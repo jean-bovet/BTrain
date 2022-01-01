@@ -10,14 +10,14 @@ BTrain is my attempt at automating a model railway layout. It is open source and
 BTrain uses the following concepts:
 
 - Block: a logical grouping of rails where one and only one train can be present at a time.
-- Turnout: an element that guide a train from one rail to another
+- Turnout: an element that guides a train from one rail to another
 - Feedback: an element that indicates when a train is present or not
 - Transition: any stretch of track between a block and turnout (and any combination of)
-- Route: a series of block that a train follows
+- Route: a series of blocks that a train follows
 
 **Features**
 
-- Support for Markling Central Station 2 & 3
+- Support for Marklin Central Station 2 & 3
 - Automatic discovery of locomotives
 - Layout editor
 - Locomotives control
@@ -26,8 +26,8 @@ BTrain uses the following concepts:
 
 **Limitations**
 
-- Does not yet take into account the length of train, blocks and turnouts. This might lead to collision if the train is longer than the block.
-- Does not yet take into account true speed conversion. This means the speed of the locomotive is not representative of the prototype model.
+- Does not yet take into account the length of train, blocks, and turnouts. This might lead to collisions if the train is longer than the block.
+- Does not yet take into account true speed conversion. This means the locomotive's speed is not representative of the prototype model.
 
 **Known Issues**
 
