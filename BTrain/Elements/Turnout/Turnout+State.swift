@@ -1,0 +1,248 @@
+// Copyright 2021 Jean Bovet
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
+// to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
+// and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+// WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+import Foundation
+
+extension Turnout {
+    
+    // Returns all the possible states for the turnout
+    var allStates: [State] {
+        switch(category) {
+        case .singleLeft:
+            return [.straight, .branchLeft]
+        case .singleRight:
+            return [.straight, .branchRight]
+        case .threeWay:
+            return [.straight, .branchLeft, .branchRight]
+        case .doubleSlip:
+            return [.straight, .branch]
+        case .doubleSlip2:
+            return [.straight01, .straight23, .branch03, .branch21]
+        }
+    }
+    
+    // Returns the next state the turnout will take when toggling between
+    // the states - see toggle() method below.
+    var nextState: State {
+        switch(category) {
+        case .singleLeft:
+            switch(state) {
+            case .straight:
+                return .branchLeft
+            case .branchLeft:
+                return .straight
+            default:
+                return .invalid
+            }
+            
+        case .singleRight:
+            switch(state) {
+            case .straight:
+                return .branchRight
+            case .branchRight:
+                return .straight
+            default:
+                return .invalid
+            }
+            
+        case .doubleSlip:
+            switch(state) {
+            case .straight:
+                return .branch
+            case .branch:
+                return .straight
+            default:
+                return .invalid
+            }
+
+        case .doubleSlip2:
+            switch(state) {
+            case .straight01:
+                return .straight23
+            case .straight23:
+                return .branch03
+            case .branch03:
+                return .branch21
+            case .branch21:
+                return .straight01
+            default:
+                return .invalid
+            }
+
+        case .threeWay:
+            switch(state) {
+            case .straight:
+                return .branchLeft
+            case .branchRight:
+                return .straight
+            case .branchLeft:
+                return .branchRight
+            default:
+                return .invalid
+            }
+        }
+    }
+    
+    var stateValue: UInt8 {
+        switch(category) {
+        case .singleLeft:
+            switch(state) {
+            case .straight:
+                return 1
+            case .branchLeft:
+                return 0
+            default:
+                return 0
+            }
+        case .singleRight:
+            switch(state) {
+            case .straight:
+                return 1
+            case .branchRight:
+                return 0
+            default:
+                return 0
+            }
+
+        case .doubleSlip:
+            switch(state) {
+            case .straight:
+                return 1
+            case .branch:
+                return 0
+            default:
+                return 0
+            }
+
+        case .doubleSlip2:
+            switch(state) {
+            case .straight01:
+                return 3
+            case .straight23:
+                return 0
+            case .branch21:
+                return 2
+            case .branch03:
+                return 1
+            default:
+                return 0
+            }
+
+        case .threeWay:
+            switch(state) {
+            case .straight:
+                return 3
+            case .branchLeft:
+                return 2
+            case .branchRight:
+                return 1
+            default:
+                return 0
+            }
+
+        }
+    }
+    
+    // Returns the command corresponding to
+    // the state of the turnout.
+    func stateCommands(power: UInt8) -> [Command] {
+        if category == .doubleSlip2 || category == .threeWay {
+            let value1 = (stateValue & 0x01)
+            let value2 = (stateValue & 0x02) >> 1
+            return [.turnout(address: address, state: value1, power: power),
+                    .turnout(address: address2, state: value2, power: power)]
+        } else {
+            return [.turnout(address: address, state: stateValue, power: power)]
+        }
+    }
+
+    func state(fromSocket: Int, toSocket: Int) -> State {
+        switch(category) {
+        case .singleLeft:
+            switch(fromSocket, toSocket) {
+            case (0, 1), (1, 0):
+                return .straight
+            case (0, 2), (2, 0):
+                return .branchLeft
+            default:
+                return .invalid
+            }
+
+        case .singleRight:
+            switch(fromSocket, toSocket) {
+            case (0, 1), (1, 0):
+                return .straight
+            case (0, 2), (2, 0):
+                return .branchRight
+            default:
+                return .invalid
+            }
+
+        case .doubleSlip:
+            switch(fromSocket, toSocket) {
+            case (0, 1), (1, 0):
+                return .straight
+            case (2, 3), (3, 2):
+                return .straight
+            case (0, 3), (3, 0):
+                return .branch
+            case (2, 1), (1, 2):
+                return .branch
+            default:
+                return .invalid
+            }
+
+        case .doubleSlip2:
+            switch(fromSocket, toSocket) {
+            case (0, 1), (1, 0):
+                return .straight01
+            case (2, 3), (3, 2):
+                return .straight23
+            case (0, 3), (3, 0):
+                return .branch03
+            case (2, 1), (1, 2):
+                return .branch21
+            default:
+                return .invalid
+            }
+
+        case .threeWay:
+            switch(fromSocket, toSocket) {
+            case (0, 1), (1, 0):
+                return .straight
+            case (0, 2), (2, 0):
+                return .branchRight
+            case (0, 3), (3, 0):
+                return .branchLeft
+            default:
+                return .invalid
+            }
+
+        }
+    }
+
+    // Use this method to safely set the state
+    func setStateSafe(_ state: State) {
+        if reserved == nil {
+            self.state = state
+        }
+    }
+    
+    // Use this method to toggle to the next available
+    // state of the turnout. This is mainly used by the
+    // UX when the user click on the turnout and it rotates
+    // over all its available states.
+    func toggleToNextState() {
+        setStateSafe(nextState)
+    }
+    
+}

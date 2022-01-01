@@ -1,0 +1,277 @@
+// Copyright 2021 Jean Bovet
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
+// to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
+// and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+// WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+import XCTest
+@testable import BTrain
+
+class PathFinderTests: XCTestCase {
+    
+    func testValidation() throws {
+        let layout = LayoutECreator().newLayout()
+        let errors = try LayoutDiagnostic(layout: layout).check()
+        XCTAssertEqual(errors.count, 0)
+    }
+
+    func testSimplePath() throws {
+        let layout = LayoutECreator().newLayout()
+        let s1 = layout.block(for: Identifier<Block>(uuid: "s1"))!
+        let pf = PathFinder(layout: layout)
+        
+        let path = try pf.path(trainId: layout.trains[0].id, from: s1, direction: .next, reservedBlockLookAhead: 1)
+        XCTAssertNotNil(path)
+        XCTAssertEqual(path!.description, ["s1:next", "b1:next", "b2:next", "b3:next", "s2:next"])
+    }
+    
+    func testPathWithBacktrack() throws {
+        let layout = LayoutECreator().newLayout()
+        let s1 = layout.block(for: Identifier<Block>(uuid: "s1"))!
+        let pf = PathFinder(layout: layout)
+        pf.turnoutSocketSelectionOverride = { turnout, socketsId, context in
+            if turnout.id.uuid == "t5" {
+                return 2
+            } else {
+                return nil
+            }
+        }
+
+        let path = try pf.path(trainId: layout.trains[0].id, from: s1, direction: .next, reservedBlockLookAhead: 1)
+        XCTAssertNotNil(path)
+        XCTAssertEqual(path!.description, ["s1:next", "b1:next", "b2:next", "b3:next", "b5:next", "b1:previous", "s2:previous"])
+    }
+    
+    func testPathLookAhead() throws {
+        let layout = LayoutECreator().newLayout()
+        let s1 = layout.block(for: Identifier<Block>(uuid: "s1"))!
+        let b2 = layout.mutableBlock(for: Identifier<Block>(uuid: "b2"))!
+        b2.reserved = Reservation("other", .next)
+        
+        let pf = PathFinder(layout: layout)
+
+        // Ensure that by specificy a look ahead equal to the number of blocks in the layout
+        // there is no valid path found because b2 is occupied.
+        var path = try pf.path(trainId: layout.trains[0].id, from: s1, direction: .next, reservedBlockLookAhead: 2*layout.blocks.count)
+        XCTAssertNil(path)
+        
+        // Now let's try again with a look ahead of just one block,
+        // in which case the reservation of b2 will be ignored because it is
+        // past the look ahead
+        path = try pf.path(trainId: layout.trains[0].id, from: s1, direction: .next, reservedBlockLookAhead: 1)
+        XCTAssertNotNil(path)
+        XCTAssertEqual(path!.description, ["s1:next", "b1:next", "b2:next", "b3:next", "s2:next"])
+    }
+
+    func testPathReserved() throws {
+        let layout = LayoutECreator().newLayout()
+        let s1 = layout.block(for: Identifier<Block>(uuid: "s1"))!
+        let b2 = layout.mutableBlock(for: Identifier<Block>(uuid: "b2"))!
+        b2.reserved = Reservation("other", .next)
+        
+        let pf = PathFinder(layout: layout)
+        pf.turnoutSocketSelectionOverride = { turnout, socketsId, context in
+            if turnout.id.uuid == "t4" {
+                b2.reserved = nil
+            }
+            return nil
+        }
+
+        let path = try pf.path(trainId: layout.trains[0].id, from: s1, direction: .next, reservedBlockLookAhead: 2*layout.blocks.count)
+        XCTAssertNotNil(path)
+        XCTAssertFalse(path!.context.isOverflowing)
+        XCTAssertEqual(path!.description, ["s1:next", "b1:next", "b5:previous", "b3:previous", "b2:previous", "b1:previous", "s2:previous"])
+    }
+
+    func testPathOverflow() throws {
+        let layout = LayoutECreator().newLayout()
+        let s1 = layout.block(for: Identifier<Block>(uuid: "s1"))!
+        
+        let pf = PathFinder(layout: layout)
+        pf.turnoutSocketSelectionOverride = { turnout, socketsId, context in
+            context.visitedSteps.removeAll()
+            
+            let s1 = layout.mutableBlock(for: Identifier<Block>(uuid: "s1"))!
+            s1.reserved = Reservation("other", .next)
+
+            let s2 = layout.mutableBlock(for: Identifier<Block>(uuid: "s2"))!
+            s2.reserved = Reservation("other", .next)
+
+            return nil
+        }
+
+        do {
+            _ = try pf.path(trainId: layout.trains[0].id, from: s1, direction: .next, reservedBlockLookAhead: 2*layout.blocks.count)
+            XCTFail("Exception must be thrown")
+        } catch PathFinder.PathError.overflow {
+            
+        } catch {
+            XCTFail("Invalid exception \(error)")
+        }
+    }
+
+    func testUpdateAutomaticRoute() throws {
+        let layout = LayoutECreator().newLayout()
+        let s1 = layout.mutableBlock(for: Identifier<Block>(uuid: "s1"))!
+
+        let train = layout.mutableTrains[0]
+        train.blockId = s1.id
+        s1.train = .init(train.id, .next)
+        XCTAssertEqual(train.speed, 0)
+
+        layout.automaticRouteRandom = false
+        
+        let route = try layout.updateAutomaticRoute(for: train.id, toBlockId: nil)
+        XCTAssertEqual(route.steps.description, ["s1:next", "b1:next", "b2:next", "b3:next", "s2:next"])
+        XCTAssertFalse(route.enabled)
+
+        // Start the route
+        let controller = LayoutCoordinator(layout: layout, interface: nil)
+        try layout.prepare(routeID: route.id, trainID: train.id, startAtEndOfBlock: true)
+        try controller.start(routeID: route.id, trainID: train.id, toBlockId: nil)
+        
+        let asserter = LayoutAsserter(layout: layout, coordinator: controller)
+        
+        try asserter.assert(["automatic-0: {r0{s1 ≏ 🚂0 }} <r0<t1,l>> <r0<t2,s>> [r0[b1 ≏ ]] <t3> [b2 ≏ ] <t4> [b3 ≏ ] <t5> <t6> {s2 ≏ }"], route: route, trains: [train])
+                        
+        // Let's put another train in b2
+        layout.reserve("b2", with: "1", direction: .next)
+        
+        try asserter.assert(["automatic-0: {r0{s1 ≏ 🚂0 }} <r0<t1,l>> <r0<t2,s>> [r0[b1 ≏ ]] <t3> [r1[b2 ≏ ]] <t4> [b3 ≏ ] <t5> <t6> {s2 ≏ }"], route: route, trains: [train])
+
+        // Move s1 -> b1
+        try asserter.assert(["automatic-0: {s1 ≏ } <t1,l> <t2,s> [r0[b1 ≡ 🛑🚂0 ]] <t3> [r1[b2 ≏ ]] <t4> [b3 ≏ ] <t5> <t6> {s2 ≏ }"], route: route, trains: [train])
+
+        // The controller will generate a new automatic route because "b2" is occupied.
+        XCTAssertEqual(controller.run(), .processed)
+        
+        // The controller will start the train again because the next block of the new route is free
+        XCTAssertEqual(controller.run(), .processed)
+        
+        // Nothing more should happen now
+        XCTAssertEqual(controller.run(), .none)
+
+        // Because block b2 is occupied, a new route will be generated automatically
+        try asserter.assert(["automatic-0: [r0[b1 ≏ 🚂0 ]] <r0<t3(0,2),r>> ![r0[b5 ≏ ]] <t7(2,0)> <t5(2,0)> ![b3 ≏ ] <t4(0,1)> ![r1[b2 ≏ ]] <r0<t3(1,0),r>> ![b1 ≏ ] <t2(0,1)> <t1(0,1),l> !{s2 ≏ }"], route: route, trains: [train])
+
+        // Move b1 -> b5
+        try asserter.assert(["automatic-0: [b1 ≏ ] <t3(0,2),r> ![r0[b5 🚂0 ≡ ]] <r0<t7(2,0),r>> <r0<t5(2,0),r>> ![r0[b3 ≏ ]] <t4(0,1)> ![r1[b2 ≏ ]] <t3(1,0),r> ![b1 ≏ ] <t2(0,1)> <t1(0,1),l> !{s2 ≏ }"], route: route, trains: [train])
+
+        // Let's remove the occupation of b2
+        layout.free("b2")
+        try asserter.assert(["automatic-0: [b1 ≏ ] <t3(0,2),r> ![r0[b5 🚂0 ≡ ]] <r0<t7(2,0),r>> <r0<t5(2,0),r>> ![r0[b3 ≏ ]] <t4(0,1)> ![b2 ≏ ] <t3(1,0),r> ![b1 ≏ ] <t2(0,1)> <t1(0,1),l> !{s2 ≏ }"], route: route, trains: [train])
+
+        // Move b5 -> b3
+        try asserter.assert(["automatic-0: [b1 ≏ ] <t3(0,2),r> ![b5 ≏ ] <t7(2,0),r> <t5(2,0),r> ![r0[b3 🚂0 ≡ ]] <r0<t4(0,1)>> ![r0[b2 ≏ ]] <t3(1,0),r> ![b1 ≏ ] <t2(0,1)> <t1(0,1),l> !{s2 ≏ }"], route: route, trains: [train])
+
+        // Move b3 -> b2
+        try asserter.assert(["automatic-0: [r0[b1 ≏ ]] <r0<t3(0,2)>> ![b5 ≏ ] <t7(2,0),r> <t5(2,0),r> ![b3 ≏ ] <t4(0,1)> ![r0[b2 🚂0 ≡ ]] <r0<t3(1,0)>> ![r0[b1 ≏ ]] <t2(0,1)> <t1(0,1),l> !{s2 ≏ }"], route: route, trains: [train])
+
+        // Move b2 -> b1
+        try asserter.assert(["automatic-0: [r0[b1 🚂0 ≡ ]] <t3(0,2)> ![b5 ≏ ] <t7(2,0),r> <t5(2,0),r> ![b3 ≏ ] <t4(0,1)> ![b2 ≏ ] <t3(1,0)> ![r0[b1 🚂0 ≡ ]] <r0<t2(0,1)>> <r0<t1(0,1)>> !{r0{s2 ≏ }}"], route: route, trains: [train])
+
+        // Move b1 -> s2
+        try asserter.assert(["automatic-0: [b1 ≏ ] <t3(0,2)> ![b5 ≏ ] <t7(2,0),r> <t5(2,0),r> ![b3 ≏ ] <t4(0,1)> ![b2 ≏ ] <t3(1,0)> ![b1 ≏ ] <t2(0,1)> <t1(0,1)> !{r0{s2 🛑🚂0 ≡ }}"], route: route, trains: [train])
+    }
+    
+    func testAutomaticRouteBetweenStations() throws {
+        let layout = LayoutFCreator().newLayout()
+        
+        layout.reserve("NE1", with: "1", direction: .next)
+        
+        let train = layout.trains[0]
+        let currentBlock = layout.mutableBlock(for: Identifier<Block>(uuid: "NE1"))!
+        let toBlock = layout.mutableBlock(for: Identifier<Block>(uuid: "LCF1"))!
+
+        let pf = PathFinder(layout: layout)
+        
+        let path = try pf.path(trainId: train.id, from: currentBlock, toBlock: toBlock, direction: .next, reservedBlockLookAhead: 1, random: false, verbose: false)
+        XCTAssertNotNil(path)
+        XCTAssertEqual(path!.description, ["NE1:next", "OL1:next", "OL2:next", "OL3:next", "NE4:next", "IL1:next", "IL2:next", "IL3:next", "S:next", "IL1:previous", "IL4:previous", "IL3:previous", "IL2:previous", "OL1:previous", "NE3:previous", "M1:next", "M2U:next", "LCF1:next"])
+        
+        self.measure {
+            let path = try! pf.path(trainId: train.id, from: currentBlock, toBlock: toBlock, direction: .next, reservedBlockLookAhead: 1, random: false, verbose: false)
+            XCTAssertNotNil(path)
+        }
+    }
+
+    func testAutomaticRouteBetweenStations2() throws {
+        let layout = LayoutECreator().newLayout()
+        
+        layout.reserve("s1", with: "1", direction: .next)
+        
+        let train = layout.trains[0]
+        let currentBlock = layout.mutableBlock(for: Identifier<Block>(uuid: "s1"))!
+        let toBlock = layout.mutableBlock(for: Identifier<Block>(uuid: "s2"))!
+
+        let pf = PathFinder(layout: layout)
+        
+        let path = try pf.path(trainId: train.id, from: currentBlock, toBlock: toBlock, direction: .next, reservedBlockLookAhead: 1, random: false, verbose: false)
+        XCTAssertEqual(path!.description, ["s1:next", "b1:next", "b2:next", "b3:next", "s2:next"])
+    }
+
+    // MARK: Utility functions
+    
+//    func toggle(feedback: String) {
+//        guard let f = layout.feedback(for: Identifier<Feedback>(uuid: feedback)) else {
+//            XCTFail("Unable to find feedback \(feedback)")
+//            return
+//        }
+//        f.detected = true
+//
+//        Timer.scheduledTimer(withTimeInterval: 0.250, repeats: false) { timer in
+//            f.detected = false
+//        }
+//    }
+    
+//    func wait(for train: ITrain, in block: String) {
+//        let blockId = Identifier<Block>(uuid: block)
+//        wait(for: { return train.blockId == blockId }, timeout: 2.0)
+//        XCTAssertEqual(train.blockId, blockId)
+//    }
+//
+//    func wait(for block: () -> Bool, timeout: TimeInterval) {
+//        let current = RunLoop.current
+//        let startTime = Date()
+//        while !block() {
+//            current.run(until: Date(timeIntervalSinceNow: 0.250))
+//            if Date().timeIntervalSince(startTime) >= timeout {
+//                XCTFail("Time out")
+//                break
+//            }
+//        }
+//    }
+}
+
+extension Layout {
+    
+    func reserve(_ block: String, with train: String, direction: Direction) {
+        mutableBlock(for: Identifier<Block>(uuid: block))?.reserved = Reservation(trainId: Identifier<Train>(uuid: train), direction: direction)
+    }
+
+    func free(_ block: String) {
+        mutableBlock(for: Identifier<Block>(uuid: block))?.reserved = nil
+    }
+
+}
+
+extension Array where Element == Route.Step {
+    
+    var description: [String] {
+        return self.map { "\($0.blockId.uuid):\($0.direction.rawValue)" }
+    }
+}
+
+extension PathFinder.Path {
+        
+    var description: [String] {
+        return steps.description
+    }
+    
+}

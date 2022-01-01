@@ -1,0 +1,85 @@
+// Copyright 2021 Jean Bovet
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
+// to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
+// and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+// WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+import SwiftUI
+
+struct SwitchboardEditControlsView: View {
+    
+    let layout: Layout
+
+    @ObservedObject var state: SwitchBoard.State
+    @ObservedObject var document: LayoutDocument
+    @ObservedObject var switchboard: SwitchBoard
+
+    @State private var newBlockSheet = false
+    @State private var newTurnoutSheet = false
+
+    var body: some View {
+        if state.editable {
+            HStack {
+                Group {
+                    Button("􀅼 Block") {
+                        newBlockSheet.toggle()
+                    }
+                    
+                    Button("􀅼 Turnout") {
+                        newTurnoutSheet.toggle()
+                    }
+                }
+                
+                Spacer().fixedSpace()
+                
+                Button("􀈑") {
+                    switchboard.remove(state.selectedShape!)
+                }.disabled(state.selectedShape == nil)
+                
+                Spacer()
+                
+                Button("Fit Size") {
+                    switchboard.idealSize = switchboard.computeIdealSize()
+                }
+                
+                Spacer()
+                
+                Button("Done") {
+                    switchboard.state.editable = false
+                }
+            }.sheet(isPresented: $newBlockSheet) {
+                NewBlockSheet(layout: layout)
+                    .frame(width: 400)
+                    .padding()
+            }.sheet(isPresented: $newTurnoutSheet) {
+                NewTurnoutSheet(layout: layout)
+                    .frame(width: 400)
+                    .padding()
+            }.sheet(isPresented: $state.trainDroppedInBlockAction) {
+                TrainDropActionSheet(layout: layout, trainDragInfo: state.trainDragInfo!, coordinator: document.coordinator!)
+                    .fixedSize(horizontal: true, vertical: false)
+                    .padding()
+            }.padding()
+        }        
+    }
+    
+}
+
+struct SwitchboardEditControlsView_Previews: PreviewProvider {
+    
+    static let doc: LayoutDocument = {
+        let doc = LayoutDocument(layout: LayoutCCreator().newLayout())
+        doc.switchboard?.state.editable = true
+        return doc
+    }()
+
+    static var previews: some View {
+        SwitchboardEditControlsView(layout: doc.layout, state: doc.switchboard!.state, document: doc, switchboard: doc.switchboard!)
+    }
+}
