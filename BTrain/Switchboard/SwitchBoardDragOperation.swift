@@ -199,16 +199,28 @@ final class SwitchBoardDragOperation {
     }
         
     func gridX(_ x: CGFloat) -> CGFloat {
-        return round(x / 10) * 10
+        if state.snapToGrid {
+            return round(x / 10) * 10
+        } else {
+            return x
+        }
     }
     
     func gridY(_ y: CGFloat) -> CGFloat {
-        return round(y / 10) * 10
+        if state.snapToGrid {
+            return round(y / 10) * 10
+        } else {
+            return y
+        }
     }
 
     func gridAngle(_ angle: CGFloat) -> CGFloat {
-        let angleGrid: CGFloat = .pi/4
-        return round(angle / angleGrid) * angleGrid
+        if state.snapToGrid {
+            let angleGrid: CGFloat = .pi/4
+            return round(angle / angleGrid) * angleGrid
+        } else {
+            return angle
+        }
     }
     
     func onDragEnded() {
