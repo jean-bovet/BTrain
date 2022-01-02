@@ -61,7 +61,7 @@ final class LayoutCoordinator: ObservableObject {
                 .removeDuplicates()
                 .receive(on: RunLoop.main)
                 .sink { value in
-                    self.speedChanged(train: train, speed: value)
+                    self.speedChanged(train: train)
                     // Note: speed changes do not affect the controller of the layout
                 }
             cancellables.append(cancellable)
@@ -95,11 +95,11 @@ final class LayoutCoordinator: ObservableObject {
         }
     }
 
-    func speedChanged(train: Train, speed: UInt16) {
-        BTLogger.debug("Train \(train) changed speed to \(speed)", layout, train)
+    func speedChanged(train: Train) {
+        BTLogger.debug("Train \(train) changed speed to \(train.speed)", layout, train)
 
         if let interface = interface {
-            interface.execute(command: .speed(address: train.address, speed: speed))
+            interface.execute(command: .speed(address: train.address, speed: train.speed))
         }
     }
     
