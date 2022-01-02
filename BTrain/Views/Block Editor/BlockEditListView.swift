@@ -24,16 +24,16 @@ struct BlockEditListView: View {
         VStack(alignment: .leading) {
             HStack {
                 VStack {
-                    Table(selection: $selection) {
-                        TableColumn("Name") { block in
-                            TextField("Name", text: block.name)
-                                .labelsHidden()
-                        }
-                    } rows: {
-                        ForEach($layout.mutableBlocks.values) { block in
-                            TableRow(block)
-                        }
-                    }
+//                    Table(selection: $selection) {
+//                        TableColumn("Name") { block in
+//                            TextField("Name", text: block.name)
+//                                .labelsHidden()
+//                        }
+//                    } rows: {
+//                        ForEach($layout.mutableBlocks.values) { block in
+//                            TableRow(block)
+//                        }
+//                    }
                     
                     HStack {
                         Text("\(layout.blocks.count) blocks")
