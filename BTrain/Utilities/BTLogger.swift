@@ -24,14 +24,14 @@ final class BTLogger {
     
     static func debug(_ msg: String, _ layout: Layout, _ train: ITrain? = nil) {
         var attributes = [String]()
-        attributes.append("l=\(layout)")
+        attributes.append("\(layout)")
         if let train = train {
-            attributes.append("t=\(train)")
+            attributes.append("\(train.name)")
         }
-        if let route = train?.routeId {
-            attributes.append("r=\(route)")
+        if let routeId = train?.routeId, let route = layout.route(for: routeId, trainId: train?.id) {
+            attributes.append("\(route.name)")
         } else {
-            attributes.append("r=nil")
+            attributes.append("No Route")
         }
         if let train = train, let cb = layout.currentBlock(train: train) {
             attributes.append(attributesFor(block: cb, layout: layout))
@@ -43,7 +43,7 @@ final class BTLogger {
     }
 
     static func attributesFor(block: IBlock, layout: Layout) -> String {
-        var info = "b=\(block)"
+        var info = "\(block.name)"
         if let reserved = block.reserved {
             info += ",r=\(reserved)"
         }
@@ -57,9 +57,6 @@ final class BTLogger {
             } else {
                 info += "<"
             }
-        }
-        if block.reserved != nil {
-            info += ",r"
         }
         return info
     }

@@ -1,4 +1,3 @@
-[![Xcode - Build and Analyze](https://github.com/jean-bovet/BTrain/actions/workflows/objective-c-xcode.yml/badge.svg)](https://github.com/jean-bovet/BTrain/actions/workflows/objective-c-xcode.yml)
 
 **Disclaimer**
 

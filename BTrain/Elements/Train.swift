@@ -20,6 +20,9 @@ protocol ITrain: AnyObject {
     // Unique identifier of the train
     var id: Identifier<Train> { get }
     
+    // A train that is enabled will show up in the switchboard
+    var enabled: Bool { get }
+    
     // Name of the train
     var name: String { get }
     
@@ -52,6 +55,8 @@ final class Train: Element, ITrain, ObservableObject {
         
     let id: Identifier<Train>
     
+    @Published var enabled = true
+    
     @Published var name = ""
     
     @Published var address: CommandLocomotiveAddress = .init(0, .MFX)
@@ -79,12 +84,13 @@ final class Train: Element, ITrain, ObservableObject {
 extension Train: Codable {
     
     enum CodingKeys: CodingKey {
-      case id, name, address, speed, route, routeIndex, block, position
+      case id, enabled, name, address, speed, route, routeIndex, block, position
     }
 
     convenience init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         self.init(id: try container.decode(Identifier<Train>.self, forKey: CodingKeys.id))
+        self.enabled = try container.decodeIfPresent(Bool.self, forKey: CodingKeys.enabled) ?? true
         self.name = try container.decode(String.self, forKey: CodingKeys.name)
         self.address = try container.decode(CommandLocomotiveAddress.self, forKey: CodingKeys.address)
         self.speed = try container.decode(UInt16.self, forKey: CodingKeys.speed)
@@ -97,6 +103,7 @@ extension Train: Codable {
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(id, forKey: CodingKeys.id)
+        try container.encode(enabled, forKey: CodingKeys.enabled)
         try container.encode(name, forKey: CodingKeys.name)
         try container.encode(address, forKey: CodingKeys.address)
         try container.encode(speed, forKey: CodingKeys.speed)
