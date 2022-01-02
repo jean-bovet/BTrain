@@ -277,12 +277,6 @@ final class TurnoutShape: Shape, DraggableShape, ConnectableShape {
             ctx.setLineWidth(lineWidth)
             ctx.addPath(path)
             ctx.drawPath(using: .stroke)
-
-            // Note: only draw endCaps when dragging a link
-    //        ctx.setFillColor(shapeContext.color)
-    //        ctx.setLineWidth(lineWidth)
-    //        ctx.addPath(endCaps(shapeContext.trackWidth*2))
-    //        ctx.fillPath()
             
             ctx.setStrokeColor(reserved != nil ? shapeContext.reservedColor : shapeContext.color)
             ctx.setLineWidth(shapeContext.trackWidth)
@@ -293,14 +287,6 @@ final class TurnoutShape: Shape, DraggableShape, ConnectableShape {
         if shapeContext.showTurnoutName {
             ctx.with {
                 drawLabel(ctx: ctx, label: turnout.name, at: center.translatedBy(x: 0, y: -radius), color: shapeContext.color, fontSize: shapeContext.fontSize)
-            }
-        }
-
-        if selected {
-            ctx.with {
-                ctx.setFillColor(shapeContext.color)
-                ctx.addPath(rotationHandle)
-                ctx.fillPath()
             }
         }
     }

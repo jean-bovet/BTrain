@@ -66,6 +66,10 @@ final class ShapeContext {
         NSColor.red.cgColor
     }
 
+    var rotationHandleColor: CGColor {
+        NSColor.blue.cgColor
+    }
+
     func trainColor(_ speed: UInt16) -> CGColor {
         if speed == 0 {
             return NSColor.systemRed.cgColor

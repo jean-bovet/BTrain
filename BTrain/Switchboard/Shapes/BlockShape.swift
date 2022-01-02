@@ -172,13 +172,7 @@ final class BlockShape: Shape, DraggableShape, ConnectableShape {
         
         ctx.with {
             drawContent(ctx: ctx, shapeContext: shapeContext)
-        }
-                
-        if selected {
-            ctx.setFillColor(shapeContext.color)
-            ctx.addPath(rotationHandle)
-            ctx.fillPath()
-        }
+        }                
     }
         
     func drawContent(ctx: CGContext, shapeContext: ShapeContext) {

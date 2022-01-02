@@ -51,6 +51,14 @@ final class SwitchBoardRenderer {
             }
         }
 
+        for shape in provider.rotableShapes.filter({ $0.selected }) {
+            context.with {
+                context.setFillColor(shapeContext.rotationHandleColor)
+                context.addPath(shape.rotationHandle)
+                context.fillPath()
+            }
+        }
+        
         if let potentialDropTrainPath = trainDragging?.dropPath {
             context.with {
                 context.setFillColor(shapeContext.dropTrainPathColor)
