@@ -117,11 +117,11 @@ extension MarklinCANMessage {
         case .stop:
             return MarklinCANMessageFactory.disable()
         case .speed(address: let address, speed: let speed, descriptor: _):
-            return MarklinCANMessageFactory.speed(addr: address.address, speed: speed)
+            return MarklinCANMessageFactory.speed(addr: address.actualAddress, speed: speed)
         case .forward(address: let address, descriptor: _):
-            return MarklinCANMessageFactory.forward(addr: address.address)
+            return MarklinCANMessageFactory.forward(addr: address.actualAddress)
         case .backward(address: let address, descriptor: _):
-            return MarklinCANMessageFactory.backward(addr: address.address)
+            return MarklinCANMessageFactory.backward(addr: address.actualAddress)
         case .turnout(address: let address, state: let state, power: let power, descriptor: _):
             return MarklinCANMessageFactory.accessory(addr: address.actualAddress, state: state, power: power)
         case .feedback(deviceID: let deviceID, contactID: let contactID, oldValue: let oldValue, newValue: let newValue, time: let time, descriptor: _):
@@ -140,9 +140,9 @@ extension CommandLocomotiveAddress {
     var actualAddress: UInt32 {
         switch(`protocol`) {
         case .DCC:
-            return 0x3800 + address - 1
+            return 0x0000 + address
         case .MFX:
-            return 0x4000 + address - 1
+            return 0x4000 + address
         }
     }
 }
