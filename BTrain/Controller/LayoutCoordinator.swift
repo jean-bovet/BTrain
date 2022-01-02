@@ -96,7 +96,7 @@ final class LayoutCoordinator: ObservableObject {
     }
 
     func speedChanged(train: Train) {
-        BTLogger.debug("Train \(train) changed speed to \(train.speed)", layout, train)
+        BTLogger.debug("Train \(train.name) changed speed to \(train.speed)", layout, train)
 
         if let interface = interface {
             interface.execute(command: .speed(address: train.address, speed: train.speed))

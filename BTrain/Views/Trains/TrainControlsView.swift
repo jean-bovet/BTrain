@@ -58,7 +58,7 @@ struct TrainControlsView: View {
                     in: 0...100
                 ) {
                 } onEditingChanged: { editing in
-                    print(train.speed)
+                    // No-op
                 }
                 
                 Text("\(Int(train.speed)) km/h")

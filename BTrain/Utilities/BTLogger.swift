@@ -47,12 +47,14 @@ final class BTLogger {
         if let reserved = block.reserved {
             info += ",r=\(reserved)"
         }
-        if let train = block.train {
-            info += ",t=\(train.trainId)"
-            if let t = layout.train(for: train.trainId) {
+        if let trainInstance = block.train {
+            if let train = layout.train(for: trainInstance.trainId) {
+                info += ",t=\(train.name)"
+            }
+            if let t = layout.train(for: trainInstance.trainId) {
                 info += "@\(t.position)"
             }
-            if train.direction == .next {
+            if trainInstance.direction == .next {
                 info += ">"
             } else {
                 info += "<"
