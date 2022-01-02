@@ -61,10 +61,6 @@ struct SwitchboardEditControlsView: View {
                 NewTurnoutSheet(layout: layout)
                     .frame(width: 400)
                     .padding()
-            }.sheet(isPresented: $state.trainDroppedInBlockAction) {
-                TrainDropActionSheet(layout: layout, trainDragInfo: state.trainDragInfo!, coordinator: document.coordinator!)
-                    .fixedSize(horizontal: true, vertical: false)
-                    .padding()
             }.padding()
         }        
     }

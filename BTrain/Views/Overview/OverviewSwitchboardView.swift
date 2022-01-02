@@ -44,8 +44,11 @@ struct OverviewSwitchboardView: View {
                     SwitchBoardView(switchboard: switchboard, state: state, layout: layout, coordinator: coordinator)
                 }
             }
+        }.sheet(isPresented: $state.trainDroppedInBlockAction) {
+            TrainDropActionSheet(layout: layout, trainDragInfo: state.trainDragInfo!, coordinator: document.coordinator!)
+                .fixedSize(horizontal: true, vertical: false)
+                .padding()
         }
-
     }
 }
 
