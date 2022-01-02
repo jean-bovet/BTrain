@@ -18,6 +18,8 @@ struct TrainControlsView: View {
 
     @ObservedObject var train: Train
 
+    @State private var speed = 0.0
+    
     @State private var trainForward = true
 
     @State private var errorStatus: String?
@@ -54,14 +56,14 @@ struct TrainControlsView: View {
                 }.buttonStyle(.borderless)
                 
                 Slider(
-                    value: $train.speedAsDouble,
+                    value: $speed,
                     in: 0...100
                 ) {
                 } onEditingChanged: { editing in
-                    print(train.speed)
+                    train.speed = UInt16(speed)
                 }
                 
-                Text("\(Int(train.speed)) km/h")
+                Text("\(Int(speed)) km/h")
             }.disabled(!document.connected)
             if let errorStatus = errorStatus {
                 Text(errorStatus)
@@ -70,6 +72,7 @@ struct TrainControlsView: View {
                     .foregroundColor(.red)
             }
         }.onAppear {
+            speed = train.speedAsDouble
             if let direction = try? document.layout.direction(ofTrain: train) {
                 trainForward = direction == .next
             }
