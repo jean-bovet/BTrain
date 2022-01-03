@@ -29,7 +29,7 @@ struct SimulatorView: View {
             HStack {
                 Picker("Locomotive:", selection: $trainId) {
                     ForEach(simulator.trains, id:\.self) { train in
-                        Text(train.name).tag(train.id as Identifier<Train>?)
+                        Text(train.train.name).tag(train.id as Identifier<Train>?)
                     }
                 }
                 

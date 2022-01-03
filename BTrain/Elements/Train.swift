@@ -26,6 +26,9 @@ protocol ITrain: AnyObject {
     // Name of the train
     var name: String { get }
     
+    // Address of the train
+    var address: CommandLocomotiveAddress { get }
+    
     // Speed of the train
     var speed: UInt16 { get }
 

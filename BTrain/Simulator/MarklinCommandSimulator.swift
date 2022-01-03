@@ -16,20 +16,16 @@ import Combine
 
 final class SimulatorTrain: ObservableObject, Element {
     let id: Identifier<Train>
-
-    @Published var name = ""
+    let train: ITrain
+    
     @Published var directionForward = true
     @Published var speed = 0.0
-    
-    init(id: Identifier<Train>, name: String, forward: Bool, speed: Double) {
-        self.id = id
-        self.name = name
-        self.directionForward = forward
-        self.speed = speed
-    }
-    
-    convenience init(train: ITrain) {
-        self.init(id: train.id, name: train.name, forward: train.directionForward, speed: Double(train.speed))
+        
+    init(train: ITrain) {
+        self.id = train.id
+        self.train = train
+        self.directionForward = train.directionForward
+        self.speed = Double(train.speed)
     }
 }
     
@@ -43,6 +39,7 @@ final class MarklinCommandSimulator: ObservableObject {
     @Published var trains = [SimulatorTrain]()
 
     private var cancellables = [AnyCancellable]()
+    private var simulatorCancellables = [AnyCancellable]()
 
     private var server: Server?
 
@@ -81,10 +78,25 @@ final class MarklinCommandSimulator: ObservableObject {
         }
     }
 
+    func registerForSimulatorTrainDirectionChange() {
+        for train in trains {
+            let cancellable = train.$directionForward
+                .removeDuplicates()
+                .receive(on: RunLoop.main)
+                .sink { value in
+                    print(value)
+                    self.setTrainDirection(train: train, directionForward: value)
+                }
+            simulatorCancellables.append(cancellable)
+        }
+    }
+
     func updateListOfTrains() {
         self.trains = layout.trains.filter({ $0.blockId != nil }).map({ train in
             return SimulatorTrain(train: train)
         })
+        simulatorCancellables.removeAll()
+        registerForSimulatorTrainDirectionChange()
     }
     
     func start() {
@@ -169,6 +181,11 @@ final class MarklinCommandSimulator: ObservableObject {
         send(message)
     }
 
+    func setTrainDirection(train: SimulatorTrain, directionForward: Bool) {
+        let message = MarklinCANMessageFactory.emergencyStop(addr: train.train.address.actualAddress)
+        send(message)
+    }
+    
     func send(_ message: MarklinCANMessage) {
         server?.connections.forEach({ connection in
             connection.send(data: message.data)

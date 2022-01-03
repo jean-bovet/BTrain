@@ -16,7 +16,7 @@ struct MarklinCANMessageFactory {
     
     static let hash: UInt16 = 0xbf46
 
-    public static func enable() -> MarklinCANMessage {
+    public static func go() -> MarklinCANMessage {
         let message = MarklinCANMessage(prio: 0,
                                         command: 0x00,
                                         resp: 0,
@@ -34,7 +34,7 @@ struct MarklinCANMessageFactory {
         return message
     }
     
-    public static func disable() -> MarklinCANMessage {
+    public static func stop() -> MarklinCANMessage {
         let message = MarklinCANMessage(prio: 0,
                                         command: 0x00,
                                         resp: 0,
@@ -45,6 +45,24 @@ struct MarklinCANMessageFactory {
                                         byte2: 0x00,
                                         byte3: 0x00,
                                         byte4: 0x00, // OFF
+                                        byte5: 0x00,
+                                        byte6: 0x00,
+                                        byte7: 0x00
+        )
+        return message
+    }
+
+    public static func emergencyStop(addr: UInt32) -> MarklinCANMessage {
+        let message = MarklinCANMessage(prio: 0,
+                                        command: 0x00,
+                                        resp: 0,
+                                        hash: hash,
+                                        dlc: 0x05,
+                                        byte0: UInt8((addr >> 24) & 0xFF),
+                                        byte1: UInt8((addr >> 16) & 0xFF),
+                                        byte2: UInt8((addr >> 8) & 0xFF),
+                                        byte3: UInt8((addr >> 0) & 0xFF),
+                                        byte4: 0x03, // Sub-command
                                         byte5: 0x00,
                                         byte6: 0x00,
                                         byte7: 0x00

@@ -113,9 +113,9 @@ extension MarklinCANMessage {
     static func from(command: Command) -> MarklinCANMessage {
         switch(command) {
         case .go:
-            return MarklinCANMessageFactory.enable()
+            return MarklinCANMessageFactory.go()
         case .stop:
-            return MarklinCANMessageFactory.disable()
+            return MarklinCANMessageFactory.stop()
         case .speed(address: let address, speed: let speed, descriptor: _):
             return MarklinCANMessageFactory.speed(addr: address.actualAddress, speed: speed)
         case .forward(address: let address, descriptor: _):

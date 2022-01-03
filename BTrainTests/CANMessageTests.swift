@@ -16,13 +16,13 @@ import XCTest
 class CANMessageTests: XCTestCase {
 
     func testEnable() {
-        assert(msg: MarklinCANMessageFactory.enable(),
+        assert(msg: MarklinCANMessageFactory.go(),
                byteArray: [ 0x00, 0x00, 0xbf, 0x46, 0x05, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00 ],
                description: "0x00 System Go")
     }
 
     func testDisable() {
-        assert(msg: MarklinCANMessageFactory.disable(),
+        assert(msg: MarklinCANMessageFactory.stop(),
                byteArray: [ 0x00, 0x00, 0xbf, 0x46, 0x05, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 ],
                description: "0x00 System Stop")
     }
