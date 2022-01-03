@@ -48,9 +48,15 @@ struct SwitchBoardView: View {
     
     var body: some View {
         Canvas { context, size in
+            if switchboard.state.editable {
+                context.stroke(
+                    Path(CGRect(origin: .zero, size: size)),
+                    with: .color(.gray),
+                    style: .init(dash: [5, 10]))
+            }
+
             draw(context: context, darkMode: colorScheme == .dark, coordinator: coordinator, layout: layout, state: switchboard.state)
         }
-        .background(Color(NSColor.windowBackgroundColor))
         .gesture(
             DragGesture(minimumDistance: 0)
                 .onChanged { gesture in
