@@ -184,7 +184,7 @@ final class LayoutCoordinator: ObservableObject {
         }
 
         interface.execute(command: .locomotives()) {
-            self.layout.freeAllTrains()
+            self.layout.freeAllTrains(removeFromLayout: true)
 
             let trains: [Train] = interface.locomotives.map { loc in
                 let train = Train()

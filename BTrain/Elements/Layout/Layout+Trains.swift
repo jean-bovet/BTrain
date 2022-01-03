@@ -51,9 +51,9 @@ extension Layout {
         }
     }
 
-    func freeAllTrains() {
+    func freeAllTrains(removeFromLayout: Bool) {
         trains.forEach {
-            try? free(trainID: $0.id)
+            try? free(trainID: $0.id, removeFromLayout: removeFromLayout)
         }
     }
 }
