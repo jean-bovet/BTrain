@@ -29,6 +29,9 @@ protocol ITrain: AnyObject {
     // Speed of the train
     var speed: UInt16 { get }
 
+    // Direction of travel of the train
+    var directionForward: Bool { get }
+    
     // The route this train is associated with
     var routeId: Identifier<Route>? { get }
         
@@ -62,7 +65,9 @@ final class Train: Element, ITrain, ObservableObject {
     @Published var address: CommandLocomotiveAddress = .init(0, .MFX)
         
     @Published var speed: UInt16 = 0
-        
+
+    @Published var directionForward: Bool = true
+    
     @Published var routeId: Identifier<Route>?
     
     @Published var routeIndex = 0
@@ -84,7 +89,7 @@ final class Train: Element, ITrain, ObservableObject {
 extension Train: Codable {
     
     enum CodingKeys: CodingKey {
-      case id, enabled, name, address, speed, route, routeIndex, block, position
+      case id, enabled, name, address, speed, direction, route, routeIndex, block, position
     }
 
     convenience init(from decoder: Decoder) throws {
@@ -94,6 +99,7 @@ extension Train: Codable {
         self.name = try container.decode(String.self, forKey: CodingKeys.name)
         self.address = try container.decode(CommandLocomotiveAddress.self, forKey: CodingKeys.address)
         self.speed = try container.decode(UInt16.self, forKey: CodingKeys.speed)
+        self.directionForward = try container.decodeIfPresent(Bool.self, forKey: CodingKeys.direction) ?? true
         self.routeId = try container.decodeIfPresent(Identifier<Route>.self, forKey: CodingKeys.route)
         self.routeIndex = try container.decode(Int.self, forKey: CodingKeys.routeIndex)
         self.blockId = try container.decodeIfPresent(Identifier<Block>.self, forKey: CodingKeys.block)
@@ -107,6 +113,7 @@ extension Train: Codable {
         try container.encode(name, forKey: CodingKeys.name)
         try container.encode(address, forKey: CodingKeys.address)
         try container.encode(speed, forKey: CodingKeys.speed)
+        try container.encode(directionForward, forKey: CodingKeys.direction)
         try container.encode(routeId, forKey: CodingKeys.route)
         try container.encode(routeIndex, forKey: CodingKeys.routeIndex)
         try container.encode(blockId, forKey: CodingKeys.block)

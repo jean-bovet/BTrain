@@ -166,6 +166,11 @@ extension LayoutDocument {
         mi.connect {
             DispatchQueue.main.async {
                 self.interface = mi
+                // TODO
+//                for t in self.layout.turnouts {
+//                    self.coordinator?.stateChanged(turnout: t)
+//                }
+//                // TODO: how to know when all commands have been sent to the turnouts?
                 completed?(nil)
             }
         } onError: { error in

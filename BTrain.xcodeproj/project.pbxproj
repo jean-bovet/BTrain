@@ -137,6 +137,8 @@
 		A79079A3277F87AB00771A60 /* Spacer+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A79079A2277F87AB00771A60 /* Spacer+Extension.swift */; };
 		A79079A5277FAB7200771A60 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A79079A4277FAB7100771A60 /* SettingsView.swift */; };
 		A79079A7277FB8E700771A60 /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = A79079A6277FB8E700771A60 /* Credits.rtf */; };
+		A792DEF627839F55004B0439 /* SimulatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A792DEF527839F55004B0439 /* SimulatorView.swift */; };
+		A792DEF82783A09C004B0439 /* SimulatorTrainControlView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A792DEF72783A09C004B0439 /* SimulatorTrainControlView.swift */; };
 		A796FA2B2772BB5400FA41BA /* Layout.json in Resources */ = {isa = PBXBuildFile; fileRef = A796FA2A2772BB5400FA41BA /* Layout.json */; };
 		A796FA2E2775642B00FA41BA /* LayoutAsserter.swift in Sources */ = {isa = PBXBuildFile; fileRef = A796FA2D2775642B00FA41BA /* LayoutAsserter.swift */; };
 		A7B06AE12727786500BDD88C /* AppView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7B06AE02727786500BDD88C /* AppView.swift */; };
@@ -331,6 +333,8 @@
 		A79079A2277F87AB00771A60 /* Spacer+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Spacer+Extension.swift"; sourceTree = "<group>"; };
 		A79079A4277FAB7100771A60 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		A79079A6277FB8E700771A60 /* Credits.rtf */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; path = Credits.rtf; sourceTree = "<group>"; };
+		A792DEF527839F55004B0439 /* SimulatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimulatorView.swift; sourceTree = "<group>"; };
+		A792DEF72783A09C004B0439 /* SimulatorTrainControlView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimulatorTrainControlView.swift; sourceTree = "<group>"; };
 		A796FA2A2772BB5400FA41BA /* Layout.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = Layout.json; sourceTree = "<group>"; };
 		A796FA2D2775642B00FA41BA /* LayoutAsserter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutAsserter.swift; sourceTree = "<group>"; };
 		A7B06AE02727786500BDD88C /* AppView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppView.swift; sourceTree = "<group>"; };
@@ -467,6 +471,7 @@
 				A7B06B062728DD9500BDD88C /* Views */,
 				A7841372273CE06F00381341 /* Switchboard */,
 				A7F779DD272C75BA00E73275 /* Controller */,
+				A792DEF92783A0A1004B0439 /* Simulator */,
 				A74CCC73272A5A1C004E58F5 /* Elements */,
 				A7F779EE272F204D00E73275 /* Layouts */,
 				A711B155273A28C3002FE7DB /* Command */,
@@ -535,7 +540,6 @@
 			children = (
 				A73AFEB627265ADA00E1ED21 /* MarklinInterface.swift */,
 				A7218069275D1CA700831998 /* MarklinCommand.swift */,
-				A7841389274165FB00381341 /* MarklinCommandSimulator.swift */,
 				A784138D274196BB00381341 /* MarklinCommandFactory.swift */,
 				A73AFEB027265A2300E1ED21 /* MarklinCANMessage.swift */,
 				A77A96DB27274A17009E7ECB /* MarklinCANMessagePrinter.swift */,
@@ -811,6 +815,16 @@
 				A71690CB27475D5F008FE624 /* LayoutGCreator.swift */,
 			);
 			path = Predefined;
+			sourceTree = "<group>";
+		};
+		A792DEF92783A0A1004B0439 /* Simulator */ = {
+			isa = PBXGroup;
+			children = (
+				A7841389274165FB00381341 /* MarklinCommandSimulator.swift */,
+				A792DEF527839F55004B0439 /* SimulatorView.swift */,
+				A792DEF72783A09C004B0439 /* SimulatorTrainControlView.swift */,
+			);
+			path = Simulator;
 			sourceTree = "<group>";
 		};
 		A796FA2C2772BB8600FA41BA /* LayoutDocument */ = {
@@ -1099,6 +1113,7 @@
 				A73E080B276ABA91005F9D64 /* LayoutDCreator.swift in Sources */,
 				A74CCC72272A5A18004E58F5 /* Transition.swift in Sources */,
 				A7710E592777D7FE00C08150 /* RouteView.swift in Sources */,
+				A792DEF82783A09C004B0439 /* SimulatorTrainControlView.swift in Sources */,
 				A73B1639274B60A10073947D /* BTLogger.swift in Sources */,
 				A7F779FC2734D53B00E73275 /* LayoutStringParser.swift in Sources */,
 				A784139127423A8D00381341 /* Command.swift in Sources */,
@@ -1149,6 +1164,7 @@
 				A77A96DC27274A17009E7ECB /* MarklinCANMessagePrinter.swift in Sources */,
 				A784137A273F4D5400381341 /* ConnectableShape.swift in Sources */,
 				A73E0829276BF554005F9D64 /* TrainSetLocationSheet.swift in Sources */,
+				A792DEF627839F55004B0439 /* SimulatorView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

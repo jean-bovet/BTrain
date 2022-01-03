@@ -12,7 +12,27 @@
 
 import Foundation
 import Gzip
+import Combine
 
+final class SimulatorTrain: ObservableObject, Element {
+    let id: Identifier<Train>
+
+    @Published var name = ""
+    @Published var directionForward = true
+    @Published var speed = 0.0
+    
+    init(id: Identifier<Train>, name: String, forward: Bool, speed: Double) {
+        self.id = id
+        self.name = name
+        self.directionForward = forward
+        self.speed = speed
+    }
+    
+    convenience init(train: ITrain) {
+        self.init(id: train.id, name: train.name, forward: train.directionForward, speed: Double(train.speed))
+    }
+}
+    
 final class MarklinCommandSimulator: ObservableObject {
     
     let layout: Layout
@@ -20,18 +40,51 @@ final class MarklinCommandSimulator: ObservableObject {
     @Published var started = false
     @Published var enabled = false
     
+    @Published var trains = [SimulatorTrain]()
+
+    private var cancellables = [AnyCancellable]()
+
     private var server: Server?
 
     private var timer: Timer?
     
-    private var feedbackTimer: Timer?
-
     private var connection: ServerConnection? {
         return server?.connections.first
     }
     
     init(layout: Layout) {
         self.layout = layout
+        
+        registerForTrainChanges()
+        registerForTrainBlockChange()
+    }
+
+    func registerForTrainChanges() {
+        let cancellable = layout.$mutableTrains
+            .removeDuplicates()
+            .receive(on: RunLoop.main)
+            .sink { value in
+                self.updateListOfTrains()
+            }
+        cancellables.append(cancellable)
+    }
+
+    func registerForTrainBlockChange() {
+        for train in layout.mutableTrains {
+            let cancellable = train.$blockId
+                .removeDuplicates()
+                .receive(on: RunLoop.main)
+                .sink { value in
+                    self.updateListOfTrains()
+                }
+            cancellables.append(cancellable)
+        }
+    }
+
+    func updateListOfTrains() {
+        self.trains = layout.trains.filter({ $0.blockId != nil }).map({ train in
+            return SimulatorTrain(train: train)
+        })
     }
     
     func start() {
@@ -110,6 +163,18 @@ final class MarklinCommandSimulator: ObservableObject {
         }
     }
     
+    func setFeedback(feedback: Feedback, value: UInt8) {
+        let oldValue: UInt8 = feedback.detected ? 1 : 0
+        let message = MarklinCANMessageFactory.feedback(deviceID: feedback.deviceID, contactID: feedback.contactID, oldValue: oldValue, newValue: value, time: 0)
+        send(message)
+    }
+
+    func send(_ message: MarklinCANMessage) {
+        server?.connections.forEach({ connection in
+            connection.send(data: message.data)
+        })
+    }
+    
     func runLayout() {
         for train in layout.trains {
             guard let routeId = train.routeId else {
@@ -162,17 +227,5 @@ final class MarklinCommandSimulator: ObservableObject {
         Timer.scheduledTimer(withTimeInterval: 0.25, repeats: false) { timer in
             self.setFeedback(feedback: feedback, value: 0)
         }
-    }
-    
-    func setFeedback(feedback: Feedback, value: UInt8) {
-        let oldValue: UInt8 = feedback.detected ? 1 : 0
-        let message = MarklinCANMessageFactory.feedback(deviceID: feedback.deviceID, contactID: feedback.contactID, oldValue: oldValue, newValue: value, time: 0)
-        send(message)
-    }
-
-    func send(_ message: MarklinCANMessage) {
-        server?.connections.forEach({ connection in
-            connection.send(data: message.data)
-        })
     }
 }
