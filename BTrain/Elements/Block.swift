@@ -45,6 +45,13 @@ protocol IBlock: AnyObject {
     // The unique identifier of the block
     var id: Identifier<Block> { get }
     
+    // True if the block is enabled and ready to participate
+    // in the routing. False to have the block ignored
+    // by any routing, which is useful when a block is occupied
+    // or in need of repair and we don't want to have a train
+    // stopping or running through it.
+    var enabled: Bool { get }
+    
     // The name of the block
     var name: String { get }
     
@@ -131,6 +138,8 @@ final class Block: Element, BlockGeometry, ObservableObject {
 
     let id: Identifier<Block>
 
+    var enabled = true
+    
     var name: String
     
     @Published var category: Category
@@ -235,7 +244,7 @@ final class Block: Element, BlockGeometry, ObservableObject {
 extension Block: Codable {
     
     enum CodingKeys: CodingKey {
-      case id, name, type, reserved, train, feedbacks, center,angle
+        case id, enabled, name, type, reserved, train, feedbacks, center,angle
     }
 
     convenience init(from decoder: Decoder) throws {
@@ -248,6 +257,7 @@ extension Block: Codable {
 
         self.init(id: id, name: name, type: category, center: center, rotationAngle: rotationAngle)
         
+        self.enabled = try container.decodeIfPresent(Bool.self, forKey: CodingKeys.enabled) ?? true
         self.reserved = try container.decodeIfPresent(Reservation.self, forKey: CodingKeys.reserved)
         self.train = try container.decodeIfPresent(TrainInstance.self, forKey: CodingKeys.train)
         self.feedbacks = try container.decode([BlockFeedback].self, forKey: CodingKeys.feedbacks)
@@ -256,6 +266,7 @@ extension Block: Codable {
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(id, forKey: CodingKeys.id)
+        try container.encode(enabled, forKey: CodingKeys.enabled)
         try container.encode(name, forKey: CodingKeys.name)
         try container.encode(category, forKey: CodingKeys.type)
         try container.encode(reserved, forKey: CodingKeys.reserved)

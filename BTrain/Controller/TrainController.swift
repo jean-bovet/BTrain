@@ -96,7 +96,7 @@ final class TrainController {
         let nextBlock = layout.nextBlock(train: train)
 
         // Start train if next block is free and reserve it
-        if let nextBlock = nextBlock, (nextBlock.reserved == nil || nextBlock.reserved == currentBlock.reserved) && nextBlock.train == nil {
+        if let nextBlock = nextBlock, (nextBlock.reserved == nil || nextBlock.reserved == currentBlock.reserved) && nextBlock.train == nil && nextBlock.enabled {
             do {
                 try layout.reserve(train: train.id, fromBlock: currentBlock.id, toBlock: nextBlock.id, direction: currentBlock.train!.direction)
                 BTLogger.debug("Start train \(train) because the next block \(nextBlock) is free or reserved for this train", layout, train)
@@ -122,6 +122,11 @@ final class TrainController {
         }
         
         var nextBlockNotAvailable = false
+        // If the next block is disabled, we need to re-compute a new route
+        if !nextBlock.enabled {
+            nextBlockNotAvailable = true
+        }
+
         // If the next block contains a train, we need to re-compute a new route
         if nextBlock.train != nil {
             nextBlockNotAvailable = true
@@ -137,7 +142,7 @@ final class TrainController {
         }
         
         // Generate a new route if one is available
-        BTLogger.debug("Generating a new route for \(train.name) at block \(currentBlock.name) because the next block \(nextBlock.name) is occupied")
+        BTLogger.debug("Generating a new route for \(train.name) at block \(currentBlock.name) because the next block \(nextBlock.name) is occupied or disabled")
 
         // Update the automatic route using any previously defined destination block
         let route = try layout.updateAutomaticRoute(for: train.id, toBlockId: route.destinationBlock)
@@ -193,11 +198,17 @@ final class TrainController {
         }
         
         // Stop if the next block is not reserved
-        if nextBlock.reserved == nil {
+        if nextBlock.reserved == nil && atEndOfBlock {
             BTLogger.debug("Stop train \(train) because the next block is not reserved", layout, train)
             return stop()
         }
-        
+
+        // Stop if the next block is disabled
+        if !nextBlock.enabled && atEndOfBlock {
+            BTLogger.debug("Stop train \(train) because the next block is disabled", layout, train)
+            return stop()
+        }
+
         if currentBlock.reserved == nil {
             BTLogger.debug("Stop train \(train) because the current block is not reserved", layout, train)
             return stop()
@@ -313,6 +324,10 @@ final class TrainController {
         }
         
         guard nextBlock.reserved == nil else {
+            return .none
+        }
+        
+        guard nextBlock.enabled else {
             return .none
         }
         

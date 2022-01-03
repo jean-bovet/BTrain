@@ -17,7 +17,7 @@ struct OverviewView: View {
     @ObservedObject var document: LayoutDocument
                 
     var body: some View {
-        HStack {
+        HStack(spacing: 0) {
             TrainListView(layout: document.layout, document: document)
             .frame(width: 500)
             if let switchboard = document.switchboard, let layout = document.layout, let coordinator = document.coordinator {

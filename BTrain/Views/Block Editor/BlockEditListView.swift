@@ -25,6 +25,11 @@ struct BlockEditListView: View {
             HStack {
                 VStack {
                     Table(selection: $selection) {
+                        TableColumn("Enabled") { block in
+                            Toggle("Enabled", isOn: block.enabled)
+                                .labelsHidden()
+                        }.width(80)
+
                         TableColumn("Name") { block in
                             TextField("Name", text: block.name)
                                 .labelsHidden()

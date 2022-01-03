@@ -44,7 +44,7 @@ struct OverviewSwitchboardView: View {
                 } else {
                     SwitchBoardView(switchboard: switchboard, state: state, layout: layout, coordinator: coordinator)
                 }
-            }
+            }.background(Color(NSColor.windowBackgroundColor))
         }.sheet(isPresented: $state.trainDroppedInBlockAction) {
             TrainDropActionSheet(layout: layout, trainDragInfo: state.trainDragInfo!, coordinator: document.coordinator!)
                 .fixedSize(horizontal: true, vertical: false)

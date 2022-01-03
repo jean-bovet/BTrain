@@ -44,12 +44,12 @@ final class BTLogger {
 
     static func attributesFor(block: IBlock, layout: Layout) -> String {
         var info = "\(block.name)"
-        if let reserved = block.reserved {
-            info += ",r=\(reserved)"
+        if let reserved = block.reserved, let train = layout.train(for: reserved.trainId) {
+            info += ",r=\(train.name)-\(reserved.direction.rawValue)"
         }
         if let trainInstance = block.train {
             if let train = layout.train(for: trainInstance.trainId) {
-                info += ",t=\(train.name)"
+                info += ",\(train.name)"
             }
             if let t = layout.train(for: trainInstance.trainId) {
                 info += "@\(t.position)"

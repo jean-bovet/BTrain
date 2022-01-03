@@ -226,7 +226,10 @@ final class PathFinder {
             
             // Find out if the next block is already reserved
             let nextBlock = layout.block(for: nextBlockId)!
-            if let reserved = nextBlock.reserved, reserved.trainId != context.trainId {
+            if !nextBlock.enabled  {
+                context.print("The next block \(nextBlock) is disabled, backtracking")
+                return false
+            } else if let reserved = nextBlock.reserved, reserved.trainId != context.trainId {
                 // The next block is reserved for another train, we cannot use it
                 let stepCount = context.steps.count - 1 // Remove one block because we don't take into account the first block which is the starting block
                 

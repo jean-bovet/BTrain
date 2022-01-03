@@ -42,7 +42,7 @@ final class ShapeContext {
         if darkMode {
             return NSColor.darkGray.cgColor
         } else {
-            return NSColor.lightGray.cgColor
+            return NSColor.lightGray.cgColor.copy(alpha: 0.5)!
         }
     }
 

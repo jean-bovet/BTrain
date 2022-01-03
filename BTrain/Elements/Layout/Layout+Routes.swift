@@ -26,6 +26,7 @@ extension Layout {
         if let trainId = trainId, routeId == Route.automaticRouteId(for: trainId), route(for: routeId) == nil {
             // Automatic route, ensure it exists for the train
             let automaticRoute = Route(id: routeId, automatic: true)
+            automaticRoute.name = "automatic"
             routes.append(automaticRoute)
             return automaticRoute
         }

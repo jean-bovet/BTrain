@@ -96,7 +96,7 @@ final class BlockShape: Shape, DraggableShape, ConnectableShape {
         let rect = CGRect(origin: CGPoint(x: center.x-size.width/2, y: center.y-size.height/2), size: size)
         var t = CGAffineTransform(translationX: center.x, y: center.y).rotated(by: rotationAngle).translatedBy(x: -center.x, y: -center.y)
         if block.category == .station {
-            let path = CGPath(roundedRect: rect, cornerWidth: 10, cornerHeight: 10, transform: &t)
+            let path = CGPath(roundedRect: rect, cornerWidth: 6, cornerHeight: 6, transform: &t)
             return path
         } else {
             let path = CGPath(rect: rect, transform: &t)
@@ -152,6 +152,14 @@ final class BlockShape: Shape, DraggableShape, ConnectableShape {
     }
         
     func draw(ctx: CGContext) {
+        if block.category == .station {
+            ctx.with {
+                ctx.addPath(path)
+                ctx.setFillColor(shapeContext.backgroundStationBlock)
+                ctx.fillPath()
+            }
+        }
+        
         drawArrows(ctx: ctx)
 
         if let train = train {
@@ -164,7 +172,7 @@ final class BlockShape: Shape, DraggableShape, ConnectableShape {
             ctx.addPath(trackPath)
             ctx.setStrokeColor(reserved != nil ? shapeContext.reservedColor : shapeContext.color)
             ctx.setLineWidth(shapeContext.trackWidth)
-            if block.category == .station {
+            if !block.enabled {
                 ctx.setLineDash(phase: 0, lengths: [6, 6])
             }
             ctx.strokePath()
