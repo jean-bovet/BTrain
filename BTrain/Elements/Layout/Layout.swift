@@ -42,6 +42,7 @@ final class Layout: Element, ObservableObject {
     // using a random path or false if they are
     // created using the first-search approach which
     // always give the same result - useful for unit tests.
+    // TODO: expose that as a settings option
     var automaticRouteRandom = true
     
     var transitions = [Transition]()

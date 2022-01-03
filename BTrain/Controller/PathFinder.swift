@@ -30,6 +30,29 @@ final class PathFinder {
     // during the path search. Used by unit tests only.
     var turnoutSocketSelectionOverride: TurnoutSocketSelectionOverride?
     
+    struct Settings {
+        // True to generate a route at random, false otherwise.
+        let random: Bool
+        
+        enum ReservedBlockBehavior {
+            // Avoid all the reserved blocks
+            case avoidReserved
+            
+            // Avoid the reserved blocks for the first
+            // `numberOfSteps` of the route. After the route
+            // has more steps than this, reserved block
+            // will be taken into consideration. This option is
+            // used in automatic routing when no particular destination
+            // block is specified: BTrain will update the route if a
+            // reserved block is found during the routing of the train.
+            case avoidReservedUntil(numberOfSteps: Int)
+        }
+        
+        let reservedBlockBehavior: ReservedBlockBehavior
+                
+        let verbose: Bool
+    }
+    
     // Internal class used to keep track of the various parameters during analysis
     final class Context {
         // Train associated with this path
@@ -37,17 +60,16 @@ final class PathFinder {
 
         // The destination block or nil if any station block can be chosen
         let toBlock: IBlock?
-
-        let random: Bool
-        let reservedBlockLookAhead: Int
-        let verbose: Bool
-                
+        
         // The maximum number of blocks in the path before
         // it overflows and the algorithm ends the analysis.
         // This is to avoid situation in which the algorithm
         // takes too long to return.
         let overflow: Int
-        
+
+        // Settings for the algorithm
+        let settings: Settings
+
         // The list of steps defining this path
         var steps = [Route.Step]()
 
@@ -56,14 +78,11 @@ final class PathFinder {
         // re-use a block and ends up in an infinite loop.
         var visitedSteps = [Route.Step]()
         
-        init(trainId: Identifier<Train>, toBlock: IBlock?, random: Bool, reservedBlockLookAhead: Int, overflow: Int, verbose: Bool) {
+        init(trainId: Identifier<Train>, toBlock: IBlock?, overflow: Int, settings: Settings) {
             self.trainId = trainId
             self.toBlock = toBlock
-            self.random = random
-            
-            self.reservedBlockLookAhead = reservedBlockLookAhead
             self.overflow = overflow
-            self.verbose = verbose
+            self.settings = settings
         }
         
         func hasVisited(_ step: Route.Step) -> Bool {
@@ -75,7 +94,7 @@ final class PathFinder {
         }
         
         func print(_ msg: String) {
-            if verbose {
+            if settings.verbose {
                 BTLogger.debug(" \(msg)")
             }
         }
@@ -91,15 +110,35 @@ final class PathFinder {
         let context: Context
     }
         
-    func path(trainId: Identifier<Train>, from block: IBlock, toBlock: IBlock? = nil, direction: Direction, reservedBlockLookAhead: Int, random: Bool = false, verbose: Bool = false) throws -> Path? {
-        let context = Context(trainId: trainId, toBlock: toBlock, random: random, reservedBlockLookAhead: reservedBlockLookAhead, overflow: layout.blocks.count*2, verbose: verbose)
-        context.steps.append(Route.Step(block.id, direction))
-        
-        if try findPath(from: block, direction: direction, context: context) {
-            return Path(steps: context.steps, context: context)
+    func path(trainId: Identifier<Train>, from block: IBlock, toBlock: IBlock? = nil, direction: Direction, settings: Settings, generatedPathCallback: ((Path) -> Void)? = nil) throws -> Path? {
+        let numberOfPaths: Int
+        if toBlock != nil && settings.random {
+            // If a destination block is specified and the path is choosen at random,
+            // try to generate 10 paths and pick the shortest one.
+            numberOfPaths = 10
         } else {
-            return nil
+            // Otherwise, return the first path choosen.
+            numberOfPaths = 1
         }
+        
+        // Note: until we have a proper algorithm that finds the shortest path in a single pass,
+        // we will generate a few paths and pick the shortest one (depending on the `numberOfPaths`).
+        var smallestPath: Path?
+        for _ in 1...numberOfPaths {
+            let context = Context(trainId: trainId, toBlock: toBlock, overflow: layout.blocks.count*2, settings: settings)
+            context.steps.append(Route.Step(block.id, direction))
+            
+            if try findPath(from: block, direction: direction, context: context) {
+                let path = Path(steps: context.steps, context: context)
+                generatedPathCallback?(path)
+                if smallestPath == nil {
+                    smallestPath = path
+                } else if let sp = smallestPath, path.steps.count < sp.steps.count {
+                    smallestPath = path
+                }
+            }
+        }
+        return smallestPath
     }
     
     // MARK: -- Recursive functions
@@ -128,7 +167,7 @@ final class PathFinder {
         let from = direction == .next ? block.next : block.previous
         var transitions = try layout.transitions(from: from, to: nil)
         context.print("Evaluating \(transitions.count) transitions from \(from)")
-        if context.random {
+        if context.settings.random {
             transitions.shuffle()
         }
         for transition in transitions {
@@ -147,7 +186,7 @@ final class PathFinder {
         
         // Find out all the sockets accessible from the `fromSocketId`.
         var nextSocketIds = socketIds(turnout: turnout, socketId: fromSocketId, context: context)
-        if context.random {
+        if context.settings.random {
             nextSocketIds.shuffle()
         }
         context.print("Evaluating possible sockets \(nextSocketIds) from \(turnout):\(fromSocketId)")
@@ -190,11 +229,20 @@ final class PathFinder {
             if let reserved = nextBlock.reserved, reserved.trainId != context.trainId {
                 // The next block is reserved for another train, we cannot use it
                 let stepCount = context.steps.count - 1 // Remove one block because we don't take into account the first block which is the starting block
-                if stepCount < context.reservedBlockLookAhead {
+                
+                // Determine what to do when a reserved block is found
+                switch(context.settings.reservedBlockBehavior) {
+                case .avoidReserved:
                     context.print("The next block \(nextBlock) is reserved for \(nextBlock.reserved!), backtracking")
                     return false
-                } else {
-                    context.print("The next block \(nextBlock) is reserved for \(nextBlock.reserved!) but will be ignored because \(stepCount) steps is past the look ahead of \(context.reservedBlockLookAhead) block")
+                    
+                case .avoidReservedUntil(numberOfSteps: let numberOfSteps):
+                    if stepCount < numberOfSteps {
+                        context.print("The next block \(nextBlock) is reserved for \(nextBlock.reserved!), backtracking")
+                        return false
+                    } else {
+                        context.print("The next block \(nextBlock) is reserved for \(nextBlock.reserved!) but will be ignored because \(stepCount) steps is past the look ahead of \(numberOfSteps) blocks")
+                    }
                 }
             }
             

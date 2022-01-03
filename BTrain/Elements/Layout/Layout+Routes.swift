@@ -98,9 +98,16 @@ extension Layout {
         guard let trainInstance = currentBlock.train else {
             throw LayoutError.trainNotFoundInBlock(blockId: currentBlock.id)
         }
-        
+
+        // Note: if `toBlock` is specified, always avoid reserved block. Otherwise,
+        // just avoid the reserved block in front of the current one but ignore the others
+        // (the automatic route will re-evaluate itself it encounters a reserved block later
+        // during execution, to avoid deadlocking).
+        let settings = PathFinder.Settings(random: automaticRouteRandom,
+                                           reservedBlockBehavior: toBlock == nil ? .avoidReservedUntil(numberOfSteps: 1) : .avoidReserved,
+                                           verbose: true)
         let pf = PathFinder(layout: self)
-        if let path = try pf.path(trainId: train.id, from: currentBlock, toBlock: toBlock, direction: trainInstance.direction, reservedBlockLookAhead: 1, random: automaticRouteRandom, verbose: true) {
+        if let path = try pf.path(trainId: train.id, from: currentBlock, toBlock: toBlock, direction: trainInstance.direction, settings: settings) {
             route.steps = path.steps
             train.routeIndex = 0
         }

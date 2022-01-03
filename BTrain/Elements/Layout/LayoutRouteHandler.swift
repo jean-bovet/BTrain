@@ -52,6 +52,8 @@ final class LayoutRouteHandler: LayoutRouteHandling {
         
         // Ensure the automatic route associated with the train is updated
         if route.automatic {
+            // Remember the destination block
+            route.destinationBlock = toBlockId
             try layout.updateAutomaticRoute(for: trainID, toBlockId: toBlockId)
         }
 

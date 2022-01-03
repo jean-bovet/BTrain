@@ -32,6 +32,11 @@ final class Route: Element, ObservableObject {
     // to follow it, a new one will be generated
     let automatic: Bool
     
+    // Optional destination block for automatic route.
+    // If specified, the automatic route will end
+    // at the `destinationBlock`.
+    var destinationBlock: Identifier<Block>?
+    
     // User-facing name of the route
     @Published var name = ""
     

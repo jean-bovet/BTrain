@@ -137,9 +137,10 @@ final class TrainController {
         }
         
         // Generate a new route if one is available
-        BTLogger.debug("Generating a new route for \(train.id) at block \(currentBlock.id) because the next block \(nextBlock) is occupied")
-        
-        let route = try layout.updateAutomaticRoute(for: train.id, toBlockId: nil)
+        BTLogger.debug("Generating a new route for \(train.name) at block \(currentBlock.name) because the next block \(nextBlock.name) is occupied")
+
+        // Update the automatic route using any previously defined destination block
+        let route = try layout.updateAutomaticRoute(for: train.id, toBlockId: route.destinationBlock)
         BTLogger.debug("Generated route is: \(route.steps)")
         
         _ = tryReserveNextBlocks(direction: currentBlock.train!.direction)
