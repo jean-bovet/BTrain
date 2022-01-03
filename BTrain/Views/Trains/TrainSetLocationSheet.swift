@@ -79,7 +79,7 @@ struct TrainSetLocationSheet: View {
                 Button("OK") {
                     do {
                         if let selectedBlock = blockId {
-                            try layout.setTrain(train.id, toBlock: selectedBlock, direction: nil)
+                            try layout.setTrain(train.id, toBlock: selectedBlock, position: .end, direction: nil)
                         }
                         try layout.setTrain(train, direction: direction)
                         errorStatus = nil
