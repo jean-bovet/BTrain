@@ -20,9 +20,9 @@ struct TrainListView: View {
 
     var body: some View {
         if layout.trains.isEmpty {
-            HStack {
+            VStack {
                 Text("No Locomotives")
-                Button("􀈄") {
+                Button("Download Locomotives 􀈄") {
                     document.discoverLocomotiveConfirmation.toggle()
                 }
             }

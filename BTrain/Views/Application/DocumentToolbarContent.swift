@@ -41,7 +41,7 @@ struct DocumentToolbarContent: ToolbarContent {
 
                 Divider()
                 
-                Button("Import Locomotives") {
+                Button("Download Locomotives 􀈄") {
                     document.discoverLocomotiveConfirmation.toggle()
                 }
                 

@@ -33,31 +33,38 @@ struct TrainLocationView: View {
     var body: some View {
         VStack {
             HStack {
-                Text("Location: \(trainLocation)")
-                
-                Spacer()
-
-                Button() {
-                    setTrainLocationSheet.toggle()
-                } label: {
-                    Image(systemName: "arrow.down.to.line.compact")
-                }
-                .help("Assign Train to a Block")
-                .buttonStyle(.borderless)
-                
-                Button() {
-                    do {
-                        try layout.free(trainID: train.id, removeFromLayout: true)
-                        errorStatus = nil
-                    } catch {
-                        errorStatus = error.localizedDescription
+                if train.blockId == nil {
+                    Button("Set Train Location 􀅄") {
+                        setTrainLocationSheet.toggle()
                     }
-                } label: {
-                    Image(systemName: "minus.circle")
+                    Spacer()
+                } else {
+                    Text("Location: \(trainLocation)")
+                    
+                    Spacer()
+
+                    Button() {
+                        setTrainLocationSheet.toggle()
+                    } label: {
+                        Image(systemName: "arrow.down.to.line.compact")
+                    }
+                    .help("Assign Train to a Block")
+                    .buttonStyle(.borderless)
+                    
+                    Button() {
+                        do {
+                            try layout.free(trainID: train.id, removeFromLayout: true)
+                            errorStatus = nil
+                        } catch {
+                            errorStatus = error.localizedDescription
+                        }
+                    } label: {
+                        Image(systemName: "minus.circle")
+                    }
+                    .help("Remove Train from its Block")
+                    .buttonStyle(.borderless)
+                    .disabled(train.blockId == nil)
                 }
-                .help("Remove Train from its Block")
-                .buttonStyle(.borderless)
-                .disabled(train.blockId == nil)
             }
             if let errorStatus = errorStatus {
                 Text(errorStatus)

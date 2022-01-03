@@ -594,8 +594,8 @@
 			children = (
 				A7F779E2272E20F500E73275 /* TrainListView.swift */,
 				A7F779F72732407E00E73275 /* TrainView.swift */,
-				A744D13227659208005C2F37 /* TrainControlsView.swift */,
 				A76507E7275AD1FE0079C71A /* TrainLocationView.swift */,
+				A744D13227659208005C2F37 /* TrainControlsView.swift */,
 				A73E0828276BF554005F9D64 /* TrainSetLocationSheet.swift */,
 				A744D13427659330005C2F37 /* TrainRouteView.swift */,
 				A7710E5B27784B1900C08150 /* TrainRouteControlView.swift */,

@@ -28,16 +28,17 @@ struct OverviewSwitchboardView: View {
             SwitchboardEditControlsView(layout: layout, state: state, document: document, switchboard: switchboard)
             ScrollView([.horizontal, .vertical]) {
                 if switchboard.isEmpty && !state.editable {
-                    HStack {
+                    VStack {
                         Text("No Elements")
-                        
-                        Spacer().fixedSpace()
-                        
-                        Button("􀈊") {
-                            state.editable = true
-                        }
-                        Button("􀈄") {
-                            document.importPredefinedLayout = true
+                                             
+                        HStack {
+                            Button("Edit Layout 􀈊") {
+                                state.editable.toggle()
+                            }
+                            
+                            Button("Import Predefined Layout 􀈄") {
+                                document.importPredefinedLayout.toggle()
+                            }
                         }
                     }
                 } else {

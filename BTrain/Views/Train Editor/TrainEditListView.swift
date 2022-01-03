@@ -22,8 +22,7 @@ struct TrainEditListView: View {
 
     var body: some View {
         VStack {
-            Table(selection: $selection) {
-                
+            Table(selection: $selection) {                
                 TableColumn("Enabled") { train in
                     Toggle("Enabled", isOn: train.enabled)
                         .labelsHidden()
