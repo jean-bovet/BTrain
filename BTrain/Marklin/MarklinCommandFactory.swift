@@ -138,11 +138,17 @@ extension MarklinCANMessage {
 extension CommandLocomotiveAddress {
     
     var actualAddress: UInt32 {
-        switch(`protocol`) {
-        case .DCC:
+        switch(decoderType) {
+        case .MM:
             return 0x0000 + address
+        case .MM2:
+            return 0x0000 + address
+        case .DCC:
+            return 0xC000 + address
         case .MFX:
             return 0x4000 + address
+        case .SX1:
+            return 0x0800 + address
         }
     }
 }

@@ -33,29 +33,32 @@ enum Command {
     case unknown(command: UInt8, descriptor: CommandDescriptor? = nil)
 }
 
-enum CommandLocomotiveProtocol: String, CaseIterable, Codable {
-    case DCC
-    case MFX
-}
-
-enum CommandTurnoutProtocol: String, CaseIterable, Codable {
-    case DCC
-    case MM
-}
-
 struct CommandDescriptor {
     let data: Data
     let description: String
 }
 
+enum DecoderType: String, CaseIterable, Codable {
+    case MM
+    case MM2
+    case DCC
+    case MFX
+    case SX1
+}
+
 struct CommandLocomotiveAddress: Codable, Hashable, Equatable {
     let address: UInt32
-    let `protocol`: CommandLocomotiveProtocol
+    let decoderType: DecoderType
     
-    init(_ address: UInt32, _ `protocol`: CommandLocomotiveProtocol) {
+    init(_ address: UInt32, _ decoderType: DecoderType) {
         self.address = address
-        self.protocol = `protocol`
+        self.decoderType = decoderType
     }
+}
+
+enum CommandTurnoutProtocol: String, CaseIterable, Codable {
+    case DCC
+    case MM
 }
 
 struct CommandTurnoutAddress: Codable, Hashable, Equatable {
@@ -72,6 +75,20 @@ struct CommandLocomotive {
     let uid: UInt32?
     let name: String?
     let address: UInt32?
+    let decoderType: DecoderType?
+    
+    var commandAddress: CommandLocomotiveAddress? {
+        guard let address = address else {
+            return nil
+        }
+
+        guard let decoderType = decoderType else {
+            return nil
+        }
+
+        return .init(address, decoderType)
+    }
+
 }
 
 struct CommandFeedback: Hashable {

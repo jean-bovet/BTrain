@@ -28,10 +28,25 @@ class CS2DocumentParsingTests: XCTestCase {
         
         XCTAssertEqual(locs.count, 11)
         
-        let loc1 = locs[0]
-        XCTAssertEqual(loc1.uid, 0x4006)
-        XCTAssertEqual(loc1.name, "460 106-8 SBB")
-        XCTAssertEqual(loc1.address, 0x6)
+        assert(loc: locs[0], uid: 0x4006, name: "460 106-8 SBB", address: 0x6, type: "mfx")
+        assert(loc: locs[2], uid: 0x2e, name: "BLS", address: 0x2e, type: "mm_prg")
+        
+        assert(loc: locs[0].commandLocomotive, uid: 0x4006, name: "460 106-8 SBB", address: 0x6, type: .MFX, cmdAddress: .init(0x6, .MFX))
+        assert(loc: locs[2].commandLocomotive, uid: 0x2e, name: "BLS", address: 0x2e, type: .MM, cmdAddress: .init(0x2e, .MM))
     }
 
+    func assert(loc: Locomotive, uid: UInt32, name: String, address: UInt32, type: String) {
+        XCTAssertEqual(loc.uid, uid)
+        XCTAssertEqual(loc.name, name)
+        XCTAssertEqual(loc.address, address)
+        XCTAssertEqual(loc.type, type)
+    }
+    
+    func assert(loc: CommandLocomotive, uid: UInt32, name: String, address: UInt32, type: DecoderType, cmdAddress: CommandLocomotiveAddress) {
+        XCTAssertEqual(loc.uid, uid)
+        XCTAssertEqual(loc.name, name)
+        XCTAssertEqual(loc.address, address)
+        XCTAssertEqual(loc.decoderType, type)
+        XCTAssertEqual(loc.commandAddress, cmdAddress)
+    }
 }

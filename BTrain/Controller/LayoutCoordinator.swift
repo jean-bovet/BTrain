@@ -191,8 +191,8 @@ final class LayoutCoordinator: ObservableObject {
                 if let name = loc.name {
                     train.name = name
                 }
-                if let address = loc.address {
-                    train.address = .init(address, .MFX) // TODO: parse also protocol
+                if let address = loc.commandAddress {
+                    train.address = address
                 }
                 return train
             }

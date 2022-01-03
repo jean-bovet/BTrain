@@ -33,9 +33,9 @@ struct TrainEditListView: View {
                         .labelsHidden()
                 }
                 
-                TableColumn("Protocol") { train in
-                    Picker("Protocol", selection: train.addressProtocol) {
-                        ForEach(CommandLocomotiveProtocol.allCases, id:\.self) { proto in
+                TableColumn("Decoder Type") { train in
+                    Picker("Decoder", selection: train.addressDecoderType) {
+                        ForEach(DecoderType.allCases, id:\.self) { proto in
                             Text(proto.rawValue)
                         }
                     }.labelsHidden()
@@ -86,9 +86,9 @@ struct TrainEditListView: View {
 
 extension Train {
     
-    var addressProtocol: CommandLocomotiveProtocol {
+    var addressDecoderType: DecoderType {
         get {
-            return address.protocol
+            return address.decoderType
         }
         set {
             address = .init(address.address, newValue)
@@ -100,7 +100,7 @@ extension Train {
             return Int(address.address)
         }
         set {
-            address = .init(UInt32(newValue), addressProtocol)
+            address = .init(UInt32(newValue), addressDecoderType)
         }
     }
 }

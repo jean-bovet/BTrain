@@ -16,6 +16,7 @@ struct Locomotive {
     var uid: UInt32?
     var name: String?
     var address: UInt32?
+    var type: String?
 }
 
 final class LocomotivesDocumentParser: CS2DocumentParser {
@@ -27,6 +28,22 @@ final class LocomotivesDocumentParser: CS2DocumentParser {
      lokomotive
       .name=460 106-8 SBB
       .uid=0x4006
+      .mfxuid=0x73f44085
+      .adresse=0x6
+      .icon=SBB Re 460 106-8
+      .typ=mfx
+      .sid=0x6
+      .tachomax=200
+      .vmax=230
+      .vmin=4
+      .av=9
+      .bv=9
+      .volume=255
+      .spa=264
+      .spm=0
+      .ft=33
+      .velocity=0
+      .richtung=0
      */
     func parse() -> [Locomotive]? {
         guard matches("[lokomotive]") else {
@@ -50,7 +67,24 @@ final class LocomotivesDocumentParser: CS2DocumentParser {
     }
 
     private func parseLokomotive() -> Locomotive {
-        //  .name=460 106-8 SBB
+//        .name=460 106-8 SBB
+//        .uid=0x4006
+//        .mfxuid=0x73f44085
+//        .adresse=0x6
+//        .icon=SBB Re 460 106-8
+//        .typ=mfx
+//        .sid=0x6
+//        .tachomax=200
+//        .vmax=230
+//        .vmin=4
+//        .av=9
+//        .bv=9
+//        .volume=255
+//        .spa=264
+//        .spm=0
+//        .ft=33
+//        .velocity=0
+//        .richtung=0
         var loc = Locomotive()
         while let line = line, line.starts(with: ".") {
             if let name = valueFor(field: ".name=") {
@@ -61,6 +95,9 @@ final class LocomotivesDocumentParser: CS2DocumentParser {
             }
             if let address = valueFor(field: ".adresse=") {
                 loc.address = address.valueFromHex
+            }
+            if let type = valueFor(field: ".typ=") {
+                loc.type = type
             }
             lineIndex += 1
         }

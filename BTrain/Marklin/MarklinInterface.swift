@@ -48,7 +48,7 @@ final class MarklinInterface {
                     let status = self.locomotiveConfig.process(cmd)
                     if case .completed(let locomotives) = status {
                         DispatchQueue.main.async {
-                            self.locomotives = locomotives.map { CommandLocomotive(uid: $0.uid, name: $0.name, address: $0.address) }
+                            self.locomotives = locomotives.map { $0.commandLocomotive }
                             self.locomotivesCommandCompletionBlocks.forEach { $0() }
                             self.locomotivesCommandCompletionBlocks.removeAll()
                         }
@@ -96,4 +96,33 @@ extension MarklinInterface: CommandInterface {
         execute(command: command)
     }
 
+}
+
+extension Locomotive {
+    
+    var commandLocomotive: CommandLocomotive {
+        CommandLocomotive(uid: uid, name: name, address: address, decoderType: type?.locomotiveDecoderType)
+    }
+}
+
+extension String {
+    
+    var locomotiveDecoderType: DecoderType? {
+        switch(self) {
+        case "mfx":
+            return .MFX
+        case "mm_prg":
+            return .MM
+        case "mm2_prg":
+            return .MM2
+        case "mm2_dil8":
+            return .MM
+        case "dcc":
+            return .DCC
+        case "sx1":
+            return .SX1
+        default:
+            return nil
+        }
+    }
 }
