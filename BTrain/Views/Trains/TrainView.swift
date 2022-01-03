@@ -22,9 +22,11 @@ struct TrainView: View {
     
     var body: some View {
         VStack(alignment: .leading) {
-            TrainControlsView(document: document, train: train)
             TrainLocationView(layout: document.layout, train: train)
-            TrainRouteView(document: document, train: train)
+            if train.blockId != nil {
+                TrainControlsView(document: document, train: train)
+                TrainRouteView(document: document, train: train)
+            }
         }
     }
 }

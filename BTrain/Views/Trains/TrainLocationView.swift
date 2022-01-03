@@ -38,10 +38,11 @@ struct TrainLocationView: View {
                 Spacer()
 
                 Button() {
-                    self.setTrainLocationSheet.toggle()
+                    setTrainLocationSheet.toggle()
                 } label: {
-                    Image(systemName: "plus.circle")
+                    Image(systemName: "arrow.down.to.line.compact")
                 }
+                .help("Assign Train to a Block")
                 .buttonStyle(.borderless)
                 
                 Button() {
@@ -54,6 +55,7 @@ struct TrainLocationView: View {
                 } label: {
                     Image(systemName: "minus.circle")
                 }
+                .help("Remove Train from its Block")
                 .buttonStyle(.borderless)
                 .disabled(train.blockId == nil)
             }
