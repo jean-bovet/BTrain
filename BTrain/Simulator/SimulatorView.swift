@@ -37,7 +37,7 @@ struct SimulatorView: View {
             }.disabled(!simulator.enabled)
         }
         .padding()
-        .background(colorScheme == .dark ? .indigo : .yellow)
+        .background(colorScheme == .dark ? .indigo.opacity(0.5) : .yellow.opacity(0.5))
     }
 }
 

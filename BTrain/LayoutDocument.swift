@@ -172,6 +172,24 @@ extension LayoutDocument {
 //                    self.coordinator?.stateChanged(turnout: t)
 //                }
 //                // TODO: how to know when all commands have been sent to the turnouts?
+                
+                self.interface?.register(forDirectionChange: { address, direction in
+                    DispatchQueue.main.async {
+                        if let train = self.coordinator?.layout.mutableTrains.find(address: address) {
+                            switch(direction) {
+                            case .forward:
+                                train.directionForward = true
+                            case .backward:
+                                train.directionForward = false
+                            case .unknown:
+                                BTLogger.error("Unknown direction \(direction) for \(address.toHex())")
+                            }
+                        } else {
+                            BTLogger.error("Unknown address \(address.toHex()) for change in direction event")
+                        }
+                    }
+                })
+                
                 completed?(nil)
             }
         } onError: { error in

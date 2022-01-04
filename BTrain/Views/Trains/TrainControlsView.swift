@@ -18,16 +18,14 @@ struct TrainControlsView: View {
 
     @ObservedObject var train: Train
 
-    @State private var trainForward = true
-
     @State private var errorStatus: String?
 
     func trainDirectionToggle() {
         let command: Command
-        if trainForward {
-            command = .forward(address: train.address)
+        if train.directionForward {
+            command = .direction(address: train.address, direction: .forward)
         } else {
-            command = .backward(address: train.address)
+            command = .direction(address: train.address, direction: .backward)
         }
         document.interface!.execute(command: command)
         
@@ -43,10 +41,10 @@ struct TrainControlsView: View {
         VStack {
             HStack {
                 Button {
-                    trainForward.toggle()
+                    train.directionForward.toggle()
                     trainDirectionToggle()
                 } label: {
-                    if trainForward {
+                    if train.directionForward {
                         Image(systemName: "arrowtriangle.right.fill")
                     } else {
                         Image(systemName: "arrowtriangle.left.fill")
@@ -69,10 +67,6 @@ struct TrainControlsView: View {
                     .lineLimit(2)
                     .fixedSize(horizontal: false, vertical: true)
                     .foregroundColor(.red)
-            }
-        }.onAppear {
-            if let direction = try? document.layout.direction(ofTrain: train) {
-                trainForward = direction == .next
             }
         }
     }

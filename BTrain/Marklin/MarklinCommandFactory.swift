@@ -42,6 +42,19 @@ extension MarklinCommand {
                 let descriptor = CommandDescriptor(data: message.data, description: "\(cmd.toHex()) configuration data: \(Data(data) as NSData)")
                 return .configDataStream(length: nil, data: data, descriptor: descriptor)
             }
+        } else if cmd == 0x05 {
+            if message.resp == 1 {
+                // Receiving the direction of a locomotive
+                let address: UInt32 = UInt32(message.byte0) << 24 | UInt32(message.byte1) << 16 | UInt32(message.byte2) << 8 | UInt32(message.byte3) << 0
+                switch(message.byte4) {
+                case 1:
+                    return .direction(address: address, direction: .forward)
+                case 2:
+                    return .direction(address: address, direction: .backward)
+                default:
+                    return .direction(address: address, direction: .unknown)
+                }
+            }
         }
         return nil
     }
@@ -71,19 +84,27 @@ extension Command {
         }
         if cmd == 0x05 {
             let address: UInt32 = UInt32(message.byte0) << 24 | UInt32(message.byte1) << 16 | UInt32(message.byte2) << 8 | UInt32(message.byte3) << 0
-            switch(message.byte4) {
-            case 0: // no change
-                break
-            case 1: // forward
-                return .forward(address: CommandLocomotiveAddress(address, .MFX),
-                                descriptor: CommandDescriptor(data: message.data, description: "\(cmd.toHex()) forward for \(address.toHex())"))
-            case 2: // backward
-                return .backward(address: CommandLocomotiveAddress(address, .MFX),
-                                 descriptor: CommandDescriptor(data: message.data, description: "\(cmd.toHex()) backward for \(address.toHex())"))
-            case 3: // toggle
-                break
-            default: // unknown
-                break
+            if message.dlc == 4 {
+                // Query of direction. We use the .MM decoder type to ensure the address is not translated
+                // TODO: see if there is a better way for that?
+                return .queryDirection(address: CommandLocomotiveAddress(address, .MM),
+                                       descriptor: CommandDescriptor(data: message.data, description: "\(cmd.toHex()) query direction for \(address.toHex())"))
+            } else {
+                // Set direction
+                switch(message.byte4) {
+                case 0: // no change
+                    break
+                case 1: // forward
+                    return .direction(address: CommandLocomotiveAddress(address, .MFX), direction: .forward,
+                                    descriptor: CommandDescriptor(data: message.data, description: "\(cmd.toHex()) forward for \(address.toHex())"))
+                case 2: // backward
+                    return .direction(address: CommandLocomotiveAddress(address, .MFX), direction: .backward,
+                                     descriptor: CommandDescriptor(data: message.data, description: "\(cmd.toHex()) backward for \(address.toHex())"))
+                case 3: // toggle
+                    break
+                default: // unknown
+                    break
+                }
             }
         }
         if cmd == 0x0B {
@@ -124,10 +145,18 @@ extension MarklinCANMessage {
             return MarklinCANMessageFactory.emergencyStop(addr: address.actualAddress)
         case .speed(address: let address, speed: let speed, descriptor: _):
             return MarklinCANMessageFactory.speed(addr: address.actualAddress, speed: speed)
-        case .forward(address: let address, descriptor: _):
-            return MarklinCANMessageFactory.forward(addr: address.actualAddress)
-        case .backward(address: let address, descriptor: _):
-            return MarklinCANMessageFactory.backward(addr: address.actualAddress)
+        case .direction(address: let address, direction: let direction, descriptor: let descriptor):
+            switch(direction) {
+            case .forward:
+                return MarklinCANMessageFactory.forward(addr: address.actualAddress)
+            case .backward:
+                return MarklinCANMessageFactory.backward(addr: address.actualAddress)
+            case .unknown:
+                fatalError("Unknown direction command \(String(describing: descriptor?.description))")
+                break
+            }
+        case .queryDirection(address: let address, descriptor: _):
+            return MarklinCANMessageFactory.direction(addr: address.address)
         case .turnout(address: let address, state: let state, power: let power, descriptor: _):
             return MarklinCANMessageFactory.accessory(addr: address.actualAddress, state: state, power: power)
         case .feedback(deviceID: let deviceID, contactID: let contactID, oldValue: let oldValue, newValue: let newValue, time: let time, descriptor: _):

@@ -19,8 +19,8 @@ extension Command: Equatable {
         case (.go, .go): return true
         case (.stop, .stop): return true
         case (.speed, .speed): return true
-        case (.forward, .forward): return true
-        case (.backward, .backward): return true
+        case (.direction, .direction): return true
+        case (.queryDirection, .queryDirection): return true
         case (.turnout, .turnout): return true
         case (.feedback, .feedback): return true
         case (.locomotives, .locomotives): return true

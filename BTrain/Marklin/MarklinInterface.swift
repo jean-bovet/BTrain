@@ -19,12 +19,18 @@ final class MarklinInterface {
     let locomotiveConfig = MarklinLocomotiveConfig()
     
     var feedbacks = Set<CommandFeedback>()
+    
+    // TODO: use direct callback like `directionChangeCallbacks`
     var speedChanges = Set<CommandSpeed>()
-    var locomotives = [CommandLocomotive]()
 
+    var directionChangeCallbacks = [DirectionChangeCallback]()
+    
     typealias CompletionBlock = () -> Void
     
-    var locomotivesCommandCompletionBlocks = [CompletionBlock]()
+    var locomotivesCommandCompletionBlocks = [QueryLocomotiveCommandCompletion]()
+    
+    var directionCommandCompletionBlocks = [QueryDirectionCommandCompletion]()
+    
     private var disconnectCompletionBlocks: CompletionBlock?
     
     init(server: String, port: UInt16) {
@@ -36,12 +42,19 @@ final class MarklinInterface {
             onReady()
         } onData: { msg in
             if let cmd = MarklinCommand.from(message: msg) {
-                let status = self.locomotiveConfig.process(cmd)
-                if case .completed(let locomotives) = status {
-                    DispatchQueue.main.async {
-                        self.locomotives = locomotives.map { $0.commandLocomotive }
-                        self.locomotivesCommandCompletionBlocks.forEach { $0() }
-                        self.locomotivesCommandCompletionBlocks.removeAll()
+                switch(cmd) {
+                case .direction(address: let address, direction: let direction):
+                    self.directionCommandCompletionBlocks.forEach { $0(address, direction) }
+                    self.directionCommandCompletionBlocks.removeAll()
+                    
+                case .configDataStream(length: _, data: _, descriptor: _):
+                    let status = self.locomotiveConfig.process(cmd)
+                    if case .completed(let locomotives) = status {
+                        DispatchQueue.main.async {
+                            let locomotives = locomotives.map { $0.commandLocomotive }
+                            self.locomotivesCommandCompletionBlocks.forEach { $0(locomotives) }
+                            self.locomotivesCommandCompletionBlocks.removeAll()
+                        }
                     }
                 }
             } else {
@@ -62,10 +75,14 @@ final class MarklinInterface {
                 if case .emergencyStop(address: let address, descriptor: _) = cmd {
                     // NOTE: do not translate the address, the decoder type is ignored here
                     print("Emergency stop \(address.address.toHex())")
-                    // TODO: ask for the locomotive direction
-//                        DispatchQueue.main.async {
-//                            self.execute(command: .queryDirection())
-//                        }
+                    
+                    // Execute a command to query the direction of the locomotive at this particular address
+                    DispatchQueue.main.async {
+                        self.queryDirection(command: .queryDirection(address: address, descriptor: nil)) { address, direction in
+                            print("** Address \(address) direction: \(direction)")
+                            self.directionChangeCallbacks.forEach { $0(address, direction) }
+                        }
+                    }
                 }
             }
         } onError: { error in
@@ -91,11 +108,20 @@ final class MarklinInterface {
 
 extension MarklinInterface: CommandInterface {    
         
+    func register(forDirectionChange callback: @escaping DirectionChangeCallback) {
+        directionChangeCallbacks.append(callback)
+    }
+    
     func execute(command: Command) {
         send(message: MarklinCANMessage.from(command: command))
     }
     
-    func execute(command: Command, completion: @escaping () -> Void) {
+    func queryDirection(command: Command, completion: @escaping QueryDirectionCommandCompletion) {
+        directionCommandCompletionBlocks.append(completion)
+        execute(command: command)
+    }
+    
+    func queryLocomotives(command: Command, completion: @escaping QueryLocomotiveCommandCompletion) {
         locomotivesCommandCompletionBlocks.append(completion)
         execute(command: command)
     }

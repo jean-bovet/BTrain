@@ -67,14 +67,17 @@ class MarklinInterfaceTests: XCTestCase {
     
     func testDiscoverLocomotives() {
         let completionExpectation = XCTestExpectation()
-        mi.execute(command: .locomotives()) {
+        var locs = [CommandLocomotive]()
+        
+        mi.queryLocomotives(command: .locomotives()) { locomotives in
+            locs = locomotives
             completionExpectation.fulfill()
         }
         wait(for: [completionExpectation], timeout: 1)
 
-        XCTAssertEqual(mi.locomotives.count, 11)
+        XCTAssertEqual(locs.count, 11)
 
-        let loc1 = mi.locomotives[0]
+        let loc1 = locs[0]
         XCTAssertEqual(loc1.name, "460 106-8 SBB")
         XCTAssertEqual(loc1.uid, 0x4006)
         XCTAssertEqual(loc1.address, 0x6)

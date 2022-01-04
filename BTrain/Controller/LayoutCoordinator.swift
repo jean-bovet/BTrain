@@ -160,10 +160,10 @@ final class LayoutCoordinator: ObservableObject {
             return
         }
 
-        interface.execute(command: .locomotives()) {
+        interface.queryLocomotives(command: .locomotives()) { locomotives in
             self.layout.freeAllTrains(removeFromLayout: true)
 
-            let trains: [Train] = interface.locomotives.map { loc in
+            let trains: [Train] = locomotives.map { loc in
                 let train = Train()
                 if let name = loc.name {
                     train.name = name

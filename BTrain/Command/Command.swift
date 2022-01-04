@@ -12,19 +12,29 @@
 
 import Foundation
 
-// List of commands that the train interface is managing.
+// List of commands that can be sent to a Digital Control System.
 // These commands are agnostic of any particular manufacturer.
 enum Command {
     case go(descriptor: CommandDescriptor? = nil)
     case stop(descriptor: CommandDescriptor? = nil)
     case emergencyStop(address: CommandLocomotiveAddress, descriptor: CommandDescriptor? = nil)
+    
     case speed(address: CommandLocomotiveAddress, speed: UInt16, descriptor: CommandDescriptor? = nil)
-    case forward(address: CommandLocomotiveAddress, descriptor: CommandDescriptor? = nil)
-    case backward(address: CommandLocomotiveAddress, descriptor: CommandDescriptor? = nil)
+    
+    enum Direction {
+        case forward
+        case backward
+        case unknown
+    }
+    
+    case direction(address: CommandLocomotiveAddress, direction: Direction, descriptor: CommandDescriptor? = nil)
+    case queryDirection(address: CommandLocomotiveAddress, descriptor: CommandDescriptor? = nil)
+
     case turnout(address: CommandTurnoutAddress, state: UInt8, power: UInt8, descriptor: CommandDescriptor? = nil)
+    
     case feedback(deviceID: UInt16, contactID: UInt16, oldValue: UInt8, newValue: UInt8, time: UInt32, descriptor: CommandDescriptor? = nil)
     
-    // Asks the train interface to retrieve the locomotives description.
+    // Asks the Digital Control System to retrieve the locomotives description.
     // This command uses the completion block of the execute() method to notify when
     // the locomotives have all been fetched
     case locomotives(descriptor: CommandDescriptor? = nil)
@@ -128,15 +138,19 @@ protocol CommandInterface {
     
     var feedbacks: Set<CommandFeedback> { get }
     var speedChanges: Set<CommandSpeed> { get }
-    var locomotives: [CommandLocomotive] { get }
+    
+    typealias DirectionChangeCallback = (_ address: UInt32, _ direction: Command.Direction) -> Void
+    func register(forDirectionChange: @escaping DirectionChangeCallback)
     
     func connect(onReady: @escaping () -> Void, onError: @escaping (Error) -> Void, onUpdate: @escaping () -> Void, onStop: @escaping () -> Void)
     func disconnect(_ completion: @escaping () -> Void)
     
     func execute(command: Command)
     
-    // This method executs a command and call the completion block when it
-    // has completed executing. Not all command supports this completion block,
-    // read each command description to know if it is used.
-    func execute(command: Command, completion: @escaping () -> Void)
+    // Note: this command is used internally by the MarklinInterface to query direction automatically after receiving a System Emergency Stop.
+    typealias QueryDirectionCommandCompletion = (_ address:UInt32, _ direction:Command.Direction) -> Void
+    func queryDirection(command: Command, completion: @escaping QueryDirectionCommandCompletion)
+    
+    typealias QueryLocomotiveCommandCompletion = (_ locomotives: [CommandLocomotive]) -> Void
+    func queryLocomotives(command: Command, completion: @escaping QueryLocomotiveCommandCompletion)
 }

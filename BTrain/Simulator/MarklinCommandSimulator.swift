@@ -39,7 +39,6 @@ final class MarklinCommandSimulator: ObservableObject {
     @Published var trains = [SimulatorTrain]()
 
     private var cancellables = [AnyCancellable]()
-    private var simulatorCancellables = [AnyCancellable]()
 
     private var server: Server?
 
@@ -78,24 +77,10 @@ final class MarklinCommandSimulator: ObservableObject {
         }
     }
 
-    func registerForSimulatorTrainDirectionChange() {
-        for train in trains {
-            let cancellable = train.$directionForward
-                .removeDuplicates()
-                .receive(on: RunLoop.main)
-                .sink { value in
-                    self.setTrainDirection(train: train, directionForward: value)
-                }
-            simulatorCancellables.append(cancellable)
-        }
-    }
-
     func updateListOfTrains() {
         self.trains = layout.trains.filter({ $0.blockId != nil }).map({ train in
             return SimulatorTrain(train: train)
         })
-        simulatorCancellables.removeAll()
-        registerForSimulatorTrainDirectionChange()
     }
     
     func start() {
@@ -131,16 +116,19 @@ final class MarklinCommandSimulator: ObservableObject {
                 
             case .speed(address: _, speed: _, descriptor: _):
                 break
-            case .forward(address: _):
-                break
-            case .backward(address: _):
+            case .direction(address: _, direction: _, descriptor: _):
                 break
             case .turnout(address: _, state: _, power: _, descriptor: _):
                 break
             case .feedback(deviceID: _, contactID: _, oldValue: _, newValue: _, time: _, descriptor: _):
                 break
+                
             case .locomotives(descriptor: _):
                 self.provideLocomotives()
+                break
+
+            case .queryDirection(address: let address, descriptor: _):
+                self.provideDirection(address: address.address)
                 break
 
             case .unknown(command: _):
@@ -151,7 +139,7 @@ final class MarklinCommandSimulator: ObservableObject {
     
     func provideLocomotives() {
         guard let file = Bundle.main.url(forResource: "Locomotives", withExtension: "cs2") else {
-            BTLogger.error("Unable to find the Locomotives.cs2 file")
+            BTLogger.error("[Simulator]  Unable to find the Locomotives.cs2 file")
             return
         }
         let data = try! Data(contentsOf: file)
@@ -177,6 +165,16 @@ final class MarklinCommandSimulator: ObservableObject {
         }
     }
     
+    func provideDirection(address: UInt32) {
+        guard let train = trains.first(where: { $0.train.address.actualAddress == address }) else {
+            BTLogger.error("[Simulator] Unable to find a locomotive for address \(address.toHex())")
+            return
+        }
+        
+        let message = MarklinCANMessageFactory.direction(addr: address, direction: train.directionForward ? 1 : 2)
+        send(message)
+    }
+    
     func setFeedback(feedback: Feedback, value: UInt8) {
         let oldValue: UInt8 = feedback.detected ? 1 : 0
         let message = MarklinCANMessageFactory.feedback(deviceID: feedback.deviceID, contactID: feedback.contactID, oldValue: oldValue, newValue: value, time: 0)
@@ -184,6 +182,11 @@ final class MarklinCommandSimulator: ObservableObject {
     }
 
     func setTrainDirection(train: SimulatorTrain, directionForward: Bool) {
+        // Remember this direction in the simulator train itself
+        train.directionForward = directionForward
+        
+        // Note: directionForward is actually ignored because the message sent by the Digital Control System is `emergencyStop`
+        // and apparently the client must request the locomotive direction explicitely.
         let message = MarklinCANMessageFactory.emergencyStop(addr: train.train.address.actualAddress)
         send(message)
     }

@@ -15,7 +15,7 @@ struct SimulatorTrainControlView: View {
     var body: some View {
         HStack {
             Button {
-                train.directionForward.toggle()
+                simulator.setTrainDirection(train: train, directionForward: !train.directionForward)
             } label: {
                 if train.directionForward {
                     Image(systemName: "arrowtriangle.right.fill")
