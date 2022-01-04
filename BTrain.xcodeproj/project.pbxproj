@@ -142,6 +142,7 @@
 		A792DEFB27841B35004B0439 /* LayoutCommandExecuting.swift in Sources */ = {isa = PBXBuildFile; fileRef = A792DEFA27841B35004B0439 /* LayoutCommandExecuting.swift */; };
 		A792DEFD27850834004B0439 /* SimulatorViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A792DEFC27850834004B0439 /* SimulatorViewTests.swift */; };
 		A792DEFF278508B0004B0439 /* LayoutCreatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A792DEFE278508B0004B0439 /* LayoutCreatorTests.swift */; };
+		A792DF012785095B004B0439 /* SettingsViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A792DF002785095B004B0439 /* SettingsViewTests.swift */; };
 		A796FA2B2772BB5400FA41BA /* Layout.json in Resources */ = {isa = PBXBuildFile; fileRef = A796FA2A2772BB5400FA41BA /* Layout.json */; };
 		A796FA2E2775642B00FA41BA /* LayoutAsserter.swift in Sources */ = {isa = PBXBuildFile; fileRef = A796FA2D2775642B00FA41BA /* LayoutAsserter.swift */; };
 		A7B06AE12727786500BDD88C /* AppView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7B06AE02727786500BDD88C /* AppView.swift */; };
@@ -341,6 +342,7 @@
 		A792DEFA27841B35004B0439 /* LayoutCommandExecuting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutCommandExecuting.swift; sourceTree = "<group>"; };
 		A792DEFC27850834004B0439 /* SimulatorViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimulatorViewTests.swift; sourceTree = "<group>"; };
 		A792DEFE278508B0004B0439 /* LayoutCreatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutCreatorTests.swift; sourceTree = "<group>"; };
+		A792DF002785095B004B0439 /* SettingsViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewTests.swift; sourceTree = "<group>"; };
 		A796FA2A2772BB5400FA41BA /* Layout.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = Layout.json; sourceTree = "<group>"; };
 		A796FA2D2775642B00FA41BA /* LayoutAsserter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutAsserter.swift; sourceTree = "<group>"; };
 		A7B06AE02727786500BDD88C /* AppView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppView.swift; sourceTree = "<group>"; };
@@ -642,6 +644,7 @@
 				A7907998277ED70C00771A60 /* SwitchboardEditControlsViewTests.swift */,
 				A79079A0277EDAA700771A60 /* RouteViewTests.swift */,
 				A792DEFC27850834004B0439 /* SimulatorViewTests.swift */,
+				A792DF002785095B004B0439 /* SettingsViewTests.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -1183,6 +1186,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				A790799B277ED7E900771A60 /* NewElementSheetTests.swift in Sources */,
+				A792DF012785095B004B0439 /* SettingsViewTests.swift in Sources */,
 				A73E080D276ABB5C005F9D64 /* LayoutErrorTests.swift in Sources */,
 				A790799D277ED8B000771A60 /* PluggableShapeTests.swift in Sources */,
 				A792DEFF278508B0004B0439 /* LayoutCreatorTests.swift in Sources */,
