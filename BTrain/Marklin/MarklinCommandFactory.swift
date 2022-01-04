@@ -73,21 +73,20 @@ extension Command {
         }
         if cmd == 0x00 && message.byte4 == 0x3 {
             let address: UInt32 = UInt32(message.byte0) << 24 | UInt32(message.byte1) << 16 | UInt32(message.byte2) << 8 | UInt32(message.byte3) << 0
-            return .emergencyStop(address: CommandLocomotiveAddress(address, .MFX), descriptor: CommandDescriptor(data: message.data, description: "0x00 System Emergency Stop"))
+            return .emergencyStop(address: CommandLocomotiveAddress(address, nil), descriptor: CommandDescriptor(data: message.data, description: "0x00 System Emergency Stop"))
         }
         if cmd == 0x04 {
             let address: UInt32 = UInt32(message.byte0) << 24 | UInt32(message.byte1) << 16 | UInt32(message.byte2) << 8 | UInt32(message.byte3) << 0
             let speed: UInt16 = UInt16(message.byte4) << 8 | UInt16(message.byte5) << 0
-            return .speed(address: CommandLocomotiveAddress(address, .MFX),
+            return .speed(address: CommandLocomotiveAddress(address, nil),
                           speed: speed,
                           descriptor: CommandDescriptor(data: message.data, description: "\(cmd.toHex()) speed \(speed) for \(address.toHex())"))
         }
         if cmd == 0x05 {
             let address: UInt32 = UInt32(message.byte0) << 24 | UInt32(message.byte1) << 16 | UInt32(message.byte2) << 8 | UInt32(message.byte3) << 0
             if message.dlc == 4 {
-                // Query of direction. We use the .MM decoder type to ensure the address is not translated
-                // TODO: see if there is a better way for that?
-                return .queryDirection(address: CommandLocomotiveAddress(address, .MM),
+                // Query of direction.
+                return .queryDirection(address: CommandLocomotiveAddress(address, nil),
                                        descriptor: CommandDescriptor(data: message.data, description: "\(cmd.toHex()) query direction for \(address.toHex())"))
             } else {
                 // Set direction
@@ -95,10 +94,10 @@ extension Command {
                 case 0: // no change
                     break
                 case 1: // forward
-                    return .direction(address: CommandLocomotiveAddress(address, .MFX), direction: .forward,
+                    return .direction(address: CommandLocomotiveAddress(address, nil), direction: .forward,
                                     descriptor: CommandDescriptor(data: message.data, description: "\(cmd.toHex()) forward for \(address.toHex())"))
                 case 2: // backward
-                    return .direction(address: CommandLocomotiveAddress(address, .MFX), direction: .backward,
+                    return .direction(address: CommandLocomotiveAddress(address, nil), direction: .backward,
                                      descriptor: CommandDescriptor(data: message.data, description: "\(cmd.toHex()) backward for \(address.toHex())"))
                 case 3: // toggle
                     break
@@ -184,6 +183,8 @@ extension CommandLocomotiveAddress {
             return 0x4000 + address
         case .SX1:
             return 0x0800 + address
+        case .none:
+            return address
         }
     }
 }

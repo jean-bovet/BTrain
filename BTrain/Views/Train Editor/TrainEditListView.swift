@@ -86,7 +86,7 @@ struct TrainEditListView: View {
 
 extension Train {
     
-    var addressDecoderType: DecoderType {
+    var addressDecoderType: DecoderType? {
         get {
             return address.decoderType
         }

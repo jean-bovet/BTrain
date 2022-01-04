@@ -58,10 +58,13 @@ enum DecoderType: String, CaseIterable, Codable {
 }
 
 struct CommandLocomotiveAddress: Codable, Hashable, Equatable {
+    // The address of the locomotive.
     let address: UInt32
-    let decoderType: DecoderType
     
-    init(_ address: UInt32, _ decoderType: DecoderType) {
+    // The decoder type or nil if not specified.
+    let decoderType: DecoderType?
+    
+    init(_ address: UInt32, _ decoderType: DecoderType?) {
         self.address = address
         self.decoderType = decoderType
     }
