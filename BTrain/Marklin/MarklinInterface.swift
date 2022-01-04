@@ -79,7 +79,6 @@ final class MarklinInterface {
                     // Execute a command to query the direction of the locomotive at this particular address
                     DispatchQueue.main.async {
                         self.queryDirection(command: .queryDirection(address: address, descriptor: nil)) { address, direction in
-                            print("** Address \(address) direction: \(direction)")
                             self.directionChangeCallbacks.forEach { $0(address, direction) }
                         }
                     }

@@ -24,7 +24,7 @@ struct TrainListView: View {
                 Text("No Locomotives")
                 Button("Download Locomotives 􀈄") {
                     document.discoverLocomotiveConfirmation.toggle()
-                }
+                }.disabled(!document.connected)
             }
         } else {
             List {

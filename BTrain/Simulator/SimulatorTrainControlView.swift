@@ -29,9 +29,7 @@ struct SimulatorTrainControlView: View {
                 in: 0...100
             ) {
             } onEditingChanged: { editing in
-                if !editing {
-                    simulator.setTrainSpeed(train: train, value: train.speed)
-                }
+                simulator.setTrainSpeed(train: train, value: train.speed)
             }
             
             Text("\(Int(train.speed)) km/h")

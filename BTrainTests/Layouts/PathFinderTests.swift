@@ -270,38 +270,6 @@ class PathFinderTests: XCTestCase {
         print(shortestPath.steps.count)
         XCTAssertEqual(path!.description, shortestPath.description)
     }
-
-    // MARK: Utility functions
-    
-//    func toggle(feedback: String) {
-//        guard let f = layout.feedback(for: Identifier<Feedback>(uuid: feedback)) else {
-//            XCTFail("Unable to find feedback \(feedback)")
-//            return
-//        }
-//        f.detected = true
-//
-//        Timer.scheduledTimer(withTimeInterval: 0.250, repeats: false) { timer in
-//            f.detected = false
-//        }
-//    }
-    
-//    func wait(for train: ITrain, in block: String) {
-//        let blockId = Identifier<Block>(uuid: block)
-//        wait(for: { return train.blockId == blockId }, timeout: 2.0)
-//        XCTAssertEqual(train.blockId, blockId)
-//    }
-//
-//    func wait(for block: () -> Bool, timeout: TimeInterval) {
-//        let current = RunLoop.current
-//        let startTime = Date()
-//        while !block() {
-//            current.run(until: Date(timeIntervalSinceNow: 0.250))
-//            if Date().timeIntervalSince(startTime) >= timeout {
-//                XCTFail("Time out")
-//                break
-//            }
-//        }
-//    }
 }
 
 extension Layout {
