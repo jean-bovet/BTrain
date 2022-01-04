@@ -67,7 +67,6 @@ class ServerConnection {
                 print("[Server] < \(MarklinCANMessagePrinter.debugDescription(msg: msg)) - \(self.id)")
                 let cmd = Command.from(message: msg)
                 self.receiveMessageCallback?(cmd)
-//                self.send(data: data)
             }
             if isComplete {
                 self.connectionDidEnd()
@@ -83,15 +82,15 @@ class ServerConnection {
 
     func send(data: Data, completion: CompletionBlock? = nil) {
         self.connection.send(content: data, completion: .contentProcessed( { error in
+            let msg = MarklinCANMessage.decode(from: [UInt8](data))
+            print("[Server] > \(MarklinCANMessagePrinter.debugDescription(msg: msg)) - \(self.id)")
+
             DispatchQueue.main.async {
                 if let error = error {
                     self.connectionDidFail(error: error)
                     return
                 }
-                
-                let msg = MarklinCANMessage.decode(from: [UInt8](data))
-                print("[Server] > \(MarklinCANMessagePrinter.debugDescription(msg: msg)) - \(self.id)")
-                
+                                
                 completion?()
             }
         }))

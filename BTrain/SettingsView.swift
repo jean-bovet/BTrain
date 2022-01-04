@@ -19,6 +19,7 @@ struct SettingsView: View {
     }
 
     @AppStorage("autoConnectSimulator") private var autoConnectSimulator = false
+    @AppStorage("autoEnableSimulator") private var autoEnableSimulator = false
     @AppStorage("debugMode") private var showDebugControls = false
     @AppStorage("fontSize") private var fontSize = 12.0
 
@@ -36,6 +37,11 @@ struct SettingsView: View {
             
             Form {
                 Toggle("Connect to Simulator At Startup", isOn: $autoConnectSimulator)
+                HStack {
+                    Spacer().fixedSpace()
+                    Toggle("Enable Simulator", isOn: $autoEnableSimulator)
+                        .disabled(!autoConnectSimulator)
+                }
                 Toggle("Show Debug Controls", isOn: $showDebugControls)
             }
             .tabItem {

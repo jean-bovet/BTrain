@@ -58,6 +58,10 @@ extension Command {
         if cmd == 0x00 && message.byte4 == 0x0 {
             return .stop(descriptor: CommandDescriptor(data: message.data, description: "0x00 System Stop"))
         }
+        if cmd == 0x00 && message.byte4 == 0x3 {
+            let address: UInt32 = UInt32(message.byte0) << 24 | UInt32(message.byte1) << 16 | UInt32(message.byte2) << 8 | UInt32(message.byte3) << 0
+            return .emergencyStop(address: CommandLocomotiveAddress(address, .MFX), descriptor: CommandDescriptor(data: message.data, description: "0x00 System Emergency Stop"))
+        }
         if cmd == 0x04 {
             let address: UInt32 = UInt32(message.byte0) << 24 | UInt32(message.byte1) << 16 | UInt32(message.byte2) << 8 | UInt32(message.byte3) << 0
             let speed: UInt16 = UInt16(message.byte4) << 8 | UInt16(message.byte5) << 0
@@ -116,6 +120,8 @@ extension MarklinCANMessage {
             return MarklinCANMessageFactory.go()
         case .stop:
             return MarklinCANMessageFactory.stop()
+        case .emergencyStop(address: let address, descriptor: _):
+            return MarklinCANMessageFactory.emergencyStop(addr: address.actualAddress)
         case .speed(address: let address, speed: let speed, descriptor: _):
             return MarklinCANMessageFactory.speed(addr: address.actualAddress, speed: speed)
         case .forward(address: let address, descriptor: _):

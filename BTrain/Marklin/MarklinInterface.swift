@@ -62,6 +62,14 @@ final class MarklinInterface {
                         }
                         onUpdate()
                     }
+                    if case .emergencyStop(address: let address, descriptor: _) = cmd {
+                        // NOTE: do not translate the address, the decoder type is ignored here
+                        print("Emergency stop \(address.address.toHex())")
+                        // TODO: ask for the locomotive direction
+//                        DispatchQueue.main.async {
+//                            self.execute(command: .queryDirection())
+//                        }
+                    }
                 }
             }
         } onError: { error in

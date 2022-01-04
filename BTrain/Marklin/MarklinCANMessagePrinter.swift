@@ -31,6 +31,9 @@ struct MarklinCANMessagePrinter {
         case .stop(descriptor: let descriptor):
             return descriptor?.description
 
+        case .emergencyStop(address: _, descriptor: let descriptor):
+            return descriptor?.description
+
         case .speed(address: _, speed: _, descriptor: let descriptor):
             return descriptor?.description
 

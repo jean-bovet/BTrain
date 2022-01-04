@@ -84,8 +84,19 @@ final class MarklinCommandSimulator: ObservableObject {
                 .removeDuplicates()
                 .receive(on: RunLoop.main)
                 .sink { value in
-                    print(value)
                     self.setTrainDirection(train: train, directionForward: value)
+                }
+            simulatorCancellables.append(cancellable)
+        }
+    }
+
+    func registerForSimulatorTrainSpeedChange() {
+        for train in trains {
+            let cancellable = train.$speed
+                .removeDuplicates()
+                .receive(on: RunLoop.main)
+                .sink { value in
+                    self.setTrainSpeed(train: train, value: value)
                 }
             simulatorCancellables.append(cancellable)
         }
@@ -97,6 +108,7 @@ final class MarklinCommandSimulator: ObservableObject {
         })
         simulatorCancellables.removeAll()
         registerForSimulatorTrainDirectionChange()
+        registerForSimulatorTrainSpeedChange()
     }
     
     func start() {
@@ -127,6 +139,9 @@ final class MarklinCommandSimulator: ObservableObject {
                 self.enabled = false
                 self.timer?.invalidate()
 
+            case .emergencyStop(address: _, descriptor: _):
+                break
+                
             case .speed(address: _, speed: _, descriptor: _):
                 break
             case .forward(address: _):
@@ -183,6 +198,11 @@ final class MarklinCommandSimulator: ObservableObject {
 
     func setTrainDirection(train: SimulatorTrain, directionForward: Bool) {
         let message = MarklinCANMessageFactory.emergencyStop(addr: train.train.address.actualAddress)
+        send(message)
+    }
+    
+    func setTrainSpeed(train: SimulatorTrain, value: Double) {
+        let message = MarklinCANMessageFactory.speed(addr: train.train.address.actualAddress, speed: UInt16(value))
         send(message)
     }
     

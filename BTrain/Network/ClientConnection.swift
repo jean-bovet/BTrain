@@ -55,7 +55,7 @@ class ClientConnection {
         nwConnection.receive(minimumIncompleteLength: 1, maximumLength: 65536) { (data, _, isComplete, error) in
             if let data = data, !data.isEmpty {
                 let msg = MarklinCANMessage.decode(from: [UInt8](data))
-                print("[Client] < \(MarklinCANMessagePrinter.debugDescription(msg: msg))")
+                print("[Client] < \(MarklinCANMessagePrinter.debugDescription(msg: msg)) - \(data.count)")
                 self.didReceiveCallback?(data)
             }
             if isComplete {
@@ -77,13 +77,14 @@ class ClientConnection {
     func send(data: Data) {
         dataQueue.schedule { completion in
             self.nwConnection.send(content: data, completion: .contentProcessed( { error in
+                let msg = MarklinCANMessage.decode(from: [UInt8](data))
+                print("[Client] > \(MarklinCANMessagePrinter.debugDescription(msg: msg))")
+
                 DispatchQueue.main.async {
                     if let error = error {
                         self.connectionDidFail(error: error)
                         return
                     }
-                    let msg = MarklinCANMessage.decode(from: [UInt8](data))
-                    print("[Client] > \(MarklinCANMessagePrinter.debugDescription(msg: msg))")
 
                     completion()
                 }

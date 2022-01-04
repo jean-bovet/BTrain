@@ -30,6 +30,8 @@ struct SimulatorTrainControlView: View {
             } onEditingChanged: { editing in
                 // No-op
             }
+            
+            Text("\(Int(train.speed)) km/h")
         }
     }
 }

@@ -17,6 +17,7 @@ import Foundation
 enum Command {
     case go(descriptor: CommandDescriptor? = nil)
     case stop(descriptor: CommandDescriptor? = nil)
+    case emergencyStop(address: CommandLocomotiveAddress, descriptor: CommandDescriptor? = nil)
     case speed(address: CommandLocomotiveAddress, speed: UInt16, descriptor: CommandDescriptor? = nil)
     case forward(address: CommandLocomotiveAddress, descriptor: CommandDescriptor? = nil)
     case backward(address: CommandLocomotiveAddress, descriptor: CommandDescriptor? = nil)

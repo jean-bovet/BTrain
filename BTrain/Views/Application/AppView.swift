@@ -73,7 +73,11 @@ struct AppView: View {
         })
         .onAppear {
             if UserDefaults.standard.bool(forKey: "autoConnectSimulator") {
-                document.connectToSimulator()
+                document.connectToSimulator() { error in
+                    if UserDefaults.standard.bool(forKey: "autoEnableSimulator") {
+                        document.enable()
+                    }
+                }
             }
         }.toolbar {
             DocumentToolbarContent(document: document,
