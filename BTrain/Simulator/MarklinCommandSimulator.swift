@@ -90,25 +90,12 @@ final class MarklinCommandSimulator: ObservableObject {
         }
     }
 
-    func registerForSimulatorTrainSpeedChange() {
-        for train in trains {
-            let cancellable = train.$speed
-                .removeDuplicates()
-                .receive(on: RunLoop.main)
-                .sink { value in
-                    self.setTrainSpeed(train: train, value: value)
-                }
-            simulatorCancellables.append(cancellable)
-        }
-    }
-
     func updateListOfTrains() {
         self.trains = layout.trains.filter({ $0.blockId != nil }).map({ train in
             return SimulatorTrain(train: train)
         })
         simulatorCancellables.removeAll()
         registerForSimulatorTrainDirectionChange()
-        registerForSimulatorTrainSpeedChange()
     }
     
     func start() {

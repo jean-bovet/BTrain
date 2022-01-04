@@ -92,6 +92,8 @@ struct CommandLocomotive {
 
 }
 
+// This structure is used to keep track of the feedback changes coming from the Digital Control System,
+// for example when a train triggers a feedback on the layout.
 struct CommandFeedback: Hashable {
     let deviceID: UInt16
     let contactID: UInt16
@@ -107,9 +109,25 @@ struct CommandFeedback: Hashable {
     }
 }
 
+// This structure is used to keep track of the locomotive speed changes coming from the Digital Control System,
+// for example when the user manually changes the speed on the Central Station.
+struct CommandSpeed: Hashable {
+    let address: CommandLocomotiveAddress
+    let speed: UInt16
+    
+    static func == (lhs: CommandSpeed, rhs: CommandSpeed) -> Bool {
+        return lhs.address == rhs.address
+    }
+
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(address)
+    }
+}
+
 protocol CommandInterface {
     
     var feedbacks: Set<CommandFeedback> { get }
+    var speedChanges: Set<CommandSpeed> { get }
     var locomotives: [CommandLocomotive] { get }
     
     func connect(onReady: @escaping () -> Void, onError: @escaping (Error) -> Void, onUpdate: @escaping () -> Void, onStop: @escaping () -> Void)

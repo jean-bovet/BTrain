@@ -28,7 +28,6 @@ final class LayoutCoordinator: ObservableObject {
         self.interface = interface
                 
         registerForFeedbackChanges()
-        registerForTrainChanges()
         registerForTurnoutChanges()
         registerForTrainBlockChanges()
         
@@ -54,20 +53,6 @@ final class LayoutCoordinator: ObservableObject {
         }
     }
     
-    func registerForTrainChanges() {
-        for train in layout.mutableTrains {
-            let cancellable = train.$speed
-                .dropFirst()
-                .removeDuplicates()
-                .receive(on: RunLoop.main)
-                .sink { value in
-                    self.speedChanged(train: train)
-                    // Note: speed changes do not affect the controller of the layout
-                }
-            cancellables.append(cancellable)
-        }
-    }
-
     func registerForTurnoutChanges() {
         for turnout in layout.turnouts {
             let cancellable = turnout.$state
@@ -95,14 +80,6 @@ final class LayoutCoordinator: ObservableObject {
         }
     }
 
-    func speedChanged(train: Train) {
-        BTLogger.debug("Train \(train.name) changed speed to \(train.speed)", layout, train)
-
-        if let interface = interface {
-            interface.execute(command: .speed(address: train.address, speed: train.speed))
-        }
-    }
-    
     func stateChanged(turnout: Turnout) {
         BTLogger.debug("Turnout \(turnout) state changed to \(turnout.state)")
         

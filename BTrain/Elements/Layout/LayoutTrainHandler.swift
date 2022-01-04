@@ -103,12 +103,14 @@ final class LayoutTrainHandler: LayoutTrainHandling {
     
     private let layout: Layout
     private let layoutTransitioning: LayoutTransitionHandling
-
-    init(layout: Layout, layoutTransitionController: LayoutTransitionHandling) {
+    private let exec: LayoutCommandExecuting
+    
+    init(layout: Layout, layoutTransitionController: LayoutTransitionHandling, exec: LayoutCommandExecuting) {
         self.layout = layout
         self.layoutTransitioning = layoutTransitionController
+        self.exec = exec
     }
-
+    
     func setTrain(_ train: ITrain, toPosition position: Int) {
         guard let train = layout.mutableTrain(for: train.id) else {
             return
@@ -121,11 +123,8 @@ final class LayoutTrainHandler: LayoutTrainHandling {
             return
         }
         
-        if speed > 0 {
-            train.speed = speed
-        } else {
-            stopTrain(train)
-        }
+        train.speed = speed
+        exec.trainSpeedChanged(train: train)
     }
     
     func direction(ofTrain train: ITrain) throws -> Direction {
@@ -183,6 +182,7 @@ final class LayoutTrainHandler: LayoutTrainHandling {
             return
         }
         train.speed = 0
+        exec.trainSpeedChanged(train: train)
     }
 
     func setTrain(_ train: ITrain, routeIndex: Int) {

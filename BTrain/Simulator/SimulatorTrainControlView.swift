@@ -9,6 +9,7 @@ import SwiftUI
 
 struct SimulatorTrainControlView: View {
     
+    let simulator: MarklinCommandSimulator
     @ObservedObject var train: SimulatorTrain
     
     var body: some View {
@@ -28,7 +29,9 @@ struct SimulatorTrainControlView: View {
                 in: 0...100
             ) {
             } onEditingChanged: { editing in
-                // No-op
+                if !editing {
+                    simulator.setTrainSpeed(train: train, value: train.speed)
+                }
             }
             
             Text("\(Int(train.speed)) km/h")
@@ -41,6 +44,7 @@ struct SimulatorTrainControlView_Previews: PreviewProvider {
     static let layout = LayoutACreator().newLayout()
     
     static var previews: some View {
-        SimulatorTrainControlView(train: .init(train: layout.trains[0]))
+        SimulatorTrainControlView(simulator: MarklinCommandSimulator(layout: layout),
+                                  train: .init(train: layout.trains[0]))
     }
 }

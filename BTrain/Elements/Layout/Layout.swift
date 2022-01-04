@@ -47,6 +47,8 @@ final class Layout: Element, ObservableObject {
     
     var transitions = [Transition]()
     
+    var interface: CommandInterface?
+    
     // MARK: Handlers
         
     lazy var transitionHandling: LayoutTransitionHandling = {
@@ -54,7 +56,7 @@ final class Layout: Element, ObservableObject {
     }()
 
     lazy var trainHandling: LayoutTrainHandling = {
-        return LayoutTrainHandler(layout: self, layoutTransitionController: transitionHandling)
+        return LayoutTrainHandler(layout: self, layoutTransitionController: transitionHandling, exec: self)
     }()
 
     lazy var routeHandling: LayoutRouteHandling = {

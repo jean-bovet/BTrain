@@ -21,7 +21,7 @@ class OverviewViewTests: RootViewTests {
 
     func testMainView() throws {
         let sut = OverviewView(document: doc)
-        XCTAssertNoThrow(try sut.inspect().hStack().view(TrainListView.self, 0))
+        XCTAssertNoThrow(try sut.inspect().hStack().vStack(0).view(TrainListView.self, 0))
         XCTAssertNoThrow(try sut.inspect().hStack().view(OverviewSwitchboardView.self, 1))
     }
     

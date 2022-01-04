@@ -17,7 +17,7 @@ import Network
 public class Client {
     
     typealias OnReadyBlock = () -> Void
-    typealias OnDataBlock = (Data) -> Void
+    typealias OnDataBlock = (MarklinCANMessage) -> Void
     typealias OnErrorBlock = (Error) -> Void
     typealias OnStopBlock = () -> Void
 
@@ -37,8 +37,8 @@ public class Client {
         connection.didSucceedCallback = {
             onReady()
         }
-        connection.didReceiveCallback = { data in
-            onData(data)
+        connection.didReceiveCallback = { message in
+            onData(message)
         }
         connection.didStopCallback = { () -> Void in
             onStop()

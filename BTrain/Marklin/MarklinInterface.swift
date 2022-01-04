@@ -19,6 +19,7 @@ final class MarklinInterface {
     let locomotiveConfig = MarklinLocomotiveConfig()
     
     var feedbacks = Set<CommandFeedback>()
+    var speedChanges = Set<CommandSpeed>()
     var locomotives = [CommandLocomotive]()
 
     typealias CompletionBlock = () -> Void
@@ -33,43 +34,38 @@ final class MarklinInterface {
     func connect(onReady: @escaping () -> Void, onError: @escaping (Error) -> Void, onUpdate: @escaping () -> Void, onStop: @escaping () -> Void) {
         client.start {
             onReady()
-        } onData: { data in
-            // Reach each CAN message, one by one. Each CAN message is 13 bytes.
-            // Sometimes more than one message is received in a single data.
-            let numberOfPackets = data.count / MarklinCANMessage.messageLength
-            for packet in 0..<numberOfPackets {
-                let start = packet * MarklinCANMessage.messageLength
-                let end = (packet + 1) * MarklinCANMessage.messageLength
-                let slice = data[start..<end]
-
-                let msg = MarklinCANMessage.decode(from: [UInt8](slice))
-
-                if let cmd = MarklinCommand.from(message: msg) {
-                    let status = self.locomotiveConfig.process(cmd)
-                    if case .completed(let locomotives) = status {
-                        DispatchQueue.main.async {
-                            self.locomotives = locomotives.map { $0.commandLocomotive }
-                            self.locomotivesCommandCompletionBlocks.forEach { $0() }
-                            self.locomotivesCommandCompletionBlocks.removeAll()
-                        }
+        } onData: { msg in
+            if let cmd = MarklinCommand.from(message: msg) {
+                let status = self.locomotiveConfig.process(cmd)
+                if case .completed(let locomotives) = status {
+                    DispatchQueue.main.async {
+                        self.locomotives = locomotives.map { $0.commandLocomotive }
+                        self.locomotivesCommandCompletionBlocks.forEach { $0() }
+                        self.locomotivesCommandCompletionBlocks.removeAll()
                     }
-                } else {
-                    let cmd = Command.from(message: msg)
-                    if case .feedback(deviceID: let deviceID, contactID: let contactID, oldValue: _, newValue: let newValue, time: _, descriptor: _) = cmd {
-                        let fb = CommandFeedback(deviceID: deviceID, contactID: contactID, value: newValue)
-                        if !self.feedbacks.insert(fb).inserted {
-                            self.feedbacks.update(with: fb)
-                        }
-                        onUpdate()
+                }
+            } else {
+                let cmd = Command.from(message: msg)
+                if case .feedback(deviceID: let deviceID, contactID: let contactID, oldValue: _, newValue: let newValue, time: _, descriptor: _) = cmd {
+                    let fb = CommandFeedback(deviceID: deviceID, contactID: contactID, value: newValue)
+                    if !self.feedbacks.insert(fb).inserted {
+                        self.feedbacks.update(with: fb)
                     }
-                    if case .emergencyStop(address: let address, descriptor: _) = cmd {
-                        // NOTE: do not translate the address, the decoder type is ignored here
-                        print("Emergency stop \(address.address.toHex())")
-                        // TODO: ask for the locomotive direction
+                    onUpdate()
+                }
+                if case .speed(address: let address, speed: let speed, descriptor: _) = cmd {
+                    // Receiving a speed change for the specified locomotive address (the protocol is ignored)
+                    // TODO: have a background thread for any changes to the layout and layout processing?
+                    self.speedChanges.update(with: .init(address: address, speed: speed))
+                    onUpdate()
+                }
+                if case .emergencyStop(address: let address, descriptor: _) = cmd {
+                    // NOTE: do not translate the address, the decoder type is ignored here
+                    print("Emergency stop \(address.address.toHex())")
+                    // TODO: ask for the locomotive direction
 //                        DispatchQueue.main.async {
 //                            self.execute(command: .queryDirection())
 //                        }
-                    }
                 }
             }
         } onError: { error in

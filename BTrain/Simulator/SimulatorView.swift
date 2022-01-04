@@ -9,6 +9,8 @@ import SwiftUI
 
 struct SimulatorView: View {
     
+    @Environment(\.colorScheme) var colorScheme
+
     @ObservedObject var  simulator: MarklinCommandSimulator
     
     @State private var trainForward = true
@@ -29,13 +31,13 @@ struct SimulatorView: View {
                 ForEach(simulator.trains, id:\.self) { train in
                     HStack {
                         Text(train.train.name)
-                        SimulatorTrainControlView(train: train)
+                        SimulatorTrainControlView(simulator: simulator, train: train)
                     }
                 }
             }.disabled(!simulator.enabled)
         }
         .padding()
-        .background(.yellow)
+        .background(colorScheme == .dark ? .indigo : .yellow)
     }
 }
 
@@ -49,6 +51,9 @@ struct SimulatorView_Previews: PreviewProvider {
     }()
 
     static var previews: some View {
-        SimulatorView(simulator: simulator)
+        ForEach(ColorScheme.allCases, id: \.self) {
+            SimulatorView(simulator: simulator)
+                .preferredColorScheme($0)
+        }
     }
 }

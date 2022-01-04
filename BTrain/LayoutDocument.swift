@@ -45,6 +45,7 @@ final class LayoutDocument: ObservableObject {
         didSet {
             connected = interface != nil
             coordinator?.interface = interface
+            layout.interface = interface
         }
     }
     
@@ -181,6 +182,7 @@ extension LayoutDocument {
         } onUpdate: {
             DispatchQueue.main.async {
                 self.interfaceFeedbackChanged()
+                self.interfaceSpeedChanged()
             }
         } onStop: {
             // No-op
@@ -193,6 +195,7 @@ extension LayoutDocument {
         interface = nil
     }
     
+    // A feedback change event has been received from the Digital Control System
     func interfaceFeedbackChanged() {
         guard let interface = interface else {
             return
@@ -204,4 +207,16 @@ extension LayoutDocument {
         }
     }
             
+    // A speed change event has been received from the Digital Control System
+    func interfaceSpeedChanged() {
+        guard let interface = interface else {
+            return
+        }
+        for cmdSpeed in interface.speedChanges {
+            if let train = coordinator?.layout.mutableTrains.find(address: cmdSpeed.address.address) {
+                train.speed = cmdSpeed.speed
+            }
+        }
+    }
+
 }

@@ -85,9 +85,7 @@ final class LayoutRouteHandler: LayoutRouteHandling {
         guard let block = layout.block(for: blockId), block.train != nil else {
             throw LayoutError.trainNotFoundInBlock(blockId: blockId)
         }
-        
-        train.speed = 0
-                
+                        
         route.enabled = true
     }
 

@@ -24,7 +24,7 @@ class ClientConnection {
     }
     
     var didSucceedCallback: (() -> Void)? = nil
-    var didReceiveCallback: ((Data) -> Void)? = nil
+    var didReceiveCallback: ((MarklinCANMessage) -> Void)? = nil
     var didStopCallback: (() -> Void)? = nil
 
     func start() {
@@ -54,9 +54,19 @@ class ClientConnection {
     private func setupReceive() {
         nwConnection.receive(minimumIncompleteLength: 1, maximumLength: 65536) { (data, _, isComplete, error) in
             if let data = data, !data.isEmpty {
-                let msg = MarklinCANMessage.decode(from: [UInt8](data))
-                print("[Client] < \(MarklinCANMessagePrinter.debugDescription(msg: msg)) - \(data.count)")
-                self.didReceiveCallback?(data)
+                print("[Client] < \(data.count) bytes of data")
+                // Read each CAN message, one by one. Each CAN message is 13 bytes.
+                // Sometimes more than one message is received in a single data.
+                let numberOfPackets = data.count / MarklinCANMessage.messageLength
+                for packet in 0..<numberOfPackets {
+                    let start = packet * MarklinCANMessage.messageLength
+                    let end = (packet + 1) * MarklinCANMessage.messageLength
+                    let slice = data[start..<end]
+
+                    let msg = MarklinCANMessage.decode(from: [UInt8](slice))
+                    print("[Client] < \(MarklinCANMessagePrinter.debugDescription(msg: msg))")
+                    self.didReceiveCallback?(msg)
+                }
             }
             if isComplete {
                 self.connectionDidEnd()
