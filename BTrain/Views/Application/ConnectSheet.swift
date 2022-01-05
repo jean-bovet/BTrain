@@ -36,14 +36,20 @@ struct ConnectSheet: View {
     
     func didConnect(withError error: Error?) {
         if let error = error {
+            connecting.toggle()
             msg = error.localizedDescription
         } else {
             if activateTurnouts {
                 document.enable() {
-                    document.applyTurnoutStateToDigitalController()
+                    document.applyTurnoutStateToDigitalController() {
+                        connecting.toggle()
+                        self.presentationMode.wrappedValue.dismiss()
+                    }
                 }
+            } else {
+                connecting.toggle()
+                self.presentationMode.wrappedValue.dismiss()
             }
-            self.presentationMode.wrappedValue.dismiss()
         }
     }
     
@@ -63,7 +69,12 @@ struct ConnectSheet: View {
                         .frame(minWidth: 200)
                 }.disabled(type == .simulator)
                                 
-                Toggle("Activate Turnouts", isOn: $activateTurnouts)
+                HStack {
+                    Toggle("Activate Turnouts", isOn: $activateTurnouts)
+                    if let percentage = document.activateTurnountPercentage {
+                        ProgressView(value: percentage)
+                    }
+                }
             }.disabled(connecting)
 
             HStack {
@@ -86,12 +97,10 @@ struct ConnectSheet: View {
                     connecting.toggle()
                     if type == .centralStation {
                         document.connect(address: address, port: UInt16(port)!) { error in
-                            connecting.toggle()
                             didConnect(withError: error)
                         }
                     } else {
                         document.connectToSimulator() { error in
-                            connecting.toggle()
                             didConnect(withError: error)
                         }
                     }

@@ -80,6 +80,8 @@ class SimulatorViewTests: RootViewTests {
         try trainSlider.callOnEditingChanged()
         XCTAssertEqual(t1.speed, 0)
         wait(for: simulatorTrain1, speed: 0)
+        
+        doc.disable { }
     }
     
     func connectToSimulator() {

@@ -66,7 +66,7 @@ struct TurnoutEditListView: View {
                             }
                         }.labelsHidden()
                         Button("Set") {
-                            layout.turnoutStateChanged(turnout: turnout.wrappedValue)
+                            layout.sendTurnoutState(turnout: turnout.wrappedValue) { }
                         }
                     }
                 }

@@ -70,10 +70,16 @@ final class LayoutDocument: ObservableObject {
     // Toggle to display debug-only controls
     @AppStorage("debugMode") var debugMode = false
         
-    // Returns true if the application is connected
+    // This property is used to keep track of the connection status.
+    // True if connected to the Digital Controller interface,
+    // false otherwise.
     @Published var connected = false
 
-    // The simulator that can be used in place of a real central station
+    // This property is used to keep track of the progress when activating the turnouts
+    // when connecting to the Digital Controller
+    @Published var activateTurnountPercentage: Double? = nil
+
+    // The simulator that can be used in place of a real Digital Controller
     var simulator: MarklinCommandSimulator
         
     init(layout: Layout) {
@@ -178,7 +184,9 @@ extension LayoutDocument {
                 completed?(error)
             }
         } onStop: {
-            // No-op
+            DispatchQueue.main.async {
+                self.interface = nil
+            }
         }
     }
     
@@ -187,10 +195,25 @@ extension LayoutDocument {
         interface?.disconnect() { }
         interface = nil
     }
-    
-    func applyTurnoutStateToDigitalController() {
-        for t in layout.turnouts {
-            layout.turnoutStateChanged(turnout: t)
+        
+    func applyTurnoutStateToDigitalController(completion: @escaping CompletionBlock) {
+        let turnouts = layout.turnouts
+        guard !turnouts.isEmpty else {
+            completion()
+            return
+        }
+        
+        activateTurnountPercentage = 0.0
+        var completionCount = 0
+        for t in turnouts {
+            layout.sendTurnoutState(turnout: t) {
+                completionCount += 1
+                self.activateTurnountPercentage = Double(completionCount) / Double(turnouts.count)
+                if completionCount == turnouts.count {
+                    self.activateTurnountPercentage = nil
+                    completion()
+                }
+            }
         }
     }
     

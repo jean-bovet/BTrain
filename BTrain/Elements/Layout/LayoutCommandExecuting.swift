@@ -7,16 +7,18 @@
 
 import Foundation
 
+typealias CompletionBlock = (() -> Void)
+
 // A protocol that the layout uses to push information to the Digital Control System
 protocol LayoutCommandExecuting {
-    func turnoutStateChanged(turnout: Turnout)
-    func trainDirectionChanged(train: Train)
-    func trainSpeedChanged(train: Train)
+    func sendTurnoutState(turnout: Turnout, completion: @escaping CompletionBlock)
+    func sendTrainDirection(train: Train)
+    func sendTrainSpeed(train: Train)
 }
 
 extension Layout: LayoutCommandExecuting {
     
-    func turnoutStateChanged(turnout: Turnout) {
+    func sendTurnoutState(turnout: Turnout, completion: @escaping CompletionBlock) {
         BTLogger.debug("Turnout \(turnout) state changed to \(turnout.state)")
         
         guard let interface = interface else {
@@ -24,7 +26,13 @@ extension Layout: LayoutCommandExecuting {
         }
         
         let commands = turnout.stateCommands(power: 0x1)
-        commands.forEach { interface.execute(command: $0) {} }
+        var commandCompletionCount = commands.count
+        commands.forEach { interface.execute(command: $0) {
+            commandCompletionCount -= 1
+            if commandCompletionCount == 0 {
+                completion()
+            }
+        } }
 
         // Turn-off the turnout power after 250ms (activation time)
         let idleCommands = turnout.stateCommands(power: 0x0)
@@ -33,7 +41,7 @@ extension Layout: LayoutCommandExecuting {
         }
     }
 
-    func trainDirectionChanged(train: Train) {
+    func sendTrainDirection(train: Train) {
         BTLogger.debug("Train \(train.name) changed direction to \(train.directionForward ? "forward" : "backward" )", self, train)
         let command: Command
         if train.directionForward {
@@ -44,7 +52,7 @@ extension Layout: LayoutCommandExecuting {
         interface?.execute(command: command) {}
     }
     
-    func trainSpeedChanged(train: Train) {
+    func sendTrainSpeed(train: Train) {
         BTLogger.debug("Train \(train.name) changed speed to \(train.speed)", self, train)
         interface?.execute(command: .speed(address: train.address, speed: train.speed)) {}
     }

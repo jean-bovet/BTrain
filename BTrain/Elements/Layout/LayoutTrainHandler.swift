@@ -131,7 +131,7 @@ final class LayoutTrainHandler: LayoutTrainHandling {
         }
         
         train.speed = speed
-        exec.trainSpeedChanged(train: train)
+        exec.sendTrainSpeed(train: train)
         
         layout.didChange()
     }
@@ -164,7 +164,7 @@ final class LayoutTrainHandler: LayoutTrainHandling {
         let forward = direction == .next
         if train.directionForward != forward {
             train.directionForward = forward
-            exec.trainDirectionChanged(train: train)
+            exec.sendTrainDirection(train: train)
         }
     }
     
@@ -195,7 +195,7 @@ final class LayoutTrainHandler: LayoutTrainHandling {
             throw LayoutError.trainNotFound(trainId: train.id)
         }
         train.speed = 0
-        exec.trainSpeedChanged(train: train)
+        exec.sendTrainSpeed(train: train)
     }
 
     func setTrain(_ train: Train, routeIndex: Int) throws {
