@@ -18,8 +18,7 @@ final class MarklinInterface {
     
     let locomotiveConfig = MarklinLocomotiveConfig()
     
-    var feedbacks = Set<CommandFeedback>()
-    
+    var feedbackChangeCallbacks = [FeedbackChangeCallback]()
     var speedChangeCallbacks = [SpeedChangeCallback]()
     var directionChangeCallbacks = [DirectionChangeCallback]()
     var turnoutChangeCallbacks = [TurnoutChangeCallback]()
@@ -35,7 +34,7 @@ final class MarklinInterface {
         self.client = Client(host: server, port: port)
     }
 
-    func connect(onReady: @escaping () -> Void, onError: @escaping (Error) -> Void, onUpdate: @escaping () -> Void, onStop: @escaping () -> Void) {
+    func connect(onReady: @escaping () -> Void, onError: @escaping (Error) -> Void, onStop: @escaping () -> Void) {
         client.start {
             onReady()
         } onData: { msg in
@@ -58,11 +57,7 @@ final class MarklinInterface {
             } else {
                 let cmd = Command.from(message: msg)
                 if case .feedback(deviceID: let deviceID, contactID: let contactID, oldValue: _, newValue: let newValue, time: _, descriptor: _) = cmd {
-                    let fb = CommandFeedback(deviceID: deviceID, contactID: contactID, value: newValue)
-                    if !self.feedbacks.insert(fb).inserted {
-                        self.feedbacks.update(with: fb)
-                    }
-                    onUpdate()
+                    self.feedbackChangeCallbacks.forEach { $0(deviceID, contactID, newValue) }
                 }
                 if case .turnout(address: let address, state: let state, power: let power, descriptor: _) = cmd {
                     if msg.resp == 0 {
@@ -112,6 +107,10 @@ extension MarklinInterface: CommandInterface {
         send(message: MarklinCANMessage.from(command: command), onCompletion: onCompletion)
     }
     
+    func register(forFeedbackChange callback: @escaping FeedbackChangeCallback) {
+        feedbackChangeCallbacks.append(callback)
+    }
+
     func register(forSpeedChange callback: @escaping SpeedChangeCallback) {
         speedChangeCallbacks.append(callback)
     }

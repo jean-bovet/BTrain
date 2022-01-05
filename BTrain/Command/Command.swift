@@ -102,34 +102,17 @@ struct CommandLocomotive {
 
         return .init(address, decoderType)
     }
-
-}
-
-// This structure is used to keep track of the feedback changes coming from the Digital Control System,
-// for example when a train triggers a feedback on the layout.
-struct CommandFeedback: Hashable {
-    let deviceID: UInt16
-    let contactID: UInt16
-    let value: UInt8
-    
-    static func == (lhs: CommandFeedback, rhs: CommandFeedback) -> Bool {
-        return lhs.deviceID == rhs.deviceID && lhs.contactID == rhs.contactID
-    }
-
-    func hash(into hasher: inout Hasher) {
-        hasher.combine(deviceID)
-        hasher.combine(contactID)
-    }
 }
 
 protocol CommandInterface {
-    
-    var feedbacks: Set<CommandFeedback> { get }
-    
-    func connect(onReady: @escaping () -> Void, onError: @escaping (Error) -> Void, onUpdate: @escaping () -> Void, onStop: @escaping () -> Void)
+        
+    func connect(onReady: @escaping () -> Void, onError: @escaping (Error) -> Void, onStop: @escaping () -> Void)
     func disconnect(_ completion: @escaping () -> Void)
     
     func execute(command: Command, onCompletion: @escaping () -> Void)
+
+    typealias FeedbackChangeCallback = (_ deviceID: UInt16, _ contactID: UInt16, _ value: UInt8) -> Void
+    func register(forFeedbackChange: @escaping FeedbackChangeCallback)
 
     typealias SpeedChangeCallback = (_ address: CommandLocomotiveAddress, _ speed: UInt16) -> Void
     func register(forSpeedChange: @escaping SpeedChangeCallback)

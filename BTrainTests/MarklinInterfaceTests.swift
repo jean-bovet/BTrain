@@ -28,8 +28,6 @@ class MarklinInterfaceTests: XCTestCase {
             connectedExpection.fulfill()
         } onError: { error in
             XCTAssertNil(error)
-        } onUpdate: {
-            
         } onStop: {
             
         }

@@ -31,7 +31,6 @@ struct DocumentToolbarContent: ToolbarContent {
                 CommandSelectedView(viewType: .blocks, label: "Blocks")
                 CommandSelectedView(viewType: .turnouts, label: "Turnouts")
                 CommandSelectedView(viewType: .feedback, label: "Feedback")
-                CommandSelectedView(viewType: .feedbackMonitor, label: "Feedback Monitor")
             }
                         
             Menu("Tools") {

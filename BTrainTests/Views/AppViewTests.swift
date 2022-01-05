@@ -39,10 +39,6 @@ class AppViewTests: RootViewTests {
         doc.selectedView = .feedback
         XCTAssertThrowsError(try sut.inspect().find(TurnoutEditListView.self))
         XCTAssertNoThrow(try sut.inspect().find(FeedbackEditListView.self))
-
-        doc.selectedView = .feedbackMonitor
-        XCTAssertThrowsError(try sut.inspect().find(FeedbackEditListView.self))
-        XCTAssertNoThrow(try sut.inspect().find(FeedbackMonitorView.self))
         
         doc.selectedView = previousValue
     }

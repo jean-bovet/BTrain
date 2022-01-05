@@ -37,7 +37,6 @@ final class LayoutDocument: ObservableObject {
         case blocks = "Blocks"
         case turnouts = "Turnouts"
         case feedback = "Feedback"
-        case feedbackMonitor = "Feedback Monitor"
     }
         
     // Interface used to communicate with the real layout
@@ -167,6 +166,7 @@ extension LayoutDocument {
         mi.connect {
             DispatchQueue.main.async {
                 self.interface = mi
+                self.registerForFeedbackChange()
                 self.registerForSpeedChange()
                 self.registerForDirectionChange()
                 self.registerForTurnoutChange()
@@ -176,10 +176,6 @@ extension LayoutDocument {
             DispatchQueue.main.async {
                 self.interface = nil
                 completed?(error)
-            }
-        } onUpdate: {
-            DispatchQueue.main.async {
-                self.interfaceFeedbackChanged()
             }
         } onStop: {
             // No-op
@@ -198,6 +194,22 @@ extension LayoutDocument {
         }
     }
     
+    func registerForFeedbackChange() {
+        guard let interface = interface else {
+            return
+        }
+        
+        guard let coordinator = coordinator else {
+            return
+        }
+        
+        interface.register(forFeedbackChange: { deviceID, contactID, value in
+            if let feedback = coordinator.layout.feedbacks.find(deviceID: deviceID, contactID: contactID) {
+                feedback.detected = value == 1
+            }
+        })
+    }
+                
     func registerForSpeedChange() {
         guard let interface = interface else {
             return
@@ -258,7 +270,7 @@ extension LayoutDocument {
             return
         }
 
-        interface.register { address, state, power in
+        interface.register(forTurnoutChange: { address, state, power in
             if let turnout = coordinator.layout.turnouts.find(address: address) {
                 BTLogger.debug("Turnout \(turnout.name) changed to \(state)")
                 turnout.stateValue = state
@@ -266,19 +278,7 @@ extension LayoutDocument {
             } else {
                 BTLogger.error("Unknown turnout for address \(address.actualAddress.toHex())")
             }
-        }
+        })
     }
     
-    // A feedback change event has been received from the Digital Control System
-    func interfaceFeedbackChanged() {
-        guard let interface = interface else {
-            return
-        }
-        for cmdFeedback in interface.feedbacks {
-            if let feedback = coordinator?.layout.feedbacks.find(deviceID: cmdFeedback.deviceID, contactID: cmdFeedback.contactID) {
-                feedback.detected = cmdFeedback.value == 1
-            }
-        }
-    }
-            
 }

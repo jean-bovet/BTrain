@@ -21,7 +21,6 @@ extension OverviewSwitchboardView: Inspectable { }
 extension BlockEditListView: Inspectable { }
 extension TurnoutEditListView: Inspectable { }
 extension FeedbackEditListView: Inspectable { }
-extension FeedbackMonitorView: Inspectable { }
 extension TrainListView: Inspectable { }
 extension SwitchBoardView: Inspectable { }
 extension FeedbackView: Inspectable { }

@@ -39,8 +39,6 @@ struct AppView: View {
                 TurnoutEditListView(layout: document.layout)
             case .feedback:
                 FeedbackEditListView(layout: document.layout)
-            case .feedbackMonitor:
-                FeedbackMonitorView(layout: document.layout)
             }
         }
         .onChange(of: document.diagnostics, perform: { v in
