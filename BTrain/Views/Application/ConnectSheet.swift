@@ -32,6 +32,8 @@ struct ConnectSheet: View {
 
     @State private var msg = ""
 
+    @State private var connecting = false
+    
     func didConnect(withError error: Error?) {
         if let error = error {
             msg = error.localizedDescription
@@ -62,13 +64,17 @@ struct ConnectSheet: View {
                 }.disabled(type == .simulator)
                                 
                 Toggle("Activate Turnouts", isOn: $activateTurnouts)
+            }.disabled(connecting)
 
+            HStack {
                 if !msg.isEmpty {
                     Text("\(msg)")
+                        .lineLimit(2)
+                        .fixedSize(horizontal: false, vertical: true)
                         .padding()
                 }
             }
-
+            
             HStack {
                 Button("Cancel") {
                     presentationMode.wrappedValue.dismiss()
@@ -77,16 +83,21 @@ struct ConnectSheet: View {
                 Spacer()
                 
                 Button("Connect") {
+                    connecting.toggle()
                     if type == .centralStation {
                         document.connect(address: address, port: UInt16(port)!) { error in
+                            connecting.toggle()
                             didConnect(withError: error)
                         }
                     } else {
                         document.connectToSimulator() { error in
+                            connecting.toggle()
                             didConnect(withError: error)
                         }
                     }
-                }.keyboardShortcut(.defaultAction)                
+                }
+                .keyboardShortcut(.defaultAction)
+                .disabled(connecting)
             }.padding()
         }
     }    

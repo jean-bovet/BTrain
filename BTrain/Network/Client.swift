@@ -40,6 +40,9 @@ public class Client {
         connection.didReceiveCallback = { message in
             onData(message)
         }
+        connection.didFailCallback = { error in
+            onError(error)
+        }
         connection.didStopCallback = { () -> Void in
             onStop()
         }

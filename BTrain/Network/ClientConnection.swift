@@ -25,6 +25,7 @@ class ClientConnection {
     
     var didSucceedCallback: (() -> Void)? = nil
     var didReceiveCallback: ((MarklinCANMessage) -> Void)? = nil
+    var didFailCallback: ((Error) -> Void)? = nil
     var didStopCallback: (() -> Void)? = nil
 
     func start() {
@@ -109,6 +110,7 @@ class ClientConnection {
     
     private func connectionDidFail(error: Error) {
         print("[Client] did fail, error: \(error)")
+        didFailCallback?(error)
         stop()
     }
     
