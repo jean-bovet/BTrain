@@ -14,39 +14,35 @@ import Foundation
 
 extension Layout {
     
-    var trains: [ITrain] {
-        return mutableTrains
-    }
-
     @discardableResult
-    func newTrain() -> ITrain {
-        return newTrain(Layout.newIdentity(mutableTrains), name: id.uuid)
+    func newTrain() -> Train {
+        return newTrain(Layout.newIdentity(trains), name: id.uuid)
     }
     
     @discardableResult
-    func newTrain(_ id: String, name: String, address: CommandLocomotiveAddress = .init(0, .MFX)) -> ITrain {
+    func newTrain(_ id: String, name: String, address: CommandLocomotiveAddress = .init(0, .MFX)) -> Train {
         let train = Train(uuid: id)
         train.name = name
         train.address = address
-        mutableTrains.append(train)
+        trains.append(train)
         return train
     }
 
     func mutableTrain(for trainId: Identifier<Train>?) -> Train? {
-        return mutableTrains.first(where: { $0.id == trainId })
+        return trains.first(where: { $0.id == trainId })
     }
 
-    func train(for trainId: Identifier<Train>?) -> ITrain? {
+    func train(for trainId: Identifier<Train>?) -> Train? {
         return trains.first(where: { $0.id == trainId })
     }
 
     func remove(trainId: Identifier<Train>) {
         try? free(trainID: trainId, removeFromLayout: true)
-        mutableTrains.removeAll(where: { $0.id == trainId})
+        trains.removeAll(where: { $0.id == trainId})
     }
     
     func sortTrains() {
-        mutableTrains.sort {
+        trains.sort {
             $0.name < $1.name
         }
     }

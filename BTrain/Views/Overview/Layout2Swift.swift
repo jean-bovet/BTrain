@@ -44,7 +44,7 @@ final class Layout2Swift {
         add(routes: layout.routes)
 
         write(section: "Trains")
-        add(trains: layout.mutableTrains)
+        add(trains: layout.trains)
         
         return code
     }

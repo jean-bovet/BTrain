@@ -59,7 +59,7 @@ extension Layout {
         routes.removeAll { t in
             return t.id == routeId
         }
-        mutableTrains.forEach { train in
+        trains.forEach { train in
             if train.routeId == routeId {
                 train.routeId = nil
             }

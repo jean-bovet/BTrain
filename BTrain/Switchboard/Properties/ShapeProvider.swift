@@ -77,7 +77,7 @@ final class ShapeProvider: ShapeProviding {
         self.layout = layout
         self.context = context
         
-        cancellables.append(layout.$mutableTrains.sink(receiveValue: { trains in
+        cancellables.append(layout.$trains.sink(receiveValue: { trains in
             self.updateShapes()
         }))
         cancellables.append(layout.$blockMap.sink(receiveValue: { blocks in
@@ -113,7 +113,7 @@ final class ShapeProvider: ShapeProviding {
                              to: socketInstance(for: transition.b, shapes: self),
                              transition: transition, shapeContext: context))
         }
-        for train in layout.mutableTrains {
+        for train in layout.trains {
             append(TrainShape(layout: layout, train: train, shapeProvider: self, shapeContext: context))
         }
     }

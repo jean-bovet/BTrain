@@ -147,7 +147,7 @@ class PathFinderTests: XCTestCase {
         let layout = LayoutECreator().newLayout()
         let s1 = layout.mutableBlock(for: Identifier<Block>(uuid: "s1"))!
 
-        let train = layout.mutableTrains[0]
+        let train = layout.trains[0]
         train.blockId = s1.id
         s1.train = .init(train.id, .next)
         XCTAssertEqual(train.speed, 0)

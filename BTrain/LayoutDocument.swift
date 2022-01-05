@@ -149,7 +149,7 @@ extension LayoutDocument {
         try coordinator?.start(routeID: route, trainID: train, toBlockId: toBlockId)
     }
     
-    func stop(train: ITrain) throws {
+    func stop(train: Train) throws {
         guard let route = train.routeId else {
             throw LayoutError.trainNotAssignedToARoute(train: train)
         }
@@ -204,7 +204,7 @@ extension LayoutDocument {
 
         interface.register(forDirectionChange: { address, direction in
             DispatchQueue.main.async {
-                if let train = self.coordinator?.layout.mutableTrains.find(address: address) {
+                if let train = self.coordinator?.layout.trains.find(address: address) {
                     switch(direction) {
                     case .forward:
                         if train.directionForward == false {
@@ -244,7 +244,7 @@ extension LayoutDocument {
             return
         }
         for cmdSpeed in interface.speedChanges {
-            if let train = coordinator?.layout.mutableTrains.find(address: cmdSpeed.address.address) {
+            if let train = coordinator?.layout.trains.find(address: cmdSpeed.address.address) {
                 train.speed = cmdSpeed.speed
             }
         }

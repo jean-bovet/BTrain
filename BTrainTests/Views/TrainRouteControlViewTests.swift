@@ -27,7 +27,7 @@ class TrainRouteControlViewTests: XCTestCase {
         let doc = LayoutDocument(layout: layout)
         let route = layout.routes[0]
         
-        let sut = TrainRouteControlView(document: doc, train: layout.mutableTrains[0], route: route, error: $error)
+        let sut = TrainRouteControlView(document: doc, train: layout.trains[0], route: route, error: $error)
 
         route.enabled = false
         _ = try sut.inspect().find(button: "Start")

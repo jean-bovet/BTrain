@@ -71,7 +71,7 @@ struct TrainRouteControlView_Previews: PreviewProvider {
     static let doc = LayoutDocument(layout: LayoutACreator().newLayout())
 
     static var previews: some View {
-        TrainRouteControlView(document: doc, train: doc.layout.mutableTrains[0], route: doc.layout.routes[0], error: .constant(""))
+        TrainRouteControlView(document: doc, train: doc.layout.trains[0], route: doc.layout.routes[0], error: .constant(""))
     }
 
 }

@@ -41,7 +41,7 @@ final class MarklinCommandSimulator: ObservableObject {
     }
 
     func registerForTrainChanges() {
-        let cancellable = layout.$mutableTrains
+        let cancellable = layout.$trains
             .removeDuplicates()
             .receive(on: RunLoop.main)
             .sink { value in
@@ -51,7 +51,7 @@ final class MarklinCommandSimulator: ObservableObject {
     }
 
     func registerForTrainBlockChange() {
-        for train in layout.mutableTrains {
+        for train in layout.trains {
             let cancellable = train.$blockId
                 .removeDuplicates()
                 .receive(on: RunLoop.main)
@@ -227,7 +227,7 @@ final class MarklinCommandSimulator: ObservableObject {
         }
     }
     
-    func tick(route: Route, train: ITrain) throws {
+    func tick(route: Route, train: Train) throws {
         guard train.speed > 0 else {
             return
         }

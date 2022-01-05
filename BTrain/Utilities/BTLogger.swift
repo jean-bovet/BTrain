@@ -22,7 +22,7 @@ final class BTLogger {
         print("[Debug] \(msg)")
     }
     
-    static func debug(_ msg: String, _ layout: Layout, _ train: ITrain? = nil) {
+    static func debug(_ msg: String, _ layout: Layout, _ train: Train? = nil) {
         var attributes = [String]()
         attributes.append("\(layout)")
         if let train = train {

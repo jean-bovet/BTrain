@@ -37,16 +37,16 @@ struct TrainView_Previews: PreviewProvider {
 
     static let doc2: LayoutDocument = {
         let layout = LayoutACreator().newLayout()
-        layout.mutableTrains[0].blockId = layout.block(at: 0).id
+        layout.trains[0].blockId = layout.block(at: 0).id
         return LayoutDocument(layout: layout)
     }()
 
     static var previews: some View {
         Group {
-            TrainView(document: doc1, train: doc1.layout.mutableTrains[0])
+            TrainView(document: doc1, train: doc1.layout.trains[0])
         }
         Group {
-            TrainView(document: doc2, train: doc2.layout.mutableTrains[0])
+            TrainView(document: doc2, train: doc2.layout.trains[0])
         }
     }
 }

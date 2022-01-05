@@ -49,7 +49,7 @@ class LayoutDocumentTests: XCTestCase {
         
         doc.enable()
         
-        let train = layout.mutableTrains[0]
+        let train = layout.trains[0]
         let route = layout.routes[0]
         train.blockId = route.steps[0].blockId
         layout.mutableBlock(for: train.blockId!)?.train = .init(train.id, .next)

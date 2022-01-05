@@ -68,7 +68,7 @@ final class LayoutCoordinator: ObservableObject {
     }
 
     func registerForTrainBlockChanges() {
-        for train in layout.mutableTrains {
+        for train in layout.trains {
             let cancellable = train.$blockId
                 .dropFirst()
                 .removeDuplicates()
@@ -98,7 +98,7 @@ final class LayoutCoordinator: ObservableObject {
     }
 
     func updateControllers() {
-        for train in layout.mutableTrains {
+        for train in layout.trains {
             if controllers[train.id] == nil {
                 controllers[train.id] = TrainController(layout: layout, train: train)
             }
@@ -173,7 +173,7 @@ final class LayoutCoordinator: ObservableObject {
                 }
                 return train
             }
-            self.layout.mutableTrains = trains
+            self.layout.trains = trains
         }
     }
 }

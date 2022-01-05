@@ -22,11 +22,11 @@ class LayoutErrorTests: XCTestCase {
     }()
     
     var train0: Train {
-        return layout.mutableTrains[0]
+        return layout.trains[0]
     }
     
     var train1: Train {
-        return layout.mutableTrains[1]
+        return layout.trains[1]
     }
     
     var b1: Block {

@@ -25,7 +25,7 @@ final class LayoutAsserter {
         self.coordinator = coordinator
     }
     
-    func assert(_ strings: [String], route: Route, trains: [ITrain]) throws {
+    func assert(_ strings: [String], route: Route, trains: [Train]) throws {
         let expectedLayout = LayoutFactory.layoutFrom(strings)
         let expectedTrains = expectedLayout.trains
         
@@ -76,7 +76,7 @@ final class LayoutAsserter {
         }
     }
     
-    private func assert(route: Route, expectedRoute: Route, trains: [ITrain], expectedTrains: [ITrain], expectedLayout: Layout) throws {
+    private func assert(route: Route, expectedRoute: Route, trains: [Train], expectedTrains: [Train], expectedLayout: Layout) throws {
 
         for (index, expectedTrain) in expectedTrains.enumerated() {
             let train = layout.train(for: expectedTrain.id)!

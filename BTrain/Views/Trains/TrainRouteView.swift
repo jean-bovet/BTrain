@@ -107,6 +107,6 @@ struct TrainRouteView_Previews: PreviewProvider {
     static let doc = LayoutDocument(layout: LayoutACreator().newLayout())
 
     static var previews: some View {
-        TrainRouteView(document: doc, train: doc.layout.mutableTrains[0])
+        TrainRouteView(document: doc, train: doc.layout.trains[0])
     }
 }

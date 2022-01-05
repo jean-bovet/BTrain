@@ -23,7 +23,7 @@ class RootLayoutTests: XCTestCase {
         return coordinator.layout.routes.first!
     }
     
-    var train: ITrain {
+    var train: Train {
         return coordinator.layout.trains.first!
     }
     

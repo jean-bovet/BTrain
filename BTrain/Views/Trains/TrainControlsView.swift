@@ -93,6 +93,6 @@ struct TrainControlsView_Previews: PreviewProvider {
     }()
 
     static var previews: some View {
-        TrainControlsView(document: doc, train: doc.layout.mutableTrains[0])
+        TrainControlsView(document: doc, train: doc.layout.trains[0])
     }
 }

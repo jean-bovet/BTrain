@@ -47,7 +47,7 @@ struct TrainEditListView: View {
                         .labelsHidden()
                 }
             } rows: {
-                ForEach($layout.mutableTrains) { train in
+                ForEach($layout.trains) { train in
                     TableRow(train)
                 }
             }
@@ -60,7 +60,7 @@ struct TrainEditListView: View {
                 Button("+") {
                     let train = layout.newTrain()
                     undoManager?.registerUndo(withTarget: layout, handler: { layout in
-                        layout.mutableTrains.removeAll { t in
+                        layout.trains.removeAll { t in
                             return t.id == train.id
                         }
                     })
@@ -70,7 +70,7 @@ struct TrainEditListView: View {
                     layout.remove(trainId: selection!)
                     
                     undoManager?.registerUndo(withTarget: layout, handler: { layout in
-                        layout.mutableTrains.append(train!)
+                        layout.trains.append(train!)
                     })
                 }.disabled(selection == nil)
                 

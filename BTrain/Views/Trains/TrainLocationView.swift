@@ -82,6 +82,6 @@ struct TrainLocationView_Previews: PreviewProvider {
     static let layout = LayoutCCreator().newLayout()
 
     static var previews: some View {
-        TrainLocationView(layout: layout, train: layout.mutableTrains[0])
+        TrainLocationView(layout: layout, train: layout.trains[0])
     }
 }

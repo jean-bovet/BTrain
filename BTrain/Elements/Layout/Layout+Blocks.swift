@@ -39,7 +39,7 @@ extension Layout {
     func remove(blockID: Identifier<Block>) {
         blockMap.removeValue(forKey: blockID)
 
-        mutableTrains.forEach { train in
+        trains.forEach { train in
             if train.blockId == blockID {
                 train.blockId = nil
             }
@@ -92,7 +92,7 @@ extension Layout {
         }
     }
         
-    func currentBlock(train: ITrain) -> Block? {
+    func currentBlock(train: Train) -> Block? {
         if let blockId = train.blockId {
             return block(for: blockId)
         } else {
@@ -100,7 +100,7 @@ extension Layout {
         }
     }
 
-    func nextBlock(train: ITrain) -> Block? {
+    func nextBlock(train: Train) -> Block? {
         if let route = route(for: train.routeId, trainId: train.id) {
             if train.routeIndex + 1 < route.steps.count {
                 let nextBlockId = route.steps[train.routeIndex+1].blockId
@@ -113,7 +113,7 @@ extension Layout {
         }
     }
 
-    func atEndOfBlock(train: ITrain) -> Bool {
+    func atEndOfBlock(train: Train) -> Bool {
         if let currentBlock = currentBlock(train: train) {
             if currentBlock.trainNaturalDirection {
                 return train.position == currentBlock.feedbacks.count

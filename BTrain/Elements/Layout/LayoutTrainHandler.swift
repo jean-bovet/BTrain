@@ -19,22 +19,22 @@ enum Position {
 }
 
 protocol LayoutTrainHandling {
-    func setTrain(_ train: ITrain, toPosition position: Int) throws
-    func setTrain(_ train: ITrain, speed: UInt16) throws
-    func setTrain(_ train: ITrain, routeIndex: Int) throws
+    func setTrain(_ train: Train, toPosition position: Int) throws
+    func setTrain(_ train: Train, speed: UInt16) throws
+    func setTrain(_ train: Train, routeIndex: Int) throws
     
     // Returns the direction of the train within the block (not the train direction itself
     // but the direction of the train relative the natural direction of the block)
-    func directionDirectionInBlock(_ train: ITrain) throws -> Direction
+    func directionDirectionInBlock(_ train: Train) throws -> Direction
     
     // Toggle the direction of the train within the block itself
-    func toggleTrainDirectionInBlock(_ train: ITrain) throws
+    func toggleTrainDirectionInBlock(_ train: Train) throws
     
     // Set the train direction (does not affect the direction of the train
     // within the block it might find itself)
-    func setTrain(_ train: ITrain, direction: Direction) throws
+    func setTrain(_ train: Train, direction: Direction) throws
 
-    func stopTrain(_ train: ITrain) throws
+    func stopTrain(_ train: Train) throws
     
     func setTrain(_ trainId: Identifier<Train>, toBlock toBlockId: Identifier<Block>, position: Position, direction: Direction?) throws
 
@@ -52,31 +52,31 @@ protocol LayoutTrainHandling {
 
 extension Layout: LayoutTrainHandling {
     
-    func setTrain(_ train: ITrain, toPosition position: Int) throws {
+    func setTrain(_ train: Train, toPosition position: Int) throws {
         try trainHandling.setTrain(train, toPosition: position)
     }
     
-    func setTrain(_ train: ITrain, speed: UInt16) throws {
+    func setTrain(_ train: Train, speed: UInt16) throws {
         try trainHandling.setTrain(train, speed: speed)
     }
 
-    func setTrain(_ train: ITrain, routeIndex: Int) throws {
+    func setTrain(_ train: Train, routeIndex: Int) throws {
         try trainHandling.setTrain(train, routeIndex: routeIndex)
     }
 
-    func directionDirectionInBlock(_ train: ITrain) throws -> Direction {
+    func directionDirectionInBlock(_ train: Train) throws -> Direction {
         return try trainHandling.directionDirectionInBlock(train)
     }
     
-    func toggleTrainDirectionInBlock(_ train: ITrain) throws {
+    func toggleTrainDirectionInBlock(_ train: Train) throws {
         try trainHandling.toggleTrainDirectionInBlock(train)
     }
 
-    func setTrain(_ train: ITrain, direction: Direction) throws {
+    func setTrain(_ train: Train, direction: Direction) throws {
         try trainHandling.setTrain(train, direction: direction)
     }
 
-    func stopTrain(_ train: ITrain) throws {
+    func stopTrain(_ train: Train) throws {
         try trainHandling.stopTrain(train)
     }
     
@@ -118,14 +118,14 @@ final class LayoutTrainHandler: LayoutTrainHandling {
         self.exec = exec
     }
     
-    func setTrain(_ train: ITrain, toPosition position: Int) throws {
+    func setTrain(_ train: Train, toPosition position: Int) throws {
         guard let train = layout.mutableTrain(for: train.id) else {
             throw LayoutError.trainNotFound(trainId: train.id)
         }
         train.position = position
     }
     
-    func setTrain(_ train: ITrain, speed: UInt16) throws {
+    func setTrain(_ train: Train, speed: UInt16) throws {
         guard let train = layout.mutableTrain(for: train.id) else {
             throw LayoutError.trainNotFound(trainId: train.id)
         }
@@ -136,7 +136,7 @@ final class LayoutTrainHandler: LayoutTrainHandling {
         layout.didChange()
     }
     
-    func directionDirectionInBlock(_ train: ITrain) throws -> Direction {
+    func directionDirectionInBlock(_ train: Train) throws -> Direction {
         guard let blockId = train.blockId else {
             throw LayoutError.trainNotAssignedToABlock(trainId: train.id)
         }
@@ -156,7 +156,7 @@ final class LayoutTrainHandler: LayoutTrainHandling {
         return ti.direction
     }
     
-    func setTrain(_ train: ITrain, direction: Direction) throws {
+    func setTrain(_ train: Train, direction: Direction) throws {
         guard let train = layout.mutableTrain(for: train.id) else {
             throw LayoutError.trainNotFound(trainId: train.id)
         }
@@ -168,7 +168,7 @@ final class LayoutTrainHandler: LayoutTrainHandling {
         }
     }
     
-    func toggleTrainDirectionInBlock(_ train: ITrain) throws {
+    func toggleTrainDirectionInBlock(_ train: Train) throws {
         guard let blockId = train.blockId else {
             throw LayoutError.trainNotAssignedToABlock(trainId: train.id)
         }
@@ -190,7 +190,7 @@ final class LayoutTrainHandler: LayoutTrainHandling {
         layout.didChange()
     }
         
-    func stopTrain(_ train: ITrain) throws {
+    func stopTrain(_ train: Train) throws {
         guard let train = layout.mutableTrain(for: train.id) else {
             throw LayoutError.trainNotFound(trainId: train.id)
         }
@@ -198,7 +198,7 @@ final class LayoutTrainHandler: LayoutTrainHandling {
         exec.trainSpeedChanged(train: train)
     }
 
-    func setTrain(_ train: ITrain, routeIndex: Int) throws {
+    func setTrain(_ train: Train, routeIndex: Int) throws {
         guard let train = layout.mutableTrain(for: train.id) else {
             throw LayoutError.trainNotFound(trainId: train.id)
         }

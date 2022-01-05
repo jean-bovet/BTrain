@@ -28,7 +28,7 @@ struct TrainListView: View {
             }
         } else {
             List {
-                ForEach(layout.mutableTrains.filter({$0.enabled}), id:\.self) { train in
+                ForEach(layout.trains.filter({$0.enabled}), id:\.self) { train in
                     Text(train.name)
                     TrainView(document: document, train: train)
                     Divider()

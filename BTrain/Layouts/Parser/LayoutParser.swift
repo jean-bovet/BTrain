@@ -77,7 +77,7 @@ final class LayoutParser {
             }
         }
 
-        layout.mutableTrains = trains.map { $0 }.sorted()
+        layout.trains = trains.map { $0 }.sorted()
         layout.feedbacks = feedbacks.map { $0 }.sorted()
         layout.add(blocks.map { $0 }.sorted().reversed())
     }

@@ -17,8 +17,8 @@ enum LayoutError: Error {
     case trainNotAssignedToABlock(trainId: Identifier<Train>)
     case trainNotFoundInBlock(blockId: Identifier<Block>)
     case trainInBlockDoesNotMatch(trainId: Identifier<Train>, blockId: Identifier<Block>, blockTrainId: Identifier<Train>)
-    case trainNotFoundInRoute(train: ITrain, route: Route)
-    case trainNotAssignedToARoute(train: ITrain)
+    case trainNotFoundInRoute(train: Train, route: Route)
+    case trainNotAssignedToARoute(train: Train)
 
     case blockNotFound(blockId: Identifier<Block>)
     case turnoutNotFound(turnoutId: Identifier<Turnout>)

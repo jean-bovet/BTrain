@@ -33,7 +33,7 @@ final class Layout: Element, ObservableObject {
     
     @Published var turnouts = [Turnout]()
     
-    @Published var mutableTrains = [Train]()
+    @Published var trains = [Train]()
     
     // Note: automatic route have a special ID that follows this pattern:
     // "automatic-<trainId>"
@@ -121,7 +121,7 @@ extension Layout: Codable {
         self.blocks = try container.decode([Block].self, forKey: CodingKeys.blocks)
         self.feedbacks = try container.decode([Feedback].self, forKey: CodingKeys.feedbacks)
         self.turnouts = try container.decode([Turnout].self, forKey: CodingKeys.turnouts)
-        self.mutableTrains = try container.decode([Train].self, forKey: CodingKeys.trains)
+        self.trains = try container.decode([Train].self, forKey: CodingKeys.trains)
         self.routes = try container.decode([Route].self, forKey: CodingKeys.routes)
         self.transitions = try container.decode([Transition].self, forKey: CodingKeys.transitions)
     }
@@ -133,7 +133,7 @@ extension Layout: Codable {
         try container.encode(blocks, forKey: CodingKeys.blocks)
         try container.encode(feedbacks, forKey: CodingKeys.feedbacks)
         try container.encode(turnouts, forKey: CodingKeys.turnouts)
-        try container.encode(mutableTrains, forKey: CodingKeys.trains)
+        try container.encode(trains, forKey: CodingKeys.trains)
         try container.encode(manualRoutes, forKey: CodingKeys.routes)
         try container.encode(transitions, forKey: CodingKeys.transitions)
     }

@@ -88,7 +88,7 @@ final class BlockShape: Shape, DraggableShape, ConnectableShape {
         return block.reserved
     }
     
-    var train: ITrain? {
+    var train: Train? {
         return layout.train(for: block.train?.trainId)
     }
         

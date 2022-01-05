@@ -14,69 +14,42 @@ import Foundation
 
 // A train is an element that moves from one block to another.
 // It can have an associated route to follow.
-// This protocol represents an immutable train which should be
-// the main way to access its properties.
-protocol ITrain: AnyObject {
+final class Train: Element, ObservableObject {
     // Unique identifier of the train
-    var id: Identifier<Train> { get }
+    let id: Identifier<Train>
     
     // A train that is enabled will show up in the switchboard
-    var enabled: Bool { get }
+    @Published var enabled = true
     
     // Name of the train
-    var name: String { get }
+    @Published var name = ""
     
     // Address of the train
-    var address: CommandLocomotiveAddress { get }
-    
+    @Published var address: CommandLocomotiveAddress = .init(0, .MFX)
+        
     // Speed of the train
-    var speed: UInt16 { get }
+    @Published var speed: UInt16 = 0
 
     // Direction of travel of the train
-    var directionForward: Bool { get }
+    @Published var directionForward: Bool = true
     
     // The route this train is associated with
-    var routeId: Identifier<Route>? { get }
-        
+    @Published var routeId: Identifier<Route>?
+    
     // Index of the current block in the route
     // This is important to use an index that is incremented
     // because a route can re-use the same block several times
     // (or the same departing block is also the arrival block)
-    var routeIndex: Int { get }
+    @Published var routeIndex = 0
     
     // The block this train is located in
-    var blockId: Identifier<Block>? { get }
-
+    @Published var blockId: Identifier<Block>?
+    
     // Position of the train inside the current block,
     // represented by an index that identifies after
     // which feedback the train is located.
     // block   : [  f1   f2   f3  ]
     // position:   0   1    2    3
-    var position: Int { get }
-}
-
-// This mutable implementation of the train is what the layout
-// can use to mutate the train state in a coherence manner.
-final class Train: Element, ITrain, ObservableObject {
-        
-    let id: Identifier<Train>
-    
-    @Published var enabled = true
-    
-    @Published var name = ""
-    
-    @Published var address: CommandLocomotiveAddress = .init(0, .MFX)
-        
-    @Published var speed: UInt16 = 0
-
-    @Published var directionForward: Bool = true
-    
-    @Published var routeId: Identifier<Route>?
-    
-    @Published var routeIndex = 0
-    
-    @Published var blockId: Identifier<Block>?
-    
     @Published var position = 0
             
     convenience init(uuid: String = UUID().uuidString) {

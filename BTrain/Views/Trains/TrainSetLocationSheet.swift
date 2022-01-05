@@ -109,7 +109,7 @@ struct TrainSetLocationView_Previews: PreviewProvider {
     static let layout = LayoutCCreator().newLayout()
 
     static var previews: some View {
-        TrainSetLocationSheet(layout: layout, train: layout.mutableTrains[0])
+        TrainSetLocationSheet(layout: layout, train: layout.trains[0])
     }
 
 }

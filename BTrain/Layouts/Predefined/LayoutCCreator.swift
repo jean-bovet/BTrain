@@ -100,7 +100,7 @@ final class LayoutCCreator: LayoutCreating {
         t2.name = "Old Loco"
         t2.address = .init(0x4010, .MFX)
 
-        l.mutableTrains.append(contentsOf: [t1, t2])
+        l.trains.append(contentsOf: [t1, t2])
 
         return l
     }

@@ -20,7 +20,7 @@ extension TrainSetLocationSheet: Inspectable { }
 class TrainSetLocationSheetTests: RootViewTests {
 
     func testLayout() throws {
-        let sut = TrainSetLocationSheet(layout: layout, train: layout.mutableTrains[0])
+        let sut = TrainSetLocationSheet(layout: layout, train: layout.trains[0])
         XCTAssertNoThrow(try sut.inspect().find(button: "OK"))
     }
 

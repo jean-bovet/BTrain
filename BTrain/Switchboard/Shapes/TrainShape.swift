@@ -14,7 +14,7 @@ import Foundation
 
 final class TrainShape: Shape, DraggableShape {
     let layout: Layout
-    let train: ITrain
+    let train: Train
     let shapeProvider: ShapeProviding
     let shapeContext: ShapeContext
     
@@ -51,7 +51,7 @@ final class TrainShape: Shape, DraggableShape {
         return path
     }
     
-    init(layout: Layout, train: ITrain, shapeProvider: ShapeProviding, shapeContext: ShapeContext) {
+    init(layout: Layout, train: Train, shapeProvider: ShapeProviding, shapeContext: ShapeContext) {
         self.layout = layout
         self.train = train
         self.shapeProvider = shapeProvider
