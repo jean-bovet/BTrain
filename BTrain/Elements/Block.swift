@@ -23,20 +23,24 @@ import Foundation
 // Ideally two feedbacks are used to determine when the train enters or exists the block with more precision.
 // The feedbacks indexes go from 0 to n following the block natural direction.
 //
-//            Feedback                       Block Direction
-//               │                                  │
-//  Socket       │                  Train           │
-//    │          │                    │             │
-//    │          │                    │             │
-//    │          │                    │             │
-//    │          ▼                    │             ▼
-//    │  ╲       ██            ██     │      ██    ╲
-//    ▼   ╲      ██            ██     ▼      ██     ╲
-//  ──○────■─────██────────────██─────■■▶────██──────■────○──
-//    0   ╱      ██            ██            ██     ╱     1
-//       ╱       ██            ██            ██    ╱
+//                  Feedback                       Block Direction
+//  p                  │                                  │
+//  r     Socket       │                  Train           │
+//  e       │          │                    │             │           n
+//  v       │          │                    │             │           e
+//  i       │          │                    │             │           x
+//  o       │          ▼                    │             ▼           t
+//  u       │  ╲       ██            ██     │      ██    ╲
+//  s       ▼   ╲      ██            ██     ▼      ██     ╲           s
+//        ──○────■─────██────────────██─────■■▶────██──────■────○──   i
+//  s       0   ╱      ██            ██            ██     ╱     1     d
+//  i          ╱       ██            ██            ██    ╱            e
+//  d
+//  e                  f0            f1            f2
 //
-//               f0            f1            f2
+//       ─────────────────────────────────────────────────────────▶
+//                              block natural direction
+//
 final class Block: Element, ObservableObject {
     
     // Defines the train in the block, which is the train
