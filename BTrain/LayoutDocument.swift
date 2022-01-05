@@ -167,35 +167,7 @@ extension LayoutDocument {
         mi.connect {
             DispatchQueue.main.async {
                 self.interface = mi
-                // TODO
-//                for t in self.layout.turnouts {
-//                    self.coordinator?.stateChanged(turnout: t)
-//                }
-//                // TODO: how to know when all commands have been sent to the turnouts?
-                
-                self.interface?.register(forDirectionChange: { address, direction in
-                    DispatchQueue.main.async {
-                        if let train = self.coordinator?.layout.mutableTrains.find(address: address) {
-                            switch(direction) {
-                            case .forward:
-                                if train.directionForward == false {
-                                    train.directionForward = true
-                                    try? self.layout.toggleTrainDirectionInBlock(train)
-                                }
-                            case .backward:
-                                if train.directionForward {
-                                    train.directionForward = false
-                                    try? self.layout.toggleTrainDirectionInBlock(train)
-                                }
-                            case .unknown:
-                                BTLogger.error("Unknown direction \(direction) for \(address.toHex())")
-                            }
-                        } else {
-                            BTLogger.error("Unknown address \(address.toHex()) for change in direction event")
-                        }
-                    }
-                })
-                
+                self.registerForDirectionChange()
                 completed?(nil)
             }
         } onError: { error in
@@ -217,6 +189,41 @@ extension LayoutDocument {
         simulator.stop()
         interface?.disconnect() { }
         interface = nil
+    }
+    
+    func applyTurnoutStateToDigitalController() {
+        for t in layout.turnouts {
+            coordinator?.stateChanged(turnout: t)
+        }
+    }
+    
+    func registerForDirectionChange() {
+        guard let interface = interface else {
+            return
+        }
+
+        interface.register(forDirectionChange: { address, direction in
+            DispatchQueue.main.async {
+                if let train = self.coordinator?.layout.mutableTrains.find(address: address) {
+                    switch(direction) {
+                    case .forward:
+                        if train.directionForward == false {
+                            train.directionForward = true
+                            try? self.layout.toggleTrainDirectionInBlock(train)
+                        }
+                    case .backward:
+                        if train.directionForward {
+                            train.directionForward = false
+                            try? self.layout.toggleTrainDirectionInBlock(train)
+                        }
+                    case .unknown:
+                        BTLogger.error("Unknown direction \(direction) for \(address.toHex())")
+                    }
+                } else {
+                    BTLogger.error("Unknown address \(address.toHex()) for change in direction event")
+                }
+            }
+        })
     }
     
     // A feedback change event has been received from the Digital Control System

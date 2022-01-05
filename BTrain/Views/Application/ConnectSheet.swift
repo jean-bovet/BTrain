@@ -25,11 +25,24 @@ struct ConnectSheet: View {
     
     @State private var type = ConnectionType.centralStation
     
+    @State private var activateTurnouts = true
+    
     @State private var address = "192.168.86.47"
     @State private var port = "15731"
 
     @State private var msg = ""
 
+    func didConnect(withError error: Error?) {
+        if let error = error {
+            msg = error.localizedDescription
+        } else {
+            if activateTurnouts {
+                document.applyTurnoutStateToDigitalController()
+            }
+            self.presentationMode.wrappedValue.dismiss()
+        }
+    }
+    
     var body: some View {
         VStack(alignment: .leading) {
             Form {
@@ -46,6 +59,8 @@ struct ConnectSheet: View {
                         .frame(minWidth: 200)
                 }.disabled(type == .simulator)
                                 
+                Toggle("Activate Turnouts", isOn: $activateTurnouts)
+
                 if !msg.isEmpty {
                     Text("\(msg)")
                         .padding()
@@ -62,19 +77,11 @@ struct ConnectSheet: View {
                 Button("Connect") {
                     if type == .centralStation {
                         document.connect(address: address, port: UInt16(port)!) { error in
-                            if let error = error {
-                                msg = error.localizedDescription
-                            } else {
-                                self.presentationMode.wrappedValue.dismiss()
-                            }
+                            didConnect(withError: error)
                         }
                     } else {
                         document.connectToSimulator() { error in
-                            if let error = error {
-                                msg = error.localizedDescription
-                            } else {
-                                self.presentationMode.wrappedValue.dismiss()
-                            }
+                            didConnect(withError: error)
                         }
                     }
                 }.keyboardShortcut(.defaultAction)                
