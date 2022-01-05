@@ -92,7 +92,11 @@ class ClientConnection {
 
                 DispatchQueue.main.async {
                     if let error = error {
-                        self.connectionDidFail(error: error)
+                        if case let NWError.posix(code) = error, code == .ECANCELED {
+                            // Cancelled, likely because we closed the connection on purpose
+                        } else {
+                            self.connectionDidFail(error: error)
+                        }
                         return
                     }
 
