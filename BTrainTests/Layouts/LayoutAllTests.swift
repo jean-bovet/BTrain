@@ -21,6 +21,6 @@ class LayoutAllTests: RootLayoutTests {
     }
 
     func testLayout() {
-        XCTAssertEqual(layout.blocks.count, 8)
+        XCTAssertEqual(layout.blockMap.count, 8)
     }
 }

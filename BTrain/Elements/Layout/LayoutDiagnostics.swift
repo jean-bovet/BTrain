@@ -91,7 +91,7 @@ final class LayoutDiagnostic {
     
     func checkForDuplicateBlocks(_ errors: inout [DiagnosticError]) throws {
         var ids = Set<Identifier<Block>>()
-        for block in layout.mutableBlockArray {
+        for block in layout.blocks {
             if ids.contains(block.id) {
                 errors.append(DiagnosticError.blockIdAlreadyExists(block: block))
             } else {
@@ -100,7 +100,7 @@ final class LayoutDiagnostic {
         }
 
         var names = Set<String>()
-        for block in layout.mutableBlockArray {
+        for block in layout.blocks {
             if names.contains(block.name) {
                 errors.append(DiagnosticError.blockNameAlreadyExists(block: block))
             } else {
@@ -109,7 +109,7 @@ final class LayoutDiagnostic {
         }
 
         var feedbacks = Set<Identifier<Feedback>>()
-        for block in layout.mutableBlockArray {
+        for block in layout.blocks {
             for blockFeedback in block.feedbacks {
                 if feedbacks.contains(blockFeedback.feedbackId) {
                     guard let feedback = layout.feedback(for: blockFeedback.feedbackId) else {
@@ -202,7 +202,7 @@ final class LayoutDiagnostic {
             }
         }
         
-        for block in layout.mutableBlockArray {
+        for block in layout.blocks {
             for socket in block.allSockets {
                 if try layout.transitions(from: socket).isEmpty {
                     let name: String
@@ -232,7 +232,7 @@ final class LayoutDiagnostic {
         }
         
         // Remove any train that do not exist anymore
-        for block in layout.mutableBlockArray {
+        for block in layout.blocks {
             if let trainId = block.train?.trainId {
                 if layout.train(for: trainId) == nil {
                     block.train = nil

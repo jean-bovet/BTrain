@@ -38,7 +38,7 @@ extension Layout {
         return routes.first(where: { $0.id == routeId })
     }
     
-    func newRoute(_ id: String, name: String, automatic: Bool = false, _ steps: [(IBlock, Direction)]) {
+    func newRoute(_ id: String, name: String, automatic: Bool = false, _ steps: [(Block, Direction)]) {
         var routeSteps = [Route.Step]()
         for (index, step) in steps.enumerated() {
             routeSteps.append(Route.Step(String(index), step.0.id, step.1))
@@ -86,7 +86,7 @@ extension Layout {
             throw LayoutError.blockNotFound(blockId: blockId)
         }
         
-        let toBlock: IBlock?
+        let toBlock: Block?
         if let toBlockId = toBlockId {
             toBlock = block(for: toBlockId)
             guard toBlock != nil else {

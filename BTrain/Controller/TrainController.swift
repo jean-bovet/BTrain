@@ -22,7 +22,7 @@ final class TrainController {
     let layout: Layout
     let train: Train
     
-    var startBlock: IBlock?
+    var startBlock: Block?
     
     init(layout: Layout, train: Train) {
         self.layout = layout

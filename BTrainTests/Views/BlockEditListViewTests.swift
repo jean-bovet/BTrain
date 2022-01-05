@@ -35,7 +35,7 @@ class BlockEditListViewTests: RootViewTests {
     
     func testBlockEditView() throws {
         let layout = LayoutCCreator().newLayout()
-        let sut = BlockEditView(layout: layout, block: layout.mutableBlockArray[0])
+        let sut = BlockEditView(layout: layout, block: layout.blocks[0])
         XCTAssertEqual(try sut.inspect().vStack().groupBox(1).labelView().text().string(), "Feedbacks")
     }
 }

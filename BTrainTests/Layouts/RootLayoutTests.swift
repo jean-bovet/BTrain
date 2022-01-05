@@ -57,7 +57,7 @@ class RootLayoutTests: XCTestCase {
 
 extension Layout {
     
-    func turnouts(from fromBlock: IBlock, to nextBlock: IBlock, direction: Direction) throws -> [Turnout] {
+    func turnouts(from fromBlock: Block, to nextBlock: Block, direction: Direction) throws -> [Turnout] {
         let transitions = try transitions(from: fromBlock, to: nextBlock, direction: direction)
         var turnouts = [Turnout]()
         for transition in transitions {

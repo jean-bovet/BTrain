@@ -387,7 +387,7 @@ final class LayoutTrainHandler: LayoutTrainHandling {
         }
 
         // Remove the train from the blocks
-        layout.mutableBlocks.values.filter { $0.reserved?.trainId == train.id }.forEach { block in
+        layout.blockMap.values.filter { $0.reserved?.trainId == train.id }.forEach { block in
             // Only free a block if the block is not the one the train is located on or
             // if `removeFromLayout` is true because the train must be removed from all the blocks.
             if block.id != train.blockId || removeFromLayout {

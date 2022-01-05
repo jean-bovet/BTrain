@@ -53,7 +53,7 @@ final class BlockShape: Shape, DraggableShape, ConnectableShape {
     }
 
     let layout: Layout
-    let block: BlockGeometry
+    let block: Block
 
     var selected = false
 
@@ -145,7 +145,7 @@ final class BlockShape: Shape, DraggableShape, ConnectableShape {
         return ConnectorSocketInstance(shape: self, socketId: previousSocket.id)
     }
     
-    init(layout: Layout, block: BlockGeometry, shapeContext: ShapeContext) {
+    init(layout: Layout, block: Block, shapeContext: ShapeContext) {
         self.layout = layout
         self.block = block
         self.shapeContext = shapeContext

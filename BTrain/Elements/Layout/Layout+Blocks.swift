@@ -16,36 +16,28 @@ import OrderedCollections
 extension Layout {
     
     var blockIds: OrderedSet<Identifier<Block>> {
-        return mutableBlocks.keys
+        return blockMap.keys
     }
     
-    var blocksGeometry: [BlockGeometry] {
-        return mutableBlocks.values.map { $0 as BlockGeometry }
-    }
-    
-    var blocks: [IBlock] {
-        return mutableBlocks.values.map { $0 as IBlock }
-    }
-    
-    var mutableBlockArray: [Block] {
+    var blocks: [Block] {
         get {
-            return mutableBlocks.values.map { $0 }
+            return blockMap.values.map { $0 }
         }
         set {
-            mutableBlocks.removeAll()
-            newValue.forEach { mutableBlocks[$0.id] = $0 }
+            blockMap.removeAll()
+            newValue.forEach { blockMap[$0.id] = $0 }
         }
     }
-    
+
     @discardableResult
-    func newBlock(name: String, type: Block.Category) -> BlockGeometry {
-        let block = Block(id: Layout.newIdentity(mutableBlocks), name: name, type: type, center: .init(x: 100, y: 100), rotationAngle: 0)
-        mutableBlocks[block.id] = block
+    func newBlock(name: String, type: Block.Category) -> Block {
+        let block = Block(id: Layout.newIdentity(blockMap), name: name, type: type, center: .init(x: 100, y: 100), rotationAngle: 0)
+        blockMap[block.id] = block
         return block
     }
     
     func remove(blockID: Identifier<Block>) {
-        mutableBlocks.removeValue(forKey: blockID)
+        blockMap.removeValue(forKey: blockID)
 
         mutableTrains.forEach { train in
             if train.blockId == blockID {
@@ -60,28 +52,28 @@ extension Layout {
     }
     
     func mutableBlock(at index: Int) -> Block {
-        return mutableBlocks.values[index]
+        return blockMap.values[index]
     }
     
     func mutableBlock(for blockId: Identifier<Block>) -> Block? {
-        return mutableBlocks[blockId]
+        return blockMap[blockId]
     }
     
     func mutableBlock(for trainId: Identifier<Train>) -> Block? {
-        return mutableBlocks.first(where: { $0.value.train?.trainId == trainId })?.value
+        return blockMap.first(where: { $0.value.train?.trainId == trainId })?.value
     }
     
     func sortBlocks() {
-        mutableBlocks.sort {
+        blockMap.sort {
             $0.value.name < $1.value.name
         }
     }
 
-    func block(at index: Int) -> IBlock {
-        return mutableBlocks.values[index]
+    func block(at index: Int) -> Block {
+        return blockMap.values[index]
     }
     
-    func block(for blockId: Identifier<Block>?) -> IBlock? {
+    func block(for blockId: Identifier<Block>?) -> Block? {
         return blocks.first(where: { $0.id == blockId })
     }
 
@@ -96,11 +88,11 @@ extension Layout {
 
     func add(_ blocks: [Block]) {
         for block in blocks {
-            self.mutableBlocks[block.id] = block
+            self.blockMap[block.id] = block
         }
     }
         
-    func currentBlock(train: ITrain) -> IBlock? {
+    func currentBlock(train: ITrain) -> Block? {
         if let blockId = train.blockId {
             return block(for: blockId)
         } else {
@@ -108,7 +100,7 @@ extension Layout {
         }
     }
 
-    func nextBlock(train: ITrain) -> IBlock? {
+    func nextBlock(train: ITrain) -> Block? {
         if let route = route(for: train.routeId, trainId: train.id) {
             if train.routeIndex + 1 < route.steps.count {
                 let nextBlockId = route.steps[train.routeIndex+1].blockId

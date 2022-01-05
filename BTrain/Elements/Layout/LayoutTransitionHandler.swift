@@ -16,8 +16,8 @@ protocol LayoutTransitionHandling {
     
     func transitions(from: Socket, to: Socket?) throws -> [ITransition]
     func transitions(from fromBlock: Identifier<Block>, to nextBlock: Identifier<Block>, direction: Direction) throws -> [ITransition]
-    func transitions(from fromBlock: IBlock, to nextBlock: IBlock, direction: Direction) throws -> [ITransition]
-    func feedbackTriggeringTransition(from fromBlock: IBlock, to nextBlock: IBlock) throws -> (Feedback?, naturalDirection: Bool)
+    func transitions(from fromBlock: Block, to nextBlock: Block, direction: Direction) throws -> [ITransition]
+    func feedbackTriggeringTransition(from fromBlock: Block, to nextBlock: Block) throws -> (Feedback?, naturalDirection: Bool)
     
 }
 
@@ -31,11 +31,11 @@ extension Layout: LayoutTransitionHandling {
         return try transitionHandling.transitions(from: fromBlock, to: nextBlock, direction: direction)
     }
     
-    func transitions(from fromBlock: IBlock, to nextBlock: IBlock, direction: Direction) throws -> [ITransition] {
+    func transitions(from fromBlock: Block, to nextBlock: Block, direction: Direction) throws -> [ITransition] {
         return try transitionHandling.transitions(from: fromBlock, to: nextBlock, direction: direction)
     }
 
-    func feedbackTriggeringTransition(from fromBlock: IBlock, to nextBlock: IBlock) throws -> (Feedback?, naturalDirection: Bool) {
+    func feedbackTriggeringTransition(from fromBlock: Block, to nextBlock: Block) throws -> (Feedback?, naturalDirection: Bool) {
         return try transitionHandling.feedbackTriggeringTransition(from: fromBlock, to: nextBlock)
     }
     
@@ -59,7 +59,7 @@ final class LayoutTransitionHandler: LayoutTransitionHandling {
         return try transitions(from: b1, to: b2, direction: direction)
     }
     
-    func transitions(from fromBlock: IBlock, to nextBlock: IBlock, direction: Direction) throws -> [ITransition] {
+    func transitions(from fromBlock: Block, to nextBlock: Block, direction: Direction) throws -> [ITransition] {
         if direction == .next {
             // If the train travels in the natural direction of the fromBlock,
             // returns all the transitions that starts at the "next" end
@@ -169,7 +169,7 @@ final class LayoutTransitionHandler: LayoutTransitionHandling {
         }
     }
 
-    func feedbackTriggeringTransition(from fromBlock: IBlock, to nextBlock: IBlock) throws -> (Feedback?, naturalDirection: Bool) {
+    func feedbackTriggeringTransition(from fromBlock: Block, to nextBlock: Block) throws -> (Feedback?, naturalDirection: Bool) {
         let transitions = try transitions(from: fromBlock, to: nextBlock, direction: fromBlock.train!.direction)
         guard let lastTransition = transitions.last else {
             throw LayoutError.noTransition(fromBlockId: fromBlock.id, toBlockId: nextBlock.id)

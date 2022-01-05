@@ -80,10 +80,10 @@ final class ShapeProvider: ShapeProviding {
         cancellables.append(layout.$mutableTrains.sink(receiveValue: { trains in
             self.updateShapes()
         }))
-        cancellables.append(layout.$mutableBlocks.sink(receiveValue: { blocks in
+        cancellables.append(layout.$blockMap.sink(receiveValue: { blocks in
             // Note: need to pass the `blocks` parameter here because the layout.mutableBlocks
             // has not yet had the time to be updated
-            self.updateShapes(blocks: blocks.values.map { $0 as BlockGeometry })
+            self.updateShapes(blocks: blocks.values.map { $0 as Block })
         }))
         cancellables.append(layout.$turnouts.sink(receiveValue: { turnouts in
             // Note: need to pass the `turnouts` parameter here because the layout.turnouts
@@ -93,13 +93,13 @@ final class ShapeProvider: ShapeProviding {
         updateShapes()
     }
         
-    func updateShapes(blocks: [BlockGeometry]? = nil, turnouts: [Turnout]? = nil) {
+    func updateShapes(blocks: [Block]? = nil, turnouts: [Turnout]? = nil) {
         shapes.removeAll()
 
         if let blocks = blocks {
             updateBlocks(blocks: blocks)
         } else {
-            updateBlocks(blocks: layout.blocksGeometry)
+            updateBlocks(blocks: layout.blocks)
         }
         
         if let turnouts = turnouts {
@@ -118,7 +118,7 @@ final class ShapeProvider: ShapeProviding {
         }
     }
     
-    func updateBlocks(blocks: [BlockGeometry]) {
+    func updateBlocks(blocks: [Block]) {
         for block in blocks {
             append(BlockShape(layout: layout, block: block, shapeContext: context))
         }

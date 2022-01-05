@@ -93,7 +93,7 @@ struct TrainSetLocationSheet: View {
     
 }
 
-private extension IBlock {
+private extension Block {
     var nameForLocation: String {
         let name: String
         if category == .station {

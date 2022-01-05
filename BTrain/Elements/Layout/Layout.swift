@@ -27,7 +27,7 @@ final class Layout: Element, ObservableObject {
     
     var name = ""
     
-    @Published var mutableBlocks = OrderedDictionary<Identifier<Block>, Block>()
+    @Published var blockMap = OrderedDictionary<Identifier<Block>, Block>()
 
     @Published var feedbacks = [Feedback]()
     
@@ -118,7 +118,7 @@ extension Layout: Codable {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         self.init(id: try container.decode(Identifier<Layout>.self, forKey: CodingKeys.id))
         self.name = try container.decode(String.self, forKey: CodingKeys.name)
-        self.mutableBlockArray = try container.decode([Block].self, forKey: CodingKeys.blocks)
+        self.blocks = try container.decode([Block].self, forKey: CodingKeys.blocks)
         self.feedbacks = try container.decode([Feedback].self, forKey: CodingKeys.feedbacks)
         self.turnouts = try container.decode([Turnout].self, forKey: CodingKeys.turnouts)
         self.mutableTrains = try container.decode([Train].self, forKey: CodingKeys.trains)
@@ -130,7 +130,7 @@ extension Layout: Codable {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(id, forKey: CodingKeys.id)
         try container.encode(name, forKey: CodingKeys.name)
-        try container.encode(mutableBlockArray, forKey: CodingKeys.blocks)
+        try container.encode(blocks, forKey: CodingKeys.blocks)
         try container.encode(feedbacks, forKey: CodingKeys.feedbacks)
         try container.encode(turnouts, forKey: CodingKeys.turnouts)
         try container.encode(mutableTrains, forKey: CodingKeys.trains)

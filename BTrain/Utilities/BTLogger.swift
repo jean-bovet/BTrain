@@ -42,7 +42,7 @@ final class BTLogger {
         print("[\(attributes.joined(separator: "|"))] \(msg)")
     }
 
-    static func attributesFor(block: IBlock, layout: Layout) -> String {
+    static func attributesFor(block: Block, layout: Layout) -> String {
         var info = "\(block.name)"
         if let reserved = block.reserved, let train = layout.train(for: reserved.trainId) {
             info += ",r=\(train.name)-\(reserved.direction.rawValue)"

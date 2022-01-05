@@ -27,7 +27,7 @@ struct RouteView: View {
             Table(selection: $selection) {
                 TableColumn("Block") { step in
                     Picker("Block:", selection: step.blockId) {
-                        ForEach(layout.mutableBlocks.values, id:\.self) { block in
+                        ForEach(layout.blockMap.values, id:\.self) { block in
                             Text(block.id.uuid).tag(block.id as Identifier<Block>)
                         }
                     }.labelsHidden()

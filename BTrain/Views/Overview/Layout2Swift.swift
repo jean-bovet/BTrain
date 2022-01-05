@@ -29,7 +29,7 @@ final class Layout2Swift {
         code = "let l = Layout()"
 
         write(section: "Blocks")
-        add(blocks: layout.mutableBlockArray)
+        add(blocks: layout.blocks)
 
         write(section: "Feedbacks")
         add(feedbacks: layout.feedbacks)
@@ -84,7 +84,7 @@ final class Layout2Swift {
         }
         code += "\nl.feedbacks.append(contentsOf: [\(content)])"
 
-        for block in layout.mutableBlockArray {
+        for block in layout.blocks {
             assignFeedbacks(to: block)
         }
     }

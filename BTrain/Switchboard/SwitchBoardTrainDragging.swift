@@ -18,7 +18,7 @@ final class SwitchBoardTrainDragging {
     let shape: TrainShape
 
     var dropPath: CGPath?
-    var dropBlock: IBlock?
+    var dropBlock: Block?
     var dropPosition = 0
     
     init(shape: TrainShape) {

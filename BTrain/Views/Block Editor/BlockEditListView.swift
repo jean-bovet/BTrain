@@ -35,13 +35,13 @@ struct BlockEditListView: View {
                                 .labelsHidden()
                         }
                     } rows: {
-                        ForEach($layout.mutableBlocks.values) { block in
+                        ForEach($layout.blockMap.values) { block in
                             TableRow(block)
                         }
                     }
                     
                     HStack {
-                        Text("\(layout.blocks.count) blocks")
+                        Text("\(layout.blockMap.count) blocks")
 
                         Spacer()
 

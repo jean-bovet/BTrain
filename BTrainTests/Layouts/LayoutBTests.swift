@@ -22,7 +22,7 @@ class LayoutBTests: RootLayoutTests {
 
     func testTrainDirection() throws {
         let train1 = layout.trains[0]
-        let block1 = layout.mutableBlockArray[0]
+        let block1 = layout.blocks[0]
         
         XCTAssertEqual(train1.directionForward, true)
 

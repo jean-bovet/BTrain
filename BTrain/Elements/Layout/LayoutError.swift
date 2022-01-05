@@ -26,7 +26,7 @@ enum LayoutError: Error {
     case socketIdNotFound(socket: Socket)
     
     case blockNotEmpty(blockId: Identifier<Block>)
-    case blockNotReservedForTrain(block: IBlock, train: Identifier<Train>)
+    case blockNotReservedForTrain(block: Block, train: Identifier<Train>)
     
     case noTransition(fromBlockId: Identifier<Block>, toBlockId: Identifier<Block>)
     case lastTransitionToBlock(transition: Identifier<Transition>, blockId: Identifier<Block>)

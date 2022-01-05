@@ -37,69 +37,7 @@ import Foundation
 //       ╱       ██            ██            ██    ╱
 //
 //               f0            f1            f2
-
-// This protocol exposes several properties of the block in a read-only manner,
-// in order to avoid any unwanted mutation.
-// Any mutation on the block object should happen within the Layout object to ensure consistency.
-protocol IBlock: AnyObject {
-    // The unique identifier of the block
-    var id: Identifier<Block> { get }
-    
-    // True if the block is enabled and ready to participate
-    // in the routing. False to have the block ignored
-    // by any routing, which is useful when a block is occupied
-    // or in need of repair and we don't want to have a train
-    // stopping or running through it.
-    var enabled: Bool { get }
-    
-    // The name of the block
-    var name: String { get }
-    
-    // The category of the block
-    var category: Block.Category { get }
-    
-    // Indicates if that block is reserved for a particular train.
-    // A reserved block does not necessarily have a train in it.
-    var reserved: Reservation? { get }
-
-    // Returns the current train (and its direction of travel) inside this block
-    var train: Block.TrainInstance? { get }
-
-    // Returns true if the train is traveling along the natural direction of the block
-    var trainNaturalDirection: Bool { get }
-    
-    // Returns the list of feedbacks in this block
-    var feedbacks: [Block.BlockFeedback] { get }
-    
-    // Returns the socket from the "previous" side
-    var previous: Socket { get }
-    
-    // Returns the socket from the "next" side
-    var next: Socket { get }
-    
-    // Returns a socket that does not have any side indication,
-    // which can be useful when we want to refer to "any socket
-    // from block" in transitions calculation.
-    var any: Socket { get }
-    
-    // Returns all the sockets
-    var allSockets: [Socket] { get }
-    
-    // Returns the name of the specific socket
-    func socketName(_ socketId: Int) -> String
-}
-
-// Semi-mutable block protocol that allows for only the geometry to be changed
-protocol BlockGeometry: IBlock {
-    // Center of the block
-    var center: CGPoint { get set }
-        
-    // Rotation angle of the block, in radian.
-    var rotationAngle: CGFloat { get set }
-}
-
-// This is the concrete (and mutable) implementation of a block
-final class Block: Element, BlockGeometry, ObservableObject {
+final class Block: Element, ObservableObject {
     
     // Defines the train in the block, which is the train
     // itself and its direction of travel within the block
@@ -136,21 +74,36 @@ final class Block: Element, BlockGeometry, ObservableObject {
         case next
     }
 
+    // The unique identifier of the block
     let id: Identifier<Block>
 
+    // True if the block is enabled and ready to participate
+    // in the routing. False to have the block ignored
+    // by any routing, which is useful when a block is occupied
+    // or in need of repair and we don't want to have a train
+    // stopping or running through it.
     var enabled = true
     
-    var name: String
+    // The name of the block
+    @Published var name: String
     
+    // The category of the block
     @Published var category: Category
     
+    // Center of the block
     var center: CGPoint = .zero
+    
+    // Rotation angle of the block, in radian.
     var rotationAngle: CGFloat = 0
 
+    // Indicates if that block is reserved for a particular train.
+    // A reserved block does not necessarily have a train in it.
     @Published var reserved: Reservation?
     
+    // Returns the current train (and its direction of travel) inside this block
     @Published var train: TrainInstance?
     
+    // Returns true if the train is traveling along the natural direction of the block
     var trainNaturalDirection: Bool {
         guard let train = train else {
             preconditionFailure("It is an error to ask for the natural direction of the train in block \(id) because it does not contain the train instance")
@@ -164,6 +117,7 @@ final class Block: Element, BlockGeometry, ObservableObject {
         var feedbackId: Identifier<Feedback>
     }
     
+    // Returns the list of feedbacks in this block
     @Published var feedbacks = [BlockFeedback]()
                 
     // Returns the integer that indicates the "previous" socket
@@ -176,18 +130,24 @@ final class Block: Element, BlockGeometry, ObservableObject {
         return 1
     }
     
+    // Returns the socket from the "previous" side
     var previous: Socket {
         return Socket.block(id, socketId: Block.previousSocket)
     }
 
+    // Returns the socket from the "next" side
     var next: Socket {
         return Socket.block(id, socketId: Block.nextSocket)
     }
     
+    // Returns a socket that does not have any side indication,
+    // which can be useful when we want to refer to "any socket
+    // from block" in transitions calculation.
     var any: Socket {
         return Socket.block(id)
     }
     
+    // Returns all the sockets
     var allSockets: [Socket] {
         switch(category) {
         case .station, .free:
@@ -199,6 +159,7 @@ final class Block: Element, BlockGeometry, ObservableObject {
         }
     }
     
+    // Returns the name of the specific socket
     func socketName(_ socketId: Int) -> String {
         switch(socketId) {
         case 0:

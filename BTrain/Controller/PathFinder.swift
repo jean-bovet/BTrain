@@ -59,7 +59,7 @@ final class PathFinder {
         let trainId: Identifier<Train>
 
         // The destination block or nil if any station block can be chosen
-        let toBlock: IBlock?
+        let toBlock: Block?
         
         // The maximum number of blocks in the path before
         // it overflows and the algorithm ends the analysis.
@@ -78,7 +78,7 @@ final class PathFinder {
         // re-use a block and ends up in an infinite loop.
         var visitedSteps = [Route.Step]()
         
-        init(trainId: Identifier<Train>, toBlock: IBlock?, overflow: Int, settings: Settings) {
+        init(trainId: Identifier<Train>, toBlock: Block?, overflow: Int, settings: Settings) {
             self.trainId = trainId
             self.toBlock = toBlock
             self.overflow = overflow
@@ -110,7 +110,7 @@ final class PathFinder {
         let context: Context
     }
         
-    func path(trainId: Identifier<Train>, from block: IBlock, toBlock: IBlock? = nil, direction: Direction, settings: Settings, generatedPathCallback: ((Path) -> Void)? = nil) throws -> Path? {
+    func path(trainId: Identifier<Train>, from block: Block, toBlock: Block? = nil, direction: Direction, settings: Settings, generatedPathCallback: ((Path) -> Void)? = nil) throws -> Path? {
         let numberOfPaths: Int
         if toBlock != nil && settings.random {
             // If a destination block is specified and the path is choosen at random,
@@ -125,7 +125,7 @@ final class PathFinder {
         // we will generate a few paths and pick the shortest one (depending on the `numberOfPaths`).
         var smallestPath: Path?
         for _ in 1...numberOfPaths {
-            let context = Context(trainId: trainId, toBlock: toBlock, overflow: layout.blocks.count*2, settings: settings)
+            let context = Context(trainId: trainId, toBlock: toBlock, overflow: layout.blockMap.count*2, settings: settings)
             context.steps.append(Route.Step(block.id, direction))
             
             if try findPath(from: block, direction: direction, context: context) {
@@ -143,7 +143,7 @@ final class PathFinder {
     
     // MARK: -- Recursive functions
     
-    private func findPath(from block: IBlock, direction: Direction, context: Context) throws -> Bool {
+    private func findPath(from block: Block, direction: Direction, context: Context) throws -> Bool {
         guard !context.isOverflowing else {
             throw PathError.overflow
         }

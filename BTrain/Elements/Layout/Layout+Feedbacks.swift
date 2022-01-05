@@ -24,7 +24,7 @@ extension Layout {
     func remove(feedbackID: Identifier<Feedback>) {
         feedbacks.removeAll(where: { $0.id == feedbackID })
         
-        mutableBlocks.forEach { blockEntry in
+        blockMap.forEach { blockEntry in
             blockEntry.value.remove(feedbackId: feedbackID)
         }
     }
