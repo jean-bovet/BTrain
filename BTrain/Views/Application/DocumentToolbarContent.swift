@@ -24,15 +24,6 @@ struct DocumentToolbarContent: ToolbarContent {
         }
         
         ToolbarItemGroup {
-            Menu("View") {
-                CommandSelectedView(viewType: .switchboard, label: "Switchboard")
-                CommandSelectedView(viewType: .routes, label: "Routes")
-                CommandSelectedView(viewType: .locomotives, label: "Trains")
-                CommandSelectedView(viewType: .blocks, label: "Blocks")
-                CommandSelectedView(viewType: .turnouts, label: "Turnouts")
-                CommandSelectedView(viewType: .feedback, label: "Feedback")
-            }
-                        
             Menu("Tools") {
                 Button("Validate Layout") {
                     document.diagnostics.toggle()
@@ -47,7 +38,7 @@ struct DocumentToolbarContent: ToolbarContent {
                 ToolDebugCommandsView(document: document)
             }
 
-            if let switchboard = document.switchboard {
+            if let switchboard = document.switchboard, document.selectedView == .switchboard {
                 Menu("Switchboard") {
                     CommandEditSwitchboardView(state: switchboard.state)
 
@@ -56,6 +47,15 @@ struct DocumentToolbarContent: ToolbarContent {
                     CommandShowBlockNameView()
                     CommandShowTurnoutNameView()
                 }.disabled(document.selectedView != .switchboard)
+            }
+            
+            Menu("View") {
+                CommandSelectedView(viewType: .switchboard, label: "Switchboard")
+                CommandSelectedView(viewType: .routes, label: "Routes")
+                CommandSelectedView(viewType: .locomotives, label: "Trains")
+                CommandSelectedView(viewType: .blocks, label: "Blocks")
+                CommandSelectedView(viewType: .turnouts, label: "Turnouts")
+                CommandSelectedView(viewType: .feedback, label: "Feedback")
             }
         }
     }
