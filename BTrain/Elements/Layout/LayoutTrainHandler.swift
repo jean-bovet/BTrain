@@ -321,9 +321,9 @@ final class LayoutTrainHandler: LayoutTrainHandling {
                 }
                 
                 let state = turnout.state(fromSocket: fromSocket, toSocket: toSocket)
-                BTLogger.debug("Change turnout \(turnout) state to \(state). From block \(b1) to \(b2)")
                 turnout.state = state
                 turnout.reserved = train
+                exec.sendTurnoutState(turnout: turnout) { }
             } else if let blockId = transition.b.block {
                 guard let block = layout.mutableBlock(for: blockId) else {
                     throw LayoutError.blockNotFound(blockId: blockId)
