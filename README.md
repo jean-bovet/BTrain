@@ -46,7 +46,7 @@ BTrain uses the following concepts:
 - A portion of the application uses [GzipSwift](https://github.com/1024jp/GzipSwift) © 2014-2020 1024jp
 - Unit tests use [ViewInspector](https://github.com/nalexn/ViewInspector) by Alexey Naumov
     
-**Copyright 2021 Jean Bovet**
+**Copyright 2021-22 Jean Bovet**
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
 to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
