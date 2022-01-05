@@ -18,6 +18,7 @@ struct SettingsView: View {
         case general, advanced
     }
 
+    @AppStorage("automaticRouteRandom") private var automaticRouteRandom = true
     @AppStorage("autoConnectSimulator") private var autoConnectSimulator = false
     @AppStorage("autoEnableSimulator") private var autoEnableSimulator = false
     @AppStorage("debugMode") private var showDebugControls = false
@@ -26,6 +27,8 @@ struct SettingsView: View {
     var body: some View {
         TabView {
             Form {
+                Toggle("Generate Automatic Route at Random", isOn: $automaticRouteRandom)
+
                 Slider(value: $fontSize, in: 9...96) {
                     Text("Font Size (\(fontSize, specifier: "%.0f") pts)")
                 }
@@ -50,7 +53,7 @@ struct SettingsView: View {
             .tag(Tabs.advanced)
         }
         .padding(20)
-        .frame(width: 350, height: 100)
+        .frame(width: 400, height: 120)
     }
 }
 

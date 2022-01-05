@@ -132,6 +132,8 @@ final class LayoutTrainHandler: LayoutTrainHandling {
         
         train.speed = speed
         exec.trainSpeedChanged(train: train)
+        
+        layout.didChange()
     }
     
     func directionDirectionInBlock(_ train: ITrain) throws -> Direction {
@@ -185,8 +187,7 @@ final class LayoutTrainHandler: LayoutTrainHandling {
 
         block.train = Block.TrainInstance(train.id, ti.direction.opposite)
 
-        // TODO: find all these occurrences and remove
-        layout.objectWillChange.send()
+        layout.didChange()
     }
         
     func stopTrain(_ train: ITrain) {
@@ -220,11 +221,7 @@ final class LayoutTrainHandler: LayoutTrainHandling {
             throw LayoutError.blockNotEmpty(blockId: toBlockId)
         }
                 
-        // Programmatically indicate that this object will change,
-        // so the switchboard, for example, re-draws itself. This is
-        // because changing the property on a block or a train, does
-        // not trigger a publisher changes on the switchboard
-        layout.objectWillChange.send()
+        layout.didChange()
         
         switch(position) {
         case .start:
@@ -407,11 +404,7 @@ final class LayoutTrainHandler: LayoutTrainHandling {
             train.blockId = nil
         }
         
-        // Programmatically indicate that this object will change,
-        // so the switchboard, for example, re-draws itself. This is
-        // because changing the property on a block or a train, does
-        // not trigger a publisher changes on the switchboard
-        layout.objectWillChange.send()
+        layout.didChange()
     }
 
 }

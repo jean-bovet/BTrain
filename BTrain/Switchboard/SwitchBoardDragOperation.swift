@@ -195,7 +195,7 @@ final class SwitchBoardDragOperation {
             }
         }
         
-        layout.objectWillChange.send()
+        layout.didChange()
     }
         
     func gridX(_ x: CGFloat) -> CGFloat {
@@ -246,7 +246,7 @@ final class SwitchBoardDragOperation {
         renderer.showAvailableSockets = false
         dragState = .none
         
-        layout.objectWillChange.send()
+        layout.didChange()
     }
         
     private func startDragPlug(_ plugId: Int) {

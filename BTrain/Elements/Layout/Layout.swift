@@ -12,6 +12,7 @@
 
 import Foundation
 import OrderedCollections
+import SwiftUI
 
 // A layout is an object that represents an actual train layout,
 // with blocks, turnouts, feedbacks, trains and transitions
@@ -42,8 +43,7 @@ final class Layout: Element, ObservableObject {
     // using a random path or false if they are
     // created using the first-search approach which
     // always give the same result - useful for unit tests.
-    // TODO: expose that as a settings option
-    var automaticRouteRandom = true
+    @AppStorage("automaticRouteRandom") var automaticRouteRandom = true
     
     var transitions = [Transition]()
     
@@ -73,6 +73,15 @@ final class Layout: Element, ObservableObject {
         self.id = id
     }
 
+    // Programmatically trigger a change event for the layout,
+    // which is used by other object, such as the switchboard,
+    // to re-draw itself. This is necessary because changes
+    // in children parameters of the layout (ie the speed of a train),
+    // is not propagated to the layout object itself.
+    func didChange() {
+        objectWillChange.send()
+    }
+    
     // MARK: Identity
     
     static func newIdentity<T>(_ elements: OrderedDictionary<Identifier<T>, T>) -> Identifier<T> {
