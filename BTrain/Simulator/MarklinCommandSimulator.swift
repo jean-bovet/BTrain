@@ -19,13 +19,13 @@ final class SimulatorTrain: ObservableObject, Element {
     let train: ITrain
     
     @Published var directionForward = true
-    @Published var speed = 0.0
+    @Published var speed: UInt16 = 0
         
     init(train: ITrain) {
         self.id = train.id
         self.train = train
         self.directionForward = train.directionForward
-        self.speed = Double(train.speed)
+        self.speed = train.speed
     }
 }
     
@@ -114,12 +114,17 @@ final class MarklinCommandSimulator: ObservableObject {
             case .emergencyStop(address: _, descriptor: _):
                 break
                 
-            case .speed(address: _, speed: _, descriptor: _):
+            case .speed(address: let address, speed: let speed, descriptor: _):
+                self.speedChanged(address: address, speed: speed)
                 break
-            case .direction(address: _, direction: _, descriptor: _):
+                
+            case .direction(address: let address, direction: let direction, descriptor: _):
+                self.directionChanged(address: address, direction: direction)
                 break
+                
             case .turnout(address: _, state: _, power: _, descriptor: _):
                 break
+                
             case .feedback(deviceID: _, contactID: _, oldValue: _, newValue: _, time: _, descriptor: _):
                 break
                 
@@ -137,6 +142,22 @@ final class MarklinCommandSimulator: ObservableObject {
         }
     }
     
+    func speedChanged(address: CommandLocomotiveAddress, speed: UInt16) {
+        for train in trains {
+            if train.train.address.actualAddress == address.actualAddress {
+                train.speed = speed
+            }
+        }
+    }
+
+    func directionChanged(address: CommandLocomotiveAddress, direction: Command.Direction) {
+        for train in trains {
+            if train.train.address.actualAddress == address.actualAddress {
+                train.directionForward = direction == .forward
+            }
+        }
+    }
+
     func provideLocomotives() {
         guard let file = Bundle.main.url(forResource: "Locomotives", withExtension: "cs2") else {
             BTLogger.error("[Simulator]  Unable to find the Locomotives.cs2 file")
@@ -191,8 +212,8 @@ final class MarklinCommandSimulator: ObservableObject {
         send(message)
     }
     
-    func setTrainSpeed(train: SimulatorTrain, value: Double) {
-        let message = MarklinCANMessageFactory.speed(addr: train.train.address.actualAddress, speed: UInt16(value))
+    func setTrainSpeed(train: SimulatorTrain, value: UInt16) {
+        let message = MarklinCANMessageFactory.speed(addr: train.train.address.actualAddress, speed: value)
         send(message)
     }
     

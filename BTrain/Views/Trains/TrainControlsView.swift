@@ -54,10 +54,7 @@ struct TrainControlsView: View {
                 Slider(value: $train.speedAsDouble, in: 0...100) {
                     
                 } onEditingChanged: { editing in
-                    // Send the speed to the Digital Control System when the editing is done
-                    if !editing {
-                        document.layout.setTrain(train, speed: train.speed)
-                    }
+                    document.layout.setTrain(train, speed: train.speed)
                 }
                 
                 Text("\(Int(train.speed)) km/h")

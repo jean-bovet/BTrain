@@ -25,7 +25,7 @@ struct SimulatorTrainControlView: View {
             }.buttonStyle(.borderless)
             
             Slider(
-                value: $train.speed,
+                value: $train.speedAsDouble,
                 in: 0...100
             ) {
             } onEditingChanged: { editing in
@@ -35,6 +35,21 @@ struct SimulatorTrainControlView: View {
             Text("\(Int(train.speed)) km/h")
         }
     }
+}
+
+extension SimulatorTrain {
+    
+    // Necessary because SwiftUI Slider requires a Double
+    // while speed is UInt16.
+    var speedAsDouble: Double {
+        get {
+            return Double(self.speed)
+        }
+        set {
+            self.speed = UInt16(newValue)
+        }
+    }
+    
 }
 
 struct SimulatorTrainControlView_Previews: PreviewProvider {

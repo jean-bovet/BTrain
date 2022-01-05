@@ -179,8 +179,10 @@ extension LayoutDocument {
                             switch(direction) {
                             case .forward:
                                 train.directionForward = true
+                                try? self.layout.toggleTrainDirection(train)
                             case .backward:
                                 train.directionForward = false
+                                try? self.layout.toggleTrainDirection(train)
                             case .unknown:
                                 BTLogger.error("Unknown direction \(direction) for \(address.toHex())")
                             }
