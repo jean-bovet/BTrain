@@ -151,7 +151,7 @@ protocol CommandInterface {
     func connect(onReady: @escaping () -> Void, onError: @escaping (Error) -> Void, onUpdate: @escaping () -> Void, onStop: @escaping () -> Void)
     func disconnect(_ completion: @escaping () -> Void)
     
-    func execute(command: Command)
+    func execute(command: Command, onCompletion: @escaping () -> Void)
     
     // Note: this command is used internally by the MarklinInterface to query direction automatically after receiving a System Emergency Stop.
     typealias QueryDirectionCommandCompletion = (_ address:UInt32, _ direction:Command.Direction) -> Void

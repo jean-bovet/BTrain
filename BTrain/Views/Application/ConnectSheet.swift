@@ -37,7 +37,9 @@ struct ConnectSheet: View {
             msg = error.localizedDescription
         } else {
             if activateTurnouts {
-                document.applyTurnoutStateToDigitalController()
+                document.enable() {
+                    document.applyTurnoutStateToDigitalController()
+                }
             }
             self.presentationMode.wrappedValue.dismiss()
         }

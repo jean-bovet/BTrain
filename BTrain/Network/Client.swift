@@ -50,8 +50,8 @@ public class Client {
         connection.stop()
     }
     
-    func send(data: Data) {
-        connection.send(data: data)
+    func send(data: Data, onCompletion: @escaping () -> Void) {
+        connection.send(data: data, onCompletion: onCompletion)
     }
         
 }

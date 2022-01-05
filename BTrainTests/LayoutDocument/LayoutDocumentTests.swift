@@ -47,7 +47,7 @@ class LayoutDocumentTests: XCTestCase {
         }
         waitForExpectations(timeout: 0.250, handler: nil)
         
-        doc.enable()
+        doc.enable() {}
         
         let train = layout.trains[0]
         let route = layout.routes[0]
@@ -56,7 +56,7 @@ class LayoutDocumentTests: XCTestCase {
         
         try doc.start(train: train.id, withRoute: route.id, toBlockId: nil)
         try doc.stop(train: train)
-        doc.disable()
+        doc.disable() {}
 
         doc.disconnect()
     }

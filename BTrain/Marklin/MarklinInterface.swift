@@ -107,8 +107,8 @@ final class MarklinInterface {
         client.stop()
     }
     
-    func send(message: MarklinCANMessage) {
-        client.send(data: message.data)
+    func send(message: MarklinCANMessage, onCompletion: @escaping () -> Void) {
+        client.send(data: message.data, onCompletion: onCompletion)
     }
 
 }
@@ -123,18 +123,18 @@ extension MarklinInterface: CommandInterface {
         turnoutChangeCallbacks.append(callback)
     }
     
-    func execute(command: Command) {
-        send(message: MarklinCANMessage.from(command: command))
+    func execute(command: Command, onCompletion: @escaping () -> Void) {
+        send(message: MarklinCANMessage.from(command: command), onCompletion: onCompletion)
     }
     
     func queryDirection(command: Command, completion: @escaping QueryDirectionCommandCompletion) {
         directionCommandCompletionBlocks.append(completion)
-        execute(command: command)
+        execute(command: command) { }
     }
     
     func queryLocomotives(command: Command, completion: @escaping QueryLocomotiveCommandCompletion) {
         locomotivesCommandCompletionBlocks.append(completion)
-        execute(command: command)
+        execute(command: command) { }
     }
 
 }

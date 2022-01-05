@@ -62,7 +62,7 @@ class ClientServerTests: XCTestCase {
         
         let msg = MarklinCANMessage.from(command: cmd)
 
-        client.send(data: msg.data)
+        client.send(data: msg.data) {}
         wait(for: [serverReceivedMessageExpectation], timeout: 1.0)
         
         server.stop()

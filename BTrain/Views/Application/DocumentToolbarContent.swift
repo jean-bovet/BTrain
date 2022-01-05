@@ -86,11 +86,11 @@ struct ConnectCommandsView: View {
         Spacer()
 
         Button("Enable") {
-            document.enable()
+            document.enable() {}
         }.disabled(!document.connected)
 
         Button("Disable") {
-            document.disable()
+            document.disable() {}
         }.disabled(!document.connected)
     }
 }

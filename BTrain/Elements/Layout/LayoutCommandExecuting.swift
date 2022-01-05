@@ -24,12 +24,12 @@ extension Layout: LayoutCommandExecuting {
         }
         
         let commands = turnout.stateCommands(power: 0x1)
-        commands.forEach { interface.execute(command: $0 )}
+        commands.forEach { interface.execute(command: $0) {} }
 
         // Turn-off the turnout power after 250ms (activation time)
         let idleCommands = turnout.stateCommands(power: 0x0)
         Timer.scheduledTimer(withTimeInterval: 0.250, repeats: false) { timer in
-            idleCommands.forEach { interface.execute(command: $0 )}
+            idleCommands.forEach { interface.execute(command: $0) {}}
         }
     }
 
@@ -41,12 +41,12 @@ extension Layout: LayoutCommandExecuting {
         } else {
             command = .direction(address: train.address, direction: .backward)
         }
-        interface?.execute(command: command)
+        interface?.execute(command: command) {}
     }
     
     func trainSpeedChanged(train: Train) {
         BTLogger.debug("Train \(train.name) changed speed to \(train.speed)", self, train)
-        interface?.execute(command: .speed(address: train.address, speed: train.speed))
+        interface?.execute(command: .speed(address: train.address, speed: train.speed)) {}
     }
 }
 

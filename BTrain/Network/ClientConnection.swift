@@ -83,7 +83,7 @@ class ClientConnection {
         
     private var dataQueue = ScheduledMessageQueue()
     
-    func send(data: Data) {
+    func send(data: Data, onCompletion: @escaping () -> Void) {
         dataQueue.schedule { completion in
             self.nwConnection.send(content: data, completion: .contentProcessed( { error in
                 let msg = MarklinCANMessage.decode(from: [UInt8](data))
@@ -96,6 +96,7 @@ class ClientConnection {
                     }
 
                     completion()
+                    onCompletion()
                 }
             }))
         }

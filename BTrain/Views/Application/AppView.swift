@@ -75,7 +75,7 @@ struct AppView: View {
             if UserDefaults.standard.bool(forKey: "autoConnectSimulator") {
                 document.connectToSimulator() { error in
                     if UserDefaults.standard.bool(forKey: "autoEnableSimulator") {
-                        document.enable()
+                        document.enable() {}
                     }
                 }
             }

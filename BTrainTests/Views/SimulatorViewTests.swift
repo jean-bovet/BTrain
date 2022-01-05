@@ -89,7 +89,7 @@ class SimulatorViewTests: RootViewTests {
         }
         waitForExpectations(timeout: 1.0, handler: nil)
         
-        doc.enable()
+        doc.enable() {}
         
         wait(for: {
             doc.simulator.enabled

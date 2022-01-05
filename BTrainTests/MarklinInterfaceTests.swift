@@ -57,7 +57,7 @@ class MarklinInterfaceTests: XCTestCase {
             }
         }
 
-        mi.execute(command: .go())
+        mi.execute(command: .go()) {}
         
         wait(for: [enabledExpectation], timeout: 0.250)
         

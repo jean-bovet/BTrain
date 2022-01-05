@@ -135,12 +135,12 @@ extension LayoutDocument: ReferenceFileDocument {
 
 extension LayoutDocument {
     
-    func enable() {
-        interface?.execute(command: .go())
+    func enable(onCompletion: @escaping () -> Void) {
+        interface?.execute(command: .go(), onCompletion: onCompletion)
     }
     
-    func disable() {
-        interface?.execute(command: .stop())
+    func disable(onCompletion: @escaping () -> Void) {
+        interface?.execute(command: .stop(), onCompletion: onCompletion)
     }
     
     func start(train: Identifier<Train>, withRoute route: Identifier<Route>, toBlockId: Identifier<Block>?) throws {
