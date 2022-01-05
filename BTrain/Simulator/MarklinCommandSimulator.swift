@@ -14,21 +14,6 @@ import Foundation
 import Gzip
 import Combine
 
-final class SimulatorTrain: ObservableObject, Element {
-    let id: Identifier<Train>
-    let train: ITrain
-    
-    @Published var directionForward = true
-    @Published var speed: UInt16 = 0
-        
-    init(train: ITrain) {
-        self.id = train.id
-        self.train = train
-        self.directionForward = train.directionForward
-        self.speed = train.speed
-    }
-}
-    
 final class MarklinCommandSimulator: ObservableObject {
     
     let layout: Layout
@@ -95,6 +80,7 @@ final class MarklinCommandSimulator: ObservableObject {
     func stop() {
         server?.stop()
         started = false
+        enabled = false
     }
     
     func register(with connection: ServerConnection) {

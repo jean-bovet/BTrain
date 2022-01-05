@@ -20,7 +20,9 @@ struct OverviewView: View {
         HStack(spacing: 0) {
             VStack {
                 TrainListView(layout: document.layout, document: document)
-                SimulatorView(simulator: document.simulator)
+                if document.simulator.started {
+                    SimulatorView(simulator: document.simulator)
+                }
             }
             .frame(width: 500)
 

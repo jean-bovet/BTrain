@@ -106,6 +106,7 @@
 		A7710E75277A7AAC00C08150 /* Layout2Swift.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7710E74277A7AAC00C08150 /* Layout2Swift.swift */; };
 		A77A96DC27274A17009E7ECB /* MarklinCANMessagePrinter.swift in Sources */ = {isa = PBXBuildFile; fileRef = A77A96DB27274A17009E7ECB /* MarklinCANMessagePrinter.swift */; };
 		A77A96DE2727767C009E7ECB /* ConnectSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A77A96DD2727767C009E7ECB /* ConnectSheet.swift */; };
+		A783EA5B278530BF00E69B6D /* SimulatorTrain.swift in Sources */ = {isa = PBXBuildFile; fileRef = A783EA5A278530BF00E69B6D /* SimulatorTrain.swift */; };
 		A784136B273CA4DE00381341 /* SwitchBoardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A784136A273CA4DE00381341 /* SwitchBoardView.swift */; };
 		A784136D273CDFF100381341 /* Shape.swift in Sources */ = {isa = PBXBuildFile; fileRef = A784136C273CDFF100381341 /* Shape.swift */; };
 		A784136F273CE00C00381341 /* BlockShape.swift in Sources */ = {isa = PBXBuildFile; fileRef = A784136E273CE00C00381341 /* BlockShape.swift */; };
@@ -306,6 +307,7 @@
 		A7710E74277A7AAC00C08150 /* Layout2Swift.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Layout2Swift.swift; sourceTree = "<group>"; };
 		A77A96DB27274A17009E7ECB /* MarklinCANMessagePrinter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarklinCANMessagePrinter.swift; sourceTree = "<group>"; };
 		A77A96DD2727767C009E7ECB /* ConnectSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectSheet.swift; sourceTree = "<group>"; };
+		A783EA5A278530BF00E69B6D /* SimulatorTrain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimulatorTrain.swift; sourceTree = "<group>"; };
 		A7841368273B55FF00381341 /* View+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+Extension.swift"; sourceTree = "<group>"; };
 		A784136A273CA4DE00381341 /* SwitchBoardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwitchBoardView.swift; sourceTree = "<group>"; };
 		A784136C273CDFF100381341 /* Shape.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Shape.swift; sourceTree = "<group>"; };
@@ -835,6 +837,7 @@
 				A7841389274165FB00381341 /* MarklinCommandSimulator.swift */,
 				A792DEF527839F55004B0439 /* SimulatorView.swift */,
 				A792DEF72783A09C004B0439 /* SimulatorTrainControlView.swift */,
+				A783EA5A278530BF00E69B6D /* SimulatorTrain.swift */,
 			);
 			path = Simulator;
 			sourceTree = "<group>";
@@ -1072,6 +1075,7 @@
 				A7710E6327799C9F00C08150 /* Layout+Blocks.swift in Sources */,
 				A7710E6527799CF800C08150 /* Layout+Routes.swift in Sources */,
 				A7710E6927799DA000C08150 /* Layout+Transitions.swift in Sources */,
+				A783EA5B278530BF00E69B6D /* SimulatorTrain.swift in Sources */,
 				A7841374273DCBA000381341 /* SwitchBoard.swift in Sources */,
 				A784137C273F4D7400381341 /* PluggableShape.swift in Sources */,
 				A74CCC68272A59F0004E58F5 /* Layout.swift in Sources */,
