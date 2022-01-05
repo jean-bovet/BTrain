@@ -161,8 +161,8 @@ class LayoutATests: RootLayoutTests {
 
         XCTAssertNoThrow(try layout.reserve(train: train.id, fromBlock: b2.id, toBlock: b3.id, direction: .next))
         
-        layout.setTrain(train, routeIndex: 1)
-        layout.setTrain(train, toPosition: 1)
+        try layout.setTrain(train, routeIndex: 1)
+        try layout.setTrain(train, toPosition: 1)
 
         assert("r1: {b1 ≏ ≏ } <t0> [r1[b2 ≏ 🛑🚂1 ≏ ]] <r1<t1,l>> [r1[b3 ≏ ≏ ]] <t0(2,0)> !{b1 ≏ ≏ }")
         

@@ -35,8 +35,13 @@ final class TrainController {
             return try tryRun()
         } catch {
             // Stop the train in case there is a problem processing the layout
-            BTLogger.debug("Stop train \(train) because there is an error processing the layout: \(error)", layout, train)
-            layout.stopTrain(train)
+            BTLogger.error("Stop train \(train) because there is an error processing the layout: \(error)")
+            do {
+                try layout.stopTrain(train)
+            } catch {
+                BTLogger.error("Unable to stop train \(train) because \(error.localizedDescription)")
+            }
+            
             return .processed
         }
     }
@@ -44,12 +49,12 @@ final class TrainController {
     func tryRun() throws -> Result {
         guard let route = layout.route(for: train.routeId, trainId: train.id) else {
             // Stop the train if there is no route associated with it
-            return stop()
+            return try stop()
         }
 
         guard route.enabled else {
             // Stop the train if the route is disabled
-            return stop()
+            return try stop()
         }
 
         // Note: because each function below has a side effect that can affect
@@ -61,7 +66,7 @@ final class TrainController {
             result = .processed
         }
 
-        if handleTrainMove() == .processed {
+        if try handleTrainMove() == .processed {
             result = .processed
         }
         
@@ -69,7 +74,7 @@ final class TrainController {
             result = .processed
         }
         
-        if handleTrainStop() == .processed {
+        if try handleTrainStop() == .processed {
             result = .processed
         }
 
@@ -77,7 +82,7 @@ final class TrainController {
             result = .processed
         }
         
-        if handleTrainStop() == .processed {
+        if try handleTrainStop() == .processed {
             result = .processed
         }
 
@@ -101,7 +106,7 @@ final class TrainController {
                 try layout.reserve(train: train.id, fromBlock: currentBlock.id, toBlock: nextBlock.id, direction: currentBlock.train!.direction)
                 BTLogger.debug("Start train \(train) because the next block \(nextBlock) is free or reserved for this train", layout, train)
                 startBlock = currentBlock
-                layout.setTrain(train, speed: LayoutFactory.Speed)
+                try layout.setTrain(train, speed: LayoutFactory.Speed)
                 return .processed
             } catch {
                 BTLogger.debug("Cannot start train \(train) because \(error)", layout, train)
@@ -153,7 +158,7 @@ final class TrainController {
         return .processed
     }
     
-    func handleTrainStop() -> Result {
+    func handleTrainStop() throws -> Result {
         guard train.speed > 0 else {
             return .none
         }
@@ -168,7 +173,7 @@ final class TrainController {
             // Stop the train if there is no next block
             if atEndOfBlock {
                 BTLogger.debug("Stop train \(train) because there is no next block (after \(currentBlock))", layout, train)
-                return stop()
+                return try stop()
             } else {
                 return .none
             }
@@ -180,13 +185,13 @@ final class TrainController {
         // started - to avoid stopping a train that is starting from a station block (while still in that block).
         if currentBlock.category == .station && atEndOfBlock && currentBlock.id != startBlock?.id {
             BTLogger.debug("Stop train \(train) because the current block \(currentBlock) is a station", layout, train)
-            return stop()
+            return try stop()
         }
 
         // Stop if the next block is occupied
         if nextBlock.train != nil && atEndOfBlock {
             BTLogger.debug("Stop train \(train) train because the next block is occupied", layout, train)
-            return stop()
+            return try stop()
         }
 
         // Stop if the next block is reserved for another train
@@ -194,30 +199,30 @@ final class TrainController {
         // the current block in the "next" direction but traveling inside the next block with the "previous" direction.
         if let reserved = nextBlock.reserved, reserved != currentBlock.reserved && atEndOfBlock {
             BTLogger.debug("Stop train \(train) because the next block is reserved for another train \(reserved)", layout, train)
-            return stop()
+            return try stop()
         }
         
         // Stop if the next block is not reserved
         if nextBlock.reserved == nil && atEndOfBlock {
             BTLogger.debug("Stop train \(train) because the next block is not reserved", layout, train)
-            return stop()
+            return try stop()
         }
 
         // Stop if the next block is disabled
         if !nextBlock.enabled && atEndOfBlock {
             BTLogger.debug("Stop train \(train) because the next block is disabled", layout, train)
-            return stop()
+            return try stop()
         }
 
         if currentBlock.reserved == nil {
             BTLogger.debug("Stop train \(train) because the current block is not reserved", layout, train)
-            return stop()
+            return try stop()
         }
         
         return .none
     }
     
-    func handleTrainMove() -> Result {
+    func handleTrainMove() throws -> Result {
         guard train.speed > 0 else {
             return .none
         }
@@ -244,7 +249,7 @@ final class TrainController {
                 if index == train.position - 1 {
                     // this is the feedback in front of the train, it means
                     // the train has moved past this feedback
-                    layout.setTrain(train, toPosition: train.position - 1)
+                    try layout.setTrain(train, toPosition: train.position - 1)
                     BTLogger.debug("Train moved to position \(train.position), direction \(trainInstance.direction)", layout, train)
                     result = .processed
                 }
@@ -252,7 +257,7 @@ final class TrainController {
                 if index == train.position {
                     // this is the feedback in front of the train, it means
                     // the train has moved past this feedback
-                    layout.setTrain(train, toPosition: train.position + 1)
+                    try layout.setTrain(train, toPosition: train.position + 1)
                     BTLogger.debug("Train moved to position \(train.position), direction \(trainInstance.direction)", layout, train)
                     result = .processed
                 }
@@ -306,7 +311,7 @@ final class TrainController {
         // Asks the layout to move the train to the next block
         try layout.setTrain(train.id, toBlock: nextBlock.id, position: .custom(value: position), direction: direction)
         
-        layout.setTrain(train, routeIndex: train.routeIndex + 1)
+        try layout.setTrain(train, routeIndex: train.routeIndex + 1)
                 
         // Reserve the block ahead if possible
         _ = tryReserveNextBlocks(direction: direction)
@@ -341,14 +346,14 @@ final class TrainController {
         return .processed
     }
     
-    func stop() -> Result {
+    func stop() throws -> Result {
         guard train.speed > 0 else {
             return .none
         }
         
         BTLogger.debug("Stop train \(train)", layout, train)
         
-        layout.stopTrain(train)
+        try layout.stopTrain(train)
         
         return .processed
     }

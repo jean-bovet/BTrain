@@ -19,9 +19,9 @@ enum Position {
 }
 
 protocol LayoutTrainHandling {
-    func setTrain(_ train: ITrain, toPosition position: Int)
-    func setTrain(_ train: ITrain, speed: UInt16)
-    func setTrain(_ train: ITrain, routeIndex: Int)
+    func setTrain(_ train: ITrain, toPosition position: Int) throws
+    func setTrain(_ train: ITrain, speed: UInt16) throws
+    func setTrain(_ train: ITrain, routeIndex: Int) throws
     
     // Returns the direction of the train within the block (not the train direction itself
     // but the direction of the train relative the natural direction of the block)
@@ -34,7 +34,7 @@ protocol LayoutTrainHandling {
     // within the block it might find itself)
     func setTrain(_ train: ITrain, direction: Direction) throws
 
-    func stopTrain(_ train: ITrain)
+    func stopTrain(_ train: ITrain) throws
     
     func setTrain(_ trainId: Identifier<Train>, toBlock toBlockId: Identifier<Block>, position: Position, direction: Direction?) throws
 
@@ -52,16 +52,16 @@ protocol LayoutTrainHandling {
 
 extension Layout: LayoutTrainHandling {
     
-    func setTrain(_ train: ITrain, toPosition position: Int) {
-        trainHandling.setTrain(train, toPosition: position)
+    func setTrain(_ train: ITrain, toPosition position: Int) throws {
+        try trainHandling.setTrain(train, toPosition: position)
     }
     
-    func setTrain(_ train: ITrain, speed: UInt16) {
-        trainHandling.setTrain(train, speed: speed)
+    func setTrain(_ train: ITrain, speed: UInt16) throws {
+        try trainHandling.setTrain(train, speed: speed)
     }
 
-    func setTrain(_ train: ITrain, routeIndex: Int) {
-        trainHandling.setTrain(train, routeIndex: routeIndex)
+    func setTrain(_ train: ITrain, routeIndex: Int) throws {
+        try trainHandling.setTrain(train, routeIndex: routeIndex)
     }
 
     func directionDirectionInBlock(_ train: ITrain) throws -> Direction {
@@ -76,8 +76,8 @@ extension Layout: LayoutTrainHandling {
         try trainHandling.setTrain(train, direction: direction)
     }
 
-    func stopTrain(_ train: ITrain) {
-        trainHandling.stopTrain(train)
+    func stopTrain(_ train: ITrain) throws {
+        try trainHandling.stopTrain(train)
     }
     
     func setTrain(_ trainId: Identifier<Train>, toBlock toBlockId: Identifier<Block>, position: Position = .start, direction: Direction?) throws {
@@ -118,16 +118,16 @@ final class LayoutTrainHandler: LayoutTrainHandling {
         self.exec = exec
     }
     
-    func setTrain(_ train: ITrain, toPosition position: Int) {
+    func setTrain(_ train: ITrain, toPosition position: Int) throws {
         guard let train = layout.mutableTrain(for: train.id) else {
-            return
+            throw LayoutError.trainNotFound(trainId: train.id)
         }
         train.position = position
     }
     
-    func setTrain(_ train: ITrain, speed: UInt16) {
+    func setTrain(_ train: ITrain, speed: UInt16) throws {
         guard let train = layout.mutableTrain(for: train.id) else {
-            return
+            throw LayoutError.trainNotFound(trainId: train.id)
         }
         
         train.speed = speed
@@ -190,19 +190,17 @@ final class LayoutTrainHandler: LayoutTrainHandling {
         layout.didChange()
     }
         
-    func stopTrain(_ train: ITrain) {
+    func stopTrain(_ train: ITrain) throws {
         guard let train = layout.mutableTrain(for: train.id) else {
-            // TODO:             throw LayoutError.trainNotFound(trainId: train.id)
-            return
+            throw LayoutError.trainNotFound(trainId: train.id)
         }
         train.speed = 0
         exec.trainSpeedChanged(train: train)
     }
 
-    func setTrain(_ train: ITrain, routeIndex: Int) {
+    func setTrain(_ train: ITrain, routeIndex: Int) throws {
         guard let train = layout.mutableTrain(for: train.id) else {
-            // TODO:             throw LayoutError.trainNotFound(trainId: train.id)
-            return
+            throw LayoutError.trainNotFound(trainId: train.id)
         }
         train.routeIndex = routeIndex
     }

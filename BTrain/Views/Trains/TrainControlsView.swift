@@ -30,6 +30,15 @@ struct TrainControlsView: View {
         }        
     }
     
+    func trainSpeedChanged() {
+        do {
+            try document.layout.setTrain(train, speed: train.speed)
+            errorStatus = nil
+        } catch {
+            errorStatus = error.localizedDescription
+        }
+    }
+    
     var body: some View {
         VStack {
             HStack {
@@ -46,7 +55,7 @@ struct TrainControlsView: View {
                 Slider(value: $train.speedAsDouble, in: 0...100) {
                     
                 } onEditingChanged: { editing in
-                    document.layout.setTrain(train, speed: train.speed)
+                    trainSpeedChanged()
                 }
                 
                 Text("\(Int(train.speed)) km/h")
