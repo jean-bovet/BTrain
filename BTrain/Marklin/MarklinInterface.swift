@@ -20,19 +20,15 @@ final class MarklinInterface {
     
     var feedbacks = Set<CommandFeedback>()
     
-    // TODO: use direct callback like `directionChangeCallbacks`
-    var speedChanges = Set<CommandSpeed>()
-
+    var speedChangeCallbacks = [SpeedChangeCallback]()
     var directionChangeCallbacks = [DirectionChangeCallback]()
-
     var turnoutChangeCallbacks = [TurnoutChangeCallback]()
-
-    typealias CompletionBlock = () -> Void
     
     var locomotivesCommandCompletionBlocks = [QueryLocomotiveCommandCompletion]()
     
     var directionCommandCompletionBlocks = [QueryDirectionCommandCompletion]()
-    
+
+    typealias CompletionBlock = () -> Void
     private var disconnectCompletionBlocks: CompletionBlock?
     
     init(server: String, port: UInt16) {
@@ -78,10 +74,7 @@ final class MarklinInterface {
                     }
                 }
                 if case .speed(address: let address, speed: let speed, descriptor: _) = cmd {
-                    // Receiving a speed change for the specified locomotive address (the protocol is ignored)
-                    // TODO: have a background thread for any changes to the layout and layout processing?
-                    self.speedChanges.update(with: .init(address: address, speed: speed))
-                    onUpdate()
+                    self.speedChangeCallbacks.forEach { $0(address, speed) }
                 }
                 if case .emergencyStop(address: let address, descriptor: _) = cmd {
                     // Execute a command to query the direction of the locomotive at this particular address
@@ -115,16 +108,20 @@ final class MarklinInterface {
 
 extension MarklinInterface: CommandInterface {    
         
+    func execute(command: Command, onCompletion: @escaping () -> Void) {
+        send(message: MarklinCANMessage.from(command: command), onCompletion: onCompletion)
+    }
+    
+    func register(forSpeedChange callback: @escaping SpeedChangeCallback) {
+        speedChangeCallbacks.append(callback)
+    }
+    
     func register(forDirectionChange callback: @escaping DirectionChangeCallback) {
         directionChangeCallbacks.append(callback)
     }
     
     func register(forTurnoutChange callback: @escaping TurnoutChangeCallback) {
         turnoutChangeCallbacks.append(callback)
-    }
-    
-    func execute(command: Command, onCompletion: @escaping () -> Void) {
-        send(message: MarklinCANMessage.from(command: command), onCompletion: onCompletion)
     }
     
     func queryDirection(command: Command, completion: @escaping QueryDirectionCommandCompletion) {

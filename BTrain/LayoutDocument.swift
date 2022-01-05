@@ -167,6 +167,7 @@ extension LayoutDocument {
         mi.connect {
             DispatchQueue.main.async {
                 self.interface = mi
+                self.registerForSpeedChange()
                 self.registerForDirectionChange()
                 self.registerForTurnoutChange()
                 completed?(nil)
@@ -179,7 +180,6 @@ extension LayoutDocument {
         } onUpdate: {
             DispatchQueue.main.async {
                 self.interfaceFeedbackChanged()
-                self.interfaceSpeedChanged()
             }
         } onStop: {
             // No-op
@@ -193,10 +193,27 @@ extension LayoutDocument {
     }
     
     func applyTurnoutStateToDigitalController() {
-        // TODO: make sure to enable the command first
         for t in layout.turnouts {
             layout.turnoutStateChanged(turnout: t)
         }
+    }
+    
+    func registerForSpeedChange() {
+        guard let interface = interface else {
+            return
+        }
+        
+        guard let coordinator = coordinator else {
+            return
+        }
+        
+        interface.register(forSpeedChange: { address, speed in
+            DispatchQueue.main.async {
+                if let train = coordinator.layout.trains.find(address: address.address) {
+                    train.speed = speed
+                }
+            }
+        })
     }
     
     func registerForDirectionChange() {
@@ -204,9 +221,13 @@ extension LayoutDocument {
             return
         }
 
+        guard let coordinator = coordinator else {
+            return
+        }
+
         interface.register(forDirectionChange: { address, direction in
             DispatchQueue.main.async {
-                if let train = self.coordinator?.layout.trains.find(address: address) {
+                if let train = coordinator.layout.trains.find(address: address) {
                     switch(direction) {
                     case .forward:
                         if train.directionForward == false {
@@ -233,8 +254,12 @@ extension LayoutDocument {
             return
         }
         
+        guard let coordinator = coordinator else {
+            return
+        }
+
         interface.register { address, state, power in
-            if let turnout = self.coordinator?.layout.turnouts.find(address: address) {
+            if let turnout = coordinator.layout.turnouts.find(address: address) {
                 BTLogger.debug("Turnout \(turnout.name) changed to \(state)")
                 turnout.stateValue = state
                 self.layout.didChange()
@@ -256,16 +281,4 @@ extension LayoutDocument {
         }
     }
             
-    // A speed change event has been received from the Digital Control System
-    func interfaceSpeedChanged() {
-        guard let interface = interface else {
-            return
-        }
-        for cmdSpeed in interface.speedChanges {
-            if let train = coordinator?.layout.trains.find(address: cmdSpeed.address.address) {
-                train.speed = cmdSpeed.speed
-            }
-        }
-    }
-
 }

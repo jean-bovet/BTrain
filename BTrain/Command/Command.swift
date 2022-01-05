@@ -122,37 +122,24 @@ struct CommandFeedback: Hashable {
     }
 }
 
-// This structure is used to keep track of the locomotive speed changes coming from the Digital Control System,
-// for example when the user manually changes the speed on the Central Station.
-struct CommandSpeed: Hashable {
-    let address: CommandLocomotiveAddress
-    let speed: UInt16
-    
-    static func == (lhs: CommandSpeed, rhs: CommandSpeed) -> Bool {
-        return lhs.address == rhs.address
-    }
-
-    func hash(into hasher: inout Hasher) {
-        hasher.combine(address)
-    }
-}
-
 protocol CommandInterface {
     
     var feedbacks: Set<CommandFeedback> { get }
-    var speedChanges: Set<CommandSpeed> { get }
     
+    func connect(onReady: @escaping () -> Void, onError: @escaping (Error) -> Void, onUpdate: @escaping () -> Void, onStop: @escaping () -> Void)
+    func disconnect(_ completion: @escaping () -> Void)
+    
+    func execute(command: Command, onCompletion: @escaping () -> Void)
+
+    typealias SpeedChangeCallback = (_ address: CommandLocomotiveAddress, _ speed: UInt16) -> Void
+    func register(forSpeedChange: @escaping SpeedChangeCallback)
+
     typealias DirectionChangeCallback = (_ address: UInt32, _ direction: Command.Direction) -> Void
     func register(forDirectionChange: @escaping DirectionChangeCallback)
 
     typealias TurnoutChangeCallback = (_ address: CommandTurnoutAddress, _ state: UInt8, _ power: UInt8) -> Void
     func register(forTurnoutChange: @escaping TurnoutChangeCallback)
 
-    func connect(onReady: @escaping () -> Void, onError: @escaping (Error) -> Void, onUpdate: @escaping () -> Void, onStop: @escaping () -> Void)
-    func disconnect(_ completion: @escaping () -> Void)
-    
-    func execute(command: Command, onCompletion: @escaping () -> Void)
-    
     // Note: this command is used internally by the MarklinInterface to query direction automatically after receiving a System Emergency Stop.
     typealias QueryDirectionCommandCompletion = (_ address:UInt32, _ direction:Command.Direction) -> Void
     func queryDirection(command: Command, completion: @escaping QueryDirectionCommandCompletion)
