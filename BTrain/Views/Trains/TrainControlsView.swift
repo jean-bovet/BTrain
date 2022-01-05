@@ -21,16 +21,9 @@ struct TrainControlsView: View {
     @State private var errorStatus: String?
 
     func trainDirectionToggle() {
-        let command: Command
-        if train.directionForward {
-            command = .direction(address: train.address, direction: .forward)
-        } else {
-            command = .direction(address: train.address, direction: .backward)
-        }
-        document.interface!.execute(command: command)
-        
         do {
-            try document.layout.toggleTrainDirection(train)
+            try document.layout.setTrain(train, direction: train.directionForward ? .previous : .next)
+            try document.layout.toggleTrainDirectionInBlock(train)
             errorStatus = nil
         } catch {
             errorStatus = error.localizedDescription
@@ -41,7 +34,6 @@ struct TrainControlsView: View {
         VStack {
             HStack {
                 Button {
-                    train.directionForward.toggle()
                     trainDirectionToggle()
                 } label: {
                     if train.directionForward {

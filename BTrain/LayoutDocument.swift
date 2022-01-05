@@ -178,11 +178,15 @@ extension LayoutDocument {
                         if let train = self.coordinator?.layout.mutableTrains.find(address: address) {
                             switch(direction) {
                             case .forward:
-                                train.directionForward = true
-                                try? self.layout.toggleTrainDirection(train)
+                                if train.directionForward == false {
+                                    train.directionForward = true
+                                    try? self.layout.toggleTrainDirectionInBlock(train)
+                                }
                             case .backward:
-                                train.directionForward = false
-                                try? self.layout.toggleTrainDirection(train)
+                                if train.directionForward {
+                                    train.directionForward = false
+                                    try? self.layout.toggleTrainDirectionInBlock(train)
+                                }
                             case .unknown:
                                 BTLogger.error("Unknown direction \(direction) for \(address.toHex())")
                             }

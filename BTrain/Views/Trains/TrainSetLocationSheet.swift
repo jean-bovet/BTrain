@@ -59,7 +59,7 @@ struct TrainSetLocationSheet: View {
                 .labelsHidden()
                 .onAppear {
                     do {
-                        direction = try layout.direction(ofTrain: train)
+                        direction = try layout.directionDirectionInBlock(train)
                     } catch {
                         BTLogger.error("Unable to retrieve the direction of the train: \(error.localizedDescription)")
                     }
@@ -79,9 +79,8 @@ struct TrainSetLocationSheet: View {
                 Button("OK") {
                     do {
                         if let selectedBlock = blockId {
-                            try layout.setTrain(train.id, toBlock: selectedBlock, position: .end, direction: nil)
+                            try layout.setTrain(train.id, toBlock: selectedBlock, position: .end, direction: direction)
                         }
-                        try layout.setTrain(train, direction: direction)
                         errorStatus = nil
                         self.presentationMode.wrappedValue.dismiss()
                     } catch {

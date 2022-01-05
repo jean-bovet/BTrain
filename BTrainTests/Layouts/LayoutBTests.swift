@@ -20,6 +20,35 @@ class LayoutBTests: RootLayoutTests {
         return LayoutBCreator.id
     }
 
+    func testTrainDirection() throws {
+        let train1 = layout.trains[0]
+        let block1 = layout.mutableBlockArray[0]
+        
+        XCTAssertEqual(train1.directionForward, true)
+
+        // Set the train direction
+        try layout.setTrain(train1, direction: .previous)
+        XCTAssertEqual(train1.directionForward, false)
+
+        // Set the train inside a block with a specific direction which
+        // is opposite of the train direction itself
+        try layout.setTrain(train1.id, toBlock: block1.id, direction: .next)
+        XCTAssertEqual(block1.train!.direction, .next)
+        XCTAssertEqual(train1.directionForward, false)
+
+        // Change the train direction - which should not affect the direction
+        // of the train within the block (we need to explicitly call the toggle
+        // method for this to happen!)
+        try layout.setTrain(train1, direction: .next)
+        XCTAssertEqual(train1.directionForward, true)
+        XCTAssertEqual(block1.train!.direction, .next)
+        
+        // Now toggle the direction within the block itself
+        try layout.toggleTrainDirectionInBlock(train1)
+        XCTAssertEqual(train1.directionForward, true)
+        XCTAssertEqual(block1.train!.direction, .previous)
+    }
+    
     func testTransitionsAndTurnoutsReservation() throws {
         let train1 = layout.trains[0]
         let train2 = layout.trains[1]
