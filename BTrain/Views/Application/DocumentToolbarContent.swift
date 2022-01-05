@@ -30,11 +30,7 @@ struct DocumentToolbarContent: ToolbarContent {
                 }
 
                 Divider()
-                
-                Button("Download Locomotives 􀈄") {
-                    document.discoverLocomotiveConfirmation.toggle()
-                }
-                
+                                
                 ToolDebugCommandsView(document: document)
             }
 

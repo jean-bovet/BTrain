@@ -16,6 +16,8 @@ struct TrainEditListView: View {
     
     @Environment(\.undoManager) var undoManager
     
+    @ObservedObject var document: LayoutDocument
+
     @ObservedObject var layout: Layout
     
     @State private var selection: Identifier<Train>? = nil
@@ -76,6 +78,12 @@ struct TrainEditListView: View {
                 
                 Spacer().fixedSpace()
                 
+                Button("􀈄") {
+                    document.discoverLocomotiveConfirmation.toggle()
+                }.help("Download Locomotives")
+                
+                Spacer().fixedSpace()
+
                 Button("􀄬") {
                     layout.sortTrains()
                 }
@@ -107,7 +115,9 @@ extension Train {
 
 struct TrainEditListView_Previews: PreviewProvider {
     
+    static let doc = LayoutDocument(layout: LayoutCCreator().newLayout())
+    
     static var previews: some View {
-        TrainEditListView(layout: LayoutCCreator().newLayout())
+        TrainEditListView(document: doc, layout: doc.layout)
     }
 }

@@ -32,7 +32,7 @@ struct AppView: View {
             case .routes:
                 RouteListView(layout: document.layout)
             case .locomotives:
-                TrainEditListView(layout: document.layout)
+                TrainEditListView(document: document, layout: document.layout)
             case .blocks:
                 BlockEditListView(layout: document.layout)
             case .turnouts:
