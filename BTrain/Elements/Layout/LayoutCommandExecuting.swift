@@ -9,13 +9,30 @@ import Foundation
 
 // A protocol that the layout uses to push information to the Digital Control System
 protocol LayoutCommandExecuting {
-    // Indicates that the train speed should be sent to the Digital Control System
+    func turnoutStateChanged(turnout: Turnout)
     func trainDirectionChanged(train: Train)
     func trainSpeedChanged(train: Train)
 }
 
 extension Layout: LayoutCommandExecuting {
     
+    func turnoutStateChanged(turnout: Turnout) {
+        BTLogger.debug("Turnout \(turnout) state changed to \(turnout.state)")
+        
+        guard let interface = interface else {
+            return
+        }
+        
+        let commands = turnout.stateCommands(power: 0x1)
+        commands.forEach { interface.execute(command: $0 )}
+
+        // Turn-off the turnout power after 250ms (activation time)
+        let idleCommands = turnout.stateCommands(power: 0x0)
+        Timer.scheduledTimer(withTimeInterval: 0.250, repeats: false) { timer in
+            idleCommands.forEach { interface.execute(command: $0 )}
+        }
+    }
+
     func trainDirectionChanged(train: Train) {
         BTLogger.debug("Train \(train.name) changed direction to \(train.directionForward ? "forward" : "backward" )", self, train)
         let command: Command

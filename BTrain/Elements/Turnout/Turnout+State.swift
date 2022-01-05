@@ -92,63 +92,33 @@ extension Turnout {
         }
     }
     
+    static var statesMap: [Turnout.Category:[Turnout.State:UInt8]] = [
+        .singleLeft:[.straight: 1, .branchLeft: 0],
+        .singleRight:[.straight: 1, .branchRight: 0],
+        .doubleSlip:[.straight: 1, .branch: 0],
+        .doubleSlip2:[.straight01: 3, .straight23: 0, .branch21: 2, .branch03: 1],
+        .threeWay:[.straight: 3, .branchLeft: 2, .branchRight: 1],
+    ]
+    
     var stateValue: UInt8 {
-        switch(category) {
-        case .singleLeft:
-            switch(state) {
-            case .straight:
-                return 1
-            case .branchLeft:
-                return 0
-            default:
+        get {
+            if let states = Turnout.statesMap[category] {
+                return states[state] ?? 0
+            } else {
+                BTLogger.error("Unknow turnout category \(category)")
                 return 0
             }
-        case .singleRight:
-            switch(state) {
-            case .straight:
-                return 1
-            case .branchRight:
-                return 0
-            default:
-                return 0
+        }
+        set {
+            guard let states = Turnout.statesMap[category] else {
+                BTLogger.error("Unknow turnout category \(category)")
+                return
             }
-
-        case .doubleSlip:
-            switch(state) {
-            case .straight:
-                return 1
-            case .branch:
-                return 0
-            default:
-                return 0
+            guard let state = states.first(where: { $0.value == newValue }) else {
+                BTLogger.error("Unknow turnout state value \(newValue) for \(category)")
+                return
             }
-
-        case .doubleSlip2:
-            switch(state) {
-            case .straight01:
-                return 3
-            case .straight23:
-                return 0
-            case .branch21:
-                return 2
-            case .branch03:
-                return 1
-            default:
-                return 0
-            }
-
-        case .threeWay:
-            switch(state) {
-            case .straight:
-                return 3
-            case .branchLeft:
-                return 2
-            case .branchRight:
-                return 1
-            default:
-                return 0
-            }
-
+            self.state = state.key
         }
     }
     

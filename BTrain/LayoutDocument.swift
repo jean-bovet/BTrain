@@ -168,6 +168,7 @@ extension LayoutDocument {
             DispatchQueue.main.async {
                 self.interface = mi
                 self.registerForDirectionChange()
+                self.registerForTurnoutChange()
                 completed?(nil)
             }
         } onError: { error in
@@ -192,8 +193,9 @@ extension LayoutDocument {
     }
     
     func applyTurnoutStateToDigitalController() {
+        // TODO: make sure to enable the command first
         for t in layout.turnouts {
-            coordinator?.stateChanged(turnout: t)
+            layout.turnoutStateChanged(turnout: t)
         }
     }
     
@@ -224,6 +226,22 @@ extension LayoutDocument {
                 }
             }
         })
+    }
+    
+    func registerForTurnoutChange() {
+        guard let interface = interface else {
+            return
+        }
+        
+        interface.register { address, state, power in
+            if let turnout = self.coordinator?.layout.turnouts.find(address: address) {
+                BTLogger.debug("Turnout \(turnout.name) changed to \(state)")
+                turnout.stateValue = state
+                self.layout.didChange()
+            } else {
+                BTLogger.error("Unknown turnout for address \(address.actualAddress.toHex())")
+            }
+        }
     }
     
     // A feedback change event has been received from the Digital Control System

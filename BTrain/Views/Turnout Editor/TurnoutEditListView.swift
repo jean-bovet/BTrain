@@ -29,7 +29,7 @@ struct TurnoutEditListView: View {
                 TableColumn("Protocol") { turnout in
                     Picker("Protocol", selection: turnout.addressProtocol) {
                         ForEach(CommandTurnoutProtocol.allCases, id:\.self) { proto in
-                            Text(proto.rawValue)
+                            Text(proto.rawValue).tag(proto as CommandTurnoutProtocol?)
                         }
                     }.labelsHidden()
                 }
@@ -59,11 +59,16 @@ struct TurnoutEditListView: View {
                 }
                 
                 TableColumn("State") { turnout in
-                    Picker("State:", selection: turnout.state) {
-                        ForEach(turnout.wrappedValue.allStates, id:\.self) { state in
-                            Text(state.description)
+                    HStack {
+                        Picker("State:", selection: turnout.state) {
+                            ForEach(turnout.wrappedValue.allStates, id:\.self) { state in
+                                Text(state.description)
+                            }
+                        }.labelsHidden()
+                        Button("Set") {
+                            layout.turnoutStateChanged(turnout: turnout.wrappedValue)
                         }
-                    }.labelsHidden()
+                    }
                 }
             } rows: {
                 ForEach($layout.turnouts) { turnout in
@@ -94,7 +99,7 @@ struct TurnoutEditListView: View {
 
 extension Turnout {
     
-    var addressProtocol: CommandTurnoutProtocol {
+    var addressProtocol: CommandTurnoutProtocol? {
         get {
             return address.protocol
         }

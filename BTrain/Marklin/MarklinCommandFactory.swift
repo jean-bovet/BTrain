@@ -110,7 +110,7 @@ extension Command {
             let address: UInt32 = UInt32(message.byte0) << 24 | UInt32(message.byte1) << 16 | UInt32(message.byte2) << 8 | UInt32(message.byte3) << 0
             let state: UInt8 = message.byte4
             let power: UInt8 = message.byte5
-            return .turnout(address: CommandTurnoutAddress(address, .MM),
+            return .turnout(address: CommandTurnoutAddress(address, nil),
                             state: state, power: power,
                             descriptor: CommandDescriptor(data: message.data, description: "\(cmd.toHex()) accessory \(state)-\(power) for \(address.toHex())"))
         }
@@ -197,6 +197,8 @@ extension CommandTurnoutAddress {
             return 0x3800 + address - 1
         case .MM:
             return 0x3000 + address - 1
+        case .none:
+            return address
         }
     }
 }

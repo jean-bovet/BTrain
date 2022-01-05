@@ -36,7 +36,7 @@ struct TrainEditListView: View {
                 TableColumn("Decoder Type") { train in
                     Picker("Decoder", selection: train.addressDecoderType) {
                         ForEach(DecoderType.allCases, id:\.self) { proto in
-                            Text(proto.rawValue)
+                            Text(proto.rawValue).tag(proto as DecoderType?)
                         }
                     }.labelsHidden()
                 }

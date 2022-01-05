@@ -25,7 +25,7 @@ struct ConnectSheet: View {
     
     @State private var type = ConnectionType.centralStation
     
-    @State private var activateTurnouts = true
+    @AppStorage("activateTurnouts") private var activateTurnouts = true
     
     @State private var address = "192.168.86.47"
     @State private var port = "15731"

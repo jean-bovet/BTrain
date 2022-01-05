@@ -77,9 +77,9 @@ enum CommandTurnoutProtocol: String, CaseIterable, Codable {
 
 struct CommandTurnoutAddress: Codable, Hashable, Equatable {
     let address: UInt32
-    let `protocol`: CommandTurnoutProtocol
+    let `protocol`: CommandTurnoutProtocol?
     
-    init(_ address: UInt32, _ `protocol`: CommandTurnoutProtocol) {
+    init(_ address: UInt32, _ `protocol`: CommandTurnoutProtocol?) {
         self.address = address
         self.protocol = `protocol`
     }
@@ -144,7 +144,10 @@ protocol CommandInterface {
     
     typealias DirectionChangeCallback = (_ address: UInt32, _ direction: Command.Direction) -> Void
     func register(forDirectionChange: @escaping DirectionChangeCallback)
-    
+
+    typealias TurnoutChangeCallback = (_ address: CommandTurnoutAddress, _ state: UInt8, _ power: UInt8) -> Void
+    func register(forTurnoutChange: @escaping TurnoutChangeCallback)
+
     func connect(onReady: @escaping () -> Void, onError: @escaping (Error) -> Void, onUpdate: @escaping () -> Void, onStop: @escaping () -> Void)
     func disconnect(_ completion: @escaping () -> Void)
     

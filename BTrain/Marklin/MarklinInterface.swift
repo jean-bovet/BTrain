@@ -24,7 +24,9 @@ final class MarklinInterface {
     var speedChanges = Set<CommandSpeed>()
 
     var directionChangeCallbacks = [DirectionChangeCallback]()
-    
+
+    var turnoutChangeCallbacks = [TurnoutChangeCallback]()
+
     typealias CompletionBlock = () -> Void
     
     var locomotivesCommandCompletionBlocks = [QueryLocomotiveCommandCompletion]()
@@ -66,6 +68,15 @@ final class MarklinInterface {
                     }
                     onUpdate()
                 }
+                if case .turnout(address: let address, state: let state, power: let power, descriptor: _) = cmd {
+                    if msg.resp == 0 {
+                        // Only report turnout change when the message is initiated from
+                        // the Digital Controller. This is because when BTrain sends
+                        // a turnout command, the Digital Controller will respond
+                        // with an acknowledgement with msg.resp == 1 which should be ignored here.
+                        self.turnoutChangeCallbacks.forEach { $0(address, state, power) }
+                    }
+                }
                 if case .speed(address: let address, speed: let speed, descriptor: _) = cmd {
                     // Receiving a speed change for the specified locomotive address (the protocol is ignored)
                     // TODO: have a background thread for any changes to the layout and layout processing?
@@ -106,6 +117,10 @@ extension MarklinInterface: CommandInterface {
         
     func register(forDirectionChange callback: @escaping DirectionChangeCallback) {
         directionChangeCallbacks.append(callback)
+    }
+    
+    func register(forTurnoutChange callback: @escaping TurnoutChangeCallback) {
+        turnoutChangeCallbacks.append(callback)
     }
     
     func execute(command: Command) {

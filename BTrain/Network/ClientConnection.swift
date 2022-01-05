@@ -54,7 +54,6 @@ class ClientConnection {
     private func setupReceive() {
         nwConnection.receive(minimumIncompleteLength: 1, maximumLength: 65536) { (data, _, isComplete, error) in
             if let data = data, !data.isEmpty {
-                print("[Client] < \(data.count) bytes of data")
                 // Read each CAN message, one by one. Each CAN message is 13 bytes.
                 // Sometimes more than one message is received in a single data.
                 let numberOfPackets = data.count / MarklinCANMessage.messageLength

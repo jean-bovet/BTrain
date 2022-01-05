@@ -28,7 +28,6 @@ final class LayoutCoordinator: ObservableObject {
         self.interface = interface
                 
         registerForFeedbackChanges()
-        registerForTurnoutChanges()
         registerForTrainBlockChanges()
         
         updateControllers()
@@ -53,20 +52,6 @@ final class LayoutCoordinator: ObservableObject {
         }
     }
     
-    func registerForTurnoutChanges() {
-        for turnout in layout.turnouts {
-            let cancellable = turnout.$state
-                .dropFirst()
-                .removeDuplicates()
-                .receive(on: RunLoop.main)
-                .sink { value in
-                    self.stateChanged(turnout: turnout)
-                    // Note: turnout changes do not affect the controller of the layout
-                }
-            cancellables.append(cancellable)
-        }
-    }
-
     func registerForTrainBlockChanges() {
         for train in layout.trains {
             let cancellable = train.$blockId
@@ -77,23 +62,6 @@ final class LayoutCoordinator: ObservableObject {
                     self.runControllers()
                 }
             cancellables.append(cancellable)
-        }
-    }
-
-    func stateChanged(turnout: Turnout) {
-        BTLogger.debug("Turnout \(turnout) state changed to \(turnout.state)")
-        
-        guard let interface = interface else {
-            return
-        }
-        
-        let commands = turnout.stateCommands(power: 0x1)
-        commands.forEach { interface.execute(command: $0 )}
-
-        // Turn-off the turnout power after 250ms (activation time)
-        let idleCommands = turnout.stateCommands(power: 0x0)
-        Timer.scheduledTimer(withTimeInterval: 0.250, repeats: false) { timer in
-            idleCommands.forEach { interface.execute(command: $0 )}
         }
     }
 

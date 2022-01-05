@@ -109,9 +109,21 @@ final class Layout2Swift {
     func add(turnouts: [Turnout]) {
 //        let t1 = Turnout("D.2", type: .crossing, address: .init(14, .MFX), address2: .init(15, .DCC), state: .straight01, center: CGPoint(x: 280, y: 140))
         for turnout in turnouts {
-            code += "\nlet \(turnout.symbol) = Turnout(\"\(turnout.name)\", type: .\(turnout.category.rawValue), address: .init(\(turnout.addressValue), .\(turnout.addressProtocol))"
+            code += "\nlet \(turnout.symbol) = Turnout(\"\(turnout.name)\", type: .\(turnout.category.rawValue), address: .init(\(turnout.addressValue),"
+            if let ap = turnout.addressProtocol {
+                code += ".\(ap)"
+            } else {
+                code += "nil"
+            }
+            code += ")"
             if turnout.doubleAddress {
-                code += ", address2: .init(\(turnout.address2Value), .\(turnout.addressProtocol))"
+                code += ", address2: .init(\(turnout.address2Value),"
+                if let ap = turnout.addressProtocol {
+                    code += ".\(ap)"
+                } else {
+                    code += "nil"
+                }
+                code += ")"
             }
             code += ", state: .\(turnout.state.rawValue), center: CGPoint(x: \(turnout.center.x), y: \(turnout.center.y)), rotationAngle: \(turnout.rotationAngle.symbolicAngle))"
         }

@@ -156,3 +156,13 @@ extension Turnout.State: CustomStringConvertible {
         }
     }
 }
+
+extension Array where Element : Turnout {
+
+    func find(address: CommandTurnoutAddress) -> Element? {
+        return self.first { turnout in
+            return turnout.address.actualAddress == address.actualAddress
+        }
+    }
+    
+}
