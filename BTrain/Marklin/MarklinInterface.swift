@@ -69,7 +69,9 @@ final class MarklinInterface {
                     }
                 }
                 if case .speed(address: let address, speed: let speed, descriptor: _) = cmd {
-                    self.speedChangeCallbacks.forEach { $0(address, speed) }
+                    if msg.resp == 0 {
+                        self.speedChangeCallbacks.forEach { $0(address, speed) }
+                    }
                 }
                 if case .emergencyStop(address: let address, descriptor: _) = cmd {
                     // Execute a command to query the direction of the locomotive at this particular address
