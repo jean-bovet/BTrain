@@ -16,6 +16,8 @@ struct SwitchBoardView: View {
         
     let switchboard: SwitchBoard
         
+    @Environment(\.undoManager) var undoManager
+
     // Because SwiftUI only reacts to changes to the object itself and not
     // its children parameters, we require the state of the switchboard
     // to be specified here - although it is accessible via `switchboard.state`.
@@ -64,6 +66,9 @@ struct SwitchBoardView: View {
                 }
                 .onEnded { _ in
                     switchboard.drag.onDragEnded()
+                    undoManager?.registerUndo(withTarget: layout, handler: { layout in
+                        // TODO: keep track of what has changed
+                    })
                 }
         )
         .frame(idealWidth: switchboard.idealSize.width, idealHeight: switchboard.idealSize.height)
