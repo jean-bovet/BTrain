@@ -40,7 +40,7 @@ class TransitionsTests: XCTestCase {
 
         let t1 = Transition(id: "1", a: Socket.block(b1.id, socketId: Block.nextSocket), b: Socket.block(b2.id, socketId: Block.previousSocket))
         let t2 = Transition(id: "2", a: Socket.block(b2.id, socketId: Block.nextSocket), b: Socket.block(b1.id, socketId: Block.previousSocket))
-
+        
         let transitions = [t1, t2]
         
         let tr1 = Identifier<Train>(uuid: "t1")
@@ -52,6 +52,27 @@ class TransitionsTests: XCTestCase {
         let tr2 = Identifier<Train>(uuid: "t2")
         t2.reserved = tr2
         XCTAssertThrowsError(try Transition.canReserve(transitions: transitions, for: tr1, layout: layout))
+    }
+    
+    func testReverse() {
+        let b1 = Block("b1", type: .station, center: .zero, rotationAngle: 0)
+        let b2 = Block("b2", type: .free, center: .zero, rotationAngle: 0)
+
+        let t1 = Transition(id: "1", a: Socket.block(b1.id, socketId: Block.nextSocket), b: Socket.block(b2.id, socketId: Block.previousSocket))
+
+        let t11 = t1.reverse
+
+        let tr1 = Identifier<Train>(uuid: "t1")
+
+        t1.reserved = tr1
+        XCTAssertEqual(t1.reserved, tr1)
+        XCTAssertEqual(t11.reserved, tr1)
+        
+        let tr2 = Identifier<Train>(uuid: "t2")
+
+        t11.reserved = tr2
+        XCTAssertEqual(t1.reserved, tr2)
+        XCTAssertEqual(t11.reserved, tr2)
     }
     
     func testSocket() {
