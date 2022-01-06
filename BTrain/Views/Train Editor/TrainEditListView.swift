@@ -68,7 +68,7 @@ struct TrainEditListView: View {
                     })
                 }
                 Button("-") {
-                    let train = layout.mutableTrain(for: selection!)
+                    let train = layout.train(for: selection!)
                     layout.remove(trainId: selection!)
                     
                     undoManager?.registerUndo(withTarget: layout, handler: { layout in

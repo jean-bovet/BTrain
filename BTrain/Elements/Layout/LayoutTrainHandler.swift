@@ -119,14 +119,14 @@ final class LayoutTrainHandler: LayoutTrainHandling {
     }
     
     func setTrain(_ train: Train, toPosition position: Int) throws {
-        guard let train = layout.mutableTrain(for: train.id) else {
+        guard let train = layout.train(for: train.id) else {
             throw LayoutError.trainNotFound(trainId: train.id)
         }
         train.position = position
     }
     
     func setTrain(_ train: Train, speed: UInt16) throws {
-        guard let train = layout.mutableTrain(for: train.id) else {
+        guard let train = layout.train(for: train.id) else {
             throw LayoutError.trainNotFound(trainId: train.id)
         }
         
@@ -141,7 +141,7 @@ final class LayoutTrainHandler: LayoutTrainHandling {
             throw LayoutError.trainNotAssignedToABlock(trainId: train.id)
         }
         
-        guard let block = layout.mutableBlock(for: blockId) else {
+        guard let block = layout.block(for: blockId) else {
             throw LayoutError.blockNotFound(blockId: blockId)
         }
         
@@ -157,7 +157,7 @@ final class LayoutTrainHandler: LayoutTrainHandling {
     }
     
     func setTrain(_ train: Train, direction: Direction) throws {
-        guard let train = layout.mutableTrain(for: train.id) else {
+        guard let train = layout.train(for: train.id) else {
             throw LayoutError.trainNotFound(trainId: train.id)
         }
 
@@ -173,7 +173,7 @@ final class LayoutTrainHandler: LayoutTrainHandling {
             throw LayoutError.trainNotAssignedToABlock(trainId: train.id)
         }
         
-        guard let block = layout.mutableBlock(for: blockId) else {
+        guard let block = layout.block(for: blockId) else {
             throw LayoutError.blockNotFound(blockId: blockId)
         }
 
@@ -191,7 +191,7 @@ final class LayoutTrainHandler: LayoutTrainHandling {
     }
         
     func stopTrain(_ train: Train) throws {
-        guard let train = layout.mutableTrain(for: train.id) else {
+        guard let train = layout.train(for: train.id) else {
             throw LayoutError.trainNotFound(trainId: train.id)
         }
         train.speed = 0
@@ -199,7 +199,7 @@ final class LayoutTrainHandler: LayoutTrainHandling {
     }
 
     func setTrain(_ train: Train, routeIndex: Int) throws {
-        guard let train = layout.mutableTrain(for: train.id) else {
+        guard let train = layout.train(for: train.id) else {
             throw LayoutError.trainNotFound(trainId: train.id)
         }
         train.routeIndex = routeIndex
@@ -207,11 +207,11 @@ final class LayoutTrainHandler: LayoutTrainHandling {
 
     func setTrain(_ trainId: Identifier<Train>, toBlock toBlockId: Identifier<Block>,
               position: Position = .start, direction: Direction?) throws {
-        guard let train = layout.mutableTrain(for: trainId) else {
+        guard let train = layout.train(for: trainId) else {
             throw LayoutError.trainNotFound(trainId: trainId)
         }
         
-        guard let toBlock = layout.mutableBlock(for: toBlockId) else {
+        guard let toBlock = layout.block(for: toBlockId) else {
             throw LayoutError.blockNotFound(blockId: toBlockId)
         }
 
@@ -241,7 +241,7 @@ final class LayoutTrainHandler: LayoutTrainHandling {
 
         train.blockId = toBlock.id
 
-        if let fromBlock = layout.mutableBlock(for: trainId) {
+        if let fromBlock = layout.block(for: trainId) {
             if let direction = direction {
                 // If the direction is specified, use it for the next block
                 toBlock.train = Block.TrainInstance(trainId, direction)
@@ -265,7 +265,7 @@ final class LayoutTrainHandler: LayoutTrainHandling {
     }
     
     func reserve(block: Identifier<Block>, withTrain train: Train, direction: Direction) throws {
-        guard let b1 = layout.mutableBlock(for: block) else {
+        guard let b1 = layout.block(for: block) else {
             throw LayoutError.blockNotFound(blockId: block)
         }
         
@@ -277,11 +277,11 @@ final class LayoutTrainHandler: LayoutTrainHandling {
     }
     
     func reserve(train: Identifier<Train>, fromBlock: Identifier<Block>, toBlock: Identifier<Block>, direction: Direction) throws {
-        guard let b1 = layout.mutableBlock(for: fromBlock) else {
+        guard let b1 = layout.block(for: fromBlock) else {
             throw LayoutError.blockNotFound(blockId: fromBlock)
         }
 
-        guard let b2 = layout.mutableBlock(for: toBlock) else {
+        guard let b2 = layout.block(for: toBlock) else {
             throw LayoutError.blockNotFound(blockId: toBlock)
         }
 
@@ -325,7 +325,7 @@ final class LayoutTrainHandler: LayoutTrainHandling {
                 turnout.reserved = train
                 exec.sendTurnoutState(turnout: turnout) { }
             } else if let blockId = transition.b.block {
-                guard let block = layout.mutableBlock(for: blockId) else {
+                guard let block = layout.block(for: blockId) else {
                     throw LayoutError.blockNotFound(blockId: blockId)
                 }
                 let naturalDirection = transition.b.socketId == Block.previousSocket
@@ -339,11 +339,11 @@ final class LayoutTrainHandler: LayoutTrainHandling {
     }
     
     func free(fromBlock: Identifier<Block>, toBlockNotIncluded: Identifier<Block>, direction: Direction) throws {
-        guard let b1 = layout.mutableBlock(for: fromBlock) else {
+        guard let b1 = layout.block(for: fromBlock) else {
             throw LayoutError.blockNotFound(blockId: fromBlock)
         }
 
-        guard let b2 = layout.mutableBlock(for: toBlockNotIncluded) else {
+        guard let b2 = layout.block(for: toBlockNotIncluded) else {
             throw LayoutError.blockNotFound(blockId: toBlockNotIncluded)
         }
 
@@ -366,13 +366,13 @@ final class LayoutTrainHandler: LayoutTrainHandling {
     }
     
     func free(block: Identifier<Block>) throws {
-        guard let b1 = layout.mutableBlock(for: block) else {
+        guard let b1 = layout.block(for: block) else {
             throw LayoutError.blockNotFound(blockId: block)
         }
 
         b1.reserved = nil
         if let train = b1.train {
-            guard let train = layout.mutableTrain(for: train.trainId) else {
+            guard let train = layout.train(for: train.trainId) else {
                 throw LayoutError.trainNotFound(trainId: train.trainId)
             }
 
@@ -382,7 +382,7 @@ final class LayoutTrainHandler: LayoutTrainHandling {
     }
     
     func free(trainID: Identifier<Train>, removeFromLayout: Bool) throws {
-        guard let train = layout.mutableTrain(for: trainID) else {
+        guard let train = layout.train(for: trainID) else {
             throw LayoutError.trainNotFound(trainId: trainID)
         }
 

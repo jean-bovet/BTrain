@@ -38,6 +38,6 @@ struct BlockEditView_Previews: PreviewProvider {
     
     static let layout = LayoutCCreator().newLayout()
     static var previews: some View {
-        BlockEditView(layout: layout, block: layout.mutableBlock(at: 0))
+        BlockEditView(layout: layout, block: layout.block(at: 0))
     }
 }

@@ -46,7 +46,7 @@ final class LayoutRouteHandler: LayoutRouteHandling {
             throw LayoutError.routeNotFound(routeId: routeID)
         }
         
-        guard let train = layout.mutableTrain(for: trainID) else {
+        guard let train = layout.train(for: trainID) else {
             throw LayoutError.trainNotFound(trainId: trainID)
         }
         

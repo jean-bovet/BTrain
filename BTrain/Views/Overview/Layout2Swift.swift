@@ -147,7 +147,7 @@ final class Layout2Swift {
     }
     
     func symbol(for socket: Socket) -> String {
-        if let blockId = socket.block, let block = layout.mutableBlock(for: blockId) {
+        if let blockId = socket.block, let block = layout.block(for: blockId) {
             if socket.socketId == Block.nextSocket {
                 return "\(block.symbol).next"
             } else if socket.socketId == Block.previousSocket {
@@ -176,7 +176,7 @@ final class Layout2Swift {
             if !content.isEmpty {
                 content += ","
             }
-            let block = layout.mutableBlock(for: step.blockId)!
+            let block = layout.block(for: step.blockId)!
             content += "(\(block.symbol),.\(step.direction.rawValue))"
         }
         code += "\nl.newRoute(\"\(route.id)\", name: \"\(route.name)\", [\(content)])"

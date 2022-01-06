@@ -93,7 +93,7 @@ class LayoutATests: RootLayoutTests {
     
     func testBlockDisabled() throws {
         // Disable a block to make the train stop
-        let b3 = layout.mutableBlock(for: route.steps[2].blockId)!
+        let b3 = layout.block(for: route.steps[2].blockId)!
         b3.enabled = false
         
         assert("r1:{r1{b1 🛑🚂1 ≏ ≏ }} <t0> [b2 ≏ ≏ ] <t1> [b3 ≏ ≏ ] <t0(2,0)> !{r1{b1 ≏ ≏ }}")

@@ -81,7 +81,7 @@ final class ShapeProvider: ShapeProviding {
             self.updateShapes()
         }))
         cancellables.append(layout.$blockMap.sink(receiveValue: { blocks in
-            // Note: need to pass the `blocks` parameter here because the layout.mutableBlocks
+            // Note: need to pass the `blocks` parameter here because the layout.blocks
             // has not yet had the time to be updated
             self.updateShapes(blocks: blocks.values.map { $0 as Block })
         }))

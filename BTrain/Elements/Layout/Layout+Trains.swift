@@ -28,10 +28,6 @@ extension Layout {
         return train
     }
 
-    func mutableTrain(for trainId: Identifier<Train>?) -> Train? {
-        return trains.first(where: { $0.id == trainId })
-    }
-
     func train(for trainId: Identifier<Train>?) -> Train? {
         return trains.first(where: { $0.id == trainId })
     }

@@ -51,6 +51,6 @@ struct BlockFeedbackView_Previews: PreviewProvider {
     static let layout = LayoutCCreator().newLayout()
     
     static var previews: some View {
-        BlockFeedbackView(layout: layout, block: layout.mutableBlock(at: 0))
+        BlockFeedbackView(layout: layout, block: layout.block(at: 0))
     }
 }

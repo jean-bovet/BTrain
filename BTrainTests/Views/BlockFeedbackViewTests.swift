@@ -16,7 +16,7 @@ import XCTest
 class BlockFeedbackViewTests: RootViewTests {
 
     func testLayout() throws {
-        let block = layout.mutableBlock(at: 0)
+        let block = layout.block(at: 0)
         let sut = BlockFeedbackView(layout: layout, block: block)
         
         let text = try sut.inspect().vStack().forEach(0).hStack(0).picker(0).forEach(0).text(0)

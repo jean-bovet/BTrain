@@ -87,7 +87,7 @@ final class LayoutFactory {
             }
                         
             if let trainId = block.train?.trainId,
-               let train = layout.mutableTrain(for: trainId),
+               let train = layout.train(for: trainId),
                 train.position == 0 {
                 text += " " + stringFrom(train)
             }
@@ -102,7 +102,7 @@ final class LayoutFactory {
                     text += " ≏"
                 }
                 if let trainId = block.train?.trainId,
-                   let train = layout.mutableTrain(for: trainId),
+                   let train = layout.train(for: trainId),
                     train.position == index + 1 {
                     text += " " + stringFrom(train)
                 }

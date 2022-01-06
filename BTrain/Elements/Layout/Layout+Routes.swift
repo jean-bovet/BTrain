@@ -74,7 +74,7 @@ extension Layout {
             throw LayoutError.routeNotFound(routeId: routeId)
         }
         
-        guard let train = mutableTrain(for: trainId) else {
+        guard let train = train(for: trainId) else {
             throw LayoutError.trainNotFound(trainId: trainId)
         }
         

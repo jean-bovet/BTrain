@@ -53,7 +53,7 @@ class PathFinderTests: XCTestCase {
     func testPathLookAhead() throws {
         let layout = LayoutECreator().newLayout()
         let s1 = layout.block(for: Identifier<Block>(uuid: "s1"))!
-        let b2 = layout.mutableBlock(for: Identifier<Block>(uuid: "b2"))!
+        let b2 = layout.block(for: Identifier<Block>(uuid: "b2"))!
         b2.reserved = Reservation("other", .next)
         
         let pf = PathFinder(layout: layout)
@@ -76,7 +76,7 @@ class PathFinderTests: XCTestCase {
     func testPathReserved() throws {
         let layout = LayoutECreator().newLayout()
         let s1 = layout.block(for: Identifier<Block>(uuid: "s1"))!
-        let b2 = layout.mutableBlock(for: Identifier<Block>(uuid: "b2"))!
+        let b2 = layout.block(for: Identifier<Block>(uuid: "b2"))!
         b2.reserved = Reservation("other", .next)
         
         let pf = PathFinder(layout: layout)
@@ -97,7 +97,7 @@ class PathFinderTests: XCTestCase {
     func testPathDisabled() throws {
         let layout = LayoutECreator().newLayout()
         let s1 = layout.block(for: Identifier<Block>(uuid: "s1"))!
-        let b2 = layout.mutableBlock(for: Identifier<Block>(uuid: "b2"))!
+        let b2 = layout.block(for: Identifier<Block>(uuid: "b2"))!
         b2.enabled = false
         
         let pf = PathFinder(layout: layout)
@@ -123,10 +123,10 @@ class PathFinderTests: XCTestCase {
         pf.turnoutSocketSelectionOverride = { turnout, socketsId, context in
             context.visitedSteps.removeAll()
             
-            let s1 = layout.mutableBlock(for: Identifier<Block>(uuid: "s1"))!
+            let s1 = layout.block(for: Identifier<Block>(uuid: "s1"))!
             s1.reserved = Reservation("other", .next)
 
-            let s2 = layout.mutableBlock(for: Identifier<Block>(uuid: "s2"))!
+            let s2 = layout.block(for: Identifier<Block>(uuid: "s2"))!
             s2.reserved = Reservation("other", .next)
 
             return nil
@@ -145,7 +145,7 @@ class PathFinderTests: XCTestCase {
 
     func testUpdateAutomaticRoute() throws {
         let layout = LayoutECreator().newLayout()
-        let s1 = layout.mutableBlock(for: Identifier<Block>(uuid: "s1"))!
+        let s1 = layout.block(for: Identifier<Block>(uuid: "s1"))!
 
         let train = layout.trains[0]
         train.blockId = s1.id
@@ -213,8 +213,8 @@ class PathFinderTests: XCTestCase {
         layout.reserve("NE1", with: "1", direction: .next)
         
         let train = layout.trains[0]
-        let currentBlock = layout.mutableBlock(for: Identifier<Block>(uuid: "NE1"))!
-        let toBlock = layout.mutableBlock(for: Identifier<Block>(uuid: "LCF1"))!
+        let currentBlock = layout.block(for: Identifier<Block>(uuid: "NE1"))!
+        let toBlock = layout.block(for: Identifier<Block>(uuid: "LCF1"))!
 
         let pf = PathFinder(layout: layout)
         let settings = PathFinder.Settings(random: false, reservedBlockBehavior: .avoidReservedUntil(numberOfSteps: 1), verbose: false)
@@ -234,8 +234,8 @@ class PathFinderTests: XCTestCase {
         layout.reserve("s1", with: "1", direction: .next)
         
         let train = layout.trains[0]
-        let currentBlock = layout.mutableBlock(for: Identifier<Block>(uuid: "s1"))!
-        let toBlock = layout.mutableBlock(for: Identifier<Block>(uuid: "s2"))!
+        let currentBlock = layout.block(for: Identifier<Block>(uuid: "s1"))!
+        let toBlock = layout.block(for: Identifier<Block>(uuid: "s2"))!
 
         let pf = PathFinder(layout: layout)
         
@@ -250,8 +250,8 @@ class PathFinderTests: XCTestCase {
         layout.reserve("NE1", with: "1", direction: .next)
         
         let train = layout.trains[0]
-        let currentBlock = layout.mutableBlock(for: Identifier<Block>(uuid: "NE1"))!
-        let toBlock = layout.mutableBlock(for: Identifier<Block>(uuid: "HLS_P1"))!
+        let currentBlock = layout.block(for: Identifier<Block>(uuid: "NE1"))!
+        let toBlock = layout.block(for: Identifier<Block>(uuid: "HLS_P1"))!
 
         let pf = PathFinder(layout: layout)
         let settings = PathFinder.Settings(random: true, reservedBlockBehavior: .avoidReservedUntil(numberOfSteps: 1), verbose: false)
@@ -275,11 +275,11 @@ class PathFinderTests: XCTestCase {
 extension Layout {
     
     func reserve(_ block: String, with train: String, direction: Direction) {
-        mutableBlock(for: Identifier<Block>(uuid: block))?.reserved = Reservation(trainId: Identifier<Train>(uuid: train), direction: direction)
+        self.block(for: Identifier<Block>(uuid: block))?.reserved = Reservation(trainId: Identifier<Train>(uuid: train), direction: direction)
     }
 
     func free(_ block: String) {
-        mutableBlock(for: Identifier<Block>(uuid: block))?.reserved = nil
+        self.block(for: Identifier<Block>(uuid: block))?.reserved = nil
     }
 
 }

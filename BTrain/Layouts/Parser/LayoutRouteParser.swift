@@ -144,7 +144,7 @@ final class LayoutRouteParser {
         // Example: { ≏ ≏ } [[ ≏ 🚂 ≏ ]] [[ ≏ ≏ ]] {b0 ≏ ≏ }
         if let blockName = blockHeader.blockName {
             let blockID = Identifier<Block>(uuid: blockName)
-            if let existingBlock = layout.mutableBlock(for: blockID) {
+            if let existingBlock = layout.block(for: blockID) {
                 block = existingBlock
                 assert(block.category == type, "The existing block \(blockID) does not match the type defined in the ASCII representation")
                 assert(block.reserved == blockHeader.reserved, "The existing block \(blockID) does not match the reserved type defined in the ASCII representation")

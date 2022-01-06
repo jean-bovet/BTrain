@@ -51,15 +51,19 @@ extension Layout {
         }
     }
     
-    func mutableBlock(at index: Int) -> Block {
+    func block(at index: Int) -> Block {
         return blockMap.values[index]
     }
     
-    func mutableBlock(for blockId: Identifier<Block>) -> Block? {
-        return blockMap[blockId]
+    func block(for blockId: Identifier<Block>?) -> Block? {
+        if let blockId = blockId {
+            return blockMap[blockId]
+        } else {
+            return nil
+        }
     }
     
-    func mutableBlock(for trainId: Identifier<Train>) -> Block? {
+    func block(for trainId: Identifier<Train>) -> Block? {
         return blockMap.first(where: { $0.value.train?.trainId == trainId })?.value
     }
     
@@ -68,15 +72,7 @@ extension Layout {
             $0.value.name < $1.value.name
         }
     }
-
-    func block(at index: Int) -> Block {
-        return blockMap.values[index]
-    }
     
-    func block(for blockId: Identifier<Block>?) -> Block? {
-        return blocks.first(where: { $0.id == blockId })
-    }
-
     func assign(_ block: Block, _ feedbacks: [Feedback]) {
         block.assign(feedbacks.map { $0.id })
         for feedback in feedbacks {

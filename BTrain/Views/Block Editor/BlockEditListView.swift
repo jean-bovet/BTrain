@@ -53,7 +53,7 @@ struct BlockEditListView: View {
                         }
                         
                         Button("-") {
-                            if let block = layout.mutableBlock(for: selection!) {
+                            if let block = layout.block(for: selection!) {
                                 layout.remove(blockID: block.id)
                                 undoManager?.registerUndo(withTarget: layout, handler: { layout in
                                     layout.add([block])
@@ -69,7 +69,7 @@ struct BlockEditListView: View {
                     }.padding()
                 }.frame(maxWidth: SideListFixedWidth)
 
-                if let selection = selection, let block = layout.mutableBlock(for: selection) {
+                if let selection = selection, let block = layout.block(for: selection) {
                     BlockEditView(layout: layout, block: block)
                         .padding()
                 } else {
