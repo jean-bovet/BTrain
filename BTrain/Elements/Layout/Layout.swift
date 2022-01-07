@@ -50,10 +50,9 @@ final class Layout: Element, ObservableObject {
     // True if unexpected feedback should be detected and the layout stopped.
     @AppStorage("detectUnexpectedFeedback") var detectUnexpectedFeedback = true
     
-    // True if the layout should enforce a strict route feedback strategy; this means
-    // that the layout is expecting each train to activate one feedback after another,
-    // in the order of the train direction of travel, including the first feedback of
-    // the next block to detect when the train moves to the next block
+    // True if the layout authorize any feedback to be triggered within the block in which
+    // the train is located *but* is expecting the next block feedback to be triggered only
+    // when the train is at the end of the current block.
     // False if the layout authorize any feedback to be triggered within the block in which
     // the train is located as well as the first feedback of the next block to detect when
     // the train moves to the next block.
