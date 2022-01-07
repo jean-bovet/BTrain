@@ -40,17 +40,7 @@ final class LayoutDocument: ObservableObject {
     }
         
     // Interface used to communicate with the real layout
-    @Published var interface: CommandInterface? {
-        didSet {
-            connected = interface != nil
-            coordinator.interface = interface
-            if let interface = interface {
-                layout.executor = LayoutCommandExecutor(layout: layout, interface: interface)
-            } else {
-                layout.executor = nil
-            }
-        }
-    }
+    @Published var interface: ProxyCommandInterface
     
     // The layout model
     @Published private(set) var layout: Layout
@@ -92,8 +82,12 @@ final class LayoutDocument: ObservableObject {
         self.layout = layout
         self.layoutDiagnostics = LayoutDiagnostic(layout: layout)
         self.simulator = MarklinCommandSimulator(layout: layout)
-        self.coordinator = LayoutCoordinator(layout: layout, interface: nil)
         self.switchboard = SwitchBoardFactory.generateSwitchboard(layout: layout)
+
+        let interface = ProxyCommandInterface()
+        self.interface = interface
+        self.coordinator = LayoutCoordinator(layout: layout, interface: interface)
+        layout.executor = LayoutCommandExecutor(layout: layout, interface: interface)
     }
 }
 
@@ -143,11 +137,11 @@ extension LayoutDocument: ReferenceFileDocument {
 extension LayoutDocument {
     
     func enable(onCompletion: @escaping () -> Void) {
-        interface?.execute(command: .go(), onCompletion: onCompletion)
+        interface.execute(command: .go(), onCompletion: onCompletion)
     }
     
     func disable(onCompletion: @escaping () -> Void) {
-        interface?.execute(command: .stop(), onCompletion: onCompletion)
+        interface.execute(command: .stop(), onCompletion: onCompletion)
     }
     
     func start(train: Identifier<Train>, withRoute route: Identifier<Route>, toBlockId: Identifier<Block>?) throws {
@@ -173,7 +167,8 @@ extension LayoutDocument {
         let mi = MarklinInterface(server: address, port: port)
         mi.connect {
             DispatchQueue.main.async {
-                self.interface = mi
+                self.connected = true
+                self.interface.interface = mi
                 self.registerForFeedbackChange()
                 self.registerForSpeedChange()
                 self.registerForDirectionChange()
@@ -182,20 +177,21 @@ extension LayoutDocument {
             }
         } onError: { error in
             DispatchQueue.main.async {
-                self.interface = nil
+                self.connected = false
+                self.interface.interface = nil
                 completed?(error)
             }
         } onStop: {
             DispatchQueue.main.async {
-                self.interface = nil
+                self.connected = false
+                self.interface.interface = nil
             }
         }
     }
     
     func disconnect() {
         simulator.stop()
-        interface?.disconnect() { }
-        interface = nil
+        interface.disconnect() { }
     }
         
     func applyTurnoutStateToDigitalController(completion: @escaping CompletionBlock) {
@@ -220,10 +216,6 @@ extension LayoutDocument {
     }
     
     func registerForFeedbackChange() {
-        guard let interface = interface else {
-            return
-        }
-                
         interface.register(forFeedbackChange: { deviceID, contactID, value in
             if let feedback = self.coordinator.layout.feedbacks.find(deviceID: deviceID, contactID: contactID) {
                 feedback.detected = value == 1
@@ -232,10 +224,6 @@ extension LayoutDocument {
     }
                 
     func registerForSpeedChange() {
-        guard let interface = interface else {
-            return
-        }
-                
         interface.register(forSpeedChange: { address, speed in
             DispatchQueue.main.async {
                 if let train = self.coordinator.layout.trains.find(address: address.address) {
@@ -246,10 +234,6 @@ extension LayoutDocument {
     }
     
     func registerForDirectionChange() {
-        guard let interface = interface else {
-            return
-        }
-
         interface.register(forDirectionChange: { address, direction in
             DispatchQueue.main.async {
                 if let train = self.coordinator.layout.trains.find(address: address) {
@@ -275,10 +259,6 @@ extension LayoutDocument {
     }
     
     func registerForTurnoutChange() {
-        guard let interface = interface else {
-            return
-        }
-        
         interface.register(forTurnoutChange: { address, state, power in
             if let turnout = self.coordinator.layout.turnouts.find(address: address) {
                 BTLogger.debug("Turnout \(turnout.name) changed to \(state)")

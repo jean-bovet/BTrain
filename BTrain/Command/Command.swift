@@ -105,9 +105,8 @@ struct CommandLocomotive {
 }
 
 protocol CommandInterface {
-        
-    func connect(onReady: @escaping () -> Void, onError: @escaping (Error) -> Void, onStop: @escaping () -> Void)
-    func disconnect(_ completion: @escaping () -> Void)
+            
+    func disconnect(_ completion: @escaping CompletionBlock)
     
     func execute(command: Command, onCompletion: @escaping () -> Void)
 

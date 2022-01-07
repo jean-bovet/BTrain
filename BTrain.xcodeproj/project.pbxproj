@@ -108,6 +108,7 @@
 		A783EA5B278530BF00E69B6D /* SimulatorTrain.swift in Sources */ = {isa = PBXBuildFile; fileRef = A783EA5A278530BF00E69B6D /* SimulatorTrain.swift */; };
 		A783EA9F2787C6DA00E69B6D /* LayoutObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = A783EA9E2787C6DA00E69B6D /* LayoutObserver.swift */; };
 		A783EAA12787D12200E69B6D /* BTTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = A783EAA02787D12200E69B6D /* BTTestCase.swift */; };
+		A783EAA32787D68200E69B6D /* ProxyCommandInterface.swift in Sources */ = {isa = PBXBuildFile; fileRef = A783EAA22787D68200E69B6D /* ProxyCommandInterface.swift */; };
 		A784136B273CA4DE00381341 /* SwitchBoardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A784136A273CA4DE00381341 /* SwitchBoardView.swift */; };
 		A784136D273CDFF100381341 /* Shape.swift in Sources */ = {isa = PBXBuildFile; fileRef = A784136C273CDFF100381341 /* Shape.swift */; };
 		A784136F273CE00C00381341 /* BlockShape.swift in Sources */ = {isa = PBXBuildFile; fileRef = A784136E273CE00C00381341 /* BlockShape.swift */; };
@@ -308,6 +309,7 @@
 		A783EA5A278530BF00E69B6D /* SimulatorTrain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimulatorTrain.swift; sourceTree = "<group>"; };
 		A783EA9E2787C6DA00E69B6D /* LayoutObserver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutObserver.swift; sourceTree = "<group>"; };
 		A783EAA02787D12200E69B6D /* BTTestCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BTTestCase.swift; sourceTree = "<group>"; };
+		A783EAA22787D68200E69B6D /* ProxyCommandInterface.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProxyCommandInterface.swift; sourceTree = "<group>"; };
 		A7841368273B55FF00381341 /* View+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+Extension.swift"; sourceTree = "<group>"; };
 		A784136A273CA4DE00381341 /* SwitchBoardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwitchBoardView.swift; sourceTree = "<group>"; };
 		A784136C273CDFF100381341 /* Shape.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Shape.swift; sourceTree = "<group>"; };
@@ -474,6 +476,7 @@
 				A73AFE852726594600E1ED21 /* BTrainApp.swift */,
 				A79079A4277FAB7100771A60 /* SettingsView.swift */,
 				A7B06AF1272782C300BDD88C /* LayoutDocument.swift */,
+				A783EAA22787D68200E69B6D /* ProxyCommandInterface.swift */,
 				A7BD6257276D39CA0039B6C2 /* Utilities */,
 				A717158E2758809C00200F92 /* Geometry */,
 				A7B06B062728DD9500BDD88C /* Views */,
@@ -1114,6 +1117,7 @@
 				A7841378273E4EB900381341 /* TurnoutShape.swift in Sources */,
 				A744D1372765C5A3005C2F37 /* LayoutError.swift in Sources */,
 				A7218071275D398000831998 /* CS2DocumentParser.swift in Sources */,
+				A783EAA32787D68200E69B6D /* ProxyCommandInterface.swift in Sources */,
 				A71715892758448D00200F92 /* CGRect+Extension.swift in Sources */,
 				A7BE36AA2751BDC300286709 /* ConnectorPlug.swift in Sources */,
 				A73E080B276ABA91005F9D64 /* LayoutDCreator.swift in Sources */,

@@ -92,11 +92,6 @@ final class MarklinInterface {
         }
     }
 
-    func disconnect(_ completion: @escaping CompletionBlock) {
-        disconnectCompletionBlocks = completion
-        client.stop()
-    }
-    
     func send(message: MarklinCANMessage, onCompletion: @escaping () -> Void) {
         client.send(data: message.data, onCompletion: onCompletion)
     }
@@ -105,6 +100,11 @@ final class MarklinInterface {
 
 extension MarklinInterface: CommandInterface {    
         
+    func disconnect(_ completion: @escaping CompletionBlock) {
+        disconnectCompletionBlocks = completion
+        client.stop()
+    }
+    
     func execute(command: Command, onCompletion: @escaping () -> Void) {
         send(message: MarklinCANMessage.from(command: command), onCompletion: onCompletion)
     }
