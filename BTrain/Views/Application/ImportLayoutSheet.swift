@@ -53,7 +53,7 @@ struct ImportLayoutSheet: View {
                 }.keyboardShortcut(.cancelAction)
                 
                 Button("Import") {
-                    document.change(layout: LayoutFactory.createLayout(selectedLayoutId))
+                    document.layout.apply(other: LayoutFactory.createLayout(selectedLayoutId))
                     presentationMode.wrappedValue.dismiss()
                 }.keyboardShortcut(.defaultAction)
             }

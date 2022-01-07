@@ -46,7 +46,7 @@ struct OverviewSwitchboardView: View {
                 }
             }.background(Color(NSColor.windowBackgroundColor))
         }.sheet(isPresented: $state.trainDroppedInBlockAction) {
-            TrainDropActionSheet(layout: layout, trainDragInfo: state.trainDragInfo!, coordinator: document.coordinator!)
+            TrainDropActionSheet(layout: layout, trainDragInfo: state.trainDragInfo!, coordinator: document.coordinator)
                 .fixedSize(horizontal: true, vertical: false)
                 .padding()
         }
@@ -58,6 +58,6 @@ struct OverviewSwitchboardView_Previews: PreviewProvider {
     static let doc = LayoutDocument(layout: LayoutCCreator().newLayout())
 
     static var previews: some View {
-        OverviewSwitchboardView(layout: doc.layout, coordinator: doc.coordinator!, document: doc, switchboard: doc.switchboard!, state: doc.switchboard!.state)
+        OverviewSwitchboardView(layout: doc.layout, coordinator: doc.coordinator, document: doc, switchboard: doc.switchboard, state: doc.switchboard.state)
     }
 }

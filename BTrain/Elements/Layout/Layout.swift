@@ -35,6 +35,8 @@ final class Layout: Element, ObservableObject {
     
     @Published var trains = [Train]()
     
+    @Published var transitions = [Transition]()
+
     // Note: automatic route have a special ID that follows this pattern:
     // "automatic-<trainId>"
     @Published var routes = [Route]()
@@ -44,9 +46,7 @@ final class Layout: Element, ObservableObject {
     // created using the first-search approach which
     // always give the same result - useful for unit tests.
     @AppStorage("automaticRouteRandom") var automaticRouteRandom = true
-    
-    var transitions = [Transition]()
-    
+        
     // The command executor used to execute command towards the Digital Controller.
     var executor: LayoutCommandExecuting?
     
@@ -74,6 +74,15 @@ final class Layout: Element, ObservableObject {
         self.id = id
     }
 
+    func apply(other: Layout) {
+        self.blockMap = other.blockMap
+        self.feedbacks = other.feedbacks
+        self.turnouts = other.turnouts
+        self.trains = other.trains
+        self.transitions = other.transitions
+        self.routes = other.routes
+    }
+    
     // Programmatically trigger a change event for the layout,
     // which is used by other object, such as the switchboard,
     // to re-draw itself. This is necessary because changes

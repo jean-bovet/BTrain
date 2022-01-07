@@ -92,10 +92,10 @@ struct SwitchBoardView_Previews: PreviewProvider {
     }
     
     static var previews: some View {
-        SwitchBoardView(switchboard: doc.switchboard!,
-                        state: doc.switchboard!.state,
+        SwitchBoardView(switchboard: doc.switchboard,
+                        state: doc.switchboard.state,
                         layout: doc.layout,
-                        coordinator: doc.coordinator!)
+                        coordinator: doc.coordinator)
             .environmentObject(doc)
             .previewLayout(.fixed(width: 800, height: 600))
     }

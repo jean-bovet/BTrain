@@ -27,14 +27,14 @@ class OverviewViewTests: RootViewTests {
     }
     
     func testOverviewSwitchboardView() throws {
-        let sut = OverviewSwitchboardView(layout: doc.layout, coordinator: doc.coordinator!, document: doc, switchboard: doc.switchboard!, state: doc.switchboard!.state)
+        let sut = OverviewSwitchboardView(layout: doc.layout, coordinator: doc.coordinator, document: doc, switchboard: doc.switchboard, state: doc.switchboard.state)
         XCTAssertNoThrow(try sut.inspect().vStack().view(SwitchboardEditControlsView.self, 0))
         XCTAssertNoThrow(try sut.inspect().vStack().scrollView(1).view(SwitchBoardView.self))
     }
     
     func testTrainDropActionSheet() throws {
         let info = SwitchBoard.State.TrainDragInfo(trainId: layout.trains[0].id, blockId: layout.blockIds[0], position: 0)
-        let sut = TrainDropActionSheet(layout: doc.layout, trainDragInfo: info, coordinator: doc.coordinator!)
+        let sut = TrainDropActionSheet(layout: doc.layout, trainDragInfo: info, coordinator: doc.coordinator)
         
         _ = try sut.inspect().find(button: "Set Train")
         _ = try sut.inspect().find(button: "Move Train")

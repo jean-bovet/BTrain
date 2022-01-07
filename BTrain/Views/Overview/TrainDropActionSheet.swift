@@ -63,6 +63,6 @@ struct TrainDropActionSheet_Previews: PreviewProvider {
     static var previews: some View {
         TrainDropActionSheet(layout: doc.layout,
                              trainDragInfo: .init(trainId: .init(uuid: "1"), blockId: .init(uuid: "b1"), position: 0),
-                             coordinator: doc.coordinator!)
+                             coordinator: doc.coordinator)
     }
 }

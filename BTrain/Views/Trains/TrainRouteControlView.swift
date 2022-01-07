@@ -23,7 +23,7 @@ struct TrainRouteControlView: View {
     @Binding var error: String?
     
     func reserveAll() throws {
-        document.switchboard?.state.triggerRedraw.toggle()
+        document.switchboard.state.triggerRedraw.toggle()
         for (index, step) in route.steps.enumerated() {
             if index+1 < route.steps.count {
                 let nextStep = route.steps[index+1]

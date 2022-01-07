@@ -22,9 +22,9 @@ class SwitchboardEditControlsViewTests: XCTestCase {
     func testLayout() throws {
         let layout = LayoutACreator().newLayout()
         let doc = LayoutDocument(layout: layout)
-        let state = doc.switchboard!.state
+        let state = doc.switchboard.state
         
-        let sut = SwitchboardEditControlsView(layout: layout, state: state, document: doc, switchboard: doc.switchboard!)
+        let sut = SwitchboardEditControlsView(layout: layout, state: state, document: doc, switchboard: doc.switchboard)
         
         state.editable = false
         

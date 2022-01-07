@@ -43,7 +43,7 @@ final class LayoutDocument: ObservableObject {
     @Published var interface: CommandInterface? {
         didSet {
             connected = interface != nil
-            coordinator?.interface = interface
+            coordinator.interface = interface
             if let interface = interface {
                 layout.executor = LayoutCommandExecutor(layout: layout, interface: interface)
             } else {
@@ -57,9 +57,9 @@ final class LayoutDocument: ObservableObject {
 
     var layoutDiagnostics: LayoutDiagnostic
 
-    @Published var coordinator: LayoutCoordinator?
+    @Published var coordinator: LayoutCoordinator
 
-    @Published var switchboard: SwitchBoard?
+    @Published var switchboard: SwitchBoard
     
     // Used to perform the menu command "Diagnostics"
     @Published var diagnostics = false
@@ -92,14 +92,8 @@ final class LayoutDocument: ObservableObject {
         self.layout = layout
         self.layoutDiagnostics = LayoutDiagnostic(layout: layout)
         self.simulator = MarklinCommandSimulator(layout: layout)
-        change(layout: layout)
-    }
-    
-    // TODO: refactor to ensure layout is set only once
-    func change(layout: Layout) {
-        self.layout = layout
-        coordinator = LayoutCoordinator(layout: layout, interface: nil)
-        switchboard = SwitchBoardFactory.generateSwitchboard(layout: layout)
+        self.coordinator = LayoutCoordinator(layout: layout, interface: nil)
+        self.switchboard = SwitchBoardFactory.generateSwitchboard(layout: layout)
     }
 }
 
@@ -159,7 +153,7 @@ extension LayoutDocument {
     func start(train: Identifier<Train>, withRoute route: Identifier<Route>, toBlockId: Identifier<Block>?) throws {
         // Note: the simulator holds a reference to the layout and will automatically simulate any
         // enabled route associated with a train.
-        try coordinator?.start(routeID: route, trainID: train, toBlockId: toBlockId)
+        try coordinator.start(routeID: route, trainID: train, toBlockId: toBlockId)
     }
     
     func stop(train: Train) throws {
@@ -167,7 +161,7 @@ extension LayoutDocument {
             throw LayoutError.trainNotAssignedToARoute(train: train)
         }
                 
-        try coordinator?.stop(routeID: route, trainID: train.id)
+        try coordinator.stop(routeID: route, trainID: train.id)
     }
     
     func connectToSimulator(completed: ((Error?) -> Void)? = nil) {
@@ -229,13 +223,9 @@ extension LayoutDocument {
         guard let interface = interface else {
             return
         }
-        
-        guard let coordinator = coordinator else {
-            return
-        }
-        
+                
         interface.register(forFeedbackChange: { deviceID, contactID, value in
-            if let feedback = coordinator.layout.feedbacks.find(deviceID: deviceID, contactID: contactID) {
+            if let feedback = self.coordinator.layout.feedbacks.find(deviceID: deviceID, contactID: contactID) {
                 feedback.detected = value == 1
             }
         })
@@ -245,14 +235,10 @@ extension LayoutDocument {
         guard let interface = interface else {
             return
         }
-        
-        guard let coordinator = coordinator else {
-            return
-        }
-        
+                
         interface.register(forSpeedChange: { address, speed in
             DispatchQueue.main.async {
-                if let train = coordinator.layout.trains.find(address: address.address) {
+                if let train = self.coordinator.layout.trains.find(address: address.address) {
                     train.speed = speed
                 }
             }
@@ -264,13 +250,9 @@ extension LayoutDocument {
             return
         }
 
-        guard let coordinator = coordinator else {
-            return
-        }
-
         interface.register(forDirectionChange: { address, direction in
             DispatchQueue.main.async {
-                if let train = coordinator.layout.trains.find(address: address) {
+                if let train = self.coordinator.layout.trains.find(address: address) {
                     switch(direction) {
                     case .forward:
                         if train.directionForward == false {
@@ -297,12 +279,8 @@ extension LayoutDocument {
             return
         }
         
-        guard let coordinator = coordinator else {
-            return
-        }
-
         interface.register(forTurnoutChange: { address, state, power in
-            if let turnout = coordinator.layout.turnouts.find(address: address) {
+            if let turnout = self.coordinator.layout.turnouts.find(address: address) {
                 BTLogger.debug("Turnout \(turnout.name) changed to \(state)")
                 turnout.stateValue = state
                 self.layout.didChange()
