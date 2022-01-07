@@ -63,7 +63,7 @@
 		A73E080F276ACC79005F9D64 /* ScheduledMessageQueueTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A73E080E276ACC79005F9D64 /* ScheduledMessageQueueTests.swift */; };
 		A73E0812276ACDA8005F9D64 /* ClientServerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A73E0811276ACDA8005F9D64 /* ClientServerTests.swift */; };
 		A73E0814276AD1D0005F9D64 /* MarklinInterfaceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A73E0813276AD1D0005F9D64 /* MarklinInterfaceTests.swift */; };
-		A73E0816276B0BC0005F9D64 /* LayoutAllTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A73E0815276B0BC0005F9D64 /* LayoutAllTests.swift */; };
+		A73E0816276B0BC0005F9D64 /* LayoutGTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A73E0815276B0BC0005F9D64 /* LayoutGTests.swift */; };
 		A73E0818276B1059005F9D64 /* SwitchBoardViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A73E0817276B1059005F9D64 /* SwitchBoardViewTests.swift */; };
 		A73E081A276B19FE005F9D64 /* NewLayoutSheetTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A73E0819276B19FE005F9D64 /* NewLayoutSheetTests.swift */; };
 		A73E081D276B1AD4005F9D64 /* ConnectSheetViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A73E081C276B1AD4005F9D64 /* ConnectSheetViewTests.swift */; };
@@ -110,6 +110,7 @@
 		A783EAA12787D12200E69B6D /* BTTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = A783EAA02787D12200E69B6D /* BTTestCase.swift */; };
 		A783EAA32787D68200E69B6D /* ProxyCommandInterface.swift in Sources */ = {isa = PBXBuildFile; fileRef = A783EAA22787D68200E69B6D /* ProxyCommandInterface.swift */; };
 		A783EAA52788B52000E69B6D /* BlockShapeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A783EAA42788B52000E69B6D /* BlockShapeView.swift */; };
+		A783EAA92788C1F700E69B6D /* LayoutFeedbackMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = A783EAA82788C1F700E69B6D /* LayoutFeedbackMonitor.swift */; };
 		A784136B273CA4DE00381341 /* SwitchBoardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A784136A273CA4DE00381341 /* SwitchBoardView.swift */; };
 		A784136D273CDFF100381341 /* Shape.swift in Sources */ = {isa = PBXBuildFile; fileRef = A784136C273CDFF100381341 /* Shape.swift */; };
 		A784136F273CE00C00381341 /* BlockShape.swift in Sources */ = {isa = PBXBuildFile; fileRef = A784136E273CE00C00381341 /* BlockShape.swift */; };
@@ -266,7 +267,7 @@
 		A73E080E276ACC79005F9D64 /* ScheduledMessageQueueTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduledMessageQueueTests.swift; sourceTree = "<group>"; };
 		A73E0811276ACDA8005F9D64 /* ClientServerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClientServerTests.swift; sourceTree = "<group>"; };
 		A73E0813276AD1D0005F9D64 /* MarklinInterfaceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarklinInterfaceTests.swift; sourceTree = "<group>"; };
-		A73E0815276B0BC0005F9D64 /* LayoutAllTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutAllTests.swift; sourceTree = "<group>"; };
+		A73E0815276B0BC0005F9D64 /* LayoutGTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutGTests.swift; sourceTree = "<group>"; };
 		A73E0817276B1059005F9D64 /* SwitchBoardViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwitchBoardViewTests.swift; sourceTree = "<group>"; };
 		A73E0819276B19FE005F9D64 /* NewLayoutSheetTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewLayoutSheetTests.swift; sourceTree = "<group>"; };
 		A73E081C276B1AD4005F9D64 /* ConnectSheetViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectSheetViewTests.swift; sourceTree = "<group>"; };
@@ -312,6 +313,7 @@
 		A783EAA02787D12200E69B6D /* BTTestCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BTTestCase.swift; sourceTree = "<group>"; };
 		A783EAA22787D68200E69B6D /* ProxyCommandInterface.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProxyCommandInterface.swift; sourceTree = "<group>"; };
 		A783EAA42788B52000E69B6D /* BlockShapeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockShapeView.swift; sourceTree = "<group>"; };
+		A783EAA82788C1F700E69B6D /* LayoutFeedbackMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutFeedbackMonitor.swift; sourceTree = "<group>"; };
 		A7841368273B55FF00381341 /* View+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+Extension.swift"; sourceTree = "<group>"; };
 		A784136A273CA4DE00381341 /* SwitchBoardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwitchBoardView.swift; sourceTree = "<group>"; };
 		A784136C273CDFF100381341 /* Shape.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Shape.swift; sourceTree = "<group>"; };
@@ -508,6 +510,7 @@
 		A73AFE962726594800E1ED21 /* BTrainTests */ = {
 			isa = PBXGroup;
 			children = (
+				A783EAA02787D12200E69B6D /* BTTestCase.swift */,
 				A73AFE972726594800E1ED21 /* CANMessageTests.swift */,
 				A73E0808276ABA09005F9D64 /* SwitchboardTests.swift */,
 				A73E080E276ACC79005F9D64 /* ScheduledMessageQueueTests.swift */,
@@ -522,7 +525,6 @@
 				A73E07F4276974F1005F9D64 /* Layouts */,
 				A73E07F3276974E6005F9D64 /* Views */,
 				A73E081B276B1AC7005F9D64 /* Sheets */,
-				A783EAA02787D12200E69B6D /* BTTestCase.swift */,
 			);
 			path = BTrainTests;
 			sourceTree = "<group>";
@@ -655,7 +657,7 @@
 				A7F779D1272BA07100E73275 /* LayoutATests.swift */,
 				A7F779E4272F063F00E73275 /* LayoutBTests.swift */,
 				A7F779F3272F5DEA00E73275 /* LayoutCTests.swift */,
-				A73E0815276B0BC0005F9D64 /* LayoutAllTests.swift */,
+				A73E0815276B0BC0005F9D64 /* LayoutGTests.swift */,
 				A7F779DE272DB21000E73275 /* LayoutParserTests.swift */,
 				A792DEFE278508B0004B0439 /* LayoutCreatorTests.swift */,
 			);
@@ -886,6 +888,7 @@
 			isa = PBXGroup;
 			children = (
 				A711B14F2739EBD7002FE7DB /* LayoutCoordinator.swift */,
+				A783EAA82788C1F700E69B6D /* LayoutFeedbackMonitor.swift */,
 				A7218077275D922300831998 /* TrainController.swift */,
 				A7FBC8B7276EBB34009D49C3 /* PathFinder.swift */,
 			);
@@ -1168,6 +1171,7 @@
 				A784136F273CE00C00381341 /* BlockShape.swift in Sources */,
 				A71715802757036B00200F92 /* LayoutFCreator.swift in Sources */,
 				A78413882740DD2D00381341 /* SwitchBoardFactory.swift in Sources */,
+				A783EAA92788C1F700E69B6D /* LayoutFeedbackMonitor.swift in Sources */,
 				A7F779EB272F1E7700E73275 /* LayoutACreator.swift in Sources */,
 				A7F779F82732407E00E73275 /* TrainView.swift in Sources */,
 				A73B1643274DC4D20073947D /* FeedbackEditListView.swift in Sources */,
@@ -1208,7 +1212,7 @@
 				A73E0818276B1059005F9D64 /* SwitchBoardViewTests.swift in Sources */,
 				A7BE366D2751ABBF00286709 /* LayoutCTests.swift in Sources */,
 				A7FBC8B6276E8BB6009D49C3 /* PathFinderTests.swift in Sources */,
-				A73E0816276B0BC0005F9D64 /* LayoutAllTests.swift in Sources */,
+				A73E0816276B0BC0005F9D64 /* LayoutGTests.swift in Sources */,
 				A73E082B276C150D005F9D64 /* TrainSetLocationSheetTests.swift in Sources */,
 				A7907999277ED70C00771A60 /* SwitchboardEditControlsViewTests.swift in Sources */,
 				A721807D275DF1B100831998 /* TransitionsTests.swift in Sources */,

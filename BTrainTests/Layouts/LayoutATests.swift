@@ -173,4 +173,44 @@ class LayoutATests: RootLayoutTests {
         assert("r1: {r1{b1 ≏ ≏ }} <r1<t0,l>> [b2 ≏ ≏ ] <t1,l> [r1[b3 ≡ 🚂1  ≏ ]] <r1<t0(2,0),l>> !{r1{b1 ≏ ≏ }}")
     }
 
+    func testStrictMode() throws {
+        layout.strictRouteFeedbackStrategy = true
+        layout.detectUnexpectedFeedback = true
+        
+        assert("r1: {r1{b1 🛑🚂1 ≏ ≏ }} <t0> [b2 ≏ ≏ ] <t1> [b3 ≏ ≏ ] <t0(2,0)> !{r1{b1 ≏ ≏ }}")
+        assert("r1: {r1{b1 🛑🚂1 ≡ ≏ }} <t0> [b2 ≏ ≏ ] <t1> [b3 ≏ ≏ ] <t0(2,0)> !{r1{b1 ≡ ≏ }}")
+
+        try coordinator.start(routeID: "r1", trainID: "1")
+
+        assert("r1: {r1{b1 🚂1 ≏ ≏ }} <r1<t0>> [r1[b2 ≏ ≏ ]] <t1> [b3 ≏ ≏ ] <r1<t0(2,0)>> !{r1{b1 ≏ ≏ }}")
+        assert("r1: {r1{b1 🚂1 ≏ ≏ }} <r1<t0>> [r1[b2 ≏ ≏ ]] <t1> [b3 ≏ ≏ ] <r1<t0(2,0)>> !{r1{b1 ≏ ≏ }}")
+        assert("r1: {r1{b1 🛑🚂1 ≏ ≏ }} <r1<t0>> [r1[b2 ≡ ≏ ]] <t1> [b3 ≏ ≏ ] <r1<t0(2,0)>> !{r1{b1 ≏ ≏ }}")
+    }
+    
+    func testRelaxMode() throws {
+        layout.strictRouteFeedbackStrategy = false
+        layout.detectUnexpectedFeedback = true
+
+        assert("r1: {r1{b1 🛑🚂1 ≏ ≏ }} <t0> [b2 ≏ ≏ ] <t1> [b3 ≏ ≏ ] <t0(2,0)> !{r1{b1 ≏ ≏ }}")
+        assert("r1: {r1{b1 🛑🚂1 ≡ ≏ }} <t0> [b2 ≏ ≏ ] <t1> [b3 ≏ ≏ ] <t0(2,0)> !{r1{b1 ≡ ≏ }}")
+
+        try coordinator.start(routeID: "r1", trainID: "1")
+
+        assert("r1: {r1{b1 🚂1 ≏ ≏ }} <r1<t0>> [r1[b2 ≏ ≏ ]] <t1> [b3 ≏ ≏ ] <r1<t0(2,0)>> !{r1{b1 ≏ ≏ }}")
+        assert("r1: {b1 ≏ ≏ } <t0> [r1[b2 ≡ 🚂1 ≏ ]] <r1<t1,l>> [r1[b3 ≏ ≏ ]] <t0(2,0)> !{b1 ≏ ≏ }")
+    }
+
+    func testRelaxMode2() throws {
+        layout.strictRouteFeedbackStrategy = false
+        layout.detectUnexpectedFeedback = true
+
+        assert("r1: {r1{b1 🛑🚂1 ≏ ≏ }} <t0> [b2 ≏ ≏ ] <t1> [b3 ≏ ≏ ] <t0(2,0)> !{r1{b1 ≏ ≏ }}")
+        assert("r1: {r1{b1 🛑🚂1 ≡ ≏ }} <t0> [b2 ≏ ≏ ] <t1> [b3 ≏ ≏ ] <t0(2,0)> !{r1{b1 ≡ ≏ }}")
+
+        try coordinator.start(routeID: "r1", trainID: "1")
+
+        assert("r1: {r1{b1 🚂1 ≏ ≏ }} <r1<t0>> [r1[b2 ≏ ≏ ]] <t1> [b3 ≏ ≏ ] <r1<t0(2,0)>> !{r1{b1 ≏ ≏ }}")
+        assert("r1: {r1{b1 🛑🚂1 ≏ ≏ }} <r1<t0>> [r1[b2 ≏ ≡ ]] <t1> [b3 ≏ ≏ ] <r1<t0(2,0)>> !{r1{b1 ≏ ≏ }}")
+    }
+
 }

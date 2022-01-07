@@ -27,6 +27,8 @@ enum LayoutError: Error {
     
     case blockNotEmpty(blockId: Identifier<Block>)
     case blockNotReservedForTrain(block: Block, train: Identifier<Train>)
+
+    case unexpectedFeedback(feedback: Feedback)
     
     case noTransition(fromBlockId: Identifier<Block>, toBlockId: Identifier<Block>)
     case lastTransitionToBlock(transition: Identifier<Transition>, blockId: Identifier<Block>)
@@ -55,6 +57,10 @@ extension LayoutError: LocalizedError {
             return "Block \(blockId) is not empty"
         case .blockNotReservedForTrain(block: let block, train: let train):
             return "Block \(block.name) did not get reserved for train \(train)"
+            
+        case .unexpectedFeedback(feedback: let feedback):
+            return "Unexpected feedback \(feedback.name) detected"
+
         case .noTransition(fromBlockId: let fromBlockId, toBlockId: let toBlockId):
             return "No transition found from block \(fromBlockId) to block \(toBlockId)"
         case .lastTransitionToBlock(transition: let transition, blockId: let blockId):

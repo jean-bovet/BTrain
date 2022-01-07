@@ -28,25 +28,9 @@ final class TrainController {
         self.layout = layout
         self.train = train
     }
-        
-    @discardableResult
-    func run() -> Result {
-        do {
-            return try tryRun()
-        } catch {
-            // Stop the train in case there is a problem processing the layout
-            BTLogger.error("Stop train \(train) because there is an error processing the layout: \(error)")
-            do {
-                try layout.stopTrain(train)
-            } catch {
-                BTLogger.error("Unable to stop train \(train) because \(error.localizedDescription)")
-            }
             
-            return .processed
-        }
-    }
-    
-    func tryRun() throws -> Result {
+    @discardableResult
+    func run() throws -> Result {
         guard let route = layout.route(for: train.routeId, trainId: train.id) else {
             // Stop the train if there is no route associated with it
             return try stop()
@@ -272,7 +256,7 @@ final class TrainController {
             return .none
         }
         
-        guard layout.atEndOfBlock(train: train) else {
+        guard layout.shouldHandleTrainMoveToNextBlock(train: train) else {
             return .none
         }
         

@@ -14,7 +14,7 @@ import XCTest
 
 @testable import BTrain
 
-class LayoutAllTests: RootLayoutTests {
+class LayoutGTests: RootLayoutTests {
 
     override var layoutID: Identifier<Layout>? {
         return LayoutGCreator.id

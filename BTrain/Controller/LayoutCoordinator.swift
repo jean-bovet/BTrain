@@ -17,14 +17,22 @@ final class LayoutCoordinator: ObservableObject {
     
     let layout: Layout
     
-    var interface: CommandInterface?
+    let feedbackMonitor: LayoutFeedbackMonitor
     
+    var interface: CommandInterface?
+        
     var controllers = [Identifier<Train>:TrainController]()
 
+    var sortedControllers: [TrainController] {
+        let sortedKeys = controllers.keys.sorted()
+        return sortedKeys.compactMap { controllers[$0] }
+    }
+    
     var cancellables = [AnyCancellable]()
         
     init(layout: Layout, interface: CommandInterface?) {
         self.layout = layout
+        self.feedbackMonitor = LayoutFeedbackMonitor(layout: layout)
         self.interface = interface
                 
         registerForFeedbackChanges()
@@ -39,6 +47,7 @@ final class LayoutCoordinator: ObservableObject {
     let debounceFor: RunLoop.SchedulerTimeType.Stride = .milliseconds(100)
     
     func registerForFeedbackChanges() {
+        // TODO: use LayoutObserver
         for feedback in layout.feedbacks {
             let cancellable = feedback.$detected
                 .dropFirst()
@@ -97,21 +106,42 @@ final class LayoutCoordinator: ObservableObject {
         
         // Process the latest changes
         updateControllers()
-        
+                
         // Run each controller one by one, using
         // the sorted keys to ensure they always
         // run in the same order.
-        let sortedKeys = controllers.keys.sorted()
+        let sortedControllers = sortedControllers
         var result: TrainController.Result = .none
-        for key in sortedKeys {
-            let controller = controllers[key]
-            if controller?.run() == .processed {
-                result = .processed
+        do {
+            // Update and detect any unexpected feedbacks
+            if layout.detectUnexpectedFeedback {
+                try feedbackMonitor.update(with: sortedControllers.map { $0.train })
+                try feedbackMonitor.handleUnexpectedFeedbacks()
             }
+            
+            for controller in sortedControllers {
+                if try controller.run() == .processed {
+                    result = .processed
+                }
+            }
+        } catch {
+            // Stop the train in case there is a problem processing the layout
+            BTLogger.error("Stopping all trains because there is an error processing the layout: \(error.localizedDescription)")
+            stopAll()
         }
         return result
     }
         
+    func stopAll() {
+        for controller in sortedControllers {
+            do {
+                try layout.stopTrain(controller.train)
+            } catch {
+                BTLogger.error("Unable to stop train \(controller.train) because \(error.localizedDescription)")
+            }
+        }
+    }
+    
     func start(routeID: Identifier<Route>, trainID: Identifier<Train>, toBlockId: Identifier<Block>?) throws {
         try layout.start(routeID: routeID, trainID: trainID, toBlockId: toBlockId)
         _ = run()

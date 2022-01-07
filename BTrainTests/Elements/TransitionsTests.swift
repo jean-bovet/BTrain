@@ -123,8 +123,8 @@ class TransitionsTests: XCTestCase {
         try v8.start(routeID: r1.id, trainID: t1.id)
         try v8.start(routeID: r2.id, trainID: t2.id)
         
-        c1.run()
-        c2.run()
+        try c1.run()
+        try c2.run()
         
         // t1 starts but t2 cannot because t1 has reserved all the transitions
         // out of the first block - transitions that are shared with t2's route.
@@ -137,8 +137,8 @@ class TransitionsTests: XCTestCase {
         // So we manually free up the first block and all the transitions to the next one
         try v8.free(fromBlock: r1.steps[0].blockId, toBlockNotIncluded: r1.steps[1].blockId, direction: .next)
         
-        c1.run()
-        c2.run()
+        try c1.run()
+        try c2.run()
         
         // Now t2 starts because it can reserve the route
         XCTAssertEqual(t1.speed, 0)

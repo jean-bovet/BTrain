@@ -19,6 +19,9 @@ struct SettingsView: View {
     }
 
     @AppStorage("automaticRouteRandom") private var automaticRouteRandom = true
+    @AppStorage("detectUnexpectedFeedback") var detectUnexpectedFeedback = true
+    @AppStorage("strictRouteFeedbackStrategy") var strictRouteFeedbackStrategy = true
+
     @AppStorage("autoConnectSimulator") private var autoConnectSimulator = false
     @AppStorage("autoEnableSimulator") private var autoEnableSimulator = false
     @AppStorage("debugMode") private var showDebugControls = false
@@ -28,6 +31,10 @@ struct SettingsView: View {
         TabView {
             Form {
                 Toggle("Generate Automatic Route at Random", isOn: $automaticRouteRandom)
+
+                Toggle("Detect Unexpected Feedbacks", isOn: $detectUnexpectedFeedback)
+
+                Toggle("Strict Route Feedback Detection", isOn: $strictRouteFeedbackStrategy)
 
                 Slider(value: $fontSize, in: 9...96) {
                     Text("Font Size (\(fontSize, specifier: "%.0f") pts)")
@@ -53,7 +60,7 @@ struct SettingsView: View {
             .tag(Tabs.advanced)
         }
         .padding(20)
-        .frame(width: 400, height: 120)
+        .frame(width: 450, height: 160)
     }
 }
 

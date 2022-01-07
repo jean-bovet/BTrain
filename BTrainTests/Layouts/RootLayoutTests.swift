@@ -14,7 +14,7 @@ import XCTest
 
 @testable import BTrain
 
-class RootLayoutTests: XCTestCase {
+class RootLayoutTests: BTTestCase {
 
     var asserter: LayoutAsserter!
     var coordinator: LayoutCoordinator!
@@ -36,7 +36,11 @@ class RootLayoutTests: XCTestCase {
     }
     
     override func setUp() {
+        super.setUp()
+        
         let layout =  LayoutFactory.createLayout(layoutID!)
+        layout.detectUnexpectedFeedback = true
+        layout.strictRouteFeedbackStrategy = true
         self.coordinator = LayoutCoordinator(layout: layout,
                                          interface: nil)
         self.asserter = LayoutAsserter(layout: layout, coordinator: coordinator)

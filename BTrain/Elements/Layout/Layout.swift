@@ -46,7 +46,19 @@ final class Layout: Element, ObservableObject {
     // created using the first-search approach which
     // always give the same result - useful for unit tests.
     @AppStorage("automaticRouteRandom") var automaticRouteRandom = true
-        
+
+    // True if unexpected feedback should be detected and the layout stopped.
+    @AppStorage("detectUnexpectedFeedback") var detectUnexpectedFeedback = true
+    
+    // True if the layout should enforce a strict route feedback strategy; this means
+    // that the layout is expecting each train to activate one feedback after another,
+    // in the order of the train direction of travel, including the first feedback of
+    // the next block to detect when the train moves to the next block
+    // False if the layout authorize any feedback to be triggered within the block in which
+    // the train is located as well as the first feedback of the next block to detect when
+    // the train moves to the next block.
+    @AppStorage("strictRouteFeedbackStrategy") var strictRouteFeedbackStrategy = true
+
     // The command executor used to execute command towards the Digital Controller.
     var executor: LayoutCommandExecuting?
     
@@ -81,6 +93,16 @@ final class Layout: Element, ObservableObject {
         self.trains = other.trains
         self.transitions = other.transitions
         self.routes = other.routes
+    }
+    
+    // Returns true if the specified train can be considered at a valid
+    // location to be monitored to move to the next block.
+    func shouldHandleTrainMoveToNextBlock(train: Train) -> Bool {
+        if strictRouteFeedbackStrategy {
+            return atEndOfBlock(train: train)
+        } else {
+            return true
+        }
     }
     
     // Programmatically trigger a change event for the layout,
