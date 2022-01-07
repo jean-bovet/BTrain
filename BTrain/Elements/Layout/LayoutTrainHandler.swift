@@ -110,12 +110,10 @@ final class LayoutTrainHandler: LayoutTrainHandling {
     
     private let layout: Layout
     private let layoutTransitioning: LayoutTransitionHandling
-    private let exec: LayoutCommandExecuting
     
-    init(layout: Layout, layoutTransitionController: LayoutTransitionHandling, exec: LayoutCommandExecuting) {
+    init(layout: Layout, layoutTransitionController: LayoutTransitionHandling) {
         self.layout = layout
         self.layoutTransitioning = layoutTransitionController
-        self.exec = exec
     }
     
     func setTrain(_ train: Train, toPosition position: Int) throws {
@@ -131,7 +129,7 @@ final class LayoutTrainHandler: LayoutTrainHandling {
         }
         
         train.speed = speed
-        exec.sendTrainSpeed(train: train)
+        layout.executor?.sendTrainSpeed(train: train)
         
         layout.didChange()
     }
@@ -164,7 +162,7 @@ final class LayoutTrainHandler: LayoutTrainHandling {
         let forward = direction == .next
         if train.directionForward != forward {
             train.directionForward = forward
-            exec.sendTrainDirection(train: train)
+            layout.executor?.sendTrainDirection(train: train)
         }
     }
     
@@ -195,7 +193,7 @@ final class LayoutTrainHandler: LayoutTrainHandling {
             throw LayoutError.trainNotFound(trainId: train.id)
         }
         train.speed = 0
-        exec.sendTrainSpeed(train: train)
+        layout.executor?.sendTrainSpeed(train: train)
     }
 
     func setTrain(_ train: Train, routeIndex: Int) throws {
@@ -323,7 +321,7 @@ final class LayoutTrainHandler: LayoutTrainHandling {
                 let state = turnout.state(fromSocket: fromSocket, toSocket: toSocket)
                 turnout.state = state
                 turnout.reserved = train
-                exec.sendTurnoutState(turnout: turnout) { }
+                layout.executor?.sendTurnoutState(turnout: turnout) { }
             } else if let blockId = transition.b.block {
                 guard let block = layout.block(for: blockId) else {
                     throw LayoutError.blockNotFound(blockId: blockId)

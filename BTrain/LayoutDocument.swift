@@ -44,7 +44,11 @@ final class LayoutDocument: ObservableObject {
         didSet {
             connected = interface != nil
             coordinator?.interface = interface
-            layout.interface = interface
+            if let interface = interface {
+                layout.executor = LayoutCommandExecutor(layout: layout, interface: interface)
+            } else {
+                layout.executor = nil
+            }
         }
     }
     
@@ -210,7 +214,7 @@ extension LayoutDocument {
         activateTurnountPercentage = 0.0
         var completionCount = 0
         for t in turnouts {
-            layout.sendTurnoutState(turnout: t) {
+            layout.executor?.sendTurnoutState(turnout: t) {
                 completionCount += 1
                 self.activateTurnountPercentage = Double(completionCount) / Double(turnouts.count)
                 if completionCount == turnouts.count {

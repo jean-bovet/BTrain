@@ -21,15 +21,19 @@ protocol LayoutCommandExecuting {
     func sendTrainSpeed(train: Train)
 }
 
-extension Layout: LayoutCommandExecuting {
+final class LayoutCommandExecutor: LayoutCommandExecuting {
+    
+    let layout: Layout
+    let interface: CommandInterface
+    
+    init(layout: Layout, interface: CommandInterface) {
+        self.layout = layout
+        self.interface = interface
+    }
     
     func sendTurnoutState(turnout: Turnout, completion: @escaping CompletionBlock) {
         BTLogger.debug("Turnout \(turnout) state changed to \(turnout.state)")
-        
-        guard let interface = interface else {
-            return
-        }
-        
+                
         let commands = turnout.stateCommands(power: 0x1)
         var commandCompletionCount = commands.count
         commands.forEach { interface.execute(command: $0) {
@@ -42,24 +46,24 @@ extension Layout: LayoutCommandExecuting {
         // Turn-off the turnout power after 250ms (activation time)
         let idleCommands = turnout.stateCommands(power: 0x0)
         Timer.scheduledTimer(withTimeInterval: 0.250, repeats: false) { timer in
-            idleCommands.forEach { interface.execute(command: $0) {}}
+            idleCommands.forEach { self.interface.execute(command: $0) {}}
         }
     }
 
     func sendTrainDirection(train: Train) {
-        BTLogger.debug("Train \(train.name) changed direction to \(train.directionForward ? "forward" : "backward" )", self, train)
+        BTLogger.debug("Train \(train.name) changed direction to \(train.directionForward ? "forward" : "backward" )", layout, train)
         let command: Command
         if train.directionForward {
             command = .direction(address: train.address, direction: .forward)
         } else {
             command = .direction(address: train.address, direction: .backward)
         }
-        interface?.execute(command: command) {}
+        interface.execute(command: command) {}
     }
     
     func sendTrainSpeed(train: Train) {
-        BTLogger.debug("Train \(train.name) changed speed to \(train.speed)", self, train)
-        interface?.execute(command: .speed(address: train.address, speed: train.speed)) {}
+        BTLogger.debug("Train \(train.name) changed speed to \(train.speed)", layout, train)
+        interface.execute(command: .speed(address: train.address, speed: train.speed)) {}
     }
 }
 

@@ -47,8 +47,8 @@ final class Layout: Element, ObservableObject {
     
     var transitions = [Transition]()
     
-    // TODO: refactor to remove this from layout
-    var interface: CommandInterface?
+    // The command executor used to execute command towards the Digital Controller.
+    var executor: LayoutCommandExecuting?
     
     // MARK: Handlers
         
@@ -57,7 +57,7 @@ final class Layout: Element, ObservableObject {
     }()
 
     lazy var trainHandling: LayoutTrainHandling = {
-        return LayoutTrainHandler(layout: self, layoutTransitionController: transitionHandling, exec: self)
+        return LayoutTrainHandler(layout: self, layoutTransitionController: transitionHandling)
     }()
 
     lazy var routeHandling: LayoutRouteHandling = {

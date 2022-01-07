@@ -739,7 +739,6 @@
 			isa = PBXGroup;
 			children = (
 				A74CCC67272A59F0004E58F5 /* Layout.swift */,
-				A783EA9E2787C6DA00E69B6D /* LayoutObserver.swift */,
 				A7710E6227799C9F00C08150 /* Layout+Blocks.swift */,
 				A7710E6427799CF800C08150 /* Layout+Routes.swift */,
 				A7710E6627799D5C00C08150 /* Layout+Trains.swift */,
@@ -751,6 +750,7 @@
 				A7EAD11327608BAA00455E09 /* LayoutTransitionHandler.swift */,
 				A7EAD11127608B0500455E09 /* LayoutTrainHandler.swift */,
 				A7EAD11527608BE000455E09 /* LayoutRouteHandler.swift */,
+				A783EA9E2787C6DA00E69B6D /* LayoutObserver.swift */,
 				A792DEFA27841B35004B0439 /* LayoutCommandExecuting.swift */,
 			);
 			path = Layout;
