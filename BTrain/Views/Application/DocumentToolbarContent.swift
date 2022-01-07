@@ -21,18 +21,16 @@ struct DocumentToolbarContent: ToolbarContent {
     var body: some ToolbarContent {
         ToolbarItemGroup {
             ConnectCommandsView(document: document, connectAlertShowing: $connectAlertShowing)
+            Spacer()
         }
-        
-        ToolbarItemGroup {
-            Menu("Tools") {
-                Button("Validate Layout") {
-                    document.diagnostics.toggle()
-                }
 
-                Divider()
-                                
-                ToolDebugCommandsView(document: document)
-            }
+        ToolbarItemGroup {
+            
+            DiagnosticsIndicationView(diagnostics: document.layoutDiagnostics, document: document)
+
+            Spacer()
+
+            ToolDebugCommandsView(document: document)
 
             if let switchboard = document.switchboard, document.selectedView == .switchboard {
                 Menu("Switchboard") {
@@ -90,6 +88,29 @@ struct ConnectCommandsView: View {
     }
 }
 
+struct DiagnosticsIndicationView: View {
+    
+    @ObservedObject var diagnostics: LayoutDiagnostic
+    @ObservedObject var document: LayoutDocument
+
+    var body: some View {
+        if diagnostics.hasErrors {
+            Button("􀇾") {
+                document.diagnostics.toggle()
+            }
+            .foregroundColor(.red)
+            .help("The layout has some issues")
+        } else {
+            Button("􀁢") {
+                document.diagnostics.toggle()
+            }
+            .foregroundColor(.green)
+            .help("The layout is valid")
+        }
+    }
+    
+}
+
 struct SimulatorIndicationView: View {
     
     @ObservedObject var simulator: MarklinCommandSimulator
@@ -129,18 +150,18 @@ struct ToolDebugCommandsView: View {
     
     var body: some View {
         if document.debugMode {
-            Divider()
+            Menu("Developer") {
+                Button("Repair Layout") {
+                    document.repairLayoutTrigger.toggle()
+                }
+                
+                Divider()
 
-            Button("Repair Layout") {
-                document.repairLayoutTrigger.toggle()
-            }
-            
-            Divider()
-
-            Button("Generate Swift Code") {
-                let code = Layout2Swift(layout: document.layout).swift()
-                NSPasteboard.general.declareTypes([.string], owner: nil)
-                NSPasteboard.general.setString(code, forType: .string)
+                Button("Generate Swift Code") {
+                    let code = Layout2Swift(layout: document.layout).swift()
+                    NSPasteboard.general.declareTypes([.string], owner: nil)
+                    NSPasteboard.general.setString(code, forType: .string)
+                }
             }
         }
     }

@@ -11,30 +11,16 @@
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 import XCTest
-import ViewInspector
-
 @testable import BTrain
 
-extension AppView: Inspectable { }
-extension OverviewView: Inspectable { }
-extension OverviewSwitchboardView: Inspectable { }
-extension BlockEditListView: Inspectable { }
-extension TurnoutEditListView: Inspectable { }
-extension FeedbackEditListView: Inspectable { }
-extension TrainListView: Inspectable { }
-extension SwitchBoardView: Inspectable { }
-extension FeedbackView: Inspectable { }
-extension TrainEditListView: Inspectable { }
-extension TrainView: Inspectable { }
-extension TrainControlsView: Inspectable { }
-extension TrainLocationView: Inspectable { }
-extension TrainRouteView: Inspectable { }
-
-class RootViewTests: BTTestCase {
-
-    let doc = LayoutDocument(layout: LayoutCCreator().newLayout())
-
-    var layout: Layout {
-        return doc.layout
+class BTTestCase: XCTestCase {
+    var backup = [String:Any]()
+    
+    override func setUp() {
+        backup = UserDefaults.standard.dictionaryRepresentation()
+    }
+    
+    override func tearDown() async throws {
+        UserDefaults.standard.setValuesForKeys(backup)
     }
 }

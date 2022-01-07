@@ -13,8 +13,8 @@
 import XCTest
 @testable import BTrain
 
-class PathFinderTests: XCTestCase {
-    
+class PathFinderTests: BTTestCase {
+        
     func testValidation() throws {
         let layout = LayoutECreator().newLayout()
         let errors = try LayoutDiagnostic(layout: layout).check()

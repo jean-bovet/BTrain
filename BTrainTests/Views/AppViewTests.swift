@@ -17,8 +17,6 @@ import XCTest
 class AppViewTests: RootViewTests {
 
     func testMainView() throws {
-        let previousValue = doc.selectedView
-        
         let sut = AppView(document: doc)
         
         doc.selectedView = .switchboard
@@ -39,8 +37,6 @@ class AppViewTests: RootViewTests {
         doc.selectedView = .feedback
         XCTAssertThrowsError(try sut.inspect().find(TurnoutEditListView.self))
         XCTAssertNoThrow(try sut.inspect().find(FeedbackEditListView.self))
-        
-        doc.selectedView = previousValue
     }
 
 }

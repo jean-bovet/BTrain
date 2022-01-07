@@ -41,9 +41,8 @@ final class ShapeProvider: ShapeProviding {
     private (set) var shapes = [Shape]()
 
     private let layout: Layout
+    private let observer: LayoutObserver
     private let context: ShapeContext
-    
-    private var cancellables = [AnyCancellable]()
     
     var selectedShape: Shape? {
         return shapes.first(where: { $0.selected })
@@ -75,21 +74,25 @@ final class ShapeProvider: ShapeProviding {
     
     init(layout: Layout, context: ShapeContext) {
         self.layout = layout
+        self.observer = LayoutObserver(layout: layout)
         self.context = context
         
-        cancellables.append(layout.$trains.sink(receiveValue: { trains in
+        observer.registerForTrainChange { trains in
             self.updateShapes()
-        }))
-        cancellables.append(layout.$blockMap.sink(receiveValue: { blocks in
+        }
+
+        observer.registerForBlockChange { blocks in
             // Note: need to pass the `blocks` parameter here because the layout.blocks
             // has not yet had the time to be updated
             self.updateShapes(blocks: blocks.values.map { $0 as Block })
-        }))
-        cancellables.append(layout.$turnouts.sink(receiveValue: { turnouts in
+        }
+        
+        observer.registerForTurnoutChange { turnouts in
             // Note: need to pass the `turnouts` parameter here because the layout.turnouts
             // has not yet had the time to be updated
             self.updateShapes(turnouts: turnouts)
-        }))
+        }
+        
         updateShapes()
     }
         

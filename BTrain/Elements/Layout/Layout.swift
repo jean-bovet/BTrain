@@ -47,6 +47,7 @@ final class Layout: Element, ObservableObject {
     
     var transitions = [Transition]()
     
+    // TODO: refactor to remove this from layout
     var interface: CommandInterface?
     
     // MARK: Handlers

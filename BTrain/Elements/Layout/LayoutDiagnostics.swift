@@ -67,14 +67,33 @@ extension DiagnosticError: LocalizedError {
     }
 }
 
-final class LayoutDiagnostic {
+final class LayoutDiagnostic: ObservableObject {
     
     let layout: Layout
+    let observer: LayoutObserver
+    @Published var hasErrors = false
     
     init(layout: Layout) {
         self.layout = layout
+        self.observer = LayoutObserver(layout: layout)
+        self.automaticCheck()
+        
+        observer.registerForAnyChange() {
+            DispatchQueue.main.async {
+                self.automaticCheck()
+            }
+        }
     }
 
+    func automaticCheck() {
+        do {
+            hasErrors = try check().count > 0
+        } catch {
+            BTLogger.error("Error checking the layout: \(error)")
+            hasErrors = true
+        }
+    }
+    
     func check() throws -> [DiagnosticError] {
         var errors = [DiagnosticError]()
         

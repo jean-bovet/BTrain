@@ -51,13 +51,15 @@ final class LayoutDocument: ObservableObject {
     // The layout model
     @Published private(set) var layout: Layout
 
+    var layoutDiagnostics: LayoutDiagnostic
+
     @Published var coordinator: LayoutCoordinator?
 
     @Published var switchboard: SwitchBoard?
     
     // Used to perform the menu command "Diagnostics"
     @Published var diagnostics = false
-
+    
     @Published var repairLayoutTrigger = false
 
     @Published var discoverLocomotiveConfirmation = false
@@ -84,10 +86,12 @@ final class LayoutDocument: ObservableObject {
         
     init(layout: Layout) {
         self.layout = layout
+        self.layoutDiagnostics = LayoutDiagnostic(layout: layout)
         self.simulator = MarklinCommandSimulator(layout: layout)
         change(layout: layout)
     }
     
+    // TODO: refactor to ensure layout is set only once
     func change(layout: Layout) {
         self.layout = layout
         coordinator = LayoutCoordinator(layout: layout, interface: nil)
