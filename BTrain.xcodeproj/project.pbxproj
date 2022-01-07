@@ -109,6 +109,7 @@
 		A783EA9F2787C6DA00E69B6D /* LayoutObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = A783EA9E2787C6DA00E69B6D /* LayoutObserver.swift */; };
 		A783EAA12787D12200E69B6D /* BTTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = A783EAA02787D12200E69B6D /* BTTestCase.swift */; };
 		A783EAA32787D68200E69B6D /* ProxyCommandInterface.swift in Sources */ = {isa = PBXBuildFile; fileRef = A783EAA22787D68200E69B6D /* ProxyCommandInterface.swift */; };
+		A783EAA52788B52000E69B6D /* BlockShapeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A783EAA42788B52000E69B6D /* BlockShapeView.swift */; };
 		A784136B273CA4DE00381341 /* SwitchBoardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A784136A273CA4DE00381341 /* SwitchBoardView.swift */; };
 		A784136D273CDFF100381341 /* Shape.swift in Sources */ = {isa = PBXBuildFile; fileRef = A784136C273CDFF100381341 /* Shape.swift */; };
 		A784136F273CE00C00381341 /* BlockShape.swift in Sources */ = {isa = PBXBuildFile; fileRef = A784136E273CE00C00381341 /* BlockShape.swift */; };
@@ -310,6 +311,7 @@
 		A783EA9E2787C6DA00E69B6D /* LayoutObserver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutObserver.swift; sourceTree = "<group>"; };
 		A783EAA02787D12200E69B6D /* BTTestCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BTTestCase.swift; sourceTree = "<group>"; };
 		A783EAA22787D68200E69B6D /* ProxyCommandInterface.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProxyCommandInterface.swift; sourceTree = "<group>"; };
+		A783EAA42788B52000E69B6D /* BlockShapeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockShapeView.swift; sourceTree = "<group>"; };
 		A7841368273B55FF00381341 /* View+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+Extension.swift"; sourceTree = "<group>"; };
 		A784136A273CA4DE00381341 /* SwitchBoardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwitchBoardView.swift; sourceTree = "<group>"; };
 		A784136C273CDFF100381341 /* Shape.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Shape.swift; sourceTree = "<group>"; };
@@ -866,6 +868,7 @@
 				A7B0B5162762FB6500F11A3E /* BlockEditListView.swift */,
 				A7F31BA0277C3D7A00FE0C65 /* BlockEditView.swift */,
 				A73E0824276B99A8005F9D64 /* BlockFeedbackView.swift */,
+				A783EAA42788B52000E69B6D /* BlockShapeView.swift */,
 			);
 			path = "Block Editor";
 			sourceTree = "<group>";
@@ -1158,6 +1161,7 @@
 				A72180852760428E00831998 /* Socket.swift in Sources */,
 				A7710E572777D69400C08150 /* RouteListView.swift in Sources */,
 				A79079A3277F87AB00771A60 /* Spacer+Extension.swift in Sources */,
+				A783EAA52788B52000E69B6D /* BlockShapeView.swift in Sources */,
 				A784138F274230CF00381341 /* MarklinTestMessageFactory.swift in Sources */,
 				A7EAD11227608B0500455E09 /* LayoutTrainHandler.swift in Sources */,
 				A7841371273CE02000381341 /* LinkShape.swift in Sources */,

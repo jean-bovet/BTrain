@@ -12,35 +12,39 @@
 
 import SwiftUI
 
-struct BlockEditView: View {
+struct BlockShapeView: View {
     
     let layout: Layout
-    @ObservedObject var block: Block
+    let category: Block.Category
+    let shapeContext = ShapeContext()
+
+    let viewSize = CGSize(width: 104, height: 34)
+    
+    var block: Block {
+        return Block("", type: category, center: .init(x: viewSize.width/2, y: viewSize.height/2), rotationAngle: 0)
+    }
+    
+    var shape: BlockShape {
+        let shape = BlockShape(layout: layout, block: block, shapeContext: shapeContext)
+        return shape
+    }
     
     var body: some View {
-        VStack(alignment: .leading) {
-            Picker("Type", selection: $block.category) {
-                ForEach(Block.Category.allCases, id:\.self) { category in
-                    HStack {
-                        Text(category.description)
-                        BlockShapeView(layout: layout, category: category)
-                    }
-                }
-            }.pickerStyle(.inline)
-
-            GroupBox("Feedbacks") {
-                BlockFeedbackView(layout: layout, block: block)
+        Canvas { context, size in
+            context.withCGContext { context in
+                shape.draw(ctx: context)
             }
-            
-            Spacer()
-        }
+        }.frame(width: viewSize.width, height: viewSize.height)
     }
+    
 }
 
-struct BlockEditView_Previews: PreviewProvider {
+
+struct BlockShapeView_Previews: PreviewProvider {
     
-    static let layout = LayoutCCreator().newLayout()
+    static let layout = LayoutACreator().newLayout()
+    
     static var previews: some View {
-        BlockEditView(layout: layout, block: layout.block(at: 0))
+        BlockShapeView(layout: layout, category: .station)
     }
 }
