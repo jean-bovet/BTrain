@@ -24,6 +24,9 @@ final class Train: Element, ObservableObject {
     // Name of the train
     @Published var name = ""
     
+    // The URL of the train icon to load
+    @Published var iconUrlData: Data?
+    
     // Address of the train
     @Published var address: CommandLocomotiveAddress = .init(0, .MFX)
         
@@ -65,7 +68,7 @@ final class Train: Element, ObservableObject {
 extension Train: Codable {
     
     enum CodingKeys: CodingKey {
-      case id, enabled, name, address, speed, direction, route, routeIndex, block, position
+      case id, enabled, name, iconUrlData, address, speed, direction, route, routeIndex, block, position
     }
 
     convenience init(from decoder: Decoder) throws {
@@ -73,6 +76,7 @@ extension Train: Codable {
         self.init(id: try container.decode(Identifier<Train>.self, forKey: CodingKeys.id))
         self.enabled = try container.decodeIfPresent(Bool.self, forKey: CodingKeys.enabled) ?? true
         self.name = try container.decode(String.self, forKey: CodingKeys.name)
+        self.iconUrlData = try container.decodeIfPresent(Data.self, forKey: CodingKeys.iconUrlData)
         self.address = try container.decode(CommandLocomotiveAddress.self, forKey: CodingKeys.address)
         self.speed = try container.decode(UInt16.self, forKey: CodingKeys.speed)
         self.directionForward = try container.decodeIfPresent(Bool.self, forKey: CodingKeys.direction) ?? true
@@ -87,6 +91,7 @@ extension Train: Codable {
         try container.encode(id, forKey: CodingKeys.id)
         try container.encode(enabled, forKey: CodingKeys.enabled)
         try container.encode(name, forKey: CodingKeys.name)
+        try container.encode(iconUrlData, forKey: CodingKeys.iconUrlData)
         try container.encode(address, forKey: CodingKeys.address)
         try container.encode(speed, forKey: CodingKeys.speed)
         try container.encode(directionForward, forKey: CodingKeys.direction)

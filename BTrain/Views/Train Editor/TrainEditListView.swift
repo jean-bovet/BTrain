@@ -23,92 +23,76 @@ struct TrainEditListView: View {
     @State private var selection: Identifier<Train>? = nil
 
     var body: some View {
-        VStack {
-            Table(selection: $selection) {                
-                TableColumn("Enabled") { train in
-                    Toggle("Enabled", isOn: train.enabled)
-                        .labelsHidden()
-                }.width(80)
+        HStack {
+            VStack {
+                Table(selection: $selection) {
+                    TableColumn("Enabled") { train in
+                        Toggle("Enabled", isOn: train.enabled)
+                            .labelsHidden()
+                    }.width(80)
+                    
+                    TableColumn("Name") { train in
+                        TextField("Name", text: train.name)
+                            .labelsHidden()
+                    }
+                    
+                } rows: {
+                    ForEach($layout.trains) { train in
+                        TableRow(train)
+                    }
+                }
+                
+                HStack {
+                    Text("\(layout.trains.count) trains")
+                    
+                    Spacer()
+                    
+                    Button("+") {
+                        let train = layout.newTrain()
+                        undoManager?.registerUndo(withTarget: layout, handler: { layout in
+                            layout.trains.removeAll { t in
+                                return t.id == train.id
+                            }
+                        })
+                    }
+                    Button("-") {
+                        let train = layout.train(for: selection!)
+                        layout.remove(trainId: selection!)
+                        
+                        undoManager?.registerUndo(withTarget: layout, handler: { layout in
+                            layout.trains.append(train!)
+                        })
+                    }.disabled(selection == nil)
+                    
+                    Spacer().fixedSpace()
+                    
+                    Button("􀈄") {
+                        document.discoverLocomotiveConfirmation.toggle()
+                    }.help("Download Locomotives")
+                    
+                    Spacer().fixedSpace()
+                    
+                    Button("􀄬") {
+                        layout.sortTrains()
+                    }
+                }.padding()
+            }.frame(maxWidth: SideListFixedWidth)
 
-                TableColumn("Name") { train in
-                    TextField("Name", text: train.name)
-                        .labelsHidden()
-                }
-                
-                TableColumn("Decoder Type") { train in
-                    Picker("Decoder", selection: train.addressDecoderType) {
-                        ForEach(DecoderType.allCases, id:\.self) { proto in
-                            Text(proto.rawValue).tag(proto as DecoderType?)
-                        }
-                    }.labelsHidden()
-                }
-                
-                TableColumn("Address") { train in
-                    TextField("Address", value: train.addressValue,
-                              format: .number)
-                        .labelsHidden()
-                }
-            } rows: {
-                ForEach($layout.trains) { train in
-                    TableRow(train)
+            if let selection = selection, let train = layout.train(for: selection) {
+                TrainEditView(layout: layout, train: train)
+                    .padding()
+            } else {
+                Group {
+                    Spacer()
+                    Text("No Selected Train")
+                        .padding()
+                    Spacer()
                 }
             }
-            
-            HStack {
-                Text("\(layout.trains.count) trains")
-                
-                Spacer()
-                
-                Button("+") {
-                    let train = layout.newTrain()
-                    undoManager?.registerUndo(withTarget: layout, handler: { layout in
-                        layout.trains.removeAll { t in
-                            return t.id == train.id
-                        }
-                    })
-                }
-                Button("-") {
-                    let train = layout.train(for: selection!)
-                    layout.remove(trainId: selection!)
-                    
-                    undoManager?.registerUndo(withTarget: layout, handler: { layout in
-                        layout.trains.append(train!)
-                    })
-                }.disabled(selection == nil)
-                
-                Spacer().fixedSpace()
-                
-                Button("􀈄") {
-                    document.discoverLocomotiveConfirmation.toggle()
-                }.help("Download Locomotives")
-                
-                Spacer().fixedSpace()
-
-                Button("􀄬") {
-                    layout.sortTrains()
-                }
-            }.padding()
-        }
-    }
-}
-
-extension Train {
-    
-    var addressDecoderType: DecoderType? {
-        get {
-            return address.decoderType
-        }
-        set {
-            address = .init(address.address, newValue)
-        }
-    }
-    
-    var addressValue: Int {
-        get {
-            return Int(address.address)
-        }
-        set {
-            address = .init(UInt32(newValue), addressDecoderType)
+        }.onAppear {
+            if selection == nil {
+                selection = layout.trains.first?.id
+            }
         }
     }
 }

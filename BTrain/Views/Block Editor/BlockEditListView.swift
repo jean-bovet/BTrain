@@ -85,6 +85,10 @@ struct BlockEditListView: View {
                     }
                 }
             }            
+        }.onAppear {
+            if selection == nil {
+                selection = layout.blockIds.first
+            }
         }
     }
 }

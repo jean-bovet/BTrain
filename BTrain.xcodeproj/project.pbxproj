@@ -131,6 +131,8 @@
 		A784138F274230CF00381341 /* MarklinTestMessageFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7B06AFE2727C01100BDD88C /* MarklinTestMessageFactory.swift */; };
 		A784139127423A8D00381341 /* Command.swift in Sources */ = {isa = PBXBuildFile; fileRef = A784139027423A8D00381341 /* Command.swift */; };
 		A785C06F2789F324002FD538 /* UndoProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = A785C06E2789F323002FD538 /* UndoProvider.swift */; };
+		A785C071278A4561002FD538 /* TrainEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A785C070278A4561002FD538 /* TrainEditView.swift */; };
+		A785C073278A4852002FD538 /* TrainIconView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A785C072278A4852002FD538 /* TrainIconView.swift */; };
 		A7907955277D071000771A60 /* CGContext+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7907954277D071000771A60 /* CGContext+Extension.swift */; };
 		A7907957277D136500771A60 /* CGAffineTransform+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7907956277D136500771A60 /* CGAffineTransform+Extension.swift */; };
 		A7907993277EC86200771A60 /* DocumentToolbarContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7907992277EC86200771A60 /* DocumentToolbarContent.swift */; };
@@ -336,6 +338,8 @@
 		A784138D274196BB00381341 /* MarklinCommandFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarklinCommandFactory.swift; sourceTree = "<group>"; };
 		A784139027423A8D00381341 /* Command.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Command.swift; sourceTree = "<group>"; };
 		A785C06E2789F323002FD538 /* UndoProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UndoProvider.swift; sourceTree = "<group>"; };
+		A785C070278A4561002FD538 /* TrainEditView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainEditView.swift; sourceTree = "<group>"; };
+		A785C072278A4852002FD538 /* TrainIconView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainIconView.swift; sourceTree = "<group>"; };
 		A7907954277D071000771A60 /* CGContext+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CGContext+Extension.swift"; sourceTree = "<group>"; };
 		A7907956277D136500771A60 /* CGAffineTransform+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CGAffineTransform+Extension.swift"; sourceTree = "<group>"; };
 		A7907992277EC86200771A60 /* DocumentToolbarContent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentToolbarContent.swift; sourceTree = "<group>"; };
@@ -574,6 +578,8 @@
 			isa = PBXGroup;
 			children = (
 				A7F779F5273214AF00E73275 /* TrainEditListView.swift */,
+				A785C070278A4561002FD538 /* TrainEditView.swift */,
+				A785C072278A4852002FD538 /* TrainIconView.swift */,
 			);
 			path = "Train Editor";
 			sourceTree = "<group>";
@@ -1085,6 +1091,7 @@
 				A784137C273F4D7400381341 /* PluggableShape.swift in Sources */,
 				A74CCC68272A59F0004E58F5 /* Layout.swift in Sources */,
 				A74CCC6A272A59F9004E58F5 /* Block.swift in Sources */,
+				A785C073278A4852002FD538 /* TrainIconView.swift in Sources */,
 				A7710E5C27784B1900C08150 /* TrainRouteControlView.swift in Sources */,
 				A7F779FE2734D55100E73275 /* LayoutRouteParser.swift in Sources */,
 				A7BE36A82751BDAB00286709 /* ConnectorSocket.swift in Sources */,
@@ -1177,6 +1184,7 @@
 				A7EAD11227608B0500455E09 /* LayoutTrainHandler.swift in Sources */,
 				A7841371273CE02000381341 /* LinkShape.swift in Sources */,
 				A784136F273CE00C00381341 /* BlockShape.swift in Sources */,
+				A785C071278A4561002FD538 /* TrainEditView.swift in Sources */,
 				A71715802757036B00200F92 /* LayoutFCreator.swift in Sources */,
 				A78413882740DD2D00381341 /* SwitchBoardFactory.swift in Sources */,
 				A783EAA92788C1F700E69B6D /* LayoutFeedbackMonitor.swift in Sources */,

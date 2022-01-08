@@ -18,7 +18,7 @@ class TrainEditListViewTests: RootViewTests {
     
     func testStringValue() throws {
         let sut = TrainEditListView(document: doc, layout: doc.layout)
-        let value = try sut.inspect().vStack().hStack(1).text(0).string()
+        let value = try sut.inspect().hStack().vStack(0).hStack(1).text(0).string()
         XCTAssertEqual(value, "2 trains")
     }
 

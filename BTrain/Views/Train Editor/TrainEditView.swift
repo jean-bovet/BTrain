@@ -12,42 +12,55 @@
 
 import SwiftUI
 
-struct TrainListView: View {
+struct TrainEditView: View {
     
-    // Note: necesary to have the layout as a separate property in order for SwiftUI to detect changes
-    @ObservedObject var layout: Layout
-    @ObservedObject var document: LayoutDocument
-
+    let layout: Layout
+    @ObservedObject var train: Train
+    
     var body: some View {
-        if layout.trains.isEmpty {
-            VStack {
-                Text("No Locomotives")
-                Button("Download Locomotives 􀈄") {
-                    document.discoverLocomotiveConfirmation.toggle()
-                }.disabled(!document.connected)
-            }
-        } else {
-            List {
-                ForEach(layout.trains.filter({$0.enabled}), id:\.self) { train in
-                    Text(train.name)
-                    HStack {
-                        if train.iconUrlData != nil {
-                            TrainIconView(train: train, size: .medium)
-                        }
-                        TrainView(document: document, train: train)
-                    }
-                    Divider()
+        Form {
+            Picker("Decoder:", selection: $train.addressDecoderType) {
+                ForEach(DecoderType.allCases, id:\.self) { proto in
+                    Text(proto.rawValue).tag(proto as DecoderType?)
                 }
             }
+
+            TextField("Address:", value: $train.addressValue,
+                      format: .number)
+                        
+            TrainIconView(train: train, size: .large)
+            
+            Spacer()
         }
     }
 }
 
-struct TrainListView_Previews: PreviewProvider {
+extension Train {
     
-    static let doc = LayoutDocument(layout: LayoutCCreator().newLayout())
+    var addressDecoderType: DecoderType? {
+        get {
+            return address.decoderType
+        }
+        set {
+            address = .init(address.address, newValue)
+        }
+    }
+    
+    var addressValue: Int {
+        get {
+            return Int(address.address)
+        }
+        set {
+            address = .init(UInt32(newValue), addressDecoderType)
+        }
+    }
+}
 
+struct TrainEditView_Previews: PreviewProvider {
+    
+    static let layout = LayoutACreator().newLayout()
+    
     static var previews: some View {
-        TrainListView(layout: doc.layout, document: doc)
+        TrainEditView(layout: layout, train: layout.trains[0])
     }
 }
