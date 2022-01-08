@@ -173,12 +173,11 @@ class LayoutATests: RootLayoutTests {
         assert("r1: {r1{b1 ≏ ≏ }} <r1<t0,l>> [b2 ≏ ≏ ] <t1,l> [r1[b3 ≡ 🚂1  ≏ ]] <r1<t0(2,0),l>> !{r1{b1 ≏ ≏ }}")
     }
 
-    func testStrictMode() throws {
+    func testStrictModeNextBlockFeedback() throws {
         layout.strictRouteFeedbackStrategy = true
         layout.detectUnexpectedFeedback = true
         
         assert("r1: {r1{b1 🛑🚂1 ≏ ≏ }} <t0> [b2 ≏ ≏ ] <t1> [b3 ≏ ≏ ] <t0(2,0)> !{r1{b1 ≏ ≏ }}")
-        assert("r1: {r1{b1 🛑🚂1 ≡ ≏ }} <t0> [b2 ≏ ≏ ] <t1> [b3 ≏ ≏ ] <t0(2,0)> !{r1{b1 ≡ ≏ }}")
 
         try coordinator.start(routeID: "r1", trainID: "1")
 
@@ -188,13 +187,27 @@ class LayoutATests: RootLayoutTests {
         // Train should stop because the next block b2's feedback is triggered but the train is not at the end of block b1
         assert("r1: {r1{b1 🛑🚂1 ≏ ≏ }} <r1<t0>> [r1[b2 ≡ ≏ ]] <t1> [b3 ≏ ≏ ] <r1<t0(2,0)>> !{r1{b1 ≏ ≏ }}")
     }
-    
-    func testRelaxMode() throws {
+
+    func testStrictModeFeedbackTooFar() throws {
+        layout.strictRouteFeedbackStrategy = true
+        layout.detectUnexpectedFeedback = true
+        
+        assert("r1: {r1{b1 🛑🚂1 ≏ ≏ }} <t0> [b2 ≏ ≏ ] <t1> [b3 ≏ ≏ ] <t0(2,0)> !{r1{b1 ≏ ≏ }}")
+
+        try coordinator.start(routeID: "r1", trainID: "1")
+
+        assert("r1: {r1{b1 🚂1 ≏ ≏ }} <r1<t0>> [r1[b2 ≏ ≏ ]] <t1> [b3 ≏ ≏ ] <r1<t0(2,0)>> !{r1{b1 ≏ ≏ }}")
+        assert("r1: {r1{b1 🚂1 ≏ ≏ }} <r1<t0>> [r1[b2 ≏ ≏ ]] <t1> [b3 ≏ ≏ ] <r1<t0(2,0)>> !{r1{b1 ≏ ≏ }}")
+
+        // Train does not move because the feedback is not the next one
+        assert("r1: {r1{b1 🚂1 ≏ ≡ }} <r1<t0>> [r1[b2 ≏ ≏ ]] <t1> [b3 ≏ ≏ ] <r1<t0(2,0)>> !{r1{b1 ≏ ≏ }}")
+    }
+
+    func testRelaxModeNextModeFeedback() throws {
         layout.strictRouteFeedbackStrategy = false
         layout.detectUnexpectedFeedback = true
 
         assert("r1: {r1{b1 🛑🚂1 ≏ ≏ }} <t0> [b2 ≏ ≏ ] <t1> [b3 ≏ ≏ ] <t0(2,0)> !{r1{b1 ≏ ≏ }}")
-        assert("r1: {r1{b1 🛑🚂1 ≡ ≏ }} <t0> [b2 ≏ ≏ ] <t1> [b3 ≏ ≏ ] <t0(2,0)> !{r1{b1 ≡ ≏ }}")
 
         try coordinator.start(routeID: "r1", trainID: "1")
 
@@ -203,12 +216,11 @@ class LayoutATests: RootLayoutTests {
         assert("r1: {b1 ≏ ≏ } <t0> [r1[b2 ≡ 🚂1 ≏ ]] <r1<t1,l>> [r1[b3 ≏ ≏ ]] <t0(2,0)> !{b1 ≏ ≏ }")
     }
 
-    func testRelaxMode2() throws {
+    func testRelaxModeNextBlockFeedbackTooFar() throws {
         layout.strictRouteFeedbackStrategy = false
         layout.detectUnexpectedFeedback = true
 
         assert("r1: {r1{b1 🛑🚂1 ≏ ≏ }} <t0> [b2 ≏ ≏ ] <t1> [b3 ≏ ≏ ] <t0(2,0)> !{r1{b1 ≏ ≏ }}")
-        assert("r1: {r1{b1 🛑🚂1 ≡ ≏ }} <t0> [b2 ≏ ≏ ] <t1> [b3 ≏ ≏ ] <t0(2,0)> !{r1{b1 ≡ ≏ }}")
 
         try coordinator.start(routeID: "r1", trainID: "1")
 
@@ -216,6 +228,21 @@ class LayoutATests: RootLayoutTests {
         // The train should stop because the next block feedback is triggered but it is not the one expected
         // to be triggered given the direction of travel of the train
         assert("r1: {r1{b1 🛑🚂1 ≏ ≏ }} <r1<t0>> [r1[b2 ≏ ≡ ]] <t1> [b3 ≏ ≏ ] <r1<t0(2,0)>> !{r1{b1 ≏ ≏ }}")
+    }
+
+    func testRelaxModeNextAndPreviousFeedbacks() throws {
+        layout.strictRouteFeedbackStrategy = false
+        layout.detectUnexpectedFeedback = true
+        
+        assert("r1: {r1{b1 🛑🚂1 ≏ ≏ }} <t0> [b2 ≏ ≏ ] <t1> [b3 ≏ ≏ ] <t0(2,0)> !{r1{b1 ≏ ≏ }}")
+
+        try coordinator.start(routeID: "r1", trainID: "1")
+
+        assert("r1: {r1{b1 🚂1 ≏ ≏ }} <r1<t0>> [r1[b2 ≏ ≏ ]] <t1> [b3 ≏ ≏ ] <r1<t0(2,0)>> !{r1{b1 ≏ ≏ }}")
+        
+        // Train position should be updated although the feedback is not next to the train but a bit further.
+        assert("r1: {r1{b1 ≏ ≡ 🚂1 }} <r1<t0>> [r1[b2 ≏ ≏ ]] <t1> [b3 ≏ ≏ ] <r1<t0(2,0)>> !{r1{b1 ≏ ≏ }}")
+        assert("r1: {r1{b1 ≡ ≏ 🚂1 }} <r1<t0>> [r1[b2 ≏ ≏ ]] <t1> [b3 ≏ ≏ ] <r1<t0(2,0)>> !{r1{b1 ≏ ≏ }}")
     }
 
 }

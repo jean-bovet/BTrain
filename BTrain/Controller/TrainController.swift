@@ -219,36 +219,66 @@ final class TrainController {
             return .none
         }
         
-        // feedback index:     0       1       2
-        // block:          [   f1      f2      f3    ]
-        // train.position:   0     1       2      3
         var result: Result = .none
         for (index, feedback) in currentBlock.feedbacks.enumerated() {
             guard let f = layout.feedback(for: feedback.feedbackId), f.detected else {
                 continue
             }
             
-            switch(trainInstance.direction) {
-            case .previous:
-                if index == train.position - 1 {
-                    // this is the feedback in front of the train, it means
-                    // the train has moved past this feedback
-                    try layout.setTrain(train, toPosition: train.position - 1)
-                    BTLogger.debug("Train moved to position \(train.position), direction \(trainInstance.direction)", layout, train)
-                    result = .processed
-                }
-            case .next:
-                if index == train.position {
-                    // this is the feedback in front of the train, it means
-                    // the train has moved past this feedback
-                    try layout.setTrain(train, toPosition: train.position + 1)
-                    BTLogger.debug("Train moved to position \(train.position), direction \(trainInstance.direction)", layout, train)
-                    result = .processed
-                }
+            let position = newPosition(forTrain: train, enabledFeedbackIndex: index, direction: trainInstance.direction)
+            if train.position != position {
+                try layout.setTrain(train, toPosition: position)
+                BTLogger.debug("Train moved to position \(train.position), direction \(trainInstance.direction)", layout, train)
+                result = .processed
             }
         }
         
         return result
+    }
+    
+    //      ╲       ██            ██            ██
+    //       ╲      ██            ██            ██
+    //────────■─────██────────────██────────────██────────────▶
+    //       ╱   0  ██     1      ██     2      ██     3
+    //      ╱       ██            ██            ██     ▲
+    //              0             1             2      │
+    //                            ▲                    │
+    //                            │                    │
+    //                            │                    │
+    //
+    //                     Feedback Index       Train Position
+    func newPosition(forTrain train: Train, enabledFeedbackIndex: Int, direction: Direction) -> Int {
+        let strict = layout.strictRouteFeedbackStrategy
+
+        switch(direction) {
+        case .previous:
+            let delta = train.position - enabledFeedbackIndex
+            if strict && delta == 1 {
+                // this is the feedback in front of the train, it means
+                // the train has moved past this feedback
+                return train.position - delta
+            }
+            if !strict && delta > 0 {
+                // A feedback in front of the train has been activated.
+                // When not in strict mode, we update the position of the train.
+                return train.position - delta
+            }
+
+        case .next:
+            let delta = enabledFeedbackIndex - train.position
+            if strict && delta == 0 {
+                // this is the feedback in front of the train, it means
+                // the train has moved past this feedback
+                return train.position + 1
+            }
+            if !strict && delta >= 0 {
+                // A feedback in front of the train has been activated.
+                // When not in strict mode, we update the position of the train.
+                return train.position + delta + 1
+            }
+        }
+        
+        return train.position
     }
     
     func handleTrainMoveToNextBlock() throws -> Result {

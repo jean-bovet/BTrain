@@ -17,12 +17,12 @@ BTrain uses the following concepts:
 
 **Features**
 
-- Support for Marklin Central Station 2 & 3
-- Automatic discovery of locomotives
 - Layout editor
-- Locomotives control
-- Manual routing
-- Automatic routing
+- Locomotives & Turnouts control
+- Manual & Automatic routing
+- Unexpected feedback detection
+- Automatic discovery of locomotives
+- Support for Marklin Central Station 3
 
 **Limitations**
 

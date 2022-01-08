@@ -50,12 +50,19 @@ final class Layout: Element, ObservableObject {
     // True if unexpected feedback should be detected and the layout stopped.
     @AppStorage("detectUnexpectedFeedback") var detectUnexpectedFeedback = true
     
-    // True if the layout authorize any feedback to be triggered within the block in which
-    // the train is located *but* is expecting the next block feedback to be triggered only
-    // when the train is at the end of the current block.
-    // False if the layout authorize any feedback to be triggered within the block in which
-    // the train is located as well as the first feedback of the next block to detect when
-    // the train moves to the next block.
+    // Defines the route feedback strategy:
+    // If true, then:
+    // - The train position is updated only when the feedback in front of the train is detected
+    //   (within the current block). Any feedback behind the train inside the current block is ignored.
+    // - The train moves to the next block only when the train is located at the end of the
+    //   current block *and* the feedback in the next block is the first one in the direction
+    //   of travel of the train.
+    //
+    // If false, then:
+    // - The train position is updated when any feedback in front of the train is detected
+    //   (within the current block). Any feedback behind the train inside the current block is ignored.
+    // - The train moves to the next block when the feedback in the next block is the first one in the direction
+    //   of travel of the train. The train does not need to be at the end of the current block for this to happen.
     @AppStorage("strictRouteFeedbackStrategy") var strictRouteFeedbackStrategy = true
 
     // The command executor used to execute command towards the Digital Controller.
