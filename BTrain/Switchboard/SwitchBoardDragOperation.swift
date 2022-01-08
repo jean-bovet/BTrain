@@ -195,7 +195,8 @@ final class SwitchBoardDragOperation {
             }
         }
         
-        layout.didChange()
+        // Trigger a redraw
+        state.triggerRedraw.toggle()
     }
         
     func gridX(_ x: CGFloat) -> CGFloat {
