@@ -17,7 +17,7 @@ BTrain uses the following concepts:
 
 **Features**
 
-- Layout editor
+- Layout editor with blocks, turnouts, transitions and feedbacks
 - Locomotives & Turnouts control
 - Manual & Automatic routing
 - Unexpected feedback detection
@@ -31,7 +31,7 @@ BTrain uses the following concepts:
 
 **Known Issues**
 
-- The document does not get marked as "Edited" for some changes (probable SwiftUI limitation).
+- The document does not get marked as "Edited" for some changes.
 
 **References**
 
