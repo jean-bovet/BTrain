@@ -130,6 +130,7 @@
 		A784138E274196BB00381341 /* MarklinCommandFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = A784138D274196BB00381341 /* MarklinCommandFactory.swift */; };
 		A784138F274230CF00381341 /* MarklinTestMessageFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7B06AFE2727C01100BDD88C /* MarklinTestMessageFactory.swift */; };
 		A784139127423A8D00381341 /* Command.swift in Sources */ = {isa = PBXBuildFile; fileRef = A784139027423A8D00381341 /* Command.swift */; };
+		A785C06F2789F324002FD538 /* UndoProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = A785C06E2789F323002FD538 /* UndoProvider.swift */; };
 		A7907955277D071000771A60 /* CGContext+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7907954277D071000771A60 /* CGContext+Extension.swift */; };
 		A7907957277D136500771A60 /* CGAffineTransform+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7907956277D136500771A60 /* CGAffineTransform+Extension.swift */; };
 		A7907993277EC86200771A60 /* DocumentToolbarContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7907992277EC86200771A60 /* DocumentToolbarContent.swift */; };
@@ -334,6 +335,7 @@
 		A7841389274165FB00381341 /* MarklinCommandSimulator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarklinCommandSimulator.swift; sourceTree = "<group>"; };
 		A784138D274196BB00381341 /* MarklinCommandFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarklinCommandFactory.swift; sourceTree = "<group>"; };
 		A784139027423A8D00381341 /* Command.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Command.swift; sourceTree = "<group>"; };
+		A785C06E2789F323002FD538 /* UndoProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UndoProvider.swift; sourceTree = "<group>"; };
 		A7907954277D071000771A60 /* CGContext+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CGContext+Extension.swift"; sourceTree = "<group>"; };
 		A7907956277D136500771A60 /* CGAffineTransform+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CGAffineTransform+Extension.swift"; sourceTree = "<group>"; };
 		A7907992277EC86200771A60 /* DocumentToolbarContent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentToolbarContent.swift; sourceTree = "<group>"; };
@@ -881,6 +883,7 @@
 		A7BD6257276D39CA0039B6C2 /* Utilities */ = {
 			isa = PBXGroup;
 			children = (
+				A785C06E2789F323002FD538 /* UndoProvider.swift */,
 				A73B1638274B60A10073947D /* BTLogger.swift */,
 				A721806E275D396A00831998 /* Hexadecimal.swift */,
 			);
@@ -1165,6 +1168,7 @@
 				A792DEFB27841B35004B0439 /* LayoutCommandExecuting.swift in Sources */,
 				A7218076275D424200831998 /* OverviewView.swift in Sources */,
 				A73B163C274DC0F50073947D /* TurnoutEditListView.swift in Sources */,
+				A785C06F2789F324002FD538 /* UndoProvider.swift in Sources */,
 				A72180852760428E00831998 /* Socket.swift in Sources */,
 				A7710E572777D69400C08150 /* RouteListView.swift in Sources */,
 				A79079A3277F87AB00771A60 /* Spacer+Extension.swift in Sources */,

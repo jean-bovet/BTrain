@@ -16,55 +16,70 @@ struct TurnoutEditListView: View {
     
     @ObservedObject var layout: Layout
     @State private var selection: Identifier<Turnout>? = nil
+    @Environment(\.undoManager) var undoManager
 
     var body: some View {
         VStack {
             Table(selection: $selection) {
-                
                 TableColumn("Name") { train in
-                    TextField("Name", text: train.name)
-                        .labelsHidden()
+                    UndoProvider(train.name) { name in
+                        TextField("Name", text: name)
+                            .labelsHidden()
+                    }
                 }
                 
                 TableColumn("Protocol") { turnout in
-                    Picker("Protocol", selection: turnout.addressProtocol) {
-                        ForEach(CommandTurnoutProtocol.allCases, id:\.self) { proto in
-                            Text(proto.rawValue).tag(proto as CommandTurnoutProtocol?)
-                        }
-                    }.labelsHidden()
+                    UndoProvider(turnout.addressProtocol) { addressProtocol in
+                        Picker("Protocol", selection: addressProtocol) {
+                            ForEach(CommandTurnoutProtocol.allCases, id:\.self) { proto in
+                                Text(proto.rawValue).tag(proto as CommandTurnoutProtocol?)
+                            }
+                        }.labelsHidden()
+                    }
                 }
                 
                 TableColumn("Type") { turnout in
-                    Picker("Type:", selection: turnout.category) {
-                        ForEach(Turnout.Category.allCases, id:\.self) { type in
-                            Text(type.description)
-                        }
-                    }.labelsHidden()
+                    UndoProvider(turnout.category) { category in
+                        Picker("Type:", selection: category) {
+                            ForEach(Turnout.Category.allCases, id:\.self) { type in
+                                Text(type.description)
+                            }
+                        }.labelsHidden()
+                    }
                 }
                 
                 TableColumn("Address") { turnout in
                     HStack {
                         if turnout.wrappedValue.doubleAddress {
-                            TextField("Address 1", value: turnout.addressValue,
-                                      format: .number)
+                            UndoProvider(turnout.addressValue) { addressValue in
+                                TextField("Address 1", value: addressValue,
+                                          format: .number)
+                            }
                             Text("|")
-                            TextField("Address 2", value: turnout.address2Value,
-                                      format: .number)
+                            UndoProvider(turnout.address2Value) { address2Value in
+                                TextField("Address 2", value: address2Value,
+                                          format: .number)
+                            }
                         }
                         else {
-                            TextField("Address", value: turnout.addressValue,
-                                      format: .number)
+                            UndoProvider(turnout.addressValue) { addressValue in
+                                TextField("Address", value: addressValue,
+                                          format: .number)
+                            }
                         }
                     }
                 }
                 
                 TableColumn("State") { turnout in
                     HStack {
-                        Picker("State:", selection: turnout.state) {
-                            ForEach(turnout.wrappedValue.allStates, id:\.self) { state in
-                                Text(state.description)
-                            }
-                        }.labelsHidden()
+                        UndoProvider(turnout.state) { state in
+                            Picker("State:", selection: state) {
+                                ForEach(turnout.wrappedValue.allStates, id:\.self) { state in
+                                    Text(state.description)
+                                }
+                            }.labelsHidden()
+                        }
+
                         Button("Set") {
                             layout.executor?.sendTurnoutState(turnout: turnout.wrappedValue) { }
                         }
@@ -81,10 +96,19 @@ struct TurnoutEditListView: View {
                 Spacer()
                 
                 Button("+") {
-                    layout.newTurnout(name: "New Turnout", type: .singleLeft)
+                    let turnout = layout.newTurnout(name: "New Turnout", type: .singleLeft)
+                    undoManager?.registerUndo(withTarget: layout, handler: { layout in
+                        layout.remove(turnoutID: turnout.id)
+                    })
                 }
+                
                 Button("-") {
-                    layout.remove(turnoutID: selection!)
+                    if let turnout = layout.turnout(for: selection) {
+                        layout.remove(turnoutID: turnout.id)
+                        undoManager?.registerUndo(withTarget: layout, handler: { layout in
+                            layout.turnouts.append(turnout)
+                        })
+                    }
                 }.disabled(selection == nil)
                 
                 Spacer().fixedSpace()

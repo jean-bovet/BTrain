@@ -19,14 +19,16 @@ struct BlockEditView: View {
     
     var body: some View {
         VStack(alignment: .leading) {
-            Picker("Type", selection: $block.category) {
-                ForEach(Block.Category.allCases, id:\.self) { category in
-                    HStack {
-                        Text(category.description)
-                        BlockShapeView(layout: layout, category: category)
+            UndoProvider($block.category) { category in
+                Picker("Type", selection: category) {
+                    ForEach(Block.Category.allCases, id:\.self) { category in
+                        HStack {
+                            Text(category.description)
+                            BlockShapeView(layout: layout, category: category)
+                        }
                     }
-                }
-            }.pickerStyle(.inline)
+                }.pickerStyle(.inline)
+            }
 
             GroupBox("Feedbacks") {
                 BlockFeedbackView(layout: layout, block: block)

@@ -26,13 +26,17 @@ struct BlockEditListView: View {
                 VStack {
                     Table(selection: $selection) {
                         TableColumn("Enabled") { block in
-                            Toggle("Enabled", isOn: block.enabled)
-                                .labelsHidden()
+                            UndoProvider(block.enabled) { enabled in
+                                Toggle("Enabled", isOn: enabled)
+                                    .labelsHidden()
+                            }
                         }.width(80)
 
                         TableColumn("Name") { block in
-                            TextField("Name", text: block.name)
-                                .labelsHidden()
+                            UndoProvider(block.name) { name in
+                                TextField("Name", text: name)
+                                    .labelsHidden()
+                            }
                         }
                     } rows: {
                         ForEach($layout.blockMap.values) { block in
@@ -53,7 +57,7 @@ struct BlockEditListView: View {
                         }
                         
                         Button("-") {
-                            if let block = layout.block(for: selection!) {
+                            if let block = layout.block(for: selection) {
                                 layout.remove(blockID: block.id)
                                 undoManager?.registerUndo(withTarget: layout, handler: { layout in
                                     layout.add([block])
