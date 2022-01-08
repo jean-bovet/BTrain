@@ -120,7 +120,7 @@ struct SimulatorIndicationView: View {
             Text("Running in Simulation Mode")
                 .bold()
                 .padding([.leading, .trailing])
-                .background(simulator.enabled ? .green : .red)
+                .background(simulator.enabled ? .green : .gray)
                 .foregroundColor(.white)
                 .clipShape(Capsule())
             Spacer()

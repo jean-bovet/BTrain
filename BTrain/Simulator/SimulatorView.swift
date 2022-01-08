@@ -14,8 +14,6 @@ import SwiftUI
 
 struct SimulatorView: View {
     
-    @Environment(\.colorScheme) var colorScheme
-
     @ObservedObject var  simulator: MarklinCommandSimulator
     
     @State private var trainForward = true
@@ -28,7 +26,7 @@ struct SimulatorView: View {
                 Text(simulator.enabled ? "Enabled" : "Disabled")
                     .bold()
                     .padding([.leading, .trailing])
-                    .background(simulator.enabled ? .green : .red)
+                    .background(simulator.enabled ? .green : .gray)
                     .foregroundColor(.white)
                     .clipShape(Capsule())
             }
@@ -42,7 +40,6 @@ struct SimulatorView: View {
             }.disabled(!simulator.enabled)
         }
         .padding()
-        .background(colorScheme == .dark ? .indigo.opacity(0.5) : .yellow.opacity(0.5))
     }
 }
 
@@ -56,9 +53,6 @@ struct SimulatorView_Previews: PreviewProvider {
     }()
 
     static var previews: some View {
-        ForEach(ColorScheme.allCases, id: \.self) {
-            SimulatorView(simulator: simulator)
-                .preferredColorScheme($0)
-        }
+        SimulatorView(simulator: simulator)
     }
 }

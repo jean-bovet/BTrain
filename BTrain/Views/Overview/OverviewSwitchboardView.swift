@@ -14,9 +14,10 @@ import SwiftUI
 
 struct OverviewSwitchboardView: View {
     
-    let layout: Layout
+    @ObservedObject var layout: Layout
+
     let coordinator: LayoutCoordinator
-    
+
     @ObservedObject var document: LayoutDocument
 
     @ObservedObject var switchboard: SwitchBoard
@@ -45,6 +46,9 @@ struct OverviewSwitchboardView: View {
                     SwitchBoardView(switchboard: switchboard, state: state, layout: layout, coordinator: coordinator)
                 }
             }.background(Color(NSColor.windowBackgroundColor))
+            if layout.runtimeError != nil {
+                LayoutRuntimeErrorView(error: $layout.runtimeError)
+            }
         }.sheet(isPresented: $state.trainDroppedInBlockAction) {
             TrainDropActionSheet(layout: layout, trainDragInfo: state.trainDragInfo!, coordinator: document.coordinator)
                 .fixedSize(horizontal: true, vertical: false)

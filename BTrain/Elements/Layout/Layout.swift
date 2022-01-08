@@ -68,6 +68,9 @@ final class Layout: Element, ObservableObject {
     // The command executor used to execute command towards the Digital Controller.
     var executor: LayoutCommandExecuting?
     
+    // Non-nil when a layout runtime error occurred
+    @Published var runtimeError: String?
+
     // MARK: Handlers
         
     lazy var transitionHandling: LayoutTransitionHandling = {

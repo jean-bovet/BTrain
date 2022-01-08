@@ -111,6 +111,7 @@
 		A783EAA32787D68200E69B6D /* ProxyCommandInterface.swift in Sources */ = {isa = PBXBuildFile; fileRef = A783EAA22787D68200E69B6D /* ProxyCommandInterface.swift */; };
 		A783EAA52788B52000E69B6D /* BlockShapeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A783EAA42788B52000E69B6D /* BlockShapeView.swift */; };
 		A783EAA92788C1F700E69B6D /* LayoutFeedbackMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = A783EAA82788C1F700E69B6D /* LayoutFeedbackMonitor.swift */; };
+		A783EAAD2789290F00E69B6D /* LayoutRuntimeErrorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A783EAAC2789290F00E69B6D /* LayoutRuntimeErrorView.swift */; };
 		A784136B273CA4DE00381341 /* SwitchBoardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A784136A273CA4DE00381341 /* SwitchBoardView.swift */; };
 		A784136D273CDFF100381341 /* Shape.swift in Sources */ = {isa = PBXBuildFile; fileRef = A784136C273CDFF100381341 /* Shape.swift */; };
 		A784136F273CE00C00381341 /* BlockShape.swift in Sources */ = {isa = PBXBuildFile; fileRef = A784136E273CE00C00381341 /* BlockShape.swift */; };
@@ -314,6 +315,7 @@
 		A783EAA22787D68200E69B6D /* ProxyCommandInterface.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProxyCommandInterface.swift; sourceTree = "<group>"; };
 		A783EAA42788B52000E69B6D /* BlockShapeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockShapeView.swift; sourceTree = "<group>"; };
 		A783EAA82788C1F700E69B6D /* LayoutFeedbackMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutFeedbackMonitor.swift; sourceTree = "<group>"; };
+		A783EAAC2789290F00E69B6D /* LayoutRuntimeErrorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutRuntimeErrorView.swift; sourceTree = "<group>"; };
 		A7841368273B55FF00381341 /* View+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+Extension.swift"; sourceTree = "<group>"; };
 		A784136A273CA4DE00381341 /* SwitchBoardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwitchBoardView.swift; sourceTree = "<group>"; };
 		A784136C273CDFF100381341 /* Shape.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Shape.swift; sourceTree = "<group>"; };
@@ -696,6 +698,7 @@
 				A7218075275D424200831998 /* OverviewView.swift */,
 				A7710E6E2779A50A00C08150 /* OverviewSwitchboardView.swift */,
 				A7F31B9C277B921B00FE0C65 /* SwitchboardEditControlsView.swift */,
+				A783EAAC2789290F00E69B6D /* LayoutRuntimeErrorView.swift */,
 				A7710E70277A344300C08150 /* NewBlockSheet.swift */,
 				A7710E72277A3BC200C08150 /* NewTurnoutSheet.swift */,
 				A7F31B9E277B95BA00FE0C65 /* TrainDropActionSheet.swift */,
@@ -1147,6 +1150,7 @@
 				A744D13B276714A2005C2F37 /* DiagnosticsSheet.swift in Sources */,
 				A717158D275845F000200F92 /* ShapeContext.swift in Sources */,
 				A784136D273CDFF100381341 /* Shape.swift in Sources */,
+				A783EAAD2789290F00E69B6D /* LayoutRuntimeErrorView.swift in Sources */,
 				A721806A275D1CA700831998 /* MarklinCommand.swift in Sources */,
 				A7B0B5172762FB6500F11A3E /* BlockEditListView.swift in Sources */,
 				A7F779E1272E1E3F00E73275 /* LayoutParser.swift in Sources */,

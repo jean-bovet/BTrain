@@ -126,6 +126,7 @@ final class LayoutCoordinator: ObservableObject {
             }
         } catch {
             // Stop the train in case there is a problem processing the layout
+            layout.runtimeError = error.localizedDescription
             BTLogger.error("Stopping all trains because there is an error processing the layout: \(error.localizedDescription)")
             stopAll()
         }
