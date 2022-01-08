@@ -24,7 +24,8 @@ class SettingsViewTests: XCTestCase {
         let t0 = try sut.inspect().tabView(0)
 
         XCTAssertEqual(try t0.form(0).tabItem().label(0).title().text(0).string(), "General")
-        XCTAssertEqual(try t0.form(1).tabItem().label(0).title().text(0).string(), "Advanced")
+        XCTAssertEqual(try t0.form(1).tabItem().label(0).title().text(0).string(), "Routing")
+        XCTAssertEqual(try t0.form(2).tabItem().label(0).title().text(0).string(), "Advanced")
     }
 
 }

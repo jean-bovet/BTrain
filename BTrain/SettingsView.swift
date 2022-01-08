@@ -15,7 +15,7 @@ import SwiftUI
 struct SettingsView: View {
     
     private enum Tabs: Hashable {
-        case general, advanced
+        case general, routing, advanced
     }
 
     @AppStorage("automaticRouteRandom") private var automaticRouteRandom = true
@@ -30,11 +30,13 @@ struct SettingsView: View {
     var body: some View {
         TabView {
             Form {
-                Toggle("Generate Automatic Route at Random", isOn: $automaticRouteRandom)
-
-                Toggle("Detect Unexpected Feedbacks", isOn: $detectUnexpectedFeedback)
-
-                Toggle("Strict Route Feedback Detection", isOn: $strictRouteFeedbackStrategy)
+                Toggle("Connect to Simulator At Startup", isOn: $autoConnectSimulator)
+                
+                HStack {
+                    Spacer().fixedSpace()
+                    Toggle("Enable Simulator", isOn: $autoEnableSimulator)
+                        .disabled(!autoConnectSimulator)
+                }
 
                 Slider(value: $fontSize, in: 9...96) {
                     Text("Font Size (\(fontSize, specifier: "%.0f") pts)")
@@ -44,14 +46,20 @@ struct SettingsView: View {
                 Label("General", systemImage: "gear")
             }
             .tag(Tabs.general)
-            
+
             Form {
-                Toggle("Connect to Simulator At Startup", isOn: $autoConnectSimulator)
-                HStack {
-                    Spacer().fixedSpace()
-                    Toggle("Enable Simulator", isOn: $autoEnableSimulator)
-                        .disabled(!autoConnectSimulator)
-                }
+                Toggle("Generate Automatic Route at Random", isOn: $automaticRouteRandom)
+
+                Toggle("Detect Unexpected Feedbacks", isOn: $detectUnexpectedFeedback)
+
+                Toggle("Strict Route Feedback Detection", isOn: $strictRouteFeedbackStrategy)
+            }
+            .tabItem {
+                Label("Routing", systemImage: "point.topleft.down.curvedto.point.filled.bottomright.up")
+            }
+            .tag(Tabs.routing)
+           
+            Form {
                 Toggle("Show Debug Controls", isOn: $showDebugControls)
             }
             .tabItem {
