@@ -76,6 +76,10 @@ struct RouteListView: View {
                     Spacer()
                 }
             }
+        }.onAppear() {
+            if selection == nil {
+                selection = layout.routes.first?.id
+            }
         }
     }}
 
