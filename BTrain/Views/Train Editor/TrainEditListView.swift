@@ -79,7 +79,7 @@ struct TrainEditListView: View {
             }.frame(maxWidth: SideListFixedWidth)
 
             if let selection = selection, let train = layout.train(for: selection) {
-                TrainEditView(layout: layout, train: train)
+                TrainEditView(layout: layout, train: train, trainIconManager: document.trainIconManager)
                     .padding()
             } else {
                 Group {

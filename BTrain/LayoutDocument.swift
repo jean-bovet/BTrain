@@ -78,10 +78,13 @@ final class LayoutDocument: ObservableObject {
     // The simulator that can be used in place of a real Digital Controller
     var simulator: MarklinCommandSimulator
         
+    let trainIconManager: TrainIconManager
+    
     init(layout: Layout) {
         self.layout = layout
         self.layoutDiagnostics = LayoutDiagnostic(layout: layout)
         self.simulator = MarklinCommandSimulator(layout: layout)
+        self.trainIconManager = TrainIconManager(layout: layout)
         self.switchboard = SwitchBoardFactory.generateSwitchboard(layout: layout)
 
         let interface = ProxyCommandInterface()

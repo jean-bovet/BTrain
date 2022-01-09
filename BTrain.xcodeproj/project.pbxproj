@@ -133,6 +133,7 @@
 		A785C06F2789F324002FD538 /* UndoProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = A785C06E2789F323002FD538 /* UndoProvider.swift */; };
 		A785C071278A4561002FD538 /* TrainEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A785C070278A4561002FD538 /* TrainEditView.swift */; };
 		A785C073278A4852002FD538 /* TrainIconView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A785C072278A4852002FD538 /* TrainIconView.swift */; };
+		A785C075278A5CE1002FD538 /* TrainIconManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A785C074278A5CE1002FD538 /* TrainIconManager.swift */; };
 		A7907955277D071000771A60 /* CGContext+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7907954277D071000771A60 /* CGContext+Extension.swift */; };
 		A7907957277D136500771A60 /* CGAffineTransform+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7907956277D136500771A60 /* CGAffineTransform+Extension.swift */; };
 		A7907993277EC86200771A60 /* DocumentToolbarContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7907992277EC86200771A60 /* DocumentToolbarContent.swift */; };
@@ -340,6 +341,7 @@
 		A785C06E2789F323002FD538 /* UndoProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UndoProvider.swift; sourceTree = "<group>"; };
 		A785C070278A4561002FD538 /* TrainEditView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainEditView.swift; sourceTree = "<group>"; };
 		A785C072278A4852002FD538 /* TrainIconView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainIconView.swift; sourceTree = "<group>"; };
+		A785C074278A5CE1002FD538 /* TrainIconManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainIconManager.swift; sourceTree = "<group>"; };
 		A7907954277D071000771A60 /* CGContext+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CGContext+Extension.swift"; sourceTree = "<group>"; };
 		A7907956277D136500771A60 /* CGAffineTransform+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CGAffineTransform+Extension.swift"; sourceTree = "<group>"; };
 		A7907992277EC86200771A60 /* DocumentToolbarContent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentToolbarContent.swift; sourceTree = "<group>"; };
@@ -892,6 +894,7 @@
 				A785C06E2789F323002FD538 /* UndoProvider.swift */,
 				A73B1638274B60A10073947D /* BTLogger.swift */,
 				A721806E275D396A00831998 /* Hexadecimal.swift */,
+				A785C074278A5CE1002FD538 /* TrainIconManager.swift */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -1141,6 +1144,7 @@
 				A7BE36AA2751BDC300286709 /* ConnectorPlug.swift in Sources */,
 				A73E080B276ABA91005F9D64 /* LayoutDCreator.swift in Sources */,
 				A74CCC72272A5A18004E58F5 /* Transition.swift in Sources */,
+				A785C075278A5CE1002FD538 /* TrainIconManager.swift in Sources */,
 				A7710E592777D7FE00C08150 /* RouteView.swift in Sources */,
 				A792DEF82783A09C004B0439 /* SimulatorTrainControlView.swift in Sources */,
 				A73B1639274B60A10073947D /* BTLogger.swift in Sources */,

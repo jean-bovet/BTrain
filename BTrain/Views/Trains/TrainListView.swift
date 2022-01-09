@@ -32,7 +32,7 @@ struct TrainListView: View {
                     Text(train.name)
                     HStack {
                         if train.iconUrlData != nil {
-                            TrainIconView(train: train, size: .medium)
+                            TrainIconView(trainIconManager: document.trainIconManager, train: train, size: .medium)
                         }
                         TrainView(document: document, train: train)
                     }

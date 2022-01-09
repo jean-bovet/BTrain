@@ -16,7 +16,8 @@ struct TrainEditView: View {
     
     let layout: Layout
     @ObservedObject var train: Train
-    
+    let trainIconManager: TrainIconManager
+
     var body: some View {
         Form {
             Picker("Decoder:", selection: $train.addressDecoderType) {
@@ -28,7 +29,7 @@ struct TrainEditView: View {
             TextField("Address:", value: $train.addressValue,
                       format: .number)
                         
-            TrainIconView(train: train, size: .large)
+            TrainIconView(trainIconManager: trainIconManager, train: train, size: .large)
             
             Spacer()
         }
@@ -61,6 +62,6 @@ struct TrainEditView_Previews: PreviewProvider {
     static let layout = LayoutACreator().newLayout()
     
     static var previews: some View {
-        TrainEditView(layout: layout, train: layout.trains[0])
+        TrainEditView(layout: layout, train: layout.trains[0], trainIconManager: TrainIconManager(layout: layout))
     }
 }
