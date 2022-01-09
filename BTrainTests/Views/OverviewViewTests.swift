@@ -21,13 +21,13 @@ class OverviewViewTests: RootViewTests {
 
     func testMainView() throws {
         let sut = OverviewView(document: doc)
-        XCTAssertNoThrow(try sut.inspect().hStack().vStack(0).view(TrainListView.self, 0))
+        XCTAssertNoThrow(try sut.inspect().hStack().vStack(0).view(TrainControlListView.self, 0))
         XCTAssertThrowsError(try sut.inspect().hStack().vStack(0).view(SimulatorView.self, 1))
-        XCTAssertNoThrow(try sut.inspect().hStack().view(OverviewSwitchboardView.self, 1))
+        XCTAssertNoThrow(try sut.inspect().hStack().view(SwitchboardContainerView.self, 1))
     }
     
     func testOverviewSwitchboardView() throws {
-        let sut = OverviewSwitchboardView(layout: doc.layout, coordinator: doc.coordinator, document: doc, switchboard: doc.switchboard, state: doc.switchboard.state)
+        let sut = SwitchboardContainerView(layout: doc.layout, coordinator: doc.coordinator, document: doc, switchboard: doc.switchboard, state: doc.switchboard.state)
         XCTAssertNoThrow(try sut.inspect().vStack().view(SwitchboardEditControlsView.self, 0))
         XCTAssertNoThrow(try sut.inspect().vStack().scrollView(1).view(SwitchBoardView.self))
     }

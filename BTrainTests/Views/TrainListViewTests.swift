@@ -11,37 +11,15 @@
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 import XCTest
-import SwiftUI
-import ViewInspector
 
 @testable import BTrain
 
 class TrainListViewTests: RootViewTests {
     
-    func testList() throws {
-        doc.layout.trains[0].blockId = doc.layout.blockIds[0]
-        
-        let sut = TrainListView(layout: doc.layout, document: doc)
-        
-        let trainView = try sut.inspect().find(TrainView.self)
-        
-        // Train Location
-        let trainLocationView = try trainView.vStack().view(TrainLocationView.self, 0)
-        
-        let locationText = try trainLocationView.vStack().hStack(0).text(0)
-        XCTAssertEqual(try locationText.string(), "Location: b1")
-                
-        // Train Controls
-        let trainControlsView = try trainView.vStack().tupleView(1).view(TrainControlsView.self, 0)
-                
-        XCTAssertEqual(try trainControlsView.vStack().hStack(0).text(2).string(), "0 km/h")
-        layout.trains[0].speed = 300
-        XCTAssertEqual(try trainControlsView.vStack().hStack(0).text(2).string(), "300 km/h")
-
-        // TrainRouteView
-        let trainRouteView = try trainView.vStack().tupleView(1).view(TrainRouteView.self, 1)
-        let text = try trainRouteView.find(ViewType.Text.self)
-        XCTAssertEqual(try text.string(), "Automatic")
+    func testStringValue() throws {
+        let sut = TrainListView(document: doc, layout: doc.layout)
+        let value = try sut.inspect().hStack().vStack(0).hStack(1).text(0).string()
+        XCTAssertEqual(value, "2 trains")
     }
-    
+
 }

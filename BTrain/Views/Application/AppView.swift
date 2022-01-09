@@ -14,6 +14,8 @@ import SwiftUI
 
 let SideListFixedWidth = 400.0
 
+// This is the main application view. It knows how to switch between views and how to
+// respond to most of the commands.
 struct AppView: View {
 
     @ObservedObject var document: LayoutDocument
@@ -24,19 +26,22 @@ struct AppView: View {
     @State private var showDiscoverLocomotiveConfirmation = false
     @State private var repairLayoutTrigger = false
 
+    @AppStorage("autoConnectSimulator") private var autoConnectSimulator = false
+    @AppStorage("autoEnableSimulator") private var autoEnableSimulator = false
+
     var body: some View {
         Group {
             switch(document.selectedView) {
-            case .switchboard:
+            case .overview:
                 OverviewView(document: document)
             case .routes:
                 RouteListView(layout: document.layout)
-            case .locomotives:
-                TrainEditListView(document: document, layout: document.layout)
+            case .trains:
+                TrainListView(document: document, layout: document.layout)
             case .blocks:
-                BlockEditListView(layout: document.layout)
+                BlockListView(layout: document.layout)
             case .turnouts:
-                TurnoutEditListView(layout: document.layout)
+                TurnoutListView(layout: document.layout)
             case .feedback:
                 FeedbackEditListView(layout: document.layout)
             }
@@ -70,9 +75,9 @@ struct AppView: View {
             }
         })
         .onAppear {
-            if UserDefaults.standard.bool(forKey: "autoConnectSimulator") {
+            if autoConnectSimulator {
                 document.connectToSimulator() { error in
-                    if UserDefaults.standard.bool(forKey: "autoEnableSimulator") {
+                    if autoEnableSimulator {
                         document.enable() {}
                     }
                 }

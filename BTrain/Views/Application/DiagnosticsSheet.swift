@@ -12,6 +12,7 @@
 
 import SwiftUI
 
+// This view displays to the user the list of errors, if any, for the current layout
 struct DiagnosticsSheet: View {
     
     let layout: Layout

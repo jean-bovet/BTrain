@@ -10,16 +10,14 @@
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-import XCTest
+import Foundation
 
-@testable import BTrain
-
-class TrainEditListViewTests: RootViewTests {
-    
-    func testStringValue() throws {
-        let sut = TrainEditListView(document: doc, layout: doc.layout)
-        let value = try sut.inspect().hStack().vStack(0).hStack(1).text(0).string()
-        XCTAssertEqual(value, "2 trains")
-    }
-
+enum ViewType: Int {
+    case overview
+    case routes
+    case trains
+    case blocks
+    case turnouts
+    case feedback
 }
+    

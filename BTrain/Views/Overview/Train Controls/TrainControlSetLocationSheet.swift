@@ -12,7 +12,7 @@
 
 import SwiftUI
 
-struct TrainSetLocationSheet: View {
+struct TrainControlSetLocationSheet: View {
     let layout: Layout
         
     @Environment(\.presentationMode) var presentationMode
@@ -121,11 +121,11 @@ private extension Block {
     }
 }
 
-struct TrainSetLocationView_Previews: PreviewProvider {
+struct TrainControlSetLocationSheet_Previews: PreviewProvider {
     static let layout = LayoutCCreator().newLayout()
 
     static var previews: some View {
-        TrainSetLocationSheet(layout: layout, train: layout.trains[0])
+        TrainControlSetLocationSheet(layout: layout, train: layout.trains[0])
     }
 
 }

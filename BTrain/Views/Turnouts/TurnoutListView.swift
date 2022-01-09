@@ -12,7 +12,7 @@
 
 import SwiftUI
 
-struct TurnoutEditListView: View {
+struct TurnoutListView: View {
     
     @ObservedObject var layout: Layout
     @State private var selection: Identifier<Turnout>? = nil
@@ -157,6 +157,6 @@ extension Turnout {
 struct TurnoutEditListView_Previews: PreviewProvider {
 
     static var previews: some View {
-        TurnoutEditListView(layout: LayoutCCreator().newLayout())
+        TurnoutListView(layout: LayoutCCreator().newLayout())
     }
 }

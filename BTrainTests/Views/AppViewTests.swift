@@ -19,23 +19,23 @@ class AppViewTests: RootViewTests {
     func testMainView() throws {
         let sut = AppView(document: doc)
         
-        doc.selectedView = .switchboard
+        doc.selectedView = .overview
         XCTAssertNoThrow(try sut.inspect().find(OverviewView.self))
         
-        doc.selectedView = .locomotives
+        doc.selectedView = .trains
         XCTAssertThrowsError(try sut.inspect().find(OverviewView.self))
-        XCTAssertNoThrow(try sut.inspect().find(TrainEditListView.self))
+        XCTAssertNoThrow(try sut.inspect().find(TrainListView.self))
         
         doc.selectedView = .blocks
-        XCTAssertThrowsError(try sut.inspect().find(TrainEditListView.self))
-        XCTAssertNoThrow(try sut.inspect().find(BlockEditListView.self))
+        XCTAssertThrowsError(try sut.inspect().find(TrainDetailsView.self))
+        XCTAssertNoThrow(try sut.inspect().find(BlockListView.self))
         
         doc.selectedView = .turnouts
-        XCTAssertThrowsError(try sut.inspect().find(BlockEditListView.self))
-        XCTAssertNoThrow(try sut.inspect().find(TurnoutEditListView.self))
+        XCTAssertThrowsError(try sut.inspect().find(BlockListView.self))
+        XCTAssertNoThrow(try sut.inspect().find(TurnoutListView.self))
 
         doc.selectedView = .feedback
-        XCTAssertThrowsError(try sut.inspect().find(TurnoutEditListView.self))
+        XCTAssertThrowsError(try sut.inspect().find(TurnoutListView.self))
         XCTAssertNoThrow(try sut.inspect().find(FeedbackEditListView.self))
     }
 

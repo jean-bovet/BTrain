@@ -12,7 +12,7 @@
 
 import SwiftUI
 
-struct BlockEditListView: View {
+struct BlockListView: View {
     
     @ObservedObject var layout: Layout
     
@@ -74,7 +74,7 @@ struct BlockEditListView: View {
                 }.frame(maxWidth: SideListFixedWidth)
 
                 if let selection = selection, let block = layout.block(for: selection) {
-                    BlockEditView(layout: layout, block: block)
+                    BlockDetailsView(layout: layout, block: block)
                         .padding()
                 } else {
                     Group {
@@ -96,6 +96,6 @@ struct BlockEditListView: View {
 struct BlockEditListView_Previews: PreviewProvider {
 
     static var previews: some View {
-        BlockEditListView(layout: LayoutCCreator().newLayout())
+        BlockListView(layout: LayoutCCreator().newLayout())
     }
 }

@@ -12,7 +12,7 @@
 
 import SwiftUI
 
-struct OverviewSwitchboardView: View {
+struct SwitchboardContainerView: View {
     
     @ObservedObject var layout: Layout
 
@@ -62,6 +62,6 @@ struct OverviewSwitchboardView_Previews: PreviewProvider {
     static let doc = LayoutDocument(layout: LayoutCCreator().newLayout())
 
     static var previews: some View {
-        OverviewSwitchboardView(layout: doc.layout, coordinator: doc.coordinator, document: doc, switchboard: doc.switchboard, state: doc.switchboard.state)
+        SwitchboardContainerView(layout: doc.layout, coordinator: doc.coordinator, document: doc, switchboard: doc.switchboard, state: doc.switchboard.state)
     }
 }

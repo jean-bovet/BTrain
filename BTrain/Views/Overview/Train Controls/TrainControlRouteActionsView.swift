@@ -12,7 +12,7 @@
 
 import SwiftUI
 
-struct TrainRouteControlView: View {
+struct TrainControlRouteActionsView: View {
     
     @ObservedObject var document: LayoutDocument
 
@@ -66,12 +66,12 @@ struct TrainRouteControlView: View {
     }
 }
 
-struct TrainRouteControlView_Previews: PreviewProvider {
+struct TrainControlRouteActionsView_Previews: PreviewProvider {
     
     static let doc = LayoutDocument(layout: LayoutACreator().newLayout())
 
     static var previews: some View {
-        TrainRouteControlView(document: doc, train: doc.layout.trains[0], route: doc.layout.routes[0], error: .constant(""))
+        TrainControlRouteActionsView(document: doc, train: doc.layout.trains[0], route: doc.layout.routes[0], error: .constant(""))
     }
 
 }

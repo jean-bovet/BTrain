@@ -12,56 +12,41 @@
 
 import SwiftUI
 
-struct TrainEditView: View {
-    
-    let layout: Layout
-    @ObservedObject var train: Train
-    let trainIconManager: TrainIconManager
-
-    var body: some View {
-        Form {
-            Picker("Decoder:", selection: $train.addressDecoderType) {
-                ForEach(DecoderType.allCases, id:\.self) { proto in
-                    Text(proto.rawValue).tag(proto as DecoderType?)
-                }
-            }
-
-            TextField("Address:", value: $train.addressValue,
-                      format: .number)
-                        
-            TrainIconView(trainIconManager: trainIconManager, train: train, size: .large)
+struct TrainControlContainerView: View {
             
-            Spacer()
+    @ObservedObject var document: LayoutDocument
+    
+    // Observe the train so any changes is reflected in the UX,
+    // such as speed changes during automatic route execution.
+    @ObservedObject var train: Train
+    
+    var body: some View {
+        VStack(alignment: .leading) {
+            TrainControlLocationView(layout: document.layout, train: train)
+            if train.blockId != nil {
+                TrainControlView(document: document, train: train)
+                TrainControlRouteView(document: document, train: train)
+            }
         }
     }
 }
 
-extension Train {
-    
-    var addressDecoderType: DecoderType? {
-        get {
-            return address.decoderType
-        }
-        set {
-            address = .init(address.address, newValue)
-        }
-    }
-    
-    var addressValue: Int {
-        get {
-            return Int(address.address)
-        }
-        set {
-            address = .init(UInt32(newValue), addressDecoderType)
-        }
-    }
-}
+struct TrainControlContainerView_Previews: PreviewProvider {
+        
+    static let doc1: LayoutDocument = LayoutDocument(layout: LayoutACreator().newLayout())
 
-struct TrainEditView_Previews: PreviewProvider {
-    
-    static let layout = LayoutACreator().newLayout()
-    
+    static let doc2: LayoutDocument = {
+        let layout = LayoutACreator().newLayout()
+        layout.trains[0].blockId = layout.block(at: 0).id
+        return LayoutDocument(layout: layout)
+    }()
+
     static var previews: some View {
-        TrainEditView(layout: layout, train: layout.trains[0], trainIconManager: TrainIconManager(layout: layout))
+        Group {
+            TrainControlContainerView(document: doc1, train: doc1.layout.trains[0])
+        }
+        Group {
+            TrainControlContainerView(document: doc2, train: doc2.layout.trains[0])
+        }
     }
 }

@@ -14,30 +14,84 @@ import SwiftUI
 
 struct TrainListView: View {
     
-    // Note: necesary to have the layout as a separate property in order for SwiftUI to detect changes
-    @ObservedObject var layout: Layout
+    @Environment(\.undoManager) var undoManager
+    
     @ObservedObject var document: LayoutDocument
 
+    @ObservedObject var layout: Layout
+    
+    @State private var selection: Identifier<Train>? = nil
+
     var body: some View {
-        if layout.trains.isEmpty {
+        HStack {
             VStack {
-                Text("No Locomotives")
-                Button("Download Locomotives 􀈄") {
-                    document.discoverLocomotiveConfirmation.toggle()
-                }.disabled(!document.connected)
-            }
-        } else {
-            List {
-                ForEach(layout.trains.filter({$0.enabled}), id:\.self) { train in
-                    Text(train.name)
-                    HStack {
-                        if train.iconUrlData != nil {
-                            TrainIconView(trainIconManager: document.trainIconManager, train: train, size: .medium)
-                        }
-                        TrainView(document: document, train: train)
+                Table(selection: $selection) {
+                    TableColumn("Enabled") { train in
+                        Toggle("Enabled", isOn: train.enabled)
+                            .labelsHidden()
+                    }.width(80)
+                    
+                    TableColumn("Name") { train in
+                        TextField("Name", text: train.name)
+                            .labelsHidden()
                     }
-                    Divider()
+                    
+                } rows: {
+                    ForEach($layout.trains) { train in
+                        TableRow(train)
+                    }
                 }
+                
+                HStack {
+                    Text("\(layout.trains.count) trains")
+                    
+                    Spacer()
+                    
+                    Button("+") {
+                        let train = layout.newTrain()
+                        undoManager?.registerUndo(withTarget: layout, handler: { layout in
+                            layout.trains.removeAll { t in
+                                return t.id == train.id
+                            }
+                        })
+                    }
+                    Button("-") {
+                        let train = layout.train(for: selection!)
+                        layout.remove(trainId: selection!)
+                        
+                        undoManager?.registerUndo(withTarget: layout, handler: { layout in
+                            layout.trains.append(train!)
+                        })
+                    }.disabled(selection == nil)
+                    
+                    Spacer().fixedSpace()
+                    
+                    Button("􀈄") {
+                        document.discoverLocomotiveConfirmation.toggle()
+                    }.help("Download Locomotives")
+                    
+                    Spacer().fixedSpace()
+                    
+                    Button("􀄬") {
+                        layout.sortTrains()
+                    }
+                }.padding()
+            }.frame(maxWidth: SideListFixedWidth)
+
+            if let selection = selection, let train = layout.train(for: selection) {
+                TrainDetailsView(layout: layout, train: train, trainIconManager: document.trainIconManager)
+                    .padding()
+            } else {
+                Group {
+                    Spacer()
+                    Text("No Selected Train")
+                        .padding()
+                    Spacer()
+                }
+            }
+        }.onAppear {
+            if selection == nil {
+                selection = layout.trains.first?.id
             }
         }
     }
@@ -46,8 +100,8 @@ struct TrainListView: View {
 struct TrainListView_Previews: PreviewProvider {
     
     static let doc = LayoutDocument(layout: LayoutCCreator().newLayout())
-
+    
     static var previews: some View {
-        TrainListView(layout: doc.layout, document: doc)
+        TrainListView(document: doc, layout: doc.layout)
     }
 }

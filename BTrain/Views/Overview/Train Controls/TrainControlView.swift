@@ -12,7 +12,7 @@
 
 import SwiftUI
 
-struct TrainControlsView: View {
+struct TrainControlView: View {
     
     @ObservedObject var document: LayoutDocument
 
@@ -70,7 +70,7 @@ struct TrainControlsView: View {
     }
 }
 
-extension Train {
+private extension Train {
     
     // Necessary because SwiftUI Slider requires a Double
     // while speed is UInt16.
@@ -85,7 +85,7 @@ extension Train {
     
 }
 
-struct TrainControlsView_Previews: PreviewProvider {
+struct TrainControlView_Previews: PreviewProvider {
     
     static let doc: LayoutDocument = {
         let layout = LayoutACreator().newLayout()
@@ -93,6 +93,6 @@ struct TrainControlsView_Previews: PreviewProvider {
     }()
 
     static var previews: some View {
-        TrainControlsView(document: doc, train: doc.layout.trains[0])
+        TrainControlView(document: doc, train: doc.layout.trains[0])
     }
 }

@@ -12,6 +12,7 @@
 
 import SwiftUI
 
+// This view allows the user to import a predefined layout into the current document
 struct ImportLayoutSheet: View {
     
     @ObservedObject var document: LayoutDocument

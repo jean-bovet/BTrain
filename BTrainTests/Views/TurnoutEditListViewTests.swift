@@ -17,7 +17,7 @@ import XCTest
 class TurnoutEditListViewTests: RootViewTests {
     
     func testStringValue() throws {
-        let sut = TurnoutEditListView(layout: LayoutCCreator().newLayout())
+        let sut = TurnoutListView(layout: LayoutCCreator().newLayout())
         let value = try sut.inspect().vStack().hStack(1).text(0).string()
         XCTAssertEqual(value, "2 turnouts")
     }

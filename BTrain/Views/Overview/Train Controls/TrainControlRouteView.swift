@@ -12,7 +12,7 @@
 
 import SwiftUI
 
-struct TrainRouteView: View {
+struct TrainControlRouteView: View {
     
     struct RouteItem: Hashable {
         let name: String
@@ -78,7 +78,7 @@ struct TrainRouteView: View {
                 Spacer()
                 
                 if let route = layout.route(for: selectedRoute, trainId: train.id) {
-                    TrainRouteControlView(document: document, train: train, route: route, error: $error)
+                    TrainControlRouteActionsView(document: document, train: train, route: route, error: $error)
                         .disabled(!document.connected)
                 }
             }
@@ -102,11 +102,11 @@ struct TrainRouteView: View {
     }
 }
 
-struct TrainRouteView_Previews: PreviewProvider {
+struct TrainControlRouteView_Previews: PreviewProvider {
     
     static let doc = LayoutDocument(layout: LayoutACreator().newLayout())
 
     static var previews: some View {
-        TrainRouteView(document: doc, train: doc.layout.trains[0])
+        TrainControlRouteView(document: doc, train: doc.layout.trains[0])
     }
 }

@@ -12,37 +12,42 @@
 
 import SwiftUI
 
-struct BlockEditView: View {
+struct TrainControlListView: View {
     
-    let layout: Layout
-    @ObservedObject var block: Block
-    
-    var body: some View {
-        VStack(alignment: .leading) {
-            UndoProvider($block.category) { category in
-                Picker("Type", selection: category) {
-                    ForEach(Block.Category.allCases, id:\.self) { category in
-                        HStack {
-                            Text(category.description)
-                            BlockShapeView(layout: layout, category: category)
-                        }
-                    }
-                }.pickerStyle(.inline)
-            }
+    // Note: necesary to have the layout as a separate property in order for SwiftUI to detect changes
+    @ObservedObject var layout: Layout
+    @ObservedObject var document: LayoutDocument
 
-            GroupBox("Feedbacks") {
-                BlockFeedbackView(layout: layout, block: block)
+    var body: some View {
+        if layout.trains.isEmpty {
+            VStack {
+                Text("No Locomotives")
+                Button("Download Locomotives 􀈄") {
+                    document.discoverLocomotiveConfirmation.toggle()
+                }.disabled(!document.connected)
             }
-            
-            Spacer()
+        } else {
+            List {
+                ForEach(layout.trains.filter({$0.enabled}), id:\.self) { train in
+                    Text(train.name)
+                    HStack {
+                        if train.iconUrlData != nil {
+                            TrainIconView(trainIconManager: document.trainIconManager, train: train, size: .medium)
+                        }
+                        TrainControlContainerView(document: document, train: train)
+                    }
+                    Divider()
+                }
+            }
         }
     }
 }
 
-struct BlockEditView_Previews: PreviewProvider {
+struct TrainControlListView_Previews: PreviewProvider {
     
-    static let layout = LayoutCCreator().newLayout()
+    static let doc = LayoutDocument(layout: LayoutCCreator().newLayout())
+
     static var previews: some View {
-        BlockEditView(layout: layout, block: layout.block(at: 0))
+        TrainControlListView(layout: doc.layout, document: doc)
     }
 }

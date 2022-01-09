@@ -53,7 +53,7 @@ class SimulatorViewTests: RootViewTests {
         wait(for: t1, directionForward: true)
         
         // Now tap on the direction of the first train in the train list and see if it is reflected in the simulator
-        let trainControlsView = try sut.inspect().find(TrainControlsView.self)
+        let trainControlsView = try sut.inspect().find(TrainControlView.self)
         let trainToggleButton = try trainControlsView.vStack().hStack(0).button(0)
         
         try trainToggleButton.tap()

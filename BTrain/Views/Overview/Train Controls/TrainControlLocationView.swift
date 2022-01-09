@@ -12,7 +12,7 @@
 
 import SwiftUI
 
-struct TrainLocationView: View {
+struct TrainControlLocationView: View {
     
     @ObservedObject var layout: Layout
         
@@ -71,17 +71,17 @@ struct TrainLocationView: View {
                     .foregroundColor(.red)
             }
         }.sheet(isPresented: $setTrainLocationSheet) {
-            TrainSetLocationSheet(layout: layout, train: train)
+            TrainControlSetLocationSheet(layout: layout, train: train)
                 .padding()
         }
     }
 }
 
-struct TrainLocationView_Previews: PreviewProvider {
+struct TrainControlLocationView_Previews: PreviewProvider {
     
     static let layout = LayoutCCreator().newLayout()
 
     static var previews: some View {
-        TrainLocationView(layout: layout, train: layout.trains[0])
+        TrainControlLocationView(layout: layout, train: layout.trains[0])
     }
 }

@@ -12,6 +12,7 @@
 
 import SwiftUI
 
+// This structure defines the window toolbar content
 struct DocumentToolbarContent: ToolbarContent {
 
     @ObservedObject var document: LayoutDocument
@@ -32,7 +33,7 @@ struct DocumentToolbarContent: ToolbarContent {
 
             ToolDebugCommandsView(document: document)
 
-            if let switchboard = document.switchboard, document.selectedView == .switchboard {
+            if let switchboard = document.switchboard, document.selectedView == .overview {
                 Menu("Switchboard") {
                     CommandEditSwitchboardView(state: switchboard.state)
 
@@ -40,13 +41,13 @@ struct DocumentToolbarContent: ToolbarContent {
 
                     CommandShowBlockNameView()
                     CommandShowTurnoutNameView()
-                }.disabled(document.selectedView != .switchboard)
+                }.disabled(document.selectedView != .overview)
             }
             
             Menu("View") {
-                CommandSelectedView(viewType: .switchboard, label: "Switchboard")
+                CommandSelectedView(viewType: .overview, label: "Switchboard")
                 CommandSelectedView(viewType: .routes, label: "Routes")
-                CommandSelectedView(viewType: .locomotives, label: "Trains")
+                CommandSelectedView(viewType: .trains, label: "Trains")
                 CommandSelectedView(viewType: .blocks, label: "Blocks")
                 CommandSelectedView(viewType: .turnouts, label: "Turnouts")
                 CommandSelectedView(viewType: .feedback, label: "Feedback")
@@ -130,7 +131,7 @@ struct SimulatorIndicationView: View {
 
 struct CommandSelectedView: View {
     
-    @AppStorage("selectedView") var selectedView: ViewType = .switchboard
+    @AppStorage("selectedView") var selectedView: ViewType = .overview
     let viewType: ViewType
     let label: String
     

@@ -19,16 +19,18 @@ struct OverviewView: View {
     var body: some View {
         HStack(spacing: 0) {
             VStack(spacing: 0) {
-                TrainListView(layout: document.layout, document: document)
+                TrainControlListView(layout: document.layout, document: document)
                 if document.simulator.started {
                     SimulatorView(simulator: document.simulator)
                 }
             }
             .frame(width: 500)
 
-            if let switchboard = document.switchboard, let layout = document.layout, let coordinator = document.coordinator {
-                OverviewSwitchboardView(layout: layout, coordinator: coordinator, document: document, switchboard: switchboard, state: switchboard.state)
-            }
+            SwitchboardContainerView(layout: document.layout,
+                                     coordinator: document.coordinator,
+                                     document: document,
+                                     switchboard: document.switchboard,
+                                     state: document.switchboard.state)
         }
     }
 }

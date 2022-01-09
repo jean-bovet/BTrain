@@ -15,12 +15,12 @@ import ViewInspector
 
 @testable import BTrain
 
-extension TrainSetLocationSheet: Inspectable { }
+extension TrainControlSetLocationSheet: Inspectable { }
 
 class TrainSetLocationSheetTests: RootViewTests {
 
     func testLayout() throws {
-        let sut = TrainSetLocationSheet(layout: layout, train: layout.trains[0])
+        let sut = TrainControlSetLocationSheet(layout: layout, train: layout.trains[0])
         XCTAssertNoThrow(try sut.inspect().find(button: "OK"))
     }
 

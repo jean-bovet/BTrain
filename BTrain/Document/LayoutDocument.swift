@@ -68,7 +68,7 @@ final class LayoutDocument: ObservableObject {
     @Published var discoverLocomotiveConfirmation = false
 
     // Property used to switch to a specific view type
-    @AppStorage("selectedView") var selectedView: ViewType = .switchboard
+    @AppStorage("selectedView") var selectedView: ViewType = .overview
 
     // Property used to toggle showing debug-only controls
     @AppStorage("debugMode") var showDebugModeControls = false

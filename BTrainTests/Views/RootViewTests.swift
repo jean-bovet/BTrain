@@ -17,18 +17,19 @@ import ViewInspector
 
 extension AppView: Inspectable { }
 extension OverviewView: Inspectable { }
-extension OverviewSwitchboardView: Inspectable { }
-extension BlockEditListView: Inspectable { }
-extension TurnoutEditListView: Inspectable { }
+extension SwitchboardContainerView: Inspectable { }
+extension BlockListView: Inspectable { }
+extension TurnoutListView: Inspectable { }
 extension FeedbackEditListView: Inspectable { }
-extension TrainListView: Inspectable { }
+extension TrainControlListView: Inspectable { }
 extension SwitchBoardView: Inspectable { }
 extension FeedbackView: Inspectable { }
-extension TrainEditListView: Inspectable { }
-extension TrainView: Inspectable { }
-extension TrainControlsView: Inspectable { }
-extension TrainLocationView: Inspectable { }
-extension TrainRouteView: Inspectable { }
+extension TrainListView: Inspectable { }
+extension TrainDetailsView: Inspectable { }
+extension TrainControlContainerView: Inspectable { }
+extension TrainControlView: Inspectable { }
+extension TrainControlLocationView: Inspectable { }
+extension TrainControlRouteView: Inspectable { }
 
 class RootViewTests: BTTestCase {
 

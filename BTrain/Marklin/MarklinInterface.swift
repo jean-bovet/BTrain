@@ -64,7 +64,7 @@ final class MarklinInterface {
                         // Only report turnout change when the message is initiated from
                         // the Digital Controller. This is because when BTrain sends
                         // a turnout command, the Digital Controller will respond
-                        // with an acknowledgement with msg.resp == 1 which should be ignored here.
+                        // with an acknowledgement with msg.resp == 1, which should be ignored here.
                         self.turnoutChangeCallbacks.forEach { $0(address, state, power) }
                     }
                 }

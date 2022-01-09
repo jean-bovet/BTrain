@@ -12,41 +12,37 @@
 
 import SwiftUI
 
-struct TrainView: View {
-            
-    @ObservedObject var document: LayoutDocument
+struct BlockDetailsView: View {
     
-    // Observe the train so any changes is reflected in the UX,
-    // such as speed changes during automatic route execution.
-    @ObservedObject var train: Train
+    let layout: Layout
+    @ObservedObject var block: Block
     
     var body: some View {
         VStack(alignment: .leading) {
-            TrainLocationView(layout: document.layout, train: train)
-            if train.blockId != nil {
-                TrainControlsView(document: document, train: train)
-                TrainRouteView(document: document, train: train)
+            UndoProvider($block.category) { category in
+                Picker("Type", selection: category) {
+                    ForEach(Block.Category.allCases, id:\.self) { category in
+                        HStack {
+                            Text(category.description)
+                            BlockShapeView(layout: layout, category: category)
+                        }
+                    }
+                }.pickerStyle(.inline)
             }
+
+            GroupBox("Feedbacks") {
+                BlockFeedbackView(layout: layout, block: block)
+            }
+            
+            Spacer()
         }
     }
 }
 
-struct TrainView_Previews: PreviewProvider {
-        
-    static let doc1: LayoutDocument = LayoutDocument(layout: LayoutACreator().newLayout())
-
-    static let doc2: LayoutDocument = {
-        let layout = LayoutACreator().newLayout()
-        layout.trains[0].blockId = layout.block(at: 0).id
-        return LayoutDocument(layout: layout)
-    }()
-
+struct BlockEditView_Previews: PreviewProvider {
+    
+    static let layout = LayoutCCreator().newLayout()
     static var previews: some View {
-        Group {
-            TrainView(document: doc1, train: doc1.layout.trains[0])
-        }
-        Group {
-            TrainView(document: doc2, train: doc2.layout.trains[0])
-        }
+        BlockDetailsView(layout: layout, block: layout.block(at: 0))
     }
 }
