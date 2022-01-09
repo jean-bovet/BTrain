@@ -159,11 +159,11 @@ class PathFinderTests: BTTestCase {
         XCTAssertFalse(route.enabled)
 
         // Start the route
-        let controller = LayoutCoordinator(layout: layout, interface: nil)
+        let layoutController = LayoutController(layout: layout, interface: nil)
         try layout.prepare(routeID: route.id, trainID: train.id, startAtEndOfBlock: true)
-        try controller.start(routeID: route.id, trainID: train.id, toBlockId: nil)
+        try layoutController.start(routeID: route.id, trainID: train.id, toBlockId: nil)
         
-        let asserter = LayoutAsserter(layout: layout, coordinator: controller)
+        let asserter = LayoutAsserter(layout: layout, layoutController: layoutController)
         
         try asserter.assert(["automatic-0: {r0{s1 ≏ 🚂0 }} <r0<t1,l>> <r0<t2,s>> [r0[b1 ≏ ]] <t3> [b2 ≏ ] <t4> [b3 ≏ ] <t5> <t6> {s2 ≏ }"], route: route, trains: [train])
                         
@@ -176,13 +176,13 @@ class PathFinderTests: BTTestCase {
         try asserter.assert(["automatic-0: {s1 ≏ } <t1,l> <t2,s> [r0[b1 ≡ 🛑🚂0 ]] <t3> [r1[b2 ≏ ]] <t4> [b3 ≏ ] <t5> <t6> {s2 ≏ }"], route: route, trains: [train])
 
         // The controller will generate a new automatic route because "b2" is occupied.
-        XCTAssertEqual(controller.run(), .processed)
+        XCTAssertEqual(layoutController.run(), .processed)
         
         // The controller will start the train again because the next block of the new route is free
-        XCTAssertEqual(controller.run(), .processed)
+        XCTAssertEqual(layoutController.run(), .processed)
         
         // Nothing more should happen now
-        XCTAssertEqual(controller.run(), .none)
+        XCTAssertEqual(layoutController.run(), .none)
 
         // Because block b2 is occupied, a new route will be generated automatically
         try asserter.assert(["automatic-0: [r0[b1 ≏ 🚂0 ]] <r0<t3(0,2),r>> ![r0[b5 ≏ ]] <t7(2,0)> <t5(2,0)> ![b3 ≏ ] <t4(0,1)> ![r1[b2 ≏ ]] <r0<t3(1,0),r>> ![b1 ≏ ] <t2(0,1)> <t1(0,1),l> !{s2 ≏ }"], route: route, trains: [train])

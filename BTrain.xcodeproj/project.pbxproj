@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		A711B1502739EBD7002FE7DB /* LayoutCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A711B14F2739EBD7002FE7DB /* LayoutCoordinator.swift */; };
+		A711B1502739EBD7002FE7DB /* LayoutController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A711B14F2739EBD7002FE7DB /* LayoutController.swift */; };
 		A71690CC27475D5F008FE624 /* LayoutGCreator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A71690CB27475D5F008FE624 /* LayoutGCreator.swift */; };
 		A717157C2756E5BD00200F92 /* ImportLayoutSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A717157B2756E5BD00200F92 /* ImportLayoutSheet.swift */; };
 		A717157E2756EB7100200F92 /* LayoutBlankCreator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A717157D2756EB7100200F92 /* LayoutBlankCreator.swift */; };
@@ -218,7 +218,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		A711B14F2739EBD7002FE7DB /* LayoutCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutCoordinator.swift; sourceTree = "<group>"; };
+		A711B14F2739EBD7002FE7DB /* LayoutController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutController.swift; sourceTree = "<group>"; };
 		A71690CB27475D5F008FE624 /* LayoutGCreator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutGCreator.swift; sourceTree = "<group>"; };
 		A717157B2756E5BD00200F92 /* ImportLayoutSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImportLayoutSheet.swift; sourceTree = "<group>"; };
 		A717157D2756EB7100200F92 /* LayoutBlankCreator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutBlankCreator.swift; sourceTree = "<group>"; };
@@ -500,9 +500,7 @@
 				A73B164F274F13890073947D /* Info.plist */,
 				A73AFE852726594600E1ED21 /* BTrainApp.swift */,
 				A79079A4277FAB7100771A60 /* SettingsView.swift */,
-				A7BD6257276D39CA0039B6C2 /* Utilities */,
 				A785C07C278A64A4002FD538 /* Document */,
-				A717158E2758809C00200F92 /* Geometry */,
 				A7B06B062728DD9500BDD88C /* Views */,
 				A7F779DD272C75BA00E73275 /* Controller */,
 				A792DEF92783A0A1004B0439 /* Simulator */,
@@ -511,6 +509,7 @@
 				A711B155273A28C3002FE7DB /* Command */,
 				A73AFEB92726680E00E1ED21 /* Marklin */,
 				A73AFEB82726680600E1ED21 /* Network */,
+				A7BD6257276D39CA0039B6C2 /* Utilities */,
 				A73AFE892726594800E1ED21 /* Assets.xcassets */,
 				A73AFE8E2726594800E1ED21 /* BTrain.entitlements */,
 				A73AFE8B2726594800E1ED21 /* Preview Content */,
@@ -908,6 +907,7 @@
 				A721806E275D396A00831998 /* Hexadecimal.swift */,
 				A7841368273B55FF00381341 /* View+Extension.swift */,
 				A79079A2277F87AB00771A60 /* Spacer+Extension.swift */,
+				A717158E2758809C00200F92 /* Geometry */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -915,7 +915,7 @@
 		A7F779DD272C75BA00E73275 /* Controller */ = {
 			isa = PBXGroup;
 			children = (
-				A711B14F2739EBD7002FE7DB /* LayoutCoordinator.swift */,
+				A711B14F2739EBD7002FE7DB /* LayoutController.swift */,
 				A783EAA82788C1F700E69B6D /* LayoutFeedbackMonitor.swift */,
 				A7218077275D922300831998 /* TrainController.swift */,
 				A7FBC8B7276EBB34009D49C3 /* PathFinder.swift */,
@@ -1192,7 +1192,7 @@
 				A7171582275738A300200F92 /* TrainShape.swift in Sources */,
 				A7F779D4272BB38F00E73275 /* LayoutFactory.swift in Sources */,
 				A7710E6D27799E4A00C08150 /* Layout+Feedbacks.swift in Sources */,
-				A711B1502739EBD7002FE7DB /* LayoutCoordinator.swift in Sources */,
+				A711B1502739EBD7002FE7DB /* LayoutController.swift in Sources */,
 				A792DEFB27841B35004B0439 /* LayoutCommandExecuting.swift in Sources */,
 				A7218076275D424200831998 /* OverviewView.swift in Sources */,
 				A73B163C274DC0F50073947D /* TurnoutListView.swift in Sources */,

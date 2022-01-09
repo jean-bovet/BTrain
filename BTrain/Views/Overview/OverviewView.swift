@@ -27,7 +27,7 @@ struct OverviewView: View {
             .frame(width: 500)
 
             SwitchboardContainerView(layout: document.layout,
-                                     coordinator: document.coordinator,
+                                     layoutController: document.layoutController,
                                      document: document,
                                      switchboard: document.switchboard,
                                      state: document.switchboard.state)

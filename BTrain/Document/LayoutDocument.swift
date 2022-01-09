@@ -44,7 +44,7 @@ final class LayoutDocument: ObservableObject {
     let layoutDiagnostics: LayoutDiagnostic
 
     // The layout coordinator which updates the layout in real-time during train operations
-    @Published var coordinator: LayoutCoordinator
+    @Published var layoutController: LayoutController
 
     // The visual representation of the layout
     @Published var switchboard: SwitchBoard
@@ -86,7 +86,7 @@ final class LayoutDocument: ObservableObject {
 
         let interface = ProxyCommandInterface()
         self.interface = interface
-        self.coordinator = LayoutCoordinator(layout: layout, interface: interface)
+        self.layoutController = LayoutController(layout: layout, interface: interface)
         layout.executor = LayoutCommandExecutor(layout: layout, interface: interface)
     }
 }

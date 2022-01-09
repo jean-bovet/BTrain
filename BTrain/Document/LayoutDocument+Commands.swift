@@ -25,7 +25,7 @@ extension LayoutDocument {
     func start(train: Identifier<Train>, withRoute route: Identifier<Route>, toBlockId: Identifier<Block>?) throws {
         // Note: the simulator holds a reference to the layout and will automatically simulate any
         // enabled route associated with a train.
-        try coordinator.start(routeID: route, trainID: train, toBlockId: toBlockId)
+        try layoutController.start(routeID: route, trainID: train, toBlockId: toBlockId)
     }
     
     func stop(train: Train) throws {
@@ -33,7 +33,7 @@ extension LayoutDocument {
             throw LayoutError.trainNotAssignedToARoute(train: train)
         }
                 
-        try coordinator.stop(routeID: route, trainID: train.id)
+        try layoutController.stop(routeID: route, trainID: train.id)
     }
     
     func connectToSimulator(completed: ((Error?) -> Void)? = nil) {
@@ -95,7 +95,7 @@ extension LayoutDocument {
     
     func registerForFeedbackChange() {
         interface.register(forFeedbackChange: { deviceID, contactID, value in
-            if let feedback = self.coordinator.layout.feedbacks.find(deviceID: deviceID, contactID: contactID) {
+            if let feedback = self.layoutController.layout.feedbacks.find(deviceID: deviceID, contactID: contactID) {
                 feedback.detected = value == 1
             }
         })
@@ -104,7 +104,7 @@ extension LayoutDocument {
     func registerForSpeedChange() {
         interface.register(forSpeedChange: { address, speed in
             DispatchQueue.main.async {
-                if let train = self.coordinator.layout.trains.find(address: address.address) {
+                if let train = self.layoutController.layout.trains.find(address: address.address) {
                     train.speed = speed
                 }
             }
@@ -114,7 +114,7 @@ extension LayoutDocument {
     func registerForDirectionChange() {
         interface.register(forDirectionChange: { address, direction in
             DispatchQueue.main.async {
-                if let train = self.coordinator.layout.trains.find(address: address) {
+                if let train = self.layoutController.layout.trains.find(address: address) {
                     switch(direction) {
                     case .forward:
                         if train.directionForward == false {
@@ -138,7 +138,7 @@ extension LayoutDocument {
     
     func registerForTurnoutChange() {
         interface.register(forTurnoutChange: { address, state, power in
-            if let turnout = self.coordinator.layout.turnouts.find(address: address) {
+            if let turnout = self.layoutController.layout.turnouts.find(address: address) {
                 BTLogger.debug("Turnout \(turnout.name) changed to \(state)")
                 turnout.stateValue = state
                 self.layout.didChange()

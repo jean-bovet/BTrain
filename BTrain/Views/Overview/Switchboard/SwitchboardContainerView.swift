@@ -16,7 +16,7 @@ struct SwitchboardContainerView: View {
     
     @ObservedObject var layout: Layout
 
-    let coordinator: LayoutCoordinator
+    let layoutController: LayoutController
 
     @ObservedObject var document: LayoutDocument
 
@@ -43,14 +43,14 @@ struct SwitchboardContainerView: View {
                         }
                     }
                 } else {
-                    SwitchBoardView(switchboard: switchboard, state: state, layout: layout, coordinator: coordinator)
+                    SwitchBoardView(switchboard: switchboard, state: state, layout: layout, coordinator: layoutController)
                 }
             }.background(Color(NSColor.windowBackgroundColor))
             if layout.runtimeError != nil {
                 LayoutRuntimeErrorView(error: $layout.runtimeError)
             }
         }.sheet(isPresented: $state.trainDroppedInBlockAction) {
-            TrainDropActionSheet(layout: layout, trainDragInfo: state.trainDragInfo!, coordinator: document.coordinator)
+            TrainDropActionSheet(layout: layout, trainDragInfo: state.trainDragInfo!, coordinator: document.layoutController)
                 .fixedSize(horizontal: true, vertical: false)
                 .padding()
         }
@@ -62,6 +62,6 @@ struct OverviewSwitchboardView_Previews: PreviewProvider {
     static let doc = LayoutDocument(layout: LayoutCCreator().newLayout())
 
     static var previews: some View {
-        SwitchboardContainerView(layout: doc.layout, coordinator: doc.coordinator, document: doc, switchboard: doc.switchboard, state: doc.switchboard.state)
+        SwitchboardContainerView(layout: doc.layout, layoutController: doc.layoutController, document: doc, switchboard: doc.switchboard, state: doc.switchboard.state)
     }
 }

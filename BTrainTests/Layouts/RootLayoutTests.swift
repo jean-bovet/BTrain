@@ -17,18 +17,18 @@ import XCTest
 class RootLayoutTests: BTTestCase {
 
     var asserter: LayoutAsserter!
-    var coordinator: LayoutCoordinator!
+    var layoutController: LayoutController!
     
     var route: Route {
-        return coordinator.layout.routes.first!
+        return layoutController.layout.routes.first!
     }
     
     var train: Train {
-        return coordinator.layout.trains.first!
+        return layoutController.layout.trains.first!
     }
     
     var layout: Layout {
-        return coordinator.layout
+        return layoutController.layout
     }
     
     var layoutID: Identifier<Layout>? {
@@ -41,9 +41,9 @@ class RootLayoutTests: BTTestCase {
         let layout =  LayoutFactory.createLayout(layoutID!)
         layout.detectUnexpectedFeedback = true
         layout.strictRouteFeedbackStrategy = true
-        self.coordinator = LayoutCoordinator(layout: layout,
-                                         interface: nil)
-        self.asserter = LayoutAsserter(layout: layout, coordinator: coordinator)
+        self.layoutController = LayoutController(layout: layout,
+                                                 interface: nil)
+        self.asserter = LayoutAsserter(layout: layout, layoutController: layoutController)
         if !layout.routes.isEmpty {
             XCTAssertNoThrow(try layout.prepare(routeID: route.id, trainID: train.id))
         }
@@ -109,7 +109,7 @@ extension Layout {
 
 }
 
-extension LayoutCoordinator {
+extension LayoutController {
     
     func start(routeID: String, trainID: String) throws {
         try start(routeID: Identifier<Route>(uuid: routeID),

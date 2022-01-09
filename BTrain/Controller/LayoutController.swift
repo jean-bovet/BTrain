@@ -13,7 +13,7 @@
 import Foundation
 import Combine
 
-final class LayoutCoordinator: ObservableObject {
+final class LayoutController: ObservableObject {
     
     let layout: Layout
     

@@ -18,11 +18,11 @@ import XCTest
 final class LayoutAsserter {
     
     let layout: Layout
-    let coordinator: LayoutCoordinator
+    let layoutController: LayoutController
     
-    init(layout: Layout, coordinator: LayoutCoordinator) {
+    init(layout: Layout, layoutController: LayoutController) {
         self.layout = layout
-        self.coordinator = coordinator
+        self.layoutController = layoutController
     }
     
     func assert(_ strings: [String], route: Route, trains: [Train]) throws {
@@ -37,7 +37,7 @@ final class LayoutAsserter {
         }
         
         // Then run the controller to update the real layout states
-        _ = coordinator.run()
+        _ = layoutController.run()
 
         // Now assert the routes to see if they match the real layout
         var assertedAtLeastOneRoute = false

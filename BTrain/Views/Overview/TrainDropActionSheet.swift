@@ -20,7 +20,7 @@ extension Layout {
     }
 }
 
-extension LayoutCoordinator {
+extension LayoutController {
     func routeTrain(info: SwitchBoard.State.TrainDragInfo) throws {
         let routeId = Route.automaticRouteId(for: info.trainId)
         try start(routeID: routeId, trainID: info.trainId, toBlockId: info.blockId)
@@ -31,7 +31,7 @@ struct TrainDropActionSheet: View {
     
     let layout: Layout
     let trainDragInfo: SwitchBoard.State.TrainDragInfo
-    let coordinator: LayoutCoordinator
+    let coordinator: LayoutController
     
     @Environment(\.presentationMode) var presentationMode
 
@@ -63,6 +63,6 @@ struct TrainDropActionSheet_Previews: PreviewProvider {
     static var previews: some View {
         TrainDropActionSheet(layout: doc.layout,
                              trainDragInfo: .init(trainId: .init(uuid: "1"), blockId: .init(uuid: "b1"), position: 0),
-                             coordinator: doc.coordinator)
+                             coordinator: doc.layoutController)
     }
 }

@@ -29,8 +29,8 @@ struct ImportLayoutSheet: View {
         return SwitchBoardFactory.generateSwitchboard(layout: layout)
     }
     
-    var coordinator: LayoutCoordinator {
-        return LayoutCoordinator(layout: layout, interface: nil)
+    var coordinator: LayoutController {
+        return LayoutController(layout: layout, interface: nil)
     }
     
     var body: some View {

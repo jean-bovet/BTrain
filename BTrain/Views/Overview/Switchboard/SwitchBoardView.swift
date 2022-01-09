@@ -29,7 +29,7 @@ struct SwitchBoardView: View {
     
     // The coordinator is observed for any change
     // that can cause the switchboard to be re-drawn.
-    @ObservedObject var coordinator: LayoutCoordinator
+    @ObservedObject var coordinator: LayoutController
 
     // Watch for dark mode to change the color of switchboard
     @Environment(\.colorScheme) var colorScheme
@@ -38,7 +38,7 @@ struct SwitchBoardView: View {
     
     // Note: we pass `redraw` and `coordinator` to this method, even if unused,
     // in order to force SwitfUI to re-draw the view if one of them change.
-    func draw(context: GraphicsContext, darkMode: Bool, coordinator: LayoutCoordinator, layout: Layout, state: SwitchBoard.State) {
+    func draw(context: GraphicsContext, darkMode: Bool, coordinator: LayoutController, layout: Layout, state: SwitchBoard.State) {
         switchboard.context.showBlockName = state.showBlockName
         switchboard.context.showTurnoutName = state.showTurnoutName
         switchboard.context.fontSize = fontSize
@@ -95,7 +95,7 @@ struct SwitchBoardView_Previews: PreviewProvider {
         SwitchBoardView(switchboard: doc.switchboard,
                         state: doc.switchboard.state,
                         layout: doc.layout,
-                        coordinator: doc.coordinator)
+                        coordinator: doc.layoutController)
             .environmentObject(doc)
             .previewLayout(.fixed(width: 800, height: 600))
     }
