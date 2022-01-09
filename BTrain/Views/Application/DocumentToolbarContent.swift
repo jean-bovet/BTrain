@@ -96,13 +96,13 @@ struct DiagnosticsIndicationView: View {
     var body: some View {
         if diagnostics.hasErrors {
             Button("􀇾") {
-                document.diagnostics.toggle()
+                document.triggerLayoutDiagnostic.toggle()
             }
             .foregroundColor(.red)
             .help("The layout has some issues")
         } else {
             Button("􀁢") {
-                document.diagnostics.toggle()
+                document.triggerLayoutDiagnostic.toggle()
             }
             .foregroundColor(.green)
             .help("The layout is valid")
@@ -130,8 +130,8 @@ struct SimulatorIndicationView: View {
 
 struct CommandSelectedView: View {
     
-    @AppStorage("selectedView") var selectedView: LayoutDocument.ViewType = .switchboard
-    let viewType: LayoutDocument.ViewType
+    @AppStorage("selectedView") var selectedView: ViewType = .switchboard
+    let viewType: ViewType
     let label: String
     
     var body: some View {
@@ -149,10 +149,10 @@ struct ToolDebugCommandsView: View {
     @ObservedObject var document: LayoutDocument
     
     var body: some View {
-        if document.debugMode {
+        if document.showDebugModeControls {
             Menu("Developer") {
                 Button("Repair Layout") {
-                    document.repairLayoutTrigger.toggle()
+                    document.triggerRepairLayout.toggle()
                 }
                 
                 Divider()

@@ -38,7 +38,7 @@ struct OverviewSwitchboardView: View {
                             }
                             
                             Button("Import Predefined Layout 􀈄") {
-                                document.importPredefinedLayout.toggle()
+                                document.triggerImportPredefinedLayout.toggle()
                             }
                         }
                     }

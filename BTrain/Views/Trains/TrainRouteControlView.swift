@@ -37,7 +37,7 @@ struct TrainRouteControlView: View {
     
     var body: some View {
         HStack {
-            if document.debugMode {
+            if document.showDebugModeControls {
                 Button("Reserve All") {
                     do {
                         try reserveAll()

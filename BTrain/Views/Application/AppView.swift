@@ -41,16 +41,16 @@ struct AppView: View {
                 FeedbackEditListView(layout: document.layout)
             }
         }
-        .onChange(of: document.diagnostics, perform: { v in
-            if document.diagnostics {
+        .onChange(of: document.triggerLayoutDiagnostic, perform: { v in
+            if document.triggerLayoutDiagnostic {
                 showDiagnosticsSheet = true
-                document.diagnostics = false
+                document.triggerLayoutDiagnostic = false
             }
         })
-        .onChange(of: document.repairLayoutTrigger, perform: { v in
-            if document.repairLayoutTrigger {
+        .onChange(of: document.triggerRepairLayout, perform: { v in
+            if document.triggerRepairLayout {
                 LayoutDiagnostic(layout: document.layout).repair()
-                document.repairLayoutTrigger = false
+                document.triggerRepairLayout = false
             }
         })
         .onChange(of: document.discoverLocomotiveConfirmation, perform: { v in
@@ -63,10 +63,10 @@ struct AppView: View {
                 document.discoverLocomotiveConfirmation = false
             }
         })
-        .onChange(of: document.importPredefinedLayout, perform: { v in
-            if document.importPredefinedLayout {
+        .onChange(of: document.triggerImportPredefinedLayout, perform: { v in
+            if document.triggerImportPredefinedLayout {
                 showNewLayoutSheet.toggle()
-                document.importPredefinedLayout = false
+                document.triggerImportPredefinedLayout = false
             }
         })
         .onAppear {

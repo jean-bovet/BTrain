@@ -103,29 +103,3 @@ struct CommandLocomotive {
         return .init(address, decoderType)
     }
 }
-
-protocol CommandInterface {
-            
-    func disconnect(_ completion: @escaping CompletionBlock)
-    
-    func execute(command: Command, onCompletion: @escaping () -> Void)
-
-    typealias FeedbackChangeCallback = (_ deviceID: UInt16, _ contactID: UInt16, _ value: UInt8) -> Void
-    func register(forFeedbackChange: @escaping FeedbackChangeCallback)
-
-    typealias SpeedChangeCallback = (_ address: CommandLocomotiveAddress, _ speed: UInt16) -> Void
-    func register(forSpeedChange: @escaping SpeedChangeCallback)
-
-    typealias DirectionChangeCallback = (_ address: UInt32, _ direction: Command.Direction) -> Void
-    func register(forDirectionChange: @escaping DirectionChangeCallback)
-
-    typealias TurnoutChangeCallback = (_ address: CommandTurnoutAddress, _ state: UInt8, _ power: UInt8) -> Void
-    func register(forTurnoutChange: @escaping TurnoutChangeCallback)
-
-    // Note: this command is used internally by the MarklinInterface to query direction automatically after receiving a System Emergency Stop.
-    typealias QueryDirectionCommandCompletion = (_ address:UInt32, _ direction:Command.Direction) -> Void
-    func queryDirection(command: Command, completion: @escaping QueryDirectionCommandCompletion)
-    
-    typealias QueryLocomotiveCommandCompletion = (_ locomotives: [CommandLocomotive]) -> Void
-    func queryLocomotives(command: Command, completion: @escaping QueryLocomotiveCommandCompletion)
-}
