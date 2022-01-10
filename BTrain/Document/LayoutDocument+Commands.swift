@@ -36,12 +36,14 @@ extension LayoutDocument {
         try layoutController.stop(routeID: route, trainID: train.id)
     }
     
-    func connectToSimulator(completed: ((Error?) -> Void)? = nil) {
+    @discardableResult
+    func connectToSimulator(completed: ((Error?) -> Void)? = nil) -> CommandInterface {
         simulator.start()
-        connect(address: "localhost", port: 15731, completed: completed)
+        return connect(address: "localhost", port: 15731, completed: completed)
     }
     
-    func connect(address: String, port: UInt16, completed: ((Error?) -> Void)? = nil) {
+    @discardableResult
+    func connect(address: String, port: UInt16, completed: ((Error?) -> Void)? = nil) -> CommandInterface {
         let mi = MarklinInterface(server: address, port: port)
         mi.connect {
             DispatchQueue.main.async {
@@ -65,6 +67,7 @@ extension LayoutDocument {
                 self.interface.interface = nil
             }
         }
+        return mi
     }
     
     func disconnect() {

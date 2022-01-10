@@ -138,7 +138,6 @@
 		A785C079278A6468002FD538 /* LayoutDocument+ReferenceFileDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = A785C078278A6468002FD538 /* LayoutDocument+ReferenceFileDocument.swift */; };
 		A785C07B278A648B002FD538 /* LayoutDocument+Commands.swift in Sources */ = {isa = PBXBuildFile; fileRef = A785C07A278A648B002FD538 /* LayoutDocument+Commands.swift */; };
 		A785C07E278A64C1002FD538 /* CommandInterface.swift in Sources */ = {isa = PBXBuildFile; fileRef = A785C07D278A64C1002FD538 /* CommandInterface.swift */; };
-		A785C07F278AB7A9002FD538 /* View+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7841368273B55FF00381341 /* View+Extension.swift */; };
 		A7907955277D071000771A60 /* CGContext+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7907954277D071000771A60 /* CGContext+Extension.swift */; };
 		A7907957277D136500771A60 /* CGAffineTransform+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7907956277D136500771A60 /* CGAffineTransform+Extension.swift */; };
 		A7907993277EC86200771A60 /* DocumentToolbarContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7907992277EC86200771A60 /* DocumentToolbarContent.swift */; };
@@ -325,7 +324,6 @@
 		A783EAA42788B52000E69B6D /* BlockShapeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockShapeView.swift; sourceTree = "<group>"; };
 		A783EAA82788C1F700E69B6D /* LayoutFeedbackMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutFeedbackMonitor.swift; sourceTree = "<group>"; };
 		A783EAAC2789290F00E69B6D /* LayoutRuntimeErrorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutRuntimeErrorView.swift; sourceTree = "<group>"; };
-		A7841368273B55FF00381341 /* View+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+Extension.swift"; sourceTree = "<group>"; };
 		A784136A273CA4DE00381341 /* SwitchBoardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwitchBoardView.swift; sourceTree = "<group>"; };
 		A784136C273CDFF100381341 /* Shape.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Shape.swift; sourceTree = "<group>"; };
 		A784136E273CE00C00381341 /* BlockShape.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockShape.swift; sourceTree = "<group>"; };
@@ -905,7 +903,6 @@
 				A785C06E2789F323002FD538 /* UndoProvider.swift */,
 				A73B1638274B60A10073947D /* BTLogger.swift */,
 				A721806E275D396A00831998 /* Hexadecimal.swift */,
-				A7841368273B55FF00381341 /* View+Extension.swift */,
 				A79079A2277F87AB00771A60 /* Spacer+Extension.swift */,
 				A717158E2758809C00200F92 /* Geometry */,
 			);
@@ -1217,7 +1214,6 @@
 				A784138E274196BB00381341 /* MarklinCommandFactory.swift in Sources */,
 				A7B06AF82727ACCB00BDD88C /* Server.swift in Sources */,
 				A77A96DC27274A17009E7ECB /* MarklinCANMessagePrinter.swift in Sources */,
-				A785C07F278AB7A9002FD538 /* View+Extension.swift in Sources */,
 				A784137A273F4D5400381341 /* ConnectableShape.swift in Sources */,
 				A73E0829276BF554005F9D64 /* TrainControlSetLocationSheet.swift in Sources */,
 				A792DEF627839F55004B0439 /* SimulatorView.swift in Sources */,
@@ -1542,11 +1538,11 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				CODE_SIGN_IDENTITY = "-";
-				CODE_SIGN_STYLE = Manual;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = 28XRU7S6GA;
 				GENERATE_INFOPLIST_FILE = YES;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1567,11 +1563,11 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				CODE_SIGN_IDENTITY = "-";
-				CODE_SIGN_STYLE = Manual;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = 28XRU7S6GA;
 				GENERATE_INFOPLIST_FILE = YES;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
