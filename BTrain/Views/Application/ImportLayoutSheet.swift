@@ -33,6 +33,14 @@ struct ImportLayoutSheet: View {
         return LayoutController(layout: layout, interface: nil)
     }
     
+    let previewSize = CGSize(width: 800, height: 400)
+    
+    var scaleSize: CGSize {
+        let canvasSize = switchboard.computeIdealSize()
+        let ratio = min(800/canvasSize.width, 400/canvasSize.height)
+        return .init(width: ratio, height: ratio)
+    }
+    
     var body: some View {
         VStack {
             HStack {
@@ -43,10 +51,10 @@ struct ImportLayoutSheet: View {
                 }.frame(maxWidth: 300)
             }.padding()
 
-            ScrollView {
-                SwitchBoardView(switchboard: switchboard, state: switchboard.state, layout: layout, coordinator: coordinator)
-                    .fixedSize()
-            }.frame(width: 800, height: 400)
+            SwitchBoardView(switchboard: switchboard, state: switchboard.state, layout: layout, coordinator: coordinator)
+                .fixedSize()
+                .scaleEffect(scaleSize)
+                .frame(width: previewSize.width, height: previewSize.height)
             
             HStack {
                 Button("Cancel") {
@@ -62,8 +70,8 @@ struct ImportLayoutSheet: View {
     }
 }
 
-struct NewLayoutSheet_Previews: PreviewProvider {
+struct ImportLayoutSheet_Previews: PreviewProvider {
     static var previews: some View {
-        ImportLayoutSheet(document: LayoutDocument(layout: Layout()))
+        ImportLayoutSheet(document: LayoutDocument(layout: LayoutFCreator().newLayout()))
     }
 }
