@@ -43,7 +43,8 @@ BTrain uses the following concepts:
 **Copyrights**
 
 - [Application icon](https://thenounproject.com/icon/train-3130173/) (c) Manaqib S from NounProject.com
-- A portion of the application uses [GzipSwift](https://github.com/1024jp/GzipSwift) © 2014-2020 1024jp
+- [GzipSwift](https://github.com/1024jp/GzipSwift) (c) 2014-2020 1024jp
+- [SwiftCubicSpline](https://github.com/gscalzo/SwiftCubicSpline) (c) 2020 by Giordano Scalzo
 - [Undo Provider](https://github.com/LostMoa/UndoProviderExample) (c) 2020 by Matthaus Woolard
 - Unit tests use [ViewInspector](https://github.com/nalexn/ViewInspector) by Alexey Naumov
     

@@ -138,6 +138,8 @@
 		A785C079278A6468002FD538 /* LayoutDocument+ReferenceFileDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = A785C078278A6468002FD538 /* LayoutDocument+ReferenceFileDocument.swift */; };
 		A785C07B278A648B002FD538 /* LayoutDocument+Commands.swift in Sources */ = {isa = PBXBuildFile; fileRef = A785C07A278A648B002FD538 /* LayoutDocument+Commands.swift */; };
 		A785C07E278A64C1002FD538 /* CommandInterface.swift in Sources */ = {isa = PBXBuildFile; fileRef = A785C07D278A64C1002FD538 /* CommandInterface.swift */; };
+		A785C081278BC527002FD538 /* TrainSpeedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A785C080278BC527002FD538 /* TrainSpeedView.swift */; };
+		A785C084278C113D002FD538 /* SwiftCubicSpline in Frameworks */ = {isa = PBXBuildFile; productRef = A785C083278C113D002FD538 /* SwiftCubicSpline */; };
 		A7907955277D071000771A60 /* CGContext+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7907954277D071000771A60 /* CGContext+Extension.swift */; };
 		A7907957277D136500771A60 /* CGAffineTransform+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7907956277D136500771A60 /* CGAffineTransform+Extension.swift */; };
 		A7907993277EC86200771A60 /* DocumentToolbarContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7907992277EC86200771A60 /* DocumentToolbarContent.swift */; };
@@ -349,6 +351,7 @@
 		A785C078278A6468002FD538 /* LayoutDocument+ReferenceFileDocument.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LayoutDocument+ReferenceFileDocument.swift"; sourceTree = "<group>"; };
 		A785C07A278A648B002FD538 /* LayoutDocument+Commands.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LayoutDocument+Commands.swift"; sourceTree = "<group>"; };
 		A785C07D278A64C1002FD538 /* CommandInterface.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommandInterface.swift; sourceTree = "<group>"; };
+		A785C080278BC527002FD538 /* TrainSpeedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainSpeedView.swift; sourceTree = "<group>"; };
 		A7907954277D071000771A60 /* CGContext+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CGContext+Extension.swift"; sourceTree = "<group>"; };
 		A7907956277D136500771A60 /* CGAffineTransform+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CGAffineTransform+Extension.swift"; sourceTree = "<group>"; };
 		A7907992277EC86200771A60 /* DocumentToolbarContent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentToolbarContent.swift; sourceTree = "<group>"; };
@@ -417,6 +420,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				A7710E612778E8DE00C08150 /* OrderedCollections in Frameworks */,
+				A785C084278C113D002FD538 /* SwiftCubicSpline in Frameworks */,
 				A73E07EB27694D17005F9D64 /* Gzip in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -588,6 +592,7 @@
 				A7F779F5273214AF00E73275 /* TrainListView.swift */,
 				A785C070278A4561002FD538 /* TrainDetailsView.swift */,
 				A785C072278A4852002FD538 /* TrainIconView.swift */,
+				A785C080278BC527002FD538 /* TrainSpeedView.swift */,
 			);
 			path = Trains;
 			sourceTree = "<group>";
@@ -960,6 +965,7 @@
 			packageProductDependencies = (
 				A73E07EA27694D17005F9D64 /* Gzip */,
 				A7710E602778E8DE00C08150 /* OrderedCollections */,
+				A785C083278C113D002FD538 /* SwiftCubicSpline */,
 			);
 			productName = BTrain;
 			productReference = A73AFE822726594600E1ED21 /* BTrain.app */;
@@ -1040,6 +1046,7 @@
 				A73E07E927694D17005F9D64 /* XCRemoteSwiftPackageReference "GzipSwift" */,
 				A73E07EC276970ED005F9D64 /* XCRemoteSwiftPackageReference "ViewInspector" */,
 				A7710E5F2778E8DE00C08150 /* XCRemoteSwiftPackageReference "swift-collections" */,
+				A785C082278C113D002FD538 /* XCRemoteSwiftPackageReference "SwiftCubicSpline" */,
 			);
 			productRefGroup = A73AFE832726594600E1ED21 /* Products */;
 			projectDirPath = "";
@@ -1184,6 +1191,7 @@
 				A7F779E1272E1E3F00E73275 /* LayoutParser.swift in Sources */,
 				A7710E6727799D5C00C08150 /* Layout+Trains.swift in Sources */,
 				A76507E6275AC7DA0079C71A /* ScheduledMessageQueue.swift in Sources */,
+				A785C081278BC527002FD538 /* TrainSpeedView.swift in Sources */,
 				A717157C2756E5BD00200F92 /* ImportLayoutSheet.swift in Sources */,
 				A7EAD11627608BE000455E09 /* LayoutRouteHandler.swift in Sources */,
 				A7171582275738A300200F92 /* TrainShape.swift in Sources */,
@@ -1650,6 +1658,14 @@
 				minimumVersion = 1.0.0;
 			};
 		};
+		A785C082278C113D002FD538 /* XCRemoteSwiftPackageReference "SwiftCubicSpline" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/gscalzo/SwiftCubicSpline";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.0.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -1667,6 +1683,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = A7710E5F2778E8DE00C08150 /* XCRemoteSwiftPackageReference "swift-collections" */;
 			productName = OrderedCollections;
+		};
+		A785C083278C113D002FD538 /* SwiftCubicSpline */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A785C082278C113D002FD538 /* XCRemoteSwiftPackageReference "SwiftCubicSpline" */;
+			productName = SwiftCubicSpline;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

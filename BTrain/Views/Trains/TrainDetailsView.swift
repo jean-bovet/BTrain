@@ -18,19 +18,33 @@ struct TrainDetailsView: View {
     @ObservedObject var train: Train
     let trainIconManager: TrainIconManager
 
+    @State private var speedExpanded = false
+
     var body: some View {
-        Form {
-            Picker("Decoder:", selection: $train.addressDecoderType) {
-                ForEach(DecoderType.allCases, id:\.self) { proto in
-                    Text(proto.rawValue).tag(proto as DecoderType?)
+        VStack {
+            HStack {
+                TrainIconView(trainIconManager: trainIconManager, train: train, size: .large)
+
+                Form {
+                    Picker("Decoder:", selection: $train.addressDecoderType) {
+                        ForEach(DecoderType.allCases, id:\.self) { proto in
+                            Text(proto.rawValue).tag(proto as DecoderType?)
+                        }
+                    }
+
+                    TextField("Address:", value: $train.addressValue,
+                              format: .number)
+                                
                 }
             }
-
-            TextField("Address:", value: $train.addressValue,
-                      format: .number)
-                        
-            TrainIconView(trainIconManager: trainIconManager, train: train, size: .large)
             
+            Divider()
+
+            DisclosureGroup("Speed", isExpanded: $speedExpanded) {
+                TrainSpeedView(train: train)
+                    .frame(height: 200)
+            }
+
             Spacer()
         }
     }

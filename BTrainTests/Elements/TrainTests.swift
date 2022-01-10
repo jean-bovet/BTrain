@@ -43,5 +43,19 @@ class TrainTests: XCTestCase {
         XCTAssertEqual(t1.blockId, t2.blockId)
         XCTAssertEqual(t1.routeId, t2.routeId)
     }
+    
+    func testSpeedSteps() {
+        let t1 = Train(uuid: "1")
+        t1.address = .init(0x4001, .MFX)
+        t1.updateSpeedStepsTable()
+        
+        t1.speed = 0
+        XCTAssertEqual(t1.steps, 0)
+        
+        t1.speed = 100
+        XCTAssertEqual(t1.steps, 63)
+        
+        t1.speed = 200
+        XCTAssertEqual(t1.steps, 126)
+    }
 }
-

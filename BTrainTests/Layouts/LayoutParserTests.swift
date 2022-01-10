@@ -33,7 +33,7 @@ class LayoutParserTests: XCTestCase {
         
         let blocks = [
             BE(type: .station, uuid: "b1", train: nil, reserved: nil),
-            BE(type: .free, uuid: "b2", train: TE(uuid: 0, position: 1, speed: LayoutFactory.Speed), reserved: 0),
+            BE(type: .free, uuid: "b2", train: TE(uuid: 0, position: 1, speed: LayoutFactory.DefaultSpeed), reserved: 0),
             BE(type: .free, uuid: "b3", train: nil, reserved: 0),
             BE(type: .station, uuid: "b4", train: nil, reserved: nil),
         ]
@@ -45,7 +45,7 @@ class LayoutParserTests: XCTestCase {
         
         let blocks = [
             BE(type: .station, uuid: "b1", train: nil, reserved: nil),
-            BE(type: .free, uuid: "b2", train: TE(uuid: 0, position: 1, speed: LayoutFactory.Speed), reserved: 0),
+            BE(type: .free, uuid: "b2", train: TE(uuid: 0, position: 1, speed: LayoutFactory.DefaultSpeed), reserved: 0),
             BE(type: .free, uuid: "b3", train: nil, reserved: 0),
             BE(type: .station, uuid: "b1", train: nil, reserved: nil),
         ]
@@ -69,7 +69,7 @@ class LayoutParserTests: XCTestCase {
         
         let blocks = [
             BE(type: .station, uuid: "b1", train: nil, reserved: nil, feedbacks: [true, false]),
-            BE(type: .free, uuid: "b2", train: TE(uuid: 0, position: 1, speed: LayoutFactory.Speed), reserved: 0, feedbacks: [false, false]),
+            BE(type: .free, uuid: "b2", train: TE(uuid: 0, position: 1, speed: LayoutFactory.DefaultSpeed), reserved: 0, feedbacks: [false, false]),
             BE(type: .free, uuid: "b3", train: nil, reserved: 0, feedbacks: [false, false]),
             BE(type: .station, uuid: "b4", train: nil, reserved: nil, feedbacks: [false, false]),
         ]
@@ -81,7 +81,7 @@ class LayoutParserTests: XCTestCase {
         
         let blocks = [
             BE(type: .station, uuid: "b1", train: nil, reserved: 0),
-            BE(type: .free, uuid: "b2", train: TE(uuid: 0, position: 1, speed: LayoutFactory.Speed), reserved: 0),
+            BE(type: .free, uuid: "b2", train: TE(uuid: 0, position: 1, speed: LayoutFactory.DefaultSpeed), reserved: 0),
             BE(type: .free, uuid: "b3", train: nil, reserved: 1),
             BE(type: .station, uuid: "b4", train: nil, reserved: nil),
         ]
@@ -93,7 +93,7 @@ class LayoutParserTests: XCTestCase {
         
         let blocks = [
             BE(type: .station, uuid: "b1", turnouts: [T("t0", 0, 1, .straight)]),
-            BE(type: .free, uuid: "b2", train: TE(uuid: 0, position: 1, speed: LayoutFactory.Speed), reserved: 0, turnouts: [T("t1", 0, 1, .straight)]),
+            BE(type: .free, uuid: "b2", train: TE(uuid: 0, position: 1, speed: LayoutFactory.DefaultSpeed), reserved: 0, turnouts: [T("t1", 0, 1, .straight)]),
             BE(type: .free, uuid: "b3", reserved: 0, turnouts: [T("t2", 0, 1, .branchLeft)]),
             BE(type: .station, uuid: "b4"),
         ]

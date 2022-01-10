@@ -11,6 +11,7 @@
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 import Foundation
+import SwiftCubicSpline
 
 // A train is an element that moves from one block to another.
 // It can have an associated route to follow.
@@ -29,10 +30,43 @@ final class Train: Element, ObservableObject {
     
     // Address of the train
     @Published var address: CommandLocomotiveAddress = .init(0, .MFX)
-        
-    // Speed of the train
-    @Published var speed: UInt16 = 0
+    
+    // Type definition for the speed
+    typealias TrainSpeedKph = UInt16
+    typealias TrainSpeedStep = UInt16
 
+    // Speed of the train in km/h
+    @Published var speed: TrainSpeedKph = 0
+
+    // Returns the steps number corresponding to the speed of the train in kph.
+    // Use a cublic spline interpolation to get the most accurate steps number.
+    var steps: TrainSpeedStep {
+        updateSpeedStepsTable()
+        
+        let csp = CubicSpline(x: speedTable.map { Double($0.speed) },
+                              y: speedTable.map { Double($0.steps) })
+        return Train.TrainSpeedStep(csp[x: Double(speed)])
+    }
+
+    // TODO: read from locomotives.cs2 as well
+    @Published var maxSpeed: TrainSpeedKph = 200
+        
+    // Structure defining the number of steps corresponding
+    // to a particular speed in kph.
+    struct SpeedStep: Identifiable {
+        var id: TrainSpeedStep {
+            return steps
+        }
+        
+        var steps: TrainSpeedStep
+        var speed: TrainSpeedKph
+    }
+
+    // Array of correspondance between the number of steps
+    // and the speed in kph. The number of steps is dependent
+    // on the type of decoder.
+    @Published var speedTable = [SpeedStep]()
+    
     // Direction of travel of the train
     @Published var directionForward: Bool = true
     
@@ -63,6 +97,25 @@ final class Train: Element, ObservableObject {
         self.id = id
     }
 
+    func updateSpeedStepsTable() {
+        guard let decoderType = address.decoderType else {
+            return
+        }
+        
+        speedTable.sort { ss1, ss2 in
+            return ss1.steps < ss2.steps
+        }
+        
+        let stepsCount = decoderType.steps
+        for index in 0...stepsCount {
+            let speedStep = TrainSpeedStep(index)
+            if index >= speedTable.count || speedTable[Int(index)].steps != speedStep {
+                let entry = SpeedStep(steps: speedStep,
+                                      speed: TrainSpeedKph(Double(maxSpeed)/Double(stepsCount) * Double(index)))
+                speedTable.insert(entry, at: Int(index))
+            }
+        }
+    }
 }
 
 extension Train: Codable {

@@ -55,6 +55,24 @@ enum DecoderType: String, CaseIterable, Codable {
     case DCC
     case MFX
     case SX1
+    
+    // Source: https://www.marklin-users.net/forum/posts/t27003-MM2-and-mfx-speed-steps
+    var steps: UInt8 {
+        switch(self) {
+        case .MM:
+            return 14
+        case .MM2:
+            return 27
+        case .DCC:
+            return 28
+        case .MFX:
+            return 126
+        case .SX1:
+            // Source: https://www.manualslib.com/manual/1489322/DAndh-Dh05c.html?page=26
+            return 31
+        }
+    }
+
 }
 
 struct CommandLocomotiveAddress: Codable, Hashable, Equatable {

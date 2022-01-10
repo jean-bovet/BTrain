@@ -186,7 +186,7 @@ final class LayoutRouteParser {
                 assert(type == .free, "Expected end of free track block")
                 parsingBlock = false
             } else if sp.matches("🚂") {
-                parseTrain(feedbackIndex: feedbackIndex, block: block, speed: LayoutFactory.Speed)
+                parseTrain(feedbackIndex: feedbackIndex, block: block, speed: LayoutFactory.DefaultSpeed)
             } else if sp.matches("≏") {
                 parseFeedback(detected: false, newBlock: newBlock, block: block, feedbackIndex: &feedbackIndex)
             } else if sp.matches("≡") {

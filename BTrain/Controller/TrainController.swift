@@ -90,7 +90,7 @@ final class TrainController {
                 try layout.reserve(train: train.id, fromBlock: currentBlock.id, toBlock: nextBlock.id, direction: currentBlock.train!.direction)
                 BTLogger.debug("Start train \(train) because the next block \(nextBlock) is free or reserved for this train", layout, train)
                 startBlock = currentBlock
-                try layout.setTrain(train, speed: LayoutFactory.Speed)
+                try layout.setTrain(train, speed: LayoutFactory.DefaultSpeed)
                 return .processed
             } catch {
                 BTLogger.debug("Cannot start train \(train) because \(error)", layout, train)

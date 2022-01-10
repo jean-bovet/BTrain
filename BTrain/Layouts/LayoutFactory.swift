@@ -20,7 +20,7 @@ protocol LayoutCreating {
 
 final class LayoutFactory {
 
-    static let Speed: UInt16 = 300
+    static let DefaultSpeed: Train.TrainSpeedKph = 70
 
     static let GlobalLayouts: [LayoutCreating] = [
         LayoutACreator(),
