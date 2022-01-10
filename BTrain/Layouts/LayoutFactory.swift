@@ -20,7 +20,6 @@ protocol LayoutCreating {
 
 final class LayoutFactory {
 
-    static let Rail2000Address = 0x4009
     static let Speed: UInt16 = 300
 
     static let GlobalLayouts: [LayoutCreating] = [
