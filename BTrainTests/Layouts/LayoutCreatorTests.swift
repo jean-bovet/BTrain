@@ -24,7 +24,7 @@ class LayoutCreatorTests: XCTestCase {
 
     func testLayoutA() {
         let c = LayoutACreator()
-        XCTAssertEqual(c.name, "Layout A")
+        XCTAssertEqual(c.name, "Loop with Reverse")
         XCTAssertNotNil(c.newLayout())
     }
 

@@ -338,6 +338,42 @@ class TurnoutTests: XCTestCase {
         cmds = t.stateCommands(power: 0x1)
         assertTurnout(cmd: cmds[0], expectedAddress: 1, expectedPower: 1, expectedStateValue: 0)
         assertTurnout(cmd: cmds[1], expectedAddress: 2, expectedPower: 1, expectedStateValue: 1)
+        
+        t.setState(value: 0, for: t.address.actualAddress)
+        t.setState(value: 0, for: t.address2.actualAddress)
+        XCTAssertEqual(t.state, .straight23)
+        
+        t.setState(value: 1, for: t.address.actualAddress)
+        t.setState(value: 1, for: t.address2.actualAddress)
+        XCTAssertEqual(t.state, .straight01)
+        
+        t.setState(value: 1, for: t.address.actualAddress)
+        t.setState(value: 0, for: t.address2.actualAddress)
+        XCTAssertEqual(t.state, .branch03)
+        
+        t.setState(value: 0, for: t.address.actualAddress)
+        t.setState(value: 1, for: t.address2.actualAddress)
+        XCTAssertEqual(t.state, .branch21)
+    }
+    
+    func testFindTurnoutsWith2Addresses() {
+        let t1 = Turnout("1", type: .doubleSlip2,
+                        address: .init(1, .MM),
+                        address2: .init(2, .MM),
+                        state: .straight01)
+
+        let t2 = Turnout("2", type: .doubleSlip2,
+                        address: .init(10, .MM),
+                        address2: .init(20, .MM),
+                        state: .straight01)
+
+        let turnouts = [t1, t2]
+        
+        XCTAssertEqual(turnouts.find(address: t1.address), t1)
+        XCTAssertEqual(turnouts.find(address: t1.address2), t1)
+        
+        XCTAssertEqual(turnouts.find(address: t2.address), t2)
+        XCTAssertEqual(turnouts.find(address: t2.address2), t2)
     }
     
     func testThreewayCommands() {

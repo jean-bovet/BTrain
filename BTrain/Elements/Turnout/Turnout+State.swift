@@ -122,6 +122,26 @@ extension Turnout {
         }
     }
     
+    // Use this method to set an individual turnout address's state.
+    // This is only useful for double slip or threeway turnout with
+    // two addresses, each corresponding to a single turnout in
+    // the real layout.
+    func setState(value state: UInt8, for stateAddress: UInt32) {
+        if category == .doubleSlip2 || category == .threeWay {
+            if address2.actualAddress == stateAddress {
+                let value1 = (stateValue & 0x01)
+                let value2 = (state & 0x01) << 1
+                stateValue = value1 | value2
+            } else if address.actualAddress == stateAddress {
+                let value1 = (state & 0x01)
+                let value2 = (stateValue & 0x01) << 1
+                stateValue = value1 | value2
+            }
+        } else {
+            stateValue = state
+        }
+    }
+    
     // Returns the command corresponding to
     // the state of the turnout.
     func stateCommands(power: UInt8) -> [Command] {
