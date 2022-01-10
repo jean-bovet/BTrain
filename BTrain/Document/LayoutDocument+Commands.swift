@@ -95,7 +95,7 @@ extension LayoutDocument {
     
     func registerForFeedbackChange() {
         interface.register(forFeedbackChange: { deviceID, contactID, value in
-            if let feedback = self.layoutController.layout.feedbacks.find(deviceID: deviceID, contactID: contactID) {
+            if let feedback = self.layout.feedbacks.find(deviceID: deviceID, contactID: contactID) {
                 feedback.detected = value == 1
             }
         })
@@ -104,7 +104,7 @@ extension LayoutDocument {
     func registerForSpeedChange() {
         interface.register(forSpeedChange: { address, speed in
             DispatchQueue.main.async {
-                if let train = self.layoutController.layout.trains.find(address: address.address) {
+                if let train = self.layout.trains.find(address: address.address) {
                     train.speed = speed
                 }
             }
@@ -114,7 +114,7 @@ extension LayoutDocument {
     func registerForDirectionChange() {
         interface.register(forDirectionChange: { address, direction in
             DispatchQueue.main.async {
-                if let train = self.layoutController.layout.trains.find(address: address) {
+                if let train = self.layout.trains.find(address: address) {
                     switch(direction) {
                     case .forward:
                         if train.directionForward == false {
@@ -138,12 +138,15 @@ extension LayoutDocument {
     
     func registerForTurnoutChange() {
         interface.register(forTurnoutChange: { address, state, power in
-            if let turnout = self.layoutController.layout.turnouts.find(address: address) {
-                BTLogger.debug("Turnout \(turnout.name) changed to \(state)")
-                turnout.stateValue = state
-                self.layout.didChange()
-            } else {
-                BTLogger.error("Unknown turnout for address \(address.actualAddress.toHex())")
+            DispatchQueue.main.async {
+                if let turnout = self.layout.turnouts.find(address: address) {
+                    BTLogger.debug("Turnout \(turnout.name) changed state \(state) for address \(address.actualAddress.toHex())")
+                    turnout.setState(value: state, for: address.actualAddress)
+                    BTLogger.debug(" > Turnout \(turnout.name) changed to state \(turnout.state)")
+                    self.layout.didChange()
+                } else {
+                    BTLogger.error("Unknown turnout for address \(address.actualAddress.toHex())")
+                }
             }
         })
     }

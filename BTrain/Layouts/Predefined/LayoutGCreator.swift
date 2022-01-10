@@ -18,7 +18,7 @@ final class LayoutGCreator: LayoutCreating {
     static let id = Identifier<Layout>(uuid: "layout-g")
 
     var name: String {
-        return "Layout G"
+        return "Layout with All Elements"
     }
     
     func newLayout() -> Layout {

@@ -30,7 +30,7 @@ final class LayoutBCreator: LayoutCreating {
     static let id = Identifier<Layout>(uuid: "layout-b")
 
     var name: String {
-        return "Layout B"
+        return "8-style Loop"
     }
     
     func newLayout() -> Layout {

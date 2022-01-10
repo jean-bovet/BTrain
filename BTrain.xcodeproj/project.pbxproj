@@ -710,8 +710,6 @@
 				A7710E72277A3BC200C08150 /* NewTurnoutSheet.swift */,
 				A7F31B9E277B95BA00FE0C65 /* TrainDropActionSheet.swift */,
 				A7710E74277A7AAC00C08150 /* Layout2Swift.swift */,
-				A73B1645274DC5BC0073947D /* Train Controls */,
-				A7841372273CE06F00381341 /* Switchboard */,
 			);
 			path = Overview;
 			sourceTree = "<group>";
@@ -878,6 +876,8 @@
 				A785C076278A6393002FD538 /* ViewType.swift */,
 				A73E07F8276A708A005F9D64 /* Application */,
 				A73E07F9276A70F5005F9D64 /* Overview */,
+				A73B1645274DC5BC0073947D /* Train Controls */,
+				A7841372273CE06F00381341 /* Switchboard */,
 				A7710E5A2777FA0E00C08150 /* Routes */,
 				A73B163A274DC02A0073947D /* Trains */,
 				A7B0B5182762FBEE00F11A3E /* Blocks */,

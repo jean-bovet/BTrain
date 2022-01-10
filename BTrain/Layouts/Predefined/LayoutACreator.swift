@@ -30,7 +30,7 @@ final class LayoutACreator: LayoutCreating {
     static let id = Identifier<Layout>(uuid: "layout-a")
     
     var name: String {
-        return "Layout A"
+        return "Loop with Reverse"
     }
     
     func newLayout() -> Layout {

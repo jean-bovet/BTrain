@@ -42,7 +42,7 @@ final class LayoutECreator: LayoutCreating {
     static let id = Identifier<Layout>(uuid: "layout-e")
 
     var name: String {
-        return "Layout E"
+        return "Loop with Alternatives"
     }
     
     func newLayout() -> Layout {

@@ -33,7 +33,7 @@ final class LayoutCCreator: LayoutCreating {
     static let id = Identifier<Layout>(uuid: "layout-c")
 
     var name: String {
-        return "Layout C"
+        return "Loop and Diagonal"
     }
     
     func newLayout() -> Layout {

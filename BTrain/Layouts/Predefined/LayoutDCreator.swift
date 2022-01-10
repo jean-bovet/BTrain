@@ -22,7 +22,7 @@ final class LayoutDCreator: LayoutCreating {
     static let id = Identifier<Layout>(uuid: "layout-d")
 
     var name: String {
-        return "Layout D"
+        return "Incomplete Layout"
     }
     
     func newLayout() -> Layout {

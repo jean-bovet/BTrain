@@ -17,7 +17,7 @@ final class LayoutFCreator: LayoutCreating {
     static let id = Identifier<Layout>(uuid: "layout-f")
 
     var name: String {
-        return "Layout F"
+        return "Complex Layout"
     }
     
     func newLayout() -> Layout {
