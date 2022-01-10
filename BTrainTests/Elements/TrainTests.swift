@@ -47,7 +47,8 @@ class TrainTests: XCTestCase {
     func testSpeedSteps() {
         let t1 = Train(uuid: "1")
         t1.address = .init(0x4001, .MFX)
-        t1.updateSpeedStepsTable()
+        
+        XCTAssertEqual(t1.speedTable.count, Int(DecoderType.MFX.steps) + 1)
         
         t1.speed = 0
         XCTAssertEqual(t1.steps, 0)
@@ -57,5 +58,8 @@ class TrainTests: XCTestCase {
         
         t1.speed = 200
         XCTAssertEqual(t1.steps, 126)
+        
+        t1.addressDecoderType = .MM
+        XCTAssertEqual(t1.speedTable.count, Int(DecoderType.MM.steps) + 1)
     }
 }

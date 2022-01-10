@@ -29,7 +29,11 @@ final class Train: Element, ObservableObject {
     @Published var iconUrlData: Data?
     
     // Address of the train
-    @Published var address: CommandLocomotiveAddress = .init(0, .MFX)
+    @Published var address: CommandLocomotiveAddress = .init(0, .MFX) {
+        didSet {
+            updateSpeedStepsTable()
+        }
+    }
     
     // Type definition for the speed
     typealias TrainSpeedKph = UInt16
@@ -41,8 +45,6 @@ final class Train: Element, ObservableObject {
     // Returns the steps number corresponding to the speed of the train in kph.
     // Use a cublic spline interpolation to get the most accurate steps number.
     var steps: TrainSpeedStep {
-        updateSpeedStepsTable()
-        
         let csp = CubicSpline(x: speedTable.map { Double($0.speed) },
                               y: speedTable.map { Double($0.steps) })
         return Train.TrainSpeedStep(csp[x: Double(speed)])
@@ -102,6 +104,14 @@ final class Train: Element, ObservableObject {
             return
         }
         
+        // Reset the table if the number of steps have changed,
+        // usually when the decoder type has been changed.
+        // Note: +1 to account for 0 steps
+        if speedTable.count != decoderType.steps + 1 {
+            speedTable.removeAll()
+        }
+        
+        // Always sort the table by ascending order of the number of steps
         speedTable.sort { ss1, ss2 in
             return ss1.steps < ss2.steps
         }
