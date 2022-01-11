@@ -41,7 +41,7 @@ final class MarklinInterface {
             if let cmd = MarklinCommand.from(message: msg) {
                 switch(cmd) {
                 case .direction(address: let address, direction: let direction):
-                    self.directionCommandCompletionBlocks.forEach { $0(address, direction) }
+                    self.directionCommandCompletionBlocks.forEach { $0(address, nil, direction) }
                     self.directionCommandCompletionBlocks.removeAll()
                     
                 case .configDataStream(length: _, data: _, descriptor: _):
@@ -68,16 +68,16 @@ final class MarklinInterface {
                         self.turnoutChangeCallbacks.forEach { $0(address, state, power) }
                     }
                 }
-                if case .speed(address: let address, value: let value, descriptor: _) = cmd {
+                if case .speed(address: let address, decoderType: let decoderType, value: let value, descriptor: _) = cmd {
                     if msg.resp == 0 {
-                        self.speedChangeCallbacks.forEach { $0(address, value) }
+                        self.speedChangeCallbacks.forEach { $0(address, decoderType, value) }
                     }
                 }
-                if case .emergencyStop(address: let address, descriptor: _) = cmd {
+                if case .emergencyStop(address: let address, decoderType: let decoderType, descriptor: _) = cmd {
                     // Execute a command to query the direction of the locomotive at this particular address
                     DispatchQueue.main.async {
-                        self.queryDirection(command: .queryDirection(address: address, descriptor: nil)) { address, direction in
-                            self.directionChangeCallbacks.forEach { $0(address, direction) }
+                        self.queryDirection(command: .queryDirection(address: address, decoderType: decoderType)) { address, decoder, direction in
+                            self.directionChangeCallbacks.forEach { $0(address, decoder, direction) }
                         }
                     }
                 }
@@ -140,13 +140,13 @@ extension MarklinInterface: CommandInterface {
 extension Locomotive {
     
     var commandLocomotive: CommandLocomotive {
-        CommandLocomotive(uid: uid, name: name, address: address, decoderType: type?.locomotiveDecoderType)
+        CommandLocomotive(uid: uid, name: name, address: address, decoderType: type?.locomotiveDecoderType ?? .MFX)
     }
 }
 
 extension String {
     
-    var locomotiveDecoderType: DecoderType? {
+    var locomotiveDecoderType: DecoderType {
         switch(self) {
         case "mfx":
             return .MFX
@@ -161,7 +161,7 @@ extension String {
         case "sx1":
             return .SX1
         default:
-            return nil
+            return .MFX
         }
     }
 }

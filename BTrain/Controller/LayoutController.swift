@@ -167,9 +167,10 @@ final class LayoutController: ObservableObject {
                 if let name = loc.name {
                     train.name = name
                 }
-                if let address = loc.commandAddress {
+                if let address = loc.address {
                     train.address = address
                 }
+                train.decoder = loc.decoderType
                 return train
             }
             self.layout.trains = trains

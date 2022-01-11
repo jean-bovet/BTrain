@@ -86,7 +86,8 @@ final class LayoutGCreator: LayoutCreating {
         for index in 1...8 {
             let tr1 = Train(uuid: "\(index)")
             tr1.name = "Loco \(index)"
-            tr1.address = .init(UInt32(0x4009 + index), .MFX)
+            tr1.address = UInt32(0x4009 + index)
+            tr1.decoder = .MFX
             layout.trains.append(tr1)
             blocks[index-1].train = Block.TrainInstance(tr1.id, .next)
         }

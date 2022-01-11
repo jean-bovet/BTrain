@@ -31,16 +31,16 @@ struct MarklinCANMessagePrinter {
         case .stop(descriptor: let descriptor):
             return descriptor?.description
 
-        case .emergencyStop(address: _, descriptor: let descriptor):
+        case .emergencyStop(address: _, decoderType: _, descriptor: let descriptor):
             return descriptor?.description
 
-        case .speed(address: _, value: _, descriptor: let descriptor):
+        case .speed(address: _, decoderType: _, value: _, descriptor: let descriptor):
             return descriptor?.description
 
-        case .direction(address: _, direction: _, descriptor: let descriptor):
+        case .direction(address: _, decoderType: _, direction: _, descriptor: let descriptor):
             return descriptor?.description
 
-        case .queryDirection(address: _, descriptor: let descriptor):
+        case .queryDirection(address: _, decoderType: _, descriptor: let descriptor):
             return descriptor?.description
 
         case .turnout(address: _, state: _, power: _, descriptor: let descriptor):

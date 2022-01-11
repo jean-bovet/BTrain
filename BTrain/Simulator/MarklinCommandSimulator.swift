@@ -97,15 +97,15 @@ final class MarklinCommandSimulator: ObservableObject {
                 self.enabled = false
                 self.timer?.invalidate()
 
-            case .emergencyStop(address: _, descriptor: _):
+            case .emergencyStop(address: _, decoderType: _, descriptor: _):
                 break
                 
-            case .speed(address: let address, value: let value, descriptor: _):
-                self.speedChanged(address: address, value: value)
+            case .speed(address: let address, decoderType: let decoderType, value: let value, descriptor: _):
+                self.speedChanged(address: address, decoderType: decoderType, value: value)
                 break
                 
-            case .direction(address: let address, direction: let direction, descriptor: _):
-                self.directionChanged(address: address, direction: direction)
+            case .direction(address: let address, decoderType: let decoderType, direction: let direction, descriptor: _):
+                self.directionChanged(address: address, decoderType: decoderType, direction: direction)
                 break
                 
             case .turnout(address: _, state: _, power: _, descriptor: _):
@@ -118,8 +118,8 @@ final class MarklinCommandSimulator: ObservableObject {
                 self.provideLocomotives()
                 break
 
-            case .queryDirection(address: let address, descriptor: _):
-                self.provideDirection(address: address.address)
+            case .queryDirection(address: let address, decoderType: let decoderType, descriptor: _):
+                self.provideDirection(address: address.actualAddress(for: decoderType))
                 break
 
             case .unknown(command: _):
@@ -128,17 +128,17 @@ final class MarklinCommandSimulator: ObservableObject {
         }
     }
     
-    func speedChanged(address: CommandLocomotiveAddress, value: UInt16) {
+    func speedChanged(address: UInt32, decoderType: DecoderType?, value: UInt16) {
         for train in trains {
-            if train.train.address.actualAddress == address.actualAddress {
-                train.speed = TrainSpeed(value: value, decoderType: train.train.address.decoderType)
+            if train.train.actualAddress == address.actualAddress(for: decoderType) {
+                train.speed = TrainSpeed(value: value, decoderType: train.train.decoder)
             }
         }
     }
 
-    func directionChanged(address: CommandLocomotiveAddress, direction: Command.Direction) {
+    func directionChanged(address: UInt32, decoderType: DecoderType?, direction: Command.Direction) {
         for train in trains {
-            if train.train.address.actualAddress == address.actualAddress {
+            if train.train.actualAddress == address.actualAddress(for: decoderType) {
                 train.directionForward = direction == .forward
             }
         }
@@ -173,7 +173,7 @@ final class MarklinCommandSimulator: ObservableObject {
     }
     
     func provideDirection(address: UInt32) {
-        guard let train = trains.first(where: { $0.train.address.actualAddress == address }) else {
+        guard let train = trains.first(where: { $0.train.actualAddress == address }) else {
             BTLogger.error("[Simulator] Unable to find a locomotive for address \(address.toHex())")
             return
         }
@@ -194,12 +194,12 @@ final class MarklinCommandSimulator: ObservableObject {
         
         // Note: directionForward is actually ignored because the message sent by the Digital Control System is `emergencyStop`
         // and apparently the client must request the locomotive direction explicitely.
-        let message = MarklinCANMessageFactory.emergencyStop(addr: train.train.address.actualAddress)
+        let message = MarklinCANMessageFactory.emergencyStop(addr: train.train.actualAddress)
         send(message)
     }
     
     func setTrainSpeed(train: SimulatorTrain, value: UInt16) {
-        let message = MarklinCANMessageFactory.speed(addr: train.train.address.actualAddress, speed: value)
+        let message = MarklinCANMessageFactory.speed(addr: train.train.actualAddress, speed: value)
         send(message)
     }
     
@@ -262,4 +262,12 @@ final class MarklinCommandSimulator: ObservableObject {
             self.setFeedback(feedback: feedback, value: 0)
         }
     }
+}
+
+private extension Train {
+    
+    var actualAddress: UInt32 {
+        return address.actualAddress(for: decoder)
+    }
+
 }

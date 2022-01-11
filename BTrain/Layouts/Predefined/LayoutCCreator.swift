@@ -94,11 +94,11 @@ final class LayoutCCreator: LayoutCreating {
         // Train
         let t1 = Train(uuid: "1")
         t1.name = "Rail 2000"
-        t1.address = .init(0x4009, .MFX)
+        t1.address = 0x4009
 
         let t2 = Train(uuid: "2")
         t2.name = "Old Loco"
-        t2.address = .init(0x4010, .MFX)
+        t2.address = 0x4010
 
         l.trains.append(contentsOf: [t1, t2])
 

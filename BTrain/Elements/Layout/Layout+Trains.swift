@@ -20,10 +20,11 @@ extension Layout {
     }
     
     @discardableResult
-    func newTrain(_ id: String, name: String, address: CommandLocomotiveAddress = .init(0, .MFX)) -> Train {
+    func newTrain(_ id: String, name: String, address: UInt32 = 0, decoder: DecoderType = .MFX) -> Train {
         let train = Train(uuid: id)
         train.name = name
         train.address = address
+        train.decoder = decoder
         trains.append(train)
         return train
     }

@@ -26,7 +26,7 @@ final class SimulatorTrain: ObservableObject, Element {
         // Note: need to create a new TrainSpeed instance which is decoupled from the train itself
         // to ensure the simulator does not change the speed of the original train directly, but only
         // via commands sent through the interface.
-        self.speed = TrainSpeed(kph: train.speed.kph, decoderType: train.addressDecoderType)
+        self.speed = TrainSpeed(kph: train.speed.kph, decoderType: train.decoder)
     }
 }
     

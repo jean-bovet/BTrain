@@ -185,11 +185,7 @@ final class Layout2Swift {
     func add(trains: [Train]) {
 //        l.newTrain("1", name: "Rail 2000", address: .init(0x4009, .MFX))
         for train in trains {
-            if let decoderType = train.addressDecoderType {
-                code += "\nl.newTrain(\"\(train.id)\", name: \"\(train.name)\", address: .init(\(train.addressValue.toHex()), .\(decoderType)))"
-            } else {
-                code += "\nl.newTrain(\"\(train.id)\", name: \"\(train.name)\", address: .init(\(train.addressValue.toHex()), nil))"
-            }
+            code += "\nl.newTrain(\"\(train.id)\", name: \"\(train.name)\", address: \(train.address.toHex()), decoder: .\(train.decoder))"
         }
     }
 }

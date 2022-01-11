@@ -21,7 +21,7 @@ class TrainTests: XCTestCase {
     func testCodable() throws {
         let t1 = Train(uuid: "1")
         t1.name = "Rail 2000"
-        t1.address = .init(0x4001, .MFX)
+        t1.address = 0x4001
         t1.speed.kph = 100
         t1.routeIndex = 1
         t1.position = 7
@@ -58,7 +58,7 @@ class TrainTests: XCTestCase {
     
     func testSpeedSteps() {
         let t1 = Train(uuid: "1")
-        t1.address = .init(0x4001, .MFX)
+        t1.address = 0x4001
         
         XCTAssertEqual(t1.speed.speedTable.count, Int(DecoderType.MFX.steps) + 1)
         
@@ -98,7 +98,7 @@ class TrainTests: XCTestCase {
         t1.speed.steps = 200
         assertSpeed(t1.speed, kph: 200, steps: 126, value: 1000)
 
-        t1.addressDecoderType = .MM
+        t1.decoder = .MM
         XCTAssertEqual(t1.speed.speedTable.count, Int(DecoderType.MM.steps) + 1)
         
         t1.speed.kph = 0

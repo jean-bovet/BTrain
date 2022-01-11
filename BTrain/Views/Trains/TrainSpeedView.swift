@@ -59,6 +59,6 @@ struct TrainSpeedView: View {
 
 struct TrainSpeedView_Previews: PreviewProvider {
     static var previews: some View {
-        TrainSpeedView(trainSpeed: TrainSpeed())
+        TrainSpeedView(trainSpeed: TrainSpeed(decoderType: .MFX))
     }
 }

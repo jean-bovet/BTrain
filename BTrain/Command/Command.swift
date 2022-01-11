@@ -17,9 +17,9 @@ import Foundation
 enum Command {
     case go(descriptor: CommandDescriptor? = nil)
     case stop(descriptor: CommandDescriptor? = nil)
-    case emergencyStop(address: CommandLocomotiveAddress, descriptor: CommandDescriptor? = nil)
+    case emergencyStop(address: UInt32, decoderType: DecoderType?, descriptor: CommandDescriptor? = nil)
     
-    case speed(address: CommandLocomotiveAddress, value: UInt16, descriptor: CommandDescriptor? = nil)
+    case speed(address: UInt32, decoderType: DecoderType?, value: UInt16, descriptor: CommandDescriptor? = nil)
     
     enum Direction {
         case forward
@@ -27,8 +27,8 @@ enum Command {
         case unknown
     }
     
-    case direction(address: CommandLocomotiveAddress, direction: Direction, descriptor: CommandDescriptor? = nil)
-    case queryDirection(address: CommandLocomotiveAddress, descriptor: CommandDescriptor? = nil)
+    case direction(address: UInt32, decoderType: DecoderType?, direction: Direction, descriptor: CommandDescriptor? = nil)
+    case queryDirection(address: UInt32, decoderType: DecoderType?, descriptor: CommandDescriptor? = nil)
 
     case turnout(address: CommandTurnoutAddress, state: UInt8, power: UInt8, descriptor: CommandDescriptor? = nil)
     
@@ -75,17 +75,25 @@ enum DecoderType: String, CaseIterable, Codable {
 
 }
 
-struct CommandLocomotiveAddress: Codable, Hashable, Equatable {
-    // The address of the locomotive.
-    let address: UInt32
+extension UInt32 {
     
-    // The decoder type or nil if not specified.
-    let decoderType: DecoderType?
-    
-    init(_ address: UInt32, _ decoderType: DecoderType?) {
-        self.address = address
-        self.decoderType = decoderType
+    func actualAddress(for decoder: DecoderType?) -> UInt32 {
+        switch(decoder) {
+        case .MM:
+            return 0x0000 + self
+        case .MM2:
+            return 0x0000 + self
+        case .DCC:
+            return 0xC000 + self
+        case .MFX:
+            return 0x4000 + self
+        case .SX1:
+            return 0x0800 + self
+        case .none:
+            return self
+        }
     }
+
 }
 
 enum CommandTurnoutProtocol: String, CaseIterable, Codable {
@@ -107,17 +115,5 @@ struct CommandLocomotive {
     let uid: UInt32?
     let name: String?
     let address: UInt32?
-    let decoderType: DecoderType?
-    
-    var commandAddress: CommandLocomotiveAddress? {
-        guard let address = address else {
-            return nil
-        }
-
-        guard let decoderType = decoderType else {
-            return nil
-        }
-
-        return .init(address, decoderType)
-    }
+    let decoderType: DecoderType
 }

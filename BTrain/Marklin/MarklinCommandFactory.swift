@@ -73,20 +73,19 @@ extension Command {
         }
         if cmd == 0x00 && message.byte4 == 0x3 {
             let address: UInt32 = UInt32(message.byte0) << 24 | UInt32(message.byte1) << 16 | UInt32(message.byte2) << 8 | UInt32(message.byte3) << 0
-            return .emergencyStop(address: CommandLocomotiveAddress(address, nil), descriptor: CommandDescriptor(data: message.data, description: "0x00 System Emergency Stop"))
+            return .emergencyStop(address: address, decoderType: nil, descriptor: CommandDescriptor(data: message.data, description: "0x00 System Emergency Stop"))
         }
         if cmd == 0x04 {
             let address: UInt32 = UInt32(message.byte0) << 24 | UInt32(message.byte1) << 16 | UInt32(message.byte2) << 8 | UInt32(message.byte3) << 0
             let speedValue: UInt16 = UInt16(message.byte4) << 8 | UInt16(message.byte5) << 0
-            return .speed(address: CommandLocomotiveAddress(address, nil),
-                          value: speedValue,
+            return .speed(address: address, decoderType: nil, value: speedValue,
                           descriptor: CommandDescriptor(data: message.data, description: "\(cmd.toHex()) speed \(speedValue) for \(address.toHex())"))
         }
         if cmd == 0x05 {
             let address: UInt32 = UInt32(message.byte0) << 24 | UInt32(message.byte1) << 16 | UInt32(message.byte2) << 8 | UInt32(message.byte3) << 0
             if message.dlc == 4 {
                 // Query of direction.
-                return .queryDirection(address: CommandLocomotiveAddress(address, nil),
+                return .queryDirection(address: address, decoderType: nil,
                                        descriptor: CommandDescriptor(data: message.data, description: "\(cmd.toHex()) query direction for \(address.toHex())"))
             } else {
                 // Set direction
@@ -94,10 +93,10 @@ extension Command {
                 case 0: // no change
                     break
                 case 1: // forward
-                    return .direction(address: CommandLocomotiveAddress(address, nil), direction: .forward,
+                    return .direction(address: address, decoderType: nil, direction: .forward,
                                     descriptor: CommandDescriptor(data: message.data, description: "\(cmd.toHex()) forward for \(address.toHex())"))
                 case 2: // backward
-                    return .direction(address: CommandLocomotiveAddress(address, nil), direction: .backward,
+                    return .direction(address: address, decoderType: nil, direction: .backward,
                                      descriptor: CommandDescriptor(data: message.data, description: "\(cmd.toHex()) backward for \(address.toHex())"))
                 case 3: // toggle
                     break
@@ -138,53 +137,41 @@ extension MarklinCANMessage {
         switch(command) {
         case .go:
             return MarklinCANMessageFactory.go()
+            
         case .stop:
             return MarklinCANMessageFactory.stop()
-        case .emergencyStop(address: let address, descriptor: _):
-            return MarklinCANMessageFactory.emergencyStop(addr: address.actualAddress)
-        case .speed(address: let address, value: let value, descriptor: _):
-            return MarklinCANMessageFactory.speed(addr: address.actualAddress, speed: value)
-        case .direction(address: let address, direction: let direction, descriptor: let descriptor):
+            
+        case .emergencyStop(address: let address, decoderType: let decoderType, descriptor: _):
+            return MarklinCANMessageFactory.emergencyStop(addr: address.actualAddress(for: decoderType))
+            
+        case .speed(address: let address, decoderType: let decoderType, value: let value, descriptor: _):
+            return MarklinCANMessageFactory.speed(addr: address.actualAddress(for: decoderType), speed: value)
+            
+        case .direction(address: let address, decoderType: let decoderType, direction: let direction, descriptor: let descriptor):
             switch(direction) {
             case .forward:
-                return MarklinCANMessageFactory.forward(addr: address.actualAddress)
+                return MarklinCANMessageFactory.forward(addr: address.actualAddress(for: decoderType))
             case .backward:
-                return MarklinCANMessageFactory.backward(addr: address.actualAddress)
+                return MarklinCANMessageFactory.backward(addr: address.actualAddress(for: decoderType))
             case .unknown:
                 fatalError("Unknown direction command \(String(describing: descriptor?.description))")
                 break
             }
-        case .queryDirection(address: let address, descriptor: _):
-            return MarklinCANMessageFactory.direction(addr: address.address)
+        case .queryDirection(address: let address, decoderType: let decoderType, descriptor: _):
+            return MarklinCANMessageFactory.direction(addr: address.actualAddress(for: decoderType))
+            
         case .turnout(address: let address, state: let state, power: let power, descriptor: _):
             return MarklinCANMessageFactory.accessory(addr: address.actualAddress, state: state, power: power)
+            
         case .feedback(deviceID: let deviceID, contactID: let contactID, oldValue: let oldValue, newValue: let newValue, time: let time, descriptor: _):
             let time: UInt16 = UInt16(time / 10)
             return MarklinCANMessageFactory.feedback(deviceID: deviceID, contactID: contactID, oldValue: oldValue, newValue: newValue, time: time)
+            
         case .locomotives(descriptor: _):
             return MarklinCANMessageFactory.locomotives()
+            
         case .unknown(command: _, descriptor: let descriptor):
             fatalError("Unknown command \(String(describing: descriptor?.description))")
-        }
-    }
-}
-
-extension CommandLocomotiveAddress {
-    
-    var actualAddress: UInt32 {
-        switch(decoderType) {
-        case .MM:
-            return 0x0000 + address
-        case .MM2:
-            return 0x0000 + address
-        case .DCC:
-            return 0xC000 + address
-        case .MFX:
-            return 0x4000 + address
-        case .SX1:
-            return 0x0800 + address
-        case .none:
-            return address
         }
     }
 }

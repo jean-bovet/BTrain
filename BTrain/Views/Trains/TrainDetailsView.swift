@@ -26,13 +26,13 @@ struct TrainDetailsView: View {
                 TrainIconView(trainIconManager: trainIconManager, train: train, size: .large)
 
                 Form {
-                    Picker("Decoder:", selection: $train.addressDecoderType) {
+                    Picker("Decoder:", selection: $train.decoder) {
                         ForEach(DecoderType.allCases, id:\.self) { proto in
-                            Text(proto.rawValue).tag(proto as DecoderType?)
+                            Text(proto.rawValue).tag(proto as DecoderType)
                         }
                     }
 
-                    TextField("Address:", value: $train.addressValue,
+                    TextField("Address:", value: $train.address,
                               format: .number)
                                 
                 }
@@ -46,27 +46,6 @@ struct TrainDetailsView: View {
             }
 
             Spacer()
-        }
-    }
-}
-
-extension Train {
-    
-    var addressDecoderType: DecoderType? {
-        get {
-            return address.decoderType
-        }
-        set {
-            address = .init(address.address, newValue)
-        }
-    }
-    
-    var addressValue: Int {
-        get {
-            return Int(address.address)
-        }
-        set {
-            address = .init(UInt32(newValue), addressDecoderType)
         }
     }
 }

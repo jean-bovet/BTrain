@@ -25,7 +25,7 @@ final class TrainSpeed: ObservableObject, Equatable, Codable {
     }
         
     // The decoder type, which is used to derive the `steps` and `value` parameters
-    var decoderType: DecoderType? {
+    var decoderType: DecoderType {
         didSet {
             updateSpeedStepsTable()
         }
@@ -73,18 +73,10 @@ final class TrainSpeed: ObservableObject, Equatable, Codable {
     // from the `steps` value and the decoder type.
     var value: UInt16 {
         get {
-            guard let decoderType = decoderType else {
-                return 0
-            }
-            
             let value = Double(steps) * Double(maxCANSpeedValue) / Double(decoderType.steps)
             return UInt16(value)
         }
         set {
-            guard let decoderType = decoderType else {
-                return
-            }
-
             steps = UnitStep(Double(newValue) / Double(maxCANSpeedValue) * Double(decoderType.steps))
         }
     }
@@ -105,16 +97,18 @@ final class TrainSpeed: ObservableObject, Equatable, Codable {
     // on the type of decoder.
     @Published var speedTable = [SpeedStep]()
         
-    convenience init(kph: UInt16, decoderType: DecoderType?) {
-        self.init()
+    init(decoderType: DecoderType) {
         self.decoderType = decoderType
+    }
+    
+    convenience init(kph: UInt16, decoderType: DecoderType) {
+        self.init(decoderType: decoderType)
         self.updateSpeedStepsTable()
         self.kph = kph
     }
     
-    convenience init(value: UInt16, decoderType: DecoderType?) {
-        self.init()
-        self.decoderType = decoderType
+    convenience init(value: UInt16, decoderType: DecoderType) {
+        self.init(decoderType: decoderType)
         self.updateSpeedStepsTable()
         self.value = value
     }
@@ -124,9 +118,8 @@ final class TrainSpeed: ObservableObject, Equatable, Codable {
     }
 
     convenience init(from decoder: Decoder) throws {
-        self.init()
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        self.decoderType = try container.decode(DecoderType.self, forKey: CodingKeys.decoderType)
+        self.init(decoderType: try container.decode(DecoderType.self, forKey: CodingKeys.decoderType))
         self.updateSpeedStepsTable()
         self.kph = try container.decode(UInt16.self, forKey: CodingKeys.kph)
     }
@@ -138,10 +131,6 @@ final class TrainSpeed: ObservableObject, Equatable, Codable {
     }
     
     func updateSpeedStepsTable() {
-        guard let decoderType = decoderType else {
-            return
-        }
-        
         // Reset the table if the number of steps have changed,
         // usually when the decoder type has been changed.
         // Note: +1 to account for 0 steps

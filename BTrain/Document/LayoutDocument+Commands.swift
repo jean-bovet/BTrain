@@ -105,9 +105,9 @@ extension LayoutDocument {
     }
                 
     func registerForSpeedChange() {
-        interface.register(forSpeedChange: { address, speed in
+        interface.register(forSpeedChange: { address, decoder, speed in
             DispatchQueue.main.async {
-                if let train = self.layout.trains.find(address: address.address) {
+                if let train = self.layout.trains.find(address: address, decoder: decoder) {
                     train.speed.value = speed
                 }
             }
@@ -115,9 +115,9 @@ extension LayoutDocument {
     }
     
     func registerForDirectionChange() {
-        interface.register(forDirectionChange: { address, direction in
+        interface.register(forDirectionChange: { address, decoder, direction in
             DispatchQueue.main.async {
-                if let train = self.layout.trains.find(address: address) {
+                if let train = self.layout.trains.find(address: address, decoder: decoder) {
                     switch(direction) {
                     case .forward:
                         if train.directionForward == false {

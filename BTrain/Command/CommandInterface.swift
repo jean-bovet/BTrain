@@ -21,17 +21,17 @@ protocol CommandInterface {
     typealias FeedbackChangeCallback = (_ deviceID: UInt16, _ contactID: UInt16, _ value: UInt8) -> Void
     func register(forFeedbackChange: @escaping FeedbackChangeCallback)
 
-    typealias SpeedChangeCallback = (_ address: CommandLocomotiveAddress, _ value: UInt16) -> Void
+    typealias SpeedChangeCallback = (_ address: UInt32, _ decoderType: DecoderType?, _ value: UInt16) -> Void
     func register(forSpeedChange: @escaping SpeedChangeCallback)
 
-    typealias DirectionChangeCallback = (_ address: UInt32, _ direction: Command.Direction) -> Void
+    typealias DirectionChangeCallback = (_ address: UInt32, _ decoderType: DecoderType?, _ direction: Command.Direction) -> Void
     func register(forDirectionChange: @escaping DirectionChangeCallback)
 
     typealias TurnoutChangeCallback = (_ address: CommandTurnoutAddress, _ state: UInt8, _ power: UInt8) -> Void
     func register(forTurnoutChange: @escaping TurnoutChangeCallback)
 
     // Note: this command is used internally by the MarklinInterface to query direction automatically after receiving a System Emergency Stop.
-    typealias QueryDirectionCommandCompletion = (_ address:UInt32, _ direction:Command.Direction) -> Void
+    typealias QueryDirectionCommandCompletion = (_ address: UInt32, _ decoderType: DecoderType?, _ direction:Command.Direction) -> Void
     func queryDirection(command: Command, completion: @escaping QueryDirectionCommandCompletion)
     
     typealias QueryLocomotiveCommandCompletion = (_ locomotives: [CommandLocomotive]) -> Void

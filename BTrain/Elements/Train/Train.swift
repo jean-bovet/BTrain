@@ -28,14 +28,17 @@ final class Train: Element, ObservableObject {
     @Published var iconUrlData: Data?
     
     // Address of the train
-    @Published var address: CommandLocomotiveAddress = .init(0, .MFX) {
+    @Published var address: UInt32 = 0
+      
+    // The decoder type of this train
+    @Published var decoder: DecoderType = .MFX {
         didSet {
-            speed.decoderType = addressDecoderType
+            speed.decoderType = decoder
         }
     }
     
     // Speed of the train
-    @Published var speed = TrainSpeed(kph: 0, decoderType: nil)
+    @Published var speed = TrainSpeed(kph: 0, decoderType: .MFX)
 
     // Direction of travel of the train
     @Published var directionForward: Bool = true
@@ -72,7 +75,7 @@ final class Train: Element, ObservableObject {
 extension Train: Codable {
     
     enum CodingKeys: CodingKey {
-      case id, enabled, name, iconUrlData, address, speed, direction, route, routeIndex, block, position
+      case id, enabled, name, iconUrlData, address, speed, decoder, direction, route, routeIndex, block, position
     }
 
     convenience init(from decoder: Decoder) throws {
@@ -81,12 +84,9 @@ extension Train: Codable {
         self.enabled = try container.decodeIfPresent(Bool.self, forKey: CodingKeys.enabled) ?? true
         self.name = try container.decode(String.self, forKey: CodingKeys.name)
         self.iconUrlData = try container.decodeIfPresent(Data.self, forKey: CodingKeys.iconUrlData)
-        self.address = try container.decode(CommandLocomotiveAddress.self, forKey: CodingKeys.address)
-        if let speedKph = try? container.decode(UInt16.self, forKey: CodingKeys.speed) {
-            self.speed = TrainSpeed(kph: speedKph, decoderType: address.decoderType)
-        } else {
-            self.speed = try container.decode(TrainSpeed.self, forKey: CodingKeys.speed)
-        }
+        self.address = try container.decode(UInt32.self, forKey: CodingKeys.address)
+        self.decoder = try container.decode(DecoderType.self, forKey: CodingKeys.decoder)
+        self.speed = try container.decode(TrainSpeed.self, forKey: CodingKeys.speed)
         self.directionForward = try container.decodeIfPresent(Bool.self, forKey: CodingKeys.direction) ?? true
         self.routeId = try container.decodeIfPresent(Identifier<Route>.self, forKey: CodingKeys.route)
         self.routeIndex = try container.decode(Int.self, forKey: CodingKeys.routeIndex)
@@ -101,6 +101,7 @@ extension Train: Codable {
         try container.encode(name, forKey: CodingKeys.name)
         try container.encode(iconUrlData, forKey: CodingKeys.iconUrlData)
         try container.encode(address, forKey: CodingKeys.address)
+        try container.encode(decoder, forKey: CodingKeys.decoder)
         try container.encode(speed, forKey: CodingKeys.speed)
         try container.encode(directionForward, forKey: CodingKeys.direction)
         try container.encode(routeId, forKey: CodingKeys.route)
@@ -113,9 +114,9 @@ extension Train: Codable {
 
 extension Array where Element : Train {
 
-    func find(address: UInt32) -> Element? {
+    func find(address: UInt32, decoder: DecoderType?) -> Element? {
         return self.first { train in
-            return train.address.actualAddress == address
+            return train.address.actualAddress(for: train.decoder) == address.actualAddress(for: decoder)
         }
     }
     

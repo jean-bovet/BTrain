@@ -81,8 +81,8 @@ final class LayoutBCreator: LayoutCreating {
 
         // Trains
 
-        l.newTrain("1", name: "Rail 2000", address: .init(0x0000, .MFX))
-        l.newTrain("2", name: "BLS", address: .init(0x0000, .MFX))
+        l.newTrain("1", name: "Rail 2000")
+        l.newTrain("2", name: "BLS")
 
         return l
     }

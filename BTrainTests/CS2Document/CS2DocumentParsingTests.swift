@@ -31,8 +31,8 @@ class CS2DocumentParsingTests: XCTestCase {
         assert(loc: locs[0], uid: 0x4006, name: "460 106-8 SBB", address: 0x6, type: "mfx")
         assert(loc: locs[2], uid: 0x2e, name: "BLS", address: 0x2e, type: "mm_prg")
         
-        assert(loc: locs[0].commandLocomotive, uid: 0x4006, name: "460 106-8 SBB", address: 0x6, type: .MFX, cmdAddress: .init(0x6, .MFX))
-        assert(loc: locs[2].commandLocomotive, uid: 0x2e, name: "BLS", address: 0x2e, type: .MM, cmdAddress: .init(0x2e, .MM))
+        assert(loc: locs[0].commandLocomotive, uid: 0x4006, name: "460 106-8 SBB", address: 0x6, type: .MFX)
+        assert(loc: locs[2].commandLocomotive, uid: 0x2e, name: "BLS", address: 0x2e, type: .MM)
     }
 
     func assert(loc: Locomotive, uid: UInt32, name: String, address: UInt32, type: String) {
@@ -42,11 +42,10 @@ class CS2DocumentParsingTests: XCTestCase {
         XCTAssertEqual(loc.type, type)
     }
     
-    func assert(loc: CommandLocomotive, uid: UInt32, name: String, address: UInt32, type: DecoderType, cmdAddress: CommandLocomotiveAddress) {
+    func assert(loc: CommandLocomotive, uid: UInt32, name: String, address: UInt32, type: DecoderType) {
         XCTAssertEqual(loc.uid, uid)
         XCTAssertEqual(loc.name, name)
         XCTAssertEqual(loc.address, address)
         XCTAssertEqual(loc.decoderType, type)
-        XCTAssertEqual(loc.commandAddress, cmdAddress)
     }
 }
