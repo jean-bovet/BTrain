@@ -150,7 +150,7 @@ class PathFinderTests: BTTestCase {
         let train = layout.trains[0]
         train.blockId = s1.id
         s1.train = .init(train.id, .next)
-        XCTAssertEqual(train.speed, 0)
+        XCTAssertEqual(train.speed.kph, 0)
 
         layout.automaticRouteRandom = false
         

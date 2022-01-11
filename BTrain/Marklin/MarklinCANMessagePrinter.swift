@@ -34,7 +34,7 @@ struct MarklinCANMessagePrinter {
         case .emergencyStop(address: _, descriptor: let descriptor):
             return descriptor?.description
 
-        case .speed(address: _, speed: _, descriptor: let descriptor):
+        case .speed(address: _, value: _, descriptor: let descriptor):
             return descriptor?.description
 
         case .direction(address: _, direction: _, descriptor: let descriptor):

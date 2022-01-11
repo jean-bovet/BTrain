@@ -128,8 +128,8 @@ class TransitionsTests: XCTestCase {
         
         // t1 starts but t2 cannot because t1 has reserved all the transitions
         // out of the first block - transitions that are shared with t2's route.
-        XCTAssertEqual(t1.speed, LayoutFactory.DefaultSpeed)
-        XCTAssertEqual(t2.speed, 0)
+        XCTAssertEqual(t1.speed.kph, LayoutFactory.DefaultSpeed)
+        XCTAssertEqual(t2.speed.kph, 0)
         
         // NOTE: stop cannot freeup blocks automatically because
         // the train might be already in transit between two blocks!
@@ -141,8 +141,8 @@ class TransitionsTests: XCTestCase {
         try c2.run()
         
         // Now t2 starts because it can reserve the route
-        XCTAssertEqual(t1.speed, 0)
-        XCTAssertEqual(t2.speed, LayoutFactory.DefaultSpeed)
+        XCTAssertEqual(t1.speed.kph, 0)
+        XCTAssertEqual(t2.speed.kph, LayoutFactory.DefaultSpeed)
     }
 
 }

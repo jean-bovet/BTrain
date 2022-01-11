@@ -74,7 +74,7 @@ final class TrainController {
     }
     
     func handleTrainStart() throws -> Result {
-        guard train.speed == 0 else {
+        guard train.speed.kph == 0 else {
             return .none
         }
 
@@ -143,7 +143,7 @@ final class TrainController {
     }
     
     func handleTrainStop() throws -> Result {
-        guard train.speed > 0 else {
+        guard train.speed.kph > 0 else {
             return .none
         }
         
@@ -207,7 +207,7 @@ final class TrainController {
     }
     
     func handleTrainMove() throws -> Result {
-        guard train.speed > 0 else {
+        guard train.speed.kph > 0 else {
             return .none
         }
                 
@@ -282,7 +282,7 @@ final class TrainController {
     }
     
     func handleTrainMoveToNextBlock() throws -> Result {
-        guard train.speed > 0 else {
+        guard train.speed.kph > 0 else {
             return .none
         }
         
@@ -361,7 +361,7 @@ final class TrainController {
     }
     
     func stop() throws -> Result {
-        guard train.speed > 0 else {
+        guard train.speed.kph > 0 else {
             return .none
         }
         

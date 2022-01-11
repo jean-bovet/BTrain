@@ -100,8 +100,8 @@ final class MarklinCommandSimulator: ObservableObject {
             case .emergencyStop(address: _, descriptor: _):
                 break
                 
-            case .speed(address: let address, speed: let speed, descriptor: _):
-                self.speedChanged(address: address, speed: speed)
+            case .speed(address: let address, value: let value, descriptor: _):
+                self.speedChanged(address: address, value: value)
                 break
                 
             case .direction(address: let address, direction: let direction, descriptor: _):
@@ -128,10 +128,10 @@ final class MarklinCommandSimulator: ObservableObject {
         }
     }
     
-    func speedChanged(address: CommandLocomotiveAddress, speed: UInt16) {
+    func speedChanged(address: CommandLocomotiveAddress, value: UInt16) {
         for train in trains {
             if train.train.address.actualAddress == address.actualAddress {
-                train.speed = speed
+                train.speed = TrainSpeed(value: value, decoderType: train.train.address.decoderType)
             }
         }
     }
@@ -228,7 +228,7 @@ final class MarklinCommandSimulator: ObservableObject {
     }
     
     func tick(route: Route, train: Train) throws {
-        guard train.speed > 0 else {
+        guard train.speed.kph > 0 else {
             return
         }
         

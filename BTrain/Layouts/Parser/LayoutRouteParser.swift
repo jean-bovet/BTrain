@@ -251,14 +251,14 @@ final class LayoutRouteParser {
         }
         
         if let train = trains.first(where: { $0.id.uuid == uuid }) {
-            assert(train.speed == speed, "Mismatching speed definition for train \(uuid)")
+            assert(train.speed.kph == speed, "Mismatching speed definition for train \(uuid)")
             assert(train.position == feedbackIndex, "Mismatching position definition for train \(uuid)")
             block.train = Block.TrainInstance(train.id, .next)
         } else {
             let train = Train(uuid: uuid)
             train.position = feedbackIndex
             train.routeIndex = route.steps.count
-            train.speed = speed
+            train.speed = .init(kph: speed, decoderType: .MFX)
             train.routeId = route.id
             block.train = Block.TrainInstance(train.id, .next)
             trains.append(train)

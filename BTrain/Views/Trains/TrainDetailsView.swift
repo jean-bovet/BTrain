@@ -41,7 +41,7 @@ struct TrainDetailsView: View {
             Divider()
 
             DisclosureGroup("Speed", isExpanded: $speedExpanded) {
-                TrainSpeedView(train: train)
+                TrainSpeedView(trainSpeed: train.speed)
                     .frame(height: 200)
             }
 

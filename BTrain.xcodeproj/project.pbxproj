@@ -140,6 +140,7 @@
 		A785C07E278A64C1002FD538 /* CommandInterface.swift in Sources */ = {isa = PBXBuildFile; fileRef = A785C07D278A64C1002FD538 /* CommandInterface.swift */; };
 		A785C081278BC527002FD538 /* TrainSpeedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A785C080278BC527002FD538 /* TrainSpeedView.swift */; };
 		A785C084278C113D002FD538 /* SwiftCubicSpline in Frameworks */ = {isa = PBXBuildFile; productRef = A785C083278C113D002FD538 /* SwiftCubicSpline */; };
+		A785C086278CFD7D002FD538 /* TrainSpeed.swift in Sources */ = {isa = PBXBuildFile; fileRef = A785C085278CFD7D002FD538 /* TrainSpeed.swift */; };
 		A7907955277D071000771A60 /* CGContext+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7907954277D071000771A60 /* CGContext+Extension.swift */; };
 		A7907957277D136500771A60 /* CGAffineTransform+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7907956277D136500771A60 /* CGAffineTransform+Extension.swift */; };
 		A7907993277EC86200771A60 /* DocumentToolbarContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7907992277EC86200771A60 /* DocumentToolbarContent.swift */; };
@@ -352,6 +353,7 @@
 		A785C07A278A648B002FD538 /* LayoutDocument+Commands.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LayoutDocument+Commands.swift"; sourceTree = "<group>"; };
 		A785C07D278A64C1002FD538 /* CommandInterface.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommandInterface.swift; sourceTree = "<group>"; };
 		A785C080278BC527002FD538 /* TrainSpeedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainSpeedView.swift; sourceTree = "<group>"; };
+		A785C085278CFD7D002FD538 /* TrainSpeed.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainSpeed.swift; sourceTree = "<group>"; };
 		A7907954277D071000771A60 /* CGContext+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CGContext+Extension.swift"; sourceTree = "<group>"; };
 		A7907956277D136500771A60 /* CGAffineTransform+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CGAffineTransform+Extension.swift"; sourceTree = "<group>"; };
 		A7907992277EC86200771A60 /* DocumentToolbarContent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentToolbarContent.swift; sourceTree = "<group>"; };
@@ -743,12 +745,12 @@
 			children = (
 				A7F779F92734A8C500E73275 /* Element.swift */,
 				A7710E5D277850F000C08150 /* Reservation.swift */,
-				A74CCC6B272A5A01004E58F5 /* Train.swift */,
 				A74CCC6D272A5A08004E58F5 /* Route.swift */,
 				A7F779CD272B445B00E73275 /* Feedback.swift */,
 				A74CCC69272A59F9004E58F5 /* Block.swift */,
 				A74CCC71272A5A18004E58F5 /* Transition.swift */,
 				A72180842760428E00831998 /* Socket.swift */,
+				A785C087278D0EE4002FD538 /* Train */,
 				A76507F5275BEEC50079C71A /* Layout */,
 				A73B164B274E1EA50073947D /* Turnout */,
 			);
@@ -837,6 +839,15 @@
 				A785C07A278A648B002FD538 /* LayoutDocument+Commands.swift */,
 			);
 			path = Document;
+			sourceTree = "<group>";
+		};
+		A785C087278D0EE4002FD538 /* Train */ = {
+			isa = PBXGroup;
+			children = (
+				A74CCC6B272A5A01004E58F5 /* Train.swift */,
+				A785C085278CFD7D002FD538 /* TrainSpeed.swift */,
+			);
+			path = Train;
 			sourceTree = "<group>";
 		};
 		A79079A8277FCE6A00771A60 /* Predefined */ = {
@@ -1144,6 +1155,7 @@
 				A7FBC8B8276EBB34009D49C3 /* PathFinder.swift in Sources */,
 				A78413862740791C00381341 /* Shape+Extension.swift in Sources */,
 				A73E0825276B99A8005F9D64 /* BlockFeedbackView.swift in Sources */,
+				A785C086278CFD7D002FD538 /* TrainSpeed.swift in Sources */,
 				A784138A274165FB00381341 /* MarklinCommandSimulator.swift in Sources */,
 				A7841382273F972B00381341 /* SwitchBoardRenderer.swift in Sources */,
 				A71690CC27475D5F008FE624 /* LayoutGCreator.swift in Sources */,

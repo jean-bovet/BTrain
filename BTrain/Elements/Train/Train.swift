@@ -11,7 +11,6 @@
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 import Foundation
-import SwiftCubicSpline
 
 // A train is an element that moves from one block to another.
 // It can have an associated route to follow.
@@ -31,44 +30,13 @@ final class Train: Element, ObservableObject {
     // Address of the train
     @Published var address: CommandLocomotiveAddress = .init(0, .MFX) {
         didSet {
-            updateSpeedStepsTable()
+            speed.decoderType = addressDecoderType
         }
     }
     
-    // Type definition for the speed
-    typealias TrainSpeedKph = UInt16
-    typealias TrainSpeedStep = UInt16
+    // Speed of the train
+    @Published var speed = TrainSpeed(kph: 0, decoderType: nil)
 
-    // Speed of the train in km/h
-    @Published var speed: TrainSpeedKph = 0
-
-    // Returns the steps number corresponding to the speed of the train in kph.
-    // Use a cublic spline interpolation to get the most accurate steps number.
-    var steps: TrainSpeedStep {
-        let csp = CubicSpline(x: speedTable.map { Double($0.speed) },
-                              y: speedTable.map { Double($0.steps) })
-        return Train.TrainSpeedStep(csp[x: Double(speed)])
-    }
-
-    // TODO: read from locomotives.cs2 as well
-    @Published var maxSpeed: TrainSpeedKph = 200
-        
-    // Structure defining the number of steps corresponding
-    // to a particular speed in kph.
-    struct SpeedStep: Identifiable {
-        var id: TrainSpeedStep {
-            return steps
-        }
-        
-        var steps: TrainSpeedStep
-        var speed: TrainSpeedKph
-    }
-
-    // Array of correspondance between the number of steps
-    // and the speed in kph. The number of steps is dependent
-    // on the type of decoder.
-    @Published var speedTable = [SpeedStep]()
-    
     // Direction of travel of the train
     @Published var directionForward: Bool = true
     
@@ -99,33 +67,6 @@ final class Train: Element, ObservableObject {
         self.id = id
     }
 
-    func updateSpeedStepsTable() {
-        guard let decoderType = address.decoderType else {
-            return
-        }
-        
-        // Reset the table if the number of steps have changed,
-        // usually when the decoder type has been changed.
-        // Note: +1 to account for 0 steps
-        if speedTable.count != decoderType.steps + 1 {
-            speedTable.removeAll()
-        }
-        
-        // Always sort the table by ascending order of the number of steps
-        speedTable.sort { ss1, ss2 in
-            return ss1.steps < ss2.steps
-        }
-        
-        let stepsCount = decoderType.steps
-        for index in 0...stepsCount {
-            let speedStep = TrainSpeedStep(index)
-            if index >= speedTable.count || speedTable[Int(index)].steps != speedStep {
-                let entry = SpeedStep(steps: speedStep,
-                                      speed: TrainSpeedKph(Double(maxSpeed)/Double(stepsCount) * Double(index)))
-                speedTable.insert(entry, at: Int(index))
-            }
-        }
-    }
 }
 
 extension Train: Codable {
@@ -141,7 +82,11 @@ extension Train: Codable {
         self.name = try container.decode(String.self, forKey: CodingKeys.name)
         self.iconUrlData = try container.decodeIfPresent(Data.self, forKey: CodingKeys.iconUrlData)
         self.address = try container.decode(CommandLocomotiveAddress.self, forKey: CodingKeys.address)
-        self.speed = try container.decode(UInt16.self, forKey: CodingKeys.speed)
+        if let speedKph = try? container.decode(UInt16.self, forKey: CodingKeys.speed) {
+            self.speed = TrainSpeed(kph: speedKph, decoderType: address.decoderType)
+        } else {
+            self.speed = try container.decode(TrainSpeed.self, forKey: CodingKeys.speed)
+        }
         self.directionForward = try container.decodeIfPresent(Bool.self, forKey: CodingKeys.direction) ?? true
         self.routeId = try container.decodeIfPresent(Identifier<Route>.self, forKey: CodingKeys.route)
         self.routeIndex = try container.decode(Int.self, forKey: CodingKeys.routeIndex)

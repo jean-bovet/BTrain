@@ -68,9 +68,9 @@ final class MarklinInterface {
                         self.turnoutChangeCallbacks.forEach { $0(address, state, power) }
                     }
                 }
-                if case .speed(address: let address, speed: let speed, descriptor: _) = cmd {
+                if case .speed(address: let address, value: let value, descriptor: _) = cmd {
                     if msg.resp == 0 {
-                        self.speedChangeCallbacks.forEach { $0(address, speed) }
+                        self.speedChangeCallbacks.forEach { $0(address, value) }
                     }
                 }
                 if case .emergencyStop(address: let address, descriptor: _) = cmd {

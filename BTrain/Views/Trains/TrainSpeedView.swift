@@ -9,15 +9,15 @@ import SwiftUI
 
 struct TrainSpeedView: View {
     
-    @ObservedObject var train: Train
+    @ObservedObject var trainSpeed: TrainSpeed
     
-    @State private var selection: Train.SpeedStep.ID?
+    @State private var selection: TrainSpeed.SpeedStep.ID?
     
     func speedPath(in size: CGSize) -> Path {
         var p = Path()
-        let xOffset = size.width / CGFloat(train.speedTable.count)
-        let yOffset = size.height / CGFloat(train.speedTable.map({$0.speed}).max() ?? 1)
-        for (index, speed) in train.speedTable.enumerated() {
+        let xOffset = size.width / CGFloat(trainSpeed.speedTable.count)
+        let yOffset = size.height / CGFloat(trainSpeed.speedTable.map({$0.speed}).max() ?? 1)
+        for (index, speed) in trainSpeed.speedTable.enumerated() {
             let point = CGPoint(x: Double(index) * xOffset, y: Double(speed.speed) * yOffset)
             if p.isEmpty {
                 p.move(to: point)
@@ -42,7 +42,7 @@ struct TrainSpeedView: View {
                     }
                 }
             } rows: {
-                ForEach($train.speedTable) { block in
+                ForEach($trainSpeed.speedTable) { block in
                     TableRow(block)
                 }
             }
@@ -52,13 +52,13 @@ struct TrainSpeedView: View {
                 context.stroke(speedPath(in: size), with: .color(.blue))
             }
         }.onAppear {
-            train.updateSpeedStepsTable()
+            trainSpeed.updateSpeedStepsTable()
         }
     }
 }
 
 struct TrainSpeedView_Previews: PreviewProvider {
     static var previews: some View {
-        TrainSpeedView(train: Train())
+        TrainSpeedView(trainSpeed: TrainSpeed())
     }
 }

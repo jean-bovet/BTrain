@@ -17,13 +17,16 @@ final class SimulatorTrain: ObservableObject, Element {
     let train: Train
     
     @Published var directionForward = true
-    @Published var speed: UInt16 = 0
+    @Published var speed = TrainSpeed(kph: 0, decoderType: .MFX)
         
     init(train: Train) {
         self.id = train.id
         self.train = train
         self.directionForward = train.directionForward
-        self.speed = train.speed
+        // Note: need to create a new TrainSpeed instance which is decoupled from the train itself
+        // to ensure the simulator does not change the speed of the original train directly, but only
+        // via commands sent through the interface.
+        self.speed = TrainSpeed(kph: train.speed.kph, decoderType: train.addressDecoderType)
     }
 }
     

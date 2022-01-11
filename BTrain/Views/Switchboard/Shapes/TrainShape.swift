@@ -95,7 +95,7 @@ final class TrainShape: Shape, DraggableShape {
         ctx.saveGState()
         
         ctx.addPath(path)
-        ctx.setFillColor(shapeContext.trainColor(train.speed))
+        ctx.setFillColor(shapeContext.trainColor(train.speed.kph))
         ctx.fillPath()
                 
         ctx.restoreGState()                

@@ -21,7 +21,7 @@ protocol CommandInterface {
     typealias FeedbackChangeCallback = (_ deviceID: UInt16, _ contactID: UInt16, _ value: UInt8) -> Void
     func register(forFeedbackChange: @escaping FeedbackChangeCallback)
 
-    typealias SpeedChangeCallback = (_ address: CommandLocomotiveAddress, _ speed: UInt16) -> Void
+    typealias SpeedChangeCallback = (_ address: CommandLocomotiveAddress, _ value: UInt16) -> Void
     func register(forSpeedChange: @escaping SpeedChangeCallback)
 
     typealias DirectionChangeCallback = (_ address: UInt32, _ direction: Command.Direction) -> Void

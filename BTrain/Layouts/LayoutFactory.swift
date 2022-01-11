@@ -20,7 +20,7 @@ protocol LayoutCreating {
 
 final class LayoutFactory {
 
-    static let DefaultSpeed: Train.TrainSpeedKph = 70
+    static let DefaultSpeed: TrainSpeed.UnitKph = 70
 
     static let GlobalLayouts: [LayoutCreating] = [
         LayoutACreator(),
@@ -127,7 +127,7 @@ final class LayoutFactory {
     }
     
     static func stringFrom(_ train: Train) -> String {
-        if train.speed == 0 {
+        if train.speed.kph == 0 {
             return "🛑🚂\(train.id)"
         } else {
             return "🚂\(train.id)"

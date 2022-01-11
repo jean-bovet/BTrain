@@ -19,7 +19,7 @@ enum Command {
     case stop(descriptor: CommandDescriptor? = nil)
     case emergencyStop(address: CommandLocomotiveAddress, descriptor: CommandDescriptor? = nil)
     
-    case speed(address: CommandLocomotiveAddress, speed: UInt16, descriptor: CommandDescriptor? = nil)
+    case speed(address: CommandLocomotiveAddress, value: UInt16, descriptor: CommandDescriptor? = nil)
     
     enum Direction {
         case forward

@@ -17,6 +17,7 @@ import ViewInspector
 
 extension SimulatorView: Inspectable { }
 extension SimulatorTrainControlView: Inspectable { }
+extension SimulatorTrainSpeedView: Inspectable { }
 
 class SimulatorViewTests: RootViewTests {
 
@@ -27,7 +28,7 @@ class SimulatorViewTests: RootViewTests {
         let t1 = trains[0]
         t1.blockId = doc.layout.blockIds[0]
         XCTAssertTrue(t1.directionForward)
-        XCTAssertEqual(t1.speed, 0)
+        XCTAssertEqual(t1.speed.kph, 0)
             
         connectToSimulator()
             
@@ -65,26 +66,30 @@ class SimulatorViewTests: RootViewTests {
         wait(for: simulatorTrain1, directionForward: true)
 
         // Change the speed of the first train and see if it is reflected in the train list
-        let slider = try simulatorTrainControl.hStack().slider(1)
+        let simulatorSpeedView = try simulatorTrainControl.find(SimulatorTrainSpeedView.self)
+        let slider = try simulatorSpeedView.hStack().slider(0)
         try slider.setValue(100)
         try slider.callOnEditingChanged()
-        wait(for: t1, speed: 100)
+        // Note: for some reason, setting the slider.setValue(100)
+        // does not set it to 100 but to its max value, 200 (maxSpeed)
+        wait(for: t1, kph: t1.speed.maxSpeed)
         
         try slider.setValue(0)
         try slider.callOnEditingChanged()
-        wait(for: t1, speed: 0)
+        wait(for: t1, kph: 0)
         
         // Same speed check but from the train list
-        let trainSlider = try trainControlsView.vStack().hStack(0).slider(1)
+        let trainSpeedView = try trainControlsView.find(TrainControlSpeedView.self)
+        let trainSlider = try trainSpeedView.hStack().slider(0)
         try trainSlider.setValue(100)
         try trainSlider.callOnEditingChanged()
-        XCTAssertEqual(t1.speed, 100)
-        wait(for: simulatorTrain1, speed: 100)
+        XCTAssertEqual(t1.speed.kph, t1.speed.maxSpeed)
+        wait(for: simulatorTrain1, kph: t1.speed.maxSpeed)
         
         try trainSlider.setValue(0)
         try trainSlider.callOnEditingChanged()
-        XCTAssertEqual(t1.speed, 0)
-        wait(for: simulatorTrain1, speed: 0)
+        XCTAssertEqual(t1.speed.kph, 0)
+        wait(for: simulatorTrain1, kph: 0)
         
         doc.disable { }
     }
@@ -119,20 +124,20 @@ class SimulatorViewTests: RootViewTests {
         XCTAssertEqual(train.directionForward, directionForward)
     }
 
-    func wait(for train: Train, speed: UInt16) {
+    func wait(for train: Train, kph: TrainSpeed.UnitKph) {
         wait(for: {
-            return train.speed == speed
+            return train.speed.kph == kph
         }, timeout: 2.0)
 
-        XCTAssertEqual(train.speed, speed)
+        XCTAssertEqual(train.speed.kph, kph)
     }
 
-    func wait(for train: SimulatorTrain, speed: UInt16) {
+    func wait(for train: SimulatorTrain, kph: TrainSpeed.UnitKph) {
         wait(for: {
-            return train.speed == speed
+            return train.speed.kph == kph
         }, timeout: 2.0)
 
-        XCTAssertEqual(train.speed, speed)
+        XCTAssertEqual(train.speed.kph, kph)
     }
 
     func wait(for block: () -> Bool, timeout: TimeInterval) {

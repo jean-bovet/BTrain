@@ -77,10 +77,10 @@ extension Command {
         }
         if cmd == 0x04 {
             let address: UInt32 = UInt32(message.byte0) << 24 | UInt32(message.byte1) << 16 | UInt32(message.byte2) << 8 | UInt32(message.byte3) << 0
-            let speed: UInt16 = UInt16(message.byte4) << 8 | UInt16(message.byte5) << 0
+            let speedValue: UInt16 = UInt16(message.byte4) << 8 | UInt16(message.byte5) << 0
             return .speed(address: CommandLocomotiveAddress(address, nil),
-                          speed: speed,
-                          descriptor: CommandDescriptor(data: message.data, description: "\(cmd.toHex()) speed \(speed) for \(address.toHex())"))
+                          value: speedValue,
+                          descriptor: CommandDescriptor(data: message.data, description: "\(cmd.toHex()) speed \(speedValue) for \(address.toHex())"))
         }
         if cmd == 0x05 {
             let address: UInt32 = UInt32(message.byte0) << 24 | UInt32(message.byte1) << 16 | UInt32(message.byte2) << 8 | UInt32(message.byte3) << 0
@@ -142,8 +142,8 @@ extension MarklinCANMessage {
             return MarklinCANMessageFactory.stop()
         case .emergencyStop(address: let address, descriptor: _):
             return MarklinCANMessageFactory.emergencyStop(addr: address.actualAddress)
-        case .speed(address: let address, speed: let speed, descriptor: _):
-            return MarklinCANMessageFactory.speed(addr: address.actualAddress, speed: speed)
+        case .speed(address: let address, value: let value, descriptor: _):
+            return MarklinCANMessageFactory.speed(addr: address.actualAddress, speed: value)
         case .direction(address: let address, direction: let direction, descriptor: let descriptor):
             switch(direction) {
             case .forward:

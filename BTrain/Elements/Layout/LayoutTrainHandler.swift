@@ -20,7 +20,7 @@ enum Position {
 
 protocol LayoutTrainHandling {
     func setTrain(_ train: Train, toPosition position: Int) throws
-    func setTrain(_ train: Train, speed: UInt16) throws
+    func setTrain(_ train: Train, speed: TrainSpeed.UnitKph) throws
     func setTrain(_ train: Train, routeIndex: Int) throws
     
     // Returns the direction of the train within the block (not the train direction itself
@@ -56,7 +56,7 @@ extension Layout: LayoutTrainHandling {
         try trainHandling.setTrain(train, toPosition: position)
     }
     
-    func setTrain(_ train: Train, speed: UInt16) throws {
+    func setTrain(_ train: Train, speed: TrainSpeed.UnitKph) throws {
         try trainHandling.setTrain(train, speed: speed)
     }
 
@@ -123,12 +123,12 @@ final class LayoutTrainHandler: LayoutTrainHandling {
         train.position = position
     }
     
-    func setTrain(_ train: Train, speed: UInt16) throws {
+    func setTrain(_ train: Train, speed: TrainSpeed.UnitKph) throws {
         guard let train = layout.train(for: train.id) else {
             throw LayoutError.trainNotFound(trainId: train.id)
         }
         
-        train.speed = speed
+        train.speed.kph = speed
         layout.executor?.sendTrainSpeed(train: train)
         
         layout.didChange()
@@ -192,7 +192,7 @@ final class LayoutTrainHandler: LayoutTrainHandling {
         guard let train = layout.train(for: train.id) else {
             throw LayoutError.trainNotFound(trainId: train.id)
         }
-        train.speed = 0
+        train.speed.kph = 0
         layout.executor?.sendTrainSpeed(train: train)
     }
 

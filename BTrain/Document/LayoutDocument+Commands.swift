@@ -108,7 +108,7 @@ extension LayoutDocument {
         interface.register(forSpeedChange: { address, speed in
             DispatchQueue.main.async {
                 if let train = self.layout.trains.find(address: address.address) {
-                    train.speed = speed
+                    train.speed.value = speed
                 }
             }
         })

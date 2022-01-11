@@ -16,6 +16,8 @@ import ViewInspector
 
 @testable import BTrain
 
+extension TrainControlSpeedView: Inspectable { }
+
 class TrainControlListViewTests: RootViewTests {
     
     func testList() throws {
@@ -34,9 +36,11 @@ class TrainControlListViewTests: RootViewTests {
         // Train Controls
         let trainControlsView = try trainView.vStack().tupleView(1).view(TrainControlView.self, 0)
                 
-        XCTAssertEqual(try trainControlsView.vStack().hStack(0).text(2).string(), "0 km/h")
-        layout.trains[0].speed = 300
-        XCTAssertEqual(try trainControlsView.vStack().hStack(0).text(2).string(), "300 km/h")
+        let trainControlSpeedView = try trainControlsView.find(TrainControlSpeedView.self)
+        
+        XCTAssertEqual(try trainControlSpeedView.hStack().text(1).string(), "0 km/h")
+        layout.trains[0].speed.kph = 78
+        XCTAssertEqual(try trainControlSpeedView.hStack().text(1).string(), "78 km/h")
 
         // TrainRouteView
         let trainRouteView = try trainView.vStack().tupleView(1).view(TrainControlRouteView.self, 1)

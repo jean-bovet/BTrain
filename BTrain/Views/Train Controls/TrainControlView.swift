@@ -12,6 +12,36 @@
 
 import SwiftUI
 
+struct TrainControlSpeedView: View {
+
+    let layout: Layout
+    let train: Train
+    
+    @ObservedObject var speed: TrainSpeed
+    @Binding var errorStatus: String?
+
+    func trainSpeedChanged() {
+        do {
+            try layout.setTrain(train, speed: speed.kph)
+            errorStatus = nil
+        } catch {
+            errorStatus = error.localizedDescription
+        }
+    }
+    
+    var body: some View {
+        HStack {
+            Slider(value: $speed.kphAsDouble, in: 0...Double(speed.maxSpeed)) {
+                
+            } onEditingChanged: { editing in
+                trainSpeedChanged()
+            }
+            
+            Text("\(Int(speed.kph)) km/h")
+        }
+    }
+}
+
 struct TrainControlView: View {
     
     @ObservedObject var document: LayoutDocument
@@ -30,15 +60,6 @@ struct TrainControlView: View {
         }        
     }
     
-    func trainSpeedChanged() {
-        do {
-            try document.layout.setTrain(train, speed: train.speed)
-            errorStatus = nil
-        } catch {
-            errorStatus = error.localizedDescription
-        }
-    }
-    
     var body: some View {
         VStack {
             HStack {
@@ -52,13 +73,7 @@ struct TrainControlView: View {
                     }
                 }.buttonStyle(.borderless)
                 
-                Slider(value: $train.speedAsDouble, in: 0...100) {
-                    
-                } onEditingChanged: { editing in
-                    trainSpeedChanged()
-                }
-                
-                Text("\(Int(train.speed)) km/h")
+                TrainControlSpeedView(layout: document.layout, train: train, speed: train.speed, errorStatus: $errorStatus)
             }.disabled(!document.connected)
             if let errorStatus = errorStatus {
                 Text(errorStatus)
@@ -70,16 +85,16 @@ struct TrainControlView: View {
     }
 }
 
-private extension Train {
+private extension TrainSpeed {
     
     // Necessary because SwiftUI Slider requires a Double
     // while speed is UInt16.
-    var speedAsDouble: Double {
+    var kphAsDouble: Double {
         get {
-            return Double(self.speed)
+            return Double(self.kph)
         }
         set {
-            self.speed = UInt16(newValue)
+            self.kph = UInt16(newValue)
         }
     }
     

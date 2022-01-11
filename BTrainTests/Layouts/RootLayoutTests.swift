@@ -103,7 +103,7 @@ extension Layout {
 
             train.routeId = route.id
             train.routeIndex = 0
-            train.speed = 0
+            train.speed.kph = 0
         }
     }
 
