@@ -14,6 +14,9 @@ import Foundation
 import Gzip
 import Combine
 
+// This class simulates the Marklin Central Station 3 in order for BTrain
+// to work offline. It does so by processing the most common commands and
+// driving automatically trains that are on enabled routes.
 final class MarklinCommandSimulator: ObservableObject {
     
     let layout: Layout

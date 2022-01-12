@@ -13,7 +13,8 @@
 import Foundation
 
 // A train is an element that moves from one block to another.
-// It can have an associated route to follow.
+// Currently we make no difference between a train and a locomotive,
+// they are the same.
 final class Train: Element, ObservableObject {
     // Unique identifier of the train
     let id: Identifier<Train>

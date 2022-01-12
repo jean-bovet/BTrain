@@ -12,24 +12,33 @@
 
 import Foundation
 
-// This type defines the speed value express in the unit that the CAN-message
-// expects the speed to be provided. This value is specific to each Digital Controller,
-// for example for the CS3, the speed value is expected to between 0 and 1000.
-struct SpeedValue: Equatable {
-    var value: UInt16
-    static let zero = SpeedValue(value: 0)
+// The direction of travel of a train within a block
+enum Direction: String, Codable, CaseIterable {
+    // The train is traveling from the side "next" to "previous"
+    case previous
+    
+    // The train is traveling from the side "previous" to "next",
+    // which we call the natural direction of traveling
+    case next
+    
+    var opposite: Direction {
+        switch(self) {
+        case .next:
+            return .previous
+        case .previous:
+            return .next
+        }
+    }
 }
 
-// Define the type of speed when expressed in number of decoder steps
-struct SpeedStep: Equatable {
-    var value: UInt16
-    static let zero = SpeedStep(value: 0)
-}
+extension Direction: CustomStringConvertible {
 
-struct CommandLocomotive {
-    let uid: UInt32?
-    let name: String?
-    let address: UInt32?
-    let maxSpeed: UInt32?
-    let decoderType: DecoderType
+    var description: String {
+        switch(self) {
+        case .previous:
+            return "Previous"
+        case .next:
+            return "Next"
+        }
+    }
 }

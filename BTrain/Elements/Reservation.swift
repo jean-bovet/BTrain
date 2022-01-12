@@ -12,6 +12,7 @@
 
 import Foundation
 
+// Defines a specific reservation of a train in a block or turnout.
 struct Reservation: Codable, Equatable, CustomStringConvertible {
     let trainId: Identifier<Train>
     
@@ -29,36 +30,5 @@ struct Reservation: Codable, Equatable, CustomStringConvertible {
 
     var description: String {
         return "Reservation(train=\(trainId), direction=\(direction.rawValue))"
-    }
-}
-
-// The direction of travel of a train within a block
-enum Direction: String, Codable, CaseIterable {
-    // The train is traveling from the side "next" to "previous"
-    case previous
-    
-    // The train is traveling from the side "previous" to "next",
-    // which we call the natural direction of traveling
-    case next
-    
-    var opposite: Direction {
-        switch(self) {
-        case .next:
-            return .previous
-        case .previous:
-            return .next
-        }
-    }
-}
-
-extension Direction: CustomStringConvertible {
-
-    var description: String {
-        switch(self) {
-        case .previous:
-            return "Previous"
-        case .next:
-            return "Next"
-        }
     }
 }

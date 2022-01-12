@@ -12,6 +12,9 @@
 
 import Foundation
 
+// This class defines the train in the simulator: each train in the simulator
+// refers to the original train the layout but has its own direction and speed
+// that can only be changed via the CommandInterface commands (like a real CS 3).
 final class SimulatorTrain: ObservableObject, Element {
     let id: Identifier<Train>
     let train: Train

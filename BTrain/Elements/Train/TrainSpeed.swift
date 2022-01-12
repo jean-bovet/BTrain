@@ -1,19 +1,21 @@
+// Copyright 2021-22 Jean Bovet
 //
-//  TrainSpeed.swift
-//  BTrain
+// Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"),
+// to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense,
+// and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 //
-//  Created by Jean Bovet on 1/10/22.
+// The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 //
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+// WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 import Foundation
 import SwiftCubicSpline
 
-// This class handles the speed of a specific train.
-// The speed can be expressed in various units:
-// - kph: this is the value that is being stored on the disk
-// - steps: the number of steps for the corresponding kph value, which depends on the decoder type
-// - value: the value sent to the Digital Controller, which depends on the decoder type
-final class TrainSpeed: ObservableObject, Equatable, Codable {
+// This class defines the speed of a train. The speed can be expressed either in kph
+// or number of steps which depends on the decoder type.
+final class TrainSpeed: ObservableObject, Equatable {
     
     // Type definition for the speed
     typealias UnitKph = UInt16
@@ -91,23 +93,6 @@ final class TrainSpeed: ObservableObject, Equatable, Codable {
         self.steps = steps
     }
 
-    enum CodingKeys: CodingKey {
-      case decoderType, kph
-    }
-
-    convenience init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        self.init(decoderType: try container.decode(DecoderType.self, forKey: CodingKeys.decoderType))
-        self.updateSpeedStepsTable()
-        self.kph = try container.decode(UInt16.self, forKey: CodingKeys.kph)
-    }
-    
-    func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encode(decoderType, forKey: CodingKeys.decoderType)
-        try container.encode(kph, forKey: CodingKeys.kph)
-    }
-    
     func updateSpeedStepsTable() {
         // Reset the table if the number of steps have changed,
         // usually when the decoder type has been changed.
@@ -132,4 +117,23 @@ final class TrainSpeed: ObservableObject, Equatable, Codable {
         }
     }
 
+}
+
+extension TrainSpeed: Codable {
+    enum CodingKeys: CodingKey {
+      case decoderType, kph
+    }
+
+    convenience init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.init(decoderType: try container.decode(DecoderType.self, forKey: CodingKeys.decoderType))
+        self.updateSpeedStepsTable()
+        self.kph = try container.decode(UInt16.self, forKey: CodingKeys.kph)
+    }
+    
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(decoderType, forKey: CodingKeys.decoderType)
+        try container.encode(kph, forKey: CodingKeys.kph)
+    }
 }

@@ -33,6 +33,7 @@
 		A72180852760428E00831998 /* Socket.swift in Sources */ = {isa = PBXBuildFile; fileRef = A72180842760428E00831998 /* Socket.swift */; };
 		A7218087276055AD00831998 /* FeedbackTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7218086276055AD00831998 /* FeedbackTests.swift */; };
 		A72180892760578000831998 /* RouteTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A72180882760578000831998 /* RouteTests.swift */; };
+		A7281840278E9EDC007BE810 /* Direction.swift in Sources */ = {isa = PBXBuildFile; fileRef = A728183F278E9EDC007BE810 /* Direction.swift */; };
 		A73AFE862726594600E1ED21 /* BTrainApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A73AFE852726594600E1ED21 /* BTrainApp.swift */; };
 		A73AFE8A2726594800E1ED21 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A73AFE892726594800E1ED21 /* Assets.xcassets */; };
 		A73AFE8D2726594800E1ED21 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A73AFE8C2726594800E1ED21 /* Preview Assets.xcassets */; };
@@ -246,6 +247,7 @@
 		A72180842760428E00831998 /* Socket.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Socket.swift; sourceTree = "<group>"; };
 		A7218086276055AD00831998 /* FeedbackTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedbackTests.swift; sourceTree = "<group>"; };
 		A72180882760578000831998 /* RouteTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteTests.swift; sourceTree = "<group>"; };
+		A728183F278E9EDC007BE810 /* Direction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Direction.swift; sourceTree = "<group>"; };
 		A73AFE822726594600E1ED21 /* BTrain.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BTrain.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A73AFE852726594600E1ED21 /* BTrainApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BTrainApp.swift; sourceTree = "<group>"; };
 		A73AFE892726594800E1ED21 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -748,6 +750,7 @@
 			children = (
 				A7F779F92734A8C500E73275 /* Element.swift */,
 				A7710E5D277850F000C08150 /* Reservation.swift */,
+				A728183F278E9EDC007BE810 /* Direction.swift */,
 				A74CCC6D272A5A08004E58F5 /* Route.swift */,
 				A7F779CD272B445B00E73275 /* Feedback.swift */,
 				A74CCC69272A59F9004E58F5 /* Block.swift */,
@@ -1109,6 +1112,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				A73AFEB127265A2300E1ED21 /* MarklinCANMessage.swift in Sources */,
+				A7281840278E9EDC007BE810 /* Direction.swift in Sources */,
 				A7907993277EC86200771A60 /* DocumentToolbarContent.swift in Sources */,
 				A7218081275F0BDB00831998 /* Turnout+State.swift in Sources */,
 				A7710E75277A7AAC00C08150 /* Layout2Swift.swift in Sources */,
