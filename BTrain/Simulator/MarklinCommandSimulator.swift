@@ -130,7 +130,7 @@ final class MarklinCommandSimulator: ObservableObject {
         }
     }
     
-    func speedChanged(address: UInt32, decoderType: DecoderType?, value: UInt16) {
+    func speedChanged(address: UInt32, decoderType: DecoderType?, value: SpeedValue) {
         for train in trains {
             if train.train.actualAddress == address.actualAddress(for: decoderType) {
                 let steps = interface.speedSteps(for: value, decoder: train.train.decoder)
@@ -203,7 +203,7 @@ final class MarklinCommandSimulator: ObservableObject {
     
     func setTrainSpeed(train: SimulatorTrain) {
         let value = interface.speedValue(for: train.speed.steps, decoder: train.train.decoder)
-        let message = MarklinCANMessageFactory.speed(addr: train.train.actualAddress, speed: value)
+        let message = MarklinCANMessageFactory.speed(addr: train.train.actualAddress, speed: value.value)
         send(message)
     }
     

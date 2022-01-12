@@ -11,7 +11,7 @@ struct TrainSpeedView: View {
     
     @ObservedObject var trainSpeed: TrainSpeed
     
-    @State private var selection: TrainSpeed.SpeedStep.ID?
+    @State private var selection: TrainSpeed.SpeedTableEntry.ID?
     
     func speedPath(in size: CGSize) -> Path {
         var p = Path()
@@ -32,7 +32,7 @@ struct TrainSpeedView: View {
         HStack {
             Table(selection: $selection) {
                 TableColumn("Steps") { steps in
-                    Text("\(steps.steps.wrappedValue)")
+                    Text("\(steps.steps.value.wrappedValue)")
                 }.width(80)
 
                 TableColumn("Speed (km/h)") { step in

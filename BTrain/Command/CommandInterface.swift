@@ -17,14 +17,17 @@ protocol CommandInterface {
     func disconnect(_ completion: @escaping CompletionBlock)
     
     func execute(command: Command, onCompletion: @escaping () -> Void)
-
-    func speedValue(for steps: UInt16, decoder: DecoderType) -> UInt16
-    func speedSteps(for value: UInt16, decoder: DecoderType) -> UInt16
+    
+    // Returns the speed value given the number of steps and the decoder type
+    func speedValue(for steps: SpeedStep, decoder: DecoderType) -> SpeedValue
+    
+    // Returns the number of decoder steps given the speed value and decoder type
+    func speedSteps(for value: SpeedValue, decoder: DecoderType) -> SpeedStep
     
     typealias FeedbackChangeCallback = (_ deviceID: UInt16, _ contactID: UInt16, _ value: UInt8) -> Void
     func register(forFeedbackChange: @escaping FeedbackChangeCallback)
 
-    typealias SpeedChangeCallback = (_ address: UInt32, _ decoderType: DecoderType?, _ value: UInt16) -> Void
+    typealias SpeedChangeCallback = (_ address: UInt32, _ decoderType: DecoderType?, _ value: SpeedValue) -> Void
     func register(forSpeedChange: @escaping SpeedChangeCallback)
 
     typealias DirectionChangeCallback = (_ address: UInt32, _ decoderType: DecoderType?, _ direction: Command.Direction) -> Void

@@ -52,7 +52,7 @@ class TrainTests: XCTestCase {
         let s1 = TrainSpeed(kph: 100, decoderType: .MFX)
         assertSpeed(s1, mi, kph: 100, steps: 63, value: 500)
         
-        let s2 = TrainSpeed(steps: 63, decoderType: .MFX)
+        let s2 = TrainSpeed(steps: SpeedStep(value: 63), decoderType: .MFX)
         assertSpeed(s2, mi, kph: 100, steps: 63, value: 500)
     }
     
@@ -74,38 +74,38 @@ class TrainTests: XCTestCase {
         t1.speed.kph = 300
         assertSpeed(t1.speed, mi, kph: 200, steps: 126, value: 1000)
 
-        t1.speed.steps = 0
+        t1.speed.steps = SpeedStep.zero
         assertSpeed(t1.speed, mi, kph: 0, steps: 0, value: 0)
         
-        t1.speed.steps = 63
+        t1.speed.steps = SpeedStep(value: 63)
         assertSpeed(t1.speed, mi, kph: 100, steps: 63, value: 500)
 
-        t1.speed.steps = 126
+        t1.speed.steps = SpeedStep(value: 126)
         assertSpeed(t1.speed, mi, kph: 200, steps: 126, value: 1000)
 
-        t1.speed.steps = 200
+        t1.speed.steps = SpeedStep(value: 200)
         assertSpeed(t1.speed, mi, kph: 200, steps: 126, value: 1000)
 
         t1.decoder = .MM
         XCTAssertEqual(t1.speed.speedTable.count, Int(DecoderType.MM.steps) + 1)
         
         t1.speed.kph = 0
-        XCTAssertEqual(t1.speed.steps, 0)
+        XCTAssertEqual(t1.speed.steps.value, 0)
         
         t1.speed.kph = 100
-        XCTAssertEqual(t1.speed.steps, 7)
+        XCTAssertEqual(t1.speed.steps.value, 7)
 
         t1.speed.kph = 200
-        XCTAssertEqual(t1.speed.steps, 14)
+        XCTAssertEqual(t1.speed.steps.value, 14)
     }
     
-    func assertSpeed(_ speed: TrainSpeed, _ interface: CommandInterface, kph: TrainSpeed.UnitKph, steps: TrainSpeed.UnitStep, value: UInt16) {
+    func assertSpeed(_ speed: TrainSpeed, _ interface: CommandInterface, kph: TrainSpeed.UnitKph, steps: UInt16, value: UInt16) {
         XCTAssertEqual(speed.kph, kph)
-        XCTAssertEqual(speed.steps, steps)
+        XCTAssertEqual(speed.steps.value, steps)
         
         let actualValue = interface.speedValue(for: speed.steps, decoder: speed.decoderType)
-        XCTAssertEqual(actualValue, value)
-        XCTAssertEqual(interface.speedSteps(for: actualValue, decoder: speed.decoderType), steps)
+        XCTAssertEqual(actualValue.value, value)
+        XCTAssertEqual(interface.speedSteps(for: actualValue, decoder: speed.decoderType).value, steps)
     }
     
 }

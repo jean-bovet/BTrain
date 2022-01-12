@@ -112,14 +112,14 @@ extension MarklinInterface: CommandInterface {
     // Maximum value of the speed parameters that can be specified in the CAN message.
     static let maxCANSpeedValue = 1000
 
-    func speedValue(for steps: UInt16, decoder: DecoderType) -> UInt16 {
-        let value = Double(steps) * Double(MarklinInterface.maxCANSpeedValue) / Double(decoder.steps)
-        return UInt16(value)
+    func speedValue(for steps: SpeedStep, decoder: DecoderType) -> SpeedValue {
+        let value = Double(steps.value) * Double(MarklinInterface.maxCANSpeedValue) / Double(decoder.steps)
+        return SpeedValue(value: UInt16(value))
     }
     
-    func speedSteps(for value: UInt16, decoder: DecoderType) -> UInt16 {
-        let steps = TrainSpeed.UnitStep(Double(value) / Double(MarklinInterface.maxCANSpeedValue) * Double(decoder.steps))
-        return steps
+    func speedSteps(for value: SpeedValue, decoder: DecoderType) -> SpeedStep {
+        let steps = Double(value.value) / Double(MarklinInterface.maxCANSpeedValue) * Double(decoder.steps)
+        return SpeedStep(value: UInt16(steps))
     }
 
     func register(forFeedbackChange callback: @escaping FeedbackChangeCallback) {

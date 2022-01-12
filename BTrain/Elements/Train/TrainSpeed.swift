@@ -17,7 +17,6 @@ final class TrainSpeed: ObservableObject, Equatable, Codable {
     
     // Type definition for the speed
     typealias UnitKph = UInt16
-    typealias UnitStep = UInt16
 
     // A speed equality is using only the kph value
     static func == (lhs: TrainSpeed, rhs: TrainSpeed) -> Bool {
@@ -45,16 +44,16 @@ final class TrainSpeed: ObservableObject, Equatable, Codable {
     @Published var maxSpeed: UnitKph = 200
         
     // Number of steps, for the current encoder type, corresponding to the current kph value.
-    var steps: UnitStep {
+    var steps: SpeedStep {
         get {
             // Use a cublic spline interpolation to get the most accurate steps number.
             let csp = CubicSpline(x: speedTable.map { Double($0.speed) },
-                                  y: speedTable.map { Double($0.steps) })
-            return TrainSpeed.UnitStep(csp[x: Double(kph)])
+                                  y: speedTable.map { Double($0.steps.value) })
+            return SpeedStep(value: UInt16(csp[x: Double(kph)]))
         }
         set {
-            if newValue < speedTable.count - 1 {
-                kph = speedTable[Int(newValue)].speed
+            if newValue.value < speedTable.count - 1 {
+                kph = speedTable[Int(newValue.value)].speed
             } else {
                 kph = speedTable.last?.speed ?? 0
             }
@@ -63,19 +62,19 @@ final class TrainSpeed: ObservableObject, Equatable, Codable {
 
     // Structure defining the number of steps corresponding
     // to a particular speed in kph.
-    struct SpeedStep: Identifiable {
-        var id: UnitStep {
-            return steps
+    struct SpeedTableEntry: Identifiable {
+        var id: UInt16 {
+            return steps.value
         }
         
-        var steps: UnitKph
-        var speed: UnitStep
+        var steps: SpeedStep
+        var speed: UnitKph
     }
 
     // Array of correspondance between the number of steps
     // and the speed in kph. The number of steps is dependent
     // on the type of decoder.
-    @Published var speedTable = [SpeedStep]()
+    @Published var speedTable = [SpeedTableEntry]()
         
     init(decoderType: DecoderType) {
         self.decoderType = decoderType
@@ -87,7 +86,7 @@ final class TrainSpeed: ObservableObject, Equatable, Codable {
         self.kph = kph
     }
 
-    convenience init(steps: UInt16, decoderType: DecoderType) {
+    convenience init(steps: SpeedStep, decoderType: DecoderType) {
         self.init(decoderType: decoderType)
         self.updateSpeedStepsTable()
         self.steps = steps
@@ -120,15 +119,15 @@ final class TrainSpeed: ObservableObject, Equatable, Codable {
         
         // Always sort the table by ascending order of the number of steps
         speedTable.sort { ss1, ss2 in
-            return ss1.steps < ss2.steps
+            return ss1.steps.value < ss2.steps.value
         }
         
         let stepsCount = decoderType.steps
         for index in 0...stepsCount {
-            let speedStep = UnitStep(index)
+            let speedStep = SpeedStep(value: UInt16(index))
             if index >= speedTable.count || speedTable[Int(index)].steps != speedStep {
-                let entry = SpeedStep(steps: speedStep,
-                                      speed: UnitKph(Double(maxSpeed)/Double(stepsCount) * Double(index)))
+                let entry = SpeedTableEntry(steps: speedStep,
+                                            speed: UnitKph(Double(maxSpeed)/Double(stepsCount) * Double(index)))
                 speedTable.insert(entry, at: Int(index))
             }
         }

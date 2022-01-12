@@ -28,12 +28,12 @@ final class ProxyCommandInterface: CommandInterface {
         interface?.execute(command: command, onCompletion: onCompletion)
     }
     
-    func speedValue(for steps: UInt16, decoder: DecoderType) -> UInt16 {
-        return interface?.speedValue(for: steps, decoder: decoder) ?? 0
+    func speedValue(for steps: SpeedStep, decoder: DecoderType) -> SpeedValue {
+        return interface?.speedValue(for: steps, decoder: decoder) ?? .zero
     }
     
-    func speedSteps(for value: UInt16, decoder: DecoderType) -> UInt16 {
-        return interface?.speedSteps(for: value, decoder: decoder) ?? 0
+    func speedSteps(for value: SpeedValue, decoder: DecoderType) -> SpeedStep {
+        return interface?.speedSteps(for: value, decoder: decoder) ?? .zero
     }
 
     func register(forFeedbackChange: @escaping FeedbackChangeCallback) {
