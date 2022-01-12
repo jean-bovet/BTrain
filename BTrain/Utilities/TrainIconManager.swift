@@ -26,7 +26,7 @@ final class TrainIconManager {
             return image
         }
         
-        guard let imageURL = secureURL(from: train.iconUrlData) else {
+        guard let imageURL = secureURL(from: train) else {
             return nil
         }
         
@@ -57,16 +57,15 @@ final class TrainIconManager {
         }
     }
     
-    private func secureURL(from bookmarkData: Data?) -> URL? {
-        guard let bookmarkData = bookmarkData else {
+    private func secureURL(from train: Train) -> URL? {
+        guard let bookmarkData = train.iconUrlData else {
             return nil
         }
         do {
             var isStale = false
             let url = try URL(resolvingBookmarkData: bookmarkData, options: .withSecurityScope, relativeTo: nil, bookmarkDataIsStale: &isStale)
             if isStale {
-                // TODO: bookmarks could become stale as the OS changes
-//                train.iconUrlData = bookmarkDataFor(url)
+                train.iconUrlData = bookmarkDataFor(url)
             }
             return url
         } catch {
