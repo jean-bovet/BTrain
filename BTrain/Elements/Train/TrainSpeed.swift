@@ -39,7 +39,6 @@ final class TrainSpeed: ObservableObject, Equatable, Codable {
         }
     }
     
-    // TODO: read from locomotives.cs2 as well
     // Maximum speed of the train in kph
     @Published var maxSpeed: UnitKph = 200
         

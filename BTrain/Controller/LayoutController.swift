@@ -47,7 +47,6 @@ final class LayoutController: ObservableObject {
     let debounceFor: RunLoop.SchedulerTimeType.Stride = .milliseconds(100)
     
     func registerForFeedbackChanges() {
-        // TODO: use LayoutObserver
         for feedback in layout.feedbacks {
             let cancellable = feedback.$detected
                 .dropFirst()
@@ -162,6 +161,7 @@ final class LayoutController: ObservableObject {
         interface.queryLocomotives(command: .locomotives()) { locomotives in
             self.layout.freeAllTrains(removeFromLayout: true)
 
+            // TODO: keep icon and customization as much as possible
             let trains: [Train] = locomotives.map { loc in
                 let train = Train()
                 if let name = loc.name {
@@ -169,6 +169,9 @@ final class LayoutController: ObservableObject {
                 }
                 if let address = loc.address {
                     train.address = address
+                }
+                if let maxSpeed = loc.maxSpeed {
+                    train.speed.maxSpeed = TrainSpeed.UnitKph(maxSpeed)
                 }
                 train.decoder = loc.decoderType
                 return train

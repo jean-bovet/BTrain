@@ -153,7 +153,7 @@ extension MarklinInterface: CommandInterface {
 extension Locomotive {
     
     var commandLocomotive: CommandLocomotive {
-        CommandLocomotive(uid: uid, name: name, address: address, decoderType: type?.locomotiveDecoderType ?? .MFX)
+        CommandLocomotive(uid: uid, name: name, address: address, maxSpeed: vmax, decoderType: type?.locomotiveDecoderType ?? .MFX)
     }
 }
 

@@ -20,3 +20,11 @@ struct SpeedStep: Equatable {
     var value: UInt16
     static let zero = SpeedStep(value: 0)
 }
+
+struct CommandLocomotive {
+    let uid: UInt32?
+    let name: String?
+    let address: UInt32?
+    let maxSpeed: UInt32?
+    let decoderType: DecoderType
+}

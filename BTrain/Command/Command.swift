@@ -110,10 +110,3 @@ struct CommandTurnoutAddress: Codable, Hashable, Equatable {
         self.protocol = `protocol`
     }
 }
-
-struct CommandLocomotive {
-    let uid: UInt32?
-    let name: String?
-    let address: UInt32?
-    let decoderType: DecoderType
-}

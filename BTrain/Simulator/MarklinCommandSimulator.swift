@@ -24,6 +24,7 @@ final class MarklinCommandSimulator: ObservableObject {
     
     @Published var trains = [SimulatorTrain]()
 
+    private var trainArrayChangesCancellable: AnyCancellable?
     private var cancellables = [AnyCancellable]()
 
     private var server: Server?
@@ -47,12 +48,19 @@ final class MarklinCommandSimulator: ObservableObject {
             .removeDuplicates()
             .receive(on: RunLoop.main)
             .sink { value in
+                // When the array of trains changes, we need
+                // to re-register for changes for each individual trains
+                // because these instances have likely changed.
+                self.registerForTrainBlockChange()
+                
+                // Then update the list of trains
                 self.updateListOfTrains()
             }
-        cancellables.append(cancellable)
+        trainArrayChangesCancellable = cancellable
     }
 
     func registerForTrainBlockChange() {
+        cancellables.removeAll()
         for train in layout.trains {
             let cancellable = train.$blockId
                 .removeDuplicates()

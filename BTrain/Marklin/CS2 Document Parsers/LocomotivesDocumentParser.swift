@@ -17,6 +17,7 @@ struct Locomotive {
     var name: String?
     var address: UInt32?
     var type: String?
+    var vmax: UInt32?
 }
 
 final class LocomotivesDocumentParser: CS2DocumentParser {
@@ -98,6 +99,9 @@ final class LocomotivesDocumentParser: CS2DocumentParser {
             }
             if let type = valueFor(field: ".typ=") {
                 loc.type = type
+            }
+            if let vmax = valueFor(field: ".vmax=") {
+                loc.vmax = UInt32(vmax)
             }
             lineIndex += 1
         }

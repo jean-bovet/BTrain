@@ -14,7 +14,7 @@ import SwiftUI
 
 struct SimulatorView: View {
     
-    @ObservedObject var  simulator: MarklinCommandSimulator
+    @ObservedObject var simulator: MarklinCommandSimulator
     
     @State private var trainForward = true
     

@@ -34,7 +34,9 @@ struct TrainDetailsView: View {
 
                     TextField("Address:", value: $train.address,
                               format: .number)
-                                
+                 
+                    TextField("Max Speed:", value: $train.speed.maxSpeed,
+                              format: .number)
                 }
             }
             
