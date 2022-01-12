@@ -19,11 +19,12 @@ class MarklinInterfaceTests: XCTestCase {
     var simulator: MarklinCommandSimulator!
     
     override func setUp() {
-        simulator = MarklinCommandSimulator(layout: Layout())
-        simulator.start()
-        
         let connectedExpection = XCTestExpectation()
         mi = MarklinInterface(server: "localhost", port: 15731)
+        
+        simulator = MarklinCommandSimulator(layout: Layout(), interface: mi)
+        simulator.start()
+
         mi.connect {
             connectedExpection.fulfill()
         } onError: { error in

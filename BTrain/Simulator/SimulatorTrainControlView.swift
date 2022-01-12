@@ -24,7 +24,7 @@ struct SimulatorTrainSpeedView: View {
                 in: 0...Double(speed.maxSpeed)
             ) {
             } onEditingChanged: { editing in
-                simulator.setTrainSpeed(train: train, value: train.speed.value)
+                simulator.setTrainSpeed(train: train)
             }
             
             Text("\(Int(speed.kph)) km/h")
@@ -74,7 +74,7 @@ struct SimulatorTrainControlView_Previews: PreviewProvider {
     static let layout = LayoutACreator().newLayout()
     
     static var previews: some View {
-        SimulatorTrainControlView(simulator: MarklinCommandSimulator(layout: layout),
+        SimulatorTrainControlView(simulator: MarklinCommandSimulator(layout: layout, interface: MarklinInterface(server: "", port: 0)),
                                   train: .init(train: layout.trains[0]))
     }
 }

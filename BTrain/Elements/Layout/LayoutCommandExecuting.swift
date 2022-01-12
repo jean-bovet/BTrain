@@ -63,7 +63,8 @@ final class LayoutCommandExecutor: LayoutCommandExecuting {
     
     func sendTrainSpeed(train: Train) {
         BTLogger.debug("Train \(train.name) changed speed to \(train.speed)", layout, train)
-        interface.execute(command: .speed(address: train.address, decoderType: train.decoder, value: train.speed.value)) {}
+        let value = interface.speedValue(for: train.speed.steps, decoder: train.decoder)
+        interface.execute(command: .speed(address: train.address, decoderType: train.decoder, value: value)) {}
     }
 }
 

@@ -79,13 +79,15 @@ final class LayoutDocument: ObservableObject {
     
     init(layout: Layout) {
         self.layout = layout
+        
+        let interface = ProxyCommandInterface()
+        self.interface = interface
+
         self.layoutDiagnostics = LayoutDiagnostic(layout: layout)
-        self.simulator = MarklinCommandSimulator(layout: layout)
+        self.simulator = MarklinCommandSimulator(layout: layout, interface: interface)
         self.trainIconManager = TrainIconManager(layout: layout)
         self.switchboard = SwitchBoardFactory.generateSwitchboard(layout: layout)
 
-        let interface = ProxyCommandInterface()
-        self.interface = interface
         self.layoutController = LayoutController(layout: layout, interface: interface)
         layout.executor = LayoutCommandExecutor(layout: layout, interface: interface)
     }

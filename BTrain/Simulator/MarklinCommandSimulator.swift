@@ -17,6 +17,7 @@ import Combine
 final class MarklinCommandSimulator: ObservableObject {
     
     let layout: Layout
+    let interface: CommandInterface
     
     @Published var started = false
     @Published var enabled = false
@@ -33,8 +34,9 @@ final class MarklinCommandSimulator: ObservableObject {
         return server?.connections.first
     }
     
-    init(layout: Layout) {
+    init(layout: Layout, interface: CommandInterface) {
         self.layout = layout
+        self.interface = interface
         
         registerForTrainChanges()
         registerForTrainBlockChange()
@@ -131,7 +133,8 @@ final class MarklinCommandSimulator: ObservableObject {
     func speedChanged(address: UInt32, decoderType: DecoderType?, value: UInt16) {
         for train in trains {
             if train.train.actualAddress == address.actualAddress(for: decoderType) {
-                train.speed = TrainSpeed(value: value, decoderType: train.train.decoder)
+                let steps = interface.speedSteps(for: value, decoder: train.train.decoder)
+                train.speed.steps = steps
             }
         }
     }
@@ -198,7 +201,8 @@ final class MarklinCommandSimulator: ObservableObject {
         send(message)
     }
     
-    func setTrainSpeed(train: SimulatorTrain, value: UInt16) {
+    func setTrainSpeed(train: SimulatorTrain) {
+        let value = interface.speedValue(for: train.speed.steps, decoder: train.train.decoder)
         let message = MarklinCANMessageFactory.speed(addr: train.train.actualAddress, speed: value)
         send(message)
     }

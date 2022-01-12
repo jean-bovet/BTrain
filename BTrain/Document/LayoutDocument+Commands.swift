@@ -105,10 +105,10 @@ extension LayoutDocument {
     }
                 
     func registerForSpeedChange() {
-        interface.register(forSpeedChange: { address, decoder, speed in
+        interface.register(forSpeedChange: { address, decoder, value in
             DispatchQueue.main.async {
                 if let train = self.layout.trains.find(address: address, decoder: decoder) {
-                    train.speed.value = speed
+                    train.speed.steps = self.interface.speedSteps(for: value, decoder: train.decoder)
                 }
             }
         })

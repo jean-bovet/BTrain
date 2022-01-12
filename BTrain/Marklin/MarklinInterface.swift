@@ -98,7 +98,7 @@ final class MarklinInterface {
 
 }
 
-extension MarklinInterface: CommandInterface {    
+extension MarklinInterface: CommandInterface {
         
     func disconnect(_ completion: @escaping CompletionBlock) {
         disconnectCompletionBlocks = completion
@@ -108,7 +108,20 @@ extension MarklinInterface: CommandInterface {
     func execute(command: Command, onCompletion: @escaping () -> Void) {
         send(message: MarklinCANMessage.from(command: command), onCompletion: onCompletion)
     }
+
+    // Maximum value of the speed parameters that can be specified in the CAN message.
+    static let maxCANSpeedValue = 1000
+
+    func speedValue(for steps: UInt16, decoder: DecoderType) -> UInt16 {
+        let value = Double(steps) * Double(MarklinInterface.maxCANSpeedValue) / Double(decoder.steps)
+        return UInt16(value)
+    }
     
+    func speedSteps(for value: UInt16, decoder: DecoderType) -> UInt16 {
+        let steps = TrainSpeed.UnitStep(Double(value) / Double(MarklinInterface.maxCANSpeedValue) * Double(decoder.steps))
+        return steps
+    }
+
     func register(forFeedbackChange callback: @escaping FeedbackChangeCallback) {
         feedbackChangeCallbacks.append(callback)
     }

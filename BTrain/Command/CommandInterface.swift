@@ -18,6 +18,9 @@ protocol CommandInterface {
     
     func execute(command: Command, onCompletion: @escaping () -> Void)
 
+    func speedValue(for steps: UInt16, decoder: DecoderType) -> UInt16
+    func speedSteps(for value: UInt16, decoder: DecoderType) -> UInt16
+    
     typealias FeedbackChangeCallback = (_ deviceID: UInt16, _ contactID: UInt16, _ value: UInt8) -> Void
     func register(forFeedbackChange: @escaping FeedbackChangeCallback)
 

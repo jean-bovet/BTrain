@@ -44,8 +44,7 @@ final class TrainSpeed: ObservableObject, Equatable, Codable {
     // Maximum speed of the train in kph
     @Published var maxSpeed: UnitKph = 200
         
-    // Number of steps, for the current encoder type, corresponding to the current
-    // kph value.
+    // Number of steps, for the current encoder type, corresponding to the current kph value.
     var steps: UnitStep {
         get {
             // Use a cublic spline interpolation to get the most accurate steps number.
@@ -62,25 +61,6 @@ final class TrainSpeed: ObservableObject, Equatable, Codable {
         }
     }
 
-    // Maximum value of the speed parameters that can be specified
-    // in the CAN message.
-    // TODO: isn't that specific to Marklin? have the interface API take
-    // the number of steps and the max number of steps so it can perform
-    // the calculation.
-    let maxCANSpeedValue = 1000
-    
-    // Value to be sent to the Digital Controller. This value is derived
-    // from the `steps` value and the decoder type.
-    var value: UInt16 {
-        get {
-            let value = Double(steps) * Double(maxCANSpeedValue) / Double(decoderType.steps)
-            return UInt16(value)
-        }
-        set {
-            steps = UnitStep(Double(newValue) / Double(maxCANSpeedValue) * Double(decoderType.steps))
-        }
-    }
-    
     // Structure defining the number of steps corresponding
     // to a particular speed in kph.
     struct SpeedStep: Identifiable {
@@ -106,13 +86,13 @@ final class TrainSpeed: ObservableObject, Equatable, Codable {
         self.updateSpeedStepsTable()
         self.kph = kph
     }
-    
-    convenience init(value: UInt16, decoderType: DecoderType) {
+
+    convenience init(steps: UInt16, decoderType: DecoderType) {
         self.init(decoderType: decoderType)
         self.updateSpeedStepsTable()
-        self.value = value
+        self.steps = steps
     }
-    
+
     enum CodingKeys: CodingKey {
       case decoderType, kph
     }
