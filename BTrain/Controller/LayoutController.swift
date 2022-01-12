@@ -153,30 +153,53 @@ final class LayoutController: ObservableObject {
         _ = run()
     }
     
-    func discoverLocomotives() {
+    func discoverLocomotives(merge: Bool) {
         guard let interface = interface else {
             return
         }
 
         interface.queryLocomotives(command: .locomotives()) { locomotives in
-            self.layout.freeAllTrains(removeFromLayout: true)
-
-            // TODO: keep icon and customization as much as possible
-            let trains: [Train] = locomotives.map { loc in
-                let train = Train()
-                if let name = loc.name {
-                    train.name = name
-                }
-                if let address = loc.address {
-                    train.address = address
-                }
-                if let maxSpeed = loc.maxSpeed {
-                    train.speed.maxSpeed = TrainSpeed.UnitKph(maxSpeed)
-                }
-                train.decoder = loc.decoderType
-                return train
-            }
-            self.layout.trains = trains
+            self.process(locomotives: locomotives, merge: merge)
         }
+    }
+    
+    func process(locomotives: [CommandLocomotive], merge: Bool) {
+        var newTrains = [Train]()
+        for loc in locomotives {
+            if let locUID = loc.uid, let train = layout.trains.first(where: { $0.id.uuid == String(locUID) }), merge {
+                mergeLocomotive(loc, with: train)
+            } else if let locAddress = loc.address, let train = layout.trains.find(address: locAddress, decoder: loc.decoderType), merge {
+                mergeLocomotive(loc, with: train)
+            } else {
+                let train: Train
+                if let locUID = loc.uid {
+                    train = Train(uuid: String(locUID))
+                } else {
+                    train = Train()
+                }
+                mergeLocomotive(loc, with: train)
+                newTrains.append(train)
+            }
+        }
+        
+        if merge {
+            layout.trains.append(contentsOf: newTrains)
+        } else {
+            layout.freeAllTrains(removeFromLayout: true)
+            layout.trains = newTrains
+        }
+    }
+    
+    func mergeLocomotive(_ locomotive: CommandLocomotive, with train: Train) {
+        if let name = locomotive.name {
+            train.name = name
+        }
+        if let address = locomotive.address {
+            train.address = address
+        }
+        if let maxSpeed = locomotive.maxSpeed {
+            train.speed.maxSpeed = TrainSpeed.UnitKph(maxSpeed)
+        }
+        train.decoder = locomotive.decoderType
     }
 }
