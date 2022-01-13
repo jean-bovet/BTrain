@@ -12,7 +12,7 @@
 
 import Foundation
 
-// This class monitors all the layout feedback and optionally detect
+// This class monitors all the layout feedback and optionally detects
 // any unexpected feedbacks in order to stop all the trains to avoid collisions.
 final class LayoutFeedbackMonitor {
     

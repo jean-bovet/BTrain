@@ -361,7 +361,7 @@ final class TrainController {
             position = nextBlock.feedbacks.count - 1
         }
         
-        BTLogger.debug("Train \(train) enters block \(nextBlock) at position \(position), \(direction)", layout, train)
+        BTLogger.debug("Train \(train) enters block \(nextBlock) at position \(position), direction \(direction)", layout, train)
 
         // Asks the layout to move the train to the next block
         try layout.setTrain(train.id, toBlock: nextBlock.id, position: .custom(value: position), direction: direction)

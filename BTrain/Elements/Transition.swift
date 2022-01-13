@@ -81,6 +81,7 @@ final class Transition: Element, ITransition {
     // Returns true if the array of transitions can be reserved
     // for the specified train (either they are free or are
     // already reserved for that same train).
+    // TODO: do not throw, return BOOL only
     static func canReserve(transitions: [ITransition], for trainId: Identifier<Train>, layout: Layout) throws {
         for transition in transitions {
             if let reserved = transition.reserved, reserved != trainId {

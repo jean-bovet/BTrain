@@ -63,6 +63,10 @@ final class Train: Element, ObservableObject {
     // position:   0   1    2    3
     @Published var position = 0
             
+    var description: String {
+        return "\(name) (\(id))"
+    }
+    
     convenience init(uuid: String = UUID().uuidString) {
         self.init(id: Identifier(uuid: uuid))
     }
