@@ -77,7 +77,11 @@ final class Route: Element, ObservableObject {
     // Indicates if this route is enabled or not.
     // Any train using this route will stop if it is disabled.
     @Published var enabled = false
-        
+    
+    // The number of seconds a train should wait in a station before
+    // starting again when using an automatic route.
+    var stationWaitDuration: TimeInterval = 2.0
+    
     convenience init(uuid: String = UUID().uuidString, automatic: Bool = false) {
         self.init(id: Identifier(uuid: uuid), automatic: automatic)
     }

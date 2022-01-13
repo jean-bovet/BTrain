@@ -207,6 +207,52 @@ class PathFinderTests: BTTestCase {
         try asserter.assert(["automatic-0: [b1 ≏ ] <t3(0,2)> ![b5 ≏ ] <t7(2,0),r> <t5(2,0),r> ![b3 ≏ ] <t4(0,1)> ![b2 ≏ ] <t3(1,0)> ![b1 ≏ ] <t2(0,1)> <t1(0,1)> !{r0{s2 🛑🚂0 ≡ }}"], route: route, trains: [train])
     }
     
+    func testAutomaticRouteStationRestart() throws {
+        let layout = LayoutECreator().newLayout()
+        let s1 = layout.block(for: Identifier<Block>(uuid: "s1"))!
+
+        let train = layout.trains[0]
+        train.blockId = s1.id
+        s1.train = .init(train.id, .next)
+        XCTAssertEqual(train.speed.kph, 0)
+
+        layout.automaticRouteRandom = false
+        
+        let route = try layout.updateAutomaticRoute(for: train.id, toBlockId: nil)
+        route.stationWaitDuration = 0.250
+        XCTAssertEqual(route.steps.description, ["s1:next", "b1:next", "b2:next", "b3:next", "s2:next"])
+        XCTAssertFalse(route.enabled)
+
+        // Start the route
+        let layoutController = LayoutController(layout: layout, interface: nil)
+        try layout.prepare(routeID: route.id, trainID: train.id, startAtEndOfBlock: true)
+        try layoutController.start(routeID: route.id, trainID: train.id, toBlockId: nil)
+        
+        XCTAssertEqual(layoutController.pausedTrainTimers.count, 0)
+
+        let asserter = LayoutAsserter(layout: layout, layoutController: layoutController)
+        
+        try asserter.assert(["automatic-0: {r0{s1 ≏ 🚂0 }} <r0<t1,l>> <r0<t2,s>> [r0[b1 ≏ ]] <t3> [b2 ≏ ] <t4> [b3 ≏ ] <t5> <t6> {s2 ≏ }"], route: route, trains: [train])
+        try asserter.assert(["automatic-0: {s1 ≏ } <t1,l> <t2,s> [r0[b1 ≡ 🚂0 ]] <r0<t3>> [r0[b2 ≏ ]] <t4> [b3 ≏ ] <t5> <t6> {s2 ≏ }"], route: route, trains: [train])
+        try asserter.assert(["automatic-0: {s1 ≏ } <t1,l> <t2,s> [b1 ≏ ] <t3> [r0[b2 ≡ 🚂0 ]] <r0<t4>> [r0[b3 ≏ ]] <t5> <t6> {s2 ≏ }"], route: route, trains: [train])
+        try asserter.assert(["automatic-0: {s1 ≏ } <t1,l> <t2,s> [b1 ≏ ] <t3> [b2 ≏ ] <t4> [r0[b3 ≡ 🚂0 ]] <r0<t5>> <r0<t6>> {r0{s2 ≏ }}"], route: route, trains: [train])
+        try asserter.assert(["automatic-0: {s1 ≏ } <t1,l> <t2,s> [b1 ≏ ] <t3> [b2 ≏ ] <t4> [b3 ≏ ] <t5> <t6> {r0{s2 ≡ 🛑🚂0 }}"], route: route, trains: [train])
+        
+        // The train will now wait for `stationWaitDuration` second before starting again
+        wait(for: {
+            return train.speed.kph > 0
+        }, timeout: 1.0)
+        
+        XCTAssertEqual(layoutController.pausedTrainTimers.count, 0)
+
+        // When restarting, the train automatic route will be updated
+        XCTAssertEqual(route.steps.description, ["s2:next", "b1:next", "b2:next", "b3:next", "s2:next"])
+
+        // Assert that the train has restarted and is moving in the correct direction
+        try asserter.assert(["automatic-0: {r0{s2 ≏ 🚂0 }} <r0<t1,s>> <r0<t2,s>> [r0[b1 ≏ ]] <t3> [b2 ≏ ] <t4> [b3 ≏ ] <t5> <t6> {r0{s2 ≏ 🚂0 }}"], route: route, trains: [train])
+        try asserter.assert(["automatic-0: {s2 ≏ } <t1,s> <t2,s> [r0[b1 ≡ 🚂0 ]] <r0<t3>> [r0[b2 ≏ ]] <t4> [b3 ≏ ] <t5> <t6> {s2 ≏ }"], route: route, trains: [train])
+    }
+    
     func testAutomaticRouteBetweenStations() throws {
         let layout = LayoutFCreator().newLayout()
         

@@ -58,7 +58,7 @@ final class TrainController {
             result = .processed
         }
         
-        if try handleTrainStop() == .processed {
+        if try handleTrainStop(route: route) == .processed {
             result = .processed
         }
 
@@ -66,11 +66,32 @@ final class TrainController {
             result = .processed
         }
         
-        if try handleTrainStop() == .processed {
+        if try handleTrainStop(route: route) == .processed {
             result = .processed
         }
 
         return result
+    }
+    
+    // This method is called by the LayoutController when a train that was paused must be restarted.
+    // This happens after the timer associated with the train expired in the LayoutController.
+    func restartTrain() throws {
+        guard let routeId = train.routeId else {
+            throw LayoutError.trainNotAssignedToARoute(train: train)
+        }
+        
+        guard let route = layout.route(for: routeId, trainId: train.id) else {
+            throw LayoutError.routeNotFound(routeId: routeId)
+        }
+        
+        guard route.automatic else {
+            BTLogger.debug("Cannot start again train \(train.name) because route \(route.name) is not automatic")
+            return
+        }
+        
+        BTLogger.debug("Re-starting train \(train.name) by updating the automatic route")
+        _ = try layout.updateAutomaticRoute(for: train.id, toBlockId: route.destinationBlock)
+        BTLogger.debug("Generated route is: \(route.steps)")
     }
     
     func handleTrainStart() throws -> Result {
@@ -142,7 +163,7 @@ final class TrainController {
         return .processed
     }
     
-    func handleTrainStop() throws -> Result {
+    func handleTrainStop(route: Route) throws -> Result {
         guard train.speed.kph > 0 else {
             return .none
         }
@@ -153,6 +174,23 @@ final class TrainController {
 
         let atEndOfBlock = layout.atEndOfBlock(train: train)
         
+        // Stop the train if the current block is a station, the train is located at the end of the block
+        // and the train is running (this is to ensure we don't stop a train that just started from the station).
+        // Stop the train when it reaches a station block, given that this block is not the one where the train
+        // started - to avoid stopping a train that is starting from a station block (while still in that block).
+        if currentBlock.category == .station && atEndOfBlock && currentBlock.id != startBlock?.id {
+            BTLogger.debug("Stop train \(train) because the current block \(currentBlock) is a station", layout, train)
+            
+            // If the route is automatic, stop the train for a specific period of time and then restart it.
+            if route.automatic {
+                BTLogger.debug("Schedule timer to restart train \(train.name) in \(route.stationWaitDuration) seconds")
+                
+                // The layout controller is going to schedule the appropriate timer given the `restartDelayTime` value
+                currentBlock.train?.restartDelayTime = route.stationWaitDuration
+            }
+            return try stop()
+        }
+
         guard let nextBlock = layout.nextBlock(train: train) else {
             // Stop the train if there is no next block
             if atEndOfBlock {
@@ -163,15 +201,6 @@ final class TrainController {
             }
         }
         
-        // Stop the train if the current block is a station, the train is located at the end of the block
-        // and the train is running (this is to ensure we don't stop a train that just started from the station).
-        // Stop the train when it reaches a station block, given that this block is not the one where the train
-        // started - to avoid stopping a train that is starting from a station block (while still in that block).
-        if currentBlock.category == .station && atEndOfBlock && currentBlock.id != startBlock?.id {
-            BTLogger.debug("Stop train \(train) because the current block \(currentBlock) is a station", layout, train)
-            return try stop()
-        }
-
         // Stop if the next block is occupied
         if nextBlock.train != nil && atEndOfBlock {
             BTLogger.debug("Stop train \(train) train because the next block is occupied", layout, train)

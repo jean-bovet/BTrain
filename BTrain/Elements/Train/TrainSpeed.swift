@@ -15,7 +15,7 @@ import SwiftCubicSpline
 
 // This class defines the speed of a train. The speed can be expressed either in kph
 // or number of steps which depends on the decoder type.
-final class TrainSpeed: ObservableObject, Equatable {
+final class TrainSpeed: ObservableObject, Equatable, CustomStringConvertible {
     
     // Type definition for the speed
     typealias UnitKph = UInt16
@@ -77,6 +77,10 @@ final class TrainSpeed: ObservableObject, Equatable {
     // on the type of decoder.
     @Published var speedTable = [SpeedTableEntry]()
         
+    var description: String {
+        return "\(kph) km/h"
+    }
+
     init(decoderType: DecoderType) {
         self.decoderType = decoderType
     }

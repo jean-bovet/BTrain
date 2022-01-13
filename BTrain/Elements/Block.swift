@@ -45,10 +45,15 @@ final class Block: Element, ObservableObject {
     
     // Defines the train in the block, which is the train
     // itself and its direction of travel within the block
-    struct TrainInstance: Codable, Equatable, CustomStringConvertible {
+    final class TrainInstance: Codable, Equatable, CustomStringConvertible {
         
         let trainId: Identifier<Train>
         let direction: Direction
+        var restartDelayTime: Double?
+
+        static func == (lhs: Block.TrainInstance, rhs: Block.TrainInstance) -> Bool {
+            lhs.trainId == rhs.trainId && lhs.direction == rhs.direction
+        }
         
         init(_ trainId: Identifier<Train>, _ direction: Direction) {
             self.trainId = trainId

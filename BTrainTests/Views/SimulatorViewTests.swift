@@ -139,7 +139,9 @@ class SimulatorViewTests: RootViewTests {
 
         XCTAssertEqual(train.speed.kph, kph)
     }
+}
 
+extension XCTestCase {
     func wait(for block: () -> Bool, timeout: TimeInterval) {
         let current = RunLoop.current
         let startTime = Date()

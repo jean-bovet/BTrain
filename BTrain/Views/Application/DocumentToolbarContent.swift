@@ -68,22 +68,22 @@ struct ConnectCommandsView: View {
         if document.connected {
             SimulatorIndicationView(simulator: document.simulator)
             
-            Button("Disconnect") {
+            Button("􀡷 Disconnect") {
                 document.disconnect()
             }
         } else {
-            Button("Connect") {
+            Button("􀡸 Connect") {
                 self.connectAlertShowing.toggle()
             }
         }
 
         Spacer()
 
-        Button("Enable") {
+        Button("􀥤 Enable") {
             document.enable() {}
         }.disabled(!document.connected)
 
-        Button("Disable") {
+        Button("􀥥 Disable") {
             document.disable() {}
         }.disabled(!document.connected)
     }

@@ -106,7 +106,7 @@ extension Layout {
         // during execution, to avoid deadlocking).
         let settings = PathFinder.Settings(random: automaticRouteRandom,
                                            reservedBlockBehavior: toBlock == nil ? .avoidReservedUntil(numberOfSteps: 1) : .avoidReserved,
-                                           verbose: true)
+                                           verbose: false)
         let pf = PathFinder(layout: self)
         if let path = try pf.path(trainId: train.id, from: currentBlock, toBlock: toBlock, direction: trainInstance.direction, settings: settings) {
             route.steps = path.steps

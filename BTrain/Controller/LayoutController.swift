@@ -37,15 +37,11 @@ final class LayoutController: ObservableObject {
                 
         registerForFeedbackChanges()
         registerForTrainBlockChanges()
+        registerForRestartTrainTrigger()
         
         updateControllers()
     }
-    
-    // Make sure to debounce all the changes so they don't overwhelm
-    // the system and also to ensure they don't end up in a re-entrant
-    // loop that will crash the app.
-    let debounceFor: RunLoop.SchedulerTimeType.Stride = .milliseconds(100)
-    
+        
     func registerForFeedbackChanges() {
         for feedback in layout.feedbacks {
             let cancellable = feedback.$detected
@@ -73,6 +69,56 @@ final class LayoutController: ObservableObject {
         }
     }
 
+    func registerForRestartTrainTrigger() {
+        for train in layout.blocks {
+            let cancellable = train.$train
+                .dropFirst()
+                .removeDuplicates()
+                .receive(on: RunLoop.main)
+                .sink { value in
+                    if let ti = value {
+                        self.scheduleRestartTimer(trainInstance: ti)
+                    }
+                }
+            cancellables.append(cancellable)
+        }
+    }
+
+    var pausedTrainTimers = [Identifier<Train>:Timer]()
+    
+    func scheduleRestartTimer(trainInstance: Block.TrainInstance) {
+        guard let time = trainInstance.restartDelayTime, time > 0 else {
+            return
+        }
+        
+        // Start a timer that will restart the train with a new automatic route
+        let timer = Timer.scheduledTimer(withTimeInterval: time, repeats: false, block: { timer in
+            trainInstance.restartDelayTime = 0
+            timer.invalidate()
+            self.runControllers()
+        })
+        pausedTrainTimers[trainInstance.trainId] = timer
+    }
+
+    func restartControllers() throws -> TrainController.Result {
+        var result = TrainController.Result.none
+        for controller in self.sortedControllers {
+            if let block = layout.block(for: controller.train.id), block.train?.restartDelayTime == 0 {
+                block.train?.restartDelayTime = nil
+                try controller.restartTrain()
+                result = .processed
+            }
+        }
+        cleanupRestartTimer()
+        return result
+    }
+    
+    func cleanupRestartTimer() {
+        // Remove any expired timer
+        // TODO: when stopping a train manually, invalidate any timer related to that train!
+        pausedTrainTimers = pausedTrainTimers.filter({$0.value.isValid})
+    }
+    
     func updateControllers() {
         for train in layout.trains {
             if controllers[train.id] == nil {
@@ -118,6 +164,12 @@ final class LayoutController: ObservableObject {
                 try feedbackMonitor.handleUnexpectedFeedbacks()
             }
             
+            // Restart any train that have waited long enough in their station with automatic routing
+            if try restartControllers() == .processed {
+                result = .processed
+            }
+            
+            // Run each controller
             for controller in sortedControllers {
                 if try controller.run() == .processed {
                     result = .processed
