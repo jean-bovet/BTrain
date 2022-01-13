@@ -102,7 +102,6 @@ final class LayoutController: ObservableObject, TrainControllerDelegate {
     
     func cleanupRestartTimer() {
         // Remove any expired timer
-        // TODO: when stopping a train manually, invalidate any timer related to that train!
         pausedTrainTimers = pausedTrainTimers.filter({$0.value.isValid})
     }
     

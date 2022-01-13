@@ -81,6 +81,9 @@ final class TrainController {
     
     // This method is called by the LayoutController when a train that was paused must be restarted.
     // This happens after the timer associated with the train expired in the LayoutController.
+    // This method actually does not restart the train per say but update the automatic route in order
+    // to have a valid route to follow. In a later cycle, the TrainController will start the train
+    // if the conditions are right (next block free, route enabled, etc).
     func restartTrain() throws {
         guard let routeId = train.routeId else {
             throw LayoutError.trainNotAssignedToARoute(train: train)
