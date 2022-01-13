@@ -22,7 +22,7 @@ final class TrainController {
     let layout: Layout
     let train: Train
     
-    var startBlock: Block?
+    var startRouteIndex: Int?
     
     init(layout: Layout, train: Train) {
         self.layout = layout
@@ -110,7 +110,7 @@ final class TrainController {
             do {
                 try layout.reserve(train: train.id, fromBlock: currentBlock.id, toBlock: nextBlock.id, direction: currentBlock.train!.direction)
                 BTLogger.debug("Start train \(train) because the next block \(nextBlock) is free or reserved for this train", layout, train)
-                startBlock = currentBlock
+                startRouteIndex = train.routeIndex
                 try layout.setTrain(train, speed: LayoutFactory.DefaultSpeed)
                 return .processed
             } catch {
@@ -178,7 +178,7 @@ final class TrainController {
         // and the train is running (this is to ensure we don't stop a train that just started from the station).
         // Stop the train when it reaches a station block, given that this block is not the one where the train
         // started - to avoid stopping a train that is starting from a station block (while still in that block).
-        if currentBlock.category == .station && atEndOfBlock && currentBlock.id != startBlock?.id {
+        if currentBlock.category == .station && atEndOfBlock && train.routeIndex != startRouteIndex {
             BTLogger.debug("Stop train \(train) because the current block \(currentBlock) is a station", layout, train)
             
             // If the route is automatic, stop the train for a specific period of time and then restart it.
