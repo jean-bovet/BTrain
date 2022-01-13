@@ -13,7 +13,7 @@
 import Foundation
 import Combine
 
-final class LayoutController: ObservableObject {
+final class LayoutController: ObservableObject, TrainControllerDelegate {
     
     let layout: Layout
     
@@ -35,9 +35,9 @@ final class LayoutController: ObservableObject {
         self.feedbackMonitor = LayoutFeedbackMonitor(layout: layout)
         self.interface = interface
                 
+        // TODO: what happens when an element is added/removed? Are these change blocks updated accordingly?
         registerForFeedbackChanges()
         registerForTrainBlockChanges()
-        registerForRestartTrainTrigger()
         
         updateControllers()
     }
@@ -69,21 +69,6 @@ final class LayoutController: ObservableObject {
         }
     }
 
-    func registerForRestartTrainTrigger() {
-        for train in layout.blocks {
-            let cancellable = train.$train
-                .dropFirst()
-                .removeDuplicates()
-                .receive(on: RunLoop.main)
-                .sink { value in
-                    if let ti = value {
-                        self.scheduleRestartTimer(trainInstance: ti)
-                    }
-                }
-            cancellables.append(cancellable)
-        }
-    }
-
     var pausedTrainTimers = [Identifier<Train>:Timer]()
     
     func scheduleRestartTimer(trainInstance: Block.TrainInstance) {
@@ -93,6 +78,7 @@ final class LayoutController: ObservableObject {
         
         // Start a timer that will restart the train with a new automatic route
         let timer = Timer.scheduledTimer(withTimeInterval: time, repeats: false, block: { timer in
+            BTLogger.debug("Timer fired to restart train \(trainInstance.trainId)")
             trainInstance.restartDelayTime = 0
             timer.invalidate()
             self.runControllers()
@@ -103,8 +89,9 @@ final class LayoutController: ObservableObject {
     func restartControllers() throws -> TrainController.Result {
         var result = TrainController.Result.none
         for controller in self.sortedControllers {
-            if let block = layout.block(for: controller.train.id), block.train?.restartDelayTime == 0 {
-                block.train?.restartDelayTime = nil
+            if let block = layout.block(for: controller.train.id), let ti = block.train, ti.restartDelayTime == 0 {
+                BTLogger.debug("Restarting train \(ti.trainId)")
+                ti.restartDelayTime = nil
                 try controller.restartTrain()
                 result = .processed
             }
@@ -122,7 +109,7 @@ final class LayoutController: ObservableObject {
     func updateControllers() {
         for train in layout.trains {
             if controllers[train.id] == nil {
-                controllers[train.id] = TrainController(layout: layout, train: train)
+                controllers[train.id] = TrainController(layout: layout, train: train, delegate: self)
             }
         }
 
@@ -179,7 +166,11 @@ final class LayoutController: ObservableObject {
             // Stop the train in case there is a problem processing the layout
             layout.runtimeError = error.localizedDescription
             BTLogger.error("Stopping all trains because there is an error processing the layout: \(error.localizedDescription)")
+            // TODO: ensure TrainController does not run anymore when a stop has been issued. Only an explicit Start from the user is allowed to change that state back (for safety reason)
             stopAll()
+//            stop() {
+//                self.stopAll()
+//            }
         }
         return result
     }
@@ -192,6 +183,10 @@ final class LayoutController: ObservableObject {
                 BTLogger.error("Unable to stop train \(controller.train) because \(error.localizedDescription)")
             }
         }
+    }
+    
+    func stop(onCompletion: @escaping () -> Void) {
+        interface?.execute(command: .stop(), onCompletion: onCompletion)
     }
     
     func start(routeID: Identifier<Route>, trainID: Identifier<Train>, toBlockId: Identifier<Block>?) throws {

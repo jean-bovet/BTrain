@@ -12,6 +12,10 @@
 
 import Foundation
 
+protocol TrainControllerDelegate: AnyObject {
+    func scheduleRestartTimer(trainInstance: Block.TrainInstance)
+}
+
 final class TrainController {
     
     enum Result {
@@ -21,12 +25,14 @@ final class TrainController {
     
     let layout: Layout
     let train: Train
+    weak var delegate: TrainControllerDelegate?
     
     var startRouteIndex: Int?
     
-    init(layout: Layout, train: Train) {
+    init(layout: Layout, train: Train, delegate: TrainControllerDelegate? = nil) {
         self.layout = layout
         self.train = train
+        self.delegate = delegate
     }
             
     @discardableResult
@@ -186,7 +192,10 @@ final class TrainController {
                 BTLogger.debug("Schedule timer to restart train \(train.name) in \(route.stationWaitDuration) seconds")
                 
                 // The layout controller is going to schedule the appropriate timer given the `restartDelayTime` value
-                currentBlock.train?.restartDelayTime = route.stationWaitDuration
+                if let ti = currentBlock.train {
+                    ti.restartDelayTime = route.stationWaitDuration
+                    delegate?.scheduleRestartTimer(trainInstance: ti)
+                }
             }
             return try stop()
         }

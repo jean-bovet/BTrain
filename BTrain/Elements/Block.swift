@@ -214,7 +214,7 @@ final class Block: Element, ObservableObject {
 extension Block: Codable {
     
     enum CodingKeys: CodingKey {
-        case id, enabled, name, type, reserved, train, feedbacks, center,angle
+        case id, enabled, name, type, reserved, train, feedbacks, center, angle
     }
 
     convenience init(from decoder: Decoder) throws {

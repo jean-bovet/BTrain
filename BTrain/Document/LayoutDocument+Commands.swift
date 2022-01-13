@@ -19,7 +19,7 @@ extension LayoutDocument {
     }
     
     func disable(onCompletion: @escaping () -> Void) {
-        interface.execute(command: .stop(), onCompletion: onCompletion)
+        layoutController.stop(onCompletion: onCompletion)
     }
     
     func start(train: Identifier<Train>, withRoute route: Identifier<Route>, toBlockId: Identifier<Block>?) throws {
