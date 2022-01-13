@@ -163,19 +163,26 @@ final class LayoutController: ObservableObject, TrainControllerDelegate {
                 }
             }
         } catch {
-            // Stop the train in case there is a problem processing the layout
+            // Stop everything in case there is a problem processing the layout
+            stopAll()
             layout.runtimeError = error.localizedDescription
             BTLogger.error("Stopping all trains because there is an error processing the layout: \(error.localizedDescription)")
-            // TODO: ensure TrainController does not run anymore when a stop has been issued. Only an explicit Start from the user is allowed to change that state back (for safety reason)
-            stopAll()
-//            stop() {
-//                self.stopAll()
-//            }
         }
         return result
     }
         
     func stopAll() {
+        // Stop the Digital Controller to ensure nothing moves further
+        stop() { }
+
+        // Disable all the routes
+        layout.routes.forEach { $0.enabled = false }
+
+        // Invalidate every restart timer
+        pausedTrainTimers.forEach { $0.value.invalidate() }
+        pausedTrainTimers.removeAll()
+        
+        // Stop each train actively monitored by the controllers
         for controller in sortedControllers {
             do {
                 try layout.stopTrain(controller.train)
