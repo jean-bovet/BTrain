@@ -67,7 +67,7 @@ extension Layout {
     }
     
     @discardableResult
-    func updateAutomaticRoute(for trainId: Identifier<Train>, toBlockId: Identifier<Block>?) throws -> Route {
+    func updateAutomaticRoute(for trainId: Identifier<Train>, toBlockId: Identifier<Block>?) throws -> (Bool, Route) {
         let routeId = Route.automaticRouteId(for: trainId)
         
         guard let route = route(for: routeId, trainId: trainId) else {
@@ -111,8 +111,12 @@ extension Layout {
         if let path = try pf.path(trainId: train.id, from: currentBlock, toBlock: toBlock, direction: trainInstance.direction, settings: settings) {
             route.steps = path.steps
             train.routeIndex = 0
+            return (true, route)
+        } else {
+            route.steps.removeAll()
+            train.routeIndex = 0
+            return (false, route)
         }
-        return route
     }
 
     func sortRoutes() {
