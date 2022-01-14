@@ -12,6 +12,25 @@
 
 import SwiftUI
 
+struct OverviewRightPanelView: View {
+    
+    let document: LayoutDocument
+    @ObservedObject var layout: Layout
+    
+    var body: some View {
+        VStack(spacing: 0) {
+            SwitchboardContainerView(layout: layout,
+                                     layoutController: document.layoutController,
+                                     document: document,
+                                     switchboard: document.switchboard,
+                                     state: document.switchboard.state)
+            if layout.runtimeError != nil {
+                LayoutRuntimeErrorView(error: $layout.runtimeError)
+            }
+        }
+    }
+}
+
 struct OverviewView: View {
     
     @ObservedObject var document: LayoutDocument
@@ -26,11 +45,7 @@ struct OverviewView: View {
             }
             .frame(width: 500)
 
-            SwitchboardContainerView(layout: document.layout,
-                                     layoutController: document.layoutController,
-                                     document: document,
-                                     switchboard: document.switchboard,
-                                     state: document.switchboard.state)
+            OverviewRightPanelView(document: document, layout: document.layout)
         }
     }
 }

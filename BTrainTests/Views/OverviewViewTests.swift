@@ -16,6 +16,7 @@ import XCTest
 import ViewInspector
 
 extension TrainDropActionSheet: Inspectable { }
+extension OverviewRightPanelView: Inspectable { }
 
 class OverviewViewTests: RootViewTests {
 
@@ -23,7 +24,7 @@ class OverviewViewTests: RootViewTests {
         let sut = OverviewView(document: doc)
         XCTAssertNoThrow(try sut.inspect().hStack().vStack(0).view(TrainControlListView.self, 0))
         XCTAssertThrowsError(try sut.inspect().hStack().vStack(0).view(SimulatorView.self, 1))
-        XCTAssertNoThrow(try sut.inspect().hStack().view(SwitchboardContainerView.self, 1))
+        XCTAssertNoThrow(try sut.inspect().hStack().view(OverviewRightPanelView.self, 1))
     }
     
     func testOverviewSwitchboardView() throws {

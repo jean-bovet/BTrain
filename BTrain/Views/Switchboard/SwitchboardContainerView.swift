@@ -25,7 +25,7 @@ struct SwitchboardContainerView: View {
     @ObservedObject var state: SwitchBoard.State
     
     var body: some View {
-        VStack {
+        VStack(spacing: 0) {
             SwitchboardEditControlsView(layout: layout, state: state, document: document, switchboard: switchboard)
             ScrollView([.horizontal, .vertical]) {
                 if switchboard.isEmpty && !state.editable {
@@ -46,9 +46,6 @@ struct SwitchboardContainerView: View {
                     SwitchBoardView(switchboard: switchboard, state: state, layout: layout, coordinator: layoutController)
                 }
             }.background(Color(NSColor.windowBackgroundColor))
-            if layout.runtimeError != nil {
-                LayoutRuntimeErrorView(error: $layout.runtimeError)
-            }
         }.sheet(isPresented: $state.trainDroppedInBlockAction) {
             TrainDropActionSheet(layout: layout, trainDragInfo: state.trainDragInfo!, coordinator: document.layoutController)
                 .fixedSize(horizontal: true, vertical: false)
