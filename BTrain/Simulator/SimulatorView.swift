@@ -34,7 +34,7 @@ struct SimulatorView: View {
                 ForEach(simulator.trains, id:\.self) { train in
                     HStack {
                         Text(train.train.name)
-                        SimulatorTrainControlView(simulator: simulator, train: train)
+                        SimulatorTrainControlView(simulator: simulator, train: train, speed: train.speed)
                     }
                 }
             }.disabled(!simulator.enabled)

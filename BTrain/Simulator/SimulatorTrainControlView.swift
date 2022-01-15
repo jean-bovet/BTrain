@@ -12,31 +12,12 @@
 
 import SwiftUI
 
-struct SimulatorTrainSpeedView: View {
-    let simulator: MarklinCommandSimulator
-    @ObservedObject var train: SimulatorTrain
-    @ObservedObject var speed: TrainSpeed
-    
-    var body: some View {
-        HStack {
-            Slider(
-                value: $speed.kphAsDouble,
-                in: 0...Double(speed.maxSpeed)
-            ) {
-            } onEditingChanged: { editing in
-                simulator.setTrainSpeed(train: train)
-            }
-            
-            Text("\(Int(speed.kph)) km/h")
-        }
-    }
-}
-
 struct SimulatorTrainControlView: View {
     
     let simulator: MarklinCommandSimulator
     @ObservedObject var train: SimulatorTrain
-    
+    @ObservedObject var speed: TrainSpeed
+
     var body: some View {
         HStack {
             Button {
@@ -49,7 +30,17 @@ struct SimulatorTrainControlView: View {
                 }
             }.buttonStyle(.borderless)
             
-            SimulatorTrainSpeedView(simulator: simulator, train: train, speed: train.speed)
+            HStack {
+                Slider(
+                    value: $speed.kphAsDouble,
+                    in: 0...Double(speed.maxSpeed)
+                ) {
+                } onEditingChanged: { editing in
+                    simulator.setTrainSpeed(train: train)
+                }
+                
+                Text("\(Int(speed.kph)) km/h")
+            }
         }
     }
 }
@@ -73,8 +64,10 @@ struct SimulatorTrainControlView_Previews: PreviewProvider {
 
     static let layout = LayoutACreator().newLayout()
     
+    static let simulatorTrain = SimulatorTrain(train: layout.trains[0])
+    
     static var previews: some View {
         SimulatorTrainControlView(simulator: MarklinCommandSimulator(layout: layout, interface: MarklinInterface(server: "", port: 0)),
-                                  train: .init(train: layout.trains[0]))
+                                  train: simulatorTrain, speed: simulatorTrain.speed)
     }
 }

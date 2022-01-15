@@ -17,7 +17,6 @@ import ViewInspector
 
 extension SimulatorView: Inspectable { }
 extension SimulatorTrainControlView: Inspectable { }
-extension SimulatorTrainSpeedView: Inspectable { }
 
 class SimulatorViewTests: RootViewTests {
 
@@ -66,8 +65,7 @@ class SimulatorViewTests: RootViewTests {
         wait(for: simulatorTrain1, directionForward: true)
 
         // Change the speed of the first train and see if it is reflected in the train list
-        let simulatorSpeedView = try simulatorTrainControl.find(SimulatorTrainSpeedView.self)
-        let slider = try simulatorSpeedView.hStack().slider(0)
+        let slider = try simulatorTrainControl.hStack().hStack(1).slider(0)
         try slider.setValue(100)
         try slider.callOnEditingChanged()
         // Note: for some reason, setting the slider.setValue(100)
