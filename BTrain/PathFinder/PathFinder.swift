@@ -24,81 +24,11 @@ final class PathFinder {
 
     let layout: Layout
     
-    typealias TurnoutSocketSelectionOverride = (_ turnout:Turnout, _ socketsId: [Int], _ context: Context) -> Int?
+    typealias TurnoutSocketSelectionOverride = (_ turnout:Turnout, _ socketsId: [Int], _ context: PathFinderContext) -> Int?
     
     // Optional override block to inject behavior when a turnout is processed
     // during the path search. Used by unit tests only.
     var turnoutSocketSelectionOverride: TurnoutSocketSelectionOverride?
-    
-    struct Settings {
-        // True to generate a route at random, false otherwise.
-        let random: Bool
-        
-        enum ReservedBlockBehavior {
-            // Avoid all the reserved blocks
-            case avoidReserved
-            
-            // Avoid the reserved blocks for the first
-            // `numberOfSteps` of the route. After the route
-            // has more steps than this, reserved block
-            // will be taken into consideration. This option is
-            // used in automatic routing when no particular destination
-            // block is specified: BTrain will update the route if a
-            // reserved block is found during the routing of the train.
-            case avoidReservedUntil(numberOfSteps: Int)
-        }
-        
-        let reservedBlockBehavior: ReservedBlockBehavior
-                
-        let verbose: Bool
-    }
-    
-    // Internal class used to keep track of the various parameters during analysis
-    final class Context {
-        // Train associated with this path
-        let trainId: Identifier<Train>
-
-        // The destination block or nil if any station block can be chosen
-        let toBlock: Block?
-        
-        // The maximum number of blocks in the path before
-        // it overflows and the algorithm ends the analysis.
-        // This is to avoid situation in which the algorithm
-        // takes too long to return.
-        let overflow: Int
-
-        // Settings for the algorithm
-        let settings: Settings
-
-        // The list of steps defining this path
-        var steps = [Route.Step]()
-
-        // The list of visited steps (block+direction),
-        // used to ensure the algorithm does not
-        // re-use a block and ends up in an infinite loop.
-        var visitedSteps = [Route.Step]()
-        
-        init(trainId: Identifier<Train>, toBlock: Block?, overflow: Int, settings: Settings) {
-            self.trainId = trainId
-            self.toBlock = toBlock
-            self.overflow = overflow
-            self.settings = settings
-        }
-        
-        func hasVisited(_ step: Route.Step) -> Bool {
-            return visitedSteps.contains { $0.same(step) }
-        }
-
-        var isOverflowing: Bool {
-            return steps.count >= overflow
-        }
-        
-        func print(_ msg: String) {
-            if settings.verbose {
-                BTLogger.debug(" \(msg)")
-            }
-        }
-    }
     
     init(layout: Layout) {
         self.layout = layout
@@ -107,10 +37,10 @@ final class PathFinder {
     // The path returned from this class after the algorithm is run
     struct Path {
         let steps: [Route.Step]
-        let context: Context
+        let context: PathFinderContext
     }
         
-    func path(trainId: Identifier<Train>, from block: Block, toBlock: Block? = nil, direction: Direction, settings: Settings, generatedPathCallback: ((Path) -> Void)? = nil) throws -> Path? {
+    func path(trainId: Identifier<Train>, from block: Block, toBlock: Block? = nil, direction: Direction, settings: PathFinderSettings, generatedPathCallback: ((Path) -> Void)? = nil) throws -> Path? {
         let numberOfPaths: Int
         if toBlock != nil && settings.random {
             // If a destination block is specified and the path is choosen at random,
@@ -125,7 +55,7 @@ final class PathFinder {
         // we will generate a few paths and pick the shortest one (depending on the `numberOfPaths`).
         var smallestPath: Path?
         for _ in 1...numberOfPaths {
-            let context = Context(trainId: trainId, toBlock: toBlock, overflow: layout.blockMap.count*2, settings: settings)
+            let context = PathFinderContext(trainId: trainId, toBlock: toBlock, overflow: layout.blockMap.count*2, settings: settings)
             context.steps.append(Route.Step(block.id, direction))
             
             if try findPath(from: block, direction: direction, context: context) {
@@ -143,7 +73,7 @@ final class PathFinder {
     
     // MARK: -- Recursive functions
     
-    private func findPath(from block: Block, direction: Direction, context: Context) throws -> Bool {
+    private func findPath(from block: Block, direction: Direction, context: PathFinderContext) throws -> Bool {
         guard !context.isOverflowing else {
             throw PathError.overflow
         }
@@ -179,7 +109,7 @@ final class PathFinder {
         return false
     }
     
-    private func findPath(from turnout: Turnout, fromSocketId: Int, context: Context) throws -> Bool {
+    private func findPath(from turnout: Turnout, fromSocketId: Int, context: PathFinderContext) throws -> Bool {
         guard !context.isOverflowing else {
             throw PathError.overflow
         }
@@ -208,7 +138,7 @@ final class PathFinder {
         return false
     }
 
-    private func findPath(from transition: ITransition, context: Context) throws -> Bool {
+    private func findPath(from transition: ITransition, context: PathFinderContext) throws -> Bool {
         guard !context.isOverflowing else {
             throw PathError.overflow
         }
@@ -290,7 +220,7 @@ final class PathFinder {
     // This function takes a turnout and a `socket` it and returns all the sockets
     // accessible from `socket`. It uses the override block, in case it is defined,
     // to modify the results.
-    private func socketIds(turnout: Turnout, socketId: Int, context: Context) -> [Int] {
+    private func socketIds(turnout: Turnout, socketId: Int, context: PathFinderContext) -> [Int] {
         let nextSocketsId = turnout.sockets(from: socketId)
         
         // Let's give an opportunity to the override block, if defined,

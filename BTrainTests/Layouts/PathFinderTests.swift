@@ -26,7 +26,7 @@ class PathFinderTests: BTTestCase {
         let s1 = layout.block(for: Identifier<Block>(uuid: "s1"))!
         let pf = PathFinder(layout: layout)
         
-        let settings = PathFinder.Settings(random: false, reservedBlockBehavior: .avoidReservedUntil(numberOfSteps: 1), verbose: false)
+        let settings = PathFinderSettings(random: false, reservedBlockBehavior: .avoidReservedUntil(numberOfSteps: 1), verbose: false)
         let path = try pf.path(trainId: layout.trains[0].id, from: s1, direction: .next, settings: settings)
         XCTAssertNotNil(path)
         XCTAssertEqual(path!.description, ["s1:next", "b1:next", "b2:next", "b3:next", "s2:next"])
@@ -44,7 +44,7 @@ class PathFinderTests: BTTestCase {
             }
         }
 
-        let settings = PathFinder.Settings(random: false, reservedBlockBehavior: .avoidReservedUntil(numberOfSteps: 1), verbose: false)
+        let settings = PathFinderSettings(random: false, reservedBlockBehavior: .avoidReservedUntil(numberOfSteps: 1), verbose: false)
         let path = try pf.path(trainId: layout.trains[0].id, from: s1, direction: .next, settings: settings)
         XCTAssertNotNil(path)
         XCTAssertEqual(path!.description, ["s1:next", "b1:next", "b2:next", "b3:next", "b5:next", "b1:previous", "s2:previous"])
@@ -60,14 +60,14 @@ class PathFinderTests: BTTestCase {
 
         // Ensure that by specificy a look ahead equal to the number of blocks in the layout
         // there is no valid path found because b2 is occupied.
-        let settings = PathFinder.Settings(random: false, reservedBlockBehavior: .avoidReservedUntil(numberOfSteps: 2*layout.blockMap.count), verbose: false)
+        let settings = PathFinderSettings(random: false, reservedBlockBehavior: .avoidReservedUntil(numberOfSteps: 2*layout.blockMap.count), verbose: false)
         var path = try pf.path(trainId: layout.trains[0].id, from: s1, direction: .next, settings: settings)
         XCTAssertNil(path)
         
         // Now let's try again with a look ahead of just one block,
         // in which case the reservation of b2 will be ignored because it is
         // past the look ahead
-        let settings2 = PathFinder.Settings(random: false, reservedBlockBehavior: .avoidReservedUntil(numberOfSteps: 1), verbose: false)
+        let settings2 = PathFinderSettings(random: false, reservedBlockBehavior: .avoidReservedUntil(numberOfSteps: 1), verbose: false)
         path = try pf.path(trainId: layout.trains[0].id, from: s1, direction: .next, settings: settings2)
         XCTAssertNotNil(path)
         XCTAssertEqual(path!.description, ["s1:next", "b1:next", "b2:next", "b3:next", "s2:next"])
@@ -87,7 +87,7 @@ class PathFinderTests: BTTestCase {
             return nil
         }
 
-        let settings = PathFinder.Settings(random: false, reservedBlockBehavior: .avoidReservedUntil(numberOfSteps: 2*layout.blockMap.count), verbose: false)
+        let settings = PathFinderSettings(random: false, reservedBlockBehavior: .avoidReservedUntil(numberOfSteps: 2*layout.blockMap.count), verbose: false)
         let path = try pf.path(trainId: layout.trains[0].id, from: s1, direction: .next, settings: settings)
         XCTAssertNotNil(path)
         XCTAssertFalse(path!.context.isOverflowing)
@@ -108,7 +108,7 @@ class PathFinderTests: BTTestCase {
             return nil
         }
 
-        let settings = PathFinder.Settings(random: false, reservedBlockBehavior: .avoidReservedUntil(numberOfSteps: 2*layout.blockMap.count), verbose: false)
+        let settings = PathFinderSettings(random: false, reservedBlockBehavior: .avoidReservedUntil(numberOfSteps: 2*layout.blockMap.count), verbose: false)
         let path = try pf.path(trainId: layout.trains[0].id, from: s1, direction: .next, settings: settings)
         XCTAssertNotNil(path)
         XCTAssertFalse(path!.context.isOverflowing)
@@ -133,7 +133,7 @@ class PathFinderTests: BTTestCase {
         }
 
         do {
-            let settings = PathFinder.Settings(random: false, reservedBlockBehavior: .avoidReservedUntil(numberOfSteps: 2*layout.blockMap.count), verbose: false)
+            let settings = PathFinderSettings(random: false, reservedBlockBehavior: .avoidReservedUntil(numberOfSteps: 2*layout.blockMap.count), verbose: false)
             _ = try pf.path(trainId: layout.trains[0].id, from: s1, direction: .next, settings: settings)
             XCTFail("Exception must be thrown")
         } catch PathFinder.PathError.overflow {
@@ -324,7 +324,7 @@ class PathFinderTests: BTTestCase {
         let toBlock = layout.block(for: Identifier<Block>(uuid: "LCF1"))!
 
         let pf = PathFinder(layout: layout)
-        let settings = PathFinder.Settings(random: false, reservedBlockBehavior: .avoidReservedUntil(numberOfSteps: 1), verbose: false)
+        let settings = PathFinderSettings(random: false, reservedBlockBehavior: .avoidReservedUntil(numberOfSteps: 1), verbose: false)
         let path = try pf.path(trainId: train.id, from: currentBlock, toBlock: toBlock, direction: .next, settings: settings)
         XCTAssertNotNil(path)
         XCTAssertEqual(path!.description, ["NE1:next", "OL1:next", "OL2:next", "OL3:next", "NE4:next", "IL1:next", "IL2:next", "IL3:next", "S:next", "IL1:previous", "IL4:previous", "IL3:previous", "IL2:previous", "OL1:previous", "NE3:previous", "M1:next", "M2U:next", "LCF1:next"])
@@ -346,7 +346,7 @@ class PathFinderTests: BTTestCase {
 
         let pf = PathFinder(layout: layout)
         
-        let settings = PathFinder.Settings(random: false, reservedBlockBehavior: .avoidReservedUntil(numberOfSteps: 1), verbose: false)
+        let settings = PathFinderSettings(random: false, reservedBlockBehavior: .avoidReservedUntil(numberOfSteps: 1), verbose: false)
         let path = try pf.path(trainId: train.id, from: currentBlock, toBlock: toBlock, direction: .next, settings: settings)
         XCTAssertEqual(path!.description, ["s1:next", "b1:next", "b2:next", "b3:next", "s2:next"])
     }
@@ -361,7 +361,7 @@ class PathFinderTests: BTTestCase {
         let toBlock = layout.block(for: Identifier<Block>(uuid: "HLS_P1"))!
 
         let pf = PathFinder(layout: layout)
-        let settings = PathFinder.Settings(random: true, reservedBlockBehavior: .avoidReservedUntil(numberOfSteps: 1), verbose: false)
+        let settings = PathFinderSettings(random: true, reservedBlockBehavior: .avoidReservedUntil(numberOfSteps: 1), verbose: false)
         
         var generatedPaths = [PathFinder.Path]()
         let path = try pf.path(trainId: train.id, from: currentBlock, toBlock: toBlock, direction: .next, settings: settings) { path in

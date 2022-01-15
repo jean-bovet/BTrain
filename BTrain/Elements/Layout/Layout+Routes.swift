@@ -104,9 +104,9 @@ extension Layout {
         // just avoid the reserved block in front of the current one but ignore the others
         // (the automatic route will re-evaluate itself it encounters a reserved block later
         // during execution, to avoid deadlocking).
-        let settings = PathFinder.Settings(random: automaticRouteRandom,
-                                           reservedBlockBehavior: toBlock == nil ? .avoidReservedUntil(numberOfSteps: 1) : .avoidReserved,
-                                           verbose: false)
+        let settings = PathFinderSettings(random: automaticRouteRandom,
+                                          reservedBlockBehavior: toBlock == nil ? .avoidReservedUntil(numberOfSteps: 1) : .avoidReserved,
+                                          verbose: false)
         let pf = PathFinder(layout: self)
         if let path = try pf.path(trainId: train.id, from: currentBlock, toBlock: toBlock, direction: trainInstance.direction, settings: settings) {
             route.steps = path.steps
