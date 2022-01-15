@@ -16,8 +16,15 @@ protocol TrainControllerDelegate: AnyObject {
     func scheduleRestartTimer(trainInstance: Block.TrainInstance)
 }
 
+// This class manages a single train in the layout, by starting and stopping it,
+// managing the monitoring when it transition from one block to another, etc.
 final class TrainController {
     
+    // Most method in this class returns a result
+    // that indicates if that method has done something
+    // or not. This is useful information that will help
+    // the LayoutController to re-run the TrainController
+    // in case there is any changes to be applied.
     enum Result {
         case none
         case processed
@@ -27,6 +34,9 @@ final class TrainController {
     let train: Train
     weak var delegate: TrainControllerDelegate?
     
+    // Keeping track of the route index when the train starts,
+    // to avoid stopping it immediately if it is still starting
+    // in the first block of the route.
     var startRouteIndex: Int?
     
     init(layout: Layout, train: Train, delegate: TrainControllerDelegate? = nil) {
@@ -35,21 +45,24 @@ final class TrainController {
         self.delegate = delegate
     }
             
+    // This is the main method to call to manage the changes for the train.
+    // If this method returns Result.processed, it is expected to be called again
+    // in order to process any changes remaining.
+    // Note: because each function below has a side effect that can affect
+    // the currentBlock and nextBlock (as well as the train speed and other parameters),
+    // always have each function retrieve what it needs.
     @discardableResult
     func run() throws -> Result {
+        // Stop the train if there is no route associated with it
         guard let route = layout.route(for: train.routeId, trainId: train.id) else {
-            // Stop the train if there is no route associated with it
             return try stop()
         }
 
+        // Stop the train if the route is disabled
         guard route.enabled else {
-            // Stop the train if the route is disabled
             return try stop()
         }
 
-        // Note: because each function below has a side effect that can affect
-        // the currentBlock and nextBlock (as well as the train speed and other parameters),
-        // always have each function retrieve what it needs.
         var result: Result = .none
         
         if try handleTrainStart() == .processed {

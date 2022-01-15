@@ -43,7 +43,7 @@ struct SwitchboardContainerView: View {
                         }
                     }
                 } else {
-                    SwitchBoardView(switchboard: switchboard, state: state, layout: layout, coordinator: layoutController)
+                    SwitchBoardView(switchboard: switchboard, state: state, layout: layout, layoutController: layoutController)
                 }
             }.background(Color(NSColor.windowBackgroundColor))
         }.sheet(isPresented: $state.trainDroppedInBlockAction) {

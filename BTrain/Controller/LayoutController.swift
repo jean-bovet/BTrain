@@ -17,7 +17,7 @@ import OrderedCollections
 // This class is responsible for managing all the trains in the layout,
 // including responding to feedback changes and ensuring the trains
 // are properly following their route.
-final class LayoutController: ObservableObject, TrainControllerDelegate {
+final class LayoutController: TrainControllerDelegate {
     
     // The layout being managed
     let layout: Layout
@@ -40,27 +40,10 @@ final class LayoutController: ObservableObject, TrainControllerDelegate {
         self.layout = layout
         self.feedbackMonitor = LayoutFeedbackMonitor(layout: layout)
         self.interface = interface
-                
-        // TODO: what happens when an element is added/removed? Are these change blocks updated accordingly?
-        registerForTrainBlockChanges()
-        
+                        
         updateControllers()
     }
         
-    func registerForTrainBlockChanges() {
-        // TODO: use callback blocks from the Layout directly?
-        for train in layout.trains {
-            let cancellable = train.$blockId
-                .dropFirst()
-                .removeDuplicates()
-                .receive(on: RunLoop.main)
-                .sink { value in
-                    self.runControllers()
-                }
-            cancellables.append(cancellable)
-        }
-    }
-
     func updateControllers() {
         for train in layout.trains {
             if controllers[train.id] == nil {
@@ -87,10 +70,6 @@ final class LayoutController: ObservableObject, TrainControllerDelegate {
     }
     
     func run() -> TrainController.Result {
-        // Make sure to send a signal when the coordinator changes
-        // so observer can update accordingly.
-        objectWillChange.send()
-        
         // Process the latest changes
         updateControllers()
                 

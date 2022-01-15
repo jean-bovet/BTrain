@@ -121,6 +121,7 @@ final class LayoutTrainHandler: LayoutTrainHandling {
             throw LayoutError.trainNotFound(trainId: train.id)
         }
         train.position = position
+        layout.didChange()
     }
     
     func setTrain(_ train: Train, speed: TrainSpeed.UnitKph) throws {
@@ -194,6 +195,7 @@ final class LayoutTrainHandler: LayoutTrainHandling {
         }
         train.speed.kph = 0
         layout.executor?.sendTrainSpeed(train: train)
+        layout.didChange()
     }
 
     func setTrain(_ train: Train, routeIndex: Int) throws {
@@ -217,7 +219,9 @@ final class LayoutTrainHandler: LayoutTrainHandling {
             throw LayoutError.blockNotEmpty(blockId: toBlockId)
         }
                 
-        layout.didChange()
+        defer {
+            layout.didChange()
+        }
         
         switch(position) {
         case .start:

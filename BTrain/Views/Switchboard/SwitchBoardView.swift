@@ -16,8 +16,6 @@ struct SwitchBoardView: View {
         
     let switchboard: SwitchBoard
         
-    @Environment(\.undoManager) var undoManager
-
     // Because SwiftUI only reacts to changes to the object itself and not
     // its children parameters, we require the state of the switchboard
     // to be specified here - although it is accessible via `switchboard.state`.
@@ -26,16 +24,16 @@ struct SwitchBoardView: View {
     // The layout is observed for any change
     // that can cause the switchboard to be re-drawn.
     @ObservedObject var layout: Layout
-    
-    // The coordinator is observed for any change
-    // that can cause the switchboard to be re-drawn.
-    @ObservedObject var coordinator: LayoutController
+
+    let layoutController: LayoutController
 
     // Watch for dark mode to change the color of switchboard
     @Environment(\.colorScheme) var colorScheme
 
     @AppStorage("fontSize") var fontSize = 12.0
     
+    @Environment(\.undoManager) var undoManager
+
     // Note: we pass `redraw` and `coordinator` to this method, even if unused,
     // in order to force SwitfUI to re-draw the view if one of them change.
     func draw(context: GraphicsContext, darkMode: Bool, coordinator: LayoutController, layout: Layout, state: SwitchBoard.State) {
@@ -57,7 +55,7 @@ struct SwitchBoardView: View {
                     style: .init(dash: [5, 10]))
             }
 
-            draw(context: context, darkMode: colorScheme == .dark, coordinator: coordinator, layout: layout, state: switchboard.state)
+            draw(context: context, darkMode: colorScheme == .dark, coordinator: layoutController, layout: layout, state: switchboard.state)
         }
         .gesture(
             DragGesture(minimumDistance: 0)
@@ -95,7 +93,7 @@ struct SwitchBoardView_Previews: PreviewProvider {
         SwitchBoardView(switchboard: doc.switchboard,
                         state: doc.switchboard.state,
                         layout: doc.layout,
-                        coordinator: doc.layoutController)
+                        layoutController: doc.layoutController)
             .environmentObject(doc)
             .previewLayout(.fixed(width: 800, height: 600))
     }

@@ -51,7 +51,7 @@ struct ImportLayoutSheet: View {
                 }.frame(maxWidth: 300)
             }.padding()
 
-            SwitchBoardView(switchboard: switchboard, state: switchboard.state, layout: layout, coordinator: coordinator)
+            SwitchBoardView(switchboard: switchboard, state: switchboard.state, layout: layout, layoutController: coordinator)
                 .fixedSize()
                 .scaleEffect(scaleSize)
                 .frame(width: previewSize.width, height: previewSize.height)
