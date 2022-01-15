@@ -42,27 +42,11 @@ final class LayoutController: ObservableObject, TrainControllerDelegate {
         self.interface = interface
                 
         // TODO: what happens when an element is added/removed? Are these change blocks updated accordingly?
-        registerForFeedbackChanges()
         registerForTrainBlockChanges()
         
         updateControllers()
     }
         
-    func registerForFeedbackChanges() {
-        // TODO: use callback blocks from LayoutDocument+Commands
-        for feedback in layout.feedbacks {
-            let cancellable = feedback.$detected
-                .dropFirst()
-                .removeDuplicates()
-                .receive(on: RunLoop.main)
-                .sink { value in
-                    BTLogger.debug("Feedback \(feedback) changed to \(feedback.detected)")
-                    self.runControllers()
-                }
-            cancellables.append(cancellable)
-        }
-    }
-    
     func registerForTrainBlockChanges() {
         // TODO: use callback blocks from the Layout directly?
         for train in layout.trains {
