@@ -15,12 +15,6 @@ import XCTest
 
 class PathFinderTests: BTTestCase {
         
-    func testValidation() throws {
-        let layout = LayoutECreator().newLayout()
-        let errors = try LayoutDiagnostic(layout: layout).check()
-        XCTAssertEqual(errors.count, 0)
-    }
-
     func testSimplePath() throws {
         let layout = LayoutECreator().newLayout()
         let s1 = layout.block(for: Identifier<Block>(uuid: "s1"))!

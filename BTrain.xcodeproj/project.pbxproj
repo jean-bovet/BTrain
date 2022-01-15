@@ -89,6 +89,7 @@
 		A758295F27925DE300AA0649 /* LayoutController+Listeners.swift in Sources */ = {isa = PBXBuildFile; fileRef = A758295E27925DE300AA0649 /* LayoutController+Listeners.swift */; };
 		A75829612792A53700AA0649 /* PathFinderContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = A75829602792A53700AA0649 /* PathFinderContext.swift */; };
 		A75829632792A55A00AA0649 /* PathFinderSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = A75829622792A55A00AA0649 /* PathFinderSettings.swift */; };
+		A7582966279380C000AA0649 /* LayoutTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7582965279380C000AA0649 /* LayoutTests.swift */; };
 		A76507E6275AC7DA0079C71A /* ScheduledMessageQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = A76507E5275AC7DA0079C71A /* ScheduledMessageQueue.swift */; };
 		A76507E8275AD1FE0079C71A /* TrainControlLocationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A76507E7275AD1FE0079C71A /* TrainControlLocationView.swift */; };
 		A76507F4275BEE5F0079C71A /* LayoutDiagnostics.swift in Sources */ = {isa = PBXBuildFile; fileRef = A76507F3275BEE5F0079C71A /* LayoutDiagnostics.swift */; };
@@ -176,7 +177,6 @@
 		A7B0B5132761CF8400F11A3E /* SwitchboardLinkUpdater.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7B0B5122761CF8400F11A3E /* SwitchboardLinkUpdater.swift */; };
 		A7B0B5172762FB6500F11A3E /* BlockListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7B0B5162762FB6500F11A3E /* BlockListView.swift */; };
 		A7BD6259276D50380039B6C2 /* LayoutDocumentTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7BD6258276D50380039B6C2 /* LayoutDocumentTests.swift */; };
-		A7BE366A2751AA9300286709 /* LayoutBTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7F779E4272F063F00E73275 /* LayoutBTests.swift */; };
 		A7BE366B2751AAA300286709 /* BlockTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7F779E8272F06C400E73275 /* BlockTests.swift */; };
 		A7BE366C2751AAF300286709 /* LayoutParserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7F779DE272DB21000E73275 /* LayoutParserTests.swift */; };
 		A7BE366D2751ABBF00286709 /* LayoutCTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7F779F3272F5DEA00E73275 /* LayoutCTests.swift */; };
@@ -310,6 +310,7 @@
 		A758295E27925DE300AA0649 /* LayoutController+Listeners.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LayoutController+Listeners.swift"; sourceTree = "<group>"; };
 		A75829602792A53700AA0649 /* PathFinderContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PathFinderContext.swift; sourceTree = "<group>"; };
 		A75829622792A55A00AA0649 /* PathFinderSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PathFinderSettings.swift; sourceTree = "<group>"; };
+		A7582965279380C000AA0649 /* LayoutTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutTests.swift; sourceTree = "<group>"; };
 		A76507E5275AC7DA0079C71A /* ScheduledMessageQueue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduledMessageQueue.swift; sourceTree = "<group>"; };
 		A76507E7275AD1FE0079C71A /* TrainControlLocationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainControlLocationView.swift; sourceTree = "<group>"; };
 		A76507F3275BEE5F0079C71A /* LayoutDiagnostics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutDiagnostics.swift; sourceTree = "<group>"; };
@@ -409,7 +410,6 @@
 		A7F779DE272DB21000E73275 /* LayoutParserTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutParserTests.swift; sourceTree = "<group>"; };
 		A7F779E0272E1E3F00E73275 /* LayoutParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutParser.swift; sourceTree = "<group>"; };
 		A7F779E2272E20F500E73275 /* TrainControlListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainControlListView.swift; sourceTree = "<group>"; };
-		A7F779E4272F063F00E73275 /* LayoutBTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutBTests.swift; sourceTree = "<group>"; };
 		A7F779E6272F065600E73275 /* RootLayoutTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootLayoutTests.swift; sourceTree = "<group>"; };
 		A7F779E8272F06C400E73275 /* BlockTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockTests.swift; sourceTree = "<group>"; };
 		A7F779EA272F1E7700E73275 /* LayoutACreator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutACreator.swift; sourceTree = "<group>"; };
@@ -678,12 +678,12 @@
 		A73E07F4276974F1005F9D64 /* Layouts */ = {
 			isa = PBXGroup;
 			children = (
+				A7582965279380C000AA0649 /* LayoutTests.swift */,
 				A7FBC8B5276E8BB6009D49C3 /* PathFinderTests.swift */,
 				A796FA2D2775642B00FA41BA /* LayoutAsserter.swift */,
 				A73E080C276ABB5C005F9D64 /* LayoutErrorTests.swift */,
 				A7F779E6272F065600E73275 /* RootLayoutTests.swift */,
 				A7F779D1272BA07100E73275 /* LayoutATests.swift */,
-				A7F779E4272F063F00E73275 /* LayoutBTests.swift */,
 				A7F779F3272F5DEA00E73275 /* LayoutCTests.swift */,
 				A73E0815276B0BC0005F9D64 /* LayoutGTests.swift */,
 				A7F779DE272DB21000E73275 /* LayoutParserTests.swift */,
@@ -1286,7 +1286,6 @@
 				A73E07F027697127005F9D64 /* FeedbackViewTests.swift in Sources */,
 				A73E0823276B9937005F9D64 /* BlockFeedbackViewTests.swift in Sources */,
 				A73E080F276ACC79005F9D64 /* ScheduledMessageQueueTests.swift in Sources */,
-				A7BE366A2751AA9300286709 /* LayoutBTests.swift in Sources */,
 				A7218087276055AD00831998 /* FeedbackTests.swift in Sources */,
 				A73E081A276B19FE005F9D64 /* NewLayoutSheetTests.swift in Sources */,
 				A7F779D2272BA07100E73275 /* LayoutATests.swift in Sources */,
@@ -1315,6 +1314,7 @@
 				A721807B275DD95900831998 /* TrainTests.swift in Sources */,
 				A79079A1277EDAA700771A60 /* RouteViewTests.swift in Sources */,
 				A73E0814276AD1D0005F9D64 /* MarklinInterfaceTests.swift in Sources */,
+				A7582966279380C000AA0649 /* LayoutTests.swift in Sources */,
 				A73E0809276ABA09005F9D64 /* SwitchboardTests.swift in Sources */,
 				A73E0827276BAED3005F9D64 /* SwitchboardRenderingTests.swift in Sources */,
 				A7907997277ED44900771A60 /* TrainRouteControlViewTests.swift in Sources */,
