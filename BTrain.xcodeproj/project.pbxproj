@@ -86,6 +86,7 @@
 		A74CCC6E272A5A08004E58F5 /* Route.swift in Sources */ = {isa = PBXBuildFile; fileRef = A74CCC6D272A5A08004E58F5 /* Route.swift */; };
 		A74CCC70272A5A10004E58F5 /* Turnout.swift in Sources */ = {isa = PBXBuildFile; fileRef = A74CCC6F272A5A10004E58F5 /* Turnout.swift */; };
 		A74CCC72272A5A18004E58F5 /* Transition.swift in Sources */ = {isa = PBXBuildFile; fileRef = A74CCC71272A5A18004E58F5 /* Transition.swift */; };
+		A758295F27925DE300AA0649 /* LayoutController+Listeners.swift in Sources */ = {isa = PBXBuildFile; fileRef = A758295E27925DE300AA0649 /* LayoutController+Listeners.swift */; };
 		A76507E6275AC7DA0079C71A /* ScheduledMessageQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = A76507E5275AC7DA0079C71A /* ScheduledMessageQueue.swift */; };
 		A76507E8275AD1FE0079C71A /* TrainControlLocationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A76507E7275AD1FE0079C71A /* TrainControlLocationView.swift */; };
 		A76507F4275BEE5F0079C71A /* LayoutDiagnostics.swift in Sources */ = {isa = PBXBuildFile; fileRef = A76507F3275BEE5F0079C71A /* LayoutDiagnostics.swift */; };
@@ -304,6 +305,7 @@
 		A74CCC6D272A5A08004E58F5 /* Route.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Route.swift; sourceTree = "<group>"; };
 		A74CCC6F272A5A10004E58F5 /* Turnout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Turnout.swift; sourceTree = "<group>"; };
 		A74CCC71272A5A18004E58F5 /* Transition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Transition.swift; sourceTree = "<group>"; };
+		A758295E27925DE300AA0649 /* LayoutController+Listeners.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LayoutController+Listeners.swift"; sourceTree = "<group>"; };
 		A76507E5275AC7DA0079C71A /* ScheduledMessageQueue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduledMessageQueue.swift; sourceTree = "<group>"; };
 		A76507E7275AD1FE0079C71A /* TrainControlLocationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainControlLocationView.swift; sourceTree = "<group>"; };
 		A76507F3275BEE5F0079C71A /* LayoutDiagnostics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutDiagnostics.swift; sourceTree = "<group>"; };
@@ -935,6 +937,7 @@
 			isa = PBXGroup;
 			children = (
 				A711B14F2739EBD7002FE7DB /* LayoutController.swift */,
+				A758295E27925DE300AA0649 /* LayoutController+Listeners.swift */,
 				A783EAA82788C1F700E69B6D /* LayoutFeedbackMonitor.swift */,
 				A7218077275D922300831998 /* TrainController.swift */,
 				A7FBC8B7276EBB34009D49C3 /* PathFinder.swift */,
@@ -1208,6 +1211,7 @@
 				A783EAAD2789290F00E69B6D /* LayoutRuntimeErrorView.swift in Sources */,
 				A721806A275D1CA700831998 /* MarklinCommand.swift in Sources */,
 				A7B0B5172762FB6500F11A3E /* BlockListView.swift in Sources */,
+				A758295F27925DE300AA0649 /* LayoutController+Listeners.swift in Sources */,
 				A7F779E1272E1E3F00E73275 /* LayoutParser.swift in Sources */,
 				A7710E6727799D5C00C08150 /* Layout+Trains.swift in Sources */,
 				A76507E6275AC7DA0079C71A /* ScheduledMessageQueue.swift in Sources */,

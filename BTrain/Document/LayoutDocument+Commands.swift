@@ -49,10 +49,7 @@ extension LayoutDocument {
             DispatchQueue.main.async {
                 self.connected = true
                 self.interface.interface = mi
-                self.registerForFeedbackChange()
-                self.registerForSpeedChange()
-                self.registerForDirectionChange()
-                self.registerForTurnoutChange()
+                self.layoutController.interfaceChanged()
                 completed?(nil)
             }
         } onError: { error in
@@ -94,64 +91,6 @@ extension LayoutDocument {
                 }
             }
         }
-    }
-    
-    func registerForFeedbackChange() {
-        interface.register(forFeedbackChange: { deviceID, contactID, value in
-            if let feedback = self.layout.feedbacks.find(deviceID: deviceID, contactID: contactID) {
-                feedback.detected = value == 1
-            }
-        })
-    }
-                
-    func registerForSpeedChange() {
-        interface.register(forSpeedChange: { address, decoder, value in
-            DispatchQueue.main.async {
-                if let train = self.layout.trains.find(address: address, decoder: decoder) {
-                    train.speed.steps = self.interface.speedSteps(for: value, decoder: train.decoder)
-                }
-            }
-        })
-    }
-    
-    func registerForDirectionChange() {
-        interface.register(forDirectionChange: { address, decoder, direction in
-            DispatchQueue.main.async {
-                if let train = self.layout.trains.find(address: address, decoder: decoder) {
-                    switch(direction) {
-                    case .forward:
-                        if train.directionForward == false {
-                            train.directionForward = true
-                            try? self.layout.toggleTrainDirectionInBlock(train)
-                        }
-                    case .backward:
-                        if train.directionForward {
-                            train.directionForward = false
-                            try? self.layout.toggleTrainDirectionInBlock(train)
-                        }
-                    case .unknown:
-                        BTLogger.error("Unknown direction \(direction) for \(address.toHex())")
-                    }
-                } else {
-                    BTLogger.error("Unknown address \(address.toHex()) for change in direction event")
-                }
-            }
-        })
-    }
-    
-    func registerForTurnoutChange() {
-        interface.register(forTurnoutChange: { address, state, power in
-            DispatchQueue.main.async {
-                if let turnout = self.layout.turnouts.find(address: address) {
-                    BTLogger.debug("Turnout \(turnout.name) changed state \(state) for address \(address.actualAddress.toHex())")
-                    turnout.setState(value: state, for: address.actualAddress)
-                    BTLogger.debug(" > Turnout \(turnout.name) changed to state \(turnout.state)")
-                    self.layout.didChange()
-                } else {
-                    BTLogger.error("Unknown turnout for address \(address.actualAddress.toHex())")
-                }
-            }
-        })
     }
     
 }
