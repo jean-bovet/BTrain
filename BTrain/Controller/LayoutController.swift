@@ -12,23 +12,29 @@
 
 import Foundation
 import Combine
+import OrderedCollections
 
+// This class is responsible for managing all the trains in the layout,
+// including responding to feedback changes and ensuring the trains
+// are properly following their route.
 final class LayoutController: ObservableObject, TrainControllerDelegate {
     
+    // The layout being managed
     let layout: Layout
     
+    // A helper class that monitors feedbacks
     let feedbackMonitor: LayoutFeedbackMonitor
     
+    // The interface to the Digital Controller
     var interface: CommandInterface?
         
-    var controllers = [Identifier<Train>:TrainController]()
-
-    var sortedControllers: [TrainController] {
-        let sortedKeys = controllers.keys.sorted()
-        return sortedKeys.compactMap { controllers[$0] }
-    }
+    // An ordered map of train controller for each available train.
+    // The train controller manages a single train in the layout.
+    // Note: we need an ordered map in order to have predictable outcome
+    // at runtime and during unit testing.
+    private var controllers = OrderedDictionary<Identifier<Train>, TrainController>()
     
-    var cancellables = [AnyCancellable]()
+    private var cancellables = [AnyCancellable]()
         
     init(layout: Layout, interface: CommandInterface?) {
         self.layout = layout
@@ -43,6 +49,7 @@ final class LayoutController: ObservableObject, TrainControllerDelegate {
     }
         
     func registerForFeedbackChanges() {
+        // TODO: use callback blocks from LayoutDocument+Commands
         for feedback in layout.feedbacks {
             let cancellable = feedback.$detected
                 .dropFirst()
@@ -57,6 +64,7 @@ final class LayoutController: ObservableObject, TrainControllerDelegate {
     }
     
     func registerForTrainBlockChanges() {
+        // TODO: use callback blocks from the Layout directly?
         for train in layout.trains {
             let cancellable = train.$blockId
                 .dropFirst()
@@ -69,42 +77,6 @@ final class LayoutController: ObservableObject, TrainControllerDelegate {
         }
     }
 
-    var pausedTrainTimers = [Identifier<Train>:Timer]()
-    
-    func scheduleRestartTimer(trainInstance: Block.TrainInstance) {
-        guard let time = trainInstance.restartDelayTime, time > 0 else {
-            return
-        }
-        
-        // Start a timer that will restart the train with a new automatic route
-        let timer = Timer.scheduledTimer(withTimeInterval: time, repeats: false, block: { timer in
-            BTLogger.debug("Timer fired to restart train \(trainInstance.trainId)")
-            trainInstance.restartDelayTime = 0
-            timer.invalidate()
-            self.runControllers()
-        })
-        pausedTrainTimers[trainInstance.trainId] = timer
-    }
-
-    func restartControllers() throws -> TrainController.Result {
-        var result = TrainController.Result.none
-        for controller in self.sortedControllers {
-            if let block = layout.block(for: controller.train.id), let ti = block.train, ti.restartDelayTime == 0 {
-                BTLogger.debug("Restarting train \(ti.trainId)")
-                ti.restartDelayTime = nil
-                try controller.restartTrain()
-                result = .processed
-            }
-        }
-        cleanupRestartTimer()
-        return result
-    }
-    
-    func cleanupRestartTimer() {
-        // Remove any expired timer
-        pausedTrainTimers = pausedTrainTimers.filter({$0.value.isValid})
-    }
-    
     func updateControllers() {
         for train in layout.trains {
             if controllers[train.id] == nil {
@@ -141,7 +113,7 @@ final class LayoutController: ObservableObject, TrainControllerDelegate {
         // Run each controller one by one, using
         // the sorted keys to ensure they always
         // run in the same order.
-        let sortedControllers = sortedControllers
+        let sortedControllers = controllers.values
         var result: TrainController.Result = .none
         do {
             // Update and detect any unexpected feedbacks
@@ -170,7 +142,7 @@ final class LayoutController: ObservableObject, TrainControllerDelegate {
         return result
     }
         
-    func stopAll() {
+    private func stopAll() {
         // Stop the Digital Controller to ensure nothing moves further
         stop() { }
 
@@ -182,7 +154,7 @@ final class LayoutController: ObservableObject, TrainControllerDelegate {
         pausedTrainTimers.removeAll()
         
         // Stop each train actively monitored by the controllers
-        for controller in sortedControllers {
+        for controller in controllers.values {
             do {
                 try layout.stopTrain(controller.train)
             } catch {
@@ -190,6 +162,8 @@ final class LayoutController: ObservableObject, TrainControllerDelegate {
             }
         }
     }
+    
+    // MARK: Commands
     
     func stop(onCompletion: @escaping () -> Void) {
         interface?.execute(command: .stop(), onCompletion: onCompletion)
@@ -254,5 +228,47 @@ final class LayoutController: ObservableObject, TrainControllerDelegate {
             train.speed.maxSpeed = TrainSpeed.UnitKph(maxSpeed)
         }
         train.decoder = locomotive.decoderType
+    }
+    
+    // MARK: Paused Train Management
+    
+    // A map that contains all trains that are currently paused
+    // and need to be restarted at a later time. Each train
+    // has an associated timer that fires when it is time to
+    // restart the train
+    var pausedTrainTimers = [Identifier<Train>:Timer]()
+    
+    // This method is called by the TrainController (via this class delegate)
+    // when a train has stopped in a station and needs to be restarted later on.
+    func scheduleRestartTimer(trainInstance: Block.TrainInstance) {
+        guard let time = trainInstance.restartDelayTime, time > 0 else {
+            return
+        }
+        
+        // Start a timer that will restart the train with a new automatic route
+        let timer = Timer.scheduledTimer(withTimeInterval: time, repeats: false, block: { timer in
+            BTLogger.debug("Timer fired to restart train \(trainInstance.trainId)")
+            trainInstance.restartDelayTime = 0
+            timer.invalidate()
+            self.runControllers()
+        })
+        pausedTrainTimers[trainInstance.trainId] = timer
+    }
+
+    // This method is called by this class to restart any train that needs
+    // to be restarted.
+    func restartControllers() throws -> TrainController.Result {
+        var result = TrainController.Result.none
+        for controller in controllers.values {
+            if let block = layout.block(for: controller.train.id), let ti = block.train, ti.restartDelayTime == 0 {
+                BTLogger.debug("Restarting train \(ti.trainId)")
+                ti.restartDelayTime = nil
+                try controller.restartTrain()
+                result = .processed
+            }
+        }
+        // Remove any expired timer
+        pausedTrainTimers = pausedTrainTimers.filter({$0.value.isValid})
+        return result
     }
 }

@@ -719,7 +719,6 @@
 				A7710E70277A344300C08150 /* NewBlockSheet.swift */,
 				A7710E72277A3BC200C08150 /* NewTurnoutSheet.swift */,
 				A7F31B9E277B95BA00FE0C65 /* TrainDropActionSheet.swift */,
-				A7710E74277A7AAC00C08150 /* Layout2Swift.swift */,
 			);
 			path = Overview;
 			sourceTree = "<group>";
@@ -921,6 +920,7 @@
 		A7BD6257276D39CA0039B6C2 /* Utilities */ = {
 			isa = PBXGroup;
 			children = (
+				A7710E74277A7AAC00C08150 /* Layout2Swift.swift */,
 				A785C074278A5CE1002FD538 /* TrainIconManager.swift */,
 				A785C06E2789F323002FD538 /* UndoProvider.swift */,
 				A73B1638274B60A10073947D /* BTLogger.swift */,
