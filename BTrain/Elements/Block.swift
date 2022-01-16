@@ -60,6 +60,10 @@ final class Block: Element, ObservableObject {
             lhs.trainId == rhs.trainId && lhs.direction == rhs.direction
         }
         
+        enum CodingKeys: CodingKey {
+          case trainId, direction
+        }
+
         init(_ trainId: Identifier<Train>, _ direction: Direction) {
             self.trainId = trainId
             self.direction = direction
