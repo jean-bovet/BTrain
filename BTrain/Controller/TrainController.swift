@@ -131,12 +131,12 @@ final class TrainController {
         if let nextBlock = nextBlock, (nextBlock.reserved == nil || nextBlock.reserved == currentBlock.reserved) && nextBlock.train == nil && nextBlock.enabled {
             do {
                 try layout.reserve(train: train.id, fromBlock: currentBlock.id, toBlock: nextBlock.id, direction: currentBlock.train!.direction)
-                BTLogger.debug("Start train \(train) because the next block \(nextBlock) is free or reserved for this train", layout, train)
+                BTLogger.debug("Start train \(train) because the next block \(nextBlock) is free or reserved for this train")
                 startRouteIndex = train.routeIndex
                 try layout.setTrain(train, speed: LayoutFactory.DefaultSpeed)
                 return .processed
             } catch {
-                BTLogger.debug("Cannot start train \(train) because \(error)", layout, train)
+                BTLogger.debug("Cannot start train \(train) because \(error)")
             }
         }
         
@@ -174,12 +174,12 @@ final class TrainController {
         }
         
         // Generate a new route if one is available
-        BTLogger.debug("Generating a new route for \(train) at block \(currentBlock.name) because the next block \(nextBlock.name) is occupied or disabled")
+        debug("Generating a new route for \(train) at block \(currentBlock.name) because the next block \(nextBlock.name) is occupied or disabled")
 
         // Update the automatic route
         return try updateAutomaticRoute(for: train.id)
     }
-    
+        
     private func handleTrainStop(route: Route) throws -> Result {
         guard train.speed.kph > 0 else {
             return .none
@@ -194,19 +194,19 @@ final class TrainController {
         // Stop the train when it reaches a station block, given that this block is not the one where the train
         // started - to avoid stopping a train that is starting from a station block (while still in that block).
         if currentBlock.category == .station && atEndOfBlock && train.routeIndex != startRouteIndex && route.automatic {
-            BTLogger.debug("Stop train \(train) because the current block \(currentBlock) is a station", layout, train)
+            debug("Stop train \(train) because the current block \(currentBlock) is a station")
             
             switch(route.automaticMode) {
             case .once(toBlockId: _):
-                BTLogger.debug("Stopping completely \(train) because it has reached the end of the route")
+                debug("Stopping completely \(train) because it has reached the end of the route")
                 return try stop(completely: true)
                 
             case .endless:
                 if train.state == .finishing {
-                    BTLogger.debug("Stopping completely \(train) because it has reached the end of the route and was marked as .finishing")
+                    debug("Stopping completely \(train) because it has reached the end of the route and was marked as .finishing")
                     return try stop(completely: true)
                 } else {
-                    BTLogger.debug("Schedule timer to restart train \(train) in \(route.stationWaitDuration) seconds")
+                    debug("Schedule timer to restart train \(train) in \(route.stationWaitDuration) seconds")
                     
                     // The layout controller is going to schedule the appropriate timer given the `restartDelayTime` value
                     if let ti = currentBlock.train {
@@ -222,7 +222,7 @@ final class TrainController {
         guard let nextBlock = layout.nextBlock(train: train) else {
             // Stop the train if there is no next block
             if atEndOfBlock {
-                BTLogger.debug("Stopping completely \(train) because there is no next block (after \(currentBlock))", layout, train)
+                debug("Stopping completely \(train) because there is no next block (after \(currentBlock))")
                 return try stop(completely: true)
             } else {
                 return .none
@@ -231,7 +231,7 @@ final class TrainController {
         
         // Stop if the next block is occupied
         if nextBlock.train != nil && atEndOfBlock {
-            BTLogger.debug("Stop train \(train) train because the next block is occupied", layout, train)
+            debug("Stop train \(train) train because the next block is occupied")
             return try stop()
         }
 
@@ -239,24 +239,24 @@ final class TrainController {
         // Note: only test the train ID because the direction can actually be different; for example, exiting
         // the current block in the "next" direction but traveling inside the next block with the "previous" direction.
         if let reserved = nextBlock.reserved, reserved != currentBlock.reserved && atEndOfBlock {
-            BTLogger.debug("Stop train \(train) because the next block is reserved for another train \(reserved)", layout, train)
+            debug("Stop train \(train) because the next block is reserved for another train \(reserved)")
             return try stop()
         }
         
         // Stop if the next block is not reserved
         if nextBlock.reserved == nil && atEndOfBlock {
-            BTLogger.debug("Stop train \(train) because the next block is not reserved", layout, train)
+            debug("Stop train \(train) because the next block is not reserved")
             return try stop()
         }
 
         // Stop if the next block is disabled
         if !nextBlock.enabled && atEndOfBlock {
-            BTLogger.debug("Stop train \(train) because the next block is disabled", layout, train)
+            debug("Stop train \(train) because the next block is disabled")
             return try stop()
         }
 
         if currentBlock.reserved == nil {
-            BTLogger.debug("Stop train \(train) because the current block is not reserved", layout, train)
+            debug("Stop train \(train) because the current block is not reserved")
             return try stop()
         }
         
@@ -285,7 +285,7 @@ final class TrainController {
             let position = newPosition(forTrain: train, enabledFeedbackIndex: index, direction: trainInstance.direction)
             if train.position != position {
                 try layout.setTrain(train, toPosition: position)
-                BTLogger.debug("Train \(train) moved to position \(train.position), direction \(trainInstance.direction)", layout, train)
+                debug("Train \(train) moved to position \(train.position), direction \(trainInstance.direction)")
                 result = .processed
             }
         }
@@ -377,7 +377,7 @@ final class TrainController {
             position = nextBlock.feedbacks.count - 1
         }
         
-        BTLogger.debug("Train \(train) enters block \(nextBlock) at position \(position), direction \(direction)", layout, train)
+        debug("Train \(train) enters block \(nextBlock) at position \(position), direction \(direction)")
 
         // Asks the layout to move the train to the next block
         try layout.setTrain(train.id, toBlock: nextBlock.id, position: .custom(value: position), direction: direction)
@@ -409,10 +409,10 @@ final class TrainController {
         
         do {
             try layout.reserve(train: train.id, fromBlock: currentBlock.id, toBlock: nextBlock.id, direction: direction)
-            BTLogger.debug("Next block \(nextBlock) is reserved", layout, train)
+            debug("Next block \(nextBlock) is reserved")
             return .processed
         } catch {
-            BTLogger.debug("Cannot reserve next blocks because \(error)", layout, train)
+            debug("Cannot reserve next blocks because \(error)")
             return .none
         }
     }
@@ -422,7 +422,7 @@ final class TrainController {
             return .none
         }
         
-        BTLogger.debug("Stop train \(train)", layout, train)
+        debug("Stop train \(train)")
         
         try layout.stopTrain(train.id, completely: completely)
                 
@@ -432,12 +432,16 @@ final class TrainController {
     private func updateAutomaticRoute(for trainId: Identifier<Train>) throws -> Result {
         let (success, route) = try layout.updateAutomaticRoute(for: train.id)
         if success {
-            BTLogger.debug("Generated route is: \(route.steps)", layout, train)
+            debug("Generated route is: \(route.steps)")
             return .processed
         } else {
-            BTLogger.debug("Unable to find a suitable route for train \(train)", layout, train)
+            debug("Unable to find a suitable route for train \(train)")
             return .none
         }
     }
     
+    private func debug(_ message: String) {
+        BTLogger.debug(message, layout, train)
+    }
+
 }
