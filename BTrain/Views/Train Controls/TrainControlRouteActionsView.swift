@@ -48,11 +48,7 @@ struct TrainControlRouteActionsView: View {
                 }
             }
             
-            if train.running {
-                Button("Stop") {
-                    try? document.stop(train: train)
-                }
-            } else {
+            if train.state == .stopped {
                 Button("Start") {
                     do {
                         try document.start(train: train.id, withRoute: route.id, toBlockId: nil)
@@ -61,6 +57,23 @@ struct TrainControlRouteActionsView: View {
                         self.error = error.localizedDescription
                     }
                 }
+            } else {
+                Button("Stop") {
+                    do {
+                        try document.stop(train: train)
+                        self.error = nil
+                    } catch {
+                        self.error = error.localizedDescription
+                    }
+                }
+                Button("Finish") {
+                    do {
+                        try document.finish(train: train)
+                        self.error = nil
+                    } catch {
+                        self.error = error.localizedDescription
+                    }
+                }.disabled(train.state == .finishing)
             }
         }
     }

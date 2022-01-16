@@ -31,7 +31,11 @@ extension LayoutDocument {
     func stop(train: Train) throws {
         try layoutController.stop(trainID: train.id, completely: true)
     }
-    
+
+    func finish(train: Train) throws {
+        try layoutController.finish(trainID: train.id)
+    }
+
     @discardableResult
     func connectToSimulator(completed: ((Error?) -> Void)? = nil) -> CommandInterface {
         simulator.start()

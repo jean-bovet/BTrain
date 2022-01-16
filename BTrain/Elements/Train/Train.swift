@@ -52,12 +52,25 @@ final class Train: Element, ObservableObject {
     // because a route can re-use the same block several times
     // (or the same departing block is also the arrival block)
     @Published var routeIndex = 0
+
+    // The various state the train can be in
+    enum State {
+        // The train is stopped and cannot be started again
+        // unless the user takes an explicit action (ie Start button)
+        case stopped
+        
+        // The train is running and has not yet finished the route
+        // Note: a train can be "stopped" with a speed of 0 kph while still
+        // be in a running state. This happens when the train stops because
+        // the next block is occupied or it has reached a station.
+        case running
+        
+        // The train is running and will stop when it finishes the route
+        case finishing
+    }
     
-    // True if the train is running along its route. A train can
-    // be stopped but still running if it hasn't finished its route
-    // (ie it is waiting for the next block to become available).
-    // False if the train has finished its route or hasn't started.
-    @Published var running = false
+    // The state of the train
+    @Published var state: State = .stopped
     
     // The block this train is located in
     @Published var blockId: Identifier<Block>?

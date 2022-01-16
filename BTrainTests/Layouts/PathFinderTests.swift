@@ -249,9 +249,28 @@ class PathFinderTests: BTTestCase {
         try p.assert("automatic-0: [b1 ≏ ] <t3(0,2)> ![b5 ≏ ] <t7(2,0),r> <t5(2,0),r> ![b3 ≏ ] <t4(0,1)> ![b2 ≏ ] <t3(1,0)> ![b1 ≏ ] <t2(0,1)> <t1(0,1)> !{r0{s2 🛑🚂0 ≡ }}")
         
         // The train is still running because the route is .endless
-        XCTAssertTrue(p.train.running)
+        XCTAssertEqual(p.train.state, .running)
     }
     
+    func testUpdateAutomaticRouteFinishing() throws {
+        let layout = LayoutECreator().newLayout()
+        let s1 = layout.block(for: Identifier<Block>(uuid: "s1"))!
+
+        let p = try setup(layout: layout, fromBlockId: s1.id, toBlockId: nil, position: .end, routeSteps: ["s1:next", "b1:next", "b2:next", "b3:next", "s2:next"])
+        
+        try p.assert("automatic-0: {r0{s1 ≏ 🚂0 }} <r0<t1,l>> <r0<t2,s>> [r0[b1 ≏ ]] <t3> [b2 ≏ ] <t4> [b3 ≏ ] <t5> <t6> {s2 ≏ }")
+        try p.assert("automatic-0: {s1 ≏ } <t1,l> <t2,s> [r0[b1 ≡ 🚂0 ]] <r0<t3>> [r0[b2 ≏ ]] <t4> [b3 ≏ ] <t5> <t6> {s2 ≏ }")
+        try p.assert("automatic-0: {s1 ≏ } <t1,l> <t2,s> [b1 ≏ ] <t3> [r0[b2 ≡ 🚂0 ]] <r0<t4>> [r0[b3 ≏ ]] <t5> <t6> {s2 ≏ }")
+        
+        try layout.finishTrain(p.train.id)
+        XCTAssertEqual(p.train.state, .finishing)
+
+        try p.assert("automatic-0: {s1 ≏ } <t1,l> <t2,s> [b1 ≏ ] <t3> [b2 ≏ ] <t4> [r0[b3 ≡ 🚂0 ]] <r0<t5>> <r0<t6>> {r0{s2 ≏ }}")
+        try p.assert("automatic-0: {s1 ≏ } <t1,l> <t2,s> [b1 ≏ ] <t3> [b2 ≏ ] <t4> [b3 ≏ ] <t5> <t6> {r0{s2 ≡ 🛑🚂0 }}")
+
+        XCTAssertEqual(p.train.state, .stopped)
+    }
+
     func testAutomaticRouteStationRestart() throws {
         let layout = LayoutECreator().newLayout()
         let s2 = layout.block(for: Identifier<Block>(uuid: "s2"))!
@@ -334,7 +353,7 @@ class PathFinderTests: BTTestCase {
         try p.assert("automatic-0: {s2 ≏ } <t1,s> <t2,s> [b1 ≏ ] <t3> [r0[b2 ≡ 🚂0 ]] <r0<t4>> [r0[b3 ≏ ]]")
         try p.assert("automatic-0: {s2 ≏ } <t1,s> <t2,s> [b1 ≏ ] <t3> [b2 ≏ ] <t4> [r0[b3 ≡ 🛑🚂0 ]]")
 
-        XCTAssertFalse(p.train.running)
+        XCTAssertEqual(p.train.state, .stopped)
 
         // Nothing more should happen because the automatic route has finished (mode .once)
         XCTAssertEqual(p.layoutController.run(), .none)
@@ -365,8 +384,8 @@ class PathFinderTests: BTTestCase {
         try p.assert("automatic-0: [b1 ≏ ] <t3,r> ![r0[b5 🚂0 ≡ ]] <r0<t7,r>> <r0<t5,r>> ![r0[b3 ≏ ]]")
         try p.assert("automatic-0: [b1 ≏ ] <t3,r> ![b5 ≏ ] <t7,r> <t5,r> ![r0[b3 🛑🚂0 ≡ ]]")
 
-        XCTAssertFalse(p.train.running)
-        
+        XCTAssertEqual(p.train.state, .stopped)
+
         // Nothing more should happen because the automatic route has finished (mode .once)
         XCTAssertEqual(p.layoutController.run(), .none)
         XCTAssertEqual(p.layoutController.run(), .none)
@@ -399,7 +418,7 @@ class PathFinderTests: BTTestCase {
 
         let route = layout.route(for: routeId, trainId: train.id)!
         XCTAssertEqual(route.steps.description, routeSteps)
-        XCTAssertTrue(train.running)
+        XCTAssertEqual(train.state, .running)
 
         let asserter = LayoutAsserter(layout: layout, layoutController: layoutController)
         

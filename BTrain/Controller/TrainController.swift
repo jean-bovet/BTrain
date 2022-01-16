@@ -59,7 +59,7 @@ final class TrainController {
         }
 
         // Return now if the train is not actively "running"
-        guard train.running else {
+        guard train.state != .stopped else {
             return .none
         }
         
@@ -202,15 +202,20 @@ final class TrainController {
                 return try stop(completely: true)
                 
             case .endless:
-                BTLogger.debug("Schedule timer to restart train \(train) in \(route.stationWaitDuration) seconds")
-                
-                // The layout controller is going to schedule the appropriate timer given the `restartDelayTime` value
-                if let ti = currentBlock.train {
-                    ti.timeUntilAutomaticRestart = route.stationWaitDuration
-                    delegate?.scheduleRestartTimer(trainInstance: ti)
+                if train.state == .finishing {
+                    BTLogger.debug("Stopping completely \(train) because it has reached the end of the route and was marked as .finishing")
+                    return try stop(completely: true)
+                } else {
+                    BTLogger.debug("Schedule timer to restart train \(train) in \(route.stationWaitDuration) seconds")
+                    
+                    // The layout controller is going to schedule the appropriate timer given the `restartDelayTime` value
+                    if let ti = currentBlock.train {
+                        ti.timeUntilAutomaticRestart = route.stationWaitDuration
+                        delegate?.scheduleRestartTimer(trainInstance: ti)
+                    }
+                    
+                    return try stop()
                 }
-                
-                return try stop()
             }
         }
 
@@ -419,7 +424,7 @@ final class TrainController {
         
         BTLogger.debug("Stop train \(train)", layout, train)
         
-        try layout.stopTrain(train, completely: completely)
+        try layout.stopTrain(train.id, completely: completely)
                 
         return .processed
     }

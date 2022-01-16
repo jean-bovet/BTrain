@@ -114,7 +114,7 @@ final class LayoutController: TrainControllerDelegate {
         // Stop each train actively monitored by the controllers
         for controller in controllers.values {
             do {
-                try layout.stopTrain(controller.train)
+                try layout.stopTrain(controller.train.id)
             } catch {
                 BTLogger.error("Unable to stop train \(controller.train) because \(error.localizedDescription)")
             }
@@ -134,6 +134,11 @@ final class LayoutController: TrainControllerDelegate {
     
     func stop(trainID: Identifier<Train>, completely: Bool) throws {
         try layout.stopTrain(trainID, completely: completely)
+        _ = run()
+    }
+    
+    func finish(trainID: Identifier<Train>) throws {
+        try layout.finishTrain(trainID)
         _ = run()
     }
     
