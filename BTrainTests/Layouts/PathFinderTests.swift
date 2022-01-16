@@ -204,11 +204,11 @@ class PathFinderTests: BTTestCase {
     
     func testAutomaticRouteStationRestart() throws {
         let layout = LayoutECreator().newLayout()
-        let s1 = layout.block(for: Identifier<Block>(uuid: "s2"))!
+        let s2 = layout.block(for: Identifier<Block>(uuid: "s2"))!
 
         let train = layout.trains[0]
-        train.blockId = s1.id
-        s1.train = .init(train.id, .next)
+        train.blockId = s2.id
+        s2.train = .init(train.id, .next)
         XCTAssertEqual(train.speed.kph, 0)
 
         layout.automaticRouteRandom = false
@@ -218,15 +218,11 @@ class PathFinderTests: BTTestCase {
         XCTAssertEqual(route.steps.description, ["s2:next", "b1:next", "b2:next", "b3:next", "s2:next"])
         XCTAssertFalse(route.enabled)
 
-        route.stationWaitDuration = 0.250
-
         // Start the route
         let layoutController = LayoutController(layout: layout, interface: nil)
         try layout.prepare(routeID: route.id, trainID: train.id, startAtEndOfBlock: true)
         try layoutController.start(routeID: route.id, trainID: train.id, toBlockId: nil)
         
-        XCTAssertEqual(layoutController.pausedTrainTimers.count, 0)
-
         let asserter = LayoutAsserter(layout: layout, layoutController: layoutController)
         
         try asserter.assert(["automatic-0: {r0{s2 ≏ 🚂0 }} <r0<t1,s>> <r0<t2,s>> [r0[b1 ≏ ]] <t3> [b2 ≏ ] <t4> [b3 ≏ ] <t5> <t6> {s2 ≏ }"], route: route, trains: [train])
@@ -235,13 +231,18 @@ class PathFinderTests: BTTestCase {
         try asserter.assert(["automatic-0: {r0{s2 ≏ }} <t1,s> <t2,s> [b1 ≏ ] <t3> [b2 ≏ ] <t4> [r0[b3 ≡ 🚂0 ]] <r0<t5>> <r0<t6>> {r0{s2 ≏ }}"], route: route, trains: [train])
         try asserter.assert(["automatic-0: {r0{s2 ≡ 🛑🚂0 }} <t1,s> <t2,s> [b1 ≏ ] <t3> [b2 ≏ ] <t4> [b3 ≏ ] <t5> <t6> {r0{s2 ≡ 🛑🚂0 }}"], route: route, trains: [train])
         
-        // The train will now wait for `stationWaitDuration` second before starting again
-        wait(for: {
-            return train.speed.kph > 0
-        }, timeout: 1.0)
+        // Nothing should be processed because the timer has not yet expired to restart the train
+        XCTAssertEqual(layoutController.run(), .none)
         
-        XCTAssertEqual(layoutController.pausedTrainTimers.count, 0)
+        // Artificially set the restart time to 0 which will make the train restart again
+        s2.train!.timeUntilAutomaticRestart = 0
+        
+        XCTAssertEqual(layoutController.run(), .processed) // Automatic route is re-generated
+        XCTAssertEqual(layoutController.run(), .processed) // Train is re-started
+        XCTAssertEqual(layoutController.run(), .none)
 
+        XCTAssertTrue(train.speed.kph > 0)
+        
         // When restarting, the train automatic route will be updated
         XCTAssertEqual(route.steps.description, ["s2:next", "b1:next", "b2:next", "b3:next", "s2:next"])
 
@@ -252,11 +253,11 @@ class PathFinderTests: BTTestCase {
     
     func testAutomaticRouteStationRestartCannotUpdateAutomaticRouteImmediately() throws {
         let layout = LayoutECreator().newLayout()
-        let s1 = layout.block(for: Identifier<Block>(uuid: "s2"))!
+        let s2 = layout.block(for: Identifier<Block>(uuid: "s2"))!
 
         let train = layout.trains[0]
-        train.blockId = s1.id
-        s1.train = .init(train.id, .next)
+        train.blockId = s2.id
+        s2.train = .init(train.id, .next)
         XCTAssertEqual(train.speed.kph, 0)
 
         layout.automaticRouteRandom = false
@@ -265,15 +266,12 @@ class PathFinderTests: BTTestCase {
         XCTAssertTrue(success)
         XCTAssertEqual(route.steps.description, ["s2:next", "b1:next", "b2:next", "b3:next", "s2:next"])
         XCTAssertFalse(route.enabled)
-        route.stationWaitDuration = 0.250
 
         // Start the route
         let layoutController = LayoutController(layout: layout, interface: nil)
         try layout.prepare(routeID: route.id, trainID: train.id, startAtEndOfBlock: true)
         try layoutController.start(routeID: route.id, trainID: train.id, toBlockId: nil)
         
-        XCTAssertEqual(layoutController.pausedTrainTimers.count, 0)
-
         let asserter = LayoutAsserter(layout: layout, layoutController: layoutController)
         
         try asserter.assert(["automatic-0: {r0{s2 ≏ 🚂0 }} <r0<t1,s>> <r0<t2,s>> [r0[b1 ≏ ]] <t3> [b2 ≏ ] <t4> [b3 ≏ ] <t5> <t6> {s2 ≏ }"], route: route, trains: [train])
@@ -286,20 +284,19 @@ class PathFinderTests: BTTestCase {
         try layout.setTrain(layout.trains[1].id, toBlock: Identifier<Block>(uuid: "b1"), direction: .next)
         
         // Wait until the train route has been updated (which happens when it restarts)
-        wait(for: {
-            return train.routeIndex == 0
-        }, timeout: 1.0)
-        
-        XCTAssertEqual(layoutController.pausedTrainTimers.count, 0)
-        
+        s2.train!.timeUntilAutomaticRestart = 0
+        XCTAssertEqual(layoutController.run(), .none)
+
         // However, in this situation, the route will be empty because a train is blocking the next block
         XCTAssertEqual(route.steps.count, 0)
         
         // Now remove the train from the block b1 in order for the train in s2 to start again properly this time
         try layout.free(trainID: layout.trains[1].id, removeFromLayout: true)
         
-        layoutController.runControllers()
-        
+        XCTAssertEqual(layoutController.run(), .processed) // Automatic route is re-generated
+        XCTAssertEqual(layoutController.run(), .processed) // Train is re-started
+        XCTAssertEqual(layoutController.run(), .none)
+
         // When restarting, the train automatic route will be updated
         XCTAssertEqual(route.steps.description, ["s2:next", "b1:next", "b2:next", "b3:next", "s2:next"])
 

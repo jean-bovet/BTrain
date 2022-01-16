@@ -109,11 +109,22 @@ final class TrainController {
             return .none
         }
 
+        guard let trainInstance = currentBlock.train else {
+            return .none
+        }
+
+        // Do not start the train if there is still time for the train until it has to restart
+        guard trainInstance.timeUntilAutomaticRestart == 0 else {
+            return .none
+        }
+        
         let nextBlock = layout.nextBlock(train: train)
+        
+        // Update the automatic route if the next block is not defined and if the automatic route
+        // does not have a destinationBlock.
         if nextBlock == nil && route.automatic && route.destinationBlock == nil {
-            // If the route is automatic and the next block is nil, let's update the route
             BTLogger.debug("Generating a new route for \(train) at block \(currentBlock.name) with destination \(String(describing: route.destinationBlock)) because the next block is not defined")
-            try updateAutomaticRoute(for: train.id, toBlockId: route.destinationBlock)
+            return try updateAutomaticRoute(for: train.id, toBlockId: nil)
         }
         
         // Start train if next block is free and reserve it
@@ -163,12 +174,10 @@ final class TrainController {
         }
         
         // Generate a new route if one is available
-        BTLogger.debug("Generating a new route for \(train.name) at block \(currentBlock.name) because the next block \(nextBlock.name) is occupied or disabled")
+        BTLogger.debug("Generating a new route for \(train) at block \(currentBlock.name) because the next block \(nextBlock.name) is occupied or disabled")
 
         // Update the automatic route using any previously defined destination block
-        try updateAutomaticRoute(for: train.id, toBlockId: route.destinationBlock)
-                        
-        return .processed
+        return try updateAutomaticRoute(for: train.id, toBlockId: route.destinationBlock)
     }
     
     private func handleTrainStop(route: Route) throws -> Result {
@@ -188,15 +197,17 @@ final class TrainController {
             BTLogger.debug("Stop train \(train) because the current block \(currentBlock) is a station", layout, train)
             
             // If the route is automatic, stop the train for a specific period of time and then restart it.
+            // Note: this is only valid for an automatic route that has no destinationBlock specified
             if route.automatic && route.destinationBlock == nil {
-                BTLogger.debug("Schedule timer to restart train \(train.name) in \(route.stationWaitDuration) seconds")
+                BTLogger.debug("Schedule timer to restart train \(train) in \(route.stationWaitDuration) seconds")
                 
                 // The layout controller is going to schedule the appropriate timer given the `restartDelayTime` value
                 if let ti = currentBlock.train {
-                    ti.restartDelayTime = route.stationWaitDuration
+                    ti.timeUntilAutomaticRestart = route.stationWaitDuration
                     delegate?.scheduleRestartTimer(trainInstance: ti)
                 }
             }
+            
             return try stop()
         }
 
@@ -266,7 +277,7 @@ final class TrainController {
             let position = newPosition(forTrain: train, enabledFeedbackIndex: index, direction: trainInstance.direction)
             if train.position != position {
                 try layout.setTrain(train, toPosition: position)
-                BTLogger.debug("Train moved to position \(train.position), direction \(trainInstance.direction)", layout, train)
+                BTLogger.debug("Train \(train) moved to position \(train.position), direction \(trainInstance.direction)", layout, train)
                 result = .processed
             }
         }
@@ -409,37 +420,15 @@ final class TrainController {
         
         return .processed
     }
-    
-    // This method is called by the LayoutController when a train that was paused must be restarted.
-    // This happens after the timer associated with the train expired in the LayoutController.
-    // This method actually does not restart the train per say but update the automatic route in order
-    // to have a valid route to follow. In a later cycle, the TrainController will start the train
-    // if the conditions are right (next block free, route enabled, etc).
-    func restartTrain() throws {
-        guard let routeId = train.routeId else {
-            throw LayoutError.trainNotAssignedToARoute(train: train)
-        }
         
-        guard let route = layout.route(for: routeId, trainId: train.id) else {
-            throw LayoutError.routeNotFound(routeId: routeId)
-        }
-        
-        guard route.automatic else {
-            BTLogger.debug("Cannot restart train \(train) because route \(route.name) is not automatic")
-            return
-        }
-        
-        BTLogger.debug("Re-starting train \(train) by updating the automatic route", layout, train)
-        // Note: we are generating a new route to any station block
-        try updateAutomaticRoute(for: train.id, toBlockId: nil)
-    }
-    
-    private func updateAutomaticRoute(for trainId: Identifier<Train>, toBlockId: Identifier<Block>?) throws {
+    private func updateAutomaticRoute(for trainId: Identifier<Train>, toBlockId: Identifier<Block>?) throws -> Result {
         let (success, route) = try layout.updateAutomaticRoute(for: train.id, toBlockId: toBlockId)
         if success {
             BTLogger.debug("Generated route is: \(route.steps)", layout, train)
+            return .processed
         } else {
             BTLogger.debug("Unable to find a suitable route for train \(train)", layout, train)
+            return .none
         }
     }
     

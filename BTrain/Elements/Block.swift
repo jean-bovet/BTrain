@@ -48,8 +48,13 @@ final class Block: Element, ObservableObject {
     final class TrainInstance: Codable, Equatable, CustomStringConvertible {
         
         let trainId: Identifier<Train>
+        
         let direction: Direction
-        var restartDelayTime: Double?
+        
+        // The time remaining until the train is automatically restarted
+        // Currently this is only taken into consideration when the train
+        // uses an automatic route.
+        var timeUntilAutomaticRestart: TimeInterval = 0
 
         static func == (lhs: Block.TrainInstance, rhs: Block.TrainInstance) -> Bool {
             lhs.trainId == rhs.trainId && lhs.direction == rhs.direction

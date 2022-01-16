@@ -85,10 +85,8 @@ final class LayoutController: TrainControllerDelegate {
                 try feedbackMonitor.handleUnexpectedFeedbacks()
             }
             
-            // Restart any train that have waited long enough in their station with automatic routing
-            if try restartControllers() == .processed {
-                result = .processed
-            }
+            // Purge any invalid restart timers
+            purgeRestartTimers()
             
             // Run each controller
             for controller in sortedControllers {
@@ -201,37 +199,31 @@ final class LayoutController: TrainControllerDelegate {
     // restart the train
     var pausedTrainTimers = [Identifier<Train>:Timer]()
     
-    // This method is called by the TrainController (via this class delegate)
+    // This method is called by the TrainController (via its delegate)
     // when a train has stopped in a station and needs to be restarted later on.
     func scheduleRestartTimer(trainInstance: Block.TrainInstance) {
-        guard let time = trainInstance.restartDelayTime, time > 0 else {
+        guard trainInstance.timeUntilAutomaticRestart > 0 else {
             return
         }
         
         // Start a timer that will restart the train with a new automatic route
-        let timer = Timer.scheduledTimer(withTimeInterval: time, repeats: false, block: { timer in
-            BTLogger.debug("Timer fired to restart train \(trainInstance.trainId)")
-            trainInstance.restartDelayTime = 0
-            timer.invalidate()
-            self.runControllers()
+        // Note: the timer fires every seconds to update the remaining time until it reaches 0.
+        let timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true, block: { timer in
+            trainInstance.timeUntilAutomaticRestart -= 1
+            if trainInstance.timeUntilAutomaticRestart <= 0 {
+                BTLogger.debug("It is now time to restart train \(trainInstance.trainId)")
+                // The TrainController is the class that actually restarts the train
+                // when it sees that this timer has reached 0 and all other parameters are valid.
+                trainInstance.timeUntilAutomaticRestart = 0
+                timer.invalidate()
+                self.runControllers()
+            }
         })
         pausedTrainTimers[trainInstance.trainId] = timer
     }
 
-    // This method is called by this class to restart any train that needs
-    // to be restarted.
-    func restartControllers() throws -> TrainController.Result {
-        var result = TrainController.Result.none
-        for controller in controllers.values {
-            if let block = layout.block(for: controller.train.id), let ti = block.train, ti.restartDelayTime == 0 {
-                BTLogger.debug("Restarting train \(ti.trainId)")
-                ti.restartDelayTime = nil
-                try controller.restartTrain()
-                result = .processed
-            }
-        }
+    func purgeRestartTimers() {
         // Remove any expired timer
         pausedTrainTimers = pausedTrainTimers.filter({$0.value.isValid})
-        return result
     }
 }
