@@ -133,7 +133,7 @@ class TransitionsTests: XCTestCase {
         
         // NOTE: stop cannot freeup blocks automatically because
         // the train might be already in transit between two blocks!
-        try v8.stop(routeID: r1.id, trainID: t1.id)
+        try v8.stopTrain(t1.id)
         // So we manually free up the first block and all the transitions to the next one
         try v8.free(fromBlock: r1.steps[0].blockId, toBlockNotIncluded: r1.steps[1].blockId, direction: .next)
         

@@ -26,13 +26,14 @@ class TrainRouteControlViewTests: XCTestCase {
         let layout = LayoutACreator().newLayout()
         let doc = LayoutDocument(layout: layout)
         let route = layout.routes[0]
+        let train = layout.trains[0]
         
-        let sut = TrainControlRouteActionsView(document: doc, train: layout.trains[0], route: route, error: $error)
+        let sut = TrainControlRouteActionsView(document: doc, train: train, route: route, error: $error)
 
-        route.enabled = false
+        train.running = false
         _ = try sut.inspect().find(button: "Start")
 
-        route.enabled = true
+        train.running = true
         _ = try sut.inspect().find(button: "Stop")
     }
 

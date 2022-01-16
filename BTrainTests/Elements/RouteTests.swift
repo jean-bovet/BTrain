@@ -18,7 +18,6 @@ class RouteTests: XCTestCase {
     func testCodable() throws {
         let r1 = Route(uuid: "1")
         r1.name = "r1"
-        r1.enabled = true
         r1.steps = [.init(Identifier<Block>(uuid: "1"), .next),
                         .init(Identifier<Block>(uuid: "2"), .previous),
                         .init(Identifier<Block>(uuid: "3"), .next)]
@@ -31,7 +30,6 @@ class RouteTests: XCTestCase {
         
         XCTAssertEqual(r1.id, r2.id)
         XCTAssertEqual(r1.name, r2.name)
-        XCTAssertEqual(r1.enabled, r2.enabled)
         XCTAssertEqual(r1.steps, r2.steps)
     }
     

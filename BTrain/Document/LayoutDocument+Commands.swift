@@ -29,11 +29,7 @@ extension LayoutDocument {
     }
     
     func stop(train: Train) throws {
-        guard let route = train.routeId else {
-            throw LayoutError.trainNotAssignedToARoute(train: train)
-        }
-                
-        try layoutController.stop(routeID: route, trainID: train.id)
+        try layoutController.stop(trainID: train.id, completely: true)
     }
     
     @discardableResult

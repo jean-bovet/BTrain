@@ -42,7 +42,7 @@ final class Train: Element, ObservableObject {
     @Published var speed = TrainSpeed(kph: 0, decoderType: .MFX)
 
     // Direction of travel of the train
-    @Published var directionForward: Bool = true
+    @Published var directionForward = true
     
     // The route this train is associated with
     @Published var routeId: Identifier<Route>?
@@ -52,6 +52,12 @@ final class Train: Element, ObservableObject {
     // because a route can re-use the same block several times
     // (or the same departing block is also the arrival block)
     @Published var routeIndex = 0
+    
+    // True if the train is running along its route. A train can
+    // be stopped but still running if it hasn't finished its route
+    // (ie it is waiting for the next block to become available).
+    // False if the train has finished its route or hasn't started.
+    @Published var running = false
     
     // The block this train is located in
     @Published var blockId: Identifier<Block>?

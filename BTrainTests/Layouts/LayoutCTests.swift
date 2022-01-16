@@ -70,13 +70,6 @@ class LayoutCTests: RootLayoutTests {
         assert2("r1: {r2{b1 🛑🚂2 ≡ ≡ }} <t0,r> [b2 ≏ ≏ ] {r1{b3 ≡ 🚂1 ≏ }} <r1<t1>> [r1[b4 ≏ ≏]] {r2{b1 🛑🚂2 ≡ ≡ }}",
                 "r3: {r1{b3 ≡ 🚂1 ≏ }} <r1<t1(0,2)>> [b5 ≏ ≏ ] <t0(2,0),r> !{r2{b1 🛑🚂2 ≡ ≡ }}")
 
-        // Train 1 stops because it has reached b3 which is a station.
-        assert2("r1: {r2{b1 🛑🚂2 ≏ ≏ }} <t0,r> [b2 ≏ ≏ ] {r1{b3 ≡ ≡ 🛑🚂1 }} <r1<t1>> [r1[b4 ≏ ≏]] {r2{b1 🛑🚂2 ≏ ≏ }}",
-                "r3: {r1{b3 ≡ ≡ 🛑🚂1 }} <r1<t1(0,2)>> [b5 ≏ ≏ ] <t0(2,0),r> !{r2{b1 🛑🚂2 ≏ ≏ }}")
-
-        // Let's start train 1 again from its station
-        try layoutController.start(routeID: "r1", trainID: "1")
-
         assert2("r1: {r2{b1 🛑🚂2 ≏ ≏ }} <t0,r> [b2 ≏ ≏ ] {r1{b3 ≡ ≡ 🚂1 }} <r1<t1>> [r1[b4 ≏ ≏]] {r2{b1 🛑🚂2 ≏ ≏ }}",
                 "r3: {r1{b3 ≡ ≡ 🚂1 }} <r1<t1(0,2)>> [b5 ≏ ≏ ] <t0(2,0),r> !{r2{b1 🛑🚂2 ≏ ≏ }}")
 

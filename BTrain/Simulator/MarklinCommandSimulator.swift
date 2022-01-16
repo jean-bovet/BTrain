@@ -246,11 +246,7 @@ final class MarklinCommandSimulator: ObservableObject {
         guard train.speed.kph > 0 else {
             return
         }
-        
-        guard route.enabled else {
-            return
-        }
-        
+                
         guard let block = layout.currentBlock(train: train) else {
             return
         }

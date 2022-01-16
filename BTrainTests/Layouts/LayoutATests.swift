@@ -45,8 +45,6 @@ class LayoutATests: RootLayoutTests {
 
         XCTAssertEqual(b1.blockId, layout.currentBlock(train: train)?.id)
         XCTAssertEqual(b2.blockId, layout.nextBlock(train: train)?.id)
-
-        XCTAssertFalse(route.enabled)
         
         let transitions = try layout.transitions(from: b1.blockId, to: b2.blockId, direction: b1.direction)
         XCTAssertEqual(transitions.count, 2)
@@ -87,8 +85,9 @@ class LayoutATests: RootLayoutTests {
         try layout.free(block: b3.blockId)
         assert("r1:{b1 ≏ ≏ } <t0> [r1[b2 ≏ ≡ 🚂1 ]] <r1<t1,l>> [r1[b3 ≏ ≏ ]] <t0(2,0)> !{b1 ≏ ≏ }")
         
-        route.enabled = false
-        assert("r1:{b1 ≏ ≏ } <t0> [r1[b2 ≏ ≡ 🛑🚂1 ]] <r1<t1,l>> [r1[b3 ≏ ≏ ]] <t0(2,0)> !{b1 ≏ ≏ }")
+        try layout.stopTrain(Identifier<Train>(uuid: "1"), completely: true)
+        
+        assert("r1:{b1 ≏ ≏ } <t0> [r1[b2 ≏ ≡ 🛑🚂1 ]] <t1,l> [b3 ≏ ≏ ] <t0(2,0)> !{b1 ≏ ≏ }")
     }
     
     func testBlockDisabled() throws {
@@ -110,13 +109,15 @@ class LayoutATests: RootLayoutTests {
         b3.enabled = true
         assert("r1:{b1 ≏ ≏ } <t0> [r1[b2 ≏ ≡ 🚂1 ]] <r1<t1,l>> [r1[b3 ≏ ≏ ]] <t0(2,0)> !{b1 ≏ ≏ }")
         
-        route.enabled = false
-        assert("r1:{b1 ≏ ≏ } <t0> [r1[b2 ≏ ≡ 🛑🚂1 ]] <r1<t1,l>> [r1[b3 ≏ ≏ ]] <t0(2,0)> !{b1 ≏ ≏ }")
+        try layout.stopTrain(Identifier<Train>(uuid: "1"), completely: true)
+        
+        assert("r1:{b1 ≏ ≏ } <t0> [r1[b2 ≏ ≡ 🛑🚂1 ]] <t1,l> [b3 ≏ ≏ ] <t0(2,0)> !{b1 ≏ ≏ }")
     }
 
     func testMoveInsideBlock() throws {
         assert("r1: {r1{b1 🛑🚂1 ≏ ≏ }} <t0> [b2 ≏ ≏ ] <t1> [b3 ≏ ≏ ] <t0(2,0)> !{r1{b1 ≏ ≏ }}")
         assert("r1: {r1{b1 🛑🚂1 ≡ ≏ }} <t0> [b2 ≏ ≏ ] <t1> [b3 ≏ ≏ ] <t0(2,0)> !{r1{b1 ≡ ≏ }}")
+        assert("r1: {r1{b1 🛑🚂1 ≏ ≏ }} <t0> [b2 ≏ ≏ ] <t1> [b3 ≏ ≏ ] <t0(2,0)> !{r1{b1 ≏ ≏ }}")
 
         try layoutController.start(routeID: "r1", trainID: "1")
 
@@ -139,7 +140,8 @@ class LayoutATests: RootLayoutTests {
         try layout.prepare(routeID: "r2", trainID: "2")
 
         assert("r2: {r2{b1 🛑🚂2 ≡ ≏ }} <t0(0,2)> ![b3 ≏ ≏ ] <t1> ![b2 ≏ ≏ ] <t0(1,0)> !{r2{b1 ≡ ≏ }}")
-        
+        assert("r2: {r2{b1 🛑🚂2 ≏ ≏ }} <t0(0,2)> ![b3 ≏ ≏ ] <t1> ![b2 ≏ ≏ ] <t0(1,0)> !{r2{b1 ≡ ≏ }}")
+
         try layoutController.start(routeID: "r2", trainID: "2")
         
         assert("r2: {r2{b1 🚂2 ≏ ≏ }} <r2<t0(0,2),l>> ![r2[b3 ≏ ≏ ]] <t1> ![b2 ≏ ≏ ] <r2<t0(1,0),l>> !{r2{b1 ≏ ≏ }}")

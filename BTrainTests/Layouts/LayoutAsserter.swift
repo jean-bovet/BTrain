@@ -57,9 +57,6 @@ final class LayoutAsserter {
     }
     
     private func applyFeedbacks(route: Route, expectedRoute: Route, expectedLayout: Layout) {
-        guard route.enabled else {
-            return
-        }
         for expectedStep in expectedRoute.steps {
             let expectedBlock = expectedLayout.block(for: expectedStep.blockId)!
             let block = layout.block(for: expectedStep.blockId)

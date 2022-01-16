@@ -34,7 +34,12 @@ protocol LayoutTrainHandling {
     // within the block it might find itself)
     func setTrain(_ train: Train, direction: Direction) throws
 
-    func stopTrain(_ train: Train) throws
+    func start(routeID: Identifier<Route>, trainID: Identifier<Train>, toBlockId: Identifier<Block>?) throws
+
+    // Stop the specified train. If completely is true,
+    // set the state running to false of the train which means
+    // it won't restart anymore.
+    func stopTrain(_ train: Train, completely: Bool) throws
     
     func setTrain(_ trainId: Identifier<Train>, toBlock toBlockId: Identifier<Block>, position: Position, direction: Direction?) throws
 
@@ -72,14 +77,25 @@ extension Layout: LayoutTrainHandling {
         try trainHandling.toggleTrainDirectionInBlock(train)
     }
 
+    func start(routeID: Identifier<Route>, trainID: Identifier<Train>, toBlockId: Identifier<Block>? = nil) throws {
+        try trainHandling.start(routeID: routeID, trainID: trainID, toBlockId: toBlockId)
+    }
+
     func setTrain(_ train: Train, direction: Direction) throws {
         try trainHandling.setTrain(train, direction: direction)
     }
 
-    func stopTrain(_ train: Train) throws {
-        try trainHandling.stopTrain(train)
+    func stopTrain(_ train: Train, completely: Bool = false) throws {
+        try trainHandling.stopTrain(train, completely: completely)
     }
     
+    func stopTrain(_ trainId: Identifier<Train>, completely: Bool = false) throws {
+        guard let train = train(for: trainId) else {
+            throw LayoutError.trainNotFound(trainId: trainId)
+        }
+        try trainHandling.stopTrain(train, completely: completely)
+    }
+
     func setTrain(_ trainId: Identifier<Train>, toBlock toBlockId: Identifier<Block>, position: Position = .start, direction: Direction?) throws {
         try trainHandling.setTrain(trainId, toBlock: toBlockId, position: position, direction: direction)
     }
@@ -189,12 +205,71 @@ final class LayoutTrainHandler: LayoutTrainHandling {
         layout.didChange()
     }
         
-    func stopTrain(_ train: Train) throws {
+    func start(routeID: Identifier<Route>, trainID: Identifier<Train>, toBlockId: Identifier<Block>?) throws {
+        guard let route = layout.route(for: routeID, trainId: trainID) else {
+            throw LayoutError.routeNotFound(routeId: routeID)
+        }
+        
+        guard let train = layout.train(for: trainID) else {
+            throw LayoutError.trainNotFound(trainId: trainID)
+        }
+        
+        // Ensure the automatic route associated with the train is updated
+        if route.automatic {
+            // Remember the destination block
+            if let toBlockId = toBlockId {
+                route.automaticMode = .once(toBlockId: toBlockId)
+            } else {
+                route.automaticMode = .endless
+            }
+            try layout.updateAutomaticRoute(for: trainID)
+        }
+
+        // Ensure the route is not empty
+        guard !route.steps.isEmpty else {
+            throw LayoutError.noSteps(routeId: routeID)
+        }
+
+        // Set the route to the train
+        train.routeId = routeID
+
+        // Check to make sure the train is somewhere along the route
+        train.routeIndex = -1
+        for (index, step) in route.steps.enumerated() {
+            if train.blockId == step.blockId {
+                train.routeIndex = index
+                break
+            }
+        }
+                             
+        guard train.routeIndex >= 0 else {
+            throw LayoutError.trainNotFoundInRoute(train: train, route: route)
+        }
+
+        guard let blockId = train.blockId else {
+            throw LayoutError.trainNotAssignedToABlock(trainId: train.id)
+        }
+        
+        guard let block = layout.block(for: blockId), block.train != nil else {
+            throw LayoutError.trainNotFoundInBlock(blockId: blockId)
+        }
+
+        train.running = true
+    }
+    
+    func stopTrain(_ train: Train, completely: Bool) throws {
         guard let train = layout.train(for: train.id) else {
             throw LayoutError.trainNotFound(trainId: train.id)
         }
+        
         train.speed.kph = 0
         layout.executor?.sendTrainSpeed(train: train)
+
+        if completely {
+            train.running = false
+            try layout.free(trainID: train.id)
+        }
+        
         layout.didChange()
     }
 

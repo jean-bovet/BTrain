@@ -81,11 +81,7 @@ final class Route: Element, ObservableObject {
     
     // The list of steps for this route
     @Published var steps = [Step]()
-    
-    // Indicates if this route is enabled or not.
-    // Any train using this route will stop if it is disabled.
-    @Published var enabled = false
-    
+        
     // The number of seconds a train should wait in a station before
     // starting again when using an automatic route.
     var stationWaitDuration: TimeInterval = 2.0
@@ -107,7 +103,7 @@ final class Route: Element, ObservableObject {
 extension Route: Codable {
     
     enum CodingKeys: CodingKey {
-      case id, name, steps, enabled, automatic
+      case id, name, steps, automatic
     }
 
     convenience init(from decoder: Decoder) throws {
@@ -117,7 +113,6 @@ extension Route: Codable {
         self.init(id: id, automatic: automatic)
         self.name = try container.decode(String.self, forKey: CodingKeys.name)
         self.steps = try container.decode([Step].self, forKey: CodingKeys.steps)
-        self.enabled = try container.decode(Bool.self, forKey: CodingKeys.enabled)
     }
     
     func encode(to encoder: Encoder) throws {
@@ -125,7 +120,6 @@ extension Route: Codable {
         try container.encode(id, forKey: CodingKeys.id)
         try container.encode(name, forKey: CodingKeys.name)
         try container.encode(steps, forKey: CodingKeys.steps)
-        try container.encode(enabled, forKey: CodingKeys.enabled)
         try container.encode(automatic, forKey: CodingKeys.automatic)
     }
 

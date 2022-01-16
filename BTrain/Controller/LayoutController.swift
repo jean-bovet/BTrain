@@ -107,9 +107,6 @@ final class LayoutController: TrainControllerDelegate {
         // Stop the Digital Controller to ensure nothing moves further
         stop() { }
 
-        // Disable all the routes
-        layout.routes.forEach { $0.enabled = false }
-
         // Invalidate every restart timer
         pausedTrainTimers.forEach { $0.value.invalidate() }
         pausedTrainTimers.removeAll()
@@ -135,9 +132,8 @@ final class LayoutController: TrainControllerDelegate {
         _ = run()
     }
     
-    func stop(routeID: Identifier<Route>, trainID: Identifier<Train>) throws {
-        try layout.free(trainID: trainID)
-        try layout.stop(routeID: routeID, trainID: trainID)
+    func stop(trainID: Identifier<Train>, completely: Bool) throws {
+        try layout.stopTrain(trainID, completely: completely)
         _ = run()
     }
     

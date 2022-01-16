@@ -81,10 +81,6 @@ final class Layout: Element, ObservableObject {
         return LayoutTrainHandler(layout: self, layoutTransitionController: transitionHandling)
     }()
 
-    lazy var routeHandling: LayoutRouteHandling = {
-        return LayoutRouteHandler(layout: self, trainController: trainHandling)
-    }()
-
     // MARK: Init
     
     convenience init(uuid: String = UUID().uuidString) {

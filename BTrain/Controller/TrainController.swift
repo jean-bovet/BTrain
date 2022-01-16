@@ -58,11 +58,11 @@ final class TrainController {
             return try stop()
         }
 
-        // Stop the train if the route is disabled
-        guard route.enabled else {
-            return try stop()
+        // Return now if the train is not actively "running"
+        guard train.running else {
+            return .none
         }
-
+        
         var result: Result = .none
         
         if try handleTrainStart() == .processed {
@@ -193,12 +193,15 @@ final class TrainController {
         
         // Stop the train when it reaches a station block, given that this block is not the one where the train
         // started - to avoid stopping a train that is starting from a station block (while still in that block).
-        if currentBlock.category == .station && atEndOfBlock && train.routeIndex != startRouteIndex {
+        if currentBlock.category == .station && atEndOfBlock && train.routeIndex != startRouteIndex && route.automatic {
             BTLogger.debug("Stop train \(train) because the current block \(currentBlock) is a station", layout, train)
             
-            // If the route is automatic, stop the train for a specific period of time and then restart it.
-            // Note: this is only valid for an automatic route that has no destinationBlock specified
-            if route.automatic && route.automaticMode == .endless {
+            switch(route.automaticMode) {
+            case .once(toBlockId: _):
+                BTLogger.debug("Stopping completely \(train) because it has reached the end of the route")
+                return try stop(completely: true)
+                
+            case .endless:
                 BTLogger.debug("Schedule timer to restart train \(train) in \(route.stationWaitDuration) seconds")
                 
                 // The layout controller is going to schedule the appropriate timer given the `restartDelayTime` value
@@ -206,16 +209,16 @@ final class TrainController {
                     ti.timeUntilAutomaticRestart = route.stationWaitDuration
                     delegate?.scheduleRestartTimer(trainInstance: ti)
                 }
+                
+                return try stop()
             }
-            
-            return try stop()
         }
 
         guard let nextBlock = layout.nextBlock(train: train) else {
             // Stop the train if there is no next block
             if atEndOfBlock {
-                BTLogger.debug("Stop train \(train) because there is no next block (after \(currentBlock))", layout, train)
-                return try stop()
+                BTLogger.debug("Stopping completely \(train) because there is no next block (after \(currentBlock))", layout, train)
+                return try stop(completely: true)
             } else {
                 return .none
             }
@@ -409,15 +412,15 @@ final class TrainController {
         }
     }
     
-    private func stop() throws -> Result {
+    private func stop(completely: Bool = false) throws -> Result {
         guard train.speed.kph > 0 else {
             return .none
         }
         
         BTLogger.debug("Stop train \(train)", layout, train)
         
-        try layout.stopTrain(train)
-        
+        try layout.stopTrain(train, completely: completely)
+                
         return .processed
     }
         

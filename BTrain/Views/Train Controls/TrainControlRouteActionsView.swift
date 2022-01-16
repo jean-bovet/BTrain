@@ -48,7 +48,7 @@ struct TrainControlRouteActionsView: View {
                 }
             }
             
-            if route.enabled {
+            if train.running {
                 Button("Stop") {
                     try? document.stop(train: train)
                 }
