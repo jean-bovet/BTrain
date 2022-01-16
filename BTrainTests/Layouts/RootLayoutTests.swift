@@ -41,8 +41,7 @@ class RootLayoutTests: BTTestCase {
         let layout =  LayoutFactory.createLayout(layoutID!)
         layout.detectUnexpectedFeedback = true
         layout.strictRouteFeedbackStrategy = true
-        self.layoutController = LayoutController(layout: layout,
-                                                 interface: nil)
+        self.layoutController = LayoutController(layout: layout, interface: nil)
         self.asserter = LayoutAsserter(layout: layout, layoutController: layoutController)
         if !layout.routes.isEmpty {
             XCTAssertNoThrow(try layout.prepare(routeID: route.id, trainID: train.id))

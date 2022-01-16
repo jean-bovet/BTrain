@@ -17,6 +17,7 @@ import ViewInspector
 
 extension TrainDropActionSheet: Inspectable { }
 extension OverviewRightPanelView: Inspectable { }
+extension LayoutRuntimeErrorView: Inspectable { }
 
 class OverviewViewTests: RootViewTests {
 
@@ -40,5 +41,12 @@ class OverviewViewTests: RootViewTests {
         _ = try sut.inspect().find(button: "Set Train")
         _ = try sut.inspect().find(button: "Move Train")
         _ = try sut.inspect().find(button: "Cancel")
+    }
+    
+    func testLayoutRuntimeError() throws {
+        let text = "Unknown feedback detected!"
+        let sut = LayoutRuntimeErrorView(error: .constant(text))
+        _ = try sut.inspect().find(button: "OK")
+        _ = try sut.inspect().find(text: "An error occurred in the layout: \(text)")
     }
 }

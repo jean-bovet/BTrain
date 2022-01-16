@@ -40,28 +40,37 @@ class LayoutTests: XCTestCase {
         XCTAssertEqual(layout.transitions.count, 0)
     }
 
-    // TODO: improve
-    func testAddFeedback() throws {
+    func testAddAndRemoveFeedback() throws {
         let layout = Layout()
+        let b1 = layout.newBlock(name: "b1", type: .free)
 
         let f1 = layout.newFeedback()
-        let f2 = layout.feedback(for: f1.id)
-        XCTAssertEqual(f1, f2)
+        layout.assign(b1, [f1])
+        XCTAssertEqual(b1.feedbacks.count, 1)
+
+        let f11 = layout.feedback(for: f1.id)
+        XCTAssertEqual(f1, f11)
         
         layout.remove(feedbackID: f1.id)
         XCTAssertNil(layout.feedback(for: f1.id))
+        XCTAssertEqual(b1.feedbacks.count, 0)
     }
     
-    // TODO: improve
-    func testAddTurnout() throws {
+    func testAddAndRemoveTurnout() throws {
         let layout = Layout()
+        let b1 = layout.newBlock(name: "b1", type: .free)
 
         let t1 = layout.newTurnout(name: "t1", type: .doubleSlip)
-        let t2 = layout.turnout(for: t1.id)
-        XCTAssertEqual(t1, t2)
+        layout.link(from: b1.next, to: t1.socket0)
+        layout.link(from: t1.socket1, to: b1.previous)
+        XCTAssertEqual(layout.transitions.count, 2)
+
+        let t11 = layout.turnout(for: t1.id)
+        XCTAssertEqual(t1, t11)
         
         layout.remove(turnoutID: t1.id)
         XCTAssertNil(layout.turnout(for: t1.id))
+        XCTAssertEqual(layout.transitions.count, 0)
     }
     
     func testTrainDirection() throws {

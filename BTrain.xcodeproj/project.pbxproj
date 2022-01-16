@@ -55,7 +55,7 @@
 		A73E07FB276A712D005F9D64 /* OverviewViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A73E07FA276A712D005F9D64 /* OverviewViewTests.swift */; };
 		A73E07FD276A8BAC005F9D64 /* TrainControlListViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A73E07FC276A8BAC005F9D64 /* TrainControlListViewTests.swift */; };
 		A73E07FF276A8BFD005F9D64 /* RootViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A73E07FE276A8BFD005F9D64 /* RootViewTests.swift */; };
-		A73E0801276A8DA9005F9D64 /* BlockEditListViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A73E0800276A8DA9005F9D64 /* BlockEditListViewTests.swift */; };
+		A73E0801276A8DA9005F9D64 /* BlockListViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A73E0800276A8DA9005F9D64 /* BlockListViewTests.swift */; };
 		A73E0803276AB757005F9D64 /* TurnoutEditListViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A73E0802276AB757005F9D64 /* TurnoutEditListViewTests.swift */; };
 		A73E0805276AB842005F9D64 /* FeedbackEditListViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A73E0804276AB842005F9D64 /* FeedbackEditListViewTests.swift */; };
 		A73E0809276ABA09005F9D64 /* SwitchboardTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A73E0808276ABA09005F9D64 /* SwitchboardTests.swift */; };
@@ -90,6 +90,10 @@
 		A75829612792A53700AA0649 /* PathFinderContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = A75829602792A53700AA0649 /* PathFinderContext.swift */; };
 		A75829632792A55A00AA0649 /* PathFinderSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = A75829622792A55A00AA0649 /* PathFinderSettings.swift */; };
 		A7582966279380C000AA0649 /* LayoutTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7582965279380C000AA0649 /* LayoutTests.swift */; };
+		A75829682793A4EF00AA0649 /* TrainSpeedViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A75829672793A4EF00AA0649 /* TrainSpeedViewTests.swift */; };
+		A758296A2793A5DC00AA0649 /* TrainIconViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A75829692793A5DC00AA0649 /* TrainIconViewTests.swift */; };
+		A758296E2793A82400AA0649 /* 460-sbb-cff.jpg in Resources */ = {isa = PBXBuildFile; fileRef = A758296D2793A82400AA0649 /* 460-sbb-cff.jpg */; };
+		A75829702793A96F00AA0649 /* TrainDetailsViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A758296F2793A96F00AA0649 /* TrainDetailsViewTests.swift */; };
 		A76507E6275AC7DA0079C71A /* ScheduledMessageQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = A76507E5275AC7DA0079C71A /* ScheduledMessageQueue.swift */; };
 		A76507E8275AD1FE0079C71A /* TrainControlLocationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A76507E7275AD1FE0079C71A /* TrainControlLocationView.swift */; };
 		A76507F4275BEE5F0079C71A /* LayoutDiagnostics.swift in Sources */ = {isa = PBXBuildFile; fileRef = A76507F3275BEE5F0079C71A /* LayoutDiagnostics.swift */; };
@@ -276,7 +280,7 @@
 		A73E07FA276A712D005F9D64 /* OverviewViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverviewViewTests.swift; sourceTree = "<group>"; };
 		A73E07FC276A8BAC005F9D64 /* TrainControlListViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainControlListViewTests.swift; sourceTree = "<group>"; };
 		A73E07FE276A8BFD005F9D64 /* RootViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootViewTests.swift; sourceTree = "<group>"; };
-		A73E0800276A8DA9005F9D64 /* BlockEditListViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockEditListViewTests.swift; sourceTree = "<group>"; };
+		A73E0800276A8DA9005F9D64 /* BlockListViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockListViewTests.swift; sourceTree = "<group>"; };
 		A73E0802276AB757005F9D64 /* TurnoutEditListViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TurnoutEditListViewTests.swift; sourceTree = "<group>"; };
 		A73E0804276AB842005F9D64 /* FeedbackEditListViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedbackEditListViewTests.swift; sourceTree = "<group>"; };
 		A73E0808276ABA09005F9D64 /* SwitchboardTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwitchboardTests.swift; sourceTree = "<group>"; };
@@ -311,6 +315,10 @@
 		A75829602792A53700AA0649 /* PathFinderContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PathFinderContext.swift; sourceTree = "<group>"; };
 		A75829622792A55A00AA0649 /* PathFinderSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PathFinderSettings.swift; sourceTree = "<group>"; };
 		A7582965279380C000AA0649 /* LayoutTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutTests.swift; sourceTree = "<group>"; };
+		A75829672793A4EF00AA0649 /* TrainSpeedViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainSpeedViewTests.swift; sourceTree = "<group>"; };
+		A75829692793A5DC00AA0649 /* TrainIconViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainIconViewTests.swift; sourceTree = "<group>"; };
+		A758296D2793A82400AA0649 /* 460-sbb-cff.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = "460-sbb-cff.jpg"; path = "BTrainTests/460-sbb-cff.jpg"; sourceTree = SOURCE_ROOT; };
+		A758296F2793A96F00AA0649 /* TrainDetailsViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainDetailsViewTests.swift; sourceTree = "<group>"; };
 		A76507E5275AC7DA0079C71A /* ScheduledMessageQueue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduledMessageQueue.swift; sourceTree = "<group>"; };
 		A76507E7275AD1FE0079C71A /* TrainControlLocationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainControlLocationView.swift; sourceTree = "<group>"; };
 		A76507F3275BEE5F0079C71A /* LayoutDiagnostics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutDiagnostics.swift; sourceTree = "<group>"; };
@@ -559,6 +567,7 @@
 				A73E07F4276974F1005F9D64 /* Layouts */,
 				A73E07F3276974E6005F9D64 /* Views */,
 				A73E081B276B1AC7005F9D64 /* Sheets */,
+				A758296D2793A82400AA0649 /* 460-sbb-cff.jpg */,
 			);
 			path = BTrainTests;
 			sourceTree = "<group>";
@@ -660,7 +669,10 @@
 				A73E07FA276A712D005F9D64 /* OverviewViewTests.swift */,
 				A73E07FC276A8BAC005F9D64 /* TrainControlListViewTests.swift */,
 				A73E07F127697285005F9D64 /* TrainListViewTests.swift */,
-				A73E0800276A8DA9005F9D64 /* BlockEditListViewTests.swift */,
+				A75829672793A4EF00AA0649 /* TrainSpeedViewTests.swift */,
+				A758296F2793A96F00AA0649 /* TrainDetailsViewTests.swift */,
+				A75829692793A5DC00AA0649 /* TrainIconViewTests.swift */,
+				A73E0800276A8DA9005F9D64 /* BlockListViewTests.swift */,
 				A73E0802276AB757005F9D64 /* TurnoutEditListViewTests.swift */,
 				A73E0804276AB842005F9D64 /* FeedbackEditListViewTests.swift */,
 				A73E07EF27697127005F9D64 /* FeedbackViewTests.swift */,
@@ -679,9 +691,9 @@
 			isa = PBXGroup;
 			children = (
 				A7582965279380C000AA0649 /* LayoutTests.swift */,
+				A73E080C276ABB5C005F9D64 /* LayoutErrorTests.swift */,
 				A7FBC8B5276E8BB6009D49C3 /* PathFinderTests.swift */,
 				A796FA2D2775642B00FA41BA /* LayoutAsserter.swift */,
-				A73E080C276ABB5C005F9D64 /* LayoutErrorTests.swift */,
 				A7F779E6272F065600E73275 /* RootLayoutTests.swift */,
 				A7F779D1272BA07100E73275 /* LayoutATests.swift */,
 				A7F779F3272F5DEA00E73275 /* LayoutCTests.swift */,
@@ -1109,6 +1121,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A758296E2793A82400AA0649 /* 460-sbb-cff.jpg in Resources */,
 				A796FA2B2772BB5400FA41BA /* Layout.json in Resources */,
 				A74C0E80275C9F490043FEE5 /* Locomotives.cs2 in Resources */,
 			);
@@ -1279,7 +1292,7 @@
 				A783EAA12787D12200E69B6D /* BTTestCase.swift in Sources */,
 				A792DEFF278508B0004B0439 /* LayoutCreatorTests.swift in Sources */,
 				A7BE366C2751AAF300286709 /* LayoutParserTests.swift in Sources */,
-				A73E0801276A8DA9005F9D64 /* BlockEditListViewTests.swift in Sources */,
+				A73E0801276A8DA9005F9D64 /* BlockListViewTests.swift in Sources */,
 				A7907995277ED3C600771A60 /* Layout2SwiftTests.swift in Sources */,
 				A790799F277ED9B200771A60 /* DocumentToolbarContentTests.swift in Sources */,
 				A73E0812276ACDA8005F9D64 /* ClientServerTests.swift in Sources */,
@@ -1293,8 +1306,10 @@
 				A73E0818276B1059005F9D64 /* SwitchBoardViewTests.swift in Sources */,
 				A7BE366D2751ABBF00286709 /* LayoutCTests.swift in Sources */,
 				A7FBC8B6276E8BB6009D49C3 /* PathFinderTests.swift in Sources */,
+				A75829682793A4EF00AA0649 /* TrainSpeedViewTests.swift in Sources */,
 				A73E0816276B0BC0005F9D64 /* LayoutGTests.swift in Sources */,
 				A73E082B276C150D005F9D64 /* TrainSetLocationSheetTests.swift in Sources */,
+				A758296A2793A5DC00AA0649 /* TrainIconViewTests.swift in Sources */,
 				A7907999277ED70C00771A60 /* SwitchboardEditControlsViewTests.swift in Sources */,
 				A721807D275DF1B100831998 /* TransitionsTests.swift in Sources */,
 				A7F779E7272F065600E73275 /* RootLayoutTests.swift in Sources */,
@@ -1318,6 +1333,7 @@
 				A73E0809276ABA09005F9D64 /* SwitchboardTests.swift in Sources */,
 				A73E0827276BAED3005F9D64 /* SwitchboardRenderingTests.swift in Sources */,
 				A7907997277ED44900771A60 /* TrainRouteControlViewTests.swift in Sources */,
+				A75829702793A96F00AA0649 /* TrainDetailsViewTests.swift in Sources */,
 				A73E07F72769B5A1005F9D64 /* AppViewTests.swift in Sources */,
 				A73E0803276AB757005F9D64 /* TurnoutEditListViewTests.swift in Sources */,
 				A73AFE982726594800E1ED21 /* CANMessageTests.swift in Sources */,
