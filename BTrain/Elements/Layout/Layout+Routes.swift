@@ -26,6 +26,7 @@ extension Layout {
         if let trainId = trainId, routeId == Route.automaticRouteId(for: trainId), route(for: routeId) == nil {
             // Automatic route, ensure it exists for the train
             let automaticRoute = Route(id: routeId, automatic: true)
+            automaticRoute.automaticMode = .endless
             automaticRoute.name = "automatic"
             routes.append(automaticRoute)
             return automaticRoute
@@ -67,7 +68,7 @@ extension Layout {
     }
     
     @discardableResult
-    func updateAutomaticRoute(for trainId: Identifier<Train>, toBlockId: Identifier<Block>?) throws -> (Bool, Route) {
+    func updateAutomaticRoute(for trainId: Identifier<Train>) throws -> (Bool, Route) {
         let routeId = Route.automaticRouteId(for: trainId)
         
         guard let route = route(for: routeId, trainId: trainId) else {
@@ -87,15 +88,16 @@ extension Layout {
         }
         
         let toBlock: Block?
-        if let toBlockId = toBlockId {
-            toBlock = block(for: toBlockId)
+        switch(route.automaticMode) {
+        case .once(toBlockId: let toBlockId):
+            toBlock = self.block(for: toBlockId)
             guard toBlock != nil else {
                 throw LayoutError.blockNotFound(blockId: toBlockId)
             }
-        } else {
+        case .endless:
             toBlock = nil
         }
-
+        
         guard let trainInstance = currentBlock.train else {
             throw LayoutError.trainNotFoundInBlock(blockId: currentBlock.id)
         }

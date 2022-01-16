@@ -53,8 +53,12 @@ final class LayoutRouteHandler: LayoutRouteHandling {
         // Ensure the automatic route associated with the train is updated
         if route.automatic {
             // Remember the destination block
-            route.destinationBlock = toBlockId
-            try layout.updateAutomaticRoute(for: trainID, toBlockId: toBlockId)
+            if let toBlockId = toBlockId {
+                route.automaticMode = .once(toBlockId: toBlockId)
+            } else {
+                route.automaticMode = .endless
+            }
+            try layout.updateAutomaticRoute(for: trainID)
         }
 
         // Ensure the route is not empty

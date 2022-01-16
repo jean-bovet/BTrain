@@ -88,11 +88,6 @@ extension Layout {
             throw LayoutError.trainNotFound(trainId: trainID)
         }
 
-        // Ensure the automatic route associated with the train is updated
-        if route.automatic {
-            try updateAutomaticRoute(for: trainID, toBlockId: toBlockId)
-        }
-
         guard let firstStep = route.steps.first else {
             throw LayoutError.noSteps(routeId: routeID)
         }

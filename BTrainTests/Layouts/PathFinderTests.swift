@@ -148,7 +148,7 @@ class PathFinderTests: BTTestCase {
 
         layout.automaticRouteRandom = false
         
-        let (success, route) = try layout.updateAutomaticRoute(for: train.id, toBlockId: nil)
+        let (success, route) = try layout.updateAutomaticRoute(for: train.id)
         XCTAssertTrue(success)
         XCTAssertEqual(route.steps.description, ["s1:next", "b1:next", "b2:next", "b3:next", "s2:next"])
         XCTAssertFalse(route.enabled)
@@ -213,7 +213,7 @@ class PathFinderTests: BTTestCase {
 
         layout.automaticRouteRandom = false
         
-        let (success, route) = try layout.updateAutomaticRoute(for: train.id, toBlockId: nil)
+        let (success, route) = try layout.updateAutomaticRoute(for: train.id)
         XCTAssertTrue(success)
         XCTAssertEqual(route.steps.description, ["s2:next", "b1:next", "b2:next", "b3:next", "s2:next"])
         XCTAssertFalse(route.enabled)
@@ -262,7 +262,7 @@ class PathFinderTests: BTTestCase {
 
         layout.automaticRouteRandom = false
         
-        let (success, route) = try layout.updateAutomaticRoute(for: train.id, toBlockId: nil)
+        let (success, route) = try layout.updateAutomaticRoute(for: train.id)
         XCTAssertTrue(success)
         XCTAssertEqual(route.steps.description, ["s2:next", "b1:next", "b2:next", "b3:next", "s2:next"])
         XCTAssertFalse(route.enabled)

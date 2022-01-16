@@ -32,10 +32,18 @@ final class Route: Element, ObservableObject {
     // to follow it, a new one will be generated
     let automatic: Bool
     
-    // Optional destination block for automatic route.
-    // If specified, the automatic route will end
-    // at the `destinationBlock`.
-    var destinationBlock: Identifier<Block>?
+    enum AutomaticMode: Equatable {
+        // Run onces the automatic route until it reaches the specified block.
+        // The automatic route will try to pick the shortest route.
+        case once(toBlockId: Identifier<Block>)
+        
+        // Run the automatic route as long as the user does not explicitely stop the train
+        case endless
+    }
+    
+    // When automatic is true, this defines the mode in which
+    // the automatic route is defined.
+    var automaticMode = AutomaticMode.endless
     
     // User-facing name of the route
     @Published var name = ""
