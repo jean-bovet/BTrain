@@ -110,7 +110,7 @@ final class TrainController {
         }
 
         let nextBlock = layout.nextBlock(train: train)
-        if nextBlock == nil && route.automatic {
+        if nextBlock == nil && route.automatic && route.destinationBlock == nil {
             // If the route is automatic and the next block is nil, let's update the route
             BTLogger.debug("Generating a new route for \(train) at block \(currentBlock.name) with destination \(String(describing: route.destinationBlock)) because the next block is not defined")
             try updateAutomaticRoute(for: train.id, toBlockId: route.destinationBlock)
@@ -182,15 +182,13 @@ final class TrainController {
 
         let atEndOfBlock = layout.atEndOfBlock(train: train)
         
-        // Stop the train if the current block is a station, the train is located at the end of the block
-        // and the train is running (this is to ensure we don't stop a train that just started from the station).
         // Stop the train when it reaches a station block, given that this block is not the one where the train
         // started - to avoid stopping a train that is starting from a station block (while still in that block).
         if currentBlock.category == .station && atEndOfBlock && train.routeIndex != startRouteIndex {
             BTLogger.debug("Stop train \(train) because the current block \(currentBlock) is a station", layout, train)
             
             // If the route is automatic, stop the train for a specific period of time and then restart it.
-            if route.automatic {
+            if route.automatic && route.destinationBlock == nil {
                 BTLogger.debug("Schedule timer to restart train \(train.name) in \(route.stationWaitDuration) seconds")
                 
                 // The layout controller is going to schedule the appropriate timer given the `restartDelayTime` value

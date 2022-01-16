@@ -52,7 +52,7 @@ struct TrainDropActionSheet: View {
             Button("Cancel") {
                 presentationMode.wrappedValue.dismiss()
             }.keyboardShortcut(.cancelAction)
-        }
+        }.padding()
     }
 }
 
