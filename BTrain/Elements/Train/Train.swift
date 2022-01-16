@@ -92,6 +92,7 @@ extension Train: Codable {
         self.address = try container.decode(UInt32.self, forKey: CodingKeys.address)
         self.decoder = try container.decode(DecoderType.self, forKey: CodingKeys.decoder)
         self.speed = try container.decode(TrainSpeed.self, forKey: CodingKeys.speed)
+        self.speed.kph = 0 // Always reset with speed to 0 when restoring from disk
         self.directionForward = try container.decodeIfPresent(Bool.self, forKey: CodingKeys.direction) ?? true
         self.routeId = try container.decodeIfPresent(Identifier<Route>.self, forKey: CodingKeys.route)
         self.routeIndex = try container.decode(Int.self, forKey: CodingKeys.routeIndex)

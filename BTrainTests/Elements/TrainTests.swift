@@ -39,9 +39,9 @@ class TrainTests: XCTestCase {
         XCTAssertEqual(t1.id, t2.id)
         XCTAssertEqual(t1.name, t2.name)
         XCTAssertEqual(t1.address, t2.address)
-        XCTAssertEqual(t1.speed, t2.speed)
+        XCTAssertEqual(t1.speed.decoderType, t2.speed.decoderType)
         XCTAssertEqual(t1.speed.kph, 100)
-        XCTAssertEqual(t2.speed.kph, 100)
+        XCTAssertEqual(t2.speed.kph, 0) // When decoding a speed, it always is initialized back to 0 for security reason
         XCTAssertEqual(t1.routeIndex, t2.routeIndex)
         XCTAssertEqual(t1.position, t2.position)
         XCTAssertEqual(t1.blockId, t2.blockId)
