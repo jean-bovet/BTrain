@@ -100,6 +100,24 @@ final class Layout: Element, ObservableObject {
         self.routes = other.routes
     }
     
+    func trainsThatCanBeStarted() -> [Train] {
+        return trains.filter { train in
+            return train.enabled && train.blockId != nil && train.routeId != nil && train.state == .stopped
+        }
+    }
+    
+    func trainsThatCanBeStopped() -> [Train] {
+        return trains.filter { train in
+            return train.state != .stopped
+        }
+    }
+    
+    func trainsThatCanBeFinished() -> [Train] {
+        return trains.filter { train in
+            return train.state == .running
+        }
+    }
+    
     // Returns true if the specified train can be considered at a valid
     // location to be monitored to move to the next block.
     func shouldHandleTrainMoveToNextBlock(train: Train) -> Bool {

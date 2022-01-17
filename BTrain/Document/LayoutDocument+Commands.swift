@@ -28,12 +28,24 @@ extension LayoutDocument {
         try layoutController.start(routeID: route, trainID: train, destination: destination)
     }
     
+    func startAll() throws {
+        try layoutController.startAll()
+    }
+    
     func stop(train: Train) throws {
         try layoutController.stop(trainID: train.id, completely: true)
     }
 
+    func stopAll() throws {
+        try layoutController.stopAll()
+    }
+
     func finish(train: Train) throws {
         try layoutController.finish(trainID: train.id)
+    }
+
+    func finishAll() throws {
+        try layoutController.finishAll()
     }
 
     @discardableResult

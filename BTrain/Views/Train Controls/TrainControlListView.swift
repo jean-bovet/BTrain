@@ -27,16 +27,20 @@ struct TrainControlListView: View {
                 }.disabled(!document.connected)
             }
         } else {
-            List {
-                ForEach(layout.trains.filter({$0.enabled}), id:\.self) { train in
-                    Text(train.name)
-                    HStack {
-                        if train.iconUrlData != nil {
-                            TrainIconView(trainIconManager: document.trainIconManager, train: train, size: .medium)
+            VStack(spacing: 0) {
+                TrainControlActionsView(layout: layout, document: document)
+                    .padding()
+                List {
+                    ForEach(layout.trains.filter({$0.enabled}), id:\.self) { train in
+                        Text(train.name)
+                        HStack {
+                            if train.iconUrlData != nil {
+                                TrainIconView(trainIconManager: document.trainIconManager, train: train, size: .medium)
+                            }
+                            TrainControlContainerView(document: document, train: train)
                         }
-                        TrainControlContainerView(document: document, train: train)
+                        Divider()
                     }
-                    Divider()
                 }
             }
         }

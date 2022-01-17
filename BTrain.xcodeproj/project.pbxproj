@@ -188,6 +188,7 @@
 		A7BE36AA2751BDC300286709 /* ConnectorPlug.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7BE36A92751BDC300286709 /* ConnectorPlug.swift */; };
 		A7CA5EBB27952ECF00171398 /* Destination.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7CA5EBA27952ECF00171398 /* Destination.swift */; };
 		A7CA5EBD2795339000171398 /* AutomaticRoutingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7CA5EBC2795339000171398 /* AutomaticRoutingTests.swift */; };
+		A7CA5EBF2795D05A00171398 /* TrainControlActionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7CA5EBE2795D05A00171398 /* TrainControlActionsView.swift */; };
 		A7EAD11227608B0500455E09 /* LayoutTrainHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7EAD11127608B0500455E09 /* LayoutTrainHandler.swift */; };
 		A7EAD11427608BAA00455E09 /* LayoutTransitionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7EAD11327608BAA00455E09 /* LayoutTransitionHandler.swift */; };
 		A7F31B9D277B921B00FE0C65 /* SwitchboardEditControlsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7F31B9C277B921B00FE0C65 /* SwitchboardEditControlsView.swift */; };
@@ -409,6 +410,7 @@
 		A7BE36A92751BDC300286709 /* ConnectorPlug.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectorPlug.swift; sourceTree = "<group>"; };
 		A7CA5EBA27952ECF00171398 /* Destination.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Destination.swift; sourceTree = "<group>"; };
 		A7CA5EBC2795339000171398 /* AutomaticRoutingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutomaticRoutingTests.swift; sourceTree = "<group>"; };
+		A7CA5EBE2795D05A00171398 /* TrainControlActionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainControlActionsView.swift; sourceTree = "<group>"; };
 		A7EAD11127608B0500455E09 /* LayoutTrainHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutTrainHandler.swift; sourceTree = "<group>"; };
 		A7EAD11327608BAA00455E09 /* LayoutTransitionHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutTransitionHandler.swift; sourceTree = "<group>"; };
 		A7F31B9C277B921B00FE0C65 /* SwitchboardEditControlsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwitchboardEditControlsView.swift; sourceTree = "<group>"; };
@@ -643,6 +645,7 @@
 			isa = PBXGroup;
 			children = (
 				A7F779E2272E20F500E73275 /* TrainControlListView.swift */,
+				A7CA5EBE2795D05A00171398 /* TrainControlActionsView.swift */,
 				A7F779F72732407E00E73275 /* TrainControlContainerView.swift */,
 				A76507E7275AD1FE0079C71A /* TrainControlLocationView.swift */,
 				A744D13227659208005C2F37 /* TrainControlView.swift */,
@@ -1279,6 +1282,7 @@
 				A7B06AF82727ACCB00BDD88C /* Server.swift in Sources */,
 				A77A96DC27274A17009E7ECB /* MarklinCANMessagePrinter.swift in Sources */,
 				A784137A273F4D5400381341 /* ConnectableShape.swift in Sources */,
+				A7CA5EBF2795D05A00171398 /* TrainControlActionsView.swift in Sources */,
 				A73E0829276BF554005F9D64 /* TrainControlSetLocationSheet.swift in Sources */,
 				A792DEF627839F55004B0439 /* SimulatorView.swift in Sources */,
 			);

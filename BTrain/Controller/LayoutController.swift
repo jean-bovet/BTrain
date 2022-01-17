@@ -96,14 +96,14 @@ final class LayoutController: TrainControllerDelegate {
             }
         } catch {
             // Stop everything in case there is a problem processing the layout
-            stopAll()
+            haltAll()
             layout.runtimeError = error.localizedDescription
             BTLogger.error("Stopping all trains because there is an error processing the layout: \(error.localizedDescription)")
         }
         return result
     }
         
-    private func stopAll() {
+    private func haltAll() {
         // Stop the Digital Controller to ensure nothing moves further
         stop() { }
 
@@ -132,16 +132,36 @@ final class LayoutController: TrainControllerDelegate {
         _ = run()
     }
     
+    func startAll() throws {
+        for train in layout.trainsThatCanBeStarted() {
+            if let routeId = train.routeId {
+                try start(routeID: routeId, trainID: train.id, destination: nil)
+            }
+        }
+    }
+    
     func stop(trainID: Identifier<Train>, completely: Bool) throws {
         try layout.stopTrain(trainID, completely: completely)
         _ = run()
     }
-    
+
+    func stopAll() throws {
+        for train in layout.trainsThatCanBeStopped() {
+            try stop(trainID: train.id, completely: true)
+        }
+    }
+
     func finish(trainID: Identifier<Train>) throws {
         try layout.finishTrain(trainID)
         _ = run()
     }
     
+    func finishAll() throws {
+        for train in layout.trainsThatCanBeFinished() {
+            try finish(trainID: train.id)
+        }
+    }
+
     func discoverLocomotives(merge: Bool) {
         guard let interface = interface else {
             return
