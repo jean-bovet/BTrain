@@ -212,6 +212,8 @@ final class TrainController {
                         if train.position == position {
                             debug("Stopping completely \(train) because it has reached the end of the route and the destination position \(position)")
                             return try stop(completely: true)
+                        } else {
+                            return .none
                         }
                     } else if atEndOfBlock {
                         // If the position is not specified, wait until the train is at the end of the block to stop it
