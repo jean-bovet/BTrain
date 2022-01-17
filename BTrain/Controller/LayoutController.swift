@@ -96,29 +96,26 @@ final class LayoutController: TrainControllerDelegate {
             }
         } catch {
             // Stop everything in case there is a problem processing the layout
-            haltAll()
-            layout.runtimeError = error.localizedDescription
             BTLogger.error("Stopping all trains because there is an error processing the layout: \(error.localizedDescription)")
+            layout.runtimeError = error.localizedDescription
+            haltAll()
         }
         return result
     }
         
     private func haltAll() {
+        do {
+            try stopAll()
+        } catch {
+            BTLogger.error("Unable to stop all the trains because \(error.localizedDescription)")
+        }
+        
         // Stop the Digital Controller to ensure nothing moves further
         stop() { }
 
         // Invalidate every restart timer
         pausedTrainTimers.forEach { $0.value.invalidate() }
-        pausedTrainTimers.removeAll()
-        
-        // Stop each train actively monitored by the controllers
-        for controller in controllers.values {
-            do {
-                try layout.stopTrain(controller.train.id)
-            } catch {
-                BTLogger.error("Unable to stop train \(controller.train) because \(error.localizedDescription)")
-            }
-        }
+        pausedTrainTimers.removeAll()        
     }
     
     // MARK: Commands

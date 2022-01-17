@@ -263,6 +263,8 @@ final class LayoutTrainHandler: LayoutTrainHandling {
             throw LayoutError.trainNotFound(trainId: trainId)
         }
         
+        BTLogger.debug("Stopping train \(train.name) \(completely ? "completely." : "until it can be restarted.")")
+        
         train.speed.kph = 0
         layout.executor?.sendTrainSpeed(train: train)
 

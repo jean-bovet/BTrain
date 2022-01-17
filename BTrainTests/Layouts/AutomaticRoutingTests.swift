@@ -255,6 +255,27 @@ class AutomaticRoutingTests: BTTestCase {
         XCTAssertEqual(p.layoutController.run(), .none)
     }
 
+    func testEmergencyStop() throws {
+        let layout = LayoutECreator().newLayout()
+        let s1 = layout.block(for: Identifier<Block>(uuid: "s1"))!
+
+        let p = try setup(layout: layout, fromBlockId: s1.id, destination: nil, position: .end, routeSteps: ["s1:next", "b1:next", "b2:next", "b3:next", "s2:next"])
+        
+        try p.assert("automatic-0: {r0{s1 ≏ 🚂0 }} <r0<t1,l>> <r0<t2,s>> [r0[b1 ≏ ]] <t3> [b2 ≏ ] <t4> [b3 ≏ ≏ ] <t5> <t6> {s2 ≏ }")
+        try p.assert("automatic-0: {s1 ≏ } <t1,l> <t2,s> [r0[b1 ≡ 🚂0 ]] <r0<t3>> [r0[b2 ≏ ]] <t4> [b3 ≏ ≏ ] <t5> <t6> {s2 ≏ }")
+        try p.assert("automatic-0: {s1 ≏ } <t1,l> <t2,s> [b1 ≏ ] <t3> [r0[b2 ≡ 🚂0 ]] <r0<t4>> [r0[b3 ≏ ≏ ]] <t5> <t6> {s2 ≏ }")
+        
+        // Trigger an unexpected feedback so the LayoutController does an emergency stop
+        try p.assert("automatic-0: {s1 ≡ } <t1,l> <t2,s> [b1 ≏ ] <t3> [r0[b2 ≏ 🛑🚂0 ]] <t4> [b3 ≏ ≏ ] <t5> <t6> {s2 ≏ }")
+        try p.assert("automatic-0: {s1 ≡ } <t1,l> <t2,s> [b1 ≏ ] <t3> [r0[b2 ≏ 🛑🚂0 ]] <t4> [b3 ≏ ≏ ] <t5> <t6> {s2 ≏ }")
+        try p.assert("automatic-0: {s1 ≡ } <t1,l> <t2,s> [b1 ≏ ] <t3> [r0[b2 ≏ 🛑🚂0 ]] <t4> [b3 ≏ ≏ ] <t5> <t6> {s2 ≏ }")
+
+        // The train must be in stopped state
+        XCTAssertEqual(p.train.state, .stopped)
+    }
+
+    // MARK: -- Utility
+    
     // Convenience structure to test the layout and its route
     struct Package {
         let layout: Layout
