@@ -191,34 +191,55 @@ final class TrainController {
 
         let atEndOfBlock = layout.atEndOfBlock(train: train)
         
-        // Stop the train when it reaches a station block, given that this block is not the one where the train
-        // started - to avoid stopping a train that is starting from a station block (while still in that block).
-        if currentBlock.category == .station && atEndOfBlock && train.routeIndex != startRouteIndex && route.automatic {
-            debug("Stop train \(train) because the current block \(currentBlock) is a station")
-            
+        if route.automatic {
             switch(route.automaticMode) {
-            case .once(destination: _):
-                debug("Stopping completely \(train) because it has reached the end of the route")
-                return try stop(completely: true)
-                
-            case .endless:
-                if train.state == .finishing {
-                    debug("Stopping completely \(train) because it has reached the end of the route and was marked as .finishing")
-                    return try stop(completely: true)
-                } else {
-                    debug("Schedule timer to restart train \(train) in \(route.stationWaitDuration) seconds")
-                    
-                    // The layout controller is going to schedule the appropriate timer given the `restartDelayTime` value
-                    if let ti = currentBlock.train {
-                        ti.timeUntilAutomaticRestart = route.stationWaitDuration
-                        delegate?.scheduleRestartTimer(trainInstance: ti)
+            case .once(destination: let destination):
+                if train.routeIndex != startRouteIndex && train.routeIndex == route.steps.count - 1 {
+                    // Double-check that the train is located in the block specified by the destination.
+                    // This should never fail.
+                    guard currentBlock.id == destination.blockId else {
+                        throw LayoutError.destinationBlockMismatch(currentBlock: currentBlock, destination: destination)
                     }
                     
-                    return try stop()
+                    // Double-check that the train is moving in the direction specified by the destination, if specified.
+                    // This should never fail.
+                    if let direction = destination.direction, currentBlock.train?.direction != direction {
+                        throw LayoutError.destinationDirectionMismatch(currentBlock: currentBlock, destination: destination)
+                    }
+
+                    if let position = destination.position {
+                        // If the position for the destination is specified, let's wait until we reach that position
+                        if train.position == position {
+                            debug("Stopping completely \(train) because it has reached the end of the route and the destination position \(position)")
+                            return try stop(completely: true)
+                        }
+                    } else if atEndOfBlock {
+                        // If the position is not specified, wait until the train is at the end of the block to stop it
+                        debug("Stopping completely \(train) because it has reached the end of the route and the end of the block")
+                        return try stop(completely: true)
+                    }
+                }
+                
+            case .endless:
+                if currentBlock.category == .station && atEndOfBlock && train.routeIndex != startRouteIndex {
+                    if train.state == .finishing {
+                        debug("Stopping completely \(train) because it has reached a station and it is marked as .finishing")
+                        return try stop(completely: true)
+                    } else {
+                        debug("Schedule timer to restart train \(train) in \(route.stationWaitDuration) seconds")
+                        
+                        // The layout controller is going to schedule the appropriate timer given the `restartDelayTime` value
+                        if let ti = currentBlock.train {
+                            ti.timeUntilAutomaticRestart = route.stationWaitDuration
+                            delegate?.scheduleRestartTimer(trainInstance: ti)
+                        }
+                        
+                        return try stop()
+                    }
                 }
             }
         }
-
+        
         guard let nextBlock = layout.nextBlock(train: train) else {
             // Stop the train if there is no next block
             if atEndOfBlock {

@@ -40,6 +40,9 @@ enum LayoutError: Error {
     
     case routeNotFound(routeId: Identifier<Route>)
     case noSteps(routeId: Identifier<Route>)
+    
+    case destinationBlockMismatch(currentBlock: Block, destination: Destination)
+    case destinationDirectionMismatch(currentBlock: Block, destination: Destination)
 }
     
 extension LayoutError: LocalizedError {
@@ -89,6 +92,11 @@ extension LayoutError: LocalizedError {
             return "No steps defined in route \(routeId)"
         case .alwaysOneAndOnlyOneTransition:
             return "There must always be only one and only one transition"
+            
+        case .destinationBlockMismatch(currentBlock: let currentBlock, destination: let destination):
+            return "The destination block \(destination.blockId) does not match the current block \(currentBlock.id) (\(currentBlock.name))"
+        case .destinationDirectionMismatch(currentBlock: let currentBlock, destination: let destination):
+            return "The destination direction \(String(describing: destination.direction)) does not match the current direction of the train within the block \(String(describing: currentBlock.train?.direction)), at block \(currentBlock.name) (\(currentBlock.id))"
         }
     }
 }
