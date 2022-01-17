@@ -199,6 +199,30 @@ class AutomaticRoutingTests: BTTestCase {
         XCTAssertEqual(p.layoutController.run(), .none)
     }
 
+    func testAutomaticRouteModeOnceWithUnreachableDestinationPosition() throws {
+        let layout = LayoutECreator().newLayout()
+        let s2 = layout.block(for: Identifier<Block>(uuid: "s2"))!
+        let b3 = layout.block(for: Identifier<Block>(uuid: "b3"))!
+
+        // Position 0 is not reachable because when the train enters block b3, it is because the first feedback is detected,
+        // which is always position 1. We want to make sure that if that is the case, the TrainController still stops the
+        // train when it reaches the end of the block because there is no other block left in the route
+        let p = try setup(layout: layout, fromBlockId: s2.id, destination: Destination(b3.id, position: 0, direction: .next), routeSteps: ["s2:next", "b1:next", "b2:next", "b3:next"])
+        
+        try p.assert("automatic-0: {r0{s2 🚂0 ≏ }} <r0<t1,s>> <r0<t2,s>> [r0[b1 ≏ ]] <t3> [b2 ≏ ] <t4> [b3 ≏ ≏ ]")
+        try p.assert("automatic-0: {r0{s2 ≡ 🚂0 }} <r0<t1,s>> <r0<t2,s>> [r0[b1 ≏ ]] <t3> [b2 ≏ ] <t4> [b3 ≏ ≏ ]")
+        try p.assert("automatic-0: {s2 ≏ } <t1,s> <t2,s> [r0[b1 ≡ 🚂0 ]] <r0<t3>> [r0[b2 ≏ ]] <t4> [b3 ≏ ≏ ]")
+        try p.assert("automatic-0: {s2 ≏ } <t1,s> <t2,s> [b1 ≏ ] <t3> [r0[b2 ≡ 🚂0 ]] <r0<t4>> [r0[b3 ≏ ≏ ]]")
+        try p.assert("automatic-0: {s2 ≏ } <t1,s> <t2,s> [b1 ≏ ] <t3> [b2 ≏ ] <t4> [r0[b3 ≡ 🚂0 ≏ ]]")
+        try p.assert("automatic-0: {s2 ≏ } <t1,s> <t2,s> [b1 ≏ ] <t3> [b2 ≏ ] <t4> [r0[b3 ≏ ≡ 🛑🚂0 ]]")
+
+        XCTAssertEqual(p.train.state, .stopped)
+
+        // Nothing more should happen because the automatic route has finished (mode .once)
+        XCTAssertEqual(p.layoutController.run(), .none)
+        XCTAssertEqual(p.layoutController.run(), .none)
+    }
+
     func testAutomaticRouteModeOnceWithReservedBlock() throws {
         let layout = LayoutECreator().newLayout()
         let s2 = layout.block(for: Identifier<Block>(uuid: "s2"))!
