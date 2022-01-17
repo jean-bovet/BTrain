@@ -197,7 +197,7 @@ final class TrainController {
             debug("Stop train \(train) because the current block \(currentBlock) is a station")
             
             switch(route.automaticMode) {
-            case .once(toBlockId: _):
+            case .once(destination: _):
                 debug("Stopping completely \(train) because it has reached the end of the route")
                 return try stop(completely: true)
                 

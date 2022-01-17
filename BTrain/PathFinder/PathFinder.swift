@@ -40,9 +40,9 @@ final class PathFinder {
         let context: PathFinderContext
     }
         
-    func path(trainId: Identifier<Train>, from block: Block, toBlock: Block? = nil, direction: Direction, settings: PathFinderSettings, generatedPathCallback: ((Path) -> Void)? = nil) throws -> Path? {
+    func path(trainId: Identifier<Train>, from block: Block, destination: Destination? = nil, direction: Direction, settings: PathFinderSettings, generatedPathCallback: ((Path) -> Void)? = nil) throws -> Path? {
         let numberOfPaths: Int
-        if toBlock != nil && settings.random {
+        if destination != nil && settings.random {
             // If a destination block is specified and the path is choosen at random,
             // try to generate 10 paths and pick the shortest one.
             numberOfPaths = 10
@@ -55,7 +55,7 @@ final class PathFinder {
         // we will generate a few paths and pick the shortest one (depending on the `numberOfPaths`).
         var smallestPath: Path?
         for _ in 1...numberOfPaths {
-            let context = PathFinderContext(trainId: trainId, toBlock: toBlock, overflow: layout.blockMap.count*2, settings: settings)
+            let context = PathFinderContext(trainId: trainId, destination: destination, overflow: layout.blockMap.count*2, settings: settings)
             context.steps.append(Route.Step(block.id, direction))
             
             if try findPath(from: block, direction: direction, context: context) {
@@ -184,10 +184,17 @@ final class PathFinder {
             
             // Return early if the block is a station,
             // because we have reached the end of the path
-            if let toBlock = context.toBlock {
-                if nextBlock.id == toBlock.id {
-                    context.print("Reached the destination block \(toBlock)")
-                    return true
+            if let destination = context.destination {
+                if let toDirection = destination.direction {
+                    if nextBlock.id == destination.blockId && nextBlockDirection == toDirection {
+                        context.print("Reached the destination block \(destination.blockId) with desired direction of \(toDirection)")
+                        return true
+                    }
+                } else {
+                    if nextBlock.id == destination.blockId {
+                        context.print("Reached the destination block \(destination.blockId)")
+                        return true
+                    }
                 }
             } else if nextBlock.category == .station {
                 context.print("Reached a station at block \(nextBlock)")

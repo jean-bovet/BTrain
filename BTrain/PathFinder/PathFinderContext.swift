@@ -17,8 +17,8 @@ final class PathFinderContext {
     // Train associated with this path
     let trainId: Identifier<Train>
 
-    // The destination block or nil if any station block can be chosen
-    let toBlock: Block?
+    // The destination or nil if any station block can be chosen
+    let destination: Destination?
     
     // The maximum number of blocks in the path before
     // it overflows and the algorithm ends the analysis.
@@ -37,9 +37,9 @@ final class PathFinderContext {
     // re-use a block and ends up in an infinite loop.
     var visitedSteps = [Route.Step]()
     
-    init(trainId: Identifier<Train>, toBlock: Block?, overflow: Int, settings: PathFinderSettings) {
+    init(trainId: Identifier<Train>, destination: Destination?, overflow: Int, settings: PathFinderSettings) {
         self.trainId = trainId
-        self.toBlock = toBlock
+        self.destination = destination
         self.overflow = overflow
         self.settings = settings
     }

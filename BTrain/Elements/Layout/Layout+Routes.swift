@@ -87,15 +87,12 @@ extension Layout {
             throw LayoutError.blockNotFound(blockId: blockId)
         }
         
-        let toBlock: Block?
+        let destination: Destination?
         switch(route.automaticMode) {
-        case .once(toBlockId: let toBlockId):
-            toBlock = self.block(for: toBlockId)
-            guard toBlock != nil else {
-                throw LayoutError.blockNotFound(blockId: toBlockId)
-            }
+        case .once(destination: let routeDestination):
+            destination = routeDestination
         case .endless:
-            toBlock = nil
+            destination = nil
         }
         
         guard let trainInstance = currentBlock.train else {
@@ -107,10 +104,10 @@ extension Layout {
         // (the automatic route will re-evaluate itself it encounters a reserved block later
         // during execution, to avoid deadlocking).
         let settings = PathFinderSettings(random: automaticRouteRandom,
-                                          reservedBlockBehavior: toBlock == nil ? .avoidReservedUntil(numberOfSteps: 1) : .avoidReserved,
-                                          verbose: false)
+                                          reservedBlockBehavior: destination == nil ? .avoidReservedUntil(numberOfSteps: 1) : .avoidReserved,
+                                          verbose: true)
         let pf = PathFinder(layout: self)
-        if let path = try pf.path(trainId: train.id, from: currentBlock, toBlock: toBlock, direction: trainInstance.direction, settings: settings) {
+        if let path = try pf.path(trainId: train.id, from: currentBlock, destination: destination, direction: trainInstance.direction, settings: settings) {
             route.steps = path.steps
             train.routeIndex = 0
             return (true, route)

@@ -108,6 +108,6 @@ extension LayoutController {
     func start(routeID: String, trainID: String) throws {
         try start(routeID: Identifier<Route>(uuid: routeID),
                   trainID: Identifier<Train>(uuid: trainID),
-                  toBlockId: nil)
+                  destination: nil)
     }
 }

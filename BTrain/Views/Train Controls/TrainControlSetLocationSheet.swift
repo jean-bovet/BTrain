@@ -90,8 +90,7 @@ struct TrainControlSetLocationSheet: View {
                 
                 Button("OK") {
                     do {
-                        if let selectedBlock = blockId {
-                            
+                        if let selectedBlock = blockId {                            
                             try layout.setTrain(train.id,
                                                 toBlock: selectedBlock,
                                                 position: trainPosition,

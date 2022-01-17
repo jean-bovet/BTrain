@@ -35,7 +35,7 @@ final class Route: Element, ObservableObject {
     enum AutomaticMode: Equatable {
         // Run onces the automatic route until it reaches the specified block.
         // The automatic route will try to pick the shortest route.
-        case once(toBlockId: Identifier<Block>)
+        case once(destination: Destination)
         
         // Run the automatic route as long as the user does not explicitely stop the train
         case endless

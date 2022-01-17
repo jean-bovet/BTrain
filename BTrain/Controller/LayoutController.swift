@@ -127,8 +127,8 @@ final class LayoutController: TrainControllerDelegate {
         interface?.execute(command: .stop(), onCompletion: onCompletion)
     }
     
-    func start(routeID: Identifier<Route>, trainID: Identifier<Train>, toBlockId: Identifier<Block>?) throws {
-        try layout.start(routeID: routeID, trainID: trainID, toBlockId: toBlockId)
+    func start(routeID: Identifier<Route>, trainID: Identifier<Train>, destination: Destination?) throws {
+        try layout.start(routeID: routeID, trainID: trainID, destination: destination)
         _ = run()
     }
     

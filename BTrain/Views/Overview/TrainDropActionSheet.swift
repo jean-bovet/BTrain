@@ -13,17 +13,18 @@
 import SwiftUI
 
 extension Layout {
-    func moveTrain(info: SwitchBoard.State.TrainDragInfo) throws {
+    func setTrain(info: SwitchBoard.State.TrainDragInfo, direction: Direction) throws {
         // Direction is nil so the train will preserve its direction
         try free(trainID: info.trainId)
-        try setTrain(info.trainId, toBlock: info.blockId, position: .custom(value: info.position), direction: nil)
+        try setTrain(info.trainId, toBlock: info.blockId, position: .custom(value: info.position), direction: direction)
     }
 }
 
 extension LayoutController {
-    func routeTrain(info: SwitchBoard.State.TrainDragInfo) throws {
+    func routeTrain(info: SwitchBoard.State.TrainDragInfo, direction: Direction) throws {
         let routeId = Route.automaticRouteId(for: info.trainId)
-        try start(routeID: routeId, trainID: info.trainId, toBlockId: info.blockId)
+        let destination = Destination(info.blockId, position: info.position, direction: direction)
+        try start(routeID: routeId, trainID: info.trainId, destination: destination)
     }
 }
 
@@ -31,28 +32,50 @@ struct TrainDropActionSheet: View {
     
     let layout: Layout
     let trainDragInfo: SwitchBoard.State.TrainDragInfo
-    let coordinator: LayoutController
-    
+    let controller: LayoutController
+    @State private var direction: Direction = .next
+
     @Environment(\.presentationMode) var presentationMode
 
     var body: some View {
         VStack {
-            Button("Set Train") {
-                try? layout.moveTrain(info: trainDragInfo)
-                presentationMode.wrappedValue.dismiss()
-            }.keyboardShortcut(.defaultAction)
-
-            Button("Move Train") {
-                try? coordinator.routeTrain(info: trainDragInfo)
-                presentationMode.wrappedValue.dismiss()
+            HStack {
+                if let block = layout.block(for: trainDragInfo.blockId) {
+                    Text("Block \(block.name)")
+                }
+                
+                Picker("Direction:", selection: $direction) {
+                    ForEach(Direction.allCases, id:\.self) { direction in
+                        Text(direction.description).tag(direction)
+                    }
+                }
+                .fixedSize()
+                .labelsHidden()
+                
+                Spacer()
             }
 
             Divider()
-            
-            Button("Cancel") {
-                presentationMode.wrappedValue.dismiss()
-            }.keyboardShortcut(.cancelAction)
-        }.padding()
+
+            HStack {
+                Button("Cancel") {
+                    presentationMode.wrappedValue.dismiss()
+                }.keyboardShortcut(.cancelAction)
+
+                Spacer().fixedSpace()
+                
+                Button("Set Train") {
+                    try? layout.setTrain(info: trainDragInfo, direction: direction)
+                    presentationMode.wrappedValue.dismiss()
+                }
+
+                Button("Move Train") {
+                    try? controller.routeTrain(info: trainDragInfo, direction: direction)
+                    presentationMode.wrappedValue.dismiss()
+                }.keyboardShortcut(.defaultAction)
+            }
+        }
+        .padding()
     }
 }
 
@@ -63,6 +86,6 @@ struct TrainDropActionSheet_Previews: PreviewProvider {
     static var previews: some View {
         TrainDropActionSheet(layout: doc.layout,
                              trainDragInfo: .init(trainId: .init(uuid: "1"), blockId: .init(uuid: "b1"), position: 0),
-                             coordinator: doc.layoutController)
+                             controller: doc.layoutController)
     }
 }

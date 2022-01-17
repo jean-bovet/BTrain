@@ -144,16 +144,16 @@ class PathFinderTests: BTTestCase {
         
         let train = layout.trains[0]
         let currentBlock = layout.block(for: Identifier<Block>(uuid: "NE1"))!
-        let toBlock = layout.block(for: Identifier<Block>(uuid: "LCF1"))!
-
+        let destination = Destination(Identifier<Block>(uuid: "LCF1"))
+        
         let pf = PathFinder(layout: layout)
         let settings = PathFinderSettings(random: false, reservedBlockBehavior: .avoidReservedUntil(numberOfSteps: 1), verbose: false)
-        let path = try pf.path(trainId: train.id, from: currentBlock, toBlock: toBlock, direction: .next, settings: settings)
+        let path = try pf.path(trainId: train.id, from: currentBlock, destination: destination, direction: .next, settings: settings)
         XCTAssertNotNil(path)
         XCTAssertEqual(path!.description, ["NE1:next", "OL1:next", "OL2:next", "OL3:next", "NE4:next", "IL1:next", "IL2:next", "IL3:next", "S:next", "IL1:previous", "IL4:previous", "IL3:previous", "IL2:previous", "OL1:previous", "NE3:previous", "M1:next", "M2U:next", "LCF1:next"])
         
         self.measure {
-            let path = try! pf.path(trainId: train.id, from: currentBlock, toBlock: toBlock, direction: .next, settings: settings)
+            let path = try! pf.path(trainId: train.id, from: currentBlock, destination: destination, direction: .next, settings: settings)
             XCTAssertNotNil(path)
         }
     }
@@ -165,12 +165,12 @@ class PathFinderTests: BTTestCase {
         
         let train = layout.trains[0]
         let currentBlock = layout.block(for: Identifier<Block>(uuid: "s1"))!
-        let toBlock = layout.block(for: Identifier<Block>(uuid: "s2"))!
+        let destination = Destination(Identifier<Block>(uuid: "s2"))
 
         let pf = PathFinder(layout: layout)
         
         let settings = PathFinderSettings(random: false, reservedBlockBehavior: .avoidReservedUntil(numberOfSteps: 1), verbose: false)
-        let path = try pf.path(trainId: train.id, from: currentBlock, toBlock: toBlock, direction: .next, settings: settings)
+        let path = try pf.path(trainId: train.id, from: currentBlock, destination: destination, direction: .next, settings: settings)
         XCTAssertEqual(path!.description, ["s1:next", "b1:next", "b2:next", "b3:next", "s2:next"])
     }
 
@@ -181,13 +181,13 @@ class PathFinderTests: BTTestCase {
         
         let train = layout.trains[0]
         let currentBlock = layout.block(for: Identifier<Block>(uuid: "NE1"))!
-        let toBlock = layout.block(for: Identifier<Block>(uuid: "HLS_P1"))!
+        let destination = Destination(Identifier<Block>(uuid: "HLS_P1"))
 
         let pf = PathFinder(layout: layout)
         let settings = PathFinderSettings(random: true, reservedBlockBehavior: .avoidReservedUntil(numberOfSteps: 1), verbose: false)
         
         var generatedPaths = [PathFinder.Path]()
-        let path = try pf.path(trainId: train.id, from: currentBlock, toBlock: toBlock, direction: .next, settings: settings) { path in
+        let path = try pf.path(trainId: train.id, from: currentBlock, destination: destination, direction: .next, settings: settings) { path in
             generatedPaths.append(path)
         }
         XCTAssertNotNil(path)
@@ -205,7 +205,7 @@ class PathFinderTests: BTTestCase {
         let layout = LayoutECreator().newLayout()
         let s1 = layout.block(for: Identifier<Block>(uuid: "s1"))!
 
-        let p = try setup(layout: layout, fromBlockId: s1.id, toBlockId: nil, position: .end, routeSteps: ["s1:next", "b1:next", "b2:next", "b3:next", "s2:next"])
+        let p = try setup(layout: layout, fromBlockId: s1.id, destination: nil, position: .end, routeSteps: ["s1:next", "b1:next", "b2:next", "b3:next", "s2:next"])
         
         try p.assert("automatic-0: {r0{s1 ≏ 🚂0 }} <r0<t1,l>> <r0<t2,s>> [r0[b1 ≏ ]] <t3> [b2 ≏ ] <t4> [b3 ≏ ] <t5> <t6> {s2 ≏ }")
                         
@@ -256,7 +256,7 @@ class PathFinderTests: BTTestCase {
         let layout = LayoutECreator().newLayout()
         let s1 = layout.block(for: Identifier<Block>(uuid: "s1"))!
 
-        let p = try setup(layout: layout, fromBlockId: s1.id, toBlockId: nil, position: .end, routeSteps: ["s1:next", "b1:next", "b2:next", "b3:next", "s2:next"])
+        let p = try setup(layout: layout, fromBlockId: s1.id, destination: nil, position: .end, routeSteps: ["s1:next", "b1:next", "b2:next", "b3:next", "s2:next"])
         
         try p.assert("automatic-0: {r0{s1 ≏ 🚂0 }} <r0<t1,l>> <r0<t2,s>> [r0[b1 ≏ ]] <t3> [b2 ≏ ] <t4> [b3 ≏ ] <t5> <t6> {s2 ≏ }")
         try p.assert("automatic-0: {s1 ≏ } <t1,l> <t2,s> [r0[b1 ≡ 🚂0 ]] <r0<t3>> [r0[b2 ≏ ]] <t4> [b3 ≏ ] <t5> <t6> {s2 ≏ }")
@@ -275,7 +275,7 @@ class PathFinderTests: BTTestCase {
         let layout = LayoutECreator().newLayout()
         let s2 = layout.block(for: Identifier<Block>(uuid: "s2"))!
 
-        let p = try setup(layout: layout, fromBlockId: s2.id, toBlockId: nil, position: .end, routeSteps: ["s2:next", "b1:next", "b2:next", "b3:next", "s2:next"])
+        let p = try setup(layout: layout, fromBlockId: s2.id, destination: nil, position: .end, routeSteps: ["s2:next", "b1:next", "b2:next", "b3:next", "s2:next"])
         
         try p.assert("automatic-0: {r0{s2 ≏ 🚂0 }} <r0<t1,s>> <r0<t2,s>> [r0[b1 ≏ ]] <t3> [b2 ≏ ] <t4> [b3 ≏ ] <t5> <t6> {s2 ≏ }")
         try p.assert("automatic-0: {s2 ≏ } <t1,s> <t2,s> [r0[b1 ≡ 🚂0 ]] <r0<t3>> [r0[b2 ≏ ]] <t4> [b3 ≏ ] <t5> <t6> {s2 ≏ }")
@@ -307,7 +307,7 @@ class PathFinderTests: BTTestCase {
         let layout = LayoutECreator().newLayout()
         let s2 = layout.block(for: Identifier<Block>(uuid: "s2"))!
 
-        let p = try setup(layout: layout, fromBlockId: s2.id, toBlockId: nil, position: .end, routeSteps: ["s2:next", "b1:next", "b2:next", "b3:next", "s2:next"])
+        let p = try setup(layout: layout, fromBlockId: s2.id, destination: nil, position: .end, routeSteps: ["s2:next", "b1:next", "b2:next", "b3:next", "s2:next"])
         
         try p.assert("automatic-0: {r0{s2 ≏ 🚂0 }} <r0<t1,s>> <r0<t2,s>> [r0[b1 ≏ ]] <t3> [b2 ≏ ] <t4> [b3 ≏ ] <t5> <t6> {s2 ≏ }")
         try p.assert("automatic-0: {s2 ≏ } <t1,s> <t2,s> [r0[b1 ≡ 🚂0 ]] <r0<t3>> [r0[b2 ≏ ]] <t4> [b3 ≏ ] <t5> <t6> {s2 ≏ }")
@@ -345,7 +345,7 @@ class PathFinderTests: BTTestCase {
         let s2 = layout.block(for: Identifier<Block>(uuid: "s2"))!
         let b3 = layout.block(for: Identifier<Block>(uuid: "b3"))!
 
-        let p = try setup(layout: layout, fromBlockId: s2.id, toBlockId: b3.id, routeSteps: ["s2:next", "b1:next", "b2:next", "b3:next"])
+        let p = try setup(layout: layout, fromBlockId: s2.id, destination: Destination(b3.id), routeSteps: ["s2:next", "b1:next", "b2:next", "b3:next"])
         
         try p.assert("automatic-0: {r0{s2 🚂0 ≏ }} <r0<t1,s>> <r0<t2,s>> [r0[b1 ≏ ]] <t3> [b2 ≏ ] <t4> [b3 ≏ ]")
         try p.assert("automatic-0: {r0{s2 ≡ 🚂0 }} <r0<t1,s>> <r0<t2,s>> [r0[b1 ≏ ]] <t3> [b2 ≏ ] <t4> [b3 ≏ ]")
@@ -365,7 +365,7 @@ class PathFinderTests: BTTestCase {
         let s2 = layout.block(for: Identifier<Block>(uuid: "s2"))!
         let b3 = layout.block(for: Identifier<Block>(uuid: "b3"))!
 
-        let p = try setup(layout: layout, fromBlockId: s2.id, toBlockId: b3.id, routeSteps: ["s2:next", "b1:next", "b2:next", "b3:next"])
+        let p = try setup(layout: layout, fromBlockId: s2.id, destination: Destination(b3.id), routeSteps: ["s2:next", "b1:next", "b2:next", "b3:next"])
         
         try p.assert("automatic-0: {r0{s2 🚂0 ≏ }} <r0<t1,s>> <r0<t2,s>> [r0[b1 ≏ ]] <t3> [b2 ≏ ] <t4> [b3 ≏ ]")
         
@@ -404,7 +404,7 @@ class PathFinderTests: BTTestCase {
         }
     }
     
-    private func setup(layout: Layout, fromBlockId: Identifier<Block>, toBlockId: Identifier<Block>?, position: Position = .start, routeSteps: [String]) throws -> Package {
+    private func setup(layout: Layout, fromBlockId: Identifier<Block>, destination: Destination?, position: Position = .start, routeSteps: [String]) throws -> Package {
         let train = layout.trains[0]
         try layout.setTrain(train.id, toBlock: fromBlockId, position: position, direction: .next)
         XCTAssertEqual(train.speed.kph, 0)
@@ -414,7 +414,7 @@ class PathFinderTests: BTTestCase {
         // Start the route
         let routeId = Route.automaticRouteId(for: train.id)
         let layoutController = LayoutController(layout: layout, interface: nil)
-        try layoutController.start(routeID: routeId, trainID: train.id, toBlockId: toBlockId)
+        try layoutController.start(routeID: routeId, trainID: train.id, destination: destination)
 
         let route = layout.route(for: routeId, trainId: train.id)!
         XCTAssertEqual(route.steps.description, routeSteps)

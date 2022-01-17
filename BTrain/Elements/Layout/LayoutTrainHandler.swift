@@ -34,7 +34,7 @@ protocol LayoutTrainHandling {
     // within the block it might find itself)
     func setTrain(_ train: Train, direction: Direction) throws
 
-    func start(routeID: Identifier<Route>, trainID: Identifier<Train>, toBlockId: Identifier<Block>?) throws
+    func start(routeID: Identifier<Route>, trainID: Identifier<Train>, destination: Destination?) throws
 
     // Stop the specified train. If completely is true,
     // set the state running to false of the train which means
@@ -80,8 +80,8 @@ extension Layout: LayoutTrainHandling {
         try trainHandling.toggleTrainDirectionInBlock(train)
     }
 
-    func start(routeID: Identifier<Route>, trainID: Identifier<Train>, toBlockId: Identifier<Block>? = nil) throws {
-        try trainHandling.start(routeID: routeID, trainID: trainID, toBlockId: toBlockId)
+    func start(routeID: Identifier<Route>, trainID: Identifier<Train>, destination: Destination? = nil) throws {
+        try trainHandling.start(routeID: routeID, trainID: trainID, destination: destination)
     }
 
     func setTrain(_ train: Train, direction: Direction) throws {
@@ -205,7 +205,7 @@ final class LayoutTrainHandler: LayoutTrainHandling {
         layout.didChange()
     }
         
-    func start(routeID: Identifier<Route>, trainID: Identifier<Train>, toBlockId: Identifier<Block>?) throws {
+    func start(routeID: Identifier<Route>, trainID: Identifier<Train>, destination: Destination?) throws {
         guard let route = layout.route(for: routeID, trainId: trainID) else {
             throw LayoutError.routeNotFound(routeId: routeID)
         }
@@ -217,8 +217,8 @@ final class LayoutTrainHandler: LayoutTrainHandling {
         // Ensure the automatic route associated with the train is updated
         if route.automatic {
             // Remember the destination block
-            if let toBlockId = toBlockId {
-                route.automaticMode = .once(toBlockId: toBlockId)
+            if let destination = destination {
+                route.automaticMode = .once(destination: destination)
             } else {
                 route.automaticMode = .endless
             }

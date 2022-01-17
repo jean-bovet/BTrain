@@ -186,6 +186,7 @@
 		A7BE366D2751ABBF00286709 /* LayoutCTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7F779F3272F5DEA00E73275 /* LayoutCTests.swift */; };
 		A7BE36A82751BDAB00286709 /* ConnectorSocket.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7BE36A72751BDAB00286709 /* ConnectorSocket.swift */; };
 		A7BE36AA2751BDC300286709 /* ConnectorPlug.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7BE36A92751BDC300286709 /* ConnectorPlug.swift */; };
+		A7CA5EBB27952ECF00171398 /* Destination.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7CA5EBA27952ECF00171398 /* Destination.swift */; };
 		A7EAD11227608B0500455E09 /* LayoutTrainHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7EAD11127608B0500455E09 /* LayoutTrainHandler.swift */; };
 		A7EAD11427608BAA00455E09 /* LayoutTransitionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7EAD11327608BAA00455E09 /* LayoutTransitionHandler.swift */; };
 		A7F31B9D277B921B00FE0C65 /* SwitchboardEditControlsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7F31B9C277B921B00FE0C65 /* SwitchboardEditControlsView.swift */; };
@@ -405,6 +406,7 @@
 		A7BD6258276D50380039B6C2 /* LayoutDocumentTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutDocumentTests.swift; sourceTree = "<group>"; };
 		A7BE36A72751BDAB00286709 /* ConnectorSocket.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectorSocket.swift; sourceTree = "<group>"; };
 		A7BE36A92751BDC300286709 /* ConnectorPlug.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectorPlug.swift; sourceTree = "<group>"; };
+		A7CA5EBA27952ECF00171398 /* Destination.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Destination.swift; sourceTree = "<group>"; };
 		A7EAD11127608B0500455E09 /* LayoutTrainHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutTrainHandler.swift; sourceTree = "<group>"; };
 		A7EAD11327608BAA00455E09 /* LayoutTransitionHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutTransitionHandler.swift; sourceTree = "<group>"; };
 		A7F31B9C277B921B00FE0C65 /* SwitchboardEditControlsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwitchboardEditControlsView.swift; sourceTree = "<group>"; };
@@ -765,6 +767,7 @@
 			isa = PBXGroup;
 			children = (
 				A7F779F92734A8C500E73275 /* Element.swift */,
+				A7CA5EBA27952ECF00171398 /* Destination.swift */,
 				A7710E5D277850F000C08150 /* Reservation.swift */,
 				A728183F278E9EDC007BE810 /* Direction.swift */,
 				A74CCC6D272A5A08004E58F5 /* Route.swift */,
@@ -1228,6 +1231,7 @@
 				A7710E6B27799E2700C08150 /* Layout+Turnouts.swift in Sources */,
 				A744D13527659330005C2F37 /* TrainControlRouteView.swift in Sources */,
 				A79079A5277FAB7200771A60 /* SettingsView.swift in Sources */,
+				A7CA5EBB27952ECF00171398 /* Destination.swift in Sources */,
 				A717157E2756EB7100200F92 /* LayoutBlankCreator.swift in Sources */,
 				A784136B273CA4DE00381341 /* SwitchBoardView.swift in Sources */,
 				A744D13B276714A2005C2F37 /* DiagnosticsSheet.swift in Sources */,

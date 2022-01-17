@@ -23,19 +23,19 @@ final class LayoutObserver {
     init(layout: Layout) {
         self.layout = layout
         
-        cancellables.append(layout.$trains.sink(receiveValue: { trains in
+        cancellables.append(layout.$trains.dropFirst().sink(receiveValue: { trains in
             self.trainCallbacks.forEach { $0(trains) }
             self.anyCallbacks.forEach { $0() }
         }))
         
-        cancellables.append(layout.$blockMap.sink(receiveValue: { blocks in
+        cancellables.append(layout.$blockMap.dropFirst().sink(receiveValue: { blocks in
             // Note: need to pass the `blocks` parameter here because the layout.blocks
             // has not yet had the time to be updated
             self.blockCallbacks.forEach { $0(blocks) }
             self.anyCallbacks.forEach { $0() }
         }))
         
-        cancellables.append(layout.$turnouts.sink(receiveValue: { turnouts in
+        cancellables.append(layout.$turnouts.dropFirst().sink(receiveValue: { turnouts in
             // Note: need to pass the `turnouts` parameter here because the layout.turnouts
             // has not yet had the time to be updated
             self.turnoutCallbacks.forEach { $0(turnouts) }

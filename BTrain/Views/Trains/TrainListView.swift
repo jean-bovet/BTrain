@@ -27,8 +27,10 @@ struct TrainListView: View {
             VStack {
                 Table(selection: $selection) {
                     TableColumn("Enabled") { train in
-                        Toggle("Enabled", isOn: train.enabled)
-                            .labelsHidden()
+                        UndoProvider(train.enabled) { enabled in
+                            Toggle("Enabled", isOn: enabled)
+                                .labelsHidden()
+                        }
                     }.width(80)
                     
                     TableColumn("Name") { train in
