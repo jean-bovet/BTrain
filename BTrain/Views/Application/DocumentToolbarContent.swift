@@ -79,11 +79,11 @@ struct ConnectCommandsView: View {
 
         Spacer()
 
-        Button("􀥤 Enable") {
+        Button("􀋧 Enable") {
             document.enable() {}
         }.disabled(!document.connected)
 
-        Button("􀥥 Disable") {
+        Button("􀋫 Disable") {
             document.disable() {}
         }.disabled(!document.connected)
     }
