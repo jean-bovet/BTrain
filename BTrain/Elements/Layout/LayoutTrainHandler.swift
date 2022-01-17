@@ -214,6 +214,14 @@ final class LayoutTrainHandler: LayoutTrainHandling {
             throw LayoutError.trainNotFound(trainId: trainID)
         }
         
+        guard let blockId = train.blockId else {
+            throw LayoutError.trainNotAssignedToABlock(trainId: train.id)
+        }
+        
+        guard let block = layout.block(for: blockId), block.train != nil else {
+            throw LayoutError.trainNotFoundInBlock(blockId: blockId)
+        }
+
         // Ensure the automatic route associated with the train is updated
         if route.automatic {
             // Remember the destination block
@@ -225,33 +233,26 @@ final class LayoutTrainHandler: LayoutTrainHandling {
             try layout.updateAutomaticRoute(for: trainID)
         }
 
-        // Ensure the route is not empty
-        guard !route.steps.isEmpty else {
-            throw LayoutError.noSteps(routeId: routeID)
-        }
-
         // Set the route to the train
         train.routeId = routeID
 
-        // Check to make sure the train is somewhere along the route
-        train.routeIndex = -1
-        for (index, step) in route.steps.enumerated() {
-            if train.blockId == step.blockId {
-                train.routeIndex = index
-                break
+        // If the route is not empty, check if the train is somewhere along the route.
+        // If the blocks in front of the train are all occupied, it is possible that
+        // the route is empty. The TrainController will automatically generate a new
+        // route (if route.automatic) when one of the blocks is cleared.
+        if !route.steps.isEmpty {
+            // Check to make sure the train is somewhere along the route
+            train.routeIndex = -1
+            for (index, step) in route.steps.enumerated() {
+                if train.blockId == step.blockId {
+                    train.routeIndex = index
+                    break
+                }
             }
-        }
-                             
-        guard train.routeIndex >= 0 else {
-            throw LayoutError.trainNotFoundInRoute(train: train, route: route)
-        }
-
-        guard let blockId = train.blockId else {
-            throw LayoutError.trainNotAssignedToABlock(trainId: train.id)
-        }
-        
-        guard let block = layout.block(for: blockId), block.train != nil else {
-            throw LayoutError.trainNotFoundInBlock(blockId: blockId)
+                                 
+            guard train.routeIndex >= 0 else {
+                throw LayoutError.trainNotFoundInRoute(train: train, route: route)
+            }
         }
 
         train.state = .running

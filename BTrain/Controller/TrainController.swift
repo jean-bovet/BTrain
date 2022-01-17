@@ -213,8 +213,14 @@ final class TrainController {
                             debug("Stopping completely \(train) because it has reached the end of the route and the destination position \(position)")
                             return try stop(completely: true)
                         }
-                    } else if atEndOfBlock {
-                        // If the position is not specified, wait until the train is at the end of the block to stop it
+                    }
+                    
+                    // If the train is at the end of the block, we need to stop it.
+                    // This can happen even if the destination.position is specified, for example if
+                    // destination.position is 0 and the train travels in the .next direction, it will
+                    // never be stopped above because position 0 is skipped to go directly to position 1
+                    // (because the first feedback in the block always indicates that the train is at position 1.
+                    if atEndOfBlock {
                         debug("Stopping completely \(train) because it has reached the end of the route and the end of the block")
                         return try stop(completely: true)
                     }
@@ -243,8 +249,13 @@ final class TrainController {
         guard let nextBlock = layout.nextBlock(train: train) else {
             // Stop the train if there is no next block
             if atEndOfBlock {
-                debug("Stopping completely \(train) because there is no next block (after \(currentBlock))")
-                return try stop(completely: true)
+                if route.automatic {
+                    debug("Stop train \(train) because there is no next block (after \(currentBlock))")
+                    return try stop()
+                } else {
+                    debug("Stopping completely \(train) because there is no next block (after \(currentBlock))")
+                    return try stop(completely: true)
+                }
             } else {
                 return .none
             }
@@ -252,7 +263,7 @@ final class TrainController {
         
         // Stop if the next block is occupied
         if nextBlock.train != nil && atEndOfBlock {
-            debug("Stop train \(train) train because the next block is occupied")
+            debug("Stop train \(train) because the next block is occupied")
             return try stop()
         }
 
