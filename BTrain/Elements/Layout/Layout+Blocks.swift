@@ -109,9 +109,12 @@ extension Layout {
         }
     }
 
-    func atEndOfBlock(train: Train) -> Bool {
+    func atEndOfBlock(train: Train) throws -> Bool {
         if let currentBlock = currentBlock(train: train) {
-            if currentBlock.trainNaturalDirection {
+            guard let ti = currentBlock.train else {
+                throw LayoutError.trainNotFoundInBlock(blockId: currentBlock.id)
+            }
+            if ti.direction == .next {
                 return train.position == currentBlock.feedbacks.count
             } else {
                 return train.position == 0

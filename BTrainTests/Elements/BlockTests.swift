@@ -26,10 +26,10 @@ class BlockTests: XCTestCase {
         let b1 = Block("1", type: .station, center: .init(x: 10, y: 20), rotationAngle: .pi)
         b1.reserved = Reservation("t1", .previous)
         b1.train = .init(b1.reserved!.trainId, .previous)
-        XCTAssertFalse(b1.trainNaturalDirection)
+        XCTAssertEqual(b1.train?.direction, .previous)
         
         b1.train = .init(b1.reserved!.trainId, .next)
-        XCTAssertTrue(b1.trainNaturalDirection)
+        XCTAssertEqual(b1.train?.direction, .next)
     }
     
     func testBlockSockets() {
@@ -56,7 +56,7 @@ class BlockTests: XCTestCase {
         let feedbacks = [Identifier<Feedback>(uuid: "1"), Identifier<Feedback>(uuid: "2")]
         b1.assign(feedbacks)
         
-        XCTAssertFalse(b1.trainNaturalDirection)
+        XCTAssertFalse(b1.train?.direction == .next)
 
         let encoder = JSONEncoder()
         let data = try encoder.encode(b1)
@@ -71,7 +71,7 @@ class BlockTests: XCTestCase {
         XCTAssertEqual(b1.reserved?.trainId, b2.reserved?.trainId)
         XCTAssertEqual(b1.reserved?.direction, b2.reserved?.direction)
         XCTAssertEqual(b1.train, b2.train)
-        XCTAssertEqual(b1.trainNaturalDirection, b2.trainNaturalDirection)
+        XCTAssertEqual(b1.train?.direction, b2.train?.direction)
         XCTAssertEqual(b1.feedbacks, b2.feedbacks)
     }
 

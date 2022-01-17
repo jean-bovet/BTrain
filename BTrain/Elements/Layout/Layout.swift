@@ -120,7 +120,7 @@ final class Layout: Element, ObservableObject {
     
     // Returns true if the specified train can be considered at a valid
     // location to be monitored to move to the next block.
-    func shouldHandleTrainMoveToNextBlock(train: Train) -> Bool {
+    func shouldHandleTrainMoveToNextBlock(train: Train) throws -> Bool {
         // There must exist a next block
         guard let nextBlock = nextBlock(train: train) else {
             return false
@@ -134,7 +134,7 @@ final class Layout: Element, ObservableObject {
         if strictRouteFeedbackStrategy {
             // Strict route stratey requires the train to be at the end of the block
             // before moving to the next block.
-            return atEndOfBlock(train: train)
+            return try atEndOfBlock(train: train)
         } else {
             return true
         }

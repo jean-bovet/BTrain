@@ -189,7 +189,7 @@ final class TrainController {
             return .none
         }
 
-        let atEndOfBlock = layout.atEndOfBlock(train: train)
+        let atEndOfBlock = try layout.atEndOfBlock(train: train)
         
         if route.automatic {
             switch(route.automaticMode) {
@@ -375,7 +375,7 @@ final class TrainController {
             return .none
         }
         
-        guard layout.shouldHandleTrainMoveToNextBlock(train: train) else {
+        guard try layout.shouldHandleTrainMoveToNextBlock(train: train) else {
             return .none
         }
         

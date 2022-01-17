@@ -121,14 +121,6 @@ final class Block: Element, ObservableObject {
     // Returns the current train (and its direction of travel) inside this block
     @Published var train: TrainInstance?
     
-    // Returns true if the train is traveling along the natural direction of the block
-    var trainNaturalDirection: Bool {
-        guard let train = train else {
-            preconditionFailure("It is an error to ask for the natural direction of the train in block \(id) because it does not contain the train instance")
-        }
-        return train.direction == .next
-    }
-
     // A structure identifying each feedback inside this block
     struct BlockFeedback: Identifiable, Hashable, Codable {
         let id: String

@@ -79,7 +79,7 @@ final class TrainShape: Shape, DraggableShape {
             
             // Take into account the direction of travel of the train within
             // the block and rotate it 180 degree if necessary.
-            if let block = layout.block(for: blockId), !block.trainNaturalDirection {
+            if let block = layout.block(for: blockId), block.train?.direction == .previous {
                 self.rotationAngle += .pi
             }
         }

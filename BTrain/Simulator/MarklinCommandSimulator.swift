@@ -251,19 +251,19 @@ final class MarklinCommandSimulator: ObservableObject {
             return
         }
                         
-        if !layout.atEndOfBlock(train: train)  {
-            let naturalDirection = block.trainNaturalDirection
+        if try !layout.atEndOfBlock(train: train)  {
+            let naturalDirection = block.train?.direction == .next
             let feedback = block.feedbacks[naturalDirection ? train.position : train.position - 1]
             if let feedback = layout.feedback(for: feedback.feedbackId) {
                 triggerFeedback(feedback: feedback, value: 1)
             }
-        } else if let nextBlock = layout.nextBlock(train: train), layout.atEndOfBlock(train: train) {
+        } else if let nextBlock = layout.nextBlock(train: train), try layout.atEndOfBlock(train: train) {
             let (feedback, _) = try layout.feedbackTriggeringTransition(from: block, to: nextBlock)
             if let feedback = feedback {
                 triggerFeedback(feedback: feedback, value: 1)
             }
         } else {
-            print("[Simulator] Nothing to process for route \(route)")
+            BTLogger.debug("[Simulator] Nothing to process for route \(route)")
         }
     }
 

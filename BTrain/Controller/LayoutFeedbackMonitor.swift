@@ -46,7 +46,7 @@ final class LayoutFeedbackMonitor {
             return
         }
 
-        guard layout.shouldHandleTrainMoveToNextBlock(train: train) else {
+        guard try layout.shouldHandleTrainMoveToNextBlock(train: train) else {
             return
         }
 
