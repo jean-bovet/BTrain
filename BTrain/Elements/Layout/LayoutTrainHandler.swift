@@ -255,7 +255,7 @@ final class LayoutTrainHandler: LayoutTrainHandling {
             }
         }
 
-        train.state = .running
+        train.scheduling = .running
     }
     
     func stopTrain(_ trainId: Identifier<Train>, completely: Bool) throws {
@@ -268,8 +268,11 @@ final class LayoutTrainHandler: LayoutTrainHandling {
         train.speed.kph = 0
         layout.executor?.sendTrainSpeed(train: train)
 
+        train.state = .stopped
+        train.stopTrigger = nil
+
         if completely {
-            train.state = .stopped
+            train.scheduling = .stopped
             try layout.free(trainID: train.id)
         }
         
@@ -281,7 +284,7 @@ final class LayoutTrainHandler: LayoutTrainHandling {
             throw LayoutError.trainNotFound(trainId: trainId)
         }
 
-        train.state = .finishing
+        train.scheduling = .finishing
     }
 
     func setTrain(_ train: Train, routeIndex: Int) throws {

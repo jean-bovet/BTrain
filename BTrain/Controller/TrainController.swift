@@ -59,7 +59,7 @@ final class TrainController {
         }
 
         // Return now if the train is not actively "running"
-        guard train.state != .stopped else {
+        guard train.scheduling != .stopped else {
             return .none
         }
         
@@ -132,12 +132,17 @@ final class TrainController {
         }
         
         // Start train if next block is free and reserve it
+        // TODO: use tryReserve?
+//        tryReserveNextBlocks(direction: <#T##Direction#>)
+        //            try layout.reserve(train: train.id, fromBlock: currentBlock.id, toBlock: nextBlock.id, direction: direction)
+
         if let nextBlock = nextBlock, (nextBlock.reserved == nil || nextBlock.reserved == currentBlock.reserved) && nextBlock.train == nil && nextBlock.enabled {
             do {
                 try layout.reserve(train: train.id, fromBlock: currentBlock.id, toBlock: nextBlock.id, direction: currentBlock.train!.direction)
                 BTLogger.debug("Start train \(train) because the next block \(nextBlock) is free or reserved for this train")
                 startRouteIndex = train.routeIndex
                 try layout.setTrain(train, speed: LayoutFactory.DefaultSpeed)
+                train.state = .running
                 return .processed
             } catch {
                 BTLogger.debug("Cannot start train \(train) because \(error)")
@@ -193,9 +198,14 @@ final class TrainController {
             return .none
         }
         
+        // The train is not in the first step of the route
+        guard train.routeIndex != startRouteIndex else {
+            return .none
+        }
+        
         switch(route.automaticMode) {
         case .once(destination: let destination):
-            if train.routeIndex != startRouteIndex && train.routeIndex == route.steps.count - 1 {
+            if train.routeIndex == route.steps.count - 1 {
                 // Double-check that the train is located in the block specified by the destination.
                 // This should never fail.
                 guard currentBlock.id == destination.blockId else {
@@ -212,8 +222,7 @@ final class TrainController {
                     // If the position for the destination is specified, let's wait until we reach that position
                     if train.position == position {
                         debug("Stopping completely \(train) because it has reached the end of the route and the destination position \(position)")
-                        train.brakeState = .needToStop
-                        train.stopCompletely = true
+                        train.stopTrigger = .init(stopCompletely: true)
                         return .processed
                     }
                 }
@@ -224,17 +233,15 @@ final class TrainController {
                 // never be stopped above because position 0 is skipped to go directly to position 1
                 // (because the first feedback in the block always indicates that the train is at position 1.
                 debug("Stopping completely \(train) because it has reached the end of the route and the end of the block")
-                train.brakeState = .needToStop
-                train.stopCompletely = true
+                train.stopTrigger = .init(stopCompletely: true)
                 return .processed
             }
             
         case .endless:
-            if currentBlock.category == .station && train.routeIndex != startRouteIndex {
-                if train.state == .finishing {
+            if currentBlock.category == .station {
+                if train.scheduling == .finishing {
                     debug("Stopping completely \(train) because it has reached a station and it is marked as .finishing")
-                    train.brakeState = .needToStop
-                    train.stopCompletely = true
+                    train.stopTrigger = .init(stopCompletely: true)
                     return .processed
                 } else {
                     debug("Schedule timer to restart train \(train) in \(route.stationWaitDuration) seconds")
@@ -244,9 +251,7 @@ final class TrainController {
                         ti.timeUntilAutomaticRestart = route.stationWaitDuration
                         delegate?.scheduleRestartTimer(trainInstance: ti)
                     }
-                    
-                    train.brakeState = .needToStop
-                    train.stopCompletely = false
+                    train.stopTrigger = .init(stopCompletely: false)
                     return .processed
                 }
             }
@@ -268,6 +273,10 @@ final class TrainController {
             return .none
         }
         
+        guard let stopTrigger = train.stopTrigger else {
+            return .none
+        }
+        
         let direction = trainInstance.direction
         var result: Result = .none
         for (_, feedback) in currentBlock.feedbacks.enumerated() {
@@ -275,26 +284,25 @@ final class TrainController {
                 continue
             }
             
-            if train.brakeState == .needToStop {
+            if train.state == .running {
                 guard let brakeFeedback = currentBlock.brakeFeedback(for: direction) else {
                     throw LayoutError.brakeFeedbackNotFound(block: currentBlock)
                 }
                 if brakeFeedback == f.id {
                     debug("Train \(train) is braking in \(currentBlock.name) at position \(train.position), direction \(direction)")
-                    train.brakeState = .braking
+                    train.state = .braking
                     try layout.setTrain(train, speed: LayoutFactory.DefaultBrakingSpeed)
                     result = .processed
                 }
             }
             
-            if train.brakeState == .braking || train.brakeState == .needToStop {
+            if train.state == .braking {
                 guard let stopFeedback = currentBlock.stopFeedback(for: direction) else {
                     throw LayoutError.stopFeedbackNotFound(block: currentBlock)
                 }
                 if stopFeedback == f.id {
                     debug("Train \(train) is stopped in \(currentBlock.name) at position \(train.position), direction \(direction)")
-                    train.brakeState = .stopped
-                    result = try stop(completely: train.stopCompletely)
+                    result = try stop(completely: stopTrigger.stopCompletely)
                 }
             }
         }
@@ -418,8 +426,7 @@ final class TrainController {
         // Reserve the block ahead. If it is not possible, then stop the train in this block
         if tryReserveNextBlocks(direction: direction) == .none {
             debug("Train \(train) will stop here (\(nextBlock)) because the next block cannot be reserved")
-            train.brakeState = .needToStop
-            train.stopCompletely = false
+            train.stopTrigger = .init(stopCompletely: false)
         }
         
         // Handle any automatic route specific stop handling.

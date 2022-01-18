@@ -30,18 +30,18 @@ class TrainRouteControlViewTests: XCTestCase {
         
         let sut = TrainControlRouteActionsView(document: doc, train: train, route: route, error: $error)
 
-        train.state = .stopped
+        train.scheduling = .stopped
         _ = try sut.inspect().find(button: "Start")
         XCTAssertThrowsError(try sut.inspect().find(button: "Stop"))
         XCTAssertThrowsError(try sut.inspect().find(button: "Finish"))
 
-        train.state = .running
+        train.scheduling = .running
         _ = try sut.inspect().find(button: "Stop")
         var fb = try sut.inspect().find(button: "Finish")
         XCTAssertFalse(fb.isDisabled())
         XCTAssertThrowsError(try sut.inspect().find(button: "Start"))
 
-        train.state = .finishing
+        train.scheduling = .finishing
         _ = try sut.inspect().find(button: "Stop")
         fb = try sut.inspect().find(button: "Finish")
         XCTAssertTrue(fb.isDisabled())

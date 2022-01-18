@@ -53,8 +53,7 @@ final class Train: Element, ObservableObject {
     // (or the same departing block is also the arrival block)
     @Published var routeIndex = 0
 
-    // The various states the train can be in
-    enum State {
+    enum Schedule {
         // The train is stopped and cannot be started again
         // unless the user takes an explicit action (ie Start button)
         case stopped
@@ -69,21 +68,23 @@ final class Train: Element, ObservableObject {
         case finishing
     }
     
-    // The state of the train
-    @Published var state: State = .stopped
+    // The state of the schedule
+    @Published var scheduling: Schedule = .stopped
     
-    // TODO: better naming and same with `state`?
-    enum BrakeState {
-        case none
-        case needToStop
+    enum State {
+        case running
         case braking
         case stopped
     }
     
-    // TODO: better way of doing this?
-    var stopCompletely = false
+    // The state of the train
+    @Published var state: State = .stopped
+
+    struct StopTrigger {
+        let stopCompletely: Bool
+    }
     
-    @Published var brakeState: BrakeState = .none
+    var stopTrigger: StopTrigger? = nil
     
     //var brakeInBlock
     // The block this train is located in
