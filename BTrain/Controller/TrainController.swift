@@ -39,6 +39,14 @@ final class TrainController {
     // in the first block of the route.
     var startRouteIndex: Int?
     
+    struct StopTrigger {
+        let stopCompletely: Bool
+    }
+    
+    // If this variable is not nil, it means the train
+    // has been asked to stop at the next opportunity.
+    var stopTrigger: StopTrigger? = nil
+    
     init(layout: Layout, train: Train, delegate: TrainControllerDelegate? = nil) {
         self.layout = layout
         self.train = train
@@ -222,7 +230,7 @@ final class TrainController {
                     // If the position for the destination is specified, let's wait until we reach that position
                     if train.position == position {
                         debug("Stopping completely \(train) because it has reached the end of the route and the destination position \(position)")
-                        train.stopTrigger = .init(stopCompletely: true)
+                        stopTrigger = .init(stopCompletely: true)
                         return .processed
                     }
                 }
@@ -233,7 +241,7 @@ final class TrainController {
                 // never be stopped above because position 0 is skipped to go directly to position 1
                 // (because the first feedback in the block always indicates that the train is at position 1.
                 debug("Stopping completely \(train) because it has reached the end of the route and the end of the block")
-                train.stopTrigger = .init(stopCompletely: true)
+                stopTrigger = .init(stopCompletely: true)
                 return .processed
             }
             
@@ -241,7 +249,7 @@ final class TrainController {
             if currentBlock.category == .station {
                 if train.scheduling == .finishing {
                     debug("Stopping completely \(train) because it has reached a station and it is marked as .finishing")
-                    train.stopTrigger = .init(stopCompletely: true)
+                    stopTrigger = .init(stopCompletely: true)
                     return .processed
                 } else {
                     debug("Schedule timer to restart train \(train) in \(route.stationWaitDuration) seconds")
@@ -251,7 +259,7 @@ final class TrainController {
                         ti.timeUntilAutomaticRestart = route.stationWaitDuration
                         delegate?.scheduleRestartTimer(trainInstance: ti)
                     }
-                    train.stopTrigger = .init(stopCompletely: false)
+                    stopTrigger = .init(stopCompletely: false)
                     return .processed
                 }
             }
@@ -273,7 +281,7 @@ final class TrainController {
             return .none
         }
         
-        guard let stopTrigger = train.stopTrigger else {
+        guard let stopTrigger = stopTrigger else {
             return .none
         }
         
@@ -426,7 +434,7 @@ final class TrainController {
         // Reserve the block ahead. If it is not possible, then stop the train in this block
         if tryReserveNextBlocks(direction: direction) == .none {
             debug("Train \(train) will stop here (\(nextBlock)) because the next block cannot be reserved")
-            train.stopTrigger = .init(stopCompletely: false)
+            stopTrigger = .init(stopCompletely: false)
         }
         
         // Handle any automatic route specific stop handling.
@@ -469,6 +477,8 @@ final class TrainController {
     }
     
     private func stop(completely: Bool = false) throws -> Result {
+        stopTrigger = nil
+        
         guard train.speed.kph > 0 else {
             return .none
         }

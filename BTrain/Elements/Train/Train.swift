@@ -80,12 +80,6 @@ final class Train: Element, ObservableObject {
     // The state of the train
     @Published var state: State = .stopped
 
-    struct StopTrigger {
-        let stopCompletely: Bool
-    }
-    
-    var stopTrigger: StopTrigger? = nil
-    
     //var brakeInBlock
     // The block this train is located in
     @Published var blockId: Identifier<Block>?

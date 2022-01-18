@@ -269,7 +269,6 @@ final class LayoutTrainHandler: LayoutTrainHandling {
         layout.executor?.sendTrainSpeed(train: train)
 
         train.state = .stopped
-        train.stopTrigger = nil
 
         if completely {
             train.scheduling = .stopped
