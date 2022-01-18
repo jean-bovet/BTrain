@@ -389,26 +389,17 @@ final class TrainController {
 
         // Get the first feedback that the train will hit upon entering the block,
         // which depends on the direction of travel within the block itself.
-        let (firstFeedback, naturalDirection) = try layout.feedbackTriggeringTransition(from: currentBlock, to: nextBlock)
+        let (firstFeedback, direction) = try layout.feedbackTriggeringTransition(from: currentBlock, to: nextBlock)
         
         guard let firstFeedback = firstFeedback, firstFeedback.detected else {
             // The first feedback is not yet detected, nothing more to do
             return .none
         }
         
-        // The next block now has the train
-        let direction: Direction
-        let position: Int
-        if naturalDirection {
-            direction = .next
-            position = 1
-        } else {
-            // Entering the next block from the "next" side, meaning the train
-            // is running backwards inside the block from the block natural direction.
-            direction = .previous
-            position = nextBlock.feedbacks.count - 1
+        guard let position = nextBlock.indexOfTrain(forFeedback: firstFeedback.id, direction: direction) else {
+            throw LayoutError.feedbackNotFound(feedbackId: firstFeedback.id)
         }
-        
+                
         debug("Train \(train) enters block \(nextBlock) at position \(position), direction \(direction)")
 
         // Asks the layout to move the train to the next block

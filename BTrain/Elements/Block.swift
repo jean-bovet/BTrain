@@ -138,67 +138,6 @@ final class Block: Element, ObservableObject {
     @Published var brakeFeedbackPrevious: Identifier<Feedback>?
     @Published var stopFeedbackPrevious: Identifier<Feedback>?
 
-    func autoFillFeedbacks() {
-        entryFeedbackNext = feedbacks.first?.feedbackId
-        brakeFeedbackNext = feedbacks.element(at: 1)?.feedbackId ?? entryFeedbackNext
-        stopFeedbackNext = feedbacks.element(at: 2)?.feedbackId ?? brakeFeedbackNext
-        
-        entryFeedbackPrevious = stopFeedbackNext
-        brakeFeedbackPrevious = brakeFeedbackNext
-        stopFeedbackPrevious = entryFeedbackNext
-    }
-    
-    // Returns the integer that indicates the "previous" socket
-    static var previousSocket: Int {
-        return 0
-    }
-    
-    // Returns the integer that indicates the "next" socket
-    static var nextSocket: Int {
-        return 1
-    }
-    
-    // Returns the socket from the "previous" side
-    var previous: Socket {
-        return Socket.block(id, socketId: Block.previousSocket)
-    }
-
-    // Returns the socket from the "next" side
-    var next: Socket {
-        return Socket.block(id, socketId: Block.nextSocket)
-    }
-    
-    // Returns a socket that does not have any side indication,
-    // which can be useful when we want to refer to "any socket
-    // from block" in transitions calculation.
-    var any: Socket {
-        return Socket.block(id)
-    }
-    
-    // Returns all the sockets
-    var allSockets: [Socket] {
-        switch(category) {
-        case .station, .free:
-            return [previous, next]
-        case .sidingPrevious:
-            return [next]
-        case .sidingNext:
-            return [previous]
-        }
-    }
-    
-    // Returns the name of the specific socket
-    func socketName(_ socketId: Int) -> String {
-        switch(socketId) {
-        case 0:
-            return "previous"
-        case 1:
-            return "next"
-        default:
-            return "?"
-        }
-    }
-
     init(id: Identifier<Block>, name: String, type: Category, center: CGPoint, rotationAngle: CGFloat) {
         self.id = id
         self.name = name
@@ -211,23 +150,7 @@ final class Block: Element, ObservableObject {
         self.init(id: Identifier(uuid: uuid), name: uuid, type: type, center: center, rotationAngle: rotationAngle)
         
     }
-    
-    func assign(_ feedbackIds: [Identifier<Feedback>]) {
-        feedbacks = feedbackIds.map { BlockFeedback(id: UUID().uuidString, feedbackId: $0) }
-    }
-    
-    func remove(_ feedback: BlockFeedback) {
-        feedbacks.removeAll(where: { $0.id == feedback.id })
-    }
-    
-    func add(_ feedbackId: Identifier<Feedback>) {
-        feedbacks.append(BlockFeedback(id: UUID().uuidString, feedbackId: feedbackId))
-    }
-    
-    func remove(feedbackId: Identifier<Feedback>) {
-        feedbacks.removeAll(where: { $0.feedbackId == feedbackId })
-    }
-    
+        
 }
 
 extension Block: Codable {

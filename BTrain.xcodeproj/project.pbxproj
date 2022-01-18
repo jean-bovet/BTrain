@@ -192,6 +192,8 @@
 		A7CA5EC1279649CF00171398 /* BlockFeedbacksView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7CA5EC0279649CF00171398 /* BlockFeedbacksView.swift */; };
 		A7CA5EC327964AA500171398 /* BlockDirectionFeedbacksView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7CA5EC227964AA500171398 /* BlockDirectionFeedbacksView.swift */; };
 		A7CA5EC527964B6700171398 /* Array+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7CA5EC427964B6700171398 /* Array+Extension.swift */; };
+		A7CA5EC7279654EB00171398 /* Block+Feedback.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7CA5EC6279654EB00171398 /* Block+Feedback.swift */; };
+		A7CA5EC92796550C00171398 /* Block+Socket.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7CA5EC82796550C00171398 /* Block+Socket.swift */; };
 		A7EAD11227608B0500455E09 /* LayoutTrainHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7EAD11127608B0500455E09 /* LayoutTrainHandler.swift */; };
 		A7EAD11427608BAA00455E09 /* LayoutTransitionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7EAD11327608BAA00455E09 /* LayoutTransitionHandler.swift */; };
 		A7F31B9D277B921B00FE0C65 /* SwitchboardEditControlsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7F31B9C277B921B00FE0C65 /* SwitchboardEditControlsView.swift */; };
@@ -417,6 +419,8 @@
 		A7CA5EC0279649CF00171398 /* BlockFeedbacksView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockFeedbacksView.swift; sourceTree = "<group>"; };
 		A7CA5EC227964AA500171398 /* BlockDirectionFeedbacksView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockDirectionFeedbacksView.swift; sourceTree = "<group>"; };
 		A7CA5EC427964B6700171398 /* Array+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Array+Extension.swift"; sourceTree = "<group>"; };
+		A7CA5EC6279654EB00171398 /* Block+Feedback.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Block+Feedback.swift"; sourceTree = "<group>"; };
+		A7CA5EC82796550C00171398 /* Block+Socket.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Block+Socket.swift"; sourceTree = "<group>"; };
 		A7EAD11127608B0500455E09 /* LayoutTrainHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutTrainHandler.swift; sourceTree = "<group>"; };
 		A7EAD11327608BAA00455E09 /* LayoutTransitionHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutTransitionHandler.swift; sourceTree = "<group>"; };
 		A7F31B9C277B921B00FE0C65 /* SwitchboardEditControlsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwitchboardEditControlsView.swift; sourceTree = "<group>"; };
@@ -785,6 +789,8 @@
 				A74CCC6D272A5A08004E58F5 /* Route.swift */,
 				A7F779CD272B445B00E73275 /* Feedback.swift */,
 				A74CCC69272A59F9004E58F5 /* Block.swift */,
+				A7CA5EC82796550C00171398 /* Block+Socket.swift */,
+				A7CA5EC6279654EB00171398 /* Block+Feedback.swift */,
 				A74CCC71272A5A18004E58F5 /* Transition.swift */,
 				A72180842760428E00831998 /* Socket.swift */,
 				A785C087278D0EE4002FD538 /* Train */,
@@ -1204,6 +1210,7 @@
 				A7710E73277A3BC200C08150 /* NewTurnoutSheet.swift in Sources */,
 				A7F31BA1277C3D7B00FE0C65 /* BlockDetailsView.swift in Sources */,
 				A7710E71277A344300C08150 /* NewBlockSheet.swift in Sources */,
+				A7CA5EC7279654EB00171398 /* Block+Feedback.swift in Sources */,
 				A7F779CE272B445B00E73275 /* Feedback.swift in Sources */,
 				A7FBC8B8276EBB34009D49C3 /* PathFinder.swift in Sources */,
 				A78413862740791C00381341 /* Shape+Extension.swift in Sources */,
@@ -1251,6 +1258,7 @@
 				A7CA5EBB27952ECF00171398 /* Destination.swift in Sources */,
 				A717157E2756EB7100200F92 /* LayoutBlankCreator.swift in Sources */,
 				A784136B273CA4DE00381341 /* SwitchBoardView.swift in Sources */,
+				A7CA5EC92796550C00171398 /* Block+Socket.swift in Sources */,
 				A744D13B276714A2005C2F37 /* DiagnosticsSheet.swift in Sources */,
 				A717158D275845F000200F92 /* ShapeContext.swift in Sources */,
 				A784136D273CDFF100381341 /* Shape.swift in Sources */,
