@@ -75,4 +75,95 @@ class BlockTests: XCTestCase {
         XCTAssertEqual(b1.feedbacks, b2.feedbacks)
     }
 
+    func testFeedbacksForEmptyBlock() {
+        let block = Block("empty", type: .free, center: .zero, rotationAngle: 0)
+
+        XCTAssertNil(block.entryFeedback(for: .next))
+        XCTAssertNil(block.entryFeedback(for: .previous))
+        
+        XCTAssertNil(block.brakeFeedback(for: .next))
+        XCTAssertNil(block.brakeFeedback(for: .previous))
+        
+        XCTAssertNil(block.stopFeedback(for: .next))
+        XCTAssertNil(block.stopFeedback(for: .previous))
+    }
+    
+    let f1 = Identifier<Feedback>(uuid: "f1")
+    let f2 = Identifier<Feedback>(uuid: "f2")
+    let f3 = Identifier<Feedback>(uuid: "f3")
+    let f4 = Identifier<Feedback>(uuid: "f4")
+
+    func testFeedbacksForBlockWith1Feedback() {
+        let block = Block("empty", type: .free, center: .zero, rotationAngle: 0)
+        block.assign([f1])
+        
+        XCTAssertEqual(block.entryFeedback(for: .next), f1)
+        XCTAssertEqual(block.entryFeedback(for: .previous), f1)
+        
+        XCTAssertEqual(block.brakeFeedback(for: .next), f1)
+        XCTAssertEqual(block.brakeFeedback(for: .previous), f1)
+        
+        XCTAssertEqual(block.stopFeedback(for: .next), f1)
+        XCTAssertEqual(block.stopFeedback(for: .previous), f1)
+    }
+    
+    func testFeedbacksForBlockWith2Feedbacks() {
+        let block = Block("empty", type: .free, center: .zero, rotationAngle: 0)
+        block.assign([f1, f2])
+        
+        XCTAssertEqual(block.entryFeedback(for: .next), f1)
+        XCTAssertEqual(block.entryFeedback(for: .previous), f2)
+        
+        XCTAssertEqual(block.brakeFeedback(for: .next), f2)
+        XCTAssertEqual(block.brakeFeedback(for: .previous), f1)
+        
+        XCTAssertEqual(block.stopFeedback(for: .next), f2)
+        XCTAssertEqual(block.stopFeedback(for: .previous), f1)
+    }
+    
+    func testFeedbacksForBlockWith3Feedbacks() {
+        let block = Block("empty", type: .free, center: .zero, rotationAngle: 0)
+        block.assign([f1, f2, f3])
+        
+        XCTAssertEqual(block.entryFeedback(for: .next), f1)
+        XCTAssertEqual(block.entryFeedback(for: .previous), f3)
+        
+        XCTAssertEqual(block.brakeFeedback(for: .next), f2)
+        XCTAssertEqual(block.brakeFeedback(for: .previous), f2)
+        
+        XCTAssertEqual(block.stopFeedback(for: .next), f3)
+        XCTAssertEqual(block.stopFeedback(for: .previous), f1)
+    }
+    
+    func testFeedbacksForBlockWith4Feedbacks() {
+        let block = Block("empty", type: .free, center: .zero, rotationAngle: 0)
+        block.assign([f1, f2, f3, f4])
+
+        XCTAssertEqual(block.entryFeedback(for: .next), f1)
+        XCTAssertEqual(block.entryFeedback(for: .previous), f4)
+        
+        XCTAssertEqual(block.brakeFeedback(for: .next), f2)
+        XCTAssertEqual(block.brakeFeedback(for: .previous), f3)
+        
+        XCTAssertEqual(block.stopFeedback(for: .next), f3)
+        XCTAssertEqual(block.stopFeedback(for: .previous), f2)
+        
+        block.entryFeedbackNext = f2
+        block.brakeFeedbackNext = f3
+        block.stopFeedbackNext = f4
+        
+        block.entryFeedbackPrevious = f3
+        block.brakeFeedbackPrevious = f2
+        block.stopFeedbackPrevious = f1
+        
+        XCTAssertEqual(block.entryFeedback(for: .next), f2)
+        XCTAssertEqual(block.entryFeedback(for: .previous), f3)
+        
+        XCTAssertEqual(block.brakeFeedback(for: .next), f3)
+        XCTAssertEqual(block.brakeFeedback(for: .previous), f2)
+        
+        XCTAssertEqual(block.stopFeedback(for: .next), f4)
+        XCTAssertEqual(block.stopFeedback(for: .previous), f1)
+    }
+
 }

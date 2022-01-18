@@ -788,11 +788,9 @@
 				A728183F278E9EDC007BE810 /* Direction.swift */,
 				A74CCC6D272A5A08004E58F5 /* Route.swift */,
 				A7F779CD272B445B00E73275 /* Feedback.swift */,
-				A74CCC69272A59F9004E58F5 /* Block.swift */,
-				A7CA5EC82796550C00171398 /* Block+Socket.swift */,
-				A7CA5EC6279654EB00171398 /* Block+Feedback.swift */,
 				A74CCC71272A5A18004E58F5 /* Transition.swift */,
 				A72180842760428E00831998 /* Socket.swift */,
+				A7CA5ECA27965ACF00171398 /* Block */,
 				A785C087278D0EE4002FD538 /* Train */,
 				A76507F5275BEEC50079C71A /* Layout */,
 				A73B164B274E1EA50073947D /* Turnout */,
@@ -979,6 +977,16 @@
 				A717158E2758809C00200F92 /* Geometry */,
 			);
 			path = Utilities;
+			sourceTree = "<group>";
+		};
+		A7CA5ECA27965ACF00171398 /* Block */ = {
+			isa = PBXGroup;
+			children = (
+				A74CCC69272A59F9004E58F5 /* Block.swift */,
+				A7CA5EC82796550C00171398 /* Block+Socket.swift */,
+				A7CA5EC6279654EB00171398 /* Block+Feedback.swift */,
+			);
+			path = Block;
 			sourceTree = "<group>";
 		};
 		A7F779DD272C75BA00E73275 /* Controller */ = {

@@ -387,17 +387,16 @@ final class TrainController {
             return .none
         }
 
-        // Get the first feedback that the train will hit upon entering the block,
-        // which depends on the direction of travel within the block itself.
-        let (firstFeedback, direction) = try layout.feedbackTriggeringTransition(from: currentBlock, to: nextBlock)
+        // Find out what is the entry feedback for the next block
+        let (entryFeedback, direction) = try layout.feedbackTriggeringTransition(from: currentBlock, to: nextBlock)
         
-        guard let firstFeedback = firstFeedback, firstFeedback.detected else {
+        guard let entryFeedback = entryFeedback, entryFeedback.detected else {
             // The first feedback is not yet detected, nothing more to do
             return .none
         }
         
-        guard let position = nextBlock.indexOfTrain(forFeedback: firstFeedback.id, direction: direction) else {
-            throw LayoutError.feedbackNotFound(feedbackId: firstFeedback.id)
+        guard let position = nextBlock.indexOfTrain(forFeedback: entryFeedback.id, direction: direction) else {
+            throw LayoutError.feedbackNotFound(feedbackId: entryFeedback.id)
         }
                 
         debug("Train \(train) enters block \(nextBlock) at position \(position), direction \(direction)")

@@ -31,24 +31,69 @@ extension Block {
     }
     
     func autoFillFeedbacks() {
-        entryFeedbackNext = feedbacks.first?.feedbackId
-        brakeFeedbackNext = feedbacks.element(at: 1)?.feedbackId ?? entryFeedbackNext
-        stopFeedbackNext = feedbacks.element(at: 2)?.feedbackId ?? brakeFeedbackNext
+        entryFeedbackNext = defaultEntryFeedback(for: .next)
+        brakeFeedbackNext = defaultBrakeFeedback(for: .next)
+        stopFeedbackNext = defaultStopFeedback(for: .next)
         
-        entryFeedbackPrevious = stopFeedbackNext
-        brakeFeedbackPrevious = brakeFeedbackNext
-        stopFeedbackPrevious = entryFeedbackNext
+        entryFeedbackPrevious = defaultEntryFeedback(for: .previous)
+        brakeFeedbackPrevious = defaultBrakeFeedback(for: .previous)
+        stopFeedbackPrevious = defaultStopFeedback(for: .previous)
     }
-    
-    func entryFeedback(for direction: Direction) -> Identifier<Feedback>? {
+
+    func defaultEntryFeedback(for direction: Direction) -> Identifier<Feedback>? {
         switch(direction) {
-        case .previous:
-            return entryFeedbackPrevious ?? feedbacks.last?.feedbackId
         case .next:
-            return entryFeedbackNext ?? feedbacks.first?.feedbackId
+            return feedbacks.first?.feedbackId
+        case .previous:
+            return feedbacks.last?.feedbackId
         }
     }
     
+    func defaultBrakeFeedback(for direction: Direction) -> Identifier<Feedback>? {
+        switch(direction) {
+        case .next:
+            return feedbacks.element(at: 1)?.feedbackId ?? defaultEntryFeedback(for: .next)
+        case .previous:
+            return feedbacks.element(at: -1)?.feedbackId ?? defaultEntryFeedback(for: .previous)
+        }
+    }
+
+    func defaultStopFeedback(for direction: Direction) -> Identifier<Feedback>? {
+        switch(direction) {
+        case .next:
+            return feedbacks.element(at: 2)?.feedbackId ?? defaultBrakeFeedback(for: .next)
+        case .previous:
+            return feedbacks.element(at: -2)?.feedbackId ?? defaultBrakeFeedback(for: .previous)
+        }
+    }
+
+    func entryFeedback(for direction: Direction) -> Identifier<Feedback>? {
+        switch(direction) {
+        case .next:
+            return entryFeedbackNext ?? defaultEntryFeedback(for: .next)
+        case .previous:
+            return entryFeedbackPrevious ?? defaultEntryFeedback(for: .previous)
+        }
+    }
+
+    func brakeFeedback(for direction: Direction) -> Identifier<Feedback>? {
+        switch(direction) {
+        case .next:
+            return brakeFeedbackNext ?? defaultBrakeFeedback(for: .next)
+        case .previous:
+            return brakeFeedbackPrevious ?? defaultBrakeFeedback(for: .previous)
+        }
+    }
+
+    func stopFeedback(for direction: Direction) -> Identifier<Feedback>? {
+        switch(direction) {
+        case .next:
+            return stopFeedbackNext ?? defaultStopFeedback(for: .next)
+        case .previous:
+            return stopFeedbackPrevious ?? defaultStopFeedback(for: .previous)
+        }
+    }
+
     func indexOfTrain(forFeedback: Identifier<Feedback>, direction: Direction) -> Int? {
         guard let index = feedbacks.firstIndex(where: { $0.feedbackId == forFeedback }) else {
             return nil

@@ -15,7 +15,14 @@ import Foundation
 extension Array {
     
     func element(at index: Index) -> Element? {
-        if index < count {
+        if index < 0 {
+            let reverseIndex = count - 1 + index
+            if reverseIndex < count && reverseIndex >= 0 {
+                return self[reverseIndex]
+            } else {
+                return nil
+            }
+        } else if index < count {
             return self[index]
         } else {
             return nil
