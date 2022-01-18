@@ -130,6 +130,24 @@ final class Block: Element, ObservableObject {
     // Returns the list of feedbacks in this block
     @Published var feedbacks = [BlockFeedback]()
                 
+    @Published var entryFeedbackNext: Identifier<Feedback>?
+    @Published var brakeFeedbackNext: Identifier<Feedback>?
+    @Published var stopFeedbackNext: Identifier<Feedback>?
+
+    @Published var entryFeedbackPrevious: Identifier<Feedback>?
+    @Published var brakeFeedbackPrevious: Identifier<Feedback>?
+    @Published var stopFeedbackPrevious: Identifier<Feedback>?
+
+    func autoFillFeedbacks() {
+        entryFeedbackNext = feedbacks.first?.feedbackId
+        brakeFeedbackNext = feedbacks.element(at: 1)?.feedbackId ?? entryFeedbackNext
+        stopFeedbackNext = feedbacks.element(at: 2)?.feedbackId ?? brakeFeedbackNext
+        
+        entryFeedbackPrevious = stopFeedbackNext
+        brakeFeedbackPrevious = brakeFeedbackNext
+        stopFeedbackPrevious = entryFeedbackNext
+    }
+    
     // Returns the integer that indicates the "previous" socket
     static var previousSocket: Int {
         return 0

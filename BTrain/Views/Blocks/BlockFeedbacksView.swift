@@ -12,45 +12,45 @@
 
 import SwiftUI
 
-struct BlockFeedbackView: View {
- 
+struct BlockFeedbacksView: View {
+    
     let layout: Layout
     @ObservedObject var block: Block
     
-    var body: some View {
-        VStack(alignment: .leading) {
-            ForEach($block.feedbacks, id: \.self) { blockFeedback in
-                HStack {
-                    Picker("Feedback:", selection: blockFeedback.feedbackId) {
-                        ForEach(layout.feedbacks, id:\.self) { feedback in
-                            Text(feedback.name).tag(feedback.id)
-                        }
-                    }
-                    .labelsHidden()
-                    .id(block) // Forces SwiftUI to re-create the picker, otherwise it crashes when the selection changes from a block that has feedbacks to one that does not have any.
-                    
-                    Button("-") {
-                        block.remove(blockFeedback.wrappedValue)
-                    }
-                }
-            }
+    enum FeedbackSegmentChoices: CaseIterable {
+        case all
+        case previous
+        case next
+    }
+    @State private var feedbackSegmentSelection: FeedbackSegmentChoices = .all
 
-            HStack {
-                Button("+") {
-                    block.add(layout.feedbacks[0].id)
-                }.disabled(layout.feedbacks.isEmpty)
-                Spacer()
+    var body: some View {
+        VStack {
+            Picker("Feedbacks", selection: $feedbackSegmentSelection) {
+                Text("Feedbacks").tag(FeedbackSegmentChoices.all)
+                Text("Previous Direction").tag(FeedbackSegmentChoices.previous)
+                Text("Next Direction").tag(FeedbackSegmentChoices.next)
+            }
+            .labelsHidden()
+            .pickerStyle(.segmented)
+            
+            switch(feedbackSegmentSelection) {
+            case .all:
+                BlockAllFeedbacksView(layout: layout, block: block)
+            case .previous:
+                BlockDirectionFeedbacksView(layout: layout, direction: .previous, block: block)
+            case .next:
+                BlockDirectionFeedbacksView(layout: layout, direction: .next, block: block)
             }
         }
     }
-    
 }
 
-struct BlockFeedbackView_Previews: PreviewProvider {
+struct BlockFeedbacksView_Previews: PreviewProvider {
     
     static let layout = LayoutCCreator().newLayout()
-    
+
     static var previews: some View {
-        BlockFeedbackView(layout: layout, block: layout.block(at: 0))
+        BlockFeedbacksView(layout: layout, block: layout.blocks[0])
     }
 }

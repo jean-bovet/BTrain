@@ -16,9 +16,10 @@ import XCTest
 import ViewInspector
 import SwiftUI
 
-extension BlockFeedbackView: Inspectable { }
+extension BlockAllFeedbacksView: Inspectable { }
 extension BlockDetailsView: Inspectable { }
 extension BlockShapeView: Inspectable { }
+extension BlockFeedbacksView: Inspectable { }
 
 class BlockListViewTests: RootViewTests {
     
@@ -37,7 +38,10 @@ class BlockListViewTests: RootViewTests {
     func testBlockEditView() throws {
         let layout = LayoutCCreator().newLayout()
         let sut = BlockDetailsView(layout: layout, block: layout.blocks[0])
-        XCTAssertEqual(try sut.inspect().vStack().groupBox(1).labelView().text().string(), "Feedbacks")
+        let feedbacks = try sut.inspect().find(BlockFeedbacksView.self)
+        _ = try feedbacks.find(text: "Feedbacks")
+        _ = try feedbacks.find(text: "Previous Direction")
+        _ = try feedbacks.find(text: "Next Direction")
     }
     
     func testBlockShapeView() throws {

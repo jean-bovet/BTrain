@@ -12,37 +12,48 @@
 
 import SwiftUI
 
-struct BlockDetailsView: View {
-    
+struct BlockAllFeedbacksView: View {
+ 
     let layout: Layout
     @ObservedObject var block: Block
-        
+    
     var body: some View {
         VStack(alignment: .leading) {
-            UndoProvider($block.category) { category in
-                Picker("Type", selection: category) {
-                    ForEach(Block.Category.allCases, id:\.self) { category in
-                        HStack {
-                            Text(category.description)
-                            BlockShapeView(layout: layout, category: category)
+            ForEach($block.feedbacks, id: \.self) { blockFeedback in
+                HStack {
+                    Picker("Feedback:", selection: blockFeedback.feedbackId) {
+                        ForEach(layout.feedbacks, id:\.self) { feedback in
+                            Text(feedback.name).tag(feedback.id)
                         }
                     }
-                }.pickerStyle(.inline)
+                    .labelsHidden()
+                    .id(block) // Forces SwiftUI to re-create the picker, otherwise it crashes when the selection changes from a block that has feedbacks to one that does not have any.
+                    
+                    Button("-") {
+                        block.remove(blockFeedback.wrappedValue)
+                    }
+                }
             }
-
-            Divider()
             
-            BlockFeedbacksView(layout: layout, block: block)
-            
-            Spacer()
+            HStack {
+                Button("+") {
+                    block.add(layout.feedbacks[0].id)
+                }.disabled(layout.feedbacks.isEmpty)
+                Spacer()
+                Button("Auto Fill") {
+                    block.autoFillFeedbacks()
+                }
+            }
         }
     }
+    
 }
 
-struct BlockEditView_Previews: PreviewProvider {
+struct BlockFeedbackView_Previews: PreviewProvider {
     
     static let layout = LayoutCCreator().newLayout()
+    
     static var previews: some View {
-        BlockDetailsView(layout: layout, block: layout.block(at: 0))
+        BlockAllFeedbacksView(layout: layout, block: layout.block(at: 0))
     }
 }

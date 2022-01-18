@@ -10,39 +10,16 @@
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-import SwiftUI
+import Foundation
 
-struct BlockDetailsView: View {
+extension Array {
     
-    let layout: Layout
-    @ObservedObject var block: Block
-        
-    var body: some View {
-        VStack(alignment: .leading) {
-            UndoProvider($block.category) { category in
-                Picker("Type", selection: category) {
-                    ForEach(Block.Category.allCases, id:\.self) { category in
-                        HStack {
-                            Text(category.description)
-                            BlockShapeView(layout: layout, category: category)
-                        }
-                    }
-                }.pickerStyle(.inline)
-            }
-
-            Divider()
-            
-            BlockFeedbacksView(layout: layout, block: block)
-            
-            Spacer()
+    func element(at index: Index) -> Element? {
+        if index < count {
+            return self[index]
+        } else {
+            return nil
         }
     }
-}
-
-struct BlockEditView_Previews: PreviewProvider {
     
-    static let layout = LayoutCCreator().newLayout()
-    static var previews: some View {
-        BlockDetailsView(layout: layout, block: layout.block(at: 0))
-    }
 }
