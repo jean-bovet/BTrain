@@ -14,16 +14,21 @@ import Foundation
 
 extension Array {
     
+    // Returns the element at index or nil if there is no element
     func element(at index: Index) -> Element? {
-        if index < 0 {
-            let reverseIndex = count - 1 + index
-            if reverseIndex < count && reverseIndex >= 0 {
-                return self[reverseIndex]
-            } else {
-                return nil
-            }
-        } else if index < count {
+        if index >= 0 && index < count {
             return self[index]
+        } else {
+            return nil
+        }
+    }
+
+    // Returns the element at the specified index starting
+    // from the end of the array, or nil if there is no element
+    func element(fromEndAt index: Index) -> Element? {
+        let reverseIndex = count - 1 - index
+        if reverseIndex >= 0 && reverseIndex < count {
+            return self[reverseIndex]
         } else {
             return nil
         }

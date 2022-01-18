@@ -114,8 +114,8 @@ class BlockTests: XCTestCase {
         XCTAssertEqual(block.entryFeedback(for: .next), f1)
         XCTAssertEqual(block.entryFeedback(for: .previous), f2)
         
-        XCTAssertEqual(block.brakeFeedback(for: .next), f2)
-        XCTAssertEqual(block.brakeFeedback(for: .previous), f1)
+        XCTAssertEqual(block.brakeFeedback(for: .next), f1)
+        XCTAssertEqual(block.brakeFeedback(for: .previous), f2)
         
         XCTAssertEqual(block.stopFeedback(for: .next), f2)
         XCTAssertEqual(block.stopFeedback(for: .previous), f1)
@@ -145,8 +145,8 @@ class BlockTests: XCTestCase {
         XCTAssertEqual(block.brakeFeedback(for: .next), f2)
         XCTAssertEqual(block.brakeFeedback(for: .previous), f3)
         
-        XCTAssertEqual(block.stopFeedback(for: .next), f3)
-        XCTAssertEqual(block.stopFeedback(for: .previous), f2)
+        XCTAssertEqual(block.stopFeedback(for: .next), f4)
+        XCTAssertEqual(block.stopFeedback(for: .previous), f1)
         
         block.entryFeedbackNext = f2
         block.brakeFeedbackNext = f3

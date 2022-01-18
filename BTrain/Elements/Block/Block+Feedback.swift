@@ -49,21 +49,33 @@ extension Block {
         }
     }
     
+    // [ f1 ]
+    // [ f1 f2 ]
+    // [ f1 f2 f3 ]
     func defaultBrakeFeedback(for direction: Direction) -> Identifier<Feedback>? {
+        let defaultBrakeFeedbackIndex: Int
+        if feedbacks.count == 2 {
+            defaultBrakeFeedbackIndex = 0
+        } else if feedbacks.count > 2 {
+            defaultBrakeFeedbackIndex = 1
+        } else {
+            defaultBrakeFeedbackIndex = 0
+        }
+        
         switch(direction) {
         case .next:
-            return feedbacks.element(at: 1)?.feedbackId ?? defaultEntryFeedback(for: .next)
+            return feedbacks.element(at: defaultBrakeFeedbackIndex)?.feedbackId ?? defaultEntryFeedback(for: .next)
         case .previous:
-            return feedbacks.element(at: -1)?.feedbackId ?? defaultEntryFeedback(for: .previous)
+            return feedbacks.element(fromEndAt: defaultBrakeFeedbackIndex)?.feedbackId ?? defaultEntryFeedback(for: .previous)
         }
     }
 
     func defaultStopFeedback(for direction: Direction) -> Identifier<Feedback>? {
         switch(direction) {
         case .next:
-            return feedbacks.element(at: 2)?.feedbackId ?? defaultBrakeFeedback(for: .next)
+            return feedbacks.last?.feedbackId ?? defaultBrakeFeedback(for: .next)
         case .previous:
-            return feedbacks.element(at: -2)?.feedbackId ?? defaultBrakeFeedback(for: .previous)
+            return feedbacks.first?.feedbackId ?? defaultBrakeFeedback(for: .previous)
         }
     }
 

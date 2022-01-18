@@ -24,7 +24,10 @@ enum LayoutError: Error {
     case turnoutNotFound(turnoutId: Identifier<Turnout>)
     case feedbackNotFound(feedbackId: Identifier<Feedback>)
     case socketIdNotFound(socket: Socket)
-    
+
+    case brakeFeedbackNotFound(block: Block)
+    case stopFeedbackNotFound(block: Block)
+
     case blockNotEmpty(blockId: Identifier<Block>)
     case blockNotReservedForTrain(block: Block, train: Identifier<Train>)
 
@@ -61,6 +64,12 @@ extension LayoutError: LocalizedError {
         case .blockNotReservedForTrain(block: let block, train: let train):
             return "Block \(block.name) did not get reserved for train \(train)"
             
+        case .brakeFeedbackNotFound(block: let block):
+            return "Block \(block.name) does not have a brake feedback"
+
+        case .stopFeedbackNotFound(block: let block):
+            return "Block \(block.name) does not have a stop feedback"
+
         case .unexpectedFeedback(feedback: let feedback):
             return "Unexpected feedback \(feedback.name) detected"
 

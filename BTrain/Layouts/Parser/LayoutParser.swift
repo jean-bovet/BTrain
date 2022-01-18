@@ -25,8 +25,8 @@ import Foundation
 // ≡  = feedback sensor (activated)
 // <t0(0,1),s> = turnout <t<id>(fromSocket,toSocket),state> where state can be: s, l, r, s01, s23, b21, b03
 // 🚂 = train
-// 🛑🚂 = train (stopped)
-//
+// 🛑🚂 = train stopped
+// 🟨🚂 = train braking
 // For example:
 // { ≏ ≏ } [r0[ ≏ ≏ 🚂 ]] [[ ≏ ≏ ]] [ ≏ ≏ ] {b0 ≏ ≏ }
 // { ≏ ≏ } <t0:0:1:0> [[r0b0 ≏ ≏ 🚂 ]] <t1:0:1:0> [[ ≏ ≏ ]] [ ≏ ≏ ] <t0:1:0:1> !{b0 ≏ ≏ }

@@ -21,6 +21,7 @@ protocol LayoutCreating {
 final class LayoutFactory {
 
     static let DefaultSpeed: TrainSpeed.UnitKph = 70
+    static let DefaultBrakingSpeed: TrainSpeed.UnitKph = 30
 
     static let GlobalLayouts: [LayoutCreating] = [
         LayoutACreator(),

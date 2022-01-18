@@ -169,6 +169,9 @@ final class LayoutRouteParser {
             if sp.matches("🛑🚂") {
                 // Stopped train
                 parseTrain(feedbackIndex: feedbackIndex, block: block, speed: 0)
+            } else if sp.matches("🟨🚂") {
+                // Braking train
+                parseTrain(feedbackIndex: feedbackIndex, block: block, speed: LayoutFactory.DefaultBrakingSpeed)
             } else if sp.matches("}}") {
                 // End of Station block
                 assert(type == .station, "Expected end of station block")

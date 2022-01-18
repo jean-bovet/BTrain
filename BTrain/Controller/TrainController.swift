@@ -73,19 +73,23 @@ final class TrainController {
             result = .processed
         }
         
+        if try handleTrainStop() == .processed {
+            result = .processed
+        }
+        
         if try handleTrainAutomaticRouteUpdate(route: route) == .processed {
             result = .processed
         }
         
-        if try handleTrainStop(route: route) == .processed {
+        if try handleTrainStop() == .processed {
             result = .processed
         }
 
-        if try handleTrainMoveToNextBlock() == .processed {
+        if try handleTrainMoveToNextBlock(route: route) == .processed {
             result = .processed
         }
         
-        if try handleTrainStop(route: route) == .processed {
+        if try handleTrainStop() == .processed {
             result = .processed
         }
 
@@ -180,119 +184,121 @@ final class TrainController {
         return try updateAutomaticRoute(for: train.id)
     }
         
-    private func handleTrainStop(route: Route) throws -> Result {
-        guard train.speed.kph > 0 else {
+    private func handleAutomaticRouteStop(route: Route) throws -> Result {
+        guard let currentBlock = layout.currentBlock(train: train) else {
             return .none
         }
         
+        guard route.automatic else {
+            return .none
+        }
+        
+        switch(route.automaticMode) {
+        case .once(destination: let destination):
+            if train.routeIndex != startRouteIndex && train.routeIndex == route.steps.count - 1 {
+                // Double-check that the train is located in the block specified by the destination.
+                // This should never fail.
+                guard currentBlock.id == destination.blockId else {
+                    throw LayoutError.destinationBlockMismatch(currentBlock: currentBlock, destination: destination)
+                }
+                
+                // Double-check that the train is moving in the direction specified by the destination, if specified.
+                // This should never fail.
+                if let direction = destination.direction, currentBlock.train?.direction != direction {
+                    throw LayoutError.destinationDirectionMismatch(currentBlock: currentBlock, destination: destination)
+                }
+                
+                if let position = destination.position {
+                    // If the position for the destination is specified, let's wait until we reach that position
+                    if train.position == position {
+                        debug("Stopping completely \(train) because it has reached the end of the route and the destination position \(position)")
+                        train.brakeState = .needToStop
+                        train.stopCompletely = true
+                        return .processed
+                    }
+                }
+                
+                // If the train is at the end of the block, we need to stop it.
+                // This can happen even if the destination.position is specified, for example if
+                // destination.position is 0 and the train travels in the .next direction, it will
+                // never be stopped above because position 0 is skipped to go directly to position 1
+                // (because the first feedback in the block always indicates that the train is at position 1.
+                debug("Stopping completely \(train) because it has reached the end of the route and the end of the block")
+                train.brakeState = .needToStop
+                train.stopCompletely = true
+                return .processed
+            }
+            
+        case .endless:
+            if currentBlock.category == .station && train.routeIndex != startRouteIndex {
+                if train.state == .finishing {
+                    debug("Stopping completely \(train) because it has reached a station and it is marked as .finishing")
+                    train.brakeState = .needToStop
+                    train.stopCompletely = true
+                    return .processed
+                } else {
+                    debug("Schedule timer to restart train \(train) in \(route.stationWaitDuration) seconds")
+                    
+                    // The layout controller is going to schedule the appropriate timer given the `restartDelayTime` value
+                    if let ti = currentBlock.train {
+                        ti.timeUntilAutomaticRestart = route.stationWaitDuration
+                        delegate?.scheduleRestartTimer(trainInstance: ti)
+                    }
+                    
+                    train.brakeState = .needToStop
+                    train.stopCompletely = false
+                    return .processed
+                }
+            }
+        }
+                                
+        return .none
+    }
+    
+    private func handleTrainStop() throws -> Result {
+        guard train.speed.kph > 0 else {
+            return .none
+        }
+                
         guard let currentBlock = layout.currentBlock(train: train) else {
             return .none
         }
 
-        let atEndOfBlock = try layout.atEndOfBlock(train: train)
+        guard let trainInstance = currentBlock.train else {
+            return .none
+        }
         
-        if route.automatic {
-            switch(route.automaticMode) {
-            case .once(destination: let destination):
-                if train.routeIndex != startRouteIndex && train.routeIndex == route.steps.count - 1 {
-                    // Double-check that the train is located in the block specified by the destination.
-                    // This should never fail.
-                    guard currentBlock.id == destination.blockId else {
-                        throw LayoutError.destinationBlockMismatch(currentBlock: currentBlock, destination: destination)
-                    }
-                    
-                    // Double-check that the train is moving in the direction specified by the destination, if specified.
-                    // This should never fail.
-                    if let direction = destination.direction, currentBlock.train?.direction != direction {
-                        throw LayoutError.destinationDirectionMismatch(currentBlock: currentBlock, destination: destination)
-                    }
-
-                    if let position = destination.position {
-                        // If the position for the destination is specified, let's wait until we reach that position
-                        if train.position == position {
-                            debug("Stopping completely \(train) because it has reached the end of the route and the destination position \(position)")
-                            return try stop(completely: true)
-                        }
-                    }
-                    
-                    // If the train is at the end of the block, we need to stop it.
-                    // This can happen even if the destination.position is specified, for example if
-                    // destination.position is 0 and the train travels in the .next direction, it will
-                    // never be stopped above because position 0 is skipped to go directly to position 1
-                    // (because the first feedback in the block always indicates that the train is at position 1.
-                    if atEndOfBlock {
-                        debug("Stopping completely \(train) because it has reached the end of the route and the end of the block")
-                        return try stop(completely: true)
-                    }
+        let direction = trainInstance.direction
+        var result: Result = .none
+        for (_, feedback) in currentBlock.feedbacks.enumerated() {
+            guard let f = layout.feedback(for: feedback.feedbackId), f.detected else {
+                continue
+            }
+            
+            if train.brakeState == .needToStop {
+                guard let brakeFeedback = currentBlock.brakeFeedback(for: direction) else {
+                    throw LayoutError.brakeFeedbackNotFound(block: currentBlock)
                 }
-                
-            case .endless:
-                if currentBlock.category == .station && atEndOfBlock && train.routeIndex != startRouteIndex {
-                    if train.state == .finishing {
-                        debug("Stopping completely \(train) because it has reached a station and it is marked as .finishing")
-                        return try stop(completely: true)
-                    } else {
-                        debug("Schedule timer to restart train \(train) in \(route.stationWaitDuration) seconds")
-                        
-                        // The layout controller is going to schedule the appropriate timer given the `restartDelayTime` value
-                        if let ti = currentBlock.train {
-                            ti.timeUntilAutomaticRestart = route.stationWaitDuration
-                            delegate?.scheduleRestartTimer(trainInstance: ti)
-                        }
-                        
-                        return try stop()
-                    }
+                if brakeFeedback == f.id {
+                    debug("Train \(train) is braking in \(currentBlock.name) at position \(train.position), direction \(direction)")
+                    train.brakeState = .braking
+                    try layout.setTrain(train, speed: LayoutFactory.DefaultBrakingSpeed)
+                    result = .processed
+                }
+            }
+            
+            if train.brakeState == .braking || train.brakeState == .needToStop {
+                guard let stopFeedback = currentBlock.stopFeedback(for: direction) else {
+                    throw LayoutError.stopFeedbackNotFound(block: currentBlock)
+                }
+                if stopFeedback == f.id {
+                    debug("Train \(train) is stopped in \(currentBlock.name) at position \(train.position), direction \(direction)")
+                    train.brakeState = .stopped
+                    result = try stop(completely: train.stopCompletely)
                 }
             }
         }
-        
-        guard let nextBlock = layout.nextBlock(train: train) else {
-            // Stop the train if there is no next block
-            if atEndOfBlock {
-                if route.automatic {
-                    debug("Stop train \(train) because there is no next block (after \(currentBlock))")
-                    return try stop()
-                } else {
-                    debug("Stopping completely \(train) because there is no next block (after \(currentBlock))")
-                    return try stop(completely: true)
-                }
-            } else {
-                return .none
-            }
-        }
-        
-        // Stop if the next block is occupied
-        if nextBlock.train != nil && atEndOfBlock {
-            debug("Stop train \(train) because the next block is occupied")
-            return try stop()
-        }
-
-        // Stop if the next block is reserved for another train
-        // Note: only test the train ID because the direction can actually be different; for example, exiting
-        // the current block in the "next" direction but traveling inside the next block with the "previous" direction.
-        if let reserved = nextBlock.reserved, reserved != currentBlock.reserved && atEndOfBlock {
-            debug("Stop train \(train) because the next block is reserved for another train \(reserved)")
-            return try stop()
-        }
-        
-        // Stop if the next block is not reserved
-        if nextBlock.reserved == nil && atEndOfBlock {
-            debug("Stop train \(train) because the next block is not reserved")
-            return try stop()
-        }
-
-        // Stop if the next block is disabled
-        if !nextBlock.enabled && atEndOfBlock {
-            debug("Stop train \(train) because the next block is disabled")
-            return try stop()
-        }
-
-        if currentBlock.reserved == nil {
-            debug("Stop train \(train) because the current block is not reserved")
-            return try stop()
-        }
-        
-        return .none
+        return result
     }
     
     private func handleTrainMove() throws -> Result {
@@ -308,18 +314,20 @@ final class TrainController {
             return .none
         }
         
+        let direction = trainInstance.direction
         var result: Result = .none
         for (index, feedback) in currentBlock.feedbacks.enumerated() {
             guard let f = layout.feedback(for: feedback.feedbackId), f.detected else {
                 continue
             }
             
-            let position = newPosition(forTrain: train, enabledFeedbackIndex: index, direction: trainInstance.direction)
+            let position = newPosition(forTrain: train, enabledFeedbackIndex: index, direction: direction)
             if train.position != position {
                 try layout.setTrain(train, toPosition: position)
-                debug("Train \(train) moved to position \(train.position), direction \(trainInstance.direction)")
+                debug("Train \(train) moved to position \(train.position), direction \(direction)")
                 result = .processed
             }
+                        
         }
         
         return result
@@ -370,7 +378,7 @@ final class TrainController {
         return train.position
     }
     
-    private func handleTrainMoveToNextBlock() throws -> Result {
+    private func handleTrainMoveToNextBlock(route: Route) throws -> Result {
         guard train.speed.kph > 0 else {
             return .none
         }
@@ -401,13 +409,23 @@ final class TrainController {
                 
         debug("Train \(train) enters block \(nextBlock) at position \(position), direction \(direction)")
 
-        // Asks the layout to move the train to the next block
+        // Set the train to its new block
         try layout.setTrain(train.id, toBlock: nextBlock.id, position: .custom(value: position), direction: direction)
         
+        // Increment the train route index
         try layout.setTrain(train, routeIndex: train.routeIndex + 1)
                 
-        // Reserve the block ahead if possible
-        _ = tryReserveNextBlocks(direction: direction)
+        // Reserve the block ahead. If it is not possible, then stop the train in this block
+        if tryReserveNextBlocks(direction: direction) == .none {
+            debug("Train \(train) will stop here (\(nextBlock)) because the next block cannot be reserved")
+            train.brakeState = .needToStop
+            train.stopCompletely = false
+        }
+        
+        // Handle any automatic route specific stop handling.
+        // This must be done here so it is executed only once
+        // after the train has moved to a new block.
+        _ = try handleAutomaticRouteStop(route: route)
         
         return .processed
     }
@@ -422,6 +440,10 @@ final class TrainController {
         }
         
         guard nextBlock.reserved == nil else {
+            return .none
+        }
+        
+        guard nextBlock.train == nil else {
             return .none
         }
         
