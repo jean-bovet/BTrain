@@ -159,7 +159,7 @@ class LayoutATests: RootLayoutTests {
         let b2 = layout.block(for: route.steps[1].blockId)!
         let b3 = layout.block(for: route.steps[2].blockId)!
 
-        try layout.setTrain(train.id, toBlock: b2.id, direction: nil)
+        try layout.setTrain(train.id, toBlock: b2.id, direction: .next)
 
         XCTAssertNoThrow(try layout.reserve(train: train.id, fromBlock: b2.id, toBlock: b3.id, direction: .next))
         

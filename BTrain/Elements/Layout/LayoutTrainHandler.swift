@@ -44,7 +44,7 @@ protocol LayoutTrainHandling {
     // Use this method to stop the train when it finishes the route
     func finishTrain(_ trainId: Identifier<Train>) throws
 
-    func setTrain(_ trainId: Identifier<Train>, toBlock toBlockId: Identifier<Block>, position: Position, direction: Direction?) throws
+    func setTrain(_ trainId: Identifier<Train>, toBlock toBlockId: Identifier<Block>, position: Position, direction: Direction) throws
 
     func reserve(block: Identifier<Block>, withTrain train: Train, direction: Direction) throws
     func reserve(train: Identifier<Train>, fromBlock: Identifier<Block>, toBlock: Identifier<Block>, direction: Direction) throws
@@ -96,7 +96,7 @@ extension Layout: LayoutTrainHandling {
         try trainHandling.finishTrain(trainId)
     }
 
-    func setTrain(_ trainId: Identifier<Train>, toBlock toBlockId: Identifier<Block>, position: Position = .start, direction: Direction?) throws {
+    func setTrain(_ trainId: Identifier<Train>, toBlock toBlockId: Identifier<Block>, position: Position = .start, direction: Direction) throws {
         try trainHandling.setTrain(trainId, toBlock: toBlockId, position: position, direction: direction)
     }
 
@@ -291,8 +291,7 @@ final class LayoutTrainHandler: LayoutTrainHandling {
         train.routeIndex = routeIndex
     }
 
-    func setTrain(_ trainId: Identifier<Train>, toBlock toBlockId: Identifier<Block>,
-              position: Position = .start, direction: Direction?) throws {
+    func setTrain(_ trainId: Identifier<Train>, toBlock toBlockId: Identifier<Block>, position: Position = .start, direction: Direction) throws {
         guard let train = layout.train(for: trainId) else {
             throw LayoutError.trainNotFound(trainId: trainId)
         }
@@ -321,8 +320,8 @@ final class LayoutTrainHandler: LayoutTrainHandling {
         // Return now if the train is already in the same block
         if toBlock.train?.trainId == trainId {
             // But ensure the direction is well set
-            if let direction = direction, toBlock.train?.direction != direction {
-                toBlock.train = .init(trainId, direction)
+            if toBlock.train?.direction != direction {
+                toBlock.train = Block.TrainInstance(trainId, direction)
             }
             return
         }
@@ -330,14 +329,8 @@ final class LayoutTrainHandler: LayoutTrainHandling {
         train.blockId = toBlock.id
 
         if let fromBlock = layout.block(for: trainId) {
-            if let direction = direction {
-                // If the direction is specified, use it for the next block
-                toBlock.train = Block.TrainInstance(trainId, direction)
-            } else {
-                // Otherwise, use the existing direction from the previous block
-                toBlock.train = fromBlock.train
-            }
-            try reserve(block: toBlockId, withTrain: train, direction: toBlock.train!.direction)
+            toBlock.train = Block.TrainInstance(trainId, direction)
+            try reserve(block: toBlockId, withTrain: train, direction: direction)
             
             if fromBlock != toBlock {
                 // Only reset when the train is moved to a different block,
@@ -347,8 +340,8 @@ final class LayoutTrainHandler: LayoutTrainHandling {
                 try free(fromBlock: fromBlock.id, toBlockNotIncluded: toBlockId, direction: direction)
             }
         } else {
-            toBlock.train = Block.TrainInstance(trainId, direction ?? .next)
-            try reserve(block: toBlockId, withTrain: train, direction: toBlock.train!.direction)
+            toBlock.train = Block.TrainInstance(trainId, direction)
+            try reserve(block: toBlockId, withTrain: train, direction: direction)
         }
     }
     

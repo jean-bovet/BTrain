@@ -83,8 +83,8 @@ struct SwitchBoardView_Previews: PreviewProvider {
         try! lt.setTrain(lt.trains[0], toPosition: 1)
         try! lt.setTrain(lt.trains[1], toPosition: 2)
 
-        try! lt.setTrain(lt.trains[0].id, toBlock: lt.block(at: 0).id, direction: nil)
-        try! lt.setTrain(lt.trains[1].id, toBlock: lt.block(at: 2).id, direction: nil)
+        try! lt.setTrain(lt.trains[0].id, toBlock: lt.block(at: 0).id, direction: .next)
+        try! lt.setTrain(lt.trains[1].id, toBlock: lt.block(at: 2).id, direction: .next)
 
         return lt
     }
