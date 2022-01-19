@@ -30,7 +30,7 @@ final class TrainShape: Shape, DraggableShape {
     var dragged = false
     
     var size: CGSize {
-        return CGSize(width: 20, height: shapeContext.trackWidth*4)
+        return CGSize(width: 16, height: shapeContext.trackWidth*4)
     }
     
     var bounds: CGRect {

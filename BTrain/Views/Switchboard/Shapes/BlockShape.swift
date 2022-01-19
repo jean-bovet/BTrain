@@ -200,6 +200,10 @@ final class BlockShape: Shape, DraggableShape, ConnectableShape {
             let path = feedbackPath(at: index)
             ctx.addPath(path)
             ctx.fillPath()
+            
+            ctx.addPath(path)
+            ctx.setStrokeColor(reserved != nil ? shapeContext.reservedColor : shapeContext.color)
+            ctx.strokePath()
         }
     }
 
@@ -355,8 +359,10 @@ extension BlockShape {
 
     func feedbackPath(at index: Int) -> CGPath {
         let rect = feedbackCellFrame(at: index)
+        let size = min(rect.width, rect.height)
+        let feedbackRect = CGRect(x: rect.origin.x + (rect.width - size)/2, y: rect.origin.y + (rect.height - size)/2, width: size, height: size)
         var t = CGAffineTransform(translationX: center.x, y: center.y).rotated(by: rotationAngle).translatedBy(x: -center.x, y: -center.y)
-        let path = CGPath(roundedRect: rect, cornerWidth: 2, cornerHeight: 2, transform: &t)
+        let path = CGPath(roundedRect: feedbackRect, cornerWidth: 2, cornerHeight: 2, transform: &t)
         return path
     }
 
