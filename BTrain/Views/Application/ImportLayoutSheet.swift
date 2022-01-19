@@ -36,7 +36,7 @@ struct ImportLayoutSheet: View {
     let previewSize = CGSize(width: 800, height: 400)
     
     var scaleSize: CGSize {
-        let canvasSize = switchboard.computeIdealSize()
+        let canvasSize = switchboard.fittedRect().size
         let ratio = min(800/canvasSize.width, 400/canvasSize.height)
         return .init(width: ratio, height: ratio)
     }

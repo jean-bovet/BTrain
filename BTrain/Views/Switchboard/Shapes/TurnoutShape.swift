@@ -36,6 +36,8 @@ final class TurnoutShape: Shape, DraggableShape, ConnectableShape {
     
     var radius = 15.0
     
+    var visible = true
+
     var selected = false
     
     var sockets: [ConnectorSocket] {

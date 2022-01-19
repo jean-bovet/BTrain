@@ -31,7 +31,7 @@ final class SwitchBoardRenderer {
     }
     
     func draw(context: CGContext) {
-        for shape in provider.shapes {
+        for shape in provider.shapes.filter({$0.visible}) {
             context.with {
                 shape.draw(ctx: context)
             }

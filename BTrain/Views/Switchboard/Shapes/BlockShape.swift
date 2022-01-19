@@ -55,6 +55,8 @@ final class BlockShape: Shape, DraggableShape, ConnectableShape {
     let layout: Layout
     let block: Block
 
+    var visible = true
+
     var selected = false
 
     var identifier: String {

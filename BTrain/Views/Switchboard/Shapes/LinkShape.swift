@@ -13,10 +13,13 @@
 import Foundation
 
 final class LinkShape: Shape, PluggableShape {
+        
     let shapeContext: ShapeContext
     
     var identifier = UUID().uuidString
-        
+    
+    var visible = true
+
     var selected = false
             
     var transition: Transition?

@@ -16,6 +16,8 @@ protocol Shape: AnyObject {
     
     var identifier: String { get }
         
+    var visible: Bool { get }
+    
     var selected: Bool { get set }
     
     var bounds: CGRect { get }

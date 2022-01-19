@@ -46,7 +46,7 @@ struct SwitchboardEditControlsView: View {
                 
                 Toggle("Snap to Grid", isOn: $state.snapToGrid)
                 Button("Fit Size") {
-                    switchboard.idealSize = switchboard.computeIdealSize()
+                    switchboard.fitSize()
                 }
                 
                 Spacer()

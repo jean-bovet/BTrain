@@ -21,6 +21,8 @@ protocol ShapeProviding {
 
     var connectableShapes: [ConnectableShape] { get }
 
+    var draggableShapes: [DraggableShape] { get }
+
     var rotableShapes: [RotableShape] { get }
 
     var actionableShapes: [ActionableShape] { get }
@@ -50,6 +52,10 @@ final class ShapeProvider: ShapeProviding {
 
     var connectableShapes: [ConnectableShape] {
         return shapes.compactMap({$0 as? ConnectableShape})
+    }
+
+    var draggableShapes: [DraggableShape] {
+        return shapes.compactMap({$0 as? DraggableShape})
     }
 
     var rotableShapes: [RotableShape] {

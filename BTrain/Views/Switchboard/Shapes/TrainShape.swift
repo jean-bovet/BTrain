@@ -86,10 +86,6 @@ final class TrainShape: Shape, DraggableShape {
     }
     
     func draw(ctx: CGContext) {
-        guard visible else {
-            return
-        }
-        
         updatePosition()
         
         ctx.saveGState()

@@ -58,21 +58,37 @@ final class SwitchBoard: ObservableObject {
         self.renderer = renderer
         
         self.state = state
-        self.idealSize = computeIdealSize()
+        self.idealSize = fittedRect().size
     }
     
-    func computeIdealSize() -> CGSize {
-        var width = 0.0
-        var height = 0.0
-        
-        provider.shapes.forEach { shape in
-            width = max(width, shape.bounds.maxX)
-            height = max(height, shape.bounds.maxY)
+    let margin = 40.0
+    
+    func fittedRect() -> CGRect {
+        if let firstShape = provider.shapes.first {
+            var rect = firstShape.bounds
+            for shape in provider.shapes.filter({$0.visible}) {
+                rect = rect.union(shape.bounds)
+            }
+            return rect.insetBy(dx: -margin, dy: -margin).standardized.integral
+        } else {
+            return CGRect(x: 0, y: 0, width: 800, height: 400)
         }
-        
-        return CGSize(width: max(800, width * 1.1), height: max(400, height * 1.1))
     }
 
+    func fitSize() {
+        let r = fittedRect()
+
+        // Offset all the shapes so they are in the center of the fitted rectangle
+        let offsetX = r.minX
+        let offsetY = r.minY
+
+        for shape in provider.draggableShapes {
+            shape.center = .init(x: shape.center.x - offsetX, y: shape.center.y - offsetY)
+        }
+        
+        idealSize = r.size
+    }
+    
     func remove(_ shape: Shape) {
         state.selectedShape = nil
         if let block = shape as? BlockShape {
