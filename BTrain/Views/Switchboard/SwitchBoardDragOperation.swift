@@ -179,16 +179,13 @@ final class SwitchBoardDragOperation {
             plug?.freePoint = location
         }
         
-        // For TrainShape, see if we are dragging it over a block, and more specifically
-        // which part of the block where the train can be dropped int
+        // For TrainShape, see if we are dragging it over a block
         if let trainShape = state.selectedShape as? TrainShape {
             let location = trainShape.center
-            if let blockShape = provider.blockShapes.first(where: { $0.inside(location) }),
-               let (position, path) = blockShape.trainCellPath(at: location) {
+            if let blockShape = provider.blockShapes.first(where: { $0.inside(location) }) {
                 renderer.trainDragging?.shape.rotationAngle = blockShape.rotationAngle
                 renderer.trainDragging?.dropBlock = blockShape.block
-                renderer.trainDragging?.dropPosition = position
-                renderer.trainDragging?.dropPath = path
+                renderer.trainDragging?.dropPath = blockShape.path
             } else {
                 renderer.trainDragging?.dropBlock = nil
                 renderer.trainDragging?.dropPath = nil
@@ -232,7 +229,7 @@ final class SwitchBoardDragOperation {
         
         if let trainDragging = renderer.trainDragging, let dropBlock = trainDragging.dropBlock {
             // Trigger the drop action in the UI where the user will decided what to do
-            state.trainDragInfo = .init(trainId: trainDragging.shape.train.id, blockId: dropBlock.id, position: trainDragging.dropPosition)
+            state.trainDragInfo = .init(trainId: trainDragging.shape.train.id, blockId: dropBlock.id)
             state.trainDroppedInBlockAction.toggle()
         }
         

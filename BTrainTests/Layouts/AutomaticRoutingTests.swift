@@ -186,7 +186,7 @@ class AutomaticRoutingTests: BTTestCase {
         let b3 = layout.block(for: Identifier<Block>(uuid: "b3"))!
 
         // TODO: the position is not used anymore for the destination so either revise this test or remove it
-        let p = try setup(layout: layout, fromBlockId: s2.id, destination: Destination(b3.id, position: 1, direction: .next), routeSteps: ["s2:next", "b1:next", "b2:next", "b3:next"])
+        let p = try setup(layout: layout, fromBlockId: s2.id, destination: Destination(b3.id, direction: .next), routeSteps: ["s2:next", "b1:next", "b2:next", "b3:next"])
         
         try p.assert("automatic-0: {r0{s2 🚂0 ≏ }} <r0<t1,s>> <r0<t2,s>> [r0[b1 ≏ ]] <t3> [b2 ≏ ] <t4> [b3 ≏ ≏ ≏ ]")
         try p.assert("automatic-0: {r0{s2 ≡ 🚂0 }} <r0<t1,s>> <r0<t2,s>> [r0[b1 ≏ ]] <t3> [b2 ≏ ] <t4> [b3 ≏ ≏ ≏ ]")
@@ -211,7 +211,7 @@ class AutomaticRoutingTests: BTTestCase {
         // Position 0 is not reachable because when the train enters block b3, it is because the first feedback is detected,
         // which is always position 1. We want to make sure that if that is the case, the TrainController still stops the
         // train when it reaches the end of the block because there is no other block left in the route
-        let p = try setup(layout: layout, fromBlockId: s2.id, destination: Destination(b3.id, position: 0, direction: .next), routeSteps: ["s2:next", "b1:next", "b2:next", "b3:next"])
+        let p = try setup(layout: layout, fromBlockId: s2.id, destination: Destination(b3.id, direction: .next), routeSteps: ["s2:next", "b1:next", "b2:next", "b3:next"])
         
         try p.assert("automatic-0: {r0{s2 🚂0 ≏ }} <r0<t1,s>> <r0<t2,s>> [r0[b1 ≏ ]] <t3> [b2 ≏ ] <t4> [b3 ≏ ≏ ≏ ]")
         try p.assert("automatic-0: {r0{s2 ≡ 🚂0 }} <r0<t1,s>> <r0<t2,s>> [r0[b1 ≏ ]] <t3> [b2 ≏ ] <t4> [b3 ≏ ≏ ≏ ]")

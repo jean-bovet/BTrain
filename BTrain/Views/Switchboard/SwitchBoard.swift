@@ -28,7 +28,6 @@ final class SwitchBoard: ObservableObject {
         struct TrainDragInfo {
             let trainId: Identifier<Train>
             let blockId: Identifier<Block>
-            let position: Int
         }
 
         @Published var trainDragInfo: TrainDragInfo?

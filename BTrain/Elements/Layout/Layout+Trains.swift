@@ -16,7 +16,8 @@ extension Layout {
     
     @discardableResult
     func newTrain() -> Train {
-        return newTrain(Layout.newIdentity(trains), name: id.uuid)
+        let id = Layout.newIdentity(trains)
+        return newTrain(id, name: id)
     }
     
     @discardableResult

@@ -225,22 +225,8 @@ final class TrainController {
                 if let direction = destination.direction, currentBlock.train?.direction != direction {
                     throw LayoutError.destinationDirectionMismatch(currentBlock: currentBlock, destination: destination)
                 }
-                
-                if let position = destination.position {
-                    // If the position for the destination is specified, let's wait until we reach that position
-                    if train.position == position {
-                        debug("Stopping completely \(train) because it has reached the end of the route and the destination position \(position)")
-                        stopTrigger = .init(stopCompletely: true)
-                        return .processed
-                    }
-                }
-                
-                // If the train is at the end of the block, we need to stop it.
-                // This can happen even if the destination.position is specified, for example if
-                // destination.position is 0 and the train travels in the .next direction, it will
-                // never be stopped above because position 0 is skipped to go directly to position 1
-                // (because the first feedback in the block always indicates that the train is at position 1.
-                debug("Stopping completely \(train) because it has reached the end of the route and the end of the block")
+                                
+                debug("Stopping completely \(train) because it has reached the end of the route")
                 stopTrigger = .init(stopCompletely: true)
                 return .processed
             }

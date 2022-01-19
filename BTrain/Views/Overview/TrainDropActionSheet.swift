@@ -16,14 +16,14 @@ extension Layout {
     func setTrain(info: SwitchBoard.State.TrainDragInfo, direction: Direction) throws {
         // Direction is nil so the train will preserve its direction
         try free(trainID: info.trainId)
-        try setTrain(info.trainId, toBlock: info.blockId, position: .custom(value: info.position), direction: direction)
+        try setTrain(info.trainId, toBlock: info.blockId, direction: direction)
     }
 }
 
 extension LayoutController {
     func routeTrain(info: SwitchBoard.State.TrainDragInfo, direction: Direction) throws {
         let routeId = Route.automaticRouteId(for: info.trainId)
-        let destination = Destination(info.blockId, position: info.position, direction: direction)
+        let destination = Destination(info.blockId, direction: direction)
         try start(routeID: routeId, trainID: info.trainId, destination: destination)
     }
 }
@@ -85,7 +85,7 @@ struct TrainDropActionSheet_Previews: PreviewProvider {
     
     static var previews: some View {
         TrainDropActionSheet(layout: doc.layout,
-                             trainDragInfo: .init(trainId: .init(uuid: "1"), blockId: .init(uuid: "b1"), position: 0),
+                             trainDragInfo: .init(trainId: .init(uuid: "1"), blockId: .init(uuid: "b1")),
                              controller: doc.layoutController)
     }
 }

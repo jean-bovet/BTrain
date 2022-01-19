@@ -61,7 +61,7 @@ final class SwitchBoardRenderer {
         
         if let potentialDropTrainPath = trainDragging?.dropPath {
             context.with {
-                context.setFillColor(shapeContext.dropTrainPathColor)
+                context.setFillColor(shapeContext.dropTrainPathColor.copy(alpha: 0.5)!)
                 context.addPath(potentialDropTrainPath)
                 context.fillPath()
             }

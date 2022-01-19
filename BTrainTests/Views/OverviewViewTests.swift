@@ -35,7 +35,7 @@ class OverviewViewTests: RootViewTests {
     }
     
     func testTrainDropActionSheet() throws {
-        let info = SwitchBoard.State.TrainDragInfo(trainId: layout.trains[0].id, blockId: layout.blockIds[0], position: 0)
+        let info = SwitchBoard.State.TrainDragInfo(trainId: layout.trains[0].id, blockId: layout.blockIds[0])
         let sut = TrainDropActionSheet(layout: doc.layout, trainDragInfo: info, controller: doc.layoutController)
         
         _ = try sut.inspect().find(button: "Set Train")

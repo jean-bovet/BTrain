@@ -101,7 +101,7 @@ class SwitchboardTests: XCTestCase {
         try? layout.setTrain(info: dragOp.state.trainDragInfo!, direction: .next)
 
         XCTAssertEqual(train.blockId, b1.block.id)
-        XCTAssertEqual(train.position, 1)
+        XCTAssertEqual(train.position, 0)
     }
     
     func testDragTrainDifferentBlocks() throws {
@@ -123,7 +123,11 @@ class SwitchboardTests: XCTestCase {
         dragOp.onDragChanged(location: c2, translation: c.distance(to: c2))
         dragOp.onDragEnded()
         
-        try? layout.setTrain(info: dragOp.state.trainDragInfo!, direction: Direction.next)
+        guard let info = dragOp.state.trainDragInfo else {
+            XCTFail("Info should not be nil")
+            return
+        }
+        try? layout.setTrain(info: info, direction: Direction.next)
 
         XCTAssertEqual(train.blockId, b2.block.id)
     }

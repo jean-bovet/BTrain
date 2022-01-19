@@ -16,24 +16,18 @@ import Foundation
 struct Destination: Equatable {
     // The block to reach
     let blockId: Identifier<Block>
-    
-    // An optional position within the block.
-    // If not specified, the end of the block is used.
-    let position: Int?
-    
+        
     // An optional direction of travel within that block.
     // If not specified, the natural direction of the block is used.
     let direction: Direction?
     
     init(_ blockId: Identifier<Block>) {
         self.blockId = blockId
-        self.position = nil
         self.direction = nil
     }
     
-    init(_ blockId: Identifier<Block>, position: Int, direction: Direction) {
+    init(_ blockId: Identifier<Block>, direction: Direction) {
         self.blockId = blockId
-        self.position = position
         self.direction = direction
     }
 }
