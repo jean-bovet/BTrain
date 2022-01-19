@@ -156,7 +156,10 @@ final class Block: Element, ObservableObject {
 extension Block: Codable {
     
     enum CodingKeys: CodingKey {
-        case id, enabled, name, type, reserved, train, feedbacks, center, angle
+        case id, enabled, name, type, reserved, train, feedbacks,
+             entryFeedbackNext, brakeFeedbackNext, stopFeedbackNext,
+             entryFeedbackPrevious, brakeFeedbackPrevious, stopFeedbackPrevious,
+             center, angle
     }
 
     convenience init(from decoder: Decoder) throws {
@@ -173,6 +176,14 @@ extension Block: Codable {
         self.reserved = try container.decodeIfPresent(Reservation.self, forKey: CodingKeys.reserved)
         self.train = try container.decodeIfPresent(TrainInstance.self, forKey: CodingKeys.train)
         self.feedbacks = try container.decode([BlockFeedback].self, forKey: CodingKeys.feedbacks)
+        
+        self.entryFeedbackNext = try container.decodeIfPresent(Identifier<Feedback>.self, forKey: CodingKeys.entryFeedbackNext)
+        self.brakeFeedbackNext = try container.decodeIfPresent(Identifier<Feedback>.self, forKey: CodingKeys.brakeFeedbackNext)
+        self.stopFeedbackNext = try container.decodeIfPresent(Identifier<Feedback>.self, forKey: CodingKeys.stopFeedbackNext)
+        
+        self.entryFeedbackPrevious = try container.decodeIfPresent(Identifier<Feedback>.self, forKey: CodingKeys.entryFeedbackPrevious)
+        self.brakeFeedbackPrevious = try container.decodeIfPresent(Identifier<Feedback>.self, forKey: CodingKeys.brakeFeedbackPrevious)
+        self.stopFeedbackPrevious = try container.decodeIfPresent(Identifier<Feedback>.self, forKey: CodingKeys.stopFeedbackPrevious)
     }
     
     func encode(to encoder: Encoder) throws {
@@ -184,7 +195,15 @@ extension Block: Codable {
         try container.encode(reserved, forKey: CodingKeys.reserved)
         try container.encode(train, forKey: CodingKeys.train)
         try container.encode(feedbacks, forKey: CodingKeys.feedbacks)
-        
+
+        try container.encode(entryFeedbackNext, forKey: CodingKeys.entryFeedbackNext)
+        try container.encode(brakeFeedbackNext, forKey: CodingKeys.brakeFeedbackNext)
+        try container.encode(stopFeedbackNext, forKey: CodingKeys.stopFeedbackNext)
+
+        try container.encode(entryFeedbackPrevious, forKey: CodingKeys.entryFeedbackPrevious)
+        try container.encode(brakeFeedbackPrevious, forKey: CodingKeys.brakeFeedbackPrevious)
+        try container.encode(stopFeedbackPrevious, forKey: CodingKeys.stopFeedbackPrevious)
+
         try container.encode(center, forKey: CodingKeys.center)
         try container.encode(rotationAngle, forKey: CodingKeys.angle)
     }

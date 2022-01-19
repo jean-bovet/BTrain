@@ -104,6 +104,27 @@ final class Layout2Swift {
             }
         }
         code += "\nl.assign(\(block.symbol), [\(content)])"
+        
+        if let fid = block.entryFeedbackNext, let f = layout.feedback(for: fid) {
+            code += "\n\(block.symbol).entryFeedbackNext = \(f.symbol).id"
+        }
+        if let fid = block.brakeFeedbackNext, let f = layout.feedback(for: fid) {
+            code += "\n\(block.symbol).brakeFeedbackNext = \(f.symbol).id"
+        }
+        if let fid = block.stopFeedbackNext, let f = layout.feedback(for: fid) {
+            code += "\n\(block.symbol).stopFeedbackNext = \(f.symbol).id"
+        }
+        
+        if let fid = block.entryFeedbackPrevious, let f = layout.feedback(for: fid) {
+            code += "\n\(block.symbol).entryFeedbackPrevious = \(f.symbol).id"
+        }
+        if let fid = block.brakeFeedbackPrevious, let f = layout.feedback(for: fid) {
+            code += "\n\(block.symbol).brakeFeedbackPrevious = \(f.symbol).id"
+        }
+        if let fid = block.stopFeedbackPrevious, let f = layout.feedback(for: fid) {
+            code += "\n\(block.symbol).stopFeedbackPrevious = \(f.symbol).id"
+        }
+
     }
             
     func add(turnouts: [Turnout]) {
