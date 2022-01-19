@@ -10,53 +10,9 @@
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-import XCTest
+import Foundation
 
 @testable import BTrain
-
-class RootLayoutTests: BTTestCase {
-
-    var asserter: LayoutAsserter!
-    var layoutController: LayoutController!
-    
-    var route: Route {
-        return layoutController.layout.routes.first!
-    }
-    
-    var train: Train {
-        return layoutController.layout.trains.first!
-    }
-    
-    var layout: Layout {
-        return layoutController.layout
-    }
-    
-    var layoutID: Identifier<Layout>? {
-        return nil
-    }
-    
-    override func setUp() {
-        super.setUp()
-        
-        let layout =  LayoutFactory.createLayout(layoutID!)
-        layout.detectUnexpectedFeedback = true
-        layout.strictRouteFeedbackStrategy = true
-        self.layoutController = LayoutController(layout: layout, interface: nil)
-        self.asserter = LayoutAsserter(layout: layout, layoutController: layoutController)
-        if !layout.routes.isEmpty {
-            XCTAssertNoThrow(try layout.prepare(routeID: route.id, trainID: train.id))
-        }
-    }
-
-    func assert(_ s: String) {
-        XCTAssertNoThrow(try asserter.assert([s], route: route, trains: layout.trains))
-    }
-
-    func assert2(_ s1: String, _ s2: String) {
-        XCTAssertNoThrow(try asserter.assert([s1, s2], route: route, trains: layout.trains))
-    }    
-
-}
 
 extension Layout {
     
@@ -72,6 +28,12 @@ extension Layout {
             }
         }
         return turnouts
+    }
+
+    func newRoute(id: String, _ steps: [(String, Direction)]) -> Route {
+        return newRoute(id, name: id, steps.map({ step in
+            return Route.Step(Identifier<Block>(uuid: step.0), step.1)
+        }))
     }
     
     func prepare(routeID: String, trainID: String) throws {
@@ -101,13 +63,4 @@ extension Layout {
         }
     }
 
-}
-
-extension LayoutController {
-    
-    func start(routeID: String, trainID: String) throws {
-        try start(routeID: Identifier<Route>(uuid: routeID),
-                  trainID: Identifier<Train>(uuid: trainID),
-                  destination: nil)
-    }
 }

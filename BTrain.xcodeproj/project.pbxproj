@@ -64,7 +64,7 @@
 		A73E080F276ACC79005F9D64 /* ScheduledMessageQueueTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A73E080E276ACC79005F9D64 /* ScheduledMessageQueueTests.swift */; };
 		A73E0812276ACDA8005F9D64 /* ClientServerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A73E0811276ACDA8005F9D64 /* ClientServerTests.swift */; };
 		A73E0814276AD1D0005F9D64 /* MarklinInterfaceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A73E0813276AD1D0005F9D64 /* MarklinInterfaceTests.swift */; };
-		A73E0816276B0BC0005F9D64 /* LayoutGTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A73E0815276B0BC0005F9D64 /* LayoutGTests.swift */; };
+		A73E0816276B0BC0005F9D64 /* ManualRoutingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A73E0815276B0BC0005F9D64 /* ManualRoutingTests.swift */; };
 		A73E0818276B1059005F9D64 /* SwitchBoardViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A73E0817276B1059005F9D64 /* SwitchBoardViewTests.swift */; };
 		A73E081A276B19FE005F9D64 /* NewLayoutSheetTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A73E0819276B19FE005F9D64 /* NewLayoutSheetTests.swift */; };
 		A73E081D276B1AD4005F9D64 /* ConnectSheetViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A73E081C276B1AD4005F9D64 /* ConnectSheetViewTests.swift */; };
@@ -183,7 +183,6 @@
 		A7BD6259276D50380039B6C2 /* LayoutDocumentTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7BD6258276D50380039B6C2 /* LayoutDocumentTests.swift */; };
 		A7BE366B2751AAA300286709 /* BlockTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7F779E8272F06C400E73275 /* BlockTests.swift */; };
 		A7BE366C2751AAF300286709 /* LayoutParserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7F779DE272DB21000E73275 /* LayoutParserTests.swift */; };
-		A7BE366D2751ABBF00286709 /* LayoutCTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7F779F3272F5DEA00E73275 /* LayoutCTests.swift */; };
 		A7BE36A82751BDAB00286709 /* ConnectorSocket.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7BE36A72751BDAB00286709 /* ConnectorSocket.swift */; };
 		A7BE36AA2751BDC300286709 /* ConnectorPlug.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7BE36A92751BDC300286709 /* ConnectorPlug.swift */; };
 		A7CA5EBB27952ECF00171398 /* Destination.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7CA5EBA27952ECF00171398 /* Destination.swift */; };
@@ -194,17 +193,16 @@
 		A7CA5EC527964B6700171398 /* Array+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7CA5EC427964B6700171398 /* Array+Extension.swift */; };
 		A7CA5EC7279654EB00171398 /* Block+Feedback.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7CA5EC6279654EB00171398 /* Block+Feedback.swift */; };
 		A7CA5EC92796550C00171398 /* Block+Socket.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7CA5EC82796550C00171398 /* Block+Socket.swift */; };
+		A7CA5ECC2797D1EB00171398 /* Layout+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7CA5ECB2797D1EB00171398 /* Layout+Extension.swift */; };
 		A7EAD11227608B0500455E09 /* LayoutTrainHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7EAD11127608B0500455E09 /* LayoutTrainHandler.swift */; };
 		A7EAD11427608BAA00455E09 /* LayoutTransitionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7EAD11327608BAA00455E09 /* LayoutTransitionHandler.swift */; };
 		A7F31B9D277B921B00FE0C65 /* SwitchboardEditControlsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7F31B9C277B921B00FE0C65 /* SwitchboardEditControlsView.swift */; };
 		A7F31B9F277B95BA00FE0C65 /* TrainDropActionSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7F31B9E277B95BA00FE0C65 /* TrainDropActionSheet.swift */; };
 		A7F31BA1277C3D7B00FE0C65 /* BlockDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7F31BA0277C3D7A00FE0C65 /* BlockDetailsView.swift */; };
 		A7F779CE272B445B00E73275 /* Feedback.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7F779CD272B445B00E73275 /* Feedback.swift */; };
-		A7F779D2272BA07100E73275 /* LayoutATests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7F779D1272BA07100E73275 /* LayoutATests.swift */; };
 		A7F779D4272BB38F00E73275 /* LayoutFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7F779D3272BB38F00E73275 /* LayoutFactory.swift */; };
 		A7F779E1272E1E3F00E73275 /* LayoutParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7F779E0272E1E3F00E73275 /* LayoutParser.swift */; };
 		A7F779E3272E20F500E73275 /* TrainControlListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7F779E2272E20F500E73275 /* TrainControlListView.swift */; };
-		A7F779E7272F065600E73275 /* RootLayoutTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7F779E6272F065600E73275 /* RootLayoutTests.swift */; };
 		A7F779EB272F1E7700E73275 /* LayoutACreator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7F779EA272F1E7700E73275 /* LayoutACreator.swift */; };
 		A7F779ED272F1E8800E73275 /* LayoutBCreator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7F779EC272F1E8800E73275 /* LayoutBCreator.swift */; };
 		A7F779F0272F2EFC00E73275 /* LayoutCCreator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7F779EF272F2EFC00E73275 /* LayoutCCreator.swift */; };
@@ -296,7 +294,7 @@
 		A73E080E276ACC79005F9D64 /* ScheduledMessageQueueTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduledMessageQueueTests.swift; sourceTree = "<group>"; };
 		A73E0811276ACDA8005F9D64 /* ClientServerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClientServerTests.swift; sourceTree = "<group>"; };
 		A73E0813276AD1D0005F9D64 /* MarklinInterfaceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarklinInterfaceTests.swift; sourceTree = "<group>"; };
-		A73E0815276B0BC0005F9D64 /* LayoutGTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutGTests.swift; sourceTree = "<group>"; };
+		A73E0815276B0BC0005F9D64 /* ManualRoutingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManualRoutingTests.swift; sourceTree = "<group>"; };
 		A73E0817276B1059005F9D64 /* SwitchBoardViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwitchBoardViewTests.swift; sourceTree = "<group>"; };
 		A73E0819276B19FE005F9D64 /* NewLayoutSheetTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewLayoutSheetTests.swift; sourceTree = "<group>"; };
 		A73E081C276B1AD4005F9D64 /* ConnectSheetViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectSheetViewTests.swift; sourceTree = "<group>"; };
@@ -421,23 +419,21 @@
 		A7CA5EC427964B6700171398 /* Array+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Array+Extension.swift"; sourceTree = "<group>"; };
 		A7CA5EC6279654EB00171398 /* Block+Feedback.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Block+Feedback.swift"; sourceTree = "<group>"; };
 		A7CA5EC82796550C00171398 /* Block+Socket.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Block+Socket.swift"; sourceTree = "<group>"; };
+		A7CA5ECB2797D1EB00171398 /* Layout+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Layout+Extension.swift"; sourceTree = "<group>"; };
 		A7EAD11127608B0500455E09 /* LayoutTrainHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutTrainHandler.swift; sourceTree = "<group>"; };
 		A7EAD11327608BAA00455E09 /* LayoutTransitionHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutTransitionHandler.swift; sourceTree = "<group>"; };
 		A7F31B9C277B921B00FE0C65 /* SwitchboardEditControlsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwitchboardEditControlsView.swift; sourceTree = "<group>"; };
 		A7F31B9E277B95BA00FE0C65 /* TrainDropActionSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainDropActionSheet.swift; sourceTree = "<group>"; };
 		A7F31BA0277C3D7A00FE0C65 /* BlockDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockDetailsView.swift; sourceTree = "<group>"; };
 		A7F779CD272B445B00E73275 /* Feedback.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Feedback.swift; sourceTree = "<group>"; };
-		A7F779D1272BA07100E73275 /* LayoutATests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutATests.swift; sourceTree = "<group>"; };
 		A7F779D3272BB38F00E73275 /* LayoutFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutFactory.swift; sourceTree = "<group>"; };
 		A7F779DE272DB21000E73275 /* LayoutParserTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutParserTests.swift; sourceTree = "<group>"; };
 		A7F779E0272E1E3F00E73275 /* LayoutParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutParser.swift; sourceTree = "<group>"; };
 		A7F779E2272E20F500E73275 /* TrainControlListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainControlListView.swift; sourceTree = "<group>"; };
-		A7F779E6272F065600E73275 /* RootLayoutTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootLayoutTests.swift; sourceTree = "<group>"; };
 		A7F779E8272F06C400E73275 /* BlockTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockTests.swift; sourceTree = "<group>"; };
 		A7F779EA272F1E7700E73275 /* LayoutACreator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutACreator.swift; sourceTree = "<group>"; };
 		A7F779EC272F1E8800E73275 /* LayoutBCreator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutBCreator.swift; sourceTree = "<group>"; };
 		A7F779EF272F2EFC00E73275 /* LayoutCCreator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutCCreator.swift; sourceTree = "<group>"; };
-		A7F779F3272F5DEA00E73275 /* LayoutCTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutCTests.swift; sourceTree = "<group>"; };
 		A7F779F5273214AF00E73275 /* TrainListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainListView.swift; sourceTree = "<group>"; };
 		A7F779F72732407E00E73275 /* TrainControlContainerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainControlContainerView.swift; sourceTree = "<group>"; };
 		A7F779F92734A8C500E73275 /* Element.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Element.swift; sourceTree = "<group>"; };
@@ -567,6 +563,7 @@
 			isa = PBXGroup;
 			children = (
 				A783EAA02787D12200E69B6D /* BTTestCase.swift */,
+				A7CA5ECB2797D1EB00171398 /* Layout+Extension.swift */,
 				A73AFE972726594800E1ED21 /* CANMessageTests.swift */,
 				A73E0808276ABA09005F9D64 /* SwitchboardTests.swift */,
 				A73E080E276ACC79005F9D64 /* ScheduledMessageQueueTests.swift */,
@@ -705,15 +702,12 @@
 		A73E07F4276974F1005F9D64 /* Layouts */ = {
 			isa = PBXGroup;
 			children = (
+				A796FA2D2775642B00FA41BA /* LayoutAsserter.swift */,
 				A7582965279380C000AA0649 /* LayoutTests.swift */,
 				A73E080C276ABB5C005F9D64 /* LayoutErrorTests.swift */,
-				A796FA2D2775642B00FA41BA /* LayoutAsserter.swift */,
-				A7F779E6272F065600E73275 /* RootLayoutTests.swift */,
-				A7F779D1272BA07100E73275 /* LayoutATests.swift */,
-				A7F779F3272F5DEA00E73275 /* LayoutCTests.swift */,
-				A73E0815276B0BC0005F9D64 /* LayoutGTests.swift */,
 				A7F779DE272DB21000E73275 /* LayoutParserTests.swift */,
 				A792DEFE278508B0004B0439 /* LayoutCreatorTests.swift */,
+				A73E0815276B0BC0005F9D64 /* ManualRoutingTests.swift */,
 				A7FBC8B5276E8BB6009D49C3 /* PathFinderTests.swift */,
 				A7CA5EBC2795339000171398 /* AutomaticRoutingTests.swift */,
 			);
@@ -1332,23 +1326,21 @@
 				A790799F277ED9B200771A60 /* DocumentToolbarContentTests.swift in Sources */,
 				A7CA5EBD2795339000171398 /* AutomaticRoutingTests.swift in Sources */,
 				A73E0812276ACDA8005F9D64 /* ClientServerTests.swift in Sources */,
+				A7CA5ECC2797D1EB00171398 /* Layout+Extension.swift in Sources */,
 				A73E07F027697127005F9D64 /* FeedbackViewTests.swift in Sources */,
 				A73E0823276B9937005F9D64 /* BlockFeedbackViewTests.swift in Sources */,
 				A73E080F276ACC79005F9D64 /* ScheduledMessageQueueTests.swift in Sources */,
 				A7218087276055AD00831998 /* FeedbackTests.swift in Sources */,
 				A73E081A276B19FE005F9D64 /* NewLayoutSheetTests.swift in Sources */,
-				A7F779D2272BA07100E73275 /* LayoutATests.swift in Sources */,
 				A73E07F227697285005F9D64 /* TrainListViewTests.swift in Sources */,
 				A73E0818276B1059005F9D64 /* SwitchBoardViewTests.swift in Sources */,
-				A7BE366D2751ABBF00286709 /* LayoutCTests.swift in Sources */,
 				A7FBC8B6276E8BB6009D49C3 /* PathFinderTests.swift in Sources */,
 				A75829682793A4EF00AA0649 /* TrainSpeedViewTests.swift in Sources */,
-				A73E0816276B0BC0005F9D64 /* LayoutGTests.swift in Sources */,
+				A73E0816276B0BC0005F9D64 /* ManualRoutingTests.swift in Sources */,
 				A73E082B276C150D005F9D64 /* TrainSetLocationSheetTests.swift in Sources */,
 				A758296A2793A5DC00AA0649 /* TrainIconViewTests.swift in Sources */,
 				A7907999277ED70C00771A60 /* SwitchboardEditControlsViewTests.swift in Sources */,
 				A721807D275DF1B100831998 /* TransitionsTests.swift in Sources */,
-				A7F779E7272F065600E73275 /* RootLayoutTests.swift in Sources */,
 				A7BE366B2751AAA300286709 /* BlockTests.swift in Sources */,
 				A796FA2E2775642B00FA41BA /* LayoutAsserter.swift in Sources */,
 				A72180892760578000831998 /* RouteTests.swift in Sources */,
