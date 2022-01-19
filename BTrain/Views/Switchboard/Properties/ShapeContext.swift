@@ -70,11 +70,14 @@ final class ShapeContext {
         NSColor.blue.cgColor
     }
 
-    func trainColor(_ speed: UInt16) -> CGColor {
-        if speed == 0 {
-            return NSColor.systemRed.cgColor
-        } else {
+    func trainColor(_ train: Train) -> CGColor {
+        switch(train.state) {
+        case .running:
             return NSColor.systemGreen.cgColor
+        case .braking:
+            return NSColor.systemYellow.cgColor
+        case .stopped:
+            return NSColor.systemRed.cgColor
         }
     }
 }
