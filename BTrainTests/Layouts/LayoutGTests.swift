@@ -14,16 +14,8 @@ import XCTest
 
 @testable import BTrain
 
-class LayoutGTests: RootLayoutTests {
-
-    override var layoutID: Identifier<Layout>? {
-        return LayoutGCreator.id
-    }
-
-    func testLayout() {
-        XCTAssertEqual(layout.blockMap.count, 8)
-    }
-    
+class LayoutGTests: BTTestCase {
+        
     func testEntryBrakeStopFeedbacks() throws {
         let layout = LayoutECreator().newLayout()
         layout.strictRouteFeedbackStrategy = false
