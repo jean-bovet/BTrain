@@ -20,79 +20,7 @@ class LayoutCTests: RootLayoutTests {
         return LayoutCCreator.id
     }
     
-    func testMoveRouteLoop() throws {
-        try layout.prepare(routeID: "r1", trainID: "1")
-        try layout.prepare(routeID: "r3", trainID: "2")
-        
-        assert2("r1: {r1{b1 🛑🚂1 ≏ ≏ }} <t0> [b2 ≏ ≏ ] {r2{b3 🛑🚂2 ≏ ≏ }} <t1> [b4 ≏ ≏] {r1{b1 🛑🚂1 ≏ ≏ }}",
-                "r3: {r2{b3 🛑🚂2 ≏ ≏ }} <t1(0,2)> [b5 ≏ ≏ ] <t0(2,0)> !{r1{b1 🛑🚂1 ≏ ≏ }}")
 
-        try layoutController.start(routeID: "r1", trainID: "1")
-
-        assert2("r1: {r1{b1 🚂1 ≏ ≏ }} <r1<t0>> [r1[b2 ≏ ≏ ]] {r2{b3 🛑🚂2 ≏ ≏ }} <t1> [b4 ≏ ≏] {r1{b1 🚂1 ≏ ≏ }}",
-                "r3: {r2{b3 🛑🚂2 ≏ ≏ }} <t1(0,2)> [b5 ≏ ≏ ] <r1<t0(2,0)>> !{r1{b1 🚂1 ≏ ≏ }}")
-        
-        try layoutController.start(routeID: "r3", trainID: "2")
-
-        assert2("r1: {r1{b1 🚂1 ≏ ≏ }} <r1<t0>> [r1[b2 ≏ ≏ ]] {r2{b3 🚂2 ≏ ≏ }} <r2<t1,r>> [b4 ≏ ≏] {r1{b1 🚂1 ≏ ≏ }}",
-                "r3: {r2{b3 🚂2 ≏ ≏ }} <r2<t1(0,2),r>> [r2[b5 ≏ ≏ ]] <r1<t0(2,0)>> !{r1{b1 🚂1 ≏ ≏ }}")
-
-        assert2("r1: {r1{b1 🚂1 ≏ ≏ }} <r1<t0>> [r1[b2 ≏ ≏ ]] {r2{b3 ≡ 🚂2 ≏ }} <r2<t1,r>> [b4 ≏ ≏] {r1{b1 🚂1 ≏ ≏ }}",
-                "r3: {r2{b3 ≡ 🚂2 ≏ }} <r2<t1(0,2),r>> [r2[b5 ≏ ≏ ]] <r1<t0(2,0)>> !{r1{b1 🚂1 ≏ ≏ }}")
-
-        assert2("r1: {r1{b1 🚂1 ≏ ≏ }} <r1<t0>> [r1[b2 ≏ ≏ ]] {r2{b3 ≡ ≡ 🚂2 }} <r2<t1,r>> [b4 ≏ ≏] {r1{b1 🚂1 ≏ ≏ }}",
-                "r3: {r2{b3 ≡ ≡ 🚂2 }} <r2<t1(0,2),r>> [r2[b5 ≏ ≏ ]] <r1<t0(2,0)>> !{r1{b1 🚂1 ≏ ≏ }}")
-
-        assert2("r1: {r1{b1 🚂1 ≏ ≏ }} <r1<t0>> [r1[b2 ≏ ≏ ]] {b3 ≏ ≏ } <t1,r> [b4 ≏ ≏] {r1{b1 🚂1 ≏ ≏ }}",
-                "r3: {b3 ≏ ≏ } <t1(0,2),r> [r2[b5 ≡ 🟨🚂2 ≏ ]] <r1<t0(2,0)>> !{r1{b1 🚂1 ≏ ≏ }}")
-
-        // Train 2 stops because block b1 is still in use by train 1.
-        assert2("r1: {r1{b1 🚂1 ≏ ≏ }} <r1<t0>> [r1[b2 ≏ ≏ ]] {b3 ≏ ≏ } <t1,r> [b4 ≏ ≏] {r1{b1 🚂1 ≏ ≏ }}",
-                "r3: {b3 ≏ ≏ } <t1(0,2),r> [r2[b5 ≡ ≡ 🛑🚂2 ]] <r1<t0(2,0)>> !{r1{b1 🚂1 ≏ ≏ }}")
-
-        assert2("r1: {r1{b1 ≡ 🚂1 ≏ }} <r1<t0>> [r1[b2 ≏ ≏ ]] {b3 ≏ ≏ } <t1,r> [b4 ≏ ≏] {r1{b1 ≡ 🚂1 ≏ }}",
-                "r3: {b3 ≏ ≏ } <t1(0,2),r> [r2[b5 ≏ ≏ 🛑🚂2 ]] <r1<t0(2,0)>> !{r1{b1 ≡ 🚂1 ≏ }}")
-
-        assert2("r1: {r1{b1 ≡ ≡ 🚂1 }} <r1<t0>> [r1[b2 ≏ ≏ ]] {b3 ≏ ≏ } <t1,r> [b4 ≏ ≏] {r1{b1 ≡ ≡ 🚂1 }}",
-                "r3: {b3 ≏ ≏ } <t1(0,2),r> [r2[b5 ≏ ≏ 🛑🚂2 ]] <r1<t0(2,0)>> !{r1{b1 ≡ ≡ 🚂1 }}")
-
-        // Train 2 starts again because block 1 is now free (train 1 has moved to block 2).
-        assert2("r1: {r2{b1 ≏ ≏ }} <r2<t0,r>> [r1[b2 ≡ 🚂1 ≏ ]] {r1{b3 ≏ ≏ }} <t1,r> [b4 ≏ ≏] {r2{b1 ≏ ≏ }}",
-                "r3: {r1{b3 ≏ ≏ }} <t1(0,2),r> [r2[b5 ≏ ≏ 🚂2 ]] <r2<t0(2,0),r>> !{r2{b1 ≏ ≏ }}")
-
-        assert2("r1: {r2{b1 ≏ ≏ }} <r2<t0,r>> [r1[b2 ≡ ≡ 🚂1 ]] {r1{b3 ≏ ≏ }} <t1,r> [b4 ≏ ≏] {r2{b1 ≏ ≏ }}",
-                "r3: {r1{b3 ≏ ≏ }} <t1(0,2),r> [r2[b5 ≏ ≏ 🚂2 ]] <r2<t0(2,0),r>> !{r2{b1 ≏ ≏ }}")
-        
-        assert2("r1: {r2{b1 ≏ 🟨🚂2 ≡ }} <t0,r> [r1[b2 ≏ ≏ 🚂1 ]] {r1{b3 ≏ ≏ }} <t1,r> [b4 ≏ ≏] {r2{b1 ≏ 🟨🚂2 ≡ }}",
-                "r3: {r1{b3 ≏ ≏ }} <t1(0,2),r> [b5 ≏ ≏ ] <t0(2,0),r> !{r2{b1 ≏ 🟨🚂2 ≡ }}")
-
-        // Train 2 stops because it has reached the end of the last block of its route (b1).
-        assert2("r1: {r2{b1 🛑🚂2 ≡ ≡ }} <t0,r> [b2 ≏ ≏ ] {r1{b3 ≡ 🚂1 ≏ }} <r1<t1>> [r1[b4 ≏ ≏]] {r2{b1 🛑🚂2 ≡ ≡ }}",
-                "r3: {r1{b3 ≡ 🚂1 ≏ }} <r1<t1(0,2)>> [b5 ≏ ≏ ] <t0(2,0),r> !{r2{b1 🛑🚂2 ≡ ≡ }}")
-
-        assert2("r1: {r2{b1 🛑🚂2 ≏ ≏ }} <t0,r> [b2 ≏ ≏ ] {r1{b3 ≡ ≡ 🚂1 }} <r1<t1>> [r1[b4 ≏ ≏]] {r2{b1 🛑🚂2 ≏ ≏ }}",
-                "r3: {r1{b3 ≡ ≡ 🚂1 }} <r1<t1(0,2)>> [b5 ≏ ≏ ] <t0(2,0),r> !{r2{b1 🛑🚂2 ≏ ≏ }}")
-
-        assert2("r1: {r2{b1 🛑🚂2 ≏ ≏ }} <t0,r> [b2 ≏ ≏ ] {b3 ≏ ≏ } <t1> [r1[b4 ≡ 🟨🚂1 ≏]] {r2{b1 🛑🚂2 ≏ ≏ }}",
-                "r3: {b3 ≏ ≏ } <t1(0,2)> [b5 ≏ ≏ ] <t0(2,0),r> !{r2{b1 🛑🚂2 ≏ ≏ }}")
-
-        // Train 1 stops again because there is a train in the next block b1 (train 2)
-        assert2("r1: {r2{b1 🛑🚂2 ≏ ≏ }} <t0,r> [b2 ≏ ≏ ] {b3 ≏ ≏ } <t1> [r1[b4 ≡ ≡ 🛑🚂1 ]] {r2{b1 🛑🚂2 ≏ ≏ }}",
-                "r3: {b3 ≏ ≏ } <t1(0,2)> [b5 ≏ ≏ ] <t0(2,0),r> !{r2{b1 🛑🚂2 ≏ ≏ }}")
-
-        // Let's remove train 2 artificially to allow train 1 to stop at the station b1
-        try layout.free(trainID: Identifier<Train>(uuid: "2"), removeFromLayout: true)
-        assert2("r1: {r1{b1 ≏ ≏ }} <t0,r> [b2 ≏ ≏ ] {b3 ≏ ≏ } <t1> [r1[b4 ≡ ≡ 🚂1 ]] {r1{b1 ≏ ≏ }}",
-                "r3: {b3 ≏ ≏ } <t1(0,2)> [b5 ≏ ≏ ] <t0(2,0),r> !{r1{b1 ≏ ≏ }}")
-
-        assert2("r1: {r1{b1 ≡ 🟨🚂1 ≏ }} <t0,r> [b2 ≏ ≏ ] {b3 ≏ ≏ } <t1> [b4 ≏ ≏ ] {r1{b1 ≡ 🟨🚂1 ≏ }}",
-                "r3: {b3 ≏ ≏ } <t1(0,2)> [b5 ≏ ≏ ] <t0(2,0),r> !{r1{b1 ≡ 🟨🚂1 ≏ }}")
-        
-        // Train 1 finally stops at the station b1 which is its final block of the route
-        assert2("r1: {r1{b1 ≡ ≡ 🛑🚂1 }} <t0,r> [b2 ≏ ≏ ] {b3 ≏ ≏ } <t1> [b4 ≏ ≏ ] {r1{b1 ≡ ≡ 🛑🚂1 }}",
-                "r3: {b3 ≏ ≏ } <t1(0,2)> [b5 ≏ ≏ ] <t0(2,0),r> !{r1{b1 ≡ ≡ 🛑🚂1 }}")
-    }
- 
     func testNextBlockFeedbackHandling() throws {
         try layout.prepare(routeID: "r1", trainID: "1")
         try layout.prepare(routeID: "r3", trainID: "2")
