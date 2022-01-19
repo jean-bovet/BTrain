@@ -268,6 +268,29 @@ final class TrainController {
         return .none
     }
     
+    private func handleManualRouteStop(route: Route) throws -> Result {
+        guard let currentBlock = layout.currentBlock(train: train) else {
+            return .none
+        }
+        
+        guard !route.automatic else {
+            return .none
+        }
+        
+        // The train is not in the first step of the route
+        guard train.routeIndex != startRouteIndex else {
+            return .none
+        }
+        
+        if train.routeIndex == route.steps.count - 1 {
+            debug("Train \(train) will stop here (\(currentBlock)) because it has reached the end of the route")
+            stopTrigger = .init(stopCompletely: true)
+            return .processed
+        }
+        
+        return .none
+    }
+    
     private func handleTrainStop() throws -> Result {
         guard train.speed.kph > 0 else {
             return .none
@@ -437,14 +460,16 @@ final class TrainController {
             stopTrigger = .init(stopCompletely: false)
         }
         
-        // Handle any automatic route specific stop handling.
-        // This must be done here so it is executed only once
-        // after the train has moved to a new block.
-        _ = try handleAutomaticRouteStop(route: route)
-        
+        // Handle any route-specific stop now that the block has moved to a new block
+        if route.automatic {
+            _ = try handleAutomaticRouteStop(route: route)
+        } else {
+            _ = try handleManualRouteStop(route: route)
+        }
+
         return .processed
     }
-    
+        
     private func tryReserveNextBlocks(direction: Direction) -> Result {
         guard let currentBlock = layout.currentBlock(train: train) else {
             return .none

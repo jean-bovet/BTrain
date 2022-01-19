@@ -67,15 +67,16 @@ final class LayoutECreator: LayoutCreating {
         let f_fb2 = Feedback("fb2", deviceID: 1, contactID: 2)
         let f_fb31 = Feedback("fb3.1", deviceID: 1, contactID: 31)
         let f_fb32 = Feedback("fb3.2", deviceID: 1, contactID: 32)
+        let f_fb33 = Feedback("fb3.3", deviceID: 1, contactID: 33)
         let f_fb4 = Feedback("fb4", deviceID: 1, contactID: 4)
         let f_fb5 = Feedback("fb5", deviceID: 1, contactID: 5)
         let f_fb6 = Feedback("fb6", deviceID: 1, contactID: 6)
         let f_fs1 = Feedback("fs1", deviceID: 1, contactID: 7)
         let f_fs2 = Feedback("fs2", deviceID: 1, contactID: 8)
-        l.feedbacks.append(contentsOf: [f_fb1,f_fb2,f_fb31, f_fb32,f_fb4,f_fb5,f_fb6,f_fs1,f_fs2])
+        l.feedbacks.append(contentsOf: [f_fb1,f_fb2,f_fb31,f_fb32,f_fb33,f_fb4,f_fb5,f_fb6,f_fs1,f_fs2])
         l.assign(b_b1, [f_fb1])
         l.assign(b_b2, [f_fb2])
-        l.assign(b_b3, [f_fb31, f_fb32])
+        l.assign(b_b3, [f_fb31,f_fb32,f_fb33])
         l.assign(b_b4, [f_fb4])
         l.assign(b_b5, [f_fb5])
         l.assign(b_b6, [f_fb6])
@@ -119,7 +120,8 @@ final class LayoutECreator: LayoutCreating {
 
         // Routes
 
-        l.newRoute("0", name: "Simple Route", [(b_b1,.next),(b_b2,.next)])
+        l.newRoute("0", name: "S1 to S1", [(b_s1,.next),(b_b1,.next),(b_b2,.next),(b_b3,.next),(b_s1,.next)])
+        l.newRoute("1", name: "S1 to S1 Reversed", [(b_s1,.previous),(b_b3,.previous),(b_b2,.previous),(b_b1,.previous),(b_s1,.previous)])
 
         // Trains
 
