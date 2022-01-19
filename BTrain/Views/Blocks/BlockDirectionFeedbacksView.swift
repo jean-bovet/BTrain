@@ -16,6 +16,9 @@ struct BlockFeedbackDirectionView: View {
     
     let label: String
     let layout: Layout
+    
+    let defaultFeedback: Identifier<Feedback>?
+    
     @Binding var feedback: Identifier<Feedback>?
     
     @ObservedObject var block: Block
@@ -24,7 +27,11 @@ struct BlockFeedbackDirectionView: View {
         HStack {
             UndoProvider($feedback) { feedbackId in
                 Picker(label, selection: feedbackId) {
-                    Text("No Feedback").tag(nil as Identifier<Feedback>?)
+                    if let defaultFeedback = defaultFeedback, let df = layout.feedback(for: defaultFeedback) {
+                        Text("\(df.name) (default)").tag(nil as Identifier<Feedback>?)
+                    } else {
+                        Text("No Feedback").tag(nil as Identifier<Feedback>?)
+                    }
                     ForEach(block.feedbacks, id:\.self) { bf in
                         if let candidate = layout.feedback(for: bf.feedbackId) {
                             Text(candidate.name).tag(candidate.id as Identifier<Feedback>?)
@@ -45,13 +52,25 @@ struct BlockDirectionFeedbacksView: View {
     var body: some View {
         Form {
             if direction == .next {
-                BlockFeedbackDirectionView(label: "Entry", layout: layout, feedback: $block.entryFeedbackNext, block: block)
-                BlockFeedbackDirectionView(label: "Brake", layout: layout, feedback: $block.brakeFeedbackNext, block: block)
-                BlockFeedbackDirectionView(label: "Stop", layout: layout, feedback: $block.stopFeedbackNext, block: block)
+                BlockFeedbackDirectionView(label: "Entry", layout: layout,
+                                           defaultFeedback: block.defaultEntryFeedback(for: .next),
+                                           feedback: $block.entryFeedbackNext, block: block)
+                BlockFeedbackDirectionView(label: "Brake", layout: layout,
+                                           defaultFeedback: block.defaultBrakeFeedback(for: .next),
+                                           feedback: $block.brakeFeedbackNext, block: block)
+                BlockFeedbackDirectionView(label: "Stop", layout: layout,
+                                           defaultFeedback: block.defaultStopFeedback(for: .next),
+                                           feedback: $block.stopFeedbackNext, block: block)
             } else {
-                BlockFeedbackDirectionView(label: "Entry", layout: layout, feedback: $block.entryFeedbackPrevious, block: block)
-                BlockFeedbackDirectionView(label: "Brake", layout: layout, feedback: $block.brakeFeedbackPrevious, block: block)
-                BlockFeedbackDirectionView(label: "Stop", layout: layout, feedback: $block.stopFeedbackPrevious, block: block)
+                BlockFeedbackDirectionView(label: "Entry", layout: layout,
+                                           defaultFeedback: block.defaultEntryFeedback(for: .previous),
+                                           feedback: $block.entryFeedbackPrevious, block: block)
+                BlockFeedbackDirectionView(label: "Brake", layout: layout,
+                                           defaultFeedback: block.defaultBrakeFeedback(for: .previous),
+                                           feedback: $block.brakeFeedbackPrevious, block: block)
+                BlockFeedbackDirectionView(label: "Stop", layout: layout,
+                                           defaultFeedback: block.defaultStopFeedback(for: .previous),
+                                           feedback: $block.stopFeedbackPrevious, block: block)
             }
         }
     }
