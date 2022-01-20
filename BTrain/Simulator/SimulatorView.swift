@@ -30,6 +30,7 @@ struct SimulatorView: View {
                     .foregroundColor(.white)
                     .clipShape(Capsule())
             }
+            Divider()
             ScrollView {
                 VStack {
                     ForEach(simulator.trains, id:\.self) { train in
@@ -39,6 +40,18 @@ struct SimulatorView: View {
                         }
                     }
                 }.disabled(!simulator.enabled)
+            }
+            Divider()
+            HStack {
+                Text("Slow")
+                Slider(
+                    value: $simulator.refreshSpeed,
+                    in: 0...Double(3.5)
+                ) {
+                } onEditingChanged: { editing in
+
+                }
+                Text("Fast")
             }
         }
         .padding()

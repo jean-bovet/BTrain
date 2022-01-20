@@ -27,6 +27,16 @@ final class MarklinCommandSimulator: ObservableObject {
     
     @Published var trains = [SimulatorTrain]()
 
+    @Published var refreshSpeed = 2.0 {
+        didSet {
+            scheduleTimer()
+        }
+    }
+    
+    var refreshTimeInterval: TimeInterval {
+        return 4.0 - refreshSpeed
+    }
+    
     private var trainArrayChangesCancellable: AnyCancellable?
     private var cancellables = [AnyCancellable]()
 
@@ -96,15 +106,19 @@ final class MarklinCommandSimulator: ObservableObject {
         enabled = false
     }
     
+    func scheduleTimer() {
+        self.timer?.invalidate()
+        self.timer = Timer.scheduledTimer(withTimeInterval: refreshTimeInterval, repeats: true) { timer in
+            self.runLayout()
+        }
+    }
+    
     func register(with connection: ServerConnection) {
         connection.receiveMessageCallback = { message in
             switch(message) {
             case .go:
                 self.enabled = true
-                self.timer?.invalidate()
-                self.timer = Timer.scheduledTimer(withTimeInterval: 2.0, repeats: true) { timer in
-                    self.runLayout()
-                }
+                self.scheduleTimer()
 
             case .stop:
                 self.enabled = false
