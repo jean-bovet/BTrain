@@ -32,7 +32,7 @@ class ServerConnection {
     var receiveMessageCallback: ((Command) -> Void)? = nil
     
     func start() {
-        print("connection \(id) will start")
+        NSLog("connection \(id) will start")
         connection.stateUpdateHandler = self.stateDidChange(to:)
         setupReceive()
         connection.start(queue: .main)
@@ -43,7 +43,7 @@ class ServerConnection {
         case .waiting(let error):
             connectionDidFail(error: error)
         case .ready:
-            print("connection \(id) ready")
+            NSLog("connection \(id) ready")
         case .failed(let error):
             connectionDidFail(error: error)
         default:
@@ -64,7 +64,7 @@ class ServerConnection {
         connection.receive(minimumIncompleteLength: 1, maximumLength: MTU) { (data, _, isComplete, error) in
             if let data = data, !data.isEmpty {
                 let msg = MarklinCANMessage.decode(from: [UInt8](data))
-                print("[Server] < \(MarklinCANMessagePrinter.debugDescription(msg: msg)) - \(self.id)")
+                NSLog("[Server] < \(MarklinCANMessagePrinter.debugDescription(msg: msg)) - \(self.id)")
                 let cmd = Command.from(message: msg)
                 self.receiveMessageCallback?(cmd)
             }
@@ -83,7 +83,7 @@ class ServerConnection {
     func send(data: Data, completion: CompletionBlock? = nil) {
         self.connection.send(content: data, completion: .contentProcessed( { error in
             let msg = MarklinCANMessage.decode(from: [UInt8](data))
-            print("[Server] > \(MarklinCANMessagePrinter.debugDescription(msg: msg)) - \(self.id)")
+            NSLog("[Server] > \(MarklinCANMessagePrinter.debugDescription(msg: msg)) - \(self.id)")
 
             DispatchQueue.main.async {
                 if let error = error {
@@ -97,17 +97,17 @@ class ServerConnection {
     }
     
     func stop() {
-        print("[Server] \(id) will stop")
+        NSLog("[Server] \(id) will stop")
         stop(error: nil)
     }
         
     private func connectionDidFail(error: Error) {
-        print("[Server] \(id) did fail, error: \(error)")
+        NSLog("[Server] \(id) did fail, error: \(error)")
         stop(error: error)
     }
     
     private func connectionDidEnd() {
-        print("[Server] \(id) did end")
+        NSLog("[Server] \(id) did end")
         stop(error: nil)
     }
     

@@ -197,7 +197,6 @@ class PathFinderTests: BTTestCase {
             p1.steps.count < p2.steps.count
         }
         let shortestPath = generatedPaths[0]
-        print(shortestPath.steps.count)
         XCTAssertEqual(path!.description, shortestPath.description)
     }
     

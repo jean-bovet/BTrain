@@ -33,7 +33,8 @@ public class Client {
     }
     
     func start(onReady: @escaping OnReadyBlock, onData: @escaping OnDataBlock, onError: @escaping OnErrorBlock, onStop: @escaping OnStopBlock) {
-        print("Client started \(host) \(port)")
+        NSLog("Client started \(host) \(port)")
+        
         connection.didSucceedCallback = {
             onReady()
         }

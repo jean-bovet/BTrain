@@ -32,7 +32,7 @@ class Server {
     }
     
     func start() throws {
-        print("Server starting...")
+        NSLog("Server starting...")
         listener.stateUpdateHandler = self.stateDidChange(to:)
         listener.newConnectionHandler = self.didAccept(nwConnection:)
         listener.start(queue: .main)
@@ -41,9 +41,9 @@ class Server {
     func stateDidChange(to newState: NWListener.State) {
         switch newState {
         case .ready:
-            print("Server ready.")
+            NSLog("Server ready.")
         case .failed(let error):
-            print("Server failure, error: \(error.localizedDescription)")
+            NSLog("Server failure, error: \(error.localizedDescription)")
         default:
             break
         }
@@ -57,12 +57,12 @@ class Server {
         }
         connection.start()
         didAcceptConnection?(connection)
-        print("server did open connection \(connection.id)")
+        NSLog("server did open connection \(connection.id)")
     }
     
     private func connectionDidStop(_ connection: ServerConnection) {
         self.connectionsByID.removeValue(forKey: connection.id)
-        print("server did close connection \(connection.id)")
+        NSLog("server did close connection \(connection.id)")
     }
     
     func stop() {

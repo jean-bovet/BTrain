@@ -64,7 +64,7 @@ class ClientConnection {
                     let slice = data[start..<end]
 
                     let msg = MarklinCANMessage.decode(from: [UInt8](slice))
-                    print("[Client] < \(MarklinCANMessagePrinter.debugDescription(msg: msg))")
+                    NSLog("[Client] < \(MarklinCANMessagePrinter.debugDescription(msg: msg))")
                     self.didReceiveCallback?(msg)
                 }
             }
@@ -88,7 +88,7 @@ class ClientConnection {
         dataQueue.schedule { completion in
             self.nwConnection.send(content: data, completion: .contentProcessed( { error in
                 let msg = MarklinCANMessage.decode(from: [UInt8](data))
-                print("[Client] > \(MarklinCANMessagePrinter.debugDescription(msg: msg))")
+                NSLog("[Client] > \(MarklinCANMessagePrinter.debugDescription(msg: msg))")
 
                 DispatchQueue.main.async {
                     if let error = error {
@@ -108,18 +108,18 @@ class ClientConnection {
     }
 
     func stop() {
-        print("[Client] will stop")
+        NSLog("[Client] will stop")
         nwConnection.cancel()
     }
     
     private func connectionDidFail(error: Error) {
-        print("[Client] did fail, error: \(error)")
+        NSLog("[Client] did fail, error: \(error)")
         didFailCallback?(error)
         stop()
     }
     
     private func connectionDidEnd() {
-        print("[Client] did end")
+        NSLog("[Client] did end")
         stop()
     }
     
