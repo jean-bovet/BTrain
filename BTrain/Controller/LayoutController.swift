@@ -11,7 +11,6 @@
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 import Foundation
-import Combine
 import OrderedCollections
 
 // This class is responsible for managing all the trains in the layout,
@@ -28,14 +27,16 @@ final class LayoutController: TrainControllerDelegate {
     // The interface to the Digital Controller
     var interface: CommandInterface?
         
+    // The switchboard state, used to refresh the switchboard
+    // when certain events happen in the layout controller
+    var switchboardState: SwitchBoard.State?
+    
     // An ordered map of train controller for each available train.
     // The train controller manages a single train in the layout.
     // Note: we need an ordered map in order to have predictable outcome
     // at runtime and during unit testing.
     private var controllers = OrderedDictionary<Identifier<Train>, TrainController>()
-    
-    private var cancellables = [AnyCancellable]()
-        
+            
     init(layout: Layout, interface: CommandInterface?) {
         self.layout = layout
         self.feedbackMonitor = LayoutFeedbackMonitor(layout: layout)
@@ -238,6 +239,8 @@ final class LayoutController: TrainControllerDelegate {
                 timer.invalidate()
                 self.runControllers()
             }
+            // Redraw the switchboard so the time interval is refreshed
+            self.switchboardState?.triggerRedraw.toggle()
         })
         pausedTrainTimers[trainInstance.trainId] = timer
     }

@@ -191,35 +191,36 @@ final class BlockShape: Shape, DraggableShape, ConnectableShape {
                 let space = 12.0
                 
                 let totalWidth = blockLabelRect.width + trainLabelRect.width + space
-                
+                                
                 ctx.with {
                     let adjustHeight = maxHeight - blockLabelRect.height
-                    drawLabel(ctx: ctx, label: block.name, at: center.translatedBy(x: -totalWidth/2, y: -size.height/2 - adjustHeight/2),
+                    drawLabel(ctx: ctx, label: block.name, at: center.translatedBy(x: -totalWidth/2, y: 0), verticalOffset: -size.height/2 - adjustHeight/2,
                               color: shapeContext.color, fontSize: shapeContext.fontSize, borderColor: shapeContext.borderLabelColor, backgroundColor: shapeContext.backgroundLabelColor)
                 }
                 ctx.with {
                     let adjustHeight = maxHeight - trainLabelRect.height
-                    drawLabel(ctx: ctx, label: train.name, at: center.translatedBy(x: blockLabelRect.width + space - totalWidth/2, y: -size.height/2 - adjustHeight/2),
+                    drawLabel(ctx: ctx, label: train.name, at: center.translatedBy(x: blockLabelRect.width + space - totalWidth/2, y: 0), verticalOffset: -size.height/2 - adjustHeight/2,
                               color: shapeContext.color, fontSize: shapeContext.fontSize, borderColor: shapeContext.trainColor(train), backgroundColor: shapeContext.backgroundLabelColor)
                 }
             } else {
                 ctx.with {
-                    drawLabel(ctx: ctx, label: train.name, at: center.translatedBy(x: 0, y: -size.height/2), hAlignment: .center, color: shapeContext.color, fontSize: shapeContext.fontSize,
+                    drawLabel(ctx: ctx, label: train.name, at: center, verticalOffset: -size.height/2, hAlignment: .center, color: shapeContext.color, fontSize: shapeContext.fontSize,
                                           borderColor: shapeContext.trainColor(train), backgroundColor: shapeContext.backgroundLabelColor)
                 }
             }
         } else {
             if showBlockName {
                 ctx.with {
-                    drawLabel(ctx: ctx, label: block.name, at: center.translatedBy(x: 0, y: -size.height/2), hAlignment: .center,
+                    drawLabel(ctx: ctx, label: block.name, at: center, verticalOffset: -size.height/2, hAlignment: .center,
                               color: shapeContext.color, fontSize: shapeContext.fontSize, borderColor: shapeContext.borderLabelColor, backgroundColor: shapeContext.backgroundLabelColor)
                 }
             }
         }
         
-        if let ti = block.train, ti.timeUntilAutomaticRestart >= 0 {
+        // Display the time remaining until the train starts again
+        if let ti = block.train, ti.timeUntilAutomaticRestart > 0 {
             ctx.with {
-                drawLabel(ctx: ctx, label: "\(ti.timeUntilAutomaticRestart) s.", at: center.translatedBy(x: 0, y: size.height/2), hAlignment: .center, vAlignment: .top,
+                drawLabel(ctx: ctx, label: "\(Int(ti.timeUntilAutomaticRestart)) s.", at: center, verticalOffset: size.height/2, hAlignment: .center, vAlignment: .top,
                           color: shapeContext.color, fontSize: shapeContext.fontSize, borderColor: shapeContext.borderLabelColor, backgroundColor: shapeContext.backgroundLabelColor)
             }
         }
@@ -242,16 +243,17 @@ final class BlockShape: Shape, DraggableShape, ConnectableShape {
     }
 
     @discardableResult
-    func drawLabel(ctx: CGContext, label: String, at location: CGPoint, hAlignment: HTextAlignment = .left, vAlignment: VTextAlignment = .bottom, color: CGColor, fontSize: CGFloat, borderColor: CGColor? = nil, backgroundColor: CGColor? = nil) -> CGSize {
-        let textCenter = location.rotate(by: rotationAngle, around: rotationCenter)
+    func drawLabel(ctx: CGContext, label: String, at location: CGPoint, verticalOffset: CGFloat, hAlignment: HTextAlignment = .left, vAlignment: VTextAlignment = .bottom, color: CGColor, fontSize: CGFloat, borderColor: CGColor? = nil, backgroundColor: CGColor? = nil) -> CGSize {
 
         // Always displays the text facing downwards so it is easer to read
         let angle = rotationAngle.truncatingRemainder(dividingBy: 2 * .pi)
         if abs(angle) <= .pi/2 || abs(angle) >= 2 * .pi*3/4 {
+            let textCenter = location.translatedBy(x: 0, y: verticalOffset).rotate(by: rotationAngle, around: rotationCenter)
             return drawText(ctx: ctx, at: textCenter, vAlignment: vAlignment, hAlignment: hAlignment, rotation: angle,
                             text: label, color: color, fontSize: fontSize, borderColor: borderColor, backgroundColor: backgroundColor)
         } else {
-            return drawText(ctx: ctx, at: textCenter, vAlignment: vAlignment.inverse, hAlignment: hAlignment.inverse, rotation: angle + .pi,
+            let textCenter = location.translatedBy(x: 0, y: -verticalOffset).rotate(by: rotationAngle, around: rotationCenter)
+            return drawText(ctx: ctx, at: textCenter, vAlignment: vAlignment, hAlignment: hAlignment.inverse, rotation: angle + .pi,
                             text: label, color: color, fontSize: fontSize, borderColor: borderColor, backgroundColor: backgroundColor)
         }
     }
