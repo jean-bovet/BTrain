@@ -34,12 +34,13 @@ struct OverviewRightPanelView: View {
 struct OverviewView: View {
     
     @ObservedObject var document: LayoutDocument
-                
+    @AppStorage("showSimulator") var showSimulator: Bool = false
+
     var body: some View {
         HStack(spacing: 0) {
             VStack(spacing: 0) {
                 TrainControlListView(layout: document.layout, document: document)
-                if document.simulator.started {
+                if document.simulator.started && showSimulator {
                     SimulatorView(simulator: document.simulator)
                         .frame(height: 300)
                 }

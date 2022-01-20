@@ -52,6 +52,8 @@ struct DocumentToolbarContent: ToolbarContent {
                 CommandSelectedView(viewType: .blocks, label: "Blocks")
                 CommandSelectedView(viewType: .turnouts, label: "Turnouts")
                 CommandSelectedView(viewType: .feedback, label: "Feedback")
+                Divider()
+                CommandShowSimulatorView()
             }
         }
     }
@@ -207,5 +209,14 @@ struct CommandShowTurnoutNameView: View {
 
     var body: some View {
         Toggle("Show Turnout Name", isOn: $state)
+    }
+}
+
+struct CommandShowSimulatorView: View {
+    
+    @AppStorage("showSimulator") var state: Bool = false
+
+    var body: some View {
+        Toggle("Simulator", isOn: $state)
     }
 }
