@@ -22,9 +22,18 @@ struct TrainControlContainerView: View {
     
     var body: some View {
         VStack(alignment: .leading) {
-            TrainControlLocationView(layout: document.layout, train: train)
+            HStack {
+                VStack(alignment: .leading) {
+                    Text(train.name).bold()
+                    TrainControlLocationView(layout: document.layout, train: train)
+                    TrainControlView(document: document, train: train)
+                }
+
+                if train.iconUrlData != nil {
+                    TrainIconView(trainIconManager: document.trainIconManager, train: train, size: .medium)
+                }
+            }
             if train.blockId != nil {
-                TrainControlView(document: document, train: train)
                 TrainControlRouteView(document: document, train: train)
             }
         }

@@ -32,13 +32,7 @@ struct TrainControlListView: View {
                     .padding()
                 List {
                     ForEach(layout.trains.filter({$0.enabled}), id:\.self) { train in
-                        Text(train.name)
-                        HStack {
-                            if train.iconUrlData != nil {
-                                TrainIconView(trainIconManager: document.trainIconManager, train: train, size: .medium)
-                            }
-                            TrainControlContainerView(document: document, train: train)
-                        }
+                        TrainControlContainerView(document: document, train: train)
                         Divider()
                     }
                 }
