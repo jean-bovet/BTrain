@@ -108,6 +108,9 @@ final class Block: Element, ObservableObject {
     // The category of the block
     @Published var category: Category
     
+    // The number of seconds a train will wait in that block
+    @Published var waitingTime: TimeInterval = 10.0
+
     // Center of the block
     var center: CGPoint = .zero
     
@@ -156,7 +159,7 @@ final class Block: Element, ObservableObject {
 extension Block: Codable {
     
     enum CodingKeys: CodingKey {
-        case id, enabled, name, type, reserved, train, feedbacks,
+        case id, enabled, name, type, waitingTime, reserved, train, feedbacks,
              entryFeedbackNext, brakeFeedbackNext, stopFeedbackNext,
              entryFeedbackPrevious, brakeFeedbackPrevious, stopFeedbackPrevious,
              center, angle
@@ -173,6 +176,7 @@ extension Block: Codable {
         self.init(id: id, name: name, type: category, center: center, rotationAngle: rotationAngle)
         
         self.enabled = try container.decodeIfPresent(Bool.self, forKey: CodingKeys.enabled) ?? true
+        self.waitingTime = try container.decodeIfPresent(TimeInterval.self, forKey: CodingKeys.waitingTime) ?? 10.0
         self.reserved = try container.decodeIfPresent(Reservation.self, forKey: CodingKeys.reserved)
         self.train = try container.decodeIfPresent(TrainInstance.self, forKey: CodingKeys.train)
         self.feedbacks = try container.decode([BlockFeedback].self, forKey: CodingKeys.feedbacks)
@@ -192,6 +196,7 @@ extension Block: Codable {
         try container.encode(enabled, forKey: CodingKeys.enabled)
         try container.encode(name, forKey: CodingKeys.name)
         try container.encode(category, forKey: CodingKeys.type)
+        try container.encode(waitingTime, forKey: CodingKeys.waitingTime)
         try container.encode(reserved, forKey: CodingKeys.reserved)
         try container.encode(train, forKey: CodingKeys.train)
         try container.encode(feedbacks, forKey: CodingKeys.feedbacks)

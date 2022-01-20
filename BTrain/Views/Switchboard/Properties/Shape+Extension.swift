@@ -17,12 +17,33 @@ enum VTextAlignment {
     case center
     case top
     case bottom
+    
+    var inverse: VTextAlignment {
+        switch(self) {
+        case .center:
+            return .center
+        case .top:
+            return .bottom
+        case .bottom:
+            return .top
+        }
+    }
 }
 
 enum HTextAlignment {
     case center
     case left
     case right
+    var inverse: HTextAlignment {
+        switch(self) {
+        case .center:
+            return .center
+        case .left:
+            return .right
+        case .right:
+            return .left
+        }
+    }
 }
 
 extension Shape {

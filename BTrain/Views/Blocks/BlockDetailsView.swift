@@ -30,6 +30,15 @@ struct BlockDetailsView: View {
                 }.pickerStyle(.inline)
             }
 
+            if block.category == .station {
+                Divider()
+
+                HStack {
+                    Text("Waiting Time:")
+                    TextField("", value: $block.waitingTime, format: .number)
+                }
+            }
+            
             Divider()
             
             BlockFeedbacksView(layout: layout, block: block)

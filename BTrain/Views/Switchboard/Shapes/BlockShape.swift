@@ -204,16 +204,23 @@ final class BlockShape: Shape, DraggableShape, ConnectableShape {
                 }
             } else {
                 ctx.with {
-                    drawLabel(ctx: ctx, label: train.name, at: center.translatedBy(x: 0, y: -size.height/2), centered: true, color: shapeContext.color, fontSize: shapeContext.fontSize,
+                    drawLabel(ctx: ctx, label: train.name, at: center.translatedBy(x: 0, y: -size.height/2), hAlignment: .center, color: shapeContext.color, fontSize: shapeContext.fontSize,
                                           borderColor: shapeContext.trainColor(train), backgroundColor: shapeContext.backgroundLabelColor)
                 }
             }
         } else {
             if showBlockName {
                 ctx.with {
-                    drawLabel(ctx: ctx, label: block.name, at: center.translatedBy(x: 0, y: -size.height/2), centered: true,
+                    drawLabel(ctx: ctx, label: block.name, at: center.translatedBy(x: 0, y: -size.height/2), hAlignment: .center,
                               color: shapeContext.color, fontSize: shapeContext.fontSize, borderColor: shapeContext.borderLabelColor, backgroundColor: shapeContext.backgroundLabelColor)
                 }
+            }
+        }
+        
+        if let ti = block.train, ti.timeUntilAutomaticRestart >= 0 {
+            ctx.with {
+                drawLabel(ctx: ctx, label: "\(ti.timeUntilAutomaticRestart) s.", at: center.translatedBy(x: 0, y: size.height/2), hAlignment: .center, vAlignment: .top,
+                          color: shapeContext.color, fontSize: shapeContext.fontSize, borderColor: shapeContext.borderLabelColor, backgroundColor: shapeContext.backgroundLabelColor)
             }
         }
         
@@ -235,16 +242,16 @@ final class BlockShape: Shape, DraggableShape, ConnectableShape {
     }
 
     @discardableResult
-    func drawLabel(ctx: CGContext, label: String, at location: CGPoint, centered: Bool = false, color: CGColor, fontSize: CGFloat, borderColor: CGColor? = nil, backgroundColor: CGColor? = nil) -> CGSize {
+    func drawLabel(ctx: CGContext, label: String, at location: CGPoint, hAlignment: HTextAlignment = .left, vAlignment: VTextAlignment = .bottom, color: CGColor, fontSize: CGFloat, borderColor: CGColor? = nil, backgroundColor: CGColor? = nil) -> CGSize {
         let textCenter = location.rotate(by: rotationAngle, around: rotationCenter)
 
         // Always displays the text facing downwards so it is easer to read
         let angle = rotationAngle.truncatingRemainder(dividingBy: 2 * .pi)
         if abs(angle) <= .pi/2 || abs(angle) >= 2 * .pi*3/4 {
-            return drawText(ctx: ctx, at: textCenter, vAlignment: .bottom, hAlignment: centered ? .center : .left, rotation: angle,
+            return drawText(ctx: ctx, at: textCenter, vAlignment: vAlignment, hAlignment: hAlignment, rotation: angle,
                             text: label, color: color, fontSize: fontSize, borderColor: borderColor, backgroundColor: backgroundColor)
         } else {
-            return drawText(ctx: ctx, at: textCenter, vAlignment: .top, hAlignment: centered ? .center : .right, rotation: angle + .pi,
+            return drawText(ctx: ctx, at: textCenter, vAlignment: vAlignment.inverse, hAlignment: hAlignment.inverse, rotation: angle + .pi,
                             text: label, color: color, fontSize: fontSize, borderColor: borderColor, backgroundColor: backgroundColor)
         }
     }

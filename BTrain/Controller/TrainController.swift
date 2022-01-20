@@ -238,11 +238,12 @@ final class TrainController {
                     stopTrigger = .init(stopCompletely: true)
                     return .processed
                 } else {
-                    debug("Schedule timer to restart train \(train) in \(route.stationWaitDuration) seconds")
+                    let delay = currentBlock.waitingTime
+                    debug("Schedule timer to restart train \(train) in \(delay) seconds")
                     
                     // The layout controller is going to schedule the appropriate timer given the `restartDelayTime` value
                     if let ti = currentBlock.train {
-                        ti.timeUntilAutomaticRestart = route.stationWaitDuration
+                        ti.timeUntilAutomaticRestart = delay
                         delegate?.scheduleRestartTimer(trainInstance: ti)
                     }
                     stopTrigger = .init(stopCompletely: false)
@@ -253,6 +254,14 @@ final class TrainController {
                                 
         return .none
     }
+    
+//    func waitingTime(route: Route, train: Train) -> TimeInterval {
+//        if let step = route.steps.element(at: train.routeIndex), let time = step.waitingTime {
+//            return time
+//        } else {
+//            return 10.0 // Default time if nothing is specified
+//        }
+//    }
     
     private func handleManualRouteStop(route: Route) throws -> Result {
         guard let currentBlock = layout.currentBlock(train: train) else {

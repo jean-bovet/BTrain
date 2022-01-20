@@ -28,7 +28,7 @@ struct RouteView: View {
                 TableColumn("Block") { step in
                     Picker("Block:", selection: step.blockId) {
                         ForEach(layout.blockMap.values, id:\.self) { block in
-                            Text(block.id.uuid).tag(block.id as Identifier<Block>)
+                            Text("\(block.name) — \(block.category.description)").tag(block.id as Identifier<Block>)
                         }
                     }.labelsHidden()
                 }
@@ -42,9 +42,17 @@ struct RouteView: View {
                     .fixedSize()
                     .labelsHidden()
                 }
+                
+                TableColumn("Wait Time") { step in
+                    if let block = layout.block(for: step.blockId.wrappedValue)  {
+                        TextField("", value: step.waitingTime, format: .number)
+                            .disabled(block.category != .station)
+                    }
+                }
+
             } rows: {
-                ForEach($route.steps) { train in
-                    TableRow(train)
+                ForEach($route.steps) { step in
+                    TableRow(step)
                 }
             }
             

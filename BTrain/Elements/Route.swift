@@ -58,6 +58,10 @@ final class Route: Element, ObservableObject {
         // The direction of travel of the train within that block
         var direction: Direction
         
+        // The number of seconds a train will wait in that block
+        // If nil, the block waitingTime is used instead.
+        var waitingTime: TimeInterval?
+        
         var description: String {
             "\(blockId)-\(direction)"
         }
@@ -81,11 +85,7 @@ final class Route: Element, ObservableObject {
     
     // The list of steps for this route
     @Published var steps = [Step]()
-        
-    // The number of seconds a train should wait in a station before
-    // starting again when using an automatic route.
-    var stationWaitDuration: TimeInterval = 2.0
-    
+            
     convenience init(uuid: String = UUID().uuidString, automatic: Bool = false) {
         self.init(id: Identifier(uuid: uuid), automatic: automatic)
     }
