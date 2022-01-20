@@ -37,7 +37,7 @@ struct TrainControlRouteView: View {
            let train = layout.train(for: train.id) {
             for (index, step) in route.steps.enumerated() {
                 if !text.isEmpty {
-                    text += " | "
+                    text += "→"
                 }
                 if let block = layout.block(for: step.blockId) {
                     text += "\(block.name)"
@@ -47,7 +47,7 @@ struct TrainControlRouteView: View {
                 if train.routeIndex == index {
                     // Indicate the block in the route where the train
                     // is currently located
-                    text += "*"
+                    text += "􀼮"
                 }
             }
         }
