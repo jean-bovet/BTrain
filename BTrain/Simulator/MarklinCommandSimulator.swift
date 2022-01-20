@@ -13,6 +13,7 @@
 import Foundation
 import Gzip
 import Combine
+import SwiftUI
 
 // This class simulates the Marklin Central Station 3 in order for BTrain
 // to work offline. It does so by processing the most common commands and
@@ -27,7 +28,7 @@ final class MarklinCommandSimulator: ObservableObject {
     
     @Published var trains = [SimulatorTrain]()
 
-    @Published var refreshSpeed = 2.0 {
+    @AppStorage("simulatorRefreshSpeed") var refreshSpeed = 2.0 {
         didSet {
             scheduleTimer()
         }
@@ -265,7 +266,7 @@ final class MarklinCommandSimulator: ObservableObject {
             return
         }
                        
-        BTLogger.debug("[Simulator] Simulating \(route)")
+        BTLogger.debug("[Simulator] Simulating route \(route.name) for \(train.name)")
 
         if try !layout.atEndOfBlock(train: train)  {
             let naturalDirection = block.train?.direction == .next
@@ -277,6 +278,15 @@ final class MarklinCommandSimulator: ObservableObject {
         } else if let nextBlock = layout.nextBlock(train: train), try layout.atEndOfBlock(train: train) {
             let (feedback, _) = try layout.feedbackTriggeringTransition(from: block, to: nextBlock)
             if let feedback = feedback {
+                // Ensure all the feedbacks of the current block is turned off, otherwise there will be
+                // an unexpected feedback error in the layout. This happens when there is less than 250ms
+                // between the time the feedback was triggered (because the feedback gets reset after 250ms)
+                for bf in block.feedbacks {
+                    if let feedback = layout.feedback(for: bf.feedbackId) {
+                        setFeedback(feedback: feedback, value: 0)
+                    }
+                }
+                
                 BTLogger.debug("[Simulator] Trigger feedback \(feedback.name) to move train \(train.name) to next block \(nextBlock.name)")
                 triggerFeedback(feedback: feedback, value: 1)
             }
