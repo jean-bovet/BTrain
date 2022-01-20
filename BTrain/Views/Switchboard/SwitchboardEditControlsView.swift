@@ -52,7 +52,7 @@ struct SwitchboardEditControlsView: View {
                 Spacer()
                 
                 Button("Done") {
-                    switchboard.state.editable = false
+                    switchboard.doneEditing()
                 }
             }.sheet(isPresented: $newBlockSheet) {
                 NewBlockSheet(layout: layout)

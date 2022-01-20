@@ -101,4 +101,10 @@ final class SwitchBoard: ObservableObject {
             provider.remove(turnout)
         }
     }
+    
+    func doneEditing() {
+        provider.shapes.forEach { $0.selected = false }
+        state.selectedShape = nil
+        state.editable = false
+    }
 }
