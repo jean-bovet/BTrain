@@ -44,7 +44,7 @@ struct TrainControlRouteView: View {
                 } else {
                     text += "\(step.blockId)"
                 }
-                if train.routeIndex == index {
+                if train.routeStepIndex == index {
                     // Indicate the block in the route where the train
                     // is currently located
                     text += "􀼮"

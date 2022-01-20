@@ -35,6 +35,7 @@ class SimulatorViewTests: RootViewTests {
 
         // Ensure all the names of the train match.
         let sut = OverviewView(document: doc)
+        sut.showSimulator = true
         let simulatorView = try sut.inspect().find(SimulatorView.self)
         let forEachView = try simulatorView.find(ViewType.ForEach.self)
         XCTAssertEqual(t1.name, try forEachView.hStack(0).text(0).string())

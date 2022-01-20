@@ -47,11 +47,8 @@ final class Train: Element, ObservableObject {
     // The route this train is associated with
     @Published var routeId: Identifier<Route>?
     
-    // Index of the current block in the route
-    // This is important to use an index that is incremented
-    // because a route can re-use the same block several times
-    // (or the same departing block is also the arrival block)
-    @Published var routeIndex = 0
+    // Index of the current route step that the train is located in.
+    @Published var routeStepIndex = 0
 
     enum Schedule {
         // The train is stopped and cannot be started again
@@ -123,7 +120,7 @@ extension Train: Codable {
         self.speed.kph = 0 // Always reset with speed to 0 when restoring from disk
         self.directionForward = try container.decodeIfPresent(Bool.self, forKey: CodingKeys.direction) ?? true
         self.routeId = try container.decodeIfPresent(Identifier<Route>.self, forKey: CodingKeys.route)
-        self.routeIndex = try container.decode(Int.self, forKey: CodingKeys.routeIndex)
+        self.routeStepIndex = try container.decode(Int.self, forKey: CodingKeys.routeIndex)
         self.blockId = try container.decodeIfPresent(Identifier<Block>.self, forKey: CodingKeys.block)
         self.position = try container.decode(Int.self, forKey: CodingKeys.position)
     }
@@ -139,7 +136,7 @@ extension Train: Codable {
         try container.encode(speed, forKey: CodingKeys.speed)
         try container.encode(directionForward, forKey: CodingKeys.direction)
         try container.encode(routeId, forKey: CodingKeys.route)
-        try container.encode(routeIndex, forKey: CodingKeys.routeIndex)
+        try container.encode(routeStepIndex, forKey: CodingKeys.routeIndex)
         try container.encode(blockId, forKey: CodingKeys.block)
         try container.encode(position, forKey: CodingKeys.position)
     }

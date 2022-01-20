@@ -148,7 +148,7 @@ final class TrainController {
             do {
                 try layout.reserve(train: train.id, fromBlock: currentBlock.id, toBlock: nextBlock.id, direction: currentBlock.train!.direction)
                 BTLogger.debug("Start train \(train) because the next block \(nextBlock) is free or reserved for this train")
-                startRouteIndex = train.routeIndex
+                startRouteIndex = train.routeStepIndex
                 try layout.setTrain(train, speed: LayoutFactory.DefaultSpeed)
                 train.state = .running
                 return .processed
@@ -207,13 +207,13 @@ final class TrainController {
         }
         
         // The train is not in the first step of the route
-        guard train.routeIndex != startRouteIndex else {
+        guard train.routeStepIndex != startRouteIndex else {
             return .none
         }
         
         switch(route.automaticMode) {
         case .once(destination: let destination):
-            if train.routeIndex == route.steps.count - 1 {
+            if train.routeStepIndex == route.steps.count - 1 {
                 // Double-check that the train is located in the block specified by the destination.
                 // This should never fail.
                 guard currentBlock.id == destination.blockId else {
@@ -273,11 +273,11 @@ final class TrainController {
         }
         
         // The train is not in the first step of the route
-        guard train.routeIndex != startRouteIndex else {
+        guard train.routeStepIndex != startRouteIndex else {
             return .none
         }
         
-        if train.routeIndex == route.steps.count - 1 {
+        if train.routeStepIndex == route.steps.count - 1 {
             debug("Train \(train) will stop here (\(currentBlock)) because it has reached the end of the route")
             stopTrigger = .init(stopCompletely: true)
             return .processed
@@ -447,7 +447,7 @@ final class TrainController {
         try layout.setTrain(train.id, toBlock: nextBlock.id, position: .custom(value: position), direction: direction)
         
         // Increment the train route index
-        try layout.setTrain(train, routeIndex: train.routeIndex + 1)
+        try layout.setTrain(train, routeIndex: train.routeStepIndex + 1)
                 
         // Reserve the block ahead. If it is not possible, then stop the train in this block
         if tryReserveNextBlocks(direction: direction) == .none {

@@ -98,8 +98,8 @@ extension Layout {
 
     func nextBlock(train: Train) -> Block? {
         if let route = route(for: train.routeId, trainId: train.id) {
-            if train.routeIndex + 1 < route.steps.count {
-                let nextBlockId = route.steps[train.routeIndex+1].blockId
+            if train.routeStepIndex + 1 < route.steps.count {
+                let nextBlockId = route.steps[train.routeStepIndex+1].blockId
                 return block(for: nextBlockId)
             } else {
                 return nil

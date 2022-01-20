@@ -39,7 +39,7 @@ class SwitchboardRenderingTests: XCTestCase {
       
         let block = provider.blockShapes[0]
         
-        block.drawText(ctx: nsContext.cgContext, center: .zero, text: "Hello", color: .black, fontSize: 12.0)
+        block.drawText(ctx: nsContext.cgContext, at: .zero, text: "Hello", color: .black, fontSize: 12.0)
     }
 
 }

@@ -58,7 +58,7 @@ extension Layout {
             try setTrain(train.id, toBlock: block.id, position: startAtEndOfBlock ? .end : .start, direction: .next)
 
             train.routeId = route.id
-            train.routeIndex = 0
+            train.routeStepIndex = 0
             train.speed.kph = 0
         }
     }

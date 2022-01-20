@@ -242,15 +242,15 @@ final class LayoutTrainHandler: LayoutTrainHandling {
         // route (if route.automatic) when one of the blocks is cleared.
         if !route.steps.isEmpty {
             // Check to make sure the train is somewhere along the route
-            train.routeIndex = -1
+            train.routeStepIndex = -1
             for (index, step) in route.steps.enumerated() {
                 if train.blockId == step.blockId {
-                    train.routeIndex = index
+                    train.routeStepIndex = index
                     break
                 }
             }
                                  
-            guard train.routeIndex >= 0 else {
+            guard train.routeStepIndex >= 0 else {
                 throw LayoutError.trainNotFoundInRoute(train: train, route: route)
             }
         }
@@ -290,7 +290,7 @@ final class LayoutTrainHandler: LayoutTrainHandling {
         guard let train = layout.train(for: train.id) else {
             throw LayoutError.trainNotFound(trainId: train.id)
         }
-        train.routeIndex = routeIndex
+        train.routeStepIndex = routeIndex
     }
 
     func setTrain(_ trainId: Identifier<Train>, toBlock toBlockId: Identifier<Block>, position: Position = .start, direction: Direction) throws {

@@ -260,7 +260,7 @@ final class LayoutRouteParser {
         } else {
             let train = Train(uuid: uuid)
             train.position = feedbackIndex
-            train.routeIndex = route.steps.count
+            train.routeStepIndex = route.steps.count
             train.speed = .init(kph: speed, decoderType: .MFX)
             train.routeId = route.id
             block.train = Block.TrainInstance(train.id, .next)

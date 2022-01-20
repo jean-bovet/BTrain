@@ -109,11 +109,11 @@ extension Layout {
         let pf = PathFinder(layout: self)
         if let path = try pf.path(trainId: train.id, from: currentBlock, destination: destination, direction: trainInstance.direction, settings: settings) {
             route.steps = path.steps
-            train.routeIndex = 0
+            train.routeStepIndex = 0
             return (true, route)
         } else {
             route.steps.removeAll()
-            train.routeIndex = 0
+            train.routeStepIndex = 0
             return (false, route)
         }
     }

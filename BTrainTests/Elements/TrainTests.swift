@@ -25,7 +25,7 @@ class TrainTests: XCTestCase {
         t1.name = "Rail 2000"
         t1.address = 0x4001
         t1.speed.kph = 100
-        t1.routeIndex = 1
+        t1.routeStepIndex = 1
         t1.position = 7
         t1.blockId = Identifier<Block>(uuid: "111")
         t1.routeId = Identifier<Route>(uuid: "1212")
@@ -42,7 +42,7 @@ class TrainTests: XCTestCase {
         XCTAssertEqual(t1.speed.decoderType, t2.speed.decoderType)
         XCTAssertEqual(t1.speed.kph, 100)
         XCTAssertEqual(t2.speed.kph, 0) // When decoding a speed, it always is initialized back to 0 for security reason
-        XCTAssertEqual(t1.routeIndex, t2.routeIndex)
+        XCTAssertEqual(t1.routeStepIndex, t2.routeStepIndex)
         XCTAssertEqual(t1.position, t2.position)
         XCTAssertEqual(t1.blockId, t2.blockId)
         XCTAssertEqual(t1.routeId, t2.routeId)

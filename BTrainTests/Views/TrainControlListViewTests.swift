@@ -28,13 +28,13 @@ class TrainControlListViewTests: RootViewTests {
         let trainView = try sut.inspect().find(TrainControlContainerView.self)
         
         // Train Location
-        let trainLocationView = try trainView.vStack().view(TrainControlLocationView.self, 0)
+        let trainLocationView = try trainView.vStack().hStack(0).vStack(0).view(TrainControlLocationView.self, 1)
         
         let locationText = try trainLocationView.vStack().hStack(0).text(0)
         XCTAssertEqual(try locationText.string(), "Location: b1")
                 
         // Train Controls
-        let trainControlsView = try trainView.vStack().tupleView(1).view(TrainControlView.self, 0)
+        let trainControlsView = try trainView.vStack().hStack(0).vStack(0).view(TrainControlView.self, 2)
                 
         let trainControlSpeedView = try trainControlsView.find(TrainControlSpeedView.self)
         
@@ -43,7 +43,7 @@ class TrainControlListViewTests: RootViewTests {
         XCTAssertEqual(try trainControlSpeedView.hStack().text(1).string(), "78 km/h")
 
         // TrainRouteView
-        let trainRouteView = try trainView.vStack().tupleView(1).view(TrainControlRouteView.self, 1)
+        let trainRouteView = try trainView.vStack().view(TrainControlRouteView.self, 1)
         let text = try trainRouteView.find(ViewType.Text.self)
         XCTAssertEqual(try text.string(), "Automatic")
     }
