@@ -13,17 +13,21 @@
 import Foundation
 import Quartz
 
-enum TextAlignment {
+enum VTextAlignment {
     case center
     case top
     case bottom
 }
 
+enum HTextAlignment {
+    case center
+    case left
+    case right
+}
+
 extension Shape {
         
-    @discardableResult
-    func drawText(ctx: CGContext, center: CGPoint, vAlignment: TextAlignment = .center, rotation: CGFloat = 0, text: String, color: CGColor, fontSize: CGFloat) -> CGSize {
-
+    func prepareText(ctx: CGContext, text: String, color: CGColor, fontSize: CGFloat) -> (CTLine, CGRect) {
         // You can use the Font Book app to find the name
         let fontName = "Helvetica" as CFString
         let font = CTFontCreateWithName(fontName, fontSize, nil)
@@ -39,10 +43,23 @@ extension Shape {
         let line = CTLineCreateWithAttributedString(attributedString)
         let stringRect = CTLineGetImageBounds(line, ctx)
 
+        return (line, stringRect)
+    }
+    
+    @discardableResult
+    func drawText(ctx: CGContext, at location: CGPoint,
+                  vAlignment: VTextAlignment = .center,
+                  hAlignment: HTextAlignment = .center,
+                  rotation: CGFloat = 0,
+                  text: String, color: CGColor, fontSize: CGFloat,
+                  borderColor: CGColor? = nil, backgroundColor: CGColor? = nil) -> CGSize {
+
+        let (line, stringRect) = prepareText(ctx: ctx, text: text, color: color, fontSize: fontSize)
+        
         // Apply rotation angle
-        ctx.translateBy(x: center.x, y: center.y)
+        ctx.translateBy(x: location.x, y: location.y)
         ctx.rotate(by: rotation)
-        ctx.translateBy(x: -center.x, y: -center.y)
+        ctx.translateBy(x: -location.x, y: -location.y)
 
         // Flip the text
         let transform = CGAffineTransform.identity
@@ -51,21 +68,39 @@ extension Shape {
 
         ctx.textMatrix = transform
 
-        var p = CGPoint(x: center.x - stringRect.width / 2,
-                        y: center.y + stringRect.height / 2)
-
+        var p = location
+        
         switch(vAlignment) {
         case .center:
-            break
-        case .top:
             p.y = p.y - stringRect.height/2
+        case .top:
+            p.y = p.y + stringRect.height
         case .bottom:
-            p.y = p.y + stringRect.height/2
+            p.y = p.y + 0
         }
 
+        switch(hAlignment) {
+        case .center:
+            p.x = p.x - stringRect.width/2
+        case .left:
+            p.x = p.x + 0
+        case .right:
+            p.x = p.x - stringRect.width
+        }
+                
+        if let borderColor = borderColor, let backgroundColor = backgroundColor {
+            let sr = CGRect(x: p.x, y: p.y - stringRect.height, width: stringRect.width + 2, height: stringRect.height).insetBy(dx: -3, dy: -3)
+
+            ctx.setFillColor(backgroundColor)
+            ctx.fill(sr)
+            
+            ctx.setStrokeColor(borderColor)
+            ctx.stroke(sr)
+        }
+        
         ctx.textPosition = p
         CTLineDraw(line, ctx)
-        
+                
         return stringRect.size
     }
     

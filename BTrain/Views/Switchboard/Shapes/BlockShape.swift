@@ -157,19 +157,13 @@ final class BlockShape: Shape, DraggableShape, ConnectableShape {
         if block.category == .station {
             ctx.with {
                 ctx.addPath(path)
-                ctx.setFillColor(shapeContext.backgroundStationBlock)
+                ctx.setFillColor(shapeContext.backgroundStationBlockColor)
                 ctx.fillPath()
             }
         }
         
         drawArrows(ctx: ctx)
 
-        if let train = train {
-            ctx.with {
-                drawLabel(ctx: ctx, label: train.name, at: center.translatedBy(x: 0, y: size.height), color: shapeContext.color, fontSize: shapeContext.fontSize)
-            }
-        }
-        
         ctx.with {
             ctx.addPath(trackPath)
             ctx.setStrokeColor(reserved != nil ? shapeContext.reservedColor : shapeContext.color)
@@ -186,9 +180,39 @@ final class BlockShape: Shape, DraggableShape, ConnectableShape {
     }
         
     func drawContent(ctx: CGContext, shapeContext: ShapeContext) {
-        if shapeContext.showBlockName {
-            ctx.with {
-                drawLabel(ctx: ctx, label: block.name, at: center.translatedBy(x: 0, y: -size.height/2), color: shapeContext.color, fontSize: shapeContext.fontSize)
+        if let train = train {
+            if shapeContext.showBlockName {
+                let (_, blockLabelRect) = prepareText(ctx: ctx, text: block.name, color: shapeContext.color, fontSize: shapeContext.fontSize)
+                let (_, trainLabelRect) = prepareText(ctx: ctx, text: train.name, color: shapeContext.color, fontSize: shapeContext.fontSize)
+
+                let maxHeight = max(blockLabelRect.height, trainLabelRect.height)
+                
+                let space = 12.0
+                
+                let totalWidth = blockLabelRect.width + trainLabelRect.width + space
+                
+                ctx.with {
+                    let adjustHeight = maxHeight - blockLabelRect.height
+                    drawLabel(ctx: ctx, label: block.name, at: center.translatedBy(x: -totalWidth/2, y: -size.height/2 - adjustHeight/2),
+                              color: shapeContext.color, fontSize: shapeContext.fontSize, borderColor: shapeContext.borderLabelColor, backgroundColor: shapeContext.backgroundLabelColor)
+                }
+                ctx.with {
+                    let adjustHeight = maxHeight - trainLabelRect.height
+                    drawLabel(ctx: ctx, label: train.name, at: center.translatedBy(x: blockLabelRect.width + space - totalWidth/2, y: -size.height/2 - adjustHeight/2),
+                              color: shapeContext.color, fontSize: shapeContext.fontSize, borderColor: shapeContext.trainColor(train), backgroundColor: shapeContext.backgroundLabelColor)
+                }
+            } else {
+                ctx.with {
+                    drawLabel(ctx: ctx, label: train.name, at: center.translatedBy(x: 0, y: -size.height/2), centered: true, color: shapeContext.color, fontSize: shapeContext.fontSize,
+                                          borderColor: shapeContext.trainColor(train), backgroundColor: shapeContext.backgroundLabelColor)
+                }
+            }
+        } else {
+            if shapeContext.showBlockName {
+                ctx.with {
+                    drawLabel(ctx: ctx, label: block.name, at: center.translatedBy(x: 0, y: -size.height/2), centered: true,
+                              color: shapeContext.color, fontSize: shapeContext.fontSize, borderColor: shapeContext.borderLabelColor, backgroundColor: shapeContext.backgroundLabelColor)
+                }
             }
         }
         
@@ -209,26 +233,25 @@ final class BlockShape: Shape, DraggableShape, ConnectableShape {
         }
     }
 
-    func inside(_ point: CGPoint) -> Bool {
-        return path.contains(point)
-    }
-
-}
-
-extension RotableShape {
-    func drawLabel(ctx: CGContext, label: String, at location: CGPoint, color: CGColor, fontSize: CGFloat) {
+    @discardableResult
+    func drawLabel(ctx: CGContext, label: String, at location: CGPoint, centered: Bool = false, color: CGColor, fontSize: CGFloat, borderColor: CGColor? = nil, backgroundColor: CGColor? = nil) -> CGSize {
         let textCenter = location.rotate(by: rotationAngle, around: rotationCenter)
 
         // Always displays the text facing downwards so it is easer to read
         let angle = rotationAngle.truncatingRemainder(dividingBy: 2 * .pi)
         if abs(angle) <= .pi/2 || abs(angle) >= 2 * .pi*3/4 {
-            drawText(ctx: ctx, center: textCenter, vAlignment: .top, rotation: angle,
-                     text: label, color: color, fontSize: fontSize)
+            return drawText(ctx: ctx, at: textCenter, vAlignment: .bottom, hAlignment: centered ? .center : .left, rotation: angle,
+                            text: label, color: color, fontSize: fontSize, borderColor: borderColor, backgroundColor: backgroundColor)
         } else {
-            drawText(ctx: ctx, center: textCenter, vAlignment: .bottom, rotation: angle + .pi,
-                     text: label, color: color, fontSize: fontSize)
+            return drawText(ctx: ctx, at: textCenter, vAlignment: .top, hAlignment: centered ? .center : .right, rotation: angle + .pi,
+                            text: label, color: color, fontSize: fontSize, borderColor: borderColor, backgroundColor: backgroundColor)
         }
     }
+
+    func inside(_ point: CGPoint) -> Bool {
+        return path.contains(point)
+    }
+
 }
 
 // MARK: Arrows

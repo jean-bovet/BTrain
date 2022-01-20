@@ -38,11 +38,27 @@ final class ShapeContext {
         NSColor.red.cgColor
     }
 
-    var backgroundStationBlock: CGColor {
+    var backgroundStationBlockColor: CGColor {
         if darkMode {
             return NSColor.darkGray.cgColor
         } else {
             return NSColor.lightGray.cgColor.copy(alpha: 0.5)!
+        }
+    }
+    
+    var backgroundLabelColor: CGColor {
+        if darkMode {
+            return NSColor.darkGray.cgColor
+        } else {
+            return NSColor.white.cgColor
+        }
+    }
+
+    var borderLabelColor: CGColor {
+        if darkMode {
+            return NSColor.lightGray.cgColor
+        } else {
+            return NSColor.black.cgColor
         }
     }
 
