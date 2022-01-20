@@ -30,14 +30,16 @@ struct SimulatorView: View {
                     .foregroundColor(.white)
                     .clipShape(Capsule())
             }
-            VStack {
-                ForEach(simulator.trains, id:\.self) { train in
-                    HStack {
-                        Text(train.train.name)
-                        SimulatorTrainControlView(simulator: simulator, train: train, speed: train.speed)
+            ScrollView {
+                VStack {
+                    ForEach(simulator.trains, id:\.self) { train in
+                        HStack {
+                            Text(train.train.name)
+                            SimulatorTrainControlView(simulator: simulator, train: train, speed: train.speed)
+                        }
                     }
-                }
-            }.disabled(!simulator.enabled)
+                }.disabled(!simulator.enabled)
+            }
         }
         .padding()
     }

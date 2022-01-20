@@ -41,6 +41,7 @@ struct OverviewView: View {
                 TrainControlListView(layout: document.layout, document: document)
                 if document.simulator.started {
                     SimulatorView(simulator: document.simulator)
+                        .frame(height: 300)
                 }
             }
             .frame(width: 500)
