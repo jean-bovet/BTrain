@@ -250,16 +250,20 @@ final class MarklinCommandSimulator: ObservableObject {
         guard let block = layout.currentBlock(train: train) else {
             return
         }
-                        
+                       
+        BTLogger.debug("[Simulator] Simulating \(route)")
+
         if try !layout.atEndOfBlock(train: train)  {
             let naturalDirection = block.train?.direction == .next
             let feedback = block.feedbacks[naturalDirection ? train.position : train.position - 1]
             if let feedback = layout.feedback(for: feedback.feedbackId) {
+                BTLogger.debug("[Simulator] Trigger feedback \(feedback.name) to move train \(train.name) within \(block.name)")
                 triggerFeedback(feedback: feedback, value: 1)
             }
         } else if let nextBlock = layout.nextBlock(train: train), try layout.atEndOfBlock(train: train) {
             let (feedback, _) = try layout.feedbackTriggeringTransition(from: block, to: nextBlock)
             if let feedback = feedback {
+                BTLogger.debug("[Simulator] Trigger feedback \(feedback.name) to move train \(train.name) to next block \(nextBlock.name)")
                 triggerFeedback(feedback: feedback, value: 1)
             }
         } else {

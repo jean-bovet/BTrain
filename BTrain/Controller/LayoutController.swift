@@ -70,6 +70,8 @@ final class LayoutController: TrainControllerDelegate {
     }
     
     func run() -> TrainController.Result {
+        BTLogger.debug("LayoutController::run()")
+        
         // Process the latest changes
         updateControllers()
                 

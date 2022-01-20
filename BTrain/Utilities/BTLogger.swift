@@ -14,6 +14,10 @@ import Foundation
 
 final class BTLogger {
     
+    static func print(_ msg: String) {
+        NSLog(msg)
+    }
+    
     static func error(_ msg: String) {
         print("[Error] \(msg)")
     }
