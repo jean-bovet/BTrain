@@ -180,8 +180,9 @@ final class BlockShape: Shape, DraggableShape, ConnectableShape {
     }
         
     func drawContent(ctx: CGContext, shapeContext: ShapeContext) {
+        let showBlockName = shapeContext.showBlockName || block.category == .station && shapeContext.showStationName
         if let train = train {
-            if shapeContext.showBlockName {
+            if showBlockName {
                 let (_, blockLabelRect) = prepareText(ctx: ctx, text: block.name, color: shapeContext.color, fontSize: shapeContext.fontSize)
                 let (_, trainLabelRect) = prepareText(ctx: ctx, text: train.name, color: shapeContext.color, fontSize: shapeContext.fontSize)
 
@@ -208,7 +209,7 @@ final class BlockShape: Shape, DraggableShape, ConnectableShape {
                 }
             }
         } else {
-            if shapeContext.showBlockName {
+            if showBlockName {
                 ctx.with {
                     drawLabel(ctx: ctx, label: block.name, at: center.translatedBy(x: 0, y: -size.height/2), centered: true,
                               color: shapeContext.color, fontSize: shapeContext.fontSize, borderColor: shapeContext.borderLabelColor, backgroundColor: shapeContext.backgroundLabelColor)

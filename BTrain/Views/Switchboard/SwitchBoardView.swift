@@ -38,6 +38,7 @@ struct SwitchBoardView: View {
     // in order to force SwitfUI to re-draw the view if one of them change.
     func draw(context: GraphicsContext, darkMode: Bool, coordinator: LayoutController, layout: Layout, state: SwitchBoard.State) {
         switchboard.context.showBlockName = state.showBlockName
+        switchboard.context.showStationName = state.showStationName
         switchboard.context.showTurnoutName = state.showTurnoutName
         switchboard.context.fontSize = fontSize
         switchboard.context.darkMode = darkMode

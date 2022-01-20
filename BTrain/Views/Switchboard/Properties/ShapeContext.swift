@@ -18,6 +18,7 @@ final class ShapeContext {
             
     var darkMode = false
     var showBlockName = false
+    var showStationName = false
     var showTurnoutName = false
     
     var fontSize: CGFloat = 12.0

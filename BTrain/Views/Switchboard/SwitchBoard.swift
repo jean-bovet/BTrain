@@ -21,6 +21,7 @@ final class SwitchBoard: ObservableObject {
         @AppStorage("snapToGrid") var snapToGrid: Bool = true
 
         @AppStorage("showBlockName") var showBlockName: Bool = false
+        @AppStorage("showStationName") var showStationName: Bool = false
         @AppStorage("showTurnoutName") var showTurnoutName: Bool = false
 
         @Published var triggerRedraw: Bool = false // Used to trigger a redraw of the switchboard

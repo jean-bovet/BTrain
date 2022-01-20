@@ -40,6 +40,7 @@ struct DocumentToolbarContent: ToolbarContent {
                     Divider()
 
                     CommandShowBlockNameView()
+                    CommandShowStationNameView()
                     CommandShowTurnoutNameView()
                 }.disabled(document.selectedView != .overview)
             }
@@ -188,6 +189,15 @@ struct CommandShowBlockNameView: View {
     
     var body: some View {
         Toggle("Show Block Name", isOn: $state)
+    }
+}
+
+struct CommandShowStationNameView: View {
+    
+    @AppStorage("showStationName") var state: Bool = false
+    
+    var body: some View {
+        Toggle("Show Station Name", isOn: $state)
     }
 }
 
