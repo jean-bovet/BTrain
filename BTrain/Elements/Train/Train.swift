@@ -65,13 +65,11 @@ final class Train: Element, ObservableObject {
     // but can be changed for long train that can span more than
     // one block. In the future, when length of blocks and trains are
     // taken into consideration, this will become a more dynamic property.
-    // TODO: persist
     var numberOfTrailingReservedBlocks = 0
     
     // The maximum number of blocks that should be reserved ahead of the train.
     // The actual number of blocks might be smaller if a block cannot be reserved.
     // The default is 1.
-    // TODO: persist
     var maxNumberOfLeadingReservedBlocks = 1
     
     enum Schedule {
@@ -129,7 +127,7 @@ final class Train: Element, ObservableObject {
 extension Train: Codable {
     
     enum CodingKeys: CodingKey {
-      case id, enabled, name, iconUrlData, address, speed, decoder, direction, route, routeIndex, block, position
+      case id, enabled, name, iconUrlData, address, speed, decoder, direction, route, routeIndex, block, position, trailingBlocks, maxLeadingBlocks
     }
 
     convenience init(from decoder: Decoder) throws {
@@ -147,6 +145,8 @@ extension Train: Codable {
         self.routeStepIndex = try container.decode(Int.self, forKey: CodingKeys.routeIndex)
         self.blockId = try container.decodeIfPresent(Identifier<Block>.self, forKey: CodingKeys.block)
         self.position = try container.decode(Int.self, forKey: CodingKeys.position)
+        self.numberOfTrailingReservedBlocks = try container.decodeIfPresent(Int.self, forKey: CodingKeys.trailingBlocks) ?? 0
+        self.maxNumberOfLeadingReservedBlocks = try container.decodeIfPresent(Int.self, forKey: CodingKeys.maxLeadingBlocks) ?? 1
     }
 
     func encode(to encoder: Encoder) throws {
@@ -163,6 +163,8 @@ extension Train: Codable {
         try container.encode(routeStepIndex, forKey: CodingKeys.routeIndex)
         try container.encode(blockId, forKey: CodingKeys.block)
         try container.encode(position, forKey: CodingKeys.position)
+        try container.encode(numberOfTrailingReservedBlocks, forKey: CodingKeys.trailingBlocks)
+        try container.encode(maxNumberOfLeadingReservedBlocks, forKey: CodingKeys.maxLeadingBlocks)
     }
 
 }
