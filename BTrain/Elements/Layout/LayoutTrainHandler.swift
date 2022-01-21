@@ -49,6 +49,8 @@ protocol LayoutTrainHandling {
     func reserve(block: Identifier<Block>, withTrain train: Train, direction: Direction) throws
     func reserve(trainId: Identifier<Train>, fromBlock: Identifier<Block>, toBlock: Identifier<Block>, direction: Direction) throws
     
+    func freeReservedElements(fromBlockId: Identifier<Block>, direction: Direction, trainId: Identifier<Train>) throws
+    
     func free(fromBlock: Identifier<Block>, toBlockNotIncluded: Identifier<Block>, direction: Direction) throws
     func free(block: Identifier<Block>) throws
     
@@ -108,6 +110,10 @@ extension Layout: LayoutTrainHandling {
         try trainHandling.reserve(trainId: trainId, fromBlock: fromBlock, toBlock: toBlock, direction: direction)
     }
      
+    func freeReservedElements(fromBlockId: Identifier<Block>, direction: Direction, trainId: Identifier<Train>) throws {
+        try trainHandling.freeReservedElements(fromBlockId: fromBlockId, direction: direction, trainId: trainId)
+    }
+    
     func free(fromBlock: Identifier<Block>, toBlockNotIncluded: Identifier<Block>, direction: Direction) throws {
         try trainHandling.free(fromBlock: fromBlock, toBlockNotIncluded: toBlockNotIncluded, direction: direction)
     }
@@ -440,6 +446,78 @@ final class LayoutTrainHandler: LayoutTrainHandling {
         }
         
         try free(block: b1.id)
+    }
+    
+    func freeReservedElements(fromBlockId: Identifier<Block>, direction: Direction, trainId: Identifier<Train>) throws {
+        guard let block = layout.block(for: fromBlockId) else {
+            throw LayoutError.blockNotFound(blockId: fromBlockId)
+        }
+        let fromSocket = direction == .next ? block.next : block.previous
+        try freeReservedElements(fromSocket: fromSocket, trainId: trainId)
+    }
+    
+    func freeReservedElements(fromSocket: Socket, trainId: Identifier<Train>) throws {
+        let transitions = try layout.transitions(from: fromSocket, to: nil).filter { $0.reserved == trainId }
+        if transitions.isEmpty {
+            return
+        } else if transitions.count > 1 {
+            throw LayoutError.alwaysOneAndOnlyOneTransition
+        } else {
+            let transition = transitions[0]
+            
+            // Free the transition
+            transition.reserved = nil
+
+            // Transitions are always ordered with a being "from" and b "to" - see layout.transitions() method
+            guard let toSocketId = transition.b.socketId else {
+                // TODO: have an exception for this
+                fatalError()
+            }
+            
+            if let blockId = transition.b.block {
+                // Transition is leading to a block
+                guard let block = layout.block(for: blockId) else {
+                    throw LayoutError.blockNotFound(blockId: blockId)
+                }
+
+                // Block must be reserved for the trainId
+                guard block.reserved?.trainId == trainId else {
+                    return
+                }
+                
+                // Free the block
+                block.reserved = nil
+                
+                // Recursively call this method again to continue the job in the next element
+                if toSocketId == block.previous.socketId {
+                    try freeReservedElements(fromSocket: block.next, trainId: trainId)
+                } else {
+                    try freeReservedElements(fromSocket: block.previous, trainId: trainId)
+                }
+            } else if let turnoutId = transition.b.turnout {
+                // Transition is leading to a turnout
+                guard let turnout = layout.turnout(for: turnoutId) else {
+                    throw LayoutError.turnoutNotFound(turnoutId: turnoutId)
+                }
+
+                // Turnout must be reserved for the trainId
+                guard turnout.reserved == trainId else {
+                    return
+                }
+                
+                // Free the turnout
+                turnout.reserved = nil
+                                    
+                // Find out the exit socket of the turnout given its state
+                guard let socketId = turnout.socketId(fromSocketId: toSocketId, withState: turnout.state) else {
+                    // TODO: have an exception for this
+                    fatalError()
+                }
+                
+                // Recursively call this method again to continue the job in the next element
+                try freeReservedElements(fromSocket: turnout.socket(socketId), trainId: trainId)
+            }
+        }
     }
     
     func free(block: Identifier<Block>) throws {

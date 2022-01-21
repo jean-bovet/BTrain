@@ -39,10 +39,10 @@ final class LayoutBCreator: LayoutCreating {
 
         // Blocks
 
-        let b_1 = Block("1", type: .station, center: CGPoint(x: 340.0, y: 140.0), rotationAngle: -.pi)
-        let b_2 = Block("2", type: .free, center: CGPoint(x: 110.0, y: 40.0), rotationAngle: .pi)
-        let b_3 = Block("3", type: .station, center: CGPoint(x: 110.0, y: 140.0), rotationAngle: 0.0)
-        let b_4 = Block("4", type: .free, center: CGPoint(x: 340.0, y: 40.0), rotationAngle: 0.0)
+        let b_1 = Block("b1", type: .station, center: CGPoint(x: 340.0, y: 140.0), rotationAngle: -.pi)
+        let b_2 = Block("b2", type: .free, center: CGPoint(x: 110.0, y: 40.0), rotationAngle: .pi)
+        let b_3 = Block("b3", type: .free, center: CGPoint(x: 110.0, y: 140.0), rotationAngle: 0.0)
+        let b_4 = Block("b4", type: .free, center: CGPoint(x: 340.0, y: 40.0), rotationAngle: 0.0)
         l.add([b_1,b_2,b_3,b_4])
 
         // Feedbacks
@@ -63,7 +63,7 @@ final class LayoutBCreator: LayoutCreating {
 
         // Turnouts
 
-        let t_t12 = Turnout("t12", type: .doubleSlip2, address: .init(0, .MM), address2: .init(0, .MM), state: .straight, center: CGPoint(x: 230.0, y: 90.0), rotationAngle: -2.356194490192345)
+        let t_t12 = Turnout("t1", type: .doubleSlip2, address: .init(0, .MM), address2: .init(0, .MM), state: .straight, center: CGPoint(x: 230.0, y: 90.0), rotationAngle: -2.356194490192345)
         l.turnouts.append(contentsOf: [t_t12])
 
         // Transitions
@@ -77,7 +77,7 @@ final class LayoutBCreator: LayoutCreating {
 
         // Routes
 
-        l.newRoute("1", name: "Loop", [(b_1,.next),(b_2,.next),(b_3,.next),(b_4,.next)])
+        l.newRoute("r1", name: "Loop", [(b_1,.next),(b_2,.next),(b_3,.next),(b_4,.next),(b_1,.next)])
 
         // Trains
 

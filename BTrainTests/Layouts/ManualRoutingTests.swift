@@ -170,6 +170,51 @@ class ManualRoutingTests: BTTestCase {
         try p.assert("r1: {r1{b1 🛑🚂1 ≡ ≏ }} <t0,l> [b2 ≏ ≏ ] <t1,l> [b3 ≏ ≏ ] <t0(2,0),l> !{r1{b1 🛑🚂1 ≡ ≏ }}")
     }
 
+    func testMoveWith2LeadingReservationWithLoop() throws {
+        let layout = LayoutBCreator().newLayout()
+        let p = try setup(layout: layout, fromBlockId: "b1", route: layout.routes[0])
+        
+        let t1 = layout.trains[0]
+        t1.maxNumberOfLeadingReservedBlocks = 2
+        
+        layout.strictRouteFeedbackStrategy = false
+
+        try p.assert("r1: {r1{b1 🛑🚂1 ≏ ≏ }} <t1{ds2}> [b2 ≏ ≏ ] [b3 ≏ ≏ ] <t1{ds2}(2,3)> [b4 ≏ ≏ ] {r1{b1 🛑🚂1 ≏ ≏ }}")
+
+        try p.start(routeID: "r1", trainID: "1")
+
+        try p.assert("r1: {r1{b1 🚂1 ≏ ≏ }} <r1<t1{ds2},s01>> [r1[b2 ≏ ≏ ]] [r1[b3 ≏ ≏ ]] <r1<t1{ds2}(2,3),s01>> [b4 ≏ ≏ ] {r1{b1 🚂1 ≏ ≏ }}")
+        try p.assert("r1: {b1 ≏ ≏ } <r1<t1{ds2},s23>> [r1[b2 ≡ 🚂1 ≏ ]] [r1[b3 ≏ ≏ ]] <r1<t1{ds2}(2,3),s23>> [r1[b4 ≏ ≏ ]] {b1 ≏ ≏ }")
+        try p.assert("r1: {r1{b1 ≏ ≏ }} <r1<t1{ds2},s23>> [b2 ≏ ≏ ] [r1[b3 ≡ 🚂1 ≏ ]] <r1<t1{ds2}(2,3),s23>> [r1[b4 ≏ ≏ ]] {r1{b1 ≏ ≏ }}")
+        try p.assert("r1: {r1{b1 ≏ ≏ }} <t1{ds2},s23> [b2 ≏ ≏ ] [b3 ≏ ≏ ] <t1{ds2}(2,3),s23> [r1[b4 ≡ 🚂1 ≏ ]] {r1{b1 ≏ ≏ }}")
+        try p.assert("r1: {r1{b1 ≡ 🟨🚂1 ≏ }} <t1{ds2},s23> [b2 ≏ ≏ ] [b3 ≏ ≏ ] <t1{ds2}(2,3),s23> [b4 ≏ ≏ ] {r1{b1 ≡ 🟨🚂1 ≏ }}")
+        try p.assert("r1: {r1{b1 ≏ ≡ 🛑🚂1 }} <t1{ds2},s23> [b2 ≏ ≏ ] [b3 ≏ ≏ ] <t1{ds2}(2,3),s23> [b4 ≏ ≏ ] {r1{b1 ≏ ≡ 🛑🚂1 }}")
+    }
+
+    func testMoveWith3LeadingReservationWithLoop() throws {
+        let layout = LayoutBCreator().newLayout()
+        let p = try setup(layout: layout, fromBlockId: "b1", route: layout.routes[0])
+        
+        let t1 = layout.trains[0]
+        t1.maxNumberOfLeadingReservedBlocks = 3
+        
+        layout.strictRouteFeedbackStrategy = false
+
+        try p.assert("r1: {r1{b1 🛑🚂1 ≏ ≏ }} <t1{ds2}> [b2 ≏ ≏ ] [b3 ≏ ≏ ] <t1{ds2}(2,3)> [b4 ≏ ≏ ] {r1{b1 🛑🚂1 ≏ ≏ }}")
+
+        try p.start(routeID: "r1", trainID: "1")
+
+        // b4 is not reserved because the turnout t1 is already reserved for b1->b2.
+        try p.assert("r1: {r1{b1 🚂1 ≏ ≏ }} <r1<t1{ds2},s01>> [r1[b2 ≏ ≏ ]] [r1[b3 ≏ ≏ ]] <r1<t1{ds2}(2,3),s01>> [b4 ≏ ≏ ] {r1{b1 🚂1 ≏ ≏ }}")
+        
+        // Now that the train is in b2, the turnout t1 is free and the leading blocks can be reserved until b1, including b4.
+        try p.assert("r1: {r1{b1 ≏ ≏ }} <r1<t1{ds2},s23>> [r1[b2 ≡ 🚂1 ≏ ]] [r1[b3 ≏ ≏ ]] <r1<t1{ds2}(2,3),s23>> [r1[b4 ≏ ≏ ]] {r1{b1 ≏ ≏ }}")
+        try p.assert("r1: {r1{b1 ≏ ≏ }} <r1<t1{ds2},s23>> [b2 ≏ ≏ ] [r1[b3 ≡ 🚂1 ≏ ]] <r1<t1{ds2}(2,3),s23>> [r1[b4 ≏ ≏ ]] {r1{b1 ≏ ≏ }}")
+        try p.assert("r1: {r1{b1 ≏ ≏ }} <t1{ds2},s23> [b2 ≏ ≏ ] [b3 ≏ ≏ ] <t1{ds2}(2,3),s23> [r1[b4 ≡ 🚂1 ≏ ]] {r1{b1 ≏ ≏ }}")
+        try p.assert("r1: {r1{b1 ≡ 🟨🚂1 ≏ }} <t1{ds2},s23> [b2 ≏ ≏ ] [b3 ≏ ≏ ] <t1{ds2}(2,3),s23> [b4 ≏ ≏ ] {r1{b1 ≡ 🟨🚂1 ≏ }}")
+        try p.assert("r1: {r1{b1 ≏ ≡ 🛑🚂1 }} <t1{ds2},s23> [b2 ≏ ≏ ] [b3 ≏ ≏ ] <t1{ds2}(2,3),s23> [b4 ≏ ≏ ] {r1{b1 ≏ ≡ 🛑🚂1 }}")
+    }
+
     func testMoveWith3LeadingReservation() throws {
         let layout = LayoutACreator().newLayout()
         let t1 = layout.trains[0]

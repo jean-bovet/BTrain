@@ -499,42 +499,58 @@ final class TrainController {
             }
         }
     }
+
+    private func freeLeadingReservedElements() throws {
+        guard let currentBlock = layout.currentBlock(train: train) else {
+            throw LayoutError.trainNotAssignedToABlock(trainId: train.id)
+        }
+
+        guard let ti = currentBlock.train else {
+            throw LayoutError.trainNotFoundInBlock(blockId: currentBlock.id)
+        }
+        
+        try layout.freeReservedElements(fromBlockId: currentBlock.id, direction: ti.direction, trainId: train.id)
+    }
     
+    // This function will try to reserve as many blocks as specified (maxNumberOfLeadingReservedBlocks)
+    // in front of the train (leading blocks).
+    // Note: it won't reserve blocks that are already reserved to avoid loops.
     private func reserveNextBlocks(route: Route) throws -> Bool {
+        // Before trying to reserve the leading blocks, let's free up
+        // all the reserved elements (turnouts, transitions, blocks) in front
+        // of the train. This is to keep the algorithm simple:
+        // (1) Free up leading reserved blocks
+        // (2) Reserve leading reserved blocks
+        try freeLeadingReservedElements()
+        
         let startReservationIndex = min(route.steps.count-1, train.routeStepIndex + 1)
         let endReservationIndex = min(route.steps.count-1, train.routeStepIndex + train.maxNumberOfLeadingReservedBlocks)
                 
         var previousStep = route.steps[train.routeStepIndex]
         let stepsToReserve = route.steps[startReservationIndex...endReservationIndex]
+        
+        // Variable keeping track of the number of blocks that have been reserved.
+        // At least one block must have been reserved to consider this function successfull.
         var numberOfBlocksReserved = 0
+        
         for step in stepsToReserve {
             guard let block = layout.block(for: step.blockId) else {
                 throw LayoutError.blockNotFound(blockId: step.blockId)
             }
             
-            if let reservation = block.reserved {
-                if reservation.trainId == train.id && reservation.leading {
-                    // The reservation was already done
-                } else {
-                    // If the block is already reserved, bail out here.
-                    // If at least one block has been reserved, we consider
-                    // the reservation to be successfull.
-                    return numberOfBlocksReserved > 0
-                }
+            guard block.reserved == nil else {
+                return numberOfBlocksReserved > 0
             }
-                        
+
             guard block.train == nil else {
-                // If the block already contains a train, bail out here.
-                // If at least one block has been reserved, we consider
-                // the reservation to be successfull.
                 return numberOfBlocksReserved > 0
             }
             
             guard block.enabled else {
-                return false
+                return numberOfBlocksReserved > 0
             }
 
-            // Note: it is possible or this call to throw an exception if it cannot reserve.
+            // Note: it is possible for this call to throw an exception if it cannot reserve.
             // Catch it and return false instead as this is not an error we want to report back to the runtime
             do {
                 try layout.reserve(trainId: train.id, fromBlock: previousStep.blockId, toBlock: block.id, direction: previousStep.direction)
@@ -542,13 +558,13 @@ final class TrainController {
                 numberOfBlocksReserved += 1
             } catch {
                 BTLogger.debug("Cannot reserve block \(previousStep.blockId) to \(block.id) for \(train.name): \(error)")
-                return false
+                return numberOfBlocksReserved > 0
             }
 
             previousStep = step
         }
         
-        return true
+        return numberOfBlocksReserved > 0
     }
     
     private func stop(completely: Bool = false) throws -> Result {

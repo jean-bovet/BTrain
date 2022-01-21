@@ -48,9 +48,11 @@ class TransitionsTests: XCTestCase {
         let tr1 = Identifier<Train>(uuid: "t1")
         XCTAssertNoThrow(try Transition.canReserve(transitions: transitions, for: tr1, layout: layout))
         
+        // Cannot reserve a transition that is already reserved, even for the same train (to avoid loops)
         t2.reserved = tr1
-        XCTAssertNoThrow(try Transition.canReserve(transitions: transitions, for: tr1, layout: layout))
+        XCTAssertThrowsError(try Transition.canReserve(transitions: transitions, for: tr1, layout: layout))
         
+        // Cannot reserve a transition that is already reserved for another train
         let tr2 = Identifier<Train>(uuid: "t2")
         t2.reserved = tr2
         XCTAssertThrowsError(try Transition.canReserve(transitions: transitions, for: tr1, layout: layout))

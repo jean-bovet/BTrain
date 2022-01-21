@@ -78,22 +78,24 @@ final class Transition: Element, ITransition {
         a.contains(other: t.b) && b.contains(other: t.a)
     }
     
-    // Returns true if the array of transitions can be reserved
-    // for the specified train (either they are free or are
-    // already reserved for that same train).
+    // Returns true if the array of transitions can be reserved for the specified train.
+    // Note: only transitions that are free can reserved. A transition that already
+    // has a train (or even the same train), are not going to be reserved (again); this
+    // is to ensure that we don't overwrite existing reservation state (ie turnout) in
+    // case the route loop on itself.
     static func canReserve(transitions: [ITransition], for trainId: Identifier<Train>, layout: Layout) throws {
         guard let train = layout.train(for: trainId) else {
             throw LayoutError.trainNotFound(trainId: trainId)
         }
         for transition in transitions {
-            if let reserved = transition.reserved, reserved != trainId {
+            if let reserved = transition.reserved {
                 guard let reservedTrain = layout.train(for: reserved) else {
                     throw LayoutError.trainNotFound(trainId: reserved)
                 }
                 throw LayoutError.cannotReserveTransition(transition: transition, train: train, reserved: reservedTrain)
             }
             if let turnoutId = transition.a.turnout, let turnout = layout.turnout(for: turnoutId) {
-                if let reserved = turnout.reserved , reserved != trainId {
+                if let reserved = turnout.reserved {
                     guard let reservedTrain = layout.train(for: reserved) else {
                         throw LayoutError.trainNotFound(trainId: reserved)
                     }
