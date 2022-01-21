@@ -24,7 +24,8 @@ enum LayoutError: Error {
     case turnoutNotFound(turnoutId: Identifier<Turnout>)
     case feedbackNotFound(feedbackId: Identifier<Feedback>)
     case socketIdNotFound(socket: Socket)
-
+    case socketIdNotFoundForState(turnout: Turnout, fromSocketId: Int)
+    
     case brakeFeedbackNotFound(block: Block)
     case stopFeedbackNotFound(block: Block)
 
@@ -106,6 +107,8 @@ extension LayoutError: LocalizedError {
             return "The destination block \(destination.blockId) does not match the current block \(currentBlock.id) (\(currentBlock.name))"
         case .destinationDirectionMismatch(currentBlock: let currentBlock, destination: let destination):
             return "The destination direction \(String(describing: destination.direction)) does not match the current direction of the train within the block \(String(describing: currentBlock.train?.direction)), at block \(currentBlock.name) (\(currentBlock.id))"
+        case .socketIdNotFoundForState(turnout: let turnout, fromSocketId: let fromSocketId):
+            return "No socket found to exit turnout \(turnout.name) from socket \(fromSocketId) with \(turnout.state)"
         }
     }
 }

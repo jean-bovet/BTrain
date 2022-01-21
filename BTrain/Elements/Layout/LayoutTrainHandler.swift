@@ -470,8 +470,7 @@ final class LayoutTrainHandler: LayoutTrainHandling {
 
             // Transitions are always ordered with a being "from" and b "to" - see layout.transitions() method
             guard let toSocketId = transition.b.socketId else {
-                // TODO: have an exception for this
-                fatalError()
+                throw LayoutError.socketIdNotFound(socket: transition.b)
             }
             
             if let blockId = transition.b.block {
@@ -510,8 +509,7 @@ final class LayoutTrainHandler: LayoutTrainHandling {
                                     
                 // Find out the exit socket of the turnout given its state
                 guard let socketId = turnout.socketId(fromSocketId: toSocketId, withState: turnout.state) else {
-                    // TODO: have an exception for this
-                    fatalError()
+                    throw LayoutError.socketIdNotFoundForState(turnout: turnout, fromSocketId: toSocketId)
                 }
                 
                 // Recursively call this method again to continue the job in the next element
