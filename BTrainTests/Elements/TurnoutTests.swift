@@ -139,6 +139,71 @@ class TurnoutTests: XCTestCase {
         XCTAssertEqual(t1.state(fromSocket: 1, toSocket: 3), .invalid)
     }
 
+    func testSingleLeftStateSockets() {
+        let t1 = Turnout("1", type: .singleLeft, address: .init(1, .MM), state: .straight)
+        
+        XCTAssertEqual(t1.socketId(fromSocketId: t1.socket0.socketId!, withState: .straight), t1.socket1.socketId)
+        XCTAssertEqual(t1.socketId(fromSocketId: t1.socket1.socketId!, withState: .straight), t1.socket0.socketId)
+        
+        XCTAssertEqual(t1.socketId(fromSocketId: t1.socket0.socketId!, withState: .branchLeft), t1.socket2.socketId)
+        XCTAssertEqual(t1.socketId(fromSocketId: t1.socket2.socketId!, withState: .branchLeft), t1.socket0.socketId)
+    }
+
+    func testSingleRightStateSockets() {
+        let t1 = Turnout("1", type: .singleRight, address: .init(1, .MM), state: .straight)
+        
+        XCTAssertEqual(t1.socketId(fromSocketId: t1.socket0.socketId!, withState: .straight), t1.socket1.socketId)
+        XCTAssertEqual(t1.socketId(fromSocketId: t1.socket1.socketId!, withState: .straight), t1.socket0.socketId)
+        
+        XCTAssertEqual(t1.socketId(fromSocketId: t1.socket0.socketId!, withState: .branchRight), t1.socket2.socketId)
+        XCTAssertEqual(t1.socketId(fromSocketId: t1.socket2.socketId!, withState: .branchRight), t1.socket0.socketId)
+    }
+
+    func testThreewayStateSockets() {
+        let t1 = Turnout("1", type: .threeWay, address: .init(1, .MM), state: .straight)
+        
+        XCTAssertEqual(t1.socketId(fromSocketId: t1.socket0.socketId!, withState: .straight), t1.socket1.socketId)
+        XCTAssertEqual(t1.socketId(fromSocketId: t1.socket1.socketId!, withState: .straight), t1.socket0.socketId)
+        
+        XCTAssertEqual(t1.socketId(fromSocketId: t1.socket0.socketId!, withState: .branchRight), t1.socket2.socketId)
+        XCTAssertEqual(t1.socketId(fromSocketId: t1.socket2.socketId!, withState: .branchRight), t1.socket0.socketId)
+        
+        XCTAssertEqual(t1.socketId(fromSocketId: t1.socket0.socketId!, withState: .branchLeft), t1.socket3.socketId)
+        XCTAssertEqual(t1.socketId(fromSocketId: t1.socket3.socketId!, withState: .branchLeft), t1.socket0.socketId)
+    }
+
+    func testDoubleSlipStateSockets() {
+        let t1 = Turnout("1", type: .doubleSlip, address: .init(1, .MM), state: .straight01)
+        
+        XCTAssertEqual(t1.socketId(fromSocketId: t1.socket0.socketId!, withState: .straight), t1.socket1.socketId)
+        XCTAssertEqual(t1.socketId(fromSocketId: t1.socket1.socketId!, withState: .straight), t1.socket0.socketId)
+
+        XCTAssertEqual(t1.socketId(fromSocketId: t1.socket2.socketId!, withState: .straight), t1.socket3.socketId)
+        XCTAssertEqual(t1.socketId(fromSocketId: t1.socket3.socketId!, withState: .straight), t1.socket2.socketId)
+
+        XCTAssertEqual(t1.socketId(fromSocketId: t1.socket0.socketId!, withState: .branch), t1.socket3.socketId)
+        XCTAssertEqual(t1.socketId(fromSocketId: t1.socket3.socketId!, withState: .branch), t1.socket0.socketId)
+
+        XCTAssertEqual(t1.socketId(fromSocketId: t1.socket2.socketId!, withState: .branch), t1.socket1.socketId)
+        XCTAssertEqual(t1.socketId(fromSocketId: t1.socket1.socketId!, withState: .branch), t1.socket2.socketId)
+    }
+
+    func testDoubleSlip2StateSockets() {
+        let t1 = Turnout("1", type: .doubleSlip2, address: .init(1, .MM), state: .straight01)
+        
+        XCTAssertEqual(t1.socketId(fromSocketId: t1.socket0.socketId!, withState: .straight01), t1.socket1.socketId)
+        XCTAssertEqual(t1.socketId(fromSocketId: t1.socket1.socketId!, withState: .straight01), t1.socket0.socketId)
+
+        XCTAssertEqual(t1.socketId(fromSocketId: t1.socket2.socketId!, withState: .straight23), t1.socket3.socketId)
+        XCTAssertEqual(t1.socketId(fromSocketId: t1.socket3.socketId!, withState: .straight23), t1.socket2.socketId)
+
+        XCTAssertEqual(t1.socketId(fromSocketId: t1.socket0.socketId!, withState: .branch03), t1.socket3.socketId)
+        XCTAssertEqual(t1.socketId(fromSocketId: t1.socket3.socketId!, withState: .branch03), t1.socket0.socketId)
+
+        XCTAssertEqual(t1.socketId(fromSocketId: t1.socket2.socketId!, withState: .branch21), t1.socket1.socketId)
+        XCTAssertEqual(t1.socketId(fromSocketId: t1.socket1.socketId!, withState: .branch21), t1.socket2.socketId)
+    }
+
     func testSingleLeftStates() {
         let t1 = Turnout("1", type: .singleLeft,
                         address: .init(1, .MM),

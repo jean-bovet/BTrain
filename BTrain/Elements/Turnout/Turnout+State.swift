@@ -122,6 +122,18 @@ extension Turnout {
         }
     }
     
+    // Return the socket reachable from the "fromSocket" given the specific "state"
+    func socketId(fromSocketId: Int, withState state: State) -> Int? {
+        let candidates = sockets(from: fromSocketId)
+        for toSocket in candidates {
+            let s = self.state(fromSocket: fromSocketId, toSocket: toSocket)
+            if s == state {
+                return toSocket
+            }
+        }
+        return nil
+    }
+    
     // Use this method to set an individual turnout address's state.
     // This is only useful for double slip or threeway turnout with
     // two addresses, each corresponding to a single turnout in
