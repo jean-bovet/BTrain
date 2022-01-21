@@ -22,7 +22,7 @@ struct TrainControlSpeedView: View {
 
     func trainSpeedChanged() {
         do {
-            try layout.setTrain(train, speed: speed.kph)
+            try layout.setTrainSpeed(train, speed.kph)
             errorStatus = nil
         } catch {
             errorStatus = error.localizedDescription
@@ -52,7 +52,7 @@ struct TrainControlView: View {
 
     func trainDirectionToggle() {
         do {
-            try document.layout.setTrain(train, direction: train.directionForward ? .previous : .next)
+            try document.layout.setTrainDirection(train, train.directionForward ? .previous : .next)
             try document.layout.toggleTrainDirectionInBlock(train)
             errorStatus = nil
         } catch {

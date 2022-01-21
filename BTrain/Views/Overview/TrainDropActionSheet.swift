@@ -15,8 +15,8 @@ import SwiftUI
 extension Layout {
     func setTrain(info: SwitchBoard.State.TrainDragInfo, direction: Direction) throws {
         // Direction is nil so the train will preserve its direction
-        try free(trainID: info.trainId)
-        try setTrain(info.trainId, toBlock: info.blockId, direction: direction)
+        try free(trainID: info.trainId, removeFromLayout: true)
+        try setTrainToBlock(info.trainId, info.blockId, direction: direction)
     }
 }
 

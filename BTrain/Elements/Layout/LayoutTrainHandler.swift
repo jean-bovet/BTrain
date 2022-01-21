@@ -19,9 +19,9 @@ enum Position {
 }
 
 protocol LayoutTrainHandling {
-    func setTrain(_ train: Train, toPosition position: Int) throws
-    func setTrain(_ train: Train, speed: TrainSpeed.UnitKph) throws
-    func setTrain(_ train: Train, routeIndex: Int) throws
+    func setTrainPosition(_ train: Train, _ position: Int) throws
+    func setTrainSpeed(_ train: Train, _ speed: TrainSpeed.UnitKph) throws
+    func setTrainRouteStepIndex(_ train: Train, _ routeIndex: Int) throws
     
     // Returns the direction of the train within the block (not the train direction itself
     // but the direction of the train relative the natural direction of the block)
@@ -32,7 +32,7 @@ protocol LayoutTrainHandling {
     
     // Set the train direction (does not affect the direction of the train
     // within the block it might find itself)
-    func setTrain(_ train: Train, direction: Direction) throws
+    func setTrainDirection(_ train: Train, _ direction: Direction) throws
 
     func start(routeID: Identifier<Route>, trainID: Identifier<Train>, destination: Destination?) throws
 
@@ -44,7 +44,7 @@ protocol LayoutTrainHandling {
     // Use this method to stop the train when it finishes the route
     func finishTrain(_ trainId: Identifier<Train>) throws
 
-    func setTrain(_ trainId: Identifier<Train>, toBlock toBlockId: Identifier<Block>, position: Position, direction: Direction) throws
+    func setTrainToBlock(_ trainId: Identifier<Train>, _ toBlockId: Identifier<Block>, position: Position, direction: Direction) throws
 
     func reserve(block: Identifier<Block>, withTrain train: Train, direction: Direction) throws
     func reserve(train: Identifier<Train>, fromBlock: Identifier<Block>, toBlock: Identifier<Block>, direction: Direction) throws
@@ -60,16 +60,16 @@ protocol LayoutTrainHandling {
 
 extension Layout: LayoutTrainHandling {
     
-    func setTrain(_ train: Train, toPosition position: Int) throws {
-        try trainHandling.setTrain(train, toPosition: position)
+    func setTrainPosition(_ train: Train, _ position: Int) throws {
+        try trainHandling.setTrainPosition(train, position)
     }
     
-    func setTrain(_ train: Train, speed: TrainSpeed.UnitKph) throws {
-        try trainHandling.setTrain(train, speed: speed)
+    func setTrainSpeed(_ train: Train, _ speed: TrainSpeed.UnitKph) throws {
+        try trainHandling.setTrainSpeed(train, speed)
     }
 
-    func setTrain(_ train: Train, routeIndex: Int) throws {
-        try trainHandling.setTrain(train, routeIndex: routeIndex)
+    func setTrainRouteStepIndex(_ train: Train, _ routeIndex: Int) throws {
+        try trainHandling.setTrainRouteStepIndex(train, routeIndex)
     }
 
     func directionDirectionInBlock(_ train: Train) throws -> Direction {
@@ -84,8 +84,8 @@ extension Layout: LayoutTrainHandling {
         try trainHandling.start(routeID: routeID, trainID: trainID, destination: destination)
     }
 
-    func setTrain(_ train: Train, direction: Direction) throws {
-        try trainHandling.setTrain(train, direction: direction)
+    func setTrainDirection(_ train: Train, _ direction: Direction) throws {
+        try trainHandling.setTrainDirection(train, direction)
     }
     
     func stopTrain(_ trainId: Identifier<Train>, completely: Bool = false) throws {
@@ -96,8 +96,8 @@ extension Layout: LayoutTrainHandling {
         try trainHandling.finishTrain(trainId)
     }
 
-    func setTrain(_ trainId: Identifier<Train>, toBlock toBlockId: Identifier<Block>, position: Position = .start, direction: Direction) throws {
-        try trainHandling.setTrain(trainId, toBlock: toBlockId, position: position, direction: direction)
+    func setTrainToBlock(_ trainId: Identifier<Train>, _ toBlockId: Identifier<Block>, position: Position = .start, direction: Direction) throws {
+        try trainHandling.setTrainToBlock(trainId, toBlockId, position: position, direction: direction)
     }
 
     func reserve(block: Identifier<Block>, withTrain train: Train, direction: Direction) throws {
@@ -132,7 +132,7 @@ final class LayoutTrainHandler: LayoutTrainHandling {
         self.layoutTransitioning = layoutTransitionController
     }
     
-    func setTrain(_ train: Train, toPosition position: Int) throws {
+    func setTrainPosition(_ train: Train, _ position: Int) throws {
         guard let train = layout.train(for: train.id) else {
             throw LayoutError.trainNotFound(trainId: train.id)
         }
@@ -140,7 +140,7 @@ final class LayoutTrainHandler: LayoutTrainHandling {
         layout.didChange()
     }
     
-    func setTrain(_ train: Train, speed: TrainSpeed.UnitKph) throws {
+    func setTrainSpeed(_ train: Train, _ speed: TrainSpeed.UnitKph) throws {
         guard let train = layout.train(for: train.id) else {
             throw LayoutError.trainNotFound(trainId: train.id)
         }
@@ -171,7 +171,7 @@ final class LayoutTrainHandler: LayoutTrainHandling {
         return ti.direction
     }
     
-    func setTrain(_ train: Train, direction: Direction) throws {
+    func setTrainDirection(_ train: Train, _ direction: Direction) throws {
         guard let train = layout.train(for: train.id) else {
             throw LayoutError.trainNotFound(trainId: train.id)
         }
@@ -286,14 +286,15 @@ final class LayoutTrainHandler: LayoutTrainHandling {
         train.scheduling = .finishing
     }
 
-    func setTrain(_ train: Train, routeIndex: Int) throws {
+    func setTrainRouteStepIndex(_ train: Train, _ routeIndex: Int) throws {
         guard let train = layout.train(for: train.id) else {
             throw LayoutError.trainNotFound(trainId: train.id)
         }
         train.routeStepIndex = routeIndex
     }
 
-    func setTrain(_ trainId: Identifier<Train>, toBlock toBlockId: Identifier<Block>, position: Position = .start, direction: Direction) throws {
+    // Note: this method does not free the previous block where the train is located. This is the responsibility of the caller.
+    func setTrainToBlock(_ trainId: Identifier<Train>, _ toBlockId: Identifier<Block>, position: Position = .start, direction: Direction) throws {
         guard let train = layout.train(for: trainId) else {
             throw LayoutError.trainNotFound(trainId: trainId)
         }
@@ -330,21 +331,8 @@ final class LayoutTrainHandler: LayoutTrainHandling {
 
         train.blockId = toBlock.id
 
-        if let fromBlock = layout.block(for: trainId) {
-            toBlock.train = Block.TrainInstance(trainId, direction)
-            try reserve(block: toBlockId, withTrain: train, direction: direction)
-            
-            if fromBlock != toBlock {
-                // Only reset when the train is moved to a different block,
-                // not when changing its position within a block
-                let direction = fromBlock.train?.direction ?? .next
-                fromBlock.train = nil
-                try free(fromBlock: fromBlock.id, toBlockNotIncluded: toBlockId, direction: direction)
-            }
-        } else {
-            toBlock.train = Block.TrainInstance(trainId, direction)
-            try reserve(block: toBlockId, withTrain: train, direction: direction)
-        }
+        toBlock.train = Block.TrainInstance(trainId, direction)
+        try reserve(block: toBlockId, withTrain: train, direction: direction)
     }
     
     func reserve(block: Identifier<Block>, withTrain train: Train, direction: Direction) throws {
@@ -454,12 +442,14 @@ final class LayoutTrainHandler: LayoutTrainHandling {
         }
 
         b1.reserved = nil
-        if let train = b1.train {
-            guard let train = layout.train(for: train.trainId) else {
-                throw LayoutError.trainNotFound(trainId: train.trainId)
+        if let blockTrain = b1.train {
+            guard let train = layout.train(for: blockTrain.trainId) else {
+                throw LayoutError.trainNotFound(trainId: blockTrain.trainId)
             }
-
-            train.blockId = nil
+            // Remove the block assignment from the train if the train is located in the block
+            if train.blockId == b1.id {
+                train.blockId = nil
+            }
             b1.train = nil
         }
     }

@@ -177,12 +177,13 @@ class ManualRoutingTests: BTTestCase {
         let b2 = layout.block(for: route.steps[1].blockId)!
         let b3 = layout.block(for: route.steps[2].blockId)!
 
-        try layout.setTrain(train.id, toBlock: b2.id, direction: .next)
+        try layout.free(trainID: train.id, removeFromLayout: true)
+        try layout.setTrainToBlock(train.id, b2.id, direction: .next)
 
         XCTAssertNoThrow(try layout.reserve(train: train.id, fromBlock: b2.id, toBlock: b3.id, direction: .next))
         
-        try layout.setTrain(train, routeIndex: 1)
-        try layout.setTrain(train, toPosition: 1)
+        try layout.setTrainRouteStepIndex(train, 1)
+        try layout.setTrainPosition(train, 1)
 
         try p.assert("r1: {b1 ≏ ≏ } <t0> [r1[b2 ≏ 🛑🚂1 ≏ ]] <r1<t1,l>> [r1[b3 ≏ ≏ ]] <t0(2,0)> !{b1 ≏ ≏ }")
         
@@ -500,7 +501,7 @@ class ManualRoutingTests: BTTestCase {
         layout.strictRouteFeedbackStrategy = true
 
         let train = layout.trains[0]
-        try layout.setTrain(train.id, toBlock: Identifier<Block>(uuid: fromBlockId), position: position, direction: direction)
+        try layout.setTrainToBlock(train.id, Identifier<Block>(uuid: fromBlockId), position: position, direction: direction)
         
         XCTAssertEqual(train.speed.kph, 0)
         XCTAssertEqual(train.scheduling, .stopped)

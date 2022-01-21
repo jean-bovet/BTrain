@@ -31,7 +31,7 @@ class LayoutTests: XCTestCase {
         layout.link(from: b1.next, to: b2.previous)
         layout.link(from: b2.next, to: b1.previous)
 
-        try layout.setTrain(t1.id, toBlock: b1.id, direction: .next)
+        try layout.setTrainToBlock(t1.id, b1.id, direction: .next)
         try layout.reserve(train: t1.id, fromBlock: b1.id, toBlock: b2.id, direction: .next)
         XCTAssertEqual(t1.blockId, b1.id)
         XCTAssertEqual(layout.transitions.count, 2)
@@ -86,19 +86,19 @@ class LayoutTests: XCTestCase {
         XCTAssertEqual(train1.directionForward, true)
 
         // Set the train direction
-        try layout.setTrain(train1, direction: .previous)
+        try layout.setTrainDirection(train1, .previous)
         XCTAssertEqual(train1.directionForward, false)
 
         // Set the train inside a block with a specific direction which
         // is opposite of the train direction itself
-        try layout.setTrain(train1.id, toBlock: block1.id, direction: .next)
+        try layout.setTrainToBlock(train1.id, block1.id, direction: .next)
         XCTAssertEqual(block1.train!.direction, .next)
         XCTAssertEqual(train1.directionForward, false)
 
         // Change the train direction - which should not affect the direction
         // of the train within the block (we need to explicitly call the toggle
         // method for this to happen!)
-        try layout.setTrain(train1, direction: .next)
+        try layout.setTrainDirection(train1, .next)
         XCTAssertEqual(train1.directionForward, true)
         XCTAssertEqual(block1.train!.direction, .next)
         
@@ -118,8 +118,8 @@ class LayoutTests: XCTestCase {
         let b3 = layout.block(at: 2)
         let b4 = layout.block(at: 3)
         
-        try layout.setTrain(train1.id, toBlock: b1.id, direction: .next)
-        try layout.setTrain(train2.id, toBlock: b3.id, direction: .next)
+        try layout.setTrainToBlock(train1.id, b1.id, direction: .next)
+        try layout.setTrainToBlock(train2.id, b3.id, direction: .next)
         
         XCTAssertNoThrow(try layout.reserve(train: train1.id, fromBlock: b1.id, toBlock: b2.id, direction: .next))
         

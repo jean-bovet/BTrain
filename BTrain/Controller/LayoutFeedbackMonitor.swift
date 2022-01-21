@@ -50,9 +50,9 @@ final class LayoutFeedbackMonitor {
             return
         }
 
-        let (firstFeedback, _) = try layout.feedbackTriggeringTransition(from: currentBlock, to: nextBlock)
-        if let firstFeedback = firstFeedback {
-            expectedFeedbacks.insert(firstFeedback.id)
+        let (entryFeedback, _) = try layout.feedbackTriggeringTransition(from: currentBlock, to: nextBlock)
+        if let entryFeedback = entryFeedback {
+            expectedFeedbacks.insert(entryFeedback.id)
         }
     }
     

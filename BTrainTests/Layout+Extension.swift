@@ -55,7 +55,7 @@ extension Layout {
         }
 
         if let block = block(for: firstStep.blockId) {
-            try setTrain(train.id, toBlock: block.id, position: startAtEndOfBlock ? .end : .start, direction: .next)
+            try setTrainToBlock(train.id, block.id, position: startAtEndOfBlock ? .end : .start, direction: .next)
 
             train.routeId = route.id
             train.routeStepIndex = 0

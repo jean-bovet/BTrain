@@ -84,11 +84,11 @@ struct SwitchBoardView_Previews: PreviewProvider {
     static func generateLayout() -> Layout {
         let lt = LayoutCCreator().newLayout()
         
-        try! lt.setTrain(lt.trains[0], toPosition: 1)
-        try! lt.setTrain(lt.trains[1], toPosition: 2)
+        try! lt.setTrainPosition(lt.trains[0], 1)
+        try! lt.setTrainPosition(lt.trains[1], 2)
 
-        try! lt.setTrain(lt.trains[0].id, toBlock: lt.block(at: 0).id, direction: .next)
-        try! lt.setTrain(lt.trains[1].id, toBlock: lt.block(at: 2).id, direction: .next)
+        try! lt.setTrainToBlock(lt.trains[0].id, lt.block(at: 0).id, direction: .next)
+        try! lt.setTrainToBlock(lt.trains[1].id, lt.block(at: 2).id, direction: .next)
 
         return lt
     }

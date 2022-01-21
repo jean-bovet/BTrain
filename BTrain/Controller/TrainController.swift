@@ -149,7 +149,7 @@ final class TrainController {
                 try layout.reserve(train: train.id, fromBlock: currentBlock.id, toBlock: nextBlock.id, direction: currentBlock.train!.direction)
                 BTLogger.debug("Start train \(train) because the next block \(nextBlock) is free or reserved for this train")
                 startRouteIndex = train.routeStepIndex
-                try layout.setTrain(train, speed: LayoutFactory.DefaultSpeed)
+                try layout.setTrainSpeed(train, LayoutFactory.DefaultSpeed)
                 train.state = .running
                 return .processed
             } catch {
@@ -317,7 +317,7 @@ final class TrainController {
                 if brakeFeedback == f.id {
                     debug("Train \(train) is braking in \(currentBlock.name) at position \(train.position), direction \(direction)")
                     train.state = .braking
-                    try layout.setTrain(train, speed: LayoutFactory.DefaultBrakingSpeed)
+                    try layout.setTrainSpeed(train, LayoutFactory.DefaultBrakingSpeed)
                     result = .processed
                 }
             }
@@ -357,7 +357,7 @@ final class TrainController {
             
             let position = newPosition(forTrain: train, enabledFeedbackIndex: index, direction: direction)
             if train.position != position {
-                try layout.setTrain(train, toPosition: position)
+                try layout.setTrainPosition(train, position)
                 debug("Train \(train) moved to position \(train.position), direction \(direction)")
                 result = .processed
             }
@@ -443,15 +443,21 @@ final class TrainController {
                 
         debug("Train \(train) enters block \(nextBlock) at position \(position), direction \(direction)")
 
+        // Remember the current step before moving to the next block
+        rememberCurrentBlock(route: route)
+        
         // Set the train to its new block
-        try layout.setTrain(train.id, toBlock: nextBlock.id, position: .custom(value: position), direction: direction)
+        try layout.setTrainToBlock(train.id, nextBlock.id, position: .custom(value: position), direction: direction)
         
         // Increment the train route index
-        try layout.setTrain(train, routeIndex: train.routeStepIndex + 1)
+        try layout.setTrainRouteStepIndex(train, train.routeStepIndex + 1)
                 
-        // Reserve the block ahead. If it is not possible, then stop the train in this block
-        if tryReserveNextBlocks(direction: direction) == .none {
-            debug("Train \(train) will stop here (\(nextBlock)) because the next block cannot be reserved")
+        // Free up the trailing blocks        
+        try freeTrailingBlocks()
+        
+        // Reserve the block(s) ahead. If it is not possible, then stop the train in this block
+        if try reserveNextBlocks(route: route) == false {
+            debug("Train \(train) will stop here (\(nextBlock)) because the next block(s) cannot be reserved")
             stopTrigger = .init(stopCompletely: false)
         }
         
@@ -465,35 +471,65 @@ final class TrainController {
         return .processed
     }
         
-    private func tryReserveNextBlocks(direction: Direction) -> Result {
+    private func rememberCurrentBlock(route: Route) {
+        let step = route.steps[train.routeStepIndex]
+        train.trailingReservedBlocks.append(.init(blockId: step.blockId, direction: step.direction))
+    }
+    
+    private func freeTrailingBlocks() throws {
         guard let currentBlock = layout.currentBlock(train: train) else {
-            return .none
+            throw LayoutError.trainNotAssignedToABlock(trainId: train.id)
         }
         
-        guard let nextBlock = layout.nextBlock(train: train) else {
-            return .none
+        // [ b1, b2, b3 ]    // Previous visited blocks that are kept reserved
+        //                b4 // Current block where the train resides
+        // Free up the following blocks, in order:
+        // b1-b2
+        // b2-b3
+        // b3-b4
+        while train.trailingReservedBlocks.count > train.numberOfTrailingReservedBlocks {
+            if train.trailingReservedBlocks.count >= 2 {
+                let step1 = train.trailingReservedBlocks.removeFirst()
+                let step2 = train.trailingReservedBlocks.first!
+                try layout.free(fromBlock: step1.blockId, toBlockNotIncluded: step2.blockId, direction: step1.direction)
+            } else if train.trailingReservedBlocks.count == 1 {
+                let step = train.trailingReservedBlocks.removeFirst()
+                try layout.free(fromBlock: step.blockId, toBlockNotIncluded: currentBlock.id, direction: step.direction)
+            } else {
+                break
+            }
+        }
+    }
+    
+    private func reserveNextBlocks(route: Route) throws -> Bool {
+        let startReservationIndex = min(route.steps.count-1, train.routeStepIndex + 1)
+        let endReservationIndex = min(route.steps.count-1, train.routeStepIndex + train.numberOfBlocksToReserveAhead)
+                
+        var previousStep = route.steps[train.routeStepIndex]
+        let stepsToReserve = route.steps[startReservationIndex...endReservationIndex]
+        for step in stepsToReserve {
+            guard let block = layout.block(for: step.blockId) else {
+                throw LayoutError.blockNotFound(blockId: step.blockId)
+            }
+            
+            guard block.reserved == nil else {
+                return false
+            }
+            
+            guard block.train == nil else {
+                return false
+            }
+            
+            guard block.enabled else {
+                return false
+            }
+
+            try layout.reserve(train: train.id, fromBlock: previousStep.blockId, toBlock: block.id, direction: previousStep.direction)
+            
+            previousStep = step
         }
         
-        guard nextBlock.reserved == nil else {
-            return .none
-        }
-        
-        guard nextBlock.train == nil else {
-            return .none
-        }
-        
-        guard nextBlock.enabled else {
-            return .none
-        }
-        
-        do {
-            try layout.reserve(train: train.id, fromBlock: currentBlock.id, toBlock: nextBlock.id, direction: direction)
-            debug("Next block \(nextBlock) is reserved")
-            return .processed
-        } catch {
-            debug("Cannot reserve next blocks because \(error)")
-            return .none
-        }
+        return true
     }
     
     private func stop(completely: Bool = false) throws -> Result {

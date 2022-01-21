@@ -85,7 +85,7 @@ class SwitchboardTests: XCTestCase {
         let b1 = provider.blockShapes[0]
         let train = layout.trains[0]
         
-        try layout.setTrain(train.id, toBlock: b1.block.id, direction: .next)
+        try layout.setTrainToBlock(train.id, b1.block.id, direction: .next)
         XCTAssertEqual(train.blockId, b1.block.id)
         XCTAssertEqual(train.position, 0)
 
@@ -111,7 +111,7 @@ class SwitchboardTests: XCTestCase {
         let b2 = provider.blockShapes[1]
 
         let train = layout.trains[0]
-        try layout.setTrain(train.id, toBlock: b1.block.id, direction: .next)
+        try layout.setTrainToBlock(train.id, b1.block.id, direction: .next)
         XCTAssertEqual(train.blockId, b1.block.id)
 
         provider.trainShapes[0].updatePosition()

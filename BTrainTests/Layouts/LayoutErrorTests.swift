@@ -82,8 +82,8 @@ class LayoutErrorTests: XCTestCase {
 
     func testBlockNotEmpty() {
         do {
-            try layout.setTrain(train0.id, toBlock: b1.id, direction: .next)
-            try layout.setTrain(train1.id, toBlock: b1.id, direction: .next)
+            try layout.setTrainToBlock(train0.id, b1.id, direction: .next)
+            try layout.setTrainToBlock(train1.id, b1.id, direction: .next)
             XCTFail("Must throw an exception")
         } catch {
             XCTAssertEqual(error.localizedDescription, "Block 1 is not empty")

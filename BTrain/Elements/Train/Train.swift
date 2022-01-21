@@ -50,6 +50,26 @@ final class Train: Element, ObservableObject {
     // Index of the current route step that the train is located in.
     @Published var routeStepIndex = 0
 
+    // Array of trailing route steps that are kept reserved as the train
+    // moves through the route. When the train moves far enough,
+    // the furthest block (defined in the step) from the train is getting released.
+    struct TrailingReservedBlock {
+        let blockId: Identifier<Block>
+        let direction: Direction
+    }
+    var trailingReservedBlocks = [TrailingReservedBlock]()
+    
+    // Number of blocks the route should keep reserved behind
+    // the train as it moves throught the route. The default is 0,
+    // but can be changed for long train that can span more than
+    // one block. In the future, when length of blocks and trains are
+    // taken into consideration, this will become a more dynamic property.
+    var numberOfTrailingReservedBlocks = 0
+    
+    // Number of blocks the route should reserved ahead of the train.
+    // The default is 1.
+    var numberOfBlocksToReserveAhead = 1
+    
     enum Schedule {
         // The train is stopped and cannot be started again
         // unless the user takes an explicit action (ie Start button)
