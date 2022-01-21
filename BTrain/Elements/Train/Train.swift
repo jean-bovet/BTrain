@@ -53,19 +53,19 @@ final class Train: Element, ObservableObject {
     // Array of trailing route steps that are kept reserved as the train
     // moves through the route. When the train moves far enough,
     // the furthest block (defined in the step) from the train is getting released.
-    var trailingReservedBlocks = [Route.Step]()
+    @Published var trailingReservedBlocks = [Route.Step]()
     
     // Number of blocks the route should keep reserved behind
     // the train as it moves throught the route. The default is 0,
     // but can be changed for long train that can span more than
     // one block. In the future, when length of blocks and trains are
     // taken into consideration, this will become a more dynamic property.
-    var numberOfTrailingReservedBlocks = 0
+    @Published var numberOfTrailingReservedBlocks = 0
     
     // The maximum number of blocks that should be reserved ahead of the train.
     // The actual number of blocks might be smaller if a block cannot be reserved.
     // The default is 1.
-    var maxNumberOfLeadingReservedBlocks = 1
+    @Published var maxNumberOfLeadingReservedBlocks = 1
     
     enum Schedule {
         // The train is stopped and cannot be started again

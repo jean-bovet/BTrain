@@ -21,7 +21,7 @@ struct TrainDetailsView: View {
     @State private var speedExpanded = false
 
     var body: some View {
-        VStack {
+        VStack(alignment: .leading) {
             HStack {
                 TrainIconView(trainIconManager: trainIconManager, train: train, size: .large)
 
@@ -38,6 +38,14 @@ struct TrainDetailsView: View {
                     TextField("Max Speed:", value: $train.speed.maxSpeed,
                               format: .number)
                 }
+            }
+            
+            Divider()
+            
+            Form {
+                Stepper("Leading Reservation Count: \(train.maxNumberOfLeadingReservedBlocks)", value: $train.maxNumberOfLeadingReservedBlocks, in: 1...10)
+                
+                Stepper("Trailing Reservation Count: \(train.numberOfTrailingReservedBlocks)", value: $train.numberOfTrailingReservedBlocks, in: 0...2)
             }
             
             Divider()
