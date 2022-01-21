@@ -146,7 +146,7 @@ final class TrainController {
 
         if let nextBlock = nextBlock, (nextBlock.reserved == nil || nextBlock.reserved == currentBlock.reserved) && nextBlock.train == nil && nextBlock.enabled {
             do {
-                try layout.reserve(train: train.id, fromBlock: currentBlock.id, toBlock: nextBlock.id, direction: currentBlock.train!.direction)
+                try layout.reserve(trainId: train.id, fromBlock: currentBlock.id, toBlock: nextBlock.id, direction: currentBlock.train!.direction)
                 BTLogger.debug("Start train \(train) because the next block \(nextBlock) is free or reserved for this train")
                 startRouteIndex = train.routeStepIndex
                 try layout.setTrainSpeed(train, LayoutFactory.DefaultSpeed)
@@ -524,8 +524,14 @@ final class TrainController {
                 return false
             }
 
-            try layout.reserve(train: train.id, fromBlock: previousStep.blockId, toBlock: block.id, direction: previousStep.direction)
-            
+            // Note: it is possible or this call to throw an exception if it cannot reserve.
+            // Catch it and return false instead as this is not an error we want to report back to the runtime
+            do {
+                try layout.reserve(trainId: train.id, fromBlock: previousStep.blockId, toBlock: block.id, direction: previousStep.direction)
+            } catch {
+                return false
+            }
+
             previousStep = step
         }
         
@@ -552,13 +558,13 @@ final class TrainController {
             debug("Generated route is: \(route.steps)")
             return .processed
         } else {
-            debug("Unable to find a suitable route for train \(train)")
+            BTLogger.warning("Unable to find a suitable route for train \(train)")
             return .none
         }
     }
     
     private func debug(_ message: String) {
-        BTLogger.debug(message, layout, train)
+        BTLogger.debug(message)
     }
 
 }

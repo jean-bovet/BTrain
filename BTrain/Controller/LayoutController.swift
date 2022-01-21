@@ -71,7 +71,7 @@ final class LayoutController: TrainControllerDelegate {
     }
     
     func run() -> TrainController.Result {
-        BTLogger.debug("LayoutController::run()")
+        BTLogger.debug("⚙ Evaluating the layout")
         
         // Process the latest changes
         updateControllers()
@@ -101,6 +101,7 @@ final class LayoutController: TrainControllerDelegate {
             // Stop everything in case there is a problem processing the layout
             BTLogger.error("Stopping all trains because there is an error processing the layout: \(error.localizedDescription)")
             layout.runtimeError = error.localizedDescription
+            dumpAll()
             haltAll()
         }
         return result

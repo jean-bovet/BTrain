@@ -47,7 +47,7 @@ protocol LayoutTrainHandling {
     func setTrainToBlock(_ trainId: Identifier<Train>, _ toBlockId: Identifier<Block>, position: Position, direction: Direction) throws
 
     func reserve(block: Identifier<Block>, withTrain train: Train, direction: Direction) throws
-    func reserve(train: Identifier<Train>, fromBlock: Identifier<Block>, toBlock: Identifier<Block>, direction: Direction) throws
+    func reserve(trainId: Identifier<Train>, fromBlock: Identifier<Block>, toBlock: Identifier<Block>, direction: Direction) throws
     
     func free(fromBlock: Identifier<Block>, toBlockNotIncluded: Identifier<Block>, direction: Direction) throws
     func free(block: Identifier<Block>) throws
@@ -104,8 +104,8 @@ extension Layout: LayoutTrainHandling {
         try trainHandling.reserve(block: block, withTrain: train, direction: direction)
     }
 
-    func reserve(train: Identifier<Train>, fromBlock: Identifier<Block>, toBlock: Identifier<Block>, direction: Direction) throws {
-        try trainHandling.reserve(train: train, fromBlock: fromBlock, toBlock: toBlock, direction: direction)
+    func reserve(trainId: Identifier<Train>, fromBlock: Identifier<Block>, toBlock: Identifier<Block>, direction: Direction) throws {
+        try trainHandling.reserve(trainId: trainId, fromBlock: fromBlock, toBlock: toBlock, direction: direction)
     }
      
     func free(fromBlock: Identifier<Block>, toBlockNotIncluded: Identifier<Block>, direction: Direction) throws {
@@ -341,13 +341,13 @@ final class LayoutTrainHandler: LayoutTrainHandling {
         }
         
         if let reserved = b1.reserved, reserved.trainId != train.id {
-            throw LayoutError.cannotReserveBlock(blockId: block, trainId: train.id, reserved: reserved)
+            throw LayoutError.cannotReserveBlock(block: b1, train: train, reserved: reserved)
         }
         
         b1.reserved = .init(trainId: train.id, direction: direction)
     }
     
-    func reserve(train: Identifier<Train>, fromBlock: Identifier<Block>, toBlock: Identifier<Block>, direction: Direction) throws {
+    func reserve(trainId: Identifier<Train>, fromBlock: Identifier<Block>, toBlock: Identifier<Block>, direction: Direction) throws {
         guard let b1 = layout.block(for: fromBlock) else {
             throw LayoutError.blockNotFound(blockId: fromBlock)
         }
@@ -356,13 +356,16 @@ final class LayoutTrainHandler: LayoutTrainHandling {
             throw LayoutError.blockNotFound(blockId: toBlock)
         }
 
-        let reservation = Reservation(trainId: train, direction: direction)
+        guard let train = layout.train(for: trainId) else {
+            throw LayoutError.trainNotFound(trainId: trainId)
+        }
+        let reservation = Reservation(trainId: trainId, direction: direction)
         guard b1.reserved == nil || b1.reserved == reservation else {
-            throw LayoutError.cannotReserveBlock(blockId: b1.id, trainId: train, reserved: b1.reserved!)
+            throw LayoutError.cannotReserveBlock(block: b1, train: train, reserved: b1.reserved!)
         }
         
         guard b2.reserved == nil || b2.reserved == reservation else {
-            throw LayoutError.cannotReserveBlock(blockId: b2.id, trainId: train, reserved: b2.reserved!)
+            throw LayoutError.cannotReserveBlock(block: b2, train: train, reserved: b2.reserved!)
         }
 
         let transitions = try layoutTransitioning.transitions(from: b1, to: b2, direction: direction)
@@ -370,12 +373,12 @@ final class LayoutTrainHandler: LayoutTrainHandling {
             throw LayoutError.noTransition(fromBlockId: b1.id, toBlockId: b2.id)
         }
         
-        try Transition.canReserve(transitions: transitions, for: train, layout: layout)
+        try Transition.canReserve(transitions: transitions, for: trainId, layout: layout)
                 
-        b1.reserved = Reservation(trainId: train, direction: direction)
+        b1.reserved = Reservation(trainId: trainId, direction: direction)
 
         for (index, transition) in transitions.enumerated() {
-            transition.reserved = train
+            transition.reserved = trainId
             
             if let turnoutId = transition.b.turnout {
                 guard let turnout = layout.turnout(for: turnoutId) else {
@@ -393,19 +396,19 @@ final class LayoutTrainHandler: LayoutTrainHandling {
                 
                 let state = turnout.state(fromSocket: fromSocket, toSocket: toSocket)
                 turnout.state = state
-                turnout.reserved = train
+                turnout.reserved = trainId
                 layout.executor?.sendTurnoutState(turnout: turnout) { }
             } else if let blockId = transition.b.block {
                 guard let block = layout.block(for: blockId) else {
                     throw LayoutError.blockNotFound(blockId: blockId)
                 }
                 let naturalDirection = transition.b.socketId == Block.previousSocket
-                block.reserved = Reservation(trainId: train, direction: naturalDirection ? .next : .previous)
+                block.reserved = Reservation(trainId: trainId, direction: naturalDirection ? .next : .previous)
             }
         }
         
-        guard b2.reserved?.trainId == train else {
-            throw LayoutError.blockNotReservedForTrain(block: b2, train: train)
+        guard b2.reserved?.trainId == trainId else {
+            throw LayoutError.blockNotReservedForTrain(block: b2, train: trainId)
         }
     }
     

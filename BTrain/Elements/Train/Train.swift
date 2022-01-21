@@ -57,6 +57,7 @@ final class Train: Element, ObservableObject {
         let blockId: Identifier<Block>
         let direction: Direction
     }
+    // TODO: use Route.Step
     var trailingReservedBlocks = [TrailingReservedBlock]()
     
     // Number of blocks the route should keep reserved behind

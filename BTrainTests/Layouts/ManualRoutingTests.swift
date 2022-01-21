@@ -180,7 +180,7 @@ class ManualRoutingTests: BTTestCase {
         try layout.free(trainID: train.id, removeFromLayout: true)
         try layout.setTrainToBlock(train.id, b2.id, direction: .next)
 
-        XCTAssertNoThrow(try layout.reserve(train: train.id, fromBlock: b2.id, toBlock: b3.id, direction: .next))
+        XCTAssertNoThrow(try layout.reserve(trainId: train.id, fromBlock: b2.id, toBlock: b3.id, direction: .next))
         
         try layout.setTrainRouteStepIndex(train, 1)
         try layout.setTrainPosition(train, 1)

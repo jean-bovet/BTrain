@@ -13,57 +13,17 @@
 import Foundation
 
 final class BTLogger {
-    
-    static func print(_ msg: String) {
-        NSLog(msg)
-    }
-    
+        
     static func error(_ msg: String) {
-        print("[Error] \(msg)")
+        NSLog("⛔️ \(msg)")
     }
     
     static func debug(_ msg: String) {
-        print("[Debug] \(msg)")
+        NSLog("\(msg)")
     }
     
-    static func debug(_ msg: String, _ layout: Layout, _ train: Train? = nil) {
-        var attributes = [String]()
-        attributes.append("\(layout)")
-        if let train = train {
-            attributes.append("\(train.name)")
-        }
-        if let routeId = train?.routeId, let route = layout.route(for: routeId, trainId: train?.id) {
-            attributes.append("\(route.name)")
-        } else {
-            attributes.append("No Route")
-        }
-        if let train = train, let cb = layout.currentBlock(train: train) {
-            attributes.append(attributesFor(block: cb, layout: layout))
-        }
-        if let train = train, let nb = layout.nextBlock(train: train) {
-            attributes.append(attributesFor(block: nb, layout: layout))
-        }
-        print("[\(attributes.joined(separator: "|"))] \(msg)")
+    static func warning(_ msg: String) {
+        NSLog("⚠️ \(msg)")
     }
 
-    static func attributesFor(block: Block, layout: Layout) -> String {
-        var info = "\(block.name)"
-        if let reserved = block.reserved, let train = layout.train(for: reserved.trainId) {
-            info += ",r=\(train.name)-\(reserved.direction.rawValue)"
-        }
-        if let trainInstance = block.train {
-            if let train = layout.train(for: trainInstance.trainId) {
-                info += ",\(train.name)"
-            }
-            if let t = layout.train(for: trainInstance.trainId) {
-                info += "@\(t.position)"
-            }
-            if trainInstance.direction == .next {
-                info += ">"
-            } else {
-                info += "<"
-            }
-        }
-        return info
-    }
 }

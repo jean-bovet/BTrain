@@ -87,7 +87,10 @@ final class Transition: Element, ITransition {
         }
         for transition in transitions {
             if let reserved = transition.reserved, reserved != trainId {
-                throw LayoutError.cannotReserveTransition(transition: transition.id, trainId: trainId, reserved: reserved)
+                guard let reservedTrain = layout.train(for: reserved) else {
+                    throw LayoutError.trainNotFound(trainId: reserved)
+                }
+                throw LayoutError.cannotReserveTransition(transition: transition, train: train, reserved: reservedTrain)
             }
             if let turnoutId = transition.a.turnout, let turnout = layout.turnout(for: turnoutId) {
                 if let reserved = turnout.reserved , reserved != trainId {

@@ -27,7 +27,7 @@ struct TrainControlRouteActionsView: View {
         for (index, step) in route.steps.enumerated() {
             if index+1 < route.steps.count {
                 let nextStep = route.steps[index+1]
-                try document.layout.reserve(train: train.id,
+                try document.layout.reserve(trainId: train.id,
                                             fromBlock: step.blockId,
                                             toBlock: nextStep.blockId,
                                             direction: step.direction)

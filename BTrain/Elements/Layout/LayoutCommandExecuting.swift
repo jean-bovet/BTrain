@@ -51,7 +51,7 @@ final class LayoutCommandExecutor: LayoutCommandExecuting {
     }
 
     func sendTrainDirection(train: Train) {
-        BTLogger.debug("Train \(train.name) changed direction to \(train.directionForward ? "forward" : "backward" )", layout, train)
+        BTLogger.debug("Train \(train.name) changed direction to \(train.directionForward ? "forward" : "backward" )")
         let command: Command
         if train.directionForward {
             command = .direction(address: train.address, decoderType: train.decoder, direction: .forward)
@@ -62,7 +62,7 @@ final class LayoutCommandExecutor: LayoutCommandExecuting {
     }
     
     func sendTrainSpeed(train: Train) {
-        BTLogger.debug("Train \(train.name) changed speed to \(train.speed)", layout, train)
+        BTLogger.debug("Train \(train.name) changed speed to \(train.speed)")
         let value = interface.speedValue(for: train.speed.steps, decoder: train.decoder)
         interface.execute(command: .speed(address: train.address, decoderType: train.decoder, value: value)) {}
     }

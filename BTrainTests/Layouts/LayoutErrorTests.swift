@@ -92,7 +92,7 @@ class LayoutErrorTests: XCTestCase {
 
     func testNoTransitions() {
         do {
-            try layout.reserve(train: train1.id, fromBlock: b1.id, toBlock: b2.id, direction: .next)
+            try layout.reserve(trainId: train1.id, fromBlock: b1.id, toBlock: b2.id, direction: .next)
             XCTFail("Must throw an exception")
         } catch {
             XCTAssertEqual(error.localizedDescription, "No transition found from block 1 to block 2")
@@ -106,7 +106,7 @@ class LayoutErrorTests: XCTestCase {
             try Transition.canReserve(transitions: layout.transitions, for: train0.id, layout: layout)
             XCTFail("Must throw an exception")
         } catch {
-            XCTAssertEqual(error.localizedDescription, "Cannot reserve transition 0 for train 1 because the transition is already reserved for 2")
+            XCTAssertEqual(error.localizedDescription, "Cannot reserve transition 0 for train 1 because the transition is already reserved for 2 (2)")
         }
     }
 
@@ -137,7 +137,7 @@ class LayoutErrorTests: XCTestCase {
             layout.link(from: b1.next, to: turnout.socket0)
             layout.link(from: turnout.socket1, to: b2.previous)
             layout.transitions[1].a = .init(block: nil, turnout: turnout.id, socketId: nil)
-            try layout.reserve(train: train0.id, fromBlock: b1.id, toBlock: b2.id, direction: .next)
+            try layout.reserve(trainId: train0.id, fromBlock: b1.id, toBlock: b2.id, direction: .next)
             XCTFail("Must throw an exception")
         } catch {
             XCTAssertEqual(error.localizedDescription, "There is no socket defined for Socket[block 1, socket 1]")
@@ -149,7 +149,7 @@ class LayoutErrorTests: XCTestCase {
             layout.link(from: b1.next, to: turnout.socket0)
             layout.link(from: turnout.socket1, to: b2.previous)
             layout.transitions[1].b = .init(block: b1.id, turnout: nil, socketId: nil)
-            try layout.reserve(train: train0.id, fromBlock: b1.id, toBlock: b2.id, direction: .next)
+            try layout.reserve(trainId: train0.id, fromBlock: b1.id, toBlock: b2.id, direction: .next)
             XCTFail("Must throw an exception")
         } catch {
             XCTAssertEqual(error.localizedDescription, "There must always be only one and only one transition")
