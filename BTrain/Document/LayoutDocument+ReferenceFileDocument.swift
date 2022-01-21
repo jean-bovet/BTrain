@@ -16,21 +16,90 @@ import UniformTypeIdentifiers
 
 extension LayoutDocument: ReferenceFileDocument {
     
-    static var readableContentTypes: [UTType] { [.json] }
+    static let packageType = UTType("ch.arizona-software.BTrain")!
+    
+    static var readableContentTypes: [UTType] { [.json, packageType] }
+    
+    static let layoutFileName = "layout.json"
     
     convenience init(configuration: ReadConfiguration) throws {
-        guard let data = configuration.file.regularFileContents else {
-            throw CocoaError(.fileReadCorruptFile)
+        switch configuration.contentType {
+        case .json:
+            guard let data = configuration.file.regularFileContents else {
+                throw CocoaError(.fileReadCorruptFile)
+            }
+
+            let layout = try LayoutDocument.layout(contentType: configuration.contentType, data: data)
+            self.init(layout: layout)
+            
+        case LayoutDocument.packageType:
+            guard let files = configuration.file.fileWrappers else {
+                throw CocoaError(.fileReadCorruptFile)
+            }
+            
+            guard let layoutFile = files.first(where: {$0.value.filename == LayoutDocument.layoutFileName }) else {
+                throw CocoaError(.fileReadCorruptFile)
+            }
+            
+            guard let data = layoutFile.value.regularFileContents else {
+                throw CocoaError(.fileReadCorruptFile)
+            }
+
+            let layout = try LayoutDocument.layout(contentType: .json, data: data)
+            self.init(layout: layout)
+
+            if let iconDirectory = files.first(where: {$0.value.isDirectory})?.value, let files = iconDirectory.fileWrappers?.values {
+                for file in files {
+                    guard let filename = file.filename else {
+                        continue
+                    }
+                    let trainId = (filename as NSString).deletingPathExtension
+                    
+                    guard let data = file.regularFileContents else {
+                        throw CocoaError(.fileReadCorruptFile)
+                    }
+                    
+                    guard let image = NSImage(data: data) else {
+                        throw CocoaError(.fileReadCorruptFile)
+                    }
+                    
+                    trainIconManager.setIcon(image, toTrainId: Identifier<Train>(uuid: trainId))
+                }
+            }
+            
+        default:
+            throw CocoaError(.fileReadUnsupportedScheme)
         }
 
-        let layout = try LayoutDocument.layout(contentType: configuration.contentType, data: data)
-        self.init(layout: layout)
     }
     
     func fileWrapper(snapshot: Data, configuration: WriteConfiguration) throws -> FileWrapper {
         switch configuration.contentType {
         case .json:
             return .init(regularFileWithContents: snapshot)
+        case LayoutDocument.packageType:
+            let wrapper = FileWrapper(directoryWithFileWrappers: [:])
+            
+            let jsonFile = FileWrapper(regularFileWithContents: snapshot)
+            jsonFile.preferredFilename = LayoutDocument.layoutFileName
+            wrapper.addFileWrapper(jsonFile)
+            
+            let iconDirectory = FileWrapper(directoryWithFileWrappers: [:])
+            iconDirectory.preferredFilename = "icons"
+            
+            for train in layout.trains {
+                if let icon = trainIconManager.imageFor(train: train) {
+                    if let jpegData = icon.jpegData() {
+                        iconDirectory.addRegularFile(withContents: jpegData, preferredFilename: "\(train.uuid).jpg")
+                    } else if let data = icon.tiffRepresentation(using: .lzw, factor: 0) {
+                        iconDirectory.addRegularFile(withContents: data, preferredFilename: "\(train.uuid).tiff")
+                    }
+                }
+            }
+            
+            wrapper.addFileWrapper(iconDirectory)
+            
+            return wrapper
         default:
             throw CocoaError(.fileWriteUnsupportedScheme)
         }

@@ -12,26 +12,18 @@
 
 import AppKit
 
-final class TrainIconManager: ObservableObject {
+extension NSImage {
     
-    let layout: Layout
-    let cache = NSCache<NSString, NSImage>()
-    
-    init(layout: Layout) {
-        self.layout = layout
-    }
-    
-    func imageFor(train: Train) -> NSImage? {
-        if let image = cache.object(forKey: train.id.uuid as NSString) {
-            return image
+    func jpegData() -> Data? {
+        guard let cgImage = cgImage(forProposedRect: nil, context: nil, hints: nil) else {
+            return nil
         }
         
-        return nil
-    }
-        
-    func setIcon(_ image: NSImage, toTrainId train: Identifier<Train>) {
-        objectWillChange.send()
-        cache.setObject(image, forKey: train.uuid as NSString)
+        let bitmapRep = NSBitmapImageRep(cgImage: cgImage)
+        guard let jpegData = bitmapRep.representation(using: .jpeg, properties: [:]) else {
+            return nil
+        }
+        return jpegData
     }
     
 }

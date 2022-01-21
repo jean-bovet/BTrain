@@ -15,7 +15,7 @@ import UniformTypeIdentifiers
 
 struct TrainIconView: View, DropDelegate {
         
-    let trainIconManager: TrainIconManager
+    @ObservedObject var trainIconManager: TrainIconManager
     @ObservedObject var train: Train
     
     let size: Size
@@ -60,7 +60,9 @@ struct TrainIconView: View, DropDelegate {
                 DispatchQueue.main.async {
                     if let urlData = urlData as? Data {
                         let url = NSURL(absoluteURLWithDataRepresentation: urlData, relativeTo: nil) as URL
-                        trainIconManager.setIcon(url, toTrain: train)
+                        if let image = NSImage(contentsOf: url) {
+                            trainIconManager.setIcon(image, toTrainId: train.id)
+                        }
                     }
                 }
             }
