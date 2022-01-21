@@ -404,6 +404,7 @@ final class LayoutTrainHandler: LayoutTrainHandling {
                 }
                 let naturalDirection = transition.b.socketId == Block.previousSocket
                 block.reserved = Reservation(trainId: trainId, direction: naturalDirection ? .next : .previous)
+                BTLogger.debug("Reserved block \(block.name) for \(block.reserved)")
             }
         }
         
@@ -444,6 +445,8 @@ final class LayoutTrainHandler: LayoutTrainHandling {
             throw LayoutError.blockNotFound(blockId: block)
         }
 
+        BTLogger.debug("Freeing block \(b1.name)")
+        
         b1.reserved = nil
         if let blockTrain = b1.train {
             guard let train = layout.train(for: blockTrain.trainId) else {

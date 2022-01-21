@@ -138,23 +138,14 @@ final class TrainController {
             BTLogger.debug("Generating a new route for \(train) at block \(currentBlock.name) with mode \(route.automaticMode) because the next block is not defined")
             return try updateAutomaticRoute(for: train.id)
         }
-        
-        // Start train if next block is free and reserve it
-        // TODO: use tryReserve?
-//        tryReserveNextBlocks(direction: <#T##Direction#>)
-        //            try layout.reserve(train: train.id, fromBlock: currentBlock.id, toBlock: nextBlock.id, direction: direction)
-
-        if let nextBlock = nextBlock, (nextBlock.reserved == nil || nextBlock.reserved == currentBlock.reserved) && nextBlock.train == nil && nextBlock.enabled {
-            do {
-                try layout.reserve(trainId: train.id, fromBlock: currentBlock.id, toBlock: nextBlock.id, direction: currentBlock.train!.direction)
-                BTLogger.debug("Start train \(train) because the next block \(nextBlock) is free or reserved for this train")
-                startRouteIndex = train.routeStepIndex
-                try layout.setTrainSpeed(train, LayoutFactory.DefaultSpeed)
-                train.state = .running
-                return .processed
-            } catch {
-                BTLogger.debug("Cannot start train \(train) because \(error)")
-            }
+                
+        // Try to reserve the next blocks and if successfull, then start the train
+        if try reserveNextBlocks(route: route) {
+            BTLogger.debug("Start train \(train.name) because the next blocks could be reserved")
+            startRouteIndex = train.routeStepIndex
+            try layout.setTrainSpeed(train, LayoutFactory.DefaultSpeed)
+            train.state = .running
+            return .processed
         }
         
         return .none
@@ -358,7 +349,7 @@ final class TrainController {
             let position = newPosition(forTrain: train, enabledFeedbackIndex: index, direction: direction)
             if train.position != position {
                 try layout.setTrainPosition(train, position)
-                debug("Train \(train) moved to position \(train.position), direction \(direction)")
+                debug("Train \(train) moved to position \(train.position) in \(currentBlock.name), direction \(direction)")
                 result = .processed
             }
                         
@@ -512,7 +503,7 @@ final class TrainController {
                 throw LayoutError.blockNotFound(blockId: step.blockId)
             }
             
-            guard block.reserved == nil else {
+            guard block.reserved == nil || block.reserved?.trainId == train.id else {
                 return false
             }
             
@@ -528,7 +519,9 @@ final class TrainController {
             // Catch it and return false instead as this is not an error we want to report back to the runtime
             do {
                 try layout.reserve(trainId: train.id, fromBlock: previousStep.blockId, toBlock: block.id, direction: previousStep.direction)
+                BTLogger.debug("Reserved \(previousStep.blockId) to \(block.id) for \(train.name)")
             } catch {
+                BTLogger.debug("Cannot reserve block \(previousStep.blockId) to \(block.id) for \(train.name): \(error)")
                 return false
             }
 
