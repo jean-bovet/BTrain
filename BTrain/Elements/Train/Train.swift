@@ -53,12 +53,7 @@ final class Train: Element, ObservableObject {
     // Array of trailing route steps that are kept reserved as the train
     // moves through the route. When the train moves far enough,
     // the furthest block (defined in the step) from the train is getting released.
-    struct TrailingReservedBlock {
-        let blockId: Identifier<Block>
-        let direction: Direction
-    }
-    // TODO: use Route.Step
-    var trailingReservedBlocks = [TrailingReservedBlock]()
+    var trailingReservedBlocks = [Route.Step]()
     
     // Number of blocks the route should keep reserved behind
     // the train as it moves throught the route. The default is 0,

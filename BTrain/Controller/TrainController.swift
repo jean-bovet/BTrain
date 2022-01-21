@@ -469,7 +469,7 @@ final class TrainController {
         
     private func rememberCurrentBlock(route: Route) {
         let step = route.steps[train.routeStepIndex]
-        train.trailingReservedBlocks.append(.init(blockId: step.blockId, direction: step.direction))
+        train.trailingReservedBlocks.append(.init(step.blockId, step.direction))
     }
     
     private func freeTrailingBlocks() throws {
