@@ -64,10 +64,12 @@ final class Train: Element, ObservableObject {
     // but can be changed for long train that can span more than
     // one block. In the future, when length of blocks and trains are
     // taken into consideration, this will become a more dynamic property.
+    // TODO: persist
     var numberOfTrailingReservedBlocks = 0
     
     // Number of blocks the route should reserved ahead of the train.
     // The default is 1.
+    // TODO: persist
     var numberOfBlocksToReserveAhead = 1
     
     enum Schedule {

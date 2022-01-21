@@ -34,7 +34,9 @@ class TransitionsTests: XCTestCase {
     
     func testReservable() {
         let layout = Layout()
-        
+        layout.newTrain("t1", name: "t1")
+        layout.newTrain("t2", name: "t2")
+
         let b1 = Block("b1", type: .station, center: .zero, rotationAngle: 0)
         let b2 = Block("b2", type: .free, center: .zero, rotationAngle: 0)
 

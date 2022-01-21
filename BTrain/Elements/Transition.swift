@@ -82,13 +82,19 @@ final class Transition: Element, ITransition {
     // for the specified train (either they are free or are
     // already reserved for that same train).
     static func canReserve(transitions: [ITransition], for trainId: Identifier<Train>, layout: Layout) throws {
+        guard let train = layout.train(for: trainId) else {
+            throw LayoutError.trainNotFound(trainId: trainId)
+        }
         for transition in transitions {
             if let reserved = transition.reserved, reserved != trainId {
                 throw LayoutError.cannotReserveTransition(transition: transition.id, trainId: trainId, reserved: reserved)
             }
             if let turnoutId = transition.a.turnout, let turnout = layout.turnout(for: turnoutId) {
                 if let reserved = turnout.reserved , reserved != trainId {
-                    throw LayoutError.cannotReserveTurnout(turnout: turnoutId, trainId: trainId, reserved: reserved)
+                    guard let reservedTrain = layout.train(for: reserved) else {
+                        throw LayoutError.trainNotFound(trainId: reserved)
+                    }
+                    throw LayoutError.cannotReserveTurnout(turnout: turnout, train: train, reserved: reservedTrain)
                 }
             }
         }

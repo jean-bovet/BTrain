@@ -47,6 +47,6 @@ class OverviewViewTests: RootViewTests {
         let text = "Unknown feedback detected!"
         let sut = LayoutRuntimeErrorView(error: .constant(text))
         _ = try sut.inspect().find(button: "OK")
-        _ = try sut.inspect().find(text: "An error occurred in the layout: \(text)")
+        _ = try sut.inspect().find(text: "\(text)")
     }
 }

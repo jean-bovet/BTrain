@@ -19,7 +19,7 @@ struct LayoutRuntimeErrorView: View {
     var body: some View {
         HStack {
             if let error = error {
-                Text("An error occurred in the layout: \(error)")
+                Text("\(error)")
                 Spacer()
             }
             Button("OK") {
