@@ -68,10 +68,11 @@ final class Train: Element, ObservableObject {
     // TODO: persist
     var numberOfTrailingReservedBlocks = 0
     
-    // Number of blocks the route should reserved ahead of the train.
+    // The maximum number of blocks that should be reserved ahead of the train.
+    // The actual number of blocks might be smaller if a block cannot be reserved.
     // The default is 1.
     // TODO: persist
-    var numberOfBlocksToReserveAhead = 1
+    var maxNumberOfLeadingReservedBlocks = 1
     
     enum Schedule {
         // The train is stopped and cannot be started again

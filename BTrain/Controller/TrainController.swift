@@ -437,6 +437,11 @@ final class TrainController {
         // Remember the current step before moving to the next block
         rememberCurrentBlock(route: route)
         
+        // Set the leading flag to false for the current block (now the previous one) and the next block (now the current one)
+        // TODO: better way to do that?
+        currentBlock.reserved?.leading = false
+        nextBlock.reserved?.leading = false
+        
         // Set the train to its new block
         try layout.setTrainToBlock(train.id, nextBlock.id, position: .custom(value: position), direction: direction)
         
@@ -494,21 +499,32 @@ final class TrainController {
     
     private func reserveNextBlocks(route: Route) throws -> Bool {
         let startReservationIndex = min(route.steps.count-1, train.routeStepIndex + 1)
-        let endReservationIndex = min(route.steps.count-1, train.routeStepIndex + train.numberOfBlocksToReserveAhead)
+        let endReservationIndex = min(route.steps.count-1, train.routeStepIndex + train.maxNumberOfLeadingReservedBlocks)
                 
         var previousStep = route.steps[train.routeStepIndex]
         let stepsToReserve = route.steps[startReservationIndex...endReservationIndex]
+        var numberOfBlocksReserved = 0
         for step in stepsToReserve {
             guard let block = layout.block(for: step.blockId) else {
                 throw LayoutError.blockNotFound(blockId: step.blockId)
             }
             
-            guard block.reserved == nil || block.reserved?.trainId == train.id else {
-                return false
+            if let reservation = block.reserved {
+                if reservation.trainId == train.id && reservation.leading {
+                    // The reservation was already done
+                } else {
+                    // If the block is already reserved, bail out here.
+                    // If at least one block has been reserved, we consider
+                    // the reservation to be successfull.
+                    return numberOfBlocksReserved > 0
+                }
             }
-            
+                        
             guard block.train == nil else {
-                return false
+                // If the block already contains a train, bail out here.
+                // If at least one block has been reserved, we consider
+                // the reservation to be successfull.
+                return numberOfBlocksReserved > 0
             }
             
             guard block.enabled else {
@@ -520,6 +536,7 @@ final class TrainController {
             do {
                 try layout.reserve(trainId: train.id, fromBlock: previousStep.blockId, toBlock: block.id, direction: previousStep.direction)
                 BTLogger.debug("Reserved \(previousStep.blockId) to \(block.id) for \(train.name)")
+                numberOfBlocksReserved += 1
             } catch {
                 BTLogger.debug("Cannot reserve block \(previousStep.blockId) to \(block.id) for \(train.name): \(error)")
                 return false

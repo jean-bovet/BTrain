@@ -21,6 +21,13 @@ struct Reservation: Codable, Equatable, CustomStringConvertible {
     // but ignored internally when checking if a block is reserved
     // (only the trainId matters).
     let direction: Direction
+
+    // True if this reservation is ahead of the train. This is used
+    // by the controller to know which blocks have been reserved ahead
+    // of the train so it can make various prediction on them.
+    // This variable is set to false as soon as the train enters a block
+    // with that reservation.
+    var leading = true
     
     // Because `direction` is only an optional information,
     // it is not considered in the equality of the reservation
@@ -29,6 +36,6 @@ struct Reservation: Codable, Equatable, CustomStringConvertible {
     }
 
     var description: String {
-        return "Reservation(train=\(trainId), direction=\(direction.rawValue))"
+        return "Reservation(train=\(trainId), direction=\(direction.rawValue), leading=\(leading))"
     }
 }

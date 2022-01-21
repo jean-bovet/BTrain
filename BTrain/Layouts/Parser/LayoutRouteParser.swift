@@ -277,7 +277,7 @@ final class LayoutRouteParser {
         } else {
             let feedback = block.feedbacks[feedbackIndex]
             let f = feedbacks.first(where: { $0.id == feedback.feedbackId })!
-            assert(f.detected == detected, "The existing feedback does not match the `reserved` defined in the ASCII representation")
+            assert(f.detected == detected, "The existing feedback does not match the `detected` defined in the ASCII representation")
             f.detected = detected
         }
         feedbackIndex += 1

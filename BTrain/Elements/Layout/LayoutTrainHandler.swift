@@ -398,13 +398,15 @@ final class LayoutTrainHandler: LayoutTrainHandling {
                 turnout.state = state
                 turnout.reserved = trainId
                 layout.executor?.sendTurnoutState(turnout: turnout) { }
+                BTLogger.debug("Reserved turnout \(turnout.name) for \(reservation) and state \(state)")
             } else if let blockId = transition.b.block {
                 guard let block = layout.block(for: blockId) else {
                     throw LayoutError.blockNotFound(blockId: blockId)
                 }
                 let naturalDirection = transition.b.socketId == Block.previousSocket
-                block.reserved = Reservation(trainId: trainId, direction: naturalDirection ? .next : .previous)
-                BTLogger.debug("Reserved block \(block.name) for \(block.reserved)")
+                let reservation = Reservation(trainId: trainId, direction: naturalDirection ? .next : .previous)
+                block.reserved = reservation
+                BTLogger.debug("Reserved block \(block.name) for \(reservation)")
             }
         }
         

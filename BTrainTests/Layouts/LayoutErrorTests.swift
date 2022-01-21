@@ -128,7 +128,7 @@ class LayoutErrorTests: XCTestCase {
             try layout.reserve(block: b1.id, withTrain: train0, direction: .next)
             XCTFail("Must throw an exception")
         } catch {
-            XCTAssertEqual(error.localizedDescription, "Cannot reserve block 1 for train 1 because the block is already reserved for Reservation(train=2, direction=next)")
+            XCTAssertEqual(error.localizedDescription, "Cannot reserve block 1 for train 1 because the block is already reserved for Reservation(train=2, direction=next, leading=true)")
         }
     }
 
