@@ -171,6 +171,7 @@
 		A792DEFD27850834004B0439 /* SimulatorViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A792DEFC27850834004B0439 /* SimulatorViewTests.swift */; };
 		A792DEFF278508B0004B0439 /* LayoutCreatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A792DEFE278508B0004B0439 /* LayoutCreatorTests.swift */; };
 		A792DF012785095B004B0439 /* SettingsViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A792DF002785095B004B0439 /* SettingsViewTests.swift */; };
+		A79466CC279B64D2006E2A4C /* MainThreadQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = A79466CB279B64D2006E2A4C /* MainThreadQueue.swift */; };
 		A796FA2B2772BB5400FA41BA /* Layout.json in Resources */ = {isa = PBXBuildFile; fileRef = A796FA2A2772BB5400FA41BA /* Layout.json */; };
 		A796FA2E2775642B00FA41BA /* LayoutAsserter.swift in Sources */ = {isa = PBXBuildFile; fileRef = A796FA2D2775642B00FA41BA /* LayoutAsserter.swift */; };
 		A7B06AE12727786500BDD88C /* AppView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7B06AE02727786500BDD88C /* AppView.swift */; };
@@ -399,6 +400,7 @@
 		A792DEFC27850834004B0439 /* SimulatorViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimulatorViewTests.swift; sourceTree = "<group>"; };
 		A792DEFE278508B0004B0439 /* LayoutCreatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutCreatorTests.swift; sourceTree = "<group>"; };
 		A792DF002785095B004B0439 /* SettingsViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewTests.swift; sourceTree = "<group>"; };
+		A79466CB279B64D2006E2A4C /* MainThreadQueue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainThreadQueue.swift; sourceTree = "<group>"; };
 		A796FA2A2772BB5400FA41BA /* Layout.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = Layout.json; sourceTree = "<group>"; };
 		A796FA2D2775642B00FA41BA /* LayoutAsserter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutAsserter.swift; sourceTree = "<group>"; };
 		A7B06AE02727786500BDD88C /* AppView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppView.swift; sourceTree = "<group>"; };
@@ -971,6 +973,7 @@
 				A7CA5EC427964B6700171398 /* Array+Extension.swift */,
 				A79079A2277F87AB00771A60 /* Spacer+Extension.swift */,
 				A717158E2758809C00200F92 /* Geometry */,
+				A79466CB279B64D2006E2A4C /* MainThreadQueue.swift */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -1169,6 +1172,7 @@
 			files = (
 				A73AFEB127265A2300E1ED21 /* MarklinCANMessage.swift in Sources */,
 				A7281840278E9EDC007BE810 /* Direction.swift in Sources */,
+				A79466CC279B64D2006E2A4C /* MainThreadQueue.swift in Sources */,
 				A7907993277EC86200771A60 /* DocumentToolbarContent.swift in Sources */,
 				A7218081275F0BDB00831998 /* Turnout+State.swift in Sources */,
 				A7710E75277A7AAC00C08150 /* Layout2Swift.swift in Sources */,

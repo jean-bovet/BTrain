@@ -53,8 +53,12 @@ final class MarklinCommandSimulator: ObservableObject {
         self.layout = layout
         self.interface = interface
         
-        registerForTrainChanges()
-        registerForTrainBlockChange()
+        // Initialization from the document can sometimes happen in the background,
+        // let's make sure these are initialized in the main thread.
+        MainThreadQueue.sync {
+            registerForTrainChanges()
+            registerForTrainBlockChange()
+        }
     }
 
     func registerForTrainChanges() {
