@@ -23,7 +23,9 @@ import Foundation
 // !{ = `!` indicates that a block is reversed, meaning the route enters the block from the reverse natural direction.
 // ≏  = feedback sensor
 // ≡  = feedback sensor (activated)
-// <t0(0,1),s> = turnout <t<id>(fromSocket,toSocket),state> where state can be: s, l, r, s01, s23, b21, b03
+// <t0{sl}(0,1),s> = turnout <t<id>{type}(fromSocket,toSocket),state> where:
+//    - type is optional and will default to straight right. Type can be "sl", "sr", "tw", "ds" and "ds2"
+//    - state can be: s, l, r, s01, s23, b21, b03
 // 🚂 = train
 // 🛑🚂 = train stopped
 // 🟨🚂 = train braking

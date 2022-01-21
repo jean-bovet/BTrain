@@ -296,7 +296,7 @@ final class LayoutRouteParser {
             sp.eat("<")
         }
         
-        let turnoutName = sp.matchString(["(", ",", ">"])
+        let turnoutName = sp.matchString(["{", "(", ",", ">"])
         guard !turnoutName.isEmpty else {
             assertionFailure("Turnout must have its name specified")
             return
@@ -306,6 +306,31 @@ final class LayoutRouteParser {
         var fromSocket = 0
         var toSocket = 1
         var state = Turnout.State.straight
+        var type = Turnout.Category.singleRight
+        
+        // See if the type is defined
+        if sp.matches("{") {
+            let typeString = sp.matchString(["}"])
+            guard !typeString.isEmpty else {
+                assertionFailure("Turnout type must be specfied within { }")
+                return
+            }
+            switch(typeString) {
+            case "sl":
+                type = .singleLeft
+            case "sr":
+                type = .singleRight
+            case "tw":
+                type = .threeWay
+            case "ds":
+                type = .doubleSlip
+            case "ds2":
+                type = .doubleSlip2
+            default:
+                assertionFailure("Invalid turnout type \(typeString)")
+            }
+            assert(sp.matches("}"), "Expecting closing '}' after type definition")
+        }
         
         // See if the socket definition is specified
         if sp.matches("(") {
@@ -347,7 +372,7 @@ final class LayoutRouteParser {
             assert(existingTurnout.state == state, "Mismatching turnout state for turnout \(turnoutName)")
             assert(existingTurnout.reserved?.uuid == reservedTrainNumber, "Mismatching turnout reservation for turnout \(turnoutName)")
         } else {
-            let turnout = Turnout(turnoutName, type: .singleRight, address: 0, state: state)
+            let turnout = Turnout(turnoutName, type: type, address: 0, state: state)
             if let reservedTrainNumber = reservedTrainNumber {
                 turnout.reserved = Identifier<Train>(uuid: reservedTrainNumber)
             }
