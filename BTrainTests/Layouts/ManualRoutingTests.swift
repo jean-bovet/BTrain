@@ -145,7 +145,7 @@ class ManualRoutingTests: BTTestCase {
         try p.assert("r1: {r1{b1 🛑🚂1 ≡ ≏ }} <t0,l> [b2 ≏ ≏ ] <t1,l> [b3 ≏ ≏ ] <t0(2,0),l> !{r1{b1 🛑🚂1 ≡ ≏ }}")
     }
     
-    func testMoveWith2ReservationBlockAhead() throws {
+    func testMoveWith2LeadingReservation() throws {
         let layout = LayoutACreator().newLayout()
         let t1 = layout.trains[0]
         t1.maxNumberOfLeadingReservedBlocks = 2
@@ -170,7 +170,7 @@ class ManualRoutingTests: BTTestCase {
         try p.assert("r1: {r1{b1 🛑🚂1 ≡ ≏ }} <t0,l> [b2 ≏ ≏ ] <t1,l> [b3 ≏ ≏ ] <t0(2,0),l> !{r1{b1 🛑🚂1 ≡ ≏ }}")
     }
 
-    func testMoveWith3ReservationBlockAhead() throws {
+    func testMoveWith3LeadingReservation() throws {
         let layout = LayoutACreator().newLayout()
         let t1 = layout.trains[0]
         t1.maxNumberOfLeadingReservedBlocks = 3
@@ -192,6 +192,33 @@ class ManualRoutingTests: BTTestCase {
         try p.assert("r1: {r1{b1 ≏ ≏ }} <r1<t0,l>> [b2 ≏ ≏ ] <t1,l> [r1[b3 ≏ ≡ 🚂1 ]] <r1<t0(2,0),l>> !{r1{b1 ≏ ≏ }}")
         try p.assert("r1: {r1{b1 ≏ 🟨🚂1 ≡ }} <t0,l> [b2 ≏ ≏ ] <t1,l> [b3 ≏ ≏ ] <t0(2,0),l> !{r1{b1 ≏ 🟨🚂1 ≡ }}")
         try p.assert("r1: {r1{b1 ≏ 🟨🚂1 ≏ }} <t0,l> [b2 ≏ ≏ ] <t1,l> [b3 ≏ ≏ ] <t0(2,0),l> !{r1{b1 ≏ 🟨🚂1 ≏ }}")
+        try p.assert("r1: {r1{b1 🛑🚂1 ≡ ≏ }} <t0,l> [b2 ≏ ≏ ] <t1,l> [b3 ≏ ≏ ] <t0(2,0),l> !{r1{b1 🛑🚂1 ≡ ≏ }}")
+    }
+
+    func testMoveWith1TrailingReservation() throws {
+        let layout = LayoutACreator().newLayout()
+        let p = try setup(layout: layout, fromBlockId: "b1", route: layout.routes[0])
+        let t1 = layout.trains[0]
+        t1.maxNumberOfLeadingReservedBlocks = 1
+        t1.numberOfTrailingReservedBlocks = 1
+
+        try p.assert("r1: {r1{b1 🛑🚂1 ≏ ≏ }} <t0> [b2 ≏ ≏ ] <t1> [b3 ≏ ≏ ] <t0(2,0)> !{r1{b1 ≏ ≏ }}")
+
+        try p.start(routeID: "r1", trainID: "1")
+
+        try p.assert("r1: {r1{b1 🚂1 ≏ ≏ }} <r1<t0>> [r1[b2 ≏ ≏ ]] <t1> [b3 ≏ ≏ ] <r1<t0(2,0)>> !{r1{b1 ≏ ≏ }}")
+        try p.assert("r1: {r1{b1 ≡ 🚂1 ≏ }} <r1<t0>> [r1[b2 ≏ ≏ ]] <t1> [b3 ≏ ≏ ] <r1<t0(2,0)>> !{r1{b1 ≡ ≏ }}")
+        try p.assert("r1: {r1{b1 ≏ ≡ 🚂1 }} <r1<t0>> [r1[b2 ≏ ≏ ]] <t1> [b3 ≏ ≏ ] <r1<t0(2,0)>> !{r1{b1 ≏ ≡ }}")
+        try p.assert("r1: {r1{b1 ≏ ≏ }} <r1<t0>> [r1[b2 ≡ 🚂1 ≏ ]] <r1<t1,l>> [r1[b3 ≏ ≏ ]] <r1<t0(2,0)>> !{b1 ≏ ≏ }")
+        try p.assert("r1: {r1{b1 ≏ ≏ }} <r1<t0>> [r1[b2 ≏ ≡ 🚂1 ]] <r1<t1,l>> [r1[b3 ≏ ≏ ]] <r1<t0(2,0)>> !{b1 ≏ ≏ }")
+        try p.assert("r1: {r1{b1 ≏ ≏ }} <r1<t0>> [r1[b2 ≏ ≏ 🚂1 ]] <r1<t1,l>> [r1[b3 ≏ ≏ ]] <r1<t0(2,0)>> !{b1 ≏ ≏ }")
+        try p.assert("r1: {r1{b1 ≏ ≏ }} <r1<t0,l>> [r1[b2 ≏ ≏ ]] <r1<t1,l>> [r1[b3 ≡ 🚂1 ≏ ]] <r1<t0(2,0),l>> !{r1{b1 ≏ ≏ }}")
+        try p.assert("r1: {r1{b1 ≏ ≏ }} <r1<t0,l>> [r1[b2 ≏ ≏ ]] <r1<t1,l>> [r1[b3 ≏ 🚂1 ≏ ]] <r1<t0(2,0),l>> !{r1{b1 ≏ ≏ }}")
+        try p.assert("r1: {r1{b1 ≏ ≏ }} <r1<t0,l>> [r1[b2 ≏ ≏ ]] <r1<t1,l>> [r1[b3 ≏ ≡ 🚂1 ]] <r1<t0(2,0),l>> !{r1{b1 ≏ ≏ }}")
+        try p.assert("r1: {r1{b1 ≏ 🟨🚂1 ≡ }} <r1<t0,l>> [b2 ≏ ≏ ] <t1,l> [r1[b3 ≏ ≏ ]] <r1<t0(2,0),l>> !{r1{b1 ≏ 🟨🚂1 ≡ }}")
+        try p.assert("r1: {r1{b1 ≏ 🟨🚂1 ≏ }} <r1<t0,l>> [b2 ≏ ≏ ] <t1,l> [r1[b3 ≏ ≏ ]] <r1<t0(2,0),l>> !{r1{b1 ≏ 🟨🚂1 ≏ }}")
+        
+        // When train stop, it frees all the elements it had reserved (including the trailing ones)
         try p.assert("r1: {r1{b1 🛑🚂1 ≡ ≏ }} <t0,l> [b2 ≏ ≏ ] <t1,l> [b3 ≏ ≏ ] <t0(2,0),l> !{r1{b1 🛑🚂1 ≡ ≏ }}")
     }
 

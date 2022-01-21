@@ -444,6 +444,9 @@ final class TrainController {
         
         // Set the train to its new block
         try layout.setTrainToBlock(train.id, nextBlock.id, position: .custom(value: position), direction: direction)
+
+        // And remove the train from the previous block
+        currentBlock.train = nil
         
         // Increment the train route index
         try layout.setTrainRouteStepIndex(train, train.routeStepIndex + 1)
