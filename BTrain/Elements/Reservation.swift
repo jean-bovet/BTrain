@@ -28,14 +28,39 @@ struct Reservation: Codable, Equatable, CustomStringConvertible {
     // This variable is set to false as soon as the train enters a block
     // with that reservation.
     var leading = true
-    
+
+    var description: String {
+        return "Reservation(train=\(trainId), direction=\(direction.rawValue), leading=\(leading))"
+    }
+
     // Because `direction` is only an optional information,
     // it is not considered in the equality of the reservation
     static func ==(lhs: Reservation, rhs: Reservation) -> Bool {
         return lhs.trainId == rhs.trainId
     }
 
-    var description: String {
-        return "Reservation(train=\(trainId), direction=\(direction.rawValue), leading=\(leading))"
+    enum CodingKeys: CodingKey {
+      case trainId, direction, leading
     }
+
+    init(trainId: Identifier<Train>, direction: Direction, leading: Bool = true) {
+        self.trainId = trainId
+        self.direction = direction
+        self.leading = leading
+    }
+    
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.init(trainId: try container.decode(Identifier<Train>.self, forKey: CodingKeys.trainId),
+                  direction: try container.decode(Direction.self, forKey: CodingKeys.direction),
+                  leading: try container.decodeIfPresent(Bool.self, forKey: CodingKeys.leading) ?? false)
+    }
+ 
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(trainId, forKey: CodingKeys.trainId)
+        try container.encode(direction, forKey: CodingKeys.direction)
+        try container.encode(leading, forKey: CodingKeys.leading)
+    }
+    
 }

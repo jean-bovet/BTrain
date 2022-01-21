@@ -34,7 +34,7 @@ class LayoutDocumentTests: XCTestCase {
         let data = try Data(contentsOf: url)
         let layout = try LayoutDocument.layout(contentType: .json, data: data)
         let errors = try LayoutDiagnostic(layout: layout).check()
-        XCTAssertEqual(errors.count, 3)
+        XCTAssertEqual(errors.count, 0)
     }
     
     func testUXCommands() throws {
