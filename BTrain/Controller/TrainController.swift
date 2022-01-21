@@ -436,12 +436,7 @@ final class TrainController {
 
         // Remember the current step before moving to the next block
         rememberCurrentBlock(route: route)
-        
-        // Set the leading flag to false for the current block (now the previous one) and the next block (now the current one)
-        // TODO: better way to do that?
-        currentBlock.reserved?.leading = false
-        nextBlock.reserved?.leading = false
-        
+                
         // Set the train to its new block
         try layout.setTrainToBlock(train.id, nextBlock.id, position: .custom(value: position), direction: direction)
 

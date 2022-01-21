@@ -70,7 +70,6 @@ class BlockTests: XCTestCase {
         XCTAssertEqual(b1.rotationAngle, b2.rotationAngle)
         XCTAssertEqual(b1.reserved?.trainId, b2.reserved?.trainId)
         XCTAssertEqual(b1.reserved?.direction, b2.reserved?.direction)
-        XCTAssertEqual(b1.reserved?.leading, b2.reserved?.leading)
         XCTAssertEqual(b1.train, b2.train)
         XCTAssertEqual(b1.train?.direction, b2.train?.direction)
         XCTAssertEqual(b1.feedbacks, b2.feedbacks)
