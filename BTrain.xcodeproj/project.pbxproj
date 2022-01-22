@@ -918,9 +918,16 @@
 			isa = PBXGroup;
 			children = (
 				A7841389274165FB00381341 /* MarklinCommandSimulator.swift */,
+				A783EA5A278530BF00E69B6D /* SimulatorTrain.swift */,
+			);
+			path = Simulator;
+			sourceTree = "<group>";
+		};
+		A79466CF279B8B22006E2A4C /* Simulator */ = {
+			isa = PBXGroup;
+			children = (
 				A792DEF527839F55004B0439 /* SimulatorView.swift */,
 				A792DEF72783A09C004B0439 /* SimulatorTrainControlView.swift */,
-				A783EA5A278530BF00E69B6D /* SimulatorTrain.swift */,
 			);
 			path = Simulator;
 			sourceTree = "<group>";
@@ -942,6 +949,7 @@
 				A73E07F9276A70F5005F9D64 /* Overview */,
 				A73B1645274DC5BC0073947D /* Train Controls */,
 				A7841372273CE06F00381341 /* Switchboard */,
+				A79466CF279B8B22006E2A4C /* Simulator */,
 				A7710E5A2777FA0E00C08150 /* Routes */,
 				A73B163A274DC02A0073947D /* Trains */,
 				A7B0B5182762FBEE00F11A3E /* Blocks */,

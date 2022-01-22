@@ -19,6 +19,7 @@ final class SimulatorTrain: ObservableObject, Element {
     let id: Identifier<Train>
     let train: Train
     
+    @Published var simulate = true
     @Published var directionForward = true
     @Published var speed = TrainSpeed(kph: 0, decoderType: .MFX)
         

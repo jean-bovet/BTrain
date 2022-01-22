@@ -77,6 +77,7 @@ extension LayoutDocument: ReferenceFileDocument {
         switch configuration.contentType {
         case .json:
             return .init(regularFileWithContents: snapshot)
+            
         case LayoutDocument.packageType:
             let wrapper = FileWrapper(directoryWithFileWrappers: [:])
             
@@ -100,6 +101,7 @@ extension LayoutDocument: ReferenceFileDocument {
             wrapper.addFileWrapper(iconDirectory)
             
             return wrapper
+            
         default:
             throw CocoaError(.fileWriteUnsupportedScheme)
         }

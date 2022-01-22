@@ -20,27 +20,31 @@ struct SimulatorTrainControlView: View {
 
     var body: some View {
         HStack {
-            Button {
-                simulator.setTrainDirection(train: train, directionForward: !train.directionForward)
-            } label: {
-                if train.directionForward {
-                    Image(systemName: "arrowtriangle.right.fill")
-                } else {
-                    Image(systemName: "arrowtriangle.left.fill")
-                }
-            }.buttonStyle(.borderless)
-            
-            HStack {
-                Slider(
-                    value: $speed.kphAsDouble,
-                    in: 0...Double(speed.maxSpeed)
-                ) {
-                } onEditingChanged: { editing in
-                    simulator.setTrainSpeed(train: train)
-                }
+            Group {
+                Button {
+                    simulator.setTrainDirection(train: train, directionForward: !train.directionForward)
+                } label: {
+                    if train.directionForward {
+                        Image(systemName: "arrowtriangle.right.fill")
+                    } else {
+                        Image(systemName: "arrowtriangle.left.fill")
+                    }
+                }.buttonStyle(.borderless)
                 
-                Text("\(Int(speed.kph)) km/h")
-            }
+                HStack {
+                    Slider(
+                        value: $speed.kphAsDouble,
+                        in: 0...Double(speed.maxSpeed)
+                    ) {
+                    } onEditingChanged: { editing in
+                        simulator.setTrainSpeed(train: train)
+                    }
+                    
+                    Text("\(Int(speed.kph)) km/h")
+                }
+            }.disabled(train.simulate == false)
+            
+            Toggle("Simulate", isOn: $train.simulate)
         }
     }
 }

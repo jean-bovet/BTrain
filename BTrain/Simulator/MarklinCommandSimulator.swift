@@ -114,7 +114,7 @@ final class MarklinCommandSimulator: ObservableObject {
     func scheduleTimer() {
         self.timer?.invalidate()
         self.timer = Timer.scheduledTimer(withTimeInterval: refreshTimeInterval, repeats: true) { timer in
-            self.runLayout()
+            self.simulateLayout()
         }
     }
     
@@ -243,8 +243,12 @@ final class MarklinCommandSimulator: ObservableObject {
         })
     }
     
-    func runLayout() {
+    func simulateLayout() {
         for train in layout.trains {
+            guard let simulatorTrain = trains.first(where: {$0.train.id == train.id}), simulatorTrain.simulate else {
+                continue
+            }
+            
             guard let routeId = train.routeId else {
                 continue
             }
@@ -254,14 +258,14 @@ final class MarklinCommandSimulator: ObservableObject {
             }
             
             do {
-                try tick(route: route, train: train)
+                try simulate(route: route, train: train)
             } catch {
                 BTLogger.error(error.localizedDescription)
             }
         }
     }
     
-    func tick(route: Route, train: Train) throws {
+    func simulate(route: Route, train: Train) throws {
         guard train.speed.kph > 0 else {
             return
         }
