@@ -45,7 +45,7 @@ struct WelcomeView: View {
                         }
 
                         let fw = try FileWrapper(url: file, options: [])
-                        document.layout.apply(other: try fw.layout())
+                        document.apply(try fw.layout())
                         document.trainIconManager.setIcons(try fw.icons())
                     } catch {
                         errorString = error.localizedDescription

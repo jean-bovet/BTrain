@@ -91,4 +91,9 @@ final class LayoutDocument: ObservableObject {
         self.layoutController = LayoutController(layout: layout, interface: interface)
         layout.executor = LayoutCommandExecutor(layout: layout, interface: interface)
     }
+    
+    func apply(_ other: Layout) {
+        layout.apply(other: other)
+        switchboard.fitSize()
+    }
 }
