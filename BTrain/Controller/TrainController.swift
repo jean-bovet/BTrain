@@ -39,8 +39,28 @@ final class TrainController {
     // in the first block of the route.
     var startRouteIndex: Int?
     
+    // Structure indicating when the train should stop and
+    // the associated behavior when it does effectively stop.
     struct StopTrigger {
+        // If > 0, the train will be restarted after the specified delay
+        let restartDelay: TimeInterval
+        
+        // If true, the train scheduling will be stopped as well,
+        // otherwise the train stops temporarily until it can restart.
         let stopCompletely: Bool
+        
+        static func completeStop() -> StopTrigger {
+            return .init(restartDelay: 0, stopCompletely: true)
+        }
+        
+        static func temporaryStop() -> StopTrigger {
+            return .init(restartDelay: 0, stopCompletely: false)
+        }
+        
+        static func stopAndRestart(after delay: TimeInterval) -> StopTrigger {
+            return .init(restartDelay: delay, stopCompletely: false)
+        }
+
     }
     
     // If this variable is not nil, it means the train
@@ -135,13 +155,13 @@ final class TrainController {
         // Update the automatic route if the next block is not defined and if the automatic route
         // does not have a destinationBlock.
         if nextBlock == nil && route.automatic && route.automaticMode == .endless {
-            BTLogger.debug("Generating a new route for \(train) at block \(currentBlock.name) with mode \(route.automaticMode) because the next block is not defined")
+            debug("Generating a new route for \(train) at block \(currentBlock.name) with mode \(route.automaticMode) because the next block is not defined")
             return try updateAutomaticRoute(for: train.id)
         }
                 
         // Try to reserve the next blocks and if successfull, then start the train
         if try reserveNextBlocks(route: route) {
-            BTLogger.debug("Start train \(train.name) because the next blocks could be reserved")
+            debug("Start train \(train.name) because the next blocks could be reserved")
             startRouteIndex = train.routeStepIndex
             try layout.setTrainSpeed(train, LayoutFactory.DefaultSpeed)
             train.state = .running
@@ -218,7 +238,7 @@ final class TrainController {
                 }
                                 
                 debug("Stopping completely \(train) because it has reached the end of the route")
-                stopTrigger = .init(stopCompletely: true)
+                stopTrigger = StopTrigger.completeStop()
                 return .processed
             }
             
@@ -226,18 +246,10 @@ final class TrainController {
             if currentBlock.category == .station {
                 if train.scheduling == .finishing {
                     debug("Stopping completely \(train) because it has reached a station and it is marked as .finishing")
-                    stopTrigger = .init(stopCompletely: true)
+                    stopTrigger = StopTrigger.completeStop()
                     return .processed
                 } else {
-                    let delay = currentBlock.waitingTime
-                    debug("Schedule timer to restart train \(train) in \(delay) seconds")
-                    
-                    // The layout controller is going to schedule the appropriate timer given the `restartDelayTime` value
-                    if let ti = currentBlock.train {
-                        ti.timeUntilAutomaticRestart = delay
-                        delegate?.scheduleRestartTimer(trainInstance: ti)
-                    }
-                    stopTrigger = .init(stopCompletely: false)
+                    stopTrigger = StopTrigger.stopAndRestart(after: currentBlock.waitingTime)
                     return .processed
                 }
             }
@@ -270,7 +282,7 @@ final class TrainController {
         
         if train.routeStepIndex == route.steps.count - 1 {
             debug("Train \(train) will stop here (\(currentBlock)) because it has reached the end of the route")
-            stopTrigger = .init(stopCompletely: true)
+            stopTrigger = StopTrigger.completeStop()
             return .processed
         }
         
@@ -320,6 +332,17 @@ final class TrainController {
                 if stopFeedback == f.id {
                     debug("Train \(train) is stopped in \(currentBlock.name) at position \(train.position), direction \(direction)")
                     result = try stop(completely: stopTrigger.stopCompletely)
+                    
+                    // Reschedule if necessary
+                    if stopTrigger.restartDelay > 0 {
+                        debug("Schedule timer to restart train \(train) in \(stopTrigger.restartDelay) seconds")
+                        
+                        // The layout controller is going to schedule the appropriate timer given the `restartDelayTime` value
+                        if let ti = currentBlock.train {
+                            ti.timeUntilAutomaticRestart = stopTrigger.restartDelay
+                            delegate?.scheduleRestartTimer(trainInstance: ti)
+                        }
+                    }
                 }
             }
         }
@@ -452,7 +475,7 @@ final class TrainController {
         // Reserve the block(s) ahead. If it is not possible, then stop the train in this block
         if try reserveNextBlocks(route: route) == false {
             debug("Train \(train) will stop here (\(nextBlock)) because the next block(s) cannot be reserved")
-            stopTrigger = .init(stopCompletely: false)
+            stopTrigger = StopTrigger.temporaryStop()
         }
         
         // Handle any route-specific stop now that the block has moved to a new block
