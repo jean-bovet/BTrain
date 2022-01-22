@@ -51,32 +51,32 @@ final class LayoutECreator: LayoutCreating {
 
         // Blocks
 
-        let b_b1 = Block("b1", type: .free, center: CGPoint(x: 150.0, y: 170.0), rotationAngle: -.pi/2)
-        let b_b2 = Block("b2", type: .free, center: CGPoint(x: 380.0, y: 70.0), rotationAngle: 0.0)
-        let b_b3 = Block("b3", type: .free, center: CGPoint(x: 630.0, y: 210.0), rotationAngle: .pi/2)
-        let b_b4 = Block("b4", type: .free, center: CGPoint(x: 380.0, y: 300.0), rotationAngle: -.pi)
-        let b_b5 = Block("b5", type: .free, center: CGPoint(x: 380.0, y: 130.0), rotationAngle: -.pi)
-        let b_b6 = Block("b6", type: .free, center: CGPoint(x: 380.0, y: 220.0), rotationAngle: -.pi)
-        let b_s1 = Block("s1", type: .station, center: CGPoint(x: 370.0, y: 360.0), rotationAngle: -.pi)
-        let b_s2 = Block("s2", type: .station, center: CGPoint(x: 370.0, y: 410.0), rotationAngle: -.pi)
+        let b_b1 = Block("b1", type: .free, center: CGPoint(x: 55.0, y: 155.0), rotationAngle: -.pi/2)
+        let b_b2 = Block("b2", type: .free, center: CGPoint(x: 285.0, y: 55.0), rotationAngle: 0.0)
+        let b_b3 = Block("b3", type: .free, center: CGPoint(x: 535.0, y: 195.0), rotationAngle: .pi/2)
+        let b_b4 = Block("b4", type: .free, center: CGPoint(x: 285.0, y: 285.0), rotationAngle: -.pi)
+        let b_b5 = Block("b5", type: .free, center: CGPoint(x: 285.0, y: 115.0), rotationAngle: -.pi)
+        let b_b6 = Block("b6", type: .free, center: CGPoint(x: 285.0, y: 205.0), rotationAngle: -.pi)
+        let b_s1 = Block("s1", type: .station, center: CGPoint(x: 275.0, y: 345.0), rotationAngle: -.pi)
+        let b_s2 = Block("s2", type: .station, center: CGPoint(x: 275.0, y: 395.0), rotationAngle: -.pi)
         l.add([b_b1,b_b2,b_b3,b_b4,b_b5,b_b6,b_s1,b_s2])
 
         // Feedbacks
 
         let f_fb1 = Feedback("fb1", deviceID: 1, contactID: 1)
         let f_fb2 = Feedback("fb2", deviceID: 1, contactID: 2)
-        let f_fb31 = Feedback("fb3.1", deviceID: 1, contactID: 31)
-        let f_fb32 = Feedback("fb3.2", deviceID: 1, contactID: 32)
-        let f_fb33 = Feedback("fb3.3", deviceID: 1, contactID: 33)
+        let f_fb3_1 = Feedback("fb3.1", deviceID: 1, contactID: 31)
+        let f_fb3_2 = Feedback("fb3.2", deviceID: 1, contactID: 32)
+        let f_fb3_3 = Feedback("fb3.3", deviceID: 1, contactID: 33)
         let f_fb4 = Feedback("fb4", deviceID: 1, contactID: 4)
         let f_fb5 = Feedback("fb5", deviceID: 1, contactID: 5)
         let f_fb6 = Feedback("fb6", deviceID: 1, contactID: 6)
         let f_fs1 = Feedback("fs1", deviceID: 1, contactID: 7)
         let f_fs2 = Feedback("fs2", deviceID: 1, contactID: 8)
-        l.feedbacks.append(contentsOf: [f_fb1,f_fb2,f_fb31,f_fb32,f_fb33,f_fb4,f_fb5,f_fb6,f_fs1,f_fs2])
+        l.feedbacks.append(contentsOf: [f_fb1,f_fb2,f_fb3_1,f_fb3_2,f_fb3_3,f_fb4,f_fb5,f_fb6,f_fs1,f_fs2])
         l.assign(b_b1, [f_fb1])
         l.assign(b_b2, [f_fb2])
-        l.assign(b_b3, [f_fb31,f_fb32,f_fb33])
+        l.assign(b_b3, [f_fb3_1,f_fb3_2,f_fb3_3])
         l.assign(b_b4, [f_fb4])
         l.assign(b_b5, [f_fb5])
         l.assign(b_b6, [f_fb6])
@@ -85,14 +85,14 @@ final class LayoutECreator: LayoutCreating {
 
         // Turnouts
 
-        let t_t1 = Turnout("t1", type: .singleLeft, address: .init(3, .MM), state: .straight, center: CGPoint(x: 200.0, y: 410.0), rotationAngle: 0.0)
-        let t_t2 = Turnout("t2", type: .singleLeft, address: .init(3, .MM), state: .straight, center: CGPoint(x: 150.0, y: 260.0), rotationAngle: .pi/2)
-        let t_t3 = Turnout("t3", type: .singleRight, address: .init(3, .MM), state: .straight, center: CGPoint(x: 220.0, y: 70.0), rotationAngle: 0.0)
-        let t_t4 = Turnout("t4", type: .singleLeft, address: .init(3, .MM), state: .straight, center: CGPoint(x: 550.0, y: 70.0), rotationAngle: .pi)
-        let t_t5 = Turnout("t5", type: .singleRight, address: .init(3, .MM), state: .straight, center: CGPoint(x: 630.0, y: 260.0), rotationAngle: .pi/2)
-        let t_t6 = Turnout("t6", type: .singleRight, address: .init(3, .MM), state: .straight, center: CGPoint(x: 570.0, y: 410.0), rotationAngle: .pi)
-        let t_t7 = Turnout("t7", type: .singleRight, address: .init(3, .MM), state: .straight, center: CGPoint(x: 520.0, y: 300.0), rotationAngle: .pi)
-        let t_t8 = Turnout("t8", type: .singleLeft, address: .init(3, .MM), state: .straight, center: CGPoint(x: 240.0, y: 300.0), rotationAngle: 0.0)
+        let t_t1 = Turnout("t1", type: .singleLeft, address: .init(3,.MM), state: .straight, center: CGPoint(x: 105.0, y: 395.0), rotationAngle: 0.0)
+        let t_t2 = Turnout("t2", type: .singleLeft, address: .init(3,.MM), state: .straight, center: CGPoint(x: 55.0, y: 245.0), rotationAngle: .pi/2)
+        let t_t3 = Turnout("t3", type: .singleRight, address: .init(3,.MM), state: .straight, center: CGPoint(x: 125.0, y: 55.0), rotationAngle: 0.0)
+        let t_t4 = Turnout("t4", type: .singleLeft, address: .init(3,.MM), state: .straight, center: CGPoint(x: 455.0, y: 55.0), rotationAngle: .pi)
+        let t_t5 = Turnout("t5", type: .singleRight, address: .init(3,.MM), state: .straight, center: CGPoint(x: 535.0, y: 245.0), rotationAngle: .pi/2)
+        let t_t6 = Turnout("t6", type: .singleRight, address: .init(3,.MM), state: .straight, center: CGPoint(x: 475.0, y: 395.0), rotationAngle: .pi)
+        let t_t7 = Turnout("t7", type: .singleRight, address: .init(3,.MM), state: .straight, center: CGPoint(x: 425.0, y: 285.0), rotationAngle: .pi)
+        let t_t8 = Turnout("t8", type: .singleLeft, address: .init(3,.MM), state: .straight, center: CGPoint(x: 145.0, y: 285.0), rotationAngle: 0.0)
         l.turnouts.append(contentsOf: [t_t1,t_t2,t_t3,t_t4,t_t5,t_t6,t_t7,t_t8])
 
         // Transitions
@@ -125,8 +125,8 @@ final class LayoutECreator: LayoutCreating {
 
         // Trains
 
-        l.newTrain("0", name: "Rail 2000")
-        l.newTrain("1", name: "Old Loco")
+        l.newTrain("0", name: "Rail 2000", address: 0x0000, decoder: .MFX)
+        l.newTrain("1", name: "Old Loco", address: 0x0000, decoder: .MFX)
         
         return l
     }
