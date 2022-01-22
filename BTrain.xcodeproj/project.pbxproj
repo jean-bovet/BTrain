@@ -176,7 +176,7 @@
 		A79466D1279B948F006E2A4C /* Simulator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A79466D0279B948F006E2A4C /* Simulator.swift */; };
 		A796FA2B2772BB5400FA41BA /* Layout.json in Resources */ = {isa = PBXBuildFile; fileRef = A796FA2A2772BB5400FA41BA /* Layout.json */; };
 		A796FA2E2775642B00FA41BA /* LayoutAsserter.swift in Sources */ = {isa = PBXBuildFile; fileRef = A796FA2D2775642B00FA41BA /* LayoutAsserter.swift */; };
-		A7B06AE12727786500BDD88C /* AppView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7B06AE02727786500BDD88C /* AppView.swift */; };
+		A7B06AE12727786500BDD88C /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7B06AE02727786500BDD88C /* ContentView.swift */; };
 		A7B06AF2272782C300BDD88C /* LayoutDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7B06AF1272782C300BDD88C /* LayoutDocument.swift */; };
 		A7B06AF4272783F600BDD88C /* MarklinCANMessageFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7B06AF3272783F600BDD88C /* MarklinCANMessageFactory.swift */; };
 		A7B06AF82727ACCB00BDD88C /* Server.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7B06AED2727819800BDD88C /* Server.swift */; };
@@ -189,6 +189,8 @@
 		A7BE366C2751AAF300286709 /* LayoutParserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7F779DE272DB21000E73275 /* LayoutParserTests.swift */; };
 		A7BE36A82751BDAB00286709 /* ConnectorSocket.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7BE36A72751BDAB00286709 /* ConnectorSocket.swift */; };
 		A7BE36AA2751BDC300286709 /* ConnectorPlug.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7BE36A92751BDC300286709 /* ConnectorPlug.swift */; };
+		A7C8A2E7279BB89E000C7246 /* AppView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7C8A2E6279BB89E000C7246 /* AppView.swift */; };
+		A7C8A2E9279BB8A6000C7246 /* WelcomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7C8A2E8279BB8A6000C7246 /* WelcomeView.swift */; };
 		A7CA5EBB27952ECF00171398 /* Destination.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7CA5EBA27952ECF00171398 /* Destination.swift */; };
 		A7CA5EBD2795339000171398 /* AutomaticRoutingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7CA5EBC2795339000171398 /* AutomaticRoutingTests.swift */; };
 		A7CA5EBF2795D05A00171398 /* TrainControlActionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7CA5EBE2795D05A00171398 /* TrainControlActionsView.swift */; };
@@ -407,7 +409,7 @@
 		A79466D0279B948F006E2A4C /* Simulator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Simulator.swift; sourceTree = "<group>"; };
 		A796FA2A2772BB5400FA41BA /* Layout.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = Layout.json; sourceTree = "<group>"; };
 		A796FA2D2775642B00FA41BA /* LayoutAsserter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutAsserter.swift; sourceTree = "<group>"; };
-		A7B06AE02727786500BDD88C /* AppView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppView.swift; sourceTree = "<group>"; };
+		A7B06AE02727786500BDD88C /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		A7B06AED2727819800BDD88C /* Server.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Server.swift; sourceTree = "<group>"; };
 		A7B06AEE2727819800BDD88C /* ServerConnection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ServerConnection.swift; sourceTree = "<group>"; };
 		A7B06AF1272782C300BDD88C /* LayoutDocument.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutDocument.swift; sourceTree = "<group>"; };
@@ -419,6 +421,8 @@
 		A7BD6258276D50380039B6C2 /* LayoutDocumentTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutDocumentTests.swift; sourceTree = "<group>"; };
 		A7BE36A72751BDAB00286709 /* ConnectorSocket.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectorSocket.swift; sourceTree = "<group>"; };
 		A7BE36A92751BDC300286709 /* ConnectorPlug.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectorPlug.swift; sourceTree = "<group>"; };
+		A7C8A2E6279BB89E000C7246 /* AppView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppView.swift; sourceTree = "<group>"; };
+		A7C8A2E8279BB8A6000C7246 /* WelcomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeView.swift; sourceTree = "<group>"; };
 		A7CA5EBA27952ECF00171398 /* Destination.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Destination.swift; sourceTree = "<group>"; };
 		A7CA5EBC2795339000171398 /* AutomaticRoutingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutomaticRoutingTests.swift; sourceTree = "<group>"; };
 		A7CA5EBE2795D05A00171398 /* TrainControlActionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainControlActionsView.swift; sourceTree = "<group>"; };
@@ -739,7 +743,9 @@
 		A73E07F8276A708A005F9D64 /* Application */ = {
 			isa = PBXGroup;
 			children = (
-				A7B06AE02727786500BDD88C /* AppView.swift */,
+				A7C8A2E6279BB89E000C7246 /* AppView.swift */,
+				A7B06AE02727786500BDD88C /* ContentView.swift */,
+				A7C8A2E8279BB8A6000C7246 /* WelcomeView.swift */,
 				A77A96DD2727767C009E7ECB /* ConnectSheet.swift */,
 				A717157B2756E5BD00200F92 /* ImportLayoutSheet.swift */,
 				A744D13A276714A2005C2F37 /* DiagnosticsSheet.swift */,
@@ -1196,6 +1202,7 @@
 				A7B0B5132761CF8400F11A3E /* SwitchboardLinkUpdater.swift in Sources */,
 				A7710E6327799C9F00C08150 /* Layout+Blocks.swift in Sources */,
 				A783EA9F2787C6DA00E69B6D /* LayoutObserver.swift in Sources */,
+				A7C8A2E7279BB89E000C7246 /* AppView.swift in Sources */,
 				A7214916279A56FA0095E5EE /* LayoutController+Debug.swift in Sources */,
 				A7710E6527799CF800C08150 /* Layout+Routes.swift in Sources */,
 				A7710E6927799DA000C08150 /* Layout+Transitions.swift in Sources */,
@@ -1219,7 +1226,7 @@
 				A7218083275F0BFC00831998 /* Turnout+Socket.swift in Sources */,
 				A717158427574B1C00200F92 /* ShapeProvider.swift in Sources */,
 				A7841376273DD5A200381341 /* Vector2D.swift in Sources */,
-				A7B06AE12727786500BDD88C /* AppView.swift in Sources */,
+				A7B06AE12727786500BDD88C /* ContentView.swift in Sources */,
 				A7F779F6273214AF00E73275 /* TrainListView.swift in Sources */,
 				A785C077278A6393002FD538 /* ViewType.swift in Sources */,
 				A7B06AF2272782C300BDD88C /* LayoutDocument.swift in Sources */,
@@ -1316,6 +1323,7 @@
 				A785C071278A4561002FD538 /* TrainDetailsView.swift in Sources */,
 				A75829632792A55A00AA0649 /* PathFinderSettings.swift in Sources */,
 				A71715802757036B00200F92 /* LayoutFCreator.swift in Sources */,
+				A7C8A2E9279BB8A6000C7246 /* WelcomeView.swift in Sources */,
 				A78413882740DD2D00381341 /* SwitchBoardFactory.swift in Sources */,
 				A783EAA92788C1F700E69B6D /* LayoutFeedbackMonitor.swift in Sources */,
 				A7F779EB272F1E7700E73275 /* LayoutACreator.swift in Sources */,

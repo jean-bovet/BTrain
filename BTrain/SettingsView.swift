@@ -27,6 +27,8 @@ struct SettingsView: View {
     @AppStorage("debugMode") private var showDebugControls = false
     @AppStorage("fontSize") private var fontSize = 12.0
 
+    @AppStorage("hideWelcomeScreen") private var hideWelcomeScreen = false
+
     var body: some View {
         TabView {
             Form {
@@ -61,6 +63,7 @@ struct SettingsView: View {
            
             Form {
                 Toggle("Show Debug Controls", isOn: $showDebugControls)
+                Toggle("Hide Welcome Screen", isOn: $hideWelcomeScreen)
             }
             .tabItem {
                 Label("Advanced", systemImage: "star")

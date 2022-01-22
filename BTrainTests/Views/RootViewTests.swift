@@ -15,7 +15,7 @@ import ViewInspector
 
 @testable import BTrain
 
-extension AppView: Inspectable { }
+extension ContentView: Inspectable { }
 extension OverviewView: Inspectable { }
 extension SwitchboardContainerView: Inspectable { }
 extension BlockListView: Inspectable { }

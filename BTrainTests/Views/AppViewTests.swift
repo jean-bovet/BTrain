@@ -17,7 +17,7 @@ import XCTest
 class AppViewTests: RootViewTests {
 
     func testMainView() throws {
-        let sut = AppView(document: doc)
+        let sut = ContentView(document: doc)
         
         doc.selectedView = .overview
         XCTAssertNoThrow(try sut.inspect().find(OverviewView.self))
