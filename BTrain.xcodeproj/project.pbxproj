@@ -192,6 +192,7 @@
 		A7C8A2E7279BB89E000C7246 /* AppView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7C8A2E6279BB89E000C7246 /* AppView.swift */; };
 		A7C8A2E9279BB8A6000C7246 /* WelcomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7C8A2E8279BB8A6000C7246 /* WelcomeView.swift */; };
 		A7C8A2EB279BDE52000C7246 /* Predefined.btrain in Resources */ = {isa = PBXBuildFile; fileRef = A7C8A2EA279BDE52000C7246 /* Predefined.btrain */; };
+		A7C8A2ED279BEA6D000C7246 /* FileWrapper+Layout.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7C8A2EC279BEA6D000C7246 /* FileWrapper+Layout.swift */; };
 		A7CA5EBB27952ECF00171398 /* Destination.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7CA5EBA27952ECF00171398 /* Destination.swift */; };
 		A7CA5EBD2795339000171398 /* AutomaticRoutingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7CA5EBC2795339000171398 /* AutomaticRoutingTests.swift */; };
 		A7CA5EBF2795D05A00171398 /* TrainControlActionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7CA5EBE2795D05A00171398 /* TrainControlActionsView.swift */; };
@@ -425,6 +426,7 @@
 		A7C8A2E6279BB89E000C7246 /* AppView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppView.swift; sourceTree = "<group>"; };
 		A7C8A2E8279BB8A6000C7246 /* WelcomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeView.swift; sourceTree = "<group>"; };
 		A7C8A2EA279BDE52000C7246 /* Predefined.btrain */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = Predefined.btrain; sourceTree = "<group>"; };
+		A7C8A2EC279BEA6D000C7246 /* FileWrapper+Layout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FileWrapper+Layout.swift"; sourceTree = "<group>"; };
 		A7CA5EBA27952ECF00171398 /* Destination.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Destination.swift; sourceTree = "<group>"; };
 		A7CA5EBC2795339000171398 /* AutomaticRoutingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutomaticRoutingTests.swift; sourceTree = "<group>"; };
 		A7CA5EBE2795D05A00171398 /* TrainControlActionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainControlActionsView.swift; sourceTree = "<group>"; };
@@ -898,6 +900,7 @@
 				A7B06AF1272782C300BDD88C /* LayoutDocument.swift */,
 				A785C078278A6468002FD538 /* LayoutDocument+ReferenceFileDocument.swift */,
 				A785C07A278A648B002FD538 /* LayoutDocument+Commands.swift */,
+				A7C8A2EC279BEA6D000C7246 /* FileWrapper+Layout.swift */,
 			);
 			path = Document;
 			sourceTree = "<group>";
@@ -1229,6 +1232,7 @@
 				A7EAD11427608BAA00455E09 /* LayoutTransitionHandler.swift in Sources */,
 				A7218083275F0BFC00831998 /* Turnout+Socket.swift in Sources */,
 				A717158427574B1C00200F92 /* ShapeProvider.swift in Sources */,
+				A7C8A2ED279BEA6D000C7246 /* FileWrapper+Layout.swift in Sources */,
 				A7841376273DD5A200381341 /* Vector2D.swift in Sources */,
 				A7B06AE12727786500BDD88C /* ContentView.swift in Sources */,
 				A7F779F6273214AF00E73275 /* TrainListView.swift in Sources */,

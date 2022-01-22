@@ -19,7 +19,7 @@ struct ImportLayoutSheet: View {
 
     @Environment(\.presentationMode) var presentationMode
 
-    @State private var selectedLayoutId = LayoutACreator.id
+    @State private var selectedLayoutId = LayoutECreator.id
 
     var layout: Layout {
         return LayoutFactory.createLayout(selectedLayoutId)
@@ -34,13 +34,7 @@ struct ImportLayoutSheet: View {
     }
     
     let previewSize = CGSize(width: 800, height: 400)
-    
-    var scaleSize: CGSize {
-        let canvasSize = switchboard.fittedRect().size
-        let ratio = min(800/canvasSize.width, 400/canvasSize.height)
-        return .init(width: ratio, height: ratio)
-    }
-    
+        
     var body: some View {
         VStack {
             HStack {
@@ -51,10 +45,12 @@ struct ImportLayoutSheet: View {
                 }.frame(maxWidth: 300)
             }.padding()
 
-            SwitchBoardView(switchboard: switchboard, state: switchboard.state, layout: layout, layoutController: coordinator)
-                .fixedSize()
-                .scaleEffect(scaleSize)
-                .frame(width: previewSize.width, height: previewSize.height)
+            ScrollView([.horizontal, .vertical]) {
+                SwitchBoardView(switchboard: switchboard,
+                                state: switchboard.state,
+                                layout: layout,
+                                layoutController: coordinator)
+            }.frame(width: previewSize.width, height: previewSize.height)
             
             HStack {
                 Button("Cancel") {

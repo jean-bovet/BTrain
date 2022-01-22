@@ -13,6 +13,8 @@ struct WelcomeView: View {
 
     @AppStorage("hideWelcomeScreen") var hideWelcomeScreen = false
 
+    @State private var errorString: String?
+    
     var body: some View {
         VStack {
             Spacer()
@@ -37,8 +39,24 @@ struct WelcomeView: View {
                 }
                 Spacer().fixedSpace()
                 Button("􀉚 Use Predefined Layout") {
+                    do {
+                        guard let file = Bundle.main.url(forResource: "Predefined", withExtension: "btrain") else {
+                            throw CocoaError(.fileNoSuchFile)
+                        }
+
+                        let fw = try FileWrapper(url: file, options: [])
+                        document.layout.apply(other: try fw.layout())
+                        document.trainIconManager.setIcons(try fw.icons())
+                    } catch {
+                        errorString = error.localizedDescription
+                    }
                     hideWelcomeScreen = true
                 }
+            }
+            if let errorString = errorString {
+                Spacer()
+                Text(errorString)
+                    .foregroundColor(.red)
             }
             Spacer()
         }

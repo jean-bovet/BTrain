@@ -33,40 +33,9 @@ extension LayoutDocument: ReferenceFileDocument {
             self.init(layout: layout)
             
         case LayoutDocument.packageType:
-            guard let files = configuration.file.fileWrappers else {
-                throw CocoaError(.fileReadCorruptFile)
-            }
-            
-            guard let layoutFile = files.first(where: {$0.value.filename == LayoutDocument.layoutFileName }) else {
-                throw CocoaError(.fileReadCorruptFile)
-            }
-            
-            guard let data = layoutFile.value.regularFileContents else {
-                throw CocoaError(.fileReadCorruptFile)
-            }
+            self.init(layout: try configuration.file.layout())
+            trainIconManager.setIcons(try configuration.file.icons())
 
-            let layout = try LayoutDocument.layout(contentType: .json, data: data)
-            self.init(layout: layout)
-
-            if let iconDirectory = files.first(where: {$0.value.isDirectory})?.value, let files = iconDirectory.fileWrappers?.values {
-                for file in files {
-                    guard let filename = file.filename else {
-                        continue
-                    }
-                    let trainId = (filename as NSString).deletingPathExtension
-                    
-                    guard let data = file.regularFileContents else {
-                        throw CocoaError(.fileReadCorruptFile)
-                    }
-                    
-                    guard let image = NSImage(data: data) else {
-                        throw CocoaError(.fileReadCorruptFile)
-                    }
-                    
-                    trainIconManager.setIcon(image, toTrainId: Identifier<Train>(uuid: trainId))
-                }
-            }
-            
         default:
             throw CocoaError(.fileReadUnsupportedScheme)
         }

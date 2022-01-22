@@ -22,7 +22,7 @@ struct TrainControlListView: View {
         if layout.trains.isEmpty {
             VStack {
                 Text("No Locomotives")
-                Button("Download Locomotives 􀈄") {
+                Button("􀈄 Download Locomotives") {
                     document.discoverLocomotiveConfirmation.toggle()
                 }.disabled(!document.connected)
             }
