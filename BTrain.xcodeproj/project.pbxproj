@@ -191,6 +191,7 @@
 		A7BE36AA2751BDC300286709 /* ConnectorPlug.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7BE36A92751BDC300286709 /* ConnectorPlug.swift */; };
 		A7C8A2E7279BB89E000C7246 /* AppView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7C8A2E6279BB89E000C7246 /* AppView.swift */; };
 		A7C8A2E9279BB8A6000C7246 /* WelcomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7C8A2E8279BB8A6000C7246 /* WelcomeView.swift */; };
+		A7C8A2EB279BDE52000C7246 /* Predefined.btrain in Resources */ = {isa = PBXBuildFile; fileRef = A7C8A2EA279BDE52000C7246 /* Predefined.btrain */; };
 		A7CA5EBB27952ECF00171398 /* Destination.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7CA5EBA27952ECF00171398 /* Destination.swift */; };
 		A7CA5EBD2795339000171398 /* AutomaticRoutingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7CA5EBC2795339000171398 /* AutomaticRoutingTests.swift */; };
 		A7CA5EBF2795D05A00171398 /* TrainControlActionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7CA5EBE2795D05A00171398 /* TrainControlActionsView.swift */; };
@@ -423,6 +424,7 @@
 		A7BE36A92751BDC300286709 /* ConnectorPlug.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectorPlug.swift; sourceTree = "<group>"; };
 		A7C8A2E6279BB89E000C7246 /* AppView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppView.swift; sourceTree = "<group>"; };
 		A7C8A2E8279BB8A6000C7246 /* WelcomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeView.swift; sourceTree = "<group>"; };
+		A7C8A2EA279BDE52000C7246 /* Predefined.btrain */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = Predefined.btrain; sourceTree = "<group>"; };
 		A7CA5EBA27952ECF00171398 /* Destination.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Destination.swift; sourceTree = "<group>"; };
 		A7CA5EBC2795339000171398 /* AutomaticRoutingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutomaticRoutingTests.swift; sourceTree = "<group>"; };
 		A7CA5EBE2795D05A00171398 /* TrainControlActionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainControlActionsView.swift; sourceTree = "<group>"; };
@@ -558,6 +560,7 @@
 				A7BD6257276D39CA0039B6C2 /* Utilities */,
 				A73AFE892726594800E1ED21 /* Assets.xcassets */,
 				A73AFE8E2726594800E1ED21 /* BTrain.entitlements */,
+				A7C8A2EA279BDE52000C7246 /* Predefined.btrain */,
 				A73AFE8B2726594800E1ED21 /* Preview Content */,
 			);
 			path = BTrain;
@@ -1162,6 +1165,7 @@
 				A7218079275DA74500831998 /* Locomotives.cs2 in Resources */,
 				A73AFE8D2726594800E1ED21 /* Preview Assets.xcassets in Resources */,
 				A73AFE8A2726594800E1ED21 /* Assets.xcassets in Resources */,
+				A7C8A2EB279BDE52000C7246 /* Predefined.btrain in Resources */,
 				A79079A7277FB8E700771A60 /* Credits.rtf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
