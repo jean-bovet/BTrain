@@ -202,8 +202,6 @@
 		A7CA5EC7279654EB00171398 /* Block+Feedback.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7CA5EC6279654EB00171398 /* Block+Feedback.swift */; };
 		A7CA5EC92796550C00171398 /* Block+Socket.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7CA5EC82796550C00171398 /* Block+Socket.swift */; };
 		A7CA5ECC2797D1EB00171398 /* Layout+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7CA5ECB2797D1EB00171398 /* Layout+Extension.swift */; };
-		A7EAD11227608B0500455E09 /* LayoutTrainHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7EAD11127608B0500455E09 /* LayoutTrainHandler.swift */; };
-		A7EAD11427608BAA00455E09 /* LayoutTransitionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7EAD11327608BAA00455E09 /* LayoutTransitionHandler.swift */; };
 		A7F31B9D277B921B00FE0C65 /* SwitchboardEditControlsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7F31B9C277B921B00FE0C65 /* SwitchboardEditControlsView.swift */; };
 		A7F31B9F277B95BA00FE0C65 /* TrainDropActionSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7F31B9E277B95BA00FE0C65 /* TrainDropActionSheet.swift */; };
 		A7F31BA1277C3D7B00FE0C65 /* BlockDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7F31BA0277C3D7A00FE0C65 /* BlockDetailsView.swift */; };
@@ -436,8 +434,6 @@
 		A7CA5EC6279654EB00171398 /* Block+Feedback.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Block+Feedback.swift"; sourceTree = "<group>"; };
 		A7CA5EC82796550C00171398 /* Block+Socket.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Block+Socket.swift"; sourceTree = "<group>"; };
 		A7CA5ECB2797D1EB00171398 /* Layout+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Layout+Extension.swift"; sourceTree = "<group>"; };
-		A7EAD11127608B0500455E09 /* LayoutTrainHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutTrainHandler.swift; sourceTree = "<group>"; };
-		A7EAD11327608BAA00455E09 /* LayoutTransitionHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutTransitionHandler.swift; sourceTree = "<group>"; };
 		A7F31B9C277B921B00FE0C65 /* SwitchboardEditControlsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwitchboardEditControlsView.swift; sourceTree = "<group>"; };
 		A7F31B9E277B95BA00FE0C65 /* TrainDropActionSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainDropActionSheet.swift; sourceTree = "<group>"; };
 		A7F31BA0277C3D7A00FE0C65 /* BlockDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockDetailsView.swift; sourceTree = "<group>"; };
@@ -833,8 +829,6 @@
 				A7710E6C27799E4A00C08150 /* Layout+Feedbacks.swift */,
 				A744D1362765C5A3005C2F37 /* LayoutError.swift */,
 				A76507F3275BEE5F0079C71A /* LayoutDiagnostics.swift */,
-				A7EAD11327608BAA00455E09 /* LayoutTransitionHandler.swift */,
-				A7EAD11127608B0500455E09 /* LayoutTrainHandler.swift */,
 				A783EA9E2787C6DA00E69B6D /* LayoutObserver.swift */,
 				A792DEFA27841B35004B0439 /* LayoutCommandExecuting.swift */,
 			);
@@ -1229,7 +1223,6 @@
 				A7218078275D922300831998 /* TrainController.swift in Sources */,
 				A77A96DE2727767C009E7ECB /* ConnectSheet.swift in Sources */,
 				A7B06AF4272783F600BDD88C /* MarklinCANMessageFactory.swift in Sources */,
-				A7EAD11427608BAA00455E09 /* LayoutTransitionHandler.swift in Sources */,
 				A7218083275F0BFC00831998 /* Turnout+Socket.swift in Sources */,
 				A717158427574B1C00200F92 /* ShapeProvider.swift in Sources */,
 				A7C8A2ED279BEA6D000C7246 /* FileWrapper+Layout.swift in Sources */,
@@ -1325,7 +1318,6 @@
 				A79079A3277F87AB00771A60 /* Spacer+Extension.swift in Sources */,
 				A783EAA52788B52000E69B6D /* BlockShapeView.swift in Sources */,
 				A784138F274230CF00381341 /* MarklinTestMessageFactory.swift in Sources */,
-				A7EAD11227608B0500455E09 /* LayoutTrainHandler.swift in Sources */,
 				A7841371273CE02000381341 /* LinkShape.swift in Sources */,
 				A784136F273CE00C00381341 /* BlockShape.swift in Sources */,
 				A785C071278A4561002FD538 /* TrainDetailsView.swift in Sources */,

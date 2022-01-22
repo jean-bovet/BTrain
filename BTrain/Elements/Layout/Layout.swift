@@ -71,16 +71,6 @@ final class Layout: Element, ObservableObject {
     // Non-nil when a layout runtime error occurred
     @Published var runtimeError: String?
 
-    // MARK: Handlers
-        
-    lazy var transitionHandling: LayoutTransitionHandling = {
-        return LayoutTransitionHandler(layout: self)
-    }()
-
-    lazy var trainHandling: LayoutTrainHandling = {
-        return LayoutTrainHandler(layout: self, layoutTransitionController: transitionHandling)
-    }()
-
     // MARK: Init
     
     convenience init(uuid: String = UUID().uuidString) {
