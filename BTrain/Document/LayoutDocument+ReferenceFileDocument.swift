@@ -82,6 +82,9 @@ extension LayoutDocument: ReferenceFileDocument {
         }
         let decoder = JSONDecoder()
         let layout = try decoder.decode(Layout.self, from: data)
+        // Upon decoding, remove all train reservations as these will be computed on-demand
+        // when the trains start moving again.
+        layout.freeAllTrains(removeFromLayout: false)
         return layout
     }
     
