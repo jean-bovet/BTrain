@@ -20,12 +20,14 @@ struct TrainControlListView: View {
 
     var body: some View {
         if layout.trains.isEmpty {
+            Spacer()
             VStack {
                 Text("No Locomotives")
                 Button("􀈄 Download Locomotives") {
                     document.discoverLocomotiveConfirmation.toggle()
                 }.disabled(!document.connected)
             }
+            Spacer()
         } else {
             VStack(spacing: 0) {
                 TrainControlActionsView(layout: layout, document: document)

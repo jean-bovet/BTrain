@@ -76,12 +76,22 @@ final class SwitchBoard: ObservableObject {
         }
     }
 
+    func sign(_ number: CGFloat) -> CGFloat {
+        if number < 0 {
+            return -1
+        } else {
+            return 1
+        }
+    }
+    
+    static let GridSize = 10.0
+    
     func fitSize() {
         let r = fittedRect()
 
         // Offset all the shapes so they are in the center of the fitted rectangle
-        let offsetX = r.minX
-        let offsetY = r.minY
+        let offsetX = sign(r.minX)*floor(abs(r.minX) / SwitchBoard.GridSize) * SwitchBoard.GridSize
+        let offsetY = sign(r.minY)*floor(abs(r.minY) / SwitchBoard.GridSize) * SwitchBoard.GridSize
 
         for shape in provider.draggableShapes {
             shape.center = .init(x: shape.center.x - offsetX, y: shape.center.y - offsetY)

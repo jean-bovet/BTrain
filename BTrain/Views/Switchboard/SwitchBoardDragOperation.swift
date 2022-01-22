@@ -198,7 +198,7 @@ final class SwitchBoardDragOperation {
         
     func gridX(_ x: CGFloat) -> CGFloat {
         if state.snapToGrid {
-            return round(x / 10) * 10
+            return round(x / SwitchBoard.GridSize) * SwitchBoard.GridSize
         } else {
             return x
         }
@@ -206,7 +206,7 @@ final class SwitchBoardDragOperation {
     
     func gridY(_ y: CGFloat) -> CGFloat {
         if state.snapToGrid {
-            return round(y / 10) * 10
+            return round(y / SwitchBoard.GridSize) * SwitchBoard.GridSize
         } else {
             return y
         }
