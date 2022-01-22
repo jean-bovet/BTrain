@@ -95,9 +95,9 @@ final class Layout: Element, ObservableObject {
         self.blockMap = other.blockMap
         self.feedbacks = other.feedbacks
         self.turnouts = other.turnouts
-        self.trains = other.trains
         self.transitions = other.transitions
         self.routes = other.routes
+        self.trains = other.trains
     }
     
     func trainsThatCanBeStarted() -> [Train] {
