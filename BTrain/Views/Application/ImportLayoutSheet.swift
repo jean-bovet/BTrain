@@ -26,7 +26,7 @@ struct ImportLayoutSheet: View {
     }
     
     var switchboard: SwitchBoard {
-        return SwitchBoardFactory.generateSwitchboard(layout: layout)
+        return SwitchBoardFactory.generateSwitchboard(layout: layout, simulator: nil)
     }
     
     var coordinator: LayoutController {

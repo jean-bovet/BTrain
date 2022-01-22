@@ -18,7 +18,7 @@ import SwiftUI
 // This class simulates the Marklin Central Station 3 in order for BTrain
 // to work offline. It does so by processing the most common commands and
 // driving automatically trains that are on enabled routes.
-final class MarklinCommandSimulator: ObservableObject {
+final class MarklinCommandSimulator: Simulator, ObservableObject {
     
     let layout: Layout
     let interface: CommandInterface
@@ -91,9 +91,22 @@ final class MarklinCommandSimulator: ObservableObject {
     }
 
     func updateListOfTrains() {
-        self.trains = layout.trains.filter({ $0.blockId != nil }).map({ train in
-            return SimulatorTrain(train: train)
+        // Remove train that are not present anymore
+        trains.removeAll(where: { simTrain in
+            return layout.train(for: simTrain.train.id) == nil
         })
+        
+        // Update existing trains, add new ones
+        for train in layout.trains.filter({$0.blockId != nil}) {
+            if let simTrain = trains.first(where: { $0.train.id == train.id }) {
+                simTrain.speed = TrainSpeed(kph: train.speed.kph, decoderType: train.decoder)
+                simTrain.directionForward = train.directionForward
+            } else {
+                trains.append(SimulatorTrain(train: train))
+            }
+        }
+        
+        objectWillChange.send()
     }
     
     func start() {

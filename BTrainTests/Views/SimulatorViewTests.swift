@@ -38,12 +38,13 @@ class SimulatorViewTests: RootViewTests {
         sut.showSimulator = true
         let simulatorView = try sut.inspect().find(SimulatorView.self)
         let forEachView = try simulatorView.find(ViewType.ForEach.self)
-        XCTAssertEqual(t1.name, try forEachView.hStack(0).text(0).string())
                 
-        let simulatorTrainControl = try forEachView.hStack(0).view(SimulatorTrainControlView.self, 1)
-        
+        let simulatorTrainControl = try forEachView.view(SimulatorTrainControlView.self, 0)
+
+        XCTAssertEqual(t1.name, try simulatorTrainControl.hStack().toggle(0).labelView().text().string())
+
         // Now tap on the direction of the first train and see if it is reflected in the train list
-        let toggleButton = try simulatorTrainControl.hStack().button(0)
+        let toggleButton = try simulatorTrainControl.hStack().group(1).button(0)
         
         try toggleButton.tap()
         XCTAssertFalse(simulatorTrain1.directionForward)
@@ -66,7 +67,7 @@ class SimulatorViewTests: RootViewTests {
         wait(for: simulatorTrain1, directionForward: true)
 
         // Change the speed of the first train and see if it is reflected in the train list
-        let slider = try simulatorTrainControl.hStack().hStack(1).slider(0)
+        let slider = try simulatorTrainControl.hStack().group(1).hStack(1).slider(0)
         try slider.setValue(100)
         try slider.callOnEditingChanged()
         // Note: for some reason, setting the slider.setValue(100)

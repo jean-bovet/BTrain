@@ -16,6 +16,8 @@ import AppKit
 // https://nshipster.com/dark-mode/
 final class ShapeContext {
             
+    var simulator: Simulator?
+
     var darkMode = false
     var showBlockName = false
     var showStationName = false
@@ -87,6 +89,10 @@ final class ShapeContext {
         NSColor.blue.cgColor
     }
 
+    init(simulator: Simulator? = nil) {
+        self.simulator = simulator
+    }
+    
     func trainColor(_ train: Train) -> CGColor {
         switch(train.state) {
         case .running:

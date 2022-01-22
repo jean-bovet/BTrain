@@ -173,6 +173,7 @@
 		A792DF012785095B004B0439 /* SettingsViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A792DF002785095B004B0439 /* SettingsViewTests.swift */; };
 		A79466CC279B64D2006E2A4C /* MainThreadQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = A79466CB279B64D2006E2A4C /* MainThreadQueue.swift */; };
 		A79466CE279B775D006E2A4C /* NSImage+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A79466CD279B775D006E2A4C /* NSImage+Extension.swift */; };
+		A79466D1279B948F006E2A4C /* Simulator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A79466D0279B948F006E2A4C /* Simulator.swift */; };
 		A796FA2B2772BB5400FA41BA /* Layout.json in Resources */ = {isa = PBXBuildFile; fileRef = A796FA2A2772BB5400FA41BA /* Layout.json */; };
 		A796FA2E2775642B00FA41BA /* LayoutAsserter.swift in Sources */ = {isa = PBXBuildFile; fileRef = A796FA2D2775642B00FA41BA /* LayoutAsserter.swift */; };
 		A7B06AE12727786500BDD88C /* AppView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7B06AE02727786500BDD88C /* AppView.swift */; };
@@ -403,6 +404,7 @@
 		A792DF002785095B004B0439 /* SettingsViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewTests.swift; sourceTree = "<group>"; };
 		A79466CB279B64D2006E2A4C /* MainThreadQueue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainThreadQueue.swift; sourceTree = "<group>"; };
 		A79466CD279B775D006E2A4C /* NSImage+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSImage+Extension.swift"; sourceTree = "<group>"; };
+		A79466D0279B948F006E2A4C /* Simulator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Simulator.swift; sourceTree = "<group>"; };
 		A796FA2A2772BB5400FA41BA /* Layout.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = Layout.json; sourceTree = "<group>"; };
 		A796FA2D2775642B00FA41BA /* LayoutAsserter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutAsserter.swift; sourceTree = "<group>"; };
 		A7B06AE02727786500BDD88C /* AppView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppView.swift; sourceTree = "<group>"; };
@@ -917,6 +919,7 @@
 		A792DEF92783A0A1004B0439 /* Simulator */ = {
 			isa = PBXGroup;
 			children = (
+				A79466D0279B948F006E2A4C /* Simulator.swift */,
 				A7841389274165FB00381341 /* MarklinCommandSimulator.swift */,
 				A783EA5A278530BF00E69B6D /* SimulatorTrain.swift */,
 			);
@@ -1303,6 +1306,7 @@
 				A785C06F2789F324002FD538 /* UndoProvider.swift in Sources */,
 				A72180852760428E00831998 /* Socket.swift in Sources */,
 				A7710E572777D69400C08150 /* RouteListView.swift in Sources */,
+				A79466D1279B948F006E2A4C /* Simulator.swift in Sources */,
 				A79079A3277F87AB00771A60 /* Spacer+Extension.swift in Sources */,
 				A783EAA52788B52000E69B6D /* BlockShapeView.swift in Sources */,
 				A784138F274230CF00381341 /* MarklinTestMessageFactory.swift in Sources */,

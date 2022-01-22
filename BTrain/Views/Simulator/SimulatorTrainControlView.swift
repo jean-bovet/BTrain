@@ -20,6 +20,8 @@ struct SimulatorTrainControlView: View {
 
     var body: some View {
         HStack {
+            Toggle("\(train.train.name)", isOn: $train.simulate)
+
             Group {
                 Button {
                     simulator.setTrainDirection(train: train, directionForward: !train.directionForward)
@@ -43,8 +45,6 @@ struct SimulatorTrainControlView: View {
                     Text("\(Int(speed.kph)) km/h")
                 }
             }.disabled(train.simulate == false)
-            
-            Toggle("Simulate", isOn: $train.simulate)
         }
     }
 }

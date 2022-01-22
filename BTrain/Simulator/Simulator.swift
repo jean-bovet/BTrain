@@ -12,12 +12,8 @@
 
 import Foundation
 
-final class SwitchBoardFactory {
+protocol Simulator {
     
-    static func generateSwitchboard(layout: Layout, simulator: Simulator?) -> SwitchBoard {
-        let context = ShapeContext(simulator: simulator)
-        let shapeProvider = ShapeProvider(layout: layout, context: context)
-        return SwitchBoard(layout: layout, provider: shapeProvider, context: context)
-    }
-        
+    func setFeedback(feedback: Feedback, value: UInt8)
+    
 }

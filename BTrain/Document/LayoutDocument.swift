@@ -86,7 +86,7 @@ final class LayoutDocument: ObservableObject {
         self.layoutDiagnostics = LayoutDiagnostic(layout: layout)
         self.simulator = MarklinCommandSimulator(layout: layout, interface: interface)
         self.trainIconManager = TrainIconManager(layout: layout)
-        self.switchboard = SwitchBoardFactory.generateSwitchboard(layout: layout)
+        self.switchboard = SwitchBoardFactory.generateSwitchboard(layout: layout, simulator: simulator)
 
         self.layoutController = LayoutController(layout: layout, interface: interface)
         layout.executor = LayoutCommandExecutor(layout: layout, interface: interface)

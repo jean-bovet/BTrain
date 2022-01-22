@@ -429,10 +429,10 @@ extension BlockShape {
 extension BlockShape: ActionableShape {
     
     func performAction(at location: CGPoint) -> Bool {
-        for (index, feedback) in block.feedbacks.enumerated() {
+        for (index, blockFeedback) in block.feedbacks.enumerated() {
             let path = feedbackPath(at: index)
-            if path.contains(location) {
-                layout.feedback(for: feedback.feedbackId)?.detected.toggle()
+            if path.contains(location), let feedback = layout.feedback(for: blockFeedback.feedbackId) {
+                shapeContext.simulator?.setFeedback(feedback: feedback, value: feedback.detected ? 0 : 1)
                 return true
             }
         }
