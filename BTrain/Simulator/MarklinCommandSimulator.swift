@@ -257,6 +257,10 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
     }
     
     func simulateLayout() {
+        guard enabled else {
+            return
+        }
+        
         for train in layout.trains {
             guard let simulatorTrain = trains.first(where: {$0.train.id == train.id}), simulatorTrain.simulate else {
                 continue

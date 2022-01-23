@@ -152,29 +152,37 @@ extension Layout {
             throw LayoutError.trainNotFoundInBlock(blockId: blockId)
         }
 
-        // Ensure the automatic route associated with the train is updated
+        // Set the route to the train
+        train.routeId = routeID
+
         if route.automatic {
-            // Remember the destination block
+            // Ensure the automatic route associated with the train is updated
+            // Note: remember the destination block
             if let destination = destination {
                 route.automaticMode = .once(destination: destination)
             } else {
                 route.automaticMode = .endless
             }
-            try self.updateAutomaticRoute(for: trainID)
-        }
-
-        // Set the route to the train
-        train.routeId = routeID
-
-        // If the route is not empty, check if the train is somewhere along the route.
-        // If the blocks in front of the train are all occupied, it is possible that
-        // the route is empty. The TrainController will automatically generate a new
-        // route (if route.automatic) when one of the blocks is cleared.
-        if !route.steps.isEmpty {
+            try updateAutomaticRoute(for: trainID)
+        } else {
             // Check to make sure the train is somewhere along the route
             train.routeStepIndex = -1
             for (index, step) in route.steps.enumerated() {
-                if train.blockId == step.blockId {
+                guard train.blockId == step.blockId else {
+                    continue
+                }
+                
+                guard let block = self.block(for: train.blockId) else {
+                    continue
+                }
+
+                guard let trainInstance = block.train else {
+                    continue
+                }
+                
+                // Check that the train direction matches as well.
+                // TODO: check if the train can change direction and if so, update here as well
+                if trainInstance.direction == step.direction {
                     train.routeStepIndex = index
                     break
                 }

@@ -121,6 +121,50 @@ class ManualRoutingTests: BTTestCase {
         try p.assert("r1:{b1 ≏ ≏ } <t0> [r1[b2 ≏ ≡ 🛑🚂1 ]] <t1,l> [b3 ≏ ≏ ] <t0(2,0)> !{b1 ≏ ≏ }")
     }
 
+    func testStartNotInRoute() throws {
+        let layout = LayoutCCreator().newLayout()
+        let p = try setup(layout: layout, fromBlockId: "b5", route: layout.routes[0])
+
+        try p.assert("r1: {b1 ≏ ≏ } <t0> [b2 ≏ ≏ ] {b3 ≏ ≏ } <t1> [b4 ≏ ≏] {b1 ≏ ≏ }")
+        
+        XCTAssertThrowsError(try p.start(routeID: "r1", trainID: "1")) { error in
+            guard let layoutError = error as? LayoutError else {
+                XCTFail()
+                return
+            }
+            
+            guard case .trainNotFoundInRoute(train: _, route: _) = layoutError else {
+                XCTFail()
+                return
+            }
+        }
+    }
+    
+    func testStartInRouteButReversedDirection() throws {
+        let layout = LayoutCCreator().newLayout()
+        
+        var p = try setup(layout: layout, fromBlockId: "b1", direction: .previous, route: layout.routes[0])
+
+        try p.assert("r1: {r1{b1 🛑🚂1 ≏ ≏ }} <t0> [b2 ≏ ≏ ] {b3 ≏ ≏ }} <t1> [b4 ≏ ≏] {r1{b1 🛑🚂1 ≏ ≏ }}")
+                
+        XCTAssertThrowsError(try p.start(routeID: "r1", trainID: "1")) { error in
+            guard let layoutError = error as? LayoutError else {
+                XCTFail()
+                return
+            }
+            
+            guard case .trainNotFoundInRoute(train: _, route: _) = layoutError else {
+                XCTFail()
+                return
+            }
+        }
+        
+        p = try setup(layout: layout, fromBlockId: "b1", direction: .next, route: layout.routes[0])
+
+        try p.assert("r1: {r1{b1 🛑🚂1 ≏ ≏ }} <t0> [b2 ≏ ≏ ] {b3 ≏ ≏ }} <t1> [b4 ≏ ≏] {r1{b1 🛑🚂1 ≏ ≏ }}")
+        try p.start(routeID: "r1", trainID: "1")
+    }
+
     func testMoveInsideBlock() throws {
         let layout = LayoutACreator().newLayout()
         let p = try setup(layout: layout, fromBlockId: "b1", route: layout.routes[0])
