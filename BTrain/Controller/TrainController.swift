@@ -246,7 +246,7 @@ final class TrainController {
             }
             
         case .endless:
-            if handleTrainStopByBlock(route: route, currentBlock: currentBlock) == .processed {
+            if handleTrainStopByBlock(route: route, block: currentBlock) == .processed {
                 return .processed
             }
         }
@@ -277,7 +277,7 @@ final class TrainController {
             return .processed
         }
         
-        if handleTrainStopByBlock(route: route, currentBlock: currentBlock) == .processed {
+        if handleTrainStopByBlock(route: route, block: currentBlock) == .processed {
             return .processed
         }
         
@@ -285,21 +285,34 @@ final class TrainController {
     }
     
     // This method takes care of trigger a stop of the train located in
-    // the specified `currentBlock`, depending on the block characteristics.
+    // the specified `block`, depending on the block characteristics.
     // For now, only "station" blocks make the train stop.
-    private func handleTrainStopByBlock(route: Route, currentBlock: Block) -> Result {
-        if currentBlock.category == .station {
-            if train.scheduling == .finishing {
-                debug("Stopping completely \(train) because it has reached a station and it is marked as .finishing")
-                stopTrigger = StopTrigger.completeStop()
-                return .processed
-            } else {
-                let delay = waitingTime(route: route, train: train, block: currentBlock)
-                stopTrigger = StopTrigger.stopAndRestart(after: delay)
-                return .processed
-            }
+    private func handleTrainStopByBlock(route: Route, block: Block) -> Result {
+        guard trainShouldStop(block: block) else {
+            return .none
         }
-        return .none
+        
+        if train.scheduling == .finishing {
+            debug("Stopping completely \(train) because it has reached a station and it is marked as .finishing")
+            stopTrigger = StopTrigger.completeStop()
+            return .processed
+        } else {
+            let delay = waitingTime(route: route, train: train, block: block)
+            stopTrigger = StopTrigger.stopAndRestart(after: delay)
+            return .processed
+        }
+    }
+
+    private func trainShouldStop(block: Block) -> Bool {
+        guard block.category == .station else {
+            return false
+        }
+
+        guard train.routeStepIndex != startRouteIndex || startRouteIndex == nil else {
+            return false
+        }
+
+        return true
     }
     
     private func waitingTime(route: Route, train: Train, block: Block) -> TimeInterval {
@@ -499,18 +512,21 @@ final class TrainController {
                 
         // Free up the trailing blocks        
         try freeTrailingBlocks()
-        
-        // Reserve the block(s) ahead. If it is not possible, then stop the train in this block
-        if try reserveNextBlocks(route: route) == false {
-            debug("Train \(train) will stop here (\(nextBlock)) because the next block(s) cannot be reserved")
-            stopTrigger = StopTrigger.temporaryStop()
-        }
-        
-        // Handle any route-specific stop now that the block has moved to a new block
+                
+        // Handle any route-specific stop now that the train has moved to a new block
         if route.automatic {
             _ = try handleAutomaticRouteStop(route: route)
         } else {
             _ = try handleManualRouteStop(route: route)
+        }
+        
+        // If the train is not stopping in this block, reserve the block(s) ahead.
+        if stopTrigger == nil {
+            if try reserveNextBlocks(route: route) == false {
+                // If it is not possible, then stop the train in this block
+                debug("Train \(train) will stop here (\(nextBlock)) because the next block(s) cannot be reserved")
+                stopTrigger = StopTrigger.temporaryStop()
+            }
         }
 
         return .processed
@@ -608,6 +624,14 @@ final class TrainController {
                 numberOfBlocksReserved += 1
             } catch {
                 BTLogger.debug("Cannot reserve block \(previousStep.blockId) to \(block.id) for \(train.name): \(error)")
+                return numberOfBlocksReserved > 0
+            }
+
+            // Stop reserving as soon as a block that is going to
+            // stop the train is detected. That way, the train stops
+            // without reserving any block ahead and upon restarting,
+            // it will reserve what it needs in front of it.
+            guard !trainShouldStop(block: block) else {
                 return numberOfBlocksReserved > 0
             }
 

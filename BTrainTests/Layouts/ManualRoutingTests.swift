@@ -554,15 +554,15 @@ class ManualRoutingTests: BTTestCase {
         
         // Train 1 brakes because it has reached a station and should stop
         // Train 2 stops because it has reached the end of the last block of its route (b1).
-        try p.assert2("r1: {r2{b1 🛑🚂2 ≡ ≡ }} <t0,r> [b2 ≏ ≏ ] {r1{b3 ≡ 🟨🚂1 ≏ }} <r1<t1>> [r1[b4 ≏ ≏]] {r2{b1 🛑🚂2 ≡ ≡ }}",
-                      "r3: {r1{b3 ≡ 🟨🚂1 ≏ }} <r1<t1(0,2)>> [b5 ≏ ≏ ] <t0(2,0),r> !{r2{b1 🛑🚂2 ≡ ≡ }}")
+        try p.assert2("r1: {r2{b1 🛑🚂2 ≡ ≡ }} <t0,r> [b2 ≏ ≏ ] {r1{b3 ≡ 🟨🚂1 ≏ }} <t1,r> [b4 ≏ ≏] {r2{b1 🛑🚂2 ≡ ≡ }}",
+                      "r3: {r1{b3 ≡ 🟨🚂1 ≏ }} <t1(0,2),r> [b5 ≏ ≏ ] <t0(2,0),r> !{r2{b1 🛑🚂2 ≡ ≡ }}")
         
         // Train 1 has stopped because it is in a station (b3). It will restart shortly after.
-        try p.assert2("r1: {r2{b1 🛑🚂2 ≏ ≏ }} <t0,r> [b2 ≏ ≏ ] {r1{b3 ≡ ≡ 🛑🚂1 }} <r1<t1>> [r1[b4 ≏ ≏]] {r2{b1 🛑🚂2 ≏ ≏ }}",
-                      "r3: {r1{b3 ≡ ≡ 🛑🚂1 }} <r1<t1(0,2)>> [b5 ≏ ≏ ] <t0(2,0),r> !{r2{b1 🛑🚂2 ≏ ≏ }}")
+        try p.assert2("r1: {r2{b1 🛑🚂2 ≏ ≏ }} <t0,r> [b2 ≏ ≏ ] {r1{b3 ≡ ≡ 🛑🚂1 }} <t1,r> [b4 ≏ ≏] {r2{b1 🛑🚂2 ≏ ≏ }}",
+                      "r3: {r1{b3 ≡ ≡ 🛑🚂1 }} <t1(0,2),r> [b5 ≏ ≏ ] <t0(2,0),r> !{r2{b1 🛑🚂2 ≏ ≏ }}")
 
-        try p.assert2("r1: {r2{b1 🛑🚂2 ≏ ≏ }} <t0,r> [b2 ≏ ≏ ] {r1{b3 ≏ ≏ 🛑🚂1 }} <r1<t1>> [r1[b4 ≏ ≏]] {r2{b1 🛑🚂2 ≏ ≏ }}",
-                      "r3: {r1{b3 ≏ ≏ 🛑🚂1 }} <r1<t1(0,2)>> [b5 ≏ ≏ ] <t0(2,0),r> !{r2{b1 🛑🚂2 ≏ ≏ }}")
+        try p.assert2("r1: {r2{b1 🛑🚂2 ≏ ≏ }} <t0,r> [b2 ≏ ≏ ] {r1{b3 ≏ ≏ 🛑🚂1 }} <t1,r> [b4 ≏ ≏] {r2{b1 🛑🚂2 ≏ ≏ }}",
+                      "r3: {r1{b3 ≏ ≏ 🛑🚂1 }} <t1(0,2),r> [b5 ≏ ≏ ] <t0(2,0),r> !{r2{b1 🛑🚂2 ≏ ≏ }}")
 
         // Artificially set the restart time to 0 which will make train 1 restart again
         let b3 = layout.block(for: Identifier<Block>(uuid: "b3"))!
@@ -662,7 +662,7 @@ class ManualRoutingTests: BTTestCase {
         try p.assert("2: {s1 ≏ } <t1,l> <t2,s> [r0[b1 ≡ 🚂0]] <r0<t3>> [r0[b2 ≏ ]] <t4> [b3 ≏ ≏ ] <t5> <t6> {s2 ≏ } <t1,l> <t2,s> [r0[b1 ≡ 🚂0]] <r0<t3>> [r0[b2 ≏ ]] <t4> [b3 ≏ ≏ ] <t5> <t6(0,2)> {s1 ≏ }")
         try p.assert("2: {s1 ≏ } <t1,l> <t2,s> [b1 ≏] <t3> [r0[b2 ≡ 🚂0 ]] <r0<t4>> [r0[b3 ≏ ≏ ]] <t5> <t6> {s2 ≏ } <t1,l> <t2,s> [b1 ≏] <t3> [r0[b2 ≡ 🚂0 ]] <r0<t4>> [r0[b3 ≏ ≏ ]] <t5> <t6(0,2)> {s1 ≏ }")
         try p.assert("2: {s1 ≏ } <t1,l> <t2,s> [b1 ≏] <t3> [b2 ≏ ] <t4> [r0[b3 ≡ 🚂0 ≏ ]] <r0<t5>> <r0<t6>> {r0{s2 ≏ }} <t1,l> <t2,s> [b1 ≏] <t3> [b2 ≏ ] <t4> [r0[b3 ≡ 🚂0 ≏ ]] <r0<t5>> <r0<t6(0,2)>> {s1 ≏ }")
-        try p.assert("2: {s1 ≏ } <r0<t1,s>> <r0<t2,s>> [r0[b1 ≏]] <t3> [b2 ≏ ] <t4> [b3 ≏ ≏ ] <t5> <t6> {r0{s2 ≡ 🛑🚂0 }} <r0<t1,s>> <r0<t2,s>> [r0[b1 ≏]] <t3> [b2 ≏ ] <t4> [b3 ≏ ≏ ] <t5> <t6(0,2)> {s1 ≏ }")
+        try p.assert("2: {s1 ≏ } <t1,l> <t2,s> [b1 ≏] <t3> [b2 ≏ ] <t4> [b3 ≏ ≏ ] <t5> <t6> {r0{s2 ≡ 🛑🚂0 }} <t1,l> <t2,s> [b1 ≏] <t3> [b2 ≏ ] <t4> [b3 ≏ ≏ ] <t5> <t6(0,2)> {s1 ≏ }")
         
         XCTAssertEqual(p.train.scheduling, .running)
 
