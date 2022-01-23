@@ -86,6 +86,10 @@ final class Route: Element, ObservableObject {
     // The list of steps for this route
     @Published var steps = [Step]()
             
+    var lastStepIndex: Int {
+        return steps.count - 1
+    }
+    
     convenience init(uuid: String = UUID().uuidString, automatic: Bool = false) {
         self.init(id: Identifier(uuid: uuid), automatic: automatic)
     }

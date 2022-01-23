@@ -122,6 +122,7 @@ final class LayoutECreator: LayoutCreating {
 
         l.newRoute("0", name: "S1 to S1", [(b_s1,.next),(b_b1,.next),(b_b2,.next),(b_b3,.next),(b_s1,.next)])
         l.newRoute("1", name: "S1 to S1 Reversed", [(b_s1,.previous),(b_b3,.previous),(b_b2,.previous),(b_b1,.previous),(b_s1,.previous)])
+        l.newRoute("2", name: "S1 to S2 to S1", [(b_s1,.next),(b_b1,.next),(b_b2,.next),(b_b3,.next),(b_s2,.next),(b_b1,.next),(b_b2,.next),(b_b3,.next),(b_s1,.next)])
 
         // Trains
 

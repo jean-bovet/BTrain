@@ -208,6 +208,9 @@ final class TrainController {
         return try updateAutomaticRoute(for: train.id)
     }
         
+    // This method handles any stop trigger related to the automatic route, which are:
+    // - The train reaches the end of the route (that does not affect `endless` automatic route)
+    // - The train reaches a block that stops the train for a while (ie station)
     private func handleAutomaticRouteStop(route: Route) throws -> Result {
         guard let currentBlock = layout.currentBlock(train: train) else {
             return .none
@@ -224,7 +227,7 @@ final class TrainController {
         
         switch(route.automaticMode) {
         case .once(destination: let destination):
-            if train.routeStepIndex == route.steps.count - 1 {
+            if train.routeStepIndex == route.lastStepIndex {
                 // Double-check that the train is located in the block specified by the destination.
                 // This should never fail.
                 guard currentBlock.id == destination.blockId else {
@@ -243,29 +246,17 @@ final class TrainController {
             }
             
         case .endless:
-            if currentBlock.category == .station {
-                if train.scheduling == .finishing {
-                    debug("Stopping completely \(train) because it has reached a station and it is marked as .finishing")
-                    stopTrigger = StopTrigger.completeStop()
-                    return .processed
-                } else {
-                    stopTrigger = StopTrigger.stopAndRestart(after: currentBlock.waitingTime)
-                    return .processed
-                }
+            if handleTrainStopByBlock(currentBlock: currentBlock) == .processed {
+                return .processed
             }
         }
                                 
         return .none
     }
-    
-//    func waitingTime(route: Route, train: Train) -> TimeInterval {
-//        if let step = route.steps.element(at: train.routeIndex), let time = step.waitingTime {
-//            return time
-//        } else {
-//            return 10.0 // Default time if nothing is specified
-//        }
-//    }
-    
+        
+    // This method handles any stop trigger related to the manual route, which are:
+    // - The train reaches the end of the route
+    // - The train reaches a block that stops the train for a while (ie station)
     private func handleManualRouteStop(route: Route) throws -> Result {
         guard let currentBlock = layout.currentBlock(train: train) else {
             return .none
@@ -280,12 +271,33 @@ final class TrainController {
             return .none
         }
         
-        if train.routeStepIndex == route.steps.count - 1 {
+        if train.routeStepIndex == route.lastStepIndex {
             debug("Train \(train) will stop here (\(currentBlock)) because it has reached the end of the route")
             stopTrigger = StopTrigger.completeStop()
             return .processed
         }
         
+        if handleTrainStopByBlock(currentBlock: currentBlock) == .processed {
+            return .processed
+        }
+        
+        return .none
+    }
+    
+    // This method takes care of trigger a stop of the train located in
+    // the specified `currentBlock`, depending on the block characteristics.
+    // For now, only "station" blocks make the train stop.
+    private func handleTrainStopByBlock(currentBlock: Block) -> Result {
+        if currentBlock.category == .station {
+            if train.scheduling == .finishing {
+                debug("Stopping completely \(train) because it has reached a station and it is marked as .finishing")
+                stopTrigger = StopTrigger.completeStop()
+                return .processed
+            } else {
+                stopTrigger = StopTrigger.stopAndRestart(after: currentBlock.waitingTime)
+                return .processed
+            }
+        }
         return .none
     }
     
@@ -426,6 +438,12 @@ final class TrainController {
         return train.position
     }
     
+    // This method handles the transition from one block to another, using
+    // the entry feedback of the next block to determine when a train moves
+    // to the next block.
+    // When the train moves to another block:
+    // - Trailing and leading reservation blocks are updated.
+    // - Stop trigger is evaluated depending on the nature of the route
     private func handleTrainMoveToNextBlock(route: Route) throws -> Result {
         guard train.speed.kph > 0 else {
             return .none
@@ -545,8 +563,8 @@ final class TrainController {
         // (2) Reserve leading reserved blocks
         try freeLeadingReservedElements()
                 
-        let startReservationIndex = min(route.steps.count-1, train.routeStepIndex + 1)
-        let endReservationIndex = min(route.steps.count-1, train.routeStepIndex + train.maxNumberOfLeadingReservedBlocks)
+        let startReservationIndex = min(route.lastStepIndex, train.routeStepIndex + 1)
+        let endReservationIndex = min(route.lastStepIndex, train.routeStepIndex + train.maxNumberOfLeadingReservedBlocks)
                 
         var previousStep = route.steps[train.routeStepIndex]
         let stepsToReserve = route.steps[startReservationIndex...endReservationIndex]
