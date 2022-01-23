@@ -20,10 +20,12 @@ class SwitchboardTests: XCTestCase {
     var renderer: SwitchBoardRenderer!
     var dragOp: SwitchBoardDragOperation!
     var state: SwitchBoard.State!
+    var controller: LayoutController!
     
     override func setUp() {
         layout = LayoutDCreator().newLayout()
         XCTAssertEqual(layout.transitions.count, 0)
+        controller = LayoutController(layout: layout, interface: nil)
         
         let context = ShapeContext()
         provider = ShapeProvider(layout: layout, context: context)
@@ -98,7 +100,7 @@ class SwitchboardTests: XCTestCase {
         dragOp.onDragChanged(location: c2, translation: c.distance(to: c2))
         dragOp.onDragEnded()
                 
-        try? layout.setTrain(info: dragOp.state.trainDragInfo!, direction: .next)
+        try? controller.setTrain(info: dragOp.state.trainDragInfo!, direction: .next)
 
         XCTAssertEqual(train.blockId, b1.block.id)
         XCTAssertEqual(train.position, 0)
@@ -127,7 +129,7 @@ class SwitchboardTests: XCTestCase {
             XCTFail("Info should not be nil")
             return
         }
-        try? layout.setTrain(info: info, direction: Direction.next)
+        try? controller.setTrain(info: info, direction: Direction.next)
 
         XCTAssertEqual(train.blockId, b2.block.id)
     }

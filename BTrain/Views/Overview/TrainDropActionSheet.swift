@@ -12,15 +12,14 @@
 
 import SwiftUI
 
-extension Layout {
-    func setTrain(info: SwitchBoard.State.TrainDragInfo, direction: Direction) throws {
-        // Direction is nil so the train will preserve its direction
-        try free(trainID: info.trainId, removeFromLayout: true)
-        try setTrainToBlock(info.trainId, info.blockId, direction: direction)
-    }
-}
-
 extension LayoutController {
+    
+    func setTrain(info: SwitchBoard.State.TrainDragInfo, direction: Direction) throws {
+        try layout.free(trainID: info.trainId, removeFromLayout: true)
+        try layout.setTrainToBlock(info.trainId, info.blockId, direction: direction)
+        _ = run()
+    }
+
     func routeTrain(info: SwitchBoard.State.TrainDragInfo, direction: Direction) throws {
         let routeId = Route.automaticRouteId(for: info.trainId)
         let destination = Destination(info.blockId, direction: direction)
@@ -65,7 +64,7 @@ struct TrainDropActionSheet: View {
                 Spacer().fixedSpace()
                 
                 Button("Set Train") {
-                    try? layout.setTrain(info: trainDragInfo, direction: direction)
+                    try? controller.setTrain(info: trainDragInfo, direction: direction)
                     presentationMode.wrappedValue.dismiss()
                 }
 
