@@ -246,7 +246,7 @@ final class TrainController {
             }
             
         case .endless:
-            if handleTrainStopByBlock(currentBlock: currentBlock) == .processed {
+            if handleTrainStopByBlock(route: route, currentBlock: currentBlock) == .processed {
                 return .processed
             }
         }
@@ -277,7 +277,7 @@ final class TrainController {
             return .processed
         }
         
-        if handleTrainStopByBlock(currentBlock: currentBlock) == .processed {
+        if handleTrainStopByBlock(route: route, currentBlock: currentBlock) == .processed {
             return .processed
         }
         
@@ -287,20 +287,30 @@ final class TrainController {
     // This method takes care of trigger a stop of the train located in
     // the specified `currentBlock`, depending on the block characteristics.
     // For now, only "station" blocks make the train stop.
-    private func handleTrainStopByBlock(currentBlock: Block) -> Result {
+    private func handleTrainStopByBlock(route: Route, currentBlock: Block) -> Result {
         if currentBlock.category == .station {
             if train.scheduling == .finishing {
                 debug("Stopping completely \(train) because it has reached a station and it is marked as .finishing")
                 stopTrigger = StopTrigger.completeStop()
                 return .processed
             } else {
-                stopTrigger = StopTrigger.stopAndRestart(after: currentBlock.waitingTime)
+                let delay = waitingTime(route: route, train: train, block: currentBlock)
+                stopTrigger = StopTrigger.stopAndRestart(after: delay)
                 return .processed
             }
         }
         return .none
     }
     
+    private func waitingTime(route: Route, train: Train, block: Block) -> TimeInterval {
+        if let step = route.steps.element(at: train.routeStepIndex), let time = step.waitingTime {
+            return time
+        } else {
+            // Use the block waiting time if the route itself has nothing specified
+            return block.waitingTime
+        }
+    }
+        
     private func handleTrainStop() throws -> Result {
         guard train.speed.kph > 0 else {
             return .none
