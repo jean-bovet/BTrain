@@ -60,7 +60,7 @@ extension LayoutController {
         if let cb = layout.currentBlock(train: train) {
             info += ", block \(cb.name) at position \(train.position)"
         }
-        info += ", speed \(train.speed) kph"
+        info += ", speed \(train.speed)"
         info += ", scheduling \(train.scheduling)"
         info += ", state \(train.state)"
         return info

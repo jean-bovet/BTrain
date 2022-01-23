@@ -78,7 +78,7 @@ final class TrainSpeed: ObservableObject, Equatable, CustomStringConvertible {
     @Published var speedTable = [SpeedTableEntry]()
         
     var description: String {
-        return "\(kph) km/h"
+        return "\(kph) kph"
     }
 
     init(decoderType: DecoderType) {
