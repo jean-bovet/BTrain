@@ -50,6 +50,12 @@ final class LayoutFeedbackMonitor {
             return
         }
 
+        // Only consider the entry feedback for the next block for a train
+        // that is actually running or finishing its route.
+        guard train.scheduling != .stopped else {
+            return
+        }
+        
         let (entryFeedback, _) = try layout.feedbackTriggeringTransition(from: currentBlock, to: nextBlock)
         if let entryFeedback = entryFeedback {
             expectedFeedbacks.insert(entryFeedback.id)
