@@ -12,7 +12,6 @@
 
 import Foundation
 
-
 // A block is a section of track between two turnouts or another block.
 // A block consists of the following elements:
 // - Socket: each block has two sockets, one at the beginning (0) and one at the end (1)
@@ -40,6 +39,22 @@ import Foundation
 //
 //       ─────────────────────────────────────────────────────────▶
 //                              block natural direction
+//
+// In terms of geometry, the block needs the following measurements:
+// - Block length
+// - Distance of each feedback from the start of the block
+//
+//      │◀──────────────────Block Length───────────────▶│
+//      │                                               │
+//      │     ██            ██            ██            │  F
+//  B   │     ██            ██            ██            │  r
+//  a   ──────██────────────██────────────██────────────■  o
+//  c   │     ██            ██            ██               n
+//  k   │     ██            ██            ██               t
+//      │                    │
+//      │                    │
+//      │       Feedback     │
+//      │ ──────Distance────▶│
 //
 final class Block: Element, ObservableObject {
     
@@ -108,6 +123,9 @@ final class Block: Element, ObservableObject {
     // The category of the block
     @Published var category: Category
     
+    // Length of the block (in cm)
+    @Published var length: Double?
+
     // The number of seconds a train will wait in that block
     @Published var waitingTime: TimeInterval = 10.0
 
@@ -128,6 +146,8 @@ final class Block: Element, ObservableObject {
     struct BlockFeedback: Identifiable, Hashable, Codable {
         let id: String
         var feedbackId: Identifier<Feedback>
+        // Distance of the feedback from the start of the block
+        var distance: Double?
     }
     
     // Returns the list of feedbacks in this block
@@ -159,7 +179,7 @@ final class Block: Element, ObservableObject {
 extension Block: Codable {
     
     enum CodingKeys: CodingKey {
-        case id, enabled, name, type, waitingTime, reserved, train, feedbacks,
+        case id, enabled, name, type, length, waitingTime, reserved, train, feedbacks,
              entryFeedbackNext, brakeFeedbackNext, stopFeedbackNext,
              entryFeedbackPrevious, brakeFeedbackPrevious, stopFeedbackPrevious,
              center, angle
@@ -176,6 +196,7 @@ extension Block: Codable {
         self.init(id: id, name: name, type: category, center: center, rotationAngle: rotationAngle)
         
         self.enabled = try container.decodeIfPresent(Bool.self, forKey: CodingKeys.enabled) ?? true
+        self.length = try container.decodeIfPresent(Double.self, forKey: CodingKeys.length)
         self.waitingTime = try container.decodeIfPresent(TimeInterval.self, forKey: CodingKeys.waitingTime) ?? 10.0
         self.reserved = try container.decodeIfPresent(Reservation.self, forKey: CodingKeys.reserved)
         self.train = try container.decodeIfPresent(TrainInstance.self, forKey: CodingKeys.train)
@@ -196,6 +217,7 @@ extension Block: Codable {
         try container.encode(enabled, forKey: CodingKeys.enabled)
         try container.encode(name, forKey: CodingKeys.name)
         try container.encode(category, forKey: CodingKeys.type)
+        try container.encode(length, forKey: CodingKeys.length)
         try container.encode(waitingTime, forKey: CodingKeys.waitingTime)
         try container.encode(reserved, forKey: CodingKeys.reserved)
         try container.encode(train, forKey: CodingKeys.train)

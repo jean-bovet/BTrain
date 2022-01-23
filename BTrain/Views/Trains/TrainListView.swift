@@ -23,7 +23,7 @@ struct TrainListView: View {
     @State private var selection: Identifier<Train>? = nil
 
     var body: some View {
-        HStack {
+        HStack(alignment: .top) {
             VStack {
                 Table(selection: $selection) {
                     TableColumn("Enabled") { train in
@@ -84,12 +84,15 @@ struct TrainListView: View {
                 TrainDetailsView(layout: layout, train: train, trainIconManager: document.trainIconManager)
                     .padding()
             } else {
-                Group {
+                // TODO: refactor this into a view and use it for the other panels
+                Spacer()
+                VStack {
                     Spacer()
                     Text("No Selected Train")
                         .padding()
                     Spacer()
                 }
+                Spacer()
             }
         }.onAppear {
             if selection == nil {

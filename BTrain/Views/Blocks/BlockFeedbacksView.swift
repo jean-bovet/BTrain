@@ -17,30 +17,21 @@ struct BlockFeedbacksView: View {
     let layout: Layout
     @ObservedObject var block: Block
     
-    enum FeedbackSegmentChoices: CaseIterable {
-        case all
-        case previous
-        case next
-    }
-    @State private var feedbackSegmentSelection: FeedbackSegmentChoices = .all
-
     var body: some View {
         VStack {
-            Picker("Feedbacks", selection: $feedbackSegmentSelection) {
-                Text("Feedbacks").tag(FeedbackSegmentChoices.all)
-                Text("Previous Direction").tag(FeedbackSegmentChoices.previous)
-                Text("Next Direction").tag(FeedbackSegmentChoices.next)
-            }
-            .labelsHidden()
-            .pickerStyle(.segmented)
+            BlockAllFeedbacksView(layout: layout, block: block)
+
+            Spacer().frame(height: 20)
             
-            switch(feedbackSegmentSelection) {
-            case .all:
-                BlockAllFeedbacksView(layout: layout, block: block)
-            case .previous:
-                BlockDirectionFeedbacksView(layout: layout, direction: .previous, block: block)
-            case .next:
-                BlockDirectionFeedbacksView(layout: layout, direction: .next, block: block)
+            HStack {
+                GroupBox("Previous Direction") {
+                    BlockDirectionFeedbacksView(layout: layout, direction: .previous, block: block)
+                        .padding()
+                }
+                GroupBox("Next Direction") {
+                    BlockDirectionFeedbacksView(layout: layout, direction: .next, block: block)
+                        .padding()
+                }
             }
         }
     }

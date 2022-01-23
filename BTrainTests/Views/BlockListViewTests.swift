@@ -39,7 +39,6 @@ class BlockListViewTests: RootViewTests {
         let layout = LayoutCCreator().newLayout()
         let sut = BlockDetailsView(layout: layout, block: layout.blocks[0])
         let feedbacks = try sut.inspect().find(BlockFeedbacksView.self)
-        _ = try feedbacks.find(text: "Feedbacks")
         _ = try feedbacks.find(text: "Previous Direction")
         _ = try feedbacks.find(text: "Next Direction")
     }

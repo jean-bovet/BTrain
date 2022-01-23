@@ -16,11 +16,12 @@ struct BlockAllFeedbacksView: View {
  
     let layout: Layout
     @ObservedObject var block: Block
+    @State private var selection: Block.BlockFeedback.ID?
     
     var body: some View {
         VStack(alignment: .leading) {
-            ForEach($block.feedbacks, id: \.self) { blockFeedback in
-                HStack {
+            Table(selection: $selection) {
+                TableColumn("Feedback") { blockFeedback in
                     Picker("Feedback:", selection: blockFeedback.feedbackId) {
                         ForEach(layout.feedbacks, id:\.self) { feedback in
                             Text(feedback.name).tag(feedback.id)
@@ -28,18 +29,31 @@ struct BlockAllFeedbacksView: View {
                     }
                     .labelsHidden()
                     .id(block) // Forces SwiftUI to re-create the picker, otherwise it crashes when the selection changes from a block that has feedbacks to one that does not have any.
-                    
-                    Button("-") {
-                        block.remove(blockFeedback.wrappedValue)
+                }
+
+                TableColumn("Distance from Start (cm)") { blockFeedback in
+                    UndoProvider(blockFeedback.distance) { speed in
+                        TextField("", value: blockFeedback.distance, format: .number)
+                            .labelsHidden()
                     }
                 }
-            }
+            } rows: {
+                ForEach($block.feedbacks) { block in
+                    TableRow(block)
+                }
+            }.frame(height: 140)
             
             HStack {
                 Button("+") {
                     block.add(layout.feedbacks[0].id)
                 }.disabled(layout.feedbacks.isEmpty)
+                
+                Button("-") {
+                    block.feedbacks.removeAll(where: {$0.id == selection})
+                }.disabled(selection == nil)
+
                 Spacer()
+                
                 Button("Auto Fill") {
                     block.autoFillFeedbacks()
                 }

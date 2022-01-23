@@ -10,18 +10,24 @@
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-import XCTest
-@testable import BTrain
+import SwiftUI
 
-class BlockFeedbackViewTests: RootViewTests {
-
-    func testLayout() throws {
-        let block = layout.block(at: 0)
-        let sut = BlockAllFeedbacksView(layout: layout, block: block)
-        
-        _ = try sut.inspect().find(button: "+")
-        _ = try sut.inspect().find(button: "-")
-        _ = try sut.inspect().find(button: "Auto Fill")
-    }
+struct SectionTitleView: View {
     
+    let label: String
+    
+    var body: some View {
+        HStack {
+            Text(label).bold()
+            VStack {
+                Divider()
+            }
+        }
+    }
+}
+
+struct SectionTitleView_Previews: PreviewProvider {
+    static var previews: some View {
+        SectionTitleView(label: "This is a section title")
+    }
 }

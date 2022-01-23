@@ -13,8 +13,26 @@
 import Foundation
 
 // A train is an element that moves from one block to another.
-// Currently we make no difference between a train and a locomotive,
-// they are the same.
+// A train consists of a locomotive and zero, one or more wagons.
+// From a geometry point of view, these are the measurements needed:
+//
+//
+//      │◀─────────────────────Train Length──────────────────────▶│
+//      │                                                         │
+//  B   │                                                         │   F
+//  a   │                                                         │   r
+//  c   ┌─────────────────┐ ┌─────────────────┐ ┌─────────────────┐   o
+//  k   │                 │ │                 │ │                 │   n
+//      │      wagon      │ │      wagon      │ │   locomotive    │   t
+//      │                 │ │                 │ │      ▨          │
+//      └─────────────────┘ └─────────────────┘ └──────┬──────────┘
+//                                                     │          │
+//                                                     │          │
+//                                                     │          │
+//                                                     │ ◀────────│
+//
+//                                                    Magnet Distance
+//
 final class Train: Element, ObservableObject {
     // Unique identifier of the train
     let id: Identifier<Train>
@@ -24,10 +42,7 @@ final class Train: Element, ObservableObject {
     
     // Name of the train
     @Published var name = ""
-    
-    // The URL of the train icon to load
-    @Published var iconUrlData: Data?
-    
+        
     // Address of the train
     @Published var address: UInt32 = 0
       
@@ -38,6 +53,14 @@ final class Train: Element, ObservableObject {
         }
     }
     
+    // Length of the train (in cm)
+    @Published var length: Double?
+
+    // Distance of the magnet from the front of the train (in cm)
+    // BTrain expects all the train (locomotive) to have a magnet
+    // to allow detection via reed feedback.
+    @Published var magnetDistance: Double?
+
     // Speed of the train
     @Published var speed = TrainSpeed(kph: 0, decoderType: .MFX)
 
@@ -122,7 +145,7 @@ final class Train: Element, ObservableObject {
 extension Train: Codable {
     
     enum CodingKeys: CodingKey {
-      case id, enabled, name, iconUrlData, address, speed, decoder, direction, route, routeIndex, block, position, trailingBlocks, maxLeadingBlocks
+      case id, enabled, name, address, length, magnetDistance, speed, decoder, direction, route, routeIndex, block, position, trailingBlocks, maxLeadingBlocks
     }
 
     convenience init(from decoder: Decoder) throws {
@@ -130,9 +153,10 @@ extension Train: Codable {
         self.init(id: try container.decode(Identifier<Train>.self, forKey: CodingKeys.id))
         self.enabled = try container.decodeIfPresent(Bool.self, forKey: CodingKeys.enabled) ?? true
         self.name = try container.decode(String.self, forKey: CodingKeys.name)
-        self.iconUrlData = try container.decodeIfPresent(Data.self, forKey: CodingKeys.iconUrlData)
         self.address = try container.decode(UInt32.self, forKey: CodingKeys.address)
         self.decoder = try container.decode(DecoderType.self, forKey: CodingKeys.decoder)
+        self.length = try container.decodeIfPresent(Double.self, forKey: CodingKeys.length)
+        self.magnetDistance = try container.decodeIfPresent(Double.self, forKey: CodingKeys.magnetDistance)
         self.speed = try container.decode(TrainSpeed.self, forKey: CodingKeys.speed)
         self.speed.kph = 0 // Always reset with speed to 0 when restoring from disk
         self.directionForward = try container.decodeIfPresent(Bool.self, forKey: CodingKeys.direction) ?? true
@@ -149,9 +173,10 @@ extension Train: Codable {
         try container.encode(id, forKey: CodingKeys.id)
         try container.encode(enabled, forKey: CodingKeys.enabled)
         try container.encode(name, forKey: CodingKeys.name)
-        try container.encode(iconUrlData, forKey: CodingKeys.iconUrlData)
         try container.encode(address, forKey: CodingKeys.address)
         try container.encode(decoder, forKey: CodingKeys.decoder)
+        try container.encode(length, forKey: CodingKeys.length)
+        try container.encode(magnetDistance, forKey: CodingKeys.magnetDistance)
         try container.encode(speed, forKey: CodingKeys.speed)
         try container.encode(directionForward, forKey: CodingKeys.direction)
         try container.encode(routeId, forKey: CodingKeys.route)

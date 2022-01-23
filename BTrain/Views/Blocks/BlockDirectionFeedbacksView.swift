@@ -52,23 +52,23 @@ struct BlockDirectionFeedbacksView: View {
     var body: some View {
         Form {
             if direction == .next {
-                BlockFeedbackDirectionView(label: "Entry", layout: layout,
+                BlockFeedbackDirectionView(label: "Entry:", layout: layout,
                                            defaultFeedback: block.defaultEntryFeedback(for: .next),
                                            feedback: $block.entryFeedbackNext, block: block)
-                BlockFeedbackDirectionView(label: "Brake", layout: layout,
+                BlockFeedbackDirectionView(label: "Brake:", layout: layout,
                                            defaultFeedback: block.defaultBrakeFeedback(for: .next),
                                            feedback: $block.brakeFeedbackNext, block: block)
-                BlockFeedbackDirectionView(label: "Stop", layout: layout,
+                BlockFeedbackDirectionView(label: "Stop:", layout: layout,
                                            defaultFeedback: block.defaultStopFeedback(for: .next),
                                            feedback: $block.stopFeedbackNext, block: block)
             } else {
-                BlockFeedbackDirectionView(label: "Entry", layout: layout,
+                BlockFeedbackDirectionView(label: "Entry:", layout: layout,
                                            defaultFeedback: block.defaultEntryFeedback(for: .previous),
                                            feedback: $block.entryFeedbackPrevious, block: block)
-                BlockFeedbackDirectionView(label: "Brake", layout: layout,
+                BlockFeedbackDirectionView(label: "Brake:", layout: layout,
                                            defaultFeedback: block.defaultBrakeFeedback(for: .previous),
                                            feedback: $block.brakeFeedbackPrevious, block: block)
-                BlockFeedbackDirectionView(label: "Stop", layout: layout,
+                BlockFeedbackDirectionView(label: "Stop:", layout: layout,
                                            defaultFeedback: block.defaultStopFeedback(for: .previous),
                                            feedback: $block.stopFeedbackPrevious, block: block)
             }

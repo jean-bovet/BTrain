@@ -12,50 +12,130 @@
 
 import SwiftUI
 
+struct TrainDetailsDecoderSectionView: View {
+    
+    @ObservedObject var train: Train
+
+    var body: some View {
+        VStack {
+            SectionTitleView(label: "Decoder")
+
+            Form {
+                Picker("Type:", selection: $train.decoder) {
+                    ForEach(DecoderType.allCases, id:\.self) { proto in
+                        Text(proto.rawValue).tag(proto as DecoderType)
+                    }
+                }.fixedSize()
+
+                TextField("Address:", value: $train.address,
+                          format: .number)
+            }.padding([.leading])
+        }
+    }
+}
+
+struct TrainDetailsGeometrySectionView: View {
+    
+    @ObservedObject var train: Train
+
+    var body: some View {
+        VStack {
+            SectionTitleView(label: "Geometry")
+
+            Form {
+                TextField("Length (cm):", value: $train.length,
+                          format: .number)
+                
+                TextField("Magnet Distance from Front (cm):", value: $train.magnetDistance,
+                          format: .number)
+            }.padding([.leading])
+        }
+    }
+}
+
+struct TrainDetailsReservationSectionView: View {
+    
+    @ObservedObject var train: Train
+
+    var body: some View {
+        VStack(alignment: .leading) {
+            SectionTitleView(label: "Reservation")
+
+            Form {
+                Stepper("Leading: \(train.maxNumberOfLeadingReservedBlocks)", value: $train.maxNumberOfLeadingReservedBlocks, in: 1...10)
+                                
+                Stepper("Trailing: \(train.numberOfTrailingReservedBlocks)", value: $train.numberOfTrailingReservedBlocks, in: 0...2)
+            }.padding([.leading])
+        }
+    }
+}
+
+struct TrainDetailsSpeedSectionView: View {
+    
+    @ObservedObject var train: Train
+    @State private var speedExpanded = false
+
+    var body: some View {
+        VStack {
+            SectionTitleView(label: "Speed")
+
+            Form {
+                TextField("Max Speed:", value: $train.speed.maxSpeed,
+                          format: .number)
+                
+                Button("Profile…") {
+                    // TODO
+                }
+            }.padding([.leading])
+
+//            DisclosureGroup("Speed", isExpanded: $speedExpanded) {
+//                TrainSpeedView(trainSpeed: train.speed)
+//                    .frame(height: 200)
+//            }
+        }
+    }
+}
+
+struct TrainDetailsIconSectionView: View {
+    
+    @ObservedObject var train: Train
+    let trainIconManager: TrainIconManager
+
+    var body: some View {
+        VStack(alignment: .leading) {
+            SectionTitleView(label: "Icon")
+
+            HStack {
+                ZStack {
+                    TrainIconView(trainIconManager: trainIconManager, train: train, size: .large)
+                    if trainIconManager.imageFor(train: train) == nil {
+                        Text("Drag an Image")
+                    }
+                }
+                
+                if trainIconManager.imageFor(train: train) != nil {
+                    Button("Remove") {
+                        // TODO
+                    }
+                }
+            }.padding([.leading])
+        }
+    }
+}
+
 struct TrainDetailsView: View {
     
     let layout: Layout
     @ObservedObject var train: Train
     let trainIconManager: TrainIconManager
 
-    @State private var speedExpanded = false
-
     var body: some View {
         VStack(alignment: .leading) {
-            HStack {
-                TrainIconView(trainIconManager: trainIconManager, train: train, size: .large)
-
-                Form {
-                    Picker("Decoder:", selection: $train.decoder) {
-                        ForEach(DecoderType.allCases, id:\.self) { proto in
-                            Text(proto.rawValue).tag(proto as DecoderType)
-                        }
-                    }
-
-                    TextField("Address:", value: $train.address,
-                              format: .number)
-                 
-                    TextField("Max Speed:", value: $train.speed.maxSpeed,
-                              format: .number)
-                }
-            }
-            
-            Divider()
-            
-            Form {
-                Stepper("Leading Reservation Count: \(train.maxNumberOfLeadingReservedBlocks)", value: $train.maxNumberOfLeadingReservedBlocks, in: 1...10)
-                
-                Stepper("Trailing Reservation Count: \(train.numberOfTrailingReservedBlocks)", value: $train.numberOfTrailingReservedBlocks, in: 0...2)
-            }
-            
-            Divider()
-
-            DisclosureGroup("Speed", isExpanded: $speedExpanded) {
-                TrainSpeedView(trainSpeed: train.speed)
-                    .frame(height: 200)
-            }
-
-            Spacer()
+            TrainDetailsDecoderSectionView(train: train)
+            TrainDetailsGeometrySectionView(train: train)
+            TrainDetailsReservationSectionView(train: train)
+            TrainDetailsSpeedSectionView(train: train)
+            TrainDetailsIconSectionView(train: train, trainIconManager: trainIconManager)
         }
     }
 }
@@ -65,6 +145,8 @@ struct TrainEditView_Previews: PreviewProvider {
     static let layout = LayoutACreator().newLayout()
     
     static var previews: some View {
-        TrainDetailsView(layout: layout, train: layout.trains[0], trainIconManager: TrainIconManager(layout: layout))
+        TrainDetailsView(layout: layout, train: layout.trains[0],
+                         trainIconManager: TrainIconManager(layout: layout))
+            
     }
 }

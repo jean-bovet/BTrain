@@ -29,9 +29,7 @@ struct TrainControlContainerView: View {
                     TrainControlView(document: document, train: train)
                 }
 
-                if train.iconUrlData != nil {
-                    TrainIconView(trainIconManager: document.trainIconManager, train: train, size: .medium)
-                }
+                TrainIconView(trainIconManager: document.trainIconManager, train: train, size: .medium)
             }
             if train.blockId != nil {
                 TrainControlRouteView(document: document, train: train)

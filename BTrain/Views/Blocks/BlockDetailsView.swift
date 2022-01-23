@@ -19,28 +19,32 @@ struct BlockDetailsView: View {
         
     var body: some View {
         VStack(alignment: .leading) {
-            UndoProvider($block.category) { category in
-                Picker("Type", selection: category) {
-                    ForEach(Block.Category.allCases, id:\.self) { category in
-                        HStack {
-                            Text(category.description)
-                            BlockShapeView(layout: layout, category: category)
+            Form {
+                UndoProvider($block.category) { category in
+                    Picker("Type:", selection: category) {
+                        ForEach(Block.Category.allCases, id:\.self) { category in
+                            HStack {
+                                Text(category.description)
+                                BlockShapeView(layout: layout, category: category)
+                            }
                         }
-                    }
-                }.pickerStyle(.inline)
-            }
-
-            if block.category == .station {
-                Divider()
-
-                HStack {
-                    Text("Waiting Time:")
-                    TextField("", value: $block.waitingTime, format: .number)
+                    }.pickerStyle(.inline)
                 }
+                
+                HStack {
+                    TextField("Waiting Time:", value: $block.waitingTime, format: .number)
+                    Text("s.")
+                }.disabled(block.category != .station)
+                
+                HStack {
+                    TextField("Length:", value: $block.length, format: .number)
+                    Text("cm")
+                }
+                
             }
             
-            Divider()
-            
+            SectionTitleView(label: "Feedbacks")
+
             BlockFeedbacksView(layout: layout, block: block)
             
             Spacer()

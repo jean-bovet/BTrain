@@ -15,6 +15,9 @@ import XCTest
 @testable import BTrain
 import ViewInspector
 
+extension TrainDetailsDecoderSectionView: Inspectable { }
+extension TrainDetailsSpeedSectionView: Inspectable { }
+
 class TrainDetailsViewTests: XCTestCase {
     
     func testLayout() throws {
@@ -22,11 +25,16 @@ class TrainDetailsViewTests: XCTestCase {
         let t1 = layout.trains[0]
         
         let sut = TrainDetailsView(layout: layout, train: t1, trainIconManager: TrainIconManager(layout: layout))
-        _ = try sut.inspect().find(text: "Decoder:")
-        _ = try sut.inspect().find(text: "MFX")
         
-        _ = try sut.inspect().find(text: "Address:")
-        _ = try sut.inspect().find(TrainSpeedView.self)
+        let decoderSection = try sut.inspect().find(TrainDetailsDecoderSectionView.self)
+        _ = try decoderSection.find(text: "Type:")
+        _ = try decoderSection.find(text: "MFX")
+        _ = try decoderSection.find(text: "Address:")
+        
+        let speedSection = try sut.inspect().find(TrainDetailsSpeedSectionView.self)
+        _ = try speedSection.find(text: "Max Speed:")
+        // TODO
+//        _ = try speedSection.find(TrainSpeedView.self)
     }
     
 }
