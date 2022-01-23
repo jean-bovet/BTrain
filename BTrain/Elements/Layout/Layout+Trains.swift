@@ -271,10 +271,11 @@ extension Layout {
             return
         }
 
+        try reserve(block: toBlockId, withTrain: train, direction: direction)
+
         train.blockId = toBlock.id
 
         toBlock.train = Block.TrainInstance(trainId, direction)
-        try reserve(block: toBlockId, withTrain: train, direction: direction)
     }
     
     func reserve(block: Identifier<Block>, withTrain train: Train, direction: Direction) throws {

@@ -15,8 +15,8 @@ import SwiftUI
 extension LayoutController {
     
     func setTrain(info: SwitchBoard.State.TrainDragInfo, direction: Direction) throws {
-        try layout.free(trainID: info.trainId, removeFromLayout: true)
         try layout.setTrainToBlock(info.trainId, info.blockId, direction: direction)
+        try layout.free(trainID: info.trainId)
         _ = run()
     }
 
@@ -36,11 +36,13 @@ struct TrainDropActionSheet: View {
 
     @Environment(\.presentationMode) var presentationMode
 
+    @State private var errorStatus: String?
+
     var body: some View {
         VStack {
             HStack {
                 if let block = layout.block(for: trainDragInfo.blockId) {
-                    Text("Block \(block.name)")
+                    Text("Destination block \(block.name) with direction")
                 }
                 
                 Picker("Direction:", selection: $direction) {
@@ -54,6 +56,11 @@ struct TrainDropActionSheet: View {
                 Spacer()
             }
 
+            if let errorStatus = errorStatus {
+                Text(errorStatus)
+                    .foregroundColor(.red)
+            }
+
             Divider()
 
             HStack {
@@ -61,16 +68,26 @@ struct TrainDropActionSheet: View {
                     presentationMode.wrappedValue.dismiss()
                 }.keyboardShortcut(.cancelAction)
 
-                Spacer().fixedSpace()
+                Spacer()
                 
                 Button("Set Train") {
-                    try? controller.setTrain(info: trainDragInfo, direction: direction)
-                    presentationMode.wrappedValue.dismiss()
+                    do {
+                        try controller.setTrain(info: trainDragInfo, direction: direction)
+                        errorStatus = nil
+                        presentationMode.wrappedValue.dismiss()
+                    } catch {
+                        errorStatus = error.localizedDescription
+                    }
                 }
 
                 Button("Move Train") {
-                    try? controller.routeTrain(info: trainDragInfo, direction: direction)
-                    presentationMode.wrappedValue.dismiss()
+                    do {
+                        try controller.routeTrain(info: trainDragInfo, direction: direction)
+                        errorStatus = nil
+                        presentationMode.wrappedValue.dismiss()
+                    } catch {
+                        errorStatus = error.localizedDescription
+                    }
                 }.keyboardShortcut(.defaultAction)
             }
         }

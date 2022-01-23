@@ -22,12 +22,7 @@ struct TrainControlActionsView: View {
         VStack(alignment: .leading, spacing: 0) {
             HStack {
                 Button("􀊋 Start All") {
-                    do {
-                        try document.startAll()
-                        self.error = nil
-                    } catch {
-                        self.error = error.localizedDescription
-                    }
+                    document.startAll()
                 }.disabled(layout.trainsThatCanBeStarted().isEmpty)
                 
                 Spacer()

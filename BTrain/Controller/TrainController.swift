@@ -534,13 +534,17 @@ final class TrainController {
     // in front of the train (leading blocks).
     // Note: it won't reserve blocks that are already reserved to avoid loops.
     private func reserveNextBlocks(route: Route) throws -> Bool {
+        guard route.steps.count > 0 else {
+            return false
+        }
+
         // Before trying to reserve the leading blocks, let's free up
         // all the reserved elements (turnouts, transitions, blocks) in front
         // of the train. This is to keep the algorithm simple:
         // (1) Free up leading reserved blocks
         // (2) Reserve leading reserved blocks
         try freeLeadingReservedElements()
-        
+                
         let startReservationIndex = min(route.steps.count-1, train.routeStepIndex + 1)
         let endReservationIndex = min(route.steps.count-1, train.routeStepIndex + train.maxNumberOfLeadingReservedBlocks)
                 

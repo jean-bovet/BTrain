@@ -133,10 +133,14 @@ final class LayoutController: TrainControllerDelegate {
         _ = run()
     }
     
-    func startAll() throws {
+    func startAll() {
         for train in layout.trainsThatCanBeStarted() {
             if let routeId = train.routeId {
-                try start(routeID: routeId, trainID: train.id, destination: nil)
+                do {
+                    try start(routeID: routeId, trainID: train.id, destination: nil)
+                } catch {
+                    BTLogger.error("Unable to start \(train.name): \(error)")
+                }
             }
         }
     }
