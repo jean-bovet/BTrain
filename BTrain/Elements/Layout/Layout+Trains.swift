@@ -250,7 +250,7 @@ extension Layout {
         }
                 
         defer {
-            self.didChange()
+            didChange()
         }
         
         switch(position) {
@@ -276,6 +276,38 @@ extension Layout {
         train.blockId = toBlock.id
 
         toBlock.train = Block.TrainInstance(trainId, direction)
+    }
+    
+    // TODO: continue working on this
+    func reserveBlockForTrainLength(train: Train) throws {
+        guard let block = self.block(for: train.blockId) else {
+            return
+        }
+        
+        guard let trainLength = train.length else {
+            return
+        }
+        
+        var remainingTrainLength = trainLength
+
+        let visitor = ElementVisitor(layout: self)
+        try visitor.visit(fromBlockId: block.id, direction: .previous, callback: { info in
+            if let _ = info.transition {
+                // Transition is just a virtual connection between two elements,
+                // no physical length exists.
+            } else if let _ = info.turnout {
+                // TODO: take turnout length into account
+            } else if let block = info.block, let blockLength = block.length, let direction = info.direction {
+                block.train = .init(train.id, direction)
+                remainingTrainLength -= blockLength
+            }
+
+            if remainingTrainLength > 0 {
+                return .continue
+            } else {
+                return .stop
+            }
+        })
     }
     
     func reserve(block: Identifier<Block>, withTrain train: Train, direction: Direction) throws {
@@ -386,72 +418,29 @@ extension Layout {
     }
     
     func freeReservedElements(fromBlockId: Identifier<Block>, direction: Direction, trainId: Identifier<Train>) throws {
-        guard let block = self.block(for: fromBlockId) else {
-            throw LayoutError.blockNotFound(blockId: fromBlockId)
-        }
-        let fromSocket = direction == .next ? block.next : block.previous
-        try freeReservedElements(fromSocket: fromSocket, trainId: trainId)
-    }
-    
-    func freeReservedElements(fromSocket: Socket, trainId: Identifier<Train>) throws {
-        let transitions = try self.transitions(from: fromSocket, to: nil).filter { $0.reserved == trainId }
-        if transitions.isEmpty {
-            return
-        } else if transitions.count > 1 {
-            throw LayoutError.alwaysOneAndOnlyOneTransition
-        } else {
-            let transition = transitions[0]
-            
-            // Free the transition
-            transition.reserved = nil
-
-            // Transitions are always ordered with a being "from" and b "to" - see self.transitions() method
-            guard let toSocketId = transition.b.socketId else {
-                throw LayoutError.socketIdNotFound(socket: transition.b)
-            }
-            
-            if let blockId = transition.b.block {
-                // Transition is leading to a block
-                guard let block = self.block(for: blockId) else {
-                    throw LayoutError.blockNotFound(blockId: blockId)
-                }
-
-                // Block must be reserved for the trainId
-                guard block.reserved?.trainId == trainId else {
-                    return
-                }
-                
-                // Free the block
-                block.reserved = nil
-                
-                // Recursively call this method again to continue the job in the next element
-                if toSocketId == block.previous.socketId {
-                    try freeReservedElements(fromSocket: block.next, trainId: trainId)
+        let visitor = ElementVisitor(layout: self)
+        try visitor.visit(fromBlockId: fromBlockId, direction: direction) { info in
+            if let transition = info.transition {
+                if transition.reserved == trainId {
+                    transition.reserved = nil
                 } else {
-                    try freeReservedElements(fromSocket: block.previous, trainId: trainId)
+                    return .stop
                 }
-            } else if let turnoutId = transition.b.turnout {
-                // Transition is leading to a turnout
-                guard let turnout = self.turnout(for: turnoutId) else {
-                    throw LayoutError.turnoutNotFound(turnoutId: turnoutId)
+            } else if let turnout = info.turnout {
+                if turnout.reserved == trainId {
+                    turnout.reserved = nil
+                } else {
+                    return .stop
                 }
-
-                // Turnout must be reserved for the trainId
-                guard turnout.reserved == trainId else {
-                    return
+            } else if let block = info.block, block.id != fromBlockId {
+                if block.reserved?.trainId == trainId {
+                    block.reserved = nil
+                } else {
+                    return .stop
                 }
-                
-                // Free the turnout
-                turnout.reserved = nil
-                                    
-                // Find out the exit socket of the turnout given its state
-                guard let socketId = turnout.socketId(fromSocketId: toSocketId, withState: turnout.state) else {
-                    throw LayoutError.socketIdNotFoundForState(turnout: turnout, fromSocketId: toSocketId)
-                }
-                
-                // Recursively call this method again to continue the job in the next element
-                try freeReservedElements(fromSocket: turnout.socket(socketId), trainId: trainId)
             }
+            
+            return .continue
         }
     }
     

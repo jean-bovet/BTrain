@@ -58,17 +58,23 @@ import Foundation
 //
 final class Block: Element, ObservableObject {
     
-    // Defines the train in the block, which is the train
-    // itself and its direction of travel within the block
     final class TrainInstance: Codable, Equatable, CustomStringConvertible {
-        
+        // Train located in the block
         let trainId: Identifier<Train>
         
+        // Direction of travel of the train within the block
         let direction: Direction
+
+        enum TrainPart {
+            case locomotive
+            case wagon
+        }
+        
+        // A map of train part that occupies the block,
+        // identified by their feedback index
+        var parts: [Int:TrainPart]?
         
         // The time remaining until the train is automatically restarted
-        // Currently this is only taken into consideration when the train
-        // uses an automatic route.
         var timeUntilAutomaticRestart: TimeInterval = 0
 
         static func == (lhs: Block.TrainInstance, rhs: Block.TrainInstance) -> Bool {

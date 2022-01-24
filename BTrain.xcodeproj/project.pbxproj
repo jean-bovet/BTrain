@@ -194,6 +194,7 @@
 		A7C8A2EB279BDE52000C7246 /* Predefined.btrain in Resources */ = {isa = PBXBuildFile; fileRef = A7C8A2EA279BDE52000C7246 /* Predefined.btrain */; };
 		A7C8A2ED279BEA6D000C7246 /* FileWrapper+Layout.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7C8A2EC279BEA6D000C7246 /* FileWrapper+Layout.swift */; };
 		A7C8A2EF279DD19A000C7246 /* SectionTitleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7C8A2EE279DD19A000C7246 /* SectionTitleView.swift */; };
+		A7C8A2F1279E6C6E000C7246 /* ElementVisitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7C8A2F0279E6C6E000C7246 /* ElementVisitor.swift */; };
 		A7CA5EBB27952ECF00171398 /* Destination.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7CA5EBA27952ECF00171398 /* Destination.swift */; };
 		A7CA5EBD2795339000171398 /* AutomaticRoutingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7CA5EBC2795339000171398 /* AutomaticRoutingTests.swift */; };
 		A7CA5EBF2795D05A00171398 /* TrainControlActionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7CA5EBE2795D05A00171398 /* TrainControlActionsView.swift */; };
@@ -427,6 +428,7 @@
 		A7C8A2EA279BDE52000C7246 /* Predefined.btrain */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = Predefined.btrain; sourceTree = "<group>"; };
 		A7C8A2EC279BEA6D000C7246 /* FileWrapper+Layout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FileWrapper+Layout.swift"; sourceTree = "<group>"; };
 		A7C8A2EE279DD19A000C7246 /* SectionTitleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SectionTitleView.swift; sourceTree = "<group>"; };
+		A7C8A2F0279E6C6E000C7246 /* ElementVisitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ElementVisitor.swift; sourceTree = "<group>"; };
 		A7CA5EBA27952ECF00171398 /* Destination.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Destination.swift; sourceTree = "<group>"; };
 		A7CA5EBC2795339000171398 /* AutomaticRoutingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutomaticRoutingTests.swift; sourceTree = "<group>"; };
 		A7CA5EBE2795D05A00171398 /* TrainControlActionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainControlActionsView.swift; sourceTree = "<group>"; };
@@ -794,6 +796,7 @@
 			isa = PBXGroup;
 			children = (
 				A7F779F92734A8C500E73275 /* Element.swift */,
+				A7C8A2F0279E6C6E000C7246 /* ElementVisitor.swift */,
 				A7CA5EBA27952ECF00171398 /* Destination.swift */,
 				A7710E5D277850F000C08150 /* Reservation.swift */,
 				A728183F278E9EDC007BE810 /* Direction.swift */,
@@ -1261,6 +1264,7 @@
 				A7710E6F2779A50A00C08150 /* SwitchboardContainerView.swift in Sources */,
 				A74CCC6E272A5A08004E58F5 /* Route.swift in Sources */,
 				A76507E8275AD1FE0079C71A /* TrainControlLocationView.swift in Sources */,
+				A7C8A2F1279E6C6E000C7246 /* ElementVisitor.swift in Sources */,
 				A74CCC6C272A5A01004E58F5 /* Train.swift in Sources */,
 				A74C0E7E275C9E900043FEE5 /* MarklinLocomotiveConfig.swift in Sources */,
 				A785C079278A6468002FD538 /* LayoutDocument+ReferenceFileDocument.swift in Sources */,
