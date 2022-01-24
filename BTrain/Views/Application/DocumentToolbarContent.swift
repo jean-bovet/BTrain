@@ -42,6 +42,10 @@ struct DocumentToolbarContent: ToolbarContent {
                     CommandShowBlockNameView()
                     CommandShowStationNameView()
                     CommandShowTurnoutNameView()
+                    
+                    Divider()
+                    
+                    CommandShowSimulatorView()
                 }.disabled(document.selectedView != .overview)
             }
             
@@ -52,8 +56,6 @@ struct DocumentToolbarContent: ToolbarContent {
                 CommandSelectedView(viewType: .blocks, label: "Blocks")
                 CommandSelectedView(viewType: .turnouts, label: "Turnouts")
                 CommandSelectedView(viewType: .feedback, label: "Feedback")
-                Divider()
-                CommandShowSimulatorView()
             }
         }
     }
@@ -190,7 +192,7 @@ struct CommandShowBlockNameView: View {
     @AppStorage("showBlockName") var state: Bool = false
     
     var body: some View {
-        Toggle("Show Block Name", isOn: $state)
+        Toggle("Block Name", isOn: $state)
     }
 }
 
@@ -199,7 +201,7 @@ struct CommandShowStationNameView: View {
     @AppStorage("showStationName") var state: Bool = false
     
     var body: some View {
-        Toggle("Show Station Name", isOn: $state)
+        Toggle("Station Name", isOn: $state)
     }
 }
 
@@ -208,7 +210,7 @@ struct CommandShowTurnoutNameView: View {
     @AppStorage("showTurnoutName") var state: Bool = false
 
     var body: some View {
-        Toggle("Show Turnout Name", isOn: $state)
+        Toggle("Turnout Name", isOn: $state)
     }
 }
 
