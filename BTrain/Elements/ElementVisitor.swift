@@ -39,7 +39,7 @@ final class ElementVisitor {
         guard let block = layout.block(for: fromBlockId) else {
             throw LayoutError.blockNotFound(blockId: fromBlockId)
         }
-        guard callback(.init(block: block)) == .continue else {
+        guard callback(.init(block: block, direction: direction)) == .continue else {
             return
         }
         let fromSocket = direction == .next ? block.next : block.previous
