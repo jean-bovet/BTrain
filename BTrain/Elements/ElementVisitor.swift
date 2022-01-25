@@ -46,7 +46,7 @@ final class ElementVisitor {
         try visit(fromSocket: fromSocket, callback: callback)
     }
     
-    func visit(fromSocket: Socket, callback: VisitorCallback) throws {
+    private func visit(fromSocket: Socket, callback: VisitorCallback) throws {
         let transitions = try layout.transitions(from: fromSocket, to: nil)
         if transitions.isEmpty {
             return

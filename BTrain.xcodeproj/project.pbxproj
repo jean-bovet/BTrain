@@ -195,6 +195,7 @@
 		A7C8A2ED279BEA6D000C7246 /* FileWrapper+Layout.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7C8A2EC279BEA6D000C7246 /* FileWrapper+Layout.swift */; };
 		A7C8A2EF279DD19A000C7246 /* SectionTitleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7C8A2EE279DD19A000C7246 /* SectionTitleView.swift */; };
 		A7C8A2F1279E6C6E000C7246 /* ElementVisitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7C8A2F0279E6C6E000C7246 /* ElementVisitor.swift */; };
+		A7C8A2F3279FA56C000C7246 /* TrainLengthTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7C8A2F2279FA56C000C7246 /* TrainLengthTests.swift */; };
 		A7CA5EBB27952ECF00171398 /* Destination.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7CA5EBA27952ECF00171398 /* Destination.swift */; };
 		A7CA5EBD2795339000171398 /* AutomaticRoutingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7CA5EBC2795339000171398 /* AutomaticRoutingTests.swift */; };
 		A7CA5EBF2795D05A00171398 /* TrainControlActionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7CA5EBE2795D05A00171398 /* TrainControlActionsView.swift */; };
@@ -429,6 +430,7 @@
 		A7C8A2EC279BEA6D000C7246 /* FileWrapper+Layout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FileWrapper+Layout.swift"; sourceTree = "<group>"; };
 		A7C8A2EE279DD19A000C7246 /* SectionTitleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SectionTitleView.swift; sourceTree = "<group>"; };
 		A7C8A2F0279E6C6E000C7246 /* ElementVisitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ElementVisitor.swift; sourceTree = "<group>"; };
+		A7C8A2F2279FA56C000C7246 /* TrainLengthTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainLengthTests.swift; sourceTree = "<group>"; };
 		A7CA5EBA27952ECF00171398 /* Destination.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Destination.swift; sourceTree = "<group>"; };
 		A7CA5EBC2795339000171398 /* AutomaticRoutingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutomaticRoutingTests.swift; sourceTree = "<group>"; };
 		A7CA5EBE2795D05A00171398 /* TrainControlActionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainControlActionsView.swift; sourceTree = "<group>"; };
@@ -727,6 +729,7 @@
 				A73E0815276B0BC0005F9D64 /* ManualRoutingTests.swift */,
 				A7FBC8B5276E8BB6009D49C3 /* PathFinderTests.swift */,
 				A7CA5EBC2795339000171398 /* AutomaticRoutingTests.swift */,
+				A7C8A2F2279FA56C000C7246 /* TrainLengthTests.swift */,
 			);
 			path = Layouts;
 			sourceTree = "<group>";
@@ -1402,6 +1405,7 @@
 				A73E0827276BAED3005F9D64 /* SwitchboardRenderingTests.swift in Sources */,
 				A7907997277ED44900771A60 /* TrainRouteControlViewTests.swift in Sources */,
 				A75829702793A96F00AA0649 /* TrainDetailsViewTests.swift in Sources */,
+				A7C8A2F3279FA56C000C7246 /* TrainLengthTests.swift in Sources */,
 				A73E07F72769B5A1005F9D64 /* AppViewTests.swift in Sources */,
 				A73E0803276AB757005F9D64 /* TurnoutEditListViewTests.swift in Sources */,
 				A73AFE982726594800E1ED21 /* CANMessageTests.swift in Sources */,

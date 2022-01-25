@@ -279,26 +279,46 @@ extension Layout {
     }
     
     // TODO: continue working on this
-    func reserveBlockForTrainLength(train: Train) throws {
-        guard let block = self.block(for: train.blockId) else {
-            return
+    func reserveBlocksForTrainLength(train: Train) throws {
+        guard let fromBlockId = train.blockId else {
+            throw LayoutError.trainNotAssignedToABlock(trainId: train.id)
+        }
+        
+        guard let fromBlock = self.block(for: fromBlockId) else {
+            throw LayoutError.blockNotFound(blockId: fromBlockId)
         }
         
         guard let trainLength = train.length else {
             return
         }
         
+        // First, free all the reserved block behind the train so we can reserve them again
+        // using the length of the train in consideraion
+        try freeReservedElements(fromBlockId: fromBlockId, direction: .previous, trainId: train.id)
+
         var remainingTrainLength = trainLength
 
         let visitor = ElementVisitor(layout: self)
-        try visitor.visit(fromBlockId: block.id, direction: .previous, callback: { info in
-            if let _ = info.transition {
+        try visitor.visit(fromBlockId: fromBlock.id, direction: .previous, callback: { info in
+            if let transition = info.transition {
                 // Transition is just a virtual connection between two elements,
                 // no physical length exists.
-            } else if let _ = info.turnout {
+                guard transition.reserved == nil else {
+                    return .stop
+                }
+                transition.reserved = train.id
+            } else if let turnout = info.turnout {
                 // TODO: take turnout length into account
+                guard turnout.reserved == nil else {
+                    return .stop
+                }
+                turnout.reserved = train.id
             } else if let block = info.block, let blockLength = block.length, let direction = info.direction {
+                guard block.reserved == nil || block.id == fromBlockId else {
+                    return .stop
+                }
                 block.train = .init(train.id, direction)
+                block.reserved = .init(trainId: train.id, direction: direction)
                 remainingTrainLength -= blockLength
             }
 

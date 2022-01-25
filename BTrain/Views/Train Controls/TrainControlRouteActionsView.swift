@@ -21,26 +21,13 @@ struct TrainControlRouteActionsView: View {
     @ObservedObject var route: Route
 
     @Binding var error: String?
-    
-    func reserveAll() throws {
-        document.switchboard.state.triggerRedraw.toggle()
-        for (index, step) in route.steps.enumerated() {
-            if index+1 < route.steps.count {
-                let nextStep = route.steps[index+1]
-                try document.layout.reserve(trainId: train.id,
-                                            fromBlock: step.blockId,
-                                            toBlock: nextStep.blockId,
-                                            direction: step.direction)
-            }
-        }
-    }
-    
+        
     var body: some View {
         HStack {
             if document.showDebugModeControls {
-                Button("Reserve All") {
+                Button("Reserve Blocks") {
                     do {
-                        try reserveAll()
+                        try document.layout.reserveBlocksForTrainLength(train: train)
                         self.error = nil
                     } catch {
                         self.error = error.localizedDescription
