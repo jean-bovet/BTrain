@@ -278,7 +278,6 @@ extension Layout {
         toBlock.train = Block.TrainInstance(trainId, direction)
     }
     
-    // TODO: continue working on this
     func reserveBlocksForTrainLength(train: Train) throws {
         guard let fromBlockId = train.blockId else {
             throw LayoutError.trainNotAssignedToABlock(trainId: train.id)
@@ -288,18 +287,24 @@ extension Layout {
             throw LayoutError.blockNotFound(blockId: fromBlockId)
         }
         
+        guard let trainInstance = fromBlock.train else {
+            throw LayoutError.trainNotFoundInBlock(blockId: fromBlockId)
+        }
+        
         guard let trainLength = train.length else {
             return
         }
         
+        let trainDirection = trainInstance.direction
+        
         // First, free all the reserved block behind the train so we can reserve them again
         // using the length of the train in consideraion
-        try freeReservedElements(fromBlockId: fromBlockId, direction: .previous, trainId: train.id)
+        try freeReservedElements(fromBlockId: fromBlockId, direction: trainDirection.opposite, trainId: train.id)
 
         var remainingTrainLength = trainLength
 
         let visitor = ElementVisitor(layout: self)
-        try visitor.visit(fromBlockId: fromBlock.id, direction: .previous, callback: { info in
+        try visitor.visit(fromBlockId: fromBlock.id, direction: trainDirection.opposite, callback: { info in
             if let transition = info.transition {
                 // Transition is just a virtual connection between two elements,
                 // no physical length exists.
@@ -314,12 +319,58 @@ extension Layout {
                 }
                 turnout.reserved = train.id
             } else if let block = info.block, let blockLength = block.length, let direction = info.direction {
-                guard block.reserved == nil || block.id == fromBlockId else {
+                guard block.reserved == nil || info.index == 0 else {
                     throw LayoutError.blockAlreadyReserved(block: block)
                 }
-                block.train = .init(train.id, direction)
+                
+                let trainInstance = info.index == 0 ? block.train! : Block.TrainInstance(train.id, direction)
+                var parts = [Int:Block.TrainInstance.TrainPart]()
+                
+                if block.id == fromBlockId {
+                    // First block that contains the locomotive
+                    if direction == .previous {
+                        var position = train.position
+                        parts[position] = .locomotive
+                        guard let partLength = block.partLenght(at: position) else {
+                            return .stop
+                        }
+                        remainingTrainLength -= partLength
+
+                        position -= 1
+                        while position >= 0 && remainingTrainLength > 0 {
+                            parts[position] = .wagon
+                            guard let partLength = block.partLenght(at: position) else {
+                                return .stop
+                            }
+                            remainingTrainLength -= partLength
+
+                            position -= 1
+                        }
+                    } else {
+                        // TODO
+                        fatalError("Not implemented yet")
+                    }
+                } else {
+                    // Block that only contains wagons
+                    if direction == .previous {
+                        var position = block.feedbacks.count
+                        while position >= 0 && remainingTrainLength > 0 {
+                            parts[position] = .wagon
+                            guard let partLength = block.partLenght(at: position) else {
+                                return .stop
+                            }
+                            remainingTrainLength -= partLength
+                            position -= 1
+                        }
+                    } else {
+                        // TODO
+                        fatalError("Not implemented yet")
+                    }
+                }
+
+                trainInstance.parts = parts
+                block.train = trainInstance
                 block.reserved = .init(trainId: train.id, direction: direction)
-                remainingTrainLength -= blockLength
             }
 
             if remainingTrainLength > 0 {
@@ -455,6 +506,7 @@ extension Layout {
             } else if let block = info.block, block.id != fromBlockId {
                 if block.reserved?.trainId == trainId {
                     block.reserved = nil
+                    block.train = nil
                 } else {
                     return .stop
                 }

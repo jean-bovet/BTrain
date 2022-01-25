@@ -26,6 +26,7 @@ final class ElementVisitor {
         var turnout: Turnout? = nil
         var block: Block? = nil
         var direction: Direction? = nil
+        var index: Int
     }
     
     enum VisitorCallbackResult {
@@ -39,14 +40,14 @@ final class ElementVisitor {
         guard let block = layout.block(for: fromBlockId) else {
             throw LayoutError.blockNotFound(blockId: fromBlockId)
         }
-        guard try callback(.init(block: block, direction: direction)) == .continue else {
+        guard try callback(.init(block: block, direction: direction, index: 0)) == .continue else {
             return
         }
         let fromSocket = direction == .next ? block.next : block.previous
-        try visit(fromSocket: fromSocket, callback: callback)
+        try visit(fromSocket: fromSocket, index: 1, callback: callback)
     }
     
-    private func visit(fromSocket: Socket, callback: VisitorCallback) throws {
+    private func visit(fromSocket: Socket, index: Int, callback: VisitorCallback) throws {
         let transitions = try layout.transitions(from: fromSocket, to: nil)
         if transitions.isEmpty {
             return
@@ -55,7 +56,7 @@ final class ElementVisitor {
         } else {
             let transition = transitions[0]
             
-            guard try callback(.init(transition: transition)) == .continue else {
+            guard try callback(.init(transition: transition, index: index)) == .continue else {
                 return
             }
 
@@ -71,15 +72,15 @@ final class ElementVisitor {
                 }
 
                 let direction: Direction = toSocketId == block.previous.socketId ? .next : .previous
-                guard try callback(.init(block: block, direction: direction)) == .continue else {
+                guard try callback(.init(block: block, direction: direction, index: index)) == .continue else {
                     return
                 }
 
                 // Recursively call this method again to continue the job in the next element
                 if direction == .next {
-                    try visit(fromSocket: block.next, callback: callback)
+                    try visit(fromSocket: block.next, index: index+1, callback: callback)
                 } else {
-                    try visit(fromSocket: block.previous, callback: callback)
+                    try visit(fromSocket: block.previous, index: index+1, callback: callback)
                 }
             } else if let turnoutId = transition.b.turnout {
                 // Transition is leading to a turnout
@@ -87,7 +88,7 @@ final class ElementVisitor {
                     throw LayoutError.turnoutNotFound(turnoutId: turnoutId)
                 }
 
-                guard try callback(.init(turnout: turnout)) == .continue else {
+                guard try callback(.init(turnout: turnout, index: index)) == .continue else {
                     return
                 }
                                     
@@ -97,7 +98,7 @@ final class ElementVisitor {
                 }
                 
                 // Recursively call this method again to continue the job in the next element
-                try visit(fromSocket: turnout.socket(socketId), callback: callback)
+                try visit(fromSocket: turnout.socket(socketId), index: index+1, callback: callback)
             }
         }
     }

@@ -94,7 +94,48 @@ final class Block: Element, ObservableObject {
             return "TrainInstance(\(trainId), \(direction.rawValue))"
         }
     }
-            
+    
+    // Returns the length (in cm) of the part at the specified index,
+    // starting from the beginning of the block.
+    func partLenght(at index: Int) -> Double? {
+        if index == feedbacks.count {
+            // Last part:
+            // [ p0  |   p1 |   p2 ]
+            // [ <0> f1 <1> f2 <2> ]
+            // |<--distance->|
+            // |<--- length ------>|
+            guard let length = length else {
+                return nil
+            }
+            guard let feedbackDistance = feedbacks[index - 1].distance else {
+                return nil
+            }
+            return length - feedbackDistance
+        } else if index > 0 {
+            // [ p0  |   p1 |   p2 ]
+            // [ <0> f1 <1> f2 <2> ]
+            // |<--distance->|
+            // |<-d->|
+            guard let feedback1Distance = feedbacks[index].distance else {
+                return nil
+            }
+            guard let feedback2Distance = feedbacks[index - 1].distance else {
+                return nil
+            }
+            return feedback1Distance - feedback2Distance
+        } else if index == 0 {
+            // First part:
+            // [ p0  |   p1 |   p2 ]
+            // [ <0> f1 <1> f2 <2> ]
+            // |<-d->|
+            return feedbacks[index].distance
+        } else {
+            // TODO: proper exception
+            fatalError("Unexpected index")
+        }
+
+    }
+    
     // The category of the block
     enum Category: String, Codable, CaseIterable, Comparable {
         case station

@@ -35,37 +35,85 @@ class TrainLengthTests: XCTestCase {
         let b4 = layout.blocks[3]
         
         b1.length = 100
+        b1.feedbacks[0].distance = 25
+        b1.feedbacks[1].distance = b1.length! - 25
+
         b2.length = 100
-        b3.length = 80
-        b4.length = 40
+        b2.feedbacks[0].distance = 25
+        b2.feedbacks[1].distance = b2.length! - 25
         
+        b3.length = 80
+        b3.feedbacks[0].distance = 25
+        b3.feedbacks[1].distance = b3.length! - 25
+
+        b4.length = 40
+        b4.feedbacks[0].distance = 5
+        b4.feedbacks[1].distance = b4.length! - 5
+
         layout.turnouts[0].state = .straight23
 
         let t1 = layout.trains[0]
         t1.blockId = b1.id
+        t1.position = 2
+        b1.train = .init(t1.id, .next)
         
         t1.length = 100+40+100
         try layout.reserveBlocksForTrainLength(train: t1)
         XCTAssertEqual(b1.reserved?.trainId, t1.id)
+        XCTAssertEqual(b1.train!.parts![2], .locomotive)
+        XCTAssertEqual(b1.train!.parts![1], .wagon)
+        XCTAssertEqual(b1.train!.parts![0], .wagon)
+
         XCTAssertEqual(b4.reserved?.trainId, t1.id)
+        XCTAssertEqual(b4.train!.parts![2], .wagon)
+        XCTAssertEqual(b4.train!.parts![1], .wagon)
+        XCTAssertEqual(b4.train!.parts![0], .wagon)
+
         XCTAssertEqual(b3.reserved?.trainId, t1.id)
+        XCTAssertEqual(b3.train!.parts![2], .wagon)
+        XCTAssertEqual(b3.train!.parts![1], .wagon)
+        XCTAssertEqual(b3.train!.parts![0], .wagon)
+
         XCTAssertEqual(b2.reserved?.trainId, t1.id)
+        XCTAssertEqual(b2.train!.parts![2], .wagon)
+        XCTAssertNil(b2.train!.parts![1])
+        XCTAssertNil(b2.train!.parts![0])
 
         t1.length = 100+40+60
-        
+
         try layout.reserveBlocksForTrainLength(train: t1)
         XCTAssertEqual(b1.reserved?.trainId, t1.id)
+        XCTAssertEqual(b1.train!.parts![2], .locomotive)
+        XCTAssertEqual(b1.train!.parts![1], .wagon)
+        XCTAssertEqual(b1.train!.parts![0], .wagon)
+
         XCTAssertEqual(b4.reserved?.trainId, t1.id)
+        XCTAssertEqual(b4.train!.parts![2], .wagon)
+        XCTAssertEqual(b4.train!.parts![1], .wagon)
+        XCTAssertEqual(b4.train!.parts![0], .wagon)
+
         XCTAssertEqual(b3.reserved?.trainId, t1.id)
+        XCTAssertEqual(b3.train!.parts![2], .wagon)
+        XCTAssertEqual(b3.train!.parts![1], .wagon)
+        XCTAssertEqual(b3.train!.parts![0], .wagon)
+
         XCTAssertNil(b2.reserved)
+        XCTAssertNil(b2.train)
 
         t1.length = 80
         try layout.reserveBlocksForTrainLength(train: t1)
         XCTAssertEqual(b1.reserved?.trainId, t1.id)
+        XCTAssertEqual(b1.train!.parts![0], .wagon)
+        XCTAssertEqual(b1.train!.parts![1], .wagon)
+        XCTAssertEqual(b1.train!.parts![2], .locomotive)
+        
         XCTAssertNil(b2.reserved)
+        XCTAssertNil(b2.train)
         XCTAssertNil(b3.reserved)
+        XCTAssertNil(b3.train)
         XCTAssertNil(b4.reserved)
-                                
+        XCTAssertNil(b4.train)
+
         t1.length = 2000
         XCTAssertThrowsError(try layout.reserveBlocksForTrainLength(train: t1))
     }
