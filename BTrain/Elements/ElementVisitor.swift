@@ -33,13 +33,13 @@ final class ElementVisitor {
         case `continue`
     }
     
-    typealias VisitorCallback = (ElementInfo) -> VisitorCallbackResult
+    typealias VisitorCallback = (ElementInfo) throws -> VisitorCallbackResult
     
     func visit(fromBlockId: Identifier<Block>, direction: Direction, callback: VisitorCallback) throws {
         guard let block = layout.block(for: fromBlockId) else {
             throw LayoutError.blockNotFound(blockId: fromBlockId)
         }
-        guard callback(.init(block: block, direction: direction)) == .continue else {
+        guard try callback(.init(block: block, direction: direction)) == .continue else {
             return
         }
         let fromSocket = direction == .next ? block.next : block.previous
@@ -55,7 +55,7 @@ final class ElementVisitor {
         } else {
             let transition = transitions[0]
             
-            guard callback(.init(transition: transition)) == .continue else {
+            guard try callback(.init(transition: transition)) == .continue else {
                 return
             }
 
@@ -71,7 +71,7 @@ final class ElementVisitor {
                 }
 
                 let direction: Direction = toSocketId == block.previous.socketId ? .next : .previous
-                guard callback(.init(block: block, direction: direction)) == .continue else {
+                guard try callback(.init(block: block, direction: direction)) == .continue else {
                     return
                 }
 
@@ -87,7 +87,7 @@ final class ElementVisitor {
                     throw LayoutError.turnoutNotFound(turnoutId: turnoutId)
                 }
 
-                guard callback(.init(turnout: turnout)) == .continue else {
+                guard try callback(.init(turnout: turnout)) == .continue else {
                     return
                 }
                                     

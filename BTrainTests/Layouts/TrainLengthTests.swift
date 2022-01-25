@@ -27,7 +27,7 @@ import XCTest
 //   └─────────┘                              └─────────┘
 class TrainLengthTests: XCTestCase {
 
-    func testReserveShortTrain() throws {
+    func testReserveVariousTrainLengths() throws {
         let layout = LayoutBCreator().newLayout()
         let b1 = layout.blocks[0]
         let b2 = layout.blocks[1]
@@ -66,6 +66,8 @@ class TrainLengthTests: XCTestCase {
         XCTAssertNil(b3.reserved)
         XCTAssertNil(b4.reserved)
                                 
+        t1.length = 2000
+        XCTAssertThrowsError(try layout.reserveBlocksForTrainLength(train: t1))
     }
 
 }

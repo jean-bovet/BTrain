@@ -304,18 +304,18 @@ extension Layout {
                 // Transition is just a virtual connection between two elements,
                 // no physical length exists.
                 guard transition.reserved == nil else {
-                    return .stop
+                    throw LayoutError.transitionAlreadyReserved(transition: transition)
                 }
                 transition.reserved = train.id
             } else if let turnout = info.turnout {
                 // TODO: take turnout length into account
                 guard turnout.reserved == nil else {
-                    return .stop
+                    throw LayoutError.turnoutAlreadyReserved(turnout: turnout)
                 }
                 turnout.reserved = train.id
             } else if let block = info.block, let blockLength = block.length, let direction = info.direction {
                 guard block.reserved == nil || block.id == fromBlockId else {
-                    return .stop
+                    throw LayoutError.blockAlreadyReserved(block: block)
                 }
                 block.train = .init(train.id, direction)
                 block.reserved = .init(trainId: train.id, direction: direction)
