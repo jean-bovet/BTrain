@@ -72,8 +72,8 @@ class ManualRoutingTests: BTTestCase {
         let p = try setup(layout: layout, fromBlockId: "b1", route: layout.routes[0])
 
         // Reserve a block with another route to make the train stop
-        let b3 = p.route.steps[2]
-        try layout.reserve(block: b3.blockId, withTrain: Train(uuid: "2"), direction: .next)
+        let b3 = layout.block(for: p.route.steps[2].blockId)!
+        b3.reserved = .init("2", .next)
         
         try p.assert("r1:{r1{b1 🛑🚂1 ≏ ≏ }} <t0> [b2 ≏ ≏ ] <t1> [r2[b3 ≏ ≏ ]] <t0(2,0)> !{r1{b1 ≏ ≏ }}")
 
@@ -86,7 +86,7 @@ class ManualRoutingTests: BTTestCase {
         try p.assert("r1:{b1 ≏ ≏ } <t0> [r1[b2 ≏ ≡ 🛑🚂1 ]] <t1> [r2[b3 ≏ ≏ ]] <t0(2,0)> !{b1 ≏ ≏ }")
         
         // The train re-starts after the block is `unreserved`
-        try layout.free(block: b3.blockId)
+        try layout.free(block: b3.id)
         try p.assert("r1:{b1 ≏ ≏ } <t0> [r1[b2 ≏ ≡ 🚂1 ]] <r1<t1,l>> [r1[b3 ≏ ≏ ]] <t0(2,0)> !{b1 ≏ ≏ }")
         
         try layout.stopTrain(Identifier<Train>(uuid: "1"), completely: true)
@@ -284,31 +284,76 @@ class ManualRoutingTests: BTTestCase {
         try p.assert("r1: {r1{b1 🛑🚂1 ≡ ≏ }} <t0,l> [b2 ≏ ≏ ] <t1,l> [b3 ≏ ≏ ] <t0(2,0),l> !{r1{b1 🛑🚂1 ≡ ≏ }}")
     }
 
-    func testMoveWith1TrailingReservation() throws {
-        let layout = LayoutACreator().newLayout()
-        let p = try setup(layout: layout, fromBlockId: "b1", route: layout.routes[0])
-        let t1 = layout.trains[0]
-        t1.maxNumberOfLeadingReservedBlocks = 1
-        t1.numberOfTrailingReservedBlocks = 1
+    //       ┌─────────┐                              ┌─────────┐
+    //    ┌──│ Block 2 │◀────┐         ┌─────────────▶│ Block 4 │──┐
+    //    │  └─────────┘     │         │              └─────────┘  │
+    //    │                  │         │                           │
+    //    │                  │                                     │
+    //    │                  └─────Turnout1 ◀───┐                  │
+    //    │                                     │                  │
+    //    │                            ▲        │                  │
+    //    │  ┌─────────┐               │        │     ┌─────────┐  │
+    //    └─▶│ Block 3 │───────────────┘        └─────│ Block 1 │◀─┘
+    //       └─────────┘                              └─────────┘
+    func testMoveWith1TrailingReservationNoFeedbacks() throws {
+        let layout = LayoutBCreator().newLayout()
+        
+        // Let's only define block length and omit feedback distances
+        for block in layout.blocks {
+            block.length = 100
+        }
 
-        try p.assert("r1: {r1{b1 🛑🚂1 ≏ ≏ }} <t0> [b2 ≏ ≏ ] <t1> [b3 ≏ ≏ ] <t0(2,0)> !{r1{b1 ≏ ≏ }}")
+        let t1 = layout.trains[0]
+        t1.length = 150 // That way, the train always needs one trailing block reserved to account for its length
+        t1.maxNumberOfLeadingReservedBlocks = 1
+
+        let p = try setup(layout: layout, fromBlockId: "b1", position: .end, route: layout.routes[0])
+        p.asserter.assertBlockParts = true
+        
+        try p.assert("r1: {r1{b1 💺1 ≏ 💺1 ≏ 🛑🚂1 }} <t1{ds2}> [b2 ≏ ≏ ] [b3 ≏ ≏ ] <t1{ds2}(2,3)> [r1[b4 💺1 ≏ 💺1 ≏ 💺1 ]] {r1{b1 💺1 ≏ 💺1 ≏ 🛑🚂1}}")
 
         try p.start(routeID: "r1", trainID: "1")
 
-        try p.assert("r1: {r1{b1 🚂1 ≏ ≏ }} <r1<t0>> [r1[b2 ≏ ≏ ]] <t1> [b3 ≏ ≏ ] <r1<t0(2,0)>> !{r1{b1 ≏ ≏ }}")
-        try p.assert("r1: {r1{b1 ≡ 🚂1 ≏ }} <r1<t0>> [r1[b2 ≏ ≏ ]] <t1> [b3 ≏ ≏ ] <r1<t0(2,0)>> !{r1{b1 ≡ ≏ }}")
-        try p.assert("r1: {r1{b1 ≏ ≡ 🚂1 }} <r1<t0>> [r1[b2 ≏ ≏ ]] <t1> [b3 ≏ ≏ ] <r1<t0(2,0)>> !{r1{b1 ≏ ≡ }}")
-        try p.assert("r1: {r1{b1 ≏ ≏ }} <r1<t0>> [r1[b2 ≡ 🚂1 ≏ ]] <r1<t1,l>> [r1[b3 ≏ ≏ ]] <r1<t0(2,0)>> !{b1 ≏ ≏ }")
-        try p.assert("r1: {r1{b1 ≏ ≏ }} <r1<t0>> [r1[b2 ≏ ≡ 🚂1 ]] <r1<t1,l>> [r1[b3 ≏ ≏ ]] <r1<t0(2,0)>> !{b1 ≏ ≏ }")
-        try p.assert("r1: {r1{b1 ≏ ≏ }} <r1<t0>> [r1[b2 ≏ ≏ 🚂1 ]] <r1<t1,l>> [r1[b3 ≏ ≏ ]] <r1<t0(2,0)>> !{b1 ≏ ≏ }")
-        try p.assert("r1: {r1{b1 ≏ ≏ }} <r1<t0,l>> [r1[b2 ≏ ≏ ]] <r1<t1,l>> [r1[b3 ≡ 🚂1 ≏ ]] <r1<t0(2,0),l>> !{r1{b1 ≏ ≏ }}")
-        try p.assert("r1: {r1{b1 ≏ ≏ }} <r1<t0,l>> [r1[b2 ≏ ≏ ]] <r1<t1,l>> [r1[b3 ≏ 🚂1 ≏ ]] <r1<t0(2,0),l>> !{r1{b1 ≏ ≏ }}")
-        try p.assert("r1: {r1{b1 ≏ ≏ }} <r1<t0,l>> [r1[b2 ≏ ≏ ]] <r1<t1,l>> [r1[b3 ≏ ≡ 🚂1 ]] <r1<t0(2,0),l>> !{r1{b1 ≏ ≏ }}")
-        try p.assert("r1: {r1{b1 ≏ 🟨🚂1 ≡ }} <r1<t0,l>> [b2 ≏ ≏ ] <t1,l> [r1[b3 ≏ ≏ ]] <r1<t0(2,0),l>> !{r1{b1 ≏ 🟨🚂1 ≡ }}")
-        try p.assert("r1: {r1{b1 ≏ 🟨🚂1 ≏ }} <r1<t0,l>> [b2 ≏ ≏ ] <t1,l> [r1[b3 ≏ ≏ ]] <r1<t0(2,0),l>> !{r1{b1 ≏ 🟨🚂1 ≏ }}")
+        try p.assert("r1: {r1{b1 💺1 ≏ 💺1 ≏ 🚂1 }} <r1<t1{ds2},s01>> [r1[b2 ≏ ≏ ]] [b3 ≏ ≏ ] <r1<t1{ds2}(2,3),s01>> [r1[b4 💺1 ≏ 💺1 ≏ 💺1 ]] {r1{b1 💺1 ≏ 💺1 ≏ 🚂1}}")
+        try p.assert("r1: {r1{b1 💺1 ≏ 💺1 ≏ 💺1 }} <r1<t1{ds2},s01>> [r1[b2 💺1 ≡ 🚂1 ≏ ]] [r1[b3 ≏ ≏ ]] <r1<t1{ds2}(2,3),s01>> [b4 ≏ ≏ ] {r1{b1 💺1 ≏ 💺1 ≏ 💺1}}")
+        try p.assert("r1: {r1{b1 💺1 ≏ 💺1 ≏ 💺1 }} <r1<t1{ds2},s01>> [r1[b2 💺1 ≏ 💺1 ≡ 🚂1 ]] [r1[b3 ≏ ≏ ]] <r1<t1{ds2}(2,3),s01>> [b4 ≏ ≏ ] {r1{b1 💺1 ≏ 💺1 ≏ 💺1}}")
+        try p.assert("r1: {b1 ≏ ≏ } <r1<t1{ds2},s23>> [r1[b2 💺1 ≏ 💺1 ≏ 💺1 ]] [r1[b3 💺1 ≡ 🚂1 ≏ ]] <r1<t1{ds2}(2,3),s23>> [r1[b4 ≏ ≏ ]] {b1 ≏ ≏ }")
+        try p.assert("r1: {b1 ≏ ≏ } <r1<t1{ds2},s23>> [r1[b2 💺1 ≏ 💺1 ≏ 💺1 ]] [r1[b3 💺1 ≏ 💺1 ≡ 🚂1 ]] <r1<t1{ds2}(2,3),s23>> [r1[b4 ≏ ≏ ]] {b1 ≏ ≏ }")
+        try p.assert("r1: {r1{b1 ≏ ≏ }} <r1<t1{ds2},s23>> [b2 ≏ ≏ ] [r1[b3 💺1 ≏ 💺1 ≏ 💺1 ]] <r1<t1{ds2}(2,3),s23>> [r1[b4 💺1 ≡ 🚂1 ≏ ]] {r1{b1 ≏ ≏ }}")
+        try p.assert("r1: {r1{b1 ≏ ≏ }} <r1<t1{ds2},s23>> [b2 ≏ ≏ ] [r1[b3 💺1 ≏ 💺1 ≏ 💺1 ]] <r1<t1{ds2}(2,3),s23>> [r1[b4 💺1 ≏ 💺1 ≡ 🚂1 ]] {r1{b1 ≏ ≏ }}")
+        try p.assert("r1: {r1{b1 💺1 ≡ 🟨🚂1 ≏ }} <t1{ds2},s23> [b2 ≏ ≏ ] [b3 ≏ ≏ ] <t1{ds2}(2,3),s23> [r1[b4 💺1 ≏ 💺1 ≏ 💺1 ]] {r1{b1 💺1 ≡ 🟨🚂1 ≏ }}")
+        try p.assert("r1: {r1{b1 💺1 ≏ 💺1 ≡ 🛑🚂1 }} <t1{ds2},s23> [b2 ≏ ≏ ] [b3 ≏ ≏ ] <t1{ds2}(2,3),s23> [r1[b4 💺1 ≏ 💺1 ≏ 💺1 ]] {r1{b1 💺1 ≏ 💺1 ≡ 🛑🚂1 }}")
+    }
+
+    func testMoveWith1TrailingReservationWithFeedbacks() throws {
+        let layout = LayoutBCreator().newLayout()
         
-        // When train stop, it frees all the elements it had reserved (including the trailing ones)
-        try p.assert("r1: {r1{b1 🛑🚂1 ≡ ≏ }} <t0,l> [b2 ≏ ≏ ] <t1,l> [b3 ≏ ≏ ] <t0(2,0),l> !{r1{b1 🛑🚂1 ≡ ≏ }}")
+        for block in layout.blocks {
+            block.length = 100
+            block.feedbacks[0].distance = 20
+            block.feedbacks[1].distance = 100 - 20
+        }
+
+        let t1 = layout.trains[0]
+        t1.length = 150 // That way, the train always needs one trailing block reserved to account for its length
+        t1.maxNumberOfLeadingReservedBlocks = 1
+
+        let p = try setup(layout: layout, fromBlockId: "b1", position: .end, route: layout.routes[0])
+        p.asserter.assertBlockParts = true
+        
+        try p.assert("r1: {r1{b1 💺1 ≏ 💺1 ≏ 🛑🚂1 }} <t1{ds2}> [b2 ≏ ≏ ] [b3 ≏ ≏ ] <t1{ds2}(2,3)> [r1[b4 ≏ 💺1 ≏ 💺1 ]] {r1{b1 💺1 ≏ 💺1 ≏ 🛑🚂1}}")
+
+        try p.start(routeID: "r1", trainID: "1")
+
+        try p.assert("r1: {r1{b1 💺1 ≏ 💺1 ≏ 🚂1 }} <r1<t1{ds2},s01>> [r1[b2 ≏ ≏ ]] [b3 ≏ ≏ ] <r1<t1{ds2}(2,3),s01>> [r1[b4 ≏ 💺1 ≏ 💺1 ]] {r1{b1 💺1 ≏ 💺1 ≏ 🚂1}}")
+        try p.assert("r1: {r1{b1 ≏ 💺1 ≏ 💺1 }} <r1<t1{ds2},s01>> [r1[b2 💺1 ≡ 🚂1 ≏ ]] [r1[b3 ≏ ≏ ]] <r1<t1{ds2}(2,3),s01>> [b4 ≏ ≏ ] {r1{b1 ≏ 💺1 ≏ 💺1}}")
+        try p.assert("r1: {r1{b1 ≏ 💺1 ≏ 💺1 }} <r1<t1{ds2},s01>> [r1[b2 💺1 ≏ 💺1 ≡ 🚂1 ]] [r1[b3 ≏ ≏ ]] <r1<t1{ds2}(2,3),s01>> [b4 ≏ ≏ ] {r1{b1 ≏ 💺1 ≏ 💺1}}")
+        try p.assert("r1: {b1 ≏ ≏ } <r1<t1{ds2},s23>> [r1[b2 ≏ 💺1 ≏ 💺1 ]] [r1[b3 💺1 ≡ 🚂1 ≏ ]] <r1<t1{ds2}(2,3),s23>> [r1[b4 ≏ ≏ ]] {b1 ≏ ≏ }")
+        try p.assert("r1: {b1 ≏ ≏ } <r1<t1{ds2},s23>> [r1[b2 ≏ 💺1 ≏ 💺1 ]] [r1[b3 💺1 ≏ 💺1 ≡ 🚂1 ]] <r1<t1{ds2}(2,3),s23>> [r1[b4 ≏ ≏ ]] {b1 ≏ ≏ }")
+        try p.assert("r1: {r1{b1 ≏ ≏ }} <r1<t1{ds2},s23>> [b2 ≏ ≏ ] [r1[b3 ≏ 💺1 ≏ 💺1 ]] <r1<t1{ds2}(2,3),s23>> [r1[b4 💺1 ≡ 🚂1 ≏ ]] {r1{b1 ≏ ≏ }}")
+        try p.assert("r1: {r1{b1 ≏ ≏ }} <r1<t1{ds2},s23>> [b2 ≏ ≏ ] [r1[b3 ≏ 💺1 ≏ 💺1 ]] <r1<t1{ds2}(2,3),s23>> [r1[b4 💺1 ≏ 💺1 ≡ 🚂1 ]] {r1{b1 ≏ ≏ }}")
+        try p.assert("r1: {r1{b1 💺1 ≡ 🟨🚂1 ≏ }} <t1{ds2},s23> [b2 ≏ ≏ ] [b3 ≏ ≏ ] <t1{ds2}(2,3),s23> [r1[b4 ≏ 💺1 ≏ 💺1 ]] {r1{b1 💺1 ≡ 🟨🚂1 ≏ }}")
+        try p.assert("r1: {r1{b1 💺1 ≏ 💺1 ≡ 🛑🚂1 }} <t1{ds2},s23> [b2 ≏ ≏ ] [b3 ≏ ≏ ] <t1{ds2}(2,3),s23> [r1[b4 ≏ 💺1 ≏ 💺1 ]] {r1{b1 💺1 ≏ 💺1 ≡ 🛑🚂1 }}")
     }
 
     func testRouteReverseLoop() throws {

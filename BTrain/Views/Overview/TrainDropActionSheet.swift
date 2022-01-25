@@ -16,7 +16,6 @@ extension LayoutController {
     
     func setTrain(info: SwitchBoard.State.TrainDragInfo, direction: Direction) throws {
         try layout.setTrainToBlock(info.trainId, info.blockId, direction: direction)
-        try layout.free(trainID: info.trainId)
         _ = run()
     }
 

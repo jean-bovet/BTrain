@@ -125,7 +125,7 @@ class LayoutErrorTests: XCTestCase {
     func testCannotReserveBlock() {
         do {
             b1.reserved = Reservation(trainId: train1.id, direction: .next)
-            try layout.reserve(block: b1.id, withTrain: train0, direction: .next)
+            try layout.setTrainToBlock(train0.id, b1.id, direction: .next)
             XCTFail("Must throw an exception")
         } catch {
             XCTAssertEqual(error.localizedDescription, "Cannot reserve block 1 for train 1 because the block is already reserved for Reservation(train=2, direction=next)")

@@ -72,7 +72,7 @@ final class Block: Element, ObservableObject {
         
         // A map of train part that occupies the block,
         // identified by their feedback index
-        var parts: [Int:TrainPart]?
+        var parts = [Int:TrainPart]()
         
         // The time remaining until the train is automatically restarted
         var timeUntilAutomaticRestart: TimeInterval = 0
@@ -134,6 +134,20 @@ final class Block: Element, ObservableObject {
             fatalError("Unexpected index")
         }
 
+    }
+    
+    // Returns all the part lenght (in cm) for the entire block or nil
+    // if one (or more) feedback distance is not defined.
+    func allPartsLength() -> [Int:Double]? {
+        var results = [Int:Double]()
+        for index in 0...feedbacks.count {
+            if let length = partLenght(at: index) {
+                results[index] = length
+            } else {
+                return nil
+            }
+        }
+        return results
     }
     
     // The category of the block

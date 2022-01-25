@@ -62,7 +62,12 @@ extension Layout {
             throw LayoutError.trainNotFound(trainId: train.id)
         }
         train.position = position
-        self.didChange()
+        
+        // Don't forget to update the reservation for the train length
+        // as moving inside a block will change them
+        try reserveBlocksForTrainLength(train: train)
+        
+        didChange()
     }
     
     func setTrainSpeed(_ train: Train, _ speed: TrainSpeed.UnitKph) throws {
@@ -214,6 +219,7 @@ extension Layout {
         if completely {
             train.scheduling = .stopped
             try self.free(trainID: train.id)
+            try self.reserveBlocksForTrainLength(train: train)
         }
         
         self.didChange()
@@ -249,10 +255,15 @@ extension Layout {
             throw LayoutError.blockNotEmpty(blockId: toBlockId)
         }
                 
+        guard toBlock.reserved == nil || toBlock.reserved?.trainId == train.id else {
+            throw LayoutError.cannotReserveBlock(block: toBlock, train: train, reserved: toBlock.reserved!)
+        }
+
         defer {
             didChange()
         }
         
+        // Determine the position of the train
         switch(position) {
         case .start:
             train.position = 0
@@ -262,32 +273,17 @@ extension Layout {
             train.position = value
         }
 
-        // Return now if the train is already in the same block
-        if toBlock.train?.trainId == trainId {
-            // But ensure the direction is well set
-            if toBlock.train?.direction != direction {
-                toBlock.train = Block.TrainInstance(trainId, direction)
-            }
-            return
-        }
-
-        try reserve(block: toBlockId, withTrain: train, direction: direction)
+        // Reserve the block
+        toBlock.reserved = .init(trainId: train.id, direction: direction)
+        toBlock.train = Block.TrainInstance(trainId, direction)
 
         train.blockId = toBlock.id
+        
+        // Free all other blocks from the train
+        try free(trainID: train.id, removeFromLayout: false)
 
-        toBlock.train = Block.TrainInstance(trainId, direction)
-    }
-    
-    func reserve(block: Identifier<Block>, withTrain train: Train, direction: Direction) throws {
-        guard let b1 = self.block(for: block) else {
-            throw LayoutError.blockNotFound(blockId: block)
-        }
-        
-        if let reserved = b1.reserved, reserved.trainId != train.id {
-            throw LayoutError.cannotReserveBlock(block: b1, train: train, reserved: reserved)
-        }
-        
-        b1.reserved = .init(trainId: train.id, direction: direction)
+        // Reserve all the blocks needed to fit the length of the train
+        try reserveBlocksForTrainLength(train: train)
     }
     
     func reserve(trainId: Identifier<Train>, fromBlock: Identifier<Block>, toBlock: Identifier<Block>, direction: Direction) throws {
@@ -440,25 +436,25 @@ extension Layout {
         guard let train = self.train(for: trainID) else {
             throw LayoutError.trainNotFound(trainId: trainID)
         }
-
+        
         // Remove the train from the blocks
-        self.blockMap.values
+        blockMap.values
             .filter { $0.reserved?.trainId == train.id || $0.train?.trainId == train.id }
             .forEach { block in
-            // Only free a block if the block is not the one the train is located on or
-            // if `removeFromLayout` is true because the train must be removed from all the blocks.
-            if block.id != train.blockId || removeFromLayout {
-                block.reserved = nil
-                block.train = nil
+                // Only free a block if the block is not the one the train is located on or
+                // if `removeFromLayout` is true because the train must be removed from all the blocks.
+                if block.id != train.blockId || removeFromLayout {
+                    block.reserved = nil
+                    block.train = nil
+                }
             }
-        }
-        self.turnouts.filter { $0.reserved == train.id }.forEach { $0.reserved = nil }
-        self.transitions.filter { $0.reserved == train.id }.forEach { $0.reserved = nil }
-
+        turnouts.filter { $0.reserved == train.id }.forEach { $0.reserved = nil }
+        transitions.filter { $0.reserved == train.id }.forEach { $0.reserved = nil }
+        
         if removeFromLayout {
             train.blockId = nil
         }
         
-        self.didChange()
+        didChange()
     }
 }

@@ -56,15 +56,17 @@ extension Layout {
                     throw LayoutError.turnoutAlreadyReserved(turnout: turnout)
                 }
                 turnout.reserved = train.id
-            } else if let block = info.block, let blockLength = block.length, let direction = info.direction {
-                // TODO: take block length into consideration if no feedback distance is defined?
+            } else if let block = info.block, let direction = info.direction {
                 guard block.reserved == nil || info.index == 0 else {
                     throw LayoutError.blockAlreadyReserved(block: block)
                 }
                 
-                if reserveBlockParts(train: train, remainingTrainLength: &remainingTrainLength, block: block, headBlock: info.index == 0, direction: direction) == .stop {
+                if block.length == nil {
+                    // TODO: throw appropriate exception
                     return .stop
                 }
+                
+                remainingTrainLength = reserveBlockParts(train: train, remainingTrainLength: remainingTrainLength, block: block, headBlock: info.index == 0, direction: direction)
                 block.reserved = .init(trainId: train.id, direction: direction)
             }
 
@@ -76,39 +78,56 @@ extension Layout {
         })
     }
     
-    private func reserveBlockParts(train: Train, remainingTrainLength: inout Double, block: Block, headBlock: Bool, direction: Direction) -> ElementVisitor.VisitorCallbackResult {
+    private func reserveBlockParts(train: Train, remainingTrainLength: Double, block: Block, headBlock: Bool, direction: Direction) -> Double {
         let trainInstance = Block.TrainInstance(train.id, direction.opposite)
-        var parts = [Int:Block.TrainInstance.TrainPart]()
-
+        trainInstance.parts.removeAll()
+        
+        var currentRemainingTrainLength = remainingTrainLength
+        
         // [ 0 | 1 | 2 ]
         //   =   =>
         //   <   <   <   (direction previous)
         //      <=   =
         //   >   >   >   (direction next)
-        var position = train.position
-        parts[position] = headBlock ? .locomotive : .wagon
-        guard let partLength = block.partLenght(at: position) else {
-            return .stop
+                
+        // Determine the starting position where to begin filling out parts of the block
+        var position: Int
+        if headBlock {
+            position = train.position
+        } else {
+            position = direction == .previous ? block.feedbacks.count : 0
         }
-        remainingTrainLength -= partLength
         
         let increment = direction == .previous ? -1 : 1
 
-        position += increment
-        while ((increment < 0 && position >= 0) || (increment > 0 && position < block.feedbacks.count + 1)) && remainingTrainLength > 0 {
-            parts[position] = .wagon
-            guard let partLength = block.partLenght(at: position) else {
-                return .stop
-            }
-            remainingTrainLength -= partLength
+        // Gather all the part length to ensure they are all defined.
+        if let allPartsLength = block.allPartsLength() {
+            trainInstance.parts[position] = headBlock ? .locomotive : .wagon
+            currentRemainingTrainLength -= allPartsLength[position]!
             
             position += increment
+            while ((increment < 0 && position >= 0) || (increment > 0 && position < block.feedbacks.count + 1)) && currentRemainingTrainLength > 0 {
+                trainInstance.parts[position] = .wagon
+                currentRemainingTrainLength -= allPartsLength[position]!
+
+                position += increment
+            }
+        } else if let length = block.length {
+            // If the parts length are not available, let's use the block full length
+            trainInstance.parts[position] = headBlock ? .locomotive : .wagon
+
+            position += increment
+            while ((increment < 0 && position >= 0) || (increment > 0 && position < block.feedbacks.count + 1)) {
+                trainInstance.parts[position] = .wagon
+                position += increment
+            }
+
+            currentRemainingTrainLength -= length
         }
         
-        trainInstance.parts = parts
         block.train = trainInstance
         
-        return .continue
+        return currentRemainingTrainLength
     }
 
 }

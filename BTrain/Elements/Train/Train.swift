@@ -72,19 +72,7 @@ final class Train: Element, ObservableObject {
     
     // Index of the current route step that the train is located in.
     @Published var routeStepIndex = 0
-
-    // Array of trailing route steps that are kept reserved as the train
-    // moves through the route. When the train moves far enough,
-    // the furthest block (defined in the step) from the train is getting released.
-    @Published var trailingReservedBlocks = [Route.Step]()
-    
-    // Number of blocks the route should keep reserved behind
-    // the train as it moves throught the route. The default is 0,
-    // but can be changed for long train that can span more than
-    // one block. In the future, when length of blocks and trains are
-    // taken into consideration, this will become a more dynamic property.
-    @Published var numberOfTrailingReservedBlocks = 0
-    
+        
     // The maximum number of blocks that should be reserved ahead of the train.
     // The actual number of blocks might be smaller if a block cannot be reserved.
     // The default is 1.
@@ -145,7 +133,7 @@ final class Train: Element, ObservableObject {
 extension Train: Codable {
     
     enum CodingKeys: CodingKey {
-      case id, enabled, name, address, length, magnetDistance, speed, decoder, direction, route, routeIndex, block, position, trailingBlocks, maxLeadingBlocks
+      case id, enabled, name, address, length, magnetDistance, speed, decoder, direction, route, routeIndex, block, position, maxLeadingBlocks
     }
 
     convenience init(from decoder: Decoder) throws {
@@ -164,7 +152,6 @@ extension Train: Codable {
         self.routeStepIndex = try container.decode(Int.self, forKey: CodingKeys.routeIndex)
         self.blockId = try container.decodeIfPresent(Identifier<Block>.self, forKey: CodingKeys.block)
         self.position = try container.decode(Int.self, forKey: CodingKeys.position)
-        self.numberOfTrailingReservedBlocks = try container.decodeIfPresent(Int.self, forKey: CodingKeys.trailingBlocks) ?? 0
         self.maxNumberOfLeadingReservedBlocks = try container.decodeIfPresent(Int.self, forKey: CodingKeys.maxLeadingBlocks) ?? 1
     }
 
@@ -183,7 +170,6 @@ extension Train: Codable {
         try container.encode(routeStepIndex, forKey: CodingKeys.routeIndex)
         try container.encode(blockId, forKey: CodingKeys.block)
         try container.encode(position, forKey: CodingKeys.position)
-        try container.encode(numberOfTrailingReservedBlocks, forKey: CodingKeys.trailingBlocks)
         try container.encode(maxNumberOfLeadingReservedBlocks, forKey: CodingKeys.maxLeadingBlocks)
     }
 

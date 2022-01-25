@@ -497,22 +497,15 @@ final class TrainController {
         }
                 
         debug("Train \(train) enters block \(nextBlock) at position \(position), direction \(direction)")
-
-        // Remember the current step before moving to the next block
-        rememberCurrentBlock(route: route)
                 
-        // Set the train to its new block
+        // Set the train to its new block. This method will also free up all the other blocks from the train, expect
+        // the blocks trailing the train depending on its length and the length of the blocks.
+        // Note: we will reserve again the leading blocks below in `reserveNextBlocks`.
         try layout.setTrainToBlock(train.id, nextBlock.id, position: .custom(value: position), direction: direction)
-
-        // And remove the train from the previous block
-        currentBlock.train = nil
         
         // Increment the train route index
         try layout.setTrainRouteStepIndex(train, train.routeStepIndex + 1)
-                
-        // Free up the trailing blocks        
-        try freeTrailingBlocks()
-                
+                                
         // Handle any route-specific stop now that the train has moved to a new block
         if route.automatic {
             _ = try handleAutomaticRouteStop(route: route)
@@ -532,36 +525,6 @@ final class TrainController {
         return .processed
     }
         
-    private func rememberCurrentBlock(route: Route) {
-        let step = route.steps[train.routeStepIndex]
-        train.trailingReservedBlocks.append(.init(step.blockId, step.direction))
-    }
-    
-    private func freeTrailingBlocks() throws {
-        guard let currentBlock = layout.currentBlock(train: train) else {
-            throw LayoutError.trainNotAssignedToABlock(trainId: train.id)
-        }
-        
-        // [ b1, b2, b3 ]    // Previous visited blocks that are kept reserved
-        //                b4 // Current block where the train resides
-        // Free up the following blocks, in order:
-        // b1-b2
-        // b2-b3
-        // b3-b4
-        while train.trailingReservedBlocks.count > train.numberOfTrailingReservedBlocks {
-            if train.trailingReservedBlocks.count >= 2 {
-                let step1 = train.trailingReservedBlocks.removeFirst()
-                let step2 = train.trailingReservedBlocks.first!
-                try layout.free(fromBlock: step1.blockId, toBlockNotIncluded: step2.blockId, direction: step1.direction)
-            } else if train.trailingReservedBlocks.count == 1 {
-                let step = train.trailingReservedBlocks.removeFirst()
-                try layout.free(fromBlock: step.blockId, toBlockNotIncluded: currentBlock.id, direction: step.direction)
-            } else {
-                break
-            }
-        }
-    }
-
     private func freeLeadingReservedElements() throws {
         guard let currentBlock = layout.currentBlock(train: train) else {
             throw LayoutError.trainNotAssignedToABlock(trainId: train.id)

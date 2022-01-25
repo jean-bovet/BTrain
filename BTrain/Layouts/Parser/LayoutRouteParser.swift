@@ -196,6 +196,9 @@ final class LayoutRouteParser {
                 parseFeedback(detected: true, newBlock: newBlock, block: block, feedbackIndex: &feedbackIndex)
             } else if sp.matches(" ") {
                 // ignore white space
+            } else if sp.matches("💺") {
+                // Wagon
+                parseWagon(feedbackIndex: feedbackIndex, block: block)
             } else {
                 fatalError("Unknown character '\(sp.c)'")
             }
@@ -256,16 +259,39 @@ final class LayoutRouteParser {
         if let train = trains.first(where: { $0.id.uuid == uuid }) {
             assert(train.speed.kph == speed, "Mismatching speed definition for train \(uuid)")
             assert(train.position == feedbackIndex, "Mismatching position definition for train \(uuid)")
-            block.train = Block.TrainInstance(train.id, .next)
+            if block.train == nil {
+                block.train = Block.TrainInstance(train.id, .next)
+            }
+            block.train?.parts[feedbackIndex] = .locomotive
+
         } else {
             let train = Train(uuid: uuid)
             train.position = feedbackIndex
             train.routeStepIndex = route.steps.count
             train.speed = .init(kph: speed, decoderType: .MFX)
             train.routeId = route.id
-            block.train = Block.TrainInstance(train.id, .next)
+            if block.train == nil {
+                block.train = Block.TrainInstance(train.id, .next)
+            }
+            block.train?.parts[feedbackIndex] = .locomotive
             trains.append(train)
         }
+    }
+        
+    func parseWagon(feedbackIndex: Int, block: Block) {
+        let uuid: String
+        if let n = sp.matchesInteger() {
+            uuid = String(n)
+        } else {
+            // Note: by default, let's use the route.id for the train id
+            uuid = route.id.uuid
+        }
+        
+        if block.train == nil {
+            block.train = Block.TrainInstance(Identifier<Train>(uuid: uuid), .next)
+        }
+                        
+        block.train?.parts[feedbackIndex] = .wagon
     }
         
     func parseFeedback(detected: Bool, newBlock: Bool, block: Block, feedbackIndex: inout Int) {

@@ -63,8 +63,6 @@ struct TrainDetailsReservationSectionView: View {
 
             Form {
                 Stepper("Leading: \(train.maxNumberOfLeadingReservedBlocks)", value: $train.maxNumberOfLeadingReservedBlocks, in: 1...10)
-                                
-                Stepper("Trailing: \(train.numberOfTrailingReservedBlocks)", value: $train.numberOfTrailingReservedBlocks, in: 0...2)
             }.padding([.leading])
         }
     }

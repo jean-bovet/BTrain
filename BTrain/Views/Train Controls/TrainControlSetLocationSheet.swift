@@ -91,7 +91,6 @@ struct TrainControlSetLocationSheet: View {
                 Button("OK") {
                     do {
                         if let selectedBlock = blockId {
-                            try layout.free(trainID: train.id, removeFromLayout: true)
                             try layout.setTrainToBlock(train.id,
                                                 selectedBlock,
                                                 position: trainPosition,

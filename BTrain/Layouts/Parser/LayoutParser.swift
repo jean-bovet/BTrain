@@ -27,6 +27,7 @@ import Foundation
 //    - type is optional and will default to straight right. Type can be "sl", "sr", "tw", "ds" and "ds2"
 //    - state can be: s, l, r, s01, s23, b21, b03
 // 🚂 = train
+// 💺 = wagon (used to indicate occupation of the train in the various parts of the block (only when train and block length are defined)
 // 🛑🚂 = train stopped
 // 🟨🚂 = train braking
 // For example:

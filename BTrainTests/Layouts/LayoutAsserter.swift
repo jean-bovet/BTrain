@@ -20,6 +20,8 @@ final class LayoutAsserter {
     let layout: Layout
     let layoutController: LayoutController
     
+    var assertBlockParts = false
+    
     init(layout: Layout, layoutController: LayoutController) {
         self.layout = layout
         self.layoutController = layoutController
@@ -104,10 +106,15 @@ final class LayoutAsserter {
                 XCTAssertEqual(block.reserved?.trainId, expectedBlock.reserved?.trainId, "Mismatching reserved block \(block) at index \(index), route \(route)")
             }
             
-            if let train = expectedBlock.train {
-                XCTAssertEqual(block.train?.trainId, train.trainId, "Unexpected train mismatch in block at index \(index)")
+            if let expectedTrain = expectedBlock.train {
+                XCTAssertEqual(block.train?.trainId, expectedTrain.trainId, "Unexpected train mismatch in block at index \(index)")
             } else {
                 XCTAssertNil(block.train, "Block \(block) should not contain train \(block.train!)")
+            }
+            
+            // Assert the parts of the block reserved for the train and its wagon
+            if let train = block.train, let expectedTrain = expectedBlock.train, assertBlockParts {
+                XCTAssertEqual(train.parts, expectedTrain.parts, "Unexpected train parts mismatch in block \(block) at index \(index), route \(route)")
             }
             
             // In ASCII representation, there is only one next transition from one block to another, for example:
