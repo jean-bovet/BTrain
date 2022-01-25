@@ -17,6 +17,7 @@ final class TrainShape: Shape, DraggableShape {
     let train: Train
     let shapeProvider: ShapeProviding
     let shapeContext: ShapeContext
+    let pathFactory: TrainPathFactory
     
     var center: CGPoint = .zero
     var rotationAngle: CGFloat = 0
@@ -33,22 +34,12 @@ final class TrainShape: Shape, DraggableShape {
         return CGSize(width: 16, height: shapeContext.trackWidth*4)
     }
     
+    var path: CGPath {
+        return pathFactory.locomotive(center: center, rotationCenter: center, rotationAngle: rotationAngle)
+    }
+    
     var bounds: CGRect {
         return path.boundingBox
-    }
-
-    var path: CGPath {
-        let rect = CGRect(origin: CGPoint(x: center.x-size.width/2, y: center.y-size.height/2), size: size)
-        let path = CGMutablePath()
-        let t = CGAffineTransform(translationX: center.x, y: center.y).rotated(by: rotationAngle).translatedBy(x: -center.x, y: -center.y)
-        path.move(to: CGPoint(x: rect.minX, y: rect.minY), transform: t)
-        path.addLine(to: CGPoint(x: rect.minX+size.width/2, y: rect.minY), transform: t)
-        path.addLine(to: CGPoint(x: rect.maxX, y: rect.midY - shapeContext.trackWidth/2), transform: t)
-        path.addLine(to: CGPoint(x: rect.maxX, y: rect.midY + shapeContext.trackWidth/2), transform: t)
-        path.addLine(to: CGPoint(x: rect.minX+size.width/2, y: rect.maxY), transform: t)
-        path.addLine(to: CGPoint(x: rect.minX, y: rect.maxY), transform: t)
-        path.addLine(to: CGPoint(x: rect.minX, y: rect.minY), transform: t)
-        return path
     }
     
     init(layout: Layout, train: Train, shapeProvider: ShapeProviding, shapeContext: ShapeContext) {
@@ -56,6 +47,7 @@ final class TrainShape: Shape, DraggableShape {
         self.train = train
         self.shapeProvider = shapeProvider
         self.shapeContext = shapeContext
+        self.pathFactory = TrainPathFactory(shapeContext: shapeContext)
         updatePosition()
     }
     

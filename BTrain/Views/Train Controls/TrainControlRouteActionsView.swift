@@ -28,6 +28,7 @@ struct TrainControlRouteActionsView: View {
                 Button("Reserve Blocks") {
                     do {
                         try document.layout.reserveBlocksForTrainLength(train: train)
+                        document.switchboard.state.triggerRedraw.toggle()
                         self.error = nil
                     } catch {
                         self.error = error.localizedDescription

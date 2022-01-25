@@ -240,6 +240,10 @@ final class BlockShape: Shape, DraggableShape, ConnectableShape {
             ctx.setStrokeColor(reserved != nil ? shapeContext.reservedColor : shapeContext.color)
             ctx.strokePath()
         }
+
+        ctx.with {
+            drawTrainParts(ctx: ctx, shapeContext: shapeContext)
+        }
     }
 
     @discardableResult
@@ -258,6 +262,30 @@ final class BlockShape: Shape, DraggableShape, ConnectableShape {
         }
     }
 
+    func drawTrainParts(ctx: CGContext, shapeContext: ShapeContext) {
+        guard let parts = block.train?.parts, let train = train else {
+            return
+        }
+        
+        let factory = TrainPathFactory(shapeContext: shapeContext)
+        ctx.setFillColor(shapeContext.trainColor(train))
+        for index in 0...trainCellCount {
+            if let part = parts[index] {
+                let rect = trainCellFrame(at: index)
+                let path: CGPath
+                switch(part) {
+                case .locomotive:
+                    path = factory.locomotive(center: rect.center, rotationCenter: center, rotationAngle: rotationAngle)
+                case .wagon:
+                    path = factory.wagon(center: rect.center, rotationCenter: center, rotationAngle: rotationAngle)
+                }
+                
+                ctx.addPath(path)
+                ctx.fillPath()
+            }
+        }
+    }
+    
     func inside(_ point: CGPoint) -> Bool {
         return path.contains(point)
     }
