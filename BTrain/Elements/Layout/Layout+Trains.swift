@@ -319,16 +319,20 @@ extension Layout {
                 }
                 turnout.reserved = train.id
             } else if let block = info.block, let blockLength = block.length, let direction = info.direction {
+                // TODO: take block length into consideration if no feedback distance is defined?
                 guard block.reserved == nil || info.index == 0 else {
                     throw LayoutError.blockAlreadyReserved(block: block)
                 }
                 
-                let trainInstance = info.index == 0 ? block.train! : Block.TrainInstance(train.id, direction)
+                let trainInstance = Block.TrainInstance(train.id, direction.opposite)
                 var parts = [Int:Block.TrainInstance.TrainPart]()
                 
                 if block.id == fromBlockId {
                     // First block that contains the locomotive
                     if direction == .previous {
+                        // [ 0 | 1 | 2 ]
+                        //   =   =>
+                        //   <   <   <   (direction previous)
                         var position = train.position
                         parts[position] = .locomotive
                         guard let partLength = block.partLenght(at: position) else {
@@ -347,12 +351,33 @@ extension Layout {
                             position -= 1
                         }
                     } else {
-                        // TODO
-                        fatalError("Not implemented yet")
+                        // [ 0 | 1 | 2 ]
+                        //      <=   =
+                        //   >   >   >   (direction next)
+                        var position = train.position
+                        parts[position] = .locomotive
+                        guard let partLength = block.partLenght(at: position) else {
+                            return .stop
+                        }
+                        remainingTrainLength -= partLength
+
+                        position += 1
+                        while position < block.feedbacks.count + 1 && remainingTrainLength > 0 {
+                            parts[position] = .wagon
+                            guard let partLength = block.partLenght(at: position) else {
+                                return .stop
+                            }
+                            remainingTrainLength -= partLength
+
+                            position += 1
+                        }
                     }
                 } else {
                     // Block that only contains wagons
                     if direction == .previous {
+                        // [ 0 | 1 | 2 ]
+                        //   =   =
+                        //   <   <   <   (direction previous)
                         var position = block.feedbacks.count
                         while position >= 0 && remainingTrainLength > 0 {
                             parts[position] = .wagon
@@ -363,8 +388,18 @@ extension Layout {
                             position -= 1
                         }
                     } else {
-                        // TODO
-                        fatalError("Not implemented yet")
+                        // [ 0 | 1 | 2 ]
+                        //       =   =
+                        //   >   >   >   (direction next)
+                        var position = 0
+                        while position < block.feedbacks.count + 1 && remainingTrainLength > 0 {
+                            parts[position] = .wagon
+                            guard let partLength = block.partLenght(at: position) else {
+                                return .stop
+                            }
+                            remainingTrainLength -= partLength
+                            position += 1
+                        }
                     }
                 }
 

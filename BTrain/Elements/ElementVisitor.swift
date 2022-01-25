@@ -25,7 +25,11 @@ final class ElementVisitor {
         var transition: ITransition? = nil
         var turnout: Turnout? = nil
         var block: Block? = nil
+        
+        // Direction in which the visitor algorithm is traversing the block
         var direction: Direction? = nil
+        
+        // Index of the block the visitor algorithm is visiting
         var index: Int
     }
     
