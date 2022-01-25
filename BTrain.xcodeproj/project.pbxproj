@@ -205,6 +205,7 @@
 		A7CA5EC7279654EB00171398 /* Block+Feedback.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7CA5EC6279654EB00171398 /* Block+Feedback.swift */; };
 		A7CA5EC92796550C00171398 /* Block+Socket.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7CA5EC82796550C00171398 /* Block+Socket.swift */; };
 		A7CA5ECC2797D1EB00171398 /* Layout+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7CA5ECB2797D1EB00171398 /* Layout+Extension.swift */; };
+		A7E78C4227A08F9E004D1821 /* Layout+Reservation.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7E78C4127A08F9E004D1821 /* Layout+Reservation.swift */; };
 		A7F31B9D277B921B00FE0C65 /* SwitchboardEditControlsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7F31B9C277B921B00FE0C65 /* SwitchboardEditControlsView.swift */; };
 		A7F31B9F277B95BA00FE0C65 /* TrainDropActionSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7F31B9E277B95BA00FE0C65 /* TrainDropActionSheet.swift */; };
 		A7F31BA1277C3D7B00FE0C65 /* BlockDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7F31BA0277C3D7A00FE0C65 /* BlockDetailsView.swift */; };
@@ -440,6 +441,7 @@
 		A7CA5EC6279654EB00171398 /* Block+Feedback.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Block+Feedback.swift"; sourceTree = "<group>"; };
 		A7CA5EC82796550C00171398 /* Block+Socket.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Block+Socket.swift"; sourceTree = "<group>"; };
 		A7CA5ECB2797D1EB00171398 /* Layout+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Layout+Extension.swift"; sourceTree = "<group>"; };
+		A7E78C4127A08F9E004D1821 /* Layout+Reservation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Layout+Reservation.swift"; sourceTree = "<group>"; };
 		A7F31B9C277B921B00FE0C65 /* SwitchboardEditControlsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwitchboardEditControlsView.swift; sourceTree = "<group>"; };
 		A7F31B9E277B95BA00FE0C65 /* TrainDropActionSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainDropActionSheet.swift; sourceTree = "<group>"; };
 		A7F31BA0277C3D7A00FE0C65 /* BlockDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockDetailsView.swift; sourceTree = "<group>"; };
@@ -835,6 +837,7 @@
 				A7710E6827799DA000C08150 /* Layout+Transitions.swift */,
 				A7710E6A27799E2700C08150 /* Layout+Turnouts.swift */,
 				A7710E6C27799E4A00C08150 /* Layout+Feedbacks.swift */,
+				A7E78C4127A08F9E004D1821 /* Layout+Reservation.swift */,
 				A744D1362765C5A3005C2F37 /* LayoutError.swift */,
 				A76507F3275BEE5F0079C71A /* LayoutDiagnostics.swift */,
 				A783EA9E2787C6DA00E69B6D /* LayoutObserver.swift */,
@@ -1255,6 +1258,7 @@
 				A7F779CE272B445B00E73275 /* Feedback.swift in Sources */,
 				A7FBC8B8276EBB34009D49C3 /* PathFinder.swift in Sources */,
 				A78413862740791C00381341 /* Shape+Extension.swift in Sources */,
+				A7E78C4227A08F9E004D1821 /* Layout+Reservation.swift in Sources */,
 				A73E0825276B99A8005F9D64 /* BlockAllFeedbacksView.swift in Sources */,
 				A785C086278CFD7D002FD538 /* TrainSpeed.swift in Sources */,
 				A75829612792A53700AA0649 /* PathFinderContext.swift in Sources */,
