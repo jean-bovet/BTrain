@@ -199,7 +199,7 @@ final class LayoutController: TrainControllerDelegate {
         if merge {
             layout.trains.append(contentsOf: newTrains)
         } else {
-            layout.freeAllTrains(removeFromLayout: true)
+            layout.removeAllTrains()
             layout.trains = newTrains
         }
     }

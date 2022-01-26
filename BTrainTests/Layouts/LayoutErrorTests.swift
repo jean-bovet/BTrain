@@ -62,7 +62,7 @@ class LayoutErrorTests: XCTestCase {
     
     func testMissingTrain() {
         do {
-            try layout.free(trainID: Identifier<Train>(uuid: "foo"))
+            try layout.freeLeadingBlocksAndUpdateTrailingBlocks(trainID: Identifier<Train>(uuid: "foo"))
             XCTFail("Must throw an exception")
         } catch {
             XCTAssertEqual(error.localizedDescription, "Train foo not found")

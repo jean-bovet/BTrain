@@ -360,7 +360,7 @@ class ManualRoutingTests: BTTestCase {
         let layout = LayoutACreator().newLayout()
         let p = try setup(layout: layout, fromBlockId: "b1", route: layout.routes[0])
 
-        try layout.free(trainID: layout.trains.first!.id, removeFromLayout: true)
+        try layout.remove(trainID: layout.trains.first!.id)
         try layout.prepare(routeID: "r2", trainID: "2")
 
         try p.assert("r2: {r2{b1 🛑🚂2 ≡ ≏ }} <t0(0,2)> ![b3 ≏ ≏ ] <t1> ![b2 ≏ ≏ ] <t0(1,0)> !{r2{b1 ≡ ≏ }}")
@@ -388,7 +388,7 @@ class ManualRoutingTests: BTTestCase {
         let b2 = layout.block(for: route.steps[1].blockId)!
         let b3 = layout.block(for: route.steps[2].blockId)!
 
-        try layout.free(trainID: train.id, removeFromLayout: true)
+        try layout.remove(trainID: train.id)
         try layout.setTrainToBlock(train.id, b2.id, direction: .next)
 
         XCTAssertNoThrow(try layout.reserve(trainId: train.id, fromBlock: b2.id, toBlock: b3.id, direction: .next))
@@ -626,7 +626,7 @@ class ManualRoutingTests: BTTestCase {
                       "r3: {b3 ≏ ≏ } <t1(0,2)> [b5 ≏ ≏ ] <t0(2,0),r> !{r2{b1 🛑🚂2 ≏ ≏ }}")
 
         // Let's remove train 2 artificially to allow train 1 to stop at the station b1
-        try layout.free(trainID: Identifier<Train>(uuid: "2"), removeFromLayout: true)
+        try layout.remove(trainID: Identifier<Train>(uuid: "2"))
         try p.assert2("r1: {r1{b1 ≏ ≏ }} <t0,r> [b2 ≏ ≏ ] {b3 ≏ ≏ } <t1> [r1[b4 ≡ ≡ 🚂1 ]] {r1{b1 ≏ ≏ }}",
                       "r3: {b3 ≏ ≏ } <t1(0,2)> [b5 ≏ ≏ ] <t0(2,0),r> !{r1{b1 ≏ ≏ }}")
 

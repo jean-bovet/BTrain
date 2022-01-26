@@ -53,7 +53,7 @@ struct TrainControlLocationView: View {
                     
                     Button() {
                         do {
-                            try layout.free(trainID: train.id, removeFromLayout: true)
+                            try layout.remove(trainID: train.id)
                             errorStatus = nil
                         } catch {
                             errorStatus = error.localizedDescription
