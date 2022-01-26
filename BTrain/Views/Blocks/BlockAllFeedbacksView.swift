@@ -32,8 +32,8 @@ struct BlockAllFeedbacksView: View {
                 }
 
                 TableColumn("Distance from Start (cm)") { blockFeedback in
-                    UndoProvider(blockFeedback.distance) { speed in
-                        TextField("", value: blockFeedback.distance, format: .number)
+                    UndoProvider(blockFeedback.distance) { distance in
+                        TextField("", value: distance, format: .number)
                             .labelsHidden()
                     }
                 }

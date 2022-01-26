@@ -32,12 +32,16 @@ struct BlockDetailsView: View {
                 }
                 
                 HStack {
-                    TextField("Waiting Time:", value: $block.waitingTime, format: .number)
+                    UndoProvider($block.waitingTime) { waitingTime in
+                        TextField("Waiting Time:", value: waitingTime, format: .number)
+                    }
                     Text("s.")
                 }.disabled(block.category != .station)
                 
                 HStack {
-                    TextField("Length:", value: $block.length, format: .number)
+                    UndoProvider($block.length) { length in
+                        TextField("Length:", value: length, format: .number)
+                    }
                     Text("cm")
                 }
                 
