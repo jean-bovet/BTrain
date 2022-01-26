@@ -66,14 +66,19 @@ final class Route: Element, ObservableObject {
             "\(blockId)-\(direction)"
         }
 
-        init(_ blockId: Identifier<Block>, _ direction: Direction) {
-            self.init(UUID().uuidString, blockId, direction)
+        init(_ blockId: Identifier<Block>, _ direction: Direction, _ waitingTime: TimeInterval? = nil) {
+            self.init(UUID().uuidString, blockId, direction, waitingTime)
         }
-        
-        init(_ id: String, _ blockId: Identifier<Block>, _ direction: Direction) {
+
+        init(_ block: Block, _ direction: Direction, _ waitingTime: TimeInterval? = nil) {
+            self.init(UUID().uuidString, block.id, direction, waitingTime)
+        }
+
+        init(_ id: String, _ blockId: Identifier<Block>, _ direction: Direction, _ waitingTime: TimeInterval? = nil) {
             self.id = id
             self.blockId = blockId
             self.direction = direction
+            self.waitingTime = waitingTime
         }
         
         // This function returns true if this step is the same as the other step,

@@ -77,7 +77,7 @@ final class LayoutBCreator: LayoutCreating {
 
         // Routes
 
-        l.newRoute("r1", name: "Loop", [(b_1,.next),(b_2,.next),(b_3,.next),(b_4,.next),(b_1,.next)])
+        l.newRoute("r1", name: "Loop", [Route.Step(b_1,.next),Route.Step(b_2,.next),Route.Step(b_3,.next),Route.Step(b_4,.next),Route.Step(b_1,.next)])
 
         // Trains
 

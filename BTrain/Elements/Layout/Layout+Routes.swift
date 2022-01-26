@@ -39,10 +39,10 @@ extension Layout {
         return routes.first(where: { $0.id == routeId })
     }
     
-    func newRoute(_ id: String, name: String, automatic: Bool = false, _ steps: [(Block, Direction)]) {
+    func newRoute(_ id: String, name: String, automatic: Bool = false, _ steps: [(Block, Direction, TimeInterval?)]) {
         var routeSteps = [Route.Step]()
         for (index, step) in steps.enumerated() {
-            routeSteps.append(Route.Step(String(index), step.0.id, step.1))
+            routeSteps.append(Route.Step(String(index), step.0.id, step.1, step.2))
         }
         newRoute(id, name: name, automatic: automatic, routeSteps)
     }

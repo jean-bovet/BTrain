@@ -83,6 +83,8 @@ class LayoutTests: XCTestCase {
         let train1 = layout.trains[0]
         let block1 = layout.blocks[0]
         
+        try layout.setTrainToBlock(train1.id, block1.id, direction: .next)
+        
         XCTAssertEqual(train1.directionForward, true)
 
         // Set the train direction

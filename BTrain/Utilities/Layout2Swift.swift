@@ -57,6 +57,10 @@ final class Layout2Swift {
         // let b1 = Block("IL1", type: .free, center: CGPoint(x: 160, y: 250), rotationAngle: -.pi/2)
         for block in blocks {
             code += "\nlet \(block.symbol) = Block(\"\(block.name)\", type: .\(block.category.rawValue), center: CGPoint(x: \(block.center.x), y: \(block.center.y)), rotationAngle: \(block.rotationAngle.symbolicAngle))"
+            code += "\n\(block.symbol).waitingTime = \(block.waitingTime)"
+            if let length = block.length {
+                code += "\n\(block.symbol).length = \(length)"
+            }
         }
 
         //        l.add([b1, b2, b3, b4, b5, b6, b7, b8, b9, b10, b11])
@@ -125,6 +129,11 @@ final class Layout2Swift {
             code += "\n\(block.symbol).stopFeedbackPrevious = \(f.symbol).id"
         }
 
+        for (index, bf) in block.feedbacks.enumerated() {
+            if let distance = bf.distance {
+                code += "\n\(block.symbol).feedbacks[\(index)].distance = \(distance)"
+            }
+        }
     }
             
     func add(turnouts: [Turnout]) {
@@ -198,15 +207,31 @@ final class Layout2Swift {
                 content += ","
             }
             let block = layout.block(for: step.blockId)!
-            content += "(\(block.symbol),.\(step.direction.rawValue))"
+            content += "Route.Step(\(block.symbol),.\(step.direction.rawValue), \(optionalString(step.waitingTime)))"
         }
         code += "\nl.newRoute(\"\(route.id)\", name: \"\(route.name)\", [\(content)])"
     }
     
+    func optionalString(_ value: Double?) -> String {
+        if let value = value {
+            return "\(value)"
+        } else {
+            return "nil"
+        }
+    }
+
     func add(trains: [Train]) {
 //        l.newTrain("1", name: "Rail 2000", address: .init(0x4009, .MFX))
         for train in trains {
-            code += "\nl.newTrain(\"\(train.id)\", name: \"\(train.name)\", address: \(train.address.toHex()), decoder: .\(train.decoder))"
+            code += "\nlet \(train.symbol) = l.newTrain(\"\(train.id)\", name: \"\(train.name)\", address: \(train.address.toHex()), decoder: .\(train.decoder))"
+            if let length = train.length {
+                code += "\n\(train.symbol).length = \(length)"
+            }
+            if let magnetDistance = train.magnetDistance {
+                code += "\n\(train.symbol).magnetDistance = \(magnetDistance)"
+            }
+            code += "\n\(train.symbol).speed.maxSpeed = \(train.speed.maxSpeed)"
+            code += "\n\(train.symbol).maxNumberOfLeadingReservedBlocks = \(train.maxNumberOfLeadingReservedBlocks)"
         }
     }
 }
@@ -232,10 +257,27 @@ private extension Feedback {
     }
 }
 
+private extension Train {
+    
+    var symbol: String {
+        "tr_\(name.sanitizedSymbol)"
+    }
+}
+
+private extension Route {
+    
+    var symbol: String {
+        "r_\(name.sanitizedSymbol)"
+    }
+}
+
 private extension String {
     
     var sanitizedSymbol: String {
-        replacingOccurrences(of: ".", with: "_")
+        return replacingOccurrences(of: ".", with: "_")
+            .replacingOccurrences(of: " ", with: "_")
+            .replacingOccurrences(of: "-", with: "_")
+            .replacingOccurrences(of: "/", with: "_")
     }
     
 }

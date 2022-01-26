@@ -115,6 +115,10 @@ extension Layout {
             train.directionForward = forward
             self.executor?.sendTrainDirection(train: train)
         }
+        
+        // Don't forget to update the reservation for the train length
+        try free(trainID: train.id)
+        try reserveBlocksForTrainLength(train: train)
     }
     
     // Toggle the direction of the train within the block itself
@@ -136,6 +140,10 @@ extension Layout {
         }
 
         block.train = Block.TrainInstance(train.id, ti.direction.opposite)
+
+        // Don't forget to update the reservation for the train length
+        try free(trainID: train.id)
+        try reserveBlocksForTrainLength(train: train)
 
         self.didChange()
     }

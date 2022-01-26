@@ -87,9 +87,9 @@ final class LayoutCCreator: LayoutCreating {
         l.link("8", from: b4.next, to: b1.previous)
 
         // Route
-        l.newRoute("r1", name: "Outer Loop", [(b1, .next), (b2, .next), (b3, .next), (b4, .next), (b1, .next)])
-        l.newRoute("r2", name: "Short Route", [(b3, .next), (b4, .next), (b1, .next)])
-        l.newRoute("r3", name: "S Route", [(b3, .next), (b5, .next), (b1, .previous)])
+        l.newRoute("r1", name: "Outer Loop", [Route.Step(b1, .next), Route.Step(b2, .next), Route.Step(b3, .next), Route.Step(b4, .next), Route.Step(b1, .next)])
+        l.newRoute("r2", name: "Short Route", [Route.Step(b3, .next), Route.Step(b4, .next), Route.Step(b1, .next)])
+        l.newRoute("r3", name: "S Route", [Route.Step(b3, .next), Route.Step(b5, .next), Route.Step(b1, .previous)])
         
         // Train
         let t1 = Train(uuid: "1")

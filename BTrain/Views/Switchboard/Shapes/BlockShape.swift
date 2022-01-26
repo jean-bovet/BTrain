@@ -270,16 +270,11 @@ final class BlockShape: Shape, DraggableShape, ConnectableShape {
         let factory = TrainPathFactory(shapeContext: shapeContext)
         ctx.setFillColor(shapeContext.trainColor(train))
         for index in 0...trainCellCount {
-            if let part = parts[index] {
+            // Only draw the wagon because the train is already handled by the TrainShape
+            if let part = parts[index], part == .wagon {
                 let rect = trainCellFrame(at: index)
                 let path: CGPath
-                switch(part) {
-                case .locomotive:
-                    path = factory.locomotive(center: rect.center, rotationCenter: center, rotationAngle: rotationAngle)
-                case .wagon:
-                    path = factory.wagon(center: rect.center, rotationCenter: center, rotationAngle: rotationAngle)
-                }
-                
+                path = factory.wagon(center: rect.center, rotationCenter: center, rotationAngle: rotationAngle)
                 ctx.addPath(path)
                 ctx.fillPath()
             }

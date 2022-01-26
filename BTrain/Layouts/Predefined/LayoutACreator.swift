@@ -69,8 +69,8 @@ final class LayoutACreator: LayoutCreating {
         l.link("5", from: t21.socket2, to: b3.previous)
 
         // Route
-        l.newRoute("r1", name: "Station Loop", [(b1,.next), (b2, .next), (b3, .next), (b1, .previous)])
-        l.newRoute("r2", name: "Reverse Loop", [(b1, .next), (b3, .previous), (b2, .previous), (b1, .previous)])
+        l.newRoute("r1", name: "Station Loop", [Route.Step(b1.id,.next), Route.Step(b2.id, .next), Route.Step(b3.id, .next), Route.Step(b1.id, .previous)])
+        l.newRoute("r2", name: "Reverse Loop", [Route.Step(b1, .next), Route.Step(b3, .previous), Route.Step(b2, .previous), Route.Step(b1, .previous)])
         
         // Train
         l.newTrain("1", name: "Rail 2000")

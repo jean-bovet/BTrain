@@ -33,15 +33,11 @@ struct TrainControlSetLocationSheet: View {
         }
     }
     
-    // Return the position of the train. If the train
-    // is already located in the selected block, its
-    // current position is returned. Otherwise, the train
-    // will be positioned at the end of the block.
     var trainPosition: Position {
-        if train.blockId == blockId {
-            return .custom(value: train.position)
-        } else {
+        if direction == .next {
             return .end
+        } else {
+            return .start
         }
     }
     

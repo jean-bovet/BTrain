@@ -51,7 +51,7 @@ final class LayoutDCreator: LayoutCreating {
         l.newTrain()
 
         // Routes
-        l.newRoute("0", name: "Simple Route", [(b1, .next), (b2, .next)])
+        l.newRoute("0", name: "Simple Route", [Route.Step(b1, .next), Route.Step(b2, .next)])
         
         return l
     }

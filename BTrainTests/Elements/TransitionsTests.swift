@@ -121,8 +121,8 @@ class TransitionsTests: XCTestCase {
         let r1 = v8.routes[0]
         let r2 = v8.routes[1]
 
-        try v8.prepare(routeID: r1.id, trainID: t1.id)
-        try v8.prepare(routeID: r2.id, trainID: t2.id)
+        try v8.prepare(routeID: r1.id, trainID: t1.id, startAtEndOfBlock: true)
+        try v8.prepare(routeID: r2.id, trainID: t2.id, startAtEndOfBlock: true)
         
         try v8.start(routeID: r1.id, trainID: t1.id)
         try v8.start(routeID: r2.id, trainID: t2.id)
@@ -135,7 +135,7 @@ class TransitionsTests: XCTestCase {
         XCTAssertEqual(t1.speed.kph, LayoutFactory.DefaultSpeed)
         XCTAssertEqual(t2.speed.kph, 0)
         
-        // NOTE: stop cannot freeup blocks automatically because
+        // NOTE: stop cannot free-up blocks automatically because
         // the train might be already in transit between two blocks!
         try v8.stopTrain(t1.id)
         // So we manually free up the first block and all the transitions to the next one
