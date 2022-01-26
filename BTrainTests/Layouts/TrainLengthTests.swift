@@ -139,7 +139,7 @@ class TrainLengthTests: XCTestCase {
         XCTAssertThrowsError(try layout.reserveBlocksForTrainLength(train: t1))
     }
 
-    func assert(_ block: Block, _ train: Train?, _ parts: [Int:Block.TrainInstance.TrainPart]?) {
+    func assert(_ block: Block, _ train: Train?, _ parts: [Int:TrainInstance.TrainPart]?) {
         XCTAssertEqual(block.reserved?.trainId, train?.id)
         XCTAssertEqual(block.train?.parts, parts)
 

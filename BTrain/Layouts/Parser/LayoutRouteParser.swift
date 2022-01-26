@@ -260,7 +260,7 @@ final class LayoutRouteParser {
             assert(train.speed.kph == speed, "Mismatching speed definition for train \(uuid)")
             assert(train.position == feedbackIndex, "Mismatching position definition for train \(uuid)")
             if block.train == nil {
-                block.train = Block.TrainInstance(train.id, .next)
+                block.train = TrainInstance(train.id, .next)
             }
             block.train?.parts[feedbackIndex] = .locomotive
 
@@ -271,7 +271,7 @@ final class LayoutRouteParser {
             train.speed = .init(kph: speed, decoderType: .MFX)
             train.routeId = route.id
             if block.train == nil {
-                block.train = Block.TrainInstance(train.id, .next)
+                block.train = TrainInstance(train.id, .next)
             }
             block.train?.parts[feedbackIndex] = .locomotive
             trains.append(train)
@@ -288,7 +288,7 @@ final class LayoutRouteParser {
         }
         
         if block.train == nil {
-            block.train = Block.TrainInstance(Identifier<Train>(uuid: uuid), .next)
+            block.train = TrainInstance(Identifier<Train>(uuid: uuid), .next)
         }
                         
         block.train?.parts[feedbackIndex] = .wagon

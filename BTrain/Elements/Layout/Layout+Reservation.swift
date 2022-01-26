@@ -79,7 +79,7 @@ extension Layout {
     }
     
     private func reserveBlockParts(train: Train, remainingTrainLength: Double, block: Block, headBlock: Bool, direction: Direction) -> Double {
-        let trainInstance = Block.TrainInstance(train.id, direction.opposite)
+        let trainInstance = TrainInstance(train.id, direction.opposite)
         trainInstance.parts.removeAll()
         
         var currentRemainingTrainLength = remainingTrainLength

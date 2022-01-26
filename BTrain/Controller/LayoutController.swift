@@ -227,27 +227,27 @@ final class LayoutController: TrainControllerDelegate {
     
     // This method is called by the TrainController (via its delegate)
     // when a train has stopped in a station and needs to be restarted later on.
-    func scheduleRestartTimer(trainInstance: Block.TrainInstance) {
-        guard trainInstance.timeUntilAutomaticRestart > 0 else {
+    func scheduleRestartTimer(train: Train) {
+        guard train.timeUntilAutomaticRestart > 0 else {
             return
         }
         
         // Start a timer that will restart the train with a new automatic route
         // Note: the timer fires every seconds to update the remaining time until it reaches 0.
         let timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true, block: { timer in
-            trainInstance.timeUntilAutomaticRestart -= 1
-            if trainInstance.timeUntilAutomaticRestart <= 0 {
-                BTLogger.debug("It is now time to restart train \(trainInstance.trainId)")
+            train.timeUntilAutomaticRestart -= 1
+            if train.timeUntilAutomaticRestart <= 0 {
+                BTLogger.debug("It is now time to restart train \(train.id)")
                 // The TrainController is the class that actually restarts the train
                 // when it sees that this timer has reached 0 and all other parameters are valid.
-                trainInstance.timeUntilAutomaticRestart = 0
+                train.timeUntilAutomaticRestart = 0
                 timer.invalidate()
                 self.runControllers()
             }
             // Redraw the switchboard so the time interval is refreshed
             self.switchboardState?.triggerRedraw.toggle()
         })
-        pausedTrainTimers[trainInstance.trainId] = timer
+        pausedTrainTimers[train.id] = timer
     }
 
     func purgeRestartTimers() {

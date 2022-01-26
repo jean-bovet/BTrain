@@ -58,61 +58,6 @@ import Foundation
 //
 final class Block: Element, ObservableObject {
     
-    final class TrainInstance: Codable, Equatable, CustomStringConvertible {
-        // Train located in the block
-        let trainId: Identifier<Train>
-        
-        // Direction of travel of the train within the block
-        let direction: Direction
-
-        enum TrainPart: Codable {
-            case locomotive
-            case wagon
-        }
-        
-        typealias TrainPartMap = [Int:TrainPart]
-        
-        // A map of train part that occupies the block,
-        // identified by their feedback index
-        var parts = TrainPartMap()
-        
-        // The time remaining until the train is automatically restarted
-        var timeUntilAutomaticRestart: TimeInterval = 0
-
-        var description: String {
-            return "TrainInstance(\(trainId), \(direction.rawValue))"
-        }
-
-        static func == (lhs: Block.TrainInstance, rhs: Block.TrainInstance) -> Bool {
-            lhs.trainId == rhs.trainId && lhs.direction == rhs.direction
-        }
-        
-        enum CodingKeys: CodingKey {
-          case trainId, direction, parts
-        }
-
-        init(_ trainId: Identifier<Train>, _ direction: Direction, _ parts: TrainPartMap? = nil) {
-            self.trainId = trainId
-            self.direction = direction
-            self.parts = parts ?? TrainPartMap()
-        }
-        
-        convenience init(from decoder: Decoder) throws {
-            let container = try decoder.container(keyedBy: CodingKeys.self)
-            let trainId = try container.decode(Identifier<Train>.self, forKey: CodingKeys.trainId)
-            let direction = try container.decode(Direction.self, forKey: CodingKeys.direction)
-            let parts = try container.decodeIfPresent(TrainPartMap.self, forKey: CodingKeys.parts)
-            self.init(trainId, direction, parts)
-        }
-        
-        func encode(to encoder: Encoder) throws {
-            var container = encoder.container(keyedBy: CodingKeys.self)
-            try container.encode(trainId, forKey: CodingKeys.trainId)
-            try container.encode(direction, forKey: CodingKeys.direction)
-            try container.encode(parts, forKey: CodingKeys.parts)
-        }
-    }
-    
     // Returns the length (in cm) of the part at the specified index,
     // starting from the beginning of the block.
     func partLenght(at index: Int) -> Double? {

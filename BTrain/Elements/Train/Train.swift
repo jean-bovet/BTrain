@@ -116,6 +116,11 @@ final class Train: Element, ObservableObject {
     // position:   0   1    2    3
     @Published var position = 0
             
+    // The time remaining until the train is automatically restarted
+    // Note: we don't need to store this property because it is used only
+    // when running the layout.
+    var timeUntilAutomaticRestart: TimeInterval = 0
+
     var description: String {
         return "\(name) (\(id))"
     }

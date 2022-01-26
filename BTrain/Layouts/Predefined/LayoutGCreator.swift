@@ -89,7 +89,7 @@ final class LayoutGCreator: LayoutCreating {
             tr1.address = UInt32(0x4009 + index)
             tr1.decoder = .MFX
             layout.trains.append(tr1)
-            blocks[index-1].train = Block.TrainInstance(tr1.id, .next)
+            blocks[index-1].train = TrainInstance(tr1.id, .next)
         }
 
         return layout

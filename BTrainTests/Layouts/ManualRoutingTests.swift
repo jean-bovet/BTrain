@@ -610,8 +610,7 @@ class ManualRoutingTests: BTTestCase {
                       "r3: {r1{b3 ≏ ≏ 🛑🚂1 }} <t1(0,2),r> [b5 ≏ ≏ ] <t0(2,0),r> !{r2{b1 🛑🚂2 ≏ ≏ }}")
 
         // Artificially set the restart time to 0 which will make train 1 restart again
-        let b3 = layout.block(for: Identifier<Block>(uuid: "b3"))!
-        b3.train!.timeUntilAutomaticRestart = 0
+        layout.trains[0].timeUntilAutomaticRestart = 0
         
         XCTAssertEqual(p.layoutController.run(), .processed) // Train 1 is re-started
         XCTAssertEqual(p.layoutController.run(), .none)
@@ -712,8 +711,7 @@ class ManualRoutingTests: BTTestCase {
         XCTAssertEqual(p.train.scheduling, .running)
 
         // Artificially set the restart time to 0 which will make the train restart again
-        let s2 = layout.block(for: Identifier<Block>(uuid: "s2"))!
-        s2.train!.timeUntilAutomaticRestart = 0
+        layout.trains[0].timeUntilAutomaticRestart = 0
 
         XCTAssertEqual(p.layoutController.run(), .processed) // Train is re-started
         XCTAssertEqual(p.layoutController.run(), .none)

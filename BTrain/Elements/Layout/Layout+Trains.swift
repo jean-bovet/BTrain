@@ -139,7 +139,7 @@ extension Layout {
             throw LayoutError.trainInBlockDoesNotMatch(trainId: train.id, blockId: blockId, blockTrainId: ti.trainId)
         }
 
-        block.train = Block.TrainInstance(train.id, ti.direction.opposite)
+        block.train = TrainInstance(train.id, ti.direction.opposite)
 
         // Don't forget to update the reservation for the train length
         try free(trainID: train.id)
@@ -283,7 +283,7 @@ extension Layout {
 
         // Reserve the block
         toBlock.reserved = .init(trainId: train.id, direction: direction)
-        toBlock.train = Block.TrainInstance(trainId, direction)
+        toBlock.train = TrainInstance(trainId, direction)
 
         train.blockId = toBlock.id
         

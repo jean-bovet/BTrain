@@ -13,7 +13,7 @@
 import Foundation
 
 protocol TrainControllerDelegate: AnyObject {
-    func scheduleRestartTimer(trainInstance: Block.TrainInstance)
+    func scheduleRestartTimer(train: Train)
 }
 
 // This class manages a single train in the layout, by starting and stopping it,
@@ -141,12 +141,8 @@ final class TrainController {
             return .none
         }
 
-        guard let trainInstance = currentBlock.train else {
-            return .none
-        }
-
         // Do not start the train if there is still time for the train until it has to restart
-        guard trainInstance.timeUntilAutomaticRestart == 0 else {
+        guard train.timeUntilAutomaticRestart == 0 else {
             return .none
         }
         
@@ -373,10 +369,8 @@ final class TrainController {
                         debug("Schedule timer to restart train \(train) in \(stopTrigger.restartDelay) seconds")
                         
                         // The layout controller is going to schedule the appropriate timer given the `restartDelayTime` value
-                        if let ti = currentBlock.train {
-                            ti.timeUntilAutomaticRestart = stopTrigger.restartDelay
-                            delegate?.scheduleRestartTimer(trainInstance: ti)
-                        }
+                        train.timeUntilAutomaticRestart = stopTrigger.restartDelay
+                        delegate?.scheduleRestartTimer(train: train)
                     }
                 }
             }

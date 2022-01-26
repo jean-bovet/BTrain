@@ -107,7 +107,7 @@ class AutomaticRoutingTests: BTTestCase {
         XCTAssertEqual(p.layoutController.run(), .none)
         
         // Artificially set the restart time to 0 which will make the train restart again
-        s2.train!.timeUntilAutomaticRestart = 0
+        layout.trains[0].timeUntilAutomaticRestart = 0
         
         XCTAssertEqual(p.layoutController.run(), .processed) // Automatic route is re-generated
         XCTAssertEqual(p.layoutController.run(), .processed) // Train is re-started
@@ -141,7 +141,7 @@ class AutomaticRoutingTests: BTTestCase {
         try layout.setTrainToBlock(layout.trains[1].id, Identifier<Block>(uuid: "b1"), direction: .next)
         
         // Wait until the train route has been updated (which happens when it restarts)
-        s2.train!.timeUntilAutomaticRestart = 0
+        layout.trains[0].timeUntilAutomaticRestart = 0
         XCTAssertEqual(p.layoutController.run(), .none)
 
         // However, in this situation, the route will be empty because a train is blocking the next block
