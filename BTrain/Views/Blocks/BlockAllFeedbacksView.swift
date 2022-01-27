@@ -27,6 +27,7 @@ struct BlockAllFeedbacksView: View {
                             Text(feedback.name).tag(feedback.id)
                         }
                     }
+                    .fixedSize()
                     .labelsHidden()
                     .id(block) // Forces SwiftUI to re-create the picker, otherwise it crashes when the selection changes from a block that has feedbacks to one that does not have any.
                 }

@@ -23,7 +23,7 @@ struct BlockFeedbacksView: View {
 
             Spacer().frame(height: 20)
             
-            HStack {
+            VStack {
                 GroupBox("Previous Direction") {
                     BlockDirectionFeedbacksView(layout: layout, direction: .previous, block: block)
                         .padding()

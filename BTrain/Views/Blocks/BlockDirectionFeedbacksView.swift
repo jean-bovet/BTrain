@@ -37,8 +37,9 @@ struct BlockFeedbackDirectionView: View {
                             Text(candidate.name).tag(candidate.id as Identifier<Feedback>?)
                         }
                     }
-                }
+                }.fixedSize()
             }
+            Spacer()
         }
     }
 }
