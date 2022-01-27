@@ -209,6 +209,7 @@
 		A7E78C4427A09931004D1821 /* TrainPathFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7E78C4327A09931004D1821 /* TrainPathFactory.swift */; };
 		A7E78C4627A1D669004D1821 /* TrainInstance.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7E78C4527A1D669004D1821 /* TrainInstance.swift */; };
 		A7E78C4827A21DD3004D1821 /* TrainController+Manual.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7E78C4727A21DD3004D1821 /* TrainController+Manual.swift */; };
+		A7E78C4A27A22B23004D1821 /* ManualOperationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7E78C4927A22B23004D1821 /* ManualOperationTests.swift */; };
 		A7F31B9D277B921B00FE0C65 /* SwitchboardEditControlsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7F31B9C277B921B00FE0C65 /* SwitchboardEditControlsView.swift */; };
 		A7F31B9F277B95BA00FE0C65 /* TrainDropActionSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7F31B9E277B95BA00FE0C65 /* TrainDropActionSheet.swift */; };
 		A7F31BA1277C3D7B00FE0C65 /* BlockDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7F31BA0277C3D7A00FE0C65 /* BlockDetailsView.swift */; };
@@ -448,6 +449,7 @@
 		A7E78C4327A09931004D1821 /* TrainPathFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainPathFactory.swift; sourceTree = "<group>"; };
 		A7E78C4527A1D669004D1821 /* TrainInstance.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainInstance.swift; sourceTree = "<group>"; };
 		A7E78C4727A21DD3004D1821 /* TrainController+Manual.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TrainController+Manual.swift"; sourceTree = "<group>"; };
+		A7E78C4927A22B23004D1821 /* ManualOperationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManualOperationTests.swift; sourceTree = "<group>"; };
 		A7F31B9C277B921B00FE0C65 /* SwitchboardEditControlsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwitchboardEditControlsView.swift; sourceTree = "<group>"; };
 		A7F31B9E277B95BA00FE0C65 /* TrainDropActionSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainDropActionSheet.swift; sourceTree = "<group>"; };
 		A7F31BA0277C3D7A00FE0C65 /* BlockDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockDetailsView.swift; sourceTree = "<group>"; };
@@ -738,6 +740,7 @@
 				A7FBC8B5276E8BB6009D49C3 /* PathFinderTests.swift */,
 				A7CA5EBC2795339000171398 /* AutomaticRoutingTests.swift */,
 				A7C8A2F2279FA56C000C7246 /* TrainLengthTests.swift */,
+				A7E78C4927A22B23004D1821 /* ManualOperationTests.swift */,
 			);
 			path = Layouts;
 			sourceTree = "<group>";
@@ -1409,6 +1412,7 @@
 				A73E081F276B1B5A005F9D64 /* DiagnosticsSheetTests.swift in Sources */,
 				A73E0805276AB842005F9D64 /* FeedbackEditListViewTests.swift in Sources */,
 				A73E07FD276A8BAC005F9D64 /* TrainControlListViewTests.swift in Sources */,
+				A7E78C4A27A22B23004D1821 /* ManualOperationTests.swift in Sources */,
 				A792DEFD27850834004B0439 /* SimulatorViewTests.swift in Sources */,
 				A721807F275F099100831998 /* TurnoutTests.swift in Sources */,
 				A73E081D276B1AD4005F9D64 /* ConnectSheetViewTests.swift in Sources */,

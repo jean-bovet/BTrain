@@ -598,7 +598,7 @@ final class TrainController {
         return numberOfBlocksReserved > 0
     }
     
-    private func stop(completely: Bool = false) throws -> Result {
+    func stop(completely: Bool = false) throws -> Result {
         stopTrigger = nil
         
         guard train.speed.kph > 0 else {

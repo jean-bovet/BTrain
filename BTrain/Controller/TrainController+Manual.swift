@@ -26,7 +26,11 @@ extension TrainController {
         if try handleTrainMove() == .processed {
             result = .processed
         }
-        // TODO: stop the train if there is no possible next block, only if the train is at the end of the block
+        
+        if try handleManualTrainStop() == .processed {
+            result = .processed
+        }
+
         return result
     }
     
@@ -63,5 +67,27 @@ extension TrainController {
         try layout.setTrainToBlock(train.id, nextBlock.id, position: .custom(value: position), direction: direction)
                                                 
         return .processed
+    }
+    
+    private func handleManualTrainStop() throws -> Result {
+        guard train.speed.kph > 0 else {
+            return .none
+        }
+                
+        guard let currentBlock = layout.currentBlock(train: train) else {
+            return .none
+        }
+
+        guard layout.nextBlock(from: currentBlock) == nil else {
+            return .none
+        }
+        
+        // If there are no possible next block detected, we need to stop the train
+        // when it reaches the end of the block to avoid a collision.
+        if try layout.atEndOfBlock(train: train) {
+            return try stop(completely: true)
+        }
+        
+        return .none
     }
 }
