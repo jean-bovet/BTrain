@@ -17,16 +17,18 @@ BTrain uses the following concepts:
 
 **Features**
 
-- Layout editor with blocks, turnouts, transitions and feedbacks
-- Locomotives & Turnouts control
-- Manual & Automatic routing
+- Easy to use layout editor where blocks and turnouts can be added in one click and linked together by dragging and dropping links between them.
+- Locomotives speed and direction control
+- Turnouts state control
+- Automatic (or manual) routing management of one or more trains simultaneously with collision avoidance
+- Take into account the length of the train, block, turnout, and feedback position to accurately understand the location of each train to reserve the necessary block to avoid a collision.
+- Visual feedback of the exact location of the train, including the locomotive and its wagons, within blocks
 - Unexpected feedback detection
 - Automatic discovery of locomotives
 - Support for Marklin Central Station 3
 
 **Limitations**
 
-- Does not yet take into account the length of train, blocks, and turnouts. This might lead to collisions if the train is longer than the block.
 - Does not yet take into account true speed conversion. This means the locomotive's speed is not representative of the prototype model.
 
 **Known Issues**
