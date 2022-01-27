@@ -51,9 +51,11 @@ extension Layout {
                 }
                 transition.reserved = train.id
             } else if let turnout = info.turnout {
-                // TODO: take turnout length into account
                 guard turnout.reserved == nil else {
                     throw LayoutError.turnoutAlreadyReserved(turnout: turnout)
+                }
+                if let length = turnout.length {
+                    remainingTrainLength -= length
                 }
                 turnout.reserved = train.id
             } else if let block = info.block, let direction = info.direction {

@@ -34,7 +34,9 @@ struct TurnoutListView: View {
                             ForEach(CommandTurnoutProtocol.allCases, id:\.self) { proto in
                                 Text(proto.rawValue).tag(proto as CommandTurnoutProtocol?)
                             }
-                        }.labelsHidden()
+                        }
+                        .labelsHidden()
+                        .fixedSize()
                     }
                 }
                 
@@ -44,7 +46,9 @@ struct TurnoutListView: View {
                             ForEach(Turnout.Category.allCases, id:\.self) { type in
                                 Text(type.description)
                             }
-                        }.labelsHidden()
+                        }
+                        .labelsHidden()
+                        .fixedSize()
                     }
                 }
                 
@@ -70,6 +74,12 @@ struct TurnoutListView: View {
                     }
                 }
                 
+                TableColumn("Length (cm)") { turnout in
+                    UndoProvider(turnout.length) { length in
+                        TextField("", value: length, format: .number)
+                    }
+                }
+
                 TableColumn("State") { turnout in
                     HStack {
                         UndoProvider(turnout.state) { state in
@@ -77,9 +87,13 @@ struct TurnoutListView: View {
                                 ForEach(turnout.wrappedValue.allStates, id:\.self) { state in
                                     Text(state.description)
                                 }
-                            }.labelsHidden()
+                            }
+                            .labelsHidden()
+                            .fixedSize()
                         }
 
+                        Spacer()
+                        
                         Button("Set") {
                             layout.executor?.sendTurnoutState(turnout: turnout.wrappedValue) { }
                         }

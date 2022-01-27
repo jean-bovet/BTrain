@@ -43,6 +43,9 @@ final class Turnout: Element, ObservableObject {
     @Published var address: CommandTurnoutAddress = .init(0, .MM)
     @Published var address2: CommandTurnoutAddress = .init(0, .MM)
 
+    // Length of the turnout (in cm)
+    @Published var length: Double?
+        
     @Published var state: State = .straight
     
     var reserved: Identifier<Train>?
@@ -81,7 +84,7 @@ final class Turnout: Element, ObservableObject {
 extension Turnout: Codable {
     
     enum CodingKeys: CodingKey {
-      case id, type, name, address, address2, state, reserved, center, angle
+      case id, type, name, address, address2, length, state, reserved, center, angle
     }
 
     convenience init(from decoder: Decoder) throws {
@@ -97,6 +100,7 @@ extension Turnout: Codable {
         self.init(id: id, name: name, type: type, address: address, address2: address2, center: center, rotationAngle: rotationAngle)
         self.state = try container.decode(State.self, forKey: CodingKeys.state)
         self.reserved = try container.decodeIfPresent(Identifier<Train>.self, forKey: CodingKeys.reserved)
+        self.length = try container.decodeIfPresent(Double.self, forKey: CodingKeys.length)
     }
     
     func encode(to encoder: Encoder) throws {
@@ -106,6 +110,7 @@ extension Turnout: Codable {
         try container.encode(category, forKey: CodingKeys.type)
         try container.encode(address, forKey: CodingKeys.address)
         try container.encode(address2, forKey: CodingKeys.address2)
+        try container.encode(length, forKey: CodingKeys.length)
         try container.encode(state, forKey: CodingKeys.state)
         try container.encode(reserved, forKey: CodingKeys.reserved)
         

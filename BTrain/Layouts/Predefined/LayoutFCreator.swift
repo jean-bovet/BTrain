@@ -258,36 +258,66 @@ final class LayoutFCreator: LayoutCreating {
         // Turnouts
 
         let t_A_1 = Turnout("A.1", type: .singleLeft, address: .init(1,.DCC), state: .straight, center: CGPoint(x: 205.0, y: 630.0), rotationAngle: .pi/4)
+        t_A_1.length = 20.0
         let t_A_2 = Turnout("A.2", type: .singleRight, address: .init(36,.MM), state: .straight, center: CGPoint(x: 165.0, y: 460.0), rotationAngle: 0.0)
+        t_A_2.length = 20.0
         let t_A_34 = Turnout("A.34", type: .doubleSlip2, address: .init(3,.DCC), address2: .init(4,.DCC), state: .branch03, center: CGPoint(x: 125.0, y: 510.0), rotationAngle: 0.0)
+        t_A_34.length = 20.0
         let t_B_1 = Turnout("B.1", type: .singleRight, address: .init(5,.DCC), state: .branchRight, center: CGPoint(x: 395.0, y: 810.0), rotationAngle: -.pi)
+        t_B_1.length = 18.0
         let t_B_2 = Turnout("B.2", type: .doubleSlip, address: .init(6,.DCC), state: .branch, center: CGPoint(x: 335.0, y: 750.0), rotationAngle: 0.0)
         let t_B_3 = Turnout("B.3", type: .singleRight, address: .init(7,.DCC), state: .branchRight, center: CGPoint(x: 275.0, y: 690.0), rotationAngle: 0.0)
+        t_B_3.length = 18.0
         let t_B_4 = Turnout("B.4", type: .singleLeft, address: .init(8,.DCC), state: .branchLeft, center: CGPoint(x: 295.0, y: 630.0), rotationAngle: 0.0)
+        t_B_4.length = 15.0
         let t_C_1 = Turnout("C.1", type: .threeWay, address: .init(9,.DCC), address2: .init(10,.DCC), state: .straight, center: CGPoint(x: 665.0, y: 750.0), rotationAngle: -.pi)
+        t_C_1.length = 18.0
         let t_C_3 = Turnout("C.3", type: .singleRight, address: .init(11,.DCC), state: .branchRight, center: CGPoint(x: 605.0, y: 690.0), rotationAngle: 0.0)
+        t_C_3.length = 18.0
         let t_C_4 = Turnout("C.4", type: .singleLeft, address: .init(12,.DCC), state: .branchLeft, center: CGPoint(x: 605.0, y: 810.0), rotationAngle: 0.0)
+        t_C_4.length = 18.0
         let t_D_1 = Turnout("D.1", type: .singleRight, address: .init(13,.DCC), state: .straight, center: CGPoint(x: 105.0, y: 50.0), rotationAngle: 0.0)
+        t_D_1.length = 20.0
         let t_D_2 = Turnout("D.2", type: .doubleSlip2, address: .init(14,.DCC), address2: .init(15,.DCC), state: .straight01, center: CGPoint(x: 255.0, y: 120.0), rotationAngle: 0.0)
+        t_D_2.length = 20.0
         let t_D_4 = Turnout("D.4", type: .singleLeft, address: .init(16,.DCC), state: .straight, center: CGPoint(x: 205.0, y: 460.0), rotationAngle: 0.0)
+        t_D_4.length = 20.0
         let t_E_1 = Turnout("E.1", type: .singleLeft, address: .init(17,.DCC), state: .straight, center: CGPoint(x: 705.0, y: 50.0), rotationAngle: .pi)
+        t_E_1.length = 20.0
         let t_E_2 = Turnout("E.2", type: .singleLeft, address: .init(18,.DCC), state: .straight, center: CGPoint(x: 645.0, y: 120.0), rotationAngle: .pi)
+        t_E_2.length = 20.0
         let t_E_3 = Turnout("E.3", type: .singleLeft, address: .init(19,.DCC), state: .straight, center: CGPoint(x: 575.0, y: 120.0), rotationAngle: 0.0)
+        t_E_3.length = 20.0
         let t_E_4 = Turnout("E.4", type: .singleRight, address: .init(20,.DCC), state: .branchRight, center: CGPoint(x: 615.0, y: 630.0), rotationAngle: .pi)
+        t_E_4.length = 20.0
         let t_F_1 = Turnout("F.1", type: .singleRight, address: .init(25,.DCC), state: .straight, center: CGPoint(x: 765.0, y: 560.0), rotationAngle: .pi/2)
+        t_F_1.length = 20.0
         let t_F_2 = Turnout("F.2", type: .singleRight, address: .init(26,.DCC), state: .straight, center: CGPoint(x: 765.0, y: 620.0), rotationAngle: .pi/2)
+        t_F_2.length = 20.0
         let t_F_3 = Turnout("F.3", type: .singleRight, address: .init(27,.DCC), state: .straight, center: CGPoint(x: 765.0, y: 470.0), rotationAngle: .pi/2)
+        t_F_3.length = 20.0
         let t_F_4 = Turnout("F.4", type: .singleRight, address: .init(28,.DCC), state: .straight, center: CGPoint(x: 655.0, y: 460.0), rotationAngle: .pi)
+        t_F_4.length = 18.0
         let t_H_1 = Turnout("H.1", type: .singleLeft, address: .init(29,.MM), state: .branchLeft, center: CGPoint(x: 195.0, y: 120.0), rotationAngle: -.pi)
+        t_H_1.length = 20.0
         let t_H_2 = Turnout("H.2", type: .singleLeft, address: .init(30,.MM), state: .branchLeft, center: CGPoint(x: 225.0, y: 320.0), rotationAngle: 0.0)
+        t_H_2.length = 15.0
         let t_H_3 = Turnout("H.3", type: .singleLeft, address: .init(31,.MM), state: .straight, center: CGPoint(x: 505.0, y: 260.0), rotationAngle: .pi)
+        t_H_3.length = 15.0
         let t_H_4 = Turnout("H.4", type: .singleLeft, address: .init(32,.MM), state: .straight, center: CGPoint(x: 285.0, y: 410.0), rotationAngle: 0.0)
+        t_H_4.length = 15.0
         let t_M_1 = Turnout("M.1", type: .singleLeft, address: .init(2,.DCC), state: .branchLeft, center: CGPoint(x: 725.0, y: 750.0), rotationAngle: 0.0)
+        t_M_1.length = 10.0
         let t_Z_1 = Turnout("Z.1", type: .singleRight, address: .init(35,.MM), state: .branchRight, center: CGPoint(x: 855.0, y: 400.0), rotationAngle: -.pi/2)
+        t_Z_1.length = 15.0
         let t_Z_2 = Turnout("Z.2", type: .singleLeft, address: .init(34,.MM), state: .branchLeft, center: CGPoint(x: 855.0, y: 160.0), rotationAngle: .pi/2)
+        t_Z_2.length = 15.0
         let t_Z_3 = Turnout("Z.3", type: .singleRight, address: .init(40,.MM), state: .straight, center: CGPoint(x: 1005.0, y: 100.0), rotationAngle: 0.0)
+        t_Z_3.length = 15.0
         let t_Z_4 = Turnout("Z.4", type: .singleLeft, address: .init(33,.MM), state: .branchLeft, center: CGPoint(x: 955.0, y: 100.0), rotationAngle: .pi/4)
+        t_Z_4.length = 15.0
         let t_Z_5 = Turnout("Z.5", type: .singleRight, address: .init(39,.MM), state: .straight, center: CGPoint(x: 985.0, y: 450.0), rotationAngle: -.pi/2)
+        t_Z_5.length = 15.0
         l.turnouts.append(contentsOf: [t_A_1,t_A_2,t_A_34,t_B_1,t_B_2,t_B_3,t_B_4,t_C_1,t_C_3,t_C_4,t_D_1,t_D_2,t_D_4,t_E_1,t_E_2,t_E_3,t_E_4,t_F_1,t_F_2,t_F_3,t_F_4,t_H_1,t_H_2,t_H_3,t_H_4,t_M_1,t_Z_1,t_Z_2,t_Z_3,t_Z_4,t_Z_5])
 
         // Transitions
@@ -416,6 +446,7 @@ final class LayoutFCreator: LayoutCreating {
         let tr_Re_4_4_I_409_SBB = l.newTrain("16395", name: "Re 4/4 I 409 SBB", address: 0x000B, decoder: .MFX)
         tr_Re_4_4_I_409_SBB.speed.maxSpeed = 200
         tr_Re_4_4_I_409_SBB.maxNumberOfLeadingReservedBlocks = 1
+        
         return l
     }
     
