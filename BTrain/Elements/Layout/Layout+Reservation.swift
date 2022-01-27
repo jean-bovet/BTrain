@@ -104,8 +104,16 @@ extension Layout {
 
         // Gather all the part length to ensure they are all defined.
         if let allPartsLength = block.allPartsLength() {
-            trainInstance.parts[position] = headBlock ? .locomotive : .wagon
-            currentRemainingTrainLength -= allPartsLength[position]!
+            if headBlock {
+                trainInstance.parts[position] = .locomotive
+                // Don't take into consideration the length of that part
+                // because the locomotive could be at the beginning of the part.
+                // This will get more precise once we manage the distance
+                // using the real speed conversion.
+            } else {
+                trainInstance.parts[position] = .wagon
+                currentRemainingTrainLength -= allPartsLength[position]!
+            }
             
             position += increment
             while ((increment < 0 && position >= 0) || (increment > 0 && position < block.feedbacks.count + 1)) && currentRemainingTrainLength > 0 {
