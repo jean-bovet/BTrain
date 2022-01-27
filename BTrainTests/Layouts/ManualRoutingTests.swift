@@ -145,7 +145,7 @@ class ManualRoutingTests: BTTestCase {
         
         var p = try setup(layout: layout, fromBlockId: "b1", direction: .previous, route: layout.routes[0])
 
-        try p.assert("r1: {r1{b1 🛑🚂1 ≏ ≏ }} <t0> [b2 ≏ ≏ ] {b3 ≏ ≏ }} <t1> [b4 ≏ ≏] {r1{b1 🛑🚂1 ≏ ≏ }}")
+        try p.assert("r1: {r1{b1 ≏ ≏ 🛑🚂1 }} <t0> [b2 ≏ ≏ ] {b3 ≏ ≏ }} <t1> [b4 ≏ ≏] {r1{b1 ≏ ≏ 🛑🚂1 }}")
                 
         XCTAssertThrowsError(try p.start(routeID: "r1", trainID: "1")) { error in
             guard let layoutError = error as? LayoutError else {

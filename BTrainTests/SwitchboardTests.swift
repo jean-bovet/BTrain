@@ -103,7 +103,7 @@ class SwitchboardTests: XCTestCase {
         try? controller.setTrain(info: dragOp.state.trainDragInfo!, direction: .next)
 
         XCTAssertEqual(train.blockId, b1.block.id)
-        XCTAssertEqual(train.position, 0)
+        XCTAssertEqual(train.position, 2)
     }
     
     func testDragTrainDifferentBlocks() throws {

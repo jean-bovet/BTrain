@@ -244,7 +244,8 @@ extension Layout {
         train.routeStepIndex = routeIndex
     }
 
-    // Note: this method does not free the previous block where the train is located. This is the responsibility of the caller.
+    // This method sets the train in a specific block, frees the leading blocks reserved by a potential route
+    // and update the trailing blocks to account for the train's length.
     func setTrainToBlock(_ trainId: Identifier<Train>, _ toBlockId: Identifier<Block>, position: Position = .start, direction: Direction) throws {
         guard let train = self.train(for: trainId) else {
             throw LayoutError.trainNotFound(trainId: trainId)
@@ -269,9 +270,9 @@ extension Layout {
         // Determine the position of the train
         switch(position) {
         case .start:
-            train.position = 0
+            train.position = direction == .next ? 0 : toBlock.feedbacks.count
         case .end:
-            train.position = toBlock.feedbacks.count
+            train.position = direction == .next ? toBlock.feedbacks.count : 0
         case .custom(value: let value):
             train.position = value
         }

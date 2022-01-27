@@ -15,7 +15,7 @@ import SwiftUI
 extension LayoutController {
     
     func setTrain(info: SwitchBoard.State.TrainDragInfo, direction: Direction) throws {
-        try layout.setTrainToBlock(info.trainId, info.blockId, direction: direction)
+        try layout.setTrainToBlock(info.trainId, info.blockId, position: .end, direction: direction)
         _ = run()
     }
 
