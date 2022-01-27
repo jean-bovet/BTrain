@@ -24,7 +24,7 @@ final class TrainController {
     // that indicates if that method has done something
     // or not. This is useful information that will help
     // the LayoutController to re-run the TrainController
-    // in case there is any changes to be applied.
+    // in case there are any changes to be applied.
     enum Result {
         case none
         case processed
@@ -81,14 +81,14 @@ final class TrainController {
     // always have each function retrieve what it needs.
     @discardableResult
     func run() throws -> Result {
+        // Handle automatic scheduling, otherwise handle manual operations
+        guard train.automaticScheduling else {
+            return try handleManualOperation()
+        }
+
         // Stop the train if there is no route associated with it
         guard let route = layout.route(for: train.routeId, trainId: train.id) else {
             return try stop()
-        }
-
-        // Return now if the train is not actively "running"
-        guard train.scheduling != .stopped else {
-            return .none
         }
         
         var result: Result = .none
@@ -287,9 +287,9 @@ final class TrainController {
         guard trainShouldStop(block: block) else {
             return .none
         }
-        
-        if train.scheduling == .finishing {
-            debug("Stopping completely \(train) because it has reached a station and it is marked as .finishing")
+                
+        if train.automaticFinishingScheduling {
+            debug("Stopping completely \(train) because it has reached a station and was finishing the route")
             stopTrigger = StopTrigger.completeStop()
             return .processed
         } else {
@@ -378,7 +378,7 @@ final class TrainController {
         return result
     }
     
-    private func handleTrainMove() throws -> Result {
+    func handleTrainMove() throws -> Result {
         guard train.speed.kph > 0 else {
             return .none
         }
@@ -479,10 +479,10 @@ final class TrainController {
         }
 
         // Find out what is the entry feedback for the next block
-        let (entryFeedback, direction) = try layout.feedbackTriggeringTransition(from: currentBlock, to: nextBlock)
+        let (entryFeedback, direction) = try layout.entryFeedback(from: currentBlock, to: nextBlock)
         
         guard let entryFeedback = entryFeedback, entryFeedback.detected else {
-            // The first feedback is not yet detected, nothing more to do
+            // The entry feedback is not yet detected, nothing more to do
             return .none
         }
         
@@ -623,7 +623,7 @@ final class TrainController {
         }
     }
     
-    private func debug(_ message: String) {
+    func debug(_ message: String) {
         BTLogger.debug(message)
     }
 

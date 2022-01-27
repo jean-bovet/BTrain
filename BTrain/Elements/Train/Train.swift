@@ -81,21 +81,43 @@ final class Train: Element, ObservableObject {
     enum Schedule {
         // The train is stopped and cannot be started again
         // unless the user takes an explicit action (ie Start button)
-        case stopped
+        case manual
         
         // The train is running and has not yet finished the route
         // Note: a train can be "stopped" with a speed of 0 kph while still
         // be in a running state. This happens when the train stops because
         // the next block is occupied or it has reached a station.
-        case running
-        
-        // The train is running and will stop when it finishes the route
-        case finishing
+        // If `finishing` is set to true, the train will stop when it finishes the route.
+        case automatic(finishing: Bool)
     }
     
     // The state of the schedule
-    @Published var scheduling: Schedule = .stopped
+    @Published var scheduling: Schedule = .manual
     
+    var manualScheduling: Bool {
+        if case .manual = scheduling {
+            return true
+        } else {
+            return false
+        }
+    }
+    
+    var automaticFinishingScheduling: Bool {
+        if case .automatic(let finishing) = scheduling {
+            return finishing
+        } else {
+            return false
+        }
+    }
+
+    var automaticScheduling: Bool {
+        if case .automatic(_) = scheduling {
+            return true
+        } else {
+            return false
+        }
+    }
+
     enum State {
         case running
         case braking

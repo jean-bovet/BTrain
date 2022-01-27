@@ -202,7 +202,7 @@ extension Layout {
             }
         }
 
-        train.scheduling = .running
+        train.scheduling = .automatic(finishing: false)
     }
     
     // Stop the specified train. If completely is true,
@@ -221,7 +221,7 @@ extension Layout {
         train.state = .stopped
 
         if completely {
-            train.scheduling = .stopped
+            train.scheduling = .manual
             try self.freeLeadingBlocksAndUpdateTrailingBlocks(trainID: train.id)
         }
         
@@ -234,7 +234,7 @@ extension Layout {
             throw LayoutError.trainNotFound(trainId: trainId)
         }
 
-        train.scheduling = .finishing
+        train.scheduling = .automatic(finishing: true)
     }
 
     func setTrainRouteStepIndex(_ train: Train, _ routeIndex: Int) throws {

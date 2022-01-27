@@ -36,7 +36,7 @@ struct TrainControlRouteActionsView: View {
                 }
             }
             
-            if train.scheduling == .stopped {
+            if train.manualScheduling {
                 Button("Start") {
                     do {
                         try document.start(train: train.id, withRoute: route.id, destination: nil)
@@ -61,7 +61,7 @@ struct TrainControlRouteActionsView: View {
                     } catch {
                         self.error = error.localizedDescription
                     }
-                }.disabled(train.scheduling == .finishing)
+                }.disabled(train.automaticFinishingScheduling)
             }
         }
     }

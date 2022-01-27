@@ -149,7 +149,7 @@ extension Layout {
         }
     }
 
-    func feedbackTriggeringTransition(from fromBlock: Block, to nextBlock: Block) throws -> (Feedback?, direction: Direction) {
+    func entryFeedback(from fromBlock: Block, to nextBlock: Block) throws -> (Feedback?, direction: Direction) {
         let transitions = try transitions(from: fromBlock, to: nextBlock, direction: fromBlock.train!.direction)
         guard let lastTransition = transitions.last else {
             throw LayoutError.noTransition(fromBlockId: fromBlock.id, toBlockId: nextBlock.id)
@@ -172,4 +172,27 @@ extension Layout {
         return (entryFeedback, nextBlockDirectionOfTravel)
     }
 
+    // This function returns the next block, reachable from the `fromBlock`
+    // and that is also not reserved. This function is used, for example,
+    // by the TrainController in manual mode to follow the movement of the
+    // train on the layout when it is manually driven by someone.
+    func nextBlock(from fromBlock: Block) -> Block? {
+        guard let trainInstance = fromBlock.train else {
+            return nil
+        }
+        
+        var nextBlock: Block?
+        let visitor = ElementVisitor(layout: self)
+        try? visitor.visit(fromBlockId: fromBlock.id, direction: trainInstance.direction) { info in
+            if let block = info.block, info.index > 0 {
+                if block.reserved == nil {
+                    nextBlock = block
+                }
+                return .stop
+            }
+            return .continue
+        }
+        
+        return nextBlock
+    }
 }

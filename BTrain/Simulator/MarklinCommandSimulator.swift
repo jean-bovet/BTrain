@@ -262,6 +262,10 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
         }
         
         for train in layout.trains {
+            guard train.automaticScheduling else {
+                continue
+            }
+            
             guard let simulatorTrain = trains.first(where: {$0.train.id == train.id}), simulatorTrain.simulate else {
                 continue
             }
@@ -301,7 +305,7 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
                 triggerFeedback(feedback: feedback, value: 1)
             }
         } else if let nextBlock = layout.nextBlock(train: train), try layout.atEndOfBlock(train: train) {
-            let (feedback, _) = try layout.feedbackTriggeringTransition(from: block, to: nextBlock)
+            let (feedback, _) = try layout.entryFeedback(from: block, to: nextBlock)
             if let feedback = feedback {
                 // Ensure all the feedbacks of the current block is turned off, otherwise there will be
                 // an unexpected feedback error in the layout. This happens when there is less than 250ms

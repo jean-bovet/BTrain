@@ -92,19 +92,19 @@ final class Layout: Element, ObservableObject {
     
     func trainsThatCanBeStarted() -> [Train] {
         return trains.filter { train in
-            return train.enabled && train.blockId != nil && train.routeId != nil && train.scheduling == .stopped
+            return train.enabled && train.blockId != nil && train.routeId != nil && train.manualScheduling
         }
     }
     
     func trainsThatCanBeStopped() -> [Train] {
         return trains.filter { train in
-            return train.scheduling != .stopped
+            return train.automaticScheduling
         }
     }
     
     func trainsThatCanBeFinished() -> [Train] {
         return trains.filter { train in
-            return train.scheduling == .running
+            return train.automaticScheduling && !train.automaticFinishingScheduling
         }
     }
     
