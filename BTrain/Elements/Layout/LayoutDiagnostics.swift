@@ -28,6 +28,12 @@ enum DiagnosticError: Error, Equatable {
     
     case blockMissingTransition(block: Block, socket: String)
     case invalidTransition(transitionId: Identifier<Transition>, socket: Socket)
+    
+    case blockMissingLength(block: Block)
+    case turnoutMissingLength(turnout: Turnout)
+    case trainMissingLength(train: Train)
+    case trainMissingMagnetDistance(train: Train)
+    case blockFeedbackMissingDistance(block: Block, feedbackId: Identifier<Feedback>)
 }
 
 extension DiagnosticError: LocalizedError {
@@ -63,14 +69,39 @@ extension DiagnosticError: LocalizedError {
             return "Block \(block.name) is missing a transition from socket \(socket)"
         case .invalidTransition(transitionId: let transitionId, socket: let socket):
             return "Transition \(transitionId) is not connected via its socket \(socket)"
+            
+        case .blockMissingLength(block: let block):
+            return "Block \(block.name) does not have a length defined"
+        case .turnoutMissingLength(turnout: let turnout):
+            return "Turnout \(turnout.name) does not have a length defined"
+        case .blockFeedbackMissingDistance(block: let block, feedbackId: let feedbackId):
+            return "Block \(block.name) does not have a distance defined for feedback \(feedbackId)"
+            
+        case .trainMissingLength(train: let train):
+            return "Train \(train.name) does not have a length defined"
+        case .trainMissingMagnetDistance(train: let train):
+            return "Train \(train.name) does not have a distance defined for the magnet"
         }
     }
 }
 
 final class LayoutDiagnostic: ObservableObject {
-    
+
+    struct Options: OptionSet {
+        let rawValue: Int
+
+        static let lengths   = Options(rawValue: 1 << 0)
+        static let duplicate = Options(rawValue: 1 << 1)
+        static let orphaned  = Options(rawValue: 1 << 2)
+
+        static let skipLengths: Options = [.duplicate, .orphaned]
+        static let all: Options = [.lengths, .duplicate, .orphaned]
+    }
+
+
     let layout: Layout
     let observer: LayoutObserver
+        
     @Published var hasErrors = false
     
     init(layout: Layout) {
@@ -94,16 +125,24 @@ final class LayoutDiagnostic: ObservableObject {
         }
     }
     
-    func check() throws -> [DiagnosticError] {
+    func check(_ options: Options = Options.all) throws -> [DiagnosticError] {
         var errors = [DiagnosticError]()
         
         repair()
         
-        checkForDuplicateFeedbacks(&errors)
-        checkForDuplicateTurnouts(&errors)
+        if options.contains(.duplicate) {
+            checkForDuplicateFeedbacks(&errors)
+            checkForDuplicateTurnouts(&errors)
+            try checkForDuplicateBlocks(&errors)
+        }
         
-        try checkForDuplicateBlocks(&errors)
-        try checkForOrphanedElements(&errors)
+        if options.contains(.orphaned) {
+            try checkForOrphanedElements(&errors)
+        }
+        
+        if options.contains(.lengths) {
+            checkForLengthAndDistance(&errors)
+        }
         
         return errors
     }
@@ -240,6 +279,32 @@ final class LayoutDiagnostic: ObservableObject {
                 if try layout.transitions(from: socket).isEmpty {
                     errors.append(DiagnosticError.invalidTransition(transitionId: transition.id, socket: socket))
                 }
+            }
+        }
+    }
+    
+    func checkForLengthAndDistance(_ errors: inout [DiagnosticError]) {
+        for block in layout.blocks {
+            if block.length == nil {
+                errors.append(DiagnosticError.blockMissingLength(block: block))
+            }
+            for bf in block.feedbacks {
+                if bf.distance == nil {
+                    errors.append(DiagnosticError.blockFeedbackMissingDistance(block: block, feedbackId: bf.feedbackId))
+                }
+            }
+        }
+        for turnout in layout.turnouts {
+            if turnout.length == nil {
+                errors.append(DiagnosticError.turnoutMissingLength(turnout: turnout))
+            }
+        }
+        for train in layout.trains {
+            if train.length == nil {
+                errors.append(DiagnosticError.trainMissingLength(train: train))
+            }
+            if train.magnetDistance == nil {
+                errors.append(DiagnosticError.trainMissingMagnetDistance(train: train))
             }
         }
     }

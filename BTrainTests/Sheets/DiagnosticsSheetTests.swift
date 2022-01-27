@@ -20,7 +20,7 @@ extension DiagnosticsSheet: Inspectable { }
 class DiagnosticsSheetTests: RootViewTests {
 
     func testLayout() throws {
-        let sut = DiagnosticsSheet(layout: layout)
+        let sut = DiagnosticsSheet(layout: layout, options: .skipLengths)
         XCTAssertNoThrow(try sut.inspect().find(button: "OK"))
         XCTAssertNoThrow(try sut.inspect().find(text: "The layout is correct!"))
     }

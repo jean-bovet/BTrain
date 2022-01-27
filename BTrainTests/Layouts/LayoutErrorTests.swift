@@ -43,7 +43,7 @@ class LayoutErrorTests: XCTestCase {
     
     func testDiagnostic() throws {
         let diag = LayoutDiagnostic(layout: layout)
-        let errors = try diag.check()
+        let errors = try diag.check(.skipLengths)
         XCTAssertEqual(errors.count, 7)
         
         let turnout = layout.turnouts[0]

@@ -92,7 +92,7 @@ struct ContentView: View {
             ImportLayoutSheet(document: document)
                 .padding()
         }.sheet(isPresented: $showDiagnosticsSheet) {
-            DiagnosticsSheet(layout: document.layout)
+            DiagnosticsSheet(layout: document.layout, options: .all)
                 .padding()
         }.alert("Are you sure you want to change the current list of locomotives with the locomotives definition from the Central Station?", isPresented: $showDiscoverLocomotiveConfirmation) {
             Button("Cancel", role: .cancel) { }

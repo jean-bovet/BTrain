@@ -16,6 +16,7 @@ import SwiftUI
 struct DiagnosticsSheet: View {
     
     let layout: Layout
+    let options: LayoutDiagnostic.Options
     
     @Environment(\.presentationMode) var presentationMode
 
@@ -26,7 +27,8 @@ struct DiagnosticsSheet: View {
     
     var errors: [DisplayError] {
         do {
-            let errors = try LayoutDiagnostic(layout: layout).check()
+            let diag = LayoutDiagnostic(layout: layout)
+            let errors = try diag.check(options)
             return errors.map { DisplayError(error: $0.localizedDescription) }
         } catch {
             return [DisplayError(error: error.localizedDescription)]
@@ -64,6 +66,6 @@ struct DiagnosticsSheet_Previews: PreviewProvider {
     static let doc = LayoutDocument(layout: LayoutCCreator().newLayout())
 
     static var previews: some View {
-        DiagnosticsSheet(layout: doc.layout)
+        DiagnosticsSheet(layout: doc.layout, options: .all)
     }
 }

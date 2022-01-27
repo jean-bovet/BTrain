@@ -18,7 +18,8 @@ class LayoutTests: XCTestCase {
 
     func testValidation() throws {
         let layout = LayoutECreator().newLayout()
-        let errors = try LayoutDiagnostic(layout: layout).check()
+        let diag = LayoutDiagnostic(layout: layout)
+        let errors = try diag.check(.skipLengths)
         XCTAssertEqual(errors.count, 0)
     }
 

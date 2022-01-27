@@ -33,7 +33,8 @@ class LayoutDocumentTests: XCTestCase {
 
         let data = try Data(contentsOf: url)
         let layout = try LayoutDocument.layout(contentType: .json, data: data)
-        let errors = try LayoutDiagnostic(layout: layout).check()
+        let diag = LayoutDiagnostic(layout: layout)
+        let errors = try diag.check(.skipLengths)
         XCTAssertEqual(errors.count, 0)
     }
     
