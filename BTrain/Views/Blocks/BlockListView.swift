@@ -74,8 +74,10 @@ struct BlockListView: View {
                 }.frame(maxWidth: SideListFixedWidth)
 
                 if let selection = selection, let block = layout.block(for: selection) {
-                    BlockDetailsView(layout: layout, block: block)
-                        .padding()
+                    ScrollView {
+                        BlockDetailsView(layout: layout, block: block)
+                            .padding()
+                    }
                 } else {
                     Group {
                         Spacer()

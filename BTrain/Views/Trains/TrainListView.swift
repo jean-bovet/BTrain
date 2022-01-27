@@ -81,8 +81,10 @@ struct TrainListView: View {
             }.frame(maxWidth: SideListFixedWidth)
 
             if let selection = selection, let train = layout.train(for: selection) {
-                TrainDetailsView(layout: layout, train: train, trainIconManager: document.trainIconManager)
-                    .padding()
+                ScrollView {
+                    TrainDetailsView(layout: layout, train: train, trainIconManager: document.trainIconManager)
+                        .padding()
+                }
             } else {
                 // TODO: refactor this into a view and use it for the other panels
                 Spacer()
