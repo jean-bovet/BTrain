@@ -42,4 +42,22 @@ class SwitchboardRenderingTests: XCTestCase {
         block.drawText(ctx: nsContext.cgContext, at: .zero, text: "Hello", color: .black, fontSize: 12.0)
     }
 
+    func testShapeContext() {
+        let context = ShapeContext()
+        let t = Train()
+        
+        t.speed.kph = 0
+        XCTAssertEqual(context.trainColor(t), NSColor.systemRed.cgColor)
+        t.speed.kph = 100
+        XCTAssertEqual(context.trainColor(t), NSColor.systemGreen.cgColor)
+        
+        t.scheduling = .automatic(finishing: false)
+        t.state = .stopped
+        XCTAssertEqual(context.trainColor(t), NSColor.systemRed.cgColor)
+        t.state = .running
+        XCTAssertEqual(context.trainColor(t), NSColor.systemGreen.cgColor)
+        t.state = .braking
+        XCTAssertEqual(context.trainColor(t), NSColor.systemYellow.cgColor)
+    }
+    
 }

@@ -27,12 +27,6 @@ class BlockListViewTests: RootViewTests {
         let sut = BlockListView(layout: LayoutCCreator().newLayout())
         let value = try sut.inspect().vStack().hStack(0).vStack(0).hStack(1).text(0).string()
         XCTAssertEqual(value, "5 blocks")
-        
-        // TODO: how to traverse a Table?
-//        let tiv = try sut.inspect().findAll(TrainInstanceView.self).first!
-//        try tiv.find(text: "Rail 2000")
-//        try sut.inspect().vStack().view(Table<Value, Rows: TableRowContent, Columns: TableColumnContent>.self, 0).view(TableColumn.sef, 3).view(TrainInstanceView.self)
-//        try sut.inspect().find(BlockFeedbackView.self)
     }
     
     func testBlockEditView() throws {
@@ -46,5 +40,7 @@ class BlockListViewTests: RootViewTests {
     func testBlockShapeView() throws {
         let sut = BlockShapeView(layout: Layout(), category: .free)
         _ = try sut.inspect().find(ViewType.Canvas)
+        _ = sut.block
+        _ = sut.shape
     }
 }
