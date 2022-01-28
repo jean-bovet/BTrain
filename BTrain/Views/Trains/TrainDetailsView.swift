@@ -68,6 +68,38 @@ struct TrainDetailsReservationSectionView: View {
     }
 }
 
+struct TrainDetailsBlocksToAvoidSectionView: View {
+    
+    let layout: Layout
+    @ObservedObject var train: Train
+
+    var body: some View {
+        VStack(alignment: .leading) {
+            SectionTitleView(label: "Blocks To Avoid")
+
+            List {
+                ForEach($train.blocksToAvoid, id: \.self) { blockItem in
+                    HStack {
+                        Picker("Block:", selection: blockItem.blockId) {
+                            ForEach(layout.blockMap.values, id:\.self) { block in
+                                Text("\(block.name) — \(block.category.description)").tag(block.id as Identifier<Block>)
+                            }
+                        }.labelsHidden()
+                        Spacer()
+                        Button("-") {
+                            train.blocksToAvoid.removeAll(where: { $0.id == blockItem.id })
+                        }
+                    }
+                }
+            }.frame(minHeight: 100)
+            
+            Button("+") {
+                train.blocksToAvoid.append(.init(layout.blockIds.first!))
+            }.disabled(layout.blockIds.isEmpty)
+        }
+    }
+}
+
 struct TrainDetailsSpeedSectionView: View {
     
     @ObservedObject var train: Train
@@ -132,6 +164,7 @@ struct TrainDetailsView: View {
             TrainDetailsDecoderSectionView(train: train)
             TrainDetailsGeometrySectionView(train: train)
             TrainDetailsReservationSectionView(train: train)
+            TrainDetailsBlocksToAvoidSectionView(layout: layout, train: train)
             TrainDetailsSpeedSectionView(train: train)
             TrainDetailsIconSectionView(train: train, trainIconManager: trainIconManager)
         }

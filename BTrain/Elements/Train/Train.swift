@@ -137,7 +137,23 @@ final class Train: Element, ObservableObject {
     // block   : [  f1   f2   f3  ]
     // position:   0   1    2    3
     @Published var position = 0
-            
+    
+    struct BlockItem: Identifiable, Codable, Hashable {
+        let id: String
+        
+        var blockId: Identifier<Block>
+        
+        init(_ blockId: Identifier<Block>) {
+            self.id = UUID().uuidString
+            self.blockId = blockId
+        }
+    }
+    
+    // List of blocks to avoid. For example, specific blocks
+    // should be avoided for Intercity train because their
+    // radius is too small and causes derailing.
+    @Published var blocksToAvoid = [BlockItem]()
+    
     // The time remaining until the train is automatically restarted
     // Note: we don't need to store this property because it is used only
     // when running the layout.
@@ -160,7 +176,7 @@ final class Train: Element, ObservableObject {
 extension Train: Codable {
     
     enum CodingKeys: CodingKey {
-      case id, enabled, name, address, length, magnetDistance, speed, decoder, direction, route, routeIndex, block, position, maxLeadingBlocks
+      case id, enabled, name, address, length, magnetDistance, speed, decoder, direction, route, routeIndex, block, position, maxLeadingBlocks, blocksToAvoid
     }
 
     convenience init(from decoder: Decoder) throws {
@@ -180,6 +196,7 @@ extension Train: Codable {
         self.blockId = try container.decodeIfPresent(Identifier<Block>.self, forKey: CodingKeys.block)
         self.position = try container.decode(Int.self, forKey: CodingKeys.position)
         self.maxNumberOfLeadingReservedBlocks = try container.decodeIfPresent(Int.self, forKey: CodingKeys.maxLeadingBlocks) ?? 1
+        self.blocksToAvoid = try container.decodeIfPresent([BlockItem].self, forKey: CodingKeys.blocksToAvoid) ?? []
     }
 
     func encode(to encoder: Encoder) throws {
@@ -198,6 +215,7 @@ extension Train: Codable {
         try container.encode(blockId, forKey: CodingKeys.block)
         try container.encode(position, forKey: CodingKeys.position)
         try container.encode(maxNumberOfLeadingReservedBlocks, forKey: CodingKeys.maxLeadingBlocks)
+        try container.encode(blocksToAvoid, forKey: CodingKeys.blocksToAvoid)
     }
 
 }
