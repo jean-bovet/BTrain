@@ -55,20 +55,20 @@ final class LayoutGCreator: LayoutCreating {
         }
 
         // Turnouts
-        let t1 = Turnout("1", type: .singleRight, address: 3, state: .straight, center: CGPoint(x: 500, y: 80))
-        let t2 = Turnout("2", type: .singleRight, address: 3, state: .branchRight, center: CGPoint(x: 550, y: 80))
+        let t1 = Turnout("1", type: .singleRight, address: .init(3, .DCC), state: .straight, center: CGPoint(x: 500, y: 80))
+        let t2 = Turnout("2", type: .singleRight, address: .init(4, .DCC), state: .branchRight, center: CGPoint(x: 550, y: 80))
         
-        let t3 = Turnout("3", type: .singleLeft, address: 4, state: .straight, center: CGPoint(x: 500, y: 140))
-        let t4 = Turnout("4", type: .singleLeft, address: 4, state: .branchLeft, center: CGPoint(x: 550, y: 140))
+        let t3 = Turnout("3", type: .singleLeft, address: .init(5, .DCC), state: .straight, center: CGPoint(x: 500, y: 140))
+        let t4 = Turnout("4", type: .singleLeft, address: .init(6, .DCC), state: .branchLeft, center: CGPoint(x: 550, y: 140))
         
-        let t5 = Turnout("5", type: .threeWay, address: 5, state: .straight, center: CGPoint(x: 500, y: 200))
-        let t6 = Turnout("6", type: .threeWay, address: 5, state: .branchLeft, center: CGPoint(x: 550, y: 200))
-        let t7 = Turnout("7", type: .threeWay, address: 5, state: .branchRight, center: CGPoint(x: 600, y: 200))
+        let t5 = Turnout("5", type: .threeWay, address: .init(7, .DCC), state: .straight, center: CGPoint(x: 500, y: 200))
+        let t6 = Turnout("6", type: .threeWay, address: .init(8, .DCC), state: .branchLeft, center: CGPoint(x: 550, y: 200))
+        let t7 = Turnout("7", type: .threeWay, address: .init(9, .DCC), state: .branchRight, center: CGPoint(x: 600, y: 200))
         
-        let t8 = Turnout("8", type: .doubleSlip2, address: 6, state: .straight01, center: CGPoint(x: 500, y: 260))
-        let t9 = Turnout("9", type: .doubleSlip2, address: 6, state: .straight23, center: CGPoint(x: 550, y: 260))
-        let t10 = Turnout("10", type: .doubleSlip2, address: 6, state: .branch03, center: CGPoint(x: 600, y: 260))
-        let t11 = Turnout("11", type: .doubleSlip2, address: 6, state: .branch21, center: CGPoint(x: 650, y: 260)) 
+        let t8 = Turnout("8", type: .doubleSlip2, address: .init(10, .DCC), state: .straight01, center: CGPoint(x: 500, y: 260))
+        let t9 = Turnout("9", type: .doubleSlip2, address: .init(11, .DCC), state: .straight23, center: CGPoint(x: 550, y: 260))
+        let t10 = Turnout("10", type: .doubleSlip2, address: .init(12, .DCC), state: .branch03, center: CGPoint(x: 600, y: 260))
+        let t11 = Turnout("11", type: .doubleSlip2, address: .init(13, .DCC), state: .branch21, center: CGPoint(x: 650, y: 260))
 
         layout.turnouts.append(contentsOf: [t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11])
         

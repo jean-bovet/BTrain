@@ -68,8 +68,8 @@ final class LayoutCCreator: LayoutCreating {
         b5.assign([f51.id, f52.id])
 
         // Turnouts
-        let t125 = Turnout("t0", type: .singleRight, address: 3, center: CGPoint(x: 180, y: 80))
-        let t345 = Turnout("t1", type: .singleRight, address: 13, center: CGPoint(x: 430, y: 320), rotationAngle: .pi)
+        let t125 = Turnout("t0", type: .singleRight, address: .init(3, .DCC), center: CGPoint(x: 180, y: 80))
+        let t345 = Turnout("t1", type: .singleRight, address: .init(13, .DCC), center: CGPoint(x: 430, y: 320), rotationAngle: .pi)
 
         l.turnouts.append(contentsOf: [t125, t345])
         

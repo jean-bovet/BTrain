@@ -58,7 +58,8 @@ final class Turnout: Element, ObservableObject {
         category == .threeWay
     }
     
-    init(id: Identifier<Turnout>, name: String, type: Category, address: CommandTurnoutAddress, address2: CommandTurnoutAddress? = nil, state: State = .straight, center: CGPoint, rotationAngle: CGFloat) {
+    init(id: Identifier<Turnout>, name: String, type: Category, address: CommandTurnoutAddress, address2: CommandTurnoutAddress? = nil,
+         state: State = .straight, center: CGPoint, rotationAngle: CGFloat, length: Double? = nil) {
         self.id = id
         self.name = name
         self.category = type
@@ -69,16 +70,13 @@ final class Turnout: Element, ObservableObject {
         self.state = state
         self.center = center
         self.rotationAngle = rotationAngle
+        self.length = length
     }
 
-    convenience init(_ uuid: String = UUID().uuidString, type: Category, address: CommandTurnoutAddress, address2: CommandTurnoutAddress? = nil, state: State = .straight, center: CGPoint = .zero, rotationAngle: CGFloat = 0) {
-        self.init(id: Identifier(uuid: uuid), name: uuid, type: type, address: address, address2: address2, state: state, center: center, rotationAngle: rotationAngle)
+    convenience init(_ uuid: String = UUID().uuidString, type: Category, address: CommandTurnoutAddress, address2: CommandTurnoutAddress? = nil, state: State = .straight, center: CGPoint = .zero, rotationAngle: CGFloat = 0, length: Double? = nil) {
+        self.init(id: Identifier(uuid: uuid), name: uuid, type: type, address: address, address2: address2, state: state, center: center, rotationAngle: rotationAngle, length: length)
     }
     
-    convenience init(_ uuid: String = UUID().uuidString, type: Category, address: UInt32, state: State = .straight, center: CGPoint = .zero, rotationAngle: CGFloat = 0) {
-        self.init(id: Identifier(uuid: uuid), name: uuid, type: type, address: .init(address, .MM), state: state, center: center, rotationAngle: rotationAngle)
-    }
-
 }
 
 extension Turnout: Codable {
@@ -96,11 +94,11 @@ extension Turnout: Codable {
         let address2 = try container.decodeIfPresent(CommandTurnoutAddress.self, forKey: CodingKeys.address2)
         let center = try container.decode(CGPoint.self, forKey: CodingKeys.center)
         let rotationAngle = try container.decode(Double.self, forKey: CodingKeys.angle)
+        let length = try container.decodeIfPresent(Double.self, forKey: CodingKeys.length)
+        let state = try container.decode(State.self, forKey: CodingKeys.state)
 
-        self.init(id: id, name: name, type: type, address: address, address2: address2, center: center, rotationAngle: rotationAngle)
-        self.state = try container.decode(State.self, forKey: CodingKeys.state)
+        self.init(id: id, name: name, type: type, address: address, address2: address2, state: state, center: center, rotationAngle: rotationAngle, length: length)
         self.reserved = try container.decodeIfPresent(Identifier<Train>.self, forKey: CodingKeys.reserved)
-        self.length = try container.decodeIfPresent(Double.self, forKey: CodingKeys.length)
     }
     
     func encode(to encoder: Encoder) throws {

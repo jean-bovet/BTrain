@@ -56,8 +56,8 @@ final class LayoutACreator: LayoutCreating {
         l.assign(b3, [f31, f32])
 
         // Turnouts
-        let t12 = Turnout("t0", type: .singleLeft, address: 0, center: CGPoint(x: 420, y: 80), rotationAngle: .pi) // b1-b2, b1-b3
-        let t21 = Turnout("t1", type: .singleLeft, address: 1, center: CGPoint(x: 180, y: 320)) // b2-b3, b2-b1
+        let t12 = Turnout("t0", type: .singleLeft, address: .init(0, .DCC), center: CGPoint(x: 420, y: 80), rotationAngle: .pi) // b1-b2, b1-b3
+        let t21 = Turnout("t1", type: .singleLeft, address: .init(1, .DCC), center: CGPoint(x: 180, y: 320)) // b2-b3, b2-b1
         l.turnouts.append(contentsOf: [t12, t21])
         
         // Transitions
