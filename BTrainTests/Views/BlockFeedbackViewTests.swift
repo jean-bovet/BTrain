@@ -12,6 +12,10 @@
 
 import XCTest
 @testable import BTrain
+import ViewInspector
+
+extension BlockDirectionFeedbacksView: Inspectable { }
+extension BlockFeedbackDirectionView: Inspectable { }
 
 class BlockFeedbackViewTests: RootViewTests {
 
@@ -24,4 +28,10 @@ class BlockFeedbackViewTests: RootViewTests {
         _ = try sut.inspect().find(button: "Auto Fill")
     }
     
+    func test() throws {        
+        let block = layout.block(at: 0)
+        let sut = BlockDirectionFeedbacksView(layout: layout, direction: .next, block: block)
+        _ = try sut.inspect().find(text: "Entry:")
+
+    }
 }

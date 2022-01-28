@@ -17,6 +17,7 @@ import ViewInspector
 
 extension TrainDetailsDecoderSectionView: Inspectable { }
 extension TrainDetailsSpeedSectionView: Inspectable { }
+extension SectionTitleView: Inspectable { }
 
 class TrainDetailsViewTests: XCTestCase {
     
@@ -37,4 +38,8 @@ class TrainDetailsViewTests: XCTestCase {
 //        _ = try speedSection.find(TrainSpeedView.self)
     }
     
+    func testSectionTitleView() throws {
+        let sut = SectionTitleView(label: "This is a section")
+        _ = try sut.inspect().find(text: "This is a section")
+    }
 }

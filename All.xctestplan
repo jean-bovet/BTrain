@@ -1,0 +1,37 @@
+{
+  "configurations" : [
+    {
+      "id" : "CB2F21FC-F970-4CD7-87F8-B9B8606C1F79",
+      "name" : "Configuration 1",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "codeCoverage" : {
+      "targets" : [
+        {
+          "containerPath" : "container:BTrain.xcodeproj",
+          "identifier" : "A73AFE812726594600E1ED21",
+          "name" : "BTrain"
+        }
+      ]
+    },
+    "targetForVariableExpansion" : {
+      "containerPath" : "container:BTrain.xcodeproj",
+      "identifier" : "A73AFE812726594600E1ED21",
+      "name" : "BTrain"
+    }
+  },
+  "testTargets" : [
+    {
+      "target" : {
+        "containerPath" : "container:BTrain.xcodeproj",
+        "identifier" : "A73AFE922726594800E1ED21",
+        "name" : "BTrainTests"
+      }
+    }
+  ],
+  "version" : 1
+}

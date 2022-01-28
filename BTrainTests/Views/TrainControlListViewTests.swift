@@ -17,6 +17,7 @@ import ViewInspector
 @testable import BTrain
 
 extension TrainControlSpeedView: Inspectable { }
+extension TrainControlActionsView: Inspectable { }
 
 class TrainControlListViewTests: RootViewTests {
     
@@ -48,4 +49,8 @@ class TrainControlListViewTests: RootViewTests {
         XCTAssertEqual(try text.string(), "Automatic")
     }
     
+    func testControl() throws {
+        let sut = TrainControlActionsView(layout: doc.layout, document: doc)
+        _ = try sut.inspect().find(button: "􀊋 Start All")
+    }
 }

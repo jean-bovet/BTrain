@@ -30,6 +30,7 @@ extension TrainControlContainerView: Inspectable { }
 extension TrainControlView: Inspectable { }
 extension TrainControlLocationView: Inspectable { }
 extension TrainControlRouteView: Inspectable { }
+extension UndoProvider: Inspectable { }
 
 class RootViewTests: BTTestCase {
 

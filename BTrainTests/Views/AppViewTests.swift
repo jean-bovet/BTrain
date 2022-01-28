@@ -13,6 +13,10 @@
 import XCTest
 
 @testable import BTrain
+import ViewInspector
+
+extension WelcomeView: Inspectable { }
+extension DocumentView: Inspectable { }
 
 class AppViewTests: RootViewTests {
 
@@ -39,4 +43,18 @@ class AppViewTests: RootViewTests {
         XCTAssertNoThrow(try sut.inspect().find(FeedbackEditListView.self))
     }
 
+    func testWelcome() throws {
+        let sut = WelcomeView(document: doc)
+        _ = try sut.inspect().find(button: "􀈷 New Document")
+        _ = try sut.inspect().find(button: "􀉚 Use Predefined Layout")
+    }
+    
+    func testDocumentView() throws {
+        let sut = DocumentView(document: doc)
+        sut.hideWelcomeScreen = true
+        _ = try sut.inspect().find(ContentView.self)
+        
+        sut.hideWelcomeScreen = false
+        _ = try sut.inspect().find(WelcomeView.self)
+    }
 }

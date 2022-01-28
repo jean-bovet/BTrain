@@ -21,16 +21,23 @@ class TrainIconViewTests: XCTestCase {
     
     func testLayout() throws {
         let layout = LayoutACreator().newLayout()
-        let t1 = layout.trains[0]
-
-        // TODO: not able to test bookmark because unit tests are not sandboxed
-        let tim = TrainIconManager(layout: layout)
-//        let url = Bundle(for: TrainIconViewTests.self).urlForImageResource("460-sbb-cff")!
-//        tim.setIcon(url, toTrain: t1)
-//        XCTAssertNotNil(t1.iconUrlData)
+        let t1 = layout.addTrain(Train(uuid: "16390"))
         
+        let tim = TrainIconManager(layout: layout)
+
         let sut = TrainIconView(trainIconManager: tim, train: t1, size: .medium)
         _ = try sut.inspect().hStack().shape(0)
+
+        let url = Bundle(for: LayoutDocument.self).url(forResource: "Predefined", withExtension: "btrain")!
+        
+        let fw = try FileWrapper(url: url, options: [])
+        XCTAssertNotNil(try fw.layout())
+        tim.setIcons(try fw.icons())
+
+        _ = try sut.inspect().hStack().image(0)
+        
+        let image = tim.imageFor(train: t1)!
+        XCTAssertNotNil(image.jpegData())
     }
     
 }
