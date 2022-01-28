@@ -11,15 +11,47 @@
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 import XCTest
-
-@testable import BTrain
 import ViewInspector
 
-extension TrainIconView: Inspectable { }
+@testable import BTrain
 
-class TrainIconViewTests: XCTestCase {
+extension TrainDetailsDecoderSectionView: Inspectable { }
+extension TrainDetailsSpeedSectionView: Inspectable { }
+extension TrainSpeedView: Inspectable { }
+extension TrainIconView: Inspectable { }
+extension SectionTitleView: Inspectable { }
+
+class TrainViewTests: RootViewTests {
     
-    func testLayout() throws {
+    func testStringValue() throws {
+        let sut = TrainListView(document: doc, layout: doc.layout)
+        let value = try sut.inspect().hStack().vStack(0).hStack(1).text(0).string()
+        XCTAssertEqual(value, "2 trains")
+    }
+
+    func testSpeedView() throws {
+        let sut = TrainSpeedView(trainSpeed: TrainSpeed(kph: 50, decoderType: .MFX))
+        _ = try sut.inspect().hStack().canvas(1)
+    }
+
+    func testDetailsView() throws {
+        let layout = LayoutACreator().newLayout()
+        let t1 = layout.trains[0]
+        
+        let sut = TrainDetailsView(layout: layout, train: t1, trainIconManager: TrainIconManager(layout: layout))
+        
+        let decoderSection = try sut.inspect().find(TrainDetailsDecoderSectionView.self)
+        _ = try decoderSection.find(text: "Type:")
+        _ = try decoderSection.find(text: "MFX")
+        _ = try decoderSection.find(text: "Address:")
+        
+        let speedSection = try sut.inspect().find(TrainDetailsSpeedSectionView.self)
+        _ = try speedSection.find(text: "Max Speed:")
+        // TODO
+//        _ = try speedSection.find(TrainSpeedView.self)
+    }
+    
+    func testIconView() throws {
         let layout = LayoutACreator().newLayout()
         let t1 = layout.addTrain(Train(uuid: "16390"))
         
@@ -39,5 +71,10 @@ class TrainIconViewTests: XCTestCase {
         let image = tim.imageFor(train: t1)!
         XCTAssertNotNil(image.jpegData())
     }
-    
+
+    func testSectionTitleView() throws {
+        let sut = SectionTitleView(label: "This is a section")
+        _ = try sut.inspect().find(text: "This is a section")
+    }
+
 }

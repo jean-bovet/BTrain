@@ -13,33 +13,13 @@
 import XCTest
 
 @testable import BTrain
-import ViewInspector
 
-extension TrainDetailsDecoderSectionView: Inspectable { }
-extension TrainDetailsSpeedSectionView: Inspectable { }
-extension SectionTitleView: Inspectable { }
-
-class TrainDetailsViewTests: XCTestCase {
+class TurnoutViewTests: RootViewTests {
     
-    func testLayout() throws {
-        let layout = LayoutACreator().newLayout()
-        let t1 = layout.trains[0]
-        
-        let sut = TrainDetailsView(layout: layout, train: t1, trainIconManager: TrainIconManager(layout: layout))
-        
-        let decoderSection = try sut.inspect().find(TrainDetailsDecoderSectionView.self)
-        _ = try decoderSection.find(text: "Type:")
-        _ = try decoderSection.find(text: "MFX")
-        _ = try decoderSection.find(text: "Address:")
-        
-        let speedSection = try sut.inspect().find(TrainDetailsSpeedSectionView.self)
-        _ = try speedSection.find(text: "Max Speed:")
-        // TODO
-//        _ = try speedSection.find(TrainSpeedView.self)
+    func testStringValue() throws {
+        let sut = TurnoutListView(layout: LayoutCCreator().newLayout())
+        let value = try sut.inspect().vStack().hStack(1).text(0).string()
+        XCTAssertEqual(value, "2 turnouts")
     }
     
-    func testSectionTitleView() throws {
-        let sut = SectionTitleView(label: "This is a section")
-        _ = try sut.inspect().find(text: "This is a section")
-    }
 }

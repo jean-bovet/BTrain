@@ -16,10 +16,17 @@ import XCTest
 
 class FeedbackViewTests: RootViewTests {
 
-    func testStringValue() throws {
+    func testFeedbackView() throws {
         let sut = FeedbackView(label: "1:2015", state: true)
         let value = try sut.inspect().text().string()
         XCTAssertEqual(value, "1:2015")
+    }
+
+    
+    func testEditList() throws {
+        let sut = FeedbackEditListView(layout: LayoutCCreator().newLayout())
+        let value = try sut.inspect().vStack().hStack(1).text(0).string()
+        XCTAssertEqual(value, "10 feedbacks")
     }
 
 }

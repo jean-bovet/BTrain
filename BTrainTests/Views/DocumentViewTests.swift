@@ -11,14 +11,15 @@
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 import XCTest
+import ViewInspector
+import SwiftUI
 
 @testable import BTrain
-import ViewInspector
 
 extension WelcomeView: Inspectable { }
 extension DocumentView: Inspectable { }
 
-class AppViewTests: RootViewTests {
+class DocumentViewTests: RootViewTests {
 
     func testMainView() throws {
         let sut = ContentView(document: doc)
@@ -57,4 +58,14 @@ class AppViewTests: RootViewTests {
         sut.hideWelcomeScreen = false
         _ = try sut.inspect().find(WelcomeView.self)
     }
+    
+    @Binding var connectAlertShowing: Bool = true
+
+    func testToolbarContent() {
+        let layout = Layout()
+        let doc = LayoutDocument(layout: layout)
+        let sut = DocumentToolbarContent(document: doc, connectAlertShowing: $connectAlertShowing)
+        XCTAssertNotNil(sut.body)
+    }
+
 }

@@ -17,6 +17,7 @@ import SwiftUI
 @testable import BTrain
 
 extension Canvas: Inspectable { }
+extension SwitchboardEditControlsView: Inspectable { }
 
 class SwitchBoardViewTests: XCTestCase {
 
@@ -33,6 +34,22 @@ class SwitchBoardViewTests: XCTestCase {
         let gesture = try canvas.gesture(DragGesture.self)
         try gesture.callOnChanged(value: DragGesture.Value(time: Date(), location: .zero, startLocation: .zero, velocity: .zero))
         try gesture.callOnEnded(value: DragGesture.Value(time: Date(), location: .zero, startLocation: .zero, velocity: .zero))
+    }
+
+    func testEditControls() throws {
+        let layout = LayoutACreator().newLayout()
+        let doc = LayoutDocument(layout: layout)
+        let state = doc.switchboard.state
+        
+        let sut = SwitchboardEditControlsView(layout: layout, state: state, document: doc, switchboard: doc.switchboard)
+        
+        state.editable = false
+        
+        XCTAssertThrowsError(_ = try sut.inspect().find(button: "􀅼 Block"))
+
+        state.editable = true
+        
+        _ = try sut.inspect().find(button: "􀅼 Block")
     }
 
 }

@@ -20,10 +20,12 @@ extension BlockAllFeedbacksView: Inspectable { }
 extension BlockDetailsView: Inspectable { }
 extension BlockShapeView: Inspectable { }
 extension BlockFeedbacksView: Inspectable { }
+extension BlockDirectionFeedbacksView: Inspectable { }
+extension BlockFeedbackDirectionView: Inspectable { }
 
-class BlockListViewTests: RootViewTests {
+class BlockViewTests: RootViewTests {
     
-    func testLayout() throws {
+    func testListView() throws {
         let sut = BlockListView(layout: LayoutCCreator().newLayout())
         let value = try sut.inspect().vStack().hStack(0).vStack(0).hStack(1).text(0).string()
         XCTAssertEqual(value, "5 blocks")
@@ -43,4 +45,21 @@ class BlockListViewTests: RootViewTests {
         _ = sut.block
         _ = sut.shape
     }
+    
+    func testAllFeedbackView() throws {
+        let block = layout.block(at: 0)
+        let sut = BlockAllFeedbacksView(layout: layout, block: block)
+        
+        _ = try sut.inspect().find(button: "+")
+        _ = try sut.inspect().find(button: "-")
+        _ = try sut.inspect().find(button: "Auto Fill")
+    }
+    
+    func testDirectionFeedbacksView() throws {
+        let block = layout.block(at: 0)
+        let sut = BlockDirectionFeedbacksView(layout: layout, direction: .next, block: block)
+        _ = try sut.inspect().find(text: "Entry:")
+
+    }
+
 }
