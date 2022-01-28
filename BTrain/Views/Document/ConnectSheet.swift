@@ -43,14 +43,7 @@ struct ConnectSheet: View {
             connecting.toggle()
             msg = error.localizedDescription
         } else {
-            if activateTurnouts {
-                document.enable() {
-                    document.applyTurnoutStateToDigitalController() {
-                        connecting.toggle()
-                        self.presentationMode.wrappedValue.dismiss()
-                    }
-                }
-            } else {
+            document.performOnConnectTasks(activateTurnouts: activateTurnouts) {
                 connecting.toggle()
                 self.presentationMode.wrappedValue.dismiss()
             }

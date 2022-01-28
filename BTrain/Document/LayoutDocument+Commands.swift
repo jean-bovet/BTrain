@@ -83,26 +83,5 @@ extension LayoutDocument {
         simulator.stop()
         interface.disconnect() { }
     }
-        
-    func applyTurnoutStateToDigitalController(completion: @escaping CompletionBlock) {
-        let turnouts = layout.turnouts
-        guard !turnouts.isEmpty else {
-            completion()
-            return
-        }
-        
-        activateTurnountPercentage = 0.0
-        var completionCount = 0
-        for t in turnouts {
-            layout.executor?.sendTurnoutState(turnout: t) {
-                completionCount += 1
-                self.activateTurnountPercentage = Double(completionCount) / Double(turnouts.count)
-                if completionCount == turnouts.count {
-                    self.activateTurnountPercentage = nil
-                    completion()
-                }
-            }
-        }
-    }
-    
+
 }

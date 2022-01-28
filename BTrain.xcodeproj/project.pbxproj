@@ -17,6 +17,7 @@
 		A71715892758448D00200F92 /* CGRect+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A71715882758448D00200F92 /* CGRect+Extension.swift */; };
 		A717158B275844AE00200F92 /* SwitchBoardTrainDragging.swift in Sources */ = {isa = PBXBuildFile; fileRef = A717158A275844AE00200F92 /* SwitchBoardTrainDragging.swift */; };
 		A717158D275845F000200F92 /* ShapeContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = A717158C275845F000200F92 /* ShapeContext.swift */; };
+		A71D97FA27A499A600EBEA06 /* LayoutDocument+OnConnect.swift in Sources */ = {isa = PBXBuildFile; fileRef = A71D97F927A499A600EBEA06 /* LayoutDocument+OnConnect.swift */; };
 		A7214916279A56FA0095E5EE /* LayoutController+Debug.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7214915279A56FA0095E5EE /* LayoutController+Debug.swift */; };
 		A721806A275D1CA700831998 /* MarklinCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7218069275D1CA700831998 /* MarklinCommand.swift */; };
 		A721806C275D2D0400831998 /* CS2DocumentParsingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A721806B275D2D0400831998 /* CS2DocumentParsingTests.swift */; };
@@ -241,6 +242,7 @@
 		A717158A275844AE00200F92 /* SwitchBoardTrainDragging.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwitchBoardTrainDragging.swift; sourceTree = "<group>"; };
 		A717158C275845F000200F92 /* ShapeContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShapeContext.swift; sourceTree = "<group>"; };
 		A71D97F727A3C5FE00EBEA06 /* All.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = All.xctestplan; sourceTree = "<group>"; };
+		A71D97F927A499A600EBEA06 /* LayoutDocument+OnConnect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LayoutDocument+OnConnect.swift"; sourceTree = "<group>"; };
 		A7214915279A56FA0095E5EE /* LayoutController+Debug.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LayoutController+Debug.swift"; sourceTree = "<group>"; };
 		A7218069275D1CA700831998 /* MarklinCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarklinCommand.swift; sourceTree = "<group>"; };
 		A721806B275D2D0400831998 /* CS2DocumentParsingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CS2DocumentParsingTests.swift; sourceTree = "<group>"; };
@@ -883,6 +885,7 @@
 				A7B06AF1272782C300BDD88C /* LayoutDocument.swift */,
 				A785C078278A6468002FD538 /* LayoutDocument+ReferenceFileDocument.swift */,
 				A785C07A278A648B002FD538 /* LayoutDocument+Commands.swift */,
+				A71D97F927A499A600EBEA06 /* LayoutDocument+OnConnect.swift */,
 				A7C8A2EC279BEA6D000C7246 /* FileWrapper+Layout.swift */,
 			);
 			path = Document;
@@ -1247,6 +1250,7 @@
 				A74CCC70272A5A10004E58F5 /* Turnout.swift in Sources */,
 				A73AFEB427265A4B00E1ED21 /* Client.swift in Sources */,
 				A73AFEB527265A4B00E1ED21 /* ClientConnection.swift in Sources */,
+				A71D97FA27A499A600EBEA06 /* LayoutDocument+OnConnect.swift in Sources */,
 				A7907955277D071000771A60 /* CGContext+Extension.swift in Sources */,
 				A7F779FA2734A8C500E73275 /* Element.swift in Sources */,
 				A7710E6B27799E2700C08150 /* Layout+Turnouts.swift in Sources */,

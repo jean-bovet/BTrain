@@ -53,33 +53,33 @@ extension LayoutController {
     
     func registerForDirectionChange() {
         interface?.register(forDirectionChange: { [weak self] address, decoder, direction in
-            guard let layout = self?.layout else {
-                return
-            }
-
             DispatchQueue.main.async {
-                if let train = layout.trains.find(address: address, decoder: decoder) {
-                    switch(direction) {
-                    case .forward:
-                        if train.directionForward == false {
-                            train.directionForward = true
-                            try? layout.toggleTrainDirectionInBlock(train)
-                            self?.switchboardState?.triggerRedraw.toggle()
-                        }
-                    case .backward:
-                        if train.directionForward {
-                            train.directionForward = false
-                            try? layout.toggleTrainDirectionInBlock(train)
-                            self?.switchboardState?.triggerRedraw.toggle()
-                        }
-                    case .unknown:
-                        BTLogger.error("Unknown direction \(direction) for \(address.toHex())")
-                    }
-                } else {
-                    BTLogger.error("Unknown address \(address.toHex()) for change in direction event")
-                }
+                self?.directionDidChange(address: address, decoder: decoder, direction: direction)
             }
         })
+    }
+    
+    func directionDidChange(address: UInt32, decoder: DecoderType?, direction: Command.Direction) {
+        if let train = layout.trains.find(address: address, decoder: decoder) {
+            switch(direction) {
+            case .forward:
+                if train.directionForward == false {
+                    train.directionForward = true
+                    try? layout.toggleTrainDirectionInBlock(train)
+                    switchboardState?.triggerRedraw.toggle()
+                }
+            case .backward:
+                if train.directionForward {
+                    train.directionForward = false
+                    try? layout.toggleTrainDirectionInBlock(train)
+                    switchboardState?.triggerRedraw.toggle()
+                }
+            case .unknown:
+                BTLogger.error("Unknown direction \(direction) for \(address.toHex())")
+            }
+        } else {
+            BTLogger.error("Unknown address \(address.toHex()) for change in direction event")
+        }
     }
     
     func registerForTurnoutChange() {
