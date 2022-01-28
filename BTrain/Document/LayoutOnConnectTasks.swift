@@ -12,12 +12,26 @@
 
 import Foundation
 
-extension LayoutDocument {
+final class LayoutOnConnectTasks: ObservableObject {
+
+    let layout: Layout
+    let layoutController: LayoutController
+    let interface: CommandInterface
+    
+    // Property used to keep track of the progress when activating the turnouts
+    // when connecting to the Digital Controller
+    @Published var activateTurnountPercentage: Double? = nil
+
+    init(layout: Layout, layoutController: LayoutController, interface: CommandInterface) {
+        self.layout = layout
+        self.layoutController = layoutController
+        self.interface = interface
+    }
     
     func performOnConnectTasks(activateTurnouts: Bool, completion: @escaping CompletionBlock) {
         queryLocomotivesDirection {
             if activateTurnouts {
-                self.enable() {
+                self.layoutController.go() {
                     self.applyTurnoutStateToDigitalController() {
                         completion()
                     }
@@ -29,7 +43,7 @@ extension LayoutDocument {
     }
     
     private func queryLocomotivesDirection(completion: @escaping CompletionBlock) {
-        let trains = layout.trains
+        let trains = layout.trains.filter( { $0.enabled })
         guard !trains.isEmpty else {
             completion()
             return

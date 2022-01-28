@@ -15,7 +15,8 @@ import SwiftUI
 struct ConnectSheet: View {
     
     @ObservedObject var document: LayoutDocument
-
+    @ObservedObject var onConnectTasks: LayoutOnConnectTasks
+    
     @Environment(\.presentationMode) var presentationMode
     
     enum ConnectionType {
@@ -43,7 +44,7 @@ struct ConnectSheet: View {
             connecting.toggle()
             msg = error.localizedDescription
         } else {
-            document.performOnConnectTasks(activateTurnouts: activateTurnouts) {
+            onConnectTasks.performOnConnectTasks(activateTurnouts: activateTurnouts) {
                 connecting.toggle()
                 self.presentationMode.wrappedValue.dismiss()
             }
@@ -68,7 +69,7 @@ struct ConnectSheet: View {
                                 
                 HStack {
                     Toggle("Activate Turnouts", isOn: $activateTurnouts)
-                    if let percentage = document.activateTurnountPercentage {
+                    if let percentage = onConnectTasks.activateTurnountPercentage {
                         ProgressView(value: percentage)
                     }
                 }
@@ -113,7 +114,10 @@ struct ConnectSheet: View {
 }
 
 struct ConnectView_Previews: PreviewProvider {
+    
+    static let doc = LayoutDocument(layout: Layout())
+    
     static var previews: some View {
-        ConnectSheet(document: LayoutDocument(layout: Layout()))
+        ConnectSheet(document: doc, onConnectTasks: doc.onConnectTasks)
     }
 }

@@ -20,7 +20,7 @@ extension ConnectSheet: Inspectable { }
 class ConnectSheetViewTests: RootViewTests {
 
     func testLayout() throws {
-        let sut = ConnectSheet(document: doc)
+        let sut = ConnectSheet(document: doc, onConnectTasks: doc.onConnectTasks)
         XCTAssertNoThrow(try sut.inspect().find(button: "Connect"))
         XCTAssertNoThrow(try sut.inspect().find(button: "Cancel"))
     }

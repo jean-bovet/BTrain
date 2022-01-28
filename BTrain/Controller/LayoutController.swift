@@ -124,6 +124,10 @@ final class LayoutController: TrainControllerDelegate {
     
     // MARK: Commands
     
+    func go(onCompletion: @escaping () -> Void) {
+        interface?.execute(command: .go(), onCompletion: onCompletion)
+    }
+
     func stop(onCompletion: @escaping () -> Void) {
         interface?.execute(command: .stop(), onCompletion: onCompletion)
     }

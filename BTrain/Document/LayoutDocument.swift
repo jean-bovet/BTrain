@@ -72,10 +72,8 @@ final class LayoutDocument: ObservableObject {
 
     // Property used to toggle showing debug-only controls
     @AppStorage("debugMode") var showDebugModeControls = false
-        
-    // Property used to keep track of the progress when activating the turnouts
-    // when connecting to the Digital Controller
-    @Published var activateTurnountPercentage: Double? = nil
+            
+    @Published var onConnectTasks: LayoutOnConnectTasks
     
     init(layout: Layout) {
         self.layout = layout
@@ -88,8 +86,11 @@ final class LayoutDocument: ObservableObject {
         self.trainIconManager = TrainIconManager(layout: layout)
         self.switchboard = SwitchBoardFactory.generateSwitchboard(layout: layout, simulator: simulator)
 
-        self.layoutController = LayoutController(layout: layout, interface: interface)
+        let layoutController = LayoutController(layout: layout, interface: interface)
+        self.layoutController = layoutController
         layout.executor = LayoutCommandExecutor(layout: layout, interface: interface)
+        
+        self.onConnectTasks = LayoutOnConnectTasks(layout: layout, layoutController: layoutController, interface: interface)
     }
     
     func apply(_ other: Layout) {

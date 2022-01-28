@@ -86,7 +86,7 @@ struct ContentView: View {
             DocumentToolbarContent(document: document,
                                    connectAlertShowing: $connectAlertShowing)
         }.sheet(isPresented: $connectAlertShowing) {
-            ConnectSheet(document: document)
+            ConnectSheet(document: document, onConnectTasks: document.onConnectTasks)
                 .padding()
         }.sheet(isPresented: $showNewLayoutSheet) {
             ImportLayoutSheet(document: document)

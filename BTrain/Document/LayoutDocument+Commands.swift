@@ -15,7 +15,7 @@ import Foundation
 extension LayoutDocument {
     
     func enable(onCompletion: @escaping () -> Void) {
-        interface.execute(command: .go(), onCompletion: onCompletion)
+        layoutController.go(onCompletion: onCompletion)
     }
     
     func disable(onCompletion: @escaping () -> Void) {
