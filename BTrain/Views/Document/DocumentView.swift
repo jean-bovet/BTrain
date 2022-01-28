@@ -12,20 +12,26 @@
 
 import SwiftUI
 
-@main
-struct BTrainApp: App {
+struct DocumentView: View {
     
-    var body: some Scene {
-        DocumentGroup {
-            LayoutDocument(layout: Layout(uuid: "new-layout"))
-        } editor: { configuration in
-            DocumentView(document: configuration.document)
+    @ObservedObject var document: LayoutDocument
+
+    @AppStorage("hideWelcomeScreen") var hideWelcomeScreen = false
+
+    var body: some View {
+        if hideWelcomeScreen {
+            ContentView(document: document)
+        } else {
+            WelcomeView(document: document)
         }
-#if os(macOS)
-        Settings {
-            SettingsView()
-        }
-#endif
     }
+}
+
+struct AppView_Previews: PreviewProvider {
     
+    static let doc = LayoutDocument(layout: Layout())
+    
+    static var previews: some View {
+        DocumentView(document: doc)
+    }
 }

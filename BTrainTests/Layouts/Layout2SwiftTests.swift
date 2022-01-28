@@ -15,7 +15,6 @@ import XCTest
 
 class Layout2SwiftTests: XCTestCase {
 
-
     func testCodeGeneration() {
         let layout = LayoutFCreator().newLayout()
         let g = Layout2Swift(layout: layout)
