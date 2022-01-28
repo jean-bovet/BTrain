@@ -18,6 +18,9 @@ import SwiftUI
 
 extension WelcomeView: Inspectable { }
 extension DocumentView: Inspectable { }
+extension ConnectSheet: Inspectable { }
+extension DiagnosticsSheet: Inspectable { }
+extension ImportLayoutSheet: Inspectable { }
 
 class DocumentViewTests: RootViewTests {
 
@@ -66,6 +69,23 @@ class DocumentViewTests: RootViewTests {
         let doc = LayoutDocument(layout: layout)
         let sut = DocumentToolbarContent(document: doc, connectAlertShowing: $connectAlertShowing)
         XCTAssertNotNil(sut.body)
+    }
+
+    func testConnectSheet() throws {
+        let sut = ConnectSheet(document: doc, onConnectTasks: doc.onConnectTasks)
+        XCTAssertNoThrow(try sut.inspect().find(button: "Connect"))
+        XCTAssertNoThrow(try sut.inspect().find(button: "Cancel"))
+    }
+
+    func testDiagnosticsSheet() throws {
+        let sut = DiagnosticsSheet(layout: layout, options: .skipLengths)
+        XCTAssertNoThrow(try sut.inspect().find(button: "OK"))
+        XCTAssertNoThrow(try sut.inspect().find(text: "The layout is correct!"))
+    }
+
+    func testImportLayoutSheet() throws {
+        let sut = ImportLayoutSheet(document: doc)
+        _ = try sut.inspect().vStack().hStack(2).find(button: "Import")
     }
 
 }

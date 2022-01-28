@@ -19,6 +19,7 @@ import ViewInspector
 extension TrainControlSpeedView: Inspectable { }
 extension TrainControlActionsView: Inspectable { }
 extension TrainControlRouteActionsView: Inspectable { }
+extension TrainControlSetLocationSheet: Inspectable { }
 
 class TrainControlsViewTests: RootViewTests {
 
@@ -81,4 +82,10 @@ class TrainControlsViewTests: RootViewTests {
         let sut = TrainControlActionsView(layout: doc.layout, document: doc)
         _ = try sut.inspect().find(button: "􀊋 Start All")
     }
+    
+    func testSetLocationSheet() throws {
+        let sut = TrainControlSetLocationSheet(layout: layout, train: layout.trains[0])
+        XCTAssertNoThrow(try sut.inspect().find(button: "OK"))
+    }
+
 }

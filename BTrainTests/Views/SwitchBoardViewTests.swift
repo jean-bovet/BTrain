@@ -18,6 +18,8 @@ import SwiftUI
 
 extension Canvas: Inspectable { }
 extension SwitchboardEditControlsView: Inspectable { }
+extension NewBlockSheet: Inspectable { }
+extension NewTurnoutSheet: Inspectable { }
 
 class SwitchBoardViewTests: XCTestCase {
 
@@ -50,6 +52,24 @@ class SwitchBoardViewTests: XCTestCase {
         state.editable = true
         
         _ = try sut.inspect().find(button: "􀅼 Block")
+    }
+    
+    func testNewBlockSheet() throws {
+        let layout = Layout()
+        let sut = NewBlockSheet(layout: layout)
+        
+        _ = try sut.inspect().find(text: "Name:")
+        _ = try sut.inspect().find(button: "Cancel")
+        _ = try sut.inspect().find(button: "OK")
+    }
+
+    func testNewTurnoutSheet() throws {
+        let layout = Layout()
+        let sut = NewTurnoutSheet(layout: layout)
+        
+        _ = try sut.inspect().find(text: "Name:")
+        _ = try sut.inspect().find(button: "Cancel")
+        _ = try sut.inspect().find(button: "OK")
     }
 
 }
