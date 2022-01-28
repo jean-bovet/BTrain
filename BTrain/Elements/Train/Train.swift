@@ -163,14 +163,21 @@ final class Train: Element, ObservableObject {
         return "\(name) (\(id))"
     }
     
-    convenience init(uuid: String = UUID().uuidString) {
-        self.init(id: Identifier(uuid: uuid))
+    convenience init(uuid: String = UUID().uuidString, name: String = "", address: UInt32 = 0, decoder: DecoderType = .MFX,
+                     length: Double? = nil, magnetDistance: Double? = nil, maxSpeed: TrainSpeed.UnitKph? = nil, maxNumberOfLeadingReservedBlocks: Int? = nil) {
+        self.init(id: Identifier(uuid: uuid), name: name, address: address, decoder: decoder)
     }
     
-    init(id: Identifier<Train>) {
+    init(id: Identifier<Train>, name: String, address: UInt32, decoder: DecoderType = .MFX,
+         length: Double? = nil, magnetDistance: Double? = nil, maxSpeed: TrainSpeed.UnitKph? = nil, maxNumberOfLeadingReservedBlocks: Int? = nil) {
         self.id = id
+        self.name = name
+        self.address = address
+        self.length = length
+        self.magnetDistance = magnetDistance
+        self.speed.maxSpeed = maxSpeed ?? self.speed.maxSpeed
+        self.maxNumberOfLeadingReservedBlocks = maxNumberOfLeadingReservedBlocks ?? self.maxNumberOfLeadingReservedBlocks
     }
-
 }
 
 extension Train: Codable {
@@ -181,10 +188,13 @@ extension Train: Codable {
 
     convenience init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        self.init(id: try container.decode(Identifier<Train>.self, forKey: CodingKeys.id))
+        let id = try container.decode(Identifier<Train>.self, forKey: CodingKeys.id)
+        let name = try container.decode(String.self, forKey: CodingKeys.name)
+        let address = try container.decode(UInt32.self, forKey: CodingKeys.address)
+
+        self.init(id: id, name: name, address: address)
+        
         self.enabled = try container.decodeIfPresent(Bool.self, forKey: CodingKeys.enabled) ?? true
-        self.name = try container.decode(String.self, forKey: CodingKeys.name)
-        self.address = try container.decode(UInt32.self, forKey: CodingKeys.address)
         self.decoder = try container.decode(DecoderType.self, forKey: CodingKeys.decoder)
         self.length = try container.decodeIfPresent(Double.self, forKey: CodingKeys.length)
         self.magnetDistance = try container.decodeIfPresent(Double.self, forKey: CodingKeys.magnetDistance)

@@ -92,15 +92,8 @@ final class LayoutCCreator: LayoutCreating {
         l.newRoute("r3", name: "S Route", [Route.Step(b3, .next), Route.Step(b5, .next), Route.Step(b1, .previous)])
         
         // Train
-        let t1 = Train(uuid: "1")
-        t1.name = "Rail 2000"
-        t1.address = 0x4009
-
-        let t2 = Train(uuid: "2")
-        t2.name = "Old Loco"
-        t2.address = 0x4010
-
-        l.trains.append(contentsOf: [t1, t2])
+        l.addTrain(Train(uuid: "1", name: "Rail 2000", address: 0x4009))
+        l.addTrain(Train(uuid: "2", name: "Old Loco", address: 0x4010))
 
         return l
     }

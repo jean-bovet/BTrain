@@ -226,17 +226,20 @@ final class Layout2Swift {
     }
 
     func add(trains: [Train]) {
-//        l.newTrain("1", name: "Rail 2000", address: .init(0x4009, .MFX))
         for train in trains {
-            code += "\nlet \(train.symbol) = l.newTrain(\"\(train.id)\", name: \"\(train.name)\", address: \(train.address.toHex()), decoder: .\(train.decoder))"
+            code += "\nl.addTrain(Train(uuid: \"\(train.id)\""
+            code += ", name: \"\(train.name)\""
+            code += ", address: \(train.address.toHex())"
+            code += ", decoder: .\(train.decoder)"
             if let length = train.length {
-                code += "\n\(train.symbol).length = \(length)"
+                code += ", length: \(length)"
             }
             if let magnetDistance = train.magnetDistance {
-                code += "\n\(train.symbol).magnetDistance = \(magnetDistance)"
+                code += ", magnetDistance: \(magnetDistance)"
             }
-            code += "\n\(train.symbol).speed.maxSpeed = \(train.speed.maxSpeed)"
-            code += "\n\(train.symbol).maxNumberOfLeadingReservedBlocks = \(train.maxNumberOfLeadingReservedBlocks)"
+            code += ", maxSpeed: \(train.speed.maxSpeed)"
+            code += ", maxNumberOfLeadingReservedBlocks: \(train.maxNumberOfLeadingReservedBlocks)"
+            code += "))"
         }
     }
 }

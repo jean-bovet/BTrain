@@ -34,8 +34,12 @@ class TransitionsTests: XCTestCase {
     
     func testReservable() {
         let layout = Layout()
-        layout.newTrain("t1", name: "t1")
-        layout.newTrain("t2", name: "t2")
+        
+        let tr1 = Train(uuid: "t1", name: "t1")
+        layout.addTrain(tr1)
+        
+        let tr2 = Train(uuid: "t2", name: "t2")
+        layout.addTrain(tr2)
 
         let b1 = Block("b1", type: .station, center: .zero, rotationAngle: 0)
         let b2 = Block("b2", type: .free, center: .zero, rotationAngle: 0)
@@ -45,17 +49,15 @@ class TransitionsTests: XCTestCase {
         
         let transitions = [t1, t2]
         
-        let tr1 = Identifier<Train>(uuid: "t1")
-        XCTAssertNoThrow(try Transition.canReserve(transitions: transitions, for: tr1, layout: layout))
+        XCTAssertNoThrow(try Transition.canReserve(transitions: transitions, for: tr1.id, layout: layout))
         
         // Cannot reserve a transition that is already reserved, even for the same train (to avoid loops)
-        t2.reserved = tr1
-        XCTAssertThrowsError(try Transition.canReserve(transitions: transitions, for: tr1, layout: layout))
+        t2.reserved = tr1.id
+        XCTAssertThrowsError(try Transition.canReserve(transitions: transitions, for: tr1.id, layout: layout))
         
         // Cannot reserve a transition that is already reserved for another train
-        let tr2 = Identifier<Train>(uuid: "t2")
-        t2.reserved = tr2
-        XCTAssertThrowsError(try Transition.canReserve(transitions: transitions, for: tr1, layout: layout))
+        t2.reserved = tr2.id
+        XCTAssertThrowsError(try Transition.canReserve(transitions: transitions, for: tr1.id, layout: layout))
     }
     
     func testReverse() {

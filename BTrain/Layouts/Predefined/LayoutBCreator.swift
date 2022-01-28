@@ -80,9 +80,8 @@ final class LayoutBCreator: LayoutCreating {
         l.newRoute("r1", name: "Loop", [Route.Step(b_1,.next),Route.Step(b_2,.next),Route.Step(b_3,.next),Route.Step(b_4,.next),Route.Step(b_1,.next)])
 
         // Trains
-
-        l.newTrain("1", name: "Rail 2000")
-        l.newTrain("2", name: "BLS")
+        l.addTrain(.init(uuid: "1", name: "Rail 2000"))
+        l.addTrain(.init(uuid: "2", name: "BLS"))
 
         return l
     }

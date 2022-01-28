@@ -126,8 +126,8 @@ final class LayoutECreator: LayoutCreating {
 
         // Trains
 
-        l.newTrain("0", name: "Rail 2000", address: 0x0000, decoder: .MFX)
-        l.newTrain("1", name: "Old Loco", address: 0x0000, decoder: .MFX)
+        l.addTrain(.init(uuid: "0", name: "Rail 2000"))
+        l.addTrain(.init(uuid: "1", name: "Old Loco"))
         
         return l
     }

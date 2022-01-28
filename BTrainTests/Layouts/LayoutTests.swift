@@ -26,7 +26,7 @@ class LayoutTests: XCTestCase {
     func testAddAndRemoveBlock() throws {
         let layout = Layout()
         
-        let t1 = layout.newTrain("t1", name: "t1", address: 0, decoder: .MM)
+        let t1 = layout.addTrain(Train(uuid: "t1", name: "t1", address: 0))
         let b1 = layout.newBlock(name: "b1", type: .free)
         let b2 = layout.newBlock(name: "b2", type: .free)
         layout.link(from: b1.next, to: b2.previous)

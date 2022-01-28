@@ -23,19 +23,15 @@ extension Layout {
     @discardableResult
     func newTrain() -> Train {
         let id = Layout.newIdentity(trains)
-        return newTrain(id, name: id)
+        return addTrain(Train(uuid: id, name: id))
     }
     
     @discardableResult
-    func newTrain(_ id: String, name: String, address: UInt32 = 0, decoder: DecoderType = .MFX) -> Train {
-        let train = Train(uuid: id)
-        train.name = name
-        train.address = address
-        train.decoder = decoder
+    func addTrain(_ train: Train) -> Train {
         trains.append(train)
         return train
     }
-
+    
     func train(for trainId: Identifier<Train>?) -> Train? {
         return trains.first(where: { $0.id == trainId })
     }

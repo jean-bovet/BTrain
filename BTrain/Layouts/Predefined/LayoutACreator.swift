@@ -73,8 +73,8 @@ final class LayoutACreator: LayoutCreating {
         l.newRoute("r2", name: "Reverse Loop", [Route.Step(b1, .next), Route.Step(b3, .previous), Route.Step(b2, .previous), Route.Step(b1, .previous)])
         
         // Train
-        l.newTrain("1", name: "Rail 2000")
-        l.newTrain("2", name: "BLS")
+        l.addTrain(.init(uuid: "1", name: "Rail 2000", address: 0))
+        l.addTrain(.init(uuid: "2", name: "BLS", address: 1))
 
         return l
     }
