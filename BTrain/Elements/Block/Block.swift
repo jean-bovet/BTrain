@@ -185,17 +185,18 @@ final class Block: Element, ObservableObject {
     @Published var brakeFeedbackPrevious: Identifier<Feedback>?
     @Published var stopFeedbackPrevious: Identifier<Feedback>?
 
-    init(id: Identifier<Block>, name: String, type: Category, center: CGPoint, rotationAngle: CGFloat) {
+    init(id: Identifier<Block>, name: String, type: Category, center: CGPoint, rotationAngle: CGFloat, waitingTime: TimeInterval? = nil, length: Double? = nil) {
         self.id = id
         self.name = name
         self.category = type
         self.center = center
         self.rotationAngle = rotationAngle
+        self.waitingTime = waitingTime ?? 10.0
+        self.length = length
     }
     
-    convenience init(_ uuid: String = UUID().uuidString, type: Category, center: CGPoint = .zero, rotationAngle: CGFloat = 0) {
-        self.init(id: Identifier(uuid: uuid), name: uuid, type: type, center: center, rotationAngle: rotationAngle)
-        
+    convenience init(_ uuid: String = UUID().uuidString, type: Category, center: CGPoint = .zero, rotationAngle: CGFloat = 0, waitingTime: TimeInterval? = nil, length: Double? = nil) {
+        self.init(id: Identifier(uuid: uuid), name: uuid, type: type, center: center, rotationAngle: rotationAngle, waitingTime: waitingTime, length: length)
     }
         
 }
@@ -216,12 +217,12 @@ extension Block: Codable {
         let category = try container.decode(Category.self, forKey: CodingKeys.type)
         let center = try container.decode(CGPoint.self, forKey: CodingKeys.center)
         let rotationAngle = try container.decode(Double.self, forKey: CodingKeys.angle)
+        let waitingTime = try container.decodeIfPresent(TimeInterval.self, forKey: CodingKeys.waitingTime)
+        let length = try container.decodeIfPresent(Double.self, forKey: CodingKeys.length)
 
-        self.init(id: id, name: name, type: category, center: center, rotationAngle: rotationAngle)
+        self.init(id: id, name: name, type: category, center: center, rotationAngle: rotationAngle, waitingTime: waitingTime, length: length)
         
         self.enabled = try container.decodeIfPresent(Bool.self, forKey: CodingKeys.enabled) ?? true
-        self.length = try container.decodeIfPresent(Double.self, forKey: CodingKeys.length)
-        self.waitingTime = try container.decodeIfPresent(TimeInterval.self, forKey: CodingKeys.waitingTime) ?? 10.0
         self.reserved = try container.decodeIfPresent(Reservation.self, forKey: CodingKeys.reserved)
         self.train = try container.decodeIfPresent(TrainInstance.self, forKey: CodingKeys.train)
         self.feedbacks = try container.decode([BlockFeedback].self, forKey: CodingKeys.feedbacks)

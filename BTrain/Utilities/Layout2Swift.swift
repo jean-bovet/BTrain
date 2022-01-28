@@ -54,16 +54,17 @@ final class Layout2Swift {
     }
     
     func add(blocks: [Block]) {
-        // let b1 = Block("IL1", type: .free, center: CGPoint(x: 160, y: 250), rotationAngle: -.pi/2)
         for block in blocks {
-            code += "\nlet \(block.symbol) = Block(\"\(block.name)\", type: .\(block.category.rawValue), center: CGPoint(x: \(block.center.x), y: \(block.center.y)), rotationAngle: \(block.rotationAngle.symbolicAngle))"
-            code += "\n\(block.symbol).waitingTime = \(block.waitingTime)"
+            code += "\nlet \(block.symbol) = Block(\"\(block.name)\", type: .\(block.category.rawValue)"
+            code += ", center: CGPoint(x: \(block.center.x), y: \(block.center.y))"
+            code += ", rotationAngle: \(block.rotationAngle.symbolicAngle)"
+            code += ", waitingTime: \(block.waitingTime)"
             if let length = block.length {
-                code += "\n\(block.symbol).length = \(length)"
+                code += ", length: \(length)"
             }
+            code += ")"
         }
 
-        //        l.add([b1, b2, b3, b4, b5, b6, b7, b8, b9, b10, b11])
         var content = ""
         for block in blocks {
             if !content.isEmpty {
