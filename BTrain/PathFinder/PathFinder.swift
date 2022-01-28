@@ -51,11 +51,15 @@ final class PathFinder {
             numberOfPaths = 1
         }
         
+        guard let train = layout.train(for: trainId) else {
+            throw LayoutError.trainNotFound(trainId: trainId)
+        }
+        
         // Note: until we have a proper algorithm that finds the shortest path in a single pass,
         // we will generate a few paths and pick the shortest one (depending on the `numberOfPaths`).
         var smallestPath: Path?
         for _ in 1...numberOfPaths {
-            let context = PathFinderContext(trainId: trainId, destination: destination, overflow: layout.blockMap.count*2, settings: settings)
+            let context = PathFinderContext(train: train, destination: destination, overflow: layout.blockMap.count*2, settings: settings)
             context.steps.append(Route.Step(block.id, direction))
             
             if try findPath(from: block, direction: direction, context: context) {
@@ -154,12 +158,18 @@ final class PathFinder {
                 nextBlockDirection = .previous
             }
             
+            // Find out if the next block is allowed to be used for that train
+            if context.train.blocksToAvoid.contains(where: {$0.blockId == nextBlockId }) {
+                context.print("The next block \(nextBlockId) is marked as to be avoided by train \(context.train.name), backtracking")
+                return false
+            }
+            
             // Find out if the next block is already reserved
             let nextBlock = layout.block(for: nextBlockId)!
             if !nextBlock.enabled  {
                 context.print("The next block \(nextBlock) is disabled, backtracking")
                 return false
-            } else if let reserved = nextBlock.reserved, reserved.trainId != context.trainId {
+            } else if let reserved = nextBlock.reserved, reserved.trainId != context.train.id {
                 // The next block is reserved for another train, we cannot use it
                 let stepCount = context.steps.count - 1 // Remove one block because we don't take into account the first block which is the starting block
                 

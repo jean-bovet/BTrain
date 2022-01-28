@@ -68,6 +68,28 @@ class AutomaticRoutingTests: BTTestCase {
         XCTAssertTrue(p.train.automaticScheduling)
     }
     
+    func testUpdateAutomaticRouteWithBlockToAvoid() throws {
+        let layout = LayoutECreator().newLayout()
+        let s1 = layout.block(for: Identifier<Block>(uuid: "s1"))!
+
+        // The route will choose "s2" as the arrival block
+        var p = try setup(layout: layout, fromBlockId: s1.id, destination: nil, position: .end, routeSteps: ["s1:next", "b1:next", "b2:next", "b3:next", "s2:next"])
+        try p.layoutController.stop(trainID: layout.trains[0].id, completely: true)
+        
+        // Let's mark "s2" as to avoid
+        layout.trains[0].blocksToAvoid.append(.init(Identifier<Block>(uuid: "s2")))
+
+        // The route will choose "s1" instead
+        p = try setup(layout: layout, fromBlockId: s1.id, destination: nil, position: .end, routeSteps: ["s1:next", "b1:next", "b2:next", "b3:next", "s1:next"])
+        try p.layoutController.stop(trainID: layout.trains[0].id, completely: true)
+
+        // Now let's mark also "s1" as to avoid
+        layout.trains[0].blocksToAvoid.append(.init(Identifier<Block>(uuid: "s1")))
+
+        // There will be no possible route to find
+        _ = try setup(layout: layout, fromBlockId: s1.id, destination: nil, position: .end, routeSteps: [])
+    }
+
     func testUpdateAutomaticRouteFinishing() throws {
         let layout = LayoutECreator().newLayout()
         let s1 = layout.block(for: Identifier<Block>(uuid: "s1"))!

@@ -15,7 +15,7 @@ import Foundation
 // This class is used to keep track of the various parameters during analysis
 final class PathFinderContext {
     // Train associated with this path
-    let trainId: Identifier<Train>
+    let train: Train
 
     // The destination or nil if any station block can be chosen
     let destination: Destination?
@@ -37,8 +37,8 @@ final class PathFinderContext {
     // re-use a block and ends up in an infinite loop.
     var visitedSteps = [Route.Step]()
     
-    init(trainId: Identifier<Train>, destination: Destination?, overflow: Int, settings: PathFinderSettings) {
-        self.trainId = trainId
+    init(train: Train, destination: Destination?, overflow: Int, settings: PathFinderSettings) {
+        self.train = train
         self.destination = destination
         self.overflow = overflow
         self.settings = settings
