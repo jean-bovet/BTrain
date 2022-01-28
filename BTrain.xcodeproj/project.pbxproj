@@ -39,8 +39,6 @@
 		A73AFE8A2726594800E1ED21 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A73AFE892726594800E1ED21 /* Assets.xcassets */; };
 		A73AFE8D2726594800E1ED21 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A73AFE8C2726594800E1ED21 /* Preview Assets.xcassets */; };
 		A73AFE982726594800E1ED21 /* CANMessageTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A73AFE972726594800E1ED21 /* CANMessageTests.swift */; };
-		A73AFEA22726594800E1ED21 /* BTrainUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A73AFEA12726594800E1ED21 /* BTrainUITests.swift */; };
-		A73AFEA42726594800E1ED21 /* BTrainUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A73AFEA32726594800E1ED21 /* BTrainUITestsLaunchTests.swift */; };
 		A73AFEB127265A2300E1ED21 /* MarklinCANMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = A73AFEB027265A2300E1ED21 /* MarklinCANMessage.swift */; };
 		A73AFEB427265A4B00E1ED21 /* Client.swift in Sources */ = {isa = PBXBuildFile; fileRef = A73AFEB227265A4B00E1ED21 /* Client.swift */; };
 		A73AFEB527265A4B00E1ED21 /* ClientConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = A73AFEB327265A4B00E1ED21 /* ClientConnection.swift */; };
@@ -237,13 +235,6 @@
 			remoteGlobalIDString = A73AFE812726594600E1ED21;
 			remoteInfo = BTrain;
 		};
-		A73AFE9E2726594800E1ED21 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = A73AFE7A2726594600E1ED21 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = A73AFE812726594600E1ED21;
-			remoteInfo = BTrain;
-		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
@@ -281,9 +272,6 @@
 		A73AFE8E2726594800E1ED21 /* BTrain.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = BTrain.entitlements; sourceTree = "<group>"; };
 		A73AFE932726594800E1ED21 /* BTrainTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BTrainTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		A73AFE972726594800E1ED21 /* CANMessageTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CANMessageTests.swift; sourceTree = "<group>"; };
-		A73AFE9D2726594800E1ED21 /* BTrainUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BTrainUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		A73AFEA12726594800E1ED21 /* BTrainUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BTrainUITests.swift; sourceTree = "<group>"; };
-		A73AFEA32726594800E1ED21 /* BTrainUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BTrainUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		A73AFEB027265A2300E1ED21 /* MarklinCANMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarklinCANMessage.swift; sourceTree = "<group>"; };
 		A73AFEB227265A4B00E1ED21 /* Client.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Client.swift; sourceTree = "<group>"; };
 		A73AFEB327265A4B00E1ED21 /* ClientConnection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ClientConnection.swift; sourceTree = "<group>"; };
@@ -489,13 +477,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		A73AFE9A2726594800E1ED21 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -538,7 +519,6 @@
 				A79079A6277FB8E700771A60 /* Credits.rtf */,
 				A73AFE842726594600E1ED21 /* BTrain */,
 				A73AFE962726594800E1ED21 /* BTrainTests */,
-				A73AFEA02726594800E1ED21 /* BTrainUITests */,
 				A73AFE832726594600E1ED21 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -548,7 +528,6 @@
 			children = (
 				A73AFE822726594600E1ED21 /* BTrain.app */,
 				A73AFE932726594800E1ED21 /* BTrainTests.xctest */,
-				A73AFE9D2726594800E1ED21 /* BTrainUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -599,15 +578,6 @@
 				A775C61E27A37B8800D712CF /* Utilities */,
 			);
 			path = BTrainTests;
-			sourceTree = "<group>";
-		};
-		A73AFEA02726594800E1ED21 /* BTrainUITests */ = {
-			isa = PBXGroup;
-			children = (
-				A73AFEA12726594800E1ED21 /* BTrainUITests.swift */,
-				A73AFEA32726594800E1ED21 /* BTrainUITestsLaunchTests.swift */,
-			);
-			path = BTrainUITests;
 			sourceTree = "<group>";
 		};
 		A73AFEB82726680600E1ED21 /* Network */ = {
@@ -1132,24 +1102,6 @@
 			productReference = A73AFE932726594800E1ED21 /* BTrainTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		A73AFE9C2726594800E1ED21 /* BTrainUITests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = A73AFEAD2726594800E1ED21 /* Build configuration list for PBXNativeTarget "BTrainUITests" */;
-			buildPhases = (
-				A73AFE992726594800E1ED21 /* Sources */,
-				A73AFE9A2726594800E1ED21 /* Frameworks */,
-				A73AFE9B2726594800E1ED21 /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				A73AFE9F2726594800E1ED21 /* PBXTargetDependency */,
-			);
-			name = BTrainUITests;
-			productName = BTrainUITests;
-			productReference = A73AFE9D2726594800E1ED21 /* BTrainUITests.xctest */;
-			productType = "com.apple.product-type.bundle.ui-testing";
-		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -1164,10 +1116,6 @@
 						CreatedOnToolsVersion = 13.0;
 					};
 					A73AFE922726594800E1ED21 = {
-						CreatedOnToolsVersion = 13.0;
-						TestTargetID = A73AFE812726594600E1ED21;
-					};
-					A73AFE9C2726594800E1ED21 = {
 						CreatedOnToolsVersion = 13.0;
 						TestTargetID = A73AFE812726594600E1ED21;
 					};
@@ -1194,7 +1142,6 @@
 			targets = (
 				A73AFE812726594600E1ED21 /* BTrain */,
 				A73AFE922726594800E1ED21 /* BTrainTests */,
-				A73AFE9C2726594800E1ED21 /* BTrainUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -1218,13 +1165,6 @@
 			files = (
 				A796FA2B2772BB5400FA41BA /* Layout.json in Resources */,
 				A74C0E80275C9F490043FEE5 /* Locomotives.cs2 in Resources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		A73AFE9B2726594800E1ED21 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1452,15 +1392,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		A73AFE992726594800E1ED21 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				A73AFEA42726594800E1ED21 /* BTrainUITestsLaunchTests.swift in Sources */,
-				A73AFEA22726594800E1ED21 /* BTrainUITests.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -1468,11 +1399,6 @@
 			isa = PBXTargetDependency;
 			target = A73AFE812726594600E1ED21 /* BTrain */;
 			targetProxy = A73AFE942726594800E1ED21 /* PBXContainerItemProxy */;
-		};
-		A73AFE9F2726594800E1ED21 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = A73AFE812726594600E1ED21 /* BTrain */;
-			targetProxy = A73AFE9E2726594800E1ED21 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -1710,56 +1636,6 @@
 			};
 			name = Release;
 		};
-		A73AFEAE2726594800E1ED21 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				CODE_SIGN_IDENTITY = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
-				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 28XRU7S6GA;
-				GENERATE_INFOPLIST_FILE = YES;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/../Frameworks",
-					"@loader_path/../Frameworks",
-				);
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "ch.arizona-software.BTrainUITests";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = "";
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
-				TEST_TARGET_NAME = BTrain;
-			};
-			name = Debug;
-		};
-		A73AFEAF2726594800E1ED21 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				CODE_SIGN_IDENTITY = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
-				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 28XRU7S6GA;
-				GENERATE_INFOPLIST_FILE = YES;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/../Frameworks",
-					"@loader_path/../Frameworks",
-				);
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "ch.arizona-software.BTrainUITests";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = "";
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
-				TEST_TARGET_NAME = BTrain;
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -1786,15 +1662,6 @@
 			buildConfigurations = (
 				A73AFEAB2726594800E1ED21 /* Debug */,
 				A73AFEAC2726594800E1ED21 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		A73AFEAD2726594800E1ED21 /* Build configuration list for PBXNativeTarget "BTrainUITests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				A73AFEAE2726594800E1ED21 /* Debug */,
-				A73AFEAF2726594800E1ED21 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

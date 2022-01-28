@@ -49,16 +49,6 @@
                ReferencedContainer = "container:BTrain.xcodeproj">
             </BuildableReference>
          </TestableReference>
-         <TestableReference
-            skipped = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "A73AFE9C2726594800E1ED21"
-               BuildableName = "BTrainUITests.xctest"
-               BlueprintName = "BTrainUITests"
-               ReferencedContainer = "container:BTrain.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
       </Testables>
    </TestAction>
    <LaunchAction
