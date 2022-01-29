@@ -58,17 +58,17 @@ extension Layout {
         // True if the train and the wagon directions are the same, false otherwise
         let trainAndWagonDirectionIdentical = trainDirection == wagonDirection
         
-        // First, free all the reserved block behind the train so we can reserve them again
+        // First, free all the reserved block "behind" the train so we can reserve them again
         // using the length of the train in consideraion
         try freeReservedElements(fromBlockId: fromBlockId, direction: wagonDirection, trainId: train.id)
 
+        // Keep track of the remaining train length that needs to have reserved blocks
         var remainingTrainLength = trainLength
 
         let visitor = ElementVisitor(layout: self)
         try visitor.visit(fromBlockId: fromBlock.id, direction: wagonDirection, callback: { info in
             if let transition = info.transition {
-                // Transition is just a virtual connection between two elements,
-                // no physical length exists.
+                // Transition is just a virtual connection between two elements, no physical length exists.
                 guard transition.reserved == nil else {
                     throw LayoutError.transitionAlreadyReserved(transition: transition)
                 }
@@ -91,7 +91,9 @@ extension Layout {
                     return .stop
                 }
                 
-                remainingTrainLength = reserveBlockParts(train: train, remainingTrainLength: remainingTrainLength, block: block,
+                remainingTrainLength = reserveBlockParts(train: train,
+                                                         remainingTrainLength: remainingTrainLength,
+                                                         block: block,
                                                          headBlock: info.index == 0,
                                                          direction: direction,
                                                          trainDirection: trainAndWagonDirectionIdentical ? direction : direction.opposite)

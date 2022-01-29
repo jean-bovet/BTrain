@@ -30,7 +30,7 @@ final class LayoutController: TrainControllerDelegate {
         
     // The switchboard state, used to refresh the switchboard
     // when certain events happen in the layout controller
-    let switchboard: SwitchBoard
+    let switchboard: SwitchBoard?
     
     // An ordered map of train controller for each available train.
     // The train controller manages a single train in the layout.
@@ -41,7 +41,7 @@ final class LayoutController: TrainControllerDelegate {
     // Retain the sink to observe any change to the layout
     private var layoutChangeSink: AnyCancellable?
 
-    init(layout: Layout, switchboard: SwitchBoard, interface: CommandInterface?) {
+    init(layout: Layout, switchboard: SwitchBoard?, interface: CommandInterface?) {
         self.layout = layout
         self.switchboard = switchboard
         self.feedbackMonitor = LayoutFeedbackMonitor(layout: layout)
@@ -124,10 +124,10 @@ final class LayoutController: TrainControllerDelegate {
     private func updateExpectedFeedbacks() throws {
         if layout.detectUnexpectedFeedback {
             try feedbackMonitor.update(with: controllers.values.map { $0.train })
-            switchboard.context.expectedFeedbackIds = feedbackMonitor.expectedFeedbacks
+            switchboard?.context.expectedFeedbackIds = feedbackMonitor.expectedFeedbacks
             try feedbackMonitor.handleUnexpectedFeedbacks()
         } else {
-            switchboard.context.expectedFeedbackIds = nil
+            switchboard?.context.expectedFeedbackIds = nil
         }
     }
     
@@ -273,7 +273,7 @@ final class LayoutController: TrainControllerDelegate {
                 self.runControllers()
             }
             // Redraw the switchboard so the time interval is refreshed
-            self.switchboard.state.triggerRedraw.toggle()
+            self.switchboard?.state.triggerRedraw.toggle()
         })
         pausedTrainTimers[train.id] = timer
     }

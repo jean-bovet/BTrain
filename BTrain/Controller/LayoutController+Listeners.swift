@@ -45,7 +45,7 @@ extension LayoutController {
             DispatchQueue.main.async {
                 if let train = layout.trains.find(address: address, decoder: decoder) {
                     train.speed.steps = interface.speedSteps(for: value, decoder: train.decoder)
-                    self?.switchboard.state.triggerRedraw.toggle()
+                    self?.switchboard?.state.triggerRedraw.toggle()
                 }
             }
         })
@@ -66,13 +66,13 @@ extension LayoutController {
                 if train.directionForward == false {
                     train.directionForward = true
                     try? layout.toggleTrainDirectionInBlock(train)
-                    switchboard.state.triggerRedraw.toggle()
+                    switchboard?.state.triggerRedraw.toggle()
                 }
             case .backward:
                 if train.directionForward {
                     train.directionForward = false
                     try? layout.toggleTrainDirectionInBlock(train)
-                    switchboard.state.triggerRedraw.toggle()
+                    switchboard?.state.triggerRedraw.toggle()
                 }
             case .unknown:
                 BTLogger.error("Unknown direction \(direction) for \(address.toHex())")
