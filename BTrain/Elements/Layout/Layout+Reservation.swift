@@ -33,16 +33,39 @@ extension Layout {
             return
         }
         
+        // Gather the train direction of travel within the current block
+        // and the wagon direction - which can be the same or the opposite.
+        // For example:
+        //              ▷             ◁             ◁
+        //         ┌─────────┐   ┌─────────┐   ┌─────────┐
+        //         │ ■■■■■■▶ │──▶│ ■■■■■■▶ │──▶│ ■■■■■■▶ │
+        //         └─────────┘   └─────────┘   └─────────┘
+        //  Train:   next          previous      previous
+        //  Wagon:   previous      next          next
+        //  trainAndWagonDirectionIdentical = false
+        //              ▷             ◁             ◁
+        //         ┌─────────┐   ┌─────────┐   ┌─────────┐
+        //         │ ▶■■■■■■ │──▶│ ▶■■■■■■ │──▶│ ▶■■■■■■ │
+        //         └─────────┘   └─────────┘   └─────────┘
+        //  Train:   next          previous      previous
+        //  Wagon:   next          previous      previous
+        //  trainAndWagonDirectionIdentical = true
+        //
+        // Direction of travel of the train within the block
         let trainDirection = trainInstance.direction
+        // Direction in which the wagon are layout from the locomotive
+        let wagonDirection = train.wagonsDirection
+        // True if the train and the wagon directions are the same, false otherwise
+        let trainAndWagonDirectionIdentical = trainDirection == wagonDirection
         
         // First, free all the reserved block behind the train so we can reserve them again
         // using the length of the train in consideraion
-        try freeReservedElements(fromBlockId: fromBlockId, direction: trainDirection.opposite, trainId: train.id)
+        try freeReservedElements(fromBlockId: fromBlockId, direction: wagonDirection, trainId: train.id)
 
         var remainingTrainLength = trainLength
 
         let visitor = ElementVisitor(layout: self)
-        try visitor.visit(fromBlockId: fromBlock.id, direction: trainDirection.opposite, callback: { info in
+        try visitor.visit(fromBlockId: fromBlock.id, direction: wagonDirection, callback: { info in
             if let transition = info.transition {
                 // Transition is just a virtual connection between two elements,
                 // no physical length exists.
@@ -68,7 +91,10 @@ extension Layout {
                     return .stop
                 }
                 
-                remainingTrainLength = reserveBlockParts(train: train, remainingTrainLength: remainingTrainLength, block: block, headBlock: info.index == 0, direction: direction)
+                remainingTrainLength = reserveBlockParts(train: train, remainingTrainLength: remainingTrainLength, block: block,
+                                                         headBlock: info.index == 0,
+                                                         direction: direction,
+                                                         trainDirection: trainAndWagonDirectionIdentical ? direction : direction.opposite)
                 block.reserved = .init(trainId: train.id, direction: direction)
             }
 
@@ -80,8 +106,8 @@ extension Layout {
         })
     }
     
-    private func reserveBlockParts(train: Train, remainingTrainLength: Double, block: Block, headBlock: Bool, direction: Direction) -> Double {
-        let trainInstance = TrainInstance(train.id, direction.opposite)
+    private func reserveBlockParts(train: Train, remainingTrainLength: Double, block: Block, headBlock: Bool, direction: Direction, trainDirection: Direction) -> Double {
+        let trainInstance = TrainInstance(train.id, trainDirection)
         trainInstance.parts.removeAll()
         
         var currentRemainingTrainLength = remainingTrainLength

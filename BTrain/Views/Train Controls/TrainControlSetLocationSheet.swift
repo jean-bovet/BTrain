@@ -22,7 +22,9 @@ struct TrainControlSetLocationSheet: View {
     @State private var blockId: Identifier<Block>? = nil
     
     @State private var direction: Direction = .next
-    
+
+    @State private var wagons: Direction = .next
+
     @State private var errorStatus: String?
 
     var sortedBlockIds: [Identifier<Block>] {
@@ -41,9 +43,17 @@ struct TrainControlSetLocationSheet: View {
         }
     }
     
+    var selectedBlockName: String {
+        if let block = layout.block(for: blockId) {
+            return block.name
+        } else {
+            return "?"
+        }
+    }
+    
     var body: some View {
         VStack {
-            HStack {
+            Form {
                 Picker("Block:", selection: $blockId) {
                     ForEach(sortedBlockIds, id:\.self) { blockId in
                         if let block = layout.block(for: blockId) {
@@ -64,7 +74,6 @@ struct TrainControlSetLocationSheet: View {
                     }
                 }
                 .fixedSize()
-                .labelsHidden()
                 .onAppear {
                     do {
                         direction = try layout.directionDirectionInBlock(train)
@@ -72,6 +81,17 @@ struct TrainControlSetLocationSheet: View {
                         BTLogger.error("Unable to retrieve the direction of the train: \(error.localizedDescription)")
                     }
                 }
+                .help("This is the direction of travel of the train relative to \(selectedBlockName)")
+                
+                Picker("Wagons:", selection: $wagons) {
+                    ForEach(Direction.allCases, id:\.self) { direction in
+                        Text(direction.description).tag(direction)
+                    }
+                }
+                .fixedSize()
+                .onAppear {
+                    wagons = train.wagonsDirection
+                }.help("Direction in which the wagons are oriented relative to \(selectedBlockName)")
             }
             if let errorStatus = errorStatus {
                 Text(errorStatus)
@@ -87,6 +107,7 @@ struct TrainControlSetLocationSheet: View {
                 Button("OK") {
                     do {
                         if let selectedBlock = blockId {
+                            train.wagonsDirection = wagons
                             try layout.setTrainToBlock(train.id,
                                                 selectedBlock,
                                                 position: trainPosition,

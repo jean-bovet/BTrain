@@ -55,6 +55,7 @@ class TrainLengthTests: XCTestCase {
 
         let t1 = layout.trains[0]
         t1.blockId = b1.id
+        t1.wagonsDirection = .previous
         t1.position = 2
         b1.train = .init(t1.id, .next)
         
@@ -111,6 +112,7 @@ class TrainLengthTests: XCTestCase {
 
         let t1 = layout.trains[0]
         t1.blockId = b4.id
+        t1.wagonsDirection = .next
         t1.position = 0
         b4.train = .init(t1.id, .previous)
         
