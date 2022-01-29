@@ -172,8 +172,8 @@ extension Layout {
         return (entryFeedback, nextBlockDirectionOfTravel)
     }
 
-    // This function returns the next block, reachable from the `fromBlock`
-    // and that is also not reserved. This function is used, for example,
+    // This function returns the next block for the locomotive, reachable from the `fromBlock`
+    // and that is either free or already reserved for the train. This function is used, for example,
     // by the TrainController in manual mode to follow the movement of the
     // train on the layout when it is manually driven by someone.
     func nextBlock(from fromBlock: Block) -> Block? {
@@ -185,7 +185,9 @@ extension Layout {
         let visitor = ElementVisitor(layout: self)
         try? visitor.visit(fromBlockId: fromBlock.id, direction: trainInstance.direction) { info in
             if let block = info.block, info.index > 0 {
-                if block.reserved == nil {
+                // TODO: check that the reservation is actually for the train wagons in front of the
+                // locomotive and not for the trailing block (which would means the locomotive is looping back on itself)?
+                if block.reserved == nil || block.reserved?.trainId == trainInstance.trainId {
                     nextBlock = block
                 }
                 return .stop
