@@ -29,7 +29,7 @@ final class LayoutController: TrainControllerDelegate {
         
     // The switchboard state, used to refresh the switchboard
     // when certain events happen in the layout controller
-    var switchboardState: SwitchBoard.State?
+    let switchboard: SwitchBoard
     
     // An ordered map of train controller for each available train.
     // The train controller manages a single train in the layout.
@@ -37,12 +37,14 @@ final class LayoutController: TrainControllerDelegate {
     // at runtime and during unit testing.
     private var controllers = OrderedDictionary<Identifier<Train>, TrainController>()
             
-    init(layout: Layout, interface: CommandInterface?) {
+    init(layout: Layout, switchboard: SwitchBoard, interface: CommandInterface?) {
         self.layout = layout
+        self.switchboard = switchboard
         self.feedbackMonitor = LayoutFeedbackMonitor(layout: layout)
         self.interface = interface
                         
         updateControllers()
+        runControllers()
     }
         
     func updateControllers() {
@@ -79,20 +81,16 @@ final class LayoutController: TrainControllerDelegate {
         // Run each controller one by one, using
         // the sorted keys to ensure they always
         // run in the same order.
-        let sortedControllers = controllers.values
         var result: TrainController.Result = .none
         do {
             // Update and detect any unexpected feedbacks
-            if layout.detectUnexpectedFeedback {
-                try feedbackMonitor.update(with: sortedControllers.map { $0.train })
-                try feedbackMonitor.handleUnexpectedFeedbacks()
-            }
+            try updateExpectedFeedbacks()
             
             // Purge any invalid restart timers
             purgeRestartTimers()
             
             // Run each controller
-            for controller in sortedControllers {
+            for controller in controllers.values {
                 if try controller.run() == .processed {
                     result = .processed
                 }
@@ -107,6 +105,16 @@ final class LayoutController: TrainControllerDelegate {
         return result
     }
         
+    private func updateExpectedFeedbacks() throws {
+        if layout.detectUnexpectedFeedback {
+            try feedbackMonitor.update(with: controllers.values.map { $0.train })
+            switchboard.context.expectedFeedbackIds = feedbackMonitor.expectedFeedbacks
+            try feedbackMonitor.handleUnexpectedFeedbacks()
+        } else {
+            switchboard.context.expectedFeedbackIds = nil
+        }
+    }
+    
     private func haltAll() {
         do {
             try stopAll()
@@ -249,7 +257,7 @@ final class LayoutController: TrainControllerDelegate {
                 self.runControllers()
             }
             // Redraw the switchboard so the time interval is refreshed
-            self.switchboardState?.triggerRedraw.toggle()
+            self.switchboard.state.triggerRedraw.toggle()
         })
         pausedTrainTimers[train.id] = timer
     }

@@ -71,9 +71,6 @@ struct SwitchBoardView: View {
                 }
         )
         .frame(idealWidth: switchboard.idealSize.width, idealHeight: switchboard.idealSize.height)
-        .onAppear {
-            layoutController.switchboardState = state
-        }
     }
 }
 

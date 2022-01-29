@@ -239,6 +239,12 @@ final class BlockShape: Shape, DraggableShape, ConnectableShape {
             ctx.addPath(path)
             ctx.setStrokeColor(reserved != nil ? shapeContext.reservedColor : shapeContext.color)
             ctx.strokePath()
+            
+            if let feedbackIds = shapeContext.expectedFeedbackIds, feedbackIds.contains(feedback.feedbackId) {
+                let path = expectedFeedbackPath(at: index)
+                ctx.addPath(path)
+                ctx.strokePath()
+            }
         }
 
         ctx.with {
@@ -421,6 +427,15 @@ extension BlockShape {
         let feedbackRect = CGRect(x: rect.origin.x + (rect.width - size)/2, y: rect.origin.y + (rect.height - size)/2, width: size, height: size)
         var t = CGAffineTransform(translationX: center.x, y: center.y).rotated(by: rotationAngle).translatedBy(x: -center.x, y: -center.y)
         let path = CGPath(roundedRect: feedbackRect, cornerWidth: 2, cornerHeight: 2, transform: &t)
+        return path
+    }
+
+    func expectedFeedbackPath(at index: Int) -> CGPath {
+        let rect = feedbackCellFrame(at: index)
+        var t = CGAffineTransform(translationX: center.x, y: center.y).rotated(by: rotationAngle).translatedBy(x: -center.x, y: -center.y)
+        let path = CGMutablePath()
+        path.addPath(CGPath(rect: CGRect(x: rect.origin.x, y: rect.origin.y + rect.height * 3/4, width: rect.width, height: 1), transform: &t))
+        path.addPath(CGPath(rect: CGRect(x: rect.origin.x, y: rect.origin.y + rect.height * 1/4, width: rect.width, height: -1), transform: &t))
         return path
     }
 

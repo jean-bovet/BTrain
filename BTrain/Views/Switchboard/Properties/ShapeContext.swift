@@ -25,6 +25,8 @@ final class ShapeContext {
     
     var fontSize: CGFloat = 12.0
     
+    var expectedFeedbackIds: Set<Identifier<Feedback>>?
+
     var trackWidth: CGFloat {
         return 4
     }
