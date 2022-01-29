@@ -33,6 +33,56 @@ import Foundation
 //
 //                                                    Magnet Distance
 //
+// ================ Train Direction Discussion =========================
+//
+// Axioms:
+// - A locomotive can move forward or backward
+// - The train direction within a block is determined by the locomotive direction
+//   and the side by which the train enters a new block.
+// - The wagons direction can only be changed by manual input from the user because
+//   they should not change (once a train is on the layout, the wagons are always oriented
+//   "behind" the locomotive, regardless of the direction of motion of the locomotive).
+// Let's look at some scenarios:
+//                  ▷             ◁             ◁
+//             ┌─────────┐   ┌─────────┐   ┌─────────┐
+//             │ ■■■■■■▶ │──▶│ ■■■■■■▶ │──▶│ ■■■■■■▶ │
+//             └─────────┘   └─────────┘   └─────────┘
+//    LOC:     forward       forward       forward
+//    DIB:     next          previous      previous
+//    WAG:     previous      next          next
+//
+//                  ▷             ◁             ◁
+//             ┌─────────┐   ┌─────────┐   ┌─────────┐
+//             │ ■■■■■■◀ │◀──│ ■■■■■■◀ │◀──│ ■■■■■■◀ │
+//             └─────────┘   └─────────┘   └─────────┘
+//    LOC:     backward      backward      backward
+//    DIB:     previous      next          next
+//    WAG:     previous      next          next
+//
+//                  ▷             ◁             ◁
+//             ┌─────────┐   ┌─────────┐   ┌─────────┐
+//             │ ▶■■■■■■ │──▶│ ▶■■■■■■ │──▶│ ▶■■■■■■ │
+//             └─────────┘   └─────────┘   └─────────┘
+//    LOC:     backward      backward      backward
+//    DIB:     next          previous      previous
+//    WAG:     next          previous      previous
+//
+//                  ▷             ◁             ◁
+//             ┌─────────┐   ┌─────────┐   ┌─────────┐
+//             │ ◀■■■■■■ │◀──│ ◀■■■■■■ │◀──│ ◀■■■■■■ │
+//             └─────────┘   └─────────┘   └─────────┘
+//    LOC:     forward       forward       forward
+//    DIB:     previous      next          next
+//    WAG:     next          previous      previous
+//
+// Legends:
+// LOC: Locomotive direction of travel (forward or backward)
+// DIB: Direction of the train relative to the block natural direction
+// WAG: Direction of the wagons relative to the block natural direction
+// ▷: Orientation of the block (natural direction)
+// ◀: Locomotive
+// ■: Wagon
+// ──▶: Direction in which the train is moving from one block to another
 final class Train: Element, ObservableObject {
     // Unique identifier of the train
     let id: Identifier<Train>
@@ -56,16 +106,21 @@ final class Train: Element, ObservableObject {
     // Length of the train (in cm)
     @Published var length: Double?
 
-    // Distance of the magnet from the front of the train (in cm)
-    // BTrain expects all the train (locomotive) to have a magnet
-    // to allow detection via reed feedback.
+    // Distance of the magnet from the front of the locomotive (in cm)
+    // BTrain expects all the locomotives to have a magnet
+    // to allow detection via a reed feedback.
     @Published var magnetDistance: Double?
 
-    // Speed of the train
+    // Speed of the locomotive
     @Published var speed = TrainSpeed(kph: 0, decoderType: .MFX)
 
-    // Direction of travel of the train
+    // Direction of travel of the locomotive
     @Published var directionForward = true
+    
+    // Direction of the wagons relative to the block. This direction is used
+    // by the layout to reserve the appropriate number of blocks that
+    // the train length occupies.
+    @Published var wagonsDirection: Direction = .previous
     
     // The route this train is associated with
     @Published var routeId: Identifier<Route>?

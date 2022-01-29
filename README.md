@@ -26,6 +26,7 @@ BTrain uses the following concepts:
 - Unexpected feedback detection
 - Automatic discovery of locomotives
 - Support for Marklin Central Station 3
+- Layout simulator to simulate the movement of the trains, including feedbacks and turnouts, without having to connect to a real Central Station 3
 
 **Limitations**
 
