@@ -11,6 +11,7 @@
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 import Foundation
+import Combine
 import OrderedCollections
 
 // This class is responsible for managing all the trains in the layout,
@@ -37,6 +38,9 @@ final class LayoutController: TrainControllerDelegate {
     // at runtime and during unit testing.
     private var controllers = OrderedDictionary<Identifier<Train>, TrainController>()
             
+    // Retain the sink to observe any change to the layout
+    private var layoutChangeSink: AnyCancellable?
+
     init(layout: Layout, switchboard: SwitchBoard, interface: CommandInterface?) {
         self.layout = layout
         self.switchboard = switchboard
@@ -44,7 +48,15 @@ final class LayoutController: TrainControllerDelegate {
         self.interface = interface
                         
         updateControllers()
-        runControllers()
+        
+        // Run the controllers each time a change is detected in the layout.
+        // For example, changing the direction of a train, adding or removing
+        // an element, etc.
+        layoutChangeSink = layout.objectWillChange.sink { [weak self] void in
+            DispatchQueue.main.async {
+                self?.runControllers()
+            }
+        }
     }
         
     func updateControllers() {
@@ -71,10 +83,14 @@ final class LayoutController: TrainControllerDelegate {
             }
         }
     }
-    
-    func run() -> TrainController.Result {
-        BTLogger.debug("⚙ Evaluating the layout")
         
+    func run() -> TrainController.Result {
+        guard layout.runtimeError == nil else {
+            BTLogger.debug("⚙ Cannot evaluate the layout because there is a runtime error")
+            return .none
+        }
+        BTLogger.debug("⚙ Evaluating the layout")
+
         // Process the latest changes
         updateControllers()
                 
