@@ -33,12 +33,7 @@ final class TrainController {
     let layout: Layout
     let train: Train
     weak var delegate: TrainControllerDelegate?
-    
-    // Keeping track of the route index when the train starts,
-    // to avoid stopping it immediately if it is still starting
-    // in the first block of the route.
-    var startRouteIndex: Int?
-    
+        
     // Structure indicating when the train should stop and
     // the associated behavior when it does effectively stop.
     struct StopTrigger {
@@ -156,9 +151,9 @@ final class TrainController {
         }
                 
         // Try to reserve the next blocks and if successfull, then start the train
-        if try reserveNextBlocks(route: route) {
+        if try layout.reserveNextBlocks(train: train, route: route) {
             debug("Start train \(train.name) because the next blocks could be reserved")
-            startRouteIndex = train.routeStepIndex
+            train.startRouteIndex = train.routeStepIndex
             try layout.setTrainSpeed(train, LayoutFactory.DefaultSpeed)
             train.state = .running
             return .processed
@@ -217,7 +212,7 @@ final class TrainController {
         }
         
         // The train is not in the first step of the route
-        guard train.routeStepIndex != startRouteIndex else {
+        guard train.routeStepIndex != train.startRouteIndex else {
             return .none
         }
         
@@ -263,7 +258,7 @@ final class TrainController {
         }
         
         // The train is not in the first step of the route
-        guard train.routeStepIndex != startRouteIndex else {
+        guard train.routeStepIndex != train.startRouteIndex else {
             return .none
         }
         
@@ -284,7 +279,7 @@ final class TrainController {
     // the specified `block`, depending on the block characteristics.
     // For now, only "station" blocks make the train stop.
     private func handleTrainStopByBlock(route: Route, block: Block) -> Result {
-        guard trainShouldStop(block: block) else {
+        guard layout.trainShouldStop(train: train, block: block) else {
             return .none
         }
                 
@@ -299,18 +294,6 @@ final class TrainController {
         }
     }
 
-    private func trainShouldStop(block: Block) -> Bool {
-        guard block.category == .station else {
-            return false
-        }
-
-        guard train.routeStepIndex != startRouteIndex || startRouteIndex == nil else {
-            return false
-        }
-
-        return true
-    }
-    
     private func waitingTime(route: Route, train: Train, block: Block) -> TimeInterval {
         if let step = route.steps.element(at: train.routeStepIndex), let time = step.waitingTime {
             return time
@@ -398,7 +381,7 @@ final class TrainController {
                 continue
             }
             
-            let position = newPosition(forTrain: train, enabledFeedbackIndex: index, direction: direction)
+            let position = layout.newPosition(forTrain: train, enabledFeedbackIndex: index, direction: direction)
             if train.position != position {
                 try layout.setTrainPosition(train, position)
                 debug("Train \(train) moved to position \(train.position) in \(currentBlock.name), direction \(direction)")
@@ -408,51 +391,6 @@ final class TrainController {
         }
         
         return result
-    }
-    
-    //      ╲       ██            ██            ██
-    //       ╲      ██            ██            ██
-    //────────■─────██────────────██────────────██────────────▶
-    //       ╱   0  ██     1      ██     2      ██     3
-    //      ╱       ██            ██            ██     ▲
-    //              0             1             2      │
-    //                            ▲                    │
-    //                            │                    │
-    //                            │                    │
-    //
-    //                     Feedback Index       Train Position
-    private func newPosition(forTrain train: Train, enabledFeedbackIndex: Int, direction: Direction) -> Int {
-        let strict = layout.strictRouteFeedbackStrategy
-
-        switch(direction) {
-        case .previous:
-            let delta = train.position - enabledFeedbackIndex
-            if strict && delta == 1 {
-                // this is the feedback in front of the train, it means
-                // the train has moved past this feedback
-                return train.position - delta
-            }
-            if !strict && delta > 0 {
-                // A feedback in front of the train has been activated.
-                // When not in strict mode, we update the position of the train.
-                return train.position - delta
-            }
-
-        case .next:
-            let delta = enabledFeedbackIndex - train.position
-            if strict && delta == 0 {
-                // this is the feedback in front of the train, it means
-                // the train has moved past this feedback
-                return train.position + 1
-            }
-            if !strict && delta >= 0 {
-                // A feedback in front of the train has been activated.
-                // When not in strict mode, we update the position of the train.
-                return train.position + delta + 1
-            }
-        }
-        
-        return train.position
     }
     
     // This method handles the transition from one block to another, using
@@ -509,7 +447,7 @@ final class TrainController {
         
         // If the train is not stopping in this block, reserve the block(s) ahead.
         if stopTrigger == nil {
-            if try reserveNextBlocks(route: route) == false {
+            if try layout.reserveNextBlocks(train: train, route: route) == false {
                 // If it is not possible, then stop the train in this block
                 debug("Train \(train) will stop here (\(nextBlock)) because the next block(s) cannot be reserved")
                 stopTrigger = StopTrigger.temporaryStop()
@@ -519,107 +457,6 @@ final class TrainController {
         return .processed
     }
         
-    private func freeLeadingReservedElements() throws {
-        guard let currentBlock = layout.currentBlock(train: train) else {
-            throw LayoutError.trainNotAssignedToABlock(trainId: train.id)
-        }
-
-        guard let ti = currentBlock.train else {
-            throw LayoutError.trainNotFoundInBlock(blockId: currentBlock.id)
-        }
-        
-        try layout.freeReservedElements(fromBlockId: currentBlock.id, direction: ti.direction, trainId: train.id)
-    }
-    
-    // This function will try to reserve as many blocks as specified (maxNumberOfLeadingReservedBlocks)
-    // in front of the train (leading blocks).
-    // Note: it won't reserve blocks that are already reserved to avoid loops.
-    private func reserveNextBlocks(route: Route) throws -> Bool {
-        guard route.steps.count > 0 else {
-            return false
-        }
-
-        // Before trying to reserve the leading blocks, let's free up
-        // all the reserved elements (turnouts, transitions, blocks) in front
-        // of the train. This is to keep the algorithm simple:
-        // (1) Free up leading reserved blocks
-        // (2) Reserve leading reserved blocks
-        try freeLeadingReservedElements()
-        
-        // Make sure to fill the blocks with the train, taking into account its length.
-        // Note: this is necessary because if the train is "pushed" by the locomotive,
-        // the leading blocks will be freedup and need to be reserved again for the train.
-        try layout.fillBlocksWithTrain(train: train)
-                
-        // We are going to iterate over all the remaining steps of the route until we
-        // either reach the end of the route or if we have reserved enough blocks.
-        let startReservationIndex = min(route.lastStepIndex, train.routeStepIndex + 1)
-        let stepsToReserve = route.steps[startReservationIndex...route.lastStepIndex]
-
-        // Remember the last step so we can reserve all the transitions and turnouts
-        var previousStep = route.steps[train.routeStepIndex]
-
-        // Variable keeping track of the number of leading blocks that have been reserved.
-        // At least one block must have been reserved to consider this function successfull.
-        // Note: blocks that are reserved for the train and its wagons do not count against that count.
-        var numberOfLeadingBlocksReserved = 0
-        
-        for step in stepsToReserve {
-            guard let block = layout.block(for: step.blockId) else {
-                throw LayoutError.blockNotFound(blockId: step.blockId)
-            }
-                   
-            guard block.enabled else {
-                return numberOfLeadingBlocksReserved > 0
-            }
-
-            if block.isOccupied(by: train.id) {
-                // The block is already reserved and contains a portion of the train
-                // Note: we are not incrementing `numberOfLeadingBlocksReserved` because
-                // an occupied block does not count as a "leading" block; it is occupied because
-                // the train (or portion of it) occupies it.
-                BTLogger.debug("Already occupied (and reserved) \(previousStep.blockId) to \(block.id) for \(train.name)")
-            } else {
-                guard block.reserved == nil else {
-                    return numberOfLeadingBlocksReserved > 0
-                }
-                
-                guard block.train == nil else {
-                    return numberOfLeadingBlocksReserved > 0
-                }
-
-                // The block is empty, try to reserve it.
-                // Note: it is possible for this call to throw an exception if it cannot reserve.
-                // Catch it and return false instead as this is not an error we want to report back to the runtime
-                do {
-                    try layout.reserve(trainId: train.id, fromBlock: previousStep.blockId, toBlock: block.id, direction: previousStep.direction)
-                    BTLogger.debug("Reserved \(previousStep.blockId) to \(block.id) for \(train.name)")
-                    numberOfLeadingBlocksReserved += 1
-                } catch {
-                    BTLogger.debug("Cannot reserve block \(previousStep.blockId) to \(block.id) for \(train.name): \(error)")
-                    return numberOfLeadingBlocksReserved > 0
-                }
-            }
-
-            // Stop reserving as soon as a block that is going to
-            // stop the train is detected. That way, the train stops
-            // without reserving any block ahead and upon restarting,
-            // it will reserve what it needs in front of it.
-            guard !trainShouldStop(block: block) else {
-                return numberOfLeadingBlocksReserved > 0
-            }
-
-            // Stop once we have reached the maximum number of leading blocks to reserve
-            if numberOfLeadingBlocksReserved >= train.maxNumberOfLeadingReservedBlocks {
-                break
-            }
-            
-            previousStep = step
-        }
-        
-        return numberOfLeadingBlocksReserved > 0
-    }
-    
     func stop(completely: Bool = false) throws -> Result {
         stopTrigger = nil
         

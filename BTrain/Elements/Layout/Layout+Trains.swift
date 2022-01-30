@@ -66,6 +66,53 @@ extension Layout {
         didChange()
     }
     
+    // Returns the new position of the train given the specified feedback. This is used
+    // to follow the train within a block when feedbacks are activated when the locomotive moves.
+    //      ╲       ██            ██            ██
+    //       ╲      ██            ██            ██
+    //────────■─────██────────────██────────────██────────────▶
+    //       ╱   0  ██     1      ██     2      ██     3
+    //      ╱       ██            ██            ██     ▲
+    //              0             1             2      │
+    //                            ▲                    │
+    //                            │                    │
+    //                            │                    │
+    //
+    //                     Feedback Index       Train Position
+    func newPosition(forTrain train: Train, enabledFeedbackIndex: Int, direction: Direction) -> Int {
+        let strict = strictRouteFeedbackStrategy
+
+        switch(direction) {
+        case .previous:
+            let delta = train.position - enabledFeedbackIndex
+            if strict && delta == 1 {
+                // this is the feedback in front of the train, it means
+                // the train has moved past this feedback
+                return train.position - delta
+            }
+            if !strict && delta > 0 {
+                // A feedback in front of the train has been activated.
+                // When not in strict mode, we update the position of the train.
+                return train.position - delta
+            }
+
+        case .next:
+            let delta = enabledFeedbackIndex - train.position
+            if strict && delta == 0 {
+                // this is the feedback in front of the train, it means
+                // the train has moved past this feedback
+                return train.position + 1
+            }
+            if !strict && delta >= 0 {
+                // A feedback in front of the train has been activated.
+                // When not in strict mode, we update the position of the train.
+                return train.position + delta + 1
+            }
+        }
+        
+        return train.position
+    }
+    
     func setTrainSpeed(_ train: Train, _ speed: TrainSpeed.UnitKph) throws {
         guard let train = self.train(for: train.id) else {
             throw LayoutError.trainNotFound(trainId: train.id)
@@ -201,6 +248,18 @@ extension Layout {
         train.scheduling = .automatic(finishing: false)
     }
     
+    func trainShouldStop(train: Train, block: Block) -> Bool {
+        guard block.category == .station else {
+            return false
+        }
+
+        guard train.routeStepIndex != train.startRouteIndex || train.startRouteIndex == nil else {
+            return false
+        }
+
+        return true
+    }
+
     // Stop the specified train. If completely is true,
     // set the state running to false of the train which means
     // it won't restart anymore.

@@ -125,6 +125,11 @@ final class Train: Element, ObservableObject {
     // The route this train is associated with
     @Published var routeId: Identifier<Route>?
     
+    // Keeping track of the route index when the train starts,
+    // to avoid stopping it immediately if it is still starting
+    // in the first block of the route.
+    @Published var startRouteIndex: Int?
+
     // Index of the current route step that the train is located in.
     @Published var routeStepIndex = 0
         
