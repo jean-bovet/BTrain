@@ -62,6 +62,8 @@ final class LayoutRouteParser {
                 parseBlock(type: .station, direction: .next)
             } else if sp.matches("![") {
                 parseBlock(type: .free, direction: .previous)
+            } else if sp.matches("|[") {
+                parseBlock(type: .sidingPrevious, direction: .next)
             } else if sp.matches("[") {
                 parseBlock(type: .free, direction: .next)
             } else if sp.matches("<") {
@@ -173,20 +175,23 @@ final class LayoutRouteParser {
                 // Braking train
                 parseTrain(feedbackIndex: feedbackIndex, block: block, speed: LayoutFactory.DefaultBrakingSpeed)
             } else if sp.matches("}}") {
-                // End of Station block
                 assert(type == .station, "Expected end of station block")
                 parsingBlock = false
             } else if sp.matches("]]") {
-                // End of Free track block
-                assert(type == .free, "Expected end of free track block")
+                assert(type == .free || type == .sidingPrevious, "Expected end of .free or .sidingPrevious track block")
+                parsingBlock = false
+            } else if sp.matches("]]|") {
+                assert(type == .sidingNext, "Expected end of .sidingNext track block")
                 parsingBlock = false
             } else if sp.matches("}") {
-                // End of Station block
                 assert(type == .station, "Expected end of station block")
                 parsingBlock = false
+            } else if sp.matches("]|") {
+                assert(type == .free, "Expected end of .free (but soon to be .sidingNext) track block")
+                block.category = .sidingNext // Change to sidingNext here because that's only when we know if it is one!
+                parsingBlock = false
             } else if sp.matches("]") {
-                // End of Free track block
-                assert(type == .free, "Expected end of free track block")
+                assert(type == .free || type == .sidingPrevious, "Expected end of .free or .sidingPrevious track block")
                 parsingBlock = false
             } else if sp.matches("🚂") {
                 parseTrain(feedbackIndex: feedbackIndex, block: block, speed: LayoutFactory.DefaultSpeed)
@@ -224,7 +229,7 @@ final class LayoutRouteParser {
         var reserved  = false
         if sp.matches("[") {
             reserved = true
-            assert(type == .free, "Invalid reserved block definition")
+            assert(type == .free || type == .sidingPrevious, "Invalid reserved block definition")
         } else if sp.matches("{") {
             reserved = true
             assert(type == .station, "Invalid reserved block definition")
