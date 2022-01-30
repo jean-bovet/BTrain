@@ -50,7 +50,7 @@ struct TrainListView: View {
                     Spacer()
                     
                     Button("+") {
-                        let train = Train()
+                        let train = layout.newTrain()
                         undoManager?.registerUndo(withTarget: layout, handler: { layout in
                             layout.trains.removeAll { t in
                                 return t.id == train.id
