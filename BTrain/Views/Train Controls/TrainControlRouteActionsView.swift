@@ -27,7 +27,7 @@ struct TrainControlRouteActionsView: View {
             if document.showDebugModeControls {
                 Button("Reserve Blocks") {
                     do {
-                        try document.layout.fillBlocksWithTrain(train: train)
+                        try document.layout.fillBlocks(train: train)
                         document.switchboard.state.triggerRedraw.toggle()
                         self.error = nil
                     } catch {

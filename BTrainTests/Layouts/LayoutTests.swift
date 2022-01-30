@@ -131,7 +131,7 @@ class LayoutTests: XCTestCase {
         XCTAssertThrowsError(try layout.reserve(trainId: train2.id, fromBlock: b3.id, toBlock: b4.id, direction: .next))
         
         // Now let's free the blocks reserved by train 1 (but keep it in its block) and try again to reserve for train 2, it should work this time
-        try layout.freeLeadingBlocksAndUpdateTrailingBlocks(trainID: train1.id)
+        try layout.updateReservedBlocks(train: train1)
         XCTAssertNotNil(b1.reserved)
         XCTAssertNotNil(train1.blockId)
 

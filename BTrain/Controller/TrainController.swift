@@ -153,7 +153,7 @@ final class TrainController {
         // Try to reserve the next blocks and if successfull, then start the train
         train.state = .running
         do {
-            if try layout.reserveNextBlocks(train: train) {
+            if try layout.updateReservedBlocks(train: train) {
                 debug("Start train \(train.name) because the next blocks could be reserved")
                 train.startRouteIndex = train.routeStepIndex
                 try layout.setTrainSpeed(train, LayoutFactory.DefaultSpeed)
@@ -452,7 +452,7 @@ final class TrainController {
         
         // If the train is not stopping in this block, reserve the block(s) ahead.
         if stopTrigger == nil {
-            if try layout.reserveNextBlocks(train: train) == false {
+            if try layout.updateReservedBlocks(train: train) == false {
                 // If it is not possible, then stop the train in this block
                 debug("Train \(train) will stop here (\(nextBlock)) because the next block(s) cannot be reserved")
                 stopTrigger = StopTrigger.temporaryStop()

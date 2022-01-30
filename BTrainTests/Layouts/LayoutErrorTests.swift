@@ -59,15 +59,16 @@ class LayoutErrorTests: XCTestCase {
             XCTAssertEqual(error.localizedDescription, "Block foo not found")
         }
     }
-    
-    func testMissingTrain() {
-        do {
-            try layout.freeLeadingBlocksAndUpdateTrailingBlocks(trainID: Identifier<Train>(uuid: "foo"))
-            XCTFail("Must throw an exception")
-        } catch {
-            XCTAssertEqual(error.localizedDescription, "Train foo not found")
-        }
-    }
+  
+    // TODO: necessary?
+//    func testMissingTrain() {
+//        do {
+//            try layout.reserveNextBlocks(trainID: Identifier<Train>(uuid: "foo"))
+//            XCTFail("Must throw an exception")
+//        } catch {
+//            XCTAssertEqual(error.localizedDescription, "Train foo not found")
+//        }
+//    }
 
     func testMissingTurnout() throws {
         layout.link(from: b1.next, to: turnout.socket0)
