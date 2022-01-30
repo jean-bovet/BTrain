@@ -545,43 +545,60 @@ final class TrainController {
         // (1) Free up leading reserved blocks
         // (2) Reserve leading reserved blocks
         try freeLeadingReservedElements()
-                
-        let startReservationIndex = min(route.lastStepIndex, train.routeStepIndex + 1)
-        let endReservationIndex = min(route.lastStepIndex, train.routeStepIndex + train.maxNumberOfLeadingReservedBlocks)
-                
-        var previousStep = route.steps[train.routeStepIndex]
-        let stepsToReserve = route.steps[startReservationIndex...endReservationIndex]
         
-        // Variable keeping track of the number of blocks that have been reserved.
+        // Make sure to fill the blocks with the train, taking into account its length.
+        // Note: this is necessary because if the train is "pushed" by the locomotive,
+        // the leading blocks will be freedup and need to be reserved again for the train.
+        try layout.fillBlocksWithTrain(train: train)
+                
+        // We are going to iterate over all the remaining steps of the route until we
+        // either reach the end of the route or if we have reserved enough blocks.
+        let startReservationIndex = min(route.lastStepIndex, train.routeStepIndex + 1)
+        let stepsToReserve = route.steps[startReservationIndex...route.lastStepIndex]
+
+        // Remember the last step so we can reserve all the transitions and turnouts
+        var previousStep = route.steps[train.routeStepIndex]
+
+        // Variable keeping track of the number of leading blocks that have been reserved.
         // At least one block must have been reserved to consider this function successfull.
-        var numberOfBlocksReserved = 0
+        // Note: blocks that are reserved for the train and its wagons do not count against that count.
+        var numberOfLeadingBlocksReserved = 0
         
         for step in stepsToReserve {
             guard let block = layout.block(for: step.blockId) else {
                 throw LayoutError.blockNotFound(blockId: step.blockId)
             }
-            
-            guard block.reserved == nil else {
-                return numberOfBlocksReserved > 0
-            }
-
-            guard block.train == nil else {
-                return numberOfBlocksReserved > 0
-            }
-            
+                   
             guard block.enabled else {
-                return numberOfBlocksReserved > 0
+                return numberOfLeadingBlocksReserved > 0
             }
 
-            // Note: it is possible for this call to throw an exception if it cannot reserve.
-            // Catch it and return false instead as this is not an error we want to report back to the runtime
-            do {
-                try layout.reserve(trainId: train.id, fromBlock: previousStep.blockId, toBlock: block.id, direction: previousStep.direction)
-                BTLogger.debug("Reserved \(previousStep.blockId) to \(block.id) for \(train.name)")
-                numberOfBlocksReserved += 1
-            } catch {
-                BTLogger.debug("Cannot reserve block \(previousStep.blockId) to \(block.id) for \(train.name): \(error)")
-                return numberOfBlocksReserved > 0
+            if block.isOccupied(by: train.id) {
+                // The block is already reserved and contains a portion of the train
+                // Note: we are not incrementing `numberOfLeadingBlocksReserved` because
+                // an occupied block does not count as a "leading" block; it is occupied because
+                // the train (or portion of it) occupies it.
+                BTLogger.debug("Already occupied (and reserved) \(previousStep.blockId) to \(block.id) for \(train.name)")
+            } else {
+                guard block.reserved == nil else {
+                    return numberOfLeadingBlocksReserved > 0
+                }
+                
+                guard block.train == nil else {
+                    return numberOfLeadingBlocksReserved > 0
+                }
+
+                // The block is empty, try to reserve it.
+                // Note: it is possible for this call to throw an exception if it cannot reserve.
+                // Catch it and return false instead as this is not an error we want to report back to the runtime
+                do {
+                    try layout.reserve(trainId: train.id, fromBlock: previousStep.blockId, toBlock: block.id, direction: previousStep.direction)
+                    BTLogger.debug("Reserved \(previousStep.blockId) to \(block.id) for \(train.name)")
+                    numberOfLeadingBlocksReserved += 1
+                } catch {
+                    BTLogger.debug("Cannot reserve block \(previousStep.blockId) to \(block.id) for \(train.name): \(error)")
+                    return numberOfLeadingBlocksReserved > 0
+                }
             }
 
             // Stop reserving as soon as a block that is going to
@@ -589,13 +606,18 @@ final class TrainController {
             // without reserving any block ahead and upon restarting,
             // it will reserve what it needs in front of it.
             guard !trainShouldStop(block: block) else {
-                return numberOfBlocksReserved > 0
+                return numberOfLeadingBlocksReserved > 0
             }
 
+            // Stop once we have reached the maximum number of leading blocks to reserve
+            if numberOfLeadingBlocksReserved >= train.maxNumberOfLeadingReservedBlocks {
+                break
+            }
+            
             previousStep = step
         }
         
-        return numberOfBlocksReserved > 0
+        return numberOfLeadingBlocksReserved > 0
     }
     
     func stop(completely: Bool = false) throws -> Result {

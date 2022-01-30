@@ -58,61 +58,6 @@ import Foundation
 //
 final class Block: Element, ObservableObject {
     
-    // Returns the length (in cm) of the part at the specified index,
-    // starting from the beginning of the block.
-    func partLenght(at index: Int) -> Double? {
-        if index == feedbacks.count {
-            // Last part:
-            // [ p0  |   p1 |   p2 ]
-            // [ <0> f1 <1> f2 <2> ]
-            // |<--distance->|
-            // |<--- length ------>|
-            guard let length = length else {
-                return nil
-            }
-            guard let feedbackDistance = feedbacks[index - 1].distance else {
-                return nil
-            }
-            return length - feedbackDistance
-        } else if index > 0 {
-            // [ p0  |   p1 |   p2 ]
-            // [ <0> f1 <1> f2 <2> ]
-            // |<--distance->|
-            // |<-d->|
-            guard let feedback1Distance = feedbacks[index].distance else {
-                return nil
-            }
-            guard let feedback2Distance = feedbacks[index - 1].distance else {
-                return nil
-            }
-            return feedback1Distance - feedback2Distance
-        } else if index == 0 {
-            // First part:
-            // [ p0  |   p1 |   p2 ]
-            // [ <0> f1 <1> f2 <2> ]
-            // |<-d->|
-            return feedbacks[index].distance
-        } else {
-            // TODO: proper exception
-            fatalError("Unexpected index")
-        }
-
-    }
-    
-    // Returns all the part lenght (in cm) for the entire block or nil
-    // if one (or more) feedback distance is not defined.
-    func allPartsLength() -> [Int:Double]? {
-        var results = [Int:Double]()
-        for index in 0...feedbacks.count {
-            if let length = partLenght(at: index) {
-                results[index] = length
-            } else {
-                return nil
-            }
-        }
-        return results
-    }
-    
     // The category of the block
     enum Category: String, Codable, CaseIterable, Comparable {
         case station

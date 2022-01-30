@@ -50,6 +50,8 @@ final class Turnout: Element, ObservableObject {
     
     var reserved: Identifier<Train>?
 
+    var train: Identifier<Train>?
+
     var rotationAngle: CGFloat = 0
     var center: CGPoint = .zero
 

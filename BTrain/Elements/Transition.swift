@@ -35,7 +35,9 @@ protocol ITransition: AnyObject {
     // Contains the train that has reserved this transition,
     // or nil if no train has reserved it.
     var reserved: Identifier<Train>? { get set }
-    
+
+    var train: Identifier<Train>? { get set }
+
     // Returns the inverse of this transition
     var reverse: ITransition { get }
 
@@ -55,7 +57,9 @@ final class Transition: Element, ITransition {
     // Contains the train that has reserved this transition,
     // or nil if no train has reserved it.
     var reserved: Identifier<Train>?
-    
+
+    var train: Identifier<Train>?
+
     // Returns the inverse of this transition
     var reverse: ITransition {
         return TransitionInverse(transition: self)
@@ -173,7 +177,16 @@ final class TransitionInverse: ITransition {
             transition.reserved = newValue
         }
     }
-    
+
+    var train: Identifier<Train>? {
+        get {
+            transition.train
+        }
+        set {
+            transition.train = newValue
+        }
+    }
+
     var reverse: ITransition {
         return TransitionInverse(transition: self)
     }

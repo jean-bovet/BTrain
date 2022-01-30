@@ -14,9 +14,9 @@ import Foundation
 
 extension Layout {
     
-    // This method reserves all the necessary blocks (and parts of the block) to fit
+    // This method reserves and occupies all the necessary blocks (and parts of the block) to fit
     // the specified train with all its length, taking into account the length of each block.
-    func reserveBlocksForTrainLength(train: Train) throws {
+    func fillBlocksWithTrain(train: Train) throws {
         guard let fromBlockId = train.blockId else {
             throw LayoutError.trainNotAssignedToABlock(trainId: train.id)
         }
@@ -73,6 +73,7 @@ extension Layout {
                     throw LayoutError.transitionAlreadyReserved(transition: transition)
                 }
                 transition.reserved = train.id
+                transition.train = train.id
             } else if let turnout = info.turnout {
                 guard turnout.reserved == nil else {
                     throw LayoutError.turnoutAlreadyReserved(turnout: turnout)
@@ -81,6 +82,7 @@ extension Layout {
                     remainingTrainLength -= length
                 }
                 turnout.reserved = train.id
+                turnout.train = train.id
             } else if let block = info.block, let direction = info.direction {
                 guard block.reserved == nil || info.index == 0 else {
                     throw LayoutError.blockAlreadyReserved(block: block)

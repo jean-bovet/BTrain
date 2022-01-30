@@ -182,8 +182,7 @@ final class Train: Element, ObservableObject {
     // The state of the train
     @Published var state: State = .stopped
 
-    //var brakeInBlock
-    // The block this train is located in
+    // The block where the locomotive is located
     @Published var blockId: Identifier<Block>?
     
     // Position of the train inside the current block,

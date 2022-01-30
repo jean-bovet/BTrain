@@ -45,6 +45,21 @@ final class LayoutECreator: LayoutCreating {
         return "Loop with Alternatives"
     }
     
+    func newLayoutWithLengths() -> Layout {
+        let l = newLayout()
+        l.trains.forEach { $0.length = 100 }
+        l.blocks.forEach { block in
+            block.length = 60
+            let fbDistanceIncrement = 60.0 / Double(block.feedbacks.count+1)
+            var fbDistance = fbDistanceIncrement
+            for index in block.feedbacks.indices {
+                block.feedbacks[index].distance = fbDistance
+                fbDistance += fbDistanceIncrement
+            }
+        }
+        return l
+    }
+    
     func newLayout() -> Layout {
         let l = Layout(uuid: LayoutDCreator.id.uuid)
         l.name = name
@@ -123,6 +138,7 @@ final class LayoutECreator: LayoutCreating {
         l.newRoute("0", name: "S1 to S1", [Route.Step(b_s1,.next),Route.Step(b_b1,.next),Route.Step(b_b2,.next),Route.Step(b_b3,.next),Route.Step(b_s1,.next)])
         l.newRoute("1", name: "S1 to S1 Reversed", [Route.Step(b_s1,.previous),Route.Step(b_b3,.previous),Route.Step(b_b2,.previous),Route.Step(b_b1,.previous),Route.Step(b_s1,.previous)])
         l.newRoute("2", name: "S1 to S2 to S1", [Route.Step(b_s1,.next),Route.Step(b_b1,.next),Route.Step(b_b2,.next),Route.Step(b_b3,.next),Route.Step(b_s2,.next),Route.Step(b_b1,.next),Route.Step(b_b2,.next),Route.Step(b_b3,.next),Route.Step(b_s1,.next)])
+        l.newRoute("3", name: "S1 to S2", [Route.Step(b_s1,.next),Route.Step(b_b1,.next),Route.Step(b_b2,.next),Route.Step(b_b3,.next),Route.Step(b_s2,.next)])
 
         // Trains
 

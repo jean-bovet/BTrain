@@ -748,6 +748,27 @@ class ManualRoutingTests: BTTestCase {
         XCTAssertTrue(p.train.manualScheduling)
     }
 
+    func testTrainWithWagonsInFront() throws {
+        let layout = LayoutECreator().newLayoutWithLengths()
+        layout.turnouts[0].state = .branchLeft
+        layout.turnouts[5].state = .branchRight
+
+        let train = layout.trains[0]
+        train.wagonsDirection = .next
+
+        let p = try setup(layout: layout, fromBlockId: "s1", position: .start, route: layout.routes[3])
+
+        try p.assert("3: {r0{s1 🛑🚂0 ≏ 💺0 }} <r0<t1,l>> <r0<t2,s>> [r0[b1 💺0 ≏ 💺0 ]] <r0<t3>> [r0[b2 💺0 ≏ ]] <t4> [b3 ≏ ≏ ] <t5> <t6,r> {s2 ≏ }")
+        
+        layout.strictRouteFeedbackStrategy = false
+
+        try p.start()
+
+        XCTAssertTrue(p.train.automaticScheduling)
+        
+        try p.assert("3: {r0{s1 🚂0 ≏ 💺0 }} <r0<t1,l>> <r0<t2,s>> [r0[b1 💺0 ≏ 💺0 ]] <r0<t3>> [r0[b2 💺0 ≏ ]] <r0<t4>> [r0[b3 ≏ ≏ ]] <t5> <t6,r> {s2 ≏ }")
+    }
+    
     // MARK: -- Utility
     
     // Convenience structure to test the layout and its route

@@ -61,7 +61,7 @@ extension Layout {
         
         // Don't forget to update the reservation for the train length
         // as moving inside a block will change them
-        try reserveBlocksForTrainLength(train: train)
+        try fillBlocksWithTrain(train: train)
         
         didChange()
     }
@@ -304,6 +304,10 @@ extension Layout {
             throw LayoutError.cannotReserveBlock(block: b2, train: train, reserved: b2.reserved!)
         }
 
+        guard b2.train == nil else {
+            throw LayoutError.cannotReserveBlock(block: b2, train: train, reserved: b2.reserved!)
+        }
+        
         let transitions = try self.transitions(from: b1, to: b2, direction: direction)
         guard transitions.count > 0 else {
             throw LayoutError.noTransition(fromBlockId: b1.id, toBlockId: b2.id)
@@ -384,12 +388,14 @@ extension Layout {
             if let transition = info.transition {
                 if transition.reserved == trainId {
                     transition.reserved = nil
+                    transition.train = nil
                 } else {
                     return .stop
                 }
             } else if let turnout = info.turnout {
                 if turnout.reserved == trainId {
                     turnout.reserved = nil
+                    turnout.train = nil
                 } else {
                     return .stop
                 }
@@ -435,10 +441,9 @@ extension Layout {
         
         // Remove the train from the blocks
         blockMap.values
-            .filter { $0.reserved?.trainId == train.id || $0.train?.trainId == train.id }
+            .filter { $0.reserved?.trainId == train.id }
             .forEach { block in
                 // Only free a block if the block is not the one the train is located on or
-                // if `removeFromLayout` is true because the train must be removed from all the blocks.
                 if block.id != train.blockId {
                     block.reserved = nil
                     block.train = nil
@@ -447,7 +452,7 @@ extension Layout {
         turnouts.filter { $0.reserved == train.id }.forEach { $0.reserved = nil }
         transitions.filter { $0.reserved == train.id }.forEach { $0.reserved = nil }
         
-        try reserveBlocksForTrainLength(train: train)
+        try fillBlocksWithTrain(train: train)
         
         didChange()
     }
@@ -460,13 +465,13 @@ extension Layout {
         
         // Remove the train from the blocks
         blockMap.values
-            .filter { $0.reserved?.trainId == train.id || $0.train?.trainId == train.id }
+            .filter { $0.reserved?.trainId == train.id }
             .forEach { block in
                 block.reserved = nil
                 block.train = nil
             }
-        turnouts.filter { $0.reserved == train.id }.forEach { $0.reserved = nil }
-        transitions.filter { $0.reserved == train.id }.forEach { $0.reserved = nil }
+        turnouts.filter { $0.reserved == train.id }.forEach { $0.reserved = nil; $0.train = nil }
+        transitions.filter { $0.reserved == train.id }.forEach { $0.reserved = nil; $0.train = nil }
         
         train.blockId = nil
         
