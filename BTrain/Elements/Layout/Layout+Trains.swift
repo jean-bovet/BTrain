@@ -340,7 +340,6 @@ extension Layout {
         
         // Free all other blocks from the train
         try updateReservedBlocks(train: train)
-//        try freeLeadingBlocksAndUpdateTrailingBlocks(trainID: train.id)
     }
     
     func reserve(trainId: Identifier<Train>, fromBlock: Identifier<Block>, toBlock: Identifier<Block>, direction: Direction) throws {

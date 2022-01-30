@@ -18,25 +18,25 @@ extension Layout {
     // in front of the train (leading blocks).
     // Note: it won't reserve blocks that are already reserved to avoid loops.
     @discardableResult
-    func updateReservedBlocks(train: Train) throws -> Bool {
+    func updateReservedBlocks(train: Train, forceReserveLeadingBlocks: Bool = false) throws -> Bool {
         // Before trying to reserve the leading blocks, let's free up
         // all the reserved elements (turnouts, transitions, blocks) in front
         // of the train. This is to keep the algorithm simple:
         // (1) Free up leading reserved blocks
         // (2) Reserve leading reserved blocks
-        try freeBlocks(train: train)
+        try freeElements(train: train)
         
         // Make sure to fill the blocks with the train, taking into account its length.
         // Note: this is necessary because if the train is "pushed" by the locomotive,
         // the leading blocks will be freedup and need to be reserved again for the train.
         try fillBlocks(train: train)
         
-        return try reserveLeadingBlocks(train: train)
+        return try reserveLeadingBlocks(train: train, forceReserveLeadingBlocks: forceReserveLeadingBlocks)
     }
     
-    private func reserveLeadingBlocks(train: Train) throws -> Bool {
+    private func reserveLeadingBlocks(train: Train, forceReserveLeadingBlocks: Bool) throws -> Bool {
         // Reserve the leading blocks only when a route is defined and when the train is running.
-        guard train.state == .running else {
+        guard train.state == .running || forceReserveLeadingBlocks else {
             return false
         }
         
@@ -157,9 +157,7 @@ extension Layout {
         // Direction of travel of the train within the block
         let trainDirection = trainInstance.direction
         // Direction in which the wagon are layout from the locomotive
-        let wagonDirection = train.wagonsDirection
-        // True if the train and the wagon directions are the same, false otherwise
-        let trainAndWagonDirectionIdentical = trainDirection == wagonDirection
+        let wagonDirection = train.wagonsPushedByLocomotive ? trainDirection : trainDirection.opposite
         
         // First, free all the reserved block "behind" the train so we can reserve them again
         // using the length of the train in consideraion
@@ -186,7 +184,7 @@ extension Layout {
                 }
                 turnout.reserved = train.id
                 turnout.train = train.id
-            } else if let block = info.block, let direction = info.direction {
+            } else if let block = info.block, let wagonDirection = info.direction {
                 guard block.reserved == nil || info.index == 0 else {
                     throw LayoutError.blockAlreadyReserved(block: block)
                 }
@@ -196,13 +194,16 @@ extension Layout {
                     return .stop
                 }
                 
+                // Determine the direction of the train within the current block by using
+                // the flag indicating if the wagons are pushed or not by the locomotive.
+                let trainDirection = train.wagonsPushedByLocomotive ? wagonDirection : wagonDirection.opposite
                 remainingTrainLength = reserveBlockParts(train: train,
                                                          remainingTrainLength: remainingTrainLength,
                                                          block: block,
                                                          headBlock: info.index == 0,
-                                                         direction: direction,
-                                                         trainDirection: trainAndWagonDirectionIdentical ? direction : direction.opposite)
-                block.reserved = .init(trainId: train.id, direction: direction)
+                                                         wagonDirection: wagonDirection,
+                                                         trainDirection: trainDirection)
+                block.reserved = .init(trainId: train.id, direction: trainDirection)
             }
 
             if remainingTrainLength > 0 {
@@ -213,7 +214,7 @@ extension Layout {
         })
     }
     
-    private func reserveBlockParts(train: Train, remainingTrainLength: Double, block: Block, headBlock: Bool, direction: Direction, trainDirection: Direction) -> Double {
+    private func reserveBlockParts(train: Train, remainingTrainLength: Double, block: Block, headBlock: Bool, wagonDirection: Direction, trainDirection: Direction) -> Double {
         let trainInstance = TrainInstance(train.id, trainDirection)
         trainInstance.parts.removeAll()
         
@@ -230,10 +231,10 @@ extension Layout {
         if headBlock {
             position = train.position
         } else {
-            position = direction == .previous ? block.feedbacks.count : 0
+            position = wagonDirection == .previous ? block.feedbacks.count : 0
         }
         
-        let increment = direction == .previous ? -1 : 1
+        let increment = wagonDirection == .previous ? -1 : 1
 
         // Gather all the part length to ensure they are all defined.
         if let allPartsLength = block.allPartsLength() {
@@ -305,18 +306,19 @@ extension Layout {
     
     // This method will free all the leading blocks reserved for the specified train and
     // update the trailing blocks that the train occupies with its length.
-    private func freeBlocks(train: Train) throws {
+    private func freeElements(train: Train) throws {
         blockMap.values
             .filter { $0.reserved?.trainId == train.id }
             .forEach { block in
                 // Only free a block if the block is not the one the train is located on or
                 if block.id != train.blockId {
+                    print("Free \(block.name)")
                     block.reserved = nil
                     block.train = nil
                 }
             }
-        turnouts.filter { $0.reserved == train.id }.forEach { $0.reserved = nil }
-        transitions.filter { $0.reserved == train.id }.forEach { $0.reserved = nil }
+        turnouts.filter { $0.reserved == train.id }.forEach { print("Free \($0.name)"); $0.reserved = nil; $0.train = nil }
+        transitions.filter { $0.reserved == train.id }.forEach { print("Free \($0.id)"); $0.reserved = nil; $0.train = nil }
     }
     
 }

@@ -27,7 +27,7 @@ import XCTest
 //   └─────────┘                              └─────────┘
 class TrainLengthTests: XCTestCase {
     
-    func testReserveDirectionNext() throws {
+    func testReserveWagonsPulledByLocomotive() throws {
         let layout = LayoutBCreator().newLayout()
 
         let b1 = layout.blocks[0]
@@ -55,7 +55,7 @@ class TrainLengthTests: XCTestCase {
 
         let t1 = layout.trains[0]
         t1.blockId = b1.id
-        t1.wagonsDirection = .previous
+        t1.wagonsPushedByLocomotive = false
         t1.position = 2
         b1.train = .init(t1.id, .next)
         
@@ -84,7 +84,7 @@ class TrainLengthTests: XCTestCase {
         XCTAssertThrowsError(try layout.fillBlocks(train: t1))
     }
 
-    func testReserveDirectionPrevious() throws {
+    func testReserveWagonsPushedByLocomotive() throws {
         let layout = LayoutBCreator().newLayout()
 
         let b1 = layout.blocks[0]
@@ -112,9 +112,9 @@ class TrainLengthTests: XCTestCase {
 
         let t1 = layout.trains[0]
         t1.blockId = b4.id
-        t1.wagonsDirection = .next
+        t1.wagonsPushedByLocomotive = true
         t1.position = 0
-        b4.train = .init(t1.id, .previous)
+        b4.train = .init(t1.id, .next)
         
         t1.length = 40+100+100+20
         try layout.fillBlocks(train: t1)

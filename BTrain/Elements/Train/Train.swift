@@ -116,11 +116,11 @@ final class Train: Element, ObservableObject {
 
     // Direction of travel of the locomotive
     @Published var directionForward = true
-    
-    // Direction of the wagons relative to the block. This direction is used
-    // by the layout to reserve the appropriate number of blocks that
-    // the train length occupies.
-    @Published var wagonsDirection: Direction = .previous
+
+    // Indicates if the wagons are pushed or pulled by the locomotive.
+    // It is used to correctly reserve the blocks occupied by the length of the train
+    // when the train length is larger than the block it occupies.
+    @Published var wagonsPushedByLocomotive = false
     
     // The route this train is associated with
     @Published var routeId: Identifier<Route>?
@@ -224,7 +224,8 @@ final class Train: Element, ObservableObject {
     
     convenience init(uuid: String = UUID().uuidString, name: String = "", address: UInt32 = 0, decoder: DecoderType = .MFX,
                      length: Double? = nil, magnetDistance: Double? = nil, maxSpeed: TrainSpeed.UnitKph? = nil, maxNumberOfLeadingReservedBlocks: Int? = nil) {
-        self.init(id: Identifier(uuid: uuid), name: name, address: address, decoder: decoder)
+        self.init(id: Identifier(uuid: uuid), name: name, address: address, decoder: decoder,
+                  length: length, magnetDistance: magnetDistance, maxSpeed: maxSpeed, maxNumberOfLeadingReservedBlocks: maxNumberOfLeadingReservedBlocks)
     }
     
     init(id: Identifier<Train>, name: String, address: UInt32, decoder: DecoderType = .MFX,

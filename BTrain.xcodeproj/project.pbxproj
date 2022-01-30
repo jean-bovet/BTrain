@@ -162,6 +162,7 @@
 		A79466D1279B948F006E2A4C /* Simulator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A79466D0279B948F006E2A4C /* Simulator.swift */; };
 		A796FA2B2772BB5400FA41BA /* Layout.json in Resources */ = {isa = PBXBuildFile; fileRef = A796FA2A2772BB5400FA41BA /* Layout.json */; };
 		A796FA2E2775642B00FA41BA /* LayoutAsserter.swift in Sources */ = {isa = PBXBuildFile; fileRef = A796FA2D2775642B00FA41BA /* LayoutAsserter.swift */; };
+		A798BB4027A6E7F1000BB4D1 /* LayoutHCreator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A798BB3F27A6E7F1000BB4D1 /* LayoutHCreator.swift */; };
 		A7B06AE12727786500BDD88C /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7B06AE02727786500BDD88C /* ContentView.swift */; };
 		A7B06AF2272782C300BDD88C /* LayoutDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7B06AF1272782C300BDD88C /* LayoutDocument.swift */; };
 		A7B06AF4272783F600BDD88C /* MarklinCANMessageFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7B06AF3272783F600BDD88C /* MarklinCANMessageFactory.swift */; };
@@ -382,6 +383,7 @@
 		A79466D0279B948F006E2A4C /* Simulator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Simulator.swift; sourceTree = "<group>"; };
 		A796FA2A2772BB5400FA41BA /* Layout.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = Layout.json; sourceTree = "<group>"; };
 		A796FA2D2775642B00FA41BA /* LayoutAsserter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutAsserter.swift; sourceTree = "<group>"; };
+		A798BB3F27A6E7F1000BB4D1 /* LayoutHCreator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutHCreator.swift; sourceTree = "<group>"; };
 		A7B06AE02727786500BDD88C /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		A7B06AED2727819800BDD88C /* Server.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Server.swift; sourceTree = "<group>"; };
 		A7B06AEE2727819800BDD88C /* ServerConnection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ServerConnection.swift; sourceTree = "<group>"; };
@@ -890,6 +892,7 @@
 				A7FBC8B3276E87B7009D49C3 /* LayoutECreator.swift */,
 				A717157F2757036B00200F92 /* LayoutFCreator.swift */,
 				A71690CB27475D5F008FE624 /* LayoutGCreator.swift */,
+				A798BB3F27A6E7F1000BB4D1 /* LayoutHCreator.swift */,
 			);
 			path = Predefined;
 			sourceTree = "<group>";
@@ -1192,6 +1195,7 @@
 				A7CA5EC7279654EB00171398 /* Block+Feedback.swift in Sources */,
 				A7F779CE272B445B00E73275 /* Feedback.swift in Sources */,
 				A7FBC8B8276EBB34009D49C3 /* PathFinder.swift in Sources */,
+				A798BB4027A6E7F1000BB4D1 /* LayoutHCreator.swift in Sources */,
 				A78413862740791C00381341 /* Shape+Extension.swift in Sources */,
 				A7E78C4227A08F9E004D1821 /* Layout+Reservation.swift in Sources */,
 				A73E0825276B99A8005F9D64 /* BlockAllFeedbacksView.swift in Sources */,

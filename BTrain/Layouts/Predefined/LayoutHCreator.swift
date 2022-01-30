@@ -21,13 +21,13 @@ final class LayoutHCreator: LayoutCreating {
         // Blocks
 
         let b_A = Block("A", type: .sidingPrevious, center: CGPoint(x: 90.0, y: 60.0), rotationAngle: 0.0, waitingTime: 10.0, length: 200.0)
-        let b_B = Block("B", type: .free, center: CGPoint(x: 310.0, y: 60.0), rotationAngle: 0.0, waitingTime: 10.0, length: 60.0)
-        let b_C = Block("C", type: .free, center: CGPoint(x: 440.0, y: 60.0), rotationAngle: 0.0, waitingTime: 10.0, length: 60.0)
-        let b_D = Block("D", type: .free, center: CGPoint(x: 570.0, y: 60.0), rotationAngle: 0.0, waitingTime: 10.0, length: 60.0)
+        let b_B = Block("B", type: .free, center: CGPoint(x: 310.0, y: 60.0), rotationAngle: 0.0, waitingTime: 10.0, length: 100.0)
+        let b_C = Block("C", type: .free, center: CGPoint(x: 440.0, y: 60.0), rotationAngle: 0.0, waitingTime: 10.0, length: 100.0)
+        let b_D = Block("D", type: .free, center: CGPoint(x: 570.0, y: 60.0), rotationAngle: 0.0, waitingTime: 10.0, length: 100.0)
         let b_E = Block("E", type: .sidingNext, center: CGPoint(x: 760.0, y: 60.0), rotationAngle: 0.0, waitingTime: 10.0, length: 200.0)
-        let b_B2 = Block("B2", type: .free, center: CGPoint(x: 310.0, y: 150.0), rotationAngle: 0.0, waitingTime: 10.0, length: 60.0)
-        let b_C2 = Block("C2", type: .free, center: CGPoint(x: 440.0, y: 150.0), rotationAngle: -.pi, waitingTime: 10.0, length: 60.0)
-        let b_D2 = Block("D2", type: .free, center: CGPoint(x: 570.0, y: 150.0), rotationAngle: 0.0, waitingTime: 10.0, length: 60.0)
+        let b_B2 = Block("B2", type: .free, center: CGPoint(x: 310.0, y: 150.0), rotationAngle: 0.0, waitingTime: 10.0, length: 100.0)
+        let b_C2 = Block("C2", type: .free, center: CGPoint(x: 440.0, y: 150.0), rotationAngle: -.pi, waitingTime: 10.0, length: 100.0)
+        let b_D2 = Block("D2", type: .free, center: CGPoint(x: 570.0, y: 150.0), rotationAngle: 0.0, waitingTime: 10.0, length: 100.0)
         l.add([b_A,b_B,b_C,b_D,b_E,b_B2,b_C2,b_D2])
 
         // Feedbacks
@@ -66,7 +66,7 @@ final class LayoutHCreator: LayoutCreating {
         b_B.brakeFeedbackPrevious = f_B_2.id
         b_B.stopFeedbackPrevious = f_B_1.id
         b_B.feedbacks[0].distance = 20.0
-        b_B.feedbacks[1].distance = 40.0
+        b_B.feedbacks[1].distance = 80.0
         l.assign(b_C, [f_C_1,f_C_2])
         b_C.entryFeedbackNext = f_C_1.id
         b_C.brakeFeedbackNext = f_C_1.id
@@ -75,7 +75,7 @@ final class LayoutHCreator: LayoutCreating {
         b_C.brakeFeedbackPrevious = f_C_2.id
         b_C.stopFeedbackPrevious = f_C_1.id
         b_C.feedbacks[0].distance = 20.0
-        b_C.feedbacks[1].distance = 40.0
+        b_C.feedbacks[1].distance = 80.0
         l.assign(b_D, [f_D_1,f_D_2])
         b_D.entryFeedbackNext = f_D_1.id
         b_D.brakeFeedbackNext = f_D_1.id
@@ -84,7 +84,7 @@ final class LayoutHCreator: LayoutCreating {
         b_D.brakeFeedbackPrevious = f_D_2.id
         b_D.stopFeedbackPrevious = f_D_1.id
         b_D.feedbacks[0].distance = 20.0
-        b_D.feedbacks[1].distance = 40.0
+        b_D.feedbacks[1].distance = 80.0
         l.assign(b_E, [f_E_1,f_E_2])
         b_E.entryFeedbackNext = f_E_1.id
         b_E.brakeFeedbackNext = f_E_1.id
@@ -102,7 +102,7 @@ final class LayoutHCreator: LayoutCreating {
         b_B2.brakeFeedbackPrevious = f_B2_2.id
         b_B2.stopFeedbackPrevious = f_B2_1.id
         b_B2.feedbacks[0].distance = 20.0
-        b_B2.feedbacks[1].distance = 40.0
+        b_B2.feedbacks[1].distance = 80.0
         l.assign(b_C2, [f_C2_1,f_C2_2])
         b_C2.entryFeedbackNext = f_C2_1.id
         b_C2.brakeFeedbackNext = f_C2_1.id
@@ -111,7 +111,7 @@ final class LayoutHCreator: LayoutCreating {
         b_C2.brakeFeedbackPrevious = f_C2_2.id
         b_C2.stopFeedbackPrevious = f_C2_1.id
         b_C2.feedbacks[0].distance = 20.0
-        b_C2.feedbacks[1].distance = 40.0
+        b_C2.feedbacks[1].distance = 80.0
         l.assign(b_D2, [f_D2_1,f_D2_2])
         b_D2.entryFeedbackNext = f_D2_1.id
         b_D2.brakeFeedbackNext = f_D2_1.id
@@ -120,7 +120,7 @@ final class LayoutHCreator: LayoutCreating {
         b_D2.brakeFeedbackPrevious = f_D2_2.id
         b_D2.stopFeedbackPrevious = f_D2_1.id
         b_D2.feedbacks[0].distance = 20.0
-        b_D2.feedbacks[1].distance = 40.0
+        b_D2.feedbacks[1].distance = 80.0
 
         // Turnouts
 

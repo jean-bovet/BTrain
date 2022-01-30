@@ -98,7 +98,8 @@ final class ElementVisitor {
                                     
                 // Find out the exit socket of the turnout given its state
                 guard let socketId = turnout.socketId(fromSocketId: toSocketId, withState: turnout.state) else {
-                    throw LayoutError.socketIdNotFoundForState(turnout: turnout, fromSocketId: toSocketId)
+                    // No error because it can happen that a turnout is configured for another route
+                    return
                 }
                 
                 // Recursively call this method again to continue the job in the next element

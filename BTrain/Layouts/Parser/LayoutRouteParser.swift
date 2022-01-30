@@ -177,11 +177,12 @@ final class LayoutRouteParser {
             } else if sp.matches("}}") {
                 assert(type == .station, "Expected end of station block")
                 parsingBlock = false
+            } else if sp.matches("]]|") {
+                assert(type == .free, "Expected end of .free (but soon to be .sidingNext) track block")
+                block.category = .sidingNext // Change to sidingNext here because that's only when we know if it is one!
+                parsingBlock = false
             } else if sp.matches("]]") {
                 assert(type == .free || type == .sidingPrevious, "Expected end of .free or .sidingPrevious track block")
-                parsingBlock = false
-            } else if sp.matches("]]|") {
-                assert(type == .sidingNext, "Expected end of .sidingNext track block")
                 parsingBlock = false
             } else if sp.matches("}") {
                 assert(type == .station, "Expected end of station block")

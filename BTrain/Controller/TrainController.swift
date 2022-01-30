@@ -151,19 +151,14 @@ final class TrainController {
         }
                 
         // Try to reserve the next blocks and if successfull, then start the train
-        train.state = .running
-        do {
-            if try layout.updateReservedBlocks(train: train) {
-                debug("Start train \(train.name) because the next blocks could be reserved")
-                train.startRouteIndex = train.routeStepIndex
-                try layout.setTrainSpeed(train, LayoutFactory.DefaultSpeed)
-                return .processed
-            }
-        } catch {
-            train.state = .stopped
-            throw error
+        if try layout.updateReservedBlocks(train: train, forceReserveLeadingBlocks: true) {
+            debug("Start train \(train.name) because the next blocks could be reserved")
+            train.startRouteIndex = train.routeStepIndex
+            train.state = .running
+            try layout.setTrainSpeed(train, LayoutFactory.DefaultSpeed)
+            return .processed
         }
-        
+
         return .none
     }
     

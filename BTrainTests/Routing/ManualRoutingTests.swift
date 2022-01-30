@@ -754,7 +754,7 @@ class ManualRoutingTests: BTTestCase {
         layout.turnouts[5].state = .branchRight
 
         let train = layout.trains[0]
-        train.wagonsDirection = .next
+        train.wagonsPushedByLocomotive = true
 
         let p = try setup(layout: layout, fromBlockId: "s1", position: .start, route: layout.routes[3])
 
@@ -772,6 +772,91 @@ class ManualRoutingTests: BTTestCase {
         try p.assert("3: {r0{s1 ≡ 🚂0 }} <r0<t1,l>> <r0<t2,s>> [r0[b1 💺0 ≏ 💺0 ]] <r0<t3>> [r0[b2 💺0 ≏ 💺0 ]] <r0<t4>> [r0[b3 ≏ ≏ ]] <t5> <t6,r> {s2 ≏ }")
     }
     
+    func testStraightLine1() throws {
+        let layout = LayoutHCreator().newLayout()
+
+        let p = try setup(layout: layout, fromBlockId: "A", position: .end, route: layout.routes[0])
+
+        try p.assert("0: |[r0[A 💺0 ≏ 💺0 ≏ 🛑🚂0 ]] <AB> [B ≏ ≏ ] [C ≏ ≏ ] [D ≏ ≏ ] <DE> [E ≏ ≏ ]|")
+        
+        try p.start()
+
+        XCTAssertTrue(p.train.automaticScheduling)
+
+        // A = 200
+        // B=C=D=100
+        // AB=DE=10
+        // Train = 120
+        // [A 20 ≏ 160 ≏ 20 ] <10> [B 20 ≏ 60 ≏ 20 ] [C 20 ≏ 60 ≏ 20 ] [D 20 ≏ 60 ≏ 20 ] <10> [E 20 ≏ 160 ≏ 20 ]
+        try p.assert("0: |[r0[A 💺0 ≏ 💺0 ≏ 🚂0 ]] <r0<AB>> [r0[B ≏ ≏ ]] [C ≏ ≏ ] [D ≏ ≏ ] <DE> [E ≏ ≏ ]|")
+        try p.assert("0: |[r0[A ≏ 💺0 ≏ 💺0 ]] <r0<AB>> [r0[B 💺0 ≡ 🚂0 ≏ ]] [r0[C ≏ ≏ ]] [D ≏ ≏ ] <DE> [E ≏ ≏ ]|")
+        try p.assert("0: |[r0[A ≏ 💺0 ≏ 💺0 ]] <r0<AB>> [r0[B 💺0 ≏ 💺0 ≡ 🚂0 ]] [r0[C ≏ ≏ ]] [D ≏ ≏ ] <DE> [E ≏ ≏ ]|")
+        try p.assert("0: |[A ≏ ≏ ] <AB> [r0[B 💺0 ≏ 💺0 ≏ 💺0 ]] [r0[C 💺0 ≡ 🚂0 ≏ ]] [r0[D ≏ ≏ ]] <DE> [E ≏ ≏ ]|")
+        try p.assert("0: |[A ≏ ≏ ] <AB> [r0[B ≏ 💺0 ≏ 💺0 ]] [r0[C 💺0 ≏ 💺0 ≡ 🚂0 ]] [r0[D ≏ ≏ ]] <DE> [E ≏ ≏ ]|")
+        try p.assert("0: |[A ≏ ≏ ] <AB> [B ≏ ≏ ] [r0[C 💺0 ≏ 💺0 ≏ 💺0]] [r0[D 💺0 ≡ 🚂0 ≏ ]] <r0<DE>> [r0[E ≏ ≏ ]]|")
+        try p.assert("0: |[A ≏ ≏ ] <AB> [B ≏ ≏ ] [r0[C 💺0 ≏ 💺0 ≏ 💺0]] [r0[D 💺0 ≏ 💺0 ≡ 🚂0 ]] <r0<DE>> [r0[E ≏ ≏ ]]|")
+        try p.assert("0: |[A ≏ ≏ ] <AB> [B ≏ ≏ ] [C ≏ ≏ ] [r0[D 💺0 ≏ 💺0 ≏ 💺0 ]] <r0<DE>> [r0[E 💺0 ≡ 🟨🚂0 ≏ ]]|")
+        try p.assert("0: |[A ≏ ≏ ] <AB> [B ≏ ≏ ] [C ≏ ≏ ] [D ≏ ≏ ] <DE> [r0[E ≏ 💺0 ≡ 🛑🚂0 ]]|")
+    }
+
+    func testStraightLine1Pushed() throws {
+        let layout = LayoutHCreator().newLayout()
+        layout.trains[0].wagonsPushedByLocomotive = true
+        
+        let p = try setup(layout: layout, fromBlockId: "A", position: .start, route: layout.routes[0])
+
+        try p.assert("0: |[r0[A 🛑🚂0 ≏ 💺0 ≏ 💺0 ]] <AB> [B ≏ ≏ ] [C ≏ ≏ ] [D ≏ ≏ ] <DE> [E ≏ ≏ ]|")
+        
+        try p.start()
+
+        XCTAssertTrue(p.train.automaticScheduling)
+
+        // A = 200
+        // B=C=D=100
+        // AB=DE=10
+        // Train = 120
+        // [A 20 ≏ 160 ≏ 20 ] <10> [B 20 ≏ 60 ≏ 20 ] [C 20 ≏ 60 ≏ 20 ] [D 20 ≏ 60 ≏ 20 ] <10> [E 20 ≏ 160 ≏ 20 ]
+        try p.assert("0: |[r0[A 🚂0 ≏ 💺0 ≏ 💺0]] <r0<AB>> [r0[B ≏ ≏ ]] [C ≏ ≏ ] [D ≏ ≏ ] <DE> [E ≏ ≏ ]|")
+        try p.assert("0: |[r0[A ≡ 🚂0 ≏ 💺0 ]] <r0<AB>> [r0[B 💺0 ≏ 💺0 ≏ ]] [r0[C ≏ ≏ ]] [D ≏ ≏ ] <DE> [E ≏ ≏ ]|")
+        // TODO: have a unit test to ensure the train stops when pushing wagons when a block ahead cannot be reserved
+        try p.assert("0: |[r0[A ≏ ≡ 🚂0 ]] <r0<AB>> [r0[B 💺0 ≏ 💺0 ≏ 💺0 ]] [r0[C 💺0 ≏ ≏ ]] [r0[D ≏ ≏ ]] <DE> [E ≏ ≏ ]|")
+        try p.assert("0: |[A ≏ ≏ ] <AB> [r0[B ≡ 🚂0 ≏ 💺0 ]] [r0[C 💺0 ≏ 💺0 ≏ 💺0 ]] [r0[D ≏ ≏ ]] <DE> [E ≏ ≏ ]|")
+        try p.assert("0: |[A ≏ ≏ ] <AB> [r0[B ≏ ≡ 🚂0 ]] [r0[C 💺0 ≏ 💺0 ≏ 💺0 ]] [r0[D 💺0 ≏ ≏ ]] <r0<DE>> [r0[E ≏ ≏ ]]|")
+        try p.assert("0: |[A ≏ ≏ ] <AB> [B ≏ ≏ ] [r0[C ≡ 🚂0 ≏ 💺0]] [r0[D 💺0 ≏ 💺0 ≏ 💺0 ]] <r0<DE>> [r0[E ≏ ≏ ]]|")
+        try p.assert("0: |[A ≏ ≏ ] <AB> [B ≏ ≏ ] [r0[C ≏ ≡ 🚂0 ]] [r0[D 💺0 ≏ 💺0 ≏ 💺0 ]] <r0<DE>> [r0[E 💺0 ≏ ≏ ]]|")
+        try p.assert("0: |[A ≏ ≏ ] <AB> [B ≏ ≏ ] [C ≏ ≏ ] [r0[D ≡ 🟨🚂0 ≏ 💺0 ]] <r0<DE>> [r0[E 💺0 ≏ 💺0 ≏ ]]|")
+        // TODO: tweak the algorithm to allow the entire train to stop in the E block if there is enough space
+        try p.assert("0: |[A ≏ ≏ ] <AB> [B ≏ ≏ ] [C ≏ ≏ ] [r0[D ≏ ≡ 🛑🚂0 ]] <r0<DE>> [r0[E 💺0 ≏ 💺0 ≏ ]]|")
+//        try p.assert("0: |[A ≏ ≏ ] <AB> [B ≏ ≏ ] [C ≏ ≏ ] [D ≏ ≏ ] <DE> [r0[E ≏ 💺0 ≡ 🛑🚂0 ]]|")
+    }
+
+    func testStraightLine2() throws {
+        let layout = LayoutHCreator().newLayout()
+
+        let p = try setup(layout: layout, fromBlockId: "A", position: .end, route: layout.routes[1])
+
+        try p.assert("1: |[r0[A 💺0 ≏ 💺0 ≏ 🛑🚂0 ]] <AB> [B2 ≏ ≏ ] ![C2 ≏ ≏ ] [D2 ≏ ≏ ] <DE> [E ≏ ≏ ]|")
+        
+        try p.start()
+
+        XCTAssertTrue(p.train.automaticScheduling)
+
+        // A = 200
+        // B=C=D=100
+        // AB=DE=10
+        // Train = 120
+        // [A 20 ≏ 160 ≏ 20 ] <10> [B2 20 ≏ 60 ≏ 20 ] [C2 20 ≏ 60 ≏ 20 ] [D2 20 ≏ 60 ≏ 20 ] <10> [E 20 ≏ 160 ≏ 20 ]
+        try p.assert("1: |[r0[A 💺0 ≏ 💺0 ≏ 🚂0 ]] <r0<AB,r>> [r0[B2 ≏ ≏ ]] ![C2 ≏ ≏ ] [D2 ≏ ≏ ] <DE> [E ≏ ≏ ]|")
+        try p.assert("1: |[r0[A ≏ 💺0 ≏ 💺0 ]] <r0<AB,r>> [r0[B2 💺0 ≡ 🚂0 ≏ ]] ![r0[C2 ≏ ≏ ]] [D2 ≏ ≏ ] <DE> [E ≏ ≏ ]|")
+        try p.assert("1: |[r0[A ≏ 💺0 ≏ 💺0 ]] <r0<AB,r>> [r0[B2 💺0 ≏ 💺0 ≡ 🚂0 ]] ![r0[C2 ≏ ≏ ]] [D2 ≏ ≏ ] <DE> [E ≏ ≏ ]|")
+        try p.assert("1: |[A ≏ ≏ ] <AB,r> [r0[B2 💺0 ≏ 💺0 ≏ 💺0 ]] ![r0[C2 ≏ 🚂0 ≡ 💺0 ]] [r0[D2 ≏ ≏ ]] <DE> [E ≏ ≏ ]|")
+        try p.assert("1: |[A ≏ ≏ ] <AB,r> [r0[B2 ≏ 💺0 ≏ 💺0 ]] ![r0[C2 🚂0 ≡ 💺0 ≏ 💺0 ]] [r0[D2 ≏ ≏ ]] <DE> [E ≏ ≏ ]|")
+        try p.assert("1: |[A ≏ ≏ ] <AB,r> [B2 ≏ ≏ ] ![r0[C2 💺0 ≏ 💺0 ≏ 💺0]] [r0[D2 💺0 ≡ 🚂0 ≏ ]] <r0<DE,l>> [r0[E ≏ ≏ ]]|")
+        try p.assert("1: |[A ≏ ≏ ] <AB,r> [B2 ≏ ≏ ] ![r0[C2 💺0 ≏ 💺0 ≏ 💺0]] [r0[D2 💺0 ≏ 💺0 ≡ 🚂0 ]] <r0<DE,l>> [r0[E ≏ ≏ ]]|")
+        try p.assert("1: |[A ≏ ≏ ] <AB,r> [B2 ≏ ≏ ] ![C2 ≏ ≏ ] [r0[D2 💺0 ≏ 💺0 ≏ 💺0 ]] <r0<DE,l>> [r0[E 💺0 ≡ 🟨🚂0 ≏ ]]|")
+        try p.assert("1: |[A ≏ ≏ ] <AB,r> [B2 ≏ ≏ ] ![C2 ≏ ≏ ] [D2 ≏ ≏ ] <DE,l> [r0[E ≏ 💺0 ≡ 🛑🚂0 ]]|")
+    }
+
     // MARK: -- Utility
     
     // Convenience structure to test the layout and its route
