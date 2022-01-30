@@ -23,7 +23,7 @@ struct TrainControlSetLocationSheet: View {
     
     @State private var direction: Direction = .next
 
-    @State private var wagons: Direction = .next
+    @State private var wagonsPushedByLocomotive = false
 
     @State private var errorStatus: String?
 
@@ -83,15 +83,10 @@ struct TrainControlSetLocationSheet: View {
                 }
                 .help("This is the direction of travel of the train relative to \(selectedBlockName)")
                 
-                Picker("Wagons:", selection: $wagons) {
-                    ForEach(Direction.allCases, id:\.self) { direction in
-                        Text(direction.description).tag(direction)
+                Toggle("Wagons Pushed by the Locomotive", isOn: $wagonsPushedByLocomotive)
+                    .onAppear {
+                        wagonsPushedByLocomotive = train.wagonsPushedByLocomotive
                     }
-                }
-                .fixedSize()
-                .onAppear {
-                    wagons = train.wagonsDirection
-                }.help("Direction in which the wagons are oriented relative to \(selectedBlockName)")
             }
             if let errorStatus = errorStatus {
                 Text(errorStatus)
@@ -107,7 +102,7 @@ struct TrainControlSetLocationSheet: View {
                 Button("OK") {
                     do {
                         if let selectedBlock = blockId {
-                            train.wagonsDirection = wagons
+                            train.wagonsPushedByLocomotive = wagonsPushedByLocomotive
                             try layout.setTrainToBlock(train.id,
                                                 selectedBlock,
                                                 position: trainPosition,
