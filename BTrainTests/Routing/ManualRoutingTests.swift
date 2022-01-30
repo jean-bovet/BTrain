@@ -410,11 +410,11 @@ class ManualRoutingTests: BTTestCase {
 
         try layout.remove(trainID: train.id)
         try layout.setTrainToBlock(train.id, b2.id, direction: .next)
-
-        XCTAssertNoThrow(try layout.reserve(trainId: train.id, fromBlock: b2.id, toBlock: b3.id, direction: .next))
         
         try layout.setTrainRouteStepIndex(train, 1)
         try layout.setTrainPosition(train, 1)
+
+        XCTAssertNoThrow(try layout.reserve(trainId: train.id, fromBlock: b2.id, toBlock: b3.id, direction: .next))
 
         try p.assert("r1: {b1 ≏ ≏ } <t0> [r1[b2 ≏ 🛑🚂1 ≏ ]] <r1<t1,l>> [r1[b3 ≏ ≏ ]] <t0(2,0)> !{b1 ≏ ≏ }")
         
@@ -766,7 +766,10 @@ class ManualRoutingTests: BTTestCase {
 
         XCTAssertTrue(p.train.automaticScheduling)
         
+        // block length = 60
+        // train length = 100
         try p.assert("3: {r0{s1 🚂0 ≏ 💺0 }} <r0<t1,l>> <r0<t2,s>> [r0[b1 💺0 ≏ 💺0 ]] <r0<t3>> [r0[b2 💺0 ≏ ]] <r0<t4>> [r0[b3 ≏ ≏ ]] <t5> <t6,r> {s2 ≏ }")
+        try p.assert("3: {r0{s1 ≡ 🚂0 }} <r0<t1,l>> <r0<t2,s>> [r0[b1 💺0 ≏ 💺0 ]] <r0<t3>> [r0[b2 💺0 ≏ 💺0 ]] <r0<t4>> [r0[b3 ≏ ≏ ]] <t5> <t6,r> {s2 ≏ }")
     }
     
     // MARK: -- Utility

@@ -173,11 +173,8 @@ extension Layout {
     // This function will try to reserve as many blocks as specified (maxNumberOfLeadingReservedBlocks)
     // in front of the train (leading blocks).
     // Note: it won't reserve blocks that are already reserved to avoid loops.
-    func reserveNextBlocks(train: Train, route: Route) throws -> Bool {
-        guard route.steps.count > 0 else {
-            return false
-        }
-
+    @discardableResult
+    func reserveNextBlocks(train: Train) throws -> Bool {
         // Before trying to reserve the leading blocks, let's free up
         // all the reserved elements (turnouts, transitions, blocks) in front
         // of the train. This is to keep the algorithm simple:
@@ -189,7 +186,20 @@ extension Layout {
         // Note: this is necessary because if the train is "pushed" by the locomotive,
         // the leading blocks will be freedup and need to be reserved again for the train.
         try fillBlocksWithTrain(train: train)
-                
+
+        // Reserve the leading blocks only when a route is defined and when the train is running.
+        guard train.state == .running else {
+            return true
+        }
+        
+        guard let route = self.route(for: train.routeId, trainId: train.id) else {
+            return true
+        }
+        
+        guard route.steps.count > 0 else {
+            return false
+        }
+
         // We are going to iterate over all the remaining steps of the route until we
         // either reach the end of the route or if we have reserved enough blocks.
         let startReservationIndex = min(route.lastStepIndex, train.routeStepIndex + 1)

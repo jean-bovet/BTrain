@@ -61,8 +61,9 @@ extension Layout {
         
         // Don't forget to update the reservation for the train length
         // as moving inside a block will change them
-        try fillBlocksWithTrain(train: train)
-        
+        // TODO: what other method change the train position or characterisit to re-evaluate all that (direction I think)
+        try reserveNextBlocks(train: train)
+
         didChange()
     }
     
