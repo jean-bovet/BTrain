@@ -15,11 +15,20 @@ import SwiftUI
 @main
 struct BTrainApp: App {
     
+    @Environment(\.openURL) var openURL
+
     var body: some Scene {
         DocumentGroup {
             LayoutDocument(layout: Layout(uuid: "new-layout"))
         } editor: { configuration in
             DocumentView(document: configuration.document)
+        }
+        .commands {
+            CommandGroup(replacing: CommandGroupPlacement.help) {
+                Button("BTrain Repository") {
+                    openURL(URL(string: "https://github.com/jean-bovet/BTrain")!)
+                }
+            }
         }
 #if os(macOS)
         Settings {
