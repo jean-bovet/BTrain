@@ -163,6 +163,7 @@
 		A796FA2B2772BB5400FA41BA /* Layout.json in Resources */ = {isa = PBXBuildFile; fileRef = A796FA2A2772BB5400FA41BA /* Layout.json */; };
 		A796FA2E2775642B00FA41BA /* LayoutAsserter.swift in Sources */ = {isa = PBXBuildFile; fileRef = A796FA2D2775642B00FA41BA /* LayoutAsserter.swift */; };
 		A798BB4027A6E7F1000BB4D1 /* LayoutHCreator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A798BB3F27A6E7F1000BB4D1 /* LayoutHCreator.swift */; };
+		A798BB4227A79CFE000BB4D1 /* TurnoutShapeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A798BB4127A79CFE000BB4D1 /* TurnoutShapeView.swift */; };
 		A7B06AE12727786500BDD88C /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7B06AE02727786500BDD88C /* ContentView.swift */; };
 		A7B06AF2272782C300BDD88C /* LayoutDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7B06AF1272782C300BDD88C /* LayoutDocument.swift */; };
 		A7B06AF4272783F600BDD88C /* MarklinCANMessageFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7B06AF3272783F600BDD88C /* MarklinCANMessageFactory.swift */; };
@@ -384,6 +385,7 @@
 		A796FA2A2772BB5400FA41BA /* Layout.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = Layout.json; sourceTree = "<group>"; };
 		A796FA2D2775642B00FA41BA /* LayoutAsserter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutAsserter.swift; sourceTree = "<group>"; };
 		A798BB3F27A6E7F1000BB4D1 /* LayoutHCreator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutHCreator.swift; sourceTree = "<group>"; };
+		A798BB4127A79CFE000BB4D1 /* TurnoutShapeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TurnoutShapeView.swift; sourceTree = "<group>"; };
 		A7B06AE02727786500BDD88C /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		A7B06AED2727819800BDD88C /* Server.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Server.swift; sourceTree = "<group>"; };
 		A7B06AEE2727819800BDD88C /* ServerConnection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ServerConnection.swift; sourceTree = "<group>"; };
@@ -721,8 +723,6 @@
 			children = (
 				A7218075275D424200831998 /* OverviewView.swift */,
 				A783EAAC2789290F00E69B6D /* LayoutRuntimeErrorView.swift */,
-				A7710E70277A344300C08150 /* NewBlockSheet.swift */,
-				A7710E72277A3BC200C08150 /* NewTurnoutSheet.swift */,
 				A7F31B9E277B95BA00FE0C65 /* TrainDropActionSheet.swift */,
 			);
 			path = Overview;
@@ -819,7 +819,6 @@
 			isa = PBXGroup;
 			children = (
 				A7710E6E2779A50A00C08150 /* SwitchboardContainerView.swift */,
-				A7F31B9C277B921B00FE0C65 /* SwitchboardEditControlsView.swift */,
 				A784136A273CA4DE00381341 /* SwitchBoardView.swift */,
 				A78413872740DD2D00381341 /* SwitchBoardFactory.swift */,
 				A7841373273DCBA000381341 /* SwitchBoard.swift */,
@@ -827,6 +826,8 @@
 				A7841383273F973D00381341 /* SwitchBoardDragOperation.swift */,
 				A717158A275844AE00200F92 /* SwitchBoardTrainDragging.swift */,
 				A7B0B5122761CF8400F11A3E /* SwitchboardLinkUpdater.swift */,
+				A798BB4427A79DCC000BB4D1 /* Preview */,
+				A798BB4327A79D1D000BB4D1 /* Editor */,
 				A7841380273F96F300381341 /* Properties */,
 				A784137F273F96EA00381341 /* Shapes */,
 			);
@@ -925,6 +926,25 @@
 			path = LayoutDocument;
 			sourceTree = "<group>";
 		};
+		A798BB4327A79D1D000BB4D1 /* Editor */ = {
+			isa = PBXGroup;
+			children = (
+				A7F31B9C277B921B00FE0C65 /* SwitchboardEditControlsView.swift */,
+				A7710E70277A344300C08150 /* NewBlockSheet.swift */,
+				A7710E72277A3BC200C08150 /* NewTurnoutSheet.swift */,
+			);
+			path = Editor;
+			sourceTree = "<group>";
+		};
+		A798BB4427A79DCC000BB4D1 /* Preview */ = {
+			isa = PBXGroup;
+			children = (
+				A783EAA42788B52000E69B6D /* BlockShapeView.swift */,
+				A798BB4127A79CFE000BB4D1 /* TurnoutShapeView.swift */,
+			);
+			path = Preview;
+			sourceTree = "<group>";
+		};
 		A7B06B062728DD9500BDD88C /* Views */ = {
 			isa = PBXGroup;
 			children = (
@@ -950,7 +970,6 @@
 			children = (
 				A7B0B5162762FB6500F11A3E /* BlockListView.swift */,
 				A7F31BA0277C3D7A00FE0C65 /* BlockDetailsView.swift */,
-				A783EAA42788B52000E69B6D /* BlockShapeView.swift */,
 				A7CA5EC0279649CF00171398 /* BlockFeedbacksView.swift */,
 				A73E0824276B99A8005F9D64 /* BlockAllFeedbacksView.swift */,
 				A7CA5EC227964AA500171398 /* BlockDirectionFeedbacksView.swift */,
@@ -1143,6 +1162,7 @@
 				A73AFEB127265A2300E1ED21 /* MarklinCANMessage.swift in Sources */,
 				A7281840278E9EDC007BE810 /* Direction.swift in Sources */,
 				A79466CC279B64D2006E2A4C /* MainThreadQueue.swift in Sources */,
+				A798BB4227A79CFE000BB4D1 /* TurnoutShapeView.swift in Sources */,
 				A7907993277EC86200771A60 /* DocumentToolbarContent.swift in Sources */,
 				A7218081275F0BDB00831998 /* Turnout+State.swift in Sources */,
 				A7710E75277A7AAC00C08150 /* Layout2Swift.swift in Sources */,

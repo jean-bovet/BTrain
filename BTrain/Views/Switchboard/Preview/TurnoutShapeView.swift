@@ -12,20 +12,20 @@
 
 import SwiftUI
 
-struct BlockShapeView: View {
+struct TurnoutShapeView: View {
     
     let layout: Layout
-    let category: Block.Category
+    let category: Turnout.Category
     let shapeContext = ShapeContext()
 
     let viewSize = CGSize(width: 104, height: 34)
     
-    var block: Block {
-        return Block("", type: category, center: .init(x: viewSize.width/2, y: viewSize.height/2), rotationAngle: 0)
+    var turnout: Turnout {
+        Turnout("", type: category, address: .init(0, .DCC), state: .straight, center: .init(x: viewSize.width/2, y: viewSize.height/2), rotationAngle: 0)
     }
     
-    var shape: BlockShape {
-        let shape = BlockShape(layout: layout, block: block, shapeContext: shapeContext)
+    var shape: TurnoutShape {
+        let shape = TurnoutShape(layout: layout, turnout: turnout, shapeContext: shapeContext)
         return shape
     }
     
@@ -40,11 +40,13 @@ struct BlockShapeView: View {
 }
 
 
-struct BlockShapeView_Previews: PreviewProvider {
+struct TurnoutShapeView_Previews: PreviewProvider {
     
     static let layout = LayoutACreator().newLayout()
     
     static var previews: some View {
-        BlockShapeView(layout: layout, category: .station)
+        ForEach(Turnout.Category.allCases, id:\.self) { category in
+            TurnoutShapeView(layout: layout, category: category)
+        }
     }
 }

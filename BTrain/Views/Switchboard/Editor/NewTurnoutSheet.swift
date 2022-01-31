@@ -28,7 +28,11 @@ struct NewTurnoutSheet: View {
                 TextField("Name:", text: $name)
                 Picker("Type:", selection: $category) {
                     ForEach(Turnout.Category.allCases, id:\.self) { category in
-                        Text(category.description)
+                        HStack {
+                            Text(category.description)
+                            Spacer()
+                            TurnoutShapeView(layout: layout, category: category)
+                        }
                     }
                 }.pickerStyle(.inline)
                 
