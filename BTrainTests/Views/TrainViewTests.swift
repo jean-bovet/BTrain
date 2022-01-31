@@ -57,7 +57,7 @@ class TrainViewTests: RootViewTests {
         
         let tim = TrainIconManager(layout: layout)
 
-        let sut = TrainIconView(trainIconManager: tim, train: t1, size: .medium)
+        let sut = TrainIconView(trainIconManager: tim, train: t1, size: .medium, hideIfNotDefined: false)
         _ = try sut.inspect().hStack().shape(0)
 
         let url = Bundle(for: LayoutDocument.self).url(forResource: "Predefined", withExtension: "btrain")!

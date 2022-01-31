@@ -110,6 +110,12 @@ final class SwitchBoard: ObservableObject {
             layout.remove(turnoutID: turnout.turnout.id)
             provider.remove(turnout)
         }
+        if let link = shape as? LinkShape {
+            if let transition = link.transition {
+                layout.remove(transitionID: transition.id)
+            }
+            provider.remove(link)
+        }
     }
     
     func doneEditing() {
