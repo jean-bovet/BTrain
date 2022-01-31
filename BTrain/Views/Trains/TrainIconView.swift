@@ -19,7 +19,8 @@ struct TrainIconView: View, DropDelegate {
     @ObservedObject var train: Train
     
     let size: Size
-
+    let hideIfNotDefined: Bool
+    
     enum Size {
         case large
         case medium
@@ -45,6 +46,11 @@ struct TrainIconView: View, DropDelegate {
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                 .frame(width: iconWidth, height: iconHeight)
+            } else if hideIfNotDefined {
+                Rectangle()
+                    .background(.clear)
+                    .foregroundColor(.clear)
+                    .frame(width: iconWidth, height: iconHeight)
             } else {
                 Rectangle()
                     .foregroundColor(.gray)
@@ -77,6 +83,6 @@ struct TrainIconView: View, DropDelegate {
 
 struct TrainIconView_Previews: PreviewProvider {
     static var previews: some View {
-        TrainIconView(trainIconManager: TrainIconManager(layout: Layout()), train: Train(), size: .large)
+        TrainIconView(trainIconManager: TrainIconManager(layout: Layout()), train: Train(), size: .large, hideIfNotDefined: false)
     }
 }

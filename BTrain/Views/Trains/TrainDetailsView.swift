@@ -137,7 +137,7 @@ struct TrainDetailsIconSectionView: View {
 
             HStack {
                 ZStack {
-                    TrainIconView(trainIconManager: trainIconManager, train: train, size: .large)
+                    TrainIconView(trainIconManager: trainIconManager, train: train, size: .large, hideIfNotDefined: false)
                     if trainIconManager.imageFor(train: train) == nil {
                         Text("Drag an Image")
                     }
