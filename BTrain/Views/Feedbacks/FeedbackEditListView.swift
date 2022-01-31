@@ -23,18 +23,24 @@ struct FeedbackEditListView: View {
             Table(selection: $selection) {
                 
                 TableColumn("Name") { feedback in
-                    TextField("Name", text: feedback.name)
-                        .labelsHidden()
+                    UndoProvider(feedback.name) { name in
+                        TextField("Name", text: name)
+                            .labelsHidden()
+                    }
                 }
                 
                 TableColumn("Device ID") { feedback in
-                    TextField("Device ID", value: feedback.deviceID,
-                              format: .number)
+                    UndoProvider(feedback.deviceID) { deviceID in
+                        TextField("Device ID", value: deviceID,
+                                  format: .number)
+                    }
                 }
                 
                 TableColumn("Contact ID") { feedback in
-                    TextField("Contact ID", value: feedback.contactID,
-                              format: .number)
+                    UndoProvider(feedback.contactID) { contactID in
+                        TextField("Contact ID", value: contactID,
+                                  format: .number)
+                    }
                 }
                 
                 TableColumn("State") { feedback in
