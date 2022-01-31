@@ -28,7 +28,11 @@ struct NewBlockSheet: View {
                 TextField("Name:", text: $name)
                 Picker("Type:", selection: $category) {
                     ForEach(Block.Category.allCases, id:\.self) { category in
-                        Text(category.rawValue)
+                        HStack {
+                            Text(category.description)
+                            Spacer()
+                            BlockShapeView(layout: layout, category: category)
+                        }
                     }
                 }.pickerStyle(.inline)
                 
@@ -39,6 +43,8 @@ struct NewBlockSheet: View {
                     presentationMode.wrappedValue.dismiss()
                 }
                 .keyboardShortcut(.cancelAction)
+                
+                Spacer().fixedSpace()
                 
                 Button("OK") {
                     layout.newBlock(name: name, type: category)
