@@ -12,8 +12,10 @@
 
 import Foundation
 
+// This class defines a turnout in the layout.
 final class Turnout: Element, ObservableObject {
 
+    // The various types of turnouts that are supported
     enum Category: String, Codable, CaseIterable {
         case singleLeft
         case singleRight
@@ -22,6 +24,7 @@ final class Turnout: Element, ObservableObject {
         case doubleSlip2 // Double slip with two addresses (4 states)
     }
 
+    // The various states supported by the turnout
     enum State: String, Codable {
         case straight
         case branch // Used for Double Slip with 2 states (straight and branch)
@@ -46,10 +49,14 @@ final class Turnout: Element, ObservableObject {
     // Length of the turnout (in cm)
     @Published var length: Double?
         
+    // State of the turnout. Note that not all states are supported
+    // by some turnout category.
     @Published var state: State = .straight
     
+    // Contains the reservation for the specified train
     var reserved: Identifier<Train>?
 
+    // The identifier of the train located in this turnout
     var train: Identifier<Train>?
 
     var rotationAngle: CGFloat = 0
@@ -84,7 +91,7 @@ final class Turnout: Element, ObservableObject {
 extension Turnout: Codable {
     
     enum CodingKeys: CodingKey {
-      case id, type, name, address, address2, length, state, reserved, center, angle
+      case id, type, name, address, address2, length, state, reserved, train, center, angle
     }
 
     convenience init(from decoder: Decoder) throws {
@@ -101,6 +108,7 @@ extension Turnout: Codable {
 
         self.init(id: id, name: name, type: type, address: address, address2: address2, state: state, center: center, rotationAngle: rotationAngle, length: length)
         self.reserved = try container.decodeIfPresent(Identifier<Train>.self, forKey: CodingKeys.reserved)
+        self.train = try container.decodeIfPresent(Identifier<Train>.self, forKey: CodingKeys.train)
     }
     
     func encode(to encoder: Encoder) throws {
@@ -113,7 +121,8 @@ extension Turnout: Codable {
         try container.encode(length, forKey: CodingKeys.length)
         try container.encode(state, forKey: CodingKeys.state)
         try container.encode(reserved, forKey: CodingKeys.reserved)
-        
+        try container.encode(train, forKey: CodingKeys.train)
+
         try container.encode(center, forKey: CodingKeys.center)
         try container.encode(rotationAngle, forKey: CodingKeys.angle)
     }

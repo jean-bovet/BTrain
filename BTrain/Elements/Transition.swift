@@ -36,6 +36,7 @@ protocol ITransition: AnyObject {
     // or nil if no train has reserved it.
     var reserved: Identifier<Train>? { get set }
 
+    // The identifier of the train located inde this transition
     var train: Identifier<Train>? { get set }
 
     // Returns the inverse of this transition
@@ -195,7 +196,7 @@ final class TransitionInverse: ITransition {
 extension Transition: Codable {
     
     enum CodingKeys: CodingKey {
-      case id, from, to, reserved
+      case id, from, to, reserved, train
     }
 
     convenience init(from decoder: Decoder) throws {
@@ -205,6 +206,7 @@ extension Transition: Codable {
         let b = try container.decode(Socket.self, forKey: CodingKeys.to)
         self.init(id: id, a: a, b: b)
         self.reserved = try container.decodeIfPresent(Identifier<Train>.self, forKey: CodingKeys.reserved)
+        self.train = try container.decodeIfPresent(Identifier<Train>.self, forKey: CodingKeys.train)
     }
     
     func encode(to encoder: Encoder) throws {
@@ -213,6 +215,7 @@ extension Transition: Codable {
         try container.encode(a, forKey: CodingKeys.from)
         try container.encode(b, forKey: CodingKeys.to)
         try container.encode(reserved, forKey: CodingKeys.reserved)
+        try container.encode(train, forKey: CodingKeys.train)
     }
     
 }
