@@ -22,8 +22,13 @@ extension Block {
         feedbacks.removeAll(where: { $0.id == feedback.id })
     }
     
-    func add(_ feedbackId: Identifier<Feedback>) {
-        feedbacks.append(BlockFeedback(id: UUID().uuidString, feedbackId: feedbackId))
+    func add(_ feedbackId: Identifier<Feedback>, at index: Int? = nil) {
+        let bf = BlockFeedback(id: UUID().uuidString, feedbackId: feedbackId)
+        if let index = index {
+            feedbacks.insert(bf, at: index)
+        } else {
+            feedbacks.append(bf)
+        }
     }
     
     func remove(feedbackId: Identifier<Feedback>) {

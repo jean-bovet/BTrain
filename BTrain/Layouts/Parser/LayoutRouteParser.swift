@@ -165,55 +165,139 @@ final class LayoutRouteParser {
             newBlock = true
         }
                     
-        var feedbackIndex = 0
-        var parsingBlock = true
-        while (sp.more && parsingBlock) {
-            if sp.matches("🛑🚂") {
-                // Stopped train
-                parseTrain(feedbackIndex: feedbackIndex, block: block, speed: 0)
-            } else if sp.matches("🟨🚂") {
-                // Braking train
-                parseTrain(feedbackIndex: feedbackIndex, block: block, speed: LayoutFactory.DefaultBrakingSpeed)
-            } else if sp.matches("}}") {
-                assert(type == .station, "Expected end of station block")
-                parsingBlock = false
-            } else if sp.matches("]]|") {
-                assert(type == .free, "Expected end of .free (but soon to be .sidingNext) track block")
-                block.category = .sidingNext // Change to sidingNext here because that's only when we know if it is one!
-                parsingBlock = false
-            } else if sp.matches("]]") {
-                assert(type == .free || type == .sidingPrevious, "Expected end of .free or .sidingPrevious track block")
-                parsingBlock = false
-            } else if sp.matches("}") {
-                assert(type == .station, "Expected end of station block")
-                parsingBlock = false
-            } else if sp.matches("]|") {
-                assert(type == .free, "Expected end of .free (but soon to be .sidingNext) track block")
-                block.category = .sidingNext // Change to sidingNext here because that's only when we know if it is one!
-                parsingBlock = false
-            } else if sp.matches("]") {
-                assert(type == .free || type == .sidingPrevious, "Expected end of .free or .sidingPrevious track block")
-                parsingBlock = false
-            } else if sp.matches("🚂") {
-                parseTrain(feedbackIndex: feedbackIndex, block: block, speed: LayoutFactory.DefaultSpeed)
-            } else if sp.matches("≏") {
-                parseFeedback(detected: false, newBlock: newBlock, block: block, feedbackIndex: &feedbackIndex)
-            } else if sp.matches("≡") {
-                parseFeedback(detected: true, newBlock: newBlock, block: block, feedbackIndex: &feedbackIndex)
-            } else if sp.matches(" ") {
-                // ignore white space
-            } else if sp.matches("💺") {
-                // Wagon
-                parseWagon(feedbackIndex: feedbackIndex, block: block)
-            } else {
-                fatalError("Unknown character '\(sp.c)'")
-            }
+        if direction == .previous {
+            let index = sp.index
+            let numberOfFeedbacks = parseNumberOfFeedbacks(block: block, newBlock: newBlock, type: type)
+            sp.index = index
+            parseBlockContent(block: block, newBlock: newBlock, type: type, numberOfFeedbacks: numberOfFeedbacks)
+        } else {
+            parseBlockContent(block: block, newBlock: newBlock, type: type, numberOfFeedbacks: nil)
         }
         
         blocks.insert(block)
         route.steps.append(Route.Step(String(route.steps.count), block.id, direction))
     }
  
+    enum BlockContentType {
+        case stoppedLoc
+        case brakingLoc
+        case runningLoc
+        
+        case wagon
+        
+        case endStation(reserved: Bool)
+        case endFreeOrSidingPrevious(reserved: Bool)
+        case endFreeOrSidingNext(reserved: Bool)
+        
+        case feedback(detected: Bool)
+    }
+    
+    typealias BlockContentCallback = (BlockContentType) -> Void
+    
+    func parseNumberOfFeedbacks(block: Block, newBlock: Bool, type: Block.Category) -> Int {
+        var currentFeedbackIndex = 0
+        parseBlockContent(block: block, newBlock: newBlock, type: type) { contentType in
+            switch(contentType) {
+            case .stoppedLoc, .brakingLoc, .runningLoc, .wagon:
+                _ = parseUUID()
+            case .endStation(reserved: _):
+                break
+            case .endFreeOrSidingPrevious(reserved: _):
+                break
+            case .endFreeOrSidingNext(reserved: _):
+                break
+            case .feedback(detected: _):
+                currentFeedbackIndex += 1
+            }
+        }
+        return currentFeedbackIndex
+    }
+    
+    func parseBlockContent(block: Block, newBlock: Bool, type: Block.Category, numberOfFeedbacks: Int?) {
+        var currentFeedbackIndex = 0
+        parseBlockContent(block: block, newBlock: newBlock, type: type) { contentType in
+            let feedbackIndex: Int
+            let position: Int
+            if let numberOfFeedbacks = numberOfFeedbacks {
+                feedbackIndex = numberOfFeedbacks - currentFeedbackIndex - 1
+                position = numberOfFeedbacks - currentFeedbackIndex
+            } else {
+                feedbackIndex = currentFeedbackIndex
+                position = currentFeedbackIndex
+            }
+            
+            switch(contentType) {
+            case .stoppedLoc:
+                parseTrain(position: position, block: block, speed: 0)
+                
+            case .brakingLoc:
+                parseTrain(position: position, block: block, speed: LayoutFactory.DefaultBrakingSpeed)
+                
+            case .runningLoc:
+                parseTrain(position: position, block: block, speed: LayoutFactory.DefaultSpeed)
+                
+            case .wagon:
+                parseWagon(position: position, block: block)
+
+            case .endStation(reserved: let reserved):
+                assert(type == .station, "Expected end of station block \(reserved)")
+                
+            case .endFreeOrSidingPrevious(reserved: let reserved):
+                assert(type == .free || type == .sidingPrevious, "Expected end of .free or .sidingPrevious track block \(reserved)")
+
+            case .endFreeOrSidingNext(reserved: let reserved):
+                assert(type == .free, "Expected end of .free (but soon to be .sidingNext) track block \(reserved)")
+                block.category = .sidingNext // Change to sidingNext here because that's only when we know if it is one!
+                
+            case .feedback(detected: let detected):
+                assert(feedbackIndex >= 0, "Invalid feedback index \(feedbackIndex)")
+                parseFeedback(detected: detected, newBlock: newBlock, block: block, feedbackIndex: feedbackIndex, reverseOrder: numberOfFeedbacks != nil)
+                currentFeedbackIndex += 1
+            }
+        }
+    }
+    
+    func parseBlockContent(block: Block, newBlock: Bool, type: Block.Category, callback: BlockContentCallback) {
+        var parsingBlock = true
+        while (sp.more && parsingBlock) {
+            if sp.matches("🛑🚂") {
+                callback(.stoppedLoc)
+            } else if sp.matches("🟨🚂") {
+                callback(.brakingLoc)
+            } else if sp.matches("}}") {
+                callback(.endStation(reserved: true))
+                parsingBlock = false
+            } else if sp.matches("]]|") {
+                callback(.endFreeOrSidingNext(reserved: true))
+                parsingBlock = false
+            } else if sp.matches("]]") {
+                callback(.endFreeOrSidingPrevious(reserved: true))
+                parsingBlock = false
+            } else if sp.matches("}") {
+                callback(.endStation(reserved: false))
+                parsingBlock = false
+            } else if sp.matches("]|") {
+                callback(.endFreeOrSidingNext(reserved: false))
+                parsingBlock = false
+            } else if sp.matches("]") {
+                callback(.endFreeOrSidingPrevious(reserved: true))
+                parsingBlock = false
+            } else if sp.matches("🚂") {
+                callback(.runningLoc)
+            } else if sp.matches("≏") {
+                callback(.feedback(detected: false))
+            } else if sp.matches("≡") {
+                callback(.feedback(detected: true))
+            } else if sp.matches(" ") {
+                // ignore white space
+            } else if sp.matches("💺") {
+                callback(.wagon)
+            } else {
+                fatalError("Unknown character '\(sp.c)'")
+            }
+        }
+    }
+    
     struct BlockHeader {
         var blockName: String?
         var reserved: Reservation?
@@ -252,8 +336,8 @@ final class LayoutRouteParser {
         }
         return header
     }
-        
-    func parseTrain(feedbackIndex: Int, block: Block, speed: UInt16) {
+
+    func parseUUID() -> String {
         let uuid: String
         if let n = sp.matchesInteger() {
             uuid = String(n)
@@ -261,50 +345,53 @@ final class LayoutRouteParser {
             // Note: by default, let's use the route.id for the train id
             uuid = route.id.uuid
         }
+        return uuid
+    }
+    
+    func parseTrain(position: Int, block: Block, speed: UInt16) {
+        let uuid = parseUUID()
         
         if let train = trains.first(where: { $0.id.uuid == uuid }) {
             assert(train.speed.kph == speed, "Mismatching speed definition for train \(uuid)")
-            assert(train.position == feedbackIndex, "Mismatching position definition for train \(uuid)")
+            assert(train.position == position, "Mismatching position definition for train \(uuid)")
             if block.train == nil {
                 block.train = TrainInstance(train.id, .next)
             }
-            block.train?.parts[feedbackIndex] = .locomotive
-
+            block.train?.parts[position] = .locomotive
         } else {
             let train = Train(uuid: uuid)
-            train.position = feedbackIndex
+            train.position = position
             train.routeStepIndex = route.steps.count
             train.speed = .init(kph: speed, decoderType: .MFX)
             train.routeId = route.id
             if block.train == nil {
                 block.train = TrainInstance(train.id, .next)
             }
-            block.train?.parts[feedbackIndex] = .locomotive
+            block.train?.parts[position] = .locomotive
             trains.append(train)
         }
     }
         
-    func parseWagon(feedbackIndex: Int, block: Block) {
-        let uuid: String
-        if let n = sp.matchesInteger() {
-            uuid = String(n)
-        } else {
-            // Note: by default, let's use the route.id for the train id
-            uuid = route.id.uuid
-        }
-        
+    func parseWagon(position: Int, block: Block) {
+        let uuid = parseUUID()
+
         if block.train == nil {
             block.train = TrainInstance(Identifier<Train>(uuid: uuid), .next)
         }
                         
-        block.train?.parts[feedbackIndex] = .wagon
+        block.train?.parts[position] = .wagon
     }
         
-    func parseFeedback(detected: Bool, newBlock: Bool, block: Block, feedbackIndex: inout Int) {
+    func parseFeedback(detected: Bool, newBlock: Bool, block: Block, feedbackIndex: Int, reverseOrder: Bool) {
         if newBlock {
-            let f = Feedback("f\(block.id.uuid)\(block.feedbacks.count+1)")
+            let f = Feedback("f\(block.id.uuid)\(feedbackIndex)")
             f.detected = detected
-            block.add(f.id)
+            // The LayoutAsserter is using the feedbacks in order in which they are added to the block
+            if reverseOrder {
+                block.add(f.id, at: 0)
+            } else {
+                block.add(f.id)
+            }
             feedbacks.insert(f)
         } else {
             let feedback = block.feedbacks[feedbackIndex]
@@ -312,7 +399,6 @@ final class LayoutRouteParser {
             assert(f.detected == detected, "The existing feedback does not match the `detected` defined in the ASCII representation")
             f.detected = detected
         }
-        feedbackIndex += 1
     }
     
     // <t0(0,1),s>

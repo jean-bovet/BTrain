@@ -114,7 +114,7 @@ struct TrainDetailsSpeedSectionView: View {
                           format: .number)
                 
                 Button("Profile…") {
-                    // TODO
+                    // TODO speed profile
                 }
             }.padding([.leading])
 
@@ -145,7 +145,7 @@ struct TrainDetailsIconSectionView: View {
                 
                 if trainIconManager.imageFor(train: train) != nil {
                     Button("Remove") {
-                        // TODO
+                        // TODO remove icon
                     }
                 }
             }.padding([.leading])

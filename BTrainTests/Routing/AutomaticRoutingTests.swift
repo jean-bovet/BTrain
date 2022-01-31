@@ -44,25 +44,25 @@ class AutomaticRoutingTests: BTTestCase {
         try p.assert("automatic-0: [r0[b1 ≏ 🚂0 ]] <r0<t3(0,2),r>> ![r0[b5 ≏ ]] <t7(2,0)> <t5(2,0)> ![b3 ≏ ≏ ] <t4(0,1)> ![r1[b2 ≏ ]] <r0<t3(1,0),r>> ![b1 ≏ ] <t2(0,1)> <t1(0,1),l> !{s2 ≏ }")
 
         // Move b1 -> b5
-        try p.assert("automatic-0: [b1 ≏ ] <t3(0,2),r> ![r0[b5 🚂0 ≡ ]] <r0<t7(2,0),r>> <r0<t5(2,0),r>> ![r0[b3 ≏ ≏ ]] <t4(0,1)> ![r1[b2 ≏ ]] <t3(1,0),r> ![b1 ≏ ] <t2(0,1)> <t1(0,1),l> !{s2 ≏ }")
+        try p.assert("automatic-0: [b1 ≏ ] <t3(0,2),r> ![r0[b5 ≡ 🚂0 ]] <r0<t7(2,0),r>> <r0<t5(2,0),r>> ![r0[b3 ≏ ≏ ]] <t4(0,1)> ![r1[b2 ≏ ]] <t3(1,0),r> ![b1 ≏ ] <t2(0,1)> <t1(0,1),l> !{s2 ≏ }")
 
         // Let's remove the occupation of b2
         layout.free("b2")
-        try p.assert("automatic-0: [b1 ≏ ] <t3(0,2),r> ![r0[b5 🚂0 ≡ ]] <r0<t7(2,0),r>> <r0<t5(2,0),r>> ![r0[b3 ≏ ≏ ]] <t4(0,1)> ![b2 ≏ ] <t3(1,0),r> ![b1 ≏ ] <t2(0,1)> <t1(0,1),l> !{s2 ≏ }")
+        try p.assert("automatic-0: [b1 ≏ ] <t3(0,2),r> ![r0[b5 ≡ 🚂0 ]] <r0<t7(2,0),r>> <r0<t5(2,0),r>> ![r0[b3 ≏ ≏ ]] <t4(0,1)> ![b2 ≏ ] <t3(1,0),r> ![b1 ≏ ] <t2(0,1)> <t1(0,1),l> !{s2 ≏ }")
 
         // Move b5 -> b3
-        try p.assert("automatic-0: [b1 ≏ ] <t3(0,2),r> ![b5 ≏ ] <t7(2,0),r> <t5(2,0),r> ![r0[b3 ≏ ≏ 🚂0 ≡ ]] <r0<t4(0,1)>> ![r0[b2 ≏ ]] <t3(1,0),r> ![b1 ≏ ] <t2(0,1)> <t1(0,1),l> !{s2 ≏ }")
-        try p.assert("automatic-0: [b1 ≏ ] <t3(0,2),r> ![b5 ≏ ] <t7(2,0),r> <t5(2,0),r> ![r0[b3 ≏ 🚂0 ≡ ≏ ]] <r0<t4(0,1)>> ![r0[b2 ≏ ]] <t3(1,0),r> ![b1 ≏ ] <t2(0,1)> <t1(0,1),l> !{s2 ≏ }")
-        try p.assert("automatic-0: [b1 ≏ ] <t3(0,2),r> ![b5 ≏ ] <t7(2,0),r> <t5(2,0),r> ![r0[b3 🚂0 ≡ ≏ ≏ ]] <r0<t4(0,1)>> ![r0[b2 ≏ ]] <t3(1,0),r> ![b1 ≏ ] <t2(0,1)> <t1(0,1),l> !{s2 ≏ }")
+        try p.assert("automatic-0: [b1 ≏ ] <t3(0,2),r> ![b5 ≏ ] <t7(2,0),r> <t5(2,0),r> ![r0[b3 ≡ 🚂0 ≏ ≏ ]] <r0<t4(0,1)>> ![r0[b2 ≏ ]] <t3(1,0),r> ![b1 ≏ ] <t2(0,1)> <t1(0,1),l> !{s2 ≏ }")
+        try p.assert("automatic-0: [b1 ≏ ] <t3(0,2),r> ![b5 ≏ ] <t7(2,0),r> <t5(2,0),r> ![r0[b3 ≏ ≡ 🚂0 ≏ ]] <r0<t4(0,1)>> ![r0[b2 ≏ ]] <t3(1,0),r> ![b1 ≏ ] <t2(0,1)> <t1(0,1),l> !{s2 ≏ }")
+        try p.assert("automatic-0: [b1 ≏ ] <t3(0,2),r> ![b5 ≏ ] <t7(2,0),r> <t5(2,0),r> ![r0[b3 ≏ ≏ ≡ 🚂0 ]] <r0<t4(0,1)>> ![r0[b2 ≏ ]] <t3(1,0),r> ![b1 ≏ ] <t2(0,1)> <t1(0,1),l> !{s2 ≏ }")
 
         // Move b3 -> b2
-        try p.assert("automatic-0: [r0[b1 ≏ ]] <r0<t3(0,2)>> ![b5 ≏ ] <t7(2,0),r> <t5(2,0),r> ![b3 ≏ ≏ ≏ ] <t4(0,1)> ![r0[b2 🚂0 ≡ ]] <r0<t3(1,0)>> ![r0[b1 ≏ ]] <t2(0,1)> <t1(0,1),l> !{s2 ≏ }")
+        try p.assert("automatic-0: [r0[b1 ≏ ]] <r0<t3(0,2)>> ![b5 ≏ ] <t7(2,0),r> <t5(2,0),r> ![b3 ≏ ≏ ≏ ] <t4(0,1)> ![r0[b2 ≡ 🚂0 ]] <r0<t3(1,0)>> ![r0[b1 ≏ ]] <t2(0,1)> <t1(0,1),l> !{s2 ≏ }")
 
         // Move b2 -> b1
-        try p.assert("automatic-0: [r0[b1 🚂0 ≡ ]] <t3(0,2)> ![b5 ≏ ] <t7(2,0),r> <t5(2,0),r> ![b3 ≏ ≏ ≏ ] <t4(0,1)> ![b2 ≏ ] <t3(1,0)> ![r0[b1 🚂0 ≡ ]] <r0<t2(0,1)>> <r0<t1(0,1)>> !{r0{s2 ≏ }}")
+        try p.assert("automatic-0: [r0[b1 🚂0 ≡ ]] <t3(0,2)> ![b5 ≏ ] <t7(2,0),r> <t5(2,0),r> ![b3 ≏ ≏ ≏ ] <t4(0,1)> ![b2 ≏ ] <t3(1,0)> ![r0[b1 ≡ 🚂0 ]] <r0<t2(0,1)>> <r0<t1(0,1)>> !{r0{s2 ≏ }}")
 
         // Move b1 -> s2
-        try p.assert("automatic-0: [b1 ≏ ] <t3(0,2)> ![b5 ≏ ] <t7(2,0),r> <t5(2,0),r> ![b3 ≏ ≏ ≏ ] <t4(0,1)> ![b2 ≏ ] <t3(1,0)> ![b1 ≏ ] <t2(0,1)> <t1(0,1)> !{r0{s2 🛑🚂0 ≡ }}")
+        try p.assert("automatic-0: [b1 ≏ ] <t3(0,2)> ![b5 ≏ ] <t7(2,0),r> <t5(2,0),r> ![b3 ≏ ≏ ≏ ] <t4(0,1)> ![b2 ≏ ] <t3(1,0)> ![b1 ≏ ] <t2(0,1)> <t1(0,1)> !{r0{s2 ≡ 🛑🚂0 }}")
         
         // The train is still running because the route is .endless
         XCTAssertTrue(p.train.automaticScheduling)
@@ -275,10 +275,10 @@ class AutomaticRoutingTests: BTTestCase {
 
         // And now the train restarts following the new route
         try p.assert("automatic-0: [r0[b1 ≏ 🚂0 ]] <r0<t3,r>> ![r0[b5 ≏ ]] <t7> <t5> ![b3 ≏ ≏ ≏]")
-        try p.assert("automatic-0: [b1 ≏ ] <t3,r> ![r0[b5 🚂0 ≡ ]] <r0<t7,r>> <r0<t5,r>> ![r0[b3 ≏ ≏ ≏ ]]")
-        try p.assert("automatic-0: [b1 ≏ ] <t3,r> ![b5 ≏ ] <t7,r> <t5,r> ![r0[b3 ≏ ≏ 🚂0 ≡ ]]")
-        try p.assert("automatic-0: [b1 ≏ ] <t3,r> ![b5 ≏ ] <t7,r> <t5,r> ![r0[b3 ≏ 🟨🚂0 ≡ ≏ ]]")
-        try p.assert("automatic-0: [b1 ≏ ] <t3,r> ![b5 ≏ ] <t7,r> <t5,r> ![r0[b3 🛑🚂0 ≡ ≏ ≏ ]]")
+        try p.assert("automatic-0: [b1 ≏ ] <t3,r> ![r0[b5 ≡ 🚂0 ]] <r0<t7,r>> <r0<t5,r>> ![r0[b3 ≏ ≏ ≏ ]]")
+        try p.assert("automatic-0: [b1 ≏ ] <t3,r> ![b5 ≏ ] <t7,r> <t5,r> ![r0[b3 ≡ 🚂0 ≏ ≏ ]]")
+        try p.assert("automatic-0: [b1 ≏ ] <t3,r> ![b5 ≏ ] <t7,r> <t5,r> ![r0[b3 ≏ ≡ 🟨🚂0 ≏ ]]")
+        try p.assert("automatic-0: [b1 ≏ ] <t3,r> ![b5 ≏ ] <t7,r> <t5,r> ![r0[b3 ≏ ≏ ≡ 🛑🚂0 ]]")
 
         XCTAssertTrue(p.train.manualScheduling)
 
