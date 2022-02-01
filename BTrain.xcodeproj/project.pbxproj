@@ -164,6 +164,7 @@
 		A796FA2E2775642B00FA41BA /* LayoutAsserter.swift in Sources */ = {isa = PBXBuildFile; fileRef = A796FA2D2775642B00FA41BA /* LayoutAsserter.swift */; };
 		A798BB4027A6E7F1000BB4D1 /* LayoutHCreator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A798BB3F27A6E7F1000BB4D1 /* LayoutHCreator.swift */; };
 		A798BB4227A79CFE000BB4D1 /* TurnoutShapeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A798BB4127A79CFE000BB4D1 /* TurnoutShapeView.swift */; };
+		A798BB4627A7B093000BB4D1 /* LayoutASCIIProducer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A798BB4527A7B093000BB4D1 /* LayoutASCIIProducer.swift */; };
 		A7B06AE12727786500BDD88C /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7B06AE02727786500BDD88C /* ContentView.swift */; };
 		A7B06AF2272782C300BDD88C /* LayoutDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7B06AF1272782C300BDD88C /* LayoutDocument.swift */; };
 		A7B06AF4272783F600BDD88C /* MarklinCANMessageFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7B06AF3272783F600BDD88C /* MarklinCANMessageFactory.swift */; };
@@ -386,6 +387,7 @@
 		A796FA2D2775642B00FA41BA /* LayoutAsserter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutAsserter.swift; sourceTree = "<group>"; };
 		A798BB3F27A6E7F1000BB4D1 /* LayoutHCreator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutHCreator.swift; sourceTree = "<group>"; };
 		A798BB4127A79CFE000BB4D1 /* TurnoutShapeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TurnoutShapeView.swift; sourceTree = "<group>"; };
+		A798BB4527A7B093000BB4D1 /* LayoutASCIIProducer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutASCIIProducer.swift; sourceTree = "<group>"; };
 		A7B06AE02727786500BDD88C /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		A7B06AED2727819800BDD88C /* Server.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Server.swift; sourceTree = "<group>"; };
 		A7B06AEE2727819800BDD88C /* ServerConnection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ServerConnection.swift; sourceTree = "<group>"; };
@@ -1035,6 +1037,7 @@
 				A7F779E0272E1E3F00E73275 /* LayoutParser.swift */,
 				A7F779FD2734D55100E73275 /* LayoutRouteParser.swift */,
 				A7F779FB2734D53B00E73275 /* LayoutStringParser.swift */,
+				A798BB4527A7B093000BB4D1 /* LayoutASCIIProducer.swift */,
 			);
 			path = Parser;
 			sourceTree = "<group>";
@@ -1296,6 +1299,7 @@
 				A784138F274230CF00381341 /* MarklinTestMessageFactory.swift in Sources */,
 				A7841371273CE02000381341 /* LinkShape.swift in Sources */,
 				A784136F273CE00C00381341 /* BlockShape.swift in Sources */,
+				A798BB4627A7B093000BB4D1 /* LayoutASCIIProducer.swift in Sources */,
 				A7C8A2EF279DD19A000C7246 /* SectionTitleView.swift in Sources */,
 				A785C071278A4561002FD538 /* TrainDetailsView.swift in Sources */,
 				A75829632792A55A00AA0649 /* PathFinderSettings.swift in Sources */,

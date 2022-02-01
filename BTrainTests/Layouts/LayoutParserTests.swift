@@ -104,7 +104,7 @@ class LayoutParserTests: XCTestCase {
         let layout = LayoutACreator().newLayout()
         let route = layout.routes[0].id
         try layout.prepare(routeID: route, trainID: layout.trains[0].id)
-        let layoutString = LayoutFactory.stringFrom(layout, route: route)
+        let layoutString = LayoutASCIIProducer.stringFrom(layout, route: route)
         XCTAssertEqual(layoutString, "{r1{b1 🛑🚂1 ≏ ≏ }} [b2 ≏ ≏ ] [b3 ≏ ≏ ] !{r1{b1 🛑🚂1 ≏ ≏ }} ")
     }
     
