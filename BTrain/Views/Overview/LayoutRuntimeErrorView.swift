@@ -14,16 +14,48 @@ import SwiftUI
 
 struct LayoutRuntimeErrorView: View {
     
+    let debugger: LayoutControllerDebugger
+    
     @Binding var error: String?
     
-    var body: some View {
-        HStack {
-            if let error = error {
-                Text("\(error)")
-                Spacer()
+    @State private var exportError: String?
+    
+    func exportDiagnosticLogs() {
+        let savePanel = NSSavePanel()
+        savePanel.allowedContentTypes = [.json]
+        savePanel.canCreateDirectories = true
+        savePanel.title = "Export Diagnostic Logs"
+        let response = savePanel.runModal()
+        if let url = savePanel.url, response == .OK {
+            do {
+                try debugger.save(to: url)
+                exportError = nil
+            } catch {
+                exportError = error.localizedDescription
             }
-            Button("OK") {
-                error = nil
+        }
+    }
+    
+    var body: some View {
+        VStack {
+            HStack {
+                if let error = error {
+                    Text("\(error)")
+                    Spacer()
+                }
+                
+                Button("Export Diagnostic Logs…") {
+                    exportDiagnosticLogs()
+                }
+                
+                Button("OK") {
+                    error = nil
+                }
+            }
+            
+            if let exportError = exportError {
+                Text("\(exportError)")
+                Spacer()
             }
         }
         .padding()
@@ -33,6 +65,6 @@ struct LayoutRuntimeErrorView: View {
 
 struct LayoutRuntimeErrorView_Previews: PreviewProvider {
     static var previews: some View {
-        LayoutRuntimeErrorView(error: .constant("Unexpected feedback IL2.1 detected"))
+        LayoutRuntimeErrorView(debugger: LayoutControllerDebugger(layout: Layout()), error: .constant("Unexpected feedback IL2.1 detected"))
     }
 }

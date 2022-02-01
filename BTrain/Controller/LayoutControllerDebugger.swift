@@ -17,7 +17,7 @@ final class LayoutControllerDebugger {
     
     @AppStorage("recordDiagnosticLogs") private var enabled = false
     
-    struct Iterations {
+    struct Iterations: Codable {
         var iterations = [String]()
         
         mutating func add(_ ascii: String) -> Bool {
@@ -29,7 +29,18 @@ final class LayoutControllerDebugger {
         }
     }
     
-    private var routes = [Identifier<Route>:Iterations]()
+    struct Information: Codable {
+        let layout: Layout
+        var routes = [Identifier<Route>:Iterations]()
+    }
+    
+    let layout: Layout
+    var info: Information
+    
+    init(layout: Layout) {
+        self.layout = layout
+        self.info = Information(layout: layout)
+    }
     
     func record(layoutController: LayoutController, controllers: [TrainController]) {
         guard enabled else {
@@ -41,12 +52,12 @@ final class LayoutControllerDebugger {
         for controller in controllers {
             if let route = layout.route(for: controller.train.routeId, trainId: controller.train.id), !route.steps.isEmpty {
                 if let s = try? producer.stringFrom(route: route) {
-                    if routes.index(forKey: route.id) == nil {
-                        routes[route.id] = Iterations()
+                    if info.routes.index(forKey: route.id) == nil {
+                        info.routes[route.id] = Iterations()
                     }
 
                     let ascii = "\(route.id): "+s
-                    if let result = routes[route.id]?.add(ascii), result {
+                    if let result = info.routes[route.id]?.add(ascii), result {
                         BTLogger.debug("[LayoutController] "+ascii)
                     }
                 }
@@ -54,4 +65,9 @@ final class LayoutControllerDebugger {
         }
     }
 
+    func save(to url: URL) throws {
+        let encoder = JSONEncoder()
+        let data = try encoder.encode(info)
+        try data.write(to: url)
+    }
 }

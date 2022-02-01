@@ -25,7 +25,7 @@ struct OverviewRightPanelView: View {
                                      switchboard: document.switchboard,
                                      state: document.switchboard.state)
             if layout.runtimeError != nil {
-                LayoutRuntimeErrorView(error: $layout.runtimeError)
+                LayoutRuntimeErrorView(debugger: document.layoutController.debugger, error: $layout.runtimeError)
             }
         }
     }

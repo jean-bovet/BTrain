@@ -41,14 +41,15 @@ final class LayoutController: TrainControllerDelegate {
     // Retain the sink to observe any change to the layout
     private var layoutChangeSink: AnyCancellable?
 
-    private let debugger = LayoutControllerDebugger()
+    let debugger: LayoutControllerDebugger
 
     init(layout: Layout, switchboard: SwitchBoard?, interface: CommandInterface?) {
         self.layout = layout
         self.switchboard = switchboard
         self.feedbackMonitor = LayoutFeedbackMonitor(layout: layout)
         self.interface = interface
-                        
+        self.debugger = LayoutControllerDebugger(layout: layout)
+        
         updateControllers()
         
         // Run the controllers each time a change is detected in the layout.
