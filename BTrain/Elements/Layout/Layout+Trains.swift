@@ -180,6 +180,7 @@ extension Layout {
         }
 
         block.train = TrainInstance(train.id, ti.direction.opposite)
+        train.wagonsPushedByLocomotive.toggle()
 
         try updateReservedBlocks(train: train)
 
