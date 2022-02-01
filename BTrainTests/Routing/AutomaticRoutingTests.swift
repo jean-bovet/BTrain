@@ -241,29 +241,6 @@ class AutomaticRoutingTests: BTTestCase {
         XCTAssertEqual(p.layoutController.run(), .none)
     }
 
-    func testAutomaticRouteModeOnceWithDestinationPosition() throws {
-        let layout = LayoutECreator().newLayout()
-        let s2 = layout.block(for: Identifier<Block>(uuid: "s2"))!
-        let b3 = layout.block(for: Identifier<Block>(uuid: "b3"))!
-
-        // TODO: the position is not used anymore for the destination so either revise this test or remove it
-        let p = try setup(layout: layout, fromBlockId: s2.id, destination: Destination(b3.id, direction: .next), routeSteps: ["s2:next", "b1:next", "b2:next", "b3:next"])
-        
-        try p.assert("automatic-0: {r0{s2 🚂0 ≏ }} <r0<t1,s>> <r0<t2,s>> [r0[b1 ≏ ]] <t3> [b2 ≏ ] <t4> [b3 ≏ ≏ ≏ ]")
-        try p.assert("automatic-0: {r0{s2 ≡ 🚂0 }} <r0<t1,s>> <r0<t2,s>> [r0[b1 ≏ ]] <t3> [b2 ≏ ] <t4> [b3 ≏ ≏ ≏ ]")
-        try p.assert("automatic-0: {s2 ≏ } <t1,s> <t2,s> [r0[b1 ≡ 🚂0 ]] <r0<t3>> [r0[b2 ≏ ]] <t4> [b3 ≏ ≏ ≏ ]")
-        try p.assert("automatic-0: {s2 ≏ } <t1,s> <t2,s> [b1 ≏ ] <t3> [r0[b2 ≡ 🚂0 ]] <r0<t4>> [r0[b3 ≏ ≏ ≏ ]]")
-        try p.assert("automatic-0: {s2 ≏ } <t1,s> <t2,s> [b1 ≏ ] <t3> [b2 ≏ ] <t4> [r0[b3 ≡ 🚂0 ≏ ≏ ]]")
-        try p.assert("automatic-0: {s2 ≏ } <t1,s> <t2,s> [b1 ≏ ] <t3> [b2 ≏ ] <t4> [r0[b3 ≏ ≡ 🟨🚂0 ≏ ]]")
-        try p.assert("automatic-0: {s2 ≏ } <t1,s> <t2,s> [b1 ≏ ] <t3> [b2 ≏ ] <t4> [r0[b3 ≏ ≏ ≡ 🛑🚂0 ]]")
-
-        XCTAssertTrue(p.train.manualScheduling)
-
-        // Nothing more should happen because the automatic route has finished (mode .once)
-        XCTAssertEqual(p.layoutController.run(), .none)
-        XCTAssertEqual(p.layoutController.run(), .none)
-    }
-
     func testAutomaticRouteModeOnceWithUnreachableDestinationPosition() throws {
         let layout = LayoutECreator().newLayout()
         let s2 = layout.block(for: Identifier<Block>(uuid: "s2"))!
