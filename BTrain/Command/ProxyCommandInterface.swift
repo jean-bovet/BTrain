@@ -51,11 +51,7 @@ final class ProxyCommandInterface: CommandInterface {
     func register(forTurnoutChange: @escaping TurnoutChangeCallback) {
         interface?.register(forTurnoutChange: forTurnoutChange)
     }
-    
-    func queryDirection(command: Command, completion: @escaping QueryDirectionCommandCompletion) {
-        interface?.queryDirection(command: command, completion: completion)
-    }
-    
+        
     func queryLocomotives(command: Command, completion: @escaping QueryLocomotiveCommandCompletion) {
         interface?.queryLocomotives(command: command, completion: completion)
     }

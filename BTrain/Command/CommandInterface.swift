@@ -35,10 +35,6 @@ protocol CommandInterface {
 
     typealias TurnoutChangeCallback = (_ address: CommandTurnoutAddress, _ state: UInt8, _ power: UInt8) -> Void
     func register(forTurnoutChange: @escaping TurnoutChangeCallback)
-
-    // Note: this command is used internally by the MarklinInterface to query direction automatically after receiving a System Emergency Stop.
-    typealias QueryDirectionCommandCompletion = (_ address: UInt32, _ decoderType: DecoderType?, _ direction:Command.Direction) -> Void
-    func queryDirection(command: Command, completion: @escaping QueryDirectionCommandCompletion)
     
     typealias QueryLocomotiveCommandCompletion = (_ locomotives: [CommandLocomotive]) -> Void
     func queryLocomotives(command: Command, completion: @escaping QueryLocomotiveCommandCompletion)

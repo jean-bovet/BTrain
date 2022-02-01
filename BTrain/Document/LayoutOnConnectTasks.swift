@@ -52,10 +52,9 @@ final class LayoutOnConnectTasks: ObservableObject {
         var completionCount = 0
         for t in trains {
             let command = Command.queryDirection(address: t.address, decoderType: t.decoder, descriptor: nil)
-            interface.queryDirection(command: command) { address, decoderType, direction in
+            interface.execute(command: command) {
                 DispatchQueue.main.async {
                     completionCount += 1
-                    self.layoutController.directionDidChange(address: address, decoder: decoderType, direction: direction)
                     if completionCount == trains.count {
                         completion()
                     }

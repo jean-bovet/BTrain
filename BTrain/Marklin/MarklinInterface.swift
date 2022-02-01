@@ -25,8 +25,6 @@ final class MarklinInterface {
     
     var locomotivesCommandCompletionBlocks = [QueryLocomotiveCommandCompletion]()
     
-    var directionCommandCompletionBlocks = [QueryDirectionCommandCompletion]()
-
     typealias CompletionBlock = () -> Void
     private var disconnectCompletionBlocks: CompletionBlock?
     
@@ -40,10 +38,6 @@ final class MarklinInterface {
         } onData: { msg in
             if let cmd = MarklinCommand.from(message: msg) {
                 switch(cmd) {
-                case .direction(address: let address, direction: let direction):
-                    self.directionCommandCompletionBlocks.forEach { $0(address, nil, direction) }
-                    self.directionCommandCompletionBlocks.removeAll()
-                    
                 case .configDataStream(length: _, data: _, descriptor: _):
                     let status = self.locomotiveConfig.process(cmd)
                     if case .completed(let locomotives) = status {
@@ -76,10 +70,12 @@ final class MarklinInterface {
                 if case .emergencyStop(address: let address, decoderType: let decoderType, descriptor: _) = cmd {
                     // Execute a command to query the direction of the locomotive at this particular address
                     DispatchQueue.main.async {
-                        self.queryDirection(command: .queryDirection(address: address, decoderType: decoderType)) { address, decoder, direction in
-                            self.directionChangeCallbacks.forEach { $0(address, decoder, direction) }
-                        }
+                        // The response from this command is going to be processed below in the case .direction
+                        self.execute(command: .queryDirection(address: address, decoderType: decoderType)) { }
                     }
+                }
+                if case .direction(address: let address, decoderType: let decoderType, direction: let direction, descriptor: _) = cmd {
+                    self.directionChangeCallbacks.forEach { $0(address, decoderType, direction) }
                 }
             }
         } onError: { error in
@@ -137,12 +133,8 @@ extension MarklinInterface: CommandInterface {
     func register(forTurnoutChange callback: @escaping TurnoutChangeCallback) {
         turnoutChangeCallbacks.append(callback)
     }
-    
-    func queryDirection(command: Command, completion: @escaping QueryDirectionCommandCompletion) {
-        directionCommandCompletionBlocks.append(completion)
-        execute(command: command) { }
-    }
-    
+
+    // TODO: move towards a model where there is a register(forLocomotive) model
     func queryLocomotives(command: Command, completion: @escaping QueryLocomotiveCommandCompletion) {
         locomotivesCommandCompletionBlocks.append(completion)
         execute(command: command) { }

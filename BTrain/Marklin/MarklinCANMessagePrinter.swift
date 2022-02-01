@@ -57,8 +57,6 @@ struct MarklinCANMessagePrinter {
             switch(mc) {
             case .configDataStream(length: _, data: _, descriptor: let descriptor):
                 return descriptor?.description
-            case .direction(address: _, direction: _):
-                return descriptor?.description
             case .none:
                 return descriptor?.description
             }

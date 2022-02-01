@@ -42,19 +42,6 @@ extension MarklinCommand {
                 let descriptor = CommandDescriptor(data: message.data, description: "\(cmd.toHex()) configuration data: \(Data(data) as NSData)")
                 return .configDataStream(length: nil, data: data, descriptor: descriptor)
             }
-        } else if cmd == 0x05 {
-            if message.resp == 1 {
-                // Receiving the direction of a locomotive
-                let address: UInt32 = UInt32(message.byte0) << 24 | UInt32(message.byte1) << 16 | UInt32(message.byte2) << 8 | UInt32(message.byte3) << 0
-                switch(message.byte4) {
-                case 1:
-                    return .direction(address: address, direction: .forward)
-                case 2:
-                    return .direction(address: address, direction: .backward)
-                default:
-                    return .direction(address: address, direction: .unknown)
-                }
-            }
         }
         return nil
     }
@@ -84,9 +71,27 @@ extension Command {
         if cmd == 0x05 {
             let address: UInt32 = UInt32(message.byte0) << 24 | UInt32(message.byte1) << 16 | UInt32(message.byte2) << 8 | UInt32(message.byte3) << 0
             if message.dlc == 4 {
-                // Query of direction.
-                return .queryDirection(address: address, decoderType: nil,
-                                       descriptor: CommandDescriptor(data: message.data, description: "\(cmd.toHex()) query direction for \(address.toHex())"))
+                if message.resp == 1 {
+                    // Response to a query direction
+                    switch(message.byte4) {
+                    case 0: // no change
+                        break
+                    case 1: // forward
+                        return .direction(address: address, decoderType: nil, direction: .forward,
+                                        descriptor: CommandDescriptor(data: message.data, description: "\(cmd.toHex()) forward for \(address.toHex())"))
+                    case 2: // backward
+                        return .direction(address: address, decoderType: nil, direction: .backward,
+                                         descriptor: CommandDescriptor(data: message.data, description: "\(cmd.toHex()) backward for \(address.toHex())"))
+                    case 3: // toggle
+                        break
+                    default: // unknown
+                        break
+                    }
+                } else {
+                    // Query of direction.
+                    return .queryDirection(address: address, decoderType: nil,
+                                           descriptor: CommandDescriptor(data: message.data, description: "\(cmd.toHex()) query direction for \(address.toHex())"))
+                }
             } else {
                 // Set direction
                 switch(message.byte4) {

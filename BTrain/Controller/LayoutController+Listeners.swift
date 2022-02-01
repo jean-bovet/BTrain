@@ -61,6 +61,7 @@ extension LayoutController {
     
     func directionDidChange(address: UInt32, decoder: DecoderType?, direction: Command.Direction) {
         if let train = layout.trains.find(address: address, decoder: decoder) {
+            BTLogger.debug("Direction changed to \(direction) for \(train.name)")
             switch(direction) {
             case .forward:
                 if train.directionForward == false {
