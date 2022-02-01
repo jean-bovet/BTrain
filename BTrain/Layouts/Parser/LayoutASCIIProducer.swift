@@ -14,13 +14,15 @@ import Foundation
 
 final class LayoutASCIIProducer {
     
-    static func stringFrom(_ layout: Layout, route: Identifier<Route>) -> String {
+    let layout: Layout
+    
+    init(layout: Layout) {
+        self.layout = layout
+    }
+    
+    func stringFrom(route: Route) -> String {
         var text = ""
-        
-        guard let route = layout.route(for: route, trainId: nil) else {
-            return text
-        }
-        
+                
         for step in route.steps {
             guard let block = layout.block(for: step.blockId) else {
                 fatalError("Unable to find block \(step.blockId)")
@@ -45,12 +47,10 @@ final class LayoutASCIIProducer {
                 text += "\(block.id)"
             }
                         
-            if let trainId = block.train?.trainId,
-               let train = layout.train(for: trainId),
-                train.position == 0 {
-                text += " " + stringFrom(train)
+            if let part = train(block, 0) {
+                text += " " + part
             }
-            
+
             for (index, feedback) in block.feedbacks.enumerated() {
                 guard let f = layout.feedback(for: feedback.feedbackId) else {
                     fatalError("Unable to find feedback \(feedback.feedbackId)")
@@ -60,10 +60,8 @@ final class LayoutASCIIProducer {
                 } else {
                     text += " ≏"
                 }
-                if let trainId = block.train?.trainId,
-                   let train = layout.train(for: trainId),
-                    train.position == index + 1 {
-                    text += " " + stringFrom(train)
+                if let part = train(block, index+1) {
+                    text += " " + part
                 }
             }
             
@@ -86,11 +84,38 @@ final class LayoutASCIIProducer {
         return text
     }
     
-    static func stringFrom(_ train: Train) -> String {
-        if train.speed.kph == 0 {
-            return "🛑🚂\(train.id)"
+    func train(_ block: Block, _ position: Int) -> String? {
+        guard let trainInstance = block.train else {
+            return nil
+        }
+              
+        guard let train = layout.train(for: trainInstance.trainId) else {
+            return nil
+        }
+
+        if trainInstance.parts.isEmpty && train.position == position {
+            return stringFrom(train)
+        } else if let part = trainInstance.parts[position] {
+            switch part {
+            case .locomotive:
+                return stringFrom(train)
+            case .wagon:
+                return "💺\(train.id)"
+            }
         } else {
-            return "🚂\(train.id)"
+            return nil
         }
     }
+    
+    func stringFrom(_ train: Train) -> String {
+        switch train.state {
+        case .running:
+            return "🚂\(train.id)"
+        case .braking:
+            return "🟨🚂\(train.id)"
+        case .stopped:
+            return "🛑🚂\(train.id)"
+        }
+    }
+    
 }
