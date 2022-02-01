@@ -40,18 +40,21 @@ final class ElementVisitor {
     
     typealias VisitorCallback = (ElementInfo) throws -> VisitorCallbackResult
     
-    func visit(fromBlockId: Identifier<Block>, direction: Direction, callback: VisitorCallback) throws {
+    // If toBlockId = nil, the algorithm follows the turnout and transitions until it cannot go any further.
+    // If toBlockId != nil, the algorithm stops when the toBlockId is reached.
+    func visit(fromBlockId: Identifier<Block>, toBlockId: Identifier<Block>? = nil, direction: Direction, callback: VisitorCallback) throws {
         guard let block = layout.block(for: fromBlockId) else {
             throw LayoutError.blockNotFound(blockId: fromBlockId)
         }
         guard try callback(.init(block: block, direction: direction, index: 0)) == .continue else {
             return
         }
+        let toBlock = layout.block(for: toBlockId)
         let fromSocket = direction == .next ? block.next : block.previous
-        try visit(fromSocket: fromSocket, index: 1, callback: callback)
+        try visit(fromSocket: fromSocket, toBlock: toBlock, index: 1, callback: callback)
     }
     
-    private func visit(fromSocket: Socket, index: Int, callback: VisitorCallback) throws {
+    private func visit(fromSocket: Socket, toBlock: Block?, index: Int, callback: VisitorCallback) throws {
         let transitions = try layout.transitions(from: fromSocket, to: nil)
         if transitions.isEmpty {
             return
@@ -80,11 +83,16 @@ final class ElementVisitor {
                     return
                 }
 
+                // Stop the visit once we reached the destination block, if specified
+                if let toBlock = toBlock, toBlock == block {
+                    return
+                }
+                
                 // Recursively call this method again to continue the job in the next element
                 if direction == .next {
-                    try visit(fromSocket: block.next, index: index+1, callback: callback)
+                    try visit(fromSocket: block.next, toBlock: toBlock, index: index+1, callback: callback)
                 } else {
-                    try visit(fromSocket: block.previous, index: index+1, callback: callback)
+                    try visit(fromSocket: block.previous, toBlock: toBlock, index: index+1, callback: callback)
                 }
             } else if let turnoutId = transition.b.turnout {
                 // Transition is leading to a turnout
@@ -96,15 +104,53 @@ final class ElementVisitor {
                     return
                 }
                                     
-                // Find out the exit socket of the turnout given its state
-                guard let socketId = turnout.socketId(fromSocketId: toSocketId, withState: turnout.state) else {
-                    // No error because it can happen that a turnout is configured for another route
-                    return
+                if let toBlock = toBlock {
+                    // If the destination block is specified, we need to find out which exit socket of the turnout to use
+                    if let exitSocket = try exitSocketOf(turnout: turnout, fromSocketId: toSocketId, toReachBlock: toBlock) {
+                        // Recursively call this method again to continue the job in the next element
+                        try visit(fromSocket: turnout.socket(exitSocket), toBlock: toBlock, index: index+1, callback: callback)
+                    }
+                } else {
+                    // Find out the exit socket of the turnout given its state
+                    guard let socketId = turnout.socketId(fromSocketId: toSocketId, withState: turnout.state) else {
+                        // No error because it can happen that a turnout is configured for another route
+                        return
+                    }
+                    
+                    // Recursively call this method again to continue the job in the next element
+                    try visit(fromSocket: turnout.socket(socketId), toBlock: toBlock, index: index+1, callback: callback)
                 }
-                
-                // Recursively call this method again to continue the job in the next element
-                try visit(fromSocket: turnout.socket(socketId), index: index+1, callback: callback)
             }
         }
+    }
+    
+    // This method returns the exit socket for the specified turnout, reachable from the `fromSocketId`,
+    // that ultimately reaches the `toReachBlock`. This method does not search more than one block ahead,
+    // but with unlimited number of turnouts chained together.
+    func exitSocketOf(turnout: Turnout, fromSocketId: Int, toReachBlock: Block) throws -> Int? {
+        for candidate in turnout.sockets(from: fromSocketId) {
+            let transitions = try layout.transitions(from: turnout.socket(candidate), to: nil)
+            if transitions.isEmpty {
+                continue
+            } else if transitions.count > 1 {
+                throw LayoutError.alwaysOneAndOnlyOneTransition
+            } else {
+                let transition = transitions[0]
+                if let blockId = transition.b.block {
+                    if blockId == toReachBlock.id {
+                        return candidate
+                    } else {
+                        // We stop at the first block we find that is not matching toReachBlock
+                        return nil
+                    }
+                } else if let turnoutId = transition.b.turnout, let turnout = layout.turnout(for: turnoutId), let socketId = transition.b.socketId {
+                    if let socket = try exitSocketOf(turnout: turnout, fromSocketId: socketId, toReachBlock: toReachBlock) {
+                        return socket
+                    }
+                }
+            }
+        }
+        
+        return nil
     }
 }

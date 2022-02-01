@@ -857,6 +857,43 @@ class ManualRoutingTests: BTTestCase {
         try p.assert("1: |[A ≏ ≏ ] <AB,r> [B2 ≏ ≏ ] ![C2 ≏ ≏ ] [D2 ≏ ≏ ] <DE,l> [r0[E ≏ 💺0 ≡ 🛑🚂0 ]]|")
     }
 
+    func testASCIIProducer() throws {
+        let layout = LayoutACreator().newLayout()
+        let producer = LayoutASCIIProducer(layout: layout)
+        let route = layout.routes[0]
+        
+        let p = try setup(layout: layout, fromBlockId: "b1", position: .start, route: route)
+
+        XCTAssertEqual(try producer.stringFrom(route: route), "{r1{b1 🛑🚂1 ≏ ≏ }} <t0{sl}(0,1),s> [b2 ≏ ≏ ] <t1{sl}(0,1),s> [b3 ≏ ≏ ] <t1{sl},s> !{r1{b1 🛑🚂1 ≏ ≏ }}")
+        
+        try p.start()
+        XCTAssertEqual(try producer.stringFrom(route: route), "{r1{b1 🚂1 ≏ ≏ }} <r1<t0{sl}(0,1),s>> [r1[b2 ≏ ≏ ]] <t1{sl}(0,1),s> [b3 ≏ ≏ ] <t1{sl},s> !{r1{b1 🚂1 ≏ ≏ }}")
+        
+        p.toggle("f11")
+        XCTAssertEqual(try producer.stringFrom(route: route), "{r1{b1 ≡ 🚂1 ≏ }} <r1<t0{sl}(0,1),s>> [r1[b2 ≏ ≏ ]] <t1{sl}(0,1),s> [b3 ≏ ≏ ] <t1{sl},s> !{r1{b1 ≡ 🚂1 ≏ }}")
+        
+        p.toggle2("f11", "f12")
+        XCTAssertEqual(try producer.stringFrom(route: route), "{r1{b1 ≏ ≡ 🚂1 }} <r1<t0{sl}(0,1),s>> [r1[b2 ≏ ≏ ]] <t1{sl}(0,1),s> [b3 ≏ ≏ ] <t1{sl},s> !{r1{b1 ≏ ≡ 🚂1 }}")
+        
+        p.toggle2("f12", "f21")
+        XCTAssertEqual(try producer.stringFrom(route: route), "{b1 ≏ ≏ } <t0{sl}(0,1),s> [r1[b2 ≡ 🚂1 ≏ ]] <r1<t1{sl}(0,2),l>> [r1[b3 ≏ ≏ ]] <r1<t1{sl}(2,0),l>> !{b1 ≏ ≏ }")
+        
+        p.toggle2("f21", "f22")
+        XCTAssertEqual(try producer.stringFrom(route: route), "{b1 ≏ ≏ } <t0{sl}(0,1),s> [r1[b2 ≏ ≡ 🚂1 ]] <r1<t1{sl}(0,2),l>> [r1[b3 ≏ ≏ ]] <r1<t1{sl}(2,0),l>> !{b1 ≏ ≏ }")
+        
+        p.toggle2("f22", "f31")
+        XCTAssertEqual(try producer.stringFrom(route: route), "{r1{b1 ≏ ≏ }} <r1<t0{sl}(0,2),l>> [b2 ≏ ≏ ] <t1{sl}(0,2),l> [r1[b3 ≡ 🚂1 ≏ ]] <t1{sl}(2,0),l> !{r1{b1 ≏ ≏ }}")
+        
+        p.toggle2("f31", "f32")
+        XCTAssertEqual(try producer.stringFrom(route: route), "{r1{b1 ≏ ≏ }} <r1<t0{sl}(0,2),l>> [b2 ≏ ≏ ] <t1{sl}(0,2),l> [r1[b3 ≏ ≡ 🚂1 ]] <t1{sl}(2,0),l> !{r1{b1 ≏ ≏ }}")
+        
+        p.toggle2("f32", "f12")
+        XCTAssertEqual(try producer.stringFrom(route: route), "{r1{b1 ≏ 🟨🚂1 ≡ }} <t0{sl}(0,2),l> [b2 ≏ ≏ ] <t1{sl}(0,2),l> [b3 ≏ ≏ ] <t1{sl}(2,0),l> !{r1{b1 ≏ 🟨🚂1 ≡ }}")
+        
+        p.toggle2("f12", "f11")
+        XCTAssertEqual(try producer.stringFrom(route: route), "{r1{b1 🛑🚂1 ≡ ≏ }} <t0{sl}(0,2),l> [b2 ≏ ≏ ] <t1{sl}(0,2),l> [b3 ≏ ≏ ] <t1{sl}(2,0),l> !{r1{b1 🛑🚂1 ≡ ≏ }}")
+    }
+
     // MARK: -- Utility
     
     // Convenience structure to test the layout and its route
@@ -880,6 +917,17 @@ class ManualRoutingTests: BTTestCase {
             XCTAssertEqual(train.state, .running)
         }
         
+        func toggle(_ feedback: String) {
+            layout.feedback(for: Identifier<Feedback>(uuid: feedback))?.detected.toggle()
+            _ = layoutController.run()
+        }
+
+        func toggle2(_ f1: String, _ f2: String) {
+            toggle(f1)
+            toggle(f2)
+            _ = layoutController.run()
+        }
+
         func assert(_ r1: String) throws {
             try asserter.assert([r1], route:route, trains: [train])
         }

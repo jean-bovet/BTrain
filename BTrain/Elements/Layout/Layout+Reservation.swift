@@ -312,13 +312,12 @@ extension Layout {
             .forEach { block in
                 // Only free a block if the block is not the one the train is located on or
                 if block.id != train.blockId {
-                    print("Free \(block.name)")
                     block.reserved = nil
                     block.train = nil
                 }
             }
-        turnouts.filter { $0.reserved == train.id }.forEach { print("Free \($0.name)"); $0.reserved = nil; $0.train = nil }
-        transitions.filter { $0.reserved == train.id }.forEach { print("Free \($0.id)"); $0.reserved = nil; $0.train = nil }
+        turnouts.filter { $0.reserved == train.id }.forEach { $0.reserved = nil; $0.train = nil }
+        transitions.filter { $0.reserved == train.id }.forEach { $0.reserved = nil; $0.train = nil }
     }
     
 }

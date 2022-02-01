@@ -474,6 +474,8 @@ final class LayoutRouteParser {
                 state = .branchLeft
             } else if sp.matches("r") {
                 state = .branchRight
+            } else if sp.matches("b") {
+                state = .branch
             } else {
                 assertionFailure("Invalid turnout state")
             }

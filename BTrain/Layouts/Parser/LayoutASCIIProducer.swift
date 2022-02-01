@@ -15,73 +15,174 @@ import Foundation
 final class LayoutASCIIProducer {
     
     let layout: Layout
+    let visitor: ElementVisitor
     
     init(layout: Layout) {
         self.layout = layout
+        self.visitor = ElementVisitor(layout: layout)
     }
     
-    func stringFrom(route: Route) -> String {
+    func stringFrom(route: Route) throws -> String {
         var text = ""
                 
+        var previousStep: Route.Step?
         for step in route.steps {
-            guard let block = layout.block(for: step.blockId) else {
-                fatalError("Unable to find block \(step.blockId)")
-            }
-            if step.direction == .previous {
-                text += "!"
-            }
-            switch(block.category) {
-            case .station:
-                text += "{"
-                if let reserved = block.reserved {
-                    text += "r\(reserved.trainId)"
-                    text += "{"
-                }
-                text += "\(block.id)"
-            case .free, .sidingNext, .sidingPrevious:
-                text += "["
-                if let reserved = block.reserved {
-                    text += "r\(reserved.trainId)"
-                    text += "["
-                }
-                text += "\(block.id)"
-            }
-                        
-            if let part = train(block, 0) {
-                text += " " + part
-            }
-
-            for (index, feedback) in block.feedbacks.enumerated() {
-                guard let f = layout.feedback(for: feedback.feedbackId) else {
-                    fatalError("Unable to find feedback \(feedback.feedbackId)")
-                }
-                if f.detected {
-                    text += " ≡"
-                } else {
-                    text += " ≏"
-                }
-                if let part = train(block, index+1) {
-                    text += " " + part
-                }
+            if let previousStep = previousStep {
+                addSpace(&text)
+                try generateTurnout(previousStep: previousStep, step: step, text: &text)
             }
             
-            switch(block.category) {
-            case .station:
-                if block.reserved != nil {
-                    text += " }} "
-                } else {
-                    text += " } "
-                }
-            case .free, .sidingNext, .sidingPrevious:
-                if block.reserved != nil {
-                    text += " ]] "
-                } else {
-                    text += " ] "
-                }
-            }
+            addSpace(&text)
+            generateBlock(step: step, text: &text)
+            
+            previousStep = step
         }
         
         return text
+    }
+
+    private func generateBlock(step: Route.Step, text: inout String) {
+        guard let block = layout.block(for: step.blockId) else {
+            fatalError("Unable to find block \(step.blockId)")
+        }
+        if step.direction == .previous {
+            text += "!"
+        }
+        switch(block.category) {
+        case .station:
+            text += "{"
+            if let reserved = block.reserved {
+                text += "r\(reserved.trainId)"
+                text += "{"
+            }
+            text += "\(block.id)"
+        case .free, .sidingNext, .sidingPrevious:
+            text += "["
+            if let reserved = block.reserved {
+                text += "r\(reserved.trainId)"
+                text += "["
+            }
+            text += "\(block.id)"
+        }
+                    
+        if let part = train(block, 0) {
+            text += " " + part
+        }
+
+        for (index, feedback) in block.feedbacks.enumerated() {
+            guard let f = layout.feedback(for: feedback.feedbackId) else {
+                fatalError("Unable to find feedback \(feedback.feedbackId)")
+            }
+            if f.detected {
+                text += " ≡"
+            } else {
+                text += " ≏"
+            }
+            if let part = train(block, index+1) {
+                text += " " + part
+            }
+        }
+        
+        switch(block.category) {
+        case .station:
+            if block.reserved != nil {
+                text += " }}"
+            } else {
+                text += " }"
+            }
+        case .free, .sidingNext, .sidingPrevious:
+            if block.reserved != nil {
+                text += " ]]"
+            } else {
+                text += " ]"
+            }
+        }
+    }
+    
+    func generateTurnout(previousStep: Route.Step, step: Route.Step, text: inout String) throws {
+        var lastSocket: Int?
+        try visitor.visit(fromBlockId: previousStep.blockId, toBlockId: step.blockId, direction: step.direction) { info in
+            if let transition = info.transition {
+                lastSocket = transition.b.socketId
+            } else if let turnout = info.turnout {
+                text += "<"
+                if let reserved = turnout.reserved {
+                    text += "r\(reserved)"
+                    text += "<"
+                }
+                
+                // <t0{sl}(0,1),s>
+                text += "\(turnout.id)"
+                text += "{\(turnoutType(turnout))}"
+                if let sockets = turnoutSockets(turnout, fromSocket: lastSocket) {
+                    text += "\(sockets)"
+                }
+                if let state = turnoutState(turnout) {
+                    text += ",\(state)"
+                }
+                if turnout.reserved != nil {
+                    text += ">"
+                }
+                text += ">"
+            } else if let block = info.block {
+                if block.id == step.blockId {
+                    return .stop
+                } else {
+                    return .continue
+                }
+            }
+            return .continue
+        }
+    }
+    
+    func turnoutState(_ turnout: Turnout) -> String? {
+        switch turnout.state {
+        case .straight:
+            return "s"
+        case .branch:
+            return "b"
+        case .branchLeft:
+            return "l"
+        case .branchRight:
+            return "r"
+        case .straight01:
+            return "s01"
+        case .straight23:
+            return "s23"
+        case .branch03:
+            return "b03"
+        case .branch21:
+            return "b21"
+        case .invalid:
+            return nil
+        }
+    }
+    
+    func turnoutType(_ turnout: Turnout) -> String {
+        switch turnout.category {
+        case .singleLeft:
+            return "sl"
+        case .singleRight:
+            return "sr"
+        case .threeWay:
+            return "tw"
+        case .doubleSlip:
+            return "ds"
+        case .doubleSlip2:
+            return "ds2"
+        }
+    }
+    
+    func turnoutSockets(_ turnout: Turnout, fromSocket: Int?) -> String? {
+        guard let fromSocket = fromSocket else {
+            return nil
+        }
+
+        guard let exitSocketId = turnout.socketId(fromSocketId: fromSocket, withState: turnout.state) else {
+            return nil
+        }
+        
+        return "(\(fromSocket),\(exitSocketId))"
     }
     
     func train(_ block: Block, _ position: Int) -> String? {
@@ -116,6 +217,16 @@ final class LayoutASCIIProducer {
         case .stopped:
             return "🛑🚂\(train.id)"
         }
+    }
+    
+    private func addSpace(_ text: inout String) {
+        if text.isEmpty {
+            return
+        }
+        if text.last == " " {
+            return
+        }
+        text += " "
     }
     
 }
