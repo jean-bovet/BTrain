@@ -267,7 +267,7 @@ final class LayoutController: TrainControllerDelegate {
         }
         
         // Start a timer that will restart the train with a new automatic route
-        // Note: the timer fires every seconds to update the remaining time until it reaches 0.
+        // Note: the timer fires every second to update the remaining time until it reaches 0.
         let timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true, block: { timer in
             train.timeUntilAutomaticRestart -= 1
             if train.timeUntilAutomaticRestart <= 0 {

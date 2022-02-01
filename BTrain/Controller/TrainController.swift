@@ -141,6 +141,13 @@ final class TrainController {
             return .none
         }
         
+        // If the train was scheduled to finish, make sure it is finished
+        if train.automaticFinishingScheduling {
+            // The train is already stopped but make sure to update the scheduling status
+            try layout.stopCompletely(train.id)
+            return .processed
+        }
+        
         let nextBlock = layout.nextBlock(train: train)
         
         // Update the automatic route if the next block is not defined and if the automatic route
@@ -275,7 +282,7 @@ final class TrainController {
         return .none
     }
     
-    // This method takes care of trigger a stop of the train located in
+    // This method takes care to trigger a stop of the train located in
     // the specified `block`, depending on the block characteristics.
     // For now, only "station" blocks make the train stop.
     private func handleTrainStopByBlock(route: Route, block: Block) -> Result {

@@ -145,6 +145,41 @@ class AutomaticRoutingTests: BTTestCase {
         try p.assert("automatic-0: {s2 ≏ } <t1,s> <t2,s> [r0[b1 ≡ 🚂0 ]] <r0<t3>> [r0[b2 ≏ ]] <t4> [b3 ≏ ≏ ≏ ] <t5> <t6> {s2 ≏ }")
     }
     
+    func testAutomaticRouteStationRestartFinishing() throws {
+        let layout = LayoutECreator().newLayout()
+        let s2 = layout.block(for: Identifier<Block>(uuid: "s2"))!
+
+        let p = try setup(layout: layout, fromBlockId: s2.id, destination: nil, position: .end, routeSteps: ["s2:next", "b1:next", "b2:next", "b3:next", "s2:next"])
+        
+        try p.assert("automatic-0: {r0{s2 ≏ 🚂0 }} <r0<t1,s>> <r0<t2,s>> [r0[b1 ≏ ]] <t3> [b2 ≏ ] <t4> [b3 ≏ ≏ ] <t5> <t6> {s2 ≏ }")
+        try p.assert("automatic-0: {s2 ≏ } <t1,s> <t2,s> [r0[b1 ≡ 🚂0 ]] <r0<t3>> [r0[b2 ≏ ]] <t4> [b3 ≏ ≏ ] <t5> <t6> {s2 ≏ }")
+        try p.assert("automatic-0: {s2 ≏ } <t1,s> <t2,s> [b1 ≏ ] <t3> [r0[b2 ≡ 🚂0 ]] <r0<t4>> [r0[b3 ≏ ≏ ]] <t5> <t6> {s2 ≏ }")
+        try p.assert("automatic-0: {r0{s2 ≏ }} <t1,s> <t2,s> [b1 ≏ ] <t3> [b2 ≏ ] <t4> [r0[b3 ≡ 🚂0 ≏ ≏ ]] <r0<t5>> <r0<t6>> {r0{s2 ≏ }}")
+        try p.assert("automatic-0: {r0{s2 ≏ }} <t1,s> <t2,s> [b1 ≏ ] <t3> [b2 ≏ ] <t4> [r0[b3 ≏ ≡ 🚂0 ≏ ]] <r0<t5>> <r0<t6>> {r0{s2 ≏ }}")
+        try p.assert("automatic-0: {r0{s2 ≏ }} <t1,s> <t2,s> [b1 ≏ ] <t3> [b2 ≏ ] <t4> [r0[b3 ≏ ≏ ≡ 🚂0 ]] <r0<t5>> <r0<t6>> {r0{s2 ≏ }}")
+        try p.assert("automatic-0: {r0{s2 ≡ 🛑🚂0 }} <t1,s> <t2,s> [b1 ≏ ] <t3> [b2 ≏ ] <t4> [b3 ≏ ≏ ≏ ] <t5> <t6> {r0{s2 ≡ 🛑🚂0 }}")
+        
+        // Nothing should be processed because the timer has not yet expired to restart the train
+        XCTAssertEqual(p.layoutController.run(), .none)
+
+        // Simulate the user tapping on the "Finish" button while the timer counts down
+        try layout.finishTrain(p.train.id)
+        XCTAssertTrue(p.train.automaticFinishingScheduling)
+
+        // Artificially set the restart time to 0 which will make the train restart again
+        layout.trains[0].timeUntilAutomaticRestart = 0
+                
+        XCTAssertEqual(p.layoutController.run(), .processed) // Automatic route is re-generated
+        XCTAssertEqual(p.layoutController.run(), .none) // The train does not restart because it was finishing the route
+
+        XCTAssertTrue(p.train.speed.kph == 0)
+        
+        // When restarting, the train automatic route will be updated
+        XCTAssertEqual(p.route.steps.description, ["s2:next", "b1:next", "b2:next", "b3:next", "s2:next"])
+
+        try p.assert("automatic-0: {r0{s2 ≡ 🛑🚂0 }} <t1,s> <t2,s> [b1 ≏ ] <t3> [b2 ≏ ] <t4> [b3 ≏ ≏ ≏ ] <t5> <t6> {r0{s2 ≡ 🛑🚂0 }}")
+    }
+    
     func testAutomaticRouteStationRestartCannotUpdateAutomaticRouteImmediately() throws {
         let layout = LayoutECreator().newLayout()
         let s2 = layout.block(for: Identifier<Block>(uuid: "s2"))!

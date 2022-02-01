@@ -276,14 +276,23 @@ extension Layout {
         train.state = .stopped
 
         if completely {
-            train.scheduling = .manual
-            try updateReservedBlocks(train: train)
-//            try self.freeLeadingBlocksAndUpdateTrailingBlocks(trainID: train.id)
+            try stopCompletely(trainId)
         }
         
         self.didChange()
     }
 
+    func stopCompletely(_ trainId: Identifier<Train>) throws {
+        guard let train = self.train(for: trainId) else {
+            throw LayoutError.trainNotFound(trainId: trainId)
+        }
+        
+        BTLogger.debug("Stopping train \(train.name) completely")
+
+        train.scheduling = .manual
+        try updateReservedBlocks(train: train)
+    }
+    
     // Use this method to stop the train when it finishes the route
     func finishTrain(_ trainId: Identifier<Train>) throws {
         guard let train = self.train(for: trainId) else {
