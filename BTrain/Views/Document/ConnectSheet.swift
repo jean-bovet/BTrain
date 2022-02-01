@@ -30,8 +30,8 @@ struct ConnectSheet: View {
     // in order to ensure that all turnouts are physically matching the layout model.
     @AppStorage("activateTurnouts") private var activateTurnouts = true
     
-    @State private var address = "192.168.86.24"
-    @State private var port = "15731"
+    @AppStorage("digitalControllerAddress") private var address = "192.168.86.24"
+    @AppStorage("digitalControllerPort") private var port = "15731"
 
     @State private var msg = ""
 
