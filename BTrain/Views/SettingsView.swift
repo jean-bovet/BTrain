@@ -18,16 +18,17 @@ struct SettingsView: View {
         case general, routing, advanced
     }
 
+    @AppStorage("autoConnectSimulator") private var autoConnectSimulator = false
+    @AppStorage("autoEnableSimulator") private var autoEnableSimulator = false
+    @AppStorage("fontSize") private var fontSize = 12.0
+
     @AppStorage("automaticRouteRandom") private var automaticRouteRandom = true
     @AppStorage("detectUnexpectedFeedback") var detectUnexpectedFeedback = true
     @AppStorage("strictRouteFeedbackStrategy") var strictRouteFeedbackStrategy = true
 
-    @AppStorage("autoConnectSimulator") private var autoConnectSimulator = false
-    @AppStorage("autoEnableSimulator") private var autoEnableSimulator = false
     @AppStorage("debugMode") private var showDebugControls = false
-    @AppStorage("fontSize") private var fontSize = 12.0
-
     @AppStorage("hideWelcomeScreen") private var hideWelcomeScreen = false
+    @AppStorage("recordDiagnosticLogs") private var recordDiagnosticLogs = false
 
     var body: some View {
         TabView {
@@ -51,9 +52,7 @@ struct SettingsView: View {
 
             Form {
                 Toggle("Generate Automatic Route at Random", isOn: $automaticRouteRandom)
-
                 Toggle("Detect Unexpected Feedbacks", isOn: $detectUnexpectedFeedback)
-
                 Toggle("Strict Route Feedback Detection", isOn: $strictRouteFeedbackStrategy)
             }
             .tabItem {
@@ -64,6 +63,8 @@ struct SettingsView: View {
             Form {
                 Toggle("Show Debug Controls", isOn: $showDebugControls)
                 Toggle("Hide Welcome Screen", isOn: $hideWelcomeScreen)
+                Toggle("Record Diagnostic Logs", isOn: $recordDiagnosticLogs)
+
             }
             .tabItem {
                 Label("Advanced", systemImage: "star")

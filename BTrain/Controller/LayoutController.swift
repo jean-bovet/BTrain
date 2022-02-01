@@ -37,9 +37,11 @@ final class LayoutController: TrainControllerDelegate {
     // Note: we need an ordered map in order to have predictable outcome
     // at runtime and during unit testing.
     private var controllers = OrderedDictionary<Identifier<Train>, TrainController>()
-            
+
     // Retain the sink to observe any change to the layout
     private var layoutChangeSink: AnyCancellable?
+
+    private let debugger = LayoutControllerDebugger()
 
     init(layout: Layout, switchboard: SwitchBoard?, interface: CommandInterface?) {
         self.layout = layout
@@ -118,6 +120,9 @@ final class LayoutController: TrainControllerDelegate {
             dumpAll()
             haltAll()
         }
+
+        debugger.record(layoutController: self, controllers: controllers.values.elements)
+        
         return result
     }
         
