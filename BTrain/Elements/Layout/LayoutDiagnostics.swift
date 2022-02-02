@@ -127,9 +127,7 @@ final class LayoutDiagnostic: ObservableObject {
     
     func check(_ options: Options = Options.all) throws -> [DiagnosticError] {
         var errors = [DiagnosticError]()
-        
-        repair()
-        
+                
         if options.contains(.duplicate) {
             checkForDuplicateFeedbacks(&errors)
             checkForDuplicateTurnouts(&errors)
