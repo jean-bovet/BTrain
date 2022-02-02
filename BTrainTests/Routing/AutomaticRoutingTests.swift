@@ -120,6 +120,21 @@ class AutomaticRoutingTests: BTTestCase {
         _ = try setup(layout: layout, fromBlockId: s1.id, destination: nil, position: .end, routeSteps: [])
     }
 
+    func testUpdateAutomaticRouteWithTurnoutToAvoid() throws {
+        let layout = LayoutECreator().newLayout()
+        let s1 = layout.block(for: Identifier<Block>(uuid: "s1"))!
+
+        // The route will choose "s2" as the arrival block
+        var p = try setup(layout: layout, fromBlockId: s1.id, destination: nil, position: .end, routeSteps: ["s1:next", "b1:next", "b2:next", "b3:next", "s2:next"])
+        try p.layoutController.stop(trainID: layout.trains[0].id, completely: true)
+        
+        // Let's mark "t5" as to avoid
+        layout.trains[0].turnoutsToAvoid.append(.init(Identifier<Turnout>(uuid: "t5")))
+
+        // No route is possible with t5 to avoid
+        p = try setup(layout: layout, fromBlockId: s1.id, destination: nil, position: .end, routeSteps: [])
+    }
+
     func testUpdateAutomaticRouteFinishing() throws {
         let layout = LayoutECreator().newLayout()
         let s1 = layout.block(for: Identifier<Block>(uuid: "s1"))!

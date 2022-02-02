@@ -212,7 +212,23 @@ final class Train: Element, ObservableObject {
     // should be avoided for Intercity train because their
     // radius is too small and causes derailing.
     @Published var blocksToAvoid = [BlockItem]()
-    
+
+    struct TurnoutItem: Identifiable, Codable, Hashable {
+        let id: String
+        
+        var turnoutId: Identifier<Turnout>
+        
+        init(_ turnoutId: Identifier<Turnout>) {
+            self.id = UUID().uuidString
+            self.turnoutId = turnoutId
+        }
+    }
+
+    // List of turnouts to avoid. For example, specific turnouts
+    // should be avoided for Intercity train because their
+    // radius is too small and causes derailing.
+    @Published var turnoutsToAvoid = [TurnoutItem]()
+
     // The time remaining until the train is automatically restarted
     // Note: we don't need to store this property because it is used only
     // when running the layout.
@@ -243,7 +259,7 @@ final class Train: Element, ObservableObject {
 extension Train: Codable {
     
     enum CodingKeys: CodingKey {
-      case id, enabled, name, address, length, magnetDistance, speed, decoder, direction, wagonsPushedByLocomotive, route, routeIndex, block, position, maxLeadingBlocks, blocksToAvoid
+      case id, enabled, name, address, length, magnetDistance, speed, decoder, direction, wagonsPushedByLocomotive, route, routeIndex, block, position, maxLeadingBlocks, blocksToAvoid, turnoutsToAvoid
     }
 
     convenience init(from decoder: Decoder) throws {
@@ -268,6 +284,7 @@ extension Train: Codable {
         self.position = try container.decode(Int.self, forKey: CodingKeys.position)
         self.maxNumberOfLeadingReservedBlocks = try container.decodeIfPresent(Int.self, forKey: CodingKeys.maxLeadingBlocks) ?? 1
         self.blocksToAvoid = try container.decodeIfPresent([BlockItem].self, forKey: CodingKeys.blocksToAvoid) ?? []
+        self.turnoutsToAvoid = try container.decodeIfPresent([TurnoutItem].self, forKey: CodingKeys.turnoutsToAvoid) ?? []
     }
 
     func encode(to encoder: Encoder) throws {
@@ -288,6 +305,7 @@ extension Train: Codable {
         try container.encode(position, forKey: CodingKeys.position)
         try container.encode(maxNumberOfLeadingReservedBlocks, forKey: CodingKeys.maxLeadingBlocks)
         try container.encode(blocksToAvoid, forKey: CodingKeys.blocksToAvoid)
+        try container.encode(turnoutsToAvoid, forKey: CodingKeys.turnoutsToAvoid)
     }
 
 }

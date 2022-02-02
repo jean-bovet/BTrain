@@ -227,6 +227,12 @@ final class PathFinder {
             // The transition ends up in a turnout
             let nextTurnout = layout.turnout(for: nextTurnoutId)!
             
+            // Find out if the next turnout is allowed to be used for that train
+            if context.train.turnoutsToAvoid.contains(where: {$0.turnoutId == nextTurnoutId }) {
+                context.print("The next turnout \(nextTurnoutId) is marked as to be avoided by train \(context.train.name), backtracking")
+                return false
+            }
+
             // Find a valid path out of that turnout
             if try findPath(from: nextTurnout, fromSocketId: transition.b.socketId!, context: context) {
                 return true

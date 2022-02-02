@@ -100,6 +100,38 @@ struct TrainDetailsBlocksToAvoidSectionView: View {
     }
 }
 
+struct TrainDetailsTurnoutsToAvoidSectionView: View {
+    
+    let layout: Layout
+    @ObservedObject var train: Train
+
+    var body: some View {
+        VStack(alignment: .leading) {
+            SectionTitleView(label: "Turnouts To Avoid")
+
+            List {
+                ForEach($train.turnoutsToAvoid, id: \.self) { turnoutItem in
+                    HStack {
+                        Picker("Turnout:", selection: turnoutItem.turnoutId) {
+                            ForEach(layout.turnouts, id:\.self) { turnout in
+                                Text("\(turnout.name)").tag(turnout.id as Identifier<Turnout>)
+                            }
+                        }.labelsHidden()
+                        Spacer()
+                        Button("-") {
+                            train.turnoutsToAvoid.removeAll(where: { $0.id == turnoutItem.id })
+                        }
+                    }
+                }
+            }.frame(minHeight: 100)
+            
+            Button("+") {
+                train.turnoutsToAvoid.append(.init(layout.turnouts.first!.id))
+            }.disabled(layout.turnouts.isEmpty)
+        }
+    }
+}
+
 struct TrainDetailsSpeedSectionView: View {
     
     @ObservedObject var train: Train
@@ -165,6 +197,7 @@ struct TrainDetailsView: View {
             TrainDetailsGeometrySectionView(train: train)
             TrainDetailsReservationSectionView(train: train)
             TrainDetailsBlocksToAvoidSectionView(layout: layout, train: train)
+            TrainDetailsTurnoutsToAvoidSectionView(layout: layout, train: train)
             TrainDetailsSpeedSectionView(train: train)
             TrainDetailsIconSectionView(train: train, trainIconManager: trainIconManager)
         }
