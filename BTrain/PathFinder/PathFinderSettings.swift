@@ -15,7 +15,7 @@ import Foundation
 struct PathFinderSettings {
     // True to generate a route at random, false otherwise.
     let random: Bool
-    
+        
     enum ReservedBlockBehavior {
         // Avoid all the reserved blocks
         case avoidReserved
@@ -32,5 +32,7 @@ struct PathFinderSettings {
     
     let reservedBlockBehavior: ReservedBlockBehavior
             
+    var consideringStoppingAtSiding = false
+    
     let verbose: Bool
 }

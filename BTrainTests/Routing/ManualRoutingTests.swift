@@ -748,6 +748,36 @@ class ManualRoutingTests: BTTestCase {
         XCTAssertTrue(p.train.manualScheduling)
     }
 
+    func testUpdateAutomaticRouteBrakingAndContinue() throws {
+        let layout = LayoutHCreator().newLayout()
+
+        let p = try setup(layout: layout, fromBlockId: "A", position: .end, route: layout.routes[0])
+        try p.start()
+        
+        try p.assert("0: |[r0[A ≏ ≏ 🚂0 ]] <r0<AB>> [r0[B ≏ ≏ ]] [C ≏ ≏ ] [D ≏ ≏ ] <DE> [E ≏ ≏ ]|")
+        try p.assert("0: |[r0[A ≏ ≏ 💺0 ]] <r0<AB>> [r0[B 💺0 ≡ 🚂0 ≏ ]] [r0[C ≏ ≏ ]] [D ≏ ≏ ] <DE> [E ≏ ≏ ]|")
+        try p.assert("0: |[r0[A ≏ ≏ 💺0 ]] <r0<AB>> [r0[B 💺0 ≏ 💺0 ≡ 🚂0 ]] [r0[C ≏ ≏ ]] [D ≏ ≏ ] <DE> [E ≏ ≏ ]|")
+
+        // Let's put another train in D
+        layout.reserve("D", with: "1", direction: .next)
+
+        // The train should brake
+        try p.assert("0: |[A ≏ ≏ ] <AB> [r0[B 💺0 ≏ 💺0 ≏ 💺0 ]] [r0[C 💺0 ≡ 🟨🚂0 ≏ ]] [r1[D ≏ ≏ ]] <DE> [E ≏ ≏ ]|")
+        
+        // And now we free D...
+        layout.free("D")
+
+        // Which means the train should start accelerating again
+        try p.assert("0: |[A ≏ ≏ ] <AB> [r0[B 💺0 ≏ 💺0 ≏ 💺0 ]] [r0[C 💺0 ≏ 💺0 ≡ 🚂0 ]] [r0[D ≏ ≏ ]] <DE> [E ≏ ≏ ]|")
+        try p.assert("0: |[A ≏ ≏ ] <AB> [B ≏ ≏ ] [r0[C 💺0 ≏ 💺0 ≏ 💺0 ]] [r0[D 💺0 ≡ 🚂0 ≏ ]] <r0<DE>> [r0[E ≏ ≏ ]]|")
+        try p.assert("0: |[A ≏ ≏ ] <AB> [B ≏ ≏ ] [r0[C 💺0 ≏ 💺0 ≏ 💺0 ]] [r0[D 💺0 ≏ 💺0 ≡ 🚂0 ]] <r0<DE>> [r0[E ≏ ≏ ]]|")
+        try p.assert("0: |[A ≏ ≏ ] <AB> [B ≏ ≏ ] [C ≏ ≏ ] [r0[D 💺0 ≏ 💺0 ≏ 💺0 ]] <r0<DE>> [r0[E 💺0 ≡ 🟨🚂0 ≏ ]]|")
+        
+        p.toggle("E.2")
+
+        XCTAssertEqual(p.train.state, .stopped)
+    }
+
     func testTrainWithWagonsInFront() throws {
         let layout = LayoutECreator().newLayoutWithLengths()
         layout.turnouts[0].state = .branchLeft

@@ -68,36 +68,6 @@ class AutomaticRoutingTests: BTTestCase {
         XCTAssertTrue(p.train.automaticScheduling)
     }
     
-    func testUpdateAutomaticRouteBrakingAndContinue() throws {
-        let layout = LayoutHCreator().newLayout()
-        let s1 = layout.block(for: Identifier<Block>(uuid: "A"))!
-
-        let p = try setup(layout: layout, fromBlockId: s1.id, destination: nil, position: .end, routeSteps: ["A:next", "B:next", "C:next", "D:next", "E:next"])
-        
-        try p.assert("automatic-0: |[r0[A ≏ ≏ 🚂0 ]] <r0<AB>> [r0[B ≏ ≏ ]] [C ≏ ≏ ] [D ≏ ≏ ] <DE> [E ≏ ≏ ]|")
-        try p.assert("automatic-0: |[r0[A ≏ ≏ 💺0 ]] <r0<AB>> [r0[B 💺0 ≡ 🚂0 ≏ ]] [r0[C ≏ ≏ ]] [D ≏ ≏ ] <DE> [E ≏ ≏ ]|")
-        try p.assert("automatic-0: |[r0[A ≏ ≏ 💺0 ]] <r0<AB>> [r0[B 💺0 ≏ 💺0 ≡ 🚂0 ]] [r0[C ≏ ≏ ]] [D ≏ ≏ ] <DE> [E ≏ ≏ ]|")
-
-        // Let's put another train in D
-        layout.reserve("D", with: "1", direction: .next)
-
-        // The train should brake
-        try p.assert("automatic-0: |[A ≏ ≏ ] <AB> [r0[B 💺0 ≏ 💺0 ≏ 💺0 ]] [r0[C 💺0 ≡ 🟨🚂0 ≏ ]] [r1[D ≏ ≏ ]] <DE> [E ≏ ≏ ]|")
-        
-        // And now we free D...
-        layout.free("D")
-
-        // Which means the train should start accelerating again
-        try p.assert("automatic-0: |[A ≏ ≏ ] <AB> [r0[B 💺0 ≏ 💺0 ≏ 💺0 ]] [r0[C 💺0 ≏ 💺0 ≡ 🚂0 ]] [r0[D ≏ ≏ ]] <DE> [E ≏ ≏ ]|")
-        try p.assert("automatic-0: |[A ≏ ≏ ] <AB> [B ≏ ≏ ] [r0[C 💺0 ≏ 💺0 ≏ 💺0 ]] [r0[D 💺0 ≡ 🚂0 ≏ ]] <r0<DE>> [r0[E ≏ ≏ ]]|")
-        try p.assert("automatic-0: |[A ≏ ≏ ] <AB> [B ≏ ≏ ] [r0[C 💺0 ≏ 💺0 ≏ 💺0 ]] [r0[D 💺0 ≏ 💺0 ≡ 🚂0 ]] <r0<DE>> [r0[E ≏ ≏ ]]|")
-        try p.assert("automatic-0: |[A ≏ ≏ ] <AB> [B ≏ ≏ ] [C ≏ ≏ ] [r0[D 💺0 ≏ 💺0 ≏ 💺0 ]] <r0<DE>> [r0[E 💺0 ≡ 🟨🚂0 ≏ ]]|")
-        
-        p.toggle("E.2")
-
-        XCTAssertEqual(p.train.state, .stopped)
-    }
-    
     func testUpdateAutomaticRouteWithBlockToAvoid() throws {
         let layout = LayoutECreator().newLayout()
         let s1 = layout.block(for: Identifier<Block>(uuid: "s1"))!

@@ -364,6 +364,7 @@ extension Layout {
         guard let train = self.train(for: trainId) else {
             throw LayoutError.trainNotFound(trainId: trainId)
         }
+        
         let reservation = Reservation(trainId: trainId, direction: direction)
         guard b1.reserved == nil || b1.reserved == reservation else {
             throw LayoutError.cannotReserveBlock(block: b1, train: train, reserved: b1.reserved!)

@@ -49,7 +49,7 @@ extension Layout {
         }
 
         // We are going to iterate over all the remaining steps of the route until we
-        // either reach the end of the route or if we have reserved enough blocks.
+        // either (1) reach the end of the route or (2)) we have reserved enough blocks.
         let startReservationIndex = min(route.lastStepIndex, train.routeStepIndex + 1)
         let stepsToReserve = route.steps[startReservationIndex...route.lastStepIndex]
 
