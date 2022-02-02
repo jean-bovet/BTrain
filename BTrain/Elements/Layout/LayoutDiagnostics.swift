@@ -33,6 +33,7 @@ enum DiagnosticError: Error, Equatable {
     case turnoutMissingLength(turnout: Turnout)
     case trainMissingLength(train: Train)
     case trainMissingMagnetDistance(train: Train)
+    case blockFeedbackInvalidDistance(block: Block, feedback: Block.BlockFeedback)
     case blockFeedbackMissingDistance(block: Block, feedbackId: Identifier<Feedback>)
 }
 
@@ -74,9 +75,11 @@ extension DiagnosticError: LocalizedError {
             return "Block \(block.name) does not have a length defined"
         case .turnoutMissingLength(turnout: let turnout):
             return "Turnout \(turnout.name) does not have a length defined"
+        case .blockFeedbackInvalidDistance(block: let block, feedback: let feedback):
+            return "Feedback \(feedback.id) has an invalid distance of \(feedback.distance!) inside block \(block.name) of length \(block.length!)"
         case .blockFeedbackMissingDistance(block: let block, feedbackId: let feedbackId):
             return "Block \(block.name) does not have a distance defined for feedback \(feedbackId)"
-            
+
         case .trainMissingLength(train: let train):
             return "Train \(train.name) does not have a length defined"
         case .trainMissingMagnetDistance(train: let train):
@@ -283,15 +286,22 @@ final class LayoutDiagnostic: ObservableObject {
     
     func checkForLengthAndDistance(_ errors: inout [DiagnosticError]) {
         for block in layout.blocks {
-            if block.length == nil {
+            guard let bl = block.length else {
                 errors.append(DiagnosticError.blockMissingLength(block: block))
+                continue
             }
+            
             for bf in block.feedbacks {
-                if bf.distance == nil {
+                if let distance = bf.distance {
+                    if distance < 0 || distance > bl {
+                        errors.append(DiagnosticError.blockFeedbackInvalidDistance(block: block, feedback: bf))
+                    }
+                } else {
                     errors.append(DiagnosticError.blockFeedbackMissingDistance(block: block, feedbackId: bf.feedbackId))
                 }
             }
         }
+        
         for turnout in layout.turnouts {
             if turnout.length == nil {
                 errors.append(DiagnosticError.turnoutMissingLength(turnout: turnout))
