@@ -158,10 +158,17 @@ final class PathFinder {
             }
             
             // Find out if the next block is already reserved
-            let nextBlock = layout.block(for: nextBlockId)!
+            guard let nextBlock = layout.block(for: nextBlockId) else {
+                throw LayoutError.blockNotFound(blockId: nextBlockId)
+            }
+            
             if !nextBlock.enabled  {
                 context.print("The next block \(nextBlock) is disabled, backtracking")
                 return false
+                
+            } else if nextBlock.category == .sidingNext || nextBlock.category == .sidingPrevious {
+                context.print("Reached a siding at block \(nextBlock)")
+                return context.settings.consideringStoppingAtSiding
             } else if let reserved = nextBlock.reserved, reserved.trainId != context.train.id {
                 // The next block is reserved for another train, we cannot use it
                 let stepCount = context.steps.count - 1 // Remove one block because we don't take into account the first block which is the starting block
@@ -202,9 +209,6 @@ final class PathFinder {
             } else if nextBlock.category == .station {
                 context.print("Reached a station at block \(nextBlock)")
                 return true
-            } else if nextBlock.category == .sidingNext || nextBlock.category == .sidingPrevious {
-                context.print("Reached a siding at block \(nextBlock)")
-                return context.settings.consideringStoppingAtSiding
             }
             
             // If the block is not a station, let's continue recursively
@@ -218,7 +222,9 @@ final class PathFinder {
             }
         } else if let nextTurnoutId = transition.b.turnout {
             // The transition ends up in a turnout
-            let nextTurnout = layout.turnout(for: nextTurnoutId)!
+            guard let nextTurnout = layout.turnout(for: nextTurnoutId) else {
+                throw LayoutError.turnoutNotFound(turnoutId: nextTurnoutId)
+            }
             
             // Find out if the next turnout is allowed to be used for that train
             if context.train.turnoutsToAvoid.contains(where: {$0.turnoutId == nextTurnoutId }) {

@@ -89,7 +89,7 @@ class AutomaticRoutingTests: BTTestCase {
         // There will be no possible route to find
         _ = try setup(layout: layout, fromBlockId: s1.id, destination: nil, position: .end, routeSteps: [])
     }
-
+    
     func testUpdateAutomaticRouteWithTurnoutToAvoid() throws {
         let layout = LayoutECreator().newLayout()
         let s1 = layout.block(for: Identifier<Block>(uuid: "s1"))!
@@ -103,6 +103,14 @@ class AutomaticRoutingTests: BTTestCase {
 
         // No route is possible with t5 to avoid
         p = try setup(layout: layout, fromBlockId: s1.id, destination: nil, position: .end, routeSteps: [])
+    }
+
+    func testUpdateAutomaticRouteNoRouteToSiding() throws {
+        let layout = LayoutHCreator().newLayout()
+
+        // There is no automatic route possible because there are no stations but only two siding blocks at each end of the route.
+        // This will be supported in the future for certain type of train.
+        _ = try setup(layout: layout, fromBlockId: Identifier<Block>(uuid: "A"), destination: nil, position: .end, routeSteps: [])
     }
 
     func testUpdateAutomaticRouteFinishing() throws {
