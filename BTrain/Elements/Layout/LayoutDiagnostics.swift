@@ -16,7 +16,8 @@ enum DiagnosticError: Error, Equatable {
     case feedbackIdAlreadyExists(feedback: Feedback)
     case feedbackNameAlreadyExists(feedback: Feedback)
     case feedbackDuplicateAddress(feedback: Feedback)
-
+    case unusedFeedback(feedback: Feedback)
+    
     case turnoutIdAlreadyExists(turnout: Turnout)
     case turnoutNameAlreadyExists(turnout: Turnout)
     case turnoutMissingTransition(turnout: Turnout, socket: String)
@@ -46,7 +47,9 @@ extension DiagnosticError: LocalizedError {
             return "Feedback name \(feedback.name) is used by more than one feedback"
         case .feedbackDuplicateAddress(feedback: let feedback):
             return "The address {deviceID=\(feedback.deviceID), contactID=\(feedback.contactID)} of feedback \(feedback.name) is already used by another feedback"
-            
+        case .unusedFeedback(feedback: let feedback):
+            return "Feedback \(feedback.name) is not used in the layout"
+
         case .blockIdAlreadyExists(block: let block):
             return "Block ID \(block.id) (named \(block.name)) is used by more than one block"
         case .blockNameAlreadyExists(block: let block):
@@ -244,7 +247,7 @@ final class LayoutDiagnostic: ObservableObject {
             }
         }
     }
-
+    
     func checkForOrphanedElements(_ errors: inout [DiagnosticError]) throws {
         // Check for elements that are not linked together (orphaned sockets)
         for turnout in layout.turnouts {
@@ -280,6 +283,21 @@ final class LayoutDiagnostic: ObservableObject {
                 if try layout.transitions(from: socket).isEmpty {
                     errors.append(DiagnosticError.invalidTransition(transitionId: transition.id, socket: socket))
                 }
+            }
+        }
+        
+        var feedbacks = Set<Identifier<Feedback>>()
+        for feedback in layout.feedbacks {
+            feedbacks.insert(feedback.id)
+        }
+        for block in layout.blocks {
+            for bf in block.feedbacks {
+                feedbacks.remove(bf.feedbackId)
+            }
+        }
+        for unusedFeedback in feedbacks {
+            if let fb = layout.feedback(for: unusedFeedback) {
+                errors.append(DiagnosticError.unusedFeedback(feedback: fb))
             }
         }
     }

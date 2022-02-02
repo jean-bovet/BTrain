@@ -41,6 +41,10 @@ final class LayoutObserver {
             self.turnoutCallbacks.forEach { $0(turnouts) }
             self.anyCallbacks.forEach { $0() }
         }))
+        
+        cancellables.append(layout.$feedbacks.dropFirst().sink(receiveValue: { feedbacks in
+            self.anyCallbacks.forEach { $0() }
+        }))
     }
     
     typealias TrainChangeCallback = ([Train]) -> Void
