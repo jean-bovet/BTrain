@@ -7,6 +7,13 @@
 
 import Foundation
 
+//┌─────────┐           ┌──────┐   ┌──────┐  ┌──────┐            ┌──────┐
+//│    A    │──▶  AB  ─▶│  B   │──▶│  C   │─▶│  D   │──▶  DE  ──▶│  E   │
+//└─────────┘           └──────┘   └──────┘  └──────┘            └──────┘
+//                 │                                       ▲
+//                 │    ┌──────┐   ┌──────┐  ┌──────┐      │
+//                 └───▶│  B2  │──▶│ !C2  │─▶│  D2  │──────┘
+//                      └──────┘   └──────┘  └──────┘
 final class LayoutHCreator: LayoutCreating {
     
     static let id = Identifier<Layout>(uuid: "layout-h")

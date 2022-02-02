@@ -44,6 +44,10 @@ final class TrainController {
         // otherwise the train stops temporarily until it can restart.
         let stopCompletely: Bool
         
+        var isTemporary: Bool {
+            return restartDelay == 0 && stopCompletely == false
+        }
+        
         static func completeStop() -> StopTrigger {
             return .init(restartDelay: 0, stopCompletely: true)
         }
@@ -120,7 +124,9 @@ final class TrainController {
     }
     
     private func handleTrainStart() throws -> Result {
-        guard train.speed.kph == 0 else {
+        // Note: we also want to start a train that is braking to stop temporarily, which can happen
+        // when the next block that was occupied (and caused the train to brake in the first place) becomes free.
+        guard train.state == .stopped || (train.state == .braking && stopTrigger?.isTemporary == true) else {
             return .none
         }
 
@@ -162,6 +168,7 @@ final class TrainController {
             debug("Start train \(train.name) because the next blocks could be reserved")
             train.startRouteIndex = train.routeStepIndex
             train.state = .running
+            stopTrigger = nil
             try layout.setTrainSpeed(train, LayoutFactory.DefaultSpeed)
             return .processed
         }
