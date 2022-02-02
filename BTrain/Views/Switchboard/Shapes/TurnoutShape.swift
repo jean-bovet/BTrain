@@ -56,11 +56,7 @@ final class TurnoutShape: Shape, DraggableShape, ConnectableShape {
         // Returns all the sockets that don't have any transitions coming out of them
         return sockets.filter { connectorSocket in
             let s = Socket.turnout(turnout.id, socketId: connectorSocket.id)
-            if let transitions = try? layout.transitions(from: s) {
-                return transitions.isEmpty
-            } else {
-                return false
-            }
+            return (try? layout.transition(from: s)) == nil
         }
     }
     

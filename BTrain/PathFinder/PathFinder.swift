@@ -99,12 +99,7 @@ final class PathFinder {
         // Find out all the transitions out of this block `next` or `previous` socket,
         // depending on the direction of travel of the train
         let from = direction == .next ? block.next : block.previous
-        var transitions = try layout.transitions(from: from, to: nil)
-        context.print("Evaluating \(transitions.count) transitions from \(from)")
-        if context.settings.random {
-            transitions.shuffle()
-        }
-        for transition in transitions {
+        if let transition = try layout.transition(from: from) {
             assert(transition.a.block == block.id)
             if try findPath(from: transition, context: context) {
                 return true
@@ -128,13 +123,11 @@ final class PathFinder {
         // Iterate over all the sockets
         for id in nextSocketIds {
             let nextSocket = turnout.socket(id)
-            let transitions = try layout.transitions(from: nextSocket, to: nil)
-            context.print("Evaluating \(transitions.count) transitions from \(nextSocket)")
-            for tr in transitions {
-                assert(tr.a.turnout == turnout.id)
+            if let transition = try layout.transition(from: nextSocket) {
+                assert(transition.a.turnout == turnout.id)
                 // Drill down this transition to see if it leads
                 // to a valid path
-                if try findPath(from: tr, context: context) {
+                if try findPath(from: transition, context: context) {
                     return true
                 }
             }

@@ -57,13 +57,42 @@ extension Layout {
         }
     }
 
+    // Returns the transition from the specified socket. There is either no transition
+    // or a single transition out of a socket.
+    // An exception is thrown if more than one transition is found because this is an error.
+    func transition(from: Socket) throws -> ITransition? {
+        let candidates: [ITransition] = self.transitions.compactMap { transition in
+            if transition.a.contains(other: from) {
+                return transition
+            } else if transition.b.contains(other: from) {
+                // Returns the reverse of the transition so the code below
+                // always assume from=a and to=b
+                return transition.reverse
+            } else {
+                return nil
+            }
+        }
+
+        switch candidates.count {
+        case 0:
+            return nil
+        case 1:
+            return candidates[0]
+        default:
+            // Check that there is only one and one transition only
+            // that starts from the `from` socket because a socket
+            // supports only one transition out of it!
+            throw LayoutError.alwaysOneAndOnlyOneTransition
+        }
+    }
+    
     // This method returns all the transitions between two sockets. A socket
     // can be either the start/end of a block or a turnout. For example,
     // it will return two transitions between block 1 and block 2:
     //┌─────────┐                     ┌─────────┐
     //│ Block 1 │────▶  Turnout  ────▶│ Block 2 │
     //└─────────┘                     └─────────┘
-    func transitions(from: Socket, to: Socket? = nil) throws -> [ITransition] {
+    func transitions(from: Socket, to: Socket) throws -> [ITransition] {
         // Find out all the transitions (candidates) that start or end with the "from" socket.
         // For example, a transition between a block and a turnout can be represented by:
         //┌─────────┐
@@ -81,39 +110,10 @@ extension Layout {
         //┌─────────┐           ┌─────────┐
         //│ Block 1 │a─────────b│ Block 2 │
         //└─────────┘           └─────────┘
-        let candidates: [ITransition] = self.transitions.compactMap { transition in
-            if transition.a.contains(other: from) {
-                return transition
-            } else if transition.b.contains(other: from) {
-                // Returns the reverse of the transition so the code below
-                // always assume from=a and to=b
-                return transition.reverse
-            } else {
-                return nil
-            }
+        guard let transition = try self.transition(from: from) else {
+            return []
         }
-
-        // Return now if there are no transitions
-        guard !candidates.isEmpty else {
-            return candidates
-        }
-
-        let transition = candidates[0]
-        
-        // If the "to" socket is not specified, we can return the transition
-        // now because this is what the caller wanted - all the transitions
-        // from the `from` socket.
-        guard let to = to else {
-            return [transition]
-        }
-                
-        // Check that there is only one and one transition only
-        // that starts from the `from` socket because a socket
-        // supports only one transition out of it!
-        guard candidates.count == 1 else {
-            throw LayoutError.alwaysOneAndOnlyOneTransition
-        }
-                     
+                                     
         if transition.b == to {
             // If the transition ends at the "to" socket, we can return it now.
             return [transition]
@@ -131,7 +131,7 @@ extension Layout {
                     let trs = try transitions(from: turnout.socket(socketId), to: to)
                     if !trs.isEmpty {
                         // If such transitions are found, we can return now.
-                        return candidates + trs
+                        return [transition] + trs
                     }
                 }
             }

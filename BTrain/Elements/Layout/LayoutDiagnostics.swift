@@ -252,7 +252,7 @@ final class LayoutDiagnostic: ObservableObject {
         // Check for elements that are not linked together (orphaned sockets)
         for turnout in layout.turnouts {
             for socket in turnout.allSockets {
-                if try layout.transitions(from: socket).isEmpty {
+                if try layout.transition(from: socket) == nil {
                     let name: String
                     if let socketId = socket.socketId {
                         name = turnout.socketName(socketId)
@@ -266,7 +266,7 @@ final class LayoutDiagnostic: ObservableObject {
         
         for block in layout.blocks {
             for socket in block.allSockets {
-                if try layout.transitions(from: socket).isEmpty {
+                if try layout.transition(from: socket) == nil {
                     let name: String
                     if let socketId = socket.socketId {
                         name = block.socketName(socketId)
@@ -280,7 +280,7 @@ final class LayoutDiagnostic: ObservableObject {
         
         for transition in layout.transitions {
             for socket in [transition.a, transition.b] {
-                if try layout.transitions(from: socket).isEmpty {
+                if try layout.transition(from: socket) == nil {
                     errors.append(DiagnosticError.invalidTransition(transitionId: transition.id, socket: socket))
                 }
             }
