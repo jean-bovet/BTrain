@@ -62,8 +62,12 @@ extension Layout {
         var numberOfLeadingBlocksReserved = 0
         
         for step in stepsToReserve {
-            guard let block = self.block(for: step.blockId) else {
-                throw LayoutError.blockNotFound(blockId: step.blockId)
+            guard let blockId = step.blockId else {
+                continue
+            }
+            
+            guard let block = self.block(for: blockId) else {
+                throw LayoutError.blockNotFound(blockId: blockId)
             }
                    
             guard block.enabled else {
@@ -89,7 +93,7 @@ extension Layout {
                 // Note: it is possible for this call to throw an exception if it cannot reserve.
                 // Catch it and return false instead as this is not an error we want to report back to the runtime
                 do {
-                    try reserve(trainId: train.id, fromBlock: previousStep.blockId, toBlock: block.id, direction: previousStep.direction)
+                    try reserve(trainId: train.id, fromBlock: previousStep.blockId!, toBlock: block.id, direction: previousStep.direction!)
                     BTLogger.debug("Reserved \(previousStep.blockId) to \(block.id) for \(train.name)")
                     numberOfLeadingBlocksReserved += 1
                 } catch {

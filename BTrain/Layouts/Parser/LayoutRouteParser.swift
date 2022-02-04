@@ -101,7 +101,7 @@ final class LayoutRouteParser {
                 for (index, turnout) in turnouts.enumerated() {
                     if index == 0 {
                         layout.link("\(step.blockId)-\(turnout.id)",
-                                    from: step.exitSocket,
+                                    from: step.exitSocket!,
                                     to: Socket.turnout(turnout.id, socketId: turnout.fromSocket))
                     }
                     
@@ -115,7 +115,7 @@ final class LayoutRouteParser {
                     if index == turnouts.count - 1 {
                         layout.link("\(turnout.id)-\(nextStep)",
                                     from: Socket.turnout(turnout.id, socketId: turnout.toSocket),
-                                    to: nextStep.entrySocket)
+                                    to: nextStep.entrySocket!)
                     }
                 }
             } else {
@@ -130,8 +130,8 @@ final class LayoutRouteParser {
                 //                                │ Block 2 │◀─┘
                 //                                └─────────┘
                 layout.link("\(step.blockId)-\(nextStep.blockId)",
-                            from: step.exitSocket,
-                            to: nextStep.entrySocket)
+                            from: step.exitSocket!,
+                            to: nextStep.entrySocket!)
             }
         }
     }
@@ -508,29 +508,4 @@ final class LayoutRouteParser {
         blockTurnouts[route.steps.count-1] = turnouts!
     }
 
-}
-
-extension Route.Step {
-    
-    // Returns the socket where the train will exit
-    // the block represented by this step, taking
-    // into account the direction of travel of the train.
-    var exitSocket: Socket {
-        if direction == .next {
-            return Socket.block(blockId, socketId: 1)
-        } else {
-            return Socket.block(blockId, socketId: 0)
-        }
-    }
-    
-    // Returns the socket where the train will enter
-    // the block represented by this step, taking
-    // into account the direction of travel of the train.
-    var entrySocket: Socket {
-        if direction == .next {
-            return Socket.block(blockId, socketId: 0)
-        } else {
-            return Socket.block(blockId, socketId: 1)
-        }
-    }
 }

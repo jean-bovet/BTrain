@@ -182,13 +182,16 @@ class LayoutParserTests: XCTestCase {
             // Assert the turnouts
             if let expectedTurnouts = expectation.turnouts {
                 let nextStep = route.steps[index+1]
-                let nextBlockId = nextStep.blockId
+                guard let nextBlockId = nextStep.blockId else {
+                    return
+                }
+                
                 guard let nextBlock = layout.block(for: nextBlockId) else {
                     XCTFail("Unable to find block \(nextBlockId)")
                     return
                 }
                 
-                let turnouts = try! layout.turnouts(from: block, to: nextBlock, direction: step.direction)
+                let turnouts = try! layout.turnouts(from: block, to: nextBlock, direction: step.direction!)
                 XCTAssertEqual(expectedTurnouts.count, turnouts.count, "Mismatching number of turnouts between \(block) and \(nextBlock)")
                 
                 for index in 0..<turnouts.count {

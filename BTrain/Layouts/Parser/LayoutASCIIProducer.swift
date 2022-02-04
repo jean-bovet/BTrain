@@ -100,8 +100,14 @@ final class LayoutASCIIProducer {
     }
     
     func generateTurnout(previousStep: Route.Step, step: Route.Step, text: inout String) throws {
+        guard let previousBlockId = previousStep.blockId else {
+            return
+        }
+        guard let direction = step.direction else {
+            return
+        }
         var lastSocket: Int?
-        try visitor.visit(fromBlockId: previousStep.blockId, toBlockId: step.blockId, direction: step.direction) { info in
+        try visitor.visit(fromBlockId: previousBlockId, toBlockId: step.blockId, direction: direction) { info in
             if let transition = info.transition {
                 lastSocket = transition.b.socketId
             } else if let turnout = info.turnout {

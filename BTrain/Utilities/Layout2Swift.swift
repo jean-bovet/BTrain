@@ -208,11 +208,12 @@ final class Layout2Swift {
         //        l.newRoute("1", name: "Outer Loop", [(b10, .next), (b6, .next), (b7, .next), (b8, .next), (b10, .next)])
         var content = ""
         for step in route.steps {
-            if !content.isEmpty {
-                content += ","
+            if let block = layout.block(for: step.blockId), let direction = step.direction {
+                if !content.isEmpty {
+                    content += ","
+                }
+                content += "Route.Step(\(block.symbol),.\(direction.rawValue), \(optionalString(step.waitingTime)))"
             }
-            let block = layout.block(for: step.blockId)!
-            content += "Route.Step(\(block.symbol),.\(step.direction.rawValue), \(optionalString(step.waitingTime)))"
         }
         code += "\nl.newRoute(\"\(route.id)\", name: \"\(route.name)\", [\(content)])"
     }

@@ -217,7 +217,7 @@ extension Layout {
 extension Array where Element == Route.Step {
     
     var description: [String] {
-        return self.map { "\($0.blockId.uuid):\($0.direction.rawValue)" }
+        return self.map { "\($0.blockId!.uuid):\($0.direction!.rawValue)" }
     }
 }
 

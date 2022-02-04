@@ -53,18 +53,58 @@ final class Route: Element, ObservableObject {
         let id: String
         
         // The block identifier
-        var blockId: Identifier<Block>
+        var blockId: Identifier<Block>?
         
         // The direction of travel of the train within that block
-        var direction: Direction
+        var direction: Direction? {
+            get {
+                if blockId != nil {
+                    return exitSocket?.socketId == Block.nextSocket ? .next : .previous
+                } else {
+                    fatalError("It is an error to request the direction for a step that does not refer to a block")
+                }
+            }
+            set {
+                if let blockId = blockId {
+                    if newValue == .next {
+                        exitSocket = Socket.block(blockId, socketId: 1)
+                        entrySocket = Socket.block(blockId, socketId: 0)
+                    } else {
+                        exitSocket = Socket.block(blockId, socketId: 0)
+                        entrySocket = Socket.block(blockId, socketId: 1)
+                    }
+                } else {
+                    fatalError("It is an error to set the direction of a step that does not refer to a block")
+                }
+            }
+        }
+        
+        var turnoutId: Identifier<Turnout>?
         
         // The number of seconds a train will wait in that block
         // If nil, the block waitingTime is used instead.
         var waitingTime: TimeInterval?
         
         var description: String {
-            "\(blockId)-\(direction)"
+            if let blockId = blockId {
+                return "\(blockId)-\(direction!)"
+            } else if let turnoutId = turnoutId {
+                return "\(turnoutId)(\(entrySocket!)-\(exitSocket!))"
+            } else {
+                // TODO: throw instead of crashing?
+                fatalError("Unsupported Step configuration")
+            }
         }
+
+        // Returns the socket where the train will exit
+        // the block represented by this step, taking
+        // into account the direction of travel of the train.
+        var exitSocket: Socket?
+        
+        // Returns the socket where the train will enter
+        // the block represented by this step, taking
+        // into account the direction of travel of the train.
+        var entrySocket: Socket?
 
         init(_ blockId: Identifier<Block>, _ direction: Direction, _ waitingTime: TimeInterval? = nil) {
             self.init(UUID().uuidString, blockId, direction, waitingTime)

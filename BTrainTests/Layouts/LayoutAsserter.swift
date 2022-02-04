@@ -125,14 +125,14 @@ final class LayoutAsserter {
                 let nextExpectedStep = route.steps[index+1]
                 let nextExpectedBlock = layout.block(for: nextExpectedStep.blockId)!
 
-                let expectedTransitions = try expectedLayout.transitions(from: expectedBlock, to: nextExpectedBlock, direction: expectedStep.direction)
+                let expectedTransitions = try expectedLayout.transitions(from: expectedBlock, to: nextExpectedBlock, direction: expectedStep.direction!)
                 XCTAssertFalse(expectedTransitions.isEmpty, "Expecting at least 1 transition between \(expectedBlock) and \(nextExpectedBlock)")
                 
-                let transitions = try layout.transitions(from: expectedBlock, to: nextExpectedBlock, direction: step.direction)
+                let transitions = try layout.transitions(from: expectedBlock, to: nextExpectedBlock, direction: step.direction!)
                 XCTAssertEqual(transitions.count, expectedTransitions.count, "Mismatching number of transitions between \(expectedBlock) and \(nextExpectedBlock)")
                 
-                let expectedTurnouts = try expectedLayout.turnouts(from: expectedBlock, to: nextExpectedBlock, direction: expectedStep.direction)
-                let turnouts = try layout.turnouts(from: expectedBlock, to: nextExpectedBlock, direction: step.direction)
+                let expectedTurnouts = try expectedLayout.turnouts(from: expectedBlock, to: nextExpectedBlock, direction: expectedStep.direction!)
+                let turnouts = try layout.turnouts(from: expectedBlock, to: nextExpectedBlock, direction: step.direction!)
                 XCTAssertEqual(turnouts.count, expectedTurnouts.count, "Mismatching number of turnouts between \(expectedBlock) and \(nextExpectedBlock)")
 
                 for index in 0..<turnouts.count {
