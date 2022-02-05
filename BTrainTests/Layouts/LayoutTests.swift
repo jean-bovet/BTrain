@@ -33,7 +33,6 @@ class LayoutTests: XCTestCase {
         layout.link(from: b2.next, to: b1.previous)
 
         try layout.setTrainToBlock(t1.id, b1.id, direction: .next)
-        try layout.reserve(trainId: t1.id, fromBlock: b1.id, toBlock: b2.id, direction: .next)
         XCTAssertEqual(t1.blockId, b1.id)
         XCTAssertEqual(layout.transitions.count, 2)
 
@@ -110,37 +109,38 @@ class LayoutTests: XCTestCase {
         XCTAssertEqual(train1.directionForward, true)
         XCTAssertEqual(block1.train!.direction, .previous)
     }
-    
-    func testTransitionsAndTurnoutsReservation() throws {
-        let layout = LayoutBCreator().newLayout()
-        let train1 = layout.trains[0]
-        let train2 = layout.trains[1]
-        
-        let b1 = layout.block(at: 0)
-        let b2 = layout.block(at: 1)
-        let b3 = layout.block(at: 2)
-        let b4 = layout.block(at: 3)
-        
-        try layout.setTrainToBlock(train1.id, b1.id, direction: .next)
-        try layout.setTrainToBlock(train2.id, b3.id, direction: .next)
-        
-        XCTAssertNoThrow(try layout.reserve(trainId: train1.id, fromBlock: b1.id, toBlock: b2.id, direction: .next))
-        
-        // Ensure that train 2 cannot reserve its block because they are overlapping with
-        // the turnout which itself is already reserved for train 1
-        XCTAssertThrowsError(try layout.reserve(trainId: train2.id, fromBlock: b3.id, toBlock: b4.id, direction: .next))
-        
-        // Now let's free the blocks reserved by train 1 (but keep it in its block) and try again to reserve for train 2, it should work this time
-        try layout.updateReservedBlocks(train: train1)
-        XCTAssertNotNil(b1.reserved)
-        XCTAssertNotNil(train1.blockId)
-
-        XCTAssertNoThrow(try layout.reserve(trainId: train2.id, fromBlock: b3.id, toBlock: b4.id, direction: .next))
-        
-        // Now let's remove train 1 from the layout
-        try layout.remove(trainID: train1.id)
-        XCTAssertNil(b1.reserved)
-        XCTAssertNil(train1.blockId)
-    }
+  
+    // TODO
+//    func testTransitionsAndTurnoutsReservation() throws {
+//        let layout = LayoutBCreator().newLayout()
+//        let train1 = layout.trains[0]
+//        let train2 = layout.trains[1]
+//
+//        let b1 = layout.block(at: 0)
+//        let b2 = layout.block(at: 1)
+//        let b3 = layout.block(at: 2)
+//        let b4 = layout.block(at: 3)
+//
+//        try layout.setTrainToBlock(train1.id, b1.id, direction: .next)
+//        try layout.setTrainToBlock(train2.id, b3.id, direction: .next)
+//
+//        XCTAssertNoThrow(try layout.reserve(trainId: train1.id, fromBlock: b1.id, toBlock: b2.id, direction: .next))
+//
+//        // Ensure that train 2 cannot reserve its block because they are overlapping with
+//        // the turnout which itself is already reserved for train 1
+//        XCTAssertThrowsError(try layout.reserve(trainId: train2.id, fromBlock: b3.id, toBlock: b4.id, direction: .next))
+//
+//        // Now let's free the blocks reserved by train 1 (but keep it in its block) and try again to reserve for train 2, it should work this time
+//        try layout.updateReservedBlocks(train: train1)
+//        XCTAssertNotNil(b1.reserved)
+//        XCTAssertNotNil(train1.blockId)
+//
+//        XCTAssertNoThrow(try layout.reserve(trainId: train2.id, fromBlock: b3.id, toBlock: b4.id, direction: .next))
+//
+//        // Now let's remove train 1 from the layout
+//        try layout.remove(trainID: train1.id)
+//        XCTAssertNil(b1.reserved)
+//        XCTAssertNil(train1.blockId)
+//    }
 
 }

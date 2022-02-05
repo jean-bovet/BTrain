@@ -201,11 +201,17 @@ final class PathFinder {
                     if nextBlock.id == destination.blockId && nextBlockDirection == toDirection {
                         context.print("Reached the destination block \(destination.blockId) with desired direction of \(toDirection)")
                         return true
+                    } else if context.settings.firstBlockShouldMatchDestination {
+                        context.steps.removeLast()
+                        return false
                     }
                 } else {
                     if nextBlock.id == destination.blockId {
                         context.print("Reached the destination block \(destination.blockId)")
                         return true
+                    } else if context.settings.firstBlockShouldMatchDestination {
+                        context.steps.removeLast()
+                        return false
                     }
                 }
             } else if nextBlock.category == .station {

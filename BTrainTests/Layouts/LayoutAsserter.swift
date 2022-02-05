@@ -49,7 +49,7 @@ final class LayoutAsserter {
                 // Only assert the routes that are specified in the expectation.
                 // Some tests focus on a sub-set of the routes actually defined in the layout
                 let resolvedRoute = Route(id: route.id, automatic: route.automatic)
-                resolvedRoute.steps = try resolver.resolve(route: route)
+                resolvedRoute.steps = try resolver.resolve(steps: ArraySlice(route.steps))
                 try assert(route: resolvedRoute, expectedRoute: expectedRoute,
                            trains: trains, expectedTrains: expectedTrains,
                            expectedLayout: expectedLayout)
@@ -146,7 +146,7 @@ final class LayoutAsserter {
             return
         }
         XCTAssertEqual(turnout.id, expectedTurnout.id, "Mismatching turnout ID at index \(index), route \(route)")
-        XCTAssertEqual(turnout.state, expectedTurnout.state, "Mismatching turnout state at index \(index), route \(route)")
-        XCTAssertEqual(turnout.reserved, expectedTurnout.reserved, "Mismatching turnout reservation at index \(index), route \(route)")
+        XCTAssertEqual(turnout.state, expectedTurnout.state, "Mismatching turnout state for \(turnout) at index \(index), route \(route)")
+        XCTAssertEqual(turnout.reserved, expectedTurnout.reserved, "Mismatching turnout reservation for \(turnout) at index \(index), route \(route)")
     }
 }

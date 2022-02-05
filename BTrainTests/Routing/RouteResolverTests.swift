@@ -16,7 +16,7 @@ class RouteResolverTests: XCTestCase {
         let train = layout.trains[0]
         
         let resolver = RouteResolver(layout: layout)
-        let resolvedSteps = try resolver.resolve(route: route, trainId: train.id)
+        let resolvedSteps = try resolver.resolve(steps: ArraySlice(route.steps), trainId: train.id)
         
         XCTAssertEqual(route.steps.map({$0.description}), ["A-Next", "B-Next", "C-Next", "D-Next", "E-Next"])
         XCTAssertEqual(resolvedSteps.map({$0.description}), ["A-Next", "AB-(0>1)", "B-Next", "C-Next", "D-Next", "DE-(1>0)", "E-Next"])

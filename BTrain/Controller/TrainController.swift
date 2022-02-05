@@ -163,10 +163,12 @@ final class TrainController {
             return try updateAutomaticRoute(for: train.id)
         }
                 
-        // Try to reserve the next blocks and if successfull, then start the train
+        // Setup the start route index of the train
+        train.startRouteIndex = train.routeStepIndex
+        
+        // And try to reserve the necessary leading blocks
         if try layout.updateReservedBlocks(train: train, forceReserveLeadingBlocks: true) {
             debug("Start train \(train.name) because the next blocks could be reserved")
-            train.startRouteIndex = train.routeStepIndex
             train.state = .running
             stopTrigger = nil
             try layout.setTrainSpeed(train, LayoutFactory.DefaultSpeed)
@@ -444,14 +446,10 @@ final class TrainController {
                 
         debug("Train \(train) enters block \(nextBlock) at position \(position), direction \(direction)")
                 
-        // Set the train to its new block. This method will also free up all the other blocks from the train, expect
-        // the blocks trailing the train depending on its length and the length of the blocks.
-        // Note: we will reserve again the leading blocks below in `reserveNextBlocks`.
-        try layout.setTrainToBlock(train.id, nextBlock.id, position: .custom(value: position), direction: direction)
-        
-        // Increment the train route index
-        try layout.setTrainRouteStepIndex(train, train.routeStepIndex + 1)
-                                
+        // Set the train to its new block. This methdo also takes care of updated the reserved blocks for the train itself
+        // but also the leading blocks so the train can continue to move automatically.
+        try layout.setTrainToBlock(train.id, nextBlock.id, position: .custom(value: position), direction: direction, routeIndex: train.routeStepIndex + 1)
+                                        
         // Handle any route-specific stop now that the train has moved to a new block
         if route.automatic {
             _ = try handleAutomaticRouteStop(route: route)

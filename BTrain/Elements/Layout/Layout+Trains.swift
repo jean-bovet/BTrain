@@ -302,16 +302,8 @@ extension Layout {
         train.scheduling = .automatic(finishing: true)
     }
 
-    func setTrainRouteStepIndex(_ train: Train, _ routeIndex: Int) throws {
-        guard let train = self.train(for: train.id) else {
-            throw LayoutError.trainNotFound(trainId: train.id)
-        }
-        train.routeStepIndex = routeIndex
-    }
-
-    // This method sets the train in a specific block, frees the leading blocks reserved by a potential route
-    // and update the trailing blocks to account for the train's length.
-    func setTrainToBlock(_ trainId: Identifier<Train>, _ toBlockId: Identifier<Block>, position: Position = .start, direction: Direction) throws {
+    // This method sets the train in a specific block and updates the reserved blocks (trailing and leading blocks).
+    func setTrainToBlock(_ trainId: Identifier<Train>, _ toBlockId: Identifier<Block>, position: Position = .start, direction: Direction, routeIndex: Int? = nil) throws {
         guard let train = self.train(for: trainId) else {
             throw LayoutError.trainNotFound(trainId: trainId)
         }
@@ -346,85 +338,17 @@ extension Layout {
         toBlock.reserved = .init(trainId: train.id, direction: direction)
         toBlock.train = TrainInstance(trainId, direction)
 
+        // Assign the block to the train
         train.blockId = toBlock.id
         
-        // Free all other blocks from the train
+        // Update the route index if specified
+        if let routeIndex = routeIndex {
+            train.routeStepIndex = routeIndex
+        }
+
         try updateReservedBlocks(train: train)
     }
-    
-    func reserve(trainId: Identifier<Train>, fromBlock: Identifier<Block>, toBlock: Identifier<Block>, direction: Direction) throws {
-        guard let b1 = self.block(for: fromBlock) else {
-            throw LayoutError.blockNotFound(blockId: fromBlock)
-        }
 
-        guard let b2 = self.block(for: toBlock) else {
-            throw LayoutError.blockNotFound(blockId: toBlock)
-        }
-
-        guard let train = self.train(for: trainId) else {
-            throw LayoutError.trainNotFound(trainId: trainId)
-        }
-        
-        let reservation = Reservation(trainId: trainId, direction: direction)
-        guard b1.reserved == nil || b1.reserved == reservation else {
-            throw LayoutError.cannotReserveBlock(block: b1, train: train, reserved: b1.reserved!)
-        }
-        
-        guard b2.reserved == nil || b2.reserved == reservation else {
-            throw LayoutError.cannotReserveBlock(block: b2, train: train, reserved: b2.reserved!)
-        }
-
-        guard b2.train == nil else {
-            throw LayoutError.cannotReserveBlock(block: b2, train: train, reserved: b2.reserved!)
-        }
-        
-        let transitions = try self.transitions(from: b1, to: b2, direction: direction)
-        guard transitions.count > 0 else {
-            throw LayoutError.noTransition(fromBlockId: b1.id, toBlockId: b2.id)
-        }
-        
-        try Transition.canReserve(transitions: transitions, for: trainId, layout: self)
-                
-        b1.reserved = Reservation(trainId: trainId, direction: direction)
-
-        for (index, transition) in transitions.enumerated() {
-            transition.reserved = trainId
-            
-            if let turnoutId = transition.b.turnout {
-                guard let turnout = self.turnout(for: turnoutId) else {
-                    throw LayoutError.turnoutNotFound(turnoutId: turnoutId)
-                }
-                let nextTransition = transitions[index+1]
-                
-                guard let fromSocket = transition.b.socketId else {
-                    throw LayoutError.socketIdNotFound(socket: transition.b)
-                }
-                
-                guard let toSocket = nextTransition.a.socketId else {
-                    throw LayoutError.socketIdNotFound(socket: transition.a)
-                }
-                
-                let state = turnout.state(fromSocket: fromSocket, toSocket: toSocket)
-                turnout.state = state
-                turnout.reserved = trainId
-                self.executor?.sendTurnoutState(turnout: turnout) { }
-                BTLogger.debug("Reserved turnout \(turnout.name) for \(reservation) and state \(state)")
-            } else if let blockId = transition.b.block {
-                guard let block = self.block(for: blockId) else {
-                    throw LayoutError.blockNotFound(blockId: blockId)
-                }
-                let naturalDirection = transition.b.socketId == Block.previousSocket
-                let reservation = Reservation(trainId: trainId, direction: naturalDirection ? .next : .previous)
-                block.reserved = reservation
-                BTLogger.debug("Reserved block \(block.name) for \(reservation)")
-            }
-        }
-        
-        guard b2.reserved?.trainId == trainId else {
-            throw LayoutError.blockNotReservedForTrain(block: b2, train: trainId)
-        }
-    }
-    
     func free(fromBlock: Identifier<Block>, toBlockNotIncluded: Identifier<Block>, direction: Direction) throws {
         guard let b1 = self.block(for: fromBlock) else {
             throw LayoutError.blockNotFound(blockId: fromBlock)

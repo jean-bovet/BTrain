@@ -154,7 +154,11 @@ extension Layout {
     }
 
     func entryFeedback(from fromBlock: Block, to nextBlock: Block) throws -> (Feedback?, direction: Direction) {
-        let transitions = try transitions(from: fromBlock, to: nextBlock, direction: fromBlock.train!.direction)
+        guard let direction = fromBlock.train?.direction else {
+            throw LayoutError.trainNotFoundInBlock(blockId: fromBlock.id)
+        }
+        
+        let transitions = try transitions(from: fromBlock, to: nextBlock, direction: direction)
         guard let lastTransition = transitions.last else {
             throw LayoutError.noTransition(fromBlockId: fromBlock.id, toBlockId: nextBlock.id)
         }

@@ -17,12 +17,12 @@ final class RouteResolver {
         self.pf = PathFinder(layout: layout)
     }
     
-    func resolve(route: Route, trainId: Identifier<Train>? = nil) throws -> [Route.Step] {
-        guard var previousStep = route.steps.first else {
+    func resolve(steps: ArraySlice<Route.Step>, trainId: Identifier<Train>? = nil) throws -> [Route.Step] {
+        guard var previousStep = steps.first else {
             return []
         }
         var resolvedSteps = [previousStep]
-        for step in route.steps.dropFirst() {
+        for step in steps.dropFirst() {
             guard let previousBlock = layout.block(for: previousStep.blockId) else {
                 continue
             }
@@ -32,6 +32,7 @@ final class RouteResolver {
             var settings = PathFinderSettings(random: false, reservedBlockBehavior: .avoidReservedUntil(numberOfSteps: 0), consideringStoppingAtSiding: false, verbose: true)
             settings.includeTurnouts = true
             settings.ignoreDisabledBlocks = true
+            settings.firstBlockShouldMatchDestination = true
             print("Resolving steps \(previousStep) to \(step)")
             // TODO: Note that the path finder might take a long time to resolve if the block to be found is in the last path to be evaluated. Should we switch
             // to breadth-first approach with depth 1, then 2 and so on?
