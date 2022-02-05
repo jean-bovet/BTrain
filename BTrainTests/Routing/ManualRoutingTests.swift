@@ -75,23 +75,23 @@ class ManualRoutingTests: BTTestCase {
         let b3 = layout.block(for: p.route.steps[2].blockId)!
         b3.reserved = .init("2", .next)
         
-        try p.assert("r1:{r1{b1 🛑🚂1 ≏ ≏ }} <t0> [b2 ≏ ≏ ] <t1> [r2[b3 ≏ ≏ ]] <t0(2,0)> !{r1{b1 ≏ ≏ }}")
+        try p.assert("r1:{r1{b1 🛑🚂1 ≏ ≏ }} <t0> [b2 ≏ ≏ ] <t1(0,2)> [r2[b3 ≏ ≏ ]] <t0(2,0)> !{r1{b1 ≏ ≏ }}")
 
         try p.start(routeID: "r1", trainID: "1")
 
-        try p.assert("r1:{r1{b1 🚂1 ≏ ≏ }} <r1<t0>> [r1[b2 ≏ ≏ ]] <t1> [r2[b3 ≏ ≏ ]] <r1<t0(2,0)>> !{r1{b1 ≏ ≏ }}")
-        try p.assert("r1:{r1{b1 ≡ 🚂1 ≏ }} <r1<t0>> [r1[b2 ≏ ≏ ]] <t1> [r2[b3 ≏ ≏ ]] <r1<t0(2,0)>> !{r1{b1 ≡ ≏ }}")
-        try p.assert("r1:{r1{b1 ≏ ≡ 🚂1 }} <r1<t0>> [r1[b2 ≏ ≏ ]] <t1> [r2[b3 ≏ ≏ ]] <r1<t0(2,0)>> !{r1{b1 ≏ ≡ }}")
-        try p.assert("r1:{b1 ≏ ≏ } <t0> [r1[b2 ≡ 🟨🚂1 ≏ ]] <t1> [r2[b3 ≏ ≏ ]] <t0(2,0)> !{b1 ≏ ≏ }")
-        try p.assert("r1:{b1 ≏ ≏ } <t0> [r1[b2 ≏ ≡ 🛑🚂1 ]] <t1> [r2[b3 ≏ ≏ ]] <t0(2,0)> !{b1 ≏ ≏ }")
+        try p.assert("r1:{r1{b1 🚂1 ≏ ≏ }} <r1<t0>> [r1[b2 ≏ ≏ ]] <t1(0,2)> [r2[b3 ≏ ≏ ]] <r1<t0(2,0)>> !{r1{b1 ≏ ≏ }}")
+        try p.assert("r1:{r1{b1 ≡ 🚂1 ≏ }} <r1<t0>> [r1[b2 ≏ ≏ ]] <t1(0,2)> [r2[b3 ≏ ≏ ]] <r1<t0(2,0)>> !{r1{b1 ≡ ≏ }}")
+        try p.assert("r1:{r1{b1 ≏ ≡ 🚂1 }} <r1<t0>> [r1[b2 ≏ ≏ ]] <t1(0,2)> [r2[b3 ≏ ≏ ]] <r1<t0(2,0)>> !{r1{b1 ≏ ≡ }}")
+        try p.assert("r1:{b1 ≏ ≏ } <t0> [r1[b2 ≡ 🟨🚂1 ≏ ]] <t1(0,2)> [r2[b3 ≏ ≏ ]] <t0(2,0)> !{b1 ≏ ≏ }")
+        try p.assert("r1:{b1 ≏ ≏ } <t0> [r1[b2 ≏ ≡ 🛑🚂1 ]] <t1(0,2)> [r2[b3 ≏ ≏ ]] <t0(2,0)> !{b1 ≏ ≏ }")
         
         // The train re-starts after the block is `unreserved`
         try layout.free(block: b3.id)
-        try p.assert("r1:{b1 ≏ ≏ } <t0> [r1[b2 ≏ ≡ 🚂1 ]] <r1<t1,l>> [r1[b3 ≏ ≏ ]] <t0(2,0)> !{b1 ≏ ≏ }")
+        try p.assert("r1:{b1 ≏ ≏ } <t0> [r1[b2 ≏ ≡ 🚂1 ]] <r1<t1(0,2),l>> [r1[b3 ≏ ≏ ]] <t0(2,0)> !{b1 ≏ ≏ }")
         
         try layout.stopTrain(Identifier<Train>(uuid: "1"), completely: true)
         
-        try p.assert("r1:{b1 ≏ ≏ } <t0> [r1[b2 ≏ ≡ 🛑🚂1 ]] <t1,l> [b3 ≏ ≏ ] <t0(2,0)> !{b1 ≏ ≏ }")
+        try p.assert("r1:{b1 ≏ ≏ } <t0> [r1[b2 ≏ ≡ 🛑🚂1 ]] <t1(0,2),l> [b3 ≏ ≏ ] <t0(2,0)> !{b1 ≏ ≏ }")
     }
     
     func testBlockDisabled() throws {
@@ -102,23 +102,23 @@ class ManualRoutingTests: BTTestCase {
         let b3 = layout.block(for: p.route.steps[2].blockId)!
         b3.enabled = false
         
-        try p.assert("r1:{r1{b1 🛑🚂1 ≏ ≏ }} <t0> [b2 ≏ ≏ ] <t1> [b3 ≏ ≏ ] <t0(2,0)> !{r1{b1 ≏ ≏ }}")
+        try p.assert("r1:{r1{b1 🛑🚂1 ≏ ≏ }} <t0> [b2 ≏ ≏ ] <t1(0,2)> [b3 ≏ ≏ ] <t0(2,0)> !{r1{b1 ≏ ≏ }}")
 
         try p.start(routeID: "r1", trainID: "1")
 
-        try p.assert("r1:{r1{b1 🚂1 ≏ ≏ }} <r1<t0>> [r1[b2 ≏ ≏ ]] <t1> [b3 ≏ ≏ ] <r1<t0(2,0)>> !{r1{b1 ≏ ≏ }}")
-        try p.assert("r1:{r1{b1 ≡ 🚂1 ≏ }} <r1<t0>> [r1[b2 ≏ ≏ ]] <t1> [b3 ≏ ≏ ] <r1<t0(2,0)>> !{r1{b1 ≡ ≏ }}")
-        try p.assert("r1:{r1{b1 ≏ ≡ 🚂1 }} <r1<t0>> [r1[b2 ≏ ≏ ]] <t1> [b3 ≏ ≏ ] <r1<t0(2,0)>> !{r1{b1 ≏ ≡ }}")
-        try p.assert("r1:{b1 ≏ ≏ } <t0> [r1[b2 ≡ 🟨🚂1 ≏ ]] <t1> [b3 ≏ ≏ ] <t0(2,0)> !{b1 ≏ ≏ }")
-        try p.assert("r1:{b1 ≏ ≏ } <t0> [r1[b2 ≏ ≡ 🛑🚂1 ]] <t1> [b3 ≏ ≏ ] <t0(2,0)> !{b1 ≏ ≏ }")
+        try p.assert("r1:{r1{b1 🚂1 ≏ ≏ }} <r1<t0>> [r1[b2 ≏ ≏ ]] <t1(0,2)> [b3 ≏ ≏ ] <r1<t0(2,0)>> !{r1{b1 ≏ ≏ }}")
+        try p.assert("r1:{r1{b1 ≡ 🚂1 ≏ }} <r1<t0>> [r1[b2 ≏ ≏ ]] <t1(0,2)> [b3 ≏ ≏ ] <r1<t0(2,0)>> !{r1{b1 ≡ ≏ }}")
+        try p.assert("r1:{r1{b1 ≏ ≡ 🚂1 }} <r1<t0>> [r1[b2 ≏ ≏ ]] <t1(0,2)> [b3 ≏ ≏ ] <r1<t0(2,0)>> !{r1{b1 ≏ ≡ }}")
+        try p.assert("r1:{b1 ≏ ≏ } <t0> [r1[b2 ≡ 🟨🚂1 ≏ ]] <t1(0,2)> [b3 ≏ ≏ ] <t0(2,0)> !{b1 ≏ ≏ }")
+        try p.assert("r1:{b1 ≏ ≏ } <t0> [r1[b2 ≏ ≡ 🛑🚂1 ]] <t1(0,2)> [b3 ≏ ≏ ] <t0(2,0)> !{b1 ≏ ≏ }")
         
         // Re-enable b3
         b3.enabled = true
-        try p.assert("r1:{b1 ≏ ≏ } <t0> [r1[b2 ≏ ≡ 🚂1 ]] <r1<t1,l>> [r1[b3 ≏ ≏ ]] <t0(2,0)> !{b1 ≏ ≏ }")
+        try p.assert("r1:{b1 ≏ ≏ } <t0> [r1[b2 ≏ ≡ 🚂1 ]] <r1<t1(0,2),l>> [r1[b3 ≏ ≏ ]] <t0(2,0)> !{b1 ≏ ≏ }")
         
         try layout.stopTrain(Identifier<Train>(uuid: "1"), completely: true)
         
-        try p.assert("r1:{b1 ≏ ≏ } <t0> [r1[b2 ≏ ≡ 🛑🚂1 ]] <t1,l> [b3 ≏ ≏ ] <t0(2,0)> !{b1 ≏ ≏ }")
+        try p.assert("r1:{b1 ≏ ≏ } <t0> [r1[b2 ≏ ≡ 🛑🚂1 ]] <t1(0,2),l> [b3 ≏ ≏ ] <t0(2,0)> !{b1 ≏ ≏ }")
     }
 
     func testStartNotInRoute() throws {
@@ -169,24 +169,24 @@ class ManualRoutingTests: BTTestCase {
         let layout = LayoutACreator().newLayout()
         let p = try setup(layout: layout, fromBlockId: "b1", route: layout.routes[0])
 
-        try p.assert("r1: {r1{b1 🛑🚂1 ≏ ≏ }} <t0> [b2 ≏ ≏ ] <t1> [b3 ≏ ≏ ] <t0(2,0)> !{r1{b1 ≏ ≏ }}")
-        try p.assert("r1: {r1{b1 🛑🚂1 ≡ ≏ }} <t0> [b2 ≏ ≏ ] <t1> [b3 ≏ ≏ ] <t0(2,0)> !{r1{b1 ≡ ≏ }}")
-        try p.assert("r1: {r1{b1 🛑🚂1 ≏ ≏ }} <t0> [b2 ≏ ≏ ] <t1> [b3 ≏ ≏ ] <t0(2,0)> !{r1{b1 ≏ ≏ }}")
+        try p.assert("r1: {r1{b1 🛑🚂1 ≏ ≏ }} <t0> [b2 ≏ ≏ ] <t1(0,2)> [b3 ≏ ≏ ] <t0(2,0)> !{r1{b1 ≏ ≏ }}")
+        try p.assert("r1: {r1{b1 🛑🚂1 ≡ ≏ }} <t0> [b2 ≏ ≏ ] <t1(0,2)> [b3 ≏ ≏ ] <t0(2,0)> !{r1{b1 ≡ ≏ }}")
+        try p.assert("r1: {r1{b1 🛑🚂1 ≏ ≏ }} <t0> [b2 ≏ ≏ ] <t1(0,2)> [b3 ≏ ≏ ] <t0(2,0)> !{r1{b1 ≏ ≏ }}")
 
         try p.start(routeID: "r1", trainID: "1")
 
-        try p.assert("r1: {r1{b1 🚂1 ≏ ≏ }} <r1<t0>> [r1[b2 ≏ ≏ ]] <t1> [b3 ≏ ≏ ] <r1<t0(2,0)>> !{r1{b1 ≏ ≏ }}")
-        try p.assert("r1: {r1{b1 ≡ 🚂1 ≏ }} <r1<t0>> [r1[b2 ≏ ≏ ]] <t1> [b3 ≏ ≏ ] <r1<t0(2,0)>> !{r1{b1 ≡ ≏ }}")
-        try p.assert("r1: {r1{b1 ≏ ≡ 🚂1 }} <r1<t0>> [r1[b2 ≏ ≏ ]] <t1> [b3 ≏ ≏ ] <r1<t0(2,0)>> !{r1{b1 ≏ ≡ }}")
-        try p.assert("r1: {b1 ≏ ≏ } <t0> [r1[b2 ≡ 🚂1 ≏ ]] <r1<t1,l>> [r1[b3 ≏ ≏ ]] <t0(2,0)> !{b1 ≏ ≏ }")
-        try p.assert("r1: {b1 ≏ ≏ } <t0> [r1[b2 ≏ ≡ 🚂1 ]] <r1<t1,l>> [r1[b3 ≏ ≏ ]] <t0(2,0)> !{b1 ≏ ≏ }")
-        try p.assert("r1: {b1 ≏ ≏ } <t0> [r1[b2 ≏ ≏ 🚂1 ]] <r1<t1,l>> [r1[b3 ≏ ≏ ]] <t0(2,0)> !{b1 ≏ ≏ }")
-        try p.assert("r1: {r1{b1 ≏ ≏ }} <r1<t0,l>> [b2 ≏ ≏ ] <t1,l> [r1[b3 ≡ 🚂1 ≏ ]] <r1<t0(2,0),l>> !{r1{b1 ≏ ≏ }}")
-        try p.assert("r1: {r1{b1 ≏ ≏ }} <r1<t0,l>> [b2 ≏ ≏ ] <t1,l> [r1[b3 ≏ 🚂1 ≏ ]] <r1<t0(2,0),l>> !{r1{b1 ≏ ≏ }}")
-        try p.assert("r1: {r1{b1 ≏ ≏ }} <r1<t0,l>> [b2 ≏ ≏ ] <t1,l> [r1[b3 ≏ ≡ 🚂1 ]] <r1<t0(2,0),l>> !{r1{b1 ≏ ≏ }}")
-        try p.assert("r1: {r1{b1 ≏ 🟨🚂1 ≡ }} <t0,l> [b2 ≏ ≏ ] <t1,l> [b3 ≏ ≏ ] <t0(2,0),l> !{r1{b1 ≡ 🟨🚂1 ≏ }}")
-        try p.assert("r1: {r1{b1 ≏ 🟨🚂1 ≏ }} <t0,l> [b2 ≏ ≏ ] <t1,l> [b3 ≏ ≏ ] <t0(2,0),l> !{r1{b1 ≏ 🟨🚂1 ≏ }}")
-        try p.assert("r1: {r1{b1 🛑🚂1 ≡ ≏ }} <t0,l> [b2 ≏ ≏ ] <t1,l> [b3 ≏ ≏ ] <t0(2,0),l> !{r1{b1 ≏ ≡ 🛑🚂1 }}")
+        try p.assert("r1: {r1{b1 🚂1 ≏ ≏ }} <r1<t0>> [r1[b2 ≏ ≏ ]] <t1(0,2)> [b3 ≏ ≏ ] <r1<t0(2,0)>> !{r1{b1 ≏ ≏ }}")
+        try p.assert("r1: {r1{b1 ≡ 🚂1 ≏ }} <r1<t0>> [r1[b2 ≏ ≏ ]] <t1(0,2)> [b3 ≏ ≏ ] <r1<t0(2,0)>> !{r1{b1 ≡ ≏ }}")
+        try p.assert("r1: {r1{b1 ≏ ≡ 🚂1 }} <r1<t0>> [r1[b2 ≏ ≏ ]] <t1(0,2)> [b3 ≏ ≏ ] <r1<t0(2,0)>> !{r1{b1 ≏ ≡ }}")
+        try p.assert("r1: {b1 ≏ ≏ } <t0> [r1[b2 ≡ 🚂1 ≏ ]] <r1<t1(0,2),l>> [r1[b3 ≏ ≏ ]] <t0(2,0)> !{b1 ≏ ≏ }")
+        try p.assert("r1: {b1 ≏ ≏ } <t0> [r1[b2 ≏ ≡ 🚂1 ]] <r1<t1(0,2),l>> [r1[b3 ≏ ≏ ]] <t0(2,0)> !{b1 ≏ ≏ }")
+        try p.assert("r1: {b1 ≏ ≏ } <t0> [r1[b2 ≏ ≏ 🚂1 ]] <r1<t1(0,2),l>> [r1[b3 ≏ ≏ ]] <t0(2,0)> !{b1 ≏ ≏ }")
+        try p.assert("r1: {r1{b1 ≏ ≏ }} <r1<t0,l>> [b2 ≏ ≏ ] <t1(0,2),l> [r1[b3 ≡ 🚂1 ≏ ]] <r1<t0(2,0),l>> !{r1{b1 ≏ ≏ }}")
+        try p.assert("r1: {r1{b1 ≏ ≏ }} <r1<t0,l>> [b2 ≏ ≏ ] <t1(0,2),l> [r1[b3 ≏ 🚂1 ≏ ]] <r1<t0(2,0),l>> !{r1{b1 ≏ ≏ }}")
+        try p.assert("r1: {r1{b1 ≏ ≏ }} <r1<t0,l>> [b2 ≏ ≏ ] <t1(0,2),l> [r1[b3 ≏ ≡ 🚂1 ]] <r1<t0(2,0),l>> !{r1{b1 ≏ ≏ }}")
+        try p.assert("r1: {r1{b1 ≏ 🟨🚂1 ≡ }} <t0,l> [b2 ≏ ≏ ] <t1(0,2),l> [b3 ≏ ≏ ] <t0(2,0),l> !{r1{b1 ≡ 🟨🚂1 ≏ }}")
+        try p.assert("r1: {r1{b1 ≏ 🟨🚂1 ≏ }} <t0,l> [b2 ≏ ≏ ] <t1(0,2),l> [b3 ≏ ≏ ] <t0(2,0),l> !{r1{b1 ≏ 🟨🚂1 ≏ }}")
+        try p.assert("r1: {r1{b1 🛑🚂1 ≡ ≏ }} <t0,l> [b2 ≏ ≏ ] <t1(0,2),l> [b3 ≏ ≏ ] <t0(2,0),l> !{r1{b1 ≏ ≡ 🛑🚂1 }}")
     }
     
     func testMoveWith2LeadingReservation() throws {
@@ -196,22 +196,22 @@ class ManualRoutingTests: BTTestCase {
         
         let p = try setup(layout: layout, fromBlockId: "b1", route: layout.routes[0])
 
-        try p.assert("r1: {r1{b1 🛑🚂1 ≏ ≏ }} <t0> [b2 ≏ ≏ ] <t1> [b3 ≏ ≏ ] <t0(2,0)> !{r1{b1 ≏ ≏ }}")
+        try p.assert("r1: {r1{b1 🛑🚂1 ≏ ≏ }} <t0> [b2 ≏ ≏ ] <t1(0,2)> [b3 ≏ ≏ ] <t0(2,0)> !{r1{b1 ≏ ≏ }}")
 
         try p.start(routeID: "r1", trainID: "1")
 
-        try p.assert("r1: {r1{b1 🚂1 ≏ ≏ }} <r1<t0>> [r1[b2 ≏ ≏ ]] <r1<t1,l>> [r1[b3 ≏ ≏ ]] <r1<t0(2,0)>> !{r1{b1 ≏ ≏ }}")
-        try p.assert("r1: {r1{b1 ≡ 🚂1 ≏ }} <r1<t0>> [r1[b2 ≏ ≏ ]] <r1<t1,l>> [r1[b3 ≏ ≏ ]] <r1<t0(2,0)>> !{r1{b1 ≡ ≏ }}")
-        try p.assert("r1: {r1{b1 ≏ ≡ 🚂1 }} <r1<t0>> [r1[b2 ≏ ≏ ]] <r1<t1,l>> [r1[b3 ≏ ≏ ]] <r1<t0(2,0)>> !{r1{b1 ≏ ≡ }}")
-        try p.assert("r1: {r1{b1 ≏ ≏ }} <r1<t0,l>> [r1[b2 ≡ 🚂1 ≏ ]] <r1<t1,l>> [r1[b3 ≏ ≏ ]] <r1<t0(2,0),l>> !{r1{b1 ≏ ≏}}")
-        try p.assert("r1: {r1{b1 ≏ ≏ }} <r1<t0,l>> [r1[b2 ≏ ≡ 🚂1 ]] <r1<t1,l>> [r1[b3 ≏ ≏ ]] <r1<t0(2,0),l>> !{r1{b1 ≏ ≏ }}")
-        try p.assert("r1: {r1{b1 ≏ ≏ }} <r1<t0,l>> [r1[b2 ≏ ≏ 🚂1 ]] <r1<t1,l>> [r1[b3 ≏ ≏ ]] <r1<t0(2,0),l>> !{r1{b1 ≏ ≏ }}")
-        try p.assert("r1: {r1{b1 ≏ ≏ }} <r1<t0,l>> [b2 ≏ ≏ ] <t1,l> [r1[b3 ≡ 🚂1 ≏ ]] <r1<t0(2,0),l>> !{r1{b1 ≏ ≏ }}")
-        try p.assert("r1: {r1{b1 ≏ ≏ }} <r1<t0,l>> [b2 ≏ ≏ ] <t1,l> [r1[b3 ≏ 🚂1 ≏ ]] <r1<t0(2,0),l>> !{r1{b1 ≏ ≏ }}")
-        try p.assert("r1: {r1{b1 ≏ ≏ }} <r1<t0,l>> [b2 ≏ ≏ ] <t1,l> [r1[b3 ≏ ≡ 🚂1 ]] <r1<t0(2,0),l>> !{r1{b1 ≏ ≏ }}")
-        try p.assert("r1: {r1{b1 ≏ 🟨🚂1 ≡ }} <t0,l> [b2 ≏ ≏ ] <t1,l> [b3 ≏ ≏ ] <t0(2,0),l> !{r1{b1 ≏ 🟨🚂1 ≡ }}")
-        try p.assert("r1: {r1{b1 ≏ 🟨🚂1 ≏ }} <t0,l> [b2 ≏ ≏ ] <t1,l> [b3 ≏ ≏ ] <t0(2,0),l> !{r1{b1 ≏ 🟨🚂1 ≏ }}")
-        try p.assert("r1: {r1{b1 🛑🚂1 ≡ ≏ }} <t0,l> [b2 ≏ ≏ ] <t1,l> [b3 ≏ ≏ ] <t0(2,0),l> !{r1{b1 ≏ ≡ 🛑🚂1 }}")
+        try p.assert("r1: {r1{b1 🚂1 ≏ ≏ }} <r1<t0>> [r1[b2 ≏ ≏ ]] <r1<t1(0,2),l>> [r1[b3 ≏ ≏ ]] <r1<t0(2,0)>> !{r1{b1 ≏ ≏ }}")
+        try p.assert("r1: {r1{b1 ≡ 🚂1 ≏ }} <r1<t0>> [r1[b2 ≏ ≏ ]] <r1<t1(0,2),l>> [r1[b3 ≏ ≏ ]] <r1<t0(2,0)>> !{r1{b1 ≡ ≏ }}")
+        try p.assert("r1: {r1{b1 ≏ ≡ 🚂1 }} <r1<t0>> [r1[b2 ≏ ≏ ]] <r1<t1(0,2),l>> [r1[b3 ≏ ≏ ]] <r1<t0(2,0)>> !{r1{b1 ≏ ≡ }}")
+        try p.assert("r1: {r1{b1 ≏ ≏ }} <r1<t0,l>> [r1[b2 ≡ 🚂1 ≏ ]] <r1<t1(0,2),l>> [r1[b3 ≏ ≏ ]] <r1<t0(2,0),l>> !{r1{b1 ≏ ≏}}")
+        try p.assert("r1: {r1{b1 ≏ ≏ }} <r1<t0,l>> [r1[b2 ≏ ≡ 🚂1 ]] <r1<t1(0,2),l>> [r1[b3 ≏ ≏ ]] <r1<t0(2,0),l>> !{r1{b1 ≏ ≏ }}")
+        try p.assert("r1: {r1{b1 ≏ ≏ }} <r1<t0,l>> [r1[b2 ≏ ≏ 🚂1 ]] <r1<t1(0,2),l>> [r1[b3 ≏ ≏ ]] <r1<t0(2,0),l>> !{r1{b1 ≏ ≏ }}")
+        try p.assert("r1: {r1{b1 ≏ ≏ }} <r1<t0,l>> [b2 ≏ ≏ ] <t1(0,2),l> [r1[b3 ≡ 🚂1 ≏ ]] <r1<t0(2,0),l>> !{r1{b1 ≏ ≏ }}")
+        try p.assert("r1: {r1{b1 ≏ ≏ }} <r1<t0,l>> [b2 ≏ ≏ ] <t1(0,2),l> [r1[b3 ≏ 🚂1 ≏ ]] <r1<t0(2,0),l>> !{r1{b1 ≏ ≏ }}")
+        try p.assert("r1: {r1{b1 ≏ ≏ }} <r1<t0,l>> [b2 ≏ ≏ ] <t1(0,2),l> [r1[b3 ≏ ≡ 🚂1 ]] <r1<t0(2,0),l>> !{r1{b1 ≏ ≏ }}")
+        try p.assert("r1: {r1{b1 ≏ 🟨🚂1 ≡ }} <t0,l> [b2 ≏ ≏ ] <t1(0,2),l> [b3 ≏ ≏ ] <t0(2,0),l> !{r1{b1 ≏ 🟨🚂1 ≡ }}")
+        try p.assert("r1: {r1{b1 ≏ 🟨🚂1 ≏ }} <t0,l> [b2 ≏ ≏ ] <t1(0,2),l> [b3 ≏ ≏ ] <t0(2,0),l> !{r1{b1 ≏ 🟨🚂1 ≏ }}")
+        try p.assert("r1: {r1{b1 🛑🚂1 ≡ ≏ }} <t0,l> [b2 ≏ ≏ ] <t1(0,2),l> [b3 ≏ ≏ ] <t0(2,0),l> !{r1{b1 ≏ ≡ 🛑🚂1 }}")
     }
 
     func testMoveWith2LeadingReservationWithLoop() throws {
@@ -266,22 +266,22 @@ class ManualRoutingTests: BTTestCase {
         
         let p = try setup(layout: layout, fromBlockId: "b1", route: layout.routes[0])
 
-        try p.assert("r1: {r1{b1 🛑🚂1 ≏ ≏ }} <t0> [b2 ≏ ≏ ] <t1> [b3 ≏ ≏ ] <t0(2,0)> !{r1{b1 ≏ ≏ }}")
+        try p.assert("r1: {r1{b1 🛑🚂1 ≏ ≏ }} <t0> [b2 ≏ ≏ ] <t1(0,2)> [b3 ≏ ≏ ] <t0(2,0)> !{r1{b1 ≏ ≏ }}")
 
         try p.start(routeID: "r1", trainID: "1")
 
-        try p.assert("r1: {r1{b1 🚂1 ≏ ≏ }} <r1<t0>> [r1[b2 ≏ ≏ ]] <r1<t1,l>> [r1[b3 ≏ ≏ ]] <r1<t0(2,0)>> !{r1{b1 ≏ ≏ }}")
-        try p.assert("r1: {r1{b1 ≡ 🚂1 ≏ }} <r1<t0>> [r1[b2 ≏ ≏ ]] <r1<t1,l>> [r1[b3 ≏ ≏ ]] <r1<t0(2,0)>> !{r1{b1 ≡ ≏ }}")
-        try p.assert("r1: {r1{b1 ≏ ≡ 🚂1 }} <r1<t0>> [r1[b2 ≏ ≏ ]] <r1<t1,l>> [r1[b3 ≏ ≏ ]] <r1<t0(2,0)>> !{r1{b1 ≏ ≡ }}")
-        try p.assert("r1: {r1{b1 ≏ ≏ }} <r1<t0,l>> [r1[b2 ≡ 🚂1 ≏ ]] <r1<t1,l>> [r1[b3 ≏ ≏ ]] <r1<t0(2,0),l>> !{r1{b1 ≏ ≏}}")
-        try p.assert("r1: {r1{b1 ≏ ≏ }} <r1<t0,l>> [r1[b2 ≏ ≡ 🚂1 ]] <r1<t1,l>> [r1[b3 ≏ ≏ ]] <r1<t0(2,0),l>> !{r1{b1 ≏ ≏ }}")
-        try p.assert("r1: {r1{b1 ≏ ≏ }} <r1<t0,l>> [r1[b2 ≏ ≏ 🚂1 ]] <r1<t1,l>> [r1[b3 ≏ ≏ ]] <r1<t0(2,0),l>> !{r1{b1 ≏ ≏ }}")
-        try p.assert("r1: {r1{b1 ≏ ≏ }} <r1<t0,l>> [b2 ≏ ≏ ] <t1,l> [r1[b3 ≡ 🚂1 ≏ ]] <r1<t0(2,0),l>> !{r1{b1 ≏ ≏ }}")
-        try p.assert("r1: {r1{b1 ≏ ≏ }} <r1<t0,l>> [b2 ≏ ≏ ] <t1,l> [r1[b3 ≏ 🚂1 ≏ ]] <r1<t0(2,0),l>> !{r1{b1 ≏ ≏ }}")
-        try p.assert("r1: {r1{b1 ≏ ≏ }} <r1<t0,l>> [b2 ≏ ≏ ] <t1,l> [r1[b3 ≏ ≡ 🚂1 ]] <r1<t0(2,0),l>> !{r1{b1 ≏ ≏ }}")
-        try p.assert("r1: {r1{b1 ≏ 🟨🚂1 ≡ }} <t0,l> [b2 ≏ ≏ ] <t1,l> [b3 ≏ ≏ ] <t0(2,0),l> !{r1{b1 ≡ 🟨🚂1 ≏ }}")
-        try p.assert("r1: {r1{b1 ≏ 🟨🚂1 ≏ }} <t0,l> [b2 ≏ ≏ ] <t1,l> [b3 ≏ ≏ ] <t0(2,0),l> !{r1{b1 ≏ 🟨🚂1 ≏ }}")
-        try p.assert("r1: {r1{b1 🛑🚂1 ≡ ≏ }} <t0,l> [b2 ≏ ≏ ] <t1,l> [b3 ≏ ≏ ] <t0(2,0),l> !{r1{b1 ≏ ≡ 🛑🚂1 }}")
+        try p.assert("r1: {r1{b1 🚂1 ≏ ≏ }} <r1<t0>> [r1[b2 ≏ ≏ ]] <r1<t1(0,2),l>> [r1[b3 ≏ ≏ ]] <r1<t0(2,0)>> !{r1{b1 ≏ ≏ }}")
+        try p.assert("r1: {r1{b1 ≡ 🚂1 ≏ }} <r1<t0>> [r1[b2 ≏ ≏ ]] <r1<t1(0,2),l>> [r1[b3 ≏ ≏ ]] <r1<t0(2,0)>> !{r1{b1 ≡ ≏ }}")
+        try p.assert("r1: {r1{b1 ≏ ≡ 🚂1 }} <r1<t0>> [r1[b2 ≏ ≏ ]] <r1<t1(0,2),l>> [r1[b3 ≏ ≏ ]] <r1<t0(2,0)>> !{r1{b1 ≏ ≡ }}")
+        try p.assert("r1: {r1{b1 ≏ ≏ }} <r1<t0,l>> [r1[b2 ≡ 🚂1 ≏ ]] <r1<t1(0,2),l>> [r1[b3 ≏ ≏ ]] <r1<t0(2,0),l>> !{r1{b1 ≏ ≏}}")
+        try p.assert("r1: {r1{b1 ≏ ≏ }} <r1<t0,l>> [r1[b2 ≏ ≡ 🚂1 ]] <r1<t1(0,2),l>> [r1[b3 ≏ ≏ ]] <r1<t0(2,0),l>> !{r1{b1 ≏ ≏ }}")
+        try p.assert("r1: {r1{b1 ≏ ≏ }} <r1<t0,l>> [r1[b2 ≏ ≏ 🚂1 ]] <r1<t1(0,2),l>> [r1[b3 ≏ ≏ ]] <r1<t0(2,0),l>> !{r1{b1 ≏ ≏ }}")
+        try p.assert("r1: {r1{b1 ≏ ≏ }} <r1<t0,l>> [b2 ≏ ≏ ] <t1(0,2),l> [r1[b3 ≡ 🚂1 ≏ ]] <r1<t0(2,0),l>> !{r1{b1 ≏ ≏ }}")
+        try p.assert("r1: {r1{b1 ≏ ≏ }} <r1<t0,l>> [b2 ≏ ≏ ] <t1(0,2),l> [r1[b3 ≏ 🚂1 ≏ ]] <r1<t0(2,0),l>> !{r1{b1 ≏ ≏ }}")
+        try p.assert("r1: {r1{b1 ≏ ≏ }} <r1<t0,l>> [b2 ≏ ≏ ] <t1(0,2),l> [r1[b3 ≏ ≡ 🚂1 ]] <r1<t0(2,0),l>> !{r1{b1 ≏ ≏ }}")
+        try p.assert("r1: {r1{b1 ≏ 🟨🚂1 ≡ }} <t0,l> [b2 ≏ ≏ ] <t1(0,2),l> [b3 ≏ ≏ ] <t0(2,0),l> !{r1{b1 ≡ 🟨🚂1 ≏ }}")
+        try p.assert("r1: {r1{b1 ≏ 🟨🚂1 ≏ }} <t0,l> [b2 ≏ ≏ ] <t1(0,2),l> [b3 ≏ ≏ ] <t0(2,0),l> !{r1{b1 ≏ 🟨🚂1 ≏ }}")
+        try p.assert("r1: {r1{b1 🛑🚂1 ≡ ≏ }} <t0,l> [b2 ≏ ≏ ] <t1(0,2),l> [b3 ≏ ≏ ] <t0(2,0),l> !{r1{b1 ≏ ≡ 🛑🚂1 }}")
     }
 
     //       ┌─────────┐                              ┌─────────┐
@@ -383,20 +383,20 @@ class ManualRoutingTests: BTTestCase {
         try layout.remove(trainID: layout.trains.first!.id)
         try layout.prepare(routeID: "r2", trainID: "2")
 
-        try p.assert("r2: {r2{b1 🛑🚂2 ≡ ≏ }} <t0(0,2)> ![b3 ≏ ≏ ] <t1> ![b2 ≏ ≏ ] <t0(1,0)> !{r2{b1 ≡ ≏ }}")
-        try p.assert("r2: {r2{b1 🛑🚂2 ≏ ≏ }} <t0(0,2)> ![b3 ≏ ≏ ] <t1> ![b2 ≏ ≏ ] <t0(1,0)> !{r2{b1 ≡ ≏ }}")
+        try p.assert("r2: {r2{b1 🛑🚂2 ≡ ≏ }} <t0(0,2)> ![b3 ≏ ≏ ] <t1(2,0)> ![b2 ≏ ≏ ] <t0(1,0)> !{r2{b1 ≡ ≏ }}")
+        try p.assert("r2: {r2{b1 🛑🚂2 ≏ ≏ }} <t0(0,2)> ![b3 ≏ ≏ ] <t1(2,0)> ![b2 ≏ ≏ ] <t0(1,0)> !{r2{b1 ≡ ≏ }}")
 
         try p.start(routeID: "r2", trainID: "2")
         
-        try p.assert("r2: {r2{b1 🚂2 ≏ ≏ }} <r2<t0(0,2),l>> ![r2[b3 ≏ ≏ ]] <t1> ![b2 ≏ ≏ ] <r2<t0(1,0),l>> !{r2{b1 ≏ ≏ }}")
-        try p.assert("r2: {r2{b1 ≡ 🚂2 ≏ }} <r2<t0(0,2),l>> ![r2[b3 ≏ ≏ ]] <t1> ![b2 ≏ ≏ ] <r2<t0(1,0),l>> !{r2{b1 ≏ ≏ }}")
-        try p.assert("r2: {r2{b1 ≏ ≡ 🚂2 }} <r2<t0(0,2),l>> ![r2[b3 ≏ ≏ ]] <t1> ![b2 ≏ ≏ ] <r2<t0(1,0),l>> !{r2{b1 ≏ ≏ }}")
-        try p.assert("r2: {b1 ≏ ≏ } <t0(0,2),l> ![r2[b3 ≡ 🚂2 ≏ ]] <r2<t1,l>> ![r2[b2 ≏ ≏ ]] <t0(1,0),l> !{b1 ≏ ≏ }")
-        try p.assert("r2: {b1 ≏ ≏ } <t0(0,2),l> ![r2[b3 ≏ ≡ 🚂2 ]] <r2<t1,l>> ![r2[b2 ≏ ≏ ]] <t0(1,0),l> !{b1 ≏ ≏ }")
-        try p.assert("r2: {r2{b1 ≏ ≏ }} <r2<t0(0,2)>> ![b3 ≏ ≏ ] <t1,l> ![r2[b2 ≡ 🚂2 ≏ ]] <r2<t0(1,0)>> !{r2{b1 ≏ ≏ }}")
-        try p.assert("r2: {r2{b1 ≏ ≏ }} <r2<t0(0,2)>> ![b3 ≏ ≏ ] <t1,l> ![r2[b2 ≏ ≡ 🚂2 ]] <r2<t0(1,0)>> !{r2{b1 ≏ ≏ }}")
-        try p.assert("r2: {r2{b1 ≏ 🟨🚂2 ≡ }} <t0(0,2)> ![b3 ≏ ≏ ] <t1,l> ![b2 ≏ ≏ ] <t0(1,0)> !{r2{b1 ≡ 🟨🚂2 ≏ }}")
-        try p.assert("r2: {r2{b1 🛑🚂2 ≡ ≏ }} <t0(0,2)> ![b3 ≏ ≏ ] <t1,l> ![b2 ≏ ≏ ] <t0(1,0)> !{r2{b1 ≏ ≡ 🛑🚂2 }}")
+        try p.assert("r2: {r2{b1 🚂2 ≏ ≏ }} <r2<t0(0,2),l>> ![r2[b3 ≏ ≏ ]] <t1(2,0)> ![b2 ≏ ≏ ] <r2<t0(1,0),l>> !{r2{b1 ≏ ≏ }}")
+        try p.assert("r2: {r2{b1 ≡ 🚂2 ≏ }} <r2<t0(0,2),l>> ![r2[b3 ≏ ≏ ]] <t1(2,0)> ![b2 ≏ ≏ ] <r2<t0(1,0),l>> !{r2{b1 ≏ ≏ }}")
+        try p.assert("r2: {r2{b1 ≏ ≡ 🚂2 }} <r2<t0(0,2),l>> ![r2[b3 ≏ ≏ ]] <t1(2,0)> ![b2 ≏ ≏ ] <r2<t0(1,0),l>> !{r2{b1 ≏ ≏ }}")
+        try p.assert("r2: {b1 ≏ ≏ } <t0(0,2),l> ![r2[b3 ≡ 🚂2 ≏ ]] <r2<t1(2,0),l>> ![r2[b2 ≏ ≏ ]] <t0(1,0),l> !{b1 ≏ ≏ }")
+        try p.assert("r2: {b1 ≏ ≏ } <t0(0,2),l> ![r2[b3 ≏ ≡ 🚂2 ]] <r2<t1(2,0),l>> ![r2[b2 ≏ ≏ ]] <t0(1,0),l> !{b1 ≏ ≏ }")
+        try p.assert("r2: {r2{b1 ≏ ≏ }} <r2<t0(0,2)>> ![b3 ≏ ≏ ] <t1(2,0),l> ![r2[b2 ≡ 🚂2 ≏ ]] <r2<t0(1,0)>> !{r2{b1 ≏ ≏ }}")
+        try p.assert("r2: {r2{b1 ≏ ≏ }} <r2<t0(0,2)>> ![b3 ≏ ≏ ] <t1(2,0),l> ![r2[b2 ≏ ≡ 🚂2 ]] <r2<t0(1,0)>> !{r2{b1 ≏ ≏ }}")
+        try p.assert("r2: {r2{b1 ≏ 🟨🚂2 ≡ }} <t0(0,2)> ![b3 ≏ ≏ ] <t1(2,0),l> ![b2 ≏ ≏ ] <t0(1,0)> !{r2{b1 ≡ 🟨🚂2 ≏ }}")
+        try p.assert("r2: {r2{b1 🛑🚂2 ≡ ≏ }} <t0(0,2)> ![b3 ≏ ≏ ] <t1(2,0),l> ![b2 ≏ ≏ ] <t0(1,0)> !{r2{b1 ≏ ≡ 🛑🚂2 }}")
     }
         
     func testTurnoutBetweenBlocks() throws {
@@ -416,13 +416,13 @@ class ManualRoutingTests: BTTestCase {
 
         XCTAssertNoThrow(try layout.reserve(trainId: train.id, fromBlock: b2.id, toBlock: b3.id, direction: .next))
 
-        try p.assert("r1: {b1 ≏ ≏ } <t0> [r1[b2 ≏ 🛑🚂1 ≏ ]] <r1<t1,l>> [r1[b3 ≏ ≏ ]] <t0(2,0)> !{b1 ≏ ≏ }")
+        try p.assert("r1: {b1 ≏ ≏ } <t0> [r1[b2 ≏ 🛑🚂1 ≏ ]] <r1<t1(0,2),l>> [r1[b3 ≏ ≏ ]] <t0(2,0)> !{b1 ≏ ≏ }")
         
         try p.start(routeID: "r1", trainID: "1")
 
-        try p.assert("r1: {b1 ≏ ≏ } <t0> [r1[b2 ≏ 🚂1 ≏ ]] <r1<t1,l>> [r1[b3 ≏ ≏ ]] <t0(2,0)> !{b1 ≏ ≏ }")
-        try p.assert("r1: {b1 ≏ ≏ } <t0> [r1[b2 ≏ ≡ 🚂1 ]] <r1<t1,l>> [r1[b3 ≏ ≏ ]] <t0(2,0)> !{b1 ≏ ≏ }")
-        try p.assert("r1: {r1{b1 ≏ ≏ }} <r1<t0,l>> [b2 ≏ ≏ ] <t1,l> [r1[b3 ≡ 🚂1  ≏ ]] <r1<t0(2,0),l>> !{r1{b1 ≏ ≏ }}")
+        try p.assert("r1: {b1 ≏ ≏ } <t0> [r1[b2 ≏ 🚂1 ≏ ]] <r1<t1(0,2),l>> [r1[b3 ≏ ≏ ]] <t0(2,0)> !{b1 ≏ ≏ }")
+        try p.assert("r1: {b1 ≏ ≏ } <t0> [r1[b2 ≏ ≡ 🚂1 ]] <r1<t1(0,2),l>> [r1[b3 ≏ ≏ ]] <t0(2,0)> !{b1 ≏ ≏ }")
+        try p.assert("r1: {r1{b1 ≏ ≏ }} <r1<t0,l>> [b2 ≏ ≏ ] <t1(0,2),l> [r1[b3 ≡ 🚂1  ≏ ]] <r1<t0(2,0),l>> !{r1{b1 ≏ ≏ }}")
     }
 
     func testStrictModeNextBlockFeedback() throws {
@@ -432,15 +432,15 @@ class ManualRoutingTests: BTTestCase {
         layout.strictRouteFeedbackStrategy = true
         layout.detectUnexpectedFeedback = true
         
-        try p.assert("r1: {r1{b1 🛑🚂1 ≏ ≏ }} <t0> [b2 ≏ ≏ ] <t1> [b3 ≏ ≏ ] <t0(2,0)> !{r1{b1 ≏ ≏ }}")
+        try p.assert("r1: {r1{b1 🛑🚂1 ≏ ≏ }} <t0> [b2 ≏ ≏ ] <t1(0,2)> [b3 ≏ ≏ ] <t0(2,0)> !{r1{b1 ≏ ≏ }}")
 
         try p.start(routeID: "r1", trainID: "1")
 
-        try p.assert("r1: {r1{b1 🚂1 ≏ ≏ }} <r1<t0>> [r1[b2 ≏ ≏ ]] <t1> [b3 ≏ ≏ ] <r1<t0(2,0)>> !{r1{b1 ≏ ≏ }}")
-        try p.assert("r1: {r1{b1 🚂1 ≏ ≏ }} <r1<t0>> [r1[b2 ≏ ≏ ]] <t1> [b3 ≏ ≏ ] <r1<t0(2,0)>> !{r1{b1 ≏ ≏ }}")
+        try p.assert("r1: {r1{b1 🚂1 ≏ ≏ }} <r1<t0>> [r1[b2 ≏ ≏ ]] <t1(0,2)> [b3 ≏ ≏ ] <r1<t0(2,0)>> !{r1{b1 ≏ ≏ }}")
+        try p.assert("r1: {r1{b1 🚂1 ≏ ≏ }} <r1<t0>> [r1[b2 ≏ ≏ ]] <t1(0,2)> [b3 ≏ ≏ ] <r1<t0(2,0)>> !{r1{b1 ≏ ≏ }}")
         
         // Train should stop because the next block b2's feedback is triggered but the train is not at the end of block b1
-        try p.assert("r1: {r1{b1 🛑🚂1 ≏ ≏ }} <t0> [b2 ≡ ≏ ] <t1> [b3 ≏ ≏ ] <t0(2,0)> !{r1{b1 ≏ ≏ }}")
+        try p.assert("r1: {r1{b1 🛑🚂1 ≏ ≏ }} <t0> [b2 ≡ ≏ ] <t1(0,2)> [b3 ≏ ≏ ] <t0(2,0)> !{r1{b1 ≏ ≏ }}")
     }
 
     func testStrictModeFeedbackTooFar() throws {
@@ -450,15 +450,15 @@ class ManualRoutingTests: BTTestCase {
         layout.strictRouteFeedbackStrategy = true
         layout.detectUnexpectedFeedback = true
         
-        try p.assert("r1: {r1{b1 🛑🚂1 ≏ ≏ }} <t0> [b2 ≏ ≏ ] <t1> [b3 ≏ ≏ ] <t0(2,0)> !{r1{b1 ≏ ≏ }}")
+        try p.assert("r1: {r1{b1 🛑🚂1 ≏ ≏ }} <t0> [b2 ≏ ≏ ] <t1(0,2)> [b3 ≏ ≏ ] <t0(2,0)> !{r1{b1 ≏ ≏ }}")
 
         try p.start(routeID: "r1", trainID: "1")
 
-        try p.assert("r1: {r1{b1 🚂1 ≏ ≏ }} <r1<t0>> [r1[b2 ≏ ≏ ]] <t1> [b3 ≏ ≏ ] <r1<t0(2,0)>> !{r1{b1 ≏ ≏ }}")
-        try p.assert("r1: {r1{b1 🚂1 ≏ ≏ }} <r1<t0>> [r1[b2 ≏ ≏ ]] <t1> [b3 ≏ ≏ ] <r1<t0(2,0)>> !{r1{b1 ≏ ≏ }}")
+        try p.assert("r1: {r1{b1 🚂1 ≏ ≏ }} <r1<t0>> [r1[b2 ≏ ≏ ]] <t1(0,2)> [b3 ≏ ≏ ] <r1<t0(2,0)>> !{r1{b1 ≏ ≏ }}")
+        try p.assert("r1: {r1{b1 🚂1 ≏ ≏ }} <r1<t0>> [r1[b2 ≏ ≏ ]] <t1(0,2)> [b3 ≏ ≏ ] <r1<t0(2,0)>> !{r1{b1 ≏ ≏ }}")
 
         // Train does not move because the feedback is not the next one
-        try p.assert("r1: {r1{b1 🚂1 ≏ ≡ }} <r1<t0>> [r1[b2 ≏ ≏ ]] <t1> [b3 ≏ ≏ ] <r1<t0(2,0)>> !{r1{b1 ≏ ≏ }}")
+        try p.assert("r1: {r1{b1 🚂1 ≏ ≡ }} <r1<t0>> [r1[b2 ≏ ≏ ]] <t1(0,2)> [b3 ≏ ≏ ] <r1<t0(2,0)>> !{r1{b1 ≏ ≏ }}")
     }
 
     func testRelaxModeNextModeFeedback() throws {
@@ -468,13 +468,13 @@ class ManualRoutingTests: BTTestCase {
         layout.strictRouteFeedbackStrategy = false
         layout.detectUnexpectedFeedback = true
 
-        try p.assert("r1: {r1{b1 🛑🚂1 ≏ ≏ }} <t0> [b2 ≏ ≏ ] <t1> [b3 ≏ ≏ ] <t0(2,0)> !{r1{b1 ≏ ≏ }}")
+        try p.assert("r1: {r1{b1 🛑🚂1 ≏ ≏ }} <t0> [b2 ≏ ≏ ] <t1(0,2)> [b3 ≏ ≏ ] <t0(2,0)> !{r1{b1 ≏ ≏ }}")
 
         try p.start(routeID: "r1", trainID: "1")
 
-        try p.assert("r1: {r1{b1 🚂1 ≏ ≏ }} <r1<t0>> [r1[b2 ≏ ≏ ]] <t1> [b3 ≏ ≏ ] <r1<t0(2,0)>> !{r1{b1 ≏ ≏ }}")
+        try p.assert("r1: {r1{b1 🚂1 ≏ ≏ }} <r1<t0>> [r1[b2 ≏ ≏ ]] <t1(0,2)> [b3 ≏ ≏ ] <r1<t0(2,0)>> !{r1{b1 ≏ ≏ }}")
         // The train should continue to the next block when the feedback of the next block is triggered
-        try p.assert("r1: {b1 ≏ ≏ } <t0> [r1[b2 ≡ 🚂1 ≏ ]] <r1<t1,l>> [r1[b3 ≏ ≏ ]] <t0(2,0)> !{b1 ≏ ≏ }")
+        try p.assert("r1: {b1 ≏ ≏ } <t0> [r1[b2 ≡ 🚂1 ≏ ]] <r1<t1(0,2),l>> [r1[b3 ≏ ≏ ]] <t0(2,0)> !{b1 ≏ ≏ }")
     }
 
     func testRelaxModeNextBlockFeedbackTooFar() throws {
@@ -484,14 +484,14 @@ class ManualRoutingTests: BTTestCase {
         layout.strictRouteFeedbackStrategy = false
         layout.detectUnexpectedFeedback = true
 
-        try p.assert("r1: {r1{b1 🛑🚂1 ≏ ≏ }} <t0> [b2 ≏ ≏ ] <t1> [b3 ≏ ≏ ] <t0(2,0)> !{r1{b1 ≏ ≏ }}")
+        try p.assert("r1: {r1{b1 🛑🚂1 ≏ ≏ }} <t0> [b2 ≏ ≏ ] <t1(0,2)> [b3 ≏ ≏ ] <t0(2,0)> !{r1{b1 ≏ ≏ }}")
 
         try p.start(routeID: "r1", trainID: "1")
 
-        try p.assert("r1: {r1{b1 🚂1 ≏ ≏ }} <r1<t0>> [r1[b2 ≏ ≏ ]] <t1> [b3 ≏ ≏ ] <r1<t0(2,0)>> !{r1{b1 ≏ ≏ }}")
+        try p.assert("r1: {r1{b1 🚂1 ≏ ≏ }} <r1<t0>> [r1[b2 ≏ ≏ ]] <t1(0,2)> [b3 ≏ ≏ ] <r1<t0(2,0)>> !{r1{b1 ≏ ≏ }}")
         // The train should stop because the next block feedback is triggered but it is not the one expected
         // to be triggered given the direction of travel of the train
-        try p.assert("r1: {r1{b1 🛑🚂1 ≏ ≏ }} <t0> [b2 ≏ ≡ ] <t1> [b3 ≏ ≏ ] <t0(2,0)> !{r1{b1 ≏ ≏ }}")
+        try p.assert("r1: {r1{b1 🛑🚂1 ≏ ≏ }} <t0> [b2 ≏ ≡ ] <t1(0,2)> [b3 ≏ ≏ ] <t0(2,0)> !{r1{b1 ≏ ≏ }}")
     }
 
     func testRelaxModeNextAndPreviousFeedbacks() throws {
@@ -501,15 +501,15 @@ class ManualRoutingTests: BTTestCase {
         layout.strictRouteFeedbackStrategy = false
         layout.detectUnexpectedFeedback = true
         
-        try p.assert("r1: {r1{b1 🛑🚂1 ≏ ≏ }} <t0> [b2 ≏ ≏ ] <t1> [b3 ≏ ≏ ] <t0(2,0)> !{r1{b1 ≏ ≏ }}")
+        try p.assert("r1: {r1{b1 🛑🚂1 ≏ ≏ }} <t0> [b2 ≏ ≏ ] <t1(0,2)> [b3 ≏ ≏ ] <t0(2,0)> !{r1{b1 ≏ ≏ }}")
 
         try p.start(routeID: "r1", trainID: "1")
 
-        try p.assert("r1: {r1{b1 🚂1 ≏ ≏ }} <r1<t0>> [r1[b2 ≏ ≏ ]] <t1> [b3 ≏ ≏ ] <r1<t0(2,0)>> !{r1{b1 ≏ ≏ }}")
+        try p.assert("r1: {r1{b1 🚂1 ≏ ≏ }} <r1<t0>> [r1[b2 ≏ ≏ ]] <t1(0,2)> [b3 ≏ ≏ ] <r1<t0(2,0)>> !{r1{b1 ≏ ≏ }}")
         
         // Train position should be updated although the feedback is not next to the train but a bit further.
-        try p.assert("r1: {r1{b1 ≏ ≡ 🚂1 }} <r1<t0>> [r1[b2 ≏ ≏ ]] <t1> [b3 ≏ ≏ ] <r1<t0(2,0)>> !{r1{b1 ≏ ≏ }}")
-        try p.assert("r1: {r1{b1 ≡ ≏ 🚂1 }} <r1<t0>> [r1[b2 ≏ ≏ ]] <t1> [b3 ≏ ≏ ] <r1<t0(2,0)>> !{r1{b1 ≏ ≏ }}")
+        try p.assert("r1: {r1{b1 ≏ ≡ 🚂1 }} <r1<t0>> [r1[b2 ≏ ≏ ]] <t1(0,2)> [b3 ≏ ≏ ] <r1<t0(2,0)>> !{r1{b1 ≏ ≏ }}")
+        try p.assert("r1: {r1{b1 ≡ ≏ 🚂1 }} <r1<t0>> [r1[b2 ≏ ≏ ]] <t1(0,2)> [b3 ≏ ≏ ] <r1<t0(2,0)>> !{r1{b1 ≏ ≏ }}")
     }
 
     func testNextBlockFeedbackHandling() throws {
@@ -677,18 +677,18 @@ class ManualRoutingTests: BTTestCase {
 
         try p.start()
 
-        try p.assert("0: {r0{s1 🚂0 ≏ }} <r0<t1,l>> <r0<t2,s>> [r0[b1 ≏ ]] <t3> [b2 ≏ ] <t4> [b3 ≏ ≏ ≏ ] <t5> <t6> {s1 🚂0 ≏ }")
-        try p.assert("0: {s1 ≏ } <t1,l> <t2,s> [r0[b1 ≡ 🚂0 ]] <r0<t3>> [r0[b2 ≏ ]] <t4> [b3 ≏ ≏ ≏ ] <t5> <t6> {s1 ≏ }")
-        try p.assert("0: {s1 ≏ } <t1,l> <t2,s> [b1 ≏ ] <t3> [r0[b2 ≡ 🚂0 ]] <r0<t4>> [r0[b3 ≏ ≏ ≏ ]] <t5> <t6> {s1 ≏ }")
+        try p.assert("0: {r0{s1 🚂0 ≏ }} <r0<t1(2,0),l>> <r0<t2(1,0),s>> [r0[b1 ≏ ]] <t3> [b2 ≏ ] <t4(1,0)> [b3 ≏ ≏ ≏ ] <t5> <t6(0,2)> {s1 🚂0 ≏ }")
+        try p.assert("0: {s1 ≏ } <t1(2,0),l> <t2(1,0),s> [r0[b1 ≡ 🚂0 ]] <r0<t3>> [r0[b2 ≏ ]] <t4(1,0)> [b3 ≏ ≏ ≏ ] <t5> <t6(0,2)> {s1 ≏ }")
+        try p.assert("0: {s1 ≏ } <t1(2,0),l> <t2(1,0),s> [b1 ≏ ] <t3> [r0[b2 ≡ 🚂0 ]] <r0<t4(1,0)>> [r0[b3 ≏ ≏ ≏ ]] <t5> <t6(0,2)> {s1 ≏ }")
 
         // Let's put another train in s1
         layout.reserve("s1", with: "1", direction: .next)
 
-        try p.assert("0: {r1{s1 ≏ }} <t1,l> <t2,s> [b1 ≏ ] <t3> [r0[b2 ≏ 🚂0 ]] <r0<t4>> [r0[b3 ≏ ≏ ≏ ]] <t5> <t6> {r1{s1 ≏ }}")
-        try p.assert("0: {r1{s1 ≏ }} <t1,l> <t2,s> [b1 ≏ ] <t3> [b2 ≏ ] <t4> [r0[b3 ≡ 🟨🚂0 ≏ ≏ ]] <t5> <t6> {r1{s1 ≏ }}")
+        try p.assert("0: {r1{s1 ≏ }} <t1(2,0),l> <t2(1,0),s> [b1 ≏ ] <t3> [r0[b2 ≏ 🚂0 ]] <r0<t4(1,0)>> [r0[b3 ≏ ≏ ≏ ]] <t5> <t6(0,2)> {r1{s1 ≏ }}")
+        try p.assert("0: {r1{s1 ≏ }} <t1(2,0),l> <t2(1,0),s> [b1 ≏ ] <t3> [b2 ≏ ] <t4(1,0)> [r0[b3 ≡ 🟨🚂0 ≏ ≏ ]] <t5> <t6(0,2)> {r1{s1 ≏ }}")
         XCTAssertEqual(train.state, .braking)
         
-        try p.assert("0: {r1{s1 ≏ }} <t1,l> <t2,s> [b1 ≏ ] <t3> [b2 ≏ ] <t4> [r0[b3 ≏ ≡ 🛑🚂0 ≏ ]] <t5> <t6> {r1{s1 ≏ }}")
+        try p.assert("0: {r1{s1 ≏ }} <t1(2,0),l> <t2(1,0),s> [b1 ≏ ] <t3> [b2 ≏ ] <t4(1,0)> [r0[b3 ≏ ≡ 🛑🚂0 ≏ ]] <t5> <t6(0,2)> {r1{s1 ≏ }}")
         
         XCTAssertTrue(train.automaticScheduling)
         XCTAssertEqual(train.state, .stopped)
@@ -696,9 +696,9 @@ class ManualRoutingTests: BTTestCase {
         // Free s1 so the train finishes its route
         layout.free("s1")
         
-        try p.assert("0: {r0{s1 ≏ }} <t1,l> <t2,s> [b1 ≏ ] <t3> [b2 ≏ ] <t4> [r0[b3 ≏ ≏ 🚂0 ≏ ]] <r0<t5>> <r0<t6,r>> {r0{s1 ≏ }}")
-        try p.assert("0: {r0{s1 ≏ }} <t1,l> <t2,s> [b1 ≏ ] <t3> [b2 ≏ ] <t4> [r0[b3 ≏ ≏ ≡ 🚂0 ]] <r0<t5>> <r0<t6,r>> {r0{s1 ≏ }}")
-        try p.assert("0: {r0{s1 ≡ 🛑🚂0 }} <t1,l> <t2,s> [b1 ≏ ] <t3> [b2 ≏ ] <t4> [b3 ≏ ≏ ≏ ] <t5> <t6,r> {r0{s1 ≡ 🛑🚂0 }}")
+        try p.assert("0: {r0{s1 ≏ }} <t1(2,0),l> <t2(1,0),s> [b1 ≏ ] <t3> [b2 ≏ ] <t4(1,0)> [r0[b3 ≏ ≏ 🚂0 ≏ ]] <r0<t5>> <r0<t6(0,2),r>> {r0{s1 ≏ }}")
+        try p.assert("0: {r0{s1 ≏ }} <t1(2,0),l> <t2(1,0),s> [b1 ≏ ] <t3> [b2 ≏ ] <t4(1,0)> [r0[b3 ≏ ≏ ≡ 🚂0 ]] <r0<t5>> <r0<t6(0,2),r>> {r0{s1 ≏ }}")
+        try p.assert("0: {r0{s1 ≡ 🛑🚂0 }} <t1(2,0),l> <t2(1,0),s> [b1 ≏ ] <t3> [b2 ≏ ] <t4(1,0)> [b3 ≏ ≏ ≏ ] <t5> <t6(0,2),r> {r0{s1 ≡ 🛑🚂0 }}")
         
         XCTAssertTrue(train.manualScheduling)
         XCTAssertEqual(train.state, .stopped)
@@ -714,7 +714,7 @@ class ManualRoutingTests: BTTestCase {
 
         let p = try setup(layout: layout, fromBlockId: "s1", route: layout.routes[2])
         
-        try p.assert("2: {r0{s1 🛑🚂0 ≏ }} <t1,s> <t2,s> [b1 ≏ ] <t3> [b2 ≏ ] <t4> [b3 ≏ ≏ ] <t5> <t6> {s2 ≏ } <t1,s> <t2,s> [b1 ≏ ] <t3> [b2 ≏ ] <t4> [b3 ≏ ≏ ] <t5> <t6(0,2)> {r0{s1 🛑🚂0 ≏ }}")
+        try p.assert("2: {r0{s1 🛑🚂0 ≏ }} <t1(2,0),s> <t2(1,0),s> [b1 ≏ ] <t3> [b2 ≏ ] <t4(1,0)> [b3 ≏ ≏ ] <t5> <t6> {s2 ≏ } <t1(1,0),s> <t2(1,0),s> [b1 ≏ ] <t3> [b2 ≏ ] <t4(1,0)> [b3 ≏ ≏ ] <t5> <t6(0,2)> {r0{s1 🛑🚂0 ≏ }}")
 
         layout.strictRouteFeedbackStrategy = false
 
@@ -722,11 +722,11 @@ class ManualRoutingTests: BTTestCase {
 
         XCTAssertTrue(p.train.automaticScheduling)
 
-        try p.assert("2: {r0{s1 🚂0 ≏ }} <r0<t1,l>> <r0<t2,s>> [r0[b1 ≏ ]] <t3> [b2 ≏ ] <t4> [b3 ≏ ≏ ] <t5> <t6> {s2 ≏ } <r0<t1,l>> <r0<t2,s>> [r0[b1 ≏ ]] <t3> [b2 ≏ ] <t4> [b3 ≏ ≏ ] <t5> <t6(0,2)> {r0{s1 🚂0 ≏ }}")
-        try p.assert("2: {s1 ≏ } <t1,l> <t2,s> [r0[b1 ≡ 🚂0]] <r0<t3>> [r0[b2 ≏ ]] <t4> [b3 ≏ ≏ ] <t5> <t6> {s2 ≏ } <t1,l> <t2,s> [r0[b1 ≡ 🚂0]] <r0<t3>> [r0[b2 ≏ ]] <t4> [b3 ≏ ≏ ] <t5> <t6(0,2)> {s1 ≏ }")
-        try p.assert("2: {s1 ≏ } <t1,l> <t2,s> [b1 ≏] <t3> [r0[b2 ≡ 🚂0 ]] <r0<t4>> [r0[b3 ≏ ≏ ]] <t5> <t6> {s2 ≏ } <t1,l> <t2,s> [b1 ≏] <t3> [r0[b2 ≡ 🚂0 ]] <r0<t4>> [r0[b3 ≏ ≏ ]] <t5> <t6(0,2)> {s1 ≏ }")
-        try p.assert("2: {s1 ≏ } <t1,l> <t2,s> [b1 ≏] <t3> [b2 ≏ ] <t4> [r0[b3 ≡ 🚂0 ≏ ]] <r0<t5>> <r0<t6>> {r0{s2 ≏ }} <t1,l> <t2,s> [b1 ≏] <t3> [b2 ≏ ] <t4> [r0[b3 ≡ 🚂0 ≏ ]] <r0<t5>> <r0<t6(0,2)>> {s1 ≏ }")
-        try p.assert("2: {s1 ≏ } <t1,l> <t2,s> [b1 ≏] <t3> [b2 ≏ ] <t4> [b3 ≏ ≏ ] <t5> <t6> {r0{s2 ≡ 🛑🚂0 }} <t1,l> <t2,s> [b1 ≏] <t3> [b2 ≏ ] <t4> [b3 ≏ ≏ ] <t5> <t6(0,2)> {s1 ≏ }")
+        try p.assert("2: {r0{s1 🚂0 ≏ }} <r0<t1(2,0),l>> <r0<t2(1,0),s>> [r0[b1 ≏ ]] <t3> [b2 ≏ ] <t4(1,0)> [b3 ≏ ≏ ] <t5> <t6> {s2 ≏ } <r0<t1(1,0),l>> <r0<t2(1,0),s>> [r0[b1 ≏ ]] <t3> [b2 ≏ ] <t4(1,0)> [b3 ≏ ≏ ] <t5> <t6(0,2)> {r0{s1 🚂0 ≏ }}")
+        try p.assert("2: {s1 ≏ } <t1(2,0),l> <t2(1,0),s> [r0[b1 ≡ 🚂0]] <r0<t3>> [r0[b2 ≏ ]] <t4(1,0)> [b3 ≏ ≏ ] <t5> <t6> {s2 ≏ } <t1(1,0),l> <t2(1,0),s> [r0[b1 ≡ 🚂0]] <r0<t3>> [r0[b2 ≏ ]] <t4(1,0)> [b3 ≏ ≏ ] <t5> <t6(0,2)> {s1 ≏ }")
+        try p.assert("2: {s1 ≏ } <t1(2,0),l> <t2(1,0),s> [b1 ≏] <t3> [r0[b2 ≡ 🚂0 ]] <r0<t4(1,0)>> [r0[b3 ≏ ≏ ]] <t5> <t6> {s2 ≏ } <t1(1,0),l> <t2(1,0),s> [b1 ≏] <t3> [r0[b2 ≡ 🚂0 ]] <r0<t4(1,0)>> [r0[b3 ≏ ≏ ]] <t5> <t6(0,2)> {s1 ≏ }")
+        try p.assert("2: {s1 ≏ } <t1(2,0),l> <t2(1,0),s> [b1 ≏] <t3> [b2 ≏ ] <t4(1,0)> [r0[b3 ≡ 🚂0 ≏ ]] <r0<t5>> <r0<t6>> {r0{s2 ≏ }} <t1(1,0),l> <t2(1,0),s> [b1 ≏] <t3> [b2 ≏ ] <t4(1,0)> [r0[b3 ≡ 🚂0 ≏ ]] <r0<t5>> <r0<t6(0,2)>> {s1 ≏ }")
+        try p.assert("2: {s1 ≏ } <t1(2,0),l> <t2(1,0),s> [b1 ≏] <t3> [b2 ≏ ] <t4(1,0)> [b3 ≏ ≏ ] <t5> <t6> {r0{s2 ≡ 🛑🚂0 }} <t1(1,0),l> <t2(1,0),s> [b1 ≏] <t3> [b2 ≏ ] <t4(1,0)> [b3 ≏ ≏ ] <t5> <t6(0,2)> {s1 ≏ }")
         
         XCTAssertTrue(p.train.automaticScheduling)
 
@@ -739,11 +739,11 @@ class ManualRoutingTests: BTTestCase {
         XCTAssertTrue(p.train.speed.kph > 0)
         
         // Assert that the train has restarted and is moving in the correct direction
-        try p.assert("2: {s1 ≏ } <r0<t1,s>> <r0<t2,s>> [r0[b1 ≏]] <t3> [b2 ≏ ] <t4> [b3 ≏ ≏ ] <t5> <t6> {r0{s2 ≏ 🚂0 }} <r0<t1,s>> <r0<t2,s>> [r0[b1 ≏]] <t3> [b2 ≏ ] <t4> [b3 ≏ ≏ ] <t5> <t6(0,2)> {s1 ≏ }")
-        try p.assert("2: {s1 ≏ } <t1,s> <t2,s> [r0[b1 ≡ 🚂0]] <r0<t3>> [r0[b2 ≏ ]] <t4> [b3 ≏ ≏ ] <t5> <t6> {s2 ≏ } <t1,s> <t2,s> [r0[b1 ≡ 🚂0]] <r0<t3>> [r0[b2 ≏ ]] <t4> [b3 ≏ ≏ ] <t5> <t6(0,2)> {s1 ≏ }")
-        try p.assert("2: {s1 ≏ } <t1,s> <t2,s> [b1 ≏ ] <t3> [r0[b2 ≡ 🚂0 ]] <r0<t4>> [r0[b3 ≏ ≏ ]] <t5> <t6> {s2 ≏ } <t1,s> <t2,s> [b1 ≏ ] <t3> [r0[b2 ≡ 🚂0 ]] <r0<t4>> [r0[b3 ≏ ≏ ]] <t5> <t6(0,2)> {s1 ≏ }")
-        try p.assert("2: {r0{s1 ≏ }} <t1,s> <t2,s> [b1 ≏ ] <t3> [b2 ≏ ] <t4> [r0[b3 ≡ 🚂0 ≏ ]] <r0<t5>> <r0<t6,r>> {s2 ≏ } <t1,s> <t2,s> [b1 ≏ ] <t3> [b2 ≏ ] <t4> [r0[b3 ≡ 🚂0 ≏ ]] <r0<t5>> <r0<t6(0,2),r>> {r0{s1 ≏ }}")
-        try p.assert("2: {r0{s1 ≡ 🛑🚂0 }} <t1,s> <t2,s> [b1 ≏ ] <t3> [b2 ≏ ] <t4> [b3 ≏ ≏ ]] <t5> <t6,r> {s2 ≏ } <t1,s> <t2,s> [b1 ≏ ] <t3> [b2 ≏ ] <t4> [b3 ≏ ≏ ] <t5> <t6(0,2),r> {r0{s1 ≡ 🛑🚂0 }}")
+        try p.assert("2: {s1 ≏ } <r0<t1(2,0),s>> <r0<t2(1,0),s>> [r0[b1 ≏]] <t3> [b2 ≏ ] <t4(1,0)> [b3 ≏ ≏ ] <t5> <t6> {r0{s2 ≏ 🚂0 }} <r0<t1(1,0),s>> <r0<t2(1,0),s>> [r0[b1 ≏]] <t3> [b2 ≏ ] <t4(1,0)> [b3 ≏ ≏ ] <t5> <t6(0,2)> {s1 ≏ }")
+        try p.assert("2: {s1 ≏ } <t1(2,0),s> <t2(1,0),s> [r0[b1 ≡ 🚂0]] <r0<t3>> [r0[b2 ≏ ]] <t4(1,0)> [b3 ≏ ≏ ] <t5> <t6> {s2 ≏ } <t1(1,0),s> <t2(1,0),s> [r0[b1 ≡ 🚂0]] <r0<t3>> [r0[b2 ≏ ]] <t4(1,0)> [b3 ≏ ≏ ] <t5> <t6(0,2)> {s1 ≏ }")
+        try p.assert("2: {s1 ≏ } <t1(2,0),s> <t2(1,0),s> [b1 ≏ ] <t3> [r0[b2 ≡ 🚂0 ]] <r0<t4(1,0)>> [r0[b3 ≏ ≏ ]] <t5> <t6> {s2 ≏ } <t1(1,0),s> <t2(1,0),s> [b1 ≏ ] <t3> [r0[b2 ≡ 🚂0 ]] <r0<t4(1,0)>> [r0[b3 ≏ ≏ ]] <t5> <t6(0,2)> {s1 ≏ }")
+        try p.assert("2: {r0{s1 ≏ }} <t1(2,0),s> <t2(1,0),s> [b1 ≏ ] <t3> [b2 ≏ ] <t4(1,0)> [r0[b3 ≡ 🚂0 ≏ ]] <r0<t5>> <r0<t6,r>> {s2 ≏ } <t1(1,0),s> <t2(1,0),s> [b1 ≏ ] <t3> [b2 ≏ ] <t4(1,0)> [r0[b3 ≡ 🚂0 ≏ ]] <r0<t5>> <r0<t6(0,2),r>> {r0{s1 ≏ }}")
+        try p.assert("2: {r0{s1 ≡ 🛑🚂0 }} <t1(2,0),s> <t2(1,0),s> [b1 ≏ ] <t3> [b2 ≏ ] <t4(1,0)> [b3 ≏ ≏ ]] <t5> <t6,r> {s2 ≏ } <t1(1,0),s> <t2(1,0),s> [b1 ≏ ] <t3> [b2 ≏ ] <t4(1,0)> [b3 ≏ ≏ ] <t5> <t6(0,2),r> {r0{s1 ≡ 🛑🚂0 }}")
         
         XCTAssertTrue(p.train.manualScheduling)
     }
@@ -754,24 +754,24 @@ class ManualRoutingTests: BTTestCase {
         let p = try setup(layout: layout, fromBlockId: "A", position: .end, route: layout.routes[0])
         try p.start()
         
-        try p.assert("0: |[r0[A ≏ ≏ 🚂0 ]] <r0<AB>> [r0[B ≏ ≏ ]] [C ≏ ≏ ] [D ≏ ≏ ] <DE> [E ≏ ≏ ]|")
-        try p.assert("0: |[r0[A ≏ ≏ 💺0 ]] <r0<AB>> [r0[B 💺0 ≡ 🚂0 ≏ ]] [r0[C ≏ ≏ ]] [D ≏ ≏ ] <DE> [E ≏ ≏ ]|")
-        try p.assert("0: |[r0[A ≏ ≏ 💺0 ]] <r0<AB>> [r0[B 💺0 ≏ 💺0 ≡ 🚂0 ]] [r0[C ≏ ≏ ]] [D ≏ ≏ ] <DE> [E ≏ ≏ ]|")
+        try p.assert("0: |[r0[A ≏ ≏ 🚂0 ]] <r0<AB>> [r0[B ≏ ≏ ]] [C ≏ ≏ ] [D ≏ ≏ ] <DE(1,0)> [E ≏ ≏ ]|")
+        try p.assert("0: |[r0[A ≏ ≏ 💺0 ]] <r0<AB>> [r0[B 💺0 ≡ 🚂0 ≏ ]] [r0[C ≏ ≏ ]] [D ≏ ≏ ] <DE(1,0)> [E ≏ ≏ ]|")
+        try p.assert("0: |[r0[A ≏ ≏ 💺0 ]] <r0<AB>> [r0[B 💺0 ≏ 💺0 ≡ 🚂0 ]] [r0[C ≏ ≏ ]] [D ≏ ≏ ] <DE(1,0)> [E ≏ ≏ ]|")
 
         // Let's put another train in D
         layout.reserve("D", with: "1", direction: .next)
 
         // The train should brake
-        try p.assert("0: |[A ≏ ≏ ] <AB> [r0[B 💺0 ≏ 💺0 ≏ 💺0 ]] [r0[C 💺0 ≡ 🟨🚂0 ≏ ]] [r1[D ≏ ≏ ]] <DE> [E ≏ ≏ ]|")
+        try p.assert("0: |[A ≏ ≏ ] <AB> [r0[B 💺0 ≏ 💺0 ≏ 💺0 ]] [r0[C 💺0 ≡ 🟨🚂0 ≏ ]] [r1[D ≏ ≏ ]] <DE(1,0)> [E ≏ ≏ ]|")
         
         // And now we free D...
         layout.free("D")
 
         // Which means the train should start accelerating again
-        try p.assert("0: |[A ≏ ≏ ] <AB> [r0[B 💺0 ≏ 💺0 ≏ 💺0 ]] [r0[C 💺0 ≏ 💺0 ≡ 🚂0 ]] [r0[D ≏ ≏ ]] <DE> [E ≏ ≏ ]|")
-        try p.assert("0: |[A ≏ ≏ ] <AB> [B ≏ ≏ ] [r0[C 💺0 ≏ 💺0 ≏ 💺0 ]] [r0[D 💺0 ≡ 🚂0 ≏ ]] <r0<DE>> [r0[E ≏ ≏ ]]|")
-        try p.assert("0: |[A ≏ ≏ ] <AB> [B ≏ ≏ ] [r0[C 💺0 ≏ 💺0 ≏ 💺0 ]] [r0[D 💺0 ≏ 💺0 ≡ 🚂0 ]] <r0<DE>> [r0[E ≏ ≏ ]]|")
-        try p.assert("0: |[A ≏ ≏ ] <AB> [B ≏ ≏ ] [C ≏ ≏ ] [r0[D 💺0 ≏ 💺0 ≏ 💺0 ]] <r0<DE>> [r0[E 💺0 ≡ 🟨🚂0 ≏ ]]|")
+        try p.assert("0: |[A ≏ ≏ ] <AB> [r0[B 💺0 ≏ 💺0 ≏ 💺0 ]] [r0[C 💺0 ≏ 💺0 ≡ 🚂0 ]] [r0[D ≏ ≏ ]] <DE(1,0)> [E ≏ ≏ ]|")
+        try p.assert("0: |[A ≏ ≏ ] <AB> [B ≏ ≏ ] [r0[C 💺0 ≏ 💺0 ≏ 💺0 ]] [r0[D 💺0 ≡ 🚂0 ≏ ]] <r0<DE(1,0)>> [r0[E ≏ ≏ ]]|")
+        try p.assert("0: |[A ≏ ≏ ] <AB> [B ≏ ≏ ] [r0[C 💺0 ≏ 💺0 ≏ 💺0 ]] [r0[D 💺0 ≏ 💺0 ≡ 🚂0 ]] <r0<DE(1,0)>> [r0[E ≏ ≏ ]]|")
+        try p.assert("0: |[A ≏ ≏ ] <AB> [B ≏ ≏ ] [C ≏ ≏ ] [r0[D 💺0 ≏ 💺0 ≏ 💺0 ]] <r0<DE(1,0)>> [r0[E 💺0 ≡ 🟨🚂0 ≏ ]]|")
         
         p.toggle("E.2")
 
@@ -788,7 +788,7 @@ class ManualRoutingTests: BTTestCase {
 
         let p = try setup(layout: layout, fromBlockId: "s1", position: .start, route: layout.routes[3])
 
-        try p.assert("3: {r0{s1 🛑🚂0 ≏ 💺0 }} <r0<t1,l>> <r0<t2,s>> [r0[b1 💺0 ≏ 💺0 ]] <r0<t3>> [r0[b2 💺0 ≏ ]] <t4> [b3 ≏ ≏ ] <t5> <t6,r> {s2 ≏ }")
+        try p.assert("3: {r0{s1 🛑🚂0 ≏ 💺0 }} <r0<t1(2,0),l>> <r0<t2(1,0),s>> [r0[b1 💺0 ≏ 💺0 ]] <r0<t3>> [r0[b2 💺0 ≏ ]] <t4(1,0)> [b3 ≏ ≏ ] <t5> <t6,r> {s2 ≏ }")
         
         layout.strictRouteFeedbackStrategy = false
 
@@ -798,8 +798,8 @@ class ManualRoutingTests: BTTestCase {
         
         // block length = 60
         // train length = 100
-        try p.assert("3: {r0{s1 🚂0 ≏ 💺0 }} <r0<t1,l>> <r0<t2,s>> [r0[b1 💺0 ≏ 💺0 ]] <r0<t3>> [r0[b2 💺0 ≏ ]] <r0<t4>> [r0[b3 ≏ ≏ ]] <t5> <t6,r> {s2 ≏ }")
-        try p.assert("3: {r0{s1 ≡ 🚂0 }} <r0<t1,l>> <r0<t2,s>> [r0[b1 💺0 ≏ 💺0 ]] <r0<t3>> [r0[b2 💺0 ≏ 💺0 ]] <r0<t4>> [r0[b3 ≏ ≏ ]] <t5> <t6,r> {s2 ≏ }")
+        try p.assert("3: {r0{s1 🚂0 ≏ 💺0 }} <r0<t1(2,0),l>> <r0<t2(1,0),s>> [r0[b1 💺0 ≏ 💺0 ]] <r0<t3>> [r0[b2 💺0 ≏ ]] <r0<t4(1,0)>> [r0[b3 ≏ ≏ ]] <t5> <t6,r> {s2 ≏ }")
+        try p.assert("3: {r0{s1 ≡ 🚂0 }} <r0<t1(2,0),l>> <r0<t2(1,0),s>> [r0[b1 💺0 ≏ 💺0 ]] <r0<t3>> [r0[b2 💺0 ≏ 💺0 ]] <r0<t4(1,0)>> [r0[b3 ≏ ≏ ]] <t5> <t6,r> {s2 ≏ }")
     }
     
     func testStraightLine1() throws {
@@ -807,7 +807,7 @@ class ManualRoutingTests: BTTestCase {
 
         let p = try setup(layout: layout, fromBlockId: "A", position: .end, route: layout.routes[0])
 
-        try p.assert("0: |[r0[A 💺0 ≏ 💺0 ≏ 🛑🚂0 ]] <AB> [B ≏ ≏ ] [C ≏ ≏ ] [D ≏ ≏ ] <DE> [E ≏ ≏ ]|")
+        try p.assert("0: |[r0[A 💺0 ≏ 💺0 ≏ 🛑🚂0 ]] <AB> [B ≏ ≏ ] [C ≏ ≏ ] [D ≏ ≏ ] <DE(1,0)> [E ≏ ≏ ]|")
         
         try p.start()
 
@@ -818,15 +818,15 @@ class ManualRoutingTests: BTTestCase {
         // AB=DE=10
         // Train = 120
         // [A 20 ≏ 160 ≏ 20 ] <10> [B 20 ≏ 60 ≏ 20 ] [C 20 ≏ 60 ≏ 20 ] [D 20 ≏ 60 ≏ 20 ] <10> [E 20 ≏ 160 ≏ 20 ]
-        try p.assert("0: |[r0[A 💺0 ≏ 💺0 ≏ 🚂0 ]] <r0<AB>> [r0[B ≏ ≏ ]] [C ≏ ≏ ] [D ≏ ≏ ] <DE> [E ≏ ≏ ]|")
-        try p.assert("0: |[r0[A ≏ 💺0 ≏ 💺0 ]] <r0<AB>> [r0[B 💺0 ≡ 🚂0 ≏ ]] [r0[C ≏ ≏ ]] [D ≏ ≏ ] <DE> [E ≏ ≏ ]|")
-        try p.assert("0: |[r0[A ≏ 💺0 ≏ 💺0 ]] <r0<AB>> [r0[B 💺0 ≏ 💺0 ≡ 🚂0 ]] [r0[C ≏ ≏ ]] [D ≏ ≏ ] <DE> [E ≏ ≏ ]|")
-        try p.assert("0: |[A ≏ ≏ ] <AB> [r0[B 💺0 ≏ 💺0 ≏ 💺0 ]] [r0[C 💺0 ≡ 🚂0 ≏ ]] [r0[D ≏ ≏ ]] <DE> [E ≏ ≏ ]|")
-        try p.assert("0: |[A ≏ ≏ ] <AB> [r0[B ≏ 💺0 ≏ 💺0 ]] [r0[C 💺0 ≏ 💺0 ≡ 🚂0 ]] [r0[D ≏ ≏ ]] <DE> [E ≏ ≏ ]|")
-        try p.assert("0: |[A ≏ ≏ ] <AB> [B ≏ ≏ ] [r0[C 💺0 ≏ 💺0 ≏ 💺0]] [r0[D 💺0 ≡ 🚂0 ≏ ]] <r0<DE>> [r0[E ≏ ≏ ]]|")
-        try p.assert("0: |[A ≏ ≏ ] <AB> [B ≏ ≏ ] [r0[C 💺0 ≏ 💺0 ≏ 💺0]] [r0[D 💺0 ≏ 💺0 ≡ 🚂0 ]] <r0<DE>> [r0[E ≏ ≏ ]]|")
-        try p.assert("0: |[A ≏ ≏ ] <AB> [B ≏ ≏ ] [C ≏ ≏ ] [r0[D 💺0 ≏ 💺0 ≏ 💺0 ]] <r0<DE>> [r0[E 💺0 ≡ 🟨🚂0 ≏ ]]|")
-        try p.assert("0: |[A ≏ ≏ ] <AB> [B ≏ ≏ ] [C ≏ ≏ ] [D ≏ ≏ ] <DE> [r0[E ≏ 💺0 ≡ 🛑🚂0 ]]|")
+        try p.assert("0: |[r0[A 💺0 ≏ 💺0 ≏ 🚂0 ]] <r0<AB>> [r0[B ≏ ≏ ]] [C ≏ ≏ ] [D ≏ ≏ ] <DE(1,0)> [E ≏ ≏ ]|")
+        try p.assert("0: |[r0[A ≏ 💺0 ≏ 💺0 ]] <r0<AB>> [r0[B 💺0 ≡ 🚂0 ≏ ]] [r0[C ≏ ≏ ]] [D ≏ ≏ ] <DE(1,0)> [E ≏ ≏ ]|")
+        try p.assert("0: |[r0[A ≏ 💺0 ≏ 💺0 ]] <r0<AB>> [r0[B 💺0 ≏ 💺0 ≡ 🚂0 ]] [r0[C ≏ ≏ ]] [D ≏ ≏ ] <DE(1,0)> [E ≏ ≏ ]|")
+        try p.assert("0: |[A ≏ ≏ ] <AB> [r0[B 💺0 ≏ 💺0 ≏ 💺0 ]] [r0[C 💺0 ≡ 🚂0 ≏ ]] [r0[D ≏ ≏ ]] <DE(1,0)> [E ≏ ≏ ]|")
+        try p.assert("0: |[A ≏ ≏ ] <AB> [r0[B ≏ 💺0 ≏ 💺0 ]] [r0[C 💺0 ≏ 💺0 ≡ 🚂0 ]] [r0[D ≏ ≏ ]] <DE(1,0)> [E ≏ ≏ ]|")
+        try p.assert("0: |[A ≏ ≏ ] <AB> [B ≏ ≏ ] [r0[C 💺0 ≏ 💺0 ≏ 💺0]] [r0[D 💺0 ≡ 🚂0 ≏ ]] <r0<DE(1,0)>> [r0[E ≏ ≏ ]]|")
+        try p.assert("0: |[A ≏ ≏ ] <AB> [B ≏ ≏ ] [r0[C 💺0 ≏ 💺0 ≏ 💺0]] [r0[D 💺0 ≏ 💺0 ≡ 🚂0 ]] <r0<DE(1,0)>> [r0[E ≏ ≏ ]]|")
+        try p.assert("0: |[A ≏ ≏ ] <AB> [B ≏ ≏ ] [C ≏ ≏ ] [r0[D 💺0 ≏ 💺0 ≏ 💺0 ]] <r0<DE(1,0)>> [r0[E 💺0 ≡ 🟨🚂0 ≏ ]]|")
+        try p.assert("0: |[A ≏ ≏ ] <AB> [B ≏ ≏ ] [C ≏ ≏ ] [D ≏ ≏ ] <DE(1,0)> [r0[E ≏ 💺0 ≡ 🛑🚂0 ]]|")
     }
 
     func testStraightLine1Pushed() throws {
@@ -835,7 +835,7 @@ class ManualRoutingTests: BTTestCase {
         
         let p = try setup(layout: layout, fromBlockId: "A", position: .start, route: layout.routes[0])
 
-        try p.assert("0: |[r0[A 🛑🚂0 ≏ 💺0 ≏ 💺0 ]] <AB> [B ≏ ≏ ] [C ≏ ≏ ] [D ≏ ≏ ] <DE> [E ≏ ≏ ]|")
+        try p.assert("0: |[r0[A 🛑🚂0 ≏ 💺0 ≏ 💺0 ]] <AB> [B ≏ ≏ ] [C ≏ ≏ ] [D ≏ ≏ ] <DE(1,0)> [E ≏ ≏ ]|")
         
         try p.start()
 
@@ -846,17 +846,17 @@ class ManualRoutingTests: BTTestCase {
         // AB=DE=10
         // Train = 120
         // [A 20 ≏ 160 ≏ 20 ] <10> [B 20 ≏ 60 ≏ 20 ] [C 20 ≏ 60 ≏ 20 ] [D 20 ≏ 60 ≏ 20 ] <10> [E 20 ≏ 160 ≏ 20 ]
-        try p.assert("0: |[r0[A 🚂0 ≏ 💺0 ≏ 💺0]] <r0<AB>> [r0[B ≏ ≏ ]] [C ≏ ≏ ] [D ≏ ≏ ] <DE> [E ≏ ≏ ]|")
-        try p.assert("0: |[r0[A ≡ 🚂0 ≏ 💺0 ]] <r0<AB>> [r0[B 💺0 ≏ 💺0 ≏ ]] [r0[C ≏ ≏ ]] [D ≏ ≏ ] <DE> [E ≏ ≏ ]|")
+        try p.assert("0: |[r0[A 🚂0 ≏ 💺0 ≏ 💺0]] <r0<AB>> [r0[B ≏ ≏ ]] [C ≏ ≏ ] [D ≏ ≏ ] <DE(1,0)> [E ≏ ≏ ]|")
+        try p.assert("0: |[r0[A ≡ 🚂0 ≏ 💺0 ]] <r0<AB>> [r0[B 💺0 ≏ 💺0 ≏ ]] [r0[C ≏ ≏ ]] [D ≏ ≏ ] <DE(1,0)> [E ≏ ≏ ]|")
         // TODO: have a unit test to ensure the train stops when pushing wagons when a block ahead cannot be reserved
-        try p.assert("0: |[r0[A ≏ ≡ 🚂0 ]] <r0<AB>> [r0[B 💺0 ≏ 💺0 ≏ 💺0 ]] [r0[C 💺0 ≏ ≏ ]] [r0[D ≏ ≏ ]] <DE> [E ≏ ≏ ]|")
-        try p.assert("0: |[A ≏ ≏ ] <AB> [r0[B ≡ 🚂0 ≏ 💺0 ]] [r0[C 💺0 ≏ 💺0 ≏ 💺0 ]] [r0[D ≏ ≏ ]] <DE> [E ≏ ≏ ]|")
-        try p.assert("0: |[A ≏ ≏ ] <AB> [r0[B ≏ ≡ 🚂0 ]] [r0[C 💺0 ≏ 💺0 ≏ 💺0 ]] [r0[D 💺0 ≏ ≏ ]] <r0<DE>> [r0[E ≏ ≏ ]]|")
-        try p.assert("0: |[A ≏ ≏ ] <AB> [B ≏ ≏ ] [r0[C ≡ 🚂0 ≏ 💺0]] [r0[D 💺0 ≏ 💺0 ≏ 💺0 ]] <r0<DE>> [r0[E ≏ ≏ ]]|")
-        try p.assert("0: |[A ≏ ≏ ] <AB> [B ≏ ≏ ] [r0[C ≏ ≡ 🚂0 ]] [r0[D 💺0 ≏ 💺0 ≏ 💺0 ]] <r0<DE>> [r0[E 💺0 ≏ ≏ ]]|")
-        try p.assert("0: |[A ≏ ≏ ] <AB> [B ≏ ≏ ] [C ≏ ≏ ] [r0[D ≡ 🟨🚂0 ≏ 💺0 ]] <r0<DE>> [r0[E 💺0 ≏ 💺0 ≏ ]]|")
+        try p.assert("0: |[r0[A ≏ ≡ 🚂0 ]] <r0<AB>> [r0[B 💺0 ≏ 💺0 ≏ 💺0 ]] [r0[C 💺0 ≏ ≏ ]] [r0[D ≏ ≏ ]] <DE(1,0)> [E ≏ ≏ ]|")
+        try p.assert("0: |[A ≏ ≏ ] <AB> [r0[B ≡ 🚂0 ≏ 💺0 ]] [r0[C 💺0 ≏ 💺0 ≏ 💺0 ]] [r0[D ≏ ≏ ]] <DE(1,0)> [E ≏ ≏ ]|")
+        try p.assert("0: |[A ≏ ≏ ] <AB> [r0[B ≏ ≡ 🚂0 ]] [r0[C 💺0 ≏ 💺0 ≏ 💺0 ]] [r0[D 💺0 ≏ ≏ ]] <r0<DE(1,0)>> [r0[E ≏ ≏ ]]|")
+        try p.assert("0: |[A ≏ ≏ ] <AB> [B ≏ ≏ ] [r0[C ≡ 🚂0 ≏ 💺0]] [r0[D 💺0 ≏ 💺0 ≏ 💺0 ]] <r0<DE(1,0)>> [r0[E ≏ ≏ ]]|")
+        try p.assert("0: |[A ≏ ≏ ] <AB> [B ≏ ≏ ] [r0[C ≏ ≡ 🚂0 ]] [r0[D 💺0 ≏ 💺0 ≏ 💺0 ]] <r0<DE(1,0)>> [r0[E 💺0 ≏ ≏ ]]|")
+        try p.assert("0: |[A ≏ ≏ ] <AB> [B ≏ ≏ ] [C ≏ ≏ ] [r0[D ≡ 🟨🚂0 ≏ 💺0 ]] <r0<DE(1,0)>> [r0[E 💺0 ≏ 💺0 ≏ ]]|")
         // TODO: tweak the algorithm to allow the entire train to stop in the E block if there is enough space
-        try p.assert("0: |[A ≏ ≏ ] <AB> [B ≏ ≏ ] [C ≏ ≏ ] [r0[D ≏ ≡ 🛑🚂0 ]] <r0<DE>> [r0[E 💺0 ≏ 💺0 ≏ ]]|")
+        try p.assert("0: |[A ≏ ≏ ] <AB> [B ≏ ≏ ] [C ≏ ≏ ] [r0[D ≏ ≡ 🛑🚂0 ]] <r0<DE(1,0)>> [r0[E 💺0 ≏ 💺0 ≏ ]]|")
 //        try p.assert("0: |[A ≏ ≏ ] <AB> [B ≏ ≏ ] [C ≏ ≏ ] [D ≏ ≏ ] <DE> [r0[E ≏ 💺0 ≡ 🛑🚂0 ]]|")
     }
 
@@ -865,7 +865,7 @@ class ManualRoutingTests: BTTestCase {
 
         let p = try setup(layout: layout, fromBlockId: "A", position: .end, route: layout.routes[1])
 
-        try p.assert("1: |[r0[A 💺0 ≏ 💺0 ≏ 🛑🚂0 ]] <AB> [B2 ≏ ≏ ] ![C2 ≏ ≏ ] [D2 ≏ ≏ ] <DE> [E ≏ ≏ ]|")
+        try p.assert("1: |[r0[A 💺0 ≏ 💺0 ≏ 🛑🚂0 ]] <AB(0,2)> [B2 ≏ ≏ ] ![C2 ≏ ≏ ] [D2 ≏ ≏ ] <DE(2,0)> [E ≏ ≏ ]|")
         
         try p.start()
 
@@ -876,15 +876,15 @@ class ManualRoutingTests: BTTestCase {
         // AB=DE=10
         // Train = 120
         // [A 20 ≏ 160 ≏ 20 ] <10> [B2 20 ≏ 60 ≏ 20 ] [C2 20 ≏ 60 ≏ 20 ] [D2 20 ≏ 60 ≏ 20 ] <10> [E 20 ≏ 160 ≏ 20 ]
-        try p.assert("1: |[r0[A 💺0 ≏ 💺0 ≏ 🚂0 ]] <r0<AB,r>> [r0[B2 ≏ ≏ ]] ![C2 ≏ ≏ ] [D2 ≏ ≏ ] <DE> [E ≏ ≏ ]|")
-        try p.assert("1: |[r0[A ≏ 💺0 ≏ 💺0 ]] <r0<AB,r>> [r0[B2 💺0 ≡ 🚂0 ≏ ]] ![r0[C2 ≏ ≏ ]] [D2 ≏ ≏ ] <DE> [E ≏ ≏ ]|")
-        try p.assert("1: |[r0[A ≏ 💺0 ≏ 💺0 ]] <r0<AB,r>> [r0[B2 💺0 ≏ 💺0 ≡ 🚂0 ]] ![r0[C2 ≏ ≏ ]] [D2 ≏ ≏ ] <DE> [E ≏ ≏ ]|")
-        try p.assert("1: |[A ≏ ≏ ] <AB,r> [r0[B2 💺0 ≏ 💺0 ≏ 💺0 ]] ![r0[C2 💺0 ≡ 🚂0 ≏ ]] [r0[D2 ≏ ≏ ]] <DE> [E ≏ ≏ ]|")
-        try p.assert("1: |[A ≏ ≏ ] <AB,r> [r0[B2 ≏ 💺0 ≏ 💺0 ]] ![r0[C2 💺0 ≏ 💺0 ≡ 🚂0]] [r0[D2 ≏ ≏ ]] <DE> [E ≏ ≏ ]|")
-        try p.assert("1: |[A ≏ ≏ ] <AB,r> [B2 ≏ ≏ ] ![r0[C2 💺0 ≏ 💺0 ≏ 💺0]] [r0[D2 💺0 ≡ 🚂0 ≏ ]] <r0<DE,l>> [r0[E ≏ ≏ ]]|")
-        try p.assert("1: |[A ≏ ≏ ] <AB,r> [B2 ≏ ≏ ] ![r0[C2 💺0 ≏ 💺0 ≏ 💺0]] [r0[D2 💺0 ≏ 💺0 ≡ 🚂0 ]] <r0<DE,l>> [r0[E ≏ ≏ ]]|")
-        try p.assert("1: |[A ≏ ≏ ] <AB,r> [B2 ≏ ≏ ] ![C2 ≏ ≏ ] [r0[D2 💺0 ≏ 💺0 ≏ 💺0 ]] <r0<DE,l>> [r0[E 💺0 ≡ 🟨🚂0 ≏ ]]|")
-        try p.assert("1: |[A ≏ ≏ ] <AB,r> [B2 ≏ ≏ ] ![C2 ≏ ≏ ] [D2 ≏ ≏ ] <DE,l> [r0[E ≏ 💺0 ≡ 🛑🚂0 ]]|")
+        try p.assert("1: |[r0[A 💺0 ≏ 💺0 ≏ 🚂0 ]] <r0<AB(0,2),r>> [r0[B2 ≏ ≏ ]] ![C2 ≏ ≏ ] [D2 ≏ ≏ ] <DE(2,0)> [E ≏ ≏ ]|")
+        try p.assert("1: |[r0[A ≏ 💺0 ≏ 💺0 ]] <r0<AB(0,2),r>> [r0[B2 💺0 ≡ 🚂0 ≏ ]] ![r0[C2 ≏ ≏ ]] [D2 ≏ ≏ ] <DE(2,0)> [E ≏ ≏ ]|")
+        try p.assert("1: |[r0[A ≏ 💺0 ≏ 💺0 ]] <r0<AB(0,2),r>> [r0[B2 💺0 ≏ 💺0 ≡ 🚂0 ]] ![r0[C2 ≏ ≏ ]] [D2 ≏ ≏ ] <DE(2,0)> [E ≏ ≏ ]|")
+        try p.assert("1: |[A ≏ ≏ ] <AB(0,2),r> [r0[B2 💺0 ≏ 💺0 ≏ 💺0 ]] ![r0[C2 💺0 ≡ 🚂0 ≏ ]] [r0[D2 ≏ ≏ ]] <DE(2,0)> [E ≏ ≏ ]|")
+        try p.assert("1: |[A ≏ ≏ ] <AB(0,2),r> [r0[B2 ≏ 💺0 ≏ 💺0 ]] ![r0[C2 💺0 ≏ 💺0 ≡ 🚂0]] [r0[D2 ≏ ≏ ]] <DE(2,0)> [E ≏ ≏ ]|")
+        try p.assert("1: |[A ≏ ≏ ] <AB(0,2),r> [B2 ≏ ≏ ] ![r0[C2 💺0 ≏ 💺0 ≏ 💺0]] [r0[D2 💺0 ≡ 🚂0 ≏ ]] <r0<DE(2,0),l>> [r0[E ≏ ≏ ]]|")
+        try p.assert("1: |[A ≏ ≏ ] <AB(0,2),r> [B2 ≏ ≏ ] ![r0[C2 💺0 ≏ 💺0 ≏ 💺0]] [r0[D2 💺0 ≏ 💺0 ≡ 🚂0 ]] <r0<DE(2,0),l>> [r0[E ≏ ≏ ]]|")
+        try p.assert("1: |[A ≏ ≏ ] <AB(0,2),r> [B2 ≏ ≏ ] ![C2 ≏ ≏ ] [r0[D2 💺0 ≏ 💺0 ≏ 💺0 ]] <r0<DE(2,0),l>> [r0[E 💺0 ≡ 🟨🚂0 ≏ ]]|")
+        try p.assert("1: |[A ≏ ≏ ] <AB(0,2),r> [B2 ≏ ≏ ] ![C2 ≏ ≏ ] [D2 ≏ ≏ ] <DE(2,0),l> [r0[E ≏ 💺0 ≡ 🛑🚂0 ]]|")
     }
 
     func testASCIIProducer() throws {

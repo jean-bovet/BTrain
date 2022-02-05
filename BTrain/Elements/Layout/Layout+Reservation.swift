@@ -79,7 +79,7 @@ extension Layout {
                 // Note: we are not incrementing `numberOfLeadingBlocksReserved` because
                 // an occupied block does not count as a "leading" block; it is occupied because
                 // the train (or portion of it) occupies it.
-                BTLogger.debug("Already occupied (and reserved) \(previousStep.blockId) to \(block.id) for \(train.name)")
+                BTLogger.debug("Already occupied (and reserved) \(String(describing: previousStep.blockId)) to \(block.id) for \(train.name)")
             } else {
                 guard block.reserved == nil else {
                     return numberOfLeadingBlocksReserved > 0
@@ -94,10 +94,10 @@ extension Layout {
                 // Catch it and return false instead as this is not an error we want to report back to the runtime
                 do {
                     try reserve(trainId: train.id, fromBlock: previousStep.blockId!, toBlock: block.id, direction: previousStep.direction!)
-                    BTLogger.debug("Reserved \(previousStep.blockId) to \(block.id) for \(train.name)")
+                    BTLogger.debug("Reserved \(String(describing: previousStep.blockId)) to \(block.id) for \(train.name)")
                     numberOfLeadingBlocksReserved += 1
                 } catch {
-                    BTLogger.debug("Cannot reserve block \(previousStep.blockId) to \(block.id) for \(train.name): \(error)")
+                    BTLogger.debug("Cannot reserve block \(String(describing: previousStep.blockId)) to \(block.id) for \(train.name): \(error)")
                     return numberOfLeadingBlocksReserved > 0
                 }
             }

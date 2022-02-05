@@ -89,7 +89,7 @@ final class Route: Element, ObservableObject {
             if let blockId = blockId {
                 return "\(blockId)-\(direction!)"
             } else if let turnoutId = turnoutId {
-                return "\(turnoutId)(\(entrySocket!)-\(exitSocket!))"
+                return "\(turnoutId)-(\(entrySocket!.socketId!)>\(exitSocket!.socketId!))"
             } else {
                 // TODO: throw instead of crashing?
                 fatalError("Unsupported Step configuration")
@@ -121,6 +121,13 @@ final class Route: Element, ObservableObject {
             self.waitingTime = waitingTime
         }
         
+        init(_ turnoutId: Identifier<Turnout>, _ fromSocket: Socket, _ toSocket: Socket) {
+            self.id = UUID().uuidString
+            self.turnoutId = turnoutId
+            self.entrySocket = fromSocket
+            self.exitSocket = toSocket
+        }
+
         // This function returns true if this step is the same as the other step,
         // considering only the blockId and direction.
         func same(_ other: Step) -> Bool {
@@ -131,6 +138,10 @@ final class Route: Element, ObservableObject {
     // The list of steps for this route
     @Published var steps = [Step]()
             
+    var blockSteps: [Step] {
+        return steps.filter({$0.blockId != nil})
+    }
+    
     var lastStepIndex: Int {
         return steps.count - 1
     }

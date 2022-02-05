@@ -43,11 +43,14 @@ final class LayoutAsserter {
 
         // Now assert the routes to see if they match the real layout
         var assertedAtLeastOneRoute = false
+        let resolver = RouteResolver(layout: layout)
         for route in layout.routes {
             if let expectedRoute = expectedLayout.routes.first(where: { $0.id == route.id }) {
                 // Only assert the routes that are specified in the expectation.
                 // Some tests focus on a sub-set of the routes actually defined in the layout
-                try assert(route: route, expectedRoute: expectedRoute,
+                let resolvedRoute = Route(id: route.id, automatic: route.automatic)
+                resolvedRoute.steps = try resolver.resolve(route: route)
+                try assert(route: resolvedRoute, expectedRoute: expectedRoute,
                            trains: trains, expectedTrains: expectedTrains,
                            expectedLayout: expectedLayout)
                 
@@ -59,7 +62,7 @@ final class LayoutAsserter {
     }
     
     private func applyFeedbacks(route: Route, expectedRoute: Route, expectedLayout: Layout) {
-        for expectedStep in expectedRoute.steps {
+        for expectedStep in expectedRoute.blockSteps {
             let expectedBlock = expectedLayout.block(for: expectedStep.blockId)!
             let block = layout.block(for: expectedStep.blockId)
             for (index, expectedBlockFeedback) in expectedBlock.feedbacks.enumerated() {
@@ -76,7 +79,6 @@ final class LayoutAsserter {
     }
     
     private func assert(route: Route, expectedRoute: Route, trains: [Train], expectedTrains: [Train], expectedLayout: Layout) throws {
-
         for (index, expectedTrain) in expectedTrains.enumerated() {
             let train = layout.train(for: expectedTrain.id)!
             XCTAssertEqual(train.id, expectedTrain.id, "Unexpected train mismatch at index \(index), route \(route.id)")
@@ -89,61 +91,62 @@ final class LayoutAsserter {
             let step = route.steps[index]
             let expectedStep = expectedRoute.steps[index]
             
-            XCTAssertEqual(step.blockId, expectedStep.blockId, "Step blockId mismatch at index \(index)")
-            XCTAssertEqual(step.direction, expectedStep.direction, "Step direction mismatch at index \(index)")
-
-            let block = layout.block(for: step.blockId)!
-            let expectedBlock = expectedLayout.block(for: expectedStep.blockId)!
-            XCTAssertEqual(block.category, expectedBlock.category, "Block category mismatch for block \(block)")
-
-            if expectedBlock.reserved == nil {
-                XCTAssertNil(block.reserved, "Expected no reservation in block \(block), route \(route)")
+            if let blockId = step.blockId {
+                XCTAssertEqual(step.blockId, expectedStep.blockId, "Step blockId mismatch at index \(index)")
+                XCTAssertEqual(step.entrySocket, expectedStep.entrySocket, "Step entrySocket mismatch at block \(blockId)")
+                XCTAssertEqual(step.exitSocket, expectedStep.exitSocket, "Step exitSocket mismatch at block \(blockId)")
+                assertBlockAt(index: index, route: route, step: step, expectedStep: expectedStep, expectedLayout: expectedLayout)
+            } else if let turnoutId = step.turnoutId {
+                XCTAssertEqual(step.turnoutId, expectedStep.turnoutId, "Step turnoutId mismatch at index \(index)")
+                XCTAssertEqual(step.entrySocket, expectedStep.entrySocket, "Step entrySocket mismatch at turnout \(turnoutId)")
+                XCTAssertEqual(step.exitSocket, expectedStep.exitSocket, "Step exitSocket mismatch at turnout \(turnoutId)")
+                assertTurnoutAt(index: index, route: route, step: step, expectedStep: expectedStep, expectedLayout: expectedLayout)
             } else {
-                // Note: we only care about the trainId, not the direction of travel
-                // because the same block in the ASCII representation can indicate
-                // a different travel direction (because it represents the block
-                // in a later phase of the route).
-                XCTAssertEqual(block.reserved?.trainId, expectedBlock.reserved?.trainId, "Mismatching reserved block \(block) at index \(index), route \(route)")
-            }
-            
-            if let expectedTrain = expectedBlock.train {
-                XCTAssertEqual(block.train?.trainId, expectedTrain.trainId, "Unexpected train mismatch in block at index \(index)")
-            } else {
-                XCTAssertNil(block.train, "Block \(block) should not contain train \(block.train!)")
-            }
-            
-            // Assert the parts of the block reserved for the train and its wagon
-            if let train = block.train, let expectedTrain = expectedBlock.train, assertBlockParts {
-                XCTAssertEqual(train.parts, expectedTrain.parts, "Unexpected train parts mismatch in block \(block) at index \(index), route \(route)")
-            }
-            
-            // In ASCII representation, there is only one next transition from one block to another, for example:
-            // [b1 ≏ ≏ ] [b2 ≏ ≏ ] which represents a single transition going from b1 to b2 without turnout
-            // [b1 ≏ ≏ ] - [b2 ≏ ≏ ] which represents a single turnout for a single transition going from b1 to b2
-            // [b1 ≏ ≏ ] -- [b2 ≏ ≏ ] which represents two turnouts for a single transition going from b1 to b2
-            if index < route.steps.count - 1 {
-                let nextExpectedStep = route.steps[index+1]
-                let nextExpectedBlock = layout.block(for: nextExpectedStep.blockId)!
-
-                let expectedTransitions = try expectedLayout.transitions(from: expectedBlock, to: nextExpectedBlock, direction: expectedStep.direction!)
-                XCTAssertFalse(expectedTransitions.isEmpty, "Expecting at least 1 transition between \(expectedBlock) and \(nextExpectedBlock)")
-                
-                let transitions = try layout.transitions(from: expectedBlock, to: nextExpectedBlock, direction: step.direction!)
-                XCTAssertEqual(transitions.count, expectedTransitions.count, "Mismatching number of transitions between \(expectedBlock) and \(nextExpectedBlock)")
-                
-                let expectedTurnouts = try expectedLayout.turnouts(from: expectedBlock, to: nextExpectedBlock, direction: expectedStep.direction!)
-                let turnouts = try layout.turnouts(from: expectedBlock, to: nextExpectedBlock, direction: step.direction!)
-                XCTAssertEqual(turnouts.count, expectedTurnouts.count, "Mismatching number of turnouts between \(expectedBlock) and \(nextExpectedBlock)")
-
-                for index in 0..<turnouts.count {
-                    let turnout = turnouts[index]
-                    let expectedTurnout = expectedTurnouts[index]
-                    
-                    XCTAssertEqual(turnout.id, expectedTurnout.id, "Mismatching turnout IDs in block \(block), route \(route)")
-                    XCTAssertEqual(turnout.state, expectedTurnout.state, "Unexpected turnout \(turnout.id) state in block \(block), route \(route)")
-                    XCTAssertEqual(turnout.reserved, expectedTurnout.reserved, "Turnout \(turnout.id) has a mismatching reservation in block \(block), route \(route)")
-                }
+                XCTFail("Unsupported step configuration without blockId nor turnoutId")
             }
         }
+    }
+    
+    private func assertBlockAt(index: Int, route: Route, step: Route.Step, expectedStep: Route.Step, expectedLayout: Layout) {
+        XCTAssertEqual(step.direction, expectedStep.direction, "Step direction mismatch at index \(index)")
+
+        let block = layout.block(for: step.blockId)!
+        let expectedBlock = expectedLayout.block(for: expectedStep.blockId)!
+        XCTAssertEqual(block.category, expectedBlock.category, "Block category mismatch for block \(block)")
+
+        if expectedBlock.reserved == nil {
+            XCTAssertNil(block.reserved, "Expected no reservation in block \(block), route \(route)")
+        } else {
+            // Note: we only care about the trainId, not the direction of travel
+            // because the same block in the ASCII representation can indicate
+            // a different travel direction (because it represents the block
+            // in a later phase of the route).
+            XCTAssertEqual(block.reserved?.trainId, expectedBlock.reserved?.trainId, "Mismatching reserved block \(block) at index \(index), route \(route)")
+        }
+        
+        if let expectedTrain = expectedBlock.train {
+            XCTAssertEqual(block.train?.trainId, expectedTrain.trainId, "Unexpected train mismatch in block at index \(index)")
+        } else {
+            XCTAssertNil(block.train, "Block \(block) should not contain train \(block.train!)")
+        }
+        
+        // Assert the parts of the block reserved for the train and its wagon
+        if let train = block.train, let expectedTrain = expectedBlock.train, assertBlockParts {
+            XCTAssertEqual(train.parts, expectedTrain.parts, "Unexpected train parts mismatch in block \(block) at index \(index), route \(route)")
+        }
+    }
+    
+    private func assertTurnoutAt(index: Int, route: Route, step: Route.Step, expectedStep: Route.Step, expectedLayout: Layout) {
+        guard let turnout = layout.turnout(for: step.turnoutId) else {
+            XCTFail("Turnout \(String(describing: step.turnoutId)) not found")
+            return
+        }
+        guard let expectedTurnout = expectedLayout.turnout(for: expectedStep.turnoutId) else {
+            XCTFail("Expected turnout \(String(describing: expectedStep.turnoutId)) not found")
+            return
+        }
+        XCTAssertEqual(turnout.id, expectedTurnout.id, "Mismatching turnout ID at index \(index), route \(route)")
+        XCTAssertEqual(turnout.state, expectedTurnout.state, "Mismatching turnout state at index \(index), route \(route)")
+        XCTAssertEqual(turnout.reserved, expectedTurnout.reserved, "Mismatching turnout reservation at index \(index), route \(route)")
     }
 }

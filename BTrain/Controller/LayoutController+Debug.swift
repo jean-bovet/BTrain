@@ -45,7 +45,9 @@ extension LayoutController {
         }
         info += ". \(route.steps.count) steps: "
         for step in route.steps {
-            info += "(\(step.blockId)-\(step.direction)) "
+            if let blockId = step.blockId, let direction = step.direction {
+                info += "(\(blockId)-\(direction)) "
+            }
         }
         return info
     }

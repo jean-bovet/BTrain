@@ -43,7 +43,7 @@ final class LayoutASCIIProducer {
 
     private func generateBlock(step: Route.Step, text: inout String) {
         guard let block = layout.block(for: step.blockId) else {
-            fatalError("Unable to find block \(step.blockId)")
+            fatalError("Unable to find block \(String(describing: step.blockId))")
         }
         if step.direction == .previous {
             text += "!"

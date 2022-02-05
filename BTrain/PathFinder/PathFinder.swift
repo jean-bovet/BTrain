@@ -40,7 +40,7 @@ final class PathFinder {
         let context: PathFinderContext
     }
         
-    func path(trainId: Identifier<Train>, from block: Block, destination: Destination? = nil, direction: Direction, settings: PathFinderSettings, generatedPathCallback: ((Path) -> Void)? = nil) throws -> Path? {
+    func path(trainId: Identifier<Train>?, from block: Block, destination: Destination? = nil, direction: Direction, settings: PathFinderSettings, generatedPathCallback: ((Path) -> Void)? = nil) throws -> Path? {
         let numberOfPaths: Int
         if destination != nil && settings.random {
             // If a destination block is specified and the path is choosen at random,
@@ -51,15 +51,14 @@ final class PathFinder {
             numberOfPaths = 1
         }
         
-        guard let train = layout.train(for: trainId) else {
-            throw LayoutError.trainNotFound(trainId: trainId)
-        }
+        let train = layout.train(for: trainId)
         
         // Note: until we have a proper algorithm that finds the shortest path in a single pass,
         // we will generate a few paths and pick the shortest one (depending on the `numberOfPaths`).
         var smallestPath: Path?
+        let overflow = (layout.turnouts.count + layout.blocks.count) * 4
         for _ in 1...numberOfPaths {
-            let context = PathFinderContext(train: train, destination: destination, overflow: layout.blockMap.count*2, settings: settings)
+            let context = PathFinderContext(train: train, destination: destination, overflow: overflow, settings: settings)
             context.steps.append(Route.Step(block.id, direction))
             
             if try findPath(from: block, direction: direction, context: context) {
@@ -119,16 +118,25 @@ final class PathFinder {
             nextSocketIds.shuffle()
         }
         context.print("Evaluating possible sockets \(nextSocketIds) from \(turnout):\(fromSocketId)")
-
+        
         // Iterate over all the sockets
         for id in nextSocketIds {
             let nextSocket = turnout.socket(id)
             if let transition = try layout.transition(from: nextSocket) {
                 assert(transition.a.turnout == turnout.id)
-                // Drill down this transition to see if it leads
-                // to a valid path
+                
+                if context.settings.includeTurnouts {
+                    context.steps.append(Route.Step(turnout.id, Socket.turnout(turnout.id, socketId: fromSocketId), nextSocket))
+                }
+
+                // Drill down this transition to see if it leads to a valid path
                 if try findPath(from: transition, context: context) {
                     return true
+                } else {
+                    if context.settings.includeTurnouts {
+                        context.print("Backtracking \(turnout.name) and socket \(id) and removing it")
+                        context.steps.removeLast()
+                    }
                 }
             }
         }
@@ -141,9 +149,7 @@ final class PathFinder {
         }
 
         if let nextBlockId = transition.b.block {
-            // The transition ends up in a block,
-            // let's find out the direction of travel of the train
-            // within that block
+            // The transition ends up in a block, let's find out the direction of travel of the train within that block
             let nextBlockDirection: Direction
             if transition.b.socketId == Block.previousSocket {
                 nextBlockDirection = .next
@@ -152,8 +158,8 @@ final class PathFinder {
             }
             
             // Find out if the next block is allowed to be used for that train
-            if context.train.blocksToAvoid.contains(where: {$0.blockId == nextBlockId }) {
-                context.print("The next block \(nextBlockId) is marked as to be avoided by train \(context.train.name), backtracking")
+            if let train = context.train, train.blocksToAvoid.contains(where: {$0.blockId == nextBlockId }) {
+                context.print("The next block \(nextBlockId) is marked as to be avoided by train \(train.name), backtracking")
                 return false
             }
             
@@ -162,14 +168,10 @@ final class PathFinder {
                 throw LayoutError.blockNotFound(blockId: nextBlockId)
             }
             
-            if !nextBlock.enabled  {
+            if !nextBlock.enabled && !context.settings.ignoreDisabledBlocks  {
                 context.print("The next block \(nextBlock) is disabled, backtracking")
                 return false
-                
-            } else if nextBlock.category == .sidingNext || nextBlock.category == .sidingPrevious {
-                context.print("Reached a siding at block \(nextBlock)")
-                return context.settings.consideringStoppingAtSiding
-            } else if let reserved = nextBlock.reserved, reserved.trainId != context.train.id {
+            } else if let reserved = nextBlock.reserved, reserved.trainId != context.train?.id {
                 // The next block is reserved for another train, we cannot use it
                 let stepCount = context.steps.count - 1 // Remove one block because we don't take into account the first block which is the starting block
                 
@@ -209,8 +211,11 @@ final class PathFinder {
             } else if nextBlock.category == .station {
                 context.print("Reached a station at block \(nextBlock)")
                 return true
+            } else if nextBlock.category == .sidingNext || nextBlock.category == .sidingPrevious {
+                context.print("Reached a siding at block \(nextBlock)")
+                return context.settings.consideringStoppingAtSiding
             }
-            
+                        
             // If the block is not a station, let's continue recursively
             if try findPath(from: nextBlock, direction: nextBlockDirection, context: context) {
                 return true
@@ -227,8 +232,8 @@ final class PathFinder {
             }
             
             // Find out if the next turnout is allowed to be used for that train
-            if context.train.turnoutsToAvoid.contains(where: {$0.turnoutId == nextTurnoutId }) {
-                context.print("The next turnout \(nextTurnoutId) is marked as to be avoided by train \(context.train.name), backtracking")
+            if let train = context.train, train.turnoutsToAvoid.contains(where: {$0.turnoutId == nextTurnoutId }) {
+                context.print("The next turnout \(nextTurnoutId) is marked as to be avoided by train \(train.name), backtracking")
                 return false
             }
 

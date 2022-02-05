@@ -167,6 +167,7 @@
 		A798BB4627A7B093000BB4D1 /* LayoutASCIIProducer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A798BB4527A7B093000BB4D1 /* LayoutASCIIProducer.swift */; };
 		A798BB4827A8EA06000BB4D1 /* LayoutControllerDebugger.swift in Sources */ = {isa = PBXBuildFile; fileRef = A798BB4727A8EA06000BB4D1 /* LayoutControllerDebugger.swift */; };
 		A798BB4A27ABAB6F000BB4D1 /* RouteResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = A798BB4927ABAB6F000BB4D1 /* RouteResolver.swift */; };
+		A798BB4C27ACD8E8000BB4D1 /* RouteResolverTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A798BB4B27ACD8E8000BB4D1 /* RouteResolverTests.swift */; };
 		A7B06AE12727786500BDD88C /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7B06AE02727786500BDD88C /* ContentView.swift */; };
 		A7B06AF2272782C300BDD88C /* LayoutDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7B06AF1272782C300BDD88C /* LayoutDocument.swift */; };
 		A7B06AF4272783F600BDD88C /* MarklinCANMessageFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7B06AF3272783F600BDD88C /* MarklinCANMessageFactory.swift */; };
@@ -392,6 +393,7 @@
 		A798BB4527A7B093000BB4D1 /* LayoutASCIIProducer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutASCIIProducer.swift; sourceTree = "<group>"; };
 		A798BB4727A8EA06000BB4D1 /* LayoutControllerDebugger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutControllerDebugger.swift; sourceTree = "<group>"; };
 		A798BB4927ABAB6F000BB4D1 /* RouteResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteResolver.swift; sourceTree = "<group>"; };
+		A798BB4B27ACD8E8000BB4D1 /* RouteResolverTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteResolverTests.swift; sourceTree = "<group>"; };
 		A7B06AE02727786500BDD88C /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		A7B06AED2727819800BDD88C /* Server.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Server.swift; sourceTree = "<group>"; };
 		A7B06AEE2727819800BDD88C /* ServerConnection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ServerConnection.swift; sourceTree = "<group>"; };
@@ -818,6 +820,7 @@
 				A7FBC8B5276E8BB6009D49C3 /* PathFinderTests.swift */,
 				A7CA5EBC2795339000171398 /* AutomaticRoutingTests.swift */,
 				A7E78C4927A22B23004D1821 /* ManualOperationTests.swift */,
+				A798BB4B27ACD8E8000BB4D1 /* RouteResolverTests.swift */,
 			);
 			path = Routing;
 			sourceTree = "<group>";
@@ -1363,6 +1366,7 @@
 				A73E07FD276A8BAC005F9D64 /* TrainControlsViewTests.swift in Sources */,
 				A7E78C4A27A22B23004D1821 /* ManualOperationTests.swift in Sources */,
 				A792DEFD27850834004B0439 /* SimulatorViewTests.swift in Sources */,
+				A798BB4C27ACD8E8000BB4D1 /* RouteResolverTests.swift in Sources */,
 				A721807F275F099100831998 /* TurnoutTests.swift in Sources */,
 				A721806C275D2D0400831998 /* CS2DocumentParsingTests.swift in Sources */,
 				A721807B275DD95900831998 /* TrainTests.swift in Sources */,

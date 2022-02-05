@@ -22,17 +22,6 @@ final class LayoutRouteParser {
     var route: Route!
 
     var trains = [Train]()
-
-    struct TurnoutSpec {
-        let id: Identifier<Turnout>
-        let fromSocket: Int
-        let toSocket: Int
-    }
-
-    // Map of block index to turnout spec. In other words,
-    // this map contains a turnout spec, if specified, related
-    // to a specific block index in the route string.
-    var blockTurnouts = [Int:[TurnoutSpec]]()
     
     let sp: LayoutStringParser
     
@@ -87,52 +76,9 @@ final class LayoutRouteParser {
                         
             let step = route.steps[index]
             let nextStep = route.steps[index+1]
-                        
-            if let turnouts = blockTurnouts[index] {
-                // There exist one or more turnouts between these two blocks
-                //┌─────────┐
-                //│ Block 1 │────▶  T1 | T2 | TX ──────────────┐
-                //└─────────┘                     ┌─────────┐  │
-                //                                │ Block 2 │◀─┘
-                //                                └─────────┘
-                //┌─────────┐                          ┌─────────┐
-                //│ Block 1 │────▶  T1 | T2 | TX  ────▶│ Block 2 │
-                //└─────────┘                          └─────────┘
-                for (index, turnout) in turnouts.enumerated() {
-                    if index == 0 {
-                        layout.link("\(step.blockId)-\(turnout.id)",
-                                    from: step.exitSocket!,
-                                    to: Socket.turnout(turnout.id, socketId: turnout.fromSocket))
-                    }
-                    
-                    if index > 0 && index < turnouts.count {
-                        let previousTurnout = turnouts[index - 1]
-                        layout.link("\(previousTurnout.id)-\(turnout.id)",
-                                    from: Socket.turnout(previousTurnout.id, socketId: previousTurnout.toSocket),
-                                    to: Socket.turnout(turnout.id, socketId: turnout.fromSocket))
-                    }
 
-                    if index == turnouts.count - 1 {
-                        layout.link("\(turnout.id)-\(nextStep)",
-                                    from: Socket.turnout(turnout.id, socketId: turnout.toSocket),
-                                    to: nextStep.entrySocket!)
-                    }
-                }
-            } else {
-                // No turnout between these two blocks
-                //┌─────────┐                     ┌─────────┐
-                //│ Block 1 │────────────────────▶│ Block 2 │
-                //└─────────┘                     └─────────┘
-                //
-                //┌─────────┐
-                //│ Block 1 │──────────────────────────────────┐
-                //└─────────┘                     ┌─────────┐  │
-                //                                │ Block 2 │◀─┘
-                //                                └─────────┘
-                layout.link("\(step.blockId)-\(nextStep.blockId)",
-                            from: step.exitSocket!,
-                            to: nextStep.entrySocket!)
-            }
+            layout.link(from: step.exitSocket!,
+                        to: nextStep.entrySocket!)
         }
     }
             
@@ -499,13 +445,8 @@ final class LayoutRouteParser {
             layout.turnouts.append(turnout)
         }
         
-        var turnouts = blockTurnouts[route.steps.count-1]
-        if turnouts == nil {
-            turnouts = [TurnoutSpec]()
-        }
-        let t = TurnoutSpec(id: turnoutId, fromSocket: fromSocket, toSocket: toSocket)
-        turnouts!.append(t)
-        blockTurnouts[route.steps.count-1] = turnouts!
+        let step = Route.Step(turnoutId, Socket.turnout(turnoutId, socketId: fromSocket), Socket.turnout(turnoutId, socketId: toSocket))
+        route.steps.append(step)
     }
 
 }

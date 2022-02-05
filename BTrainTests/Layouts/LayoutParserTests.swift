@@ -140,17 +140,18 @@ class LayoutParserTests: XCTestCase {
     
     func assertLayout(layout: Layout, expectations: [BE]) {
         let route = layout.routes.first!
+        let blockSteps = route.blockSteps
         
-        XCTAssertEqual(route.steps.count, expectations.count)
+        XCTAssertEqual(blockSteps.count, expectations.count)
         
         for (index, expectation) in expectations.enumerated() {
-            let step = route.steps[index]
+            let step = blockSteps[index]
             let blockId = step.blockId
             
             XCTAssertEqual(blockId, Identifier<Block>(uuid: String(expectation.uuid)), "Mismatching block identifier at index \(index)")
             
             guard let block = layout.block(for: blockId) else {
-                XCTFail("Unable to find block \(blockId)")
+                XCTFail("Unable to find block \(String(describing: blockId))")
                 return
             }
             

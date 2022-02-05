@@ -16,20 +16,6 @@ import Foundation
 
 extension Layout {
     
-    func turnouts(from fromBlock: Block, to nextBlock: Block, direction: Direction) throws -> [Turnout] {
-        let transitions = try transitions(from: fromBlock, to: nextBlock, direction: direction)
-        var turnouts = [Turnout]()
-        for transition in transitions {
-            if let turnoutId = transition.b.turnout {
-                guard let turnout = turnout(for: turnoutId) else {
-                    fatalError("Unable to find turnout \(turnoutId)")
-                }
-                turnouts.append(turnout)
-            }
-        }
-        return turnouts
-    }
-
     func newRoute(id: String, _ steps: [(String, Direction)]) -> Route {
         return newRoute(id, name: id, steps.map({ step in
             return Route.Step(Identifier<Block>(uuid: step.0), step.1)

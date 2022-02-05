@@ -34,5 +34,9 @@ struct PathFinderSettings {
             
     var consideringStoppingAtSiding = false
     
+    var includeTurnouts = false
+    
+    var ignoreDisabledBlocks = false
+    
     let verbose: Bool
 }

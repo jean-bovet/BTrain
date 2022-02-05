@@ -127,7 +127,7 @@ class PathFinderTests: BTTestCase {
         }
 
         do {
-            let settings = PathFinderSettings(random: false, reservedBlockBehavior: .avoidReservedUntil(numberOfSteps: 2*layout.blockMap.count), verbose: false)
+            let settings = PathFinderSettings(random: false, reservedBlockBehavior: .avoidReserved, verbose: false)
             _ = try pf.path(trainId: layout.trains[0].id, from: s1, direction: .next, settings: settings)
             XCTFail("Exception must be thrown")
         } catch PathFinder.PathError.overflow {
