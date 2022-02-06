@@ -62,7 +62,7 @@ extension Layout {
         // Don't forget to update the reservation for the train length
         // as moving inside a block will change them
         // TODO: what other method change the train position or characterisit to re-evaluate all that (direction I think)
-        try updateReservedBlocks(train: train)
+        try reservation.updateReservedBlocks(train: train)
 
         didChange()
     }
@@ -182,7 +182,7 @@ extension Layout {
         block.train = TrainInstance(train.id, ti.direction.opposite)
         train.wagonsPushedByLocomotive.toggle()
 
-        try updateReservedBlocks(train: train)
+        try reservation.updateReservedBlocks(train: train)
 
         self.didChange()
     }
@@ -290,7 +290,7 @@ extension Layout {
         BTLogger.debug("Stopping train \(train.name) completely")
 
         train.scheduling = .manual
-        try updateReservedBlocks(train: train)
+        try reservation.updateReservedBlocks(train: train)
     }
     
     // Use this method to stop the train when it finishes the route
@@ -346,7 +346,7 @@ extension Layout {
             train.routeStepIndex = routeIndex
         }
 
-        try updateReservedBlocks(train: train)
+        try reservation.updateReservedBlocks(train: train)
     }
 
     func free(fromBlock: Identifier<Block>, toBlockNotIncluded: Identifier<Block>, direction: Direction) throws {

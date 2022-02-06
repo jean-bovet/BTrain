@@ -19,6 +19,23 @@ extension Block {
         return reserved?.trainId == trainId && train?.trainId == trainId
     }
     
+    func canBeReserved(withTrain: Train, direction: Direction) -> Bool {
+        guard enabled else {
+            return false
+        }
+        
+        guard train == nil else {
+            return false
+        }
+        
+        let reservation = Reservation(trainId: withTrain.id, direction: direction)
+        guard reserved == nil || reserved == reservation else {
+            return false
+        }
+        
+        return true
+    }
+    
     // Returns the length (in cm) of the part at the specified index,
     // starting from the beginning of the block.
     func partLenght(at index: Int) -> Double? {

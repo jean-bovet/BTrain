@@ -12,7 +12,23 @@
 
 import Foundation
 
-extension Layout {
+// TODO: use the word "occupied" block instead of "trailing" so the notion of direction is dropped
+// This class handles the trailing and leading blocks reservation for a specified train.
+// - A trailing block is a block behind the train that contains the wagons of the train.
+//   Note that if a locomotive pushes the wagon, the trailing blocks are actually "in front" of the train.
+// - A leading block is a block in front of the train that is reserved in order for the train to be
+//   able to move into it safely without risking a collision with another train.
+final class LayoutReservation {
+    
+    let layout: Layout
+    let resolver: RouteResolver
+    let visitor: ElementVisitor
+
+    init(layout: Layout) {
+        self.layout = layout
+        self.resolver = RouteResolver(layout: layout)
+        self.visitor = ElementVisitor(layout: layout)
+   }
     
     // This function will try to reserve as many blocks as specified (maxNumberOfLeadingReservedBlocks)
     // in front of the train (leading blocks).
@@ -34,14 +50,6 @@ extension Layout {
         return try reserveLeadingBlocks(train: train, forceReserveLeadingBlocks: forceReserveLeadingBlocks)
     }
         
-    // The basic idea of the reservation of leading blocks (to ensure the train can move into a block without another train in it)
-    // is to work at the resolution of the block.
-    // TODO: why the route needs to be resolved?
-    // In other words, the route is resolved to ensure we have contiguous turnouts
-    // and blocks. After that, we make sure that the block can be reserved before reserving all the turnouts leading to that block.
-    // Initial route: [b1] [b2] [b3]
-    // Resolved route: [b1] <t1> <t2> [b2] <t3> [b3]
-    // Note: at the moment, we don't support resolving blocks that are not specified contiguously.
     private func reserveLeadingBlocks(train: Train, forceReserveLeadingBlocks: Bool) throws -> Bool {
         // The train must be running (or we have the specific force flag which happens when the train starts)
         // TODO: instead of forceReserveLeadingBlocks, can't we use train.state == .starting?
@@ -50,7 +58,7 @@ extension Layout {
         }
         
         // The route must be defined and not be empty
-        guard let route = self.route(for: train.routeId, trainId: train.id), !route.steps.isEmpty else {
+        guard let route = layout.route(for: train.routeId, trainId: train.id), !route.steps.isEmpty else {
             return false
         }
 
@@ -60,7 +68,6 @@ extension Layout {
         let stepsToReserve = route.steps[startReservationIndex...route.lastStepIndex]
         
         // First of all, resolve the route to discover all non-specified turnouts and blocks
-        let resolver = RouteResolver(layout: self)
         let resolvedSteps = try resolver.resolve(steps: stepsToReserve, trainId: train.id)
         assert(resolvedSteps.count >= stepsToReserve.count)
 
@@ -78,7 +85,7 @@ extension Layout {
         // Iterate over all the resolved steps
         for step in resolvedSteps {
             if let blockId = step.blockId {
-                guard let block = self.block(for: blockId) else {
+                guard let block = layout.block(for: blockId) else {
                     throw LayoutError.blockNotFound(blockId: blockId)
                 }
                                 
@@ -91,7 +98,7 @@ extension Layout {
                     return numberOfLeadingBlocksReserved > 0
                 }
             } else if let turnoutId = step.turnoutId {
-                guard let turnout = self.turnout(for: turnoutId) else {
+                guard let turnout = layout.turnout(for: turnoutId) else {
                     throw LayoutError.turnoutNotFound(turnoutId: turnoutId)
                 }
 
@@ -117,7 +124,7 @@ extension Layout {
             // the train (or portion of it) occupies it.
             BTLogger.debug("Already occupied (and reserved) \(block.name) for \(train.name)")
         } else {
-            guard canBlockBeReserved(block, train: train, direction: direction) else {
+            guard block.canBeReserved(withTrain: train, direction: direction) else {
                 return false
             }
             
@@ -139,7 +146,7 @@ extension Layout {
         // stop the train is detected. That way, the train stops
         // without reserving any block ahead and upon restarting,
         // it will reserve what it needs in front of it.
-        guard !trainShouldStop(train: train, block: block) else {
+        guard !layout.trainShouldStop(train: train, block: block) else {
             return false
         }
         
@@ -155,26 +162,8 @@ extension Layout {
         
         turnout.state = state
         turnout.reserved = train.id
-        self.executor?.sendTurnoutState(turnout: turnout) { }
+        layout.executor?.sendTurnoutState(turnout: turnout) { }
         BTLogger.debug("Reserved turnout \(turnout.name) for \(train) and state \(state)")
-    }
-    
-    // TODO: move to Block+Occupation?
-    private func canBlockBeReserved(_ block: Block, train: Train, direction: Direction) -> Bool {
-        guard block.enabled else {
-            return false
-        }
-        
-        guard block.train == nil else {
-            return false
-        }
-        
-        let reservation = Reservation(trainId: train.id, direction: direction)
-        guard block.reserved == nil || block.reserved == reservation else {
-            return false
-        }
-        
-        return true
     }
     
     private func rememberTurnoutToReserve(turnout: Turnout, train: Train, step: Route.Step, numberOfLeadingBlocksReserved: inout Int, turnouts: inout [(Turnout, Turnout.State)]) throws -> Bool {
@@ -231,7 +220,7 @@ extension Layout {
             throw LayoutError.trainNotAssignedToABlock(trainId: train.id)
         }
         
-        guard let fromBlock = self.block(for: fromBlockId) else {
+        guard let fromBlock = layout.block(for: fromBlockId) else {
             throw LayoutError.blockNotFound(blockId: fromBlockId)
         }
         
@@ -273,7 +262,6 @@ extension Layout {
         // Keep track of the remaining train length that needs to have reserved blocks
         var remainingTrainLength = trainLength
 
-        let visitor = ElementVisitor(layout: self)
         try visitor.visit(fromBlockId: fromBlock.id, direction: wagonDirection, callback: { info in
             if let transition = info.transition {
                 // Transition is just a virtual connection between two elements, no physical length exists.
@@ -382,7 +370,6 @@ extension Layout {
     }
 
     private func freeReservedElements(fromBlockId: Identifier<Block>, direction: Direction, trainId: Identifier<Train>) throws {
-        let visitor = ElementVisitor(layout: self)
         try visitor.visit(fromBlockId: fromBlockId, direction: direction) { info in
             if let transition = info.transition {
                 if transition.reserved == trainId {
@@ -414,7 +401,7 @@ extension Layout {
     // This method will free all the leading blocks reserved for the specified train and
     // update the trailing blocks that the train occupies with its length.
     private func freeElements(train: Train) throws {
-        blockMap.values
+        layout.blockMap.values
             .filter { $0.reserved?.trainId == train.id }
             .forEach { block in
                 // Only free a block if the block is not the one the train is located on or
@@ -423,8 +410,8 @@ extension Layout {
                     block.train = nil
                 }
             }
-        turnouts.filter { $0.reserved == train.id }.forEach { $0.reserved = nil; $0.train = nil }
-        transitions.filter { $0.reserved == train.id }.forEach { $0.reserved = nil; $0.train = nil }
+        layout.turnouts.filter { $0.reserved == train.id }.forEach { $0.reserved = nil; $0.train = nil }
+        layout.transitions.filter { $0.reserved == train.id }.forEach { $0.reserved = nil; $0.train = nil }
     }
     
 }
