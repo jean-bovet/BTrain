@@ -14,6 +14,7 @@ import Foundation
 
 // This class is used to visit the elements of the layout in a specific direction,
 // receiving a callback for each element visited (transition, turnout and block).
+// At the moment, this class follows the current state of each turnout.
 final class ElementVisitor {
     
     let layout: Layout
