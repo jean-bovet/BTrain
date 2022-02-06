@@ -58,7 +58,7 @@ class MarklinInterfaceTests: XCTestCase {
 
         mi.execute(command: .go()) {}
         
-        wait(for: [enabledExpectation], timeout: 0.250)
+        wait(for: [enabledExpectation], timeout: ScheduledMessageQueue.delay)
         
         XCTAssertTrue(simulator.enabled)
         XCTAssertNotNil(cancellable)

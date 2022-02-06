@@ -14,12 +14,18 @@ import Foundation
 
 // List of commands that can be sent to a Digital Control System.
 // These commands are agnostic of any particular manufacturer.
+
 enum Command {
-    case go(descriptor: CommandDescriptor? = nil)
-    case stop(descriptor: CommandDescriptor? = nil)
-    case emergencyStop(address: UInt32, decoderType: DecoderType?, descriptor: CommandDescriptor? = nil)
+    enum Priority {
+        case high
+        case normal
+    }
     
-    case speed(address: UInt32, decoderType: DecoderType?, value: SpeedValue, descriptor: CommandDescriptor? = nil)
+    case go(priority: Priority = .high, descriptor: CommandDescriptor? = nil)
+    case stop(priority: Priority = .high, descriptor: CommandDescriptor? = nil)
+    case emergencyStop(address: UInt32, decoderType: DecoderType?, priority: Priority = .high, descriptor: CommandDescriptor? = nil)
+    
+    case speed(address: UInt32, decoderType: DecoderType?, value: SpeedValue, priority: Priority = .normal, descriptor: CommandDescriptor? = nil)
     
     enum Direction {
         case forward
@@ -27,21 +33,21 @@ enum Command {
         case unknown
     }
     
-    case direction(address: UInt32, decoderType: DecoderType?, direction: Direction, descriptor: CommandDescriptor? = nil)
-    case queryDirection(address: UInt32, decoderType: DecoderType?, descriptor: CommandDescriptor? = nil)
+    case direction(address: UInt32, decoderType: DecoderType?, direction: Direction, priority: Priority = .normal, descriptor: CommandDescriptor? = nil)
+    case queryDirection(address: UInt32, decoderType: DecoderType?, priority: Priority = .normal, descriptor: CommandDescriptor? = nil)
 
-    case turnout(address: CommandTurnoutAddress, state: UInt8, power: UInt8, descriptor: CommandDescriptor? = nil)
+    case turnout(address: CommandTurnoutAddress, state: UInt8, power: UInt8, priority: Priority = .normal, descriptor: CommandDescriptor? = nil)
     
-    case feedback(deviceID: UInt16, contactID: UInt16, oldValue: UInt8, newValue: UInt8, time: UInt32, descriptor: CommandDescriptor? = nil)
+    case feedback(deviceID: UInt16, contactID: UInt16, oldValue: UInt8, newValue: UInt8, time: UInt32, priority: Priority = .normal, descriptor: CommandDescriptor? = nil)
     
     // Asks the Digital Control System to retrieve the locomotives description.
     // This command uses the completion block of the execute() method to notify when
     // the locomotives have all been fetched
-    case locomotives(descriptor: CommandDescriptor? = nil)
+    case locomotives(priority: Priority = .normal, descriptor: CommandDescriptor? = nil)
     
     // Unknown command. Use the descriptor to find out more about its description
     // and potential hex values for debugging.
-    case unknown(command: UInt8, descriptor: CommandDescriptor? = nil)
+    case unknown(command: UInt8, priority: Priority = .normal, descriptor: CommandDescriptor? = nil)
 }
 
 struct CommandDescriptor {

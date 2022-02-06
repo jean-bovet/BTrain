@@ -142,28 +142,28 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
                 self.enabled = false
                 self.timer?.invalidate()
 
-            case .emergencyStop(address: _, decoderType: _, descriptor: _):
+            case .emergencyStop(address: _, decoderType: _, priority: _, descriptor: _):
                 break
                 
-            case .speed(address: let address, decoderType: let decoderType, value: let value, descriptor: _):
+            case .speed(address: let address, decoderType: let decoderType, value: let value, priority: _, descriptor: _):
                 self.speedChanged(address: address, decoderType: decoderType, value: value)
                 break
                 
-            case .direction(address: let address, decoderType: let decoderType, direction: let direction, descriptor: _):
+            case .direction(address: let address, decoderType: let decoderType, direction: let direction, priority: _, descriptor: _):
                 self.directionChanged(address: address, decoderType: decoderType, direction: direction)
                 break
                 
-            case .turnout(address: _, state: _, power: _, descriptor: _):
+            case .turnout(address: _, state: _, power: _, priority: _, descriptor: _):
                 break
                 
-            case .feedback(deviceID: _, contactID: _, oldValue: _, newValue: _, time: _, descriptor: _):
+            case .feedback(deviceID: _, contactID: _, oldValue: _, newValue: _, time: _, priority: _, descriptor: _):
                 break
                 
-            case .locomotives(descriptor: _):
+            case .locomotives(priority: _, descriptor: _):
                 self.provideLocomotives()
                 break
 
-            case .queryDirection(address: let address, decoderType: let decoderType, descriptor: _):
+            case .queryDirection(address: let address, decoderType: let decoderType, priority: _, descriptor: _):
                 self.provideDirection(address: address.actualAddress(for: decoderType))
                 break
 

@@ -84,8 +84,8 @@ class ClientConnection {
         
     private var dataQueue = ScheduledMessageQueue()
     
-    func send(data: Data, onCompletion: @escaping () -> Void) {
-        dataQueue.schedule { completion in
+    func send(data: Data, priority: Bool, onCompletion: @escaping () -> Void) {
+        dataQueue.schedule(priority: priority) { completion in
             self.nwConnection.send(content: data, completion: .contentProcessed( { error in
                 let msg = MarklinCANMessage.decode(from: [UInt8](data))
                 NSLog("[Client] > \(MarklinCANMessagePrinter.debugDescription(msg: msg))")

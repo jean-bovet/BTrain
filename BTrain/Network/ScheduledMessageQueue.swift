@@ -13,7 +13,7 @@
 import Foundation
 
 // This class ensures that every scheduled execution
-// of a block is performed serialy, every 250ms.
+// of a block is performed serialy, every x ms.
 // This is used to ensure commands sent to the Central Station
 // are not clobbed together or sent too fast which would cause
 // one event to be missed. This happens for example when
@@ -23,13 +23,18 @@ final class ScheduledMessageQueue {
 
     typealias ExecutionBlock = ( (@escaping CompletionBlock) -> Void)
 
+    struct ScheduledBlock {
+        let priority: Bool
+        let block: ExecutionBlock
+    }
+    
     typealias CompletionBlock = (() -> Void)
 
-    static let delay = 0.250
+    static let delay = 0.50
     
-    private var scheduledQueue = [ExecutionBlock]()
+    private var scheduledQueue = [ScheduledBlock]()
 
-    private var executingQueue = [ExecutionBlock]()
+    private var executingQueue = [ScheduledBlock]()
     
     private var executing = false
     
@@ -37,24 +42,33 @@ final class ScheduledMessageQueue {
         scheduleSendData()
     }
     
-    func schedule(block: @escaping ExecutionBlock) {
-        scheduledQueue.append(block)
+    func schedule(priority: Bool, block: @escaping ExecutionBlock) {
+        let scheduledBlock = ScheduledBlock(priority: priority, block: block)
+        if scheduledBlock.priority {
+            scheduledQueue.insert(scheduledBlock, at: 0)
+        } else {
+            scheduledQueue.append(scheduledBlock)
+        }
     }
         
-    private func execute(block: @escaping ExecutionBlock) {
+    private func execute(scheduledBlock: ScheduledBlock) {
         guard !executing else {
-            executingQueue.append(block)
+            if scheduledBlock.priority {
+                executingQueue.insert(scheduledBlock, at: 0)
+            } else {
+                executingQueue.append(scheduledBlock)
+            }
             return
         }
         executing = true
 
-        block() {
+        scheduledBlock.block() {
             DispatchQueue.main.async {
                 self.executing = false
                 
                 if !self.executingQueue.isEmpty {
-                    let data = self.executingQueue.removeFirst()
-                    self.execute(block: data)
+                    let scheduledBlock = self.executingQueue.removeFirst()
+                    self.execute(scheduledBlock: scheduledBlock)
                 }
             }
         }
@@ -63,8 +77,8 @@ final class ScheduledMessageQueue {
     private func scheduleSendData() {
         Timer.scheduledTimer(withTimeInterval: ScheduledMessageQueue.delay, repeats: true) { timer in
             if !self.scheduledQueue.isEmpty {
-                let data = self.scheduledQueue.removeFirst()
-                self.execute(block: data)
+                let scheduledBlock = self.scheduledQueue.removeFirst()
+                self.execute(scheduledBlock: scheduledBlock)
             }
         }
     }

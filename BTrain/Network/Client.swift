@@ -54,8 +54,8 @@ public class Client {
         connection.stop()
     }
     
-    func send(data: Data, onCompletion: @escaping () -> Void) {
-        connection.send(data: data, onCompletion: onCompletion)
+    func send(data: Data, priority: Bool, onCompletion: @escaping () -> Void) {
+        connection.send(data: data, priority: priority, onCompletion: onCompletion)
     }
         
 }

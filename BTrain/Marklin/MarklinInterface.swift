@@ -50,10 +50,10 @@ final class MarklinInterface {
                 }
             } else {
                 let cmd = Command.from(message: msg)
-                if case .feedback(deviceID: let deviceID, contactID: let contactID, oldValue: _, newValue: let newValue, time: _, descriptor: _) = cmd {
+                if case .feedback(deviceID: let deviceID, contactID: let contactID, oldValue: _, newValue: let newValue, time: _, priority: _, descriptor: _) = cmd {
                     self.feedbackChangeCallbacks.forEach { $0(deviceID, contactID, newValue) }
                 }
-                if case .turnout(address: let address, state: let state, power: let power, descriptor: _) = cmd {
+                if case .turnout(address: let address, state: let state, power: let power, priority: _, descriptor: _) = cmd {
                     if msg.resp == 0 {
                         // Only report turnout change when the message is initiated from
                         // the Digital Controller. This is because when BTrain sends
@@ -62,19 +62,19 @@ final class MarklinInterface {
                         self.turnoutChangeCallbacks.forEach { $0(address, state, power) }
                     }
                 }
-                if case .speed(address: let address, decoderType: let decoderType, value: let value, descriptor: _) = cmd {
+                if case .speed(address: let address, decoderType: let decoderType, value: let value, priority: _, descriptor: _) = cmd {
                     if msg.resp == 0 {
                         self.speedChangeCallbacks.forEach { $0(address, decoderType, value) }
                     }
                 }
-                if case .emergencyStop(address: let address, decoderType: let decoderType, descriptor: _) = cmd {
+                if case .emergencyStop(address: let address, decoderType: let decoderType, priority: _, descriptor: _) = cmd {
                     // Execute a command to query the direction of the locomotive at this particular address
                     DispatchQueue.main.async {
                         // The response from this command is going to be processed below in the case .direction
                         self.execute(command: .queryDirection(address: address, decoderType: decoderType)) { }
                     }
                 }
-                if case .direction(address: let address, decoderType: let decoderType, direction: let direction, descriptor: _) = cmd {
+                if case .direction(address: let address, decoderType: let decoderType, direction: let direction, priority: _, descriptor: _) = cmd {
                     self.directionChangeCallbacks.forEach { $0(address, decoderType, direction) }
                 }
             }
@@ -88,8 +88,8 @@ final class MarklinInterface {
         }
     }
 
-    func send(message: MarklinCANMessage, onCompletion: @escaping () -> Void) {
-        client.send(data: message.data, onCompletion: onCompletion)
+    func send(message: MarklinCANMessage, priority: Command.Priority, onCompletion: @escaping () -> Void) {
+        client.send(data: message.data, priority: priority == .high, onCompletion: onCompletion)
     }
 
 }
@@ -102,7 +102,8 @@ extension MarklinInterface: CommandInterface {
     }
     
     func execute(command: Command, onCompletion: @escaping () -> Void) {
-        send(message: MarklinCANMessage.from(command: command), onCompletion: onCompletion)
+        let (message, priority) = MarklinCANMessage.from(command: command)
+        send(message: message, priority: priority, onCompletion: onCompletion)
     }
 
     // Maximum value of the speed parameters that can be specified in the CAN message.

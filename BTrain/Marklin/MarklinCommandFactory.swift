@@ -138,44 +138,44 @@ extension Command {
 
 extension MarklinCANMessage {
     
-    static func from(command: Command) -> MarklinCANMessage {
+    static func from(command: Command) -> (MarklinCANMessage, Command.Priority) {
         switch(command) {
-        case .go:
-            return MarklinCANMessageFactory.go()
+        case .go(priority: let priority, descriptor: _):
+            return (MarklinCANMessageFactory.go(), priority)
             
-        case .stop:
-            return MarklinCANMessageFactory.stop()
+        case .stop(priority: let priority, descriptor: _):
+            return (MarklinCANMessageFactory.stop(), priority)
             
-        case .emergencyStop(address: let address, decoderType: let decoderType, descriptor: _):
-            return MarklinCANMessageFactory.emergencyStop(addr: address.actualAddress(for: decoderType))
+        case .emergencyStop(address: let address, decoderType: let decoderType, priority: let priority, descriptor: _):
+            return (MarklinCANMessageFactory.emergencyStop(addr: address.actualAddress(for: decoderType)), priority)
             
-        case .speed(address: let address, decoderType: let decoderType, value: let value, descriptor: _):
-            return MarklinCANMessageFactory.speed(addr: address.actualAddress(for: decoderType), speed: value.value)
+        case .speed(address: let address, decoderType: let decoderType, value: let value, priority: let priority, descriptor: _):
+            return (MarklinCANMessageFactory.speed(addr: address.actualAddress(for: decoderType), speed: value.value), priority)
             
-        case .direction(address: let address, decoderType: let decoderType, direction: let direction, descriptor: let descriptor):
+        case .direction(address: let address, decoderType: let decoderType, direction: let direction, priority: let priority, descriptor: let descriptor):
             switch(direction) {
             case .forward:
-                return MarklinCANMessageFactory.forward(addr: address.actualAddress(for: decoderType))
+                return (MarklinCANMessageFactory.forward(addr: address.actualAddress(for: decoderType)), priority)
             case .backward:
-                return MarklinCANMessageFactory.backward(addr: address.actualAddress(for: decoderType))
+                return (MarklinCANMessageFactory.backward(addr: address.actualAddress(for: decoderType)), priority)
             case .unknown:
                 fatalError("Unknown direction command \(String(describing: descriptor?.description))")
                 break
             }
-        case .queryDirection(address: let address, decoderType: let decoderType, descriptor: _):
-            return MarklinCANMessageFactory.direction(addr: address.actualAddress(for: decoderType))
+        case .queryDirection(address: let address, decoderType: let decoderType, priority: let priority, descriptor: _):
+            return (MarklinCANMessageFactory.direction(addr: address.actualAddress(for: decoderType)), priority)
             
-        case .turnout(address: let address, state: let state, power: let power, descriptor: _):
-            return MarklinCANMessageFactory.accessory(addr: address.actualAddress, state: state, power: power)
+        case .turnout(address: let address, state: let state, power: let power, priority: let priority, descriptor: _):
+            return (MarklinCANMessageFactory.accessory(addr: address.actualAddress, state: state, power: power), priority)
             
-        case .feedback(deviceID: let deviceID, contactID: let contactID, oldValue: let oldValue, newValue: let newValue, time: let time, descriptor: _):
+        case .feedback(deviceID: let deviceID, contactID: let contactID, oldValue: let oldValue, newValue: let newValue, time: let time, priority: let priority, descriptor: _):
             let time: UInt16 = UInt16(time / 10)
-            return MarklinCANMessageFactory.feedback(deviceID: deviceID, contactID: contactID, oldValue: oldValue, newValue: newValue, time: time)
+            return (MarklinCANMessageFactory.feedback(deviceID: deviceID, contactID: contactID, oldValue: oldValue, newValue: newValue, time: time), priority)
             
-        case .locomotives(descriptor: _):
-            return MarklinCANMessageFactory.locomotives()
+        case .locomotives(priority: let priority, descriptor: _):
+            return (MarklinCANMessageFactory.locomotives(), priority)
             
-        case .unknown(command: _, descriptor: let descriptor):
+        case .unknown(command: _, priority: _, descriptor: let descriptor):
             fatalError("Unknown command \(String(describing: descriptor?.description))")
         }
     }

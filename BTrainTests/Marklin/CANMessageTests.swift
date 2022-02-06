@@ -52,14 +52,14 @@ class CANMessageTests: XCTestCase {
     }
 
     func testFeedback1() {
-        let msg = MarklinCANMessage.from(command: MarklinTestMessageFactory.feedback1())
+        let (msg, _) = MarklinCANMessage.from(command: MarklinTestMessageFactory.feedback1())
         assert(msg: msg,
                byteArray: MarklinTestMessageFactory.feedback1ByteArray,
                description: "0x11 feedback: 1:14, from 0 to 1, t = 655350ms")
     }
 
     func testFeedback2() {
-        let msg = MarklinCANMessage.from(command: MarklinTestMessageFactory.feedback2())
+        let (msg, _) = MarklinCANMessage.from(command: MarklinTestMessageFactory.feedback2())
         assert(msg: msg,
                byteArray: MarklinTestMessageFactory.feedback2ByteArray,
                description: "0x11 feedback: 1:16, from 1 to 0, t = 29100ms")

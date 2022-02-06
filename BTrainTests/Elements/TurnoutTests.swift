@@ -463,7 +463,8 @@ class TurnoutTests: XCTestCase {
     }
     
     func assertTurnout(cmd: Command, expectedAddress: UInt32, expectedPower: UInt8, expectedStateValue: UInt8) {
-        if case .turnout(address: let address, state: let state, power: let power, descriptor: _) = cmd {
+        if case .turnout(address: let address, state: let state, power: let power, priority: let priority, descriptor: _) = cmd {
+            XCTAssertEqual(priority, .normal)
             XCTAssertEqual(address.address, expectedAddress)
             XCTAssertEqual(power, expectedPower)
             XCTAssertEqual(state, expectedStateValue)

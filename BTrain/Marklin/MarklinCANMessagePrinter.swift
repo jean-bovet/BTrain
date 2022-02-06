@@ -25,34 +25,34 @@ struct MarklinCANMessagePrinter {
     static func description(message: MarklinCANMessage) -> String? {
         let cmd = Command.from(message: message)
         switch(cmd) {
-        case .go(descriptor: let descriptor):
+        case .go(priority: _, descriptor: let descriptor):
             return descriptor?.description
             
-        case .stop(descriptor: let descriptor):
+        case .stop(priority: _, descriptor: let descriptor):
             return descriptor?.description
 
-        case .emergencyStop(address: _, decoderType: _, descriptor: let descriptor):
+        case .emergencyStop(address: _, decoderType: _, priority: _, descriptor: let descriptor):
             return descriptor?.description
 
-        case .speed(address: _, decoderType: _, value: _, descriptor: let descriptor):
+        case .speed(address: _, decoderType: _, value: _, priority: _, descriptor: let descriptor):
             return descriptor?.description
 
-        case .direction(address: _, decoderType: _, direction: _, descriptor: let descriptor):
+        case .direction(address: _, decoderType: _, direction: _, priority: _, descriptor: let descriptor):
             return descriptor?.description
 
-        case .queryDirection(address: _, decoderType: _, descriptor: let descriptor):
+        case .queryDirection(address: _, decoderType: _, priority: _, descriptor: let descriptor):
             return descriptor?.description
 
-        case .turnout(address: _, state: _, power: _, descriptor: let descriptor):
+        case .turnout(address: _, state: _, power: _, priority: _, descriptor: let descriptor):
             return descriptor?.description
 
-        case .feedback(deviceID: _, contactID: _, oldValue: _, newValue: _, time: _, descriptor: let descriptor):
+        case .feedback(deviceID: _, contactID: _, oldValue: _, newValue: _, time: _, priority: _, descriptor: let descriptor):
             return descriptor?.description
 
-        case .locomotives(descriptor: let descriptor):
+        case .locomotives(priority: _, descriptor: let descriptor):
             return descriptor?.description
 
-        case .unknown(command: _, descriptor: let descriptor):
+        case .unknown(command: _, priority: _, descriptor: let descriptor):
             let mc = MarklinCommand.from(message: message)
             switch(mc) {
             case .configDataStream(length: _, data: _, descriptor: let descriptor):
