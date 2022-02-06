@@ -22,9 +22,98 @@ final class PathFinder {
         case overflow
     }
 
+    // The path returned from this class after the algorithm is run
+    struct Path {
+        let steps: [Route.Step]
+        let context: Context
+    }
+        
+    // This class is used to keep track of the various parameters during analysis
+    final class Context {
+        // Train associated with this path
+        let train: Train?
+
+        // The destination or nil if any station block can be chosen
+        let destination: Destination?
+        
+        // The maximum number of blocks in the path before
+        // it overflows and the algorithm ends the analysis.
+        // This is to avoid situation in which the algorithm
+        // takes too long to return.
+        let overflow: Int
+
+        // Settings for the algorithm
+        let settings: Settings
+
+        // The list of steps defining this path
+        var steps = [Route.Step]()
+
+        // The list of visited steps (block+direction),
+        // used to ensure the algorithm does not
+        // re-use a block and ends up in an infinite loop.
+        var visitedSteps = [Route.Step]()
+        
+        init(train: Train?, destination: Destination?, overflow: Int, settings: Settings) {
+            self.train = train
+            self.destination = destination
+            self.overflow = overflow
+            self.settings = settings
+        }
+        
+        func hasVisited(_ step: Route.Step) -> Bool {
+            return visitedSteps.contains { $0.same(step) }
+        }
+
+        var isOverflowing: Bool {
+            return steps.count >= overflow
+        }
+        
+        func print(_ msg: String) {
+            if settings.verbose {
+                BTLogger.debug(" \(msg)")
+            }
+        }
+    }
+
+    struct Settings {
+        // True to generate a route at random, false otherwise.
+        let random: Bool
+            
+        enum ReservedBlockBehavior {
+            // Avoid all the reserved blocks
+            case avoidReserved
+            
+            // Avoid the reserved blocks for the first
+            // `numberOfSteps` of the route. After the route
+            // has more steps than this, reserved block
+            // will be taken into consideration. This option is
+            // used in automatic routing when no particular destination
+            // block is specified: BTrain will update the route if a
+            // reserved block is found during the routing of the train.
+            case avoidReservedUntil(numberOfSteps: Int)
+        }
+        
+        let reservedBlockBehavior: ReservedBlockBehavior
+                
+        var consideringStoppingAtSiding = false
+        
+        var includeTurnouts = false
+        
+        var ignoreDisabledBlocks = false
+        
+        // True if the first block that is found must match the destination.
+        // TODO: add support for looking up block that are further than 1 block in distance.
+        // This will be needed when a route is specified only with sparse block that are more than
+        // one block appart. In that case, the algorithm should be changed to a traversal first algorithm
+        // where we try out depth 1 first, then depth 2 second, etc, in order to find the block with the shortest path first.
+        var firstBlockShouldMatchDestination = false
+        
+        let verbose: Bool
+    }
+
     let layout: Layout
     
-    typealias TurnoutSocketSelectionOverride = (_ turnout:Turnout, _ socketsId: [Int], _ context: PathFinderContext) -> Int?
+    typealias TurnoutSocketSelectionOverride = (_ turnout:Turnout, _ socketsId: [Int], _ context: Context) -> Int?
     
     // Optional override block to inject behavior when a turnout is processed
     // during the path search. Used by unit tests only.
@@ -34,13 +123,7 @@ final class PathFinder {
         self.layout = layout
     }
         
-    // The path returned from this class after the algorithm is run
-    struct Path {
-        let steps: [Route.Step]
-        let context: PathFinderContext
-    }
-        
-    func path(trainId: Identifier<Train>?, from block: Block, destination: Destination? = nil, direction: Direction, settings: PathFinderSettings, generatedPathCallback: ((Path) -> Void)? = nil) throws -> Path? {
+    func path(trainId: Identifier<Train>?, from block: Block, destination: Destination? = nil, direction: Direction, settings: Settings, generatedPathCallback: ((Path) -> Void)? = nil) throws -> Path? {
         let numberOfPaths: Int
         if destination != nil && settings.random {
             // If a destination block is specified and the path is choosen at random,
@@ -58,7 +141,7 @@ final class PathFinder {
         var smallestPath: Path?
         let overflow = (layout.turnouts.count + layout.blocks.count) * 4
         for _ in 1...numberOfPaths {
-            let context = PathFinderContext(train: train, destination: destination, overflow: overflow, settings: settings)
+            let context = Context(train: train, destination: destination, overflow: overflow, settings: settings)
             context.steps.append(Route.Step(block.id, direction))
             
             if try findPath(from: block, direction: direction, context: context) {
@@ -76,7 +159,7 @@ final class PathFinder {
     
     // MARK: -- Recursive functions
     
-    private func findPath(from block: Block, direction: Direction, context: PathFinderContext) throws -> Bool {
+    private func findPath(from block: Block, direction: Direction, context: Context) throws -> Bool {
         guard !context.isOverflowing else {
             throw PathError.overflow
         }
@@ -107,7 +190,7 @@ final class PathFinder {
         return false
     }
     
-    private func findPath(from turnout: Turnout, fromSocketId: Int, context: PathFinderContext) throws -> Bool {
+    private func findPath(from turnout: Turnout, fromSocketId: Int, context: Context) throws -> Bool {
         guard !context.isOverflowing else {
             throw PathError.overflow
         }
@@ -143,7 +226,7 @@ final class PathFinder {
         return false
     }
 
-    private func findPath(from transition: ITransition, context: PathFinderContext) throws -> Bool {
+    private func findPath(from transition: ITransition, context: Context) throws -> Bool {
         guard !context.isOverflowing else {
             throw PathError.overflow
         }
@@ -256,7 +339,7 @@ final class PathFinder {
     // This function takes a turnout and a `socket` it and returns all the sockets
     // accessible from `socket`. It uses the override block, in case it is defined,
     // to modify the results.
-    private func socketIds(turnout: Turnout, socketId: Int, context: PathFinderContext) -> [Int] {
+    private func socketIds(turnout: Turnout, socketId: Int, context: Context) -> [Int] {
         let nextSocketsId = turnout.sockets(from: socketId)
         
         // Let's give an opportunity to the override block, if defined,

@@ -75,6 +75,10 @@ final class Layout: Element, ObservableObject {
         return LayoutReservation(layout: self)
     }()
     
+    lazy var automaticRouting: AutomaticRouting = {
+        return AutomaticRouting(layout: self)
+    }()
+    
     // MARK: Init
     
     convenience init(uuid: String = UUID().uuidString) {

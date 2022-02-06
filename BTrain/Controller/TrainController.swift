@@ -484,7 +484,7 @@ final class TrainController {
     }
         
     private func updateAutomaticRoute(for trainId: Identifier<Train>) throws -> Result {
-        let (success, route) = try layout.updateAutomaticRoute(for: train.id)
+        let (success, route) = try layout.automaticRouting.updateAutomaticRoute(for: train.id)
         if success {
             debug("Generated route is: \(route.steps)")
             return .processed

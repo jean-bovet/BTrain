@@ -215,7 +215,7 @@ extension Layout {
             } else {
                 route.automaticMode = .endless
             }
-            try updateAutomaticRoute(for: trainID)
+            try automaticRouting.updateAutomaticRoute(for: trainID)
         } else {
             // Check to make sure the train is somewhere along the route
             train.routeStepIndex = -1
