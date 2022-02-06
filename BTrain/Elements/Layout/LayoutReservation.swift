@@ -34,7 +34,7 @@ final class LayoutReservation {
     // in front of the train (leading blocks).
     // Note: it won't reserve blocks that are already reserved to avoid loops.
     @discardableResult
-    func updateReservedBlocks(train: Train, forceReserveLeadingBlocks: Bool = false) throws -> Bool {
+    func updateReservedBlocks(train: Train, trainStarting: Bool = false) throws -> Bool {
         // Before trying to reserve the leading blocks, let's free up
         // all the reserved elements (turnouts, transitions, blocks) in front
         // of the train. This is to keep the algorithm simple:
@@ -47,13 +47,12 @@ final class LayoutReservation {
         // the leading blocks will be freedup and need to be reserved again for the train.
         try fillBlocks(train: train)
         
-        return try reserveLeadingBlocks(train: train, forceReserveLeadingBlocks: forceReserveLeadingBlocks)
+        return try reserveLeadingBlocks(train: train, trainStarting: trainStarting)
     }
         
-    private func reserveLeadingBlocks(train: Train, forceReserveLeadingBlocks: Bool) throws -> Bool {
+    private func reserveLeadingBlocks(train: Train, trainStarting: Bool) throws -> Bool {
         // The train must be running (or we have the specific force flag which happens when the train starts)
-        // TODO: instead of forceReserveLeadingBlocks, can't we use train.state == .starting?
-        guard train.state == .running || forceReserveLeadingBlocks else {
+        guard train.state == .running || trainStarting else {
             return false
         }
         

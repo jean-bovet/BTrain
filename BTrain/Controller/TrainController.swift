@@ -167,7 +167,7 @@ final class TrainController {
         train.startRouteIndex = train.routeStepIndex
         
         // And try to reserve the necessary leading blocks
-        if try layout.reservation.updateReservedBlocks(train: train, forceReserveLeadingBlocks: true) {
+        if try layout.reservation.updateReservedBlocks(train: train, trainStarting: true) {
             debug("Start train \(train.name) because the next blocks could be reserved")
             train.state = .running
             stopTrigger = nil
