@@ -302,7 +302,12 @@ final class PathFinder {
                 return true
             } else if nextBlock.category == .sidingNext || nextBlock.category == .sidingPrevious {
                 context.print("Reached a siding at block \(nextBlock)")
-                return context.settings.consideringStoppingAtSiding
+                if context.settings.consideringStoppingAtSiding {
+                    return true
+                } else {
+                    context.steps.removeLast()
+                    return false
+                }
             }
                         
             // If the block is not a station, let's continue recursively
