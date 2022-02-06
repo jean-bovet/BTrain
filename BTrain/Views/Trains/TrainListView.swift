@@ -86,15 +86,7 @@ struct TrainListView: View {
                         .padding()
                 }
             } else {
-                // TODO: refactor this into a view and use it for the other panels
-                Spacer()
-                VStack {
-                    Spacer()
-                    Text("No Selected Train")
-                        .padding()
-                    Spacer()
-                }
-                Spacer()
+                CenteredLabelView(label: "No Selected Train")
             }
         }.onAppear {
             if selection == nil {

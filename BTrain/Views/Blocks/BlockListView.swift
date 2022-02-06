@@ -79,12 +79,7 @@ struct BlockListView: View {
                             .padding()
                     }
                 } else {
-                    Group {
-                        Spacer()
-                        Text("No Selected Block")
-                            .padding()
-                        Spacer()
-                    }
+                    CenteredLabelView(label: "No Selected Block")
                 }
             }            
         }.onAppear {

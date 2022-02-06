@@ -69,12 +69,7 @@ struct RouteListView: View {
             if let routeId = selection, let route = layout.route(for: routeId, trainId: nil) {
                 RouteView(layout: layout, route: route)
             } else {
-                Group {
-                    Spacer()
-                    Text("No Selected Route")
-                        .padding()
-                    Spacer()
-                }
+                CenteredLabelView(label: "No Selected Route")
             }
         }.onAppear() {
             if selection == nil {

@@ -159,6 +159,7 @@
 		A79466CE279B775D006E2A4C /* NSImage+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A79466CD279B775D006E2A4C /* NSImage+Extension.swift */; };
 		A79466D1279B948F006E2A4C /* Simulator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A79466D0279B948F006E2A4C /* Simulator.swift */; };
 		A795A03127AF6C8D00AE90EB /* AutomaticRouting.swift in Sources */ = {isa = PBXBuildFile; fileRef = A795A03027AF6C8D00AE90EB /* AutomaticRouting.swift */; };
+		A795A03327B0894800AE90EB /* CenteredLabelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A795A03227B0894800AE90EB /* CenteredLabelView.swift */; };
 		A796FA2B2772BB5400FA41BA /* Layout.json in Resources */ = {isa = PBXBuildFile; fileRef = A796FA2A2772BB5400FA41BA /* Layout.json */; };
 		A796FA2E2775642B00FA41BA /* LayoutAsserter.swift in Sources */ = {isa = PBXBuildFile; fileRef = A796FA2D2775642B00FA41BA /* LayoutAsserter.swift */; };
 		A798BB4027A6E7F1000BB4D1 /* LayoutHCreator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A798BB3F27A6E7F1000BB4D1 /* LayoutHCreator.swift */; };
@@ -385,6 +386,7 @@
 		A79466CD279B775D006E2A4C /* NSImage+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSImage+Extension.swift"; sourceTree = "<group>"; };
 		A79466D0279B948F006E2A4C /* Simulator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Simulator.swift; sourceTree = "<group>"; };
 		A795A03027AF6C8D00AE90EB /* AutomaticRouting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutomaticRouting.swift; sourceTree = "<group>"; };
+		A795A03227B0894800AE90EB /* CenteredLabelView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CenteredLabelView.swift; sourceTree = "<group>"; };
 		A796FA2A2772BB5400FA41BA /* Layout.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = Layout.json; sourceTree = "<group>"; };
 		A796FA2D2775642B00FA41BA /* LayoutAsserter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutAsserter.swift; sourceTree = "<group>"; };
 		A798BB3F27A6E7F1000BB4D1 /* LayoutHCreator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutHCreator.swift; sourceTree = "<group>"; };
@@ -927,6 +929,16 @@
 			path = Simulator;
 			sourceTree = "<group>";
 		};
+		A795A03427B0896800AE90EB /* Common */ = {
+			isa = PBXGroup;
+			children = (
+				A785C076278A6393002FD538 /* ViewType.swift */,
+				A7C8A2EE279DD19A000C7246 /* SectionTitleView.swift */,
+				A795A03227B0894800AE90EB /* CenteredLabelView.swift */,
+			);
+			path = Common;
+			sourceTree = "<group>";
+		};
 		A796FA2C2772BB8600FA41BA /* LayoutDocument */ = {
 			isa = PBXGroup;
 			children = (
@@ -958,9 +970,8 @@
 		A7B06B062728DD9500BDD88C /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				A785C076278A6393002FD538 /* ViewType.swift */,
-				A7C8A2EE279DD19A000C7246 /* SectionTitleView.swift */,
 				A79079A4277FAB7100771A60 /* SettingsView.swift */,
+				A795A03427B0896800AE90EB /* Common */,
 				A73E07F8276A708A005F9D64 /* Document */,
 				A73E07F9276A70F5005F9D64 /* Overview */,
 				A73B1645274DC5BC0073947D /* Train Controls */,
@@ -1257,6 +1268,7 @@
 				A7BE36AA2751BDC300286709 /* ConnectorPlug.swift in Sources */,
 				A73E080B276ABA91005F9D64 /* LayoutDCreator.swift in Sources */,
 				A785C07E278A64C1002FD538 /* CommandInterface.swift in Sources */,
+				A795A03327B0894800AE90EB /* CenteredLabelView.swift in Sources */,
 				A74CCC72272A5A18004E58F5 /* Transition.swift in Sources */,
 				A785C075278A5CE1002FD538 /* TrainIconManager.swift in Sources */,
 				A7710E592777D7FE00C08150 /* RouteView.swift in Sources */,
