@@ -30,7 +30,7 @@ final class ScheduledMessageQueue {
     
     typealias CompletionBlock = (() -> Void)
 
-    static let delay = 0.50
+    static let delay = 0.050
     
     private var scheduledQueue = [ScheduledBlock]()
 
@@ -49,6 +49,7 @@ final class ScheduledMessageQueue {
         } else {
             scheduledQueue.append(scheduledBlock)
         }
+        printStats()
     }
         
     private func execute(scheduledBlock: ScheduledBlock) {
@@ -66,6 +67,8 @@ final class ScheduledMessageQueue {
             DispatchQueue.main.async {
                 self.executing = false
                 
+                self.printStats()
+
                 if !self.executingQueue.isEmpty {
                     let scheduledBlock = self.executingQueue.removeFirst()
                     self.execute(scheduledBlock: scheduledBlock)
@@ -81,5 +84,9 @@ final class ScheduledMessageQueue {
                 self.execute(scheduledBlock: scheduledBlock)
             }
         }
+    }
+    
+    private func printStats() {
+        BTLogger.debug("􀐫 \(scheduledQueue.count) scheduled, \(executingQueue.count) pending execution")
     }
 }
