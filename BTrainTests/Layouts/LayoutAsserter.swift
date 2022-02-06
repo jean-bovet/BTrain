@@ -87,6 +87,7 @@ final class LayoutAsserter {
         }
         
         XCTAssertEqual(route.steps.count, expectedRoute.steps.count, "Mismatching number of steps for route \(route)")
+        var previousStep: Route.Step?
         for index in 0..<route.steps.count {
             let step = route.steps[index]
             let expectedStep = expectedRoute.steps[index]
@@ -104,6 +105,56 @@ final class LayoutAsserter {
             } else {
                 XCTFail("Unsupported step configuration without blockId nor turnoutId")
             }
+            
+            // Check that the transitions between two elements that are reserved are also reserved
+            // TODO: any chance that this code can be simplified?
+            if let previousStep = previousStep {
+                var reserved: Identifier<Train>?
+                var fromString: String?
+                var toString: String?
+                if let previousBlock = layout.block(for: previousStep.blockId) {
+                    reserved = previousBlock.reserved?.trainId
+                    fromString = previousBlock.name
+                } else if let previousTurnout = layout.turnout(for: previousStep.turnoutId) {
+                    reserved = previousTurnout.reserved
+                    fromString = previousTurnout.name
+                    // Check that the actual exitSocket is one that the state of the turnout allows, otherwise
+                    // this means that this transition is not going to be used for the reservation and can be skipped.
+                    if previousTurnout.socketId(fromSocketId: previousStep.exitSocket!.socketId!, withState: previousTurnout.state) == nil {
+                        reserved = nil
+                    }
+                }
+                
+                if let block = layout.block(for: step.blockId) {
+                    toString = block.name
+                    if reserved != block.reserved?.trainId {
+                        reserved = nil
+                    }
+                } else if let turnout = layout.turnout(for: step.turnoutId) {
+                    toString = turnout.name
+                    if reserved != turnout.reserved {
+                        reserved = nil
+                    } else {
+                        // Check that the actual entrySocket is one that the state of the turnout allows, otherwise
+                        // this means that this transition is not going to be used for the reservation and can be skipped.
+                        if turnout.socketId(fromSocketId: step.entrySocket!.socketId!, withState: turnout.state) == nil {
+                            reserved = nil
+                        }
+                    }
+                }
+
+                if let exitSocket = previousStep.exitSocket, let entrySocket = step.entrySocket, reserved != nil {
+                    let transitions = try layout.transitions(from: exitSocket, to: entrySocket)
+                    XCTAssertFalse(transitions.isEmpty)
+                    for transition in transitions {
+                        XCTAssertNotNil(transition.reserved, "Transition should be reserved between \(fromString) and \(toString)")
+                        XCTAssertEqual(reserved, transition.reserved, "Transition should have a reservation between \(fromString) and \(toString)")
+                    }
+                }
+
+            }
+            
+            previousStep = step
         }
     }
     

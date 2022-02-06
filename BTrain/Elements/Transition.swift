@@ -45,7 +45,7 @@ protocol ITransition: AnyObject {
 }
 
 // The concrete implementation of a transition
-final class Transition: Element, ITransition {
+final class Transition: Element, ITransition, CustomStringConvertible {
 
     let id: Identifier<Transition>
         
@@ -64,6 +64,10 @@ final class Transition: Element, ITransition {
     // Returns the inverse of this transition
     var reverse: ITransition {
         return TransitionInverse(transition: self)
+    }
+    
+    var description: String {
+        "\(a) -> \(b)"
     }
     
     required init(id: Identifier<Transition>, a: Socket, b: Socket) {

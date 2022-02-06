@@ -80,9 +80,15 @@ final class LayoutReservation {
         // can be indeed reserved - otherwise we end up with a bunch of turnouts that are reserved
         // but lead to a non-reserved block.
         var turnouts = [(Turnout, Turnout.State)]()
+
+        var transitions = [ITransition]()
         
+        var previousStep: Route.Step?
+
         // Iterate over all the resolved steps
         for step in resolvedSteps {
+            try rememberTransitions(from: previousStep, to: step, transitions: &transitions)
+
             if let blockId = step.blockId {
                 guard let block = layout.block(for: blockId) else {
                     throw LayoutError.blockNotFound(blockId: blockId)
@@ -93,14 +99,14 @@ final class LayoutReservation {
                     fatalError()
                 }
 
-                if try !reserveBlock(block: block, direction: direction, train: train, numberOfLeadingBlocksReserved: &numberOfLeadingBlocksReserved, turnouts: &turnouts) {
+                if try !reserveBlock(block: block, direction: direction, train: train, numberOfLeadingBlocksReserved: &numberOfLeadingBlocksReserved, turnouts: &turnouts, transitions: &transitions) {
                     return numberOfLeadingBlocksReserved > 0
                 }
             } else if let turnoutId = step.turnoutId {
                 guard let turnout = layout.turnout(for: turnoutId) else {
                     throw LayoutError.turnoutNotFound(turnoutId: turnoutId)
                 }
-
+                
                 if try !rememberTurnoutToReserve(turnout: turnout, train: train, step: step, numberOfLeadingBlocksReserved: &numberOfLeadingBlocksReserved, turnouts: &turnouts) {
                     return numberOfLeadingBlocksReserved > 0
                 }
@@ -110,12 +116,14 @@ final class LayoutReservation {
             if numberOfLeadingBlocksReserved >= train.maxNumberOfLeadingReservedBlocks {
                 break
             }
+            
+            previousStep = step
         }
         
         return numberOfLeadingBlocksReserved > 0
     }
     
-    private func reserveBlock(block: Block, direction: Direction, train: Train, numberOfLeadingBlocksReserved: inout Int, turnouts: inout [(Turnout, Turnout.State)]) throws -> Bool {
+    private func reserveBlock(block: Block, direction: Direction, train: Train, numberOfLeadingBlocksReserved: inout Int, turnouts: inout [(Turnout, Turnout.State)], transitions: inout [ITransition]) throws -> Bool {
         if block.isOccupied(by: train.id) {
             // The block is already reserved and contains a portion of the train
             // Note: we are not incrementing `numberOfLeadingBlocksReserved` because
@@ -133,6 +141,17 @@ final class LayoutReservation {
                 try reserveTurnout(turnout: turnout, state: state, train: train)
             }
             turnouts.removeAll()
+            
+            // Reserve all the transitions
+            for transition in transitions {
+                guard transition.reserved == nil || (transition.reserved == train.id && transition.train == train.id) else {
+                    // TODO: exception
+                    fatalError()
+                }
+                BTLogger.debug("Reserved transition \(transition) for \(train)")
+                transition.reserved = train.id
+            }
+            transitions.removeAll()
             
             // Now reserve the block
             let reservation = Reservation(trainId: train.id, direction: direction)
@@ -210,6 +229,25 @@ final class LayoutReservation {
         }
         
         return true
+    }
+    
+    private func rememberTransitions(from previousStep: Route.Step?, to step: Route.Step, transitions: inout [ITransition]) throws {
+        guard let previousStep = previousStep else {
+            return
+        }
+
+        guard let exitSocket = previousStep.exitSocket else {
+            // TODO: throw
+            fatalError()
+        }
+        guard let entrySocket = step.entrySocket else {
+            // TODO: throw
+            fatalError()
+        }
+        
+        let trs = try layout.transitions(from: exitSocket, to: entrySocket)
+        print("** \(exitSocket) >>> \(entrySocket) : \(trs.count)")
+        transitions.append(contentsOf: trs)
     }
     
     // This method reserves and occupies all the necessary blocks (and parts of the block) to fit
