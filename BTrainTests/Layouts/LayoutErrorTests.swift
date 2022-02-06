@@ -60,15 +60,14 @@ class LayoutErrorTests: XCTestCase {
         }
     }
   
-    // TODO: necessary?
-//    func testMissingTrain() {
-//        do {
-//            try layout.reserveNextBlocks(trainID: Identifier<Train>(uuid: "foo"))
-//            XCTFail("Must throw an exception")
-//        } catch {
-//            XCTAssertEqual(error.localizedDescription, "Train foo not found")
-//        }
-//    }
+    func testMissingTrain() {
+        do {
+            try layout.setTrainSpeed(Train(id: Identifier<Train>(uuid: "foo"), name: "foo", address: 0), 70)
+            XCTFail("Must throw an exception")
+        } catch {
+            XCTAssertEqual(error.localizedDescription, "Train foo not found")
+        }
+    }
 
     func testMissingTurnout() throws {
         layout.link(from: b1.next, to: turnout.socket0)
@@ -101,30 +100,6 @@ class LayoutErrorTests: XCTestCase {
         }
     }
 
-    // TODO
-//    func testCannotReserveTransition() {
-//        do {
-//            layout.link("0", from: b1.next, to: turnout.socket0)
-//            layout.transitions[0].reserved = train1.id
-//            try Transition.canReserve(transitions: layout.transitions, for: train0.id, layout: layout)
-//            XCTFail("Must throw an exception")
-//        } catch {
-//            XCTAssertEqual(error.localizedDescription, "Cannot reserve transition 0 for train 1 because the transition is already reserved for 2 (2)")
-//        }
-//    }
-
-//    func testCannotReserveTurnout() {
-//        do {
-//            layout.link(from: b1.next, to: turnout.socket0)
-//            layout.link(from: turnout.socket1, to: b2.previous)
-//            turnout.reserved = train1.id
-//            try Transition.canReserve(transitions: layout.transitions, for: train0.id, layout: layout)
-//            XCTFail("Must throw an exception")
-//        } catch {
-//            XCTAssertEqual(error.localizedDescription, "Cannot reserve turnout 0 for train 1 because the turnout is already reserved for 2")
-//        }
-//    }
-
     func testCannotReserveBlock() {
         do {
             b1.reserved = Reservation(trainId: train1.id, direction: .next)
@@ -134,30 +109,18 @@ class LayoutErrorTests: XCTestCase {
             XCTAssertEqual(error.localizedDescription, "Cannot reserve block 1 for train 1 because the block is already reserved for Reservation(train=2, direction=next)")
         }
     }
-// TODO
-//    func testSocketIdNotFond() {
-//        do {
-//            layout.link(from: b1.next, to: turnout.socket0)
-//            layout.link(from: turnout.socket1, to: b2.previous)
-//            layout.transitions[1].a = .init(block: nil, turnout: turnout.id, socketId: nil)
-//            try layout.reserve(trainId: train0.id, fromBlock: b1.id, toBlock: b2.id, direction: .next)
-//            XCTFail("Must throw an exception")
-//        } catch {
-//            XCTAssertEqual(error.localizedDescription, "There is no socket defined for Socket[block 1, socket 1]")
-//        }
-//    }
-//
-//    func testAlwaysOneTransition() {
-//        do {
-//            layout.link(from: b1.next, to: turnout.socket0)
-//            layout.link(from: turnout.socket1, to: b2.previous)
-//            layout.transitions[1].b = .init(block: b1.id, turnout: nil, socketId: nil)
-//            try layout.reserve(trainId: train0.id, fromBlock: b1.id, toBlock: b2.id, direction: .next)
-//            XCTFail("Must throw an exception")
-//        } catch {
-//            XCTAssertEqual(error.localizedDescription, "There must always be only one and only one transition")
-//        }
-//    }
+    
+    func testAlwaysOneTransition() {
+        do {
+            layout.link(from: b1.next, to: turnout.socket0)
+            layout.link(from: turnout.socket1, to: b2.previous)
+            layout.transitions[1].b = .init(block: b1.id, turnout: nil, socketId: nil)
+            _  = try layout.transition(from: b1.next)
+            XCTFail("Must throw an exception")
+        } catch {
+            XCTAssertEqual(error.localizedDescription, "There must always be only one and only one transition")
+        }
+    }
 
     func testTrainNotAssignedToABlock() {
         do {

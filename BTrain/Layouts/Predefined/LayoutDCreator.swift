@@ -15,7 +15,7 @@ import Foundation
 // This layout contains two blocks and one turnout that are
 // not linked together. It is used for unit tests and functional testing
 //┌─────────┐                              ┌─────────┐
-//│ Block 2 │           Turnout12          │ Block 1 │
+//│ Block 1 │           Turnout12          │ Block 2 │
 //└─────────┘                              └─────────┘
 final class LayoutDCreator: LayoutCreating {
     

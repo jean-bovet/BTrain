@@ -41,8 +41,6 @@ enum LayoutError: Error {
     case lastTransitionToBlock(transition: Identifier<Transition>, blockId: Identifier<Block>)
     case alwaysOneAndOnlyOneTransition
     
-    case cannotReserveTransition(transition: ITransition, train: Train, reserved: Train)
-    case cannotReserveTurnout(turnout: Turnout, train: Train, reserved: Train)
     case cannotReserveBlock(block: Block, train: Train, reserved: Reservation)
     
     case routeNotFound(routeId: Identifier<Route>)
@@ -81,10 +79,6 @@ extension LayoutError: LocalizedError {
             return "No transition found from block \(fromBlockId) to block \(toBlockId)"
         case .lastTransitionToBlock(transition: let transition, blockId: let blockId):
             return "The last transition \(transition) should be to block \(blockId)"
-        case .cannotReserveTransition(transition: let transition, train: let train, reserved: let reserved):
-            return "Cannot reserve transition \(transition) for train \(train.name) because the transition is already reserved for \(reserved)"
-        case .cannotReserveTurnout(turnout: let turnout, train: let train, reserved: let reserved):
-            return "Cannot reserve turnout \(turnout.name) for train \(train.name) because the turnout is already reserved for \(reserved.name)"
         case .cannotReserveBlock(block: let block, train: let train, reserved: let reserved):
             return "Cannot reserve block \(block.name) for train \(train.name) because the block is already reserved for \(reserved)"
         case .socketIdNotFound(socket: let socket):
