@@ -81,8 +81,13 @@ final class LayoutReservation {
         // but lead to a non-reserved block.
         var turnouts = [(Turnout, Turnout.State)]()
 
+        // Remember the transitions between two blocks. This is because we are going to reserve
+        // the turnouts between two blocks only when we can guarantee that the destination block
+        // can be indeed reserved - otherwise we end up with a bunch of turnouts that are reserved
+        // but lead to a non-reserved block.
         var transitions = [ITransition]()
         
+        // Remember the previous step so we can determine the transitions between two elements.
         var previousStep: Route.Step?
 
         // Iterate over all the resolved steps
@@ -246,7 +251,6 @@ final class LayoutReservation {
         }
         
         let trs = try layout.transitions(from: exitSocket, to: entrySocket)
-        print("** \(exitSocket) >>> \(entrySocket) : \(trs.count)")
         transitions.append(contentsOf: trs)
     }
     

@@ -107,31 +107,50 @@ final class LayoutAsserter {
             }
             
             // Check that the transitions between two elements that are reserved are also reserved
-            // TODO: any chance that this code can be simplified?
+            // Take extra care to not assert a transition between two blocks that are reserved
+            // for the same train but that are not actually linked - see diagram:
+            //                     ┏━━━━━━━━━┓
+            //    ┏━━━━━━━━━━━━━━━━┃ Block 2 ┃◀━━━━━━━━━━━━━━━━━━━━┓
+            //    ┃                ┗━━━━━━━━━┛                     ┃
+            //    ┃                                                ┃
+            //    ┃                                                ●
+            //    ┃                ┏━━━━━━━━━┓                 ┏━━━━━━━┓
+            //    ┃       ┏━━━━━━━▶┃ Block 3 ┃─ ─ ─ ─ ─ ─ ─ ─ ▶┃Turnout┃
+            //    ┃       ┃        ┗━━━━━━━━━┛                 ┗━━━━━━━┛
+            //    ┃       ┃                                        ▲
+            //    ┃       ●                                        ┃
+            //    ┃  ┏━━━━━━━━┓                     ┏━━━━━━━━━┓    ┃
+            //    ┗━▶┃Turnout2┃─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ▶┃ Block 1 ┃━━━━┛
+            //       ┗━━━━━━━━┛                     ┗━━━━━━━━━┛
+            // The transition between Block 3 and Turnout is not reserved because the locomotive is in Block 3
+            // and the wagons of the train are occupying all the tracks until Block 1. We can determine this
+            // by ensuring the transition (out of or into) a turnout matches the sockets reacheable by the state of the turnout.
             if let previousStep = previousStep {
                 var reserved: Identifier<Train>?
-                var fromString: String?
-                var toString: String?
+                var fromElementName: String
+                var toElementName: String
                 if let previousBlock = layout.block(for: previousStep.blockId) {
                     reserved = previousBlock.reserved?.trainId
-                    fromString = previousBlock.name
+                    fromElementName = previousBlock.name
                 } else if let previousTurnout = layout.turnout(for: previousStep.turnoutId) {
                     reserved = previousTurnout.reserved
-                    fromString = previousTurnout.name
+                    fromElementName = previousTurnout.name
                     // Check that the actual exitSocket is one that the state of the turnout allows, otherwise
                     // this means that this transition is not going to be used for the reservation and can be skipped.
                     if previousTurnout.socketId(fromSocketId: previousStep.exitSocket!.socketId!, withState: previousTurnout.state) == nil {
                         reserved = nil
                     }
+                } else {
+                    fromElementName = "?"
                 }
                 
                 if let block = layout.block(for: step.blockId) {
-                    toString = block.name
+                    toElementName = block.name
                     if reserved != block.reserved?.trainId {
                         reserved = nil
                     }
                 } else if let turnout = layout.turnout(for: step.turnoutId) {
-                    toString = turnout.name
+                    toElementName = turnout.name
                     if reserved != turnout.reserved {
                         reserved = nil
                     } else {
@@ -141,14 +160,16 @@ final class LayoutAsserter {
                             reserved = nil
                         }
                     }
+                } else {
+                    toElementName = "?"
                 }
 
                 if let exitSocket = previousStep.exitSocket, let entrySocket = step.entrySocket, reserved != nil {
                     let transitions = try layout.transitions(from: exitSocket, to: entrySocket)
                     XCTAssertFalse(transitions.isEmpty)
                     for transition in transitions {
-                        XCTAssertNotNil(transition.reserved, "Transition should be reserved between \(fromString) and \(toString)")
-                        XCTAssertEqual(reserved, transition.reserved, "Transition should have a reservation between \(fromString) and \(toString)")
+                        XCTAssertNotNil(transition.reserved, "Transition should be reserved between \(fromElementName) and \(toElementName)")
+                        XCTAssertEqual(reserved, transition.reserved, "Transition should have a reservation between \(fromElementName) and \(toElementName)")
                     }
                 }
 
