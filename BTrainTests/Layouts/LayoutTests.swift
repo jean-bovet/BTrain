@@ -88,7 +88,7 @@ class LayoutTests: XCTestCase {
         XCTAssertEqual(train1.directionForward, true)
 
         // Set the train direction
-        try layout.setTrainDirection(train1, .previous)
+        try layout.setLocomotiveDirection(train1, forward: false)
         XCTAssertEqual(train1.directionForward, false)
 
         // Set the train inside a block with a specific direction which
@@ -97,15 +97,8 @@ class LayoutTests: XCTestCase {
         XCTAssertEqual(block1.train!.direction, .next)
         XCTAssertEqual(train1.directionForward, false)
 
-        // Change the train direction - which should not affect the direction
-        // of the train within the block (we need to explicitly call the toggle
-        // method for this to happen!)
-        try layout.setTrainDirection(train1, .next)
-        XCTAssertEqual(train1.directionForward, true)
-        XCTAssertEqual(block1.train!.direction, .next)
-        
-        // Now toggle the direction within the block itself
-        try layout.toggleTrainDirectionInBlock(train1)
+        // Change the train direction
+        try layout.setLocomotiveDirection(train1, forward: true)
         XCTAssertEqual(train1.directionForward, true)
         XCTAssertEqual(block1.train!.direction, .previous)
     }

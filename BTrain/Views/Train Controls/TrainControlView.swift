@@ -52,8 +52,7 @@ struct TrainControlView: View {
 
     func trainDirectionToggle() {
         do {
-            try document.layout.setTrainDirection(train, train.directionForward ? .previous : .next)
-            try document.layout.toggleTrainDirectionInBlock(train)
+            try document.layout.setLocomotiveDirection(train, forward: !train.directionForward)
             errorStatus = nil
         } catch {
             errorStatus = error.localizedDescription

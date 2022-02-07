@@ -184,7 +184,7 @@ extension Layout {
     // and that is either free or already reserved for the train. This function is used, for example,
     // by the TrainController in manual mode to follow the movement of the
     // train on the layout when it is manually driven by someone.
-    func nextBlock(from fromBlock: Block) -> Block? {
+    func nextBlockForLocomotive(from fromBlock: Block, train: Train) -> Block? {
         guard let trainInstance = fromBlock.train else {
             return nil
         }
@@ -193,10 +193,20 @@ extension Layout {
         let visitor = ElementVisitor(layout: self)
         try? visitor.visit(fromBlockId: fromBlock.id, direction: trainInstance.direction) { info in
             if let block = info.block, info.index > 0 {
-                // TODO: check that the reservation is actually for the train wagons in front of the
-                // locomotive and not for the occupied block (which would means the locomotive is looping back on itself)?
-                if block.reserved == nil || block.reserved?.trainId == trainInstance.trainId {
-                    nextBlock = block
+                if train.wagonsPushedByLocomotive {
+                    // TODO: need to ensure that the wagons are not bumping into the train itself
+                    // when it is looping on itself. For this, we need to go to the end of the train
+                    // and check that the next block after it is free.
+                    if block.reserved == nil {
+                        nextBlock = block
+                    }
+                } else {
+                    // If the wagons are pulled by the locomotive, the next block must be free,
+                    // otherwise it means another train is in the block or the tail of the train
+                    // itself is still in that block in situation where the train loops on itself.
+                    if block.reserved == nil {
+                        nextBlock = block
+                    }
                 }
                 return .stop
             }

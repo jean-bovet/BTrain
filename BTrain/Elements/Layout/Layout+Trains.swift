@@ -144,17 +144,16 @@ extension Layout {
         return ti.direction
     }
     
-    // Set the train direction (does not affect the direction of the train
-    // within the block it might find itself)
-    func setTrainDirection(_ train: Train, _ direction: Direction) throws {
-        guard let train = self.train(for: train.id) else {
-            throw LayoutError.trainNotFound(trainId: train.id)
-        }
-
-        let forward = direction == .next
+    // Set the direction of travel of the locomotive and update the direction
+    // of the train if it is located inside a block.
+    func setLocomotiveDirection(_ train: Train, forward: Bool) throws {
         if train.directionForward != forward {
             train.directionForward = forward
             self.executor?.sendTrainDirection(train: train)
+            
+            if train.blockId != nil {
+                try toggleTrainDirectionInBlock(train)
+            }
         }
     }
     

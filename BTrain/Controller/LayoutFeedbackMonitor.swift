@@ -43,7 +43,7 @@ final class LayoutFeedbackMonitor {
         }
         
         if train.manualScheduling {
-            guard let nextBlock = layout.nextBlock(from: currentBlock) else {
+            guard let nextBlock = layout.nextBlockForLocomotive(from: currentBlock, train: train) else {
                 return
             }
 

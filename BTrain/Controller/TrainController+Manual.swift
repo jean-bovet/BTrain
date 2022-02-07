@@ -43,7 +43,7 @@ extension TrainController {
             return .none
         }
 
-        guard let nextBlock = layout.nextBlock(from: currentBlock) else {
+        guard let nextBlock = layout.nextBlockForLocomotive(from: currentBlock, train: train) else {
             return .none
         }
         
@@ -75,13 +75,14 @@ extension TrainController {
             return .none
         }
 
-        guard layout.nextBlock(from: currentBlock) == nil else {
+        guard layout.nextBlockForLocomotive(from: currentBlock, train: train) == nil else {
             return .none
         }
         
         // If there are no possible next block detected, we need to stop the train
         // when it reaches the end of the block to avoid a collision.
         if try layout.atEndOfBlock(train: train) {
+            BTLogger.warning("No next block detected, stopping \(train.name) by precaution.")
             return try stop(completely: true)
         }
         
