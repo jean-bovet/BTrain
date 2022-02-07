@@ -12,10 +12,9 @@
 
 import Foundation
 
-// TODO: use the word "occupied" block instead of "trailing" so the notion of direction is dropped
-// This class handles the trailing and leading blocks reservation for a specified train.
-// - A trailing block is a block behind the train that contains the wagons of the train.
-//   Note that if a locomotive pushes the wagon, the trailing blocks are actually "in front" of the train.
+// This class handles the occupied and leading blocks reservation for a specified train.
+// - A occupied block is a block, either behind or in front of the locomotive, that contains the wagons of the train.
+//   Note that if a locomotive pushes the wagon, the occupied blocks are actually "in front" of the train.
 // - A leading block is a block in front of the train that is reserved in order for the train to be
 //   able to move into it safely without risking a collision with another train.
 final class LayoutReservation {
@@ -404,8 +403,7 @@ final class LayoutReservation {
         }
     }
     
-    // This method will free all the leading blocks reserved for the specified train and
-    // update the trailing blocks that the train occupies with its length.
+    // This methods frees all the reserved elements except the block in which the locomotive is located
     private func freeElements(train: Train) throws {
         layout.blockMap.values
             .filter { $0.reserved?.trainId == train.id }

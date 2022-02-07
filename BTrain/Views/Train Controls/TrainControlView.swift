@@ -52,7 +52,6 @@ struct TrainControlView: View {
 
     func trainDirectionToggle() {
         do {
-            // TODO: refactor to have toggleTrainDirectionInBlock inside setTrainDirection?
             try document.layout.setTrainDirection(train, train.directionForward ? .previous : .next)
             try document.layout.toggleTrainDirectionInBlock(train)
             errorStatus = nil

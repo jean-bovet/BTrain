@@ -35,8 +35,6 @@ final class RouteResolver {
         self.pf = PathFinder(layout: layout)
     }
     
-    // TODO: at the moment, we assume the steps provided contain only contiguous block. This will have to change in the future
-    // to include possible turnouts and non-contiguous blocks.
     func resolve(steps: ArraySlice<Route.Step>, trainId: Identifier<Train>? = nil) throws -> [Route.Step] {
         guard var previousStep = steps.first else {
             return []

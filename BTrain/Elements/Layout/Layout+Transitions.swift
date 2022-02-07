@@ -194,7 +194,7 @@ extension Layout {
         try? visitor.visit(fromBlockId: fromBlock.id, direction: trainInstance.direction) { info in
             if let block = info.block, info.index > 0 {
                 // TODO: check that the reservation is actually for the train wagons in front of the
-                // locomotive and not for the trailing block (which would means the locomotive is looping back on itself)?
+                // locomotive and not for the occupied block (which would means the locomotive is looping back on itself)?
                 if block.reserved == nil || block.reserved?.trainId == trainInstance.trainId {
                     nextBlock = block
                 }

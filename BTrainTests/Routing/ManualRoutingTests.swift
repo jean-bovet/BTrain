@@ -295,7 +295,7 @@ class ManualRoutingTests: BTTestCase {
     //    │  ┌─────────┐               │        │     ┌─────────┐  │
     //    └─▶│ Block 3 │───────────────┘        └─────│ Block 1 │◀─┘
     //       └─────────┘                              └─────────┘
-    func testMoveWith1TrailingReservationNoFeedbacks() throws {
+    func testMoveWith1OccupiedReservationNoFeedbacks() throws {
         let layout = LayoutBCreator().newLayout()
         
         // Let's only define block length and omit feedback distances
@@ -304,7 +304,7 @@ class ManualRoutingTests: BTTestCase {
         }
 
         let t1 = layout.trains[0]
-        t1.length = 150 // That way, the train always needs one trailing block reserved to account for its length
+        t1.length = 150 // That way, the train always needs one occupied block reserved to account for its length
         t1.maxNumberOfLeadingReservedBlocks = 1
 
         let p = try setup(layout: layout, fromBlockId: "b1", position: .end, route: layout.routes[0])
@@ -325,7 +325,7 @@ class ManualRoutingTests: BTTestCase {
         try p.assert("r1: {r1{b1 💺1 ≏ 💺1 ≡ 🛑🚂1 }} <t1{ds2},s23> [b2 ≏ ≏ ] [b3 ≏ ≏ ] <t1{ds2}(2,3),s23> [r1[b4 💺1 ≏ 💺1 ≏ 💺1 ]] {r1{b1 💺1 ≏ 💺1 ≡ 🛑🚂1 }}")
     }
 
-    func testMoveWith1TrailingReservationWithFeedbacks() throws {
+    func testMoveWith1OccupiedReservationWithFeedbacks() throws {
         let layout = LayoutBCreator().newLayout()
         
         for block in layout.blocks {
@@ -335,7 +335,7 @@ class ManualRoutingTests: BTTestCase {
         }
 
         let t1 = layout.trains[0]
-        t1.length = 140 // That way, the train always needs one trailing block reserved to account for its length
+        t1.length = 140 // That way, the train always needs one occupied block reserved to account for its length
         t1.maxNumberOfLeadingReservedBlocks = 1
 
         let p = try setup(layout: layout, fromBlockId: "b1", position: .end, route: layout.routes[0])

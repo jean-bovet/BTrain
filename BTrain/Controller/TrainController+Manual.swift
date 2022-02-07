@@ -61,9 +61,6 @@ extension TrainController {
                 
         debug("Train \(train) enters block \(nextBlock) at position \(position), direction \(direction)")
                 
-        // Set the train to its new block. This method will also free up all the other blocks from the train, expect
-        // the blocks trailing the train depending on its length and the length of the blocks.
-        // Note: we will reserve again the leading blocks below in `reserveNextBlocks`.
         try layout.setTrainToBlock(train.id, nextBlock.id, position: .custom(value: position), direction: direction)
                                                 
         return .processed

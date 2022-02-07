@@ -102,10 +102,6 @@ final class PathFinder {
         var ignoreDisabledBlocks = false
         
         // True if the first block that is found must match the destination.
-        // TODO: add support for looking up block that are further than 1 block in distance.
-        // This will be needed when a route is specified only with sparse block that are more than
-        // one block appart. In that case, the algorithm should be changed to a traversal first algorithm
-        // where we try out depth 1 first, then depth 2 second, etc, in order to find the block with the shortest path first.
         var firstBlockShouldMatchDestination = false
         
         let verbose: Bool

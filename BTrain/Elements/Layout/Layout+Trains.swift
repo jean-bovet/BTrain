@@ -59,9 +59,6 @@ extension Layout {
         }
         train.position = position
         
-        // Don't forget to update the reservation for the train length
-        // as moving inside a block will change them
-        // TODO: what other method change the train position or characterisit to re-evaluate all that (direction I think)
         try reservation.updateReservedBlocks(train: train)
 
         didChange()
@@ -233,7 +230,6 @@ extension Layout {
                 }
                 
                 // Check that the train direction matches as well.
-                // TODO: check if the train can change direction and if so, update here as well
                 if trainInstance.direction == step.direction {
                     train.routeStepIndex = index
                     break
@@ -302,7 +298,7 @@ extension Layout {
         train.scheduling = .automatic(finishing: true)
     }
 
-    // This method sets the train in a specific block and updates the reserved blocks (trailing and leading blocks).
+    // This method sets the train in a specific block and updates the reserved blocks (occupied and leading blocks).
     func setTrainToBlock(_ trainId: Identifier<Train>, _ toBlockId: Identifier<Block>, position: Position = .start, direction: Direction, routeIndex: Int? = nil) throws {
         guard let train = self.train(for: trainId) else {
             throw LayoutError.trainNotFound(trainId: trainId)

@@ -413,7 +413,7 @@ final class TrainController {
     // the entry feedback of the next block to determine when a train moves
     // to the next block.
     // When the train moves to another block:
-    // - Trailing and leading reservation blocks are updated.
+    // - Occupied and leading reservation blocks are updated.
     // - Stop trigger is evaluated depending on the nature of the route
     private func handleTrainMoveToNextBlock(route: Route) throws -> Result {
         guard train.speed.kph > 0 else {
