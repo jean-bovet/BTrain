@@ -94,14 +94,9 @@ class TransitionsTests: XCTestCase {
 
         let r1 = v8.routes[0]
         let r2 = v8.routes[1]
-
-        let ascii = LayoutASCIIProducer(layout: v8)
         
-        // r1: {NE1 ≏ ≏ } <B.4{sl}(2,0),l><A.1{sl},s><A.34{ds2},s01> [OL1 ≏ ≏ ] <D.1{sr}(0,2),r> [OL2 ≏ ≏ ] <E.1{sl},l> [OL3 ≏ ≏ ] <F.3{sr}(0,1),s> {NE1 ≏ ≏ }
-        // r2: {NE2 ≏ ≏ } <B.4{sl},l> [IL1 ≏ ≏ ] <H.1{sl},l><A.2{sr}(0,2),r> [IL2 ≏ ≏ ≏ ] <E.3{sl}(0,2),l><D.2{ds2}(1,0),s01> [IL3 ≏ ≏ ] <F.4{sr}(0,2),r> [IL4 ≏ ≏ ] <D.4{sl}(1,0),s><A.2{sr},r> [IL1 ≏ ≏ ] <H.1{sl},l><A.2{sr}(0,2),r> [IL2 ≏ ≏ ≏ ] <E.3{sl}(0,2),l><D.2{ds2}(1,0),s01> [OL3 ≏ ≏ ] <F.3{sr}(0,1),s><F.1{sr}(0,2),r><F.2{sr}(0,1),s> {NE2 ≏ ≏ }
-        // TODO: assertions
-        print(try ascii.stringFrom(route: r1, trainId: t1.id))
-        print(try ascii.stringFrom(route: r2, trainId: t2.id))
+        try assert(v8, r1, t1, "{NE1 ≏ ≏ } <B.4{sl}(2,0),l> <A.1{sl}(2,0),s> <A.34{ds2}(3,0),s01> [OL1 ≏ ≏ ] <D.1{sr}(0,1),r> [OL2 ≏ ≏ ] <E.1{sl}(1,0),l> [OL3 ≏ ≏ ] <F.3{sr}(0,1),s> <F.1{sr}(0,2),r> <E.4{sr}(0,2),s> {NE1 ≏ ≏ }")
+        try assert(v8, r2, t2, "{NE2 ≏ ≏ } <B.4{sl}(1,0),l> <A.1{sl}(2,0),s> <A.34{ds2}(3,2),s01> <A.2{sr}(2,0),r> [IL1 ≏ ≏ ] <H.1{sl}(1,0),l> <D.2{ds2}(0,1),s01> [IL2 ≏ ≏ ≏ ] <E.3{sl}(0,1),l> <E.2{sl}(1,0),l> [IL3 ≏ ≏ ] <F.4{sr}(0,1),r> [IL4 ≏ ≏ ] <D.4{sl}(1,0),s> <A.2{sr}(1,0),r> [IL1 ≏ ≏ ] <H.1{sl}(1,0),l> <D.2{ds2}(0,1),s01> [IL2 ≏ ≏ ≏ ] <E.3{sl}(0,2),l> <E.1{sl}(2,0),l> [OL3 ≏ ≏ ] <F.3{sr}(0,1),s> <F.1{sr}(0,2),r> <E.4{sr}(0,1),s> {NE2 ≏ ≏ }")
 
         try v8.prepare(routeID: r1.id, trainID: t1.id, startAtEndOfBlock: true)
         try v8.prepare(routeID: r2.id, trainID: t2.id, startAtEndOfBlock: true)
@@ -109,11 +104,8 @@ class TransitionsTests: XCTestCase {
         try v8.start(routeID: r1.id, trainID: t1.id)
         try v8.start(routeID: r2.id, trainID: t2.id)
         
-        // r1: {r16390{NE1 💺16390 ≏ 💺16390 ≏ 🛑🚂16390 }} <B.4{sl}(2,0),l><A.1{sl},s><A.34{ds2},s01> [OL1 ≏ ≏ ] <D.1{sr}(0,2),r> [OL2 ≏ ≏ ] <E.1{sl},l> [OL3 ≏ ≏ ] <F.3{sr}(0,1),s> {r16390{NE1 💺16390 ≏ 💺16390 ≏ 🛑🚂16390 }}
-        // r2: {r16405{NE2 ≏ 💺16405 ≏ 🛑🚂16405 }} <B.4{sl},l> [IL1 ≏ ≏ ] <H.1{sl},l><A.2{sr}(0,2),r> [IL2 ≏ ≏ ≏ ] <E.3{sl}(0,2),l><D.2{ds2}(1,0),s01> [IL3 ≏ ≏ ] <F.4{sr}(0,2),r> [IL4 ≏ ≏ ] <D.4{sl}(1,0),s><A.2{sr},r> [IL1 ≏ ≏ ] <H.1{sl},l><A.2{sr}(0,2),r> [IL2 ≏ ≏ ≏ ] <E.3{sl}(0,2),l><D.2{ds2}(1,0),s01> [OL3 ≏ ≏ ] <F.3{sr}(0,1),s><F.1{sr}(0,2),r><F.2{sr}(0,1),s> {r16405{NE2 ≏ 💺16405 ≏ 🛑🚂16405 }}
-
-        print(try ascii.stringFrom(route: r1, trainId: t1.id))
-        print(try ascii.stringFrom(route: r2, trainId: t2.id))
+        try assert(v8, r1, t1, "{r16390{NE1 💺16390 ≏ 💺16390 ≏ 🛑🚂16390 }} <B.4{sl}(2,0),l> <A.1{sl}(2,0),s> <A.34{ds2}(3,0),s01> [OL1 ≏ ≏ ] <D.1{sr}(0,1),r> [OL2 ≏ ≏ ] <E.1{sl}(1,0),l> [OL3 ≏ ≏ ] <F.3{sr}(0,1),s> <F.1{sr}(0,2),r> <E.4{sr}(0,2),s> {r16390{NE1 💺16390 ≏ 💺16390 ≏ 🛑🚂16390 }}")
+        try assert(v8, r2, t2, "{r16405{NE2 ≏ 💺16405 ≏ 🛑🚂16405 }} <B.4{sl}(1,0),l> <A.1{sl}(2,0),s> <A.34{ds2}(3,2),s01> <A.2{sr}(2,0),r> [IL1 ≏ ≏ ] <H.1{sl}(1,0),l> <D.2{ds2}(0,1),s01> [IL2 ≏ ≏ ≏ ] <E.3{sl}(0,1),l> <E.2{sl}(1,0),l> [IL3 ≏ ≏ ] <F.4{sr}(0,1),r> [IL4 ≏ ≏ ] <D.4{sl}(1,0),s> <A.2{sr}(1,0),r> [IL1 ≏ ≏ ] <H.1{sl}(1,0),l> <D.2{ds2}(0,1),s01> [IL2 ≏ ≏ ≏ ] <E.3{sl}(0,2),l> <E.1{sl}(2,0),l> [OL3 ≏ ≏ ] <F.3{sr}(0,1),s> <F.1{sr}(0,2),r> <E.4{sr}(0,1),s> {r16405{NE2 ≏ 💺16405 ≏ 🛑🚂16405 }}")
 
         try c1.run()
         try c2.run()
@@ -123,11 +115,8 @@ class TransitionsTests: XCTestCase {
         XCTAssertEqual(t1.speed.kph, LayoutFactory.DefaultSpeed)
         XCTAssertEqual(t2.speed.kph, 0)
         
-        // r1: {r16390{NE1 💺16390 ≏ 💺16390 ≏ 🚂16390 }} <r16390<B.4{sl}(2,0),l>><r16390<A.1{sl}(2,0),l>><r16390<A.34{ds2}(3,0),b03>> [r16390[OL1 ≏ ≏ ]] <r16390<D.1{sr}(0,1),s>> [r16390[OL2 ≏ ≏ ]] <E.1{sl},l> [OL3 ≏ ≏ ] <F.3{sr}(0,1),s> {r16390{NE1 💺16390 ≏ 💺16390 ≏ 🚂16390 }}
-        // r2: {r16405{NE2 ≏ 💺16405 ≏ 🛑🚂16405 }} <r16390<B.4{sl},l>> [IL1 ≏ ≏ ] <H.1{sl},l><A.2{sr}(0,2),r> [IL2 ≏ ≏ ≏ ] <E.3{sl}(0,2),l><D.2{ds2}(1,0),s01> [IL3 ≏ ≏ ] <F.4{sr}(0,2),r> [IL4 ≏ ≏ ] <D.4{sl}(1,0),s><A.2{sr},r> [IL1 ≏ ≏ ] <H.1{sl},l><A.2{sr}(0,2),r> [IL2 ≏ ≏ ≏ ] <E.3{sl}(0,2),l><D.2{ds2}(1,0),s01> [OL3 ≏ ≏ ] <F.3{sr}(0,1),s><F.1{sr}(0,2),r><F.2{sr}(0,1),s> {r16405{NE2 ≏ 💺16405 ≏ 🛑🚂16405 }}
-
-        print(try ascii.stringFrom(route: r1, trainId: t1.id))
-        print(try ascii.stringFrom(route: r2, trainId: t2.id))
+        try assert(v8, r1, t1, "{r16390{NE1 💺16390 ≏ 💺16390 ≏ 🚂16390 }} <r16390<B.4{sl}(2,0),l>> <r16390<A.1{sl}(2,0),l>> <r16390<A.34{ds2}(3,0),b03>> [r16390[OL1 ≏ ≏ ]] <r16390<D.1{sr}(0,1),s>> [r16390[OL2 ≏ ≏ ]] <E.1{sl}(1,0),l> [OL3 ≏ ≏ ] <F.3{sr}(0,1),s> <F.1{sr}(0,2),r> <E.4{sr}(0,2),s> {r16390{NE1 💺16390 ≏ 💺16390 ≏ 🚂16390 }}")
+        try assert(v8, r2, t2, "{r16405{NE2 ≏ 💺16405 ≏ 🛑🚂16405 }} <r16390<B.4{sl}(1,0),l>> <r16390<A.1{sl}(2,0),l>> <r16390<A.34{ds2}(3,2),b03>> <A.2{sr}(2,0),r> [IL1 ≏ ≏ ] <H.1{sl}(1,0),l> <D.2{ds2}(0,1),s01> [IL2 ≏ ≏ ≏ ] <E.3{sl}(0,1),l> <E.2{sl}(1,0),l> [IL3 ≏ ≏ ] <F.4{sr}(0,1),r> [IL4 ≏ ≏ ] <D.4{sl}(1,0),s> <A.2{sr}(1,0),r> [IL1 ≏ ≏ ] <H.1{sl}(1,0),l> <D.2{ds2}(0,1),s01> [IL2 ≏ ≏ ≏ ] <E.3{sl}(0,2),l> <E.1{sl}(2,0),l> [OL3 ≏ ≏ ] <F.3{sr}(0,1),s> <F.1{sr}(0,2),r> <E.4{sr}(0,1),s> {r16405{NE2 ≏ 💺16405 ≏ 🛑🚂16405 }}")
 
         // NOTE: stop cannot free-up blocks automatically because
         // the train might be already in transit between two blocks!
@@ -135,21 +124,19 @@ class TransitionsTests: XCTestCase {
         // So we manually free up the first block and all the transitions to the next one
         try v8.free(fromBlock: r1.steps[0].blockId!, toBlockNotIncluded: r1.steps[1].blockId!, direction: .next)
 
-        // r1: {NE1 ≏ ≏ } <B.4{sl}(2,0),l><A.1{sl}(2,0),l><A.34{ds2}(3,0),b03> [r16390[OL1 ≏ ≏ ]] <r16390<D.1{sr}(0,1),s>> [r16390[OL2 ≏ ≏ ]] <E.1{sl},l> [OL3 ≏ ≏ ] <F.3{sr}(0,1),s> {NE1 ≏ ≏ }
-        // r2: {r16405{NE2 ≏ 💺16405 ≏ 🛑🚂16405 }} <B.4{sl},l> [IL1 ≏ ≏ ] <H.1{sl},l><A.2{sr}(0,2),r> [IL2 ≏ ≏ ≏ ] <E.3{sl}(0,2),l><D.2{ds2}(1,0),s01> [IL3 ≏ ≏ ] <F.4{sr}(0,2),r> [IL4 ≏ ≏ ] <D.4{sl}(1,0),s><A.2{sr},r> [IL1 ≏ ≏ ] <H.1{sl},l><A.2{sr}(0,2),r> [IL2 ≏ ≏ ≏ ] <E.3{sl}(0,2),l><D.2{ds2}(1,0),s01> [OL3 ≏ ≏ ] <F.3{sr}(0,1),s><F.1{sr}(0,2),r><F.2{sr}(0,1),s> {r16405{NE2 ≏ 💺16405 ≏ 🛑🚂16405 }}
-
         try c1.run()
         try c2.run()
 
-        // r1: {NE1 ≏ ≏ } <B.4{sl}(2,0),l><A.1{sl}(2,0),l><A.34{ds2}(3,0),b03> [r16390[OL1 ≏ ≏ ]] <r16390<D.1{sr}(0,1),s>> [r16390[OL2 ≏ ≏ ]] <E.1{sl},l> [OL3 ≏ ≏ ] <F.3{sr}(0,1),s> {NE1 ≏ ≏ }
-        // r2: {r16405{NE2 ≏ 💺16405 ≏ 🛑🚂16405 }} <B.4{sl},l> [IL1 ≏ ≏ ] <H.1{sl},l><A.2{sr}(0,2),r> [IL2 ≏ ≏ ≏ ] <E.3{sl}(0,2),l><D.2{ds2}(1,0),s01> [IL3 ≏ ≏ ] <F.4{sr}(0,2),r> [IL4 ≏ ≏ ] <D.4{sl}(1,0),s><A.2{sr},r> [IL1 ≏ ≏ ] <H.1{sl},l><A.2{sr}(0,2),r> [IL2 ≏ ≏ ≏ ] <E.3{sl}(0,2),l><D.2{ds2}(1,0),s01> [OL3 ≏ ≏ ] <F.3{sr}(0,1),s><F.1{sr}(0,2),r><F.2{sr}(0,1),s> {r16405{NE2 ≏ 💺16405 ≏ 🛑🚂16405 }}
-
-        print(try ascii.stringFrom(route: r1, trainId: t1.id))
-        print(try ascii.stringFrom(route: r2, trainId: t2.id))
+        try assert(v8, r1, t1, "{NE1 ≏ ≏ } <r16405<B.4{sl}(2,0),s>> <r16405<A.1{sl}(2,0),l>> <r16405<A.34{ds2}(3,0),s23>> [r16390[OL1 ≏ ≏ ]] <r16390<D.1{sr}(0,1),s>> [r16390[OL2 ≏ ≏ ]] <E.1{sl}(1,0),l> [OL3 ≏ ≏ ] <F.3{sr}(0,1),s> <F.1{sr}(0,2),r> <E.4{sr}(0,2),s> {NE1 ≏ ≏ }")
+        try assert(v8, r2, t2, "{r16405{NE2 ≏ 💺16405 ≏ 🚂16405 }} <r16405<B.4{sl}(1,0),s>> <r16405<A.1{sl}(2,0),l>> <r16405<A.34{ds2}(3,2),s23>> <r16405<A.2{sr}(2,0),r>> [r16405[IL1 ≏ ≏ ]] <H.1{sl}(1,0),l> <D.2{ds2}(0,1),s01> [IL2 ≏ ≏ ≏ ] <E.3{sl}(0,1),l> <E.2{sl}(1,0),l> [IL3 ≏ ≏ ] <F.4{sr}(0,1),r> [IL4 ≏ ≏ ] <D.4{sl}(1,0),s> <r16405<A.2{sr}(1,0),r>> [r16405[IL1 ≏ ≏ ]] <H.1{sl}(1,0),l> <D.2{ds2}(0,1),s01> [IL2 ≏ ≏ ≏ ] <E.3{sl}(0,2),l> <E.1{sl}(2,0),l> [OL3 ≏ ≏ ] <F.3{sr}(0,1),s> <F.1{sr}(0,2),r> <E.4{sr}(0,1),s> {r16405{NE2 ≏ 💺16405 ≏ 🚂16405 }}")
 
         // Now t2 starts because it can reserve the route
         XCTAssertEqual(t1.speed.kph, 0)
         XCTAssertEqual(t2.speed.kph, LayoutFactory.DefaultSpeed)
     }
 
+    private func assert(_ layout: Layout, _ route: Route, _ train: Train, _ expected: String) throws {
+        let ascii = LayoutASCIIProducer(layout: layout)
+        XCTAssertEqual(try ascii.stringFrom(route: route, trainId: train.id), expected)
+    }
 }
