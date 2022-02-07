@@ -16,6 +16,7 @@ import ViewInspector
 
 extension RouteView: Inspectable { }
 extension RouteListView: Inspectable { }
+extension CenteredLabelView: Inspectable { }
 
 class RouteViewTests: XCTestCase {
 

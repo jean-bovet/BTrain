@@ -865,37 +865,38 @@ class ManualRoutingTests: BTTestCase {
         let layout = LayoutACreator().newLayout()
         let producer = LayoutASCIIProducer(layout: layout)
         let route = layout.routes[0]
+        let trainId = layout.trains[0].id
         
         let p = try setup(layout: layout, fromBlockId: "b1", position: .start, route: route)
 
-        XCTAssertEqual(try producer.stringFrom(route: route), "{r1{b1 🛑🚂1 ≏ ≏ }} <t0{sl}(0,1),s> [b2 ≏ ≏ ] <t1{sl}(0,1),s> [b3 ≏ ≏ ] <t1{sl},s> !{r1{b1 🛑🚂1 ≏ ≏ }}")
+        XCTAssertEqual(try producer.stringFrom(route: route, trainId: trainId), "{r1{b1 🛑🚂1 ≏ ≏ }} <t0{sl}(0,1),s> [b2 ≏ ≏ ] <t1{sl}(0,2),s> [b3 ≏ ≏ ] <t0{sl}(2,0),s> !{r1{b1 🛑🚂1 ≏ ≏ }}")
         
         try p.start()
-        XCTAssertEqual(try producer.stringFrom(route: route), "{r1{b1 🚂1 ≏ ≏ }} <r1<t0{sl}(0,1),s>> [r1[b2 ≏ ≏ ]] <t1{sl}(0,1),s> [b3 ≏ ≏ ] <t1{sl},s> !{r1{b1 🚂1 ≏ ≏ }}")
+        XCTAssertEqual(try producer.stringFrom(route: route, trainId: trainId), "{r1{b1 🚂1 ≏ ≏ }} <r1<t0{sl}(0,1),s>> [r1[b2 ≏ ≏ ]] <t1{sl}(0,2),s> [b3 ≏ ≏ ] <r1<t0{sl}(2,0),s>> !{r1{b1 🚂1 ≏ ≏ }}")
         
         p.toggle("f11")
-        XCTAssertEqual(try producer.stringFrom(route: route), "{r1{b1 ≡ 🚂1 ≏ }} <r1<t0{sl}(0,1),s>> [r1[b2 ≏ ≏ ]] <t1{sl}(0,1),s> [b3 ≏ ≏ ] <t1{sl},s> !{r1{b1 ≡ 🚂1 ≏ }}")
+        XCTAssertEqual(try producer.stringFrom(route: route, trainId: trainId), "{r1{b1 ≡ 🚂1 ≏ }} <r1<t0{sl}(0,1),s>> [r1[b2 ≏ ≏ ]] <t1{sl}(0,2),s> [b3 ≏ ≏ ] <r1<t0{sl}(2,0),s>> !{r1{b1 ≡ 🚂1 ≏ }}")
         
         p.toggle2("f11", "f12")
-        XCTAssertEqual(try producer.stringFrom(route: route), "{r1{b1 ≏ ≡ 🚂1 }} <r1<t0{sl}(0,1),s>> [r1[b2 ≏ ≏ ]] <t1{sl}(0,1),s> [b3 ≏ ≏ ] <t1{sl},s> !{r1{b1 ≏ ≡ 🚂1 }}")
+        XCTAssertEqual(try producer.stringFrom(route: route, trainId: trainId), "{r1{b1 ≏ ≡ 🚂1 }} <r1<t0{sl}(0,1),s>> [r1[b2 ≏ ≏ ]] <t1{sl}(0,2),s> [b3 ≏ ≏ ] <r1<t0{sl}(2,0),s>> !{r1{b1 ≏ ≡ 🚂1 }}")
         
         p.toggle2("f12", "f21")
-        XCTAssertEqual(try producer.stringFrom(route: route), "{b1 ≏ ≏ } <t0{sl}(0,1),s> [r1[b2 ≡ 🚂1 ≏ ]] <r1<t1{sl}(0,2),l>> [r1[b3 ≏ ≏ ]] <r1<t1{sl}(2,0),l>> !{b1 ≏ ≏ }")
+        XCTAssertEqual(try producer.stringFrom(route: route, trainId: trainId), "{b1 ≏ ≏ } <t0{sl}(0,1),s> [r1[b2 ≡ 🚂1 ≏ ]] <r1<t1{sl}(0,2),l>> [r1[b3 ≏ ≏ ]] <t0{sl}(2,0),s> !{b1 ≏ ≏ }")
         
         p.toggle2("f21", "f22")
-        XCTAssertEqual(try producer.stringFrom(route: route), "{b1 ≏ ≏ } <t0{sl}(0,1),s> [r1[b2 ≏ ≡ 🚂1 ]] <r1<t1{sl}(0,2),l>> [r1[b3 ≏ ≏ ]] <r1<t1{sl}(2,0),l>> !{b1 ≏ ≏ }")
+        XCTAssertEqual(try producer.stringFrom(route: route, trainId: trainId), "{b1 ≏ ≏ } <t0{sl}(0,1),s> [r1[b2 ≏ ≡ 🚂1 ]] <r1<t1{sl}(0,2),l>> [r1[b3 ≏ ≏ ]] <t0{sl}(2,0),s> !{b1 ≏ ≏ }")
         
         p.toggle2("f22", "f31")
-        XCTAssertEqual(try producer.stringFrom(route: route), "{r1{b1 ≏ ≏ }} <r1<t0{sl}(0,2),l>> [b2 ≏ ≏ ] <t1{sl}(0,2),l> [r1[b3 ≡ 🚂1 ≏ ]] <t1{sl}(2,0),l> !{r1{b1 ≏ ≏ }}")
+        XCTAssertEqual(try producer.stringFrom(route: route, trainId: trainId), "{r1{b1 ≏ ≏ }} <r1<t0{sl}(0,1),l>> [b2 ≏ ≏ ] <t1{sl}(0,2),l> [r1[b3 ≡ 🚂1 ≏ ]] <r1<t0{sl}(2,0),l>> !{r1{b1 ≏ ≏ }}")
         
         p.toggle2("f31", "f32")
-        XCTAssertEqual(try producer.stringFrom(route: route), "{r1{b1 ≏ ≏ }} <r1<t0{sl}(0,2),l>> [b2 ≏ ≏ ] <t1{sl}(0,2),l> [r1[b3 ≏ ≡ 🚂1 ]] <t1{sl}(2,0),l> !{r1{b1 ≏ ≏ }}")
+        XCTAssertEqual(try producer.stringFrom(route: route, trainId: trainId), "{r1{b1 ≏ ≏ }} <r1<t0{sl}(0,1),l>> [b2 ≏ ≏ ] <t1{sl}(0,2),l> [r1[b3 ≏ ≡ 🚂1 ]] <r1<t0{sl}(2,0),l>> !{r1{b1 ≏ ≏ }}")
         
         p.toggle2("f32", "f12")
-        XCTAssertEqual(try producer.stringFrom(route: route), "{r1{b1 ≏ 🟨🚂1 ≡ }} <t0{sl}(0,2),l> [b2 ≏ ≏ ] <t1{sl}(0,2),l> [b3 ≏ ≏ ] <t1{sl}(2,0),l> !{r1{b1 ≏ 🟨🚂1 ≡ }}")
+        XCTAssertEqual(try producer.stringFrom(route: route, trainId: trainId), "{r1{b1 ≏ 🟨🚂1 ≡ }} <t0{sl}(0,1),l> [b2 ≏ ≏ ] <t1{sl}(0,2),l> [b3 ≏ ≏ ] <t0{sl}(2,0),l> !{r1{b1 ≏ 🟨🚂1 ≡ }}")
         
         p.toggle2("f12", "f11")
-        XCTAssertEqual(try producer.stringFrom(route: route), "{r1{b1 🛑🚂1 ≡ ≏ }} <t0{sl}(0,2),l> [b2 ≏ ≏ ] <t1{sl}(0,2),l> [b3 ≏ ≏ ] <t1{sl}(2,0),l> !{r1{b1 🛑🚂1 ≡ ≏ }}")
+        XCTAssertEqual(try producer.stringFrom(route: route, trainId: trainId), "{r1{b1 🛑🚂1 ≡ ≏ }} <t0{sl}(0,1),l> [b2 ≏ ≏ ] <t1{sl}(0,2),l> [b3 ≏ ≏ ] <t0{sl}(2,0),l> !{r1{b1 🛑🚂1 ≡ ≏ }}")
     }
 
     // MARK: -- Utility

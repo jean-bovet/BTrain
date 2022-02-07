@@ -15,27 +15,25 @@ import Foundation
 final class LayoutASCIIProducer {
     
     let layout: Layout
-    let visitor: ElementVisitor
+    let resolver: RouteResolver
     
     init(layout: Layout) {
         self.layout = layout
-        self.visitor = ElementVisitor(layout: layout)
+        self.resolver = RouteResolver(layout: layout)
     }
     
-    func stringFrom(route: Route) throws -> String {
+    func stringFrom(route: Route, trainId: Identifier<Train>?) throws -> String {
         var text = ""
                 
-        var previousStep: Route.Step?
-        for step in route.steps {
-            if let previousStep = previousStep {
+        let resolvedSteps = try resolver.resolve(steps: ArraySlice(route.steps), trainId: trainId)
+        for step in resolvedSteps {
+            if step.turnoutId != nil {
                 addSpace(&text)
-                try generateTurnout(previousStep: previousStep, step: step, text: &text)
+                try generateTurnout(step: step, text: &text)
+            } else if step.blockId != nil {
+                addSpace(&text)
+                generateBlock(step: step, text: &text)
             }
-            
-            addSpace(&text)
-            generateBlock(step: step, text: &text)
-            
-            previousStep = step
         }
         
         return text
@@ -99,46 +97,37 @@ final class LayoutASCIIProducer {
         }
     }
     
-    func generateTurnout(previousStep: Route.Step, step: Route.Step, text: inout String) throws {
-        guard let previousBlockId = previousStep.blockId else {
-            return
+    func generateTurnout(step: Route.Step, text: inout String) throws {
+        guard let turnout = layout.turnout(for: step.turnoutId) else {
+            // TODO: throw and same above
+            fatalError("Unable to find turnout \(String(describing: step.blockId))")
         }
-        guard let direction = step.direction else {
-            return
+
+        guard let fromSocketId = step.entrySocket?.socketId else {
+            fatalError()
         }
-        var lastSocket: Int?
-        try visitor.visit(fromBlockId: previousBlockId, toBlockId: step.blockId, direction: direction) { info in
-            if let transition = info.transition {
-                lastSocket = transition.b.socketId
-            } else if let turnout = info.turnout {
-                text += "<"
-                if let reserved = turnout.reserved {
-                    text += "r\(reserved)"
-                    text += "<"
-                }
-                
-                // <t0{sl}(0,1),s>
-                text += "\(turnout.id)"
-                text += "{\(turnoutType(turnout))}"
-                if let sockets = turnoutSockets(turnout, fromSocket: lastSocket) {
-                    text += "\(sockets)"
-                }
-                if let state = turnoutState(turnout) {
-                    text += ",\(state)"
-                }
-                if turnout.reserved != nil {
-                    text += ">"
-                }
-                text += ">"
-            } else if let block = info.block {
-                if block.id == step.blockId {
-                    return .stop
-                } else {
-                    return .continue
-                }
-            }
-            return .continue
+        
+        guard let toSocketId = step.exitSocket?.socketId else {
+            fatalError()
         }
+        
+        text += "<"
+        if let reserved = turnout.reserved {
+            text += "r\(reserved)"
+            text += "<"
+        }
+
+        // <t0{sl}(0,1),s>
+        text += "\(turnout.id)"
+        text += "{\(turnoutType(turnout))}"
+        text += "(\(fromSocketId),\(toSocketId))"
+        if let state = turnoutState(turnout) {
+            text += ",\(state)"
+        }
+        if turnout.reserved != nil {
+            text += ">"
+        }
+        text += ">"
     }
     
     func turnoutState(_ turnout: Turnout) -> String? {
@@ -178,19 +167,7 @@ final class LayoutASCIIProducer {
             return "ds2"
         }
     }
-    
-    func turnoutSockets(_ turnout: Turnout, fromSocket: Int?) -> String? {
-        guard let fromSocket = fromSocket else {
-            return nil
-        }
-
-        guard let exitSocketId = turnout.socketId(fromSocketId: fromSocket, withState: turnout.state) else {
-            return nil
-        }
         
-        return "(\(fromSocket),\(exitSocketId))"
-    }
-    
     func train(_ block: Block, _ position: Int) -> String? {
         guard let trainInstance = block.train else {
             return nil

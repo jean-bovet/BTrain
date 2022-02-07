@@ -100,8 +100,8 @@ class TransitionsTests: XCTestCase {
         // r1: {NE1 ≏ ≏ } <B.4{sl}(2,0),l><A.1{sl},s><A.34{ds2},s01> [OL1 ≏ ≏ ] <D.1{sr}(0,2),r> [OL2 ≏ ≏ ] <E.1{sl},l> [OL3 ≏ ≏ ] <F.3{sr}(0,1),s> {NE1 ≏ ≏ }
         // r2: {NE2 ≏ ≏ } <B.4{sl},l> [IL1 ≏ ≏ ] <H.1{sl},l><A.2{sr}(0,2),r> [IL2 ≏ ≏ ≏ ] <E.3{sl}(0,2),l><D.2{ds2}(1,0),s01> [IL3 ≏ ≏ ] <F.4{sr}(0,2),r> [IL4 ≏ ≏ ] <D.4{sl}(1,0),s><A.2{sr},r> [IL1 ≏ ≏ ] <H.1{sl},l><A.2{sr}(0,2),r> [IL2 ≏ ≏ ≏ ] <E.3{sl}(0,2),l><D.2{ds2}(1,0),s01> [OL3 ≏ ≏ ] <F.3{sr}(0,1),s><F.1{sr}(0,2),r><F.2{sr}(0,1),s> {NE2 ≏ ≏ }
         // TODO: assertions
-        print(try ascii.stringFrom(route: r1))
-        print(try ascii.stringFrom(route: r2))
+        print(try ascii.stringFrom(route: r1, trainId: t1.id))
+        print(try ascii.stringFrom(route: r2, trainId: t2.id))
 
         try v8.prepare(routeID: r1.id, trainID: t1.id, startAtEndOfBlock: true)
         try v8.prepare(routeID: r2.id, trainID: t2.id, startAtEndOfBlock: true)
@@ -112,8 +112,8 @@ class TransitionsTests: XCTestCase {
         // r1: {r16390{NE1 💺16390 ≏ 💺16390 ≏ 🛑🚂16390 }} <B.4{sl}(2,0),l><A.1{sl},s><A.34{ds2},s01> [OL1 ≏ ≏ ] <D.1{sr}(0,2),r> [OL2 ≏ ≏ ] <E.1{sl},l> [OL3 ≏ ≏ ] <F.3{sr}(0,1),s> {r16390{NE1 💺16390 ≏ 💺16390 ≏ 🛑🚂16390 }}
         // r2: {r16405{NE2 ≏ 💺16405 ≏ 🛑🚂16405 }} <B.4{sl},l> [IL1 ≏ ≏ ] <H.1{sl},l><A.2{sr}(0,2),r> [IL2 ≏ ≏ ≏ ] <E.3{sl}(0,2),l><D.2{ds2}(1,0),s01> [IL3 ≏ ≏ ] <F.4{sr}(0,2),r> [IL4 ≏ ≏ ] <D.4{sl}(1,0),s><A.2{sr},r> [IL1 ≏ ≏ ] <H.1{sl},l><A.2{sr}(0,2),r> [IL2 ≏ ≏ ≏ ] <E.3{sl}(0,2),l><D.2{ds2}(1,0),s01> [OL3 ≏ ≏ ] <F.3{sr}(0,1),s><F.1{sr}(0,2),r><F.2{sr}(0,1),s> {r16405{NE2 ≏ 💺16405 ≏ 🛑🚂16405 }}
 
-        print("r1: \(try ascii.stringFrom(route: r1))")
-        print("r2: \(try ascii.stringFrom(route: r2))")
+        print(try ascii.stringFrom(route: r1, trainId: t1.id))
+        print(try ascii.stringFrom(route: r2, trainId: t2.id))
 
         try c1.run()
         try c2.run()
@@ -126,8 +126,8 @@ class TransitionsTests: XCTestCase {
         // r1: {r16390{NE1 💺16390 ≏ 💺16390 ≏ 🚂16390 }} <r16390<B.4{sl}(2,0),l>><r16390<A.1{sl}(2,0),l>><r16390<A.34{ds2}(3,0),b03>> [r16390[OL1 ≏ ≏ ]] <r16390<D.1{sr}(0,1),s>> [r16390[OL2 ≏ ≏ ]] <E.1{sl},l> [OL3 ≏ ≏ ] <F.3{sr}(0,1),s> {r16390{NE1 💺16390 ≏ 💺16390 ≏ 🚂16390 }}
         // r2: {r16405{NE2 ≏ 💺16405 ≏ 🛑🚂16405 }} <r16390<B.4{sl},l>> [IL1 ≏ ≏ ] <H.1{sl},l><A.2{sr}(0,2),r> [IL2 ≏ ≏ ≏ ] <E.3{sl}(0,2),l><D.2{ds2}(1,0),s01> [IL3 ≏ ≏ ] <F.4{sr}(0,2),r> [IL4 ≏ ≏ ] <D.4{sl}(1,0),s><A.2{sr},r> [IL1 ≏ ≏ ] <H.1{sl},l><A.2{sr}(0,2),r> [IL2 ≏ ≏ ≏ ] <E.3{sl}(0,2),l><D.2{ds2}(1,0),s01> [OL3 ≏ ≏ ] <F.3{sr}(0,1),s><F.1{sr}(0,2),r><F.2{sr}(0,1),s> {r16405{NE2 ≏ 💺16405 ≏ 🛑🚂16405 }}
 
-        print("r1: \(try ascii.stringFrom(route: r1))")
-        print("r2: \(try ascii.stringFrom(route: r2))")
+        print(try ascii.stringFrom(route: r1, trainId: t1.id))
+        print(try ascii.stringFrom(route: r2, trainId: t2.id))
 
         // NOTE: stop cannot free-up blocks automatically because
         // the train might be already in transit between two blocks!
@@ -144,8 +144,8 @@ class TransitionsTests: XCTestCase {
         // r1: {NE1 ≏ ≏ } <B.4{sl}(2,0),l><A.1{sl}(2,0),l><A.34{ds2}(3,0),b03> [r16390[OL1 ≏ ≏ ]] <r16390<D.1{sr}(0,1),s>> [r16390[OL2 ≏ ≏ ]] <E.1{sl},l> [OL3 ≏ ≏ ] <F.3{sr}(0,1),s> {NE1 ≏ ≏ }
         // r2: {r16405{NE2 ≏ 💺16405 ≏ 🛑🚂16405 }} <B.4{sl},l> [IL1 ≏ ≏ ] <H.1{sl},l><A.2{sr}(0,2),r> [IL2 ≏ ≏ ≏ ] <E.3{sl}(0,2),l><D.2{ds2}(1,0),s01> [IL3 ≏ ≏ ] <F.4{sr}(0,2),r> [IL4 ≏ ≏ ] <D.4{sl}(1,0),s><A.2{sr},r> [IL1 ≏ ≏ ] <H.1{sl},l><A.2{sr}(0,2),r> [IL2 ≏ ≏ ≏ ] <E.3{sl}(0,2),l><D.2{ds2}(1,0),s01> [OL3 ≏ ≏ ] <F.3{sr}(0,1),s><F.1{sr}(0,2),r><F.2{sr}(0,1),s> {r16405{NE2 ≏ 💺16405 ≏ 🛑🚂16405 }}
 
-        print("r1: \(try ascii.stringFrom(route: r1))")
-        print("r2: \(try ascii.stringFrom(route: r2))")
+        print(try ascii.stringFrom(route: r1, trainId: t1.id))
+        print(try ascii.stringFrom(route: r2, trainId: t2.id))
 
         // Now t2 starts because it can reserve the route
         XCTAssertEqual(t1.speed.kph, 0)

@@ -51,7 +51,7 @@ final class LayoutControllerDebugger {
         let producer = LayoutASCIIProducer(layout: layout)
         for controller in controllers {
             if let route = layout.route(for: controller.train.routeId, trainId: controller.train.id), !route.steps.isEmpty {
-                if let s = try? producer.stringFrom(route: route) {
+                if let s = try? producer.stringFrom(route: route, trainId: controller.train.id) {
                     if info.routes.index(forKey: route.id) == nil {
                         info.routes[route.id] = Iterations()
                     }
