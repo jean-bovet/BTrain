@@ -100,8 +100,7 @@ final class LayoutReservation {
                 }
                                 
                 guard let direction = step.direction else {
-                    // TODO: throw
-                    fatalError()
+                    throw LayoutError.missingDirection(step: step)
                 }
 
                 if try !reserveBlock(block: block, direction: direction, train: train, numberOfLeadingBlocksReserved: &numberOfLeadingBlocksReserved, turnouts: &turnouts, transitions: &transitions) {
@@ -150,8 +149,7 @@ final class LayoutReservation {
             // Reserve all the transitions
             for transition in transitions {
                 guard transition.reserved == nil || (transition.reserved == train.id && transition.train == train.id) else {
-                    // TODO: exception
-                    fatalError()
+                    throw LayoutError.transitionAlreadyReserved(transition: transition)
                 }
                 BTLogger.debug("Reserved transition \(transition) for \(train)")
                 transition.reserved = train.id
@@ -178,9 +176,7 @@ final class LayoutReservation {
     
     private func reserveTurnout(turnout: Turnout, state: Turnout.State, train: Train) throws {
         guard turnout.canBeReserved else {
-            // TODO: exception
-            // Should not happen. Or maybe if the turnout loops on themselves which would be weird.
-            fatalError()
+            throw LayoutError.turnoutAlreadyReserved(turnout: turnout)
         }
         
         turnout.state = state
@@ -190,25 +186,7 @@ final class LayoutReservation {
     }
     
     private func rememberTurnoutToReserve(turnout: Turnout, train: Train, step: Route.Step, numberOfLeadingBlocksReserved: inout Int, turnouts: inout [(Turnout, Turnout.State)]) throws -> Bool {
-        guard let entrySocket = step.entrySocket else {
-            // TODO: exception
-            fatalError()
-        }
-        
-        guard let fromSocket = entrySocket.socketId else {
-            throw LayoutError.socketIdNotFound(socket: entrySocket)
-        }
-
-        guard let exitSocket = step.exitSocket else {
-            // TODO: exception
-            fatalError()
-        }
-
-        guard let toSocket = exitSocket.socketId else {
-            throw LayoutError.socketIdNotFound(socket: exitSocket)
-        }
-
-        let state = turnout.state(fromSocket: fromSocket, toSocket: toSocket)
+        let state = turnout.state(fromSocket: try step.entrySocketId(), toSocket: try step.exitSocketId())
 
         if turnout.isOccupied(by: train.id) {
             // The turnout is already reserved and contains a portion of the train
@@ -240,17 +218,9 @@ final class LayoutReservation {
         guard let previousStep = previousStep else {
             return
         }
-
-        guard let exitSocket = previousStep.exitSocket else {
-            // TODO: throw
-            fatalError()
-        }
-        guard let entrySocket = step.entrySocket else {
-            // TODO: throw
-            fatalError()
-        }
-        
-        let trs = try layout.transitions(from: exitSocket, to: entrySocket)
+        let fromSocket = try previousStep.exitSocketOrThrow()
+        let toSocket = try step.entrySocketOrThrow()
+        let trs = try layout.transitions(from: fromSocket, to: toSocket)
         transitions.append(contentsOf: trs)
     }
     
@@ -324,21 +294,16 @@ final class LayoutReservation {
                 guard block.reserved == nil || info.index == 0 else {
                     throw LayoutError.blockAlreadyReserved(block: block)
                 }
-                
-                if block.length == nil {
-                    // TODO: throw appropriate exception
-                    return .stop
-                }
-                
+                                
                 // Determine the direction of the train within the current block by using
                 // the flag indicating if the wagons are pushed or not by the locomotive.
                 let trainDirection = train.wagonsPushedByLocomotive ? wagonDirection : wagonDirection.opposite
-                remainingTrainLength = reserveBlockParts(train: train,
-                                                         remainingTrainLength: remainingTrainLength,
-                                                         block: block,
-                                                         headBlock: info.index == 0,
-                                                         wagonDirection: wagonDirection,
-                                                         trainDirection: trainDirection)
+                remainingTrainLength = try reserveBlockParts(train: train,
+                                                             remainingTrainLength: remainingTrainLength,
+                                                             block: block,
+                                                             headBlock: info.index == 0,
+                                                             wagonDirection: wagonDirection,
+                                                             trainDirection: trainDirection)
                 block.reserved = .init(trainId: train.id, direction: trainDirection)
             }
 
@@ -350,7 +315,7 @@ final class LayoutReservation {
         })
     }
     
-    private func reserveBlockParts(train: Train, remainingTrainLength: Double, block: Block, headBlock: Bool, wagonDirection: Direction, trainDirection: Direction) -> Double {
+    private func reserveBlockParts(train: Train, remainingTrainLength: Double, block: Block, headBlock: Bool, wagonDirection: Direction, trainDirection: Direction) throws -> Double {
         let trainInstance = TrainInstance(train.id, trainDirection)
         trainInstance.parts.removeAll()
         
@@ -373,7 +338,7 @@ final class LayoutReservation {
         let increment = wagonDirection == .previous ? -1 : 1
 
         // Gather all the part length to ensure they are all defined.
-        if let allPartsLength = block.allPartsLength() {
+        if let allPartsLength = try block.allPartsLength() {
             if headBlock {
                 trainInstance.parts[position] = .locomotive
                 // Don't take into consideration the length of that part

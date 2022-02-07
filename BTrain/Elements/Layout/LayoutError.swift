@@ -25,6 +25,9 @@ enum LayoutError: Error {
     case feedbackNotFound(feedbackId: Identifier<Feedback>)
     case socketIdNotFound(socket: Socket)
         
+    case entrySocketNotFound(step: Route.Step)
+    case exitSocketNotFound(step: Route.Step)
+
     case brakeFeedbackNotFound(block: Block)
     case stopFeedbackNotFound(block: Block)
 
@@ -48,6 +51,10 @@ enum LayoutError: Error {
     
     case destinationBlockMismatch(currentBlock: Block, destination: Destination)
     case destinationDirectionMismatch(currentBlock: Block, destination: Destination)
+    
+    case missingDirection(step: Route.Step)
+    
+    case invalidPartIndex(index: Int, block: Block)
 }
     
 extension LayoutError: LocalizedError {
@@ -81,8 +88,14 @@ extension LayoutError: LocalizedError {
             return "The last transition \(transition) should be to block \(blockId)"
         case .cannotReserveBlock(block: let block, train: let train, reserved: let reserved):
             return "Cannot reserve block \(block.name) for train \(train.name) because the block is already reserved for \(reserved)"
+            
         case .socketIdNotFound(socket: let socket):
             return "There is no socket defined for \(socket)"
+        case .entrySocketNotFound(step: let step):
+            return "There is no entry socket defined for \(step)"
+        case .exitSocketNotFound(step: let step):
+            return "There is no exit socket defined for \(step)"
+
         case .trainNotAssignedToABlock(trainId: let trainId):
             return "Train \(trainId) does not have any assigned block (train.blockId is nil)"
         case .trainNotFoundInBlock(blockId: let blockId):
@@ -111,6 +124,12 @@ extension LayoutError: LocalizedError {
             return "Turnout \(turnout.name) is already reserved for \(String(describing: turnout.reserved))"
         case .transitionAlreadyReserved(transition: let transition):
             return "Transition \(transition.id) is already reserved for \(String(describing: transition.reserved))"
+            
+        case .missingDirection(step: let step):
+            return "Direction is missing from \(step)"
+            
+        case .invalidPartIndex(index: let index, block: let block):
+            return "Invalid part index \(index) in \(block.name)"
         }
     }
 }

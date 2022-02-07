@@ -38,7 +38,7 @@ extension Block {
     
     // Returns the length (in cm) of the part at the specified index,
     // starting from the beginning of the block.
-    func partLenght(at index: Int) -> Double? {
+    func partLenght(at index: Int) throws -> Double? {
         if index == feedbacks.count {
             // Last part:
             // [ p0  |   p1 |   p2 ]
@@ -71,18 +71,17 @@ extension Block {
             // |<-d->|
             return feedbacks[index].distance
         } else {
-            // TODO: proper exception
-            fatalError("Unexpected index")
+            throw LayoutError.invalidPartIndex(index: index, block: self)
         }
 
     }
     
     // Returns all the part lenght (in cm) for the entire block or nil
     // if one (or more) feedback distance is not defined.
-    func allPartsLength() -> [Int:Double]? {
+    func allPartsLength() throws -> [Int:Double]? {
         var results = [Int:Double]()
         for index in 0...feedbacks.count {
-            if let length = partLenght(at: index) {
+            if let length = try partLenght(at: index) {
                 results[index] = length
             } else {
                 return nil

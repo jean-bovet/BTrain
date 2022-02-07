@@ -48,8 +48,7 @@ final class RouteResolver {
             }
             
             guard let previousDirection = previousStep.direction else {
-                // TODO: throw
-                fatalError()
+                throw LayoutError.missingDirection(step: previousStep)
             }
             
             guard let block = layout.block(for: step.blockId) else {
@@ -57,8 +56,7 @@ final class RouteResolver {
             }
 
             guard let direction = step.direction else {
-                // TODO: throw
-                fatalError()
+                throw LayoutError.missingDirection(step: step)
             }
 
             // Find the missing turnouts between `previousBlock` and `block`

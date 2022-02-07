@@ -91,8 +91,7 @@ final class Route: Element, ObservableObject {
             } else if let turnoutId = turnoutId {
                 return "\(turnoutId)-(\(entrySocket!.socketId!)>\(exitSocket!.socketId!))"
             } else {
-                // TODO: throw instead of crashing?
-                fatalError("Unsupported Step configuration")
+                return "Invalid state because no block nor turnout is defined"
             }
         }
 
@@ -105,6 +104,39 @@ final class Route: Element, ObservableObject {
         // the block represented by this step, taking
         // into account the direction of travel of the train.
         var entrySocket: Socket?
+
+        func entrySocketOrThrow() throws -> Socket {
+            guard let entrySocket = entrySocket else {
+                throw LayoutError.entrySocketNotFound(step: self)
+            }
+            return entrySocket
+        }
+        
+        func entrySocketId() throws -> Int {
+            let entrySocket = try entrySocketOrThrow()
+            guard let socketId = entrySocket.socketId else {
+                throw LayoutError.socketIdNotFound(socket: entrySocket)
+            }
+            
+            return socketId
+        }
+
+        func exitSocketOrThrow() throws -> Socket {
+            guard let exitSocket = exitSocket else {
+                throw LayoutError.exitSocketNotFound(step: self)
+            }
+
+            return exitSocket
+        }
+        
+        func exitSocketId() throws -> Int {
+            let exitSocket = try exitSocketOrThrow()
+            guard let socketId = exitSocket.socketId else {
+                throw LayoutError.socketIdNotFound(socket: exitSocket)
+            }
+            
+            return socketId
+        }
 
         init(_ blockId: Identifier<Block>, _ direction: Direction, _ waitingTime: TimeInterval? = nil) {
             self.init(UUID().uuidString, blockId, direction, waitingTime)

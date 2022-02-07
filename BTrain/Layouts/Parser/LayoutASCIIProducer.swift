@@ -27,22 +27,23 @@ final class LayoutASCIIProducer {
                 
         let resolvedSteps = try resolver.resolve(steps: ArraySlice(route.steps), trainId: trainId)
         for step in resolvedSteps {
-            if step.turnoutId != nil {
+            if let turnoutId = step.turnoutId {
                 addSpace(&text)
-                try generateTurnout(step: step, text: &text)
-            } else if step.blockId != nil {
+                try generateTurnout(turnoutId: turnoutId, step: step, text: &text)
+            } else if let blockId = step.blockId {
                 addSpace(&text)
-                generateBlock(step: step, text: &text)
+                try generateBlock(blockId: blockId, step: step, text: &text)
             }
         }
         
         return text
     }
 
-    private func generateBlock(step: Route.Step, text: inout String) {
-        guard let block = layout.block(for: step.blockId) else {
-            fatalError("Unable to find block \(String(describing: step.blockId))")
+    private func generateBlock(blockId: Identifier<Block>, step: Route.Step, text: inout String) throws {
+        guard let block = layout.block(for: blockId) else {
+            throw LayoutError.blockNotFound(blockId: blockId)
         }
+        
         if step.direction == .previous {
             text += "!"
         }
@@ -69,7 +70,7 @@ final class LayoutASCIIProducer {
 
         for (index, feedback) in block.feedbacks.enumerated() {
             guard let f = layout.feedback(for: feedback.feedbackId) else {
-                fatalError("Unable to find feedback \(feedback.feedbackId)")
+                throw LayoutError.feedbackNotFound(feedbackId: feedback.feedbackId)
             }
             if f.detected {
                 text += " ≡"
@@ -97,18 +98,9 @@ final class LayoutASCIIProducer {
         }
     }
     
-    func generateTurnout(step: Route.Step, text: inout String) throws {
-        guard let turnout = layout.turnout(for: step.turnoutId) else {
-            // TODO: throw and same above
-            fatalError("Unable to find turnout \(String(describing: step.blockId))")
-        }
-
-        guard let fromSocketId = step.entrySocket?.socketId else {
-            fatalError()
-        }
-        
-        guard let toSocketId = step.exitSocket?.socketId else {
-            fatalError()
+    func generateTurnout(turnoutId: Identifier<Turnout>, step: Route.Step, text: inout String) throws {
+        guard let turnout = layout.turnout(for: turnoutId) else {
+            throw LayoutError.turnoutNotFound(turnoutId: turnoutId)
         }
         
         text += "<"
@@ -120,7 +112,7 @@ final class LayoutASCIIProducer {
         // <t0{sl}(0,1),s>
         text += "\(turnout.id)"
         text += "{\(turnoutType(turnout))}"
-        text += "(\(fromSocketId),\(toSocketId))"
+        text += "(\(try step.entrySocketId()),\(try step.exitSocketId()))"
         if let state = turnoutState(turnout) {
             text += ",\(state)"
         }
