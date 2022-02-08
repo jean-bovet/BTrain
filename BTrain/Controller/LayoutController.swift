@@ -201,7 +201,11 @@ final class LayoutController: TrainControllerDelegate {
             trains = layout.trainsThatCanBeStopped()
         }
         for train in trains {
-            try stop(trainID: train.id, completely: true)
+            do {
+                try stop(trainID: train.id, completely: true)
+            } catch {
+                BTLogger.error("Unable to stop \(train.name): \(error)")
+            }
         }
     }
 

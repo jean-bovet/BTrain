@@ -38,12 +38,16 @@ final class LayoutFeedbackMonitor {
             return
         }
 
+        // TODO: when locomotive pushes the wagon, not all feedback within the locomotive block
+        // can be activated because the front of the train maybe moving into an occupied block.
+        // The problem is that the front of the train should have a magnet so it can be detected
+        // and we can stop it like a locomotive pulling its wagons.
         for feedback in currentBlock.feedbacks {
             expectedFeedbacks.insert(feedback.feedbackId)
         }
         
         if train.manualScheduling {
-            guard let nextBlock = layout.nextBlockForLocomotive(from: currentBlock, train: train) else {
+            guard let nextBlock = try layout.nextBlockForLocomotive(from: currentBlock, train: train) else {
                 return
             }
 

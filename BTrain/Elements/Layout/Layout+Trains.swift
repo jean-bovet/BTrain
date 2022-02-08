@@ -148,7 +148,7 @@ extension Layout {
     func setLocomotiveDirection(_ train: Train, forward: Bool) throws {
         if train.directionForward != forward {
             train.directionForward = forward
-            self.executor?.sendTrainDirection(train: train)            
+            self.executor?.sendTrainDirection(train: train)
         }
     }
     

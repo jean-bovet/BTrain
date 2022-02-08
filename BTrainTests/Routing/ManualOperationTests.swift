@@ -18,7 +18,6 @@ class ManualOperationTests: BTTestCase {
     func testFollowManualOperation() throws {
         let layout = LayoutACreator().newLayout()
         let p = try setup(layout: layout, fromBlockId: "b1")
-        
         p.train.speed.kph = 100
         
         try p.assertTrain(inBlock: "b1", position: 0, speed: 100)
@@ -51,6 +50,114 @@ class ManualOperationTests: BTTestCase {
         try p.assertTrain(inBlock: "b1", position: 2, speed: 0)
     }
 
+    // b1 > b2 > b3 > !b1
+    func testPullingLongTrain() throws {
+        let layout = LayoutACreator().newLayout()
+        
+        layout.turnouts[1].state = .branchLeft
+        
+        let b1 = layout.blocks[0]
+        let b2 = layout.blocks[1]
+        let b3 = layout.blocks[2]
+
+        b1.length = 100
+        b1.feedbacks[0].distance = 20
+        b1.feedbacks[1].distance = 80
+        
+        b2.length = 20
+        b2.feedbacks[0].distance = 5
+        b2.feedbacks[1].distance = 15
+        
+        b3.length = 20
+        b3.feedbacks[0].distance = 5
+        b3.feedbacks[1].distance = 15
+
+        let train = layout.trains[0]
+        train.length = 60
+        
+//        try layout.setLocomotiveDirection(train, forward: false)
+//        train.wagonsPushedByLocomotive = true
+        
+        let p = try setup(layout: layout, fromBlockId: "b1")
+        
+        p.train.speed.kph = 100
+        
+        try p.assertTrain(inBlock: "b1", position: 0, speed: 100)
+
+        try p.triggerFeedback("f21")
+        
+        try p.assertTrain(inBlock: "b1", position: 1, speed: 100)
+        try p.assertTrain(inBlock: "b2", position: 1, speed: 100)
+        
+        try p.triggerFeedback("f21", false)
+        try p.triggerFeedback("f22")
+        
+        try p.assertTrain(inBlock: "b1", position: 2, speed: 100)
+        try p.assertTrain(inBlock: "b2", position: 2, speed: 100)
+        
+        try p.triggerFeedback("f22", false)
+        try p.triggerFeedback("f31")
+        
+        try p.assertTrain(inBlock: "b1", position: 1, speed: 100)
+        try p.assertTrain(inBlock: "b2", position: 1, speed: 100)
+        try p.assertTrain(inBlock: "b3", position: 1, speed: 100)
+        
+        try p.triggerFeedback("f31", false)
+        try p.triggerFeedback("f32")
+        
+        // Train stops because its tail is still in the block b1
+        try p.assertTrain(inBlock: "b1", position: 2, speed: 0)
+        try p.assertTrain(inBlock: "b2", position: 2, speed: 0)
+        try p.assertTrain(inBlock: "b3", position: 2, speed: 0)
+    }
+    
+    // b1 > b2 > b3 > !b1
+    func testPushingLongTrain() throws {
+        let layout = LayoutACreator().newLayout()
+        
+        layout.turnouts[1].state = .branchLeft
+        
+        let b1 = layout.blocks[0]
+        let b2 = layout.blocks[1]
+        let b3 = layout.blocks[2]
+
+        b1.length = 100
+        b1.feedbacks[0].distance = 20
+        b1.feedbacks[1].distance = 80
+        
+        b2.length = 20
+        b2.feedbacks[0].distance = 5
+        b2.feedbacks[1].distance = 15
+        
+        b3.length = 20
+        b3.feedbacks[0].distance = 5
+        b3.feedbacks[1].distance = 15
+
+        let train = layout.trains[0]
+        train.length = 60
+        
+        try layout.setLocomotiveDirection(train, forward: false)
+        train.wagonsPushedByLocomotive = true
+        
+        let p = try setup(layout: layout, fromBlockId: "b1")
+        
+        p.train.speed.kph = 100
+        
+        try p.assertTrain(inBlock: "b1", position: 0, speed: 100)
+        try p.assertTrain(notInBlock: "b2")
+        try p.assertTrain(notInBlock: "b3")
+
+        // TODO: train should be stopped because its wagon will bump into b1
+        try p.triggerFeedback("f11")
+        try p.assertTrain(inBlock: "b1", position: 1, speed: 100)
+        try p.assertTrain(inBlock: "b2", position: 1, speed: 100)
+        try p.assertTrain(inBlock: "b3", position: 1, speed: 100)
+
+        try p.triggerFeedback("f21")
+//        try p.assertTrain(inBlock: "b1", position: 1, speed: 0)
+        try p.assertTrain(inBlock: "b2", position: 1, speed: 0)
+    }
+    
     // MARK: -- Utility
     
     // Convenience structure to test the layout and its route

@@ -184,9 +184,15 @@ extension Layout {
     // and that is either free or already reserved for the train. This function is used, for example,
     // by the TrainController in manual mode to follow the movement of the
     // train on the layout when it is manually driven by someone.
-    func nextBlockForLocomotive(from fromBlock: Block, train: Train) -> Block? {
+    func nextBlockForLocomotive(from fromBlock: Block, train: Train) throws -> Block? {
         guard let trainInstance = fromBlock.train else {
             return nil
+        }
+        
+        if train.wagonsPushedByLocomotive {
+            if !(try freeBlockAfterLeadingBlock(train: train)) {
+                return nil
+            }
         }
         
         var nextBlock: Block?
@@ -197,7 +203,7 @@ extension Layout {
                     // TODO: need to ensure that the wagons are not bumping into the train itself
                     // when it is looping on itself. For this, we need to go to the end of the train
                     // and check that the next block after it is free.
-                    if block.reserved == nil {
+                    if block.reserved == nil || block.reserved?.trainId == train.id {
                         nextBlock = block
                     }
                 } else {
@@ -214,5 +220,35 @@ extension Layout {
         }
         
         return nextBlock
+    }
+    
+    func freeBlockAfterLeadingBlock(train: Train) throws -> Bool {
+        guard let block = self.block(for: train.id) else {
+            throw LayoutError.trainNotAssignedToABlock(trainId: train.id)
+        }
+        
+        guard let trainInstance = block.train else {
+            throw LayoutError.trainNotFoundInBlock(blockId: block.id)
+        }
+        
+        let visitor = ElementVisitor(layout: self)
+        var freeBlock = false
+        try visitor.visit(fromBlockId: block.id, toBlockId: nil, direction: trainInstance.direction) { info in
+            if let block = info.block, info.index > 0 {
+                if train.wagonsPushedByLocomotive {
+                    if block.reserved == nil {
+                        freeBlock = true
+                        return .stop
+                    } else if block.reserved?.trainId == train.id {
+                        return .continue
+                    }
+                } else {
+                    freeBlock = block.reserved == nil
+                    return .stop
+                }
+            }
+            return .continue
+        }
+        return freeBlock
     }
 }
