@@ -37,7 +37,7 @@ extension LayoutDocument {
     }
 
     func stopAll() throws {
-        try layoutController.stopAll()
+        try layoutController.stopAll(includingManualTrains: false)
     }
 
     func finish(train: Train) throws {

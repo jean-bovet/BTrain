@@ -108,12 +108,21 @@ final class LayoutController: TrainControllerDelegate {
             // Purge any invalid restart timers
             purgeRestartTimers()
             
-            // Run each controller
+            // Run each controller, one for each train, in order
+            // to process the new state of each train (speed, position,
+            // reserved blocks, etc).
             for controller in controllers.values {
                 if try controller.run() == .processed {
                     result = .processed
                 }
             }
+            
+            // Update and detect any unexpected feedbacks
+            // Note: it is necessary to repeat this step after
+            // running all the train controllers because a train
+            // might have moved and hence the expected feedbacks
+            // should be updated promptly to reflect the new state.
+            try updateExpectedFeedbacks()
         } catch {
             // Stop everything in case there is a problem processing the layout
             BTLogger.error("Stopping all trains because there is an error processing the layout: \(error.localizedDescription)")
@@ -139,7 +148,7 @@ final class LayoutController: TrainControllerDelegate {
     
     private func haltAll() {
         do {
-            try stopAll()
+            try stopAll(includingManualTrains: true)
         } catch {
             BTLogger.error("Unable to stop all the trains because \(error.localizedDescription)")
         }
@@ -184,8 +193,14 @@ final class LayoutController: TrainControllerDelegate {
         _ = run()
     }
 
-    func stopAll() throws {
-        for train in layout.trainsThatCanBeStopped() {
+    func stopAll(includingManualTrains: Bool) throws {
+        let trains: [Train]
+        if includingManualTrains {
+            trains = layout.trains
+        } else {
+            trains = layout.trainsThatCanBeStopped()
+        }
+        for train in trains {
             try stop(trainID: train.id, completely: true)
         }
     }
