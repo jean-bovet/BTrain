@@ -184,71 +184,39 @@ extension Layout {
     // and that is either free or already reserved for the train. This function is used, for example,
     // by the TrainController in manual mode to follow the movement of the
     // train on the layout when it is manually driven by someone.
-    func nextBlockForLocomotive(from fromBlock: Block, train: Train) throws -> Block? {
-        guard let trainInstance = fromBlock.train else {
+    func nextBlockForLocomotive(from blockWithLoco: Block, train: Train) throws -> Block? {
+        guard let trainInstance = blockWithLoco.train else {
+            return nil
+        }
+        
+        // Retrieve the next block in the direction of travel of the train
+        guard let nextBlock = try ElementVisitor.blockAfter(block: blockWithLoco, direction: trainInstance.direction, layout: self) else {
             return nil
         }
         
         if train.wagonsPushedByLocomotive {
-            if !(try freeBlockAfterLeadingBlock(train: train)) {
+            // If the locomotive is pushing the wagons, the next block must either be free
+            // or if occupied, it must be occupied by itself (which indicates that the
+            // wagons of the train occupies the next block which is expected in this scenario).
+            guard nextBlock.reserved == nil || nextBlock.reserved?.trainId == train.id else {
                 return nil
+                
+            }
+            
+            // However, we need to make one extra check to ensure that the head of the train (which
+            // is the last wagon in this scenario) has a free block ahead of it to land on.
+            if try TrainPositionFinder.isFreeBlockInFrontOfHeadWagon(train: train, layout: self) {
+                return nextBlock
+            }
+        } else {
+            // If the wagons are pulled by the locomotive, the next block must be free,
+            // otherwise it means another train is in the block or the tail of the train
+            // itself is still in that block in situation where the train loops on itself.
+            if nextBlock.reserved == nil {
+                return nextBlock
             }
         }
-        
-        var nextBlock: Block?
-        let visitor = ElementVisitor(layout: self)
-        try? visitor.visit(fromBlockId: fromBlock.id, direction: trainInstance.direction) { info in
-            if let block = info.block, info.index > 0 {
-                if train.wagonsPushedByLocomotive {
-                    // TODO: need to ensure that the wagons are not bumping into the train itself
-                    // when it is looping on itself. For this, we need to go to the end of the train
-                    // and check that the next block after it is free.
-                    if block.reserved == nil || block.reserved?.trainId == train.id {
-                        nextBlock = block
-                    }
-                } else {
-                    // If the wagons are pulled by the locomotive, the next block must be free,
-                    // otherwise it means another train is in the block or the tail of the train
-                    // itself is still in that block in situation where the train loops on itself.
-                    if block.reserved == nil {
-                        nextBlock = block
-                    }
-                }
-                return .stop
-            }
-            return .continue
-        }
-        
-        return nextBlock
+        return nil
     }
     
-    func freeBlockAfterLeadingBlock(train: Train) throws -> Bool {
-        guard let block = self.block(for: train.id) else {
-            throw LayoutError.trainNotAssignedToABlock(trainId: train.id)
-        }
-        
-        guard let trainInstance = block.train else {
-            throw LayoutError.trainNotFoundInBlock(blockId: block.id)
-        }
-        
-        let visitor = ElementVisitor(layout: self)
-        var freeBlock = false
-        try visitor.visit(fromBlockId: block.id, toBlockId: nil, direction: trainInstance.direction) { info in
-            if let block = info.block, info.index > 0 {
-                if train.wagonsPushedByLocomotive {
-                    if block.reserved == nil {
-                        freeBlock = true
-                        return .stop
-                    } else if block.reserved?.trainId == train.id {
-                        return .continue
-                    }
-                } else {
-                    freeBlock = block.reserved == nil
-                    return .stop
-                }
-            }
-            return .continue
-        }
-        return freeBlock
-    }
 }

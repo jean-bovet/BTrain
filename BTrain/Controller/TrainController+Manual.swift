@@ -79,13 +79,18 @@ extension TrainController {
             return .none
         }
         
-        // If there are no possible next block detected, we need to stop the train
-        // when it reaches the end of the block to avoid a collision.
-        if try layout.atEndOfBlock(train: train) {
+        if train.wagonsPushedByLocomotive {
             BTLogger.warning("No next block detected, stopping \(train.name) by precaution.")
             return try stop(completely: true)
+        } else {
+            // If there are no possible next block detected, we need to stop the train
+            // when it reaches the end of the block to avoid a collision.
+            if try layout.atEndOfBlock(train: train) {
+                BTLogger.warning("No next block detected, stopping \(train.name) by precaution.")
+                return try stop(completely: true)
+            }
         }
-        
+
         return .none
     }
 }

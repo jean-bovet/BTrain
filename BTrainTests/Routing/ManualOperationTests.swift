@@ -15,6 +15,7 @@ import XCTest
 
 class ManualOperationTests: BTTestCase {
 
+    // b1 > b2 > b1
     func testFollowManualOperation() throws {
         let layout = LayoutACreator().newLayout()
         let p = try setup(layout: layout, fromBlockId: "b1")
@@ -147,15 +148,20 @@ class ManualOperationTests: BTTestCase {
         try p.assertTrain(notInBlock: "b2")
         try p.assertTrain(notInBlock: "b3")
 
-        // TODO: train should be stopped because its wagon will bump into b1
-        try p.triggerFeedback("f11")
-        try p.assertTrain(inBlock: "b1", position: 1, speed: 100)
-        try p.assertTrain(inBlock: "b2", position: 1, speed: 100)
-        try p.assertTrain(inBlock: "b3", position: 1, speed: 100)
+        var headWagonBlock = try TrainPositionFinder.headWagonBlockFor(train: train, layout: layout)!
+        XCTAssertEqual(headWagonBlock.id, b1.id)
 
-        try p.triggerFeedback("f21")
-//        try p.assertTrain(inBlock: "b1", position: 1, speed: 0)
+        // The train advances within b1
+        try p.triggerFeedback("f11")
+        
+        headWagonBlock = try TrainPositionFinder.headWagonBlockFor(train: train, layout: layout)!
+        XCTAssertEqual(headWagonBlock.id, b3.id)
+
+        // The train should stop because it is occupying all the blocks and will hit
+        // itself back in b1 if it continues.
+        try p.assertTrain(inBlock: "b1", position: 1, speed: 0)
         try p.assertTrain(inBlock: "b2", position: 1, speed: 0)
+        try p.assertTrain(inBlock: "b3", position: 1, speed: 0)
     }
     
     // MARK: -- Utility

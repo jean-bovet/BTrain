@@ -42,6 +42,20 @@ final class ElementVisitor {
     
     typealias VisitorCallback = (ElementInfo) throws -> VisitorCallbackResult
     
+    static func blockAfter(block: Block, direction: Direction, layout: Layout) throws -> Block? {
+        var nextBlock: Block? = nil
+        let visitor = ElementVisitor(layout: layout)
+        try visitor.visit(fromBlockId: block.id, toBlockId: nil, direction: direction) { info in
+            if let block = info.block, info.index > 0 {
+                nextBlock = block
+                return .stop
+            } else {
+                return .continue
+            }
+        }
+        return nextBlock
+    }
+    
     // If toBlockId = nil, the algorithm follows the turnout and transitions until it cannot go any further.
     // If toBlockId != nil, the algorithm stops when the toBlockId is reached.
     func visit(fromBlockId: Identifier<Block>, toBlockId: Identifier<Block>? = nil, direction: Direction, callback: VisitorCallback) throws {

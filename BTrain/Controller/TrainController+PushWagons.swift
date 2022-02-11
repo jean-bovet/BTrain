@@ -80,14 +80,4 @@ extension TrainController {
 //        }
     }
   
-    func headWagonLocation(train: Train) throws {
-        let visitor = TrainVisitor(layout: layout)
-        try visitor.visit(train: train) { transition in
-            
-        } turnoutCallback: { turnout in
-            
-        } blockCallback: { block, attributes in
-            
-        }
-    }
 }

@@ -21,6 +21,7 @@ final class TrainVisitor {
         // (the head block of the train).
         let headBlock: Bool
                 
+        // Direction of travel of the train  inside the block
         var trainDirection: Direction
         
         // An array of all the positions that are occupied by the train.
@@ -55,31 +56,18 @@ final class TrainVisitor {
             throw LayoutError.blockNotFound(blockId: fromBlockId)
         }
                 
+        guard let trainInstance = fromBlock.train else {
+            throw LayoutError.trainNotFoundInBlock(blockId: fromBlockId)
+        }
+        
         guard let trainLength = train.length else {
+            // If the train length is not defined, we invoke once the callback for the entire block
+            try blockCallback(fromBlock, BlockAttributes(headBlock: true, trainDirection: trainInstance.direction))
             return
         }
 
         // Keep track of the remaining train length that needs to have reserved blocks
         var remainingTrainLength = trainLength
-
-        // Gather the train direction of travel within the current block
-        // and the wagon direction - which can be the same or the opposite.
-        // For example:
-        //              ▷             ◁             ◁
-        //         ┌─────────┐   ┌─────────┐   ┌─────────┐
-        //         │ ■■■■■■▶ │──▶│ ■■■■■■▶ │──▶│ ■■■■■■▶ │
-        //         └─────────┘   └─────────┘   └─────────┘
-        //  Train:   next          previous      previous
-        //  Wagon:   previous      next          next
-        //  trainAndWagonDirectionIdentical = false
-        //              ▷             ◁             ◁
-        //         ┌─────────┐   ┌─────────┐   ┌─────────┐
-        //         │ ▶■■■■■■ │──▶│ ▶■■■■■■ │──▶│ ▶■■■■■■ │
-        //         └─────────┘   └─────────┘   └─────────┘
-        //  Train:   next          previous      previous
-        //  Wagon:   next          previous      previous
-        //  trainAndWagonDirectionIdentical = true
-        //
 
         // Direction in which the wagon are layout from the locomotive
         let wagonDirection = try fromBlock.wagonDirection(for: train)
