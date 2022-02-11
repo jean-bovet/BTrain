@@ -14,6 +14,22 @@ import Foundation
 
 extension Block {
 
+    // Returns the direction in which the wagons are layout for the given
+    // train and block. If the wagons are pushed by the locomotive, they
+    // will have a direction opposite to the one of the locomotive (train).
+    func wagonDirection(for train: Train) throws -> Direction {
+        guard let trainInstance = self.train else {
+            throw LayoutError.trainNotFoundInBlock(blockId: self.id)
+        }
+
+        // Direction of travel of the train within the block
+        let trainDirection = trainInstance.direction
+        // Direction in which the wagon are layout from the locomotive
+        let wagonDirection = train.wagonsPushedByLocomotive ? trainDirection : trainDirection.opposite
+        
+        return wagonDirection
+    }
+    
     // Returns true if the block is reserved and occupied by the train or a portion of the train.
     func isOccupied(by trainId: Identifier<Train>) -> Bool {
         return reserved?.trainId == trainId && train?.trainId == trainId

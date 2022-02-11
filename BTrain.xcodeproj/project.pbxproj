@@ -160,6 +160,8 @@
 		A79466D1279B948F006E2A4C /* Simulator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A79466D0279B948F006E2A4C /* Simulator.swift */; };
 		A795A03127AF6C8D00AE90EB /* AutomaticRouting.swift in Sources */ = {isa = PBXBuildFile; fileRef = A795A03027AF6C8D00AE90EB /* AutomaticRouting.swift */; };
 		A795A03327B0894800AE90EB /* CenteredLabelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A795A03227B0894800AE90EB /* CenteredLabelView.swift */; };
+		A795A03627B681D100AE90EB /* TrainController+PushWagons.swift in Sources */ = {isa = PBXBuildFile; fileRef = A795A03527B681D100AE90EB /* TrainController+PushWagons.swift */; };
+		A795A03827B6848000AE90EB /* LayoutTrainVisitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = A795A03727B6848000AE90EB /* LayoutTrainVisitor.swift */; };
 		A796FA2B2772BB5400FA41BA /* Layout.json in Resources */ = {isa = PBXBuildFile; fileRef = A796FA2A2772BB5400FA41BA /* Layout.json */; };
 		A796FA2E2775642B00FA41BA /* LayoutAsserter.swift in Sources */ = {isa = PBXBuildFile; fileRef = A796FA2D2775642B00FA41BA /* LayoutAsserter.swift */; };
 		A798BB4027A6E7F1000BB4D1 /* LayoutHCreator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A798BB3F27A6E7F1000BB4D1 /* LayoutHCreator.swift */; };
@@ -387,6 +389,8 @@
 		A79466D0279B948F006E2A4C /* Simulator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Simulator.swift; sourceTree = "<group>"; };
 		A795A03027AF6C8D00AE90EB /* AutomaticRouting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutomaticRouting.swift; sourceTree = "<group>"; };
 		A795A03227B0894800AE90EB /* CenteredLabelView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CenteredLabelView.swift; sourceTree = "<group>"; };
+		A795A03527B681D100AE90EB /* TrainController+PushWagons.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TrainController+PushWagons.swift"; sourceTree = "<group>"; };
+		A795A03727B6848000AE90EB /* LayoutTrainVisitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutTrainVisitor.swift; sourceTree = "<group>"; };
 		A796FA2A2772BB5400FA41BA /* Layout.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = Layout.json; sourceTree = "<group>"; };
 		A796FA2D2775642B00FA41BA /* LayoutAsserter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutAsserter.swift; sourceTree = "<group>"; };
 		A798BB3F27A6E7F1000BB4D1 /* LayoutHCreator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutHCreator.swift; sourceTree = "<group>"; };
@@ -780,6 +784,7 @@
 				A7710E6A27799E2700C08150 /* Layout+Turnouts.swift */,
 				A7710E6C27799E4A00C08150 /* Layout+Feedbacks.swift */,
 				A7E78C4127A08F9E004D1821 /* LayoutReservation.swift */,
+				A795A03727B6848000AE90EB /* LayoutTrainVisitor.swift */,
 				A744D1362765C5A3005C2F37 /* LayoutError.swift */,
 				A76507F3275BEE5F0079C71A /* LayoutDiagnostics.swift */,
 				A783EA9E2787C6DA00E69B6D /* LayoutObserver.swift */,
@@ -1036,6 +1041,7 @@
 				A783EAA82788C1F700E69B6D /* LayoutFeedbackMonitor.swift */,
 				A7218077275D922300831998 /* TrainController.swift */,
 				A7E78C4727A21DD3004D1821 /* TrainController+Manual.swift */,
+				A795A03527B681D100AE90EB /* TrainController+PushWagons.swift */,
 			);
 			path = Controller;
 			sourceTree = "<group>";
@@ -1251,6 +1257,7 @@
 				A717158B275844AE00200F92 /* SwitchBoardTrainDragging.swift in Sources */,
 				A7FBC8B4276E87B7009D49C3 /* LayoutECreator.swift in Sources */,
 				A7710E6F2779A50A00C08150 /* SwitchboardContainerView.swift in Sources */,
+				A795A03627B681D100AE90EB /* TrainController+PushWagons.swift in Sources */,
 				A74CCC6E272A5A08004E58F5 /* Route.swift in Sources */,
 				A798BB4E27AF4478000BB4D1 /* Turnout+Reservation.swift in Sources */,
 				A76507E8275AD1FE0079C71A /* TrainControlLocationView.swift in Sources */,
@@ -1318,6 +1325,7 @@
 				A71D97FC27A6210300EBEA06 /* Block+Occupation.swift in Sources */,
 				A7710E572777D69400C08150 /* RouteListView.swift in Sources */,
 				A79466D1279B948F006E2A4C /* Simulator.swift in Sources */,
+				A795A03827B6848000AE90EB /* LayoutTrainVisitor.swift in Sources */,
 				A79079A3277F87AB00771A60 /* Spacer+Extension.swift in Sources */,
 				A783EAA52788B52000E69B6D /* BlockShapeView.swift in Sources */,
 				A784138F274230CF00381341 /* MarklinTestMessageFactory.swift in Sources */,

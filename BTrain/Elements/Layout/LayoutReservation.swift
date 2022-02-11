@@ -233,145 +233,49 @@ final class LayoutReservation {
         guard let fromBlock = layout.block(for: fromBlockId) else {
             throw LayoutError.blockNotFound(blockId: fromBlockId)
         }
-        
-        guard let trainInstance = fromBlock.train else {
-            throw LayoutError.trainNotFoundInBlock(blockId: fromBlockId)
-        }
-        
-        guard let trainLength = train.length else {
-            return
-        }
-        
-        // Gather the train direction of travel within the current block
-        // and the wagon direction - which can be the same or the opposite.
-        // For example:
-        //              ▷             ◁             ◁
-        //         ┌─────────┐   ┌─────────┐   ┌─────────┐
-        //         │ ■■■■■■▶ │──▶│ ■■■■■■▶ │──▶│ ■■■■■■▶ │
-        //         └─────────┘   └─────────┘   └─────────┘
-        //  Train:   next          previous      previous
-        //  Wagon:   previous      next          next
-        //  trainAndWagonDirectionIdentical = false
-        //              ▷             ◁             ◁
-        //         ┌─────────┐   ┌─────────┐   ┌─────────┐
-        //         │ ▶■■■■■■ │──▶│ ▶■■■■■■ │──▶│ ▶■■■■■■ │
-        //         └─────────┘   └─────────┘   └─────────┘
-        //  Train:   next          previous      previous
-        //  Wagon:   next          previous      previous
-        //  trainAndWagonDirectionIdentical = true
-        //
-        // Direction of travel of the train within the block
-        let trainDirection = trainInstance.direction
-        // Direction in which the wagon are layout from the locomotive
-        let wagonDirection = train.wagonsPushedByLocomotive ? trainDirection : trainDirection.opposite
-        
+                        
         // First, free all the reserved block "behind" the train so we can reserve them again
         // using the length of the train in consideraion
-        try freeReservedElements(fromBlockId: fromBlockId, direction: wagonDirection, trainId: train.id)
-
-        // Keep track of the remaining train length that needs to have reserved blocks
-        var remainingTrainLength = trainLength
-
-        try visitor.visit(fromBlockId: fromBlock.id, direction: wagonDirection, callback: { info in
-            if let transition = info.transition {
-                // Transition is just a virtual connection between two elements, no physical length exists.
-                guard transition.reserved == nil else {
-                    throw LayoutError.transitionAlreadyReserved(transition: transition)
-                }
-                transition.reserved = train.id
-                transition.train = train.id
-            } else if let turnout = info.turnout {
-                guard turnout.reserved == nil else {
-                    throw LayoutError.turnoutAlreadyReserved(turnout: turnout)
-                }
-                if let length = turnout.length {
-                    remainingTrainLength -= length
-                }
-                turnout.reserved = train.id
-                turnout.train = train.id
-            } else if let block = info.block, let wagonDirection = info.direction {
-                guard block.reserved == nil || info.index == 0 else {
-                    throw LayoutError.blockAlreadyReserved(block: block)
-                }
-                                
-                // Determine the direction of the train within the current block by using
-                // the flag indicating if the wagons are pushed or not by the locomotive.
-                let trainDirection = train.wagonsPushedByLocomotive ? wagonDirection : wagonDirection.opposite
-                remainingTrainLength = try reserveBlockParts(train: train,
-                                                             remainingTrainLength: remainingTrainLength,
-                                                             block: block,
-                                                             headBlock: info.index == 0,
-                                                             wagonDirection: wagonDirection,
-                                                             trainDirection: trainDirection)
-                block.reserved = .init(trainId: train.id, direction: trainDirection)
-            }
-
-            if remainingTrainLength > 0 {
-                return .continue
-            } else {
-                return .stop
-            }
-        })
+        try freeReservedElements(fromBlockId: fromBlockId,
+                                 direction: fromBlock.wagonDirection(for: train),
+                                 trainId: train.id)
+        
+        // Fill all the elements that are occupied by the train
+        try fillElementWith(train: train)
     }
     
-    private func reserveBlockParts(train: Train, remainingTrainLength: Double, block: Block, headBlock: Bool, wagonDirection: Direction, trainDirection: Direction) throws -> Double {
-        let trainInstance = TrainInstance(train.id, trainDirection)
-        trainInstance.parts.removeAll()
-        
-        var currentRemainingTrainLength = remainingTrainLength
-        
-        // [ 0 | 1 | 2 ]
-        //   =   =>
-        //   <   <   <   (direction previous)
-        //      <=   =
-        //   >   >   >   (direction next)
-                
-        // Determine the starting position where to begin filling out parts of the block
-        var position: Int
-        if headBlock {
-            position = train.position
-        } else {
-            position = wagonDirection == .previous ? block.feedbacks.count : 0
+    private func fillElementWith(train: Train) throws {
+        let trainVisitor = LayoutTrainVisitor(layout: layout)
+        try trainVisitor.visit(train: train) { transition in
+            guard transition.reserved == nil else {
+                throw LayoutError.transitionAlreadyReserved(transition: transition)
+            }
+            transition.reserved = train.id
+            transition.train = train.id
+        } turnoutCallback: { turnout in
+            guard turnout.reserved == nil else {
+                throw LayoutError.turnoutAlreadyReserved(turnout: turnout)
+            }
+            turnout.reserved = train.id
+            turnout.train = train.id
+        } blockCallback: { block, attributes in
+            guard block.reserved == nil || attributes.headBlock else {
+                throw LayoutError.blockAlreadyReserved(block: block)
+            }
+
+            let trainInstance = TrainInstance(train.id, attributes.trainDirection)
+            block.train = trainInstance
+
+            for (index, position) in attributes.positions.enumerated() {
+                if index == 0 {
+                    trainInstance.parts[position] = attributes.headBlock ? .locomotive : .wagon
+                } else {
+                    trainInstance.parts[position] = .wagon
+                }
+            }
+
+            block.reserved = .init(trainId: train.id, direction: attributes.trainDirection)
         }
-        
-        let increment = wagonDirection == .previous ? -1 : 1
-
-        // Gather all the part length to ensure they are all defined.
-        if let allPartsLength = try block.allPartsLength() {
-            if headBlock {
-                trainInstance.parts[position] = .locomotive
-                // Don't take into consideration the length of that part
-                // because the locomotive could be at the beginning of the part.
-                // This will get more precise once we manage the distance
-                // using the real speed conversion.
-            } else {
-                trainInstance.parts[position] = .wagon
-                currentRemainingTrainLength -= allPartsLength[position]!
-            }
-            
-            position += increment
-            while ((increment < 0 && position >= 0) || (increment > 0 && position < block.feedbacks.count + 1)) && currentRemainingTrainLength > 0 {
-                trainInstance.parts[position] = .wagon
-                currentRemainingTrainLength -= allPartsLength[position]!
-
-                position += increment
-            }
-        } else if let length = block.length {
-            // If the parts length are not available, let's use the block full length
-            trainInstance.parts[position] = headBlock ? .locomotive : .wagon
-
-            position += increment
-            while ((increment < 0 && position >= 0) || (increment > 0 && position < block.feedbacks.count + 1)) {
-                trainInstance.parts[position] = .wagon
-                position += increment
-            }
-
-            currentRemainingTrainLength -= length
-        }
-        
-        block.train = trainInstance
-        
-        return currentRemainingTrainLength
     }
 
     private func freeReservedElements(fromBlockId: Identifier<Block>, direction: Direction, trainId: Identifier<Train>) throws {
