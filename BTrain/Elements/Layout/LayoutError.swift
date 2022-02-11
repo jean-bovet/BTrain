@@ -19,6 +19,8 @@ enum LayoutError: Error {
     case trainInBlockDoesNotMatch(trainId: Identifier<Train>, blockId: Identifier<Block>, blockTrainId: Identifier<Train>)
     case trainNotFoundInRoute(train: Train, route: Route)
     case trainNotAssignedToARoute(train: Train)
+    
+    case headWagonNotFound(train: Train)
 
     case blockNotFound(blockId: Identifier<Block>)
     case turnoutNotFound(turnoutId: Identifier<Turnout>)
@@ -106,6 +108,10 @@ extension LayoutError: LocalizedError {
             return "Train \(train.name) not found in route \(route.name)"
         case .trainNotAssignedToARoute(train: let train):
             return "Train \(train.name) has no associated route"
+            
+        case .headWagonNotFound(train: let train):
+            return "No head wagon found for train \(train.name)"
+
         case .routeNotFound(routeId: let routeId):
             return "Route \(routeId) not found"
         case .noSteps(routeId: let routeId):

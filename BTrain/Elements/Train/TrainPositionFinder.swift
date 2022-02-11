@@ -41,8 +41,7 @@ final class TrainPositionFinder {
     // Returns true if the block in front of the block containing the head wagon is free.
     static func isFreeBlockInFrontOfHeadWagon(train: Train, layout: Layout) throws -> Bool {
         guard let headWagonBlock = try headWagonBlockFor(train: train, layout: layout) else {
-            // TODO: throw
-            fatalError()
+            throw LayoutError.headWagonNotFound(train: train)
         }
                         
         guard let blockId = train.blockId else {
