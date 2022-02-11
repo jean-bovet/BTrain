@@ -338,7 +338,7 @@ final class TrainController {
         
         let direction = trainInstance.direction
         var result: Result = .none
-        for (_, feedback) in currentBlock.feedbacks.enumerated() {
+        for feedback in currentBlock.feedbacks {
             guard let f = layout.feedback(for: feedback.feedbackId), f.detected else {
                 continue
             }

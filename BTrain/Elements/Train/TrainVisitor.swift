@@ -14,7 +14,7 @@ import Foundation
 
 // This class provides an easy way to visit all the elements (transitions, turnouts and blocks)
 // that a train occupies, including the individual parts of each block.
-final class LayoutTrainVisitor {
+final class TrainVisitor {
     
     struct BlockAttributes {
         // True if this block is the one containing the locomotive

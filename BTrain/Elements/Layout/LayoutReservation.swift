@@ -245,7 +245,7 @@ final class LayoutReservation {
     }
     
     private func fillElementWith(train: Train) throws {
-        let trainVisitor = LayoutTrainVisitor(layout: layout)
+        let trainVisitor = TrainVisitor(layout: layout)
         try trainVisitor.visit(train: train) { transition in
             guard transition.reserved == nil else {
                 throw LayoutError.transitionAlreadyReserved(transition: transition)

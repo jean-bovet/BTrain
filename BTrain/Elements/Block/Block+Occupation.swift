@@ -17,6 +17,24 @@ extension Block {
     // Returns the direction in which the wagons are layout for the given
     // train and block. If the wagons are pushed by the locomotive, they
     // will have a direction opposite to the one of the locomotive (train).
+    // Gather the train direction of travel within the current block
+    // and the wagon direction - which can be the same or the opposite.
+    // For example:
+    //              ▷             ◁             ◁
+    //         ┌─────────┐   ┌─────────┐   ┌─────────┐
+    //         │ ■■■■■■▶ │──▶│ ■■■■■■▶ │──▶│ ■■■■■■▶ │
+    //         └─────────┘   └─────────┘   └─────────┘
+    //  Train:   next          previous      previous
+    //  Wagon:   previous      next          next
+    //  trainAndWagonDirectionIdentical = false
+    //              ▷             ◁             ◁
+    //         ┌─────────┐   ┌─────────┐   ┌─────────┐
+    //         │ ▶■■■■■■ │──▶│ ▶■■■■■■ │──▶│ ▶■■■■■■ │
+    //         └─────────┘   └─────────┘   └─────────┘
+    //  Train:   next          previous      previous
+    //  Wagon:   next          previous      previous
+    //  trainAndWagonDirectionIdentical = true
+    //
     func wagonDirection(for train: Train) throws -> Direction {
         guard let trainInstance = self.train else {
             throw LayoutError.trainNotFoundInBlock(blockId: self.id)
