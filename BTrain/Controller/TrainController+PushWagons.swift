@@ -59,7 +59,7 @@ import Foundation
 //    └─────────┘   └─────────┘   └─────────┘
 //
 // The pseudo-code to take care of the scenario described above is the following:
-// - Each time a feedback is detected by the locomotive, we need to find the next feedback and perform the same calculation.
+// - Each time a feedback is detected by the locomotive, we need to find the next feedback and perform the following evaluations:
 //   - If the HWP is past the block it needs to stop in, stop the train.
 //   - If the HWP is past the stopping feedback of the block it needs to stop in, stop the train.
 //   - If the HWP is past the braking feedback of the block it needs to stop in, brake the train.
