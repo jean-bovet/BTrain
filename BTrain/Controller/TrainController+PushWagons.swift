@@ -89,17 +89,5 @@ extension TrainController {
         
         return .none
     }
-    
-//        let nextFeedback = nextFeedback()
-//        let headWagonPositionFeedback = headWagonPositionFeedback()
-//        if headWagonPositionFeedback.pastBlock(blockToStopIn) {
-//
-//        }
-//        if headWagonPositionFeedback.isPastBrakingFeedback {
-//            // Brake the train
-//        }
-//        if headWagonPositionFeedback.isPastStoppingFeedback {
-//
-//        }
-  
+      
 }

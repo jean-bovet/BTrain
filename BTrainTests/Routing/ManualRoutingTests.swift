@@ -645,7 +645,7 @@ class ManualRoutingTests: BTTestCase {
         XCTAssertEqual(b3.brakeFeedback(for: .next), Identifier<Feedback>(uuid: "fb3.1"))
         XCTAssertEqual(b3.stopFeedback(for: .next), Identifier<Feedback>(uuid: "fb3.2"))
 
-        let p = try setup(layout: layout, fromBlockId: "s1", route: layout.routes[0])
+        var p = try setup(layout: layout, fromBlockId: "s1", route: layout.routes[0])
 
         layout.strictRouteFeedbackStrategy = false
 
@@ -678,9 +678,21 @@ class ManualRoutingTests: BTTestCase {
         XCTAssertEqual(train.state, .stopped)
 
         // Now let's reverse the train direction and pick the reverse route
-        // TODO finish the test
-//        p = try setup(layout: layout, fromBlockId: "s1", direction: .previous, route: layout.routes[1])
-//        try p.assert("0: !{r0{s1 🛑🚂0 ≏ }} <t6,r> <t5> ![b3 ≏ ≏ ≏ ] <t4> ![b2 ≏ ] <t3> ![b1 ≏ ] <t2,s> <t1,l> !{r0{s1 🛑🚂0 ≏}}")
+        p = try setup(layout: layout, fromBlockId: "s1", direction: .previous, route: layout.routes[1])
+        
+        layout.strictRouteFeedbackStrategy = false
+
+        try p.assert("1: !{r0{s1 🛑🚂0 ≏ }} <t6(2,0),r> <t5(1,0)> ![b3 ≏ ≏ ≏ ] <t4> ![b2 ≏ ] <t3(1,0)> ![b1 ≏ ] <t2,s> <t1(0,2),l> !{r0{s1 🛑🚂0 ≏}}")
+        
+        try p.start()
+        
+        try p.assert("1: !{r0{s1 🚂0 ≏ }} <r0<t6(2,0),r>> <r0<t5(1,0)>> ![r0[b3 ≏ ≏ ≏ ]] <t4> ![b2 ≏ ] <t3(1,0)> ![b1 ≏ ] <t2,s> <t1(0,2),l> !{r0{s1 🚂0 ≏}}")
+        try p.assert("1: !{r0{s1 ≡ 🚂0 }} <r0<t6(2,0),r>> <r0<t5(1,0)>> ![r0[b3 ≏ ≏ ≏ ]] <t4> ![b2 ≏ ] <t3(1,0)> ![b1 ≏ ] <t2,s> <t1(0,2),l> !{r0{s1 ≡ 🚂0 }}")
+        
+        try p.assert("1: !{s1 ≏ } <t6(2,0),r> <t5(1,0)> ![r0[b3 ≡ 🚂0 ≏ ≏ ]] <r0<t4>> ![r0[b2 ≏ ]] <t3(1,0)> ![b1 ≏ ] <t2,s> <t1(0,2),l> !{s1 ≏}")
+        try p.assert("1: !{s1 ≏ } <t6(2,0),r> <t5(1,0)> ![b3 ≏ ≏ ≏ ] <t4> ![r0[b2 ≡ 🚂0 ]] <r0<t3(1,0)>> ![r0[b1 ≏ ]] <t2,s> <t1(0,2),l> !{s1 ≏}")
+        try p.assert("1: !{r0{s1 ≏ }} <t6(2,0),r> <t5(1,0)> ![b3 ≏ ≏ ≏ ] <t4> ![b2 ≏ ] <t3(1,0)> ![r0[b1 ≡ 🚂0 ]] <r0<t2,s>> <r0<t1(0,2),l>> !{r0{s1 ≏}}")
+        try p.assert("1: !{r0{s1 ≡ 🛑🚂0 }} <t6(2,0),r> <t5(1,0)> ![b3 ≏ ≏ ≏ ] <t4> ![b2 ≏ ] <t3(1,0)> ![b1 ≏ ] <t2,s> <t1(0,2),l> !{r0{s1 ≡ 🛑🚂0 }}")
     }
     
     func testRouteStationRestart() throws {
