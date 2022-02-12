@@ -45,34 +45,70 @@ final class TrainVisitor {
     }
     
     func visit(train: Train,
+               startAtNextPosition: Bool = false,
                transitionCallback: TransitionCallbackBlock,
                turnoutCallback: TurnoutCallbackBlock,
                blockCallback: BlockCallbackBlock) throws {
-        guard let fromBlockId = train.blockId else {
+        guard let locomotiveBlockId = train.blockId else {
             throw LayoutError.trainNotAssignedToABlock(trainId: train.id)
         }
         
-        guard let fromBlock = layout.block(for: fromBlockId) else {
-            throw LayoutError.blockNotFound(blockId: fromBlockId)
+        guard var locomotiveBlock = layout.block(for: locomotiveBlockId) else {
+            throw LayoutError.blockNotFound(blockId: locomotiveBlockId)
         }
                 
-        guard let trainInstance = fromBlock.train else {
-            throw LayoutError.trainNotFoundInBlock(blockId: fromBlockId)
+        guard let trainInstance = locomotiveBlock.train else {
+            throw LayoutError.trainNotFoundInBlock(blockId: locomotiveBlockId)
         }
         
         guard let trainLength = train.length else {
             // If the train length is not defined, we invoke once the callback for the entire block
-            try blockCallback(fromBlock, BlockAttributes(headBlock: true, trainDirection: trainInstance.direction))
+            try blockCallback(locomotiveBlock, BlockAttributes(headBlock: true, trainDirection: trainInstance.direction))
             return
         }
+        
+        var trainPosition = train.position
+        
+        // Direction in which the wagon are layout from the locomotive
+        var wagonDirection = try locomotiveBlock.wagonDirection(for: train)
+        
+        if startAtNextPosition {
+            // Determine the next position of the locomotive
+            trainPosition += 1
+            if trainPosition > locomotiveBlock.feedbacks.count {
+                if let nextBlock = try ElementVisitor.blockAfter(block: locomotiveBlock, direction: trainInstance.direction, layout: layout) {
+                    let (_, direction) = try layout.entryFeedback(from: locomotiveBlock, to: nextBlock)
+                    if trainInstance.direction == direction {
+                        // No change in direction relative to the new block
+                        trainPosition = 0
+                    } else {
+                        // The train will enter the next block in the previous direction relative to the block
+                        trainPosition = nextBlock.feedbacks.count
+                        wagonDirection = wagonDirection.opposite
+                    }
+                    locomotiveBlock = nextBlock
+                } else {
+                    return
+                }
+            }
+        }
 
+        try visit(trainLength: trainLength, trainPosition: trainPosition, wagonDirection: wagonDirection, wagonsPushedByLocomotive: train.wagonsPushedByLocomotive, trainBlock: locomotiveBlock,
+                  transitionCallback: transitionCallback, turnoutCallback: turnoutCallback, blockCallback: blockCallback)
+    }
+    
+    func visit(trainLength: Double,
+               trainPosition: Int,
+               wagonDirection: Direction,
+               wagonsPushedByLocomotive: Bool,
+               trainBlock: Block,
+               transitionCallback: TransitionCallbackBlock,
+               turnoutCallback: TurnoutCallbackBlock,
+               blockCallback: BlockCallbackBlock) throws {
         // Keep track of the remaining train length that needs to have reserved blocks
         var remainingTrainLength = trainLength
 
-        // Direction in which the wagon are layout from the locomotive
-        let wagonDirection = try fromBlock.wagonDirection(for: train)
-
-        try visitor.visit(fromBlockId: fromBlock.id, direction: wagonDirection, callback: { info in
+        try visitor.visit(fromBlockId: trainBlock.id, direction: wagonDirection, callback: { info in
             if let transition = info.transition {
                 // Transition is just a virtual connection between two elements, no physical length exists.
                 try transitionCallback(transition)
@@ -84,8 +120,8 @@ final class TrainVisitor {
             } else if let block = info.block, let wagonDirection = info.direction {
                 // Determine the direction of the train within the current block by using
                 // the flag indicating if the wagons are pushed or not by the locomotive.
-                let trainDirection = train.wagonsPushedByLocomotive ? wagonDirection : wagonDirection.opposite
-                remainingTrainLength = try visitBlockParts(train: train,
+                let trainDirection = wagonsPushedByLocomotive ? wagonDirection : wagonDirection.opposite
+                remainingTrainLength = try visitBlockParts(trainPosition: trainPosition,
                                                            remainingTrainLength: remainingTrainLength,
                                                            block: block,
                                                            headBlock: info.index == 0,
@@ -102,7 +138,7 @@ final class TrainVisitor {
         })
     }
     
-    private func visitBlockParts(train: Train, remainingTrainLength: Double, block: Block, headBlock: Bool, wagonDirection: Direction, trainDirection: Direction, blockCallback: BlockCallbackBlock) throws -> Double {
+    private func visitBlockParts(trainPosition: Int, remainingTrainLength: Double, block: Block, headBlock: Bool, wagonDirection: Direction, trainDirection: Direction, blockCallback: BlockCallbackBlock) throws -> Double {
         var currentRemainingTrainLength = remainingTrainLength
         
         // [ 0 | 1 | 2 ]
@@ -114,7 +150,7 @@ final class TrainVisitor {
         // Determine the starting position where to begin filling out parts of the block
         var position: Int
         if headBlock {
-            position = train.position
+            position = trainPosition
         } else {
             position = wagonDirection == .previous ? block.feedbacks.count : 0
         }

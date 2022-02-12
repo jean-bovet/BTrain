@@ -115,7 +115,11 @@ final class TrainController {
         if try handleTrainMoveToNextBlock(route: route) == .processed {
             result = .processed
         }
-        
+
+        if try handleTrainStopPushingWagons() == .processed {
+            result = .processed
+        }
+
         if try handleTrainStop() == .processed {
             result = .processed
         }

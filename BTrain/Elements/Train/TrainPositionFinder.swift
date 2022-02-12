@@ -16,7 +16,7 @@ final class TrainPositionFinder {
         
     // Returns the block that contains the last wagon of the train
     // which is the "lead wagon" when the locomotive pushes the train.
-    static func headWagonBlockFor(train: Train, layout: Layout) throws -> Block? {
+    static func headWagonBlockFor(train: Train, startAtNextPosition: Bool = false, layout: Layout) throws -> Block? {
         guard train.wagonsPushedByLocomotive else {
             fatalError("It is an error to ask for the head wagon when the locomotive is not pushing its wagons")
         }
@@ -24,7 +24,7 @@ final class TrainPositionFinder {
         let visitor = TrainVisitor(layout: layout)
         
         var lastVisitedBlock: Block? = nil
-        try visitor.visit(train: train) { transition in
+        try visitor.visit(train: train, startAtNextPosition: startAtNextPosition) { transition in
             // Transition is only a virtual element, nothing to do.
         } turnoutCallback: { turnout in
             // Note: we are ignoring any occupied turnout that might
@@ -40,7 +40,7 @@ final class TrainPositionFinder {
     
     // Returns true if the block in front of the block containing the head wagon is free.
     static func isFreeBlockInFrontOfHeadWagon(train: Train, layout: Layout) throws -> Bool {
-        guard let headWagonBlock = try headWagonBlockFor(train: train, layout: layout) else {
+        guard let headWagonBlock = try headWagonBlockFor(train: train, startAtNextPosition: false, layout: layout) else {
             throw LayoutError.headWagonNotFound(train: train)
         }
                         

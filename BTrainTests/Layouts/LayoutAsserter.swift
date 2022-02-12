@@ -197,7 +197,7 @@ final class LayoutAsserter {
         }
         
         if let expectedTrain = expectedBlock.train {
-            XCTAssertEqual(block.train?.trainId, expectedTrain.trainId, "Unexpected train mismatch in block at index \(index)")
+            XCTAssertEqual(block.train?.trainId, expectedTrain.trainId, "Unexpected train mismatch in block \(block.name) at index \(index)")
         } else {
             XCTAssertNil(block.train, "Block \(block) should not contain train \(block.train!)")
         }
