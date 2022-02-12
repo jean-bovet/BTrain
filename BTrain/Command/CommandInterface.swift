@@ -36,6 +36,6 @@ protocol CommandInterface {
     typealias TurnoutChangeCallback = (_ address: CommandTurnoutAddress, _ state: UInt8, _ power: UInt8) -> Void
     func register(forTurnoutChange: @escaping TurnoutChangeCallback)
     
-    typealias QueryLocomotiveCommandCompletion = (_ locomotives: [CommandLocomotive]) -> Void
-    func queryLocomotives(command: Command, completion: @escaping QueryLocomotiveCommandCompletion)
+    typealias QueryLocomotiveCallback = (_ locomotives: [CommandLocomotive]) -> Void
+    func register(forLocomotivesQuery callback: @escaping QueryLocomotiveCallback)
 }

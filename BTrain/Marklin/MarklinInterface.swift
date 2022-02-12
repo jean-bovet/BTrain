@@ -22,8 +22,7 @@ final class MarklinInterface {
     var speedChangeCallbacks = [SpeedChangeCallback]()
     var directionChangeCallbacks = [DirectionChangeCallback]()
     var turnoutChangeCallbacks = [TurnoutChangeCallback]()
-    
-    var locomotivesCommandCompletionBlocks = [QueryLocomotiveCommandCompletion]()
+    var locomotivesQueryCallbacks = [QueryLocomotiveCallback]()
     
     typealias CompletionBlock = () -> Void
     private var disconnectCompletionBlocks: CompletionBlock?
@@ -43,8 +42,7 @@ final class MarklinInterface {
                     if case .completed(let locomotives) = status {
                         DispatchQueue.main.async {
                             let locomotives = locomotives.map { $0.commandLocomotive }
-                            self.locomotivesCommandCompletionBlocks.forEach { $0(locomotives) }
-                            self.locomotivesCommandCompletionBlocks.removeAll()
+                            self.locomotivesQueryCallbacks.forEach { $0(locomotives) }
                         }
                     }
                 }
@@ -135,10 +133,8 @@ extension MarklinInterface: CommandInterface {
         turnoutChangeCallbacks.append(callback)
     }
 
-    // TODO: move towards a model where there is a register(forLocomotive) model
-    func queryLocomotives(command: Command, completion: @escaping QueryLocomotiveCommandCompletion) {
-        locomotivesCommandCompletionBlocks.append(completion)
-        execute(command: command) { }
+    func register(forLocomotivesQuery callback: @escaping QueryLocomotiveCallback) {
+        locomotivesQueryCallbacks.append(callback)
     }
 
 }

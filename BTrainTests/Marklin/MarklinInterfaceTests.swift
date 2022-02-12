@@ -68,10 +68,13 @@ class MarklinInterfaceTests: XCTestCase {
         let completionExpectation = XCTestExpectation()
         var locs = [CommandLocomotive]()
         
-        mi.queryLocomotives(command: .locomotives()) { locomotives in
+        mi.register { locomotives in
             locs = locomotives
             completionExpectation.fulfill()
         }
+        
+        mi.execute(command: .locomotives()) { }
+        
         wait(for: [completionExpectation], timeout: 1)
 
         XCTAssertEqual(locs.count, 11)
