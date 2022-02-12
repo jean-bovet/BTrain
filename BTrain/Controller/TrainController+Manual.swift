@@ -43,7 +43,7 @@ extension TrainController {
             return .none
         }
 
-        guard let nextBlock = try layout.nextBlockForLocomotive(from: currentBlock, train: train) else {
+        guard let nextBlock = try layout.nextValidBlockForLocomotive(from: currentBlock, train: train) else {
             return .none
         }
         
@@ -75,7 +75,7 @@ extension TrainController {
             return .none
         }
 
-        guard try layout.nextBlockForLocomotive(from: currentBlock, train: train) == nil else {
+        guard try layout.nextValidBlockForLocomotive(from: currentBlock, train: train) == nil else {
             return .none
         }
         

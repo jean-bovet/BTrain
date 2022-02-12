@@ -34,18 +34,14 @@ final class LayoutReservation {
     // Note: it won't reserve blocks that are already reserved to avoid loops.
     @discardableResult
     func updateReservedBlocks(train: Train, trainStarting: Bool = false) throws -> Bool {
-        // Before trying to reserve the leading blocks, let's free up
-        // all the reserved elements (turnouts, transitions, blocks) in front
-        // of the train. This is to keep the algorithm simple:
-        // (1) Free up leading reserved blocks
-        // (2) Reserve leading reserved blocks
+        // Remove the train from all the elements
         try freeElements(train: train)
         
-        // Make sure to fill the blocks with the train, taking into account its length.
-        // Note: this is necessary because if the train is "pushed" by the locomotive,
-        // the leading blocks will be freedup and need to be reserved again for the train.
+        // Reserve and set the train and its wagon(s) using the necessary number of
+        // elements (turnouts and blocks)
         try fillBlocks(train: train)
-        
+
+        // Reserve the number of leading blocks necessary
         return try reserveLeadingBlocks(train: train, trainStarting: trainStarting)
     }
         

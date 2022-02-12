@@ -184,7 +184,7 @@ extension Layout {
     // and that is either free or already reserved for the train. This function is used, for example,
     // by the TrainController in manual mode to follow the movement of the
     // train on the layout when it is manually driven by someone.
-    func nextBlockForLocomotive(from blockWithLoco: Block, train: Train) throws -> Block? {
+    func nextValidBlockForLocomotive(from blockWithLoco: Block, train: Train) throws -> Block? {
         guard let trainInstance = blockWithLoco.train else {
             return nil
         }
