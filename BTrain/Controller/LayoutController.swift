@@ -85,6 +85,7 @@ final class LayoutController: TrainControllerDelegate {
                 self.runControllers()
             }
         }
+        redrawSwitchboard()
     }
         
     func run() -> TrainController.Result {
@@ -237,7 +238,7 @@ final class LayoutController: TrainControllerDelegate {
         
         // Start a timer that will restart the train with a new automatic route
         // Note: the timer fires every second to update the remaining time until it reaches 0.
-        let timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true, block: { timer in
+        let timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true, block: { [weak self] timer in
             train.timeUntilAutomaticRestart -= 1
             if train.timeUntilAutomaticRestart <= 0 {
                 BTLogger.debug("It is now time to restart train \(train.id)")
@@ -245,10 +246,10 @@ final class LayoutController: TrainControllerDelegate {
                 // when it sees that this timer has reached 0 and all other parameters are valid.
                 train.timeUntilAutomaticRestart = 0
                 timer.invalidate()
-                self.runControllers()
+                self?.runControllers()
             }
             // Redraw the switchboard so the time interval is refreshed
-            self.switchboard?.state.triggerRedraw.toggle()
+            self?.redrawSwitchboard()
         })
         pausedTrainTimers[train.id] = timer
     }
@@ -256,5 +257,9 @@ final class LayoutController: TrainControllerDelegate {
     func purgeRestartTimers() {
         // Remove any expired timer
         pausedTrainTimers = pausedTrainTimers.filter({$0.value.isValid})
+    }
+    
+    private func redrawSwitchboard() {
+        switchboard?.state.triggerRedraw.toggle()
     }
 }
