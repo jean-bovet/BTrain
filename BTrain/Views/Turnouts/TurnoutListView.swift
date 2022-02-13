@@ -12,6 +12,41 @@
 
 import SwiftUI
 
+struct TurnoutStateCell: View {
+
+    @ObservedObject var layout: Layout
+
+    @Binding var turnout: Turnout
+    
+    // TODO: not sure why this is needed but otherwise toggling the Turnout state does not refresh this view (SwiftUI bug?)
+    @State var refreshUI = false
+    
+    var body: some View {
+        HStack {
+            UndoProvider($turnout.state) { state in
+                Picker("State:", selection: state) {
+                    ForEach(turnout.allStates, id:\.self) { state in
+                        Text(state.description)
+                    }
+                }
+                .labelsHidden()
+            }
+
+            Spacer()
+
+            Button("Set") {
+                layout.executor?.sendTurnoutState(turnout: turnout) { }
+            }
+            
+            Button("Toggle") {
+                turnout.toggleToNextState()
+                refreshUI.toggle()
+                layout.executor?.sendTurnoutState(turnout: turnout) { }
+            }
+        }
+    }
+}
+
 struct TurnoutListView: View {
     
     @ObservedObject var layout: Layout
@@ -81,23 +116,7 @@ struct TurnoutListView: View {
                 }
 
                 TableColumn("State") { turnout in
-                    HStack {
-                        UndoProvider(turnout.state) { state in
-                            Picker("State:", selection: state) {
-                                ForEach(turnout.wrappedValue.allStates, id:\.self) { state in
-                                    Text(state.description)
-                                }
-                            }
-                            .labelsHidden()
-                            .fixedSize()
-                        }
-
-                        Spacer()
-                        
-                        Button("Set") {
-                            layout.executor?.sendTurnoutState(turnout: turnout.wrappedValue) { }
-                        }
-                    }
+                    TurnoutStateCell(layout: layout, turnout: turnout)
                 }
             } rows: {
                 ForEach($layout.turnouts) { turnout in
