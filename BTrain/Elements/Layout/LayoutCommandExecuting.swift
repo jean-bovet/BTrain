@@ -35,18 +35,20 @@ final class LayoutCommandExecutor: LayoutCommandExecuting {
         BTLogger.debug("Turnout \(turnout) state changed to \(turnout.state)")
                 
         let commands = turnout.stateCommands(power: 0x1)
-        var commandCompletionCount = commands.count
+        var commandCompletionCount = commands.count * 2
         commands.forEach { interface.execute(command: $0) {
             commandCompletionCount -= 1
-            if commandCompletionCount == 0 {
-                completion()
-            }
         } }
 
-        // Turn-off the turnout power after 250ms (activation time)
+        // Turn-off the turnout power after 200ms (activation time)
         let idleCommands = turnout.stateCommands(power: 0x0)
-        Timer.scheduledTimer(withTimeInterval: 0.250, repeats: false) { timer in
-            idleCommands.forEach { self.interface.execute(command: $0) {}}
+        Timer.scheduledTimer(withTimeInterval: 0.200, repeats: false) { timer in
+            idleCommands.forEach { self.interface.execute(command: $0) {
+                commandCompletionCount -= 1
+                if commandCompletionCount == 0 {
+                    completion()
+                }
+            }}
         }
     }
 
