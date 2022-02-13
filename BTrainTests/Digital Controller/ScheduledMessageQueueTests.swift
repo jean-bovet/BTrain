@@ -20,7 +20,7 @@ class ScheduledMessageQueueTests: XCTestCase {
         let expectation = XCTestExpectation.init(description: "scheduled")
         let startTime = Date()
         queue.schedule(priority: false) { completion in
-            XCTAssertGreaterThanOrEqual(Date().timeIntervalSince(startTime), ScheduledMessageQueue.delay)
+            XCTAssertGreaterThanOrEqual(Date().timeIntervalSince(startTime), queue.delay)
             expectation.fulfill()
             completion()
         }
@@ -37,7 +37,7 @@ class ScheduledMessageQueueTests: XCTestCase {
             XCTAssertFalse(normalExecutedFirst)
             normalExecutedFirst = true
             
-            XCTAssertGreaterThanOrEqual(Date().timeIntervalSince(startTime), ScheduledMessageQueue.delay)
+            XCTAssertGreaterThanOrEqual(Date().timeIntervalSince(startTime), queue.delay)
             normalExpectation.fulfill()
             completion()
         }
@@ -45,7 +45,7 @@ class ScheduledMessageQueueTests: XCTestCase {
             XCTAssertTrue(normalExecutedFirst)
             normalExecutedFirst = false
             
-            XCTAssertGreaterThanOrEqual(Date().timeIntervalSince(startTime), ScheduledMessageQueue.delay)
+            XCTAssertGreaterThanOrEqual(Date().timeIntervalSince(startTime), queue.delay)
             normalExpectation2.fulfill()
             completion()
         }
@@ -62,7 +62,7 @@ class ScheduledMessageQueueTests: XCTestCase {
             XCTAssertTrue(highPriorityMessageExecuted)
             highPriorityMessageExecuted = false
             
-            XCTAssertGreaterThanOrEqual(Date().timeIntervalSince(startTime), ScheduledMessageQueue.delay)
+            XCTAssertGreaterThanOrEqual(Date().timeIntervalSince(startTime), queue.delay)
             normalExpectation.fulfill()
             completion()
         }
@@ -70,7 +70,7 @@ class ScheduledMessageQueueTests: XCTestCase {
             XCTAssertFalse(highPriorityMessageExecuted)
             highPriorityMessageExecuted = true
             
-            XCTAssertGreaterThanOrEqual(Date().timeIntervalSince(startTime), ScheduledMessageQueue.delay)
+            XCTAssertGreaterThanOrEqual(Date().timeIntervalSince(startTime), queue.delay)
             highExpectation.fulfill()
             completion()
         }

@@ -26,6 +26,13 @@ final class LayoutCommandExecutor: LayoutCommandExecuting {
     let layout: Layout
     let interface: CommandInterface
     
+    // Queue to ensure that sending of command for each turnout does happen
+    // every 250ms in order to avoid a spike in current on the real layout.
+    let queue = ScheduledMessageQueue(delay: 0.25)
+    
+    // Time until the turnout state power is turned off.
+    let activationTime: TimeInterval = 0.200
+    
     init(layout: Layout, interface: CommandInterface) {
         self.layout = layout
         self.interface = interface
@@ -35,20 +42,24 @@ final class LayoutCommandExecutor: LayoutCommandExecuting {
         BTLogger.debug("Turnout \(turnout) state changed to \(turnout.state)")
                 
         let commands = turnout.stateCommands(power: 0x1)
-        var commandCompletionCount = commands.count * 2
-        commands.forEach { interface.execute(command: $0) {
-            commandCompletionCount -= 1
-        } }
-
-        // Turn-off the turnout power after 200ms (activation time)
         let idleCommands = turnout.stateCommands(power: 0x0)
-        Timer.scheduledTimer(withTimeInterval: 0.200, repeats: false) { timer in
-            idleCommands.forEach { self.interface.execute(command: $0) {
-                commandCompletionCount -= 1
-                if commandCompletionCount == 0 {
-                    completion()
+        assert(commands.count == idleCommands.count)
+        
+        var commandCompletionCount = commands.count
+        for (index, command) in commands.enumerated() {
+            queue.schedule { qc in
+                self.interface.execute(command: command) {
+                    qc()
+                    Timer.scheduledTimer(withTimeInterval: self.activationTime, repeats: false) { timer in
+                        self.interface.execute(command: idleCommands[index]) {
+                            commandCompletionCount -= 1
+                            if commandCompletionCount == 0 {
+                                completion()
+                            }
+                        }
+                    }
                 }
-            }}
+            }
         }
     }
 

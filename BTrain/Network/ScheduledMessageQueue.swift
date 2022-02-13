@@ -29,19 +29,23 @@ final class ScheduledMessageQueue {
     }
     
     typealias CompletionBlock = (() -> Void)
-
-    // 50ms delay between sending of each message
-    static let delay = 50.0 / 1000.0
     
     private var scheduledQueue = [ScheduledBlock]()
     
     private var executing = false
     
-    init() {
-        scheduleSendData()
+    static let DefaultDelay = 50.0 / 1000.0
+    
+    let delay: TimeInterval
+    
+    init(delay: TimeInterval = ScheduledMessageQueue.DefaultDelay) {
+        self.delay = delay
+        MainThreadQueue.sync {
+            scheduleSendData()
+        }
     }
     
-    func schedule(priority: Bool, block: @escaping ExecutionBlock) {
+    func schedule(priority: Bool = false, block: @escaping ExecutionBlock) {
         let scheduledBlock = ScheduledBlock(priority: priority, block: block)
         if scheduledBlock.priority {
             scheduledQueue.insert(scheduledBlock, at: 0)
@@ -66,7 +70,7 @@ final class ScheduledMessageQueue {
     }
     
     private func scheduleSendData() {
-        Timer.scheduledTimer(withTimeInterval: ScheduledMessageQueue.delay, repeats: true) { timer in
+        Timer.scheduledTimer(withTimeInterval: delay, repeats: true) { timer in
             if !self.scheduledQueue.isEmpty {
                 let scheduledBlock = self.scheduledQueue.removeFirst()
                 self.execute(scheduledBlock: scheduledBlock)
