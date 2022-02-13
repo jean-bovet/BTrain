@@ -47,8 +47,6 @@ class TrainViewTests: RootViewTests {
         
         let speedSection = try sut.inspect().find(TrainDetailsSpeedSectionView.self)
         _ = try speedSection.find(text: "Max Speed:")
-        // TODO
-//        _ = try speedSection.find(TrainSpeedView.self)
     }
     
     func testIconView() throws {

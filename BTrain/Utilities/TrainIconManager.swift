@@ -29,6 +29,11 @@ final class TrainIconManager: ObservableObject {
         return nil
     }
         
+    func removeImageFor(train: Train) {
+        objectWillChange.send()
+        cache.removeObject(forKey: train.id.uuid as NSString)
+    }
+    
     func setIcon(_ image: NSImage, toTrainId train: Identifier<Train>) {
         objectWillChange.send()
         cache.setObject(image, forKey: train.uuid as NSString)

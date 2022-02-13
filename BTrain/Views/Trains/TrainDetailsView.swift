@@ -161,7 +161,7 @@ struct TrainDetailsSpeedSectionView: View {
 struct TrainDetailsIconSectionView: View {
     
     @ObservedObject var train: Train
-    let trainIconManager: TrainIconManager
+    @ObservedObject var trainIconManager: TrainIconManager
 
     var body: some View {
         VStack(alignment: .leading) {
@@ -177,7 +177,7 @@ struct TrainDetailsIconSectionView: View {
                 
                 if trainIconManager.imageFor(train: train) != nil {
                     Button("Remove") {
-                        // TODO remove icon
+                        trainIconManager.removeImageFor(train: train)
                     }
                 }
             }.padding([.leading])
