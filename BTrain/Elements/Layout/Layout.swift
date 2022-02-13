@@ -63,7 +63,7 @@ final class Layout: Element, ObservableObject {
     //   (within the current block). Any feedback behind the train inside the current block is ignored.
     // - The train moves to the next block when the feedback in the next block is the first one in the direction
     //   of travel of the train. The train does not need to be at the end of the current block for this to happen.
-    @AppStorage("strictRouteFeedbackStrategy") var strictRouteFeedbackStrategy = true
+    @AppStorage("strictRouteFeedbackStrategy") var strictRouteFeedbackStrategy = false
 
     // The command executor used to execute command towards the Digital Controller.
     var executor: LayoutCommandExecuting?

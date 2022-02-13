@@ -24,7 +24,7 @@ struct SettingsView: View {
 
     @AppStorage("automaticRouteRandom") private var automaticRouteRandom = true
     @AppStorage("detectUnexpectedFeedback") var detectUnexpectedFeedback = true
-    @AppStorage("strictRouteFeedbackStrategy") var strictRouteFeedbackStrategy = true
+    @AppStorage("strictRouteFeedbackStrategy") var strictRouteFeedbackStrategy = false
 
     @AppStorage("debugMode") private var showDebugControls = false
     @AppStorage("hideWelcomeScreen") private var hideWelcomeScreen = false
