@@ -35,14 +35,6 @@ struct TrainControlSetLocationSheet: View {
         }
     }
     
-    var trainPosition: Position {
-        if direction == .next {
-            return .end
-        } else {
-            return .start
-        }
-    }
-    
     var selectedBlockName: String {
         if let block = layout.block(for: blockId) {
             return block.name
@@ -102,11 +94,13 @@ struct TrainControlSetLocationSheet: View {
                 Button("OK") {
                     do {
                         if let selectedBlock = blockId {
+                            // TODO: allow the user to choose the exact location of the train
+                            // (start, end or custom)
                             train.wagonsPushedByLocomotive = wagonsPushedByLocomotive
                             try layout.setTrainToBlock(train.id,
-                                                selectedBlock,
-                                                position: trainPosition,
-                                                direction: direction)
+                                                       selectedBlock,
+                                                       position: .end,
+                                                       direction: direction)
                         }
                         errorStatus = nil
                         self.presentationMode.wrappedValue.dismiss()
