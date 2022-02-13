@@ -88,7 +88,7 @@ class PathFinderTests: BTTestCase {
         XCTAssertEqual(path!.description, ["s1:next", "b1:next", "b5:previous", "b3:previous", "b2:previous", "b1:previous", "s2:previous"])
     }
 
-    func testPathDisabled() throws {
+    func testPathBlockDisabled() throws {
         let layout = LayoutECreator().newLayout()
         let s1 = layout.block(for: Identifier<Block>(uuid: "s1"))!
         let b2 = layout.block(for: Identifier<Block>(uuid: "b2"))!
@@ -98,6 +98,27 @@ class PathFinderTests: BTTestCase {
         pf.turnoutSocketSelectionOverride = { turnout, socketsId, context in
             if turnout.id.uuid == "t4" {
                 b2.enabled = true
+            }
+            return nil
+        }
+
+        let settings = PathFinder.Settings(random: false, reservedBlockBehavior: .avoidReservedUntil(numberOfSteps: 2*layout.blockMap.count), verbose: false)
+        let path = try pf.path(trainId: layout.trains[0].id, from: s1, direction: .next, settings: settings)
+        XCTAssertNotNil(path)
+        XCTAssertFalse(path!.context.isOverflowing)
+        XCTAssertEqual(path!.description, ["s1:next", "b1:next", "b5:previous", "b3:previous", "b2:previous", "b1:previous", "s2:previous"])
+    }
+
+    func testPathTurnoutDisabled() throws {
+        let layout = LayoutECreator().newLayout()
+        let s1 = layout.block(for: Identifier<Block>(uuid: "s1"))!
+        let t4 = layout.turnout(for: Identifier<Turnout>(uuid: "t4"))!
+        t4.enabled = false
+        
+        let pf = PathFinder(layout: layout)
+        pf.turnoutSocketSelectionOverride = { turnout, socketsId, context in
+            if turnout.id.uuid == "t5" {
+                t4.enabled = true
             }
             return nil
         }

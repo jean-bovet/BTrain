@@ -56,13 +56,20 @@ struct TurnoutListView: View {
     var body: some View {
         VStack {
             Table(selection: $selection) {
-                TableColumn("Name") { train in
-                    UndoProvider(train.name) { name in
+                TableColumn("Enabled") { turnout in
+                    UndoProvider(turnout.enabled) { enabled in
+                        Toggle("Enabled", isOn: enabled)
+                            .labelsHidden()
+                    }
+                }.width(80)
+
+                TableColumn("Name") { turnout in
+                    UndoProvider(turnout.name) { name in
                         TextField("Name", text: name)
                             .labelsHidden()
                     }
                 }
-                
+
                 TableColumn("Protocol") { turnout in
                     UndoProvider(turnout.addressProtocol) { addressProtocol in
                         Picker("Protocol", selection: addressProtocol) {

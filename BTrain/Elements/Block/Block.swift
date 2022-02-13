@@ -84,7 +84,7 @@ final class Block: Element, ObservableObject {
     // by any routing, which is useful when a block is occupied
     // or in need of repair and we don't want to have a train
     // stopping or running through it.
-    var enabled = true
+    @Published var enabled = true
     
     // The name of the block
     @Published var name: String

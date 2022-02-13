@@ -99,7 +99,7 @@ final class PathFinder {
         
         var includeTurnouts = false
         
-        var ignoreDisabledBlocks = false
+        var ignoreDisabledElements = false
         
         // True if the first block that is found must match the destination.
         var firstBlockShouldMatchDestination = false
@@ -247,7 +247,7 @@ final class PathFinder {
                 throw LayoutError.blockNotFound(blockId: nextBlockId)
             }
             
-            if !nextBlock.enabled && !context.settings.ignoreDisabledBlocks  {
+            if !nextBlock.enabled && !context.settings.ignoreDisabledElements  {
                 context.print("The next block \(nextBlock) is disabled, backtracking")
                 return false
             } else if let reserved = nextBlock.reserved, reserved.trainId != context.train?.id {
@@ -319,6 +319,11 @@ final class PathFinder {
             // The transition ends up in a turnout
             guard let nextTurnout = layout.turnout(for: nextTurnoutId) else {
                 throw LayoutError.turnoutNotFound(turnoutId: nextTurnoutId)
+            }
+            
+            if !nextTurnout.enabled && !context.settings.ignoreDisabledElements  {
+                context.print("The next turnout \(nextTurnout) is disabled, backtracking")
+                return false
             }
             
             // Find out if the next turnout is allowed to be used for that train

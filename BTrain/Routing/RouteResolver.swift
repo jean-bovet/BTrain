@@ -25,7 +25,7 @@ final class RouteResolver {
     lazy var settings: PathFinder.Settings = {
         var settings = PathFinder.Settings(random: false, reservedBlockBehavior: .avoidReservedUntil(numberOfSteps: 0), consideringStoppingAtSiding: false, verbose: true)
         settings.includeTurnouts = true
-        settings.ignoreDisabledBlocks = true
+        settings.ignoreDisabledElements = true
         settings.firstBlockShouldMatchDestination = true
         return settings
     }()

@@ -270,7 +270,10 @@ final class TurnoutShape: Shape, DraggableShape, ConnectableShape {
     func draw(ctx: CGContext) {
         ctx.with {
             let lineWidth = selected ? shapeContext.selectedTrackWidth : shapeContext.trackWidth
-            
+            if !turnout.enabled {
+                ctx.setLineDash(phase: 0, lengths: [3, 3])
+            }
+
             ctx.setStrokeColor(shapeContext.color.copy(alpha: 0.5)!)
             ctx.setLineWidth(lineWidth)
             ctx.addPath(path)

@@ -39,6 +39,12 @@ final class Turnout: Element, ObservableObject {
 
     let id: Identifier<Turnout>
                 
+    // True if the turnout is enabled and ready to participate
+    // in the routing. False to have the turnout ignored
+    // by any routing, which is useful when a turnout is in need of repair
+    // and we don't want to have a train running through it.
+    @Published var enabled = true
+
     @Published var name = ""
     
     @Published var category: Category = .singleLeft
@@ -91,7 +97,7 @@ final class Turnout: Element, ObservableObject {
 extension Turnout: Codable {
     
     enum CodingKeys: CodingKey {
-      case id, type, name, address, address2, length, state, reserved, train, center, angle
+      case id, enabled, type, name, address, address2, length, state, reserved, train, center, angle
     }
 
     convenience init(from decoder: Decoder) throws {
@@ -107,6 +113,7 @@ extension Turnout: Codable {
         let state = try container.decode(State.self, forKey: CodingKeys.state)
 
         self.init(id: id, name: name, type: type, address: address, address2: address2, state: state, center: center, rotationAngle: rotationAngle, length: length)
+        self.enabled = try container.decodeIfPresent(Bool.self, forKey: CodingKeys.enabled) ?? true
         self.reserved = try container.decodeIfPresent(Identifier<Train>.self, forKey: CodingKeys.reserved)
         self.train = try container.decodeIfPresent(Identifier<Train>.self, forKey: CodingKeys.train)
     }
@@ -114,6 +121,7 @@ extension Turnout: Codable {
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(id, forKey: CodingKeys.id)
+        try container.encode(enabled, forKey: CodingKeys.enabled)
         try container.encode(name, forKey: CodingKeys.name)
         try container.encode(category, forKey: CodingKeys.type)
         try container.encode(address, forKey: CodingKeys.address)
