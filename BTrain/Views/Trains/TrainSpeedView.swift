@@ -17,12 +17,11 @@ struct TrainSpeedView: View {
     let document: LayoutDocument
     let train: Train
     
+    @ObservedObject var measurement: TrainSpeedMeasurement
     @ObservedObject var trainSpeed: TrainSpeed
-    
+
     @State private var selection = Set<TrainSpeed.SpeedTableEntry.ID>()
     
-    @StateObject private var measurement = TrainSpeedMeasurement()
-
     @Environment(\.presentationMode) var presentationMode
 
     func speedPath(in size: CGSize) -> Path {
@@ -70,7 +69,7 @@ struct TrainSpeedView: View {
             
             Divider()
             
-            TrainSpeedMeasureView(interface: document.interface, layout: document.layout, train: train, selectedSpeedEntries: $selection, measurement: measurement)
+            TrainSpeedMeasureView(document: document, layout: document.layout, train: train, selectedSpeedEntries: $selection, measurement: measurement)
             
             Divider()
 
@@ -89,9 +88,75 @@ struct TrainSpeedView: View {
     }
 }
 
+struct TrainSpeedMeasureFeedbackView: View {
+
+    let document: LayoutDocument
+    let layout: Layout
+    let label: String
+    
+    @ObservedObject var measurement: TrainSpeedMeasurement
+    @Binding var feedbackUUID: String?
+    
+    var feedback: Feedback? {
+        if let feedbackUUID = feedbackUUID, let feedback = layout.feedback(for: Identifier<Feedback>(uuid: feedbackUUID)) {
+            return feedback
+        } else {
+            return nil
+        }
+    }
+    
+    var feedbackDetected: Bool {
+        if let feedback = feedback {
+            return feedback.detected
+        } else {
+            return false
+        }
+    }
+    
+    var body: some View {
+        VStack {
+            Text(label)
+            HStack {
+                Picker(label, selection: $feedbackUUID) {
+                    ForEach(layout.feedbacks, id:\.self) { feedback in
+                        Text(feedback.name).tag(feedback.id.uuid as String?)
+                    }
+                }
+                .labelsHidden()
+                .disabled(measurement.running)
+                Button("􀧷") {
+                    if let feedback = self.feedback {
+                        document.simulator.setFeedback(feedback: feedback, value: feedbackDetected ? 0 : 1)
+                    }
+                }
+                .buttonStyle(.borderless)
+                .foregroundColor(feedbackDetected ? .green : .black)
+            }
+        }
+    }
+}
+
+struct TrainSpeedMeasureDistanceView: View {
+
+    @Binding var distance: Double
+    @ObservedObject var measurement: TrainSpeedMeasurement
+
+    var body: some View {
+        VStack {
+            Text("Distance")
+            HStack {
+                Text("􀅁")
+                TextField("Distance:", value: $distance, format: .number)
+                Text("􀅂")
+            }
+            .disabled(measurement.running)
+        }
+    }
+}
+
 struct TrainSpeedMeasureView: View {
     
-    let interface: CommandInterface
+    let document: LayoutDocument
     let layout: Layout
     let train: Train
 
@@ -109,58 +174,23 @@ struct TrainSpeedMeasureView: View {
     @State private var error: String?
     @State private var progressInfo: String?
     @State private var progressValue: Double?
-
+    
     var body: some View {
         VStack(alignment: .leading) {
             Text("􀁟 Position the locomotive before feedback A with its travel direction towards A, B & C.")
             
             GroupBox {
                 HStack {
-                    VStack {
-                        Text("Feedback A")
-                        Picker("A:", selection: $feedbackA) {
-                            ForEach(layout.feedbacks, id:\.self) { feedback in
-                                Text(feedback.name).tag(feedback.id.uuid as String?)
-                            }
-                        }.labelsHidden()
-                    }
+                    TrainSpeedMeasureFeedbackView(document: document, layout: layout, label: "Feedback A", measurement: measurement, feedbackUUID: $feedbackA)
                     
-                    VStack {
-                        Text("Distance")
-                        HStack {
-                            Text("􀅁")
-                            TextField("Distance:", value: $distanceAB, format: .number)
-                            Text("􀅂")
-                        }
-                    }
+                    TrainSpeedMeasureDistanceView(distance: $distanceAB, measurement: measurement)
                     
-                    VStack {
-                        Text("Feedback B")
-                        Picker("B:", selection: $feedbackB) {
-                            ForEach(layout.feedbacks, id:\.self) { feedback in
-                                Text(feedback.name).tag(feedback.id.uuid as String?)
-                            }
-                        }.labelsHidden()
-                    }
+                    TrainSpeedMeasureFeedbackView(document: document, layout: layout, label: "Feedback B", measurement: measurement, feedbackUUID: $feedbackB)
+
+                    TrainSpeedMeasureDistanceView(distance: $distanceBC, measurement: measurement)
                     
-                    VStack {
-                        Text("Distance")
-                        HStack {
-                            Text("􀅁")
-                            TextField("Distance:", value: $distanceBC, format: .number)
-                            Text("􀅂")
-                        }
-                    }
-                    
-                    VStack {
-                        Text("Feedback C")
-                        Picker("C:", selection: $feedbackC) {
-                            ForEach(layout.feedbacks, id:\.self) { feedback in
-                                Text(feedback.name).tag(feedback.id.uuid as String?)
-                            }
-                        }.labelsHidden()
-                    }
-                }.disabled(measurement.running)
+                    TrainSpeedMeasureFeedbackView(document: document, layout: layout, label: "Feedback C", measurement: measurement, feedbackUUID: $feedbackC)
+                }
             }
                         
             HStack {
@@ -170,18 +200,7 @@ struct TrainSpeedMeasureView: View {
                     }
                 } else {
                     Button("Measure") {
-                        if let feedbackA = feedbackA, let feedbackB = feedbackB, let feedbackC = feedbackC {
-                            let properties = TrainSpeedMeasurement.Properties(interface: interface, train: train, selectedSpeedEntries: selectedSpeedEntries, feedbackA: Identifier<Feedback>(uuid: feedbackA), feedbackB: Identifier<Feedback>(uuid: feedbackB), feedbackC: Identifier<Feedback>(uuid: feedbackC))
-                            self.error = nil
-                            do {
-                                try measurement.start(properties: properties) { info, progress in
-                                    self.progressInfo = info
-                                    self.progressValue = progress
-                                }
-                            } catch {
-                                self.error = error.localizedDescription
-                            }
-                        }
+                        measure()
                     }.disabled(feedbackA == nil || feedbackB == nil || feedbackC == nil || selectedSpeedEntries.isEmpty)
                 }
 
@@ -214,6 +233,21 @@ struct TrainSpeedMeasureView: View {
             }
         }
     }
+    
+    func measure() {
+        if let feedbackA = feedbackA, let feedbackB = feedbackB, let feedbackC = feedbackC {
+            let properties = TrainSpeedMeasurement.Properties(train: train, selectedSpeedEntries: selectedSpeedEntries, feedbackA: Identifier<Feedback>(uuid: feedbackA), feedbackB: Identifier<Feedback>(uuid: feedbackB), feedbackC: Identifier<Feedback>(uuid: feedbackC))
+            self.error = nil
+            do {
+                try measurement.start(properties: properties) { info, progress in
+                    self.progressInfo = info
+                    self.progressValue = progress
+                }
+            } catch {
+                self.error = error.localizedDescription
+            }
+        }
+    }
 }
 
 struct TrainSpeedView_Previews: PreviewProvider {
@@ -221,6 +255,6 @@ struct TrainSpeedView_Previews: PreviewProvider {
     static let doc = LayoutDocument(layout: LayoutFCreator().newLayout())
     
     static var previews: some View {
-        TrainSpeedView(document: doc, train: Train(), trainSpeed: TrainSpeed(decoderType: .MFX))
+        TrainSpeedView(document: doc, train: Train(), measurement: doc.trainSpeedMeasurement, trainSpeed: TrainSpeed(decoderType: .MFX))
     }
 }

@@ -55,6 +55,9 @@ final class LayoutDocument: ObservableObject {
     // The centralized class that manages all train icon-related functions
     let trainIconManager: TrainIconManager
 
+    // The class that measures the true speed for each train
+    let trainSpeedMeasurement: TrainSpeedMeasurement
+    
     // Property used to perform the layout diagnostic command
     @Published var triggerLayoutDiagnostic = false
 
@@ -89,6 +92,7 @@ final class LayoutDocument: ObservableObject {
         self.simulator = simulator
         self.layoutDiagnostics = LayoutDiagnostic(layout: layout)
         self.trainIconManager = TrainIconManager(layout: layout)
+        self.trainSpeedMeasurement = TrainSpeedMeasurement(layout: layout, interface: interface)
         self.switchboard = switchboard
         self.layoutController = layoutController
                 
