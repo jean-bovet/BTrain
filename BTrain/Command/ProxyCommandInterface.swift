@@ -18,42 +18,64 @@ import Foundation
 // switching from real Digital Controller to the Simulator).
 final class ProxyCommandInterface: CommandInterface {
     
-    var interface: CommandInterface?
+    var interface: CommandInterface! {
+        didSet {
+            interfaceDidChange()
+        }
+    }
     
+    private var feedbackChangeCallbacks = [FeedbackChangeCallback]()
+    private var speedChangeCallbacks = [SpeedChangeCallback]()
+    private var directionChangeCallbacks = [DirectionChangeCallback]()
+    private var turnoutChangeCallbacks = [TurnoutChangeCallback]()
+    private var queryLocomotiveChangeCallbacks = [QueryLocomotiveCallback]()
+
     func disconnect(_ completion: @escaping CompletionBlock) {
-        interface?.disconnect(completion)
+        interface.disconnect(completion)
     }
 
     func execute(command: Command, onCompletion: @escaping () -> Void) {
-        interface?.execute(command: command, onCompletion: onCompletion)
+        interface.execute(command: command, onCompletion: onCompletion)
     }
     
     func speedValue(for steps: SpeedStep, decoder: DecoderType) -> SpeedValue {
-        return interface?.speedValue(for: steps, decoder: decoder) ?? .zero
+        return interface.speedValue(for: steps, decoder: decoder)
     }
     
     func speedSteps(for value: SpeedValue, decoder: DecoderType) -> SpeedStep {
-        return interface?.speedSteps(for: value, decoder: decoder) ?? .zero
+        return interface.speedSteps(for: value, decoder: decoder)
     }
 
     func register(forFeedbackChange: @escaping FeedbackChangeCallback) {
-        interface?.register(forFeedbackChange: forFeedbackChange)
+        feedbackChangeCallbacks.append(forFeedbackChange)
+        interface.register(forFeedbackChange: forFeedbackChange)
     }
     
     func register(forSpeedChange: @escaping SpeedChangeCallback) {
-        interface?.register(forSpeedChange: forSpeedChange)
+        speedChangeCallbacks.append(forSpeedChange)
+        interface.register(forSpeedChange: forSpeedChange)
     }
     
     func register(forDirectionChange: @escaping DirectionChangeCallback) {
-        interface?.register(forDirectionChange: forDirectionChange)
+        directionChangeCallbacks.append(forDirectionChange)
+        interface.register(forDirectionChange: forDirectionChange)
     }
     
     func register(forTurnoutChange: @escaping TurnoutChangeCallback) {
-        interface?.register(forTurnoutChange: forTurnoutChange)
+        turnoutChangeCallbacks.append(forTurnoutChange)
+        interface.register(forTurnoutChange: forTurnoutChange)
     }
         
     func register(forLocomotivesQuery callback: @escaping QueryLocomotiveCallback) {
-        interface?.register(forLocomotivesQuery: callback)
+        queryLocomotiveChangeCallbacks.append(callback)
+        interface.register(forLocomotivesQuery: callback)
     }
     
+    private func interfaceDidChange() {
+        feedbackChangeCallbacks.forEach { interface.register(forFeedbackChange: $0) }
+        speedChangeCallbacks.forEach { interface.register(forSpeedChange: $0) }
+        directionChangeCallbacks.forEach { interface.register(forDirectionChange: $0) }
+        turnoutChangeCallbacks.forEach { interface.register(forTurnoutChange: $0) }
+        queryLocomotiveChangeCallbacks.forEach { interface.register(forLocomotivesQuery: $0) }
+    }
 }
