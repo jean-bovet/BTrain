@@ -134,8 +134,27 @@ struct TrainDetailsTurnoutsToAvoidSectionView: View {
 
 struct TrainDetailsSpeedSectionView: View {
     
+    let document: LayoutDocument
+
     @ObservedObject var train: Train
     @State private var speedExpanded = false
+    @State private var showSpeedProfileSheet = false
+    
+    var sheetWidth: Double {
+        if let screen = NSScreen.main {
+            return screen.visibleFrame.width * 0.6
+        } else {
+            return 800
+        }
+    }
+
+    var sheetHeight: Double {
+        if let screen = NSScreen.main {
+            return screen.visibleFrame.height * 0.6
+        } else {
+            return 600
+        }
+    }
 
     var body: some View {
         VStack {
@@ -146,14 +165,13 @@ struct TrainDetailsSpeedSectionView: View {
                           format: .number)
                 
                 Button("Profile…") {
-                    // TODO speed profile
+                    showSpeedProfileSheet.toggle()
                 }
             }.padding([.leading])
-
-//            DisclosureGroup("Speed", isExpanded: $speedExpanded) {
-//                TrainSpeedView(trainSpeed: train.speed)
-//                    .frame(height: 200)
-//            }
+        }.sheet(isPresented: $showSpeedProfileSheet) {
+            TrainSpeedView(document: document, train: train, trainSpeed: train.speed)
+                .frame(width: sheetWidth, height: sheetHeight)
+                .padding()
         }
     }
 }
@@ -187,7 +205,7 @@ struct TrainDetailsIconSectionView: View {
 
 struct TrainDetailsView: View {
     
-    let layout: Layout
+    let document: LayoutDocument
     @ObservedObject var train: Train
     let trainIconManager: TrainIconManager
 
@@ -196,9 +214,9 @@ struct TrainDetailsView: View {
             TrainDetailsDecoderSectionView(train: train)
             TrainDetailsGeometrySectionView(train: train)
             TrainDetailsReservationSectionView(train: train)
-            TrainDetailsBlocksToAvoidSectionView(layout: layout, train: train)
-            TrainDetailsTurnoutsToAvoidSectionView(layout: layout, train: train)
-            TrainDetailsSpeedSectionView(train: train)
+            TrainDetailsBlocksToAvoidSectionView(layout: document.layout, train: train)
+            TrainDetailsTurnoutsToAvoidSectionView(layout: document.layout, train: train)
+            TrainDetailsSpeedSectionView(document: document, train: train)
             TrainDetailsIconSectionView(train: train, trainIconManager: trainIconManager)
         }
     }
@@ -206,11 +224,11 @@ struct TrainDetailsView: View {
 
 struct TrainEditView_Previews: PreviewProvider {
     
-    static let layout = LayoutACreator().newLayout()
+    static let doc = LayoutDocument(layout: LayoutACreator().newLayout())
     
     static var previews: some View {
-        TrainDetailsView(layout: layout, train: layout.trains[0],
-                         trainIconManager: TrainIconManager(layout: layout))
+        TrainDetailsView(document: doc, train: doc.layout.trains[0],
+                         trainIconManager: TrainIconManager(layout: doc.layout))
             
     }
 }

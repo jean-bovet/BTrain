@@ -164,6 +164,7 @@
 		A795A03827B6848000AE90EB /* TrainVisitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = A795A03727B6848000AE90EB /* TrainVisitor.swift */; };
 		A795A03B27B6C08B00AE90EB /* TrainPositionFinder.swift in Sources */ = {isa = PBXBuildFile; fileRef = A795A03A27B6C08B00AE90EB /* TrainPositionFinder.swift */; };
 		A795A03D27B87CCE00AE90EB /* LayoutController+Locomotives.swift in Sources */ = {isa = PBXBuildFile; fileRef = A795A03C27B87CCE00AE90EB /* LayoutController+Locomotives.swift */; };
+		A795A03F27B9CB0200AE90EB /* TrainSpeedMeasurement.swift in Sources */ = {isa = PBXBuildFile; fileRef = A795A03E27B9CB0200AE90EB /* TrainSpeedMeasurement.swift */; };
 		A796FA2B2772BB5400FA41BA /* Layout.json in Resources */ = {isa = PBXBuildFile; fileRef = A796FA2A2772BB5400FA41BA /* Layout.json */; };
 		A796FA2E2775642B00FA41BA /* LayoutAsserter.swift in Sources */ = {isa = PBXBuildFile; fileRef = A796FA2D2775642B00FA41BA /* LayoutAsserter.swift */; };
 		A798BB4027A6E7F1000BB4D1 /* LayoutHCreator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A798BB3F27A6E7F1000BB4D1 /* LayoutHCreator.swift */; };
@@ -395,6 +396,7 @@
 		A795A03727B6848000AE90EB /* TrainVisitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainVisitor.swift; sourceTree = "<group>"; };
 		A795A03A27B6C08B00AE90EB /* TrainPositionFinder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainPositionFinder.swift; sourceTree = "<group>"; };
 		A795A03C27B87CCE00AE90EB /* LayoutController+Locomotives.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LayoutController+Locomotives.swift"; sourceTree = "<group>"; };
+		A795A03E27B9CB0200AE90EB /* TrainSpeedMeasurement.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainSpeedMeasurement.swift; sourceTree = "<group>"; };
 		A796FA2A2772BB5400FA41BA /* Layout.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = Layout.json; sourceTree = "<group>"; };
 		A796FA2D2775642B00FA41BA /* LayoutAsserter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutAsserter.swift; sourceTree = "<group>"; };
 		A798BB3F27A6E7F1000BB4D1 /* LayoutHCreator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutHCreator.swift; sourceTree = "<group>"; };
@@ -627,6 +629,7 @@
 				A785C070278A4561002FD538 /* TrainDetailsView.swift */,
 				A785C072278A4852002FD538 /* TrainIconView.swift */,
 				A785C080278BC527002FD538 /* TrainSpeedView.swift */,
+				A795A03E27B9CB0200AE90EB /* TrainSpeedMeasurement.swift */,
 			);
 			path = Trains;
 			sourceTree = "<group>";
@@ -1242,6 +1245,7 @@
 				A7841376273DD5A200381341 /* Vector2D.swift in Sources */,
 				A7B06AE12727786500BDD88C /* ContentView.swift in Sources */,
 				A7F779F6273214AF00E73275 /* TrainListView.swift in Sources */,
+				A795A03F27B9CB0200AE90EB /* TrainSpeedMeasurement.swift in Sources */,
 				A785C077278A6393002FD538 /* ViewType.swift in Sources */,
 				A7B06AF2272782C300BDD88C /* LayoutDocument.swift in Sources */,
 				A7710E5E277850F000C08150 /* Reservation.swift in Sources */,

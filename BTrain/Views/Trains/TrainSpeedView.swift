@@ -14,10 +14,17 @@ import SwiftUI
 
 struct TrainSpeedView: View {
     
+    let document: LayoutDocument
+    let train: Train
+    
     @ObservedObject var trainSpeed: TrainSpeed
     
-    @State private var selection: TrainSpeed.SpeedTableEntry.ID?
+    @State private var selection = Set<TrainSpeed.SpeedTableEntry.ID>()
     
+    @StateObject private var measurement = TrainSpeedMeasurement()
+
+    @Environment(\.presentationMode) var presentationMode
+
     func speedPath(in size: CGSize) -> Path {
         var p = Path()
         let xOffset = size.width / CGFloat(trainSpeed.speedTable.count)
@@ -34,36 +41,186 @@ struct TrainSpeedView: View {
     }
     
     var body: some View {
-        HStack {
-            Table(selection: $selection) {
-                TableColumn("Steps") { steps in
-                    Text("\(steps.steps.value.wrappedValue)")
-                }.width(80)
+        VStack {
+            HStack {
+                Table(selection: $selection) {
+                    TableColumn("Steps") { steps in
+                        Text("\(steps.steps.value.wrappedValue)")
+                    }.width(80)
 
-                TableColumn("Speed (km/h)") { step in
-                    UndoProvider(step.speed) { speed in
-                        TextField("Speed", value: speed, format: .number)
-                            .labelsHidden()
+                    TableColumn("Speed (km/h)") { step in
+                        UndoProvider(step.speed) { speed in
+                            TextField("Speed", value: speed, format: .number)
+                                .labelsHidden()
+                        }
+                    }
+                } rows: {
+                    ForEach($trainSpeed.speedTable) { block in
+                        TableRow(block)
                     }
                 }
-            } rows: {
-                ForEach($trainSpeed.speedTable) { block in
-                    TableRow(block)
+                .disabled(measurement.running)
+
+                Canvas { context, size in
+                    let flipVertical: CGAffineTransform = CGAffineTransform(a: 1, b: 0, c: 0, d: -1, tx: 0, ty: size.height)
+                    context.concatenate(flipVertical)
+                    context.stroke(speedPath(in: size), with: .color(.blue))
                 }
             }
-            Canvas { context, size in
-                let flipVertical: CGAffineTransform = CGAffineTransform(a: 1, b: 0, c: 0, d: -1, tx: 0, ty: size.height)
-                context.concatenate(flipVertical)
-                context.stroke(speedPath(in: size), with: .color(.blue))
+            
+            Divider()
+            
+            TrainSpeedMeasureView(interface: document.interface, layout: document.layout, train: train, selectedSpeedEntries: $selection, measurement: measurement)
+            
+            Divider()
+
+            HStack {
+                Spacer()
+                Button("OK") {
+                    presentationMode.wrappedValue.dismiss()
+                }
+                .disabled(measurement.running)
+                .keyboardShortcut(.defaultAction)
             }
-        }.onAppear {
+        }
+        .onAppear {
             trainSpeed.updateSpeedStepsTable()
         }
     }
 }
 
+struct TrainSpeedMeasureView: View {
+    
+    let interface: CommandInterface
+    let layout: Layout
+    let train: Train
+
+    @Binding var selectedSpeedEntries: Set<TrainSpeed.SpeedTableEntry.ID>
+
+    @AppStorage("speedMeasureFeedbackA") private var feedbackA: String?
+    @AppStorage("speedMeasureFeedbackB") private var feedbackB: String?
+    @AppStorage("speedMeasureFeedbackC") private var feedbackC: String?
+
+    @AppStorage("speedMeasureDistanceAB") private var distanceAB: Double = 0
+    @AppStorage("speedMeasureDistanceBC") private var distanceBC: Double = 0
+
+    @ObservedObject var measurement: TrainSpeedMeasurement
+    
+    @State private var error: String?
+    @State private var progressInfo: String?
+    @State private var progressValue: Double?
+
+    var body: some View {
+        VStack(alignment: .leading) {
+            Text("􀁟 Position the locomotive before feedback A with its travel direction towards A, B & C.")
+            
+            GroupBox {
+                HStack {
+                    VStack {
+                        Text("Feedback A")
+                        Picker("A:", selection: $feedbackA) {
+                            ForEach(layout.feedbacks, id:\.self) { feedback in
+                                Text(feedback.name).tag(feedback.id.uuid as String?)
+                            }
+                        }.labelsHidden()
+                    }
+                    
+                    VStack {
+                        Text("Distance")
+                        HStack {
+                            Text("􀅁")
+                            TextField("Distance:", value: $distanceAB, format: .number)
+                            Text("􀅂")
+                        }
+                    }
+                    
+                    VStack {
+                        Text("Feedback B")
+                        Picker("B:", selection: $feedbackB) {
+                            ForEach(layout.feedbacks, id:\.self) { feedback in
+                                Text(feedback.name).tag(feedback.id.uuid as String?)
+                            }
+                        }.labelsHidden()
+                    }
+                    
+                    VStack {
+                        Text("Distance")
+                        HStack {
+                            Text("􀅁")
+                            TextField("Distance:", value: $distanceBC, format: .number)
+                            Text("􀅂")
+                        }
+                    }
+                    
+                    VStack {
+                        Text("Feedback C")
+                        Picker("C:", selection: $feedbackC) {
+                            ForEach(layout.feedbacks, id:\.self) { feedback in
+                                Text(feedback.name).tag(feedback.id.uuid as String?)
+                            }
+                        }.labelsHidden()
+                    }
+                }.disabled(measurement.running)
+            }
+                        
+            HStack {
+                if measurement.running {
+                    Button("Cancel") {
+                        measurement.cancel()
+                    }
+                } else {
+                    Button("Measure") {
+                        if let feedbackA = feedbackA, let feedbackB = feedbackB, let feedbackC = feedbackC {
+                            let properties = TrainSpeedMeasurement.Properties(interface: interface, train: train, selectedSpeedEntries: selectedSpeedEntries, feedbackA: Identifier<Feedback>(uuid: feedbackA), feedbackB: Identifier<Feedback>(uuid: feedbackB), feedbackC: Identifier<Feedback>(uuid: feedbackC))
+                            self.error = nil
+                            do {
+                                try measurement.start(properties: properties) { info, progress in
+                                    self.progressInfo = info
+                                    self.progressValue = progress
+                                }
+                            } catch {
+                                self.error = error.localizedDescription
+                            }
+                        }
+                    }.disabled(feedbackA == nil || feedbackB == nil || feedbackC == nil || selectedSpeedEntries.isEmpty)
+                }
+
+                if let progressValue = progressValue, measurement.running {
+                    HStack {
+                        ProgressView(value: progressValue)
+                        if let progressInfo = progressInfo {
+                            Text(progressInfo)
+                        }
+                    }
+                } else {
+                    if let error = error {
+                        Text("􀇿 \(error)")
+                    } else if selectedSpeedEntries.isEmpty {
+                        Text("􀇿 Select one or more steps in the table above")
+                    } else if feedbackA == nil {
+                        Text("􀇿 Select feedback A")
+                    } else if feedbackB == nil {
+                        Text("􀇿 Select feedback B")
+                    } else if feedbackC == nil {
+                        Text("􀇿 Select feedback C")
+                    } else {
+                        if selectedSpeedEntries.count == 1 {
+                            Text("Ready to measure one step")
+                        } else {
+                            Text("Ready to measure \(selectedSpeedEntries.count) steps")
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
 struct TrainSpeedView_Previews: PreviewProvider {
+        
+    static let doc = LayoutDocument(layout: LayoutFCreator().newLayout())
+    
     static var previews: some View {
-        TrainSpeedView(trainSpeed: TrainSpeed(decoderType: .MFX))
+        TrainSpeedView(document: doc, train: Train(), trainSpeed: TrainSpeed(decoderType: .MFX))
     }
 }

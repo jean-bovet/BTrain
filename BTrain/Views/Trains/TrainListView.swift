@@ -82,7 +82,7 @@ struct TrainListView: View {
 
             if let selection = selection, let train = layout.train(for: selection) {
                 ScrollView {
-                    TrainDetailsView(layout: layout, train: train, trainIconManager: document.trainIconManager)
+                    TrainDetailsView(document: document, train: train, trainIconManager: document.trainIconManager)
                         .padding()
                 }
             } else {
