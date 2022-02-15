@@ -70,7 +70,7 @@ final class TrainSpeedMeasurement: ObservableObject {
             self.entryIndex += 1
             self.forward.toggle()
             if self.entryIndex >= entries.count {
-                self.running = false
+                self.done()
             } else {
                 self.run(properties: properties, callback: callback)
             }
@@ -165,8 +165,10 @@ final class TrainSpeedMeasurement: ObservableObject {
     private var expectedFeedbackId: Identifier<Feedback>?
     private var expectedFeedbackCallback: CompletionBlock?
     
+    private var feedbackChangeUUID: UUID?
+    
     private func registerForFeedbackChanges() {
-        interface.register(forFeedbackChange: { [weak self] deviceID, contactID, value in
+        feedbackChangeUUID = interface.register(forFeedbackChange: { [weak self] deviceID, contactID, value in
             guard let sSelf = self else {
                 return
             }
@@ -186,7 +188,19 @@ final class TrainSpeedMeasurement: ObservableObject {
         })
     }
     
+    private func unregisterForFeedbackChanges() {
+        if let feedbackChangeUUID = feedbackChangeUUID {
+            interface.unregister(uuid: feedbackChangeUUID)
+        }
+    }
+    
     func cancel() {
+        unregisterForFeedbackChanges()
+        running = false
+    }
+    
+    func done() {
+        unregisterForFeedbackChanges()
         running = false
     }
 }

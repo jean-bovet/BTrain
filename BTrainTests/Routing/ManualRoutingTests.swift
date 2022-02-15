@@ -989,7 +989,7 @@ class ManualRoutingTests: BTTestCase {
         XCTAssertTrue(train.manualScheduling)
         XCTAssertEqual(train.state, .stopped)
 
-        let layoutController = LayoutController(layout: layout, switchboard: nil, interface: nil)
+        let layoutController = LayoutController(layout: layout, switchboard: nil, interface: MarklinInterface())
         let asserter = LayoutAsserter(layout: layout, layoutController: layoutController)
         return Package(layout: layout, train: train, route: route, asserter: asserter, layoutController: layoutController)
     }

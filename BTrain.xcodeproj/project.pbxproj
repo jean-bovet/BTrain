@@ -106,7 +106,6 @@
 		A783EA5B278530BF00E69B6D /* SimulatorTrain.swift in Sources */ = {isa = PBXBuildFile; fileRef = A783EA5A278530BF00E69B6D /* SimulatorTrain.swift */; };
 		A783EA9F2787C6DA00E69B6D /* LayoutObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = A783EA9E2787C6DA00E69B6D /* LayoutObserver.swift */; };
 		A783EAA12787D12200E69B6D /* BTTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = A783EAA02787D12200E69B6D /* BTTestCase.swift */; };
-		A783EAA32787D68200E69B6D /* ProxyCommandInterface.swift in Sources */ = {isa = PBXBuildFile; fileRef = A783EAA22787D68200E69B6D /* ProxyCommandInterface.swift */; };
 		A783EAA52788B52000E69B6D /* BlockShapeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A783EAA42788B52000E69B6D /* BlockShapeView.swift */; };
 		A783EAA92788C1F700E69B6D /* LayoutFeedbackMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = A783EAA82788C1F700E69B6D /* LayoutFeedbackMonitor.swift */; };
 		A783EAAD2789290F00E69B6D /* LayoutRuntimeErrorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A783EAAC2789290F00E69B6D /* LayoutRuntimeErrorView.swift */; };
@@ -340,7 +339,6 @@
 		A783EA5A278530BF00E69B6D /* SimulatorTrain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimulatorTrain.swift; sourceTree = "<group>"; };
 		A783EA9E2787C6DA00E69B6D /* LayoutObserver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutObserver.swift; sourceTree = "<group>"; };
 		A783EAA02787D12200E69B6D /* BTTestCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BTTestCase.swift; sourceTree = "<group>"; };
-		A783EAA22787D68200E69B6D /* ProxyCommandInterface.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProxyCommandInterface.swift; sourceTree = "<group>"; };
 		A783EAA42788B52000E69B6D /* BlockShapeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockShapeView.swift; sourceTree = "<group>"; };
 		A783EAA82788C1F700E69B6D /* LayoutFeedbackMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutFeedbackMonitor.swift; sourceTree = "<group>"; };
 		A783EAAC2789290F00E69B6D /* LayoutRuntimeErrorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutRuntimeErrorView.swift; sourceTree = "<group>"; };
@@ -486,7 +484,6 @@
 		A711B155273A28C3002FE7DB /* Command */ = {
 			isa = PBXGroup;
 			children = (
-				A783EAA22787D68200E69B6D /* ProxyCommandInterface.swift */,
 				A784139027423A8D00381341 /* Command.swift */,
 				A785C07D278A64C1002FD538 /* CommandInterface.swift */,
 				A785C088278E59A4002FD538 /* CommandTypes.swift */,
@@ -1289,7 +1286,6 @@
 				A7841378273E4EB900381341 /* TurnoutShape.swift in Sources */,
 				A744D1372765C5A3005C2F37 /* LayoutError.swift in Sources */,
 				A7218071275D398000831998 /* CS2DocumentParser.swift in Sources */,
-				A783EAA32787D68200E69B6D /* ProxyCommandInterface.swift in Sources */,
 				A71715892758448D00200F92 /* CGRect+Extension.swift in Sources */,
 				A7BE36AA2751BDC300286709 /* ConnectorPlug.swift in Sources */,
 				A73E080B276ABA91005F9D64 /* LayoutDCreator.swift in Sources */,

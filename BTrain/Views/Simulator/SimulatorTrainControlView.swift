@@ -71,7 +71,7 @@ struct SimulatorTrainControlView_Previews: PreviewProvider {
     static let simulatorTrain = SimulatorTrain(train: layout.trains[0])
     
     static var previews: some View {
-        SimulatorTrainControlView(simulator: MarklinCommandSimulator(layout: layout, interface: MarklinInterface(server: "", port: 0)),
+        SimulatorTrainControlView(simulator: MarklinCommandSimulator(layout: layout, interface: MarklinInterface()),
                                   train: simulatorTrain, speed: simulatorTrain.speed)
     }
 }

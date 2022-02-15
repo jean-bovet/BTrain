@@ -25,7 +25,7 @@ class SwitchboardTests: XCTestCase {
     override func setUp() {
         layout = LayoutDCreator().newLayout()
         XCTAssertEqual(layout.transitions.count, 0)
-        controller = LayoutController(layout: layout, switchboard: nil, interface: nil)
+        controller = LayoutController(layout: layout, switchboard: nil, interface: MarklinInterface())
         
         let context = ShapeContext()
         provider = ShapeProvider(layout: layout, context: context)

@@ -20,12 +20,12 @@ class MarklinInterfaceTests: XCTestCase {
     
     override func setUp() {
         let connectedExpection = XCTestExpectation()
-        mi = MarklinInterface(server: "localhost", port: 15731)
+        mi = MarklinInterface()
         
         simulator = MarklinCommandSimulator(layout: Layout(), interface: mi)
         simulator.start()
 
-        mi.connect {
+        mi.connect(server: "localhost", port: 15731) {
             connectedExpection.fulfill()
         } onError: { error in
             XCTAssertNil(error)

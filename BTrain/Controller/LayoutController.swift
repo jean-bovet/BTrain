@@ -26,7 +26,7 @@ final class LayoutController: TrainControllerDelegate {
     let feedbackMonitor: LayoutFeedbackMonitor
     
     // The interface to the Digital Controller
-    var interface: CommandInterface?
+    var interface: CommandInterface
         
     // The switchboard state, used to refresh the switchboard
     // when certain events happen in the layout controller
@@ -43,12 +43,14 @@ final class LayoutController: TrainControllerDelegate {
 
     let debugger: LayoutControllerDebugger
 
-    init(layout: Layout, switchboard: SwitchBoard?, interface: CommandInterface?) {
+    init(layout: Layout, switchboard: SwitchBoard?, interface: CommandInterface) {
         self.layout = layout
         self.switchboard = switchboard
         self.feedbackMonitor = LayoutFeedbackMonitor(layout: layout)
         self.interface = interface
         self.debugger = LayoutControllerDebugger(layout: layout)
+        
+        registerForChange()
         
         updateControllers()
         
@@ -62,6 +64,13 @@ final class LayoutController: TrainControllerDelegate {
         }
     }
         
+    func registerForChange() {
+        registerForFeedbackChange()
+        registerForSpeedChange()
+        registerForDirectionChange()
+        registerForTurnoutChange()
+    }
+    
     func updateControllers() {
         for train in layout.trains {
             if controllers[train.id] == nil {
@@ -165,11 +174,11 @@ final class LayoutController: TrainControllerDelegate {
     // MARK: Commands
     
     func go(onCompletion: @escaping () -> Void) {
-        interface?.execute(command: .go(), onCompletion: onCompletion)
+        interface.execute(command: .go(), onCompletion: onCompletion)
     }
 
     func stop(onCompletion: @escaping () -> Void) {
-        interface?.execute(command: .stop(), onCompletion: onCompletion)
+        interface.execute(command: .stop(), onCompletion: onCompletion)
     }
     
     func start(routeID: Identifier<Route>, trainID: Identifier<Train>, destination: Destination?) throws {

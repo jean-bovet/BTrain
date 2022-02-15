@@ -12,13 +12,13 @@
 
 import Foundation
 
-final class MarklinInterface {
+final class MarklinInterface: CommandInterface {
         
-    let client: Client
+    var client: Client?
     
     let locomotiveConfig = MarklinLocomotiveConfig()
     
-    var feedbackChangeCallbacks = [FeedbackChangeCallback]()
+    var feedbackChangeCallbacks = [UUID:FeedbackChangeCallback]()
     var speedChangeCallbacks = [SpeedChangeCallback]()
     var directionChangeCallbacks = [DirectionChangeCallback]()
     var turnoutChangeCallbacks = [TurnoutChangeCallback]()
@@ -27,12 +27,9 @@ final class MarklinInterface {
     typealias CompletionBlock = () -> Void
     private var disconnectCompletionBlocks: CompletionBlock?
     
-    init(server: String, port: UInt16) {
-        self.client = Client(host: server, port: port)
-    }
-
-    func connect(onReady: @escaping () -> Void, onError: @escaping (Error) -> Void, onStop: @escaping () -> Void) {
-        client.start {
+    func connect(server: String, port: UInt16, onReady: @escaping () -> Void, onError: @escaping (Error) -> Void, onStop: @escaping () -> Void) {
+        client = Client(host: server, port: port)
+        client?.start {
             onReady()
         } onData: { msg in
             if let cmd = MarklinCommand.from(message: msg) {
@@ -49,7 +46,7 @@ final class MarklinInterface {
             } else {
                 let cmd = Command.from(message: msg)
                 if case .feedback(deviceID: let deviceID, contactID: let contactID, oldValue: _, newValue: let newValue, time: _, priority: _, descriptor: _) = cmd {
-                    self.feedbackChangeCallbacks.forEach { $0(deviceID, contactID, newValue) }
+                    self.feedbackChangeCallbacks.forEach { $0.value(deviceID, contactID, newValue) }
                 }
                 if case .turnout(address: let address, state: let state, power: let power, priority: _, descriptor: _) = cmd {
                     if msg.resp == 0 {
@@ -77,26 +74,21 @@ final class MarklinInterface {
                 }
             }
         } onError: { error in
+            self.client = nil
             onError(error)
         } onStop: {
             DispatchQueue.main.async {
                 self.disconnectCompletionBlocks?()
             }
+            self.client = nil
             onStop()
         }
     }
 
-    func send(message: MarklinCANMessage, priority: Command.Priority, onCompletion: @escaping () -> Void) {
-        client.send(data: message.data, priority: priority == .high, onCompletion: onCompletion)
-    }
-
-}
-
-extension MarklinInterface: CommandInterface {
-        
     func disconnect(_ completion: @escaping CompletionBlock) {
         disconnectCompletionBlocks = completion
-        client.stop()
+        client?.stop()
+        client = nil
     }
     
     func execute(command: Command, onCompletion: @escaping () -> Void) {
@@ -117,10 +109,12 @@ extension MarklinInterface: CommandInterface {
         return SpeedStep(value: UInt16(steps))
     }
 
-    func register(forFeedbackChange callback: @escaping FeedbackChangeCallback) {
-        feedbackChangeCallbacks.append(callback)
+    func register(forFeedbackChange callback: @escaping FeedbackChangeCallback) -> UUID {
+        let uuid = UUID()
+        feedbackChangeCallbacks[uuid] = callback
+        return uuid
     }
-
+    
     func register(forSpeedChange callback: @escaping SpeedChangeCallback) {
         speedChangeCallbacks.append(callback)
     }
@@ -137,6 +131,14 @@ extension MarklinInterface: CommandInterface {
         locomotivesQueryCallbacks.append(callback)
     }
 
+    func unregister(uuid: UUID) {
+        feedbackChangeCallbacks.removeValue(forKey: uuid)
+    }
+
+    private func send(message: MarklinCANMessage, priority: Command.Priority, onCompletion: @escaping () -> Void) {
+        client?.send(data: message.data, priority: priority == .high, onCompletion: onCompletion)
+    }
+        
 }
 
 extension Locomotive {

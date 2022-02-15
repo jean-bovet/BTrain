@@ -30,7 +30,7 @@ struct ImportLayoutSheet: View {
     }
     
     var coordinator: LayoutController {
-        return LayoutController(layout: layout, switchboard: switchboard, interface: nil)
+        return LayoutController(layout: layout, switchboard: switchboard, interface: MarklinInterface())
     }
     
     let previewSize = CGSize(width: 800, height: 400)

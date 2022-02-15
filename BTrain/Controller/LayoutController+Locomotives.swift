@@ -15,10 +15,6 @@ import Foundation
 extension LayoutController {
         
     func discoverLocomotives(merge: Bool) {
-        guard let interface = interface else {
-            return
-        }
-
         interface.register(forLocomotivesQuery: { locomotives in
             self.process(locomotives: locomotives, merge: merge)
         })

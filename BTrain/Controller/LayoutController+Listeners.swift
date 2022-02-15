@@ -14,15 +14,8 @@ import Foundation
 
 extension LayoutController {
     
-    func interfaceChanged() {
-        registerForFeedbackChange()
-        registerForSpeedChange()
-        registerForDirectionChange()
-        registerForTurnoutChange()
-    }
-    
     func registerForFeedbackChange() {
-        interface?.register(forFeedbackChange: { [weak self] deviceID, contactID, value in
+        _ = interface.register(forFeedbackChange: { [weak self] deviceID, contactID, value in
             guard let sSelf = self else {
                 return
             }
@@ -37,7 +30,7 @@ extension LayoutController {
     }
                 
     func registerForSpeedChange() {
-        interface?.register(forSpeedChange: { [weak self] address, decoder, value in
+        interface.register(forSpeedChange: { [weak self] address, decoder, value in
             guard let layout = self?.layout, let interface = self?.interface else {
                 return
             }
@@ -52,7 +45,7 @@ extension LayoutController {
     }
     
     func registerForDirectionChange() {
-        interface?.register(forDirectionChange: { [weak self] address, decoder, direction in
+        interface.register(forDirectionChange: { [weak self] address, decoder, direction in
             DispatchQueue.main.async {
                 self?.directionDidChange(address: address, decoder: decoder, direction: direction)
             }
@@ -84,7 +77,7 @@ extension LayoutController {
     }
     
     func registerForTurnoutChange() {
-        interface?.register(forTurnoutChange: { [weak self] address, state, power in
+        interface.register(forTurnoutChange: { [weak self] address, state, power in
             guard let layout = self?.layout else {
                 return
             }

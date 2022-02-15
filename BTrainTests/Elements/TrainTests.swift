@@ -18,7 +18,7 @@ import XCTest
 
 class TrainTests: XCTestCase {
     
-    let mi = MarklinInterface(server: "", port: 0)
+    let mi = MarklinInterface()
 
     func testCodable() throws {
         let t1 = Train(uuid: "1")

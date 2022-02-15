@@ -30,15 +30,15 @@ class TrainViewTests: RootViewTests {
     }
 
     func testSpeedView() throws {
-        let sut = TrainSpeedView(trainSpeed: TrainSpeed(kph: 50, decoderType: .MFX))
-        _ = try sut.inspect().hStack().canvas(1)
+        let sut = TrainSpeedView(document: doc, train: layout.trains[0], measurement: doc.trainSpeedMeasurement, trainSpeed: TrainSpeed(kph: 50, decoderType: .MFX))
+        _ = try sut.inspect().vStack().hStack(0).canvas(1)
     }
 
     func testDetailsView() throws {
         let layout = LayoutACreator().newLayout()
         let t1 = layout.trains[0]
         
-        let sut = TrainDetailsView(layout: layout, train: t1, trainIconManager: TrainIconManager(layout: layout))
+        let sut = TrainDetailsView(document: doc, train: t1, trainIconManager: TrainIconManager(layout: layout))
         
         let decoderSection = try sut.inspect().find(TrainDetailsDecoderSectionView.self)
         _ = try decoderSection.find(text: "Type:")

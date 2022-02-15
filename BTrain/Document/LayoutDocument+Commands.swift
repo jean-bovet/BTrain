@@ -48,35 +48,27 @@ extension LayoutDocument {
         try layoutController.finishAll()
     }
 
-    @discardableResult
-    func connectToSimulator(completed: ((Error?) -> Void)? = nil) -> CommandInterface {
+    func connectToSimulator(completed: ((Error?) -> Void)? = nil) {
         simulator.start()
-        return connect(address: "localhost", port: 15731, completed: completed)
+        connect(address: "localhost", port: 15731, completed: completed)
     }
     
-    @discardableResult
-    func connect(address: String, port: UInt16, completed: ((Error?) -> Void)? = nil) -> CommandInterface {
-        let mi = MarklinInterface(server: address, port: port)
-        mi.connect {
+    func connect(address: String, port: UInt16, completed: ((Error?) -> Void)? = nil) {
+        interface.connect(server: address, port: port) {
             DispatchQueue.main.async {
                 self.connected = true
-                self.interface.interface = mi
-                self.layoutController.interfaceChanged()
                 completed?(nil)
             }
         } onError: { error in
             DispatchQueue.main.async {
                 self.connected = false
-                self.interface.interface = nil
                 completed?(error)
             }
         } onStop: {
             DispatchQueue.main.async {
                 self.connected = false
-                self.interface.interface = nil
             }
         }
-        return mi
     }
     
     func disconnect() {

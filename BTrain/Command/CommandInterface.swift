@@ -14,6 +14,8 @@ import Foundation
 
 protocol CommandInterface {
             
+    func connect(server: String, port: UInt16, onReady: @escaping () -> Void, onError: @escaping (Error) -> Void, onStop: @escaping () -> Void)
+    
     func disconnect(_ completion: @escaping CompletionBlock)
     
     func execute(command: Command, onCompletion: @escaping () -> Void)
@@ -25,7 +27,7 @@ protocol CommandInterface {
     func speedSteps(for value: SpeedValue, decoder: DecoderType) -> SpeedStep
     
     typealias FeedbackChangeCallback = (_ deviceID: UInt16, _ contactID: UInt16, _ value: UInt8) -> Void
-    func register(forFeedbackChange: @escaping FeedbackChangeCallback)
+    func register(forFeedbackChange: @escaping FeedbackChangeCallback) -> UUID
 
     typealias SpeedChangeCallback = (_ address: UInt32, _ decoderType: DecoderType?, _ value: SpeedValue) -> Void
     func register(forSpeedChange: @escaping SpeedChangeCallback)
@@ -38,4 +40,6 @@ protocol CommandInterface {
     
     typealias QueryLocomotiveCallback = (_ locomotives: [CommandLocomotive]) -> Void
     func register(forLocomotivesQuery callback: @escaping QueryLocomotiveCallback)
+    
+    func unregister(uuid: UUID)
 }

@@ -370,7 +370,7 @@ class AutomaticRoutingTests: BTTestCase {
                 
         // Start the route
         let routeId = Route.automaticRouteId(for: train.id)
-        let layoutController = LayoutController(layout: layout, switchboard: nil, interface: nil)
+        let layoutController = LayoutController(layout: layout, switchboard: nil, interface: MarklinInterface())
         try layoutController.start(routeID: routeId, trainID: train.id, destination: destination)
 
         let route = layout.route(for: routeId, trainId: train.id)!

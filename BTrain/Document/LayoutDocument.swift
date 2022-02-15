@@ -35,7 +35,7 @@ final class LayoutDocument: ObservableObject {
     @Published var connected = false
 
     // Interface to communicate with the Digital Controller
-    @Published var interface: ProxyCommandInterface
+    let interface: CommandInterface
     
     // The layout model
     @Published var layout: Layout
@@ -81,7 +81,7 @@ final class LayoutDocument: ObservableObject {
     init(layout: Layout) {
         self.layout = layout
         
-        let interface = ProxyCommandInterface()
+        let interface = MarklinInterface()
         let simulator = MarklinCommandSimulator(layout: layout, interface: interface)
         let switchboard = SwitchBoardFactory.generateSwitchboard(layout: layout, simulator: simulator)
         let layoutController = LayoutController(layout: layout, switchboard: switchboard, interface: interface)

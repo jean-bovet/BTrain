@@ -36,9 +36,7 @@ struct ConnectSheet: View {
     @State private var msg = ""
 
     @State private var connecting = false
-    
-    @State var connectingCommandInterface: CommandInterface?
-    
+        
     func didConnect(withError error: Error?) {
         if let error = error {
             connecting.toggle()
@@ -86,9 +84,7 @@ struct ConnectSheet: View {
             
             HStack {
                 Button("Cancel") {
-                    connectingCommandInterface?.disconnect {
-                        
-                    }
+                    document.interface.disconnect { }
                     presentationMode.wrappedValue.dismiss()
                 }.keyboardShortcut(.cancelAction)
 
@@ -97,11 +93,11 @@ struct ConnectSheet: View {
                 Button("Connect") {
                     connecting.toggle()
                     if type == .centralStation {
-                        connectingCommandInterface = document.connect(address: address, port: UInt16(port)!) { error in
+                        document.connect(address: address, port: UInt16(port)!) { error in
                             didConnect(withError: error)
                         }
                     } else {
-                        connectingCommandInterface = document.connectToSimulator() { error in
+                        document.connectToSimulator() { error in
                             didConnect(withError: error)
                         }
                     }
