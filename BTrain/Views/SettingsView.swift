@@ -12,6 +12,15 @@
 
 import SwiftUI
 
+struct SettingsKeys {
+    
+    static let logRoutingResolutionSteps = "logRoutingResolutionSteps"
+    
+    static func bool(forKey key: String) -> Bool {
+        return UserDefaults.standard.bool(forKey: key)
+    }
+}
+
 struct SettingsView: View {
     
     private enum Tabs: Hashable {
@@ -29,6 +38,7 @@ struct SettingsView: View {
     @AppStorage("debugMode") private var showDebugControls = false
     @AppStorage("hideWelcomeScreen") private var hideWelcomeScreen = false
     @AppStorage("recordDiagnosticLogs") private var recordDiagnosticLogs = false
+    @AppStorage(SettingsKeys.logRoutingResolutionSteps) private var logRoutingResolutionSteps = false
 
     var body: some View {
         TabView {
@@ -64,7 +74,7 @@ struct SettingsView: View {
                 Toggle("Show Debug Controls", isOn: $showDebugControls)
                 Toggle("Hide Welcome Screen", isOn: $hideWelcomeScreen)
                 Toggle("Record Diagnostic Logs", isOn: $recordDiagnosticLogs)
-
+                Toggle("Log Routing Resolution Steps", isOn: $logRoutingResolutionSteps)
             }
             .tabItem {
                 Label("Advanced", systemImage: "star")

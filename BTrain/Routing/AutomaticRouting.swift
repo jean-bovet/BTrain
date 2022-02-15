@@ -61,7 +61,7 @@ final class AutomaticRouting {
         let settings = PathFinder.Settings(random: layout.automaticRouteRandom,
                                            reservedBlockBehavior: destination == nil ? .avoidReservedUntil(numberOfSteps: 1) : .avoidReserved,
                                            consideringStoppingAtSiding: false,
-                                           verbose: true)
+                                           verbose: SettingsKeys.bool(forKey: SettingsKeys.logRoutingResolutionSteps))
         if let path = try pf.path(trainId: train.id, from: currentBlock, destination: destination, direction: trainInstance.direction, settings: settings) {
             route.steps = path.steps
             train.routeStepIndex = 0

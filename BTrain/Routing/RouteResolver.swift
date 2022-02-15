@@ -23,7 +23,10 @@ final class RouteResolver {
     let pf: PathFinder
     
     lazy var settings: PathFinder.Settings = {
-        var settings = PathFinder.Settings(random: false, reservedBlockBehavior: .avoidReservedUntil(numberOfSteps: 0), consideringStoppingAtSiding: false, verbose: true)
+        var settings = PathFinder.Settings(random: false,
+                                           reservedBlockBehavior: .avoidReservedUntil(numberOfSteps: 0),
+                                           consideringStoppingAtSiding: false,
+                                           verbose: SettingsKeys.bool(forKey: SettingsKeys.logRoutingResolutionSteps))
         settings.includeTurnouts = true
         settings.ignoreDisabledElements = true
         settings.firstBlockShouldMatchDestination = true
