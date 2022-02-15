@@ -31,6 +31,7 @@ final class TrainSpeedMeasurement: ObservableObject {
     @Published var running = false
 
     private var entryIndex = 0
+    private var forward = true
     
     struct Properties {
         let train: Train
@@ -38,6 +39,8 @@ final class TrainSpeedMeasurement: ObservableObject {
         let feedbackA: Identifier<Feedback>
         let feedbackB: Identifier<Feedback>
         let feedbackC: Identifier<Feedback>
+        let distanceAB: Double
+        let distanceBC: Double
     }
     
     init(layout: Layout, interface: CommandInterface){
@@ -54,6 +57,7 @@ final class TrainSpeedMeasurement: ObservableObject {
         registerForFeedbackChanges()
 
         running = true
+        forward = properties.train.directionForward
         entryIndex = 0
         run(properties: properties, callback: callback)
     }
@@ -64,6 +68,7 @@ final class TrainSpeedMeasurement: ObservableObject {
         callback("Measuring speed for step \(speedEntry.steps.value)", Double(entryIndex+1) / Double(entries.count))
         measure(properties: properties, speedEntry: speedEntry) {
             self.entryIndex += 1
+            self.forward.toggle()
             if self.entryIndex >= entries.count {
                 self.running = false
             } else {
@@ -74,14 +79,33 @@ final class TrainSpeedMeasurement: ObservableObject {
     
     private func measure(properties: Properties, speedEntry: TrainSpeed.SpeedTableEntry, completion: @escaping CompletionBlock) {
         startTrain(properties: properties, speedEntry: speedEntry) {
-            self.waitForFeedback(properties.feedbackA) {
-                self.waitForFeedback(properties.feedbackB) {
-                    let t0 = Date()
-                    self.waitForFeedback(properties.feedbackC) {
-                        let t1 = Date()
-                        self.stopTrain(properties: properties) {
-                            self.storeMeasurement(t0: t0, t1: t1)
-                            completion()
+            if self.forward {
+                self.waitForFeedback(properties.feedbackA) {
+                    self.waitForFeedback(properties.feedbackB) {
+                        let t0 = Date()
+                        self.waitForFeedback(properties.feedbackC) {
+                            let t1 = Date()
+                            self.stopTrain(properties: properties) {
+                                self.storeMeasurement(properties: properties, t0: t0, t1: t1, distance: properties.distanceBC)
+                                self.setTrainDirection(properties: properties, direction: self.forward ? .forward : .backward) {
+                                    completion()
+                                }
+                            }
+                        }
+                    }
+                }
+            } else {
+                self.waitForFeedback(properties.feedbackC) {
+                    self.waitForFeedback(properties.feedbackB) {
+                        let t0 = Date()
+                        self.waitForFeedback(properties.feedbackA) {
+                            let t1 = Date()
+                            self.stopTrain(properties: properties) {
+                                self.storeMeasurement(properties: properties, t0: t0, t1: t1, distance: properties.distanceAB)
+                                self.setTrainDirection(properties: properties, direction: self.forward ? .forward : .backward) {
+                                    completion()
+                                }
+                            }
                         }
                     }
                 }
@@ -106,20 +130,36 @@ final class TrainSpeedMeasurement: ObservableObject {
         }
     }
     
+    private func setTrainDirection(properties: Properties, direction: Command.Direction, completion: @escaping CompletionBlock) {
+        let train = properties.train
+        interface.execute(command: .direction(address: train.address, decoderType: train.decoder, direction: direction)) {
+            completion()
+        }
+    }
+    
     private func waitForFeedback(_ feedbackId: Identifier<Feedback>, completion: @escaping CompletionBlock) {
         expectedFeedbackId = feedbackId
         expectedFeedbackCallback = { [weak self] in
             // TODO: abort on unexpected feedbacks?
             self?.expectedFeedbackId = nil
             self?.expectedFeedbackCallback = nil
-            self?.objectWillChange.send()
             completion()
         }
     }
     
-    private func storeMeasurement(t0: Date, t1: Date) {
+    private func storeMeasurement(properties: Properties, t0: Date, t1: Date, distance: Double) {
         let duration = t1.timeIntervalSince(t0)
-        print("Duration is \(duration)")
+        let durationInHour = duration / (60 * 60)
+        
+        // H0 is 1:87 (1cm in prototype = 0.0115cm in the layout)
+        let modelDistanceKm = distance / 100000
+        let realDistanceKm = modelDistanceKm * 87
+        let speedInKph = realDistanceKm / durationInHour
+        
+        print("Duration is \(duration): \(speedInKph)")
+        
+        let entry = properties.train.speed.speedTable[entryIndex]
+        properties.train.speed.speedTable[entryIndex] = .init(steps: entry.steps, speed: TrainSpeed.UnitKph(speedInKph))
     }
     
     private var expectedFeedbackId: Identifier<Feedback>?

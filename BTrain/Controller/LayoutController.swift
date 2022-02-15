@@ -90,7 +90,7 @@ final class LayoutController: TrainControllerDelegate {
         
     func run() -> TrainController.Result {
         guard layout.runtimeError == nil else {
-            BTLogger.debug("⚙ Cannot evaluate the layout because there is a runtime error")
+            BTLogger.debug("⚙ Cannot evaluate the layout because there is a runtime error: \(layout.runtimeError!)")
             return .none
         }
         BTLogger.debug("⚙ Evaluating the layout")

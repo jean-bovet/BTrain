@@ -88,6 +88,21 @@ struct TrainSpeedView: View {
     }
 }
 
+struct TrainSpeedMeasureFeedbackVisualView: View {
+
+    let document: LayoutDocument
+
+    @ObservedObject var feedback: Feedback
+        
+    var body: some View {
+        Button("􀧷") {
+            document.simulator.setFeedback(feedback: feedback, value: feedback.detected ? 0 : 1)
+        }
+        .buttonStyle(.borderless)
+        .foregroundColor(feedback.detected ? .green : .black)
+    }
+}
+
 struct TrainSpeedMeasureFeedbackView: View {
 
     let document: LayoutDocument
@@ -105,14 +120,6 @@ struct TrainSpeedMeasureFeedbackView: View {
         }
     }
     
-    var feedbackDetected: Bool {
-        if let feedback = feedback {
-            return feedback.detected
-        } else {
-            return false
-        }
-    }
-    
     var body: some View {
         VStack {
             Text(label)
@@ -124,13 +131,9 @@ struct TrainSpeedMeasureFeedbackView: View {
                 }
                 .labelsHidden()
                 .disabled(measurement.running)
-                Button("􀧷") {
-                    if let feedback = self.feedback {
-                        document.simulator.setFeedback(feedback: feedback, value: feedbackDetected ? 0 : 1)
-                    }
+                if let feedback = self.feedback {
+                    TrainSpeedMeasureFeedbackVisualView(document: document, feedback: feedback)
                 }
-                .buttonStyle(.borderless)
-                .foregroundColor(feedbackDetected ? .green : .black)
             }
         }
     }
@@ -147,7 +150,7 @@ struct TrainSpeedMeasureDistanceView: View {
             HStack {
                 Text("􀅁")
                 TextField("Distance:", value: $distance, format: .number)
-                Text("􀅂")
+                Text("cm 􀅂")
             }
             .disabled(measurement.running)
         }
@@ -236,7 +239,7 @@ struct TrainSpeedMeasureView: View {
     
     func measure() {
         if let feedbackA = feedbackA, let feedbackB = feedbackB, let feedbackC = feedbackC {
-            let properties = TrainSpeedMeasurement.Properties(train: train, selectedSpeedEntries: selectedSpeedEntries, feedbackA: Identifier<Feedback>(uuid: feedbackA), feedbackB: Identifier<Feedback>(uuid: feedbackB), feedbackC: Identifier<Feedback>(uuid: feedbackC))
+            let properties = TrainSpeedMeasurement.Properties(train: train, selectedSpeedEntries: selectedSpeedEntries, feedbackA: Identifier<Feedback>(uuid: feedbackA), feedbackB: Identifier<Feedback>(uuid: feedbackB), feedbackC: Identifier<Feedback>(uuid: feedbackC), distanceAB: distanceAB, distanceBC: distanceBC)
             self.error = nil
             do {
                 try measurement.start(properties: properties) { info, progress in
