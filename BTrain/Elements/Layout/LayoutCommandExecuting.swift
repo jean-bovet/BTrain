@@ -28,7 +28,7 @@ final class LayoutCommandExecutor: LayoutCommandExecuting {
     
     // Queue to ensure that sending of command for each turnout does happen
     // every 250ms in order to avoid a spike in current on the real layout.
-    let queue = ScheduledMessageQueue(delay: 0.25)
+    let turnoutQueue = ScheduledMessageQueue(delay: 0.25, name: "Turnout")
     
     // Time until the turnout state power is turned off.
     let activationTime: TimeInterval = 0.200
@@ -47,7 +47,7 @@ final class LayoutCommandExecutor: LayoutCommandExecuting {
         
         var commandCompletionCount = commands.count
         for (index, command) in commands.enumerated() {
-            queue.schedule { qc in
+            turnoutQueue.schedule { qc in
                 self.interface.execute(command: command) {
                     qc()
                     Timer.scheduledTimer(withTimeInterval: self.activationTime, repeats: false) { timer in

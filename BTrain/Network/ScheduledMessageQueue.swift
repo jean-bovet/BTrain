@@ -37,9 +37,11 @@ final class ScheduledMessageQueue {
     static let DefaultDelay = 50.0 / 1000.0
     
     let delay: TimeInterval
+    let name: String
     
-    init(delay: TimeInterval = ScheduledMessageQueue.DefaultDelay) {
+    init(delay: TimeInterval = ScheduledMessageQueue.DefaultDelay, name: String) {
         self.delay = delay
+        self.name = name
         MainThreadQueue.sync {
             scheduleSendData()
         }
@@ -79,6 +81,6 @@ final class ScheduledMessageQueue {
     }
     
     private func printStats() {
-        BTLogger.debug("􀐫 \(scheduledQueue.count) scheduled")
+        BTLogger.debug("􀐫 [\(name)] \(scheduledQueue.count) scheduled")
     }
 }

@@ -16,7 +16,7 @@ import XCTest
 class ScheduledMessageQueueTests: XCTestCase {
 
     func testDelay() throws {
-        let queue = ScheduledMessageQueue()
+        let queue = ScheduledMessageQueue(name: "test")
         let expectation = XCTestExpectation.init(description: "scheduled")
         let startTime = Date()
         queue.schedule(priority: false) { completion in
@@ -28,7 +28,7 @@ class ScheduledMessageQueueTests: XCTestCase {
     }
 
     func testPriorityNormal() throws {
-        let queue = ScheduledMessageQueue()
+        let queue = ScheduledMessageQueue(name: "test")
         let normalExpectation = XCTestExpectation.init(description: "normal")
         let normalExpectation2 = XCTestExpectation.init(description: "normal2")
         let startTime = Date()
@@ -53,7 +53,7 @@ class ScheduledMessageQueueTests: XCTestCase {
     }
 
     func testPriorityHigh() throws {
-        let queue = ScheduledMessageQueue()
+        let queue = ScheduledMessageQueue(name: "test")
         let normalExpectation = XCTestExpectation.init(description: "normal")
         let highExpectation = XCTestExpectation.init(description: "high")
         let startTime = Date()

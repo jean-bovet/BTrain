@@ -82,7 +82,7 @@ class ClientConnection {
         }
     }
         
-    private var dataQueue = ScheduledMessageQueue()
+    private var dataQueue = ScheduledMessageQueue(name: "Client")
     
     func send(data: Data, priority: Bool, onCompletion: @escaping () -> Void) {
         dataQueue.schedule(priority: priority) { completion in
