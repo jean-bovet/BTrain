@@ -53,7 +53,6 @@ final class TrainSpeedMeasurement: ObservableObject {
             throw MeasurementError.alreadyRunning
         }
         
-        // TODO: do it only once or unregister after run?
         registerForFeedbackChanges()
 
         running = true
@@ -64,7 +63,8 @@ final class TrainSpeedMeasurement: ObservableObject {
     
     private func run(properties: Properties, callback: @escaping (String, Double) -> Void) {
         let entries = properties.selectedSpeedEntries.sorted()
-        let speedEntry = properties.train.speed.speedTable[entryIndex]
+        let speedTableIndex = Int(entries[entryIndex])
+        let speedEntry = properties.train.speed.speedTable[speedTableIndex]
         callback("Measuring speed for step \(speedEntry.steps.value)", Double(entryIndex+1) / Double(entries.count))
         measure(properties: properties, speedEntry: speedEntry) {
             self.entryIndex += 1
@@ -116,8 +116,10 @@ final class TrainSpeedMeasurement: ObservableObject {
     private func startTrain(properties: Properties, speedEntry: TrainSpeed.SpeedTableEntry, completion: @escaping CompletionBlock) {
         let train = properties.train
         let numberOfSteps = train.speed.speedTable.count
-        let speedValue = UInt16(Double(speedEntry.steps.value) / Double(numberOfSteps)) * 1000
+        let speedValue = UInt16(Double(speedEntry.steps.value) / Double(numberOfSteps) * 1000)
 
+        train.speed.steps = speedEntry.steps
+        
         interface.execute(command: .speed(address: train.address, decoderType: train.decoder, value: .init(value: speedValue))) {
             completion()
         }
@@ -125,6 +127,9 @@ final class TrainSpeedMeasurement: ObservableObject {
     
     private func stopTrain(properties: Properties, completion: @escaping CompletionBlock) {
         let train = properties.train
+        
+        train.speed.steps = SpeedStep(value: 0)
+        
         interface.execute(command: .speed(address: train.address, decoderType: train.decoder, value: .init(value: 0))) {
             completion()
         }
