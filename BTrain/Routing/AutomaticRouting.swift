@@ -35,7 +35,7 @@ final class AutomaticRouting {
         }
         
         guard let blockId = train.blockId else {
-            throw LayoutError.trainNotAssignedToABlock(trainId: trainId)
+            throw LayoutError.trainNotAssignedToABlock(train: train)
         }
         
         guard let currentBlock = layout.block(for: blockId) else {

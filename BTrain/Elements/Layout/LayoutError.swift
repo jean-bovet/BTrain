@@ -14,7 +14,7 @@ import Foundation
 
 enum LayoutError: Error {
     case trainNotFound(trainId: Identifier<Train>)
-    case trainNotAssignedToABlock(trainId: Identifier<Train>)
+    case trainNotAssignedToABlock(train: Train)
     case trainNotFoundInBlock(blockId: Identifier<Block>)
     case trainInBlockDoesNotMatch(trainId: Identifier<Train>, blockId: Identifier<Block>, blockTrainId: Identifier<Train>)
     case trainNotFoundInRoute(train: Train, route: Route)
@@ -98,8 +98,8 @@ extension LayoutError: LocalizedError {
         case .exitSocketNotFound(step: let step):
             return "There is no exit socket defined for \(step)"
 
-        case .trainNotAssignedToABlock(trainId: let trainId):
-            return "Train \(trainId) does not have any assigned block (train.blockId is nil)"
+        case .trainNotAssignedToABlock(train: let train):
+            return "Train \(train.name) does not have any assigned block (train.blockId is nil)"
         case .trainNotFoundInBlock(blockId: let blockId):
             return "Block \(blockId) does not have any train assigned to it (TrainInstance is nil)"
         case .trainInBlockDoesNotMatch(trainId: let trainId, blockId: let blockId, blockTrainId: let blockTrainId):

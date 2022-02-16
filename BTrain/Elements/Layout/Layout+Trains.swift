@@ -126,7 +126,7 @@ extension Layout {
     // but the direction of the train relative the natural direction of the block)
     func directionDirectionInBlock(_ train: Train) throws -> Direction {
         guard let blockId = train.blockId else {
-            throw LayoutError.trainNotAssignedToABlock(trainId: train.id)
+            throw LayoutError.trainNotAssignedToABlock(train: train)
         }
         
         guard let block = self.block(for: blockId) else {
@@ -155,7 +155,7 @@ extension Layout {
     // Toggle the direction of the train within the block itself
     func toggleTrainDirectionInBlock(_ train: Train) throws {
         guard let blockId = train.blockId else {
-            throw LayoutError.trainNotAssignedToABlock(trainId: train.id)
+            throw LayoutError.trainNotAssignedToABlock(train: train)
         }
         
         guard let block = self.block(for: blockId) else {
@@ -188,7 +188,7 @@ extension Layout {
         }
         
         guard let blockId = train.blockId else {
-            throw LayoutError.trainNotAssignedToABlock(trainId: train.id)
+            throw LayoutError.trainNotAssignedToABlock(train: train)
         }
         
         guard let block = self.block(for: blockId), block.train != nil else {

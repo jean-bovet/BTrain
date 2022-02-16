@@ -223,7 +223,7 @@ final class LayoutReservation {
     // the specified train with all its length, taking into account the length of each block.
     func fillBlocks(train: Train) throws {
         guard let fromBlockId = train.blockId else {
-            throw LayoutError.trainNotAssignedToABlock(trainId: train.id)
+            throw LayoutError.trainNotAssignedToABlock(train: train)
         }
         
         guard let fromBlock = layout.block(for: fromBlockId) else {

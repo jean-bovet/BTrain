@@ -45,7 +45,7 @@ final class TrainPositionFinder {
         }
                         
         guard let blockId = train.blockId else {
-            throw LayoutError.trainNotAssignedToABlock(trainId: train.id)
+            throw LayoutError.trainNotAssignedToABlock(train: train)
         }
         
         guard let block = layout.block(for: blockId) else {
