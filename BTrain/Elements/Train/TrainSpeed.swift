@@ -48,13 +48,18 @@ final class TrainSpeed: ObservableObject, Equatable, CustomStringConvertible {
     var steps: SpeedStep {
         get {
             // Use a cublic spline interpolation to get the most accurate steps number.
-            let csp = CubicSpline(x: speedTable.map { Double($0.speed) },
-                                  y: speedTable.map { Double($0.steps.value) })
+            let csp = CubicSpline(points: speedTable.compactMap { speedEntry in
+                if let speed = speedEntry.speed {
+                    return Point(x: Double(speed), y: Double(speedEntry.steps.value))
+                } else {
+                    return nil
+                }
+            })
             return SpeedStep(value: UInt16(csp[x: Double(kph)]))
         }
         set {
             if newValue.value < speedTable.count - 1 {
-                kph = speedTable[Int(newValue.value)].speed
+                kph = speedTable[Int(newValue.value)].speed ?? 0
             } else {
                 kph = speedTable.last?.speed ?? 0
             }
@@ -69,7 +74,10 @@ final class TrainSpeed: ObservableObject, Equatable, CustomStringConvertible {
         }
         
         var steps: SpeedStep
-        var speed: UnitKph
+        
+        // The real speed in km/h or nil if the speed hasn't been defined.
+        // If nil, this speed will be interpolated given the other data point.
+        var speed: UnitKph?
     }
 
     // Array of correspondance between the number of steps

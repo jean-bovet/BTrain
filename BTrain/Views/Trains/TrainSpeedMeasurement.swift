@@ -68,7 +68,6 @@ final class TrainSpeedMeasurement: ObservableObject {
         callback("Measuring speed for step \(speedEntry.steps.value)", Double(entryIndex+1) / Double(entries.count))
         measure(properties: properties, speedEntry: speedEntry) {
             self.entryIndex += 1
-            self.forward.toggle()
             if self.entryIndex >= entries.count {
                 self.done()
             } else {
@@ -87,7 +86,7 @@ final class TrainSpeedMeasurement: ObservableObject {
                             let t1 = Date()
                             self.stopTrain(properties: properties) {
                                 self.storeMeasurement(properties: properties, t0: t0, t1: t1, distance: properties.distanceBC)
-                                self.setTrainDirection(properties: properties, direction: self.forward ? .forward : .backward) {
+                                self.toggleTrainDirection(properties: properties) {
                                     completion()
                                 }
                             }
@@ -102,7 +101,7 @@ final class TrainSpeedMeasurement: ObservableObject {
                             let t1 = Date()
                             self.stopTrain(properties: properties) {
                                 self.storeMeasurement(properties: properties, t0: t0, t1: t1, distance: properties.distanceAB)
-                                self.setTrainDirection(properties: properties, direction: self.forward ? .forward : .backward) {
+                                self.toggleTrainDirection(properties: properties) {
                                     completion()
                                 }
                             }
@@ -118,7 +117,10 @@ final class TrainSpeedMeasurement: ObservableObject {
         let numberOfSteps = train.speed.speedTable.count
         let speedValue = UInt16(Double(speedEntry.steps.value) / Double(numberOfSteps) * 1000)
 
+        // TODO: try to refactor to be able to use the layout.setTrainSpeed()
         train.speed.steps = speedEntry.steps
+        
+        layout.didChange()
         
         interface.execute(command: .speed(address: train.address, decoderType: train.decoder, value: .init(value: speedValue))) {
             completion()
@@ -127,25 +129,29 @@ final class TrainSpeedMeasurement: ObservableObject {
     
     private func stopTrain(properties: Properties, completion: @escaping CompletionBlock) {
         let train = properties.train
-        
-        train.speed.steps = SpeedStep(value: 0)
-        
-        interface.execute(command: .speed(address: train.address, decoderType: train.decoder, value: .init(value: 0))) {
-            completion()
+        do {
+            try layout.stopTrain(train.id)
+        } catch {
+            // TODO throw
         }
+        completion()
     }
     
-    private func setTrainDirection(properties: Properties, direction: Command.Direction, completion: @escaping CompletionBlock) {
+    private func toggleTrainDirection(properties: Properties, completion: @escaping CompletionBlock) {
         let train = properties.train
-        interface.execute(command: .direction(address: train.address, decoderType: train.decoder, direction: direction)) {
-            completion()
+        do {
+            self.forward.toggle()
+            layout.setLocomotiveDirection(train, forward: self.forward)
+            try layout.toggleTrainDirectionInBlock(train)
+        } catch {
+            // TODO throw
         }
+        completion()
     }
     
     private func waitForFeedback(_ feedbackId: Identifier<Feedback>, completion: @escaping CompletionBlock) {
         expectedFeedbackId = feedbackId
         expectedFeedbackCallback = { [weak self] in
-            // TODO: abort on unexpected feedbacks?
             self?.expectedFeedbackId = nil
             self?.expectedFeedbackCallback = nil
             completion()

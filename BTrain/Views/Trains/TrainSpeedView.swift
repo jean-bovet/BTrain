@@ -21,19 +21,22 @@ struct TrainSpeedView: View {
     @ObservedObject var trainSpeed: TrainSpeed
 
     @State private var selection = Set<TrainSpeed.SpeedTableEntry.ID>()
-    
+    @State private var viewType = 0
+
     @Environment(\.presentationMode) var presentationMode
 
     func speedPath(in size: CGSize) -> Path {
         var p = Path()
         let xOffset = size.width / CGFloat(trainSpeed.speedTable.count)
-        let yOffset = size.height / CGFloat(trainSpeed.speedTable.map({$0.speed}).max() ?? 1)
+        let yOffset = size.height / CGFloat(trainSpeed.speedTable.compactMap({$0.speed}).max() ?? 1)
         for (index, speed) in trainSpeed.speedTable.enumerated() {
-            let point = CGPoint(x: Double(index) * xOffset, y: Double(speed.speed) * yOffset)
-            if p.isEmpty {
-                p.move(to: point)
-            } else {
-                p.addLine(to: point)
+            if let speedValue = speed.speed {
+                let point = CGPoint(x: Double(index) * xOffset, y: Double(speedValue) * yOffset)
+                if p.isEmpty {
+                    p.move(to: point)
+                } else {
+                    p.addLine(to: point)
+                }
             }
         }
         return p
@@ -42,34 +45,58 @@ struct TrainSpeedView: View {
     var body: some View {
         VStack {
             HStack {
-                Table(selection: $selection) {
-                    TableColumn("Steps") { steps in
-                        Text("\(steps.steps.value.wrappedValue)")
-                    }.width(80)
+                VStack {
+                    Table(selection: $selection) {
+                        TableColumn("Steps") { steps in
+                            Text("\(steps.steps.value.wrappedValue)")
+                        }.width(80)
 
-                    TableColumn("Speed (km/h)") { step in
-                        UndoProvider(step.speed) { speed in
-                            TextField("Speed", value: speed, format: .number)
-                                .labelsHidden()
+                        TableColumn("Speed (km/h)") { step in
+                            UndoProvider(step.speed) { speed in
+                                TextField("", value: speed, format: .number)
+                                    .labelsHidden()
+                            }
+                        }
+                    } rows: {
+                        ForEach($trainSpeed.speedTable) { block in
+                            TableRow(block)
                         }
                     }
-                } rows: {
-                    ForEach($trainSpeed.speedTable) { block in
-                        TableRow(block)
+                    HStack {
+                        Spacer()
+                        Button("􀈑") {
+                            selection.forEach { index in
+                                trainSpeed.speedTable[Int(index)].speed = nil
+                            }
+                        }.disabled(selection.isEmpty)
                     }
                 }
+                .frame(width: 300)
                 .disabled(measurement.running)
 
-                Canvas { context, size in
-                    let flipVertical: CGAffineTransform = CGAffineTransform(a: 1, b: 0, c: 0, d: -1, tx: 0, ty: size.height)
-                    context.concatenate(flipVertical)
-                    context.stroke(speedPath(in: size), with: .color(.blue))
+                VStack {
+                    Picker("", selection: $viewType) {
+                        Text("Profile").tag(0)
+                        Text("Measure").tag(1)
+                    }
+                    .labelsHidden()
+                    .pickerStyle(.segmented)
+                    .disabled(measurement.running)
+
+                    if viewType == 0 {
+                        Canvas { context, size in
+                            let flipVertical: CGAffineTransform = CGAffineTransform(a: 1, b: 0, c: 0, d: -1, tx: 0, ty: size.height)
+                            context.concatenate(flipVertical)
+                            context.stroke(speedPath(in: size), with: .color(.blue))
+                        }
+                    } else if viewType == 1 {
+                        VStack {
+                            OverviewRightPanelView(document: document, layout: document.layout)
+                            TrainSpeedMeasureView(document: document, layout: document.layout, train: train, selectedSpeedEntries: $selection, measurement: measurement)
+                        }
+                    }
                 }
             }
-            
-            Divider()
-            
-            TrainSpeedMeasureView(document: document, layout: document.layout, train: train, selectedSpeedEntries: $selection, measurement: measurement)
             
             Divider()
 
@@ -85,21 +112,6 @@ struct TrainSpeedView: View {
         .onAppear {
             trainSpeed.updateSpeedStepsTable()
         }
-    }
-}
-
-struct TrainSpeedMeasureFeedbackVisualView: View {
-
-    let document: LayoutDocument
-
-    @ObservedObject var feedback: Feedback
-        
-    var body: some View {
-        Button("􀧷") {
-            document.simulator.setFeedback(feedback: feedback, value: feedback.detected ? 0 : 1)
-        }
-        .buttonStyle(.borderless)
-        .foregroundColor(feedback.detected ? .green : .black)
     }
 }
 
@@ -123,18 +135,13 @@ struct TrainSpeedMeasureFeedbackView: View {
     var body: some View {
         VStack {
             Text(label)
-            HStack {
-                Picker(label, selection: $feedbackUUID) {
-                    ForEach(layout.feedbacks, id:\.self) { feedback in
-                        Text(feedback.name).tag(feedback.id.uuid as String?)
-                    }
-                }
-                .labelsHidden()
-                .disabled(measurement.running)
-                if let feedback = self.feedback {
-                    TrainSpeedMeasureFeedbackVisualView(document: document, feedback: feedback)
+            Picker(label, selection: $feedbackUUID) {
+                ForEach(layout.feedbacks, id:\.self) { feedback in
+                    Text(feedback.name).tag(feedback.id.uuid as String?)
                 }
             }
+            .labelsHidden()
+            .disabled(measurement.running)
         }
     }
 }
@@ -180,8 +187,6 @@ struct TrainSpeedMeasureView: View {
     
     var body: some View {
         VStack(alignment: .leading) {
-            Text("􀁟 Position the locomotive before feedback A with its travel direction towards A, B & C.")
-            
             GroupBox {
                 HStack {
                     TrainSpeedMeasureFeedbackView(document: document, layout: layout, label: "Feedback A", measurement: measurement, feedbackUUID: $feedbackA)
@@ -196,6 +201,8 @@ struct TrainSpeedMeasureView: View {
                 }
             }
                         
+            Text("􀁟 Position locomotive \"\(train.name)\" before feedback A with its travel direction towards A, B & C.")
+            
             HStack {
                 if measurement.running {
                     Button("Cancel") {

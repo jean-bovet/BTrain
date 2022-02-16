@@ -137,7 +137,7 @@ class ManualOperationTests: BTTestCase {
         let train = layout.trains[0]
         train.length = 60
         
-        try layout.setLocomotiveDirection(train, forward: false)
+        layout.setLocomotiveDirection(train, forward: false)
         train.wagonsPushedByLocomotive = true
         
         let p = try setup(layout: layout, fromBlockId: "b1")

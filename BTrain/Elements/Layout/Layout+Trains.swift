@@ -145,7 +145,7 @@ extension Layout {
     }
     
     // Set the direction of travel of the locomotive
-    func setLocomotiveDirection(_ train: Train, forward: Bool) throws {
+    func setLocomotiveDirection(_ train: Train, forward: Bool) {
         if train.directionForward != forward {
             train.directionForward = forward
             self.executor?.sendTrainDirection(train: train)
