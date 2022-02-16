@@ -45,10 +45,10 @@ final class Layout: Element, ObservableObject {
     // using a random path or false if they are
     // created using the first-search approach which
     // always give the same result - useful for unit tests.
-    @AppStorage("automaticRouteRandom") var automaticRouteRandom = true
+    @AppStorage(SettingsKeys.automaticRouteRandom) var automaticRouteRandom = true
 
     // True if unexpected feedback should be detected and the layout stopped.
-    @AppStorage("detectUnexpectedFeedback") var detectUnexpectedFeedback = true
+    @AppStorage(SettingsKeys.detectUnexpectedFeedback) var detectUnexpectedFeedback = true
     
     // Defines the route feedback strategy:
     // If true, then:
@@ -63,7 +63,7 @@ final class Layout: Element, ObservableObject {
     //   (within the current block). Any feedback behind the train inside the current block is ignored.
     // - The train moves to the next block when the feedback in the next block is the first one in the direction
     //   of travel of the train. The train does not need to be at the end of the current block for this to happen.
-    @AppStorage("strictRouteFeedbackStrategy") var strictRouteFeedbackStrategy = false
+    @AppStorage(SettingsKeys.strictRouteFeedbackStrategy) var strictRouteFeedbackStrategy = false
 
     // The command executor used to execute command towards the Digital Controller.
     var executor: LayoutCommandExecuting?

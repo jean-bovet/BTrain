@@ -26,8 +26,8 @@ struct ContentView: View {
     @State private var showDiscoverLocomotiveConfirmation = false
     @State private var repairLayoutTrigger = false
     
-    @AppStorage("autoConnectSimulator") private var autoConnectSimulator = false
-    @AppStorage("autoEnableSimulator") private var autoEnableSimulator = false
+    @AppStorage(SettingsKeys.autoConnectSimulator) private var autoConnectSimulator = false
+    @AppStorage(SettingsKeys.autoEnableSimulator) private var autoEnableSimulator = false
     
     var body: some View {
         Group {

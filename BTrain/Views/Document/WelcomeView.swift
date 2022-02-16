@@ -16,7 +16,7 @@ struct WelcomeView: View {
     
     @ObservedObject var document: LayoutDocument
 
-    @AppStorage("hideWelcomeScreen") var hideWelcomeScreen = false
+    @AppStorage(SettingsKeys.hideWelcomeScreen) var hideWelcomeScreen = false
 
     @State private var errorString: String?
     

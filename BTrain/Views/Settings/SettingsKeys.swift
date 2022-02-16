@@ -10,28 +10,25 @@
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-import SwiftUI
+import Foundation
 
-struct DocumentView: View {
+struct SettingsKeys {
     
-    @ObservedObject var document: LayoutDocument
+    static let autoConnectSimulator = "autoConnectSimulator"
+    static let autoEnableSimulator = "autoEnableSimulator"
+    static let fontSize = "fontSize"
+    
+    static let automaticRouteRandom = "automaticRouteRandom"
+    static let detectUnexpectedFeedback = "detectUnexpectedFeedback"
+    static let strictRouteFeedbackStrategy = "strictRouteFeedbackStrategy"
 
-    @AppStorage(SettingsKeys.hideWelcomeScreen) var hideWelcomeScreen = false
+    static let debugMode = "debugMode"
+    static let hideWelcomeScreen = "hideWelcomeScreen"
+    static let recordDiagnosticLogs = "recordDiagnosticLogs"
+    static let logRoutingResolutionSteps = "logRoutingResolutionSteps"
 
-    var body: some View {
-        if hideWelcomeScreen {
-            ContentView(document: document)
-        } else {
-            WelcomeView(document: document)
-        }
+    static func bool(forKey key: String) -> Bool {
+        return UserDefaults.standard.bool(forKey: key)
     }
 }
 
-struct AppView_Previews: PreviewProvider {
-    
-    static let doc = LayoutDocument(layout: Layout())
-    
-    static var previews: some View {
-        DocumentView(document: doc)
-    }
-}

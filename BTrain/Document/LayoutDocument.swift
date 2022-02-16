@@ -74,7 +74,7 @@ final class LayoutDocument: ObservableObject {
     @AppStorage("selectedView") var selectedView: ViewType = .overview
 
     // Property used to toggle showing debug-only controls
-    @AppStorage("debugMode") var showDebugModeControls = false
+    @AppStorage(SettingsKeys.debugMode) var showDebugModeControls = false
             
     @Published var onConnectTasks: LayoutOnConnectTasks
     

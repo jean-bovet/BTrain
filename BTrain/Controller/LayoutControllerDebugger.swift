@@ -15,7 +15,7 @@ import SwiftUI
 
 final class LayoutControllerDebugger {
     
-    @AppStorage("recordDiagnosticLogs") private var enabled = false
+    @AppStorage(SettingsKeys.recordDiagnosticLogs) private var enabled = false
     
     struct Iterations: Codable {
         var iterations = [String]()

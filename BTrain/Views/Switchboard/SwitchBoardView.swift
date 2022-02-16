@@ -30,7 +30,7 @@ struct SwitchBoardView: View {
     // Watch for dark mode to change the color of switchboard
     @Environment(\.colorScheme) var colorScheme
 
-    @AppStorage("fontSize") var fontSize = 12.0
+    @AppStorage(SettingsKeys.fontSize) var fontSize = 12.0
     
     @Environment(\.undoManager) var undoManager
 

@@ -12,32 +12,23 @@
 
 import SwiftUI
 
-struct SettingsKeys {
-    
-    static let logRoutingResolutionSteps = "logRoutingResolutionSteps"
-    
-    static func bool(forKey key: String) -> Bool {
-        return UserDefaults.standard.bool(forKey: key)
-    }
-}
-
 struct SettingsView: View {
     
     private enum Tabs: Hashable {
         case general, routing, advanced
     }
 
-    @AppStorage("autoConnectSimulator") private var autoConnectSimulator = false
-    @AppStorage("autoEnableSimulator") private var autoEnableSimulator = false
-    @AppStorage("fontSize") private var fontSize = 12.0
+    @AppStorage(SettingsKeys.autoConnectSimulator) private var autoConnectSimulator = false
+    @AppStorage(SettingsKeys.autoEnableSimulator) private var autoEnableSimulator = false
+    @AppStorage(SettingsKeys.fontSize) private var fontSize = 12.0
 
-    @AppStorage("automaticRouteRandom") private var automaticRouteRandom = true
-    @AppStorage("detectUnexpectedFeedback") var detectUnexpectedFeedback = true
-    @AppStorage("strictRouteFeedbackStrategy") var strictRouteFeedbackStrategy = false
+    @AppStorage(SettingsKeys.automaticRouteRandom) private var automaticRouteRandom = true
+    @AppStorage(SettingsKeys.detectUnexpectedFeedback) var detectUnexpectedFeedback = true
+    @AppStorage(SettingsKeys.strictRouteFeedbackStrategy) var strictRouteFeedbackStrategy = false
 
-    @AppStorage("debugMode") private var showDebugControls = false
-    @AppStorage("hideWelcomeScreen") private var hideWelcomeScreen = false
-    @AppStorage("recordDiagnosticLogs") private var recordDiagnosticLogs = false
+    @AppStorage(SettingsKeys.debugMode) private var showDebugControls = false
+    @AppStorage(SettingsKeys.hideWelcomeScreen) private var hideWelcomeScreen = false
+    @AppStorage(SettingsKeys.recordDiagnosticLogs) private var recordDiagnosticLogs = false
     @AppStorage(SettingsKeys.logRoutingResolutionSteps) private var logRoutingResolutionSteps = false
 
     var body: some View {
