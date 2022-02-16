@@ -170,7 +170,7 @@ struct TrainDetailsSpeedSectionView: View {
             }.padding([.leading])
         }.sheet(isPresented: $showSpeedProfileSheet) {
             TrainSpeedView(document: document, train: train, measurement: document.trainSpeedMeasurement, trainSpeed: train.speed)
-                .frame(width: sheetWidth, height: sheetHeight)
+                .frame(idealWidth: sheetWidth, idealHeight: sheetHeight)
                 .padding()
         }
     }
