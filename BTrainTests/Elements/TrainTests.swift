@@ -99,7 +99,36 @@ class TrainTests: XCTestCase {
         XCTAssertEqual(t1.speed.steps.value, 14)
     }
     
-    func assertSpeed(_ speed: TrainSpeed, _ interface: CommandInterface, kph: TrainSpeed.UnitKph, steps: UInt16, value: UInt16) {
+    func testSpeedTableWithUndefinedValue() {
+        let t1 = Train(uuid: "1")
+        t1.address = 0x4001
+        
+        XCTAssertEqual(t1.speed.speedTable.count, Int(DecoderType.MFX.steps) + 1)
+
+        let fixedSpeedStep = SpeedStep(value: 10)
+        
+        t1.speed.steps = fixedSpeedStep
+        
+        XCTAssertEqual(t1.speed.steps.value, 10)
+        XCTAssertEqual(t1.speed.kph, 15)
+        
+        t1.speed.speedTable[10] = .init(steps: fixedSpeedStep, speed: nil)
+
+        t1.speed.steps = fixedSpeedStep
+
+        XCTAssertEqual(t1.speed.steps.value, 9) // 9 because of the interpolation
+        XCTAssertEqual(t1.speed.kph, 15)
+        
+        // Put back the speed value
+        t1.speed.speedTable[10] = .init(steps: fixedSpeedStep, speed: 15)
+
+        t1.speed.steps = fixedSpeedStep
+
+        XCTAssertEqual(t1.speed.steps.value, 10)
+        XCTAssertEqual(t1.speed.kph, 15)
+    }
+    
+    private func assertSpeed(_ speed: TrainSpeed, _ interface: CommandInterface, kph: TrainSpeed.UnitKph, steps: UInt16, value: UInt16) {
         XCTAssertEqual(speed.kph, kph)
         XCTAssertEqual(speed.steps.value, steps)
         

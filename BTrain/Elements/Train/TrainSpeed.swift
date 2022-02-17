@@ -48,20 +48,27 @@ final class TrainSpeed: ObservableObject, Equatable, CustomStringConvertible {
     var steps: SpeedStep {
         get {
             // Use a cublic spline interpolation to get the most accurate steps number.
-            let csp = CubicSpline(points: speedTable.compactMap { speedEntry in
+            let points: [Point] = speedTable.compactMap { speedEntry in
                 if let speed = speedEntry.speed {
                     return Point(x: Double(speed), y: Double(speedEntry.steps.value))
                 } else {
                     return nil
                 }
-            })
-            return SpeedStep(value: UInt16(csp[x: Double(kph)]))
+            }
+            if points.count > 1 {
+                let csp = CubicSpline(points: points)
+                return SpeedStep(value: UInt16(csp[x: Double(kph)]))
+            } else {
+                return SpeedStep(value: 0)
+            }
         }
         set {
-            if newValue.value < speedTable.count - 1 {
-                kph = speedTable[Int(newValue.value)].speed ?? 0
+            if newValue.value == 0 {
+                kph = 0
+            } else if newValue.value < speedTable.count - 1 {
+                kph = speedTable[Int(newValue.value)].speed ?? speedKph(for: newValue)
             } else {
-                kph = speedTable.last?.speed ?? 0
+                kph = speedTable.last?.speed ?? maxSpeed
             }
         }
     }
@@ -118,15 +125,19 @@ final class TrainSpeed: ObservableObject, Equatable, CustomStringConvertible {
             return ss1.steps.value < ss2.steps.value
         }
         
-        let stepsCount = decoderType.steps
+        let stepsCount: UInt16 = UInt16(decoderType.steps)
         for index in 0...stepsCount {
-            let speedStep = SpeedStep(value: UInt16(index))
+            let speedStep = SpeedStep(value: index)
             if index >= speedTable.count || speedTable[Int(index)].steps != speedStep {
                 let entry = SpeedTableEntry(steps: speedStep,
-                                            speed: UnitKph(Double(maxSpeed)/Double(stepsCount) * Double(index)))
+                                            speed: speedKph(for: speedStep))
                 speedTable.insert(entry, at: Int(index))
             }
         }
+    }
+    
+    func speedKph(for steps: SpeedStep) -> UnitKph {
+        UnitKph(Double(maxSpeed)/Double(decoderType.steps) * Double(steps.value))
     }
 
 }
