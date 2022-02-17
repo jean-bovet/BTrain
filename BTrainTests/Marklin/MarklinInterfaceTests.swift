@@ -85,4 +85,28 @@ class MarklinInterfaceTests: XCTestCase {
         XCTAssertEqual(loc1.address, 0x6)
     }
 
+    func testCallbackOrdering() {
+        let firstCallbackExpectation = XCTestExpectation()
+        let secondCallbackExpectation = XCTestExpectation()
+
+        let uuid1 = mi.register(forFeedbackChange: { deviceID,contactID,value in
+            firstCallbackExpectation.fulfill()
+        })
+        let uuid2 = mi.register(forFeedbackChange: { deviceID,contactID,value in
+            secondCallbackExpectation.fulfill()
+        })
+
+        XCTAssertEqual(mi.feedbackChangeCallbacks.count, 2)
+
+        let layout = LayoutFCreator().newLayout()
+        let f = layout.feedbacks[0]
+        simulator.triggerFeedback(feedback: f, value: 1)
+        
+        wait(for: [firstCallbackExpectation, secondCallbackExpectation], timeout: 1.0, enforceOrder: true)
+        
+        mi.unregister(uuid: uuid1)
+        mi.unregister(uuid: uuid2)
+
+        XCTAssertEqual(mi.feedbackChangeCallbacks.count, 0)
+    }
 }

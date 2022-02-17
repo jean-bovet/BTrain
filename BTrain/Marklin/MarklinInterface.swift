@@ -11,6 +11,7 @@
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 import Foundation
+import OrderedCollections
 
 final class MarklinInterface: CommandInterface {
         
@@ -18,7 +19,10 @@ final class MarklinInterface: CommandInterface {
     
     let locomotiveConfig = MarklinLocomotiveConfig()
     
-    var feedbackChangeCallbacks = [UUID:FeedbackChangeCallback]()
+    // Note: very important to keep the order in which the callback are registered because
+    // this has many implications: for example, the layout controller is expecting to be
+    // the first one to process changes from the layout before other components.
+    var feedbackChangeCallbacks = OrderedDictionary<UUID, FeedbackChangeCallback>()
     var speedChangeCallbacks = [SpeedChangeCallback]()
     var directionChangeCallbacks = [DirectionChangeCallback]()
     var turnoutChangeCallbacks = [TurnoutChangeCallback]()
