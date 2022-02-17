@@ -41,14 +41,52 @@ final class TrainSpeedMeasurement: ObservableObject {
         let feedbackC: Identifier<Feedback>
         let distanceAB: Double
         let distanceBC: Double
+        
+        func speedEntry(for entryIndex: Int) -> TrainSpeed.SpeedTableEntry {
+            let entries = selectedSpeedEntries.sorted()
+            let speedTableIndex = Int(entries[entryIndex])
+            let speedEntry = train.speed.speedTable[speedTableIndex]
+            return speedEntry
+        }
+        
+        func setSpeedEntry(_ speedEntry: TrainSpeed.SpeedTableEntry, for entryIndex: Int) {
+            let entries = selectedSpeedEntries.sorted()
+            let speedTableIndex = Int(entries[entryIndex])
+            train.speed.speedTable[speedTableIndex] = speedEntry
+        }
+        
+        func progress(for entryIndex: Int) -> Double {
+            let progress = Double(entryIndex+1) / Double(selectedSpeedEntries.count)
+            return progress
+        }
+        
+        func isFinished(for entryIndex: Int) -> Bool {
+            return entryIndex >= selectedSpeedEntries.count
+        }
+    }
+    
+    enum CallbackStep {
+        case trainStarted
+        case feedbackA
+        case feedbackB
+        case feedbackC
+        case trainStopped
+        case trainDirectionToggle
+        case done
+    }
+    
+    struct CallbackInfo {
+        let speedEntry: TrainSpeed.SpeedTableEntry
+        let step: CallbackStep
+        let progress: Double
     }
     
     init(layout: Layout, interface: CommandInterface){
         self.layout = layout
         self.interface = interface
     }
-    
-    func start(properties: Properties, callback: @escaping (String, Double) -> Void) throws {
+        
+    func start(properties: Properties, callback: @escaping (CallbackInfo) -> Void) throws {
         guard !running else {
             throw MeasurementError.alreadyRunning
         }
@@ -61,32 +99,36 @@ final class TrainSpeedMeasurement: ObservableObject {
         run(properties: properties, callback: callback)
     }
     
-    private func run(properties: Properties, callback: @escaping (String, Double) -> Void) {
-        let entries = properties.selectedSpeedEntries.sorted()
-        let speedTableIndex = Int(entries[entryIndex])
-        let speedEntry = properties.train.speed.speedTable[speedTableIndex]
-        callback("Measuring speed for step \(speedEntry.steps.value)", Double(entryIndex+1) / Double(entries.count))
-        measure(properties: properties, speedEntry: speedEntry) {
-            self.entryIndex += 1
-            if self.entryIndex >= entries.count {
+    private func run(properties: Properties, callback: @escaping (CallbackInfo) -> Void) {
+        let speedEntry = properties.speedEntry(for: entryIndex)
+        measure(properties: properties, speedEntry: speedEntry, callback: callback) {
+            if properties.isFinished(for: self.entryIndex+1) {
+                callback(.init(speedEntry: speedEntry, step: .done, progress: properties.progress(for: self.entryIndex)))
                 self.done()
             } else {
+                self.entryIndex += 1
                 self.run(properties: properties, callback: callback)
             }
         }
     }
     
-    private func measure(properties: Properties, speedEntry: TrainSpeed.SpeedTableEntry, completion: @escaping CompletionBlock) {
+    private func measure(properties: Properties, speedEntry: TrainSpeed.SpeedTableEntry, callback: @escaping (CallbackInfo) -> Void, completion: @escaping CompletionBlock) {
         startTrain(properties: properties, speedEntry: speedEntry) {
+            callback(.init(speedEntry: speedEntry, step: .trainStarted, progress: properties.progress(for: self.entryIndex)))
             if self.forward {
                 self.waitForFeedback(properties.feedbackA) {
+                    callback(.init(speedEntry: speedEntry, step: .feedbackA, progress: properties.progress(for: self.entryIndex)))
                     self.waitForFeedback(properties.feedbackB) {
+                        callback(.init(speedEntry: speedEntry, step: .feedbackB, progress: properties.progress(for: self.entryIndex)))
                         let t0 = Date()
                         self.waitForFeedback(properties.feedbackC) {
+                            callback(.init(speedEntry: speedEntry, step: .feedbackC, progress: properties.progress(for: self.entryIndex)))
                             let t1 = Date()
                             self.stopTrain(properties: properties) {
+                                callback(.init(speedEntry: speedEntry, step: .trainStopped, progress: properties.progress(for: self.entryIndex)))
                                 self.storeMeasurement(properties: properties, t0: t0, t1: t1, distance: properties.distanceBC)
                                 self.toggleTrainDirection(properties: properties) {
+                                    callback(.init(speedEntry: speedEntry, step: .trainDirectionToggle, progress: properties.progress(for: self.entryIndex)))
                                     completion()
                                 }
                             }
@@ -95,13 +137,18 @@ final class TrainSpeedMeasurement: ObservableObject {
                 }
             } else {
                 self.waitForFeedback(properties.feedbackC) {
+                    callback(.init(speedEntry: speedEntry, step: .feedbackC, progress: properties.progress(for: self.entryIndex)))
                     self.waitForFeedback(properties.feedbackB) {
+                        callback(.init(speedEntry: speedEntry, step: .feedbackB, progress: properties.progress(for: self.entryIndex)))
                         let t0 = Date()
                         self.waitForFeedback(properties.feedbackA) {
+                            callback(.init(speedEntry: speedEntry, step: .feedbackA, progress: properties.progress(for: self.entryIndex)))
                             let t1 = Date()
                             self.stopTrain(properties: properties) {
+                                callback(.init(speedEntry: speedEntry, step: .trainStopped, progress: properties.progress(for: self.entryIndex)))
                                 self.storeMeasurement(properties: properties, t0: t0, t1: t1, distance: properties.distanceAB)
                                 self.toggleTrainDirection(properties: properties) {
+                                    callback(.init(speedEntry: speedEntry, step: .trainDirectionToggle, progress: properties.progress(for: self.entryIndex)))
                                     completion()
                                 }
                             }
@@ -168,9 +215,9 @@ final class TrainSpeedMeasurement: ObservableObject {
         let speedInKph = realDistanceKm / durationInHour
         
         print("Duration is \(duration): \(speedInKph)")
-        
-        let entry = properties.train.speed.speedTable[entryIndex]
-        properties.train.speed.speedTable[entryIndex] = .init(steps: entry.steps, speed: TrainSpeed.UnitKph(speedInKph))
+                
+        let entry = properties.speedEntry(for: entryIndex)
+        properties.setSpeedEntry(.init(steps: entry.steps, speed: TrainSpeed.UnitKph(speedInKph)), for: entryIndex)
     }
     
     private var expectedFeedbackId: Identifier<Feedback>?

@@ -100,7 +100,7 @@ class MarklinInterfaceTests: XCTestCase {
 
         let layout = LayoutFCreator().newLayout()
         let f = layout.feedbacks[0]
-        simulator.triggerFeedback(feedback: f, value: 1)
+        simulator.triggerFeedback(feedback: f)
         
         wait(for: [firstCallbackExpectation, secondCallbackExpectation], timeout: 1.0, enforceOrder: true)
         

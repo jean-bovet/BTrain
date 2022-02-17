@@ -302,7 +302,7 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
             let feedback = block.feedbacks[naturalDirection ? train.position : train.position - 1]
             if let feedback = layout.feedback(for: feedback.feedbackId) {
                 BTLogger.debug("[Simulator] Trigger feedback \(feedback.name) to move train \(train.name) within \(block.name)")
-                triggerFeedback(feedback: feedback, value: 1)
+                triggerFeedback(feedback: feedback)
             }
         } else if let nextBlock = layout.nextBlock(train: train), try layout.atEndOfBlock(train: train) {
             let (feedback, _) = try layout.entryFeedback(from: block, to: nextBlock)
@@ -317,14 +317,14 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
                 }
                 
                 BTLogger.debug("[Simulator] Trigger feedback \(feedback.name) to move train \(train.name) to next block \(nextBlock.name)")
-                triggerFeedback(feedback: feedback, value: 1)
+                triggerFeedback(feedback: feedback)
             }
         } else {
             BTLogger.debug("[Simulator] Nothing to process for route \(route)")
         }
     }
 
-    func triggerFeedback(feedback: Feedback, value: UInt8) {
+    func triggerFeedback(feedback: Feedback) {
         setFeedback(feedback: feedback, value: 1)
         Timer.scheduledTimer(withTimeInterval: 0.25, repeats: false) { timer in
             self.setFeedback(feedback: feedback, value: 0)

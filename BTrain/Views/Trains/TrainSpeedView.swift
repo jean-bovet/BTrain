@@ -249,9 +249,9 @@ struct TrainSpeedMeasureView: View {
             let properties = TrainSpeedMeasurement.Properties(train: train, selectedSpeedEntries: selectedSpeedEntries, feedbackA: Identifier<Feedback>(uuid: feedbackA), feedbackB: Identifier<Feedback>(uuid: feedbackB), feedbackC: Identifier<Feedback>(uuid: feedbackC), distanceAB: distanceAB, distanceBC: distanceBC)
             self.error = nil
             do {
-                try measurement.start(properties: properties) { info, progress in
-                    self.progressInfo = info
-                    self.progressValue = progress
+                try measurement.start(properties: properties) { info in
+                    self.progressInfo = "Measuring speed for step \(info.speedEntry)"
+                    self.progressValue = info.progress
                 }
             } catch {
                 self.error = error.localizedDescription
