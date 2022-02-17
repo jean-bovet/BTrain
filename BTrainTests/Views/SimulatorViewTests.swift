@@ -94,6 +94,7 @@ class SimulatorViewTests: RootViewTests {
         wait(for: simulatorTrain1, kph: 0)
         
         doc.disable { }
+        doc.disconnect()
     }
     
     func connectToSimulator() {
