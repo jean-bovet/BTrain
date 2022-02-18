@@ -13,8 +13,7 @@
 import Foundation
 import SwiftCubicSpline
 
-// This class defines the speed of a train. The speed can be expressed either in kph
-// or number of steps which depends on the decoder type.
+// This class handles the speed of a train. The speed is always expressed in kph.
 final class TrainSpeed: ObservableObject, Equatable, CustomStringConvertible {
     
     // Type definition for the speed
@@ -25,14 +24,7 @@ final class TrainSpeed: ObservableObject, Equatable, CustomStringConvertible {
         return lhs.kph == rhs.kph
     }
         
-    // The decoder type, which is used to derive the `steps` and `value` parameters
-    var decoderType: DecoderType {
-        didSet {
-            updateSpeedStepsTable()
-        }
-    }
-        
-    // The speed express in kilometer per hour (kph).
+    // The speed expressed in kilometer per hour (kph).
     @Published var kph: UnitKph = 0 {
         didSet {
             if kph > maxSpeed {
@@ -44,7 +36,34 @@ final class TrainSpeed: ObservableObject, Equatable, CustomStringConvertible {
     // Maximum speed of the train in kph
     @Published var maxSpeed: UnitKph = 200
         
+    // Structure defining the number of steps corresponding
+    // to a particular speed in kph.
+    struct SpeedTableEntry: Identifiable {
+        var id: UInt16 {
+            return steps.value
+        }
+        
+        var steps: SpeedStep
+        
+        // The real speed in km/h or nil if the speed hasn't been defined.
+        // If nil, this speed will be interpolated given the other data point.
+        var speed: UnitKph?
+    }
+
+    // Array of correspondance between the number of steps
+    // and the speed in kph. The number of steps is dependent
+    // on the type of decoder.
+    @Published var speedTable = [SpeedTableEntry]()
+        
+    // The decoder type, which is used to derive the `steps` and `value` parameters
+    var decoderType: DecoderType {
+        didSet {
+            updateSpeedStepsTable()
+        }
+    }
+        
     // Number of steps, for the current encoder type, corresponding to the current kph value.
+    // Note: the steps are always converted from/to the underlying kph value.
     var steps: SpeedStep {
         get {
             // Use a cublic spline interpolation to get the most accurate steps number.
@@ -73,25 +92,6 @@ final class TrainSpeed: ObservableObject, Equatable, CustomStringConvertible {
         }
     }
 
-    // Structure defining the number of steps corresponding
-    // to a particular speed in kph.
-    struct SpeedTableEntry: Identifiable {
-        var id: UInt16 {
-            return steps.value
-        }
-        
-        var steps: SpeedStep
-        
-        // The real speed in km/h or nil if the speed hasn't been defined.
-        // If nil, this speed will be interpolated given the other data point.
-        var speed: UnitKph?
-    }
-
-    // Array of correspondance between the number of steps
-    // and the speed in kph. The number of steps is dependent
-    // on the type of decoder.
-    @Published var speedTable = [SpeedTableEntry]()
-        
     var description: String {
         return "\(kph) kph"
     }

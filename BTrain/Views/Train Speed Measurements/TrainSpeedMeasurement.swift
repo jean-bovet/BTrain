@@ -181,6 +181,7 @@ final class TrainSpeedMeasurement: ObservableObject {
         } catch {
             // TODO throw
         }
+        // TODO: only call completion when the actual train speed has reached 0
         completion()
     }
     
