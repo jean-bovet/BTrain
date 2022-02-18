@@ -31,7 +31,7 @@ class TrainViewTests: RootViewTests {
     }
 
     func testSpeedView() throws {
-        let sut = TrainSpeedView(document: doc, train: layout.trains[0], measurement: doc.trainSpeedMeasurement, trainSpeed: TrainSpeed(kph: 50, decoderType: .MFX))
+        let sut = TrainSpeedView(document: doc, train: layout.trains[0], trainSpeed: TrainSpeed(kph: 50, decoderType: .MFX))
         _ = try sut.inspect().vStack().hStack(0).view(TrainSpeedGraphView.self, 1).canvas(0)
     }
 

@@ -27,10 +27,26 @@ struct TrainSpeedMeasurementsView: View {
     @AppStorage("speedMeasureDistanceBC") private var distanceBC: Double = 0
         
     @AppStorage("speedMeasureSelectedTrain") private var selectedTrain: String?
-    
+
+    @State private var running = false
+
     var train: Train? {
         if let selectedTrain = selectedTrain {
             return layout.train(for: Identifier<Train>(uuid: selectedTrain))
+        } else {
+            return nil
+        }
+    }
+    
+    var validationError: String? {
+        if selectedSpeedEntries.isEmpty {
+            return "􀇿 One or more steps must be selected"
+        } else if feedbackA == nil {
+            return "􀇿 Select feedback A"
+        } else if feedbackB == nil {
+            return "􀇿 Select feedback B"
+        } else if feedbackC == nil {
+            return "􀇿 Select feedback C"
         } else {
             return nil
         }
@@ -45,7 +61,9 @@ struct TrainSpeedMeasurementsView: View {
                     }
                 }
                 .fixedSize()
-            }.padding([.leading, .trailing, .top])
+            }
+            .disabled(running)
+            .padding([.leading, .trailing, .top])
                             
             Divider()
 
@@ -59,33 +77,46 @@ struct TrainSpeedMeasurementsView: View {
                     }
                     TrainSpeedColumnView(selection: $selectedSpeedEntries, trainSpeed: train.speed)
                         .frame(minHeight: 200)
-                }.padding([.leading, .trailing])
+                }
+                .disabled(running)
+                .padding([.leading, .trailing])
             }
 
             Divider()
             
             HStack {
-                TrainSpeedMeasureFeedbackView(document: document, layout: layout, label: "Feedback A", measurement: document.trainSpeedMeasurement, feedbackUUID: $feedbackA)
+                TrainSpeedMeasureFeedbackView(document: document, layout: layout, label: "Feedback A", feedbackUUID: $feedbackA)
                 
-                TrainSpeedMeasureDistanceView(distance: $distanceAB, measurement: document.trainSpeedMeasurement)
+                TrainSpeedMeasureDistanceView(distance: $distanceAB)
                 
-                TrainSpeedMeasureFeedbackView(document: document, layout: layout, label: "Feedback B", measurement: document.trainSpeedMeasurement, feedbackUUID: $feedbackB)
+                TrainSpeedMeasureFeedbackView(document: document, layout: layout, label: "Feedback B", feedbackUUID: $feedbackB)
 
-                TrainSpeedMeasureDistanceView(distance: $distanceBC, measurement: document.trainSpeedMeasurement)
+                TrainSpeedMeasureDistanceView(distance: $distanceBC)
                 
-                TrainSpeedMeasureFeedbackView(document: document, layout: layout, label: "Feedback C", measurement: document.trainSpeedMeasurement, feedbackUUID: $feedbackC)
-            }.padding([.leading, .trailing])
+                TrainSpeedMeasureFeedbackView(document: document, layout: layout, label: "Feedback C", feedbackUUID: $feedbackC)
+            }
+            .disabled(running)
+            .padding([.leading, .trailing])
 
             Divider()
             
-            if let train = train {
-                TrainSpeedMeasureControlsView(layout: layout, train: train, measurement: document.trainSpeedMeasurement,
-                                              selectedSpeedEntries: $selectedSpeedEntries,
-                                              feedbackA: $feedbackA, feedbackB: $feedbackB, feedbackC: $feedbackC,
-                                              distanceAB: $distanceAB, distanceBC: $distanceBC)
+            if let validationError = validationError {
+                Text(validationError)
                     .padding([.leading, .trailing])
+            } else {
+                if let train = train, let feedbackA = feedbackA, let feedbackB = feedbackB, let feedbackC = feedbackC {
+                    TrainSpeedMeasureControlsView(measurement: TrainSpeedMeasurement(layout: layout, interface: document.interface, train: train,
+                                                                                     speedEntries: selectedSpeedEntries,
+                                                                                     feedbackA: Identifier<Feedback>(uuid: feedbackA),
+                                                                                     feedbackB: Identifier<Feedback>(uuid: feedbackB),
+                                                                                     feedbackC: Identifier<Feedback>(uuid: feedbackC),
+                                                                                     distanceAB: distanceAB,
+                                                                                     distanceBC: distanceBC),
+                                                  running: $running)
+                        .padding([.leading, .trailing])
+                }
             }
-            
+
             OverviewRightPanelView(document: document, layout: document.layout)
         }
     }
@@ -105,7 +136,6 @@ struct TrainSpeedMeasureFeedbackView: View {
     let layout: Layout
     let label: String
     
-    @ObservedObject var measurement: TrainSpeedMeasurement
     @Binding var feedbackUUID: String?
     
     var feedback: Feedback? {
@@ -125,7 +155,6 @@ struct TrainSpeedMeasureFeedbackView: View {
                 }
             }
             .labelsHidden()
-            .disabled(measurement.running)
         }
     }
 }
@@ -133,7 +162,6 @@ struct TrainSpeedMeasureFeedbackView: View {
 struct TrainSpeedMeasureDistanceView: View {
 
     @Binding var distance: Double
-    @ObservedObject var measurement: TrainSpeedMeasurement
 
     var body: some View {
         VStack {
@@ -143,7 +171,6 @@ struct TrainSpeedMeasureDistanceView: View {
                 TextField("Distance:", value: $distance, format: .number)
                 Text("cm 􀅂")
             }
-            .disabled(measurement.running)
         }
     }
 }

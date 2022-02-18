@@ -12,59 +12,22 @@
 
 import Foundation
 
-final class TrainSpeedMeasurement: ObservableObject {
-    
-    enum MeasurementError: Error, LocalizedError {
-        case alreadyRunning
-        
-        var errorDescription: String? {
-            switch self {
-            case .alreadyRunning:
-                return "Measurement is already running"
-            }
-        }
-    }
-        
+final class TrainSpeedMeasurement {
+            
     let layout: Layout
     let interface: CommandInterface
+    let train: Train
 
-    @Published var running = false
-
+    let speedEntries: Set<TrainSpeed.SpeedTableEntry.ID>
+    let feedbackA: Identifier<Feedback>
+    let feedbackB: Identifier<Feedback>
+    let feedbackC: Identifier<Feedback>
+    let distanceAB: Double
+    let distanceBC: Double
+    
     private var entryIndex = 0
     private var forward = true
-    
-    struct Properties {
-        let train: Train
-        let selectedSpeedEntries: Set<TrainSpeed.SpeedTableEntry.ID>
-        let feedbackA: Identifier<Feedback>
-        let feedbackB: Identifier<Feedback>
-        let feedbackC: Identifier<Feedback>
-        let distanceAB: Double
-        let distanceBC: Double
         
-        func speedEntry(for entryIndex: Int) -> TrainSpeed.SpeedTableEntry {
-            let entries = selectedSpeedEntries.sorted()
-            let speedTableIndex = Int(entries[entryIndex])
-            let speedEntry = train.speed.speedTable[speedTableIndex]
-            return speedEntry
-        }
-        
-        func setSpeedEntry(_ speedEntry: TrainSpeed.SpeedTableEntry, for entryIndex: Int) {
-            let entries = selectedSpeedEntries.sorted()
-            let speedTableIndex = Int(entries[entryIndex])
-            train.speed.speedTable[speedTableIndex] = speedEntry
-        }
-        
-        func progress(for entryIndex: Int) -> Double {
-            let progress = Double(entryIndex+1) / Double(selectedSpeedEntries.count)
-            return progress
-        }
-        
-        func isFinished(for entryIndex: Int) -> Bool {
-            return entryIndex >= selectedSpeedEntries.count
-        }
-    }
-    
     enum CallbackStep {
         case trainStarted
         case feedbackA
@@ -81,54 +44,69 @@ final class TrainSpeedMeasurement: ObservableObject {
         let progress: Double
     }
     
-    init(layout: Layout, interface: CommandInterface){
+    init(layout: Layout, interface: CommandInterface, train: Train,
+         speedEntries: Set<TrainSpeed.SpeedTableEntry.ID>,
+         feedbackA: Identifier<Feedback>, feedbackB: Identifier<Feedback>, feedbackC: Identifier<Feedback>,
+         distanceAB: Double, distanceBC: Double) {
         self.layout = layout
         self.interface = interface
+        self.train = train
+        self.speedEntries = speedEntries
+        self.feedbackA = feedbackA
+        self.feedbackB = feedbackB
+        self.feedbackC = feedbackC
+        self.distanceAB = distanceAB
+        self.distanceBC = distanceBC
     }
         
-    func start(properties: Properties, callback: @escaping (CallbackInfo) -> Void) throws {
-        guard !running else {
-            throw MeasurementError.alreadyRunning
-        }
-        
+    func start(callback: @escaping (CallbackInfo) -> Void) {
         registerForFeedbackChanges()
 
-        running = true
-        forward = properties.train.directionForward
+        forward = train.directionForward
         entryIndex = 0
-        run(properties: properties, callback: callback)
+        run(callback: callback)
+    }
+        
+    func cancel() {
+        stopTrain {
+            self.unregisterForFeedbackChanges()
+        }
     }
     
-    private func run(properties: Properties, callback: @escaping (CallbackInfo) -> Void) {
-        let speedEntry = properties.speedEntry(for: entryIndex)
-        measure(properties: properties, speedEntry: speedEntry, callback: callback) {
-            if properties.isFinished(for: self.entryIndex+1) {
-                callback(.init(speedEntry: speedEntry, step: .done, progress: properties.progress(for: self.entryIndex)))
+    func done() {
+        unregisterForFeedbackChanges()
+    }
+
+    private func run(callback: @escaping (CallbackInfo) -> Void) {
+        let speedEntry = speedEntry(for: entryIndex)
+        measure(speedEntry: speedEntry, callback: callback) {
+            if self.isFinished(for: self.entryIndex+1) {
+                callback(.init(speedEntry: speedEntry, step: .done, progress: self.progress(for: self.entryIndex)))
                 self.done()
             } else {
                 self.entryIndex += 1
-                self.run(properties: properties, callback: callback)
+                self.run(callback: callback)
             }
         }
     }
     
-    private func measure(properties: Properties, speedEntry: TrainSpeed.SpeedTableEntry, callback: @escaping (CallbackInfo) -> Void, completion: @escaping CompletionBlock) {
-        startTrain(properties: properties, speedEntry: speedEntry) {
-            callback(.init(speedEntry: speedEntry, step: .trainStarted, progress: properties.progress(for: self.entryIndex)))
+    private func measure(speedEntry: TrainSpeed.SpeedTableEntry, callback: @escaping (CallbackInfo) -> Void, completion: @escaping CompletionBlock) {
+        startTrain(speedEntry: speedEntry) {
+            callback(.init(speedEntry: speedEntry, step: .trainStarted, progress: self.progress(for: self.entryIndex)))
             if self.forward {
-                self.waitForFeedback(properties.feedbackA) {
-                    callback(.init(speedEntry: speedEntry, step: .feedbackA, progress: properties.progress(for: self.entryIndex)))
-                    self.waitForFeedback(properties.feedbackB) {
-                        callback(.init(speedEntry: speedEntry, step: .feedbackB, progress: properties.progress(for: self.entryIndex)))
+                self.waitForFeedback(self.feedbackA) {
+                    callback(.init(speedEntry: speedEntry, step: .feedbackA, progress: self.progress(for: self.entryIndex)))
+                    self.waitForFeedback(self.feedbackB) {
+                        callback(.init(speedEntry: speedEntry, step: .feedbackB, progress: self.progress(for: self.entryIndex)))
                         let t0 = Date()
-                        self.waitForFeedback(properties.feedbackC) {
-                            callback(.init(speedEntry: speedEntry, step: .feedbackC, progress: properties.progress(for: self.entryIndex)))
+                        self.waitForFeedback(self.feedbackC) {
+                            callback(.init(speedEntry: speedEntry, step: .feedbackC, progress: self.progress(for: self.entryIndex)))
                             let t1 = Date()
-                            self.stopTrain(properties: properties) {
-                                callback(.init(speedEntry: speedEntry, step: .trainStopped, progress: properties.progress(for: self.entryIndex)))
-                                self.storeMeasurement(properties: properties, t0: t0, t1: t1, distance: properties.distanceBC)
-                                self.toggleTrainDirection(properties: properties) {
-                                    callback(.init(speedEntry: speedEntry, step: .trainDirectionToggle, progress: properties.progress(for: self.entryIndex)))
+                            self.stopTrain() {
+                                callback(.init(speedEntry: speedEntry, step: .trainStopped, progress: self.progress(for: self.entryIndex)))
+                                self.storeMeasurement(t0: t0, t1: t1, distance: self.distanceBC)
+                                self.toggleTrainDirection() {
+                                    callback(.init(speedEntry: speedEntry, step: .trainDirectionToggle, progress: self.progress(for: self.entryIndex)))
                                     completion()
                                 }
                             }
@@ -136,19 +114,19 @@ final class TrainSpeedMeasurement: ObservableObject {
                     }
                 }
             } else {
-                self.waitForFeedback(properties.feedbackC) {
-                    callback(.init(speedEntry: speedEntry, step: .feedbackC, progress: properties.progress(for: self.entryIndex)))
-                    self.waitForFeedback(properties.feedbackB) {
-                        callback(.init(speedEntry: speedEntry, step: .feedbackB, progress: properties.progress(for: self.entryIndex)))
+                self.waitForFeedback(self.feedbackC) {
+                    callback(.init(speedEntry: speedEntry, step: .feedbackC, progress: self.progress(for: self.entryIndex)))
+                    self.waitForFeedback(self.feedbackB) {
+                        callback(.init(speedEntry: speedEntry, step: .feedbackB, progress: self.progress(for: self.entryIndex)))
                         let t0 = Date()
-                        self.waitForFeedback(properties.feedbackA) {
-                            callback(.init(speedEntry: speedEntry, step: .feedbackA, progress: properties.progress(for: self.entryIndex)))
+                        self.waitForFeedback(self.feedbackA) {
+                            callback(.init(speedEntry: speedEntry, step: .feedbackA, progress: self.progress(for: self.entryIndex)))
                             let t1 = Date()
-                            self.stopTrain(properties: properties) {
-                                callback(.init(speedEntry: speedEntry, step: .trainStopped, progress: properties.progress(for: self.entryIndex)))
-                                self.storeMeasurement(properties: properties, t0: t0, t1: t1, distance: properties.distanceAB)
-                                self.toggleTrainDirection(properties: properties) {
-                                    callback(.init(speedEntry: speedEntry, step: .trainDirectionToggle, progress: properties.progress(for: self.entryIndex)))
+                            self.stopTrain() {
+                                callback(.init(speedEntry: speedEntry, step: .trainStopped, progress: self.progress(for: self.entryIndex)))
+                                self.storeMeasurement(t0: t0, t1: t1, distance: self.distanceAB)
+                                self.toggleTrainDirection() {
+                                    callback(.init(speedEntry: speedEntry, step: .trainDirectionToggle, progress: self.progress(for: self.entryIndex)))
                                     completion()
                                 }
                             }
@@ -159,8 +137,7 @@ final class TrainSpeedMeasurement: ObservableObject {
         }
     }
     
-    private func startTrain(properties: Properties, speedEntry: TrainSpeed.SpeedTableEntry, completion: @escaping CompletionBlock) {
-        let train = properties.train
+    private func startTrain(speedEntry: TrainSpeed.SpeedTableEntry, completion: @escaping CompletionBlock) {
         let numberOfSteps = train.speed.speedTable.count
         let speedValue = UInt16(Double(speedEntry.steps.value) / Double(numberOfSteps) * 1000)
 
@@ -174,22 +151,24 @@ final class TrainSpeedMeasurement: ObservableObject {
         }
     }
     
-    private func stopTrain(properties: Properties, completion: @escaping CompletionBlock) {
-        let train = properties.train
+    private func stopTrain(completion: @escaping CompletionBlock) {
         do {
+            // TODO: callback when the network has sent the message
             try layout.stopTrain(train.id)
         } catch {
             // TODO throw
         }
-        // TODO: only call completion when the actual train speed has reached 0
-        completion()
+        // TODO: when we handle the deceleration with a curve, we can invoke completion when the curve reaches 0.
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1.0) {
+            completion()
+        }
     }
     
-    private func toggleTrainDirection(properties: Properties, completion: @escaping CompletionBlock) {
-        let train = properties.train
+    private func toggleTrainDirection(completion: @escaping CompletionBlock) {
         do {
             self.forward.toggle()
             layout.setLocomotiveDirection(train, forward: self.forward)
+            // TODO: callback when the network has sent the message
             try layout.toggleTrainDirectionInBlock(train)
         } catch {
             // TODO throw
@@ -206,7 +185,7 @@ final class TrainSpeedMeasurement: ObservableObject {
         }
     }
     
-    private func storeMeasurement(properties: Properties, t0: Date, t1: Date, distance: Double) {
+    private func storeMeasurement(t0: Date, t1: Date, distance: Double) {
         let duration = t1.timeIntervalSince(t0)
         let durationInHour = duration / (60 * 60)
         
@@ -217,8 +196,8 @@ final class TrainSpeedMeasurement: ObservableObject {
         
         print("Duration is \(duration): \(speedInKph)")
                 
-        let entry = properties.speedEntry(for: entryIndex)
-        properties.setSpeedEntry(.init(steps: entry.steps, speed: TrainSpeed.UnitKph(speedInKph)), for: entryIndex)
+        let entry = speedEntry(for: entryIndex)
+        setSpeedEntry(.init(steps: entry.steps, speed: TrainSpeed.UnitKph(speedInKph)), for: entryIndex)
     }
     
     private var expectedFeedbackId: Identifier<Feedback>?
@@ -253,13 +232,25 @@ final class TrainSpeedMeasurement: ObservableObject {
         }
     }
     
-    func cancel() {
-        unregisterForFeedbackChanges()
-        running = false
+    private func speedEntry(for entryIndex: Int) -> TrainSpeed.SpeedTableEntry {
+        let entries = speedEntries.sorted()
+        let speedTableIndex = Int(entries[entryIndex])
+        let speedEntry = train.speed.speedTable[speedTableIndex]
+        return speedEntry
     }
     
-    func done() {
-        unregisterForFeedbackChanges()
-        running = false
+    private func setSpeedEntry(_ speedEntry: TrainSpeed.SpeedTableEntry, for entryIndex: Int) {
+        let entries = speedEntries.sorted()
+        let speedTableIndex = Int(entries[entryIndex])
+        train.speed.speedTable[speedTableIndex] = speedEntry
+    }
+    
+    private func progress(for entryIndex: Int) -> Double {
+        let progress = Double(entryIndex+1) / Double(speedEntries.count)
+        return progress
+    }
+    
+    private func isFinished(for entryIndex: Int) -> Bool {
+        return entryIndex >= speedEntries.count
     }
 }

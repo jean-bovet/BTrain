@@ -17,7 +17,6 @@ struct TrainSpeedView: View {
     let document: LayoutDocument
     let train: Train
     
-    @ObservedObject var measurement: TrainSpeedMeasurement
     @ObservedObject var trainSpeed: TrainSpeed
 
     @State private var selection = Set<TrainSpeed.SpeedTableEntry.ID>()
@@ -38,7 +37,6 @@ struct TrainSpeedView: View {
                 Button("OK") {
                     presentationMode.wrappedValue.dismiss()
                 }
-                .disabled(measurement.running)
                 .keyboardShortcut(.defaultAction)
             }
         }
@@ -53,6 +51,6 @@ struct TrainSpeedView_Previews: PreviewProvider {
     static let doc = LayoutDocument(layout: LayoutFCreator().newLayout())
     
     static var previews: some View {
-        TrainSpeedView(document: doc, train: Train(), measurement: doc.trainSpeedMeasurement, trainSpeed: TrainSpeed(decoderType: .MFX))
+        TrainSpeedView(document: doc, train: Train(), trainSpeed: TrainSpeed(decoderType: .MFX))
     }
 }

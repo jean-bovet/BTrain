@@ -14,66 +14,37 @@ import SwiftUI
 
 struct TrainSpeedMeasureControlsView: View {
     
-    let layout: Layout
-    let train: Train
+    let measurement: TrainSpeedMeasurement
+
+    @Binding var running: Bool
     
-    @ObservedObject var measurement: TrainSpeedMeasurement
-
-    @Binding var selectedSpeedEntries: Set<TrainSpeed.SpeedTableEntry.ID>
-
-    @Binding var feedbackA: String?
-    @Binding var feedbackB: String?
-    @Binding var feedbackC: String?
-
-    @Binding var distanceAB: Double
-    @Binding var distanceBC: Double
-
-    @State private var error: String?
     @State private var progressInfo: String?
     @State private var progressValue: Double?
     
-    var validationError: String? {
-        if selectedSpeedEntries.isEmpty {
-            return "􀇿 One or more steps must be selected"
-        } else if feedbackA == nil {
-            return "􀇿 Select feedback A"
-        } else if feedbackB == nil {
-            return "􀇿 Select feedback B"
-        } else if feedbackC == nil {
-            return "􀇿 Select feedback C"
-        } else {
-            return nil
-        }
-    }
-    
     var body: some View {
         VStack(alignment: .leading) {
-            if let validationError = validationError {
-                Text(validationError)
+            if let progressInfo = progressInfo {
+                Text(progressInfo)
             } else {
-                if let error = error {
-                    Text("􀇿 \(error)")
-                } else if let progressInfo = progressInfo {
-                    Text(progressInfo)
+                Text("􀁟 Position locomotive \"\(measurement.train.name)\" before feedback A with its travel direction towards A, B & C.")
+            }
+
+            HStack {
+                if running {
+                    Button("Cancel") {
+                        running = false
+                        cancel()
+                    }
                 } else {
-                    Text("􀁟 Position locomotive \"\(train.name)\" before feedback A with its travel direction towards A, B & C.")
+                    Button("Measure") {
+                        running = true
+                        measure()
+                    }
                 }
 
-                HStack {
-                    if measurement.running {
-                        Button("Cancel") {
-                            cancel()
-                        }
-                    } else {
-                        Button("Measure") {
-                            measure()
-                        }.disabled(feedbackA == nil || feedbackB == nil || feedbackC == nil || selectedSpeedEntries.isEmpty)
-                    }
-
-                    if let progressValue = progressValue, measurement.running {
-                        HStack {
-                            ProgressView(value: progressValue)
-                        }
+                if let progressValue = progressValue, running {
+                    HStack {
+                        ProgressView(value: progressValue)
                     }
                 }
             }
@@ -81,23 +52,9 @@ struct TrainSpeedMeasureControlsView: View {
     }
     
     func measure() {
-        if let feedbackA = feedbackA, let feedbackB = feedbackB, let feedbackC = feedbackC {
-            let properties = TrainSpeedMeasurement.Properties(train: train,
-                                                              selectedSpeedEntries: selectedSpeedEntries,
-                                                              feedbackA: Identifier<Feedback>(uuid: feedbackA),
-                                                              feedbackB: Identifier<Feedback>(uuid: feedbackB),
-                                                              feedbackC: Identifier<Feedback>(uuid: feedbackC),
-                                                              distanceAB: distanceAB,
-                                                              distanceBC: distanceBC)
-            self.error = nil
-            do {
-                try measurement.start(properties: properties) { info in
-                    self.progressInfo = "Measuring speed for step \(info.speedEntry.steps.value)"
-                    self.progressValue = info.progress
-                }
-            } catch {
-                self.error = error.localizedDescription
-            }
+        measurement.start() { info in
+            self.progressInfo = "Measuring speed for step \(info.speedEntry.steps.value)"
+            self.progressValue = info.progress
         }
     }
 
@@ -110,8 +67,10 @@ struct TrainSpeedMeasureControlsView: View {
 struct TrainSpeedMeasureControlsView_Previews: PreviewProvider {
     
     static let doc = LayoutDocument(layout: LayoutFCreator().newLayout())
-
+    static let measurement = TrainSpeedMeasurement(layout: doc.layout, interface: doc.interface, train: doc.layout.trains[0], speedEntries: [10],
+                                                   feedbackA: Identifier<Feedback>(uuid: "OL1.1"), feedbackB: Identifier<Feedback>(uuid: "OL1.1"), feedbackC: Identifier<Feedback>(uuid: "OL1.1"),
+                                                   distanceAB: 10, distanceBC: 20)
     static var previews: some View {
-        TrainSpeedMeasureControlsView(layout: doc.layout, train: doc.layout.trains[0], measurement: doc.trainSpeedMeasurement, selectedSpeedEntries: .constant([10]), feedbackA: .constant("OL1.1"), feedbackB: .constant("OL1.2"), feedbackC: .constant("OL2.1"), distanceAB: .constant(0), distanceBC: .constant(0))
+        TrainSpeedMeasureControlsView(measurement: measurement, running: .constant(false))
     }
 }

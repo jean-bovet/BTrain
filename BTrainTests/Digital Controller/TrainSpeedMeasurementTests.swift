@@ -48,7 +48,6 @@ class TrainSpeedMeasurementTests: XCTestCase {
 
     func testMeasureOneStep() throws {
         let layout = LayoutFCreator().newLayout()
-        let sm = TrainSpeedMeasurement(layout: layout, interface: mi)
         
         let train = layout.trains[0]
         
@@ -61,11 +60,11 @@ class TrainSpeedMeasurementTests: XCTestCase {
         train.speed.speedTable[step] = .init(steps: SpeedStep(value: UInt16(step)), speed: nil)
         XCTAssertNil(train.speed.speedTable[step].speed)
 
-        let properties = TrainSpeedMeasurement.Properties(train: train,
-                                                          selectedSpeedEntries: [UInt16(step)],
-                                                          feedbackA: fa.id, feedbackB: fb.id, feedbackC: fc.id,
-                                                          distanceAB: 95, distanceBC: 18)
-                
+        let sm = TrainSpeedMeasurement(layout: layout, interface: mi, train: train,
+                                       speedEntries: [UInt16(step)],
+                                       feedbackA: fa.id, feedbackB: fb.id, feedbackC: fc.id,
+                                       distanceAB: 95, distanceBC: 18)
+
         var expectedInfoArray: [TrainSpeedMeasurement.CallbackStep] = [.trainStarted, .feedbackA, .feedbackB, .feedbackC, .trainStopped, .trainDirectionToggle, .done]
         
         let callbackExpectation = expectation(description: "Callback")
@@ -75,7 +74,7 @@ class TrainSpeedMeasurementTests: XCTestCase {
         let feedbackAExpectation = expectation(description: "Feedback A")
         let feedbackBExpectation = expectation(description: "Feedback B")
 
-        try sm.start(properties: properties) { info in
+        sm.start() { info in
             XCTAssertEqual(info.progress, 1)
             let expectedInfo = expectedInfoArray.removeFirst()
             XCTAssertEqual(expectedInfo, info.step)
@@ -122,7 +121,7 @@ class TrainSpeedMeasurementTests: XCTestCase {
                 } else {
                     return actualInfoStepArray.removeFirst() == step
                 }
-            }, timeout: 1.0)
+            }, timeout: 2.0)
         }
         
         func wait(for block: () -> Bool, timeout: TimeInterval) {
@@ -141,7 +140,6 @@ class TrainSpeedMeasurementTests: XCTestCase {
     
     func testMeasureTwoStep() throws {
         let layout = LayoutFCreator().newLayout()
-        let sm = TrainSpeedMeasurement(layout: layout, interface: mi)
         
         let train = layout.trains[0]
         
@@ -157,10 +155,10 @@ class TrainSpeedMeasurementTests: XCTestCase {
         XCTAssertNil(train.speed.speedTable[step1].speed)
         XCTAssertNil(train.speed.speedTable[step2].speed)
 
-        let properties = TrainSpeedMeasurement.Properties(train: train,
-                                                          selectedSpeedEntries: [UInt16(step1), UInt16(step2)],
-                                                          feedbackA: fa.id, feedbackB: fb.id, feedbackC: fc.id,
-                                                          distanceAB: 95, distanceBC: 18)
+        let sm = TrainSpeedMeasurement(layout: layout, interface: mi, train: train,
+                                       speedEntries: [UInt16(step1), UInt16(step2)],
+                                       feedbackA: fa.id, feedbackB: fb.id, feedbackC: fc.id,
+                                       distanceAB: 95, distanceBC: 18)
                 
         var expectedInfoArray: [TrainSpeedMeasurement.CallbackStep] = [.trainStarted, .feedbackA, .feedbackB, .feedbackC, .trainStopped, .trainDirectionToggle,
                                                                        .trainStarted, .feedbackC, .feedbackB, .feedbackA, .trainStopped, .trainDirectionToggle, .done]
@@ -170,7 +168,7 @@ class TrainSpeedMeasurementTests: XCTestCase {
         
         let infoStepAsserter = InfoStepAsserter()
         
-        try sm.start(properties: properties) { info in
+        sm.start() { info in
             callbackExpectation.fulfill()
 
             let expectedInfo = expectedInfoArray.removeFirst()
