@@ -69,12 +69,16 @@ final class TrainSpeedMeasurement {
 
         forward = train.directionForward
         entryIndex = 0
-        run(callback: callback)
+        Task {
+            try await run(callback: callback)
+        }
     }
         
     func cancel() {
-        stopTrain {
-            self.feedbackMonitor.stop()
+        Task {
+            try await stopTrain()
+            
+            feedbackMonitor.stop()
         }
     }
     
@@ -82,112 +86,120 @@ final class TrainSpeedMeasurement {
         feedbackMonitor.stop()
     }
 
-    private func run(callback: @escaping (CallbackInfo) -> Void) {
-        let speedEntry = speedEntry(for: entryIndex)
-        measure(speedEntry: speedEntry, callback: callback) {
-            if self.isFinished(for: self.entryIndex+1) {
-                callback(.init(speedEntry: speedEntry, step: .done, progress: self.progress(for: self.entryIndex)))
-                self.done()
+    private func run(callback: @escaping (CallbackInfo) -> Void) async throws {
+        while (true) {
+            try await measure(callback: callback)
+            if isFinished(for: entryIndex+1) {
+                invokeCallback(.done, callback)
+                done()
+                break
             } else {
-                self.entryIndex += 1
-                self.run(callback: callback)
+                entryIndex += 1
             }
         }
     }
     
-    private func measure(speedEntry: TrainSpeed.SpeedTableEntry, callback: @escaping (CallbackInfo) -> Void, completion: @escaping CompletionBlock) {
-        startTrain(speedEntry: speedEntry) {
-            callback(.init(speedEntry: speedEntry, step: .trainStarted, progress: self.progress(for: self.entryIndex)))
-            if self.forward {
-                self.waitForFeedback(self.feedbackA) {
-                    callback(.init(speedEntry: speedEntry, step: .feedbackA, progress: self.progress(for: self.entryIndex)))
-                    self.waitForFeedback(self.feedbackB) {
-                        callback(.init(speedEntry: speedEntry, step: .feedbackB, progress: self.progress(for: self.entryIndex)))
-                        let t0 = Date()
-                        self.waitForFeedback(self.feedbackC) {
-                            callback(.init(speedEntry: speedEntry, step: .feedbackC, progress: self.progress(for: self.entryIndex)))
-                            let t1 = Date()
-                            self.waitForFeedback(self.feedbackC, detected: false) {
-                                self.stopTrain() {
-                                    callback(.init(speedEntry: speedEntry, step: .trainStopped, progress: self.progress(for: self.entryIndex)))
-                                    self.storeMeasurement(t0: t0, t1: t1, distance: self.distanceBC)
-                                    self.toggleTrainDirection() {
-                                        callback(.init(speedEntry: speedEntry, step: .trainDirectionToggle, progress: self.progress(for: self.entryIndex)))
-                                        completion()
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            } else {
-                self.waitForFeedback(self.feedbackC) {
-                    callback(.init(speedEntry: speedEntry, step: .feedbackC, progress: self.progress(for: self.entryIndex)))
-                    self.waitForFeedback(self.feedbackB) {
-                        callback(.init(speedEntry: speedEntry, step: .feedbackB, progress: self.progress(for: self.entryIndex)))
-                        let t0 = Date()
-                        self.waitForFeedback(self.feedbackA) {
-                            callback(.init(speedEntry: speedEntry, step: .feedbackA, progress: self.progress(for: self.entryIndex)))
-                            let t1 = Date()
-                            self.waitForFeedback(self.feedbackA, detected: false) {
-                                self.stopTrain() {
-                                    callback(.init(speedEntry: speedEntry, step: .trainStopped, progress: self.progress(for: self.entryIndex)))
-                                    self.storeMeasurement(t0: t0, t1: t1, distance: self.distanceAB)
-                                    self.toggleTrainDirection() {
-                                        callback(.init(speedEntry: speedEntry, step: .trainDirectionToggle, progress: self.progress(for: self.entryIndex)))
-                                        completion()
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+    private func measure(callback: @escaping (CallbackInfo) -> Void) async throws {
+        await startTrain()
+        invokeCallback(.trainStarted, callback)
+        
+        let feedbacks: [(Identifier<Feedback>, CallbackStep)]
+        if forward {
+            feedbacks = [(feedbackA, .feedbackA), (feedbackB, .feedbackB), (feedbackC, .feedbackC)]
+        } else {
+            feedbacks = [(feedbackC, .feedbackC), (feedbackB, .feedbackB), (feedbackA, .feedbackA)]
         }
-    }
-    
-    private func startTrain(speedEntry: TrainSpeed.SpeedTableEntry, completion: @escaping CompletionBlock) {
-        let numberOfSteps = train.speed.speedTable.count
-        let speedValue = UInt16(Double(speedEntry.steps.value) / Double(numberOfSteps) * 1000)
+        
+        await waitForFeedback(feedbacks[0].0)
+        invokeCallback(feedbacks[0].1, callback)
+        
+        await waitForFeedback(feedbacks[1].0)
+        invokeCallback(feedbacks[1].1, callback)
+        
+        let t0 = Date()
+        
+        await waitForFeedback(feedbacks[2].0)
+        invokeCallback(feedbacks[2].1, callback)
 
-        // TODO: try to refactor to be able to use the layout.setTrainSpeed()
-        train.speed.steps = speedEntry.steps
+        let t1 = Date()
         
-        layout.didChange()
+        await waitForFeedback(feedbacks[2].0, detected: false)
+
+        try await stopTrain()
+        invokeCallback(.trainStopped, callback)
+
+        storeMeasurement(t0: t0, t1: t1, distance: forward ? distanceBC : distanceAB)
         
-        interface.execute(command: .speed(address: train.address, decoderType: train.decoder, value: .init(value: speedValue))) {
-            completion()
-        }
+        try await toggleTrainDirection()
+        invokeCallback(.trainDirectionToggle, callback)
     }
     
-    private func stopTrain(completion: @escaping CompletionBlock) {
-        do {
-            try layout.stopTrain(train.id) {
-                // TODO: when we handle the deceleration with a curve, we can invoke completion when the curve reaches 0.
-                DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.250) {
-                    completion()
+    private func invokeCallback(_ step: CallbackStep, _ callback: @escaping (CallbackInfo) -> Void) {
+        let speedEntry = speedEntry(for: entryIndex)
+        callback(.init(speedEntry: speedEntry, step: step, progress: progress(for: entryIndex)))
+    }
+    
+    private func startTrain() async {
+        return await withCheckedContinuation { continuation in
+            DispatchQueue.main.async { [self] in
+                let numberOfSteps = train.speed.speedTable.count
+                let speedEntry = speedEntry(for: entryIndex)
+                let speedValue = UInt16(Double(speedEntry.steps.value) / Double(numberOfSteps) * 1000)
+                
+                // TODO: try to refactor to be able to use the layout.setTrainSpeed()
+                train.speed.steps = speedEntry.steps
+                
+                layout.didChange()
+                
+                interface.execute(command: .speed(address: train.address, decoderType: train.decoder, value: .init(value: speedValue))) {
+                    continuation.resume(returning: ())
                 }
             }
-        } catch {
-            // TODO throw
         }
     }
     
-    private func toggleTrainDirection(completion: @escaping CompletionBlock) {
-        self.forward.toggle()
-        layout.setLocomotiveDirection(train, forward: self.forward) {
-            do {
-                try self.layout.toggleTrainDirectionInBlock(self.train)
-                completion()
-            } catch {
-                print("Error \(error)")
-                // TODO: log? and report to the UX somehow
+    private func stopTrain() async throws {
+        return try await withCheckedThrowingContinuation { continuation in
+            DispatchQueue.main.async { [self] in
+                do {
+                    try layout.stopTrain(train.id) {
+                        // TODO: when we handle the deceleration with a curve, we can invoke completion when the curve reaches 0.
+                        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.250) {
+                            continuation.resume(returning: ())
+                        }
+                    }
+                } catch {
+                    continuation.resume(throwing: error)
+                }
             }
         }
     }
     
-    private func waitForFeedback(_ feedbackId: Identifier<Feedback>, detected: Bool = true, completion: @escaping CompletionBlock) {
-        feedbackMonitor.waitForFeedback(feedbackId, detected: detected, completion: completion)
+    private func toggleTrainDirection() async throws {
+        return try await withCheckedThrowingContinuation { continuation in
+            DispatchQueue.main.async { [self] in
+                self.forward.toggle()
+
+                layout.setLocomotiveDirection(train, forward: self.forward) {
+                    do {
+                        try self.layout.toggleTrainDirectionInBlock(self.train)
+                        continuation.resume(returning: ())
+                    } catch {
+                        continuation.resume(throwing: error)
+                    }
+                }
+            }
+        }
+    }
+    
+    private func waitForFeedback(_ feedbackId: Identifier<Feedback>, detected: Bool = true) async {
+        await withCheckedContinuation { continuation in
+            DispatchQueue.main.async { [self] in
+                feedbackMonitor.waitForFeedback(feedbackId, detected: detected) {
+                    continuation.resume()
+                }
+            }
+        }
     }
     
     private func storeMeasurement(t0: Date, t1: Date, distance: Double) {

@@ -53,8 +53,13 @@ struct TrainSpeedMeasureControlsView: View {
     
     func measure() {
         measurement.start() { info in
-            self.progressInfo = "Measuring speed for step \(info.speedEntry.steps.value)"
-            self.progressValue = info.progress
+            if info.step == .done {
+                self.progressInfo = nil
+                self.running = false
+            } else {
+                self.progressInfo = "Measuring speed for step \(info.speedEntry.steps.value)"
+                self.progressValue = info.progress
+            }
         }
     }
 
