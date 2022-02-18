@@ -20,6 +20,7 @@ extension TrainDetailsSpeedSectionView: Inspectable { }
 extension TrainSpeedView: Inspectable { }
 extension TrainIconView: Inspectable { }
 extension SectionTitleView: Inspectable { }
+extension TrainSpeedGraphView: Inspectable { }
 
 class TrainViewTests: RootViewTests {
     
@@ -31,7 +32,7 @@ class TrainViewTests: RootViewTests {
 
     func testSpeedView() throws {
         let sut = TrainSpeedView(document: doc, train: layout.trains[0], measurement: doc.trainSpeedMeasurement, trainSpeed: TrainSpeed(kph: 50, decoderType: .MFX))
-        _ = try sut.inspect().vStack().hStack(0).vStack(1).canvas(1)
+        _ = try sut.inspect().vStack().hStack(0).view(TrainSpeedGraphView.self, 1).canvas(0)
     }
 
     func testDetailsView() throws {

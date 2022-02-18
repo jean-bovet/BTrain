@@ -12,47 +12,40 @@
 
 import SwiftUI
 
-struct TrainSpeedView: View {
+struct TrainSpeedGraphView: View {
     
-    let document: LayoutDocument
-    let train: Train
-    
-    @ObservedObject var measurement: TrainSpeedMeasurement
     @ObservedObject var trainSpeed: TrainSpeed
 
-    @State private var selection = Set<TrainSpeed.SpeedTableEntry.ID>()
-
-    @Environment(\.presentationMode) var presentationMode
-
-    var body: some View {
-        VStack {
-            HStack {
-                TrainSpeedColumnView(selection: $selection, trainSpeed: trainSpeed)
-                TrainSpeedGraphView(trainSpeed: trainSpeed)
-            }
-            
-            Divider()
-
-            HStack {
-                Spacer()
-                Button("OK") {
-                    presentationMode.wrappedValue.dismiss()
+    func speedPath(in size: CGSize) -> Path {
+        var p = Path()
+        let xOffset = size.width / CGFloat(trainSpeed.speedTable.count)
+        let yOffset = size.height / CGFloat(trainSpeed.speedTable.compactMap({$0.speed}).max() ?? 1)
+        for (index, speed) in trainSpeed.speedTable.enumerated() {
+            if let speedValue = speed.speed {
+                let point = CGPoint(x: Double(index) * xOffset, y: Double(speedValue) * yOffset)
+                if p.isEmpty {
+                    p.move(to: point)
+                } else {
+                    p.addLine(to: point)
                 }
-                .disabled(measurement.running)
-                .keyboardShortcut(.defaultAction)
             }
         }
-        .onAppear {
-            trainSpeed.updateSpeedStepsTable()
+        return p
+    }
+    
+    var body: some View {
+        Canvas { context, size in
+            let flipVertical: CGAffineTransform = CGAffineTransform(a: 1, b: 0, c: 0, d: -1, tx: 0, ty: size.height)
+            context.concatenate(flipVertical)
+            context.stroke(speedPath(in: size), with: .color(.blue))
         }
     }
 }
 
-struct TrainSpeedView_Previews: PreviewProvider {
-        
+struct TrainSpeedGraphView_Previews: PreviewProvider {
     static let doc = LayoutDocument(layout: LayoutFCreator().newLayout())
-    
+
     static var previews: some View {
-        TrainSpeedView(document: doc, train: Train(), measurement: doc.trainSpeedMeasurement, trainSpeed: TrainSpeed(decoderType: .MFX))
+        TrainSpeedGraphView(trainSpeed: doc.layout.trains[0].speed)
     }
 }

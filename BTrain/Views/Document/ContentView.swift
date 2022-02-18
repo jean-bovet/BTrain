@@ -44,6 +44,8 @@ struct ContentView: View {
                 TurnoutListView(layout: document.layout)
             case .feedback:
                 FeedbackEditListView(layout: document.layout)
+            case .speed:
+                TrainSpeedMeasurementsView(document: document, layout: document.layout)
             }
         }
         .onChange(of: document.triggerLayoutDiagnostic, perform: { v in

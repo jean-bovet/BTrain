@@ -56,6 +56,8 @@ struct DocumentToolbarContent: ToolbarContent {
                 CommandSelectedView(viewType: .blocks, label: "Blocks")
                 CommandSelectedView(viewType: .turnouts, label: "Turnouts")
                 CommandSelectedView(viewType: .feedback, label: "Feedback")
+                Divider()
+                CommandSelectedView(viewType: .speed, label: "Speed Measurements")
             }
         }
     }

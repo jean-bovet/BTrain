@@ -19,5 +19,6 @@ enum ViewType: Int {
     case blocks
     case turnouts
     case feedback
+    case speed
 }
     

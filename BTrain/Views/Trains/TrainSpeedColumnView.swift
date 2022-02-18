@@ -12,47 +12,47 @@
 
 import SwiftUI
 
-struct TrainSpeedView: View {
+struct TrainSpeedColumnView: View {
     
-    let document: LayoutDocument
-    let train: Train
-    
-    @ObservedObject var measurement: TrainSpeedMeasurement
+    @Binding var selection: Set<TrainSpeed.SpeedTableEntry.ID>
+
     @ObservedObject var trainSpeed: TrainSpeed
-
-    @State private var selection = Set<TrainSpeed.SpeedTableEntry.ID>()
-
-    @Environment(\.presentationMode) var presentationMode
 
     var body: some View {
         VStack {
-            HStack {
-                TrainSpeedColumnView(selection: $selection, trainSpeed: trainSpeed)
-                TrainSpeedGraphView(trainSpeed: trainSpeed)
-            }
-            
-            Divider()
+            Table(selection: $selection) {
+                TableColumn("Steps") { steps in
+                    Text("\(steps.steps.value.wrappedValue)")
+                }.width(80)
 
+                TableColumn("Speed (km/h)") { step in
+                    UndoProvider(step.speed) { speed in
+                        TextField("", value: speed, format: .number)
+                            .labelsHidden()
+                    }
+                }
+            } rows: {
+                ForEach($trainSpeed.speedTable) { block in
+                    TableRow(block)
+                }
+            }
             HStack {
                 Spacer()
-                Button("OK") {
-                    presentationMode.wrappedValue.dismiss()
-                }
-                .disabled(measurement.running)
-                .keyboardShortcut(.defaultAction)
+                Button("􀈑") {
+                    selection.forEach { index in
+                        trainSpeed.speedTable[Int(index)].speed = nil
+                    }
+                }.disabled(selection.isEmpty)
             }
-        }
-        .onAppear {
-            trainSpeed.updateSpeedStepsTable()
         }
     }
 }
 
-struct TrainSpeedView_Previews: PreviewProvider {
-        
-    static let doc = LayoutDocument(layout: LayoutFCreator().newLayout())
+struct TrainSpeedColumnView_Previews: PreviewProvider {
     
+    static let doc = LayoutDocument(layout: LayoutFCreator().newLayout())
+
     static var previews: some View {
-        TrainSpeedView(document: doc, train: Train(), measurement: doc.trainSpeedMeasurement, trainSpeed: TrainSpeed(decoderType: .MFX))
+        TrainSpeedColumnView(selection: .constant([]), trainSpeed: doc.layout.trains[0].speed)
     }
 }
