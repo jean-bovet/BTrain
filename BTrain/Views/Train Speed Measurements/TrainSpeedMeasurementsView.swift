@@ -74,11 +74,14 @@ struct TrainSpeedMeasurementsView: View {
                         Button("Auto Select") {
                             updateSelectedSteps()
                         }
+                        .disabled(running)
                     }
-                    TrainSpeedColumnView(selection: $selectedSpeedEntries, trainSpeed: train.speed)
-                        .frame(minHeight: 200)
+                    HStack {
+                        TrainSpeedColumnView(selection: $selectedSpeedEntries, trainSpeed: train.speed)
+                        TrainSpeedGraphView(trainSpeed: train.speed)
+                    }
+                    .frame(minHeight: 200)
                 }
-                .disabled(running)
                 .padding([.leading, .trailing])
             }
 
