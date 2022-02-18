@@ -18,7 +18,8 @@ struct TrainSpeedMeasurementsView: View {
     let layout: Layout
 
     @State private var selectedSpeedEntries = Set<TrainSpeed.SpeedTableEntry.ID>()
-
+    @State private var currentSpeedEntry: TrainSpeed.SpeedTableEntry?
+    
     @AppStorage("speedMeasureFeedbackA") private var feedbackA: String?
     @AppStorage("speedMeasureFeedbackB") private var feedbackB: String?
     @AppStorage("speedMeasureFeedbackC") private var feedbackC: String?
@@ -77,7 +78,7 @@ struct TrainSpeedMeasurementsView: View {
                         .disabled(running)
                     }
                     HStack {
-                        TrainSpeedColumnView(selection: $selectedSpeedEntries, trainSpeed: train.speed)
+                        TrainSpeedColumnView(selection: $selectedSpeedEntries, currentSpeedEntry: $currentSpeedEntry, trainSpeed: train.speed)
                         TrainSpeedGraphView(trainSpeed: train.speed)
                     }
                     .frame(minHeight: 200)
@@ -115,7 +116,7 @@ struct TrainSpeedMeasurementsView: View {
                                                                                      feedbackC: Identifier<Feedback>(uuid: feedbackC),
                                                                                      distanceAB: distanceAB,
                                                                                      distanceBC: distanceBC),
-                                                  running: $running)
+                                                  running: $running, currentSpeedEntry: $currentSpeedEntry)
                         .padding([.leading, .trailing])
                 }
             }

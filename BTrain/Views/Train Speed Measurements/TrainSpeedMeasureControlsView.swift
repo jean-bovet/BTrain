@@ -17,6 +17,7 @@ struct TrainSpeedMeasureControlsView: View {
     let measurement: TrainSpeedMeasurement
 
     @Binding var running: Bool
+    @Binding var currentSpeedEntry: TrainSpeed.SpeedTableEntry?
     
     @State private var progressInfo: String?
     @State private var progressValue: Double?
@@ -32,7 +33,6 @@ struct TrainSpeedMeasureControlsView: View {
             HStack {
                 if running {
                     Button("Cancel") {
-                        running = false
                         cancel()
                     }
                 } else {
@@ -54,18 +54,24 @@ struct TrainSpeedMeasureControlsView: View {
     func measure() {
         measurement.start() { info in
             if info.step == .done {
-                self.progressInfo = nil
-                self.running = false
+                self.done()
             } else {
                 self.progressInfo = "Measuring speed for step \(info.speedEntry.steps.value)"
                 self.progressValue = info.progress
+                self.currentSpeedEntry = info.speedEntry
             }
         }
     }
 
     func cancel() {
         measurement.cancel()
+        done()
+    }
+    
+    func done() {
         progressInfo = nil
+        running = false
+        currentSpeedEntry = nil
     }
 }
 
@@ -76,6 +82,6 @@ struct TrainSpeedMeasureControlsView_Previews: PreviewProvider {
                                                    feedbackA: Identifier<Feedback>(uuid: "OL1.1"), feedbackB: Identifier<Feedback>(uuid: "OL1.1"), feedbackC: Identifier<Feedback>(uuid: "OL1.1"),
                                                    distanceAB: 10, distanceBC: 20)
     static var previews: some View {
-        TrainSpeedMeasureControlsView(measurement: measurement, running: .constant(false))
+        TrainSpeedMeasureControlsView(measurement: measurement, running: .constant(false), currentSpeedEntry: .constant(nil))
     }
 }

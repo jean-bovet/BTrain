@@ -26,7 +26,7 @@ struct TrainSpeedView: View {
     var body: some View {
         VStack {
             HStack {
-                TrainSpeedColumnView(selection: $selection, trainSpeed: trainSpeed)
+                TrainSpeedColumnView(selection: $selection, currentSpeedEntry: .constant(nil), trainSpeed: trainSpeed)
                 TrainSpeedGraphView(trainSpeed: trainSpeed)
             }
             

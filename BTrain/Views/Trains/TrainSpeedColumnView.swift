@@ -15,6 +15,7 @@ import SwiftUI
 struct TrainSpeedColumnView: View {
     
     @Binding var selection: Set<TrainSpeed.SpeedTableEntry.ID>
+    @Binding var currentSpeedEntry: TrainSpeed.SpeedTableEntry?
 
     @ObservedObject var trainSpeed: TrainSpeed
 
@@ -26,9 +27,14 @@ struct TrainSpeedColumnView: View {
                 }.width(80)
 
                 TableColumn("Speed (km/h)") { step in
-                    UndoProvider(step.speed) { speed in
-                        TextField("", value: speed, format: .number)
-                            .labelsHidden()
+                    HStack {
+                        UndoProvider(step.speed) { speed in
+                            TextField("", value: speed, format: .number)
+                                .labelsHidden()
+                        }
+                        if let currentSpeedEntry = currentSpeedEntry, currentSpeedEntry.steps.value == step.steps.value.wrappedValue {
+                            Text("􀐫")
+                        }
                     }
                 }
             } rows: {
@@ -62,6 +68,6 @@ struct TrainSpeedColumnView_Previews: PreviewProvider {
     static let doc = LayoutDocument(layout: LayoutFCreator().newLayout())
 
     static var previews: some View {
-        TrainSpeedColumnView(selection: .constant([]), trainSpeed: doc.layout.trains[0].speed)
+        TrainSpeedColumnView(selection: .constant([]), currentSpeedEntry: .constant(nil), trainSpeed: doc.layout.trains[0].speed)
     }
 }
