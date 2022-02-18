@@ -17,8 +17,8 @@ typealias CompletionBlock = (() -> Void)
 // A protocol that the layout uses to push information to the Digital Control System
 protocol LayoutCommandExecuting {
     func sendTurnoutState(turnout: Turnout, completion: @escaping CompletionBlock)
-    func sendTrainDirection(train: Train)
-    func sendTrainSpeed(train: Train)
+    func sendTrainDirection(train: Train, completion: @escaping CompletionBlock)
+    func sendTrainSpeed(train: Train, completion: @escaping CompletionBlock)
 }
 
 final class LayoutCommandExecutor: LayoutCommandExecuting {
@@ -63,7 +63,7 @@ final class LayoutCommandExecutor: LayoutCommandExecuting {
         }
     }
 
-    func sendTrainDirection(train: Train) {
+    func sendTrainDirection(train: Train, completion: @escaping CompletionBlock) {
         BTLogger.debug("Train \(train.name) changed direction to \(train.directionForward ? "forward" : "backward" )")
         let command: Command
         if train.directionForward {
@@ -71,13 +71,13 @@ final class LayoutCommandExecutor: LayoutCommandExecuting {
         } else {
             command = .direction(address: train.address, decoderType: train.decoder, direction: .backward)
         }
-        interface.execute(command: command) {}
+        interface.execute(command: command, onCompletion: completion)
     }
     
-    func sendTrainSpeed(train: Train) {
+    func sendTrainSpeed(train: Train, completion: @escaping CompletionBlock) {
         BTLogger.debug("Train \(train.name) changed speed to \(train.speed)")
         let value = interface.speedValue(for: train.speed.steps, decoder: train.decoder)
-        interface.execute(command: .speed(address: train.address, decoderType: train.decoder, value: value)) {}
+        interface.execute(command: .speed(address: train.address, decoderType: train.decoder, value: value), onCompletion: completion)
     }
 }
 

@@ -111,13 +111,19 @@ extension Layout {
         return train.position
     }
     
-    func setTrainSpeed(_ train: Train, _ speed: TrainSpeed.UnitKph) throws {
+    func setTrainSpeed(_ train: Train, _ speed: TrainSpeed.UnitKph, completion: CompletionBlock? = nil) throws {
         guard let train = self.train(for: train.id) else {
             throw LayoutError.trainNotFound(trainId: train.id)
         }
         
         train.speed.kph = speed
-        self.executor?.sendTrainSpeed(train: train)
+        if let executor = executor {
+            executor.sendTrainSpeed(train: train) {
+                completion?()
+            }
+        } else {
+            completion?()
+        }
         
         self.didChange()
     }
@@ -145,10 +151,18 @@ extension Layout {
     }
     
     // Set the direction of travel of the locomotive
-    func setLocomotiveDirection(_ train: Train, forward: Bool) {
+    func setLocomotiveDirection(_ train: Train, forward: Bool, completion: CompletionBlock? = nil) {
         if train.directionForward != forward {
             train.directionForward = forward
-            self.executor?.sendTrainDirection(train: train)
+            if let executor = executor {
+                executor.sendTrainDirection(train: train) {
+                    completion?()
+                }
+            } else {
+                completion?()
+            }
+        } else {
+            completion?()
         }
     }
     
@@ -253,7 +267,7 @@ extension Layout {
     // Stop the specified train. If completely is true,
     // set the state running to false of the train which means
     // it won't restart anymore.
-    func stopTrain(_ trainId: Identifier<Train>, completely: Bool = false) throws {
+    func stopTrain(_ trainId: Identifier<Train>, completely: Bool = false, completion: CompletionBlock? = nil) throws {
         guard let train = self.train(for: trainId) else {
             throw LayoutError.trainNotFound(trainId: trainId)
         }
@@ -261,7 +275,6 @@ extension Layout {
         BTLogger.debug("Stopping train \(train.name) \(completely ? "completely." : "until it can be restarted.")")
         
         train.speed.kph = 0
-        self.executor?.sendTrainSpeed(train: train)
 
         train.state = .stopped
 
@@ -269,6 +282,14 @@ extension Layout {
             try stopCompletely(trainId)
         }
         
+        if let executor = executor {
+            executor.sendTrainSpeed(train: train) {
+                completion?()
+            }
+        } else {
+            completion?()
+        }
+
         self.didChange()
     }
 

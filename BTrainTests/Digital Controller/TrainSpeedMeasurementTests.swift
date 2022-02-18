@@ -50,7 +50,9 @@ class TrainSpeedMeasurementTests: XCTestCase {
         let layout = LayoutFCreator().newLayout()
         
         let train = layout.trains[0]
-        
+        train.blockId = layout.blocks[0].id
+        layout.blocks[0].train = .init(train.id, .next)
+
         let fa = layout.feedback(for: Identifier<Feedback>(uuid: "OL1.2"))!
         let fb = layout.feedback(for: Identifier<Feedback>(uuid: "OL2.1"))!
         let fc = layout.feedback(for: Identifier<Feedback>(uuid: "OL2.2"))!
@@ -142,7 +144,9 @@ class TrainSpeedMeasurementTests: XCTestCase {
         let layout = LayoutFCreator().newLayout()
         
         let train = layout.trains[0]
-        
+        train.blockId = layout.blocks[0].id
+        layout.blocks[0].train = .init(train.id, .next)
+
         let fa = layout.feedback(for: Identifier<Feedback>(uuid: "OL1.2"))!
         let fb = layout.feedback(for: Identifier<Feedback>(uuid: "OL2.1"))!
         let fc = layout.feedback(for: Identifier<Feedback>(uuid: "OL2.2"))!

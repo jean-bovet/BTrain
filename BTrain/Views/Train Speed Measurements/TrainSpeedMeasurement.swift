@@ -12,6 +12,8 @@
 
 import Foundation
 
+// This class performs the automatic measurement of the real speed of a locomotive
+// by using 3 feedbacks and running the locomotive between these feedbacks at various decoder steps.
 final class TrainSpeedMeasurement {
             
     let layout: Layout
@@ -24,6 +26,8 @@ final class TrainSpeedMeasurement {
     let feedbackC: Identifier<Feedback>
     let distanceAB: Double
     let distanceBC: Double
+    
+    let feedbackMonitor: FeedbackMonitor
     
     private var entryIndex = 0
     private var forward = true
@@ -57,10 +61,11 @@ final class TrainSpeedMeasurement {
         self.feedbackC = feedbackC
         self.distanceAB = distanceAB
         self.distanceBC = distanceBC
+        self.feedbackMonitor = FeedbackMonitor(layout: layout, interface: interface)
     }
         
     func start(callback: @escaping (CallbackInfo) -> Void) {
-        registerForFeedbackChanges()
+        feedbackMonitor.start()
 
         forward = train.directionForward
         entryIndex = 0
@@ -69,12 +74,12 @@ final class TrainSpeedMeasurement {
         
     func cancel() {
         stopTrain {
-            self.unregisterForFeedbackChanges()
+            self.feedbackMonitor.stop()
         }
     }
     
     func done() {
-        unregisterForFeedbackChanges()
+        feedbackMonitor.stop()
     }
 
     private func run(callback: @escaping (CallbackInfo) -> Void) {
@@ -102,12 +107,14 @@ final class TrainSpeedMeasurement {
                         self.waitForFeedback(self.feedbackC) {
                             callback(.init(speedEntry: speedEntry, step: .feedbackC, progress: self.progress(for: self.entryIndex)))
                             let t1 = Date()
-                            self.stopTrain() {
-                                callback(.init(speedEntry: speedEntry, step: .trainStopped, progress: self.progress(for: self.entryIndex)))
-                                self.storeMeasurement(t0: t0, t1: t1, distance: self.distanceBC)
-                                self.toggleTrainDirection() {
-                                    callback(.init(speedEntry: speedEntry, step: .trainDirectionToggle, progress: self.progress(for: self.entryIndex)))
-                                    completion()
+                            self.waitForFeedback(self.feedbackC, detected: false) {
+                                self.stopTrain() {
+                                    callback(.init(speedEntry: speedEntry, step: .trainStopped, progress: self.progress(for: self.entryIndex)))
+                                    self.storeMeasurement(t0: t0, t1: t1, distance: self.distanceBC)
+                                    self.toggleTrainDirection() {
+                                        callback(.init(speedEntry: speedEntry, step: .trainDirectionToggle, progress: self.progress(for: self.entryIndex)))
+                                        completion()
+                                    }
                                 }
                             }
                         }
@@ -122,12 +129,14 @@ final class TrainSpeedMeasurement {
                         self.waitForFeedback(self.feedbackA) {
                             callback(.init(speedEntry: speedEntry, step: .feedbackA, progress: self.progress(for: self.entryIndex)))
                             let t1 = Date()
-                            self.stopTrain() {
-                                callback(.init(speedEntry: speedEntry, step: .trainStopped, progress: self.progress(for: self.entryIndex)))
-                                self.storeMeasurement(t0: t0, t1: t1, distance: self.distanceAB)
-                                self.toggleTrainDirection() {
-                                    callback(.init(speedEntry: speedEntry, step: .trainDirectionToggle, progress: self.progress(for: self.entryIndex)))
-                                    completion()
+                            self.waitForFeedback(self.feedbackA, detected: false) {
+                                self.stopTrain() {
+                                    callback(.init(speedEntry: speedEntry, step: .trainStopped, progress: self.progress(for: self.entryIndex)))
+                                    self.storeMeasurement(t0: t0, t1: t1, distance: self.distanceAB)
+                                    self.toggleTrainDirection() {
+                                        callback(.init(speedEntry: speedEntry, step: .trainDirectionToggle, progress: self.progress(for: self.entryIndex)))
+                                        completion()
+                                    }
                                 }
                             }
                         }
@@ -153,36 +162,32 @@ final class TrainSpeedMeasurement {
     
     private func stopTrain(completion: @escaping CompletionBlock) {
         do {
-            // TODO: callback when the network has sent the message
-            try layout.stopTrain(train.id)
+            try layout.stopTrain(train.id) {
+                // TODO: when we handle the deceleration with a curve, we can invoke completion when the curve reaches 0.
+                DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.250) {
+                    completion()
+                }
+            }
         } catch {
             // TODO throw
-        }
-        // TODO: when we handle the deceleration with a curve, we can invoke completion when the curve reaches 0.
-        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1.0) {
-            completion()
         }
     }
     
     private func toggleTrainDirection(completion: @escaping CompletionBlock) {
-        do {
-            self.forward.toggle()
-            layout.setLocomotiveDirection(train, forward: self.forward)
-            // TODO: callback when the network has sent the message
-            try layout.toggleTrainDirectionInBlock(train)
-        } catch {
-            // TODO throw
+        self.forward.toggle()
+        layout.setLocomotiveDirection(train, forward: self.forward) {
+            do {
+                try self.layout.toggleTrainDirectionInBlock(self.train)
+                completion()
+            } catch {
+                print("Error \(error)")
+                // TODO: log? and report to the UX somehow
+            }
         }
-        completion()
     }
     
-    private func waitForFeedback(_ feedbackId: Identifier<Feedback>, completion: @escaping CompletionBlock) {
-        expectedFeedbackId = feedbackId
-        expectedFeedbackCallback = { [weak self] in
-            self?.expectedFeedbackId = nil
-            self?.expectedFeedbackCallback = nil
-            completion()
-        }
+    private func waitForFeedback(_ feedbackId: Identifier<Feedback>, detected: Bool = true, completion: @escaping CompletionBlock) {
+        feedbackMonitor.waitForFeedback(feedbackId, detected: detected, completion: completion)
     }
     
     private func storeMeasurement(t0: Date, t1: Date, distance: Double) {
@@ -199,39 +204,7 @@ final class TrainSpeedMeasurement {
         let entry = speedEntry(for: entryIndex)
         setSpeedEntry(.init(steps: entry.steps, speed: TrainSpeed.UnitKph(speedInKph)), for: entryIndex)
     }
-    
-    private var expectedFeedbackId: Identifier<Feedback>?
-    private var expectedFeedbackCallback: CompletionBlock?
-    
-    private var feedbackChangeUUID: UUID?
-    
-    private func registerForFeedbackChanges() {
-        feedbackChangeUUID = interface.register(forFeedbackChange: { [weak self] deviceID, contactID, value in
-            guard let sSelf = self else {
-                return
-            }
-            DispatchQueue.main.async {
-                guard let feedback = sSelf.layout.feedbacks.find(deviceID: deviceID, contactID: contactID) else {
-                    return
-                }
-                
-                guard value == 1 else {
-                    return
-                }
-                
-                if feedback.id == sSelf.expectedFeedbackId {
-                    sSelf.expectedFeedbackCallback?()
-                }
-            }
-        })
-    }
-    
-    private func unregisterForFeedbackChanges() {
-        if let feedbackChangeUUID = feedbackChangeUUID {
-            interface.unregister(uuid: feedbackChangeUUID)
-        }
-    }
-    
+        
     private func speedEntry(for entryIndex: Int) -> TrainSpeed.SpeedTableEntry {
         let entries = speedEntries.sorted()
         let speedTableIndex = Int(entries[entryIndex])
