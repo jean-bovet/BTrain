@@ -11,7 +11,6 @@
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 import Foundation
-import SwiftCubicSpline
 
 // This class handles the speed of a train. The speed is always expressed in kph.
 final class TrainSpeed: ObservableObject, Equatable, CustomStringConvertible {
@@ -66,20 +65,7 @@ final class TrainSpeed: ObservableObject, Equatable, CustomStringConvertible {
     // Note: the steps are always converted from/to the underlying kph value.
     var steps: SpeedStep {
         get {
-            // Use a cublic spline interpolation to get the most accurate steps number.
-            let points: [Point] = speedTable.compactMap { speedEntry in
-                if let speed = speedEntry.speed {
-                    return Point(x: Double(speed), y: Double(speedEntry.steps.value))
-                } else {
-                    return nil
-                }
-            }
-            if points.count > 1 {
-                let csp = CubicSpline(points: points)
-                return SpeedStep(value: UInt16(csp[x: Double(kph)]))
-            } else {
-                return SpeedStep(value: 0)
-            }
+            return steps(for: kph)
         }
         set {
             if newValue.value == 0 {
@@ -125,7 +111,7 @@ final class TrainSpeed: ObservableObject, Equatable, CustomStringConvertible {
             return ss1.steps.value < ss2.steps.value
         }
         
-        let stepsCount: UInt16 = UInt16(decoderType.steps)
+        let stepsCount = UInt16(decoderType.steps)
         for index in 0...stepsCount {
             let speedStep = SpeedStep(value: index)
             if index >= speedTable.count || speedTable[Int(index)].steps != speedStep {
@@ -140,6 +126,29 @@ final class TrainSpeed: ObservableObject, Equatable, CustomStringConvertible {
         UnitKph(Double(maxSpeed)/Double(decoderType.steps) * Double(steps.value))
     }
 
+    // This method returns the number of steps corresponding to the speed in kph
+    // by finding the closest match in the speedTable.
+    func steps(for speedKph: UnitKph) -> SpeedStep {
+        if kph == 0 {
+            return SpeedStep.zero
+        }
+
+        var delta = Double.greatestFiniteMagnitude
+        var matchingSteps = SpeedStep.zero
+        for entry in speedTable {
+            if let speed = entry.speed {
+                let newDelta = abs(Double(kph) - Double(speed))
+                if newDelta <= delta {
+                    delta = newDelta
+                    matchingSteps = entry.steps
+                } else if newDelta > delta {
+                    return matchingSteps
+                }
+            }
+        }
+        return matchingSteps
+    }
+    
 }
 
 extension TrainSpeed: Codable {

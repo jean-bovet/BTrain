@@ -126,7 +126,14 @@ struct TrainSpeedMeasurementsView: View {
             return
         }
 
-        selectedSpeedEntries = [train.speed.speedTable[1].id]
+        var steps: Set<TrainSpeed.SpeedTableEntry.ID> = [train.speed.speedTable[1].id]
+        var index = 10
+        while index < train.speed.speedTable.count {
+            steps.insert(train.speed.speedTable[index].id)
+            index += 10
+        }
+        steps.insert(train.speed.speedTable[train.speed.speedTable.count-1].id)
+        selectedSpeedEntries = steps
     }
 }
 

@@ -114,21 +114,22 @@ final class TrainSpeedMeasurement {
         invokeCallback(feedbacks[0].1, callback)
         
         await waitForFeedback(feedbacks[1].0)
-        invokeCallback(feedbacks[1].1, callback)
-        
         let t0 = Date()
-        
+        invokeCallback(feedbacks[1].1, callback)
+                
         await waitForFeedback(feedbacks[2].0)
-        invokeCallback(feedbacks[2].1, callback)
-
         let t1 = Date()
+
+        invokeCallback(feedbacks[2].1, callback)
         
         await waitForFeedback(feedbacks[2].0, detected: false)
 
         try await stopTrain()
         invokeCallback(.trainStopped, callback)
 
-        storeMeasurement(t0: t0, t1: t1, distance: forward ? distanceBC : distanceAB)
+        DispatchQueue.main.sync {
+            storeMeasurement(t0: t0, t1: t1, distance: forward ? distanceBC : distanceAB)
+        }
         
         try await toggleTrainDirection()
         invokeCallback(.trainDirectionToggle, callback)
