@@ -37,12 +37,21 @@ struct TrainSpeedColumnView: View {
                 }
             }
             HStack {
-                Spacer()
+                Button("􁂥") {
+                    trainSpeed.updateSpeedStepsTable()
+                    trainSpeed.interpolateSpeedTable()
+                }
+                .help("Interpolate Missing Speed Values")
+ 
                 Button("􀈑") {
                     selection.forEach { index in
                         trainSpeed.speedTable[Int(index)].speed = nil
                     }
-                }.disabled(selection.isEmpty)
+                }
+                .help("Remove Speed Value")
+                .disabled(selection.isEmpty)
+                
+                Spacer()
             }
         }
     }

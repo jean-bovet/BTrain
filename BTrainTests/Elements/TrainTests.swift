@@ -147,6 +147,38 @@ class TrainTests: XCTestCase {
         XCTAssertEqual(t1.speed.kph, 0)
     }
 
+    func testInterpolation() {
+        let t1 = Train(uuid: "1")
+        t1.address = 0x4001
+        
+        // Empty the whole speed table of its speed value
+        let speed = t1.speed
+        for index in t1.speed.speedTable.indices {
+            speed.speedTable[index].speed = nil
+        }
+
+        let maxSteps = speed.speedTable.count - 1
+        
+        XCTAssertEqual(speed.interpolatedSpeed(at: 0), 0)
+        XCTAssertEqual(speed.interpolatedSpeed(at: maxSteps/3), 66)
+        XCTAssertEqual(speed.interpolatedSpeed(at: maxSteps/2), 100)
+        XCTAssertEqual(speed.interpolatedSpeed(at: maxSteps), 200)
+        
+        // Interpolate the whole table
+        speed.interpolateSpeedTable()
+        
+        // Assert of a few speed values
+        XCTAssertEqual(speed.speedTable[0].speed, 0)
+        XCTAssertEqual(speed.speedTable[maxSteps/3].speed, 66)
+        XCTAssertEqual(speed.speedTable[maxSteps/2].speed, 100)
+        XCTAssertEqual(speed.speedTable[maxSteps].speed, 200)
+        
+        // Now assert the whole table
+        for index in 0...maxSteps {
+            XCTAssertEqual(speed.speedTable[index].speed, TrainSpeed.UnitKph(Double(index) / Double(maxSteps) * 200), "At index \(index)")
+        }
+    }
+    
     private func assertSpeed(_ speed: TrainSpeed, _ interface: CommandInterface, kph: TrainSpeed.UnitKph, steps: UInt16, value: UInt16) {
         XCTAssertEqual(speed.kph, kph)
         XCTAssertEqual(speed.steps.value, steps)

@@ -122,6 +122,86 @@ final class TrainSpeed: ObservableObject, Equatable, CustomStringConvertible {
         }
     }
     
+    func interpolateSpeedTable() {
+        var newSpeedValues = [TrainSpeed.UnitKph]()
+        
+        // Compute all the missing speed value using linear interpolation
+        // Note: we assign the interpolated values to a new array in order
+        // to avoid touching the speedTable during interpolation; this is because
+        // the speed values are stored as UInt16 while interpolation needs Double
+        // speed value to ensure complete accuracy.
+        for (index, entry) in speedTable.enumerated() {
+            if let speed = entry.speed {
+                newSpeedValues.append(speed)
+            } else if let speed = interpolatedSpeed(at: index) {
+                newSpeedValues.append(speed)
+            } else {
+                newSpeedValues.append(0)
+            }
+        }
+        
+        // Finally assign all the new speed values to the original speed table
+        for (index, speed) in newSpeedValues.enumerated() {
+            speedTable[index].speed = speed
+        }
+    }
+    
+    func interpolatedSpeed(at index: Int) -> UnitKph? {
+        // Find the previous non-nil entry
+        var previousEntry = SpeedTableEntry(steps: .zero, speed: 0)
+        var previousIndex = index - 1
+        while previousIndex >= 0 {
+            let entry = speedTable[previousIndex]
+            if entry.speed != nil {
+                previousEntry = entry
+                break
+            }
+            previousIndex -= 1
+        }
+        
+        // Find the next non-nil entry
+        var nextEntry: SpeedTableEntry?
+        var nextIndex = index
+        while nextIndex < speedTable.count {
+            let entry = speedTable[nextIndex]
+            if entry.speed != nil {
+                nextEntry = entry
+                break
+            }
+            nextIndex += 1
+        }
+        
+        // If there are no non-nil speed next entry, we use the
+        // maximum speed specified for the maximum number of steps possible
+        if nextEntry == nil {
+            nextEntry = SpeedTableEntry(steps: SpeedStep(value: UInt16(speedTable.count - 1)), speed: maxSpeed)
+        }
+        
+        guard let nextEntry = nextEntry else {
+            return nil
+        }
+        
+        let x = (Double(index) - Double(previousEntry.steps.value)) / (Double(nextEntry.steps.value) - Double(previousEntry.steps.value))
+        guard !x.isNaN && !x.isInfinite else {
+            BTLogger.error("Unexpected x value of \(x) for previous steps \(previousEntry.steps.value) and next steps \(nextEntry.steps.value)")
+            return nil
+        }
+        
+        guard let previousSpeed = previousEntry.speed else {
+            return nil
+        }
+
+        guard let nextSpeed = nextEntry.speed else {
+            return nil
+        }
+
+        let speed0 = Double(previousSpeed)
+        let speed1 = Double(nextSpeed)
+        
+        let interpolatedSpeed = speed0 + (speed1 - speed0) * x
+        return UnitKph(interpolatedSpeed)
+    }
+    
     func speedKph(for steps: SpeedStep) -> UnitKph {
         UnitKph(Double(maxSpeed)/Double(decoderType.steps) * Double(steps.value))
     }
