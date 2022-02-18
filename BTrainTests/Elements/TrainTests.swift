@@ -128,6 +128,25 @@ class TrainTests: XCTestCase {
         XCTAssertEqual(t1.speed.kph, 15)
     }
     
+    func testEmptySpeedTable() {
+        let t1 = Train(uuid: "1")
+        t1.address = 0x4001
+        
+        XCTAssertEqual(t1.speed.speedTable.count, Int(DecoderType.MFX.steps) + 1)
+
+        t1.speed.speedTable.removeAll()
+
+        XCTAssertTrue(t1.speed.speedTable.isEmpty)
+        
+        t1.speed.kph = 0
+        XCTAssertEqual(t1.speed.steps.value, 0)
+        XCTAssertEqual(t1.speed.kph, 0)
+        
+        t1.speed.steps = .zero
+        XCTAssertEqual(t1.speed.steps.value, 0)
+        XCTAssertEqual(t1.speed.kph, 0)
+    }
+
     private func assertSpeed(_ speed: TrainSpeed, _ interface: CommandInterface, kph: TrainSpeed.UnitKph, steps: UInt16, value: UInt16) {
         XCTAssertEqual(speed.kph, kph)
         XCTAssertEqual(speed.steps.value, steps)

@@ -37,7 +37,7 @@ final class TrainSpeed: ObservableObject, Equatable, CustomStringConvertible {
         
     // Structure defining the number of steps corresponding
     // to a particular speed in kph.
-    struct SpeedTableEntry: Identifiable {
+    struct SpeedTableEntry: Identifiable, Codable {
         var id: UInt16 {
             return steps.value
         }
@@ -153,19 +153,24 @@ final class TrainSpeed: ObservableObject, Equatable, CustomStringConvertible {
 
 extension TrainSpeed: Codable {
     enum CodingKeys: CodingKey {
-      case decoderType, kph
+      case decoderType, kph, speedTable
     }
 
     convenience init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         self.init(decoderType: try container.decode(DecoderType.self, forKey: CodingKeys.decoderType))
-        self.updateSpeedStepsTable()
         self.kph = try container.decode(UInt16.self, forKey: CodingKeys.kph)
+        if let speedTable = try container.decodeIfPresent([SpeedTableEntry].self, forKey: CodingKeys.speedTable) {
+            self.speedTable = speedTable
+        } else {
+            updateSpeedStepsTable()
+        }
     }
     
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(decoderType, forKey: CodingKeys.decoderType)
         try container.encode(kph, forKey: CodingKeys.kph)
+        try container.encode(speedTable, forKey: CodingKeys.speedTable)
     }
 }
