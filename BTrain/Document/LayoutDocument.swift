@@ -23,10 +23,6 @@ import SwiftUI
 //│ CommandInterface │◀────────│LayoutCoordinator │──────────▶│ Layout  │◀────────────│   Switchboard    │
 //└──────────────────┘         └──────────────────┘           └─────────┘             └──────────────────┘
 //
-
-final class CommandTrigger: ObservableObject {
-}
-
 final class LayoutDocument: ObservableObject {
     
     // This property is used to keep track of the connection status.

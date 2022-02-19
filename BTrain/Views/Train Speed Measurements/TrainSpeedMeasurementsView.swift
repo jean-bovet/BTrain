@@ -122,7 +122,11 @@ struct TrainSpeedMeasurementsView: View {
                 }
             }
 
-            OverviewRightPanelView(document: document, layout: document.layout)
+            SwitchboardContainerView(layout: document.layout,
+                                     layoutController: document.layoutController,
+                                     document: document,
+                                     switchboard: document.switchboard,
+                                     state: document.switchboard.state)
         }
     }
     

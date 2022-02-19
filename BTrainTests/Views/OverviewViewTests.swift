@@ -15,7 +15,6 @@ import XCTest
 @testable import BTrain
 import ViewInspector
 
-extension OverviewRightPanelView: Inspectable { }
 extension LayoutRuntimeErrorView: Inspectable { }
 
 class OverviewViewTests: RootViewTests {
@@ -24,13 +23,13 @@ class OverviewViewTests: RootViewTests {
         let sut = OverviewView(document: doc)
         XCTAssertNoThrow(try sut.inspect().hStack().vStack(0).view(TrainControlListView.self, 0))
         XCTAssertThrowsError(try sut.inspect().hStack().vStack(0).view(SimulatorView.self, 1))
-        XCTAssertNoThrow(try sut.inspect().hStack().view(OverviewRightPanelView.self, 1))
+        XCTAssertNoThrow(try sut.inspect().hStack().view(SwitchboardContainerView.self, 1))
     }
     
     func testOverviewSwitchboardView() throws {
         let sut = SwitchboardContainerView(layout: doc.layout, layoutController: doc.layoutController, document: doc, switchboard: doc.switchboard, state: doc.switchboard.state)
-        XCTAssertNoThrow(try sut.inspect().vStack().view(SwitchboardEditControlsView.self, 0))
-        XCTAssertNoThrow(try sut.inspect().vStack().scrollView(1).view(SwitchBoardView.self))
+        XCTAssertNoThrow(try sut.inspect().vStack().vStack(0).view(SwitchboardEditControlsView.self, 0))
+        XCTAssertNoThrow(try sut.inspect().vStack().vStack(0).scrollView(1).view(SwitchBoardView.self))
     }
     
     func testLayoutRuntimeError() throws {

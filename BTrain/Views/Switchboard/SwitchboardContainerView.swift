@@ -26,26 +26,31 @@ struct SwitchboardContainerView: View {
     
     var body: some View {
         VStack(spacing: 0) {
-            SwitchboardEditControlsView(layout: layout, state: state, document: document, switchboard: switchboard)
-            ScrollView([.horizontal, .vertical]) {
-                if switchboard.isEmpty && !state.editable {
-                    VStack {
-                        Text("No Elements")
-                                             
-                        HStack {
-                            Button("􀈊 Edit Layout") {
-                                state.editable.toggle()
-                            }
+            VStack(spacing: 0) {
+                SwitchboardEditControlsView(layout: layout, state: state, document: document, switchboard: switchboard)
+                ScrollView([.horizontal, .vertical]) {
+                    if switchboard.isEmpty && !state.editable {
+                        VStack {
+                            Text("No Elements")
                             
-                            Button("􀈄 Import Predefined Layout") {
-                                document.triggerImportPredefinedLayout.toggle()
+                            HStack {
+                                Button("􀈊 Edit Layout") {
+                                    state.editable.toggle()
+                                }
+                                
+                                Button("􀈄 Import Predefined Layout") {
+                                    document.triggerImportPredefinedLayout.toggle()
+                                }
                             }
                         }
+                    } else {
+                        SwitchBoardView(switchboard: switchboard, state: state, layout: layout, layoutController: layoutController)
                     }
-                } else {
-                    SwitchBoardView(switchboard: switchboard, state: state, layout: layout, layoutController: layoutController)
-                }
-            }.background(Color(NSColor.windowBackgroundColor))
+                }.background(Color(NSColor.windowBackgroundColor))
+            }
+            if layout.runtimeError != nil {
+                LayoutRuntimeErrorView(debugger: document.layoutController.debugger, error: $layout.runtimeError)
+            }
         }.sheet(isPresented: $state.trainDroppedInBlockAction) {
             TrainControlSetLocationSheet(layout: layout, controller: document.layoutController, trainDragInfo: state.trainDragInfo, train: layout.train(for: state.trainDragInfo?.trainId)!)
                 .padding()
