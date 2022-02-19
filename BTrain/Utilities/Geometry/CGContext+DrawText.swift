@@ -49,9 +49,7 @@ enum HTextAlignment {
 extension CGContext {
         
     func prepareText(text: String, color: CGColor, fontSize: CGFloat) -> (CTLine, CGRect) {
-        // You can use the Font Book app to find the name
-        let fontName = "Helvetica" as CFString
-        let font = CTFontCreateWithName(fontName, fontSize, nil)
+        let font = CTFontCreateWithName(NSFont.systemFont(ofSize: NSFont.systemFontSize).fontName as CFString, fontSize, nil)
 
         let attributes = [NSAttributedString.Key.font: font,
                           NSAttributedString.Key.foregroundColor: color] as [NSAttributedString.Key : Any]

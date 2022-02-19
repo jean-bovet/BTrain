@@ -17,8 +17,8 @@ struct TrainSpeedGraphView: View {
     @ObservedObject var trainSpeed: TrainSpeed
     @Environment(\.colorScheme) var colorScheme
 
-    let fontSize = 16.0
-    let margin = 8.0
+    let fontSize = NSFont.systemFontSize
+    let margin = NSFont.systemFontSize/2
 
     var textColor: CGColor {
         colorScheme == .dark ? .white : .black

@@ -77,7 +77,7 @@ struct TrainSpeedMeasurementsView: View {
                         }
                         .disabled(running)
                     }
-                    HStack {
+                    HStack(spacing: 10) {
                         TrainSpeedColumnView(selection: $selectedSpeedEntries, currentSpeedEntry: $currentSpeedEntry, trainSpeed: train.speed)
                         TrainSpeedGraphView(trainSpeed: train.speed)
                     }
