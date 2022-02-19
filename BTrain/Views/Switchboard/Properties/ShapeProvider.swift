@@ -84,7 +84,9 @@ final class ShapeProvider: ShapeProviding {
         self.context = context
         
         observer.registerForTrainChange { trains in
-            self.updateShapes()
+            // Note: need to pass the `trains` parameter here because the layout.blocks
+            // has not yet had the time to be updated
+            self.updateShapes(trains: trains)
         }
 
         observer.registerForBlockChange { blocks in
@@ -102,7 +104,7 @@ final class ShapeProvider: ShapeProviding {
         updateShapes()
     }
         
-    func updateShapes(blocks: [Block]? = nil, turnouts: [Turnout]? = nil) {
+    func updateShapes(blocks: [Block]? = nil, turnouts: [Turnout]? = nil, trains: [Train]? = nil) {
         shapes.removeAll()
 
         if let blocks = blocks {
@@ -122,8 +124,11 @@ final class ShapeProvider: ShapeProviding {
                              to: socketInstance(for: transition.b, shapes: self),
                              transition: transition, shapeContext: context))
         }
-        for train in layout.trains {
-            append(TrainShape(layout: layout, train: train, shapeProvider: self, shapeContext: context))
+        
+        if let trains = trains {
+            updateTrains(trains: trains)
+        } else {
+            updateTrains(trains: layout.trains)
         }
     }
     
@@ -136,6 +141,12 @@ final class ShapeProvider: ShapeProviding {
     func updateTurnouts(turnouts: [Turnout]) {
         for turnout in turnouts {
             append(TurnoutShape(layout: layout, turnout: turnout, shapeContext: context))
+        }
+    }
+    
+    func updateTrains(trains: [Train]) {
+        for train in trains {
+            append(TrainShape(layout: layout, train: train, shapeProvider: self, shapeContext: context))
         }
     }
     
