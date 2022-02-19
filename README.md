@@ -7,7 +7,7 @@ BTrain is my attempt at automating a model railway layout. It is open-source and
 
 BTrain allows the layout to be created quickly with just a few clicks. Each block is connected to another block using curves that can be dragged and dropped.
 
-![Layout](Assets/layout.png)
+![Layout Builder](Assets/layout-builder.gif)
 
 BTrain renders many details of the train in the layout, including the position and direction of travel of the locomotive and its wagons and the name of the block. Individual feedbacks located in the block are displayed and expected feedbacks - when BTrain is in charge of monitoring the position of each train.
 
