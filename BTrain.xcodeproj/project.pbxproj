@@ -638,9 +638,6 @@
 				A7F779F5273214AF00E73275 /* TrainListView.swift */,
 				A785C070278A4561002FD538 /* TrainDetailsView.swift */,
 				A785C072278A4852002FD538 /* TrainIconView.swift */,
-				A785C080278BC527002FD538 /* TrainSpeedView.swift */,
-				A763F19427BF0FC800B3499A /* TrainSpeedColumnView.swift */,
-				A763F19627BF0FE100B3499A /* TrainSpeedGraphView.swift */,
 			);
 			path = Trains;
 			sourceTree = "<group>";
@@ -860,6 +857,16 @@
 			path = Routing;
 			sourceTree = "<group>";
 		};
+		A77BBAB327C09B3500F7828F /* Train Speed */ = {
+			isa = PBXGroup;
+			children = (
+				A785C080278BC527002FD538 /* TrainSpeedView.swift */,
+				A763F19427BF0FC800B3499A /* TrainSpeedColumnView.swift */,
+				A763F19627BF0FE100B3499A /* TrainSpeedGraphView.swift */,
+			);
+			path = "Train Speed";
+			sourceTree = "<group>";
+		};
 		A7841372273CE06F00381341 /* Switchboard */ = {
 			isa = PBXGroup;
 			children = (
@@ -1031,6 +1038,7 @@
 				A79466CF279B8B22006E2A4C /* Simulator */,
 				A7710E5A2777FA0E00C08150 /* Routes */,
 				A73B163A274DC02A0073947D /* Trains */,
+				A77BBAB327C09B3500F7828F /* Train Speed */,
 				A7B0B5182762FBEE00F11A3E /* Blocks */,
 				A73B163D274DC1EB0073947D /* Turnouts */,
 				A73B1641274DC4030073947D /* Feedbacks */,

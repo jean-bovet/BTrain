@@ -15,10 +15,15 @@ import SwiftUI
 struct TrainSpeedGraphView: View {
     
     @ObservedObject var trainSpeed: TrainSpeed
+    @Environment(\.colorScheme) var colorScheme
 
     let fontSize = 16.0
     let margin = 8.0
 
+    var textColor: CGColor {
+        colorScheme == .dark ? .white : .black
+    }
+    
     func maxSpeed() -> Int {
         var speed = 0
         for entry in trainSpeed.speedTable {
@@ -51,7 +56,7 @@ struct TrainSpeedGraphView: View {
                 ctx.addLine(to: CGPoint(x: x, y: y + rect.height))
                 ctx.strokePath()
                 
-                ctx.drawText(at: CGPoint(x: x, y: margin), hAlignment: .center, flip: false, text: "\(index)", color: .black, fontSize: fontSize)
+                ctx.drawText(at: CGPoint(x: x, y: margin), hAlignment: .center, flip: false, text: "\(index)", color: textColor, fontSize: fontSize)
             }
         }
         
@@ -65,7 +70,7 @@ struct TrainSpeedGraphView: View {
                 ctx.addLine(to: CGPoint(x: rect.width, y: y))
                 ctx.strokePath()
                 
-                ctx.drawText(at: CGPoint(x: vAxisTextRect.width, y: y), hAlignment: .right, flip: false, text: "\(index)", color: .black, fontSize: fontSize)
+                ctx.drawText(at: CGPoint(x: vAxisTextRect.width, y: y), hAlignment: .right, flip: false, text: "\(index)", color: textColor, fontSize: fontSize)
             }
         }
         
