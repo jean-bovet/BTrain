@@ -49,6 +49,13 @@ struct TrainSpeedColumnView: View {
                 }
                 .help("Interpolate Missing Speed Values")
  
+                Button("􀈂") {
+                    exportTable()
+                }
+                .help("Export Table")
+                
+                Spacer()
+                
                 Button("􀈑") {
                     selection.forEach { index in
                         trainSpeed.speedTable[Int(index)].speed = nil
@@ -56,8 +63,23 @@ struct TrainSpeedColumnView: View {
                 }
                 .help("Remove Speed Value")
                 .disabled(selection.isEmpty)
-                
-                Spacer()
+            }
+        }
+    }
+        
+    func exportTable() {
+        let savePanel = NSSavePanel()
+        savePanel.allowedContentTypes = [.json]
+        savePanel.canCreateDirectories = true
+        savePanel.title = "Export Speed Table"
+        let response = savePanel.runModal()
+        if let url = savePanel.url, response == .OK {
+            do {
+                let encoder = JSONEncoder()
+                let data = try encoder.encode(trainSpeed.speedTable)
+                try data.write(to: url)
+            } catch {
+                BTLogger.error("Error exporting Speed Table: \(error)")
             }
         }
     }
