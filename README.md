@@ -1,27 +1,37 @@
 
-**Disclaimer**
+**Welcome**
 
-BTrain is my attempt at automating a model railway layout. It is open source and free to use but still experimental: use it at your own risk!
+BTrain is my attempt at automating a model railway layout. It is open-source and free to use but still experimental: use it at your own risk!
 
-![Automatic Routing](/Assets/switchboard.png)
+![Automatic Routing](Assets/switchboard.png)
 
-**Concepts**
+BTrain allows the layout to be created quickly with just a few clicks. Each block is connected to another block using curves that can be dragged and dropped.
 
-BTrain uses the following concepts:
+![Layout](Assets/layout.png)
 
-- Block: a logical grouping of rails where one and only one train can be present at a time.
-- Turnout: an element that guides a train from one rail to another
-- Feedback: an element that indicates when a train is present or not
-- Transition: any stretch of track between a block and turnout (and any combination of)
-- Route: a series of blocks that a train follows
+BTrain renders many details of the train in the layout, including the position and direction of travel of the locomotive and its wagons and the name of the block. Individual feedbacks located in the block are displayed and expected feedbacks - when BTrain is in charge of monitoring the position of each train.
+
+![Block](Assets/block.png)
+
+Each train's direction, speed, and position is controlled via a dedicated section. A train can follow a predefined route or a random route created on the fly as the train moves through the layout.
+
+![Train](Assets/train.png)
+
+BTrain allows each locomotive's speed to be measured using 3 feedbacks. This measurement enables the locomotive speed to represent its prototype accurately and ensures all locomotives move at the same speed regardless of their decoder type.
+
+![Speed Measurements](Assets/speed.png)
+
+An embedded Marklin Central 3 station simulator allows BTrain to simulate a layout entirely offline, allowing the development of the layout without connecting to a real Central Station 3 until it is ready.
+
+![Simulator](Assets/simulator.png)
 
 **Features**
 
 - Easy to use layout editor where blocks and turnouts can be added in one click and linked together by dragging and dropping links between them.
 - Locomotives speed and direction control
+- Locomotive speed measurements
 - Turnouts state control
 - Automatic (or manual) routing management of one or more trains simultaneously with collision avoidance
-- Locomotive speed measurements
 - Take into account the length of the train, block, turnout, and feedback position to accurately understand the location of each train to reserve the necessary block to avoid a collision.
 - Visual feedback of the exact location of the train, including the locomotive and its wagons, within blocks
 - Unexpected feedback detection
@@ -36,6 +46,14 @@ BTrain uses the following concepts:
 **Known Issues**
 
 - The document does not get marked as "Edited" for some changes.
+
+**Glossary**
+
+- Block: a logical grouping of rails where one and only one train can be present at a time.
+- Turnout: an element that guides a train from one rail to another
+- Feedback: an element that indicates when a train is present or not
+- Transition: any stretch of track between a block and turnout (and any combination of)
+- Route: a series of blocks that a train follows
 
 **References**
 
