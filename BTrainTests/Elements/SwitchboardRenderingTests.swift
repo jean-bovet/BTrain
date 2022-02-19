@@ -32,14 +32,8 @@ class SwitchboardRenderingTests: XCTestCase {
         renderer.draw(context: nsContext.cgContext)
     }
     
-    func testDrawText() {
-        let layout = LayoutACreator().newLayout()
-        let context = ShapeContext()
-        let provider = ShapeProvider(layout: layout, context: context)
-      
-        let block = provider.blockShapes[0]
-        
-        block.drawText(ctx: nsContext.cgContext, at: .zero, text: "Hello", color: .black, fontSize: 12.0)
+    func testDrawText() {              
+        nsContext.cgContext.drawText(at: .zero, text: "Hello", color: .black, fontSize: 12.0)
     }
 
     func testShapeContext() {

@@ -179,8 +179,8 @@ final class BlockShape: Shape, DraggableShape, ConnectableShape {
         let showBlockName = shapeContext.showBlockName || block.category == .station && shapeContext.showStationName
         if let train = train {
             if showBlockName {
-                let (_, blockLabelRect) = prepareText(ctx: ctx, text: block.name, color: shapeContext.color, fontSize: shapeContext.fontSize)
-                let (_, trainLabelRect) = prepareText(ctx: ctx, text: train.name, color: shapeContext.color, fontSize: shapeContext.fontSize)
+                let (_, blockLabelRect) = ctx.prepareText(text: block.name, color: shapeContext.color, fontSize: shapeContext.fontSize)
+                let (_, trainLabelRect) = ctx.prepareText(text: train.name, color: shapeContext.color, fontSize: shapeContext.fontSize)
 
                 let maxHeight = max(blockLabelRect.height, trainLabelRect.height)
                 
@@ -191,7 +191,7 @@ final class BlockShape: Shape, DraggableShape, ConnectableShape {
                 ctx.with {
                     let adjustHeight = maxHeight - blockLabelRect.height
                     drawLabel(ctx: ctx, label: block.name, at: center.translatedBy(x: -totalWidth/2, y: 0), verticalOffset: -size.height/2 - adjustHeight/2,
-                              color: shapeContext.color, fontSize: shapeContext.fontSize, borderColor: shapeContext.borderLabelColor, backgroundColor: shapeContext.backgroundLabelColor)
+                                  color: shapeContext.color, fontSize: shapeContext.fontSize, borderColor: shapeContext.borderLabelColor, backgroundColor: shapeContext.backgroundLabelColor)
                 }
                 ctx.with {
                     let adjustHeight = maxHeight - trainLabelRect.height
@@ -255,12 +255,12 @@ final class BlockShape: Shape, DraggableShape, ConnectableShape {
         let angle = rotationAngle.truncatingRemainder(dividingBy: 2 * .pi)
         if abs(angle) <= .pi/2 || abs(angle) >= 2 * .pi*3/4 {
             let textCenter = location.translatedBy(x: 0, y: verticalOffset).rotate(by: rotationAngle, around: rotationCenter)
-            return drawText(ctx: ctx, at: textCenter, vAlignment: vAlignment, hAlignment: hAlignment, rotation: angle,
-                            text: label, color: color, fontSize: fontSize, borderColor: borderColor, backgroundColor: backgroundColor)
+            return ctx.drawText(at: textCenter, vAlignment: vAlignment, hAlignment: hAlignment, rotation: angle,
+                                text: label, color: color, fontSize: fontSize, borderColor: borderColor, backgroundColor: backgroundColor)
         } else {
             let textCenter = location.translatedBy(x: 0, y: -verticalOffset).rotate(by: rotationAngle, around: rotationCenter)
-            return drawText(ctx: ctx, at: textCenter, vAlignment: vAlignment, hAlignment: hAlignment.inverse, rotation: angle + .pi,
-                            text: label, color: color, fontSize: fontSize, borderColor: borderColor, backgroundColor: backgroundColor)
+            return ctx.drawText(at: textCenter, vAlignment: vAlignment, hAlignment: hAlignment.inverse, rotation: angle + .pi,
+                                text: label, color: color, fontSize: fontSize, borderColor: borderColor, backgroundColor: backgroundColor)
         }
     }
 

@@ -128,7 +128,7 @@
 		A784137E273F4DB700381341 /* CGPoint+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A784137D273F4DB700381341 /* CGPoint+Extension.swift */; };
 		A7841382273F972B00381341 /* SwitchBoardRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7841381273F972B00381341 /* SwitchBoardRenderer.swift */; };
 		A7841384273F973D00381341 /* SwitchBoardDragOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7841383273F973D00381341 /* SwitchBoardDragOperation.swift */; };
-		A78413862740791C00381341 /* Shape+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A78413852740791C00381341 /* Shape+Extension.swift */; };
+		A78413862740791C00381341 /* CGContext+DrawText.swift in Sources */ = {isa = PBXBuildFile; fileRef = A78413852740791C00381341 /* CGContext+DrawText.swift */; };
 		A78413882740DD2D00381341 /* SwitchBoardFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = A78413872740DD2D00381341 /* SwitchBoardFactory.swift */; };
 		A784138A274165FB00381341 /* MarklinCommandSimulator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7841389274165FB00381341 /* MarklinCommandSimulator.swift */; };
 		A784138E274196BB00381341 /* MarklinCommandFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = A784138D274196BB00381341 /* MarklinCommandFactory.swift */; };
@@ -368,7 +368,7 @@
 		A784137D273F4DB700381341 /* CGPoint+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CGPoint+Extension.swift"; sourceTree = "<group>"; };
 		A7841381273F972B00381341 /* SwitchBoardRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwitchBoardRenderer.swift; sourceTree = "<group>"; };
 		A7841383273F973D00381341 /* SwitchBoardDragOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwitchBoardDragOperation.swift; sourceTree = "<group>"; };
-		A78413852740791C00381341 /* Shape+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Shape+Extension.swift"; sourceTree = "<group>"; };
+		A78413852740791C00381341 /* CGContext+DrawText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CGContext+DrawText.swift"; sourceTree = "<group>"; };
 		A78413872740DD2D00381341 /* SwitchBoardFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwitchBoardFactory.swift; sourceTree = "<group>"; };
 		A7841389274165FB00381341 /* MarklinCommandSimulator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarklinCommandSimulator.swift; sourceTree = "<group>"; };
 		A784138D274196BB00381341 /* MarklinCommandFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarklinCommandFactory.swift; sourceTree = "<group>"; };
@@ -509,6 +509,7 @@
 			isa = PBXGroup;
 			children = (
 				A7841375273DD5A200381341 /* Vector2D.swift */,
+				A78413852740791C00381341 /* CGContext+DrawText.swift */,
 				A7907954277D071000771A60 /* CGContext+Extension.swift */,
 				A784137D273F4DB700381341 /* CGPoint+Extension.swift */,
 				A71715882758448D00200F92 /* CGRect+Extension.swift */,
@@ -897,7 +898,6 @@
 			isa = PBXGroup;
 			children = (
 				A784136C273CDFF100381341 /* Shape.swift */,
-				A78413852740791C00381341 /* Shape+Extension.swift */,
 				A717158327574B1C00200F92 /* ShapeProvider.swift */,
 				A717158C275845F000200F92 /* ShapeContext.swift */,
 				A7841379273F4D5400381341 /* ConnectableShape.swift */,
@@ -1300,7 +1300,7 @@
 				A7F779CE272B445B00E73275 /* Feedback.swift in Sources */,
 				A7FBC8B8276EBB34009D49C3 /* PathFinder.swift in Sources */,
 				A798BB4027A6E7F1000BB4D1 /* LayoutHCreator.swift in Sources */,
-				A78413862740791C00381341 /* Shape+Extension.swift in Sources */,
+				A78413862740791C00381341 /* CGContext+DrawText.swift in Sources */,
 				A7E78C4227A08F9E004D1821 /* LayoutReservation.swift in Sources */,
 				A73E0825276B99A8005F9D64 /* BlockAllFeedbacksView.swift in Sources */,
 				A785C086278CFD7D002FD538 /* TrainSpeed.swift in Sources */,

@@ -21,6 +21,7 @@ BTrain uses the following concepts:
 - Locomotives speed and direction control
 - Turnouts state control
 - Automatic (or manual) routing management of one or more trains simultaneously with collision avoidance
+- Locomotive speed measurements
 - Take into account the length of the train, block, turnout, and feedback position to accurately understand the location of each train to reserve the necessary block to avoid a collision.
 - Visual feedback of the exact location of the train, including the locomotive and its wagons, within blocks
 - Unexpected feedback detection
@@ -30,7 +31,7 @@ BTrain uses the following concepts:
 
 **Limitations**
 
-- Does not yet take into account true speed conversion. This means the locomotive's speed is not representative of the prototype model.
+- Locomotives pushing their wagons is only partially supported today.
 
 **Known Issues**
 

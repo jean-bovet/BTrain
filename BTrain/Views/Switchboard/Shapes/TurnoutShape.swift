@@ -299,10 +299,10 @@ final class TurnoutShape: Shape, DraggableShape, ConnectableShape {
         // Always displays the text facing downwards so it is easer to read
         let angle = rotationAngle.truncatingRemainder(dividingBy: 2 * .pi)
         if abs(angle) <= .pi/2 || abs(angle) >= 2 * .pi*3/4 {
-            return drawText(ctx: ctx, at: textCenter, vAlignment: .bottom, hAlignment: .center, rotation: angle,
+            return ctx.drawText(at: textCenter, vAlignment: .bottom, hAlignment: .center, rotation: angle,
                             text: label, color: color, fontSize: fontSize)
         } else {
-            return drawText(ctx: ctx, at: textCenter, vAlignment: .top, hAlignment: .center, rotation: angle + .pi,
+            return ctx.drawText(at: textCenter, vAlignment: .top, hAlignment: .center, rotation: angle + .pi,
                             text: label, color: color, fontSize: fontSize)
         }
     }

@@ -46,9 +46,9 @@ enum HTextAlignment {
     }
 }
 
-extension Shape {
+extension CGContext {
         
-    func prepareText(ctx: CGContext, text: String, color: CGColor, fontSize: CGFloat) -> (CTLine, CGRect) {
+    func prepareText(text: String, color: CGColor, fontSize: CGFloat) -> (CTLine, CGRect) {
         // You can use the Font Book app to find the name
         let fontName = "Helvetica" as CFString
         let font = CTFontCreateWithName(fontName, fontSize, nil)
@@ -62,32 +62,35 @@ extension Shape {
 
         // Render
         let line = CTLineCreateWithAttributedString(attributedString)
-        let stringRect = CTLineGetImageBounds(line, ctx)
+        let stringRect = CTLineGetImageBounds(line, self)
 
         return (line, stringRect)
     }
     
     @discardableResult
-    func drawText(ctx: CGContext, at location: CGPoint,
+    func drawText(at location: CGPoint,
                   vAlignment: VTextAlignment = .center,
                   hAlignment: HTextAlignment = .center,
                   rotation: CGFloat = 0,
+                  flip: Bool = true,
                   text: String, color: CGColor, fontSize: CGFloat,
                   borderColor: CGColor? = nil, backgroundColor: CGColor? = nil) -> CGSize {
 
-        let (line, stringRect) = prepareText(ctx: ctx, text: text, color: color, fontSize: fontSize)
+        let (line, stringRect) = prepareText(text: text, color: color, fontSize: fontSize)
         
         // Apply rotation angle
-        ctx.translateBy(x: location.x, y: location.y)
-        ctx.rotate(by: rotation)
-        ctx.translateBy(x: -location.x, y: -location.y)
+        translateBy(x: location.x, y: location.y)
+        rotate(by: rotation)
+        translateBy(x: -location.x, y: -location.y)
 
         // Flip the text
-        let transform = CGAffineTransform.identity
-            .translatedBy(x: 0.0, y: stringRect.height)
-            .scaledBy(x: 1.0, y: -1.0)
+        if flip {
+            let transform = CGAffineTransform.identity
+                .translatedBy(x: 0.0, y: stringRect.height)
+                .scaledBy(x: 1.0, y: -1.0)
 
-        ctx.textMatrix = transform
+            textMatrix = transform
+        }
 
         var p = location
         
@@ -112,15 +115,15 @@ extension Shape {
         if let borderColor = borderColor, let backgroundColor = backgroundColor {
             let sr = CGRect(x: p.x, y: p.y - stringRect.height, width: stringRect.width + 2, height: stringRect.height).insetBy(dx: -3, dy: -3)
 
-            ctx.setFillColor(backgroundColor)
-            ctx.fill(sr)
+            setFillColor(backgroundColor)
+            fill(sr)
             
-            ctx.setStrokeColor(borderColor)
-            ctx.stroke(sr)
+            setStrokeColor(borderColor)
+            stroke(sr)
         }
         
-        ctx.textPosition = p
-        CTLineDraw(line, ctx)
+        textPosition = p
+        CTLineDraw(line, self)
                 
         return stringRect.size
     }
