@@ -14,7 +14,7 @@ import Foundation
 import Network
 
 @available(macOS 10.14, *)
-class ServerConnection {
+final class ServerConnection {
     //The TCP maximum package size is 64K 65536
     let MTU = 65536
     
@@ -33,7 +33,9 @@ class ServerConnection {
     
     func start() {
         NSLog("connection \(id) will start")
-        connection.stateUpdateHandler = self.stateDidChange(to:)
+        connection.stateUpdateHandler = { [weak self] state in
+            self?.stateDidChange(to: state)
+        }
         setupReceive()
         connection.start(queue: .main)
     }
@@ -61,19 +63,22 @@ class ServerConnection {
     }
     
     private func setupReceive() {
-        connection.receive(minimumIncompleteLength: 1, maximumLength: MTU) { (data, _, isComplete, error) in
+        connection.receive(minimumIncompleteLength: 1, maximumLength: MTU) { [weak self] (data, _, isComplete, error) in
+            guard let sSelf = self else {
+                return
+            }
             if let data = data, !data.isEmpty {
                 let msg = MarklinCANMessage.decode(from: [UInt8](data))
-                NSLog("[Server] < \(MarklinCANMessagePrinter.debugDescription(msg: msg)) - \(self.id)")
+                NSLog("[Server] < \(MarklinCANMessagePrinter.debugDescription(msg: msg)) - \(sSelf.id)")
                 let cmd = Command.from(message: msg)
-                self.receiveMessageCallback?(cmd)
+                sSelf.receiveMessageCallback?(cmd)
             }
             if isComplete {
-                self.connectionDidEnd()
+                sSelf.connectionDidEnd()
             } else if let error = error {
-                self.connectionDidFail(error: error)
+                sSelf.connectionDidFail(error: error)
             } else {
-                self.setupReceive()
+                sSelf.setupReceive()
             }
         }
     }

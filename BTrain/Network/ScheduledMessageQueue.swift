@@ -72,10 +72,13 @@ final class ScheduledMessageQueue {
     }
     
     private func scheduleSendData() {
-        Timer.scheduledTimer(withTimeInterval: delay, repeats: true) { timer in
-            if !self.scheduledQueue.isEmpty {
-                let scheduledBlock = self.scheduledQueue.removeFirst()
-                self.execute(scheduledBlock: scheduledBlock)
+        Timer.scheduledTimer(withTimeInterval: delay, repeats: true) { [weak self] timer in
+            guard let sSelf = self else {
+                return
+            }
+            if !sSelf.scheduledQueue.isEmpty {
+                let scheduledBlock = sSelf.scheduledQueue.removeFirst()
+                sSelf.execute(scheduledBlock: scheduledBlock)
             }
         }
     }

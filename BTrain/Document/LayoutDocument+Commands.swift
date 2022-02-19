@@ -48,25 +48,33 @@ extension LayoutDocument {
         try layoutController.finishAll()
     }
 
-    func connectToSimulator(completed: ((Error?) -> Void)? = nil) {
+    func connectToSimulator(enable: Bool, completed: ((Error?) -> Void)? = nil) {
         simulator.start()
-        connect(address: "localhost", port: 15731, completed: completed)
+        connect(address: "localhost", port: 15731) { [weak self] error in
+            if enable {
+                self?.enable() {
+                    completed?(nil)
+                }
+            } else {
+                completed?(error)
+            }
+        }
     }
     
     func connect(address: String, port: UInt16, completed: ((Error?) -> Void)? = nil) {
-        interface.connect(server: address, port: port) {
+        interface.connect(server: address, port: port) { [weak self] in
             DispatchQueue.main.async {
-                self.connected = true
+                self?.connected = true
                 completed?(nil)
             }
-        } onError: { error in
+        } onError: { [weak self] error in
             DispatchQueue.main.async {
-                self.connected = false
+                self?.connected = false
                 completed?(error)
             }
-        } onStop: {
+        } onStop: { [weak self] in
             DispatchQueue.main.async {
-                self.connected = false
+                self?.connected = false
             }
         }
     }

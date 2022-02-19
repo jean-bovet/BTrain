@@ -104,7 +104,6 @@ final class LayoutDiagnostic: ObservableObject {
         static let all: Options = [.lengths, .duplicate, .orphaned]
     }
 
-
     let layout: Layout
     let observer: LayoutObserver
         
@@ -115,9 +114,9 @@ final class LayoutDiagnostic: ObservableObject {
         self.observer = LayoutObserver(layout: layout)
         self.automaticCheck()
         
-        observer.registerForAnyChange() {
+        observer.registerForAnyChange() { [weak self] in
             DispatchQueue.main.async {
-                self.automaticCheck()
+                self?.automaticCheck()
             }
         }
     }

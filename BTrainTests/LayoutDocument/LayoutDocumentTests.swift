@@ -43,7 +43,7 @@ class LayoutDocumentTests: XCTestCase {
         let doc = LayoutDocument(layout: layout)
 
         let e = expectation(description: "connect")
-        doc.connectToSimulator { error in
+        doc.connectToSimulator(enable: false) { error in
             e.fulfill()
         }
         waitForExpectations(timeout: 0.250, handler: nil)

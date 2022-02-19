@@ -12,7 +12,7 @@
 
 import Foundation
 
-protocol CommandInterface {
+protocol CommandInterface: AnyObject {
             
     func connect(server: String, port: UInt16, onReady: @escaping () -> Void, onError: @escaping (Error) -> Void, onStop: @escaping () -> Void)
     

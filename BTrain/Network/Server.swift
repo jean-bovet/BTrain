@@ -31,10 +31,18 @@ class Server {
         listener = try! NWListener(using: .tcp, on: self.port)
     }
     
+    deinit {
+        stop()
+    }
+    
     func start() throws {
         NSLog("Server starting...")
-        listener.stateUpdateHandler = self.stateDidChange(to:)
-        listener.newConnectionHandler = self.didAccept(nwConnection:)
+        listener.stateUpdateHandler = { [weak self] state in
+            self?.stateDidChange(to: state)
+        }
+        listener.newConnectionHandler = { [weak self] connection in
+            self?.didAccept(nwConnection: connection)            
+        }
         listener.start(queue: .main)
     }
     
@@ -52,8 +60,8 @@ class Server {
     private func didAccept(nwConnection: NWConnection) {
         let connection = ServerConnection(nwConnection: nwConnection)
         self.connectionsByID[connection.id] = connection
-        connection.didStopCallback = { _ in
-            self.connectionDidStop(connection)
+        connection.didStopCallback = { [weak self] _ in
+            self?.connectionDidStop(connection)
         }
         connection.start()
         didAcceptConnection?(connection)

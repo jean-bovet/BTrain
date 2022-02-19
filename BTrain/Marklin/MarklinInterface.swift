@@ -35,22 +35,22 @@ final class MarklinInterface: CommandInterface {
         client = Client(host: server, port: port)
         client?.start {
             onReady()
-        } onData: { msg in
+        } onData: { [weak self] msg in
             if let cmd = MarklinCommand.from(message: msg) {
                 switch(cmd) {
                 case .configDataStream(length: _, data: _, descriptor: _):
-                    let status = self.locomotiveConfig.process(cmd)
+                    let status = self?.locomotiveConfig.process(cmd)
                     if case .completed(let locomotives) = status {
                         DispatchQueue.main.async {
                             let locomotives = locomotives.map { $0.commandLocomotive }
-                            self.locomotivesQueryCallbacks.forEach { $0(locomotives) }
+                            self?.locomotivesQueryCallbacks.forEach { $0(locomotives) }
                         }
                     }
                 }
             } else {
                 let cmd = Command.from(message: msg)
                 if case .feedback(deviceID: let deviceID, contactID: let contactID, oldValue: _, newValue: let newValue, time: _, priority: _, descriptor: _) = cmd {
-                    self.feedbackChangeCallbacks.forEach { $0.value(deviceID, contactID, newValue) }
+                    self?.feedbackChangeCallbacks.forEach { $0.value(deviceID, contactID, newValue) }
                 }
                 if case .turnout(address: let address, state: let state, power: let power, priority: _, descriptor: _) = cmd {
                     if msg.resp == 0 {
@@ -58,33 +58,33 @@ final class MarklinInterface: CommandInterface {
                         // the Digital Controller. This is because when BTrain sends
                         // a turnout command, the Digital Controller will respond
                         // with an acknowledgement with msg.resp == 1, which should be ignored here.
-                        self.turnoutChangeCallbacks.forEach { $0(address, state, power) }
+                        self?.turnoutChangeCallbacks.forEach { $0(address, state, power) }
                     }
                 }
                 if case .speed(address: let address, decoderType: let decoderType, value: let value, priority: _, descriptor: _) = cmd {
                     if msg.resp == 0 {
-                        self.speedChangeCallbacks.forEach { $0(address, decoderType, value) }
+                        self?.speedChangeCallbacks.forEach { $0(address, decoderType, value) }
                     }
                 }
                 if case .emergencyStop(address: let address, decoderType: let decoderType, priority: _, descriptor: _) = cmd {
                     // Execute a command to query the direction of the locomotive at this particular address
                     DispatchQueue.main.async {
                         // The response from this command is going to be processed below in the case .direction
-                        self.execute(command: .queryDirection(address: address, decoderType: decoderType)) { }
+                        self?.execute(command: .queryDirection(address: address, decoderType: decoderType)) { }
                     }
                 }
                 if case .direction(address: let address, decoderType: let decoderType, direction: let direction, priority: _, descriptor: _) = cmd {
-                    self.directionChangeCallbacks.forEach { $0(address, decoderType, direction) }
+                    self?.directionChangeCallbacks.forEach { $0(address, decoderType, direction) }
                 }
             }
-        } onError: { error in
-            self.client = nil
+        } onError: { [weak self] error in
+            self?.client = nil
             onError(error)
-        } onStop: {
+        } onStop: { [weak self] in
             DispatchQueue.main.async {
-                self.disconnectCompletionBlocks?()
+                self?.disconnectCompletionBlocks?()
             }
-            self.client = nil
+            self?.client = nil
             onStop()
         }
     }
@@ -92,7 +92,6 @@ final class MarklinInterface: CommandInterface {
     func disconnect(_ completion: @escaping CompletionBlock) {
         disconnectCompletionBlocks = completion
         client?.stop()
-        client = nil
     }
     
     func execute(command: Command, onCompletion: @escaping () -> Void) {

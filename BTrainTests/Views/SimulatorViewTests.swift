@@ -99,7 +99,7 @@ class SimulatorViewTests: RootViewTests {
     
     func connectToSimulator() {
         let expectation = expectation(description: "ConnectToSimulator")
-        doc.connectToSimulator { error in
+        doc.connectToSimulator(enable: false) { error in
             expectation.fulfill()
         }
         waitForExpectations(timeout: 1.0, handler: nil)

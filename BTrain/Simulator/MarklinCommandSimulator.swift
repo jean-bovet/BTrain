@@ -65,14 +65,14 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
         let cancellable = layout.$trains
             .removeDuplicates()
             .receive(on: RunLoop.main)
-            .sink { value in
+            .sink { [weak self] value in
                 // When the array of trains changes, we need
                 // to re-register for changes for each individual trains
                 // because these instances have likely changed.
-                self.registerForTrainBlockChange()
+                self?.registerForTrainBlockChange()
                 
                 // Then update the list of trains
-                self.updateListOfTrains()
+                self?.updateListOfTrains()
             }
         trainArrayChangesCancellable = cancellable
     }
@@ -83,8 +83,8 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
             let cancellable = train.$blockId
                 .removeDuplicates()
                 .receive(on: RunLoop.main)
-                .sink { value in
-                    self.updateListOfTrains()
+                .sink { [weak self] value in
+                    self?.updateListOfTrains()
                 }
             cancellables.append(cancellable)
         }
@@ -111,8 +111,8 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
     
     func start() {
         server = Server(port: 15731)
-        server?.didAcceptConnection = { connection in
-            self.register(with: connection)
+        server?.didAcceptConnection = { [weak self] connection in
+            self?.register(with: connection)
         }
         try! server?.start()
         started = true
@@ -126,31 +126,31 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
     
     func scheduleTimer() {
         self.timer?.invalidate()
-        self.timer = Timer.scheduledTimer(withTimeInterval: refreshTimeInterval, repeats: true) { timer in
-            self.simulateLayout()
+        self.timer = Timer.scheduledTimer(withTimeInterval: refreshTimeInterval, repeats: true) { [weak self] timer in
+            self?.simulateLayout()
         }
     }
     
     func register(with connection: ServerConnection) {
-        connection.receiveMessageCallback = { message in
+        connection.receiveMessageCallback = { [weak self] message in
             switch(message) {
             case .go:
-                self.enabled = true
-                self.scheduleTimer()
+                self?.enabled = true
+                self?.scheduleTimer()
 
             case .stop:
-                self.enabled = false
-                self.timer?.invalidate()
+                self?.enabled = false
+                self?.timer?.invalidate()
 
             case .emergencyStop(address: _, decoderType: _, priority: _, descriptor: _):
                 break
                 
             case .speed(address: let address, decoderType: let decoderType, value: let value, priority: _, descriptor: _):
-                self.speedChanged(address: address, decoderType: decoderType, value: value)
+                self?.speedChanged(address: address, decoderType: decoderType, value: value)
                 break
                 
             case .direction(address: let address, decoderType: let decoderType, direction: let direction, priority: _, descriptor: _):
-                self.directionChanged(address: address, decoderType: decoderType, direction: direction)
+                self?.directionChanged(address: address, decoderType: decoderType, direction: direction)
                 break
                 
             case .turnout(address: _, state: _, power: _, priority: _, descriptor: _):
@@ -160,11 +160,11 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
                 break
                 
             case .locomotives(priority: _, descriptor: _):
-                self.provideLocomotives()
+                self?.provideLocomotives()
                 break
 
             case .queryDirection(address: let address, decoderType: let decoderType, priority: _, descriptor: _):
-                self.provideDirection(address: address.actualAddress(for: decoderType))
+                self?.provideDirection(address: address.actualAddress(for: decoderType))
                 break
 
             case .unknown(command: _):

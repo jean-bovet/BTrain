@@ -23,8 +23,8 @@ protocol LayoutCommandExecuting {
 
 final class LayoutCommandExecutor: LayoutCommandExecuting {
     
-    let layout: Layout
-    let interface: CommandInterface
+    weak var layout: Layout?
+    weak var interface: CommandInterface?
     
     // Queue to ensure that sending of command for each turnout does happen
     // every 250ms in order to avoid a spike in current on the real layout.
@@ -47,11 +47,18 @@ final class LayoutCommandExecutor: LayoutCommandExecuting {
         
         var commandCompletionCount = commands.count
         for (index, command) in commands.enumerated() {
-            turnoutQueue.schedule { qc in
-                self.interface.execute(command: command) {
+            turnoutQueue.schedule { [weak self] qc in
+                guard let interface = self?.interface else {
+                    return
+                }
+                
+                interface.execute(command: command) { [weak self] in
                     qc()
-                    Timer.scheduledTimer(withTimeInterval: self.activationTime, repeats: false) { timer in
-                        self.interface.execute(command: idleCommands[index]) {
+                    guard let activationTime = self?.activationTime else {
+                        return
+                    }
+                    Timer.scheduledTimer(withTimeInterval: activationTime, repeats: false) { timer in
+                        interface.execute(command: idleCommands[index]) {
                             commandCompletionCount -= 1
                             if commandCompletionCount == 0 {
                                 completion()
@@ -71,11 +78,15 @@ final class LayoutCommandExecutor: LayoutCommandExecuting {
         } else {
             command = .direction(address: train.address, decoderType: train.decoder, direction: .backward)
         }
-        interface.execute(command: command, onCompletion: completion)
+        interface?.execute(command: command, onCompletion: completion)
     }
     
     func sendTrainSpeed(train: Train, completion: @escaping CompletionBlock) {
         BTLogger.debug("Train \(train.name) changed speed to \(train.speed)")
+        guard let interface = interface else {
+            return
+        }
+
         let value = interface.speedValue(for: train.speed.steps, decoder: train.decoder)
         interface.execute(command: .speed(address: train.address, decoderType: train.decoder, value: value), onCompletion: completion)
     }

@@ -97,7 +97,7 @@ struct ConnectSheet: View {
                             didConnect(withError: error)
                         }
                     } else {
-                        document.connectToSimulator() { error in
+                        document.connectToSimulator(enable: false) { error in
                             didConnect(withError: error)
                         }
                     }

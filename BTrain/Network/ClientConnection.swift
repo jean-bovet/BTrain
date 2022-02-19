@@ -29,7 +29,9 @@ class ClientConnection {
     var didStopCallback: (() -> Void)? = nil
 
     func start() {
-        nwConnection.stateUpdateHandler = stateDidChange(to:)
+        nwConnection.stateUpdateHandler = { [weak self] state in
+            self?.stateDidChange(to: state)
+        }
         setupReceive()
         nwConnection.start(queue: queue)
     }
@@ -53,7 +55,7 @@ class ClientConnection {
     }
     
     private func setupReceive() {
-        nwConnection.receive(minimumIncompleteLength: 1, maximumLength: 65536) { (data, _, isComplete, error) in
+        nwConnection.receive(minimumIncompleteLength: 1, maximumLength: 65536) { [weak self] (data, _, isComplete, error) in
             if let data = data, !data.isEmpty {
                 // Read each CAN message, one by one. Each CAN message is 13 bytes.
                 // Sometimes more than one message is received in a single data.
@@ -65,19 +67,19 @@ class ClientConnection {
 
                     let msg = MarklinCANMessage.decode(from: [UInt8](slice))
                     NSLog("[Client] < \(MarklinCANMessagePrinter.debugDescription(msg: msg))")
-                    self.didReceiveCallback?(msg)
+                    self?.didReceiveCallback?(msg)
                 }
             }
             if isComplete {
-                self.connectionDidEnd()
+                self?.connectionDidEnd()
             } else if let error = error {
                 if case let NWError.posix(code) = error, code == .ECANCELED {
                     // Cancelled, likely because we closed the connection on purpose
                 } else {
-                    self.connectionDidFail(error: error)
+                    self?.connectionDidFail(error: error)
                 }
             } else {
-                self.setupReceive()
+                self?.setupReceive()
             }
         }
     }

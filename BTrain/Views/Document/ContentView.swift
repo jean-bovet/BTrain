@@ -78,11 +78,7 @@ struct ContentView: View {
         })
         .onAppear {
             if autoConnectSimulator {
-                document.connectToSimulator() { error in
-                    if autoEnableSimulator {
-                        document.enable() {}
-                    }
-                }
+                document.connectToSimulator(enable: autoEnableSimulator)
             }
         }.toolbar {
             DocumentToolbarContent(document: document,

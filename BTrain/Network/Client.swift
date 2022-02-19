@@ -14,7 +14,7 @@ import Foundation
 import Network
 
 @available(macOS 10.14, *)
-public class Client {
+final class Client {
     
     typealias OnReadyBlock = () -> Void
     typealias OnDataBlock = (MarklinCANMessage) -> Void
@@ -30,6 +30,10 @@ public class Client {
         self.port = NWEndpoint.Port(rawValue: port)!
         let nwConnection = NWConnection(host: self.host, port: self.port, using: .tcp)
         connection = ClientConnection(nwConnection: nwConnection)
+    }
+    
+    deinit {
+        stop()
     }
     
     func start(onReady: @escaping OnReadyBlock, onData: @escaping OnDataBlock, onError: @escaping OnErrorBlock, onStop: @escaping OnStopBlock) {

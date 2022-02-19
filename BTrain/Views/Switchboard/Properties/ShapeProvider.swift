@@ -83,22 +83,22 @@ final class ShapeProvider: ShapeProviding {
         self.observer = LayoutObserver(layout: layout)
         self.context = context
         
-        observer.registerForTrainChange { trains in
+        observer.registerForTrainChange { [weak self] trains in
             // Note: need to pass the `trains` parameter here because the layout.blocks
             // has not yet had the time to be updated
-            self.updateShapes(trains: trains)
+            self?.updateShapes(trains: trains)
         }
 
-        observer.registerForBlockChange { blocks in
+        observer.registerForBlockChange { [weak self] blocks in
             // Note: need to pass the `blocks` parameter here because the layout.blocks
             // has not yet had the time to be updated
-            self.updateShapes(blocks: blocks.values.map { $0 as Block })
+            self?.updateShapes(blocks: blocks.values.map { $0 as Block })
         }
         
-        observer.registerForTurnoutChange { turnouts in
+        observer.registerForTurnoutChange { [weak self] turnouts in
             // Note: need to pass the `turnouts` parameter here because the layout.turnouts
             // has not yet had the time to be updated
-            self.updateShapes(turnouts: turnouts)
+            self?.updateShapes(turnouts: turnouts)
         }
         
         updateShapes()
