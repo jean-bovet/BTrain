@@ -125,9 +125,11 @@ struct TrainControlSetLocationSheet: View {
                         if let selectedBlock = blockId {
                             if action == .set {
                                 train.wagonsPushedByLocomotive = wagonsPushedByLocomotive
-                                try controller.setTrain(trainId: train.id, blockId: selectedBlock, direction: direction)
+                                try layout.setTrainToBlock(train.id, selectedBlock, position: .end, direction: direction)
                             } else {
-                                try controller.routeTrain(trainId: train.id, blockId: selectedBlock, direction: direction)
+                                let routeId = Route.automaticRouteId(for: train.id)
+                                let destination = Destination(selectedBlock, direction: direction)
+                                try controller.start(routeID: routeId, trainID: train.id, destination: destination)
                             }
                         }
                         errorStatus = nil
@@ -142,20 +144,6 @@ struct TrainControlSetLocationSheet: View {
         }
     }
     
-}
-
-extension LayoutController {
-
-    func setTrain(trainId: Identifier<Train>, blockId: Identifier<Block>, direction: Direction) throws {
-        try layout.setTrainToBlock(trainId, blockId, position: .end, direction: direction)
-        _ = run()
-    }
-
-    func routeTrain(trainId: Identifier<Train>, blockId: Identifier<Block>, direction: Direction) throws {
-        let routeId = Route.automaticRouteId(for: trainId)
-        let destination = Destination(blockId, direction: direction)
-        try start(routeID: routeId, trainID: trainId, destination: destination)
-    }
 }
 
 private extension Block {
