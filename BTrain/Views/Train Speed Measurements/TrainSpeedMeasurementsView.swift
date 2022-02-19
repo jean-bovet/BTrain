@@ -81,6 +81,7 @@ struct TrainSpeedMeasurementsView: View {
                         TrainSpeedColumnView(selection: $selectedSpeedEntries, currentSpeedEntry: $currentSpeedEntry, trainSpeed: train.speed)
                         TrainSpeedGraphView(trainSpeed: train.speed)
                     }
+                    .id(train) // ensure the table and graph are updated when train changes
                     .frame(minHeight: 200)
                 }
                 .padding([.leading, .trailing])
