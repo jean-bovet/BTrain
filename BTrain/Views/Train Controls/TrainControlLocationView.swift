@@ -14,6 +14,8 @@ import SwiftUI
 
 struct TrainControlLocationView: View {
     
+    let controller: LayoutController
+    
     @ObservedObject var layout: Layout
         
     @ObservedObject var train: Train
@@ -71,7 +73,7 @@ struct TrainControlLocationView: View {
                     .foregroundColor(.red)
             }
         }.sheet(isPresented: $setTrainLocationSheet) {
-            TrainControlSetLocationSheet(layout: layout, train: train)
+            TrainControlSetLocationSheet(layout: layout, controller: controller, train: train)
                 .padding()
         }
     }
@@ -79,9 +81,9 @@ struct TrainControlLocationView: View {
 
 struct TrainControlLocationView_Previews: PreviewProvider {
     
-    static let layout = LayoutCCreator().newLayout()
+    static let doc = LayoutDocument(layout: LayoutCCreator().newLayout())
 
     static var previews: some View {
-        TrainControlLocationView(layout: layout, train: layout.trains[0])
+        TrainControlLocationView(controller: doc.layoutController, layout: doc.layout, train: doc.layout.trains[0])
     }
 }

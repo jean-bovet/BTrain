@@ -25,7 +25,7 @@ struct TrainControlContainerView: View {
             HStack {
                 VStack(alignment: .leading) {
                     Text(train.name).bold()
-                    TrainControlLocationView(layout: document.layout, train: train)
+                    TrainControlLocationView(controller: document.layoutController, layout: document.layout, train: train)
                     TrainControlView(document: document, train: train)
                 }
 
@@ -40,7 +40,7 @@ struct TrainControlContainerView: View {
 
 struct TrainControlContainerView_Previews: PreviewProvider {
         
-    static let doc1: LayoutDocument = LayoutDocument(layout: LayoutACreator().newLayout())
+    static let doc1 = LayoutDocument(layout: LayoutACreator().newLayout())
 
     static let doc2: LayoutDocument = {
         let layout = LayoutACreator().newLayout()

@@ -47,8 +47,7 @@ struct SwitchboardContainerView: View {
                 }
             }.background(Color(NSColor.windowBackgroundColor))
         }.sheet(isPresented: $state.trainDroppedInBlockAction) {
-            TrainDropActionSheet(layout: layout, trainDragInfo: state.trainDragInfo!, controller: document.layoutController)
-                .fixedSize(horizontal: true, vertical: false)
+            TrainControlSetLocationSheet(layout: layout, controller: document.layoutController, trainDragInfo: state.trainDragInfo, train: layout.train(for: state.trainDragInfo?.trainId)!)
                 .padding()
         }
     }

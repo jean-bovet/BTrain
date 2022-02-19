@@ -14,19 +14,30 @@ import SwiftUI
 
 struct TrainControlSetLocationSheet: View {
     let layout: Layout
+    let controller: LayoutController
+    
+    // Optional information resulting from dragging the train on the switchboard
+    var trainDragInfo: SwitchBoard.State.TrainDragInfo?
         
-    @Environment(\.presentationMode) var presentationMode
-
     @ObservedObject var train: Train
-        
+    
     @State private var blockId: Identifier<Block>? = nil
     
     @State private var direction: Direction = .next
-
+    
     @State private var wagonsPushedByLocomotive = false
-
+    
     @State private var errorStatus: String?
+    
+    @Environment(\.presentationMode) var presentationMode
 
+    enum Action {
+        case set
+        case move
+    }
+    
+    @State private var action: Action = .set
+    
     var sortedBlockIds: [Identifier<Block>] {
         layout.blocks.sorted {
             $0.name < $1.name
@@ -45,8 +56,17 @@ struct TrainControlSetLocationSheet: View {
     
     var body: some View {
         VStack {
-            Form {
-                Picker("Block:", selection: $blockId) {
+            HStack {
+                Picker("Action:", selection: $action) {
+                    Text("Set").tag(Action.set)
+                    Text("Move").tag(Action.move)
+                }
+                .fixedSize()
+                .labelsHidden()
+                
+                Text("\"\(train.name)\"")
+                
+                Picker("to block", selection: $blockId) {
                     ForEach(sortedBlockIds, id:\.self) { blockId in
                         if let block = layout.block(for: blockId) {
                             Text(block.nameForLocation).tag(blockId as Identifier<Block>?)
@@ -57,14 +77,19 @@ struct TrainControlSetLocationSheet: View {
                 }
                 .fixedSize()
                 .onAppear {
-                    blockId = train.blockId
+                    if let trainDragInfo = trainDragInfo {
+                        blockId = trainDragInfo.blockId
+                    } else {
+                        blockId = train.blockId
+                    }
                 }
                 
-                Picker("Direction:", selection: $direction) {
+                Picker("with direction", selection: $direction) {
                     ForEach(Direction.allCases, id:\.self) { direction in
                         Text(direction.description).tag(direction)
                     }
                 }
+                .help("This is the direction of travel of the train relative to \(selectedBlockName)")
                 .fixedSize()
                 .onAppear {
                     do {
@@ -73,13 +98,17 @@ struct TrainControlSetLocationSheet: View {
                         BTLogger.error("Unable to retrieve the direction of the train: \(error.localizedDescription)")
                     }
                 }
-                .help("This is the direction of travel of the train relative to \(selectedBlockName)")
-                
+            }
+            
+            HStack {
                 Toggle("Wagons Pushed by the Locomotive", isOn: $wagonsPushedByLocomotive)
+                    .disabled(action == .move)
                     .onAppear {
                         wagonsPushedByLocomotive = train.wagonsPushedByLocomotive
                     }
+                Spacer()
             }
+            
             if let errorStatus = errorStatus {
                 Text(errorStatus)
                     .foregroundColor(.red)
@@ -91,27 +120,42 @@ struct TrainControlSetLocationSheet: View {
                     self.presentationMode.wrappedValue.dismiss()
                 }.keyboardShortcut(.cancelAction)
                 
-                Button("OK") {
+                Button(action == .set ? "Set" : "Move") {
                     do {
                         if let selectedBlock = blockId {
-                            // TODO: allow the user to choose the exact location of the train
-                            // (start, end or custom)
-                            train.wagonsPushedByLocomotive = wagonsPushedByLocomotive
-                            try layout.setTrainToBlock(train.id,
-                                                       selectedBlock,
-                                                       position: .end,
-                                                       direction: direction)
+                            if action == .set {
+                                train.wagonsPushedByLocomotive = wagonsPushedByLocomotive
+                                try controller.setTrain(trainId: train.id, blockId: selectedBlock, direction: direction)
+                            } else {
+                                try controller.routeTrain(trainId: train.id, blockId: selectedBlock, direction: direction)
+                            }
                         }
                         errorStatus = nil
                         self.presentationMode.wrappedValue.dismiss()
                     } catch {
                         errorStatus = error.localizedDescription
                     }
-                }.keyboardShortcut(.defaultAction)
-            }.padding()
+                }
+                .disabled(blockId == nil)
+                .keyboardShortcut(.defaultAction)
+            }
         }
     }
     
+}
+
+extension LayoutController {
+
+    func setTrain(trainId: Identifier<Train>, blockId: Identifier<Block>, direction: Direction) throws {
+        try layout.setTrainToBlock(trainId, blockId, position: .end, direction: direction)
+        _ = run()
+    }
+
+    func routeTrain(trainId: Identifier<Train>, blockId: Identifier<Block>, direction: Direction) throws {
+        let routeId = Route.automaticRouteId(for: trainId)
+        let destination = Destination(blockId, direction: direction)
+        try start(routeID: routeId, trainID: trainId, destination: destination)
+    }
 }
 
 private extension Block {
@@ -127,10 +171,11 @@ private extension Block {
 }
 
 struct TrainControlSetLocationSheet_Previews: PreviewProvider {
-    static let layout = LayoutCCreator().newLayout()
-
+    
+    static let doc = LayoutDocument(layout: LayoutCCreator().newLayout())
+    
     static var previews: some View {
-        TrainControlSetLocationSheet(layout: layout, train: layout.trains[0])
+        TrainControlSetLocationSheet(layout: doc.layout, controller: doc.layoutController, train: doc.layout.trains[0])
     }
-
+    
 }
