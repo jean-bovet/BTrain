@@ -28,7 +28,7 @@ struct RouteView: View {
                 TableColumn("Block") { step in
                     Picker("Block:", selection: step.blockId) {
                         ForEach(layout.blockMap.values, id:\.self) { block in
-                            Text("\(block.name) — \(block.category.description)").tag(block.id as Identifier<Block>)
+                            Text("\(block.name) — \(block.category.description)").tag(block.id as Identifier<Block>?)
                         }
                     }.labelsHidden()
                 }
@@ -36,7 +36,7 @@ struct RouteView: View {
                 TableColumn("Direction in Block") { step in
                     Picker("Direction:", selection: step.direction) {
                         ForEach(Direction.allCases, id:\.self) { direction in
-                            Text(direction.description).tag(direction)
+                            Text(direction.description).tag(direction as Direction?)
                         }
                     }
                     .fixedSize()
