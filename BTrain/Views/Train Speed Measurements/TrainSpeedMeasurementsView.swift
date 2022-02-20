@@ -57,7 +57,7 @@ struct TrainSpeedMeasurementsView: View {
         VStack(alignment: .leading) {
             HStack {
                 Picker("Locomotive:", selection: $selectedTrain) {
-                    ForEach(layout.trains, id:\.self) { train in
+                    ForEach(layout.trains.filter({$0.enabled}), id:\.self) { train in
                         Text(train.name).tag(train.id.uuid as String?)
                     }
                 }
@@ -135,6 +135,8 @@ struct TrainSpeedMeasurementsView: View {
             return
         }
 
+        selectedSpeedEntries.removeAll()
+        
         var steps: Set<TrainSpeed.SpeedTableEntry.ID> = [train.speed.speedTable[1].id]
         var index = 10
         while index < train.speed.speedTable.count {
