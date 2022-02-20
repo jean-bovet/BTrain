@@ -63,6 +63,13 @@ struct TrainControlSetLocationSheet: View {
                 }
                 .fixedSize()
                 .labelsHidden()
+                .onAppear {
+                    // If the user just dragged the train, let's pre-select
+                    // the "move" action as it is likely the one desired.
+                    if trainDragInfo != nil {
+                        action = .move
+                    }
+                }
                 
                 Text("\"\(train.name)\"")
                 
