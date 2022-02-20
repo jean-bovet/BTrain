@@ -151,8 +151,10 @@ final class TrainController {
             return .none
         }
         
-        // If the train was scheduled to finish, make sure it is finished
-        if train.automaticFinishingScheduling {
+        // If the train was scheduled to finish, make sure it is finished but only
+        // if it has reached the last block of the route (otherwise, a train can
+        // be stopped in the middle of the route if that route was blocked for some reason).
+        if train.automaticFinishingScheduling && train.routeStepIndex == route.lastStepIndex {
             // The train is already stopped but make sure to update the scheduling status
             try layout.stopCompletely(train.id)
             return .processed
