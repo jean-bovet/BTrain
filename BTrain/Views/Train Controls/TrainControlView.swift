@@ -18,23 +18,13 @@ struct TrainControlSpeedView: View {
     let train: Train
     
     @ObservedObject var speed: TrainSpeed
-    @Binding var errorStatus: String?
-
-    func trainSpeedChanged() {
-        do {
-            try layout.setTrainSpeed(train, speed.kph)
-            errorStatus = nil
-        } catch {
-            errorStatus = error.localizedDescription
-        }
-    }
     
     var body: some View {
         HStack {
             Slider(value: $speed.kphAsDouble, in: 0...Double(speed.maxSpeed)) {
                 
             } onEditingChanged: { editing in
-                trainSpeedChanged()
+                layout.setTrainSpeed(train, speed.kph)
             }
             
             Text("\(Int(speed.kph)) km/h")
@@ -73,7 +63,7 @@ struct TrainControlView: View {
                     }
                 }.buttonStyle(.borderless)
                 
-                TrainControlSpeedView(layout: document.layout, train: train, speed: train.speed, errorStatus: $errorStatus)
+                TrainControlSpeedView(layout: document.layout, train: train, speed: train.speed)
             }.disabled(!document.connected)
             if let errorStatus = errorStatus {
                 Text(errorStatus)

@@ -18,7 +18,7 @@ extension XCTestCase {
         let current = RunLoop.current
         let startTime = Date()
         while !block() {
-            current.run(until: Date(timeIntervalSinceNow: 0.250))
+            current.run(until: Date(timeIntervalSinceNow: 0.01))
             if Date().timeIntervalSince(startTime) >= timeout {
                 XCTFail("Time out")
                 break

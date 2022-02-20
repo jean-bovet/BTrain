@@ -66,7 +66,7 @@ final class Layout: Element, ObservableObject {
     @AppStorage(SettingsKeys.strictRouteFeedbackStrategy) var strictRouteFeedbackStrategy = false
 
     // The command executor used to execute command towards the Digital Controller.
-    var executor: LayoutCommandExecuting?
+    var executor: LayoutCommandExecutor?
     
     // Non-nil when a layout runtime error occurred
     @Published var runtimeError: String?

@@ -14,14 +14,7 @@ import Foundation
 
 typealias CompletionBlock = (() -> Void)
 
-// A protocol that the layout uses to push information to the Digital Control System
-protocol LayoutCommandExecuting {
-    func sendTurnoutState(turnout: Turnout, completion: @escaping CompletionBlock)
-    func sendTrainDirection(train: Train, completion: @escaping CompletionBlock)
-    func sendTrainSpeed(train: Train, completion: @escaping CompletionBlock)
-}
-
-final class LayoutCommandExecutor: LayoutCommandExecuting {
+final class LayoutCommandExecutor {
     
     weak var layout: Layout?
     weak var interface: CommandInterface?
@@ -31,7 +24,8 @@ final class LayoutCommandExecutor: LayoutCommandExecuting {
     let turnoutQueue = ScheduledMessageQueue(delay: 0.25, name: "Turnout")
     
     // Time until the turnout state power is turned off.
-    let activationTime: TimeInterval = 0.200
+    let activationTime: TimeInterval = 0.2
+    
     
     init(layout: Layout, interface: CommandInterface) {
         self.layout = layout
@@ -41,6 +35,10 @@ final class LayoutCommandExecutor: LayoutCommandExecuting {
     func sendTurnoutState(turnout: Turnout, completion: @escaping CompletionBlock) {
         BTLogger.debug("Turnout \(turnout) state changed to \(turnout.state)")
                 
+        guard let interface = interface else {
+            return
+        }
+
         let commands = turnout.stateCommands(power: 0x1)
         let idleCommands = turnout.stateCommands(power: 0x0)
         assert(commands.count == idleCommands.count)
@@ -48,10 +46,6 @@ final class LayoutCommandExecutor: LayoutCommandExecuting {
         var commandCompletionCount = commands.count
         for (index, command) in commands.enumerated() {
             turnoutQueue.schedule { [weak self] qc in
-                guard let interface = self?.interface else {
-                    return
-                }
-                
                 interface.execute(command: command) { [weak self] in
                     qc()
                     guard let activationTime = self?.activationTime else {
@@ -72,22 +66,26 @@ final class LayoutCommandExecutor: LayoutCommandExecuting {
 
     func sendTrainDirection(train: Train, completion: @escaping CompletionBlock) {
         BTLogger.debug("Train \(train.name) changed direction to \(train.directionForward ? "forward" : "backward" )")
+        guard let interface = interface else {
+            return
+        }
+
         let command: Command
         if train.directionForward {
             command = .direction(address: train.address, decoderType: train.decoder, direction: .forward)
         } else {
             command = .direction(address: train.address, decoderType: train.decoder, direction: .backward)
         }
-        interface?.execute(command: command, onCompletion: completion)
+        interface.execute(command: command, onCompletion: completion)
     }
     
-    func sendTrainSpeed(train: Train, completion: @escaping CompletionBlock) {
+    func sendTrainSpeed(train: Train, steps: SpeedStep, completion: @escaping CompletionBlock) {
         BTLogger.debug("Train \(train.name) changed speed to \(train.speed)")
         guard let interface = interface else {
             return
         }
 
-        let value = interface.speedValue(for: train.speed.steps, decoder: train.decoder)
+        let value = interface.speedValue(for: steps, decoder: train.decoder)
         interface.execute(command: .speed(address: train.address, decoderType: train.decoder, value: value), onCompletion: completion)
     }
 }

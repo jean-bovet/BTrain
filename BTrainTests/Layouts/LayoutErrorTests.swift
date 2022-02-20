@@ -62,7 +62,7 @@ class LayoutErrorTests: XCTestCase {
   
     func testMissingTrain() {
         do {
-            try layout.setTrainSpeed(Train(id: Identifier<Train>(uuid: "foo"), name: "foo", address: 0), 70)
+            try layout.remove(trainID: Identifier<Train>(uuid: "foo"))
             XCTFail("Must throw an exception")
         } catch {
             XCTAssertEqual(error.localizedDescription, "Train foo not found")

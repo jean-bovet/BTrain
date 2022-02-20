@@ -54,9 +54,6 @@ extension Layout {
     }
     
     func setTrainPosition(_ train: Train, _ position: Int) throws {
-        guard let train = self.train(for: train.id) else {
-            throw LayoutError.trainNotFound(trainId: train.id)
-        }
         train.position = position
         
         try reservation.updateReservedBlocks(train: train)
@@ -111,23 +108,34 @@ extension Layout {
         return train.position
     }
     
-    func setTrainSpeed(_ train: Train, _ speed: TrainSpeed.UnitKph, completion: CompletionBlock? = nil) throws {
-        guard let train = self.train(for: train.id) else {
-            throw LayoutError.trainNotFound(trainId: train.id)
-        }
-        
+    func setTrainSpeed(_ train: Train, _ speed: TrainSpeed.UnitKph, completion: CompletionBlock? = nil) {
         train.speed.kph = speed
         if let executor = executor {
-            executor.sendTrainSpeed(train: train) {
+            executor.sendTrainSpeed(train: train, steps: train.speed.steps) {
                 completion?()
             }
         } else {
             completion?()
         }
         
-        self.didChange()
+        didChange()
     }
-    
+
+    func setTrainSpeed(_ train: Train, _ steps: SpeedStep, completion: CompletionBlock? = nil) {
+        train.speed.steps = steps
+        if let executor = executor {
+            // Note: use `steps` directly to ensure it is the exact number sent to the Digital Controller.
+            // train.speed.steps might be slightly off depending on the rounding with kph (which is the base nominal value)
+            executor.sendTrainSpeed(train: train, steps: steps) {
+                completion?()
+            }
+        } else {
+            completion?()
+        }
+        
+        didChange()
+    }
+
     // Returns the direction of the train within the block (not the train direction itself
     // but the direction of the train relative the natural direction of the block)
     func directionDirectionInBlock(_ train: Train) throws -> Direction {
@@ -283,7 +291,7 @@ extension Layout {
         }
         
         if let executor = executor {
-            executor.sendTrainSpeed(train: train) {
+            executor.sendTrainSpeed(train: train, steps: train.speed.steps) {
                 completion?()
             }
         } else {

@@ -177,7 +177,7 @@ final class TrainController {
             debug("Start train \(train.name) because the next blocks could be reserved")
             train.state = .running
             stopTrigger = nil
-            try layout.setTrainSpeed(train, LayoutFactory.DefaultSpeed)
+            layout.setTrainSpeed(train, LayoutFactory.DefaultSpeed)
             return .processed
         }
 
@@ -356,7 +356,7 @@ final class TrainController {
                 if brakeFeedback == f.id {
                     debug("Train \(train) is braking in \(currentBlock.name) at position \(train.position), direction \(direction)")
                     train.state = .braking
-                    try layout.setTrainSpeed(train, LayoutFactory.DefaultBrakingSpeed)
+                    layout.setTrainSpeed(train, LayoutFactory.DefaultBrakingSpeed)
                     result = .processed
                 }
             }

@@ -171,16 +171,9 @@ final class TrainSpeedMeasurement {
     private func startTrain() async {
         return await withCheckedContinuation { continuation in
             DispatchQueue.main.async { [self] in
-                let numberOfSteps = train.speed.speedTable.count
                 let speedEntry = speedEntry(for: entryIndex)
-                let speedValue = UInt16(Double(speedEntry.steps.value) / Double(numberOfSteps) * 1000)
                 
-                // TODO: try to refactor to be able to use the layout.setTrainSpeed()
-                train.speed.steps = speedEntry.steps
-                
-                layout.didChange()
-                
-                interface.execute(command: .speed(address: train.address, decoderType: train.decoder, value: .init(value: speedValue))) {
+                layout.setTrainSpeed(train, speedEntry.steps) {
                     continuation.resume(returning: ())
                 }
             }
