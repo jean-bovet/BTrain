@@ -25,8 +25,7 @@ final class LayoutCommandExecutor {
     
     // Time until the turnout state power is turned off.
     let activationTime: TimeInterval = 0.2
-    
-    
+        
     init(layout: Layout, interface: CommandInterface) {
         self.layout = layout
         self.interface = interface
@@ -36,6 +35,7 @@ final class LayoutCommandExecutor {
         BTLogger.debug("Turnout \(turnout) state changed to \(turnout.state)")
                 
         guard let interface = interface else {
+            completion()
             return
         }
 
@@ -67,6 +67,7 @@ final class LayoutCommandExecutor {
     func sendTrainDirection(train: Train, completion: @escaping CompletionBlock) {
         BTLogger.debug("Train \(train.name) changed direction to \(train.directionForward ? "forward" : "backward" )")
         guard let interface = interface else {
+            completion()
             return
         }
 
@@ -79,14 +80,41 @@ final class LayoutCommandExecutor {
         interface.execute(command: command, onCompletion: completion)
     }
     
+    private var trainInertiaControllers = [Identifier<Train>:TrainInertiaController]()
+    
     func sendTrainSpeed(train: Train, steps: SpeedStep, completion: @escaping CompletionBlock) {
-        BTLogger.debug("Train \(train.name) changed speed to \(train.speed)")
+        BTLogger.debug("Train \(train.name) changed speed to \(train.speed) (inertia=\(train.inertia))")
         guard let interface = interface else {
+            completion()
             return
         }
 
-        let value = interface.speedValue(for: steps, decoder: train.decoder)
-        interface.execute(command: .speed(address: train.address, decoderType: train.decoder, value: value), onCompletion: completion)
+        if train.inertia {
+            let tic = speedInertiaHandler(train: train)
+            tic.changeSpeed(to: steps) { steps, finished in
+                let value = interface.speedValue(for: steps, decoder: train.decoder)
+                interface.execute(command: .speed(address: train.address, decoderType: train.decoder, value: value)) {
+                    if finished {
+                        completion()
+                    }
+                }
+            }
+        } else {
+            let value = interface.speedValue(for: steps, decoder: train.decoder)
+            interface.execute(command: .speed(address: train.address, decoderType: train.decoder, value: value)) {
+                completion()
+            }
+        }
+    }
+    
+    private func speedInertiaHandler(train: Train) -> TrainInertiaController {
+        if let tic = trainInertiaControllers[train.id] {
+            return tic
+        } else {
+            let tic = TrainInertiaController(train: train)
+            trainInertiaControllers[train.id] = tic
+            return tic
+        }
     }
 }
 

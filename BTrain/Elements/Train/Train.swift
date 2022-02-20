@@ -114,6 +114,8 @@ final class Train: Element, ObservableObject {
     // Speed of the locomotive
     @Published var speed = TrainSpeed(kph: 0, decoderType: .MFX)
 
+    @Published var inertia = false
+    
     // Direction of travel of the locomotive
     @Published var directionForward = true
 

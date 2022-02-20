@@ -15,34 +15,28 @@ import Combine
 
 final class TrainInertiaController {
     
+    typealias SpeedChangedCallback = (_ steps: SpeedStep, _ completed: Bool) -> Void
+    
     let train: Train
     
     var actual: SpeedStep = .zero
     var desired: SpeedStep = .zero
-    
-    var speedChanged: ((SpeedStep)->Void)?
-    
+        
     let stepIncrement = 4
     let stepDelay = 0.1
     
     private var timer: Timer?
+    private var callback: SpeedChangedCallback?
     
-    private var cancellable: AnyCancellable?
-
     init(train: Train) {
         self.train = train
-        cancellable = train.$speed
-            .removeDuplicates()
-            .receive(on: RunLoop.main)
-            .sink { [weak self] value in
-                print("Speed changed to \(value.steps)")
-                self?.desired = value.steps
-                self?.catchup()
-            }
     }
         
-    func catchup() {
-        timer?.invalidate()
+    func changeSpeed(to steps: SpeedStep, callback: @escaping SpeedChangedCallback) {
+        finished()
+        
+        self.callback = callback
+        desired = steps
 
         let delta = Int(desired.value) - Int(actual.value)
         if abs(delta) <= stepIncrement {
@@ -58,7 +52,7 @@ final class TrainInertiaController {
         }
     }
     
-    func changeActual(with increment: Int) {
+    private func changeActual(with increment: Int) {
         var newValue = Int(actual.value) + increment
         if newValue < 0 {
             newValue = 0
@@ -67,19 +61,33 @@ final class TrainInertiaController {
         }
         actual = SpeedStep(value: UInt16(newValue))
         
-        if increment > 0 {
-            if actual.value > desired.value {
-                actual = desired
-                timer?.invalidate()
-            }
+        var done = false
+        if actual.value == desired.value {
+            done = true
         } else {
-            if actual.value < desired.value {
-                actual = desired
-                timer?.invalidate()
+            if increment > 0 {
+                if actual.value > desired.value {
+                    actual = desired
+                    done = true
+                }
+            } else {
+                if actual.value < desired.value {
+                    actual = desired
+                    done = true
+                }
             }
         }
         
-        speedChanged?(actual)
-        print("Send speed \(actual.value)")
+        if done {
+            finished()
+        } else {
+            callback?(actual, false)
+        }
+    }
+    
+    private func finished() {
+        callback?(actual, true)
+        callback = nil
+        timer?.invalidate()
     }
 }

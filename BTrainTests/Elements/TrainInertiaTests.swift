@@ -40,8 +40,8 @@ class TrainInertiaTests: XCTestCase {
         XCTAssertEqual(ic.actual.value, fromSteps)
         
         var expectedStepIndex = 0
-        ic.speedChanged = { speed in
-            XCTAssertEqual(speed.value, expectedSteps[expectedStepIndex])
+        ic.changeSpeed(to: SpeedStep(value: steps)) { actualSteps, finished in
+            XCTAssertEqual(actualSteps.value, expectedSteps[expectedStepIndex])
             expectedStepIndex += 1
         }
         
@@ -53,6 +53,7 @@ class TrainInertiaTests: XCTestCase {
             ic.actual.value == steps
         }, timeout: ic.duration)
 
+        XCTAssertEqual(expectedStepIndex, expectedSteps.count)
     }
 }
 
