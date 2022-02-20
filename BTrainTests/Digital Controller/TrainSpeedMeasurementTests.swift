@@ -65,7 +65,8 @@ class TrainSpeedMeasurementTests: XCTestCase {
         let sm = TrainSpeedMeasurement(layout: layout, interface: mi, train: train,
                                        speedEntries: [UInt16(step)],
                                        feedbackA: fa.id, feedbackB: fb.id, feedbackC: fc.id,
-                                       distanceAB: 95, distanceBC: 18)
+                                       distanceAB: 95, distanceBC: 18,
+                                       simulator: true)
 
         var expectedInfoArray: [TrainSpeedMeasurement.CallbackStep] = [.trainStarted, .feedbackA, .feedbackB, .feedbackC, .trainStopped, .trainDirectionToggle, .done]
         
@@ -162,7 +163,7 @@ class TrainSpeedMeasurementTests: XCTestCase {
         let sm = TrainSpeedMeasurement(layout: layout, interface: mi, train: train,
                                        speedEntries: [UInt16(step1), UInt16(step2)],
                                        feedbackA: fa.id, feedbackB: fb.id, feedbackC: fc.id,
-                                       distanceAB: 95, distanceBC: 18)
+                                       distanceAB: 95, distanceBC: 18, simulator: true)
                 
         var expectedInfoArray: [TrainSpeedMeasurement.CallbackStep] = [.trainStarted, .feedbackA, .feedbackB, .feedbackC, .trainStopped, .trainDirectionToggle,
                                                                        .trainStarted, .feedbackC, .feedbackB, .feedbackA, .trainStopped, .trainDirectionToggle, .done]

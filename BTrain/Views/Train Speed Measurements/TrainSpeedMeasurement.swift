@@ -29,9 +29,14 @@ final class TrainSpeedMeasurement {
     
     let feedbackMonitor: FeedbackMonitor
     
+    // True if the measurement is done in the simulator,
+    // which is going to affect some delays after stopping the train
+    let simulator: Bool
+    
     private var entryIndex = 0
     private var forward = true
-        
+    private var task: Task<Void, Error>?
+    
     enum CallbackStep {
         case trainStarted
         case feedbackA
@@ -51,7 +56,7 @@ final class TrainSpeedMeasurement {
     init(layout: Layout, interface: CommandInterface, train: Train,
          speedEntries: Set<TrainSpeed.SpeedTableEntry.ID>,
          feedbackA: Identifier<Feedback>, feedbackB: Identifier<Feedback>, feedbackC: Identifier<Feedback>,
-         distanceAB: Double, distanceBC: Double) {
+         distanceAB: Double, distanceBC: Double, simulator: Bool = false) {
         self.layout = layout
         self.interface = interface
         self.train = train
@@ -62,19 +67,23 @@ final class TrainSpeedMeasurement {
         self.distanceAB = distanceAB
         self.distanceBC = distanceBC
         self.feedbackMonitor = FeedbackMonitor(layout: layout, interface: interface)
+        self.simulator = simulator
     }
         
     func start(callback: @escaping (CallbackInfo) -> Void) {
+        task?.cancel()
+        
         feedbackMonitor.start()
 
         forward = train.directionForward
         entryIndex = 0
-        Task {
+        task = Task {
             try await run(callback: callback)
         }
     }
         
     func cancel() {
+        task?.cancel()
         Task {
             try await stopTrain()
             
@@ -88,6 +97,7 @@ final class TrainSpeedMeasurement {
 
     private func run(callback: @escaping (CallbackInfo) -> Void) async throws {
         while (true) {
+            try Task.checkCancellation()
             try await measure(callback: callback)
             if isFinished(for: entryIndex+1) {
                 invokeCallback(.done, callback)
@@ -112,17 +122,24 @@ final class TrainSpeedMeasurement {
         
         await waitForFeedback(feedbacks[0].0)
         invokeCallback(feedbacks[0].1, callback)
-        
+                
+        try Task.checkCancellation()
+
         await waitForFeedback(feedbacks[1].0)
         let t0 = Date()
         invokeCallback(feedbacks[1].1, callback)
                 
+        try Task.checkCancellation()
+
         await waitForFeedback(feedbacks[2].0)
         let t1 = Date()
-
         invokeCallback(feedbacks[2].1, callback)
         
+        try Task.checkCancellation()
+
         await waitForFeedback(feedbacks[2].0, detected: false)
+
+        try Task.checkCancellation()
 
         try await stopTrain()
         invokeCallback(.trainStopped, callback)
@@ -131,6 +148,17 @@ final class TrainSpeedMeasurement {
             storeMeasurement(t0: t0, t1: t1, distance: forward ? distanceBC : distanceAB)
         }
         
+        if !simulator && !Task.isCancelled {
+            // Wait a bit before toggling the train direction because in the real
+            // layout, the train takes some time to stop. Is there a better way to
+            // do that? CS 3 does not seem to send back the actual speed value so it
+            // is hard to know when the train has effectively stopped. Maybe we could poll
+            // for the train speed?
+            try await Task.sleep(nanoseconds: 2_000_000_000)
+        }
+
+        try Task.checkCancellation()
+
         try await toggleTrainDirection()
         invokeCallback(.trainDirectionToggle, callback)
     }
