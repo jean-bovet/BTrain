@@ -82,14 +82,15 @@ final class LayoutCommandExecutor {
     
     private var trainInertiaControllers = [Identifier<Train>:TrainInertiaController]()
     
-    func sendTrainSpeed(train: Train, steps: SpeedStep, completion: @escaping CompletionBlock) {
+    func sendTrainSpeed(train: Train, steps: SpeedStep, inertia: Bool? = nil, completion: @escaping CompletionBlock) {
         BTLogger.debug("Train \(train.name) changed speed to \(train.speed) (inertia=\(train.inertia))")
         guard let interface = interface else {
             completion()
             return
         }
 
-        if train.inertia {
+        if inertia ?? train.inertia {
+            // TODO: can we do with a singleton TrainInertiaController?
             let tic = speedInertiaHandler(train: train)
             tic.changeSpeed(to: steps) { steps, finished in
                 let value = interface.speedValue(for: steps, decoder: train.decoder)

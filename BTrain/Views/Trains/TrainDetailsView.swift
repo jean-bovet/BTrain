@@ -161,6 +161,8 @@ struct TrainDetailsSpeedSectionView: View {
             SectionTitleView(label: "Speed")
 
             Form {
+                Toggle("Inertia", isOn: $train.inertia)
+                
                 TextField("Max Speed:", value: $train.speed.maxSpeed,
                           format: .number)
                 

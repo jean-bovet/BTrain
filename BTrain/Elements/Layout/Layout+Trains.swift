@@ -121,12 +121,12 @@ extension Layout {
         didChange()
     }
 
-    func setTrainSpeed(_ train: Train, _ steps: SpeedStep, completion: CompletionBlock? = nil) {
+    func setTrainSpeed(_ train: Train, _ steps: SpeedStep, inertia: Bool? = nil, completion: CompletionBlock? = nil) {
         train.speed.steps = steps
         if let executor = executor {
             // Note: use `steps` directly to ensure it is the exact number sent to the Digital Controller.
             // train.speed.steps might be slightly off depending on the rounding with kph (which is the base nominal value)
-            executor.sendTrainSpeed(train: train, steps: steps) {
+            executor.sendTrainSpeed(train: train, steps: steps, inertia: inertia) {
                 completion?()
             }
         } else {
@@ -275,7 +275,7 @@ extension Layout {
     // Stop the specified train. If completely is true,
     // set the state running to false of the train which means
     // it won't restart anymore.
-    func stopTrain(_ trainId: Identifier<Train>, completely: Bool = false, completion: CompletionBlock? = nil) throws {
+    func stopTrain(_ trainId: Identifier<Train>, completely: Bool = false, inertia: Bool? = nil, completion: CompletionBlock? = nil) throws {
         guard let train = self.train(for: trainId) else {
             throw LayoutError.trainNotFound(trainId: trainId)
         }
@@ -291,7 +291,7 @@ extension Layout {
         }
         
         if let executor = executor {
-            executor.sendTrainSpeed(train: train, steps: train.speed.steps) {
+            executor.sendTrainSpeed(train: train, steps: train.speed.steps, inertia: inertia) {
                 completion?()
             }
         } else {

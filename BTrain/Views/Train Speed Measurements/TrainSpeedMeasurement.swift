@@ -149,11 +149,9 @@ final class TrainSpeedMeasurement {
         }
         
         if !simulator && !Task.isCancelled {
-            // Wait a bit before toggling the train direction because in the real
-            // layout, the train takes some time to stop. Is there a better way to
-            // do that? CS 3 does not seem to send back the actual speed value so it
-            // is hard to know when the train has effectively stopped. Maybe we could poll
-            // for the train speed?
+            // Wait a bit before toggling the train direction because a locomotive might still
+            // not be fully stopped. Although stopTrain() waits until the train has stopped (from a command
+            // control point of view), some locomotive still need some time to stop fully.
             try await Task.sleep(nanoseconds: 2_000_000_000)
         }
 
@@ -173,7 +171,9 @@ final class TrainSpeedMeasurement {
             DispatchQueue.main.async { [self] in
                 let speedEntry = speedEntry(for: entryIndex)
                 
-                layout.setTrainSpeed(train, speedEntry.steps) {
+                // Note: do not use inertia when accelerating the locomotive
+                // in order to reach the speed as fast as possible.
+                layout.setTrainSpeed(train, speedEntry.steps, inertia: false) {
                     continuation.resume(returning: ())
                 }
             }
@@ -184,11 +184,10 @@ final class TrainSpeedMeasurement {
         return try await withCheckedThrowingContinuation { continuation in
             DispatchQueue.main.async { [self] in
                 do {
-                    try layout.stopTrain(train.id) {
-                        // TODO: when we handle the deceleration with a curve, we can invoke completion when the curve reaches 0.
-                        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.250) {
-                            continuation.resume(returning: ())
-                        }
+                    // Note: always use inertia because some locomotive take some time to slow down,
+                    // so enabling inertia allows BTrain to wait long enough for the locomotive to be stopped.
+                    try layout.stopTrain(train.id, inertia: true) {
+                        continuation.resume(returning: ())
                     }
                 } catch {
                     continuation.resume(throwing: error)

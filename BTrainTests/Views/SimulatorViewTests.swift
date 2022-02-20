@@ -25,6 +25,7 @@ class SimulatorViewTests: RootViewTests {
         XCTAssertFalse(trains.isEmpty)
         
         let t1 = trains[0]
+        t1.inertia = false
         t1.blockId = doc.layout.blockIds[0]
         doc.layout.blocks[0].train = .init(t1.id, .next)
         
