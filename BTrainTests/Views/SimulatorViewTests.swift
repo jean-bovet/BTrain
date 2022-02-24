@@ -30,7 +30,7 @@ class SimulatorViewTests: RootViewTests {
         doc.layout.blocks[0].train = .init(t1.id, .next)
         
         XCTAssertTrue(t1.directionForward)
-        XCTAssertEqual(t1.speed.kph, 0)
+        XCTAssertEqual(t1.speed.requestedKph, 0)
             
         connectToSimulator()
             
@@ -86,13 +86,13 @@ class SimulatorViewTests: RootViewTests {
         let trainSlider = try trainSpeedView.hStack().slider(0)
         try trainSlider.setValue(100)
         try trainSlider.callOnEditingChanged()
-        XCTAssertEqual(t1.speed.kph, t1.speed.maxSpeed)
-        wait(for: simulatorTrain1, kph: t1.speed.maxSpeed)
+        XCTAssertEqual(t1.speed.requestedKph, t1.speed.maxSpeed)
+        wait(for: simulatorTrain1, steps: t1.speed.requestedSteps)
         
         try trainSlider.setValue(0)
         try trainSlider.callOnEditingChanged()
-        XCTAssertEqual(t1.speed.kph, 0)
-        wait(for: simulatorTrain1, kph: 0)
+        XCTAssertEqual(t1.speed.requestedKph, 0)
+        wait(for: simulatorTrain1, steps: .zero)
         
         doc.disable { }
         doc.disconnect()
@@ -130,17 +130,17 @@ class SimulatorViewTests: RootViewTests {
 
     func wait(for train: Train, kph: TrainSpeed.UnitKph) {
         wait(for: {
-            return train.speed.kph == kph
+            return train.speed.actualKph == kph
         }, timeout: 2.0)
 
-        XCTAssertEqual(train.speed.kph, kph)
+        XCTAssertEqual(train.speed.actualKph, kph)
     }
 
-    func wait(for train: SimulatorTrain, kph: TrainSpeed.UnitKph) {
+    func wait(for train: SimulatorTrain, steps: SpeedStep) {
         wait(for: {
-            return train.speed.kph == kph
+            return train.speed == steps
         }, timeout: 2.0)
 
-        XCTAssertEqual(train.speed.kph, kph)
+        XCTAssertEqual(train.speed, steps)
     }
 }

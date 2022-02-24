@@ -171,9 +171,8 @@ final class TrainSpeedMeasurement {
             DispatchQueue.main.async { [self] in
                 let speedEntry = speedEntry(for: entryIndex)
                 
-                // Note: do not use inertia when accelerating the locomotive
-                // in order to reach the speed as fast as possible.
-                layout.setTrainSpeed(train, speedEntry.steps, inertia: false) {
+                train.state = .running
+                layout.setTrainSpeed(train, speedEntry.steps) {
                     continuation.resume(returning: ())
                 }
             }
@@ -184,9 +183,9 @@ final class TrainSpeedMeasurement {
         return try await withCheckedThrowingContinuation { continuation in
             DispatchQueue.main.async { [self] in
                 do {
-                    // Note: always use inertia because some locomotive take some time to slow down,
-                    // so enabling inertia allows BTrain to wait long enough for the locomotive to be stopped.
-                    try layout.stopTrain(train.id, inertia: true) {
+                    // Note: in practice, the train inertia must be set to true if the locomotive take some time to slow down,
+                    // in order for BTrain to wait long enough for the locomotive to be stopped.
+                    try layout.stopTrain(train.id) {
                         continuation.resume(returning: ())
                     }
                 } catch {

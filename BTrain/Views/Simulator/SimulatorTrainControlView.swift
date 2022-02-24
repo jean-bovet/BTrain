@@ -16,7 +16,6 @@ struct SimulatorTrainControlView: View {
     
     let simulator: MarklinCommandSimulator
     @ObservedObject var train: SimulatorTrain
-    @ObservedObject var speed: TrainSpeed
 
     var body: some View {
         HStack {
@@ -35,30 +34,30 @@ struct SimulatorTrainControlView: View {
                 
                 HStack {
                     Slider(
-                        value: $speed.kphAsDouble,
-                        in: 0...Double(speed.maxSpeed)
+                        value: $train.speedAsDouble,
+                        in: 0...Double(train.train.decoder.steps)
                     ) {
                     } onEditingChanged: { editing in
                         simulator.setTrainSpeed(train: train)
                     }
                     
-                    Text("\(Int(speed.kph)) km/h")
+                    Text("\(Int(train.speed.value)) steps")
                 }
             }.disabled(train.simulate == false)
         }
     }
 }
 
-private extension TrainSpeed {
+private extension SimulatorTrain {
     
     // Necessary because SwiftUI Slider requires a Double
     // while speed is UInt16.
-    var kphAsDouble: Double {
+    var speedAsDouble: Double {
         get {
-            return Double(self.kph)
+            return Double(self.speed.value)
         }
         set {
-            self.kph = UInt16(newValue)
+            self.speed.value = UInt16(newValue)
         }
     }
     
@@ -72,6 +71,6 @@ struct SimulatorTrainControlView_Previews: PreviewProvider {
     
     static var previews: some View {
         SimulatorTrainControlView(simulator: MarklinCommandSimulator(layout: layout, interface: MarklinInterface()),
-                                  train: simulatorTrain, speed: simulatorTrain.speed)
+                                  train: simulatorTrain)
     }
 }

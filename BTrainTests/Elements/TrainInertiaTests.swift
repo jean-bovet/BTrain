@@ -16,49 +16,105 @@ import XCTest
 
 class TrainInertiaTests: XCTestCase {
 
-    func testAcceleration() {
+    func testInertia() {
         let t = Train()
-        let ic = TrainInertiaController(train: t)
+        let ic = TrainInertiaController(train: t, interface: MockCommandInterface())
         
-        t.speed.steps = SpeedStep(value: 20)
-        assertChangeSpeed(from: 0, to: 20, [4, 8, 12, 16, 20], ic)
+        assertChangeSpeed(train: t, from: 0, to: 20, [4, 8, 12, 16, 20], ic)
+        assertChangeSpeed(train: t, from: 20, to: 13, [16, 13], ic)
+        assertChangeSpeed(train: t, from: 13, to: 14, [14], ic)
+        assertChangeSpeed(train: t, from: 14, to: 13, [13], ic)
+        assertChangeSpeed(train: t, from: 13, to: 0, [9, 5, 1, 0], ic)
+    }
 
-        t.speed = .init(steps: SpeedStep(value: 13), decoderType: .DCC)
-        assertChangeSpeed(from: 20, to: 13, [16, 13], ic)
-        
-        t.speed = .init(steps: SpeedStep(value: 14), decoderType: .DCC)
-        assertChangeSpeed(from: 13, to: 14, [14], ic)
+    func testWithNoInertia() {
+        let t = Train()
+        t.inertia = false
+        let ic = TrainInertiaController(train: t, interface: MockCommandInterface())
 
-        t.speed = .init(steps: SpeedStep(value: 13), decoderType: .DCC)
-        assertChangeSpeed(from: 14, to: 13, [13], ic)
-        
-        t.speed = .init(steps: SpeedStep(value: 0), decoderType: .DCC)
-        assertChangeSpeed(from: 13, to: 0, [9, 5, 1, 0], ic)
+        assertChangeSpeed(train: t, from: 0, to: 20, [20], ic)
+        assertChangeSpeed(train: t, from: 20, to: 13, [13], ic)
+        assertChangeSpeed(train: t, from: 13, to: 14, [14], ic)
+        assertChangeSpeed(train: t, from: 14, to: 13, [13], ic)
+        assertChangeSpeed(train: t, from: 13, to: 0, [0], ic)
     }
     
-    private func assertChangeSpeed(from fromSteps: UInt16, to steps: UInt16, _ expectedSteps: [UInt16], _ ic: TrainInertiaController) {
+    private func assertChangeSpeed(train: Train, from fromSteps: UInt16, to steps: UInt16, _ expectedSteps: [UInt16], _ ic: TrainInertiaController) {
         XCTAssertEqual(ic.actual.value, fromSteps)
-        
-        var expectedStepIndex = 0
-        ic.changeSpeed(to: SpeedStep(value: steps)) { actualSteps, finished in
-            XCTAssertEqual(actualSteps.value, expectedSteps[expectedStepIndex])
-            expectedStepIndex += 1
-        }
-        
-        wait(for: {
-            ic.desired.value == steps
-        }, timeout: 0.1)
-        
-        wait(for: {
-            ic.actual.value == steps
-        }, timeout: ic.duration)
 
-        XCTAssertEqual(expectedStepIndex, expectedSteps.count)
+        let cmd = ic.interface as! MockCommandInterface
+
+        cmd.speedValues.removeAll()
+
+        train.speed.requestedSteps = SpeedStep(value: steps)
+        
+        let expectation = expectation(description: "Completed")
+        ic.applySpeed(for: train) {
+            expectation.fulfill()
+        }
+
+        wait(for: [expectation], timeout: 2.0)
+        
+        XCTAssertEqual(ic.desired.value, steps)
+        XCTAssertEqual(ic.actual.value, steps)
+        
+        XCTAssertEqual(cmd.speedValues, expectedSteps)
+        cmd.speedValues.removeAll()
     }
+    
 }
 
-private extension TrainInertiaController {
-    var duration: TimeInterval {
-        ceil(abs(Double(desired.value) - Double(actual.value)) / Double(stepIncrement)) * stepDelay * 2
+final class MockCommandInterface: CommandInterface {
+    
+    var speedValues = [UInt16]()
+    
+    func connect(server: String, port: UInt16, onReady: @escaping () -> Void, onError: @escaping (Error) -> Void, onStop: @escaping () -> Void) {
+        
     }
+    
+    func disconnect(_ completion: @escaping CompletionBlock) {
+        
+    }
+    
+    func execute(command: Command, onCompletion: @escaping () -> Void) {
+        if case .speed(address: _, decoderType: _, value: let value, priority: _, descriptor: _) = command {
+            speedValues.append(value.value)
+        }
+        DispatchQueue.main.async {
+            onCompletion()
+        }
+    }
+    
+    func speedValue(for steps: SpeedStep, decoder: DecoderType) -> SpeedValue {
+        return .init(value: steps.value)
+    }
+    
+    func speedSteps(for value: SpeedValue, decoder: DecoderType) -> SpeedStep {
+        return .zero
+    }
+    
+    func register(forFeedbackChange: @escaping FeedbackChangeCallback) -> UUID {
+        return UUID()
+    }
+    
+    func register(forSpeedChange: @escaping SpeedChangeCallback) {
+        
+    }
+    
+    func register(forDirectionChange: @escaping DirectionChangeCallback) {
+        
+    }
+    
+    func register(forTurnoutChange: @escaping TurnoutChangeCallback) {
+        
+    }
+    
+    func register(forLocomotivesQuery callback: @escaping QueryLocomotiveCallback) {
+        
+    }
+    
+    func unregister(uuid: UUID) {
+        
+    }
+            
 }

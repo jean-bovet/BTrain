@@ -38,6 +38,9 @@ final class LayoutController: TrainControllerDelegate {
     // at runtime and during unit testing.
     private var controllers = OrderedDictionary<Identifier<Train>, TrainController>()
 
+    // The executor that will send commands to the Digital Controller
+    private var executor: LayoutCommandExecutor
+    
     // Retain the sink to observe any change to the layout
     private var layoutChangeSink: AnyCancellable?
 
@@ -48,6 +51,7 @@ final class LayoutController: TrainControllerDelegate {
         self.switchboard = switchboard
         self.feedbackMonitor = LayoutFeedbackMonitor(layout: layout)
         self.interface = interface
+        self.executor = LayoutCommandExecutor(layout: layout, interface: interface)
         self.debugger = LayoutControllerDebugger(layout: layout)
         
         registerForChange()
@@ -74,7 +78,7 @@ final class LayoutController: TrainControllerDelegate {
     func updateControllers() {
         for train in layout.trains {
             if controllers[train.id] == nil {
-                controllers[train.id] = TrainController(layout: layout, train: train, delegate: self)
+                controllers[train.id] = TrainController(layout: layout, train: train, interface: interface, delegate: self)
             }
         }
 
@@ -199,7 +203,7 @@ final class LayoutController: TrainControllerDelegate {
     }
     
     func stop(trainID: Identifier<Train>, completely: Bool) throws {
-        try layout.stopTrain(trainID, completely: completely)
+        try layout.stopTrain(trainID, completely: completely) { }
         _ = run()
     }
 
@@ -271,4 +275,25 @@ final class LayoutController: TrainControllerDelegate {
     private func redrawSwitchboard() {
         switchboard?.state.triggerRedraw.toggle()
     }
+}
+
+extension LayoutController: LayoutCommandExecuting {
+    
+    func sendTurnoutState(turnout: Turnout, completion: @escaping CompletionBlock) {
+        executor.sendTurnoutState(turnout: turnout, completion: completion)
+    }
+    
+    func sendTrainDirection(train: Train, completion: @escaping CompletionBlock) {
+        executor.sendTrainDirection(train: train, completion: completion)
+    }
+    
+    func sendTrainSpeed(train: Train, completion: @escaping CompletionBlock) {
+        if let controller = controllers[train.id] {
+            controller.inertiaController.applySpeed(for: train, completion: completion)
+        } else {
+            // TODO
+            fatalError()
+        }
+    }
+    
 }

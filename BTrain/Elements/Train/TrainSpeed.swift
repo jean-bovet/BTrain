@@ -12,23 +12,54 @@
 
 import Foundation
 
-// This class handles the speed of a train. The speed is always expressed in kph.
+// This class manages the speed of a train. The speed is always expressed (and stored)
+// as a number of steps of the locomotive decoder. However, the speed in steps
+// can also be converted to kph using a table of conversion that is filled
+// by measuring the speed of the train on the layout using 3 feedback sensors.
 final class TrainSpeed: ObservableObject, Equatable, CustomStringConvertible {
     
-    // Type definition for the speed
+    // The speed expressed as a number of steps of the locomotive decoder.
+    @Published var requestedSteps: SpeedStep = .zero {
+        didSet {
+            if requestedSteps.value > decoderType.steps {
+                requestedSteps.value = UInt16(decoderType.steps)
+            }
+        }
+    }
+
+    // The actual speed value of the locomotive. If the train
+    // does not have any inertia, it is always equal to the `steps` value.
+    // If the train has inertia, this value will change in increment until
+    // it reaches `steps` value.
+    // This value can also be different if the locomotive speed is changed
+    // on the Digital Controller directly; in that case, the requestSteps
+    // will remain unchanged but the actualSteps will change.
+    @Published var actualSteps: SpeedStep = .zero
+
+    // Type definition for the speed expressed in kph
     typealias UnitKph = UInt16
 
-    // A speed equality is using only the kph value
-    static func == (lhs: TrainSpeed, rhs: TrainSpeed) -> Bool {
-        return lhs.kph == rhs.kph
+    // The desired speed in kilometer per hour (kph).
+    var requestedKph: UnitKph {
+        get {
+            return speedKph(for: requestedSteps)
+        }
+        set {
+            if newValue > maxSpeed {
+                requestedSteps = steps(for: maxSpeed)
+            } else {
+                requestedSteps = steps(for: newValue)
+            }
+        }
     }
         
-    // The speed expressed in kilometer per hour (kph).
-    @Published var kph: UnitKph = 0 {
-        didSet {
-            if kph > maxSpeed {
-                kph = maxSpeed
-            }
+    // The actual speed in kph
+    var actualKph: UnitKph {
+        get {
+            return speedKph(for: actualSteps)
+        }
+        set {
+            actualSteps = steps(for: newValue)
         }
     }
     
@@ -60,26 +91,9 @@ final class TrainSpeed: ObservableObject, Equatable, CustomStringConvertible {
             updateSpeedStepsTable()
         }
     }
-        
-    // Number of steps, for the current encoder type, corresponding to the current kph value.
-    // Note: the steps are always converted from/to the underlying kph value.
-    var steps: SpeedStep {
-        get {
-            return steps(for: kph)
-        }
-        set {
-            if newValue.value == 0 {
-                kph = 0
-            } else if newValue.value < speedTable.count - 1 {
-                kph = speedTable[Int(newValue.value)].speed ?? speedKph(for: newValue)
-            } else {
-                kph = speedTable.last?.speed ?? maxSpeed
-            }
-        }
-    }
-
+            
     var description: String {
-        return "\(kph) kph"
+        return "\(requestedKph) kph"
     }
 
     init(decoderType: DecoderType) {
@@ -89,15 +103,20 @@ final class TrainSpeed: ObservableObject, Equatable, CustomStringConvertible {
     convenience init(kph: UInt16, decoderType: DecoderType) {
         self.init(decoderType: decoderType)
         self.updateSpeedStepsTable()
-        self.kph = kph
+        self.requestedKph = kph
     }
 
     convenience init(steps: SpeedStep, decoderType: DecoderType) {
         self.init(decoderType: decoderType)
         self.updateSpeedStepsTable()
-        self.steps = steps
+        self.requestedSteps = steps
     }
 
+    // A speed equality is using only the steps value
+    static func == (lhs: TrainSpeed, rhs: TrainSpeed) -> Bool {
+        return lhs.requestedSteps == rhs.requestedSteps
+    }
+        
     func updateSpeedStepsTable() {
         // Reset the table if the number of steps have changed,
         // usually when the decoder type has been changed.
@@ -115,8 +134,9 @@ final class TrainSpeed: ObservableObject, Equatable, CustomStringConvertible {
         for index in 0...stepsCount {
             let speedStep = SpeedStep(value: index)
             if index >= speedTable.count || speedTable[Int(index)].steps != speedStep {
+                let speed = UnitKph(Double(maxSpeed)/Double(decoderType.steps) * Double(speedStep.value))
                 let entry = SpeedTableEntry(steps: speedStep,
-                                            speed: speedKph(for: speedStep))
+                                            speed: speed)
                 speedTable.insert(entry, at: Int(index))
             }
         }
@@ -201,15 +221,30 @@ final class TrainSpeed: ObservableObject, Equatable, CustomStringConvertible {
         let interpolatedSpeed = speed0 + (speed1 - speed0) * x
         return UnitKph(interpolatedSpeed)
     }
-    
+        
+    // This method returns the speed in kph for the specified number of steps.
+    // Note: if the speed is not specified in the speedTable, the value is interpolated
+    // and if it is not possible to interpolate, the value corresponding to the steps
+    // is returned as the last resort.
     func speedKph(for steps: SpeedStep) -> UnitKph {
-        UnitKph(Double(maxSpeed)/Double(decoderType.steps) * Double(steps.value))
+        if steps.value == 0 {
+            return 0
+        } else {
+            let index = Int(steps.value)
+            if let speed = speedTable[min(index, speedTable.count - 1)].speed {
+                return speed
+            } else if let speed = interpolatedSpeed(at: index) {
+                return speed
+            } else {
+                return steps.value
+            }
+        }
     }
 
     // This method returns the number of steps corresponding to the speed in kph
     // by finding the closest match in the speedTable.
     func steps(for speedKph: UnitKph) -> SpeedStep {
-        if kph == 0 {
+        if speedKph == 0 {
             return SpeedStep.zero
         }
 
@@ -217,7 +252,7 @@ final class TrainSpeed: ObservableObject, Equatable, CustomStringConvertible {
         var matchingSteps = SpeedStep.zero
         for entry in speedTable {
             if let speed = entry.speed {
-                let newDelta = abs(Double(kph) - Double(speed))
+                let newDelta = abs(Double(speedKph) - Double(speed))
                 if newDelta <= delta {
                     delta = newDelta
                     matchingSteps = entry.steps
@@ -233,13 +268,12 @@ final class TrainSpeed: ObservableObject, Equatable, CustomStringConvertible {
 
 extension TrainSpeed: Codable {
     enum CodingKeys: CodingKey {
-      case decoderType, kph, speedTable
+      case decoderType, speedTable
     }
 
     convenience init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         self.init(decoderType: try container.decode(DecoderType.self, forKey: CodingKeys.decoderType))
-        self.kph = try container.decode(UInt16.self, forKey: CodingKeys.kph)
         if let speedTable = try container.decodeIfPresent([SpeedTableEntry].self, forKey: CodingKeys.speedTable) {
             self.speedTable = speedTable
         } else {
@@ -250,7 +284,6 @@ extension TrainSpeed: Codable {
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(decoderType, forKey: CodingKeys.decoderType)
-        try container.encode(kph, forKey: CodingKeys.kph)
         try container.encode(speedTable, forKey: CodingKeys.speedTable)
     }
 }

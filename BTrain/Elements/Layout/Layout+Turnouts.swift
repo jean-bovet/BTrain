@@ -42,6 +42,6 @@ extension Layout {
 
     func toggleTurnoutToNextState(turnout: Turnout) {
         turnout.toggleToNextState()
-        executor?.sendTurnoutState(turnout: turnout) {}
+        executor.sendTurnoutState(turnout: turnout) {}
     }
 }

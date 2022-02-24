@@ -207,7 +207,7 @@ class AutomaticRoutingTests: BTTestCase {
         XCTAssertEqual(p.layoutController.run(), .processed) // Train is re-started
         XCTAssertEqual(p.layoutController.run(), .none)
 
-        XCTAssertTrue(p.train.speed.kph > 0)
+        XCTAssertTrue(p.train.speed.requestedKph > 0)
         
         // When restarting, the train automatic route will be updated
         XCTAssertEqual(p.route.steps.description, ["s2:next", "b1:next", "b2:next", "b3:next", "s2:next"])
@@ -244,7 +244,7 @@ class AutomaticRoutingTests: BTTestCase {
         XCTAssertEqual(p.layoutController.run(), .processed) // Automatic route is re-generated
         XCTAssertEqual(p.layoutController.run(), .none) // The train does not restart because it was finishing the route
 
-        XCTAssertTrue(p.train.speed.kph == 0)
+        XCTAssertTrue(p.train.speed.requestedKph == 0)
         
         // When restarting, the train automatic route will be updated
         XCTAssertEqual(p.route.steps.description, ["s2:next", "b1:next", "b2:next", "b3:next", "s2:next"])
@@ -293,6 +293,7 @@ class AutomaticRoutingTests: BTTestCase {
 
     func testAutomaticRouteModeOnce() throws {
         let layout = LayoutECreator().newLayout()
+
         let s2 = layout.block(for: Identifier<Block>(uuid: "s2"))!
         let b3 = layout.block(for: Identifier<Block>(uuid: "b3"))!
 
@@ -413,7 +414,7 @@ class AutomaticRoutingTests: BTTestCase {
     private func setup(layout: Layout, fromBlockId: Identifier<Block>, destination: Destination?, position: Position = .start, routeSteps: [String]) throws -> Package {
         let train = layout.trains[0]
         try layout.setTrainToBlock(train.id, fromBlockId, position: position, direction: .next)
-        XCTAssertEqual(train.speed.kph, 0)
+        XCTAssertEqual(train.speed.requestedKph, 0)
 
         layout.automaticRouteRandom = false
                 

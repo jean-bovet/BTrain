@@ -21,13 +21,14 @@ struct TrainControlSpeedView: View {
     
     var body: some View {
         HStack {
+            // TODO: provide a way to visualize the actual Kph speed
             Slider(value: $speed.kphAsDouble, in: 0...Double(speed.maxSpeed)) {
                 
             } onEditingChanged: { editing in
-                layout.setTrainSpeed(train, speed.kph)
+                layout.setTrainSpeed(train, speed.requestedKph) { } 
             }
             
-            Text("\(Int(speed.kph)) km/h")
+            Text("\(Int(speed.requestedKph)) km/h")
         }
     }
 }
@@ -81,10 +82,10 @@ private extension TrainSpeed {
     // while speed is UInt16.
     var kphAsDouble: Double {
         get {
-            return Double(self.kph)
+            return Double(self.requestedKph)
         }
         set {
-            self.kph = UInt16(newValue)
+            self.requestedKph = UInt16(newValue)
         }
     }
     

@@ -32,6 +32,11 @@ final class TrainController {
     
     let layout: Layout
     let train: Train
+    
+    // The train inertia controller instance that is monitoring the specified train
+    // by sending the actual speed to the Digital Controller.
+    let inertiaController: TrainInertiaController
+    
     weak var delegate: TrainControllerDelegate?
         
     // Structure indicating when the train should stop and
@@ -65,11 +70,12 @@ final class TrainController {
     // If this variable is not nil, it means the train
     // has been asked to stop at the next opportunity.
     var stopTrigger: StopTrigger? = nil
-    
-    init(layout: Layout, train: Train, delegate: TrainControllerDelegate? = nil) {
+        
+    init(layout: Layout, train: Train, interface: CommandInterface, delegate: TrainControllerDelegate? = nil) {
         self.layout = layout
         self.train = train
-        self.delegate = delegate
+        self.inertiaController = TrainInertiaController(train: train, interface: interface)
+        self.delegate = delegate    
     }
             
     // This is the main method to call to manage the changes for the train.
@@ -175,9 +181,9 @@ final class TrainController {
         // And try to reserve the necessary leading blocks
         if try layout.reservation.updateReservedBlocks(train: train, trainStarting: true) {
             debug("Start train \(train.name) because the next blocks could be reserved")
-            train.state = .running
             stopTrigger = nil
-            layout.setTrainSpeed(train, LayoutFactory.DefaultSpeed)
+            train.state = .running
+            layout.setTrainSpeed(train, LayoutFactory.DefaultSpeed) { }
             return .processed
         }
 
@@ -326,7 +332,10 @@ final class TrainController {
     }
         
     private func handleTrainStop() throws -> Result {
-        guard train.speed.kph > 0 else {
+        // Check the requested speed to see if it is greated than 0.
+        // This is because the actual speed might be still > 0 if the
+        // train takes some time to break.
+        guard train.speed.requestedKph > 0 else {
             return .none
         }
                 
@@ -356,7 +365,7 @@ final class TrainController {
                 if brakeFeedback == f.id {
                     debug("Train \(train) is braking in \(currentBlock.name) at position \(train.position), direction \(direction)")
                     train.state = .braking
-                    layout.setTrainSpeed(train, LayoutFactory.DefaultBrakingSpeed)
+                    layout.setTrainSpeed(train, LayoutFactory.DefaultBrakingSpeed) {}
                     result = .processed
                 }
             }
@@ -366,7 +375,7 @@ final class TrainController {
                     throw LayoutError.stopFeedbackNotFound(block: currentBlock)
                 }
                 if stopFeedback == f.id {
-                    debug("Train \(train) is stopped in \(currentBlock.name) at position \(train.position), direction \(direction)")
+                    debug("Train \(train) is stopping in \(currentBlock.name) at position \(train.position), direction \(direction)")
                     result = try stop(completely: stopTrigger.stopCompletely)
                     
                     // Reschedule if necessary
@@ -384,7 +393,10 @@ final class TrainController {
     }
     
     func handleTrainMove() throws -> Result {
-        guard train.speed.kph > 0 else {
+        // Monitor the actual speed because even if the desired speed is set to 0,
+        // the train might still be slowing down and we must account for that (it
+        // could move inside the block or even move to another block while braking).
+        guard train.speed.actualKph > 0 else {
             return .none
         }
                 
@@ -422,7 +434,10 @@ final class TrainController {
     // - Occupied and leading reservation blocks are updated.
     // - Stop trigger is evaluated depending on the nature of the route
     private func handleTrainMoveToNextBlock(route: Route) throws -> Result {
-        guard train.speed.kph > 0 else {
+        // Monitor the actual speed because even if the desired speed is set to 0,
+        // the train might still be slowing down and we must account for that (it
+        // could move inside the block or even move to another block while braking).
+        guard train.speed.actualKph > 0 else {
             return .none
         }
         
@@ -477,14 +492,10 @@ final class TrainController {
         
     func stop(completely: Bool = false) throws -> Result {
         stopTrigger = nil
-        
-        guard train.speed.kph > 0 else {
-            return .none
-        }
-        
+                                
         debug("Stop train \(train)")
         
-        try layout.stopTrain(train.id, completely: completely)
+        try layout.stopTrain(train.id, completely: completely) { }
                 
         return .processed
     }

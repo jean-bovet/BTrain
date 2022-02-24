@@ -21,16 +21,16 @@ final class SimulatorTrain: ObservableObject, Element {
     
     @Published var simulate = true
     @Published var directionForward = true
-    @Published var speed = TrainSpeed(kph: 0, decoderType: .MFX)
+    
+    // Note: ensure that the speed of the simulated train is decoupled from the train itself
+    // to ensure the simulator does not change the speed of the original train directly, but only
+    // via commands sent through the interface.
+    @Published var speed: SpeedStep = .zero
         
     init(train: Train) {
         self.id = train.id
         self.train = train
         self.directionForward = train.directionForward
-        // Note: need to create a new TrainSpeed instance which is decoupled from the train itself
-        // to ensure the simulator does not change the speed of the original train directly, but only
-        // via commands sent through the interface.
-        self.speed = TrainSpeed(kph: train.speed.kph, decoderType: train.decoder)
     }
 }
     

@@ -37,7 +37,7 @@ extension LayoutController {
 
             DispatchQueue.main.async {
                 if let train = layout.trains.find(address: address, decoder: decoder) {
-                    train.speed.steps = interface.speedSteps(for: value, decoder: train.decoder)
+                    train.speed.actualSteps = interface.speedSteps(for: value, decoder: train.decoder)
                     self?.switchboard?.state.triggerRedraw.toggle()
                 }
             }

@@ -45,7 +45,7 @@ extension Layout {
 
             train.routeId = route.id
             train.routeStepIndex = 0
-            train.speed.kph = 0
+            train.speed.requestedKph = 0
         }
     }
 

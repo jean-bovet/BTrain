@@ -176,7 +176,7 @@ final class LayoutReservation {
         
         turnout.state = state
         turnout.reserved = train.id
-        layout.executor?.sendTurnoutState(turnout: turnout) { }
+        layout.executor.sendTurnoutState(turnout: turnout) { }
         BTLogger.debug("Reserved turnout \(turnout.name) for \(train) and state \(state)")
     }
     

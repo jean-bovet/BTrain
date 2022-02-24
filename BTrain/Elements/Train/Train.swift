@@ -278,7 +278,6 @@ extension Train: Codable {
         self.length = try container.decodeIfPresent(Double.self, forKey: CodingKeys.length)
         self.magnetDistance = try container.decodeIfPresent(Double.self, forKey: CodingKeys.magnetDistance)
         self.speed = try container.decode(TrainSpeed.self, forKey: CodingKeys.speed)
-        self.speed.kph = 0 // Always reset with speed to 0 when restoring from disk
         self.inertia = try container.decodeIfPresent(Bool.self, forKey: CodingKeys.inertia) ?? true
         self.directionForward = try container.decodeIfPresent(Bool.self, forKey: CodingKeys.direction) ?? true
         self.wagonsPushedByLocomotive = try container.decodeIfPresent(Bool.self, forKey: CodingKeys.wagonsPushedByLocomotive) ?? false

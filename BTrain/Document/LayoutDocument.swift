@@ -79,7 +79,7 @@ final class LayoutDocument: ObservableObject {
         let switchboard = SwitchBoardFactory.generateSwitchboard(layout: layout, simulator: simulator)
         let layoutController = LayoutController(layout: layout, switchboard: switchboard, interface: interface)
 
-        layout.executor = LayoutCommandExecutor(layout: layout, interface: interface)
+        layout.executing = layoutController
 
         self.interface = interface
         self.simulator = simulator

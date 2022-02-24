@@ -66,7 +66,18 @@ final class Layout: Element, ObservableObject {
     @AppStorage(SettingsKeys.strictRouteFeedbackStrategy) var strictRouteFeedbackStrategy = false
 
     // The command executor used to execute command towards the Digital Controller.
-    var executor: LayoutCommandExecutor?
+    weak var executing: LayoutCommandExecuting?
+    
+    // Returns an executor that is guaranteed to exist. It usually will be the `executing`
+    // which is set by the LayoutController but if not, like during unit testing,
+    // a default executor will be returned that provides basic functionalities.
+    var executor: LayoutCommandExecuting {
+        if let executing = executing {
+            return executing
+        } else {
+            return DefaultCommandExecutor()
+        }
+    }
     
     // Non-nil when a layout runtime error occurred
     @Published var runtimeError: String?

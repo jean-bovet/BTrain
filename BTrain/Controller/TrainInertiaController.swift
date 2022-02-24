@@ -18,6 +18,7 @@ final class TrainInertiaController {
     typealias SpeedChangedCallback = (_ steps: SpeedStep, _ completed: Bool) -> Void
     
     let train: Train
+    let interface: CommandInterface
     
     var actual: SpeedStep = .zero
     var desired: SpeedStep = .zero
@@ -26,22 +27,53 @@ final class TrainInertiaController {
     let stepDelay = 0.1
     
     private var timer: Timer?
-    private var callback: SpeedChangedCallback?
+    private var stepsDidChange: SpeedChangedCallback?
     
-    init(train: Train) {
+    init(train: Train, interface: CommandInterface) {
         self.train = train
+        self.interface = interface
     }
-        
-    func changeSpeed(to steps: SpeedStep, callback: @escaping SpeedChangedCallback) {
+    
+    func applySpeed(for train: Train, completion: @escaping CompletionBlock) {
+        changeSpeed(of: train, desiredSteps: train.speed.requestedSteps, completion: completion)
+    }
+    
+    private func changeSpeed(of train: Train, desiredSteps: SpeedStep, completion: @escaping CompletionBlock) {
+        BTLogger.debug("Train \(train.name) changed speed to \(desiredSteps) steps")
+
+        changeSpeed(to: desiredSteps, inertia: train.inertia) { [weak self] steps, finished in
+            train.speed.actualSteps = steps
+            if let interface = self?.interface {
+                let value = interface.speedValue(for: steps, decoder: train.decoder)
+                interface.execute(command: .speed(address: train.address, decoderType: train.decoder, value: value)) {
+                    if finished {
+                        completion()
+                    }
+                }
+            }
+        }
+    }
+    
+    private func changeSpeed(to steps: SpeedStep, inertia: Bool, callback: @escaping SpeedChangedCallback) {
         finished()
         
-        self.callback = callback
+        self.stepsDidChange = callback
         desired = steps
 
+        guard inertia else {
+            actual = steps
+            finished()
+            return
+        }
+        
         let delta = Int(desired.value) - Int(actual.value)
         if abs(delta) <= stepIncrement {
             changeActual(with: delta)
         } else {
+            // Trigger a speed change immediately
+            changeActual(with: stepIncrement * delta.signum())
+            
+            // And scheduled the subsequent changes to be every `stepDelay` seconds.
             timer = Timer.scheduledTimer(withTimeInterval: stepDelay, repeats: true, block: { [weak self] timer in
                 guard let sSelf = self else {
                     return
@@ -81,13 +113,13 @@ final class TrainInertiaController {
         if done {
             finished()
         } else {
-            callback?(actual, false)
+            stepsDidChange?(actual, false)
         }
     }
     
     private func finished() {
-        callback?(actual, true)
-        callback = nil
+        stepsDidChange?(actual, true)
+        stepsDidChange = nil
         timer?.invalidate()
     }
 }

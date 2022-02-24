@@ -66,7 +66,7 @@ import Foundation
 extension TrainController {
     
     func handleTrainStopPushingWagons() throws -> Result {
-        guard train.speed.kph > 0 else {
+        guard train.speed.requestedKph > 0 else {
             return .none
         }
         
@@ -77,13 +77,11 @@ extension TrainController {
         // Now determine the position of the head wagon given the next locomotive position
         guard let hwb = try TrainPositionFinder.headWagonBlockFor(train: train, startAtNextPosition: true, layout: layout) else {
             // Stop the train if there is no head wagon block found
-            train.state = .stopped
             return try stop(completely: true)
         }
         
         if hwb.reserved != nil && hwb.reserved?.trainId != train.id {
             // Stop the train if the head wagon block is reserved for another train.
-            train.state = .stopped
             return try stop(completely: true)
         }
         

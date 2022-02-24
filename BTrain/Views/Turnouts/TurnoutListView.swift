@@ -35,13 +35,13 @@ struct TurnoutStateCell: View {
             Spacer()
 
             Button("Set") {
-                layout.executor?.sendTurnoutState(turnout: turnout) { }
+                layout.executor.sendTurnoutState(turnout: turnout) { }
             }
             
             Button("Toggle") {
                 turnout.toggleToNextState()
                 refreshUI.toggle()
-                layout.executor?.sendTurnoutState(turnout: turnout) { }
+                layout.executor.sendTurnoutState(turnout: turnout) { }
             }
         }
     }

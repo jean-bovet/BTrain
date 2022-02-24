@@ -34,7 +34,7 @@ struct SimulatorView: View {
             ScrollView {
                 VStack {
                     ForEach(simulator.trains, id:\.self) { train in
-                        SimulatorTrainControlView(simulator: simulator, train: train, speed: train.speed)
+                        SimulatorTrainControlView(simulator: simulator, train: train)
                     }
                 }.disabled(!simulator.enabled)
             }

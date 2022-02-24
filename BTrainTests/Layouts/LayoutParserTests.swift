@@ -159,7 +159,7 @@ class LayoutParserTests: XCTestCase {
                 let trainId = block.train!.trainId
                 let train = layout.train(for: trainId)!
                 XCTAssertEqual(train.id, Identifier<Train>(uuid: String(expectedTrain.uuid)), "Unexpected train in block \(index)")
-                XCTAssertEqual(train.speed.kph, expectedTrain.speed)
+                XCTAssertEqual(train.speed.requestedKph, expectedTrain.speed)
                 XCTAssertEqual(train.position, expectedTrain.position)
             } else {
                 XCTAssertNil(block.train)

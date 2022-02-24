@@ -40,9 +40,9 @@ class SwitchboardRenderingTests: XCTestCase {
         let context = ShapeContext()
         let t = Train()
         
-        t.speed.kph = 0
+        t.speed.actualKph = 0
         XCTAssertEqual(context.trainColor(t), NSColor.systemRed.cgColor)
-        t.speed.kph = 100
+        t.speed.actualKph = 100
         XCTAssertEqual(context.trainColor(t), NSColor.systemGreen.cgColor)
         
         t.scheduling = .automatic(finishing: false)

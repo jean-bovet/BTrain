@@ -99,7 +99,7 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
         // Update existing trains, add new ones
         for train in layout.trains.filter({$0.blockId != nil}) {
             if let simTrain = trains.first(where: { $0.train.id == train.id }) {
-                simTrain.speed = TrainSpeed(kph: train.speed.kph, decoderType: train.decoder)
+                simTrain.speed = .zero
                 simTrain.directionForward = train.directionForward
             } else {
                 trains.append(SimulatorTrain(train: train))
@@ -177,7 +177,7 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
         for train in trains {
             if train.train.actualAddress == address.actualAddress(for: decoderType) {
                 let steps = interface.speedSteps(for: value, decoder: train.train.decoder)
-                train.speed.steps = steps
+                train.speed = steps
             }
         }
     }
@@ -245,7 +245,7 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
     }
     
     func setTrainSpeed(train: SimulatorTrain) {
-        let value = interface.speedValue(for: train.speed.steps, decoder: train.train.decoder)
+        let value = interface.speedValue(for: train.speed, decoder: train.train.decoder)
         let message = MarklinCANMessageFactory.speed(addr: train.train.actualAddress, speed: value.value)
         send(message)
     }
@@ -287,7 +287,7 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
     }
     
     func simulate(route: Route, train: Train) throws {
-        guard train.speed.kph > 0 else {
+        guard train.speed.requestedKph > 0 else {
             return
         }
                 

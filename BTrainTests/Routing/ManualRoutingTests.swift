@@ -89,7 +89,7 @@ class ManualRoutingTests: BTTestCase {
         try layout.free(block: b3.id)
         try p.assert("r1:{b1 ≏ ≏ } <t0> [r1[b2 ≏ ≡ 🚂1 ]] <r1<t1(0,2),l>> [r1[b3 ≏ ≏ ]] <t0(2,0)> !{b1 ≏ ≏ }")
         
-        try layout.stopTrain(Identifier<Train>(uuid: "1"), completely: true)
+        try layout.stopTrain(Identifier<Train>(uuid: "1"), completely: true) { }
         
         try p.assert("r1:{b1 ≏ ≏ } <t0> [r1[b2 ≏ ≡ 🛑🚂1 ]] <t1(0,2),l> [b3 ≏ ≏ ] <t0(2,0)> !{b1 ≏ ≏ }")
     }
@@ -116,7 +116,7 @@ class ManualRoutingTests: BTTestCase {
         b3.enabled = true
         try p.assert("r1:{b1 ≏ ≏ } <t0> [r1[b2 ≏ ≡ 🚂1 ]] <r1<t1(0,2),l>> [r1[b3 ≏ ≏ ]] <t0(2,0)> !{b1 ≏ ≏ }")
         
-        try layout.stopTrain(Identifier<Train>(uuid: "1"), completely: true)
+        try layout.stopTrain(Identifier<Train>(uuid: "1"), completely: true) { }
         
         try p.assert("r1:{b1 ≏ ≏ } <t0> [r1[b2 ≏ ≡ 🛑🚂1 ]] <t1(0,2),l> [b3 ≏ ≏ ] <t0(2,0)> !{b1 ≏ ≏ }")
     }
@@ -722,7 +722,7 @@ class ManualRoutingTests: BTTestCase {
         XCTAssertEqual(p.layoutController.run(), .processed) // Train is re-started
         XCTAssertEqual(p.layoutController.run(), .none)
 
-        XCTAssertTrue(p.train.speed.kph > 0)
+        XCTAssertTrue(p.train.speed.requestedKph > 0)
         
         // Assert that the train has restarted and is moving in the correct direction
         try p.assert("2: {s1 ≏ } <r0<t1(2,0),s>> <r0<t2(1,0),s>> [r0[b1 ≏]] <t3> [b2 ≏ ] <t4(1,0)> [b3 ≏ ≏ ] <t5> <t6> {r0{s2 ≏ 🚂0 }} <r0<t1(1,0),s>> <r0<t2(1,0),s>> [r0[b1 ≏]] <t3> [b2 ≏ ] <t4(1,0)> [b3 ≏ ≏ ] <t5> <t6(0,2)> {s1 ≏ }")
@@ -855,7 +855,8 @@ class ManualRoutingTests: BTTestCase {
         try p.start()
 
         XCTAssertTrue(p.train.automaticScheduling)
-
+        XCTAssertEqual(p.train.state, .running)
+        
         // A=E=200
         // B=C=D=100
         // AB=DE=10
@@ -985,7 +986,7 @@ class ManualRoutingTests: BTTestCase {
         let train = layout.trains[0]
         try layout.setTrainToBlock(train.id, Identifier<Block>(uuid: fromBlockId), position: position, direction: direction)
         
-        XCTAssertEqual(train.speed.kph, 0)
+        XCTAssertEqual(train.speed.requestedKph, 0)
         XCTAssertTrue(train.manualScheduling)
         XCTAssertEqual(train.state, .stopped)
 

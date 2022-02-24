@@ -14,108 +14,26 @@ import Foundation
 
 typealias CompletionBlock = (() -> Void)
 
-final class LayoutCommandExecutor {
+protocol LayoutCommandExecuting: AnyObject {
     
-    weak var layout: Layout?
-    weak var interface: CommandInterface?
-    
-    // Queue to ensure that sending of command for each turnout does happen
-    // every 250ms in order to avoid a spike in current on the real layout.
-    let turnoutQueue = ScheduledMessageQueue(delay: 0.25, name: "Turnout")
-    
-    // Time until the turnout state power is turned off.
-    let activationTime: TimeInterval = 0.2
-        
-    init(layout: Layout, interface: CommandInterface) {
-        self.layout = layout
-        self.interface = interface
-    }
-    
-    func sendTurnoutState(turnout: Turnout, completion: @escaping CompletionBlock) {
-        BTLogger.debug("Turnout \(turnout) state changed to \(turnout.state)")
-                
-        guard let interface = interface else {
-            completion()
-            return
-        }
+    func sendTurnoutState(turnout: Turnout, completion: @escaping CompletionBlock)
+    func sendTrainDirection(train: Train, completion: @escaping CompletionBlock)
+    func sendTrainSpeed(train: Train, completion: @escaping CompletionBlock)
 
-        let commands = turnout.stateCommands(power: 0x1)
-        let idleCommands = turnout.stateCommands(power: 0x0)
-        assert(commands.count == idleCommands.count)
-        
-        var commandCompletionCount = commands.count
-        for (index, command) in commands.enumerated() {
-            turnoutQueue.schedule { [weak self] qc in
-                interface.execute(command: command) { [weak self] in
-                    qc()
-                    guard let activationTime = self?.activationTime else {
-                        return
-                    }
-                    Timer.scheduledTimer(withTimeInterval: activationTime, repeats: false) { timer in
-                        interface.execute(command: idleCommands[index]) {
-                            commandCompletionCount -= 1
-                            if commandCompletionCount == 0 {
-                                completion()
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    func sendTrainDirection(train: Train, completion: @escaping CompletionBlock) {
-        BTLogger.debug("Train \(train.name) changed direction to \(train.directionForward ? "forward" : "backward" )")
-        guard let interface = interface else {
-            completion()
-            return
-        }
-
-        let command: Command
-        if train.directionForward {
-            command = .direction(address: train.address, decoderType: train.decoder, direction: .forward)
-        } else {
-            command = .direction(address: train.address, decoderType: train.decoder, direction: .backward)
-        }
-        interface.execute(command: command, onCompletion: completion)
-    }
-    
-    private var trainInertiaControllers = [Identifier<Train>:TrainInertiaController]()
-    
-    func sendTrainSpeed(train: Train, steps: SpeedStep, inertia: Bool? = nil, completion: @escaping CompletionBlock) {
-        BTLogger.debug("Train \(train.name) changed speed to \(train.speed) (inertia=\(train.inertia))")
-        guard let interface = interface else {
-            completion()
-            return
-        }
-
-        if inertia ?? train.inertia {
-            // TODO: can we do with a singleton TrainInertiaController?
-            let tic = speedInertiaHandler(train: train)
-            tic.changeSpeed(to: steps) { steps, finished in
-                let value = interface.speedValue(for: steps, decoder: train.decoder)
-                interface.execute(command: .speed(address: train.address, decoderType: train.decoder, value: value)) {
-                    if finished {
-                        completion()
-                    }
-                }
-            }
-        } else {
-            let value = interface.speedValue(for: steps, decoder: train.decoder)
-            interface.execute(command: .speed(address: train.address, decoderType: train.decoder, value: value)) {
-                completion()
-            }
-        }
-    }
-    
-    private func speedInertiaHandler(train: Train) -> TrainInertiaController {
-        if let tic = trainInertiaControllers[train.id] {
-            return tic
-        } else {
-            let tic = TrainInertiaController(train: train)
-            trainInertiaControllers[train.id] = tic
-            return tic
-        }
-    }
 }
 
+final class DefaultCommandExecutor: LayoutCommandExecuting {
+    func sendTurnoutState(turnout: Turnout, completion: @escaping CompletionBlock) {
+        completion()
+    }
+    
+    func sendTrainDirection(train: Train, completion: @escaping CompletionBlock) {
+        completion()
+    }
+    
+    func sendTrainSpeed(train: Train, completion: @escaping CompletionBlock) {
+        train.speed.actualSteps = train.speed.requestedSteps
+        completion()
+    }
+    
+}

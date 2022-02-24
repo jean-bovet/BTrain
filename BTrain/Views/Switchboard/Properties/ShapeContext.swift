@@ -97,7 +97,7 @@ final class ShapeContext {
     
     func trainColor(_ train: Train) -> CGColor {
         if train.manualScheduling {
-            if train.speed.kph > 0 {
+            if train.speed.actualKph > 0 {
                 return NSColor.systemGreen.cgColor
             } else {
                 return NSColor.systemRed.cgColor
