@@ -49,7 +49,7 @@ class TrainInertiaTests: XCTestCase {
         train.speed.requestedSteps = SpeedStep(value: steps)
         
         let expectation = expectation(description: "Completed")
-        ic.applySpeed(for: train) {
+        ic.applySpeed(for: train, inertia: nil) {
             expectation.fulfill()
         }
 

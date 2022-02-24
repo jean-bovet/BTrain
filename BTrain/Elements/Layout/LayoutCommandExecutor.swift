@@ -18,7 +18,7 @@ protocol LayoutCommandExecuting: AnyObject {
     
     func sendTurnoutState(turnout: Turnout, completion: @escaping CompletionBlock)
     func sendTrainDirection(train: Train, completion: @escaping CompletionBlock)
-    func sendTrainSpeed(train: Train, completion: @escaping CompletionBlock)
+    func sendTrainSpeed(train: Train, inertia: Bool?, completion: @escaping CompletionBlock)
 
 }
 
@@ -31,7 +31,7 @@ final class DefaultCommandExecutor: LayoutCommandExecuting {
         completion()
     }
     
-    func sendTrainSpeed(train: Train, completion: @escaping CompletionBlock) {
+    func sendTrainSpeed(train: Train, inertia: Bool?, completion: @escaping CompletionBlock) {
         train.speed.actualSteps = train.speed.requestedSteps
         completion()
     }

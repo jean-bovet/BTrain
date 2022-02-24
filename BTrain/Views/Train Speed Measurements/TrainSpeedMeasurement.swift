@@ -184,12 +184,11 @@ final class TrainSpeedMeasurement {
                 let speedEntry = speedEntry(for: entryIndex)
                 
                 train.state = .running
-                layout.setTrainSpeed(train, speedEntry.steps) { }
                 
-                // Note: do not resume this function in the completion block of the setTrainSpeed
-                // because we need to immediately wait for the first feedback to be hit, which can
-                // happen before the train has finished accelerating!
-                continuation.resume(returning: ())
+                // Set the speed without inertia to ensure the locomotive accelerates as fast as possible
+                layout.setTrainSpeed(train, speedEntry.steps, inertia: false) {
+                    continuation.resume(returning: ())
+                }
             }
         }
     }

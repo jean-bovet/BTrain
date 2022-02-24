@@ -108,18 +108,14 @@ extension Layout {
         return train.position
     }
     
-    func setTrainSpeed(_ train: Train, _ speed: TrainSpeed.UnitKph, completion: @escaping CompletionBlock) {
+    func setTrainSpeed(_ train: Train, _ speed: TrainSpeed.UnitKph, inertia: Bool? = nil, completion: @escaping CompletionBlock) {
         train.speed.requestedKph = speed
-        executor.sendTrainSpeed(train: train) { [weak self] in
-            self?.didChange()
-            completion()
-        }
-        didChange()
+        setTrainSpeed(train, train.speed.requestedSteps, inertia: inertia, completion: completion)
     }
 
-    func setTrainSpeed(_ train: Train, _ speed: SpeedStep, completion: @escaping CompletionBlock) {
+    func setTrainSpeed(_ train: Train, _ speed: SpeedStep, inertia: Bool? = nil, completion: @escaping CompletionBlock) {
         train.speed.requestedSteps = speed
-        executor.sendTrainSpeed(train: train) { [weak self] in
+        executor.sendTrainSpeed(train: train, inertia: inertia) { [weak self] in
             self?.didChange()
             completion()
         }
@@ -269,7 +265,7 @@ extension Layout {
         BTLogger.debug("Stopping train \(train.name) \(completely ? "completely." : "until it can be restarted.")")
         
         train.speed.requestedKph = 0
-        executor.sendTrainSpeed(train: train) { [weak self] in
+        executor.sendTrainSpeed(train: train, inertia: nil) { [weak self] in
             self?.didChange()
             completion()
         }
