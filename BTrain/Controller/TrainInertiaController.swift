@@ -35,13 +35,13 @@ final class TrainInertiaController {
     }
     
     func applySpeed(for train: Train, completion: @escaping CompletionBlock) {
-        changeSpeed(of: train, desiredSteps: train.speed.requestedSteps, completion: completion)
+        changeSpeed(of: train, completion: completion)
     }
     
-    private func changeSpeed(of train: Train, desiredSteps: SpeedStep, completion: @escaping CompletionBlock) {
-        BTLogger.debug("Train \(train.name) changed speed to \(desiredSteps) steps")
+    private func changeSpeed(of train: Train, completion: @escaping CompletionBlock) {
+        BTLogger.debug("Train \(train.name) changed speed to \(train.speed)")
 
-        changeSpeed(to: desiredSteps, inertia: train.inertia) { [weak self] steps, finished in
+        changeSpeed(to: train.speed.requestedSteps, inertia: train.inertia) { [weak self] steps, finished in
             train.speed.actualSteps = steps
             if let interface = self?.interface {
                 let value = interface.speedValue(for: steps, decoder: train.decoder)

@@ -71,8 +71,13 @@ final class TrainSpeedMeasurement {
     }
         
     func start(callback: @escaping (CallbackInfo) -> Void) {
-        task?.cancel()
-        
+        if let task = task {
+            log("Cancel already existing task")
+            task.cancel()
+        }
+
+        log("Preparing to measure \(train) with direction \(train.directionForward ? "forward" : "backward" )")
+
         feedbackMonitor.start()
 
         forward = train.directionForward
@@ -95,13 +100,19 @@ final class TrainSpeedMeasurement {
         feedbackMonitor.stop()
     }
 
+    private func log(_ msg: String) {
+        BTLogger.debug("􀍾 \(msg)")
+    }
+    
     private func run(callback: @escaping (CallbackInfo) -> Void) async throws {
+        log("Start measuring")
         while (true) {
             try Task.checkCancellation()
             try await measure(callback: callback)
             if isFinished(for: entryIndex+1) {
                 invokeCallback(.done, callback)
                 done()
+                log("Done measuring")
                 break
             } else {
                 entryIndex += 1
@@ -162,6 +173,7 @@ final class TrainSpeedMeasurement {
     }
     
     private func invokeCallback(_ step: CallbackStep, _ callback: @escaping (CallbackInfo) -> Void) {
+        log("Completed step \(step)")
         let speedEntry = speedEntry(for: entryIndex)
         callback(.init(speedEntry: speedEntry, step: step, progress: progress(for: entryIndex)))
     }
@@ -172,9 +184,12 @@ final class TrainSpeedMeasurement {
                 let speedEntry = speedEntry(for: entryIndex)
                 
                 train.state = .running
-                layout.setTrainSpeed(train, speedEntry.steps) {
-                    continuation.resume(returning: ())
-                }
+                layout.setTrainSpeed(train, speedEntry.steps) { }
+                
+                // Note: do not resume this function in the completion block of the setTrainSpeed
+                // because we need to immediately wait for the first feedback to be hit, which can
+                // happen before the train has finished accelerating!
+                continuation.resume(returning: ())
             }
         }
     }
