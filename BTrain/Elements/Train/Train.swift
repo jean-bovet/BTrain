@@ -187,7 +187,7 @@ final class Train: Element, ObservableObject {
         case stopped
     }
     
-    // The state of the train
+    // The state of the train, which is only used when in automatic schedule.
     @Published var state: State = .stopped
 
     // The block where the locomotive is located

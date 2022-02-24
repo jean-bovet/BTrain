@@ -20,7 +20,7 @@ class ManualOperationTests: BTTestCase {
         let layout = LayoutACreator().newLayout()
         let p = try setup(layout: layout, fromBlockId: "b1")
         
-        p.setTrainSpeed(100, .running)
+        p.setTrainSpeed(100)
         
         try p.assertTrain(inBlock: "b1", position: 0, speed: 100)
 
@@ -50,8 +50,6 @@ class ManualOperationTests: BTTestCase {
         
         try p.assertTrain(notInBlock: "b2")
         try p.assertTrain(inBlock: "b1", position: 2, speed: 0)
-        
-        p.assertTrain(state: .stopped)
     }
 
     // b1 > b2 > b3 > !b1
@@ -84,7 +82,7 @@ class ManualOperationTests: BTTestCase {
         
         let p = try setup(layout: layout, fromBlockId: "b1")
         
-        p.setTrainSpeed(100, .running)
+        p.setTrainSpeed(100)
 
         try p.assertTrain(inBlock: "b1", position: 0, speed: 100)
 
@@ -109,8 +107,6 @@ class ManualOperationTests: BTTestCase {
         try p.triggerFeedback("f31", false)
         try p.triggerFeedback("f32")
         
-        p.assertTrain(state: .stopped)
-
         // Train stops because its tail is still in the block b1
         try p.assertTrain(inBlock: "b1", position: 2, speed: 0)
         try p.assertTrain(inBlock: "b2", position: 2, speed: 0)
@@ -147,7 +143,7 @@ class ManualOperationTests: BTTestCase {
         
         let p = try setup(layout: layout, fromBlockId: "b1")
         
-        p.setTrainSpeed(100, .running)
+        p.setTrainSpeed(100)
 
         try p.assertTrain(inBlock: "b1", position: 0, speed: 100)
         try p.assertTrain(notInBlock: "b2")
@@ -161,8 +157,6 @@ class ManualOperationTests: BTTestCase {
         
         headWagonBlock = try TrainPositionFinder.headWagonBlockFor(train: train, layout: layout)!
         XCTAssertEqual(headWagonBlock.id, b3.id)
-
-        p.assertTrain(state: .stopped)
 
         // The train should stop because it is occupying all the blocks and will hit
         // itself back in b1 if it continues.
@@ -200,16 +194,11 @@ class ManualOperationTests: BTTestCase {
             XCTAssertNil(block.train)
         }
         
-        func setTrainSpeed(_ speed: TrainSpeed.UnitKph, _ state: Train.State) {
+        func setTrainSpeed(_ speed: TrainSpeed.UnitKph) {
             layout.setTrainSpeed(train, speed) { }
             _ = layoutController.run()
-            assertTrain(state: state)
         }
-        
-        func assertTrain(state: Train.State) {
-            XCTAssertEqual(train.state, state)
-        }
-        
+                
         func triggerFeedback(_ named: String, _ detected: Bool = true) throws {
             let feedbackId = Identifier<Feedback>(uuid: named)
             guard let feedback = layout.feedback(for: feedbackId) else {

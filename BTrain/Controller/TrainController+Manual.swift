@@ -20,10 +20,6 @@ extension TrainController {
     func handleManualOperation() throws -> Result {
         var result: Result = .none
         
-        if handleManualTrainStart() == .processed {
-            result = .processed
-        }
-
         if try handleManualTrainMoveToNextBlock() == .processed {
             result = .processed
         }
@@ -38,19 +34,7 @@ extension TrainController {
 
         return result
     }
-    
-    private func handleManualTrainStart() -> Result {
-        // Change the state of the train when the train starts moving
-        // while the current state is .stopped.
-        // TODO: problem is that it will switch to .running when it is actually stopping. Should we use another state to describe stopping?
-        if train.state == .stopped && train.speed.actualKph > 0 {
-            train.state = .running
-            return .processed
-        } else {
-            return .none
-        }
-    }
-    
+        
     private func handleManualTrainMoveToNextBlock() throws -> Result {
         guard train.speed.actualKph > 0 else {
             return .none
