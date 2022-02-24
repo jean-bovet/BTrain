@@ -43,9 +43,9 @@ class TrainControlsViewTests: RootViewTests {
                 
         let trainControlSpeedView = try trainControlsView.find(TrainControlSpeedView.self)
         
-        XCTAssertEqual(try trainControlSpeedView.hStack().text(1).string(), "0 km/h")
+        XCTAssertEqual(try trainControlSpeedView.hStack().text(1).string(), "0 kph")
         layout.trains[0].speed.requestedKph = 79
-        XCTAssertEqual(try trainControlSpeedView.hStack().text(1).string(), "79 km/h")
+        XCTAssertEqual(try trainControlSpeedView.hStack().text(1).string(), "79/0 kph")
 
         // TrainRouteView
         let trainRouteView = try trainView.vStack().view(TrainControlRouteView.self, 1)

@@ -25,10 +25,14 @@ struct TrainControlSpeedView: View {
             Slider(value: $speed.kphAsDouble, in: 0...Double(speed.maxSpeed)) {
                 
             } onEditingChanged: { editing in
-                layout.setTrainSpeed(train, speed.requestedKph) { } 
+                layout.setTrainSpeed(train, speed.requestedKph) { }
             }
             
-            Text("\(Int(speed.requestedKph)) km/h")
+            if speed.requestedKph != speed.actualKph {
+                Text("\(Int(speed.requestedKph))/\(Int(speed.actualKph)) kph")
+            } else {
+                Text("\(Int(speed.requestedKph)) kph")
+            }
         }
     }
 }
