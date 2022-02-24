@@ -69,7 +69,7 @@ struct TrainControlView: View {
                 }.buttonStyle(.borderless)
                 
                 TrainControlSpeedView(layout: document.layout, train: train, speed: train.speed)
-            }.disabled(!document.connected)
+            }.disabled(!document.connected || train.blockId == nil)
             if let errorStatus = errorStatus {
                 Text(errorStatus)
                     .lineLimit(2)
