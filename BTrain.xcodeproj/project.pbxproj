@@ -212,6 +212,7 @@
 		A7DB7D4827C21D7C000893BA /* TrainInertiaController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7DB7D4727C21D7C000893BA /* TrainInertiaController.swift */; };
 		A7DB7D4A27C29B32000893BA /* TrainInertiaTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7DB7D4927C29B32000893BA /* TrainInertiaTests.swift */; };
 		A7DB7D4E27C714E3000893BA /* LayoutControllerCommandExecutor.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7DB7D4D27C714E2000893BA /* LayoutControllerCommandExecutor.swift */; };
+		A7DB7D5027C7647C000893BA /* View+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7DB7D4F27C7647C000893BA /* View+Extension.swift */; };
 		A7E78C4227A08F9E004D1821 /* LayoutReservation.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7E78C4127A08F9E004D1821 /* LayoutReservation.swift */; };
 		A7E78C4427A09931004D1821 /* TrainPathFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7E78C4327A09931004D1821 /* TrainPathFactory.swift */; };
 		A7E78C4627A1D669004D1821 /* TrainInstance.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7E78C4527A1D669004D1821 /* TrainInstance.swift */; };
@@ -452,6 +453,7 @@
 		A7DB7D4727C21D7C000893BA /* TrainInertiaController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainInertiaController.swift; sourceTree = "<group>"; };
 		A7DB7D4927C29B32000893BA /* TrainInertiaTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainInertiaTests.swift; sourceTree = "<group>"; };
 		A7DB7D4D27C714E2000893BA /* LayoutControllerCommandExecutor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutControllerCommandExecutor.swift; sourceTree = "<group>"; };
+		A7DB7D4F27C7647C000893BA /* View+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+Extension.swift"; sourceTree = "<group>"; };
 		A7E78C4127A08F9E004D1821 /* LayoutReservation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutReservation.swift; sourceTree = "<group>"; };
 		A7E78C4327A09931004D1821 /* TrainPathFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainPathFactory.swift; sourceTree = "<group>"; };
 		A7E78C4527A1D669004D1821 /* TrainInstance.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainInstance.swift; sourceTree = "<group>"; };
@@ -1078,6 +1080,7 @@
 				A79079A2277F87AB00771A60 /* Spacer+Extension.swift */,
 				A79466CB279B64D2006E2A4C /* MainThreadQueue.swift */,
 				A79466CD279B775D006E2A4C /* NSImage+Extension.swift */,
+				A7DB7D4F27C7647C000893BA /* View+Extension.swift */,
 				A717158E2758809C00200F92 /* Geometry */,
 			);
 			path = Utilities;
@@ -1381,6 +1384,7 @@
 				A76507E6275AC7DA0079C71A /* ScheduledMessageQueue.swift in Sources */,
 				A785C081278BC527002FD538 /* TrainSpeedView.swift in Sources */,
 				A717157C2756E5BD00200F92 /* ImportLayoutSheet.swift in Sources */,
+				A7DB7D5027C7647C000893BA /* View+Extension.swift in Sources */,
 				A7171582275738A300200F92 /* TrainShape.swift in Sources */,
 				A7F779D4272BB38F00E73275 /* LayoutFactory.swift in Sources */,
 				A7710E6D27799E4A00C08150 /* Layout+Feedbacks.swift in Sources */,

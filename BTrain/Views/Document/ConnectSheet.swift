@@ -65,10 +65,12 @@ struct ConnectSheet: View {
                         .frame(minWidth: 200)
                 }.disabled(type == .simulator)
                                 
-                HStack {
+                VStack(alignment: .leading) {
                     Toggle("Activate Turnouts", isOn: $activateTurnouts)
                     if let percentage = onConnectTasks.activateTurnountPercentage {
                         ProgressView(value: percentage)
+                    } else {
+                        ProgressView(value: 0).hidden()
                     }
                 }
             }.disabled(connecting)
