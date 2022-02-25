@@ -34,18 +34,21 @@ final class TrainInertiaController {
         self.interface = interface
     }
     
+    // TODO: remove this method for changeSpeed as they are the same
     func applySpeed(for train: Train, inertia: Bool?, completion: @escaping CompletionBlock) {
         changeSpeed(of: train, inertia: inertia, completion: completion)
     }
     
     private func changeSpeed(of train: Train, inertia: Bool?, completion: @escaping CompletionBlock) {
-        BTLogger.debug("Train \(train.name) changed speed to \(train.speed)")
+        BTLogger.debug("Train \(train.name) requested speed of \(train.speed)")
 
         changeSpeed(to: train.speed.requestedSteps, inertia: inertia ?? train.inertia) { [weak self] steps, finished in
-            train.speed.actualSteps = steps
             if let interface = self?.interface {
                 let value = interface.speedValue(for: steps, decoder: train.decoder)
                 interface.execute(command: .speed(address: train.address, decoderType: train.decoder, value: value)) {
+                    // Note: change the actualSteps only after we know the command has been sent to the Digital Controller
+                    BTLogger.debug("Train \(train.name) actual speed is \(train.speed)")
+                    train.speed.actualSteps = steps
                     if finished {
                         completion()
                     }
@@ -55,9 +58,9 @@ final class TrainInertiaController {
     }
     
     private func changeSpeed(to steps: SpeedStep, inertia: Bool, callback: @escaping SpeedChangedCallback) {
-        finished()
+        cancelPrevious()
         
-        self.stepsDidChange = callback
+        stepsDidChange = callback
         desired = steps
 
         guard inertia else {
@@ -115,6 +118,15 @@ final class TrainInertiaController {
         } else {
             stepsDidChange?(actual, false)
         }
+    }
+    
+    private func cancelPrevious() {
+        if let stepsDidChange = stepsDidChange {
+            BTLogger.debug("Interrupting in-progress speed change for \(train.name)")
+            stepsDidChange(actual, true)
+        }
+        stepsDidChange = nil
+        timer?.invalidate()
     }
     
     private func finished() {

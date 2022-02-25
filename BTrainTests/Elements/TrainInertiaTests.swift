@@ -39,6 +39,35 @@ class TrainInertiaTests: XCTestCase {
         assertChangeSpeed(train: t, from: 13, to: 0, [0], ic)
     }
     
+    func testActualSpeedChangeHappensAfterDigitalControllerResponse() {
+        let t = Train()
+        t.inertia = false
+        let mi = ManualCommandInterface()
+        let ic = TrainInertiaController(train: t, interface: mi)
+
+        t.speed.requestedSteps = SpeedStep(value: 100)
+        
+        let expectation = expectation(description: "Completed")
+        ic.applySpeed(for: t, inertia: nil) {
+            expectation.fulfill()
+        }
+        
+        wait(for: {
+            mi.onCompletion != nil
+        }, timeout: 1.0)
+        
+        // The actual speed shouldn't change yet, because the completion
+        // block for the command request hasn't been invoked yet
+        XCTAssertEqual(t.speed.actualSteps, .zero)
+        
+        mi.onCompletion!()
+        // Now the actual speed should be set
+        XCTAssertEqual(t.speed.requestedSteps, SpeedStep(value: 100))
+
+        wait(for: [expectation], timeout: 2.0)
+        XCTAssertEqual(t.speed.requestedSteps, SpeedStep(value: 100))
+    }
+    
     private func assertChangeSpeed(train: Train, from fromSteps: UInt16, to steps: UInt16, _ expectedSteps: [UInt16], _ ic: TrainInertiaController) {
         XCTAssertEqual(ic.actual.value, fromSteps)
 
@@ -64,7 +93,7 @@ class TrainInertiaTests: XCTestCase {
     
 }
 
-final class MockCommandInterface: CommandInterface {
+class MockCommandInterface: CommandInterface {
     
     var speedValues = [UInt16]()
     
@@ -117,4 +146,14 @@ final class MockCommandInterface: CommandInterface {
         
     }
             
+}
+
+class ManualCommandInterface: MockCommandInterface {
+    
+    var onCompletion: CompletionBlock?
+    
+    override func execute(command: Command, onCompletion: @escaping () -> Void) {
+        self.onCompletion = onCompletion
+    }
+    
 }
