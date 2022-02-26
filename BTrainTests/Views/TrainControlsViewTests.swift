@@ -35,11 +35,11 @@ class TrainControlsViewTests: RootViewTests {
         // Train Location
         let trainLocationView = try trainView.vStack().hStack(0).vStack(0).view(TrainControlLocationView.self, 1)
         
-        let locationText = try trainLocationView.vStack().hStack(0).text(0)
-        XCTAssertEqual(try locationText.string(), "Location: b1")
+        let locationText = try trainLocationView.vStack().hStack(0).hStack(0).text(0)
+        XCTAssertEqual(try locationText.string(), "Location:")
                 
         // Train Controls
-        let trainControlsView = try trainView.vStack().hStack(0).vStack(0).view(TrainControlView.self, 2)
+        let trainControlsView = try trainView.vStack().hStack(0).vStack(0).view(TrainControlView.self, 3)
                 
         let trainControlSpeedView = try trainControlsView.find(TrainControlSpeedView.self)
         
