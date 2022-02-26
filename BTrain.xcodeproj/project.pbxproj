@@ -582,6 +582,7 @@
 				A711B155273A28C3002FE7DB /* Command */,
 				A73AFEB92726680E00E1ED21 /* Marklin */,
 				A73AFEB82726680600E1ED21 /* Network */,
+				A717158E2758809C00200F92 /* Geometry */,
 				A7BD6257276D39CA0039B6C2 /* Utilities */,
 				A73AFE892726594800E1ED21 /* Assets.xcassets */,
 				A73AFE8E2726594800E1ED21 /* BTrain.entitlements */,
@@ -1084,7 +1085,6 @@
 				A79466CB279B64D2006E2A4C /* MainThreadQueue.swift */,
 				A79466CD279B775D006E2A4C /* NSImage+Extension.swift */,
 				A7DB7D4F27C7647C000893BA /* View+Extension.swift */,
-				A717158E2758809C00200F92 /* Geometry */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
