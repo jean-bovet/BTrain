@@ -68,7 +68,7 @@ class TrainViewTests: RootViewTests {
         _ = try sut.inspect().hStack().image(0)
         
         let image = tim.imageFor(train: t1)!
-        XCTAssertNotNil(image.jpegData())
+        XCTAssertNotNil(image.pngData())
     }
 
     func testSectionTitleView() throws {

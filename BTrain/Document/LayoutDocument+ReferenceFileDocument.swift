@@ -59,8 +59,8 @@ extension LayoutDocument: ReferenceFileDocument {
             
             for train in layout.trains {
                 if let icon = trainIconManager.imageFor(train: train) {
-                    if let jpegData = icon.jpegData() {
-                        iconDirectory.addRegularFile(withContents: jpegData, preferredFilename: "\(train.uuid).jpg")
+                    if let pngData = icon.pngData() {
+                        iconDirectory.addRegularFile(withContents: pngData, preferredFilename: "\(train.uuid).png")
                     } else if let data = icon.tiffRepresentation(using: .lzw, factor: 0) {
                         iconDirectory.addRegularFile(withContents: data, preferredFilename: "\(train.uuid).tiff")
                     }

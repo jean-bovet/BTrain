@@ -14,16 +14,16 @@ import AppKit
 
 extension NSImage {
     
-    func jpegData() -> Data? {
+    func pngData() -> Data? {
         guard let cgImage = cgImage(forProposedRect: nil, context: nil, hints: nil) else {
             return nil
         }
         
         let bitmapRep = NSBitmapImageRep(cgImage: cgImage)
-        guard let jpegData = bitmapRep.representation(using: .jpeg, properties: [:]) else {
+        guard let data = bitmapRep.representation(using: .png, properties: [:]) else {
             return nil
         }
-        return jpegData
+        return data
     }
     
 }
