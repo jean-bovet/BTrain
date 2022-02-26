@@ -41,11 +41,24 @@ final class TrainInertiaController {
             if let interface = self?.interface {
                 let value = interface.speedValue(for: steps, decoder: train.decoder)
                 interface.execute(command: .speed(address: train.address, decoderType: train.decoder, value: value)) {
-                    // Note: change the actualSteps only after we know the command has been sent to the Digital Controller
-                    BTLogger.debug("Train \(train.name) actual speed is \(train.speed)")
+                    // Change the actualSteps only after we know the command has been sent to the Digital Controller
                     train.speed.actualSteps = steps
+                    BTLogger.debug("Train \(train.name) actual speed is \(train.speed.actualKph)")
                     if finished {
-                        completion()
+                        if steps == .zero {
+                            // When stopping a locomotive, we need to wait a bit more to ensure the locomotive
+                            // has effectively stopped physically on the layout. This is because we want to callback
+                            // the `completion` block only when the locomotive has stopped (otherwise, it might continue
+                            // to move and activate an unexpected feedback because the layout think it has stopped already).
+                            // There is unfortunately no way to know without ambiguity from the Digital Controller if the
+                            // train has stopped so this extra wait time can be configured in the UX, per locomotive, and
+                            // adjusted by the user depending on the locomotive speed inertia behavior.
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                                completion()
+                            }
+                        } else {
+                            completion()
+                        }
                     }
                 }
             }

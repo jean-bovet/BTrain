@@ -18,7 +18,7 @@ struct TurnoutStateCell: View {
 
     @Binding var turnout: Turnout
     
-    // TODO: not sure why this is needed but otherwise toggling the Turnout state does not refresh this view (SwiftUI bug?)
+    // Note: not sure why this is needed but otherwise toggling the Turnout state does not refresh this view (SwiftUI bug?)
     @State var refreshUI = false
     
     var body: some View {

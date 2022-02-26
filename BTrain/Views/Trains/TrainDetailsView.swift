@@ -165,7 +165,11 @@ struct TrainDetailsSpeedSectionView: View {
                 
                 TextField("Max Speed:", value: $train.speed.maxSpeed,
                           format: .number)
-                
+
+                TextField("Stop Settle Delay:", value: $train.stopSettleDelay,
+                          format: .number)
+                    .help("Delay until the locomotive is effectively considered fully stopped after a speed of 0 has been sent to the Digital Controller")
+
                 Button("Profile…") {
                     showSpeedProfileSheet.toggle()
                 }

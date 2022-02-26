@@ -22,7 +22,7 @@ struct SectionTitleView: View {
             VStack {
                 Divider()
             }
-        }
+        }.padding([.top])
     }
 }
 
