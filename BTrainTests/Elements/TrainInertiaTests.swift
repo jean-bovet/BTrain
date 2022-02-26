@@ -48,7 +48,7 @@ class TrainInertiaTests: XCTestCase {
         t.speed.requestedSteps = SpeedStep(value: 100)
         
         let expectation = expectation(description: "Completed")
-        ic.applySpeed(for: t, inertia: nil) {
+        ic.changeSpeed(of: t, inertia: nil) {
             expectation.fulfill()
         }
         
@@ -78,7 +78,7 @@ class TrainInertiaTests: XCTestCase {
         train.speed.requestedSteps = SpeedStep(value: steps)
         
         let expectation = expectation(description: "Completed")
-        ic.applySpeed(for: train, inertia: nil) {
+        ic.changeSpeed(of: train, inertia: nil) {
             expectation.fulfill()
         }
 

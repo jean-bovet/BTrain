@@ -289,10 +289,11 @@ extension LayoutController: LayoutCommandExecuting {
     
     func sendTrainSpeed(train: Train, inertia: Bool?, completion: @escaping CompletionBlock) {
         if let controller = controllers[train.id] {
-            controller.inertiaController.applySpeed(for: train, inertia: inertia, completion: completion)
+            controller.inertiaController.changeSpeed(of: train, inertia: inertia, completion: completion)
         } else {
-            // TODO
-            fatalError()
+            let msg = "There is no TrainController for \(train.name)"
+            assertionFailure(msg)
+            BTLogger.error(msg)
         }
     }
     

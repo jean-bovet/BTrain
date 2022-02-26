@@ -33,13 +33,8 @@ final class TrainInertiaController {
         self.train = train
         self.interface = interface
     }
-    
-    // TODO: remove this method for changeSpeed as they are the same
-    func applySpeed(for train: Train, inertia: Bool?, completion: @escaping CompletionBlock) {
-        changeSpeed(of: train, inertia: inertia, completion: completion)
-    }
-    
-    private func changeSpeed(of train: Train, inertia: Bool?, completion: @escaping CompletionBlock) {
+        
+    func changeSpeed(of train: Train, inertia: Bool?, completion: @escaping CompletionBlock) {
         BTLogger.debug("Train \(train.name) requested speed of \(train.speed)")
 
         changeSpeed(to: train.speed.requestedSteps, inertia: inertia ?? train.inertia) { [weak self] steps, finished in
