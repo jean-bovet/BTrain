@@ -97,13 +97,14 @@ extension TrainController {
         }
         
         if train.wagonsPushedByLocomotive {
-            // TODO: think about how to report this to the UX next to the train. This can be reproduced by having a turnout in the wrong state in front of the train and trying to start the the train manually.
+            train.runtimeInfo = "Stopped because no next block detected"
             BTLogger.warning("No next block detected, stopping \(train.name) by precaution.")
             return try stop(completely: true)
         } else {
             // If there are no possible next block detected, we need to stop the train
             // when it reaches the end of the block to avoid a collision.
             if try layout.atEndOfBlock(train: train) {
+                train.runtimeInfo = "Stopped because no next block detected"
                 BTLogger.warning("No next block detected, stopping \(train.name) by precaution.")
                 return try stop(completely: true)
             }

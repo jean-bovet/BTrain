@@ -19,9 +19,7 @@ struct TrainControlLocationView: View {
     @ObservedObject var layout: Layout
         
     @ObservedObject var train: Train
-    
-    @State private var errorStatus: String?
-    
+        
     @State private var setTrainLocationSheet = false
     
     var trainLocation: String {
@@ -41,8 +39,12 @@ struct TrainControlLocationView: View {
                     }
                     Spacer()
                 } else {
-                    Text("Location: \(trainLocation)")
-                    
+                    HStack {
+                        Text("Location:")
+                            .font(Font.body.weight(.medium))
+                        Text("\(trainLocation)")
+                    }
+
                     Spacer()
 
                     Button() {
@@ -56,9 +58,9 @@ struct TrainControlLocationView: View {
                     Button() {
                         do {
                             try layout.remove(trainID: train.id)
-                            errorStatus = nil
+                            train.runtimeInfo = nil
                         } catch {
-                            errorStatus = error.localizedDescription
+                            train.runtimeInfo = error.localizedDescription
                         }
                     } label: {
                         Image(systemName: "minus.circle")
@@ -67,10 +69,6 @@ struct TrainControlLocationView: View {
                     .buttonStyle(.borderless)
                     .disabled(train.blockId == nil)
                 }
-            }
-            if let errorStatus = errorStatus {
-                Text(errorStatus)
-                    .foregroundColor(.red)
             }
         }.sheet(isPresented: $setTrainLocationSheet) {
             TrainControlSetLocationSheet(layout: layout, controller: controller, train: train)

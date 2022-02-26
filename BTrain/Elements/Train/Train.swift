@@ -92,7 +92,12 @@ final class Train: Element, ObservableObject {
     
     // Name of the train
     @Published var name = ""
-        
+    
+    // Runtime-information only. This is not stored and is only
+    // used to display transient information when the train
+    // is running in the layout.
+    @Published var runtimeInfo: String?
+    
     // Address of the train
     @Published var address: UInt32 = 0
       

@@ -43,20 +43,18 @@ struct TrainControlView: View {
 
     @ObservedObject var train: Train
 
-    @State private var errorStatus: String?
-
     func trainDirectionToggle() {
         do {
             document.layout.setLocomotiveDirection(train, forward: !train.directionForward)
             try document.layout.toggleTrainDirectionInBlock(train)
-            errorStatus = nil
+            train.runtimeInfo = nil
         } catch {
-            errorStatus = error.localizedDescription
-        }        
+            train.runtimeInfo = error.localizedDescription
+        }
     }
     
     var body: some View {
-        VStack {
+        VStack(alignment: .leading) {
             HStack {
                 Button {
                     trainDirectionToggle()
@@ -70,12 +68,6 @@ struct TrainControlView: View {
                 
                 TrainControlSpeedView(layout: document.layout, train: train, speed: train.speed)
             }.disabled(!document.connected || train.blockId == nil)
-            if let errorStatus = errorStatus {
-                Text(errorStatus)
-                    .lineLimit(2)
-                    .fixedSize(horizontal: false, vertical: true)
-                    .foregroundColor(.red)
-            }
         }
     }
 }
