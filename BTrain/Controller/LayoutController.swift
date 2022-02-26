@@ -294,6 +294,7 @@ extension LayoutController: LayoutCommandExecuting {
             let msg = "There is no TrainController for \(train.name)"
             assertionFailure(msg)
             BTLogger.error(msg)
+            completion()
         }
     }
     

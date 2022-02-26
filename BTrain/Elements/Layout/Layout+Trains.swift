@@ -263,6 +263,7 @@ extension Layout {
         }
                 
         guard train.state != .stopped && train.state != .stopping else {
+            completion()
             return
         }
         
