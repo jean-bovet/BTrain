@@ -189,6 +189,8 @@ final class LayoutASCIIProducer {
             return "🚂\(train.id)"
         case .braking:
             return "🟨🚂\(train.id)"
+        case .stopping:
+            return "🟧🚂\(train.id)"
         case .stopped:
             return "🛑🚂\(train.id)"
         }

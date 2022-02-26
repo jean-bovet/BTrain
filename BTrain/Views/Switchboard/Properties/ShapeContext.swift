@@ -96,21 +96,15 @@ final class ShapeContext {
     }
     
     func trainColor(_ train: Train) -> CGColor {
-        if train.manualScheduling {
-            if train.speed.actualKph > 0 {
-                return NSColor.systemGreen.cgColor
-            } else {
-                return NSColor.systemRed.cgColor
-            }
-        } else {
-            switch(train.state) {
-            case .running:
-                return NSColor.systemGreen.cgColor
-            case .braking:
-                return NSColor.systemYellow.cgColor
-            case .stopped:
-                return NSColor.systemRed.cgColor
-            }
+        switch(train.state) {
+        case .running:
+            return NSColor.systemGreen.cgColor
+        case .braking:
+            return NSColor.systemYellow.cgColor
+        case .stopping:
+            return NSColor.systemOrange.cgColor
+        case .stopped:
+            return NSColor.systemRed.cgColor
         }
     }
 }

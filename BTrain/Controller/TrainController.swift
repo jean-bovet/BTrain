@@ -332,10 +332,7 @@ final class TrainController {
     }
         
     private func handleTrainStop() throws -> Result {
-        // Check the requested speed to see if it is greated than 0.
-        // This is because the actual speed might be still > 0 if the
-        // train takes some time to break.
-        guard train.speed.requestedKph > 0 else {
+        guard train.state != .stopped && train.state != .stopping else {
             return .none
         }
                 
@@ -393,10 +390,7 @@ final class TrainController {
     }
     
     func handleTrainMove() throws -> Result {
-        // Monitor the actual speed because even if the desired speed is set to 0,
-        // the train might still be slowing down and we must account for that (it
-        // could move inside the block or even move to another block while braking).
-        guard train.speed.actualKph > 0 else {
+        guard train.state != .stopped else {
             return .none
         }
                 
@@ -434,10 +428,7 @@ final class TrainController {
     // - Occupied and leading reservation blocks are updated.
     // - Stop trigger is evaluated depending on the nature of the route
     private func handleTrainMoveToNextBlock(route: Route) throws -> Result {
-        // Monitor the actual speed because even if the desired speed is set to 0,
-        // the train might still be slowing down and we must account for that (it
-        // could move inside the block or even move to another block while braking).
-        guard train.speed.actualKph > 0 else {
+        guard train.state != .stopped else {
             return .none
         }
         

@@ -36,22 +36,36 @@ class SwitchboardRenderingTests: XCTestCase {
         nsContext.cgContext.drawText(at: .zero, text: "Hello", color: .black, fontSize: 12.0)
     }
 
-    func testShapeContext() {
+    func testTrainColorAutomaticMode() {
         let context = ShapeContext()
         let t = Train()
-        
-        t.speed.actualKph = 0
-        XCTAssertEqual(context.trainColor(t), NSColor.systemRed.cgColor)
-        t.speed.actualKph = 100
-        XCTAssertEqual(context.trainColor(t), NSColor.systemGreen.cgColor)
-        
+                
         t.scheduling = .automatic(finishing: false)
-        t.state = .stopped
-        XCTAssertEqual(context.trainColor(t), NSColor.systemRed.cgColor)
+        
         t.state = .running
         XCTAssertEqual(context.trainColor(t), NSColor.systemGreen.cgColor)
         t.state = .braking
         XCTAssertEqual(context.trainColor(t), NSColor.systemYellow.cgColor)
+        t.state = .stopping
+        XCTAssertEqual(context.trainColor(t), NSColor.systemOrange.cgColor)
+        t.state = .stopped
+        XCTAssertEqual(context.trainColor(t), NSColor.systemRed.cgColor)
+    }
+    
+    func testTrainColorManualMode() {
+        let context = ShapeContext()
+        let t = Train()
+                        
+        t.scheduling = .manual
+        
+        t.state = .running
+        XCTAssertEqual(context.trainColor(t), NSColor.systemGreen.cgColor)
+        t.state = .braking
+        XCTAssertEqual(context.trainColor(t), NSColor.systemYellow.cgColor)
+        t.state = .stopping
+        XCTAssertEqual(context.trainColor(t), NSColor.systemOrange.cgColor)
+        t.state = .stopped
+        XCTAssertEqual(context.trainColor(t), NSColor.systemRed.cgColor)
     }
     
 }

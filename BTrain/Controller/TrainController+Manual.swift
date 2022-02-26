@@ -20,10 +20,14 @@ extension TrainController {
     func handleManualOperation() throws -> Result {
         var result: Result = .none
         
-        if try handleManualTrainMoveToNextBlock() == .processed {
+        if handleManualTrainState() == .processed {
             result = .processed
         }
         
+        if try handleManualTrainMoveToNextBlock() == .processed {
+            result = .processed
+        }
+
         if try handleTrainMove() == .processed {
             result = .processed
         }
@@ -35,8 +39,20 @@ extension TrainController {
         return result
     }
         
+    private func handleManualTrainState() -> Result {
+        if train.state == .stopped && train.speed.actualKph > 0 {
+            train.state = .running
+            return .processed
+        } else if train.state != .stopped && train.state != .stopping && train.speed.actualKph == 0 {
+            train.state = .stopped
+            return .processed
+        }
+        
+        return .none
+    }
+    
     private func handleManualTrainMoveToNextBlock() throws -> Result {
-        guard train.speed.actualKph > 0 else {
+        guard train.state != .stopped else {
             return .none
         }
                 
@@ -68,7 +84,7 @@ extension TrainController {
     }
     
     private func handleManualTrainStop() throws -> Result {
-        guard train.speed.actualKph > 0 else {
+        guard train.state != .stopped && train.state != .stopping else {
             return .none
         }
                 

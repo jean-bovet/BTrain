@@ -77,6 +77,9 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
         trainArrayChangesCancellable = cancellable
     }
 
+    // Register to detect when a train is assigned to a different block,
+    // which happens when a train moves from one block to another or when
+    // a train is assigned a block for the first time (put into the layout).
     func registerForTrainBlockChange() {
         cancellables.removeAll()
         for train in layout.trains {
@@ -99,7 +102,7 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
         // Update existing trains, add new ones
         for train in layout.trains.filter({$0.blockId != nil}) {
             if let simTrain = trains.first(where: { $0.train.id == train.id }) {
-                simTrain.speed = .zero
+                simTrain.speed = train.speed.actualSteps
                 simTrain.directionForward = train.directionForward
             } else {
                 trains.append(SimulatorTrain(train: train))

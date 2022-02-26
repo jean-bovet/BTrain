@@ -184,10 +184,11 @@ final class Train: Element, ObservableObject {
     enum State {
         case running
         case braking
+        case stopping
         case stopped
     }
     
-    // The state of the train, which is only used when in automatic schedule.
+    // The state of the train
     @Published var state: State = .stopped
 
     // The block where the locomotive is located
