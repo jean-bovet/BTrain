@@ -58,8 +58,8 @@ class SimulatorViewTests: RootViewTests {
         wait(for: t1, directionForward: true)
         
         // Now tap on the direction of the first train in the train list and see if it is reflected in the simulator
-        let trainControlsView = try sut.inspect().find(TrainControlView.self)
-        let trainToggleButton = try trainControlsView.vStack().hStack(0).button(0)
+        let trainSpeedView = try sut.inspect().find(TrainControlSpeedView.self)
+        let trainToggleButton = try trainSpeedView.vStack().hStack(0).button(0)
         
         try trainToggleButton.tap()
         XCTAssertFalse(t1.directionForward)
@@ -82,8 +82,7 @@ class SimulatorViewTests: RootViewTests {
         wait(for: t1, kph: 0)
         
         // Same speed check but from the train list
-        let trainSpeedView = try trainControlsView.find(TrainControlSpeedView.self)
-        let trainSlider = try trainSpeedView.hStack().slider(0)
+        let trainSlider = try trainSpeedView.vStack().hStack(0).hStack(1).slider(0)
         try trainSlider.setValue(100)
         try trainSlider.callOnEditingChanged()
         XCTAssertEqual(t1.speed.requestedKph, t1.speed.maxSpeed)

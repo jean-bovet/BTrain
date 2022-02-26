@@ -13,35 +13,11 @@
 import SwiftUI
 
 struct TrainControlSpeedView: View {
-
-    let layout: Layout
-    let train: Train
-    
-    @ObservedObject var speed: TrainSpeed
-    
-    var body: some View {
-        HStack {
-            // TODO: provide a way to visualize the actual Kph speed
-            Slider(value: $speed.kphAsDouble, in: 0...Double(speed.maxSpeed)) {
-                
-            } onEditingChanged: { editing in
-                layout.setTrainSpeed(train, speed.requestedKph) { }
-            }
-            
-            if speed.requestedKph != speed.actualKph {
-                Text("\(Int(speed.requestedKph))/\(Int(speed.actualKph)) kph")
-            } else {
-                Text("\(Int(speed.requestedKph)) kph")
-            }
-        }
-    }
-}
-
-struct TrainControlView: View {
     
     @ObservedObject var document: LayoutDocument
 
     @ObservedObject var train: Train
+    @ObservedObject var speed: TrainSpeed
 
     func trainDirectionToggle() {
         do {
@@ -66,7 +42,20 @@ struct TrainControlView: View {
                     }
                 }.buttonStyle(.borderless)
                 
-                TrainControlSpeedView(layout: document.layout, train: train, speed: train.speed)
+                HStack {
+                    // TODO: provide a way to visualize the actual Kph speed
+                    Slider(value: $speed.kphAsDouble, in: 0...Double(speed.maxSpeed)) {
+                        
+                    } onEditingChanged: { editing in
+                        document.layout.setTrainSpeed(train, speed.requestedKph) { }
+                    }
+                    
+                    if speed.requestedKph != speed.actualKph {
+                        Text("\(Int(speed.requestedKph))/\(Int(speed.actualKph)) kph")
+                    } else {
+                        Text("\(Int(speed.requestedKph)) kph")
+                    }
+                }
             }.disabled(!document.connected || train.blockId == nil)
         }
     }
@@ -95,6 +84,6 @@ struct TrainControlView_Previews: PreviewProvider {
     }()
 
     static var previews: some View {
-        TrainControlView(document: doc, train: doc.layout.trains[0])
+        TrainControlSpeedView(document: doc, train: doc.layout.trains[0], speed: doc.layout.trains[0].speed)
     }
 }

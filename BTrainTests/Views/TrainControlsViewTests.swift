@@ -16,7 +16,6 @@ import ViewInspector
 
 @testable import BTrain
 
-extension TrainControlSpeedView: Inspectable { }
 extension TrainControlActionsView: Inspectable { }
 extension TrainControlRouteActionsView: Inspectable { }
 extension TrainControlSetLocationSheet: Inspectable { }
@@ -39,13 +38,11 @@ class TrainControlsViewTests: RootViewTests {
         XCTAssertEqual(try locationText.string(), "Location:")
                 
         // Train Controls
-        let trainControlsView = try trainView.vStack().hStack(0).vStack(0).view(TrainControlView.self, 3)
-                
-        let trainControlSpeedView = try trainControlsView.find(TrainControlSpeedView.self)
-        
-        XCTAssertEqual(try trainControlSpeedView.hStack().text(1).string(), "0 kph")
+        let trainControlSpeedView = try trainView.vStack().hStack(0).vStack(0).view(TrainControlSpeedView.self, 2)
+                        
+        XCTAssertEqual(try trainControlSpeedView.vStack().hStack(0).hStack(1).text(1).string(), "0 kph")
         layout.trains[0].speed.requestedKph = 79
-        XCTAssertEqual(try trainControlSpeedView.hStack().text(1).string(), "79/0 kph")
+        XCTAssertEqual(try trainControlSpeedView.vStack().hStack(0).hStack(1).text(1).string(), "79/0 kph")
 
         // TrainRouteView
         let trainRouteView = try trainView.vStack().view(TrainControlRouteView.self, 1)

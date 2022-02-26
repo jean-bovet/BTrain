@@ -16,6 +16,8 @@ struct TrainControlStateView: View {
     
     @ObservedObject var train: Train
     
+    let size = 10.0
+    
     var stateString: String {
         switch train.state {
         case .running:
@@ -25,7 +27,7 @@ struct TrainControlStateView: View {
         case .stopping:
             return "Stopping"
         case .stopped:
-            return "-"
+            return "Stopped"
         }
     }
     
@@ -41,14 +43,58 @@ struct TrainControlStateView: View {
         return stateString
     }
     
+    var stateColor: Color {
+        switch(train.state) {
+        case .running:
+            return .green
+        case .braking:
+            return .yellow
+        case .stopping:
+            return .orange
+        case .stopped:
+            return .red
+        }
+    }
+    
     var body: some View {
         HStack {
-            Text("Status:")
-                .font(Font.body.weight(.medium))
-            Text("\(train.runtimeInfo ?? statusInformation)")
-                .lineLimit(2)
-                .fixedSize(horizontal: false, vertical: true)
+            if let runtimeInfo = train.runtimeInfo {
+                Text("􀇾")
+                    .help(runtimeInfo)
+            }
+            Circle()
+                .frame(width: size, height: size)
+                .foregroundColor(stateColor)
+                .help(statusInformation)
         }
     }
 
+}
+
+struct TrainControlStateView_Previews: PreviewProvider {
+    
+    static func train(with state: Train.State, _ runtimeInfo: String? = nil) -> Train {
+        let t = Train()
+        t.state = state
+        t.runtimeInfo = runtimeInfo
+        return t
+    }
+    
+    static var previews: some View {
+        Group {
+            TrainControlStateView(train: train(with: .stopped))
+        }
+        Group {
+            TrainControlStateView(train: train(with: .stopped, "There was an error"))
+        }
+        Group {
+            TrainControlStateView(train: train(with: .running))
+        }
+        Group {
+            TrainControlStateView(train: train(with: .braking))
+        }
+        Group {
+            TrainControlStateView(train: train(with: .stopping))
+        }
+    }
 }

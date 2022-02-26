@@ -22,19 +22,21 @@ struct TrainControlContainerView: View {
     
     var body: some View {
         VStack(alignment: .leading) {
-            HStack {
+            HStack(alignment: .top) {
                 VStack(alignment: .leading) {
-                    Text(train.name).font(.headline)
-                    TrainControlLocationView(controller: document.layoutController, layout: document.layout, train: train)                    
-                    TrainControlStateView(train: train)
-                    TrainControlView(document: document, train: train)
+                    HStack {
+                        Text(train.name).font(.headline)
+                        Spacer()
+                        TrainControlStateView(train: train)
+                    }
+                    TrainControlLocationView(controller: document.layoutController, layout: document.layout, train: train)
+                    TrainControlSpeedView(document: document, train: train, speed: train.speed)
                 }
 
                 TrainIconView(trainIconManager: document.trainIconManager, train: train, size: .medium, hideIfNotDefined: true)
             }
-            if train.blockId != nil {
-                TrainControlRouteView(document: document, train: train)
-            }
+            TrainControlRouteView(document: document, train: train)
+                .disabled(train.blockId == nil)
         }
     }
 }

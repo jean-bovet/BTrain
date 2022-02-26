@@ -27,7 +27,7 @@ extension FeedbackView: Inspectable { }
 extension TrainListView: Inspectable { }
 extension TrainDetailsView: Inspectable { }
 extension TrainControlContainerView: Inspectable { }
-extension TrainControlView: Inspectable { }
+extension TrainControlSpeedView: Inspectable { }
 extension TrainControlLocationView: Inspectable { }
 extension TrainControlRouteView: Inspectable { }
 extension UndoProvider: Inspectable { }

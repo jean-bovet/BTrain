@@ -69,7 +69,7 @@
 		A73E0825276B99A8005F9D64 /* BlockAllFeedbacksView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A73E0824276B99A8005F9D64 /* BlockAllFeedbacksView.swift */; };
 		A73E0827276BAED3005F9D64 /* SwitchboardRenderingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A73E0826276BAED3005F9D64 /* SwitchboardRenderingTests.swift */; };
 		A73E0829276BF554005F9D64 /* TrainControlSetLocationSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A73E0828276BF554005F9D64 /* TrainControlSetLocationSheet.swift */; };
-		A744D13327659208005C2F37 /* TrainControlView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A744D13227659208005C2F37 /* TrainControlView.swift */; };
+		A744D13327659208005C2F37 /* TrainControlSpeedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A744D13227659208005C2F37 /* TrainControlSpeedView.swift */; };
 		A744D13527659330005C2F37 /* TrainControlRouteView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A744D13427659330005C2F37 /* TrainControlRouteView.swift */; };
 		A744D1372765C5A3005C2F37 /* LayoutError.swift in Sources */ = {isa = PBXBuildFile; fileRef = A744D1362765C5A3005C2F37 /* LayoutError.swift */; };
 		A744D13B276714A2005C2F37 /* DiagnosticsSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A744D13A276714A2005C2F37 /* DiagnosticsSheet.swift */; };
@@ -315,7 +315,7 @@
 		A73E0824276B99A8005F9D64 /* BlockAllFeedbacksView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockAllFeedbacksView.swift; sourceTree = "<group>"; };
 		A73E0826276BAED3005F9D64 /* SwitchboardRenderingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwitchboardRenderingTests.swift; sourceTree = "<group>"; };
 		A73E0828276BF554005F9D64 /* TrainControlSetLocationSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainControlSetLocationSheet.swift; sourceTree = "<group>"; };
-		A744D13227659208005C2F37 /* TrainControlView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainControlView.swift; sourceTree = "<group>"; };
+		A744D13227659208005C2F37 /* TrainControlSpeedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainControlSpeedView.swift; sourceTree = "<group>"; };
 		A744D13427659330005C2F37 /* TrainControlRouteView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainControlRouteView.swift; sourceTree = "<group>"; };
 		A744D1362765C5A3005C2F37 /* LayoutError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutError.swift; sourceTree = "<group>"; };
 		A744D13A276714A2005C2F37 /* DiagnosticsSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiagnosticsSheet.swift; sourceTree = "<group>"; };
@@ -681,7 +681,7 @@
 				A7F779F72732407E00E73275 /* TrainControlContainerView.swift */,
 				A76507E7275AD1FE0079C71A /* TrainControlLocationView.swift */,
 				A7DB7D5127C9C0C6000893BA /* TrainControlStateView.swift */,
-				A744D13227659208005C2F37 /* TrainControlView.swift */,
+				A744D13227659208005C2F37 /* TrainControlSpeedView.swift */,
 				A73E0828276BF554005F9D64 /* TrainControlSetLocationSheet.swift */,
 				A744D13427659330005C2F37 /* TrainControlRouteView.swift */,
 				A7710E5B27784B1900C08150 /* TrainControlRouteActionsView.swift */,
@@ -1345,7 +1345,7 @@
 				A74CCC6C272A5A01004E58F5 /* Train.swift in Sources */,
 				A74C0E7E275C9E900043FEE5 /* MarklinLocomotiveConfig.swift in Sources */,
 				A785C079278A6468002FD538 /* LayoutDocument+ReferenceFileDocument.swift in Sources */,
-				A744D13327659208005C2F37 /* TrainControlView.swift in Sources */,
+				A744D13327659208005C2F37 /* TrainControlSpeedView.swift in Sources */,
 				A7841378273E4EB900381341 /* TurnoutShape.swift in Sources */,
 				A744D1372765C5A3005C2F37 /* LayoutError.swift in Sources */,
 				A7218071275D398000831998 /* CS2DocumentParser.swift in Sources */,
