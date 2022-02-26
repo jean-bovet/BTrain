@@ -20,7 +20,7 @@ final class ConnectorPlug {
     var freePoint: CGPoint?
         
     var position: CGPoint {
-        if let point = socketPosition() {
+        if let point = connectorSocket?.center {
             return point
         } else {
             return freePoint ?? .zero
@@ -28,35 +28,35 @@ final class ConnectorPlug {
     }
     
     var control: CGPoint {
-        if let point = socketControlPoint() {
+        if let point = connectorSocket?.controlPoint {
             return point
         } else {
             return freePoint ?? .zero
         }
     }
-    
+
+    var linePoint: CGPoint {
+        if let point = connectorSocket?.linePoint {
+            return point
+        } else {
+            return freePoint ?? .zero
+        }
+    }
+
     var shape: CGPath {
         let size = 10.0
         let shape = CGPath(ellipseIn: CGRect(x: position.x-size/2, y: position.y-size/2, width: size, height: size), transform: nil)
         return shape
     }
     
-    func socketControlPoint() -> CGPoint? {
+    var connectorSocket: ConnectorSocket? {
         guard let socket = socket else {
             return nil
         }
         
-        return socket.shape.sockets.first(where: { $0.id == socket.socketId })?.controlPoint
+        return socket.shape.sockets.first(where: { $0.id == socket.socketId })
     }
-
-    func socketPosition() -> CGPoint? {
-        guard let socket = socket else {
-            return nil
-        }
-        
-        return socket.shape.sockets.first(where: { $0.id == socket.socketId })?.center
-    }
-
+    
     init(id: Int) {
         self.id = id
     }

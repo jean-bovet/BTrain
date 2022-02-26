@@ -33,10 +33,17 @@ final class LinkShape: Shape, PluggableShape {
     
     var path: CGPath {
         let path = CGMutablePath()
-        path.move(to: from.position)
-        path.addCurve(to: to.position,
-                      control1: from.control,
-                      control2: to.control)
+        if let p = Line2D.linesCross(start1: from.position, end1: from.linePoint, start2: to.position, end2: to.linePoint) {
+            path.move(to: from.position)
+            path.addCurve(to: to.position,
+                          control1: p,
+                          control2: p)
+        } else {
+            path.move(to: from.position)
+            path.addCurve(to: to.position,
+                          control1: from.control,
+                          control2: to.control)
+        }
         return path
     }
     

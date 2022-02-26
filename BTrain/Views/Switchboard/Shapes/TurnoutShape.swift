@@ -48,7 +48,8 @@ final class TurnoutShape: Shape, DraggableShape, ConnectableShape {
             let vn = v.normalized
             let l = v.magnitude * 4
             let ctrlPoint = CGPoint(x: center.x + vn.x * l, y: center.y + vn.y * l)
-            return ConnectorSocket.create(id: index, center: point, controlPoint: ctrlPoint)
+            let linePoint = CGPoint(x: center.x + vn.x * l * 4, y: center.y + vn.y * l * 4)
+            return ConnectorSocket.create(id: index, center: point, controlPoint: ctrlPoint, linePoint: linePoint)
         }
     }
     

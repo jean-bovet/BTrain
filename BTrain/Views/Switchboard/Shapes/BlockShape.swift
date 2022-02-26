@@ -124,7 +124,9 @@ final class BlockShape: Shape, DraggableShape, ConnectableShape {
             .rotate(by: rotationAngle, around: center)
         let ctrlPoint = CGPoint(x: center.x + size.width, y: center.y)
             .rotate(by: rotationAngle, around: center)
-        return ConnectorSocket.create(id: Block.nextSocket, center: socketCenter, controlPoint: ctrlPoint)
+        let linePoint = CGPoint(x: center.x + size.width * 4, y: center.y)
+            .rotate(by: rotationAngle, around: center)
+        return ConnectorSocket.create(id: Block.nextSocket, center: socketCenter, controlPoint: ctrlPoint, linePoint: linePoint)
     }
 
     var previousSocket: ConnectorSocket {
@@ -132,7 +134,9 @@ final class BlockShape: Shape, DraggableShape, ConnectableShape {
             .rotate(by: rotationAngle, around: center)
         let ctrlPoint = CGPoint(x: center.x - size.width, y: center.y)
             .rotate(by: rotationAngle, around: center)
-        return ConnectorSocket.create(id: Block.previousSocket, center: socketCenter, controlPoint: ctrlPoint)
+        let linePoint = CGPoint(x: center.x - size.width * 4, y: center.y)
+            .rotate(by: rotationAngle, around: center)
+        return ConnectorSocket.create(id: Block.previousSocket, center: socketCenter, controlPoint: ctrlPoint, linePoint: linePoint)
     }
         
     var nextSocketInstance: ConnectorSocketInstance {
