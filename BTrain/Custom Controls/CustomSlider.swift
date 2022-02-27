@@ -123,6 +123,6 @@ extension Double {
         value /= Double(fromRange.1 - fromRange.0)
         value *= toRange.1 - toRange.0
         value += toRange.0
-        return value
+        return min(toRange.1, value)
     }
 }

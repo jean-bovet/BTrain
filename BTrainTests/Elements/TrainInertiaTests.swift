@@ -25,6 +25,11 @@ class TrainInertiaTests: XCTestCase {
         assertChangeSpeed(train: t, from: 13, to: 14, [14], ic)
         assertChangeSpeed(train: t, from: 14, to: 13, [13], ic)
         assertChangeSpeed(train: t, from: 13, to: 0, [9, 5, 1, 0], ic)
+        
+        // Simulate a change in the actual speed by the Digital Controller.
+        // This means the TrainInertiaController needs to take that into account.
+        t.speed.actualSteps = SpeedStep(value: 10)
+        assertChangeSpeed(train: t, from: 0, to: 20, [14, 18, 20], ic)
     }
 
     func testWithNoInertia() {

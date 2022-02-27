@@ -23,7 +23,7 @@ struct SpeedSlider: View {
 
     var body: some View {
         HStack {
-            CustomSlider(value: $speed.kphAsDouble, secondaryValue: $speed.actualKphAsDouble, range: (0, Double(speed.maxSpeed)), knobWidth: knobWidth + 1, onEditingChanged: onEditingChanged) { modifiers in
+            CustomSlider(value: $speed.kphAsDouble, secondaryValue: $speed.actualKphAsDouble, range: (0, Double(speed.maxSpeed)), knobWidth: knobWidth, onEditingChanged: onEditingChanged) { modifiers in
                 ZStack {
                     Rectangle().foregroundColor(Color(NSColor.windowBackgroundColor)).frame(height: 8).cornerRadius(4)
                     
@@ -44,7 +44,7 @@ struct SpeedSlider: View {
                     ZStack {
                         Rectangle()
                             .fill(Color.white)
-                            .cornerRadius(1.5)
+                            .cornerRadius(4)
                             .shadow(radius: 1.2)
                             .frame(width: knobWidth, height: knobHeight)
                         VStack {
@@ -54,7 +54,7 @@ struct SpeedSlider: View {
                     }
                     .modifier(modifiers.knob)
                 }
-                .cornerRadius(3)
+                .padding([.leading, .trailing], 4)
             }
             .frame(height: knobHeight + 4)
             Text("kph")
@@ -107,11 +107,19 @@ struct SpeedSlider_Previews: PreviewProvider {
         return t
     }()
 
+    static let t4: Train = {
+        let t = Train()
+        t.speed.requestedKph = t.speed.maxSpeed
+        t.speed.actualKph = t.speed.maxSpeed
+        return t
+    }()
+
     static var previews: some View {
         VStack {
             SpeedSlider(speed: t1.speed)
             SpeedSlider(speed: t2.speed)
             SpeedSlider(speed: t3.speed)
+            SpeedSlider(speed: t4.speed)
         }.padding()
     }
 }
