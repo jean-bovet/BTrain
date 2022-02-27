@@ -67,6 +67,7 @@ An embedded Marklin Central 3 station simulator allows BTrain to simulate a layo
 - [Application icon](https://thenounproject.com/icon/train-3130173/) (c) Manaqib S from NounProject.com
 - [GzipSwift](https://github.com/1024jp/GzipSwift) (c) 2014-2020 1024jp
 - [Undo Provider](https://github.com/LostMoa/UndoProviderExample) (c) 2020 by Matthaus Woolard
+- [Custom Slider](https://betterprogramming.pub/reusable-components-in-swiftui-custom-sliders-8c115914b856) (c) 2020 Aubree Quiroz
 - Unit tests use [ViewInspector](https://github.com/nalexn/ViewInspector) by Alexey Naumov
     
 **Copyright 2021-22 Jean Bovet**
