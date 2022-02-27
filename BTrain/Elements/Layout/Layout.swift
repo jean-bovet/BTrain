@@ -214,4 +214,20 @@ extension Layout: Codable {
         try container.encode(transitions, forKey: CodingKeys.transitions)
     }
     
+    func restore(from data: Data) throws {
+        apply(other: try Layout.decode(from: data))
+    }
+    
+    static func decode(from data: Data) throws -> Layout {
+        let decoder = JSONDecoder()
+        let layout = try decoder.decode(Layout.self, from: data)
+        return layout
+    }
+    
+    func encode() throws -> Data {
+        let encoder = JSONEncoder()
+        let data = try encoder.encode(self)
+        return data
+    }
+    
 }

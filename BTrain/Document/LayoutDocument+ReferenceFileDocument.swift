@@ -80,15 +80,11 @@ extension LayoutDocument: ReferenceFileDocument {
         guard contentType == .json else {
             throw CocoaError(.fileReadUnknown)
         }
-        let decoder = JSONDecoder()
-        let layout = try decoder.decode(Layout.self, from: data)
-        return layout
+        return try Layout.decode(from: data)
     }
     
     func snapshot(contentType: UTType) throws -> Data {
-        let encoder = JSONEncoder()
-        let data = try encoder.encode(layout)
-        return data
+        return try layout.encode()
     }
 
 }

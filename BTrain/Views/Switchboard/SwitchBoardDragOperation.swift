@@ -47,8 +47,13 @@ final class SwitchBoardDragOperation {
     // The delta rotation value when the shape is rotated
     var deltaRotationAngle: CGFloat = 0
     
+    // State of the drag operation
     var dragState: DragState = .none
         
+    // Snapshot of the layout used to restore state in
+    // case the user undo the last drag operation
+    var snapshot: Data?
+    
     init(layout: Layout, state: SwitchBoard.State, provider: ShapeProviding, renderer: SwitchBoardRenderer) {
         self.layout = layout
         self.state = state
@@ -64,9 +69,22 @@ final class SwitchBoardDragOperation {
         }
         return false
     }
+
+    func saveState() {
+        snapshot = try? layout.encode()
+    }
     
+    func restoreState() {
+        if let snapshot = snapshot {
+            try? layout.restore(from: snapshot)
+        }
+        snapshot = nil
+    }
+
     func onDragChanged(location: CGPoint, translation: CGSize) {
         if dragState == .none {
+            saveState()
+            
             // Try to see if there is an action that a shape can perform
             // at the location of the tap, and if so, ignore the rest of the gesture.
             if !state.editable {

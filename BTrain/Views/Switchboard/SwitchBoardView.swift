@@ -66,7 +66,7 @@ struct SwitchBoardView: View {
                 .onEnded { _ in
                     switchboard.drag.onDragEnded()
                     undoManager?.registerUndo(withTarget: layout, handler: { layout in
-                        // TODO: keep track of what has changed
+                        switchboard.drag.restoreState()
                     })
                 }
         )
