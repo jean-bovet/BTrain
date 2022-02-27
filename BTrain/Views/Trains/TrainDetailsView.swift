@@ -161,14 +161,20 @@ struct TrainDetailsSpeedSectionView: View {
             SectionTitleView(label: "Speed")
 
             Form {
-                Toggle("Inertia", isOn: $train.inertia)
+                UndoProvider($train.inertia) { inertia in
+                    Toggle("Inertia", isOn: inertia)
+                }
                 
-                TextField("Max Speed:", value: $train.speed.maxSpeed,
-                          format: .number)
+                UndoProvider($train.speed.maxSpeed) { maxSpeed in
+                    TextField("Max Speed:", value: maxSpeed,
+                              format: .number)
+                }
 
-                TextField("Stop Settle Delay:", value: $train.stopSettleDelay,
-                          format: .number)
-                    .help("Delay until the locomotive is effectively considered fully stopped after a speed of 0 has been sent to the Digital Controller")
+                UndoProvider($train.stopSettleDelay) { stopSettleDelay in
+                    TextField("Stop Settle Delay:", value: stopSettleDelay,
+                              format: .number)
+                        .help("Delay until the locomotive is effectively considered fully stopped after a speed of 0 has been sent to the Digital Controller")
+                }
 
                 Button("Profile…") {
                     showSpeedProfileSheet.toggle()

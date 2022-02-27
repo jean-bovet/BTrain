@@ -268,12 +268,13 @@ final class TrainSpeed: ObservableObject, Equatable, CustomStringConvertible {
 
 extension TrainSpeed: Codable {
     enum CodingKeys: CodingKey {
-      case decoderType, speedTable
+      case decoderType, maxSpeed, speedTable
     }
 
     convenience init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         self.init(decoderType: try container.decode(DecoderType.self, forKey: CodingKeys.decoderType))
+        maxSpeed = try container.decodeIfPresent(UnitKph.self, forKey: CodingKeys.maxSpeed) ?? 200
         if let speedTable = try container.decodeIfPresent([SpeedTableEntry].self, forKey: CodingKeys.speedTable) {
             self.speedTable = speedTable
         } else {
@@ -284,6 +285,7 @@ extension TrainSpeed: Codable {
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(decoderType, forKey: CodingKeys.decoderType)
+        try container.encode(maxSpeed, forKey: CodingKeys.maxSpeed)
         try container.encode(speedTable, forKey: CodingKeys.speedTable)
     }
 }

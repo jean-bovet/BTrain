@@ -41,39 +41,13 @@ struct TrainControlSpeedView: View {
                         Image(systemName: "arrowtriangle.left.fill")
                     }
                 }.buttonStyle(.borderless)
-                
-                HStack {
-                    // TODO: provide a way to visualize the actual Kph speed
-                    Slider(value: $speed.kphAsDouble, in: 0...Double(speed.maxSpeed)) {
-                        
-                    } onEditingChanged: { editing in
-                        document.layout.setTrainSpeed(train, speed.requestedKph) { }
-                    }
-                    
-                    if speed.requestedKph != speed.actualKph {
-                        Text("\(Int(speed.requestedKph))/\(Int(speed.actualKph)) kph")
-                    } else {
-                        Text("\(Int(speed.requestedKph)) kph")
-                    }
+                                
+                SpeedSlider(speed: speed) {
+                    document.layout.setTrainSpeed(train, speed.requestedKph) { }
                 }
             }.disabled(!document.connected || train.blockId == nil)
         }
     }
-}
-
-private extension TrainSpeed {
-    
-    // Necessary because SwiftUI Slider requires a Double
-    // while speed is UInt16.
-    var kphAsDouble: Double {
-        get {
-            return Double(self.requestedKph)
-        }
-        set {
-            self.requestedKph = UInt16(newValue)
-        }
-    }
-    
 }
 
 struct TrainControlView_Previews: PreviewProvider {

@@ -82,14 +82,12 @@ class SimulatorViewTests: RootViewTests {
         wait(for: t1, kph: 0)
         
         // Same speed check but from the train list
-        let trainSlider = try trainSpeedView.vStack().hStack(0).hStack(1).slider(0)
-        try trainSlider.setValue(100)
-        try trainSlider.callOnEditingChanged()
+        let trainSlider = try trainSpeedView.find(SpeedSlider.self).actualView()
+        trainSlider.setRequestedKph(kph: 200)
         XCTAssertEqual(t1.speed.requestedKph, t1.speed.maxSpeed)
         wait(for: simulatorTrain1, steps: t1.speed.requestedSteps)
         
-        try trainSlider.setValue(0)
-        try trainSlider.callOnEditingChanged()
+        trainSlider.setRequestedKph(kph: 0)
         XCTAssertEqual(t1.speed.requestedKph, 0)
         wait(for: simulatorTrain1, steps: .zero)
         
