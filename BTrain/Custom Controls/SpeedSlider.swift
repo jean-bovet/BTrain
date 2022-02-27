@@ -14,13 +14,16 @@ import SwiftUI
 
 struct SpeedSlider: View {
     
+    let knobWidth = 26.0
+    let knobHeight = 30.0
+
     @ObservedObject var speed: TrainSpeed
         
     var onEditingChanged: (() -> Void)?
 
     var body: some View {
         HStack {
-            CustomSlider(value: $speed.kphAsDouble, secondaryValue: $speed.actualKphAsDouble, range: (0, Double(speed.maxSpeed)), onEditingChanged: onEditingChanged) { modifiers in
+            CustomSlider(value: $speed.kphAsDouble, secondaryValue: $speed.actualKphAsDouble, range: (0, Double(speed.maxSpeed)), knobWidth: knobWidth + 1, onEditingChanged: onEditingChanged) { modifiers in
                 ZStack {
                     Rectangle().foregroundColor(Color(NSColor.windowBackgroundColor)).frame(height: 8).cornerRadius(4)
                     
@@ -39,15 +42,21 @@ struct SpeedSlider: View {
                         .modifier(modifiers.barLeftSecondary)
                     
                     ZStack {
-                        Rectangle().fill(Color.white).cornerRadius(1.5).shadow(radius: 1.2).frame(width: 26, height: 30)
+                        Rectangle()
+                            .fill(Color.white)
+                            .cornerRadius(1.5)
+                            .shadow(radius: 1.2)
+                            .frame(width: knobWidth, height: knobHeight)
                         VStack {
-                            Text(("\(Int(speed.requestedKph))")).font(.system(size: 11)).foregroundColor(.black)
-                            Text(("\(Int(speed.actualKph))")).font(.system(size: 11)).foregroundColor(.black)
+                            Text(("\(Int(speed.requestedKph))")).foregroundColor(.black)
+                            Text(("\(Int(speed.actualKph))")).foregroundColor(.black)
                         }
                     }
                     .modifier(modifiers.knob)
-                }.cornerRadius(3)
-            }.frame(height: 34)
+                }
+                .cornerRadius(3)
+            }
+            .frame(height: knobHeight + 4)
             Text("kph")
         }
     }
@@ -91,9 +100,19 @@ struct SpeedSlider_Previews: PreviewProvider {
         return t
     }()
 
+    static let t3: Train = {
+        let t = Train()
+        t.speed.requestedKph = 0
+        t.speed.actualKph = 0
+        return t
+    }()
+
     static var previews: some View {
-        SpeedSlider(speed: t1.speed)
-        SpeedSlider(speed: t2.speed)
+        VStack {
+            SpeedSlider(speed: t1.speed)
+            SpeedSlider(speed: t2.speed)
+            SpeedSlider(speed: t3.speed)
+        }.padding()
     }
 }
 
