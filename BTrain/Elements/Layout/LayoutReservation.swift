@@ -23,6 +23,14 @@ final class LayoutReservation {
     let resolver: RouteResolver
     let visitor: ElementVisitor
 
+    // Internal structure used to hold information
+    // about an upcoming turnout reservation
+    internal struct TurnoutReservation {
+        let turnout: Turnout
+        let state: Turnout.State
+        let sockets: Turnout.SocketReservation
+    }
+
     init(layout: Layout) {
         self.layout = layout
         self.resolver = RouteResolver(layout: layout)
@@ -44,7 +52,7 @@ final class LayoutReservation {
         // Reserve the number of leading blocks necessary
         return try reserveLeadingBlocks(train: train, trainStarting: trainStarting)
     }
-        
+
     private func reserveLeadingBlocks(train: Train, trainStarting: Bool) throws -> Bool {
         // The train must be running (or we have the specific force flag which happens when the train starts)
         guard train.state == .running || trainStarting else {
@@ -74,7 +82,7 @@ final class LayoutReservation {
         // the turnouts between two blocks only when we can guarantee that the destination block
         // can be indeed reserved - otherwise we end up with a bunch of turnouts that are reserved
         // but lead to a non-reserved block.
-        var turnouts = [(Turnout, Turnout.State)]()
+        var turnouts = [TurnoutReservation]()
 
         // Remember the transitions between two blocks. This is because we are going to reserve
         // the turnouts between two blocks only when we can guarantee that the destination block
@@ -122,7 +130,7 @@ final class LayoutReservation {
         return numberOfLeadingBlocksReserved > 0
     }
     
-    private func reserveBlock(block: Block, direction: Direction, train: Train, numberOfLeadingBlocksReserved: inout Int, turnouts: inout [(Turnout, Turnout.State)], transitions: inout [ITransition]) throws -> Bool {
+    private func reserveBlock(block: Block, direction: Direction, train: Train, numberOfLeadingBlocksReserved: inout Int, turnouts: inout [TurnoutReservation], transitions: inout [ITransition]) throws -> Bool {
         if block.isOccupied(by: train.id) {
             // The block is already reserved and contains a portion of the train
             // Note: we are not incrementing `numberOfLeadingBlocksReserved` because
@@ -136,8 +144,8 @@ final class LayoutReservation {
             
             // Now that the block can be reserved, reserve all the turnouts leading to
             // that block, including setting the appropriate state to each turnout
-            for (turnout, state) in turnouts {
-                try reserveTurnout(turnout: turnout, state: state, train: train)
+            for tr in turnouts {
+                try reserveTurnout(reservation: tr, train: train)
             }
             turnouts.removeAll()
             
@@ -169,19 +177,24 @@ final class LayoutReservation {
         return true
     }
     
-    private func reserveTurnout(turnout: Turnout, state: Turnout.State, train: Train) throws {
+    private func reserveTurnout(reservation: TurnoutReservation, train: Train) throws {
+        let turnout = reservation.turnout
         guard turnout.canBeReserved else {
             throw LayoutError.turnoutAlreadyReserved(turnout: turnout)
         }
         
-        turnout.state = state
+        turnout.state = reservation.state
         turnout.reserved = train.id
+        turnout.reservedSockets = reservation.sockets
+        
         layout.executor.sendTurnoutState(turnout: turnout) { }
-        BTLogger.debug("Reserved turnout \(turnout.name) for \(train) and state \(state)")
+        BTLogger.debug("Reserved turnout \(turnout.name) for \(train) and state \(turnout.state)")
     }
     
-    private func rememberTurnoutToReserve(turnout: Turnout, train: Train, step: Route.Step, numberOfLeadingBlocksReserved: inout Int, turnouts: inout [(Turnout, Turnout.State)]) throws -> Bool {
-        let state = turnout.state(fromSocket: try step.entrySocketId(), toSocket: try step.exitSocketId())
+    private func rememberTurnoutToReserve(turnout: Turnout, train: Train, step: Route.Step, numberOfLeadingBlocksReserved: inout Int, turnouts: inout [TurnoutReservation]) throws -> Bool {
+        let fromSocketId = try step.entrySocketId()
+        let toSocketId = try step.exitSocketId()
+        let state = turnout.state(fromSocket: fromSocketId, toSocket: toSocketId)
 
         if turnout.isOccupied(by: train.id) {
             // The turnout is already reserved and contains a portion of the train
@@ -203,7 +216,7 @@ final class LayoutReservation {
             
             // If the turnout can be reserved, remember it and it will actually be reserved
             // when the block that is leads to can also be reserved.
-            turnouts.append((turnout, state))
+            turnouts.append(TurnoutReservation(turnout: turnout, state: state, sockets: Turnout.SocketReservation(fromSocketId: fromSocketId, toSocketId: toSocketId)))
         }
         
         return true
