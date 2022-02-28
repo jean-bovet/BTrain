@@ -31,10 +31,18 @@ struct CustomSliderModifier: ViewModifier {
     let size: CGSize
     let offset: CGFloat
 
+    var width: CGFloat {
+        if size.width < 0 || size.width.isNaN {
+            return 0
+        } else {
+            return size.width
+        }
+    }
+    
     func body(content: Content) -> some View {
         content
-        .frame(width: size.width)
-        .position(x: size.width*0.5, y: size.height*0.5)
+        .frame(width: width)
+        .position(x: width*0.5, y: size.height*0.5)
         .offset(x: offset)
     }
 }
