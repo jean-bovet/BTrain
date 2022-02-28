@@ -583,6 +583,7 @@
 				A73AFE852726594600E1ED21 /* BTrainApp.swift */,
 				A7B06B062728DD9500BDD88C /* Views */,
 				A785C07C278A64A4002FD538 /* Document */,
+				A743AF0A27CC88BE00A4AE79 /* Switchboard */,
 				A7F779DD272C75BA00E73275 /* Controllers */,
 				A792DEF92783A0A1004B0439 /* Simulator */,
 				A74CCC73272A5A1C004E58F5 /* Elements */,
@@ -780,6 +781,21 @@
 			path = Overview;
 			sourceTree = "<group>";
 		};
+		A743AF0A27CC88BE00A4AE79 /* Switchboard */ = {
+			isa = PBXGroup;
+			children = (
+				A78413872740DD2D00381341 /* SwitchBoardFactory.swift */,
+				A7841373273DCBA000381341 /* SwitchBoard.swift */,
+				A7841381273F972B00381341 /* SwitchBoardRenderer.swift */,
+				A7841383273F973D00381341 /* SwitchBoardDragOperation.swift */,
+				A717158A275844AE00200F92 /* SwitchBoardTrainDragging.swift */,
+				A7B0B5122761CF8400F11A3E /* SwitchboardLinkUpdater.swift */,
+				A7841380273F96F300381341 /* Properties */,
+				A784137F273F96EA00381341 /* Shapes */,
+			);
+			path = Switchboard;
+			sourceTree = "<group>";
+		};
 		A74CCC73272A5A1C004E58F5 /* Elements */ = {
 			isa = PBXGroup;
 			children = (
@@ -897,16 +913,8 @@
 				A7710E6E2779A50A00C08150 /* SwitchboardContainerView.swift */,
 				A783EAAC2789290F00E69B6D /* SwitchboardRuntimeErrorView.swift */,
 				A784136A273CA4DE00381341 /* SwitchBoardView.swift */,
-				A78413872740DD2D00381341 /* SwitchBoardFactory.swift */,
-				A7841373273DCBA000381341 /* SwitchBoard.swift */,
-				A7841381273F972B00381341 /* SwitchBoardRenderer.swift */,
-				A7841383273F973D00381341 /* SwitchBoardDragOperation.swift */,
-				A717158A275844AE00200F92 /* SwitchBoardTrainDragging.swift */,
-				A7B0B5122761CF8400F11A3E /* SwitchboardLinkUpdater.swift */,
 				A798BB4427A79DCC000BB4D1 /* Preview */,
 				A798BB4327A79D1D000BB4D1 /* Editor */,
-				A7841380273F96F300381341 /* Properties */,
-				A784137F273F96EA00381341 /* Shapes */,
 			);
 			path = Switchboard;
 			sourceTree = "<group>";
@@ -1058,7 +1066,6 @@
 				A73E07F9276A70F5005F9D64 /* Overview */,
 				A73B1645274DC5BC0073947D /* Train Controls */,
 				A7841372273CE06F00381341 /* Switchboard */,
-				A79466CF279B8B22006E2A4C /* Simulator */,
 				A7710E5A2777FA0E00C08150 /* Routes */,
 				A73B163A274DC02A0073947D /* Trains */,
 				A77BBAB327C09B3500F7828F /* Train Speed */,
@@ -1066,6 +1073,7 @@
 				A73B163D274DC1EB0073947D /* Turnouts */,
 				A73B1641274DC4030073947D /* Feedbacks */,
 				A763F19A27BF1A6B00B3499A /* Train Speed Measurements */,
+				A79466CF279B8B22006E2A4C /* Simulator */,
 				A795A03427B0896800AE90EB /* Common */,
 			);
 			path = Views;
