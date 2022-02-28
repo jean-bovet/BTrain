@@ -181,25 +181,46 @@ final class TurnoutShape: Shape, DraggableShape, ConnectableShape {
             }
 
         case .doubleSlip:
-            switch(turnout.state) {
-            case .straight:
-                // Note: only show one straight path
-                path.move(to: sp[0])
-                path.addLine(to: sp[1])
-                
-//                path.move(to: sp[2])
-//                path.addLine(to: sp[3])
-            case .branch:
-                // Note: only show one branch
-                path.move(to: sp[0])
-                path.addLine(to: center)
-                path.addLine(to: sp[3])
-                
-//                path.move(to: sp[2])
-//                path.addLine(to: center)
-//                path.addLine(to: sp[1])
-            default:
-                break
+            if let reservedSockets = turnout.reservedSockets {
+                switch (reservedSockets.fromSocketId, reservedSockets.toSocketId) {
+                case (0, 1), (1, 0):
+                    path.move(to: sp[0])
+                    path.addLine(to: sp[1])
+                    
+                case (2, 3), (3, 2):
+                    path.move(to: sp[2])
+                    path.addLine(to: sp[3])
+                    
+                case (0, 3), (3, 0):
+                    path.move(to: sp[0])
+                    path.addLine(to: sp[3])
+                    
+                case (2, 1), (1, 2):
+                    path.move(to: sp[2])
+                    path.addLine(to: sp[1])
+                    
+                default:
+                    break
+                }
+            } else {
+                switch turnout.state {
+                case .straight:
+                    path.move(to: sp[0])
+                    path.addLine(to: sp[1])
+                    
+                    path.move(to: sp[2])
+                    path.addLine(to: sp[3])
+
+                case .branch:
+                    path.move(to: sp[0])
+                    path.addLine(to: sp[3])
+
+                    path.move(to: sp[2])
+                    path.addLine(to: sp[1])
+
+                default:
+                    break
+                }
             }
 
         case .doubleSlip2:
