@@ -61,4 +61,14 @@ class LayoutDocumentTests: XCTestCase {
 
         doc.disconnect()
     }
+    
+    static weak var memoryLeakLayout: Layout?
+    
+    func testMemoryLeak() {
+        var doc: LayoutDocument? = LayoutDocument(layout: LayoutACreator().newLayout())
+        LayoutDocumentTests.memoryLeakLayout = doc!.layout
+        XCTAssertNotNil(LayoutDocumentTests.memoryLeakLayout)
+        doc = nil
+        XCTAssertNil(LayoutDocumentTests.memoryLeakLayout)
+    }
 }
