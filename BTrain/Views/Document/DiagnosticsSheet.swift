@@ -50,9 +50,9 @@ struct DiagnosticsSheet: View {
                         TableRow(error)
                     }
                 }.frame(width: 800, height: 600)
+                
+                Divider()
             }
-
-            Divider()
             
             Button("OK") {
                 self.presentationMode.wrappedValue.dismiss()

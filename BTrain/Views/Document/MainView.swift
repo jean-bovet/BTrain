@@ -14,9 +14,8 @@ import SwiftUI
 
 let SideListFixedWidth = 400.0
 
-// This is the main application view. It knows how to switch between views and how to
-// respond to most of the commands.
-struct ContentView: View {
+// This is the main application view. It knows how to switch between views and how to respond to most of the commands.
+struct MainView: View {
 
     @ObservedObject var document: LayoutDocument
     
@@ -106,6 +105,6 @@ struct ContentView: View {
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        ContentView(document: LayoutDocument(layout: Layout()))
+        MainView(document: LayoutDocument(layout: Layout()))
     }
 }

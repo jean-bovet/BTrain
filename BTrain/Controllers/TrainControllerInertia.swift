@@ -13,7 +13,7 @@
 import Foundation
 import Combine
 
-final class TrainInertiaController {
+final class TrainControllerInertia {
     
     typealias SpeedChangedCallback = (_ steps: SpeedStep, _ completed: Bool) -> Void
     

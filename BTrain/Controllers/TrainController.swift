@@ -35,7 +35,7 @@ final class TrainController {
     
     // The train inertia controller instance that is monitoring the specified train
     // by sending the actual speed to the Digital Controller.
-    let inertiaController: TrainInertiaController
+    let inertiaController: TrainControllerInertia
     
     weak var delegate: TrainControllerDelegate?
         
@@ -74,7 +74,7 @@ final class TrainController {
     init(layout: Layout, train: Train, interface: CommandInterface, delegate: TrainControllerDelegate? = nil) {
         self.layout = layout
         self.train = train
-        self.inertiaController = TrainInertiaController(train: train, interface: interface)
+        self.inertiaController = TrainControllerInertia(train: train, interface: interface)
         self.delegate = delegate    
     }
             

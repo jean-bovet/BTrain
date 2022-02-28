@@ -18,7 +18,7 @@ class TrainInertiaTests: XCTestCase {
 
     func testInertia() {
         let t = Train()
-        let ic = TrainInertiaController(train: t, interface: MockCommandInterface())
+        let ic = TrainControllerInertia(train: t, interface: MockCommandInterface())
         
         assertChangeSpeed(train: t, from: 0, to: 20, [4, 8, 12, 16, 20], ic)
         assertChangeSpeed(train: t, from: 20, to: 13, [16, 13], ic)
@@ -35,7 +35,7 @@ class TrainInertiaTests: XCTestCase {
     func testWithNoInertia() {
         let t = Train()
         t.inertia = false
-        let ic = TrainInertiaController(train: t, interface: MockCommandInterface())
+        let ic = TrainControllerInertia(train: t, interface: MockCommandInterface())
 
         assertChangeSpeed(train: t, from: 0, to: 20, [20], ic)
         assertChangeSpeed(train: t, from: 20, to: 13, [13], ic)
@@ -48,7 +48,7 @@ class TrainInertiaTests: XCTestCase {
         let t = Train()
         t.inertia = false
         let mi = ManualCommandInterface()
-        let ic = TrainInertiaController(train: t, interface: mi)
+        let ic = TrainControllerInertia(train: t, interface: mi)
 
         t.speed.requestedSteps = SpeedStep(value: 100)
         
@@ -73,7 +73,7 @@ class TrainInertiaTests: XCTestCase {
         XCTAssertEqual(t.speed.requestedSteps, SpeedStep(value: 100))
     }
     
-    private func assertChangeSpeed(train: Train, from fromSteps: UInt16, to steps: UInt16, _ expectedSteps: [UInt16], _ ic: TrainInertiaController) {
+    private func assertChangeSpeed(train: Train, from fromSteps: UInt16, to steps: UInt16, _ expectedSteps: [UInt16], _ ic: TrainControllerInertia) {
         XCTAssertEqual(ic.actual.value, fromSteps)
 
         let cmd = ic.interface as! MockCommandInterface

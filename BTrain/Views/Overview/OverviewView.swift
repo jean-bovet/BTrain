@@ -37,7 +37,7 @@ struct OverviewView: View {
     }
 }
 
-struct MainView_Previews: PreviewProvider {
+struct OverviewView_Previews: PreviewProvider {
     
     static let doc = LayoutDocument(layout: LayoutCCreator().newLayout())
 

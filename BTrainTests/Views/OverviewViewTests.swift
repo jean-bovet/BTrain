@@ -15,7 +15,7 @@ import XCTest
 @testable import BTrain
 import ViewInspector
 
-extension LayoutRuntimeErrorView: Inspectable { }
+extension SwitchboardRuntimeErrorView: Inspectable { }
 
 class OverviewViewTests: RootViewTests {
 
@@ -34,7 +34,7 @@ class OverviewViewTests: RootViewTests {
     
     func testLayoutRuntimeError() throws {
         let text = "Unknown feedback detected!"
-        let sut = LayoutRuntimeErrorView(debugger: LayoutControllerDebugger(layout: Layout()), error: .constant(text))
+        let sut = SwitchboardRuntimeErrorView(debugger: LayoutControllerDebugger(layout: Layout()), error: .constant(text))
         _ = try sut.inspect().find(button: "OK")
         _ = try sut.inspect().find(text: "\(text)")
     }

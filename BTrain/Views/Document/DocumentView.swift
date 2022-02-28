@@ -20,7 +20,7 @@ struct DocumentView: View {
 
     var body: some View {
         if hideWelcomeScreen {
-            ContentView(document: document)
+            MainView(document: document)
         } else {
             WelcomeView(document: document)
         }

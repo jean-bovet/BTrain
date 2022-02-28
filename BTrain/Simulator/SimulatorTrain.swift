@@ -33,4 +33,3 @@ final class SimulatorTrain: ObservableObject, Element {
         self.directionForward = train.directionForward
     }
 }
-    

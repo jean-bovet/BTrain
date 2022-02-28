@@ -25,7 +25,7 @@ extension ImportLayoutSheet: Inspectable { }
 class DocumentViewTests: RootViewTests {
 
     func testMainView() throws {
-        let sut = ContentView(document: doc)
+        let sut = MainView(document: doc)
         
         doc.selectedView = .overview
         XCTAssertNoThrow(try sut.inspect().find(OverviewView.self))
@@ -56,7 +56,7 @@ class DocumentViewTests: RootViewTests {
     func testDocumentView() throws {
         let sut = DocumentView(document: doc)
         sut.hideWelcomeScreen = true
-        _ = try sut.inspect().find(ContentView.self)
+        _ = try sut.inspect().find(MainView.self)
         
         sut.hideWelcomeScreen = false
         _ = try sut.inspect().find(WelcomeView.self)

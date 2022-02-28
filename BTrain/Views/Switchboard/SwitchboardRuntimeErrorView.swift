@@ -12,7 +12,7 @@
 
 import SwiftUI
 
-struct LayoutRuntimeErrorView: View {
+struct SwitchboardRuntimeErrorView: View {
     
     let debugger: LayoutControllerDebugger
     
@@ -65,6 +65,6 @@ struct LayoutRuntimeErrorView: View {
 
 struct LayoutRuntimeErrorView_Previews: PreviewProvider {
     static var previews: some View {
-        LayoutRuntimeErrorView(debugger: LayoutControllerDebugger(layout: Layout()), error: .constant("Unexpected feedback IL2.1 detected"))
+        SwitchboardRuntimeErrorView(debugger: LayoutControllerDebugger(layout: Layout()), error: .constant("Unexpected feedback IL2.1 detected"))
     }
 }
