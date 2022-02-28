@@ -52,7 +52,7 @@ final class BlockShape: Shape, DraggableShape, ConnectableShape {
         return path.boundingBox
     }
 
-    let layout: Layout
+    weak var layout: Layout?
     let block: Block
 
     var visible = true
@@ -78,7 +78,7 @@ final class BlockShape: Shape, DraggableShape, ConnectableShape {
         // Returns all the sockets that don't have any transitions coming out of them
         return sockets.filter { connectorSocket in
             let s = Socket.block(block.id, socketId: connectorSocket.id)
-            return (try? layout.transition(from: s)) == nil
+            return (try? layout?.transition(from: s)) == nil
         }
     }
     
@@ -87,7 +87,7 @@ final class BlockShape: Shape, DraggableShape, ConnectableShape {
     }
     
     var train: Train? {
-        return layout.train(for: block.train?.trainId)
+        return layout?.train(for: block.train?.trainId)
     }
         
     var path: CGPath {
@@ -226,7 +226,7 @@ final class BlockShape: Shape, DraggableShape, ConnectableShape {
         }
         
         for (index, feedback) in block.feedbacks.enumerated() {
-            if let f = layout.feedback(for: feedback.feedbackId), f.detected {
+            if let f = layout?.feedback(for: feedback.feedbackId), f.detected {
                 ctx.setFillColor(shapeContext.activeFeedbackColor)
             } else {
                 ctx.setFillColor(shapeContext.inactiveFeedbackColor)
@@ -469,7 +469,7 @@ extension BlockShape: ActionableShape {
     func performAction(at location: CGPoint) -> Bool {
         for (index, blockFeedback) in block.feedbacks.enumerated() {
             let path = feedbackPath(at: index)
-            if path.contains(location), let feedback = layout.feedback(for: blockFeedback.feedbackId) {
+            if path.contains(location), let feedback = layout?.feedback(for: blockFeedback.feedbackId) {
                 shapeContext.simulator?.setFeedback(feedback: feedback, value: feedback.detected ? 0 : 1)
                 return true
             }

@@ -13,7 +13,7 @@
 import Foundation
 
 final class TurnoutShape: Shape, DraggableShape, ConnectableShape {
-    let layout: Layout
+    weak var layout: Layout?
     let turnout: Turnout
     let shapeContext: ShapeContext
     
@@ -57,7 +57,7 @@ final class TurnoutShape: Shape, DraggableShape, ConnectableShape {
         // Returns all the sockets that don't have any transitions coming out of them
         return sockets.filter { connectorSocket in
             let s = Socket.turnout(turnout.id, socketId: connectorSocket.id)
-            return (try? layout.transition(from: s)) == nil
+            return (try? layout?.transition(from: s)) == nil
         }
     }
     
@@ -346,7 +346,7 @@ extension TurnoutShape: ActionableShape {
     
     func performAction(at location: CGPoint) -> Bool {
         if inside(location) {
-            layout.toggleTurnoutToNextState(turnout: turnout)
+            layout?.toggleTurnoutToNextState(turnout: turnout)
             return true
         } else {
             return false

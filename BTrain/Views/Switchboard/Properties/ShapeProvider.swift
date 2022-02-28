@@ -13,7 +13,7 @@
 import Foundation
 import Combine
 
-protocol ShapeProviding {
+protocol ShapeProviding: AnyObject {
     
     var shapes: [Shape] { get }
 

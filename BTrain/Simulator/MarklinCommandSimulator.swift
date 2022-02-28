@@ -20,7 +20,7 @@ import SwiftUI
 // driving automatically trains that are on enabled routes.
 final class MarklinCommandSimulator: Simulator, ObservableObject {
     
-    let layout: Layout
+    weak var layout: Layout?
     let interface: CommandInterface
     
     @Published var started = false
@@ -62,6 +62,10 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
     }
 
     func registerForTrainChanges() {
+        guard let layout = layout else {
+            return
+        }
+
         let cancellable = layout.$trains
             .removeDuplicates()
             .receive(on: RunLoop.main)
@@ -81,6 +85,10 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
     // which happens when a train moves from one block to another or when
     // a train is assigned a block for the first time (put into the layout).
     func registerForTrainBlockChange() {
+        guard let layout = layout else {
+            return
+        }
+
         cancellables.removeAll()
         for train in layout.trains {
             let cancellable = train.$blockId
@@ -94,6 +102,10 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
     }
 
     func updateListOfTrains() {
+        guard let layout = layout else {
+            return
+        }
+
         // Remove train that are not present anymore
         trains.removeAll(where: { simTrain in
             return layout.train(for: simTrain.train.id) == nil
@@ -264,6 +276,10 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
             return
         }
         
+        guard let layout = layout else {
+            return
+        }
+
         for train in layout.trains {
             guard train.automaticScheduling else {
                 continue
@@ -294,6 +310,10 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
             return
         }
                 
+        guard let layout = layout else {
+            return
+        }
+
         guard let block = layout.currentBlock(train: train) else {
             return
         }

@@ -13,9 +13,9 @@
 import Foundation
 
 final class TrainShape: Shape, DraggableShape {
-    let layout: Layout
+    weak var layout: Layout?
     let train: Train
-    let shapeProvider: ShapeProviding
+    weak var shapeProvider: ShapeProviding?
     let shapeContext: ShapeContext
     let pathFactory: TrainPathFactory
     
@@ -64,14 +64,14 @@ final class TrainShape: Shape, DraggableShape {
             return
         }
         
-        if let blockShape = shapeProvider.blockShape(for: blockId) {
+        if let blockShape = shapeProvider?.blockShape(for: blockId) {
             let locationShape = blockShape.trainPath(at: train.position)
             self.center = CGPoint(x: locationShape.boundingBox.midX, y: locationShape.boundingBox.midY)
             self.rotationAngle = blockShape.rotationAngle
             
             // Take into account the direction of travel of the train within
             // the block and rotate it 180 degree if necessary.
-            if let block = layout.block(for: blockId), block.train?.direction == .previous {
+            if let block = layout?.block(for: blockId), block.train?.direction == .previous {
                 self.rotationAngle += .pi
             }
         }

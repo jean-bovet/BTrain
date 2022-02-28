@@ -93,8 +93,9 @@ final class SwitchBoardDragOperation {
                 } else {
                     // Find out if a train is located at the tap location so it can be dragged
                     if let trainShape = provider.trainShapes.first(where: { $0.inside(location) }),
+                       let layout = trainShape.layout, let shapeProvider = trainShape.shapeProvider,
                        trainShape.train.manualScheduling {
-                        let draggedTrainShape = TrainShape(layout: trainShape.layout, train: trainShape.train, shapeProvider: trainShape.shapeProvider, shapeContext: trainShape.shapeContext)
+                        let draggedTrainShape = TrainShape(layout: layout, train: trainShape.train, shapeProvider: shapeProvider, shapeContext: trainShape.shapeContext)
                         draggedTrainShape.rotationAngle = trainShape.rotationAngle
                         draggedTrainShape.center = trainShape.center
                         draggedTrainShape.dragged = true
