@@ -34,6 +34,7 @@ struct TrainControlSetLocationSheet: View {
     enum Action {
         case set
         case move
+        case remove
     }
     
     @State private var action: Action = .set
@@ -54,26 +55,46 @@ struct TrainControlSetLocationSheet: View {
         }
     }
     
+    var actionButtonName: String {
+        switch action {
+        case .set:
+            return "Set"
+        case .move:
+            return "Move"
+        case .remove:
+            return "Remove"
+        }
+    }
+    
     var body: some View {
         VStack {
             HStack {
-                Picker("Action:", selection: $action) {
-                    Text("Set").tag(Action.set)
-                    Text("Move").tag(Action.move)
-                }
-                .fixedSize()
-                .labelsHidden()
-                .onAppear {
-                    // If the user just dragged the train, let's pre-select
-                    // the "move" action as it is likely the one desired.
-                    if trainDragInfo != nil {
-                        action = .move
+                if train.blockId == nil {
+                    Text("Set")
+                        .onAppear {
+                            action = .set
+                        }
+                } else {
+                    Picker("Action:", selection: $action) {
+                        Text("Set").tag(Action.set)
+                        Text("Move").tag(Action.move)
+                        Text("Remove").tag(Action.remove)
+                    }
+                    .pickerStyle(.radioGroup)
+                    .fixedSize()
+                    .labelsHidden()
+                    .onAppear {
+                        // If the user just dragged the train, let's pre-select
+                        // the "move" action as it is likely the one desired.
+                        if trainDragInfo != nil {
+                            action = .move
+                        }
                     }
                 }
                 
                 Text("\"\(train.name)\"")
                 
-                Picker("to block", selection: $blockId) {
+                Picker(action == .remove ? "from block" : "to block", selection: $blockId) {
                     ForEach(sortedBlockIds, id:\.self) { blockId in
                         if let block = layout.block(for: blockId) {
                             Text(block.nameForLocation).tag(blockId as Identifier<Block>?)
@@ -91,29 +112,33 @@ struct TrainControlSetLocationSheet: View {
                     }
                 }
                 
-                Picker("with direction", selection: $direction) {
-                    ForEach(Direction.allCases, id:\.self) { direction in
-                        Text(direction.description).tag(direction)
+                if action != .remove {
+                    Picker("with direction", selection: $direction) {
+                        ForEach(Direction.allCases, id:\.self) { direction in
+                            Text(direction.description).tag(direction)
+                        }
+                    }
+                    .help("This is the direction of travel of the train relative to \(selectedBlockName)")
+                    .fixedSize()
+                    .onAppear {
+                        do {
+                            direction = try layout.directionDirectionInBlock(train)
+                        } catch {
+                            BTLogger.error("Unable to retrieve the direction of the train: \(error.localizedDescription)")
+                        }
                     }
                 }
-                .help("This is the direction of travel of the train relative to \(selectedBlockName)")
-                .fixedSize()
-                .onAppear {
-                    do {
-                        direction = try layout.directionDirectionInBlock(train)
-                    } catch {
-                        BTLogger.error("Unable to retrieve the direction of the train: \(error.localizedDescription)")
-                    }
-                }
+                
+                Spacer()
             }
             
             HStack {
+                Spacer()
                 Toggle("Wagons Pushed by the Locomotive", isOn: $wagonsPushedByLocomotive)
-                    .disabled(action == .move)
+                    .hidden(action != .set)
                     .onAppear {
                         wagonsPushedByLocomotive = train.wagonsPushedByLocomotive
                     }
-                Spacer()
             }
             
             if let errorStatus = errorStatus {
@@ -127,16 +152,21 @@ struct TrainControlSetLocationSheet: View {
                     self.presentationMode.wrappedValue.dismiss()
                 }.keyboardShortcut(.cancelAction)
                 
-                Button(action == .set ? "Set" : "Move") {
+                Button(actionButtonName) {
                     do {
                         if let selectedBlock = blockId {
-                            if action == .set {
+                            switch action {
+                            case .set:
                                 train.wagonsPushedByLocomotive = wagonsPushedByLocomotive
                                 try layout.setTrainToBlock(train.id, selectedBlock, position: .end, direction: direction)
-                            } else {
+
+                            case .move:
                                 let routeId = Route.automaticRouteId(for: train.id)
                                 let destination = Destination(selectedBlock, direction: direction)
                                 try controller.start(routeID: routeId, trainID: train.id, destination: destination)
+
+                            case .remove:
+                                try layout.remove(trainID: train.id)
                             }
                         }
                         errorStatus = nil
@@ -147,7 +177,7 @@ struct TrainControlSetLocationSheet: View {
                 }
                 .disabled(blockId == nil)
                 .keyboardShortcut(.defaultAction)
-            }
+            }.padding([.top])
         }
     }
     

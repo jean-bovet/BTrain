@@ -32,15 +32,11 @@ struct TrainControlSpeedView: View {
     var body: some View {
         VStack(alignment: .leading) {
             HStack {
-                Button {
+                Button(train.directionForward ? "􀄫" : "􀄪") {
                     trainDirectionToggle()
-                } label: {
-                    if train.directionForward {
-                        Image(systemName: "arrowtriangle.right.fill")
-                    } else {
-                        Image(systemName: "arrowtriangle.left.fill")
-                    }
-                }.buttonStyle(.borderless)
+                }
+                .buttonStyle(.borderless)
+                .help("Change Direction of Travel")
                                 
                 SpeedSlider(speed: speed) {
                     document.layout.setTrainSpeed(train, speed.requestedKph) { }

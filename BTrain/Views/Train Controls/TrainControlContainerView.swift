@@ -24,17 +24,18 @@ struct TrainControlContainerView: View {
         VStack(alignment: .leading) {
             HStack(alignment: .top) {
                 VStack(alignment: .leading) {
-                    HStack {
-                        Text(train.name).font(.headline)
-                        Spacer()
-                        TrainControlStateView(train: train)
-                    }
+                    Text(train.name).font(.headline)
                     TrainControlLocationView(controller: document.layoutController, layout: document.layout, train: train)
-                    TrainControlSpeedView(document: document, train: train, speed: train.speed)
                 }
 
                 TrainIconView(trainIconManager: document.trainIconManager, train: train, size: .medium, hideIfNotDefined: true)
             }
+            HStack {
+                TrainControlSpeedView(document: document, train: train, speed: train.speed)
+                Spacer()
+                TrainControlStateView(train: train)
+            }
+
             TrainControlRouteView(document: document, train: train)
                 .disabled(train.blockId == nil)
         }

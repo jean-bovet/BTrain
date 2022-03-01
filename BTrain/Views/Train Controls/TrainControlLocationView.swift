@@ -26,49 +26,22 @@ struct TrainControlLocationView: View {
         if let blockId = train.blockId, let block = layout.block(for: blockId) {
             return "\(block.name)"
         } else {
-            return "-"
+            return "􀅄"
         }
     }
     
     var body: some View {
         VStack {
             HStack {
-                if train.blockId == nil {
-                    Button("Set Train Location 􀅄") {
+                HStack {
+                    Text("Location:")
+                        .font(Font.body.weight(.medium))
+                    Button("\(trainLocation)") {
                         setTrainLocationSheet.toggle()
                     }
-                    Spacer()
-                } else {
-                    HStack {
-                        Text("Location:")
-                            .font(Font.body.weight(.medium))
-                        Text("\(trainLocation)")
-                    }
-
-                    Spacer()
-
-                    Button() {
-                        setTrainLocationSheet.toggle()
-                    } label: {
-                        Image(systemName: "arrow.down.to.line.compact")
-                    }
-                    .help("Assign Train to a Block")
-                    .buttonStyle(.borderless)
-                    
-                    Button() {
-                        do {
-                            try layout.remove(trainID: train.id)
-                            train.runtimeInfo = nil
-                        } catch {
-                            train.runtimeInfo = error.localizedDescription
-                        }
-                    } label: {
-                        Image(systemName: "minus.circle")
-                    }
-                    .help("Remove Train from its Block")
-                    .buttonStyle(.borderless)
-                    .disabled(train.blockId == nil)
                 }
+
+                Spacer()
             }
         }.sheet(isPresented: $setTrainLocationSheet) {
             TrainControlSetLocationSheet(layout: layout, controller: controller, train: train)
@@ -80,8 +53,16 @@ struct TrainControlLocationView: View {
 struct TrainControlLocationView_Previews: PreviewProvider {
     
     static let doc = LayoutDocument(layout: LayoutCCreator().newLayout())
+    static let doc2: LayoutDocument = {
+       let doc = LayoutDocument(layout: LayoutCCreator().newLayout())
+        doc.layout.trains[0].blockId = doc.layout.blockIds[0]
+        return doc
+    }()
 
     static var previews: some View {
-        TrainControlLocationView(controller: doc.layoutController, layout: doc.layout, train: doc.layout.trains[0])
+        Group {
+            TrainControlLocationView(controller: doc.layoutController, layout: doc.layout, train: doc.layout.trains[0])
+            TrainControlLocationView(controller: doc2.layoutController, layout: doc2.layout, train: doc2.layout.trains[0])
+        }
     }
 }

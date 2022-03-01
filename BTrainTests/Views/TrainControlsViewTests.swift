@@ -40,14 +40,14 @@ class TrainControlsViewTests: RootViewTests {
         XCTAssertEqual(try locationText.string(), "Location:")
                 
         // Train Controls
-        let trainControlSpeedView = try trainView.vStack().hStack(0).vStack(0).view(TrainControlSpeedView.self, 2)
+        let trainControlSpeedView = try trainView.find(TrainControlSpeedView.self)
                         
         _ = try trainControlSpeedView.find(text: "0")
         layout.trains[0].speed.requestedKph = 79
         _ = try trainControlSpeedView.find(text: "79")
 
         // TrainRouteView
-        let trainRouteView = try trainView.vStack().view(TrainControlRouteView.self, 1)
+        let trainRouteView = try trainView.find(TrainControlRouteView.self)
         let text = try trainRouteView.find(ViewType.Text.self)
         XCTAssertEqual(try text.string(), "Automatic")
     }
