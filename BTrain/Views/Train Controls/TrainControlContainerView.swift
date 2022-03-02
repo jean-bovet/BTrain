@@ -30,14 +30,16 @@ struct TrainControlContainerView: View {
 
                 TrainIconView(trainIconManager: document.trainIconManager, train: train, size: .medium, hideIfNotDefined: true)
             }
-            HStack {
-                TrainControlSpeedView(document: document, train: train, speed: train.speed)
-                Spacer()
-                TrainControlStateView(train: train)
-            }
+            
+            if train.blockId != nil {
+                HStack {
+                    TrainControlSpeedView(document: document, train: train, speed: train.speed)
+                    Spacer()
+                    TrainControlStateView(train: train)
+                }
 
-            TrainControlRouteView(document: document, train: train)
-                .disabled(train.blockId == nil)
+                TrainControlRouteView(document: document, train: train)
+            }
         }
     }
 }
