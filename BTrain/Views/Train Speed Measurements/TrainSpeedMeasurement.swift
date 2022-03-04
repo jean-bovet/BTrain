@@ -34,7 +34,12 @@ final class TrainSpeedMeasurement {
     let simulator: Bool
     
     private var entryIndex = 0
+    
+    // Direction of travel of the train:
+    // If true, the train is moving towards feedback A, B and then C.
+    // If false, the train is moving towards feedback C, B and then A.
     private var forward = true
+    
     private var task: Task<Void, Error>?
     
     enum CallbackStep {
@@ -76,12 +81,14 @@ final class TrainSpeedMeasurement {
             task.cancel()
         }
 
-        log("Preparing to measure \(train) with direction \(train.directionForward ? "forward" : "backward" )")
-
+        // The measurement always start with the train moving "forward" towards feedback A, B and then C.
+        forward = true
+        entryIndex = 0
+        
         feedbackMonitor.start()
 
-        forward = train.directionForward
-        entryIndex = 0
+        log("Begin to measure \(train)")
+
         task = Task {
             try await run(callback: callback)
         }
@@ -214,7 +221,7 @@ final class TrainSpeedMeasurement {
             DispatchQueue.main.async { [self] in
                 self.forward.toggle()
 
-                layout.setLocomotiveDirection(train, forward: self.forward) {
+                layout.setLocomotiveDirection(train, forward: !train.directionForward) {
                     do {
                         try self.layout.toggleTrainDirectionInBlock(self.train)
                         continuation.resume(returning: ())
@@ -227,7 +234,7 @@ final class TrainSpeedMeasurement {
     }
     
     private func waitForFeedback(_ feedbackId: Identifier<Feedback>, detected: Bool = true) async {
-        await withCheckedContinuation { continuation in
+        return await withCheckedContinuation { continuation in
             DispatchQueue.main.async { [self] in
                 feedbackMonitor.waitForFeedback(feedbackId, detected: detected) {
                     continuation.resume()
