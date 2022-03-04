@@ -88,11 +88,10 @@ struct TrainControlRouteView: View {
                 Text(error)
                     .lineLimit(2)
                     .fixedSize(horizontal: false, vertical: true)
-            } else if let route = selectedRouteDescription, !route.isEmpty {
-                Text(route)
-                    .lineLimit(2)
-                    .fixedSize(horizontal: false, vertical: true)
             }
+            Text(selectedRouteDescription)
+                .lineLimit(2)
+                .fixedSize(horizontal: false, vertical: true)
         }
         .onAppear {
             if let routeId = train.routeId {

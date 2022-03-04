@@ -103,6 +103,7 @@ struct TrainControlSetLocationSheet: View {
                         }
                     }
                 }
+                .disabled(action == .remove)
                 .fixedSize()
                 .onAppear {
                     if let trainDragInfo = trainDragInfo {
