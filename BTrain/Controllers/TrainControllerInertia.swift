@@ -13,6 +13,10 @@
 import Foundation
 import Combine
 
+// This class manages the inertia for a specific train. When a speed change is requested,
+// this class will progressively change the speed until it reaches the requested speed value.
+// The speed is incremented by a specified number of steps that is small enough to be executed
+// by the Digital Controller.
 final class TrainControllerInertia {
     
     typealias SpeedChangedCallback = (_ steps: SpeedStep, _ completed: Bool) -> Void
@@ -20,10 +24,17 @@ final class TrainControllerInertia {
     let train: Train
     let interface: CommandInterface
     
+    // The actual speed value of the locomotive (ie the last
+    // speed value sent to the Digital Controller).
     var actual: SpeedStep = .zero
+    
+    // The desired speed value that has been requested
     var desired: SpeedStep = .zero
-        
+    
+    // The number of steps to increment when changing the speed
     let stepIncrement = 4
+    
+    // The delay between step increments, recommended to be about 100ms.
     let stepDelay = 0.1
     
     private var timer: Timer?
@@ -35,15 +46,16 @@ final class TrainControllerInertia {
     }
         
     func changeSpeed(of train: Train, inertia: Bool?, completion: @escaping CompletionBlock) {
-        BTLogger.debug("Train \(train.name) requested speed of \(train.speed)")
+        BTLogger.debug("Train \(train.name) requested speed of \(train.speed.requestedKph) kph (\(train.speed.requestedSteps) steps) from actual speed of \(train.speed.actualKph)")
 
         changeSpeed(from: train.speed.actualSteps, to: train.speed.requestedSteps, inertia: inertia ?? train.inertia) { [weak self] steps, finished in
             if let interface = self?.interface {
                 let value = interface.speedValue(for: steps, decoder: train.decoder)
+                BTLogger.debug("Train \(train.name) execute speed \(steps.value) steps towards Digital Controller \(finished ? "- done":"- changing")")
                 interface.execute(command: .speed(address: train.address, decoderType: train.decoder, value: value)) {
                     // Change the actualSteps only after we know the command has been sent to the Digital Controller
                     train.speed.actualSteps = steps
-                    BTLogger.debug("Train \(train.name) actual speed is \(train.speed.actualKph)")
+                    BTLogger.debug("Train \(train.name) actual speed is \(train.speed.actualKph) \(finished ? "- done":"- changing")")
                     if finished {
                         if steps == .zero {
                             // When stopping a locomotive, we need to wait a bit more to ensure the locomotive
@@ -131,7 +143,7 @@ final class TrainControllerInertia {
     
     private func cancelPrevious() {
         if let stepsDidChange = stepsDidChange {
-            BTLogger.debug("Interrupting in-progress speed change for \(train.name)")
+            BTLogger.debug("Interrupting in-progress speed change from \(actual.value) steps to \(desired.value) steps for \(train.name)")
             stepsDidChange(actual, true)
         }
         stepsDidChange = nil
