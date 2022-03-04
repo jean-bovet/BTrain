@@ -43,13 +43,15 @@ struct SpeedSlider: View {
                     
                     ZStack {
                         Rectangle()
-                            .fill(Color.white)
+                            .fill(Color(NSColor.controlColor))
                             .cornerRadius(4)
                             .shadow(radius: 1.2)
                             .frame(width: knobWidth, height: knobHeight)
                         VStack {
-                            Text(("\(Int(speed.requestedKph))")).foregroundColor(.black)
-                            Text(("\(Int(speed.actualKph))")).foregroundColor(.black)
+                            Text(("\(Int(speed.requestedKph))"))
+                                .foregroundColor(Color(NSColor.controlTextColor))
+                            Text(("\(Int(speed.actualKph))"))
+                                .foregroundColor(Color(NSColor.controlTextColor))
                         }
                     }
                     .modifier(modifiers.knob)
@@ -120,7 +122,18 @@ struct SpeedSlider_Previews: PreviewProvider {
             SpeedSlider(speed: t2.speed)
             SpeedSlider(speed: t3.speed)
             SpeedSlider(speed: t4.speed)
-        }.padding()
+        }
+        .preferredColorScheme(.dark)
+        .padding()
+        
+        VStack {
+            SpeedSlider(speed: t1.speed)
+            SpeedSlider(speed: t2.speed)
+            SpeedSlider(speed: t3.speed)
+            SpeedSlider(speed: t4.speed)
+        }
+        .preferredColorScheme(.light)
+        .padding()
     }
 }
 
