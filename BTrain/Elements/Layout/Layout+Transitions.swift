@@ -200,13 +200,14 @@ extension Layout {
             // wagons of the train occupies the next block which is expected in this scenario).
             guard nextBlock.reserved == nil || nextBlock.reserved?.trainId == train.id else {
                 return nil
-                
             }
             
             // However, we need to make one extra check to ensure that the head of the train (which
             // is the last wagon in this scenario) has a free block ahead of it to land on.
             if try TrainPositionFinder.isFreeBlockInFrontOfHeadWagon(train: train, layout: self) {
                 return nextBlock
+            } else {
+                return nil
             }
         } else {
             // If the wagons are pulled by the locomotive, the next block must be free,
@@ -214,9 +215,10 @@ extension Layout {
             // itself is still in that block in situation where the train loops on itself.
             if nextBlock.reserved == nil {
                 return nextBlock
+            } else {
+                return nil
             }
         }
-        return nil
     }
     
 }

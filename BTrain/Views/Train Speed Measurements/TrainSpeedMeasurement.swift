@@ -181,9 +181,7 @@ final class TrainSpeedMeasurement {
         return await withCheckedContinuation { continuation in
             DispatchQueue.main.async { [self] in
                 let speedEntry = speedEntry(for: entryIndex)
-                
-                train.state = .running
-                
+                                
                 // Set the speed without inertia to ensure the locomotive accelerates as fast as possible
                 layout.setTrainSpeed(train, speedEntry.steps, inertia: false) {
                     continuation.resume(returning: ())
