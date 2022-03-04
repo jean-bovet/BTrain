@@ -88,12 +88,23 @@ final class TrainSpeedMeasurement {
         feedbackMonitor.start()
 
         task = Task {
-            try await run(callback: callback)
+            do {
+                try await run(callback: callback)
+                BTLogger.debug("Speed measurement task completed")
+            } catch is CancellationError {
+                BTLogger.error("Speed measurement task has been cancelled")
+            } catch {
+                BTLogger.error("Speed measurement task error: \(error)")
+            }
         }
     }
         
     func cancel() {
-        task?.cancel()
+        if let task = task {
+            task.cancel()
+        } else {
+            BTLogger.warning("Unable to cancel speed measurement task because the task handle is nil")
+        }
         
         feedbackMonitor.cancel()
         feedbackMonitor.stop()

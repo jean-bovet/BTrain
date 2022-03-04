@@ -14,7 +14,14 @@ import SwiftUI
 
 struct TrainSpeedMeasureControlsView: View {
     
-    let measurement: TrainSpeedMeasurement
+    let document: LayoutDocument
+    let train: Train
+    @Binding var speedEntries: Set<TrainSpeed.SpeedTableEntry.ID>
+    let feedbackA: String
+    let feedbackB: String
+    let feedbackC: String
+    @Binding var distanceAB: Double
+    @Binding var distanceBC: Double
 
     @Binding var running: Bool
     @Binding var currentSpeedEntry: TrainSpeed.SpeedTableEntry?
@@ -27,7 +34,7 @@ struct TrainSpeedMeasureControlsView: View {
             if let progressInfo = progressInfo {
                 Text(progressInfo)
             } else {
-                Text("􀁟 Position locomotive \"\(measurement.train.name)\" before feedback A with its travel direction towards A, B & C.")
+                Text("􀁟 Position locomotive \"\(train.name)\" before feedback A with its travel direction towards A, B & C.")
             }
 
             HStack {
@@ -52,7 +59,10 @@ struct TrainSpeedMeasureControlsView: View {
     }
     
     func measure() {
-        measurement.start() { info in
+        document.measurement = TrainSpeedMeasurement(layout: document.layout, interface: document.interface, train: train, speedEntries: speedEntries,
+                                                feedbackA: Identifier<Feedback>(uuid: feedbackA), feedbackB: Identifier<Feedback>(uuid: feedbackB), feedbackC: Identifier<Feedback>(uuid: feedbackC),
+                                                distanceAB: distanceAB, distanceBC: distanceBC)
+        document.measurement?.start() { info in
             if info.step == .done {
                 self.done()
             } else {
@@ -64,7 +74,7 @@ struct TrainSpeedMeasureControlsView: View {
     }
 
     func cancel() {
-        measurement.cancel()
+        document.measurement?.cancel()
         done()
     }
     
@@ -82,6 +92,8 @@ struct TrainSpeedMeasureControlsView_Previews: PreviewProvider {
                                                    feedbackA: Identifier<Feedback>(uuid: "OL1.1"), feedbackB: Identifier<Feedback>(uuid: "OL1.1"), feedbackC: Identifier<Feedback>(uuid: "OL1.1"),
                                                    distanceAB: 10, distanceBC: 20)
     static var previews: some View {
-        TrainSpeedMeasureControlsView(measurement: measurement, running: .constant(false), currentSpeedEntry: .constant(nil))
+        TrainSpeedMeasureControlsView(document: doc, train: doc.layout.trains[0], speedEntries: .constant([]),
+                                      feedbackA: "a", feedbackB: "b", feedbackC: "c", distanceAB: .constant(0), distanceBC: .constant(0),
+                                      running: .constant(false), currentSpeedEntry: .constant(nil))
     }
 }

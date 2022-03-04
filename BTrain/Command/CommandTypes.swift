@@ -15,8 +15,11 @@ import Foundation
 // This type defines the speed value express in the unit that the CAN-message
 // expects the speed to be provided. This value is specific to each Digital Controller,
 // for example for the CS3, the speed value is expected to between 0 and 1000.
-struct SpeedValue: Equatable {
+struct SpeedValue: Equatable, CustomStringConvertible {
     var value: UInt16
+    var description: String {
+        return "\(value)"
+    }
     static let zero = SpeedValue(value: 0)
 }
 

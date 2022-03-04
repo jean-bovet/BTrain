@@ -51,6 +51,9 @@ final class LayoutDocument: ObservableObject {
     // The centralized class that manages all train icon-related functions
     let trainIconManager: TrainIconManager
     
+    // If non-nil, the instance of the class that is measuring the speed of a train
+    var measurement: TrainSpeedMeasurement?
+
     // Property used to perform the layout diagnostic command
     @Published var triggerLayoutDiagnostic = false
 

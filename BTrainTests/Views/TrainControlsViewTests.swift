@@ -48,8 +48,8 @@ class TrainControlsViewTests: RootViewTests {
 
         // TrainRouteView
         let trainRouteView = try trainView.find(TrainControlRouteView.self)
-        let text = try trainRouteView.find(ViewType.Text.self)
-        XCTAssertEqual(try text.string(), "Automatic")
+        let picker = try trainRouteView.find(ViewType.Picker.self)
+        XCTAssertEqual(try picker.text(0).string(), "Automatic")
     }
     
     func testRouteActions() throws {

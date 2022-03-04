@@ -110,14 +110,15 @@ struct TrainSpeedMeasurementsView: View {
                     .padding([.leading, .trailing])
             } else {
                 if let train = train, let feedbackA = feedbackA, let feedbackB = feedbackB, let feedbackC = feedbackC {
-                    TrainSpeedMeasureControlsView(measurement: TrainSpeedMeasurement(layout: layout, interface: document.interface, train: train,
-                                                                                     speedEntries: selectedSpeedEntries,
-                                                                                     feedbackA: Identifier<Feedback>(uuid: feedbackA),
-                                                                                     feedbackB: Identifier<Feedback>(uuid: feedbackB),
-                                                                                     feedbackC: Identifier<Feedback>(uuid: feedbackC),
-                                                                                     distanceAB: distanceAB,
-                                                                                     distanceBC: distanceBC),
-                                                  running: $running, currentSpeedEntry: $currentSpeedEntry)
+                    TrainSpeedMeasureControlsView(document: document, train: train,
+                                                  speedEntries: $selectedSpeedEntries,
+                                                  feedbackA: feedbackA,
+                                                  feedbackB: feedbackB,
+                                                  feedbackC: feedbackC,
+                                                  distanceAB: $distanceAB,
+                                                  distanceBC: $distanceBC,
+                                                  running: $running,
+                                                  currentSpeedEntry: $currentSpeedEntry)
                         .padding([.leading, .trailing])
                 }
             }

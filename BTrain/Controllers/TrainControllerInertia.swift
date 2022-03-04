@@ -46,16 +46,16 @@ final class TrainControllerInertia {
     }
         
     func changeSpeed(of train: Train, inertia: Bool?, completion: @escaping CompletionBlock) {
-        BTLogger.debug("Train \(train.name) requested speed of \(train.speed.requestedKph) kph (\(train.speed.requestedSteps)) from actual speed of \(train.speed.actualKph)")
+        BTLogger.debug("Train \(train) request speed of \(train.speed.requestedKph) kph (\(train.speed.requestedSteps)) from actual speed of \(train.speed.actualKph) kph (\(train.speed.actualSteps))")
 
         changeSpeed(from: train.speed.actualSteps, to: train.speed.requestedSteps, inertia: inertia ?? train.inertia) { [weak self] steps, finished in
             if let interface = self?.interface {
                 let value = interface.speedValue(for: steps, decoder: train.decoder)
-                BTLogger.debug("Train \(train.name) execute speed \(steps.value) steps towards Digital Controller \(finished ? "- done":"- changing")")
+                BTLogger.debug("Train \(train) execute speed value \(value) (\(steps)) towards Digital Controller \(finished ? "- completed":"- in progress")")
                 interface.execute(command: .speed(address: train.address, decoderType: train.decoder, value: value)) {
                     // Change the actualSteps only after we know the command has been sent to the Digital Controller
                     train.speed.actualSteps = steps
-                    BTLogger.debug("Train \(train.name) actual speed is \(train.speed.actualKph) \(finished ? "- done":"- changing")")
+                    BTLogger.debug("Train \(train) actual speed is \(train.speed.actualKph) kph (\(train.speed.actualSteps)) \(finished ? "- completed":"- in progress")")
                     if finished {
                         if steps == .zero {
                             // When stopping a locomotive, we need to wait a bit more to ensure the locomotive
