@@ -109,5 +109,54 @@ class LayoutTests: XCTestCase {
         XCTAssertEqual(train1.directionForward, true)
         XCTAssertEqual(block1.train!.direction, .previous)
     }
+    
+    func testTrainStopCompletely() throws {
+        let doc = LayoutDocument(layout: LayoutBCreator().newLayout())
+        let layout = doc.layout
+        let train1 = layout.trains[0]
+        let block1 = layout.blocks[0]
+
+        try layout.setTrainToBlock(train1.id, block1.id, direction: .next)
+
+        let connected = expectation(description: "Connected")
+        doc.connectToSimulator(enable: true) { error in
+            connected.fulfill()
+        }
+        wait(for: [connected], timeout: 2.0)
+
+        XCTAssertEqual(train1.state, .stopped)
+        XCTAssertTrue(train1.manualScheduling)
+
+        try layout.start(routeID: layout.routes[0].id, trainID: train1.id, destination: nil)
+        
+        doc.layoutController.runControllers()
+        
+        XCTAssertEqual(train1.state, .running)
+        XCTAssertTrue(train1.automaticScheduling)
+
+        let stopped = expectation(description: "Stopped")
+        try layout.stopTrain(train1.id, completely: false) {
+            stopped.fulfill()
+        }
+
+        XCTAssertEqual(train1.state, .stopping)
+        XCTAssertTrue(train1.automaticScheduling)
+
+        wait(for: [stopped], timeout: 2.0)
+        
+        XCTAssertEqual(train1.state, .stopped)
+        XCTAssertTrue(train1.automaticScheduling)
+
+        let stoppedFully = expectation(description: "StoppedFully")
+        try layout.stopTrain(train1.id, completely: true) {
+            stoppedFully.fulfill()
+        }
+        wait(for: [stoppedFully], timeout: 2.0)
+
+        XCTAssertEqual(train1.state, .stopped)
+        XCTAssertTrue(train1.manualScheduling)
+
+        doc.disconnect()
+    }
   
 }

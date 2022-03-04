@@ -254,7 +254,7 @@ final class LayoutController: TrainControllerDelegate {
         let timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true, block: { [weak self] timer in
             train.timeUntilAutomaticRestart -= 1
             if train.timeUntilAutomaticRestart <= 0 {
-                BTLogger.debug("It is now time to restart train \(train.id)")
+                BTLogger.debug("It is now time to restart train \(train)")
                 // The TrainController is the class that actually restarts the train
                 // when it sees that this timer has reached 0 and all other parameters are valid.
                 train.timeUntilAutomaticRestart = 0

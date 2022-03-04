@@ -262,19 +262,18 @@ extension Layout {
             throw LayoutError.trainNotFound(trainId: trainId)
         }
                 
-        guard train.state != .stopped && train.state != .stopping else {
-            completion()
-            return
-        }
-        
         BTLogger.debug("Stopping train \(train.name) \(completely ? "completely." : "until it can be restarted.")")
-        
-        train.speed.requestedKph = 0
-        train.state = .stopping
 
-        executor.sendTrainSpeed(train: train, inertia: nil) { [weak self] in
-            train.state = .stopped
-            self?.didChange()
+        if train.state != .stopped && train.state != .stopping {
+            train.speed.requestedKph = 0
+            train.state = .stopping
+
+            executor.sendTrainSpeed(train: train, inertia: nil) { [weak self] in
+                train.state = .stopped
+                self?.didChange()
+                completion()
+            }
+        } else {
             completion()
         }
 

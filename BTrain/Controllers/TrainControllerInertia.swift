@@ -46,7 +46,7 @@ final class TrainControllerInertia {
     }
         
     func changeSpeed(of train: Train, inertia: Bool?, completion: @escaping CompletionBlock) {
-        BTLogger.debug("Train \(train.name) requested speed of \(train.speed.requestedKph) kph (\(train.speed.requestedSteps) steps) from actual speed of \(train.speed.actualKph)")
+        BTLogger.debug("Train \(train.name) requested speed of \(train.speed.requestedKph) kph (\(train.speed.requestedSteps)) from actual speed of \(train.speed.actualKph)")
 
         changeSpeed(from: train.speed.actualSteps, to: train.speed.requestedSteps, inertia: inertia ?? train.inertia) { [weak self] steps, finished in
             if let interface = self?.interface {

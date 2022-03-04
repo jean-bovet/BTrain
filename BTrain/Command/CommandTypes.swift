@@ -21,8 +21,11 @@ struct SpeedValue: Equatable {
 }
 
 // Define the type of speed when expressed in number of decoder steps
-struct SpeedStep: Equatable, Codable {
+struct SpeedStep: Equatable, Codable, CustomStringConvertible {
     var value: UInt16
+    var description: String {
+        return "\(value) steps"
+    }
     static let zero = SpeedStep(value: 0)
 }
 
