@@ -19,8 +19,18 @@ struct SpeedSlider: View {
 
     @ObservedObject var speed: TrainSpeed
         
+    @Environment(\.colorScheme) var colorScheme
+
     var onEditingChanged: (() -> Void)?
 
+    var knobColor: Color {
+        if colorScheme == .light {
+            return Color(NSColor.controlColor)
+        } else {
+            return Color(NSColor.darkGray)
+        }
+    }
+    
     var body: some View {
         HStack {
             CustomSlider(value: $speed.kphAsDouble, secondaryValue: $speed.actualKphAsDouble, range: (0, Double(speed.maxSpeed)), knobWidth: knobWidth, onEditingChanged: onEditingChanged) { modifiers in
@@ -43,7 +53,7 @@ struct SpeedSlider: View {
                     
                     ZStack {
                         Rectangle()
-                            .fill(Color(NSColor.controlColor))
+                            .fill(knobColor)
                             .cornerRadius(4)
                             .shadow(radius: 1.2)
                             .frame(width: knobWidth, height: knobHeight)
