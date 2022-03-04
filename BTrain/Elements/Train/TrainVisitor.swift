@@ -117,13 +117,14 @@ final class TrainVisitor {
                     remainingTrainLength -= length
                 }
                 try turnoutCallback(turnoutInfo)
-            } else if let block = info.block, let wagonDirection = info.direction {
+            } else if let blockInfo = info.block {
+                let wagonDirection = blockInfo.direction
                 // Determine the direction of the train within the current block by using
                 // the flag indicating if the wagons are pushed or not by the locomotive.
                 let trainDirection = wagonsPushedByLocomotive ? wagonDirection : wagonDirection.opposite
                 remainingTrainLength = try visitBlockParts(trainPosition: trainPosition,
                                                            remainingTrainLength: remainingTrainLength,
-                                                           block: block,
+                                                           block: blockInfo.block,
                                                            headBlock: info.index == 0,
                                                            wagonDirection: wagonDirection,
                                                            trainDirection: trainDirection,

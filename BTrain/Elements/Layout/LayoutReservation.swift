@@ -304,10 +304,10 @@ final class LayoutReservation {
                 } else {
                     return .stop
                 }
-            } else if let block = info.block, block.id != fromBlockId {
-                if block.reserved?.trainId == trainId {
-                    block.reserved = nil
-                    block.train = nil
+            } else if let blockInfo = info.block, blockInfo.block.id != fromBlockId {
+                if blockInfo.block.reserved?.trainId == trainId {
+                    blockInfo.block.reserved = nil
+                    blockInfo.block.train = nil
                 } else {
                     return .stop
                 }

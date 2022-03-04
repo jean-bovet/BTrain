@@ -27,20 +27,33 @@ final class ElementVisitor {
         let turnout: Turnout
         let sockets: Turnout.Reservation.Sockets?
     }
-
-    struct ElementInfo {
-        var transition: ITransition? = nil
-                
-        var turnout: TurnoutInfo? = nil
-
-        // TODO: create BlockInfo with block and direction in it, similar to TurnoutInfo
-        var block: Block? = nil
+    
+    struct BlockInfo {
+        let block: Block
         
         // Direction in which the visitor algorithm is traversing the block
-        var direction: Direction? = nil
+        let direction: Direction
+    }
+
+    struct ElementInfo {
+        let transition: ITransition?
+        let turnout: TurnoutInfo?
+        let block: BlockInfo?
         
-        // Index of the block the visitor algorithm is visiting
-        var index: Int
+        // Index of the element the visitor algorithm is visiting
+        let index: Int
+        
+        static func block(_ block: Block, direction: Direction, index: Int) -> ElementInfo {
+            return .init(transition: nil, turnout: nil, block: .init(block: block, direction: direction), index: index)
+        }
+        
+        static func transition(_ transition: ITransition, index: Int) -> ElementInfo {
+            return .init(transition: transition, turnout: nil, block: nil, index: index)
+        }
+        
+        static func turnout(_ turnout: Turnout, sockets: Turnout.Reservation.Sockets?, index: Int) -> ElementInfo {
+            return .init(transition: nil, turnout: .init(turnout: turnout, sockets: sockets), block: nil, index: index)
+        }
     }
     
     enum VisitorCallbackResult {
@@ -55,7 +68,7 @@ final class ElementVisitor {
         let visitor = ElementVisitor(layout: layout)
         try visitor.visit(fromBlockId: block.id, toBlockId: nil, direction: direction) { info in
             if let block = info.block, info.index > 0 {
-                nextBlock = block
+                nextBlock = block.block
                 return .stop
             } else {
                 return .continue
@@ -70,7 +83,7 @@ final class ElementVisitor {
         guard let block = layout.block(for: fromBlockId) else {
             throw LayoutError.blockNotFound(blockId: fromBlockId)
         }
-        guard try callback(.init(block: block, direction: direction, index: 0)) == .continue else {
+        guard try callback(ElementInfo.block(block, direction: direction, index: 0)) == .continue else {
             return
         }
         let toBlock = layout.block(for: toBlockId)
@@ -83,7 +96,7 @@ final class ElementVisitor {
             return
         }
         
-        guard try callback(.init(transition: transition, index: index)) == .continue else {
+        guard try callback(ElementInfo.transition(transition, index: index)) == .continue else {
             return
         }
         
@@ -99,7 +112,7 @@ final class ElementVisitor {
             }
             
             let direction: Direction = toSocketId == block.previous.socketId ? .next : .previous
-            guard try callback(.init(block: block, direction: direction, index: index)) == .continue else {
+            guard try callback(ElementInfo.block(block, direction: direction, index: index)) == .continue else {
                 return
             }
             
@@ -135,7 +148,7 @@ final class ElementVisitor {
                 }
             }
             
-            guard try callback(.init(turnout: .init(turnout: turnout, sockets: sockets), index: index)) == .continue else {
+            guard try callback(ElementInfo.turnout(turnout, sockets: sockets, index: index)) == .continue else {
                 return
             }
 
