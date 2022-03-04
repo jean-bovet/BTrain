@@ -46,6 +46,50 @@ class TrainSpeedMeasurementTests: XCTestCase {
         wait(for: [disconnectExpectation], timeout: 5.0)
     }
 
+    func testCancelMeasure() throws {
+        let layout = LayoutFCreator().newLayout()
+        
+        let train = layout.trains[0]
+        train.blockId = layout.blocks[0].id
+        layout.blocks[0].train = .init(train.id, .next)
+
+        let fa = layout.feedback(for: Identifier<Feedback>(uuid: "OL1.2"))!
+        let fb = layout.feedback(for: Identifier<Feedback>(uuid: "OL2.1"))!
+        let fc = layout.feedback(for: Identifier<Feedback>(uuid: "OL2.2"))!
+
+        let step = 10
+
+        let sm = TrainSpeedMeasurement(layout: layout, interface: mi, train: train,
+                                       speedEntries: [UInt16(step)],
+                                       feedbackA: fa.id, feedbackB: fb.id, feedbackC: fc.id,
+                                       distanceAB: 95, distanceBC: 18,
+                                       simulator: true)
+
+        let trainStartedExpectation = expectation(description: "TrainStarted")
+
+        sm.start { info in
+            if info.step == .trainStarted {
+                trainStartedExpectation.fulfill()
+            } else {
+                XCTFail("Unexpected info.step \(info.step)")
+            }
+        }
+        
+        wait(for: [trainStartedExpectation], timeout: 5.0)
+        
+        // Wait for the speed measurement class to be waiting for feedback A trigger
+        wait(for: {
+            sm.feedbackMonitor.pendingRequestCount == 1
+        }, timeout: 1.0)
+        
+        // Cancel the speed measurement
+        sm.cancel()
+        
+        // And check that it is not waiting for feedback A anymore, because cancel()
+        // should have removed and cancelled that wait
+        XCTAssertEqual(sm.feedbackMonitor.pendingRequestCount, 0)
+    }
+    
     func testMeasureOneStep() throws {
         let layout = LayoutFCreator().newLayout()
         
@@ -94,7 +138,7 @@ class TrainSpeedMeasurementTests: XCTestCase {
         }
         
         wait(for: [trainStartedExpectation], timeout: 5.0)
-        
+
         simulator.triggerFeedback(feedback: fa)
 
         wait(for: [feedbackAExpectation], timeout: 5.0)
@@ -112,6 +156,7 @@ class TrainSpeedMeasurementTests: XCTestCase {
         XCTAssertEqual(expectedInfoArray.count, 0)
         XCTAssertEqual(train.speed.speedTable[step].steps.value, UInt16(step))
         XCTAssertNotNil(train.speed.speedTable[step].speed)
+        XCTAssertEqual(sm.feedbackMonitor.pendingRequestCount, 0)
     }
 
     final class InfoStepAsserter {
@@ -227,6 +272,7 @@ class TrainSpeedMeasurementTests: XCTestCase {
         XCTAssertNotNil(train.speed.speedTable[step2].speed)
         
         XCTAssertNotEqual(train.speed.speedTable[step1].steps.value, train.speed.speedTable[step2].steps.value)
+        XCTAssertEqual(sm.feedbackMonitor.pendingRequestCount, 0)
     }
     
 }

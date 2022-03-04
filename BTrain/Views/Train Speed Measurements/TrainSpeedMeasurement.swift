@@ -87,8 +87,6 @@ final class TrainSpeedMeasurement {
         
         feedbackMonitor.start()
 
-        log("Begin to measure \(train)")
-
         task = Task {
             try await run(callback: callback)
         }
@@ -96,10 +94,12 @@ final class TrainSpeedMeasurement {
         
     func cancel() {
         task?.cancel()
+        
+        feedbackMonitor.cancel()
+        feedbackMonitor.stop()
+
         Task {
             try await stopTrain()
-            
-            feedbackMonitor.stop()
         }
     }
     
@@ -112,14 +112,14 @@ final class TrainSpeedMeasurement {
     }
     
     private func run(callback: @escaping (CallbackInfo) -> Void) async throws {
-        log("Start measuring")
-        while (true) {
-            try Task.checkCancellation()
+        log("Start measuring \(train)")
+        while !Task.isCancelled {
             try await measure(callback: callback)
+            try Task.checkCancellation()
             if isFinished(for: entryIndex+1) {
-                invokeCallback(.done, callback)
+                try invokeCallback(.done, callback)
                 done()
-                log("Done measuring")
+                log("Done measuring \(train)")
                 break
             } else {
                 entryIndex += 1
@@ -129,7 +129,7 @@ final class TrainSpeedMeasurement {
     
     private func measure(callback: @escaping (CallbackInfo) -> Void) async throws {
         await startTrain()
-        invokeCallback(.trainStarted, callback)
+        try invokeCallback(.trainStarted, callback)
         
         let feedbacks: [(Identifier<Feedback>, CallbackStep)]
         if forward {
@@ -138,29 +138,21 @@ final class TrainSpeedMeasurement {
             feedbacks = [(feedbackC, .feedbackC), (feedbackB, .feedbackB), (feedbackA, .feedbackA)]
         }
         
-        await waitForFeedback(feedbacks[0].0)
-        invokeCallback(feedbacks[0].1, callback)
+        try await waitForFeedback(feedbacks[0].0)
+        try invokeCallback(feedbacks[0].1, callback)
                 
-        try Task.checkCancellation()
-
-        await waitForFeedback(feedbacks[1].0)
+        try await waitForFeedback(feedbacks[1].0)
         let t0 = Date()
-        invokeCallback(feedbacks[1].1, callback)
+        try invokeCallback(feedbacks[1].1, callback)
                 
-        try Task.checkCancellation()
-
-        await waitForFeedback(feedbacks[2].0)
+        try await waitForFeedback(feedbacks[2].0)
         let t1 = Date()
-        invokeCallback(feedbacks[2].1, callback)
+        try invokeCallback(feedbacks[2].1, callback)
         
-        try Task.checkCancellation()
-
-        await waitForFeedback(feedbacks[2].0, detected: false)
-
-        try Task.checkCancellation()
+        try await waitForFeedback(feedbacks[2].0, detected: false)
 
         try await stopTrain()
-        invokeCallback(.trainStopped, callback)
+        try invokeCallback(.trainStopped, callback)
 
         DispatchQueue.main.sync {
             storeMeasurement(t0: t0, t1: t1, distance: forward ? distanceBC : distanceAB)
@@ -173,13 +165,13 @@ final class TrainSpeedMeasurement {
             try await Task.sleep(nanoseconds: 2_000_000_000)
         }
 
-        try Task.checkCancellation()
-
         try await toggleTrainDirection()
-        invokeCallback(.trainDirectionToggle, callback)
+        try invokeCallback(.trainDirectionToggle, callback)
     }
     
-    private func invokeCallback(_ step: CallbackStep, _ callback: @escaping (CallbackInfo) -> Void) {
+    private func invokeCallback(_ step: CallbackStep, _ callback: @escaping (CallbackInfo) -> Void) throws {
+        try Task.checkCancellation()
+
         log("Completed step \(step)")
         let speedEntry = speedEntry(for: entryIndex)
         callback(.init(speedEntry: speedEntry, step: step, progress: progress(for: entryIndex)))
@@ -233,7 +225,8 @@ final class TrainSpeedMeasurement {
         }
     }
     
-    private func waitForFeedback(_ feedbackId: Identifier<Feedback>, detected: Bool = true) async {
+    private func waitForFeedback(_ feedbackId: Identifier<Feedback>, detected: Bool = true) async throws {
+        try Task.checkCancellation()
         return await withCheckedContinuation { continuation in
             DispatchQueue.main.async { [self] in
                 feedbackMonitor.waitForFeedback(feedbackId, detected: detected) {

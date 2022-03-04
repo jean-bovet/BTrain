@@ -28,6 +28,10 @@ final class FeedbackMonitor {
     
     private var requests = [Request]()
         
+    var pendingRequestCount: Int {
+        return requests.count
+    }
+    
     init(layout: Layout, interface: CommandInterface) {
         self.layout = layout
         self.interface = interface
@@ -35,6 +39,11 @@ final class FeedbackMonitor {
     
     func start() {
         registerForFeedbackChanges()
+    }
+    
+    func cancel() {
+        requests.forEach { $0.completion() }
+        requests.removeAll()
     }
     
     func stop() {
