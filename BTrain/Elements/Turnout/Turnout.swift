@@ -58,16 +58,28 @@ final class Turnout: Element, ObservableObject {
     // State of the turnout. Note that not all states are supported
     // by some turnout category.
     @Published var state: State = .straight
-        
-    // Contains the reservation for the specified train
-    var reserved: Identifier<Train>?
 
-    struct SocketReservation: Codable {
-        let fromSocketId: Int
-        let toSocketId: Int
+    struct Reservation: Codable, CustomStringConvertible {
+        let train: Identifier<Train>
+        
+        struct Sockets: Codable {
+            let fromSocketId: Int
+            let toSocketId: Int
+        }
+        
+        let sockets: Sockets?
+        
+        var description: String {
+            if let sockets = sockets {
+                return "\(train):\(sockets.fromSocketId)-\(sockets.toSocketId)"
+            } else {
+                return "\(train)"
+            }
+        }
     }
 
-    var reservedSockets: SocketReservation?
+    // Contains the reservation for the specified train
+    var reserved: Reservation?
     
     // The identifier of the train located in this turnout
     var train: Identifier<Train>?
@@ -104,7 +116,7 @@ final class Turnout: Element, ObservableObject {
 extension Turnout: Codable {
     
     enum CodingKeys: CodingKey {
-      case id, enabled, type, name, address, address2, length, state, reserved, reservedSockets, train, center, angle
+      case id, enabled, type, name, address, address2, length, state, reserved, train, center, angle
     }
 
     convenience init(from decoder: Decoder) throws {
@@ -121,8 +133,11 @@ extension Turnout: Codable {
 
         self.init(id: id, name: name, type: type, address: address, address2: address2, state: state, center: center, rotationAngle: rotationAngle, length: length)
         self.enabled = try container.decodeIfPresent(Bool.self, forKey: CodingKeys.enabled) ?? true
-        self.reserved = try container.decodeIfPresent(Identifier<Train>.self, forKey: CodingKeys.reserved)
-        self.reservedSockets = try container.decodeIfPresent(Turnout.SocketReservation.self, forKey: CodingKeys.reservedSockets)
+        if let reserved = try? container.decodeIfPresent(Identifier<Train>.self, forKey: CodingKeys.reserved) {
+            self.reserved = .init(train: reserved, sockets: nil)
+        } else {
+            self.reserved = try container.decodeIfPresent(Turnout.Reservation.self, forKey: CodingKeys.reserved)
+        }
         self.train = try container.decodeIfPresent(Identifier<Train>.self, forKey: CodingKeys.train)
     }
     
@@ -137,7 +152,6 @@ extension Turnout: Codable {
         try container.encode(length, forKey: CodingKeys.length)
         try container.encode(state, forKey: CodingKeys.state)
         try container.encode(reserved, forKey: CodingKeys.reserved)
-        try container.encode(reservedSockets, forKey: CodingKeys.reservedSockets)
         try container.encode(train, forKey: CodingKeys.train)
 
         try container.encode(center, forKey: CodingKeys.center)

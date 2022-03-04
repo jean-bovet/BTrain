@@ -33,7 +33,7 @@ final class TrainVisitor {
     }
     
     typealias TransitionCallbackBlock = (ITransition) throws -> Void
-    typealias TurnoutCallbackBlock = (Turnout) throws -> Void
+    typealias TurnoutCallbackBlock = (ElementVisitor.TurnoutInfo) throws -> Void
     typealias BlockCallbackBlock = (Block, BlockAttributes) throws -> Void
 
     let layout: Layout
@@ -112,11 +112,11 @@ final class TrainVisitor {
             if let transition = info.transition {
                 // Transition is just a virtual connection between two elements, no physical length exists.
                 try transitionCallback(transition)
-            } else if let turnout = info.turnout {
-                if let length = turnout.length {
+            } else if let turnoutInfo = info.turnout {
+                if let length = turnoutInfo.turnout.length {
                     remainingTrainLength -= length
                 }
-                try turnoutCallback(turnout)
+                try turnoutCallback(turnoutInfo)
             } else if let block = info.block, let wagonDirection = info.direction {
                 // Determine the direction of the train within the current block by using
                 // the flag indicating if the wagons are pushed or not by the locomotive.

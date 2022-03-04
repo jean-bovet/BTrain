@@ -23,9 +23,17 @@ final class ElementVisitor {
         self.layout = layout
     }
     
+    struct TurnoutInfo {
+        let turnout: Turnout
+        let sockets: Turnout.Reservation.Sockets?
+    }
+
     struct ElementInfo {
         var transition: ITransition? = nil
-        var turnout: Turnout? = nil
+                
+        var turnout: TurnoutInfo? = nil
+
+        // TODO: create BlockInfo with block and direction in it, similar to TurnoutInfo
         var block: Block? = nil
         
         // Direction in which the visitor algorithm is traversing the block
@@ -111,27 +119,31 @@ final class ElementVisitor {
             guard let turnout = layout.turnout(for: turnoutId) else {
                 throw LayoutError.turnoutNotFound(turnoutId: turnoutId)
             }
-            
-            guard try callback(.init(turnout: turnout, index: index)) == .continue else {
-                return
-            }
+                        
+            var sockets: Turnout.Reservation.Sockets?
             
             if let toBlock = toBlock {
                 // If the destination block is specified, we need to find out which exit socket of the turnout to use
-                if let exitSocket = try exitSocketOf(turnout: turnout, fromSocketId: toSocketId, toReachBlock: toBlock) {
-                    // Recursively call this method again to continue the job in the next element
-                    try visit(fromSocket: turnout.socket(exitSocket), toBlock: toBlock, index: index+1, callback: callback)
+                if let exitSocketId = try exitSocketOf(turnout: turnout, fromSocketId: toSocketId, toReachBlock: toBlock) {
+                    sockets = .init(fromSocketId: toSocketId, toSocketId: exitSocketId)
                 }
             } else {
-                // Find out the exit socket of the turnout given its state
-                guard let socketId = turnout.socketId(fromSocketId: toSocketId, withState: turnout.state) else {
-                    // No error because it can happen that a turnout is configured for another route
-                    return
+                // Find out the exit socket of the turnout given its state.
+                // Note that it can happen that a turnout is configured for another route and exitSocketId will be nil here.
+                if let exitSocketId = turnout.socketId(fromSocketId: toSocketId, withState: turnout.state) {
+                    sockets = .init(fromSocketId: toSocketId, toSocketId: exitSocketId)
                 }
-                
-                // Recursively call this method again to continue the job in the next element
-                try visit(fromSocket: turnout.socket(socketId), toBlock: toBlock, index: index+1, callback: callback)
             }
+            
+            guard try callback(.init(turnout: .init(turnout: turnout, sockets: sockets), index: index)) == .continue else {
+                return
+            }
+
+            if let sockets = sockets {
+                // Recursively call this method again to continue the job in the next element
+                try visit(fromSocket: turnout.socket(sockets.toSocketId), toBlock: toBlock, index: index+1, callback: callback)
+            }
+
         }
     }
     

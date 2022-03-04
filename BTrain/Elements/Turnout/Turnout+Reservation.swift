@@ -16,7 +16,7 @@ extension Turnout {
     
     // Returns true if the turnout is reserved and occupied by the train or a portion of the train.
     func isOccupied(by trainId: Identifier<Train>) -> Bool {
-        return reserved == trainId && train == trainId
+        return reserved?.train == trainId && train == trainId
     }
 
     var canBeReserved: Bool {

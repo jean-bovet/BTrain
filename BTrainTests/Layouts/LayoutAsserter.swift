@@ -133,7 +133,7 @@ final class LayoutAsserter {
                     reserved = previousBlock.reserved?.trainId
                     fromElementName = previousBlock.name
                 } else if let previousTurnout = layout.turnout(for: previousStep.turnoutId) {
-                    reserved = previousTurnout.reserved
+                    reserved = previousTurnout.reserved?.train
                     fromElementName = previousTurnout.name
                     // Check that the actual exitSocket is one that the state of the turnout allows, otherwise
                     // this means that this transition is not going to be used for the reservation and can be skipped.
@@ -151,7 +151,7 @@ final class LayoutAsserter {
                     }
                 } else if let turnout = layout.turnout(for: step.turnoutId) {
                     toElementName = turnout.name
-                    if reserved != turnout.reserved {
+                    if reserved != turnout.reserved?.train {
                         reserved = nil
                     } else {
                         // Check that the actual entrySocket is one that the state of the turnout allows, otherwise
@@ -219,6 +219,6 @@ final class LayoutAsserter {
         }
         XCTAssertEqual(turnout.id, expectedTurnout.id, "Mismatching turnout ID at index \(index), route \(route)")
         XCTAssertEqual(turnout.state, expectedTurnout.state, "Mismatching turnout state for \(turnout) at index \(index), route \(route)")
-        XCTAssertEqual(turnout.reserved, expectedTurnout.reserved, "Mismatching turnout reservation for \(turnout) at index \(index), route \(route)")
+        XCTAssertEqual(turnout.reserved?.train, expectedTurnout.reserved?.train, "Mismatching turnout reservation for \(turnout) at index \(index), route \(route)")
     }
 }

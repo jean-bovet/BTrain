@@ -28,7 +28,7 @@ final class LayoutReservation {
     internal struct TurnoutReservation {
         let turnout: Turnout
         let state: Turnout.State
-        let sockets: Turnout.SocketReservation
+        let sockets: Turnout.Reservation.Sockets
     }
 
     init(layout: Layout) {
@@ -184,8 +184,7 @@ final class LayoutReservation {
         }
         
         turnout.state = reservation.state
-        turnout.reserved = train.id
-        turnout.reservedSockets = reservation.sockets
+        turnout.reserved = .init(train: train.id, sockets: reservation.sockets)
         
         layout.executor.sendTurnoutState(turnout: turnout) { }
         BTLogger.debug("Reserved turnout \(turnout.name) for \(train) and state \(turnout.state)")
@@ -216,7 +215,7 @@ final class LayoutReservation {
             
             // If the turnout can be reserved, remember it and it will actually be reserved
             // when the block that is leads to can also be reserved.
-            turnouts.append(TurnoutReservation(turnout: turnout, state: state, sockets: Turnout.SocketReservation(fromSocketId: fromSocketId, toSocketId: toSocketId)))
+            turnouts.append(TurnoutReservation(turnout: turnout, state: state, sockets: Turnout.Reservation.Sockets(fromSocketId: fromSocketId, toSocketId: toSocketId)))
         }
         
         return true
@@ -261,11 +260,13 @@ final class LayoutReservation {
             }
             transition.reserved = train.id
             transition.train = train.id
-        } turnoutCallback: { turnout in
+        } turnoutCallback: { turnoutInfo in
+            let turnout = turnoutInfo.turnout
+
             guard turnout.reserved == nil else {
                 throw LayoutError.turnoutAlreadyReserved(turnout: turnout)
             }
-            turnout.reserved = train.id
+            turnout.reserved = .init(train: train.id, sockets: turnoutInfo.sockets)
             turnout.train = train.id
         } blockCallback: { block, attributes in
             guard block.reserved == nil || attributes.headBlock else {
@@ -296,8 +297,8 @@ final class LayoutReservation {
                 } else {
                     return .stop
                 }
-            } else if let turnout = info.turnout {
-                if turnout.reserved == trainId {
+            } else if let turnout = info.turnout?.turnout {
+                if turnout.reserved?.train == trainId {
                     turnout.reserved = nil
                     turnout.train = nil
                 } else {
@@ -327,7 +328,7 @@ final class LayoutReservation {
                     block.train = nil
                 }
             }
-        layout.turnouts.filter { $0.reserved == train.id }.forEach { $0.reserved = nil; $0.train = nil }
+        layout.turnouts.filter { $0.reserved?.train == train.id }.forEach { $0.reserved = nil; $0.train = nil }
         layout.transitions.filter { $0.reserved == train.id }.forEach { $0.reserved = nil; $0.train = nil }
     }
     

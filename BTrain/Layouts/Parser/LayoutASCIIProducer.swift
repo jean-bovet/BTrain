@@ -104,7 +104,7 @@ final class LayoutASCIIProducer {
         }
         
         text += "<"
-        if let reserved = turnout.reserved {
+        if let reserved = turnout.reserved?.train {
             text += "r\(reserved)"
             text += "<"
         }

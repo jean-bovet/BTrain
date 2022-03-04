@@ -330,7 +330,7 @@ class TurnoutTests: XCTestCase {
         t1.setStateSafe(.branch03)
         XCTAssertEqual(.branch03, t1.state)
         
-        t1.reserved = Identifier<Train>(uuid: "12")
+        t1.reserved = .init(train: Identifier<Train>(uuid: "12"), sockets: nil)
         t1.setStateSafe(.straight01)
         XCTAssertEqual(.branch03, t1.state)
         

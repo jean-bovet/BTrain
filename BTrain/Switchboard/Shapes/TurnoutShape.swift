@@ -62,7 +62,7 @@ final class TurnoutShape: Shape, DraggableShape, ConnectableShape {
     }
     
     var reserved: Identifier<Train>? {
-        return turnout.reserved
+        return turnout.reserved?.train
     }
     
     func socketInstance(_ id: Int) -> ConnectorSocketInstance {
@@ -181,7 +181,7 @@ final class TurnoutShape: Shape, DraggableShape, ConnectableShape {
             }
 
         case .doubleSlip:
-            if let reservedSockets = turnout.reservedSockets {
+            if let reservedSockets = turnout.reserved?.sockets {
                 switch (reservedSockets.fromSocketId, reservedSockets.toSocketId) {
                 case (0, 1), (1, 0):
                     path.move(to: sp[0])
