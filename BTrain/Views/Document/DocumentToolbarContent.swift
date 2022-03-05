@@ -103,7 +103,7 @@ struct DiagnosticsIndicationView: View {
 
     var body: some View {
         if diagnostics.hasErrors {
-            Button("􀇾") {
+            Button("\(diagnostics.errorCount) 􀇾") {
                 document.triggerLayoutDiagnostic.toggle()
             }
             .foregroundColor(.red)

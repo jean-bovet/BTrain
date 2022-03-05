@@ -108,7 +108,8 @@ final class LayoutDiagnostic: ObservableObject {
     let observer: LayoutObserver
         
     @Published var hasErrors = false
-    
+    @Published var errorCount = 0
+
     init(layout: Layout) {
         self.layout = layout
         self.observer = LayoutObserver(layout: layout)
@@ -123,7 +124,8 @@ final class LayoutDiagnostic: ObservableObject {
 
     func automaticCheck() {
         do {
-            hasErrors = try check().count > 0
+            errorCount = try check().count
+            hasErrors = errorCount > 0
         } catch {
             BTLogger.error("Error checking the layout: \(error)")
             hasErrors = true
