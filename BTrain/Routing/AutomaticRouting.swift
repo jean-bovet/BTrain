@@ -59,7 +59,7 @@ final class AutomaticRouting {
         // (the automatic route will re-evaluate itself if it encounters a reserved block later
         // during execution, to avoid deadlocking).
         let settings = PathFinder.Settings(random: layout.automaticRouteRandom,
-                                           reservedBlockBehavior: destination == nil ? .avoidReservedUntil(numberOfSteps: 1) : .avoidReserved,
+                                           reservedBlockBehavior: destination == nil ? .avoidFirstReservedBlock : .avoidReserved,
                                            consideringStoppingAtSiding: false,
                                            verbose: SettingsKeys.bool(forKey: SettingsKeys.logRoutingResolutionSteps))
         if let path = try pf.path(trainId: train.id, from: currentBlock, destination: destination, direction: trainInstance.direction, settings: settings) {

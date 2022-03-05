@@ -68,6 +68,26 @@ class AutomaticRoutingTests: BTTestCase {
         XCTAssertTrue(p.train.automaticScheduling)
     }
     
+    func testUpdateAutomaticRouteWithReservedTurnout() throws {
+        let layout = LayoutICreator().newLayout()
+        let s1 = layout.block(for: Identifier<Block>(uuid: "s1"))!
+        let train = layout.trains[0]
+        
+        // The route will choose "s2" as the arrival block
+        var p = try setup(layout: layout, fromBlockId: s1.id, destination: nil, position: .end, routeSteps: ["s1:next", "b1:next", "s2:next"])
+        
+        try p.layoutController.stop(trainID: train.id, completely: true)
+
+        try p.assert("automatic-0: {r0{s1 ≏ 💺0 ≏ 🛑🚂0 }} <t1{sr}(0,1),s> <t2{sr}(0,1),s> [b1 ≏ ≏ ] <t4{sl}(1,0),s> {s2 ≏ ≏ }")
+
+        // Let's artifically reserve turnout t2. This should cause the automatic route to be re-evaluated to find an alternate path
+        layout.turnout(for: .init(uuid: "t2"))!.reserved = .init(train: .init(uuid: "7"), sockets: .init(fromSocketId: 0, toSocketId: 1))
+        
+        p = try setup(layout: layout, fromBlockId: s1.id, destination: nil, position: .end, routeSteps: ["s1:next", "b2:next", "b3:next", "s2:next"])
+
+        try p.assert("automatic-0: {r0{s1 ≏ 💺0 ≏ 🚂0 }} <r0<t1{sr}(0,2),r>> [r0[b2 ≏ ≏ ]] <t3{sr}(1,0),s> [b3 ≏ ≏ ] <t4{sl}(2,0),s> {s2 ≏ ≏ }")
+    }
+
     func testUpdateAutomaticRouteWithBlockToAvoid() throws {
         let layout = LayoutECreator().newLayout()
         let s1 = layout.block(for: Identifier<Block>(uuid: "s1"))!
@@ -402,7 +422,7 @@ class AutomaticRoutingTests: BTTestCase {
         let layoutController: LayoutController
         
         func assert(_ routeString: String) throws {
-            try asserter.assert([routeString], route:route, trains: [train])
+            try asserter.assert([routeString], trains: [train])
         }
         
         func toggle(_ feedback: String) {

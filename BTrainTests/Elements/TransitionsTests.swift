@@ -125,6 +125,7 @@ class TransitionsTests: XCTestCase {
         // So we manually free up the first block and all the transitions to the next one
         try v8.free(fromBlock: r1.steps[0].blockId!, toBlockNotIncluded: r1.steps[1].blockId!, direction: .next)
 
+        // Train t1 has been stopped so only train t2 can actually start
         try c1.run()
         try c2.run()
 

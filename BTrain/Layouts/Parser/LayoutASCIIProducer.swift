@@ -22,10 +22,13 @@ final class LayoutASCIIProducer {
         self.resolver = RouteResolver(layout: layout)
     }
     
-    func stringFrom(route: Route, trainId: Identifier<Train>?) throws -> String {
+    func stringFrom(route: Route, trainId: Identifier<Train>) throws -> String {
         var text = ""
                 
-        let resolvedSteps = try resolver.resolve(steps: ArraySlice(route.steps), trainId: trainId)
+        guard let resolvedSteps = try resolver.resolve(steps: ArraySlice(route.steps), trainId: trainId) else {
+            return text
+        }
+        
         for step in resolvedSteps {
             if let turnoutId = step.turnoutId {
                 addSpace(&text)

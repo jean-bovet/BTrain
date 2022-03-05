@@ -79,18 +79,20 @@ final class PathFinder {
         // True to generate a route at random, false otherwise.
         let random: Bool
             
+        // Search behavior when encountering a reserved block.
         enum ReservedBlockBehavior {
-            // Avoid all the reserved blocks
+            // Avoid all reserved blocks (that is, avoid any block
+            // that is reserved for another train).
             case avoidReserved
             
-            // Avoid the reserved blocks for the first
-            // `numberOfSteps` of the route. After the route
-            // has more steps than this, reserved block
-            // will be taken into consideration. This option is
-            // used in automatic routing when no particular destination
-            // block is specified: BTrain will update the route if a
-            // reserved block is found during the routing of the train.
-            case avoidReservedUntil(numberOfSteps: Int)
+            // Ignore all reserved blocks (that is,
+            // take them into account even if they are
+            // reserved for another train).
+            case ignoreReserved
+            
+            // Avoid the first reserved block encountered,
+            // then ignore all the others reserved blocks.
+            case avoidFirstReservedBlock
         }
         
         let reservedBlockBehavior: ReservedBlockBehavior
@@ -251,22 +253,25 @@ final class PathFinder {
                 context.print("The next block \(nextBlock) is disabled, backtracking")
                 return false
             } else if let reserved = nextBlock.reserved, reserved.trainId != context.train?.id {
-                // The next block is reserved for another train, we cannot use it
-                let stepCount = context.steps.count - 1 // Remove one block because we don't take into account the first block which is the starting block
-                
-                // Determine what to do when a reserved block is found
-                switch(context.settings.reservedBlockBehavior) {
+                // The next block is reserved for another train, determine what to do.
+                switch context.settings.reservedBlockBehavior {
                 case .avoidReserved:
                     context.print("The next block \(nextBlock) is reserved for \(nextBlock.reserved!), backtracking")
                     return false
                     
-                case .avoidReservedUntil(numberOfSteps: let numberOfSteps):
-                    if stepCount < numberOfSteps {
+                case .avoidFirstReservedBlock:
+                    // Count the number of blocks that the path contains so far.
+                    // Note: remove one block because we don't take into account the first block which is the starting block
+                    let numberOfBlocks = context.steps.dropFirst().filter { $0.blockId != nil }.count
+                    if numberOfBlocks == 0 {
                         context.print("The next block \(nextBlock) is reserved for \(nextBlock.reserved!), backtracking")
                         return false
                     } else {
-                        context.print("The next block \(nextBlock) is reserved for \(nextBlock.reserved!) but will be ignored because \(stepCount) steps is past the look ahead of \(numberOfSteps) blocks")
+                        context.print("The next block \(nextBlock) is reserved for \(nextBlock.reserved!) but will be ignored because it is the first block")
                     }
+                    
+                case .ignoreReserved:
+                    context.print("The next block \(nextBlock) is reserved for \(nextBlock.reserved!) but will be ignored")
                 }
             }
             
@@ -324,6 +329,29 @@ final class PathFinder {
             if !nextTurnout.enabled && !context.settings.ignoreDisabledElements  {
                 context.print("The next turnout \(nextTurnout) is disabled, backtracking")
                 return false
+            }
+            
+            if let reserved = nextTurnout.reserved, reserved.train != context.train?.id {
+                // The next turnout is reserved for another train, determine what to do.
+                switch context.settings.reservedBlockBehavior {
+                case .avoidReserved:
+                    context.print("The next turnout \(nextTurnout) is reserved for \(reserved.train), backtracking")
+                    return false
+                    
+                case .avoidFirstReservedBlock:
+                    // Count the number of blocks that the path contains so far.
+                    // Note: remove one block because we don't take into account the first block which is the starting block
+                    let numberOfBlocks = context.steps.dropFirst().filter { $0.blockId != nil }.count
+                    if numberOfBlocks == 1 {
+                        context.print("The next turnout \(nextTurnout) is reserved for \(reserved.train) but will be ignored because it is before the first block")
+                    } else {
+                        context.print("The next turnout \(nextTurnout) is reserved for \(reserved.train), backtracking")
+                        return false
+                    }
+                    
+                case .ignoreReserved:
+                    context.print("The next turnout \(nextTurnout) is reserved for \(reserved.train) but will be ignored")
+                }
             }
             
             // Find out if the next turnout is allowed to be used for that train

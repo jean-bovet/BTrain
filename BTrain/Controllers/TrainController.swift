@@ -180,7 +180,7 @@ final class TrainController {
         
         // And try to reserve the necessary leading blocks
         if try layout.reservation.updateReservedBlocks(train: train, trainStarting: true) {
-            debug("Start train \(train.name) because the next blocks could be reserved")
+            debug("Start train \(train.name) because the next blocks could be reserved (route: \(route.steps.debugDescription))")
             stopTrigger = nil
             train.state = .running
             layout.setTrainSpeed(train, LayoutFactory.DefaultSpeed) { }
@@ -192,6 +192,10 @@ final class TrainController {
     
     // This method updates the automatic route, if selected, in case the next block is occupied.
     private func handleTrainAutomaticRouteUpdate(route: Route) throws -> Result {
+        guard route.automatic else {
+            return .none
+        }
+        
         guard let currentBlock = layout.currentBlock(train: train) else {
             return .none
         }
@@ -200,6 +204,7 @@ final class TrainController {
             return .none
         }
         
+        // TODO: check if all the turnouts going to that block are free!!!
         var nextBlockNotAvailable = false
         // If the next block is disabled, we need to re-compute a new route
         if !nextBlock.enabled {
@@ -216,7 +221,7 @@ final class TrainController {
             nextBlockNotAvailable = true
         }
         
-        guard nextBlockNotAvailable && route.automatic else {
+        guard nextBlockNotAvailable else {
             return .none
         }
         

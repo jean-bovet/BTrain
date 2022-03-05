@@ -27,7 +27,7 @@ final class LayoutAsserter {
         self.layoutController = layoutController
     }
     
-    func assert(_ strings: [String], route: Route, trains: [Train]) throws {
+    func assert(_ strings: [String], trains: [Train]) throws {
         let expectedLayout = LayoutFactory.layoutFrom(strings)
         let expectedTrains = expectedLayout.trains
         
@@ -45,17 +45,27 @@ final class LayoutAsserter {
         var assertedAtLeastOneRoute = false
         let resolver = RouteResolver(layout: layout)
         for route in layout.routes {
-            if let expectedRoute = expectedLayout.routes.first(where: { $0.id == route.id }) {
-                // Only assert the routes that are specified in the expectation.
-                // Some tests focus on a sub-set of the routes actually defined in the layout
-                let resolvedRoute = Route(id: route.id, automatic: route.automatic)
-                resolvedRoute.steps = try resolver.resolve(steps: ArraySlice(route.steps))
-                try assert(route: resolvedRoute, expectedRoute: expectedRoute,
-                           trains: trains, expectedTrains: expectedTrains,
-                           expectedLayout: expectedLayout)
-                
-                assertedAtLeastOneRoute = true
+            guard let expectedRoute = expectedLayout.routes.first(where: { $0.id == route.id }) else {
+                continue
             }
+            
+            // Only assert the routes that are specified in the expectation.
+            // Some tests focus on a sub-set of the routes actually defined in the layout
+            guard let train = trains.first(where: { $0.routeId == route.id }) else {
+                continue
+            }
+            
+            let resolvedRoute = Route(id: route.id, automatic: route.automatic)
+            guard let resolvedSteps = try resolver.resolve(steps: ArraySlice(route.steps), trainId: train.id) else {
+                continue
+            }
+            
+            resolvedRoute.steps = resolvedSteps
+            try assert(route: resolvedRoute, expectedRoute: expectedRoute,
+                       trains: trains, expectedTrains: expectedTrains,
+                       expectedLayout: expectedLayout)
+
+            assertedAtLeastOneRoute = true
         }
         
         XCTAssertTrue(assertedAtLeastOneRoute, "At least one route should have been asserted!")

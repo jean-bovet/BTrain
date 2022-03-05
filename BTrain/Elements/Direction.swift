@@ -36,9 +36,9 @@ extension Direction: CustomStringConvertible {
     var description: String {
         switch(self) {
         case .previous:
-            return "Previous"
+            return "previous"
         case .next:
-            return "Next"
+            return "next"
         }
     }
 }

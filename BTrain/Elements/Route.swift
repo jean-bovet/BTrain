@@ -87,9 +87,9 @@ final class Route: Element, ObservableObject {
         
         var description: String {
             if let blockId = blockId {
-                return "\(blockId)-\(direction!)"
+                return "\(blockId):\(direction!)"
             } else if let turnoutId = turnoutId {
-                return "\(turnoutId)-(\(entrySocket!.socketId!)>\(exitSocket!.socketId!))"
+                return "\(turnoutId):(\(entrySocket!.socketId!)>\(exitSocket!.socketId!))"
             } else {
                 return "Invalid state because no block nor turnout is defined"
             }

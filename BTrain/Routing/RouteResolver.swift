@@ -24,7 +24,7 @@ final class RouteResolver {
     
     lazy var settings: PathFinder.Settings = {
         var settings = PathFinder.Settings(random: false,
-                                           reservedBlockBehavior: .avoidReservedUntil(numberOfSteps: 0),
+                                           reservedBlockBehavior: .ignoreReserved,
                                            consideringStoppingAtSiding: false,
                                            verbose: SettingsKeys.bool(forKey: SettingsKeys.logRoutingResolutionSteps))
         settings.includeTurnouts = true
@@ -38,7 +38,14 @@ final class RouteResolver {
         self.pf = PathFinder(layout: layout)
     }
     
-    func resolve(steps: ArraySlice<Route.Step>, trainId: Identifier<Train>? = nil) throws -> [Route.Step] {
+    // This function takes an array of steps and returns a resolved array of steps. The returned array
+    // contains all the blocks and turnouts that were not explicitely indicated in the first array.
+    // Note: a train must be specified in order to resolve the steps because a train can have specific requirements
+    // to avoid certain blocks or turnouts, in addition to the algorithm checking allowing block (or turnout)
+    // already reserved for the same train to be accepted as resolved steps.
+    // Returns nil if the route cannot be resolved. This can happen, for example, if a turnout or block is already
+    // reserved for another train and no other alternative path is found.
+    func resolve(steps: ArraySlice<Route.Step>, trainId: Identifier<Train>) throws -> [Route.Step]? {
         guard var previousStep = steps.first else {
             return []
         }
@@ -67,6 +74,9 @@ final class RouteResolver {
                 for turnoutStep in path.steps.filter({ $0.turnoutId != nil }) {
                     resolvedSteps.append(turnoutStep)
                 }
+            } else {
+                // Bail out if a path cannot be found between two blocks.
+                return nil
             }
             resolvedSteps.append(step)
             previousStep = step

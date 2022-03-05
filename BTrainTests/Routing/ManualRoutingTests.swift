@@ -69,7 +69,8 @@ class ManualRoutingTests: BTTestCase {
 
     func testBlockReserved() throws {
         let layout = LayoutACreator().newLayout()
-        let p = try setup(layout: layout, fromBlockId: "b1", route: layout.routes[0])
+        let p = Package(layout: layout)
+        try p.prepare(routeID: "r1", trainID: "1", fromBlockId: "b1")
 
         // Reserve a block with another route to make the train stop
         let b3 = layout.block(for: p.route.steps[2].blockId)!
@@ -77,7 +78,7 @@ class ManualRoutingTests: BTTestCase {
         
         try p.assert("r1:{r1{b1 🛑🚂1 ≏ ≏ }} <t0> [b2 ≏ ≏ ] <t1(0,2)> [r2[b3 ≏ ≏ ]] <t0(2,0)> !{r1{b1 ≏ ≏ }}")
 
-        try p.start(routeID: "r1", trainID: "1")
+        try p.start()
 
         try p.assert("r1:{r1{b1 🚂1 ≏ ≏ }} <r1<t0>> [r1[b2 ≏ ≏ ]] <t1(0,2)> [r2[b3 ≏ ≏ ]] <r1<t0(2,0)>> !{r1{b1 ≏ ≏ }}")
         try p.assert("r1:{r1{b1 ≡ 🚂1 ≏ }} <r1<t0>> [r1[b2 ≏ ≏ ]] <t1(0,2)> [r2[b3 ≏ ≏ ]] <r1<t0(2,0)>> !{r1{b1 ≡ ≏ }}")
@@ -96,7 +97,8 @@ class ManualRoutingTests: BTTestCase {
     
     func testBlockDisabled() throws {
         let layout = LayoutACreator().newLayout()
-        let p = try setup(layout: layout, fromBlockId: "b1", route: layout.routes[0])
+        let p = Package(layout: layout)
+        try p.prepare(routeID: "r1", trainID: "1", fromBlockId: "b1")
 
         // Disable a block to make the train stop
         let b3 = layout.block(for: p.route.steps[2].blockId)!
@@ -104,7 +106,7 @@ class ManualRoutingTests: BTTestCase {
         
         try p.assert("r1:{r1{b1 🛑🚂1 ≏ ≏ }} <t0> [b2 ≏ ≏ ] <t1(0,2)> [b3 ≏ ≏ ] <t0(2,0)> !{r1{b1 ≏ ≏ }}")
 
-        try p.start(routeID: "r1", trainID: "1")
+        try p.start()
 
         try p.assert("r1:{r1{b1 🚂1 ≏ ≏ }} <r1<t0>> [r1[b2 ≏ ≏ ]] <t1(0,2)> [b3 ≏ ≏ ] <r1<t0(2,0)>> !{r1{b1 ≏ ≏ }}")
         try p.assert("r1:{r1{b1 ≡ 🚂1 ≏ }} <r1<t0>> [r1[b2 ≏ ≏ ]] <t1(0,2)> [b3 ≏ ≏ ] <r1<t0(2,0)>> !{r1{b1 ≡ ≏ }}")
@@ -123,11 +125,12 @@ class ManualRoutingTests: BTTestCase {
 
     func testStartNotInRoute() throws {
         let layout = LayoutCCreator().newLayout()
-        let p = try setup(layout: layout, fromBlockId: "b5", route: layout.routes[0])
+        let p = Package(layout: layout)
+        try p.prepare(routeID: "r1", trainID: "1", fromBlockId: "b5")
 
         try p.assert("r1: {b1 ≏ ≏ } <t0> [b2 ≏ ≏ ] {b3 ≏ ≏ } <t1> [b4 ≏ ≏] {b1 ≏ ≏ }")
         
-        XCTAssertThrowsError(try p.start(routeID: "r1", trainID: "1")) { error in
+        XCTAssertThrowsError(try p.start()) { error in
             guard let layoutError = error as? LayoutError else {
                 XCTFail()
                 return
@@ -142,12 +145,12 @@ class ManualRoutingTests: BTTestCase {
     
     func testStartInRouteButReversedDirection() throws {
         let layout = LayoutCCreator().newLayout()
+        let p = Package(layout: layout)
+        try p.prepare(routeID: "r1", trainID: "1", fromBlockId: "b1", direction: .previous)
         
-        var p = try setup(layout: layout, fromBlockId: "b1", direction: .previous, route: layout.routes[0])
-
         try p.assert("r1: {r1{b1 ≏ ≏ 🛑🚂1 }} <t0> [b2 ≏ ≏ ] {b3 ≏ ≏ }} <t1> [b4 ≏ ≏] {r1{b1 ≏ ≏ 🛑🚂1 }}")
-                
-        XCTAssertThrowsError(try p.start(routeID: "r1", trainID: "1")) { error in
+        
+        XCTAssertThrowsError(try p.start()) { error in
             guard let layoutError = error as? LayoutError else {
                 XCTFail()
                 return
@@ -159,21 +162,22 @@ class ManualRoutingTests: BTTestCase {
             }
         }
         
-        p = try setup(layout: layout, fromBlockId: "b1", direction: .next, route: layout.routes[0])
+        try p.prepare(routeID: "r1", trainID: "1", fromBlockId: "b1", direction: .next)
 
         try p.assert("r1: {r1{b1 🛑🚂1 ≏ ≏ }} <t0> [b2 ≏ ≏ ] {b3 ≏ ≏ }} <t1> [b4 ≏ ≏] {r1{b1 🛑🚂1 ≏ ≏ }}")
-        try p.start(routeID: "r1", trainID: "1")
+        try p.start()
     }
 
     func testMoveInsideBlock() throws {
         let layout = LayoutACreator().newLayout()
-        let p = try setup(layout: layout, fromBlockId: "b1", route: layout.routes[0])
+        let p = Package(layout: layout)
+        try p.prepare(routeID: "r1", trainID: "1", fromBlockId: "b1")
 
         try p.assert("r1: {r1{b1 🛑🚂1 ≏ ≏ }} <t0> [b2 ≏ ≏ ] <t1(0,2)> [b3 ≏ ≏ ] <t0(2,0)> !{r1{b1 ≏ ≏ }}")
         try p.assert("r1: {r1{b1 🛑🚂1 ≡ ≏ }} <t0> [b2 ≏ ≏ ] <t1(0,2)> [b3 ≏ ≏ ] <t0(2,0)> !{r1{b1 ≡ ≏ }}")
         try p.assert("r1: {r1{b1 🛑🚂1 ≏ ≏ }} <t0> [b2 ≏ ≏ ] <t1(0,2)> [b3 ≏ ≏ ] <t0(2,0)> !{r1{b1 ≏ ≏ }}")
 
-        try p.start(routeID: "r1", trainID: "1")
+        try p.start()
 
         try p.assert("r1: {r1{b1 🚂1 ≏ ≏ }} <r1<t0>> [r1[b2 ≏ ≏ ]] <t1(0,2)> [b3 ≏ ≏ ] <r1<t0(2,0)>> !{r1{b1 ≏ ≏ }}")
         try p.assert("r1: {r1{b1 ≡ 🚂1 ≏ }} <r1<t0>> [r1[b2 ≏ ≏ ]] <t1(0,2)> [b3 ≏ ≏ ] <r1<t0(2,0)>> !{r1{b1 ≡ ≏ }}")
@@ -194,11 +198,12 @@ class ManualRoutingTests: BTTestCase {
         let t1 = layout.trains[0]
         t1.maxNumberOfLeadingReservedBlocks = 2
         
-        let p = try setup(layout: layout, fromBlockId: "b1", route: layout.routes[0])
+        let p = Package(layout: layout)
+        try p.prepare(routeID: "r1", trainID: "1", fromBlockId: "b1")
 
         try p.assert("r1: {r1{b1 🛑🚂1 ≏ ≏ }} <t0> [b2 ≏ ≏ ] <t1(0,2)> [b3 ≏ ≏ ] <t0(2,0)> !{r1{b1 ≏ ≏ }}")
 
-        try p.start(routeID: "r1", trainID: "1")
+        try p.start()
 
         try p.assert("r1: {r1{b1 🚂1 ≏ ≏ }} <r1<t0>> [r1[b2 ≏ ≏ ]] <r1<t1(0,2),l>> [r1[b3 ≏ ≏ ]] <r1<t0(2,0)>> !{r1{b1 ≏ ≏ }}")
         try p.assert("r1: {r1{b1 ≡ 🚂1 ≏ }} <r1<t0>> [r1[b2 ≏ ≏ ]] <r1<t1(0,2),l>> [r1[b3 ≏ ≏ ]] <r1<t0(2,0)>> !{r1{b1 ≡ ≏ }}")
@@ -216,8 +221,9 @@ class ManualRoutingTests: BTTestCase {
 
     func testMoveWith2LeadingReservationWithLoop() throws {
         let layout = LayoutBCreator().newLayout()
-        let p = try setup(layout: layout, fromBlockId: "b1", route: layout.routes[0])
-        
+        let p = Package(layout: layout)
+        try p.prepare(routeID: "r1", trainID: "1", fromBlockId: "b1")
+
         let t1 = layout.trains[0]
         t1.maxNumberOfLeadingReservedBlocks = 2
         
@@ -225,7 +231,7 @@ class ManualRoutingTests: BTTestCase {
 
         try p.assert("r1: {r1{b1 🛑🚂1 ≏ ≏ }} <t1{ds2}> [b2 ≏ ≏ ] [b3 ≏ ≏ ] <t1{ds2}(2,3)> [b4 ≏ ≏ ] {r1{b1 🛑🚂1 ≏ ≏ }}")
 
-        try p.start(routeID: "r1", trainID: "1")
+        try p.start()
 
         try p.assert("r1: {r1{b1 🚂1 ≏ ≏ }} <r1<t1{ds2},s01>> [r1[b2 ≏ ≏ ]] [r1[b3 ≏ ≏ ]] <r1<t1{ds2}(2,3),s01>> [b4 ≏ ≏ ] {r1{b1 🚂1 ≏ ≏ }}")
         try p.assert("r1: {b1 ≏ ≏ } <r1<t1{ds2},s23>> [r1[b2 ≡ 🚂1 ≏ ]] [r1[b3 ≏ ≏ ]] <r1<t1{ds2}(2,3),s23>> [r1[b4 ≏ ≏ ]] {b1 ≏ ≏ }")
@@ -237,8 +243,9 @@ class ManualRoutingTests: BTTestCase {
 
     func testMoveWith3LeadingReservationWithLoop() throws {
         let layout = LayoutBCreator().newLayout()
-        let p = try setup(layout: layout, fromBlockId: "b1", route: layout.routes[0])
-        
+        let p = Package(layout: layout)
+        try p.prepare(routeID: "r1", trainID: "1", fromBlockId: "b1")
+
         let t1 = layout.trains[0]
         t1.maxNumberOfLeadingReservedBlocks = 3
         
@@ -246,7 +253,7 @@ class ManualRoutingTests: BTTestCase {
 
         try p.assert("r1: {r1{b1 🛑🚂1 ≏ ≏ }} <t1{ds2}> [b2 ≏ ≏ ] [b3 ≏ ≏ ] <t1{ds2}(2,3)> [b4 ≏ ≏ ] {r1{b1 🛑🚂1 ≏ ≏ }}")
 
-        try p.start(routeID: "r1", trainID: "1")
+        try p.start()
 
         // b4 is not reserved because the turnout t1 is already reserved for b1->b2.
         try p.assert("r1: {r1{b1 🚂1 ≏ ≏ }} <r1<t1{ds2},s01>> [r1[b2 ≏ ≏ ]] [r1[b3 ≏ ≏ ]] <r1<t1{ds2}(2,3),s01>> [b4 ≏ ≏ ] {r1{b1 🚂1 ≏ ≏ }}")
@@ -264,11 +271,12 @@ class ManualRoutingTests: BTTestCase {
         let t1 = layout.trains[0]
         t1.maxNumberOfLeadingReservedBlocks = 3
         
-        let p = try setup(layout: layout, fromBlockId: "b1", route: layout.routes[0])
+        let p = Package(layout: layout)
+        try p.prepare(routeID: "r1", trainID: "1", fromBlockId: "b1")
 
         try p.assert("r1: {r1{b1 🛑🚂1 ≏ ≏ }} <t0> [b2 ≏ ≏ ] <t1(0,2)> [b3 ≏ ≏ ] <t0(2,0)> !{r1{b1 ≏ ≏ }}")
 
-        try p.start(routeID: "r1", trainID: "1")
+        try p.start()
 
         try p.assert("r1: {r1{b1 🚂1 ≏ ≏ }} <r1<t0>> [r1[b2 ≏ ≏ ]] <r1<t1(0,2),l>> [r1[b3 ≏ ≏ ]] <r1<t0(2,0)>> !{r1{b1 ≏ ≏ }}")
         try p.assert("r1: {r1{b1 ≡ 🚂1 ≏ }} <r1<t0>> [r1[b2 ≏ ≏ ]] <r1<t1(0,2),l>> [r1[b3 ≏ ≏ ]] <r1<t0(2,0)>> !{r1{b1 ≡ ≏ }}")
@@ -307,12 +315,14 @@ class ManualRoutingTests: BTTestCase {
         t1.length = 150 // That way, the train always needs one occupied block reserved to account for its length
         t1.maxNumberOfLeadingReservedBlocks = 1
 
-        let p = try setup(layout: layout, fromBlockId: "b1", position: .end, route: layout.routes[0])
+        let p = Package(layout: layout)
+        try p.prepare(routeID: "r1", trainID: "1", fromBlockId: "b1", position: .end)
+
         p.asserter.assertBlockParts = true
         
         try p.assert("r1: {r1{b1 💺1 ≏ 💺1 ≏ 🛑🚂1 }} <t1{ds2}> [b2 ≏ ≏ ] [b3 ≏ ≏ ] <t1{ds2}(2,3)> [r1[b4 💺1 ≏ 💺1 ≏ 💺1 ]] {r1{b1 💺1 ≏ 💺1 ≏ 🛑🚂1}}")
 
-        try p.start(routeID: "r1", trainID: "1")
+        try p.start()
 
         try p.assert("r1: {r1{b1 💺1 ≏ 💺1 ≏ 🚂1 }} <r1<t1{ds2},s01>> [r1[b2 ≏ ≏ ]] [b3 ≏ ≏ ] <r1<t1{ds2}(2,3),s01>> [r1[b4 💺1 ≏ 💺1 ≏ 💺1 ]] {r1{b1 💺1 ≏ 💺1 ≏ 🚂1}}")
         try p.assert("r1: {r1{b1 💺1 ≏ 💺1 ≏ 💺1 }} <r1<t1{ds2},s01>> [r1[b2 💺1 ≡ 🚂1 ≏ ]] [r1[b3 ≏ ≏ ]] <r1<t1{ds2}(2,3),s01>> [b4 ≏ ≏ ] {r1{b1 💺1 ≏ 💺1 ≏ 💺1}}")
@@ -337,14 +347,15 @@ class ManualRoutingTests: BTTestCase {
         let t1 = layout.trains[0]
         t1.length = 140 // That way, the train always needs one occupied block reserved to account for its length
         t1.maxNumberOfLeadingReservedBlocks = 1
-
-        let p = try setup(layout: layout, fromBlockId: "b1", position: .end, route: layout.routes[0])
+        
+        let p = Package(layout: layout)
+        try p.prepare(routeID: "r1", trainID: "1", fromBlockId: "b1", position: .end)
         p.asserter.assertBlockParts = true
         
         // b1: { w20 | w60 | >20 } b2: [ 20 | 60 | 20 ] b3: [ 20 | 60 | 20 ] b4: [ 20 | w60 | w20 ]
         try p.assert("r1: {r1{b1 💺1 ≏ 💺1 ≏ 🛑🚂1 }} <t1{ds2}> [b2 ≏ ≏ ] [b3 ≏ ≏ ] <t1{ds2}(2,3)> [r1[b4 ≏ 💺1 ≏ 💺1 ]] {r1{b1 💺1 ≏ 💺1 ≏ 🛑🚂1}}")
 
-        try p.start(routeID: "r1", trainID: "1")
+        try p.start()
 
         // b1: { w20 | w60 | >20 } b2: [ 20 | 60 | 20 ] b3: [ 20 | 60 | 20 ] b4: [ 20 | w60 | w20 ]
         try p.assert("r1: {r1{b1 💺1 ≏ 💺1 ≏ 🚂1 }} <r1<t1{ds2},s01>> [r1[b2 ≏ ≏ ]] [b3 ≏ ≏ ] <r1<t1{ds2}(2,3),s01>> [r1[b4 ≏ 💺1 ≏ 💺1 ]] {r1{b1 💺1 ≏ 💺1 ≏ 🚂1}}")
@@ -378,7 +389,8 @@ class ManualRoutingTests: BTTestCase {
 
     func testRouteReverseLoop() throws {
         let layout = LayoutACreator().newLayout()
-        let p = try setup(layout: layout, fromBlockId: "b1", route: layout.routes[0])
+        let p = Package(layout: layout)
+        try p.prepare(routeID: "r2", trainID: "2", fromBlockId: "b1")
 
         try layout.remove(trainID: layout.trains.first!.id)
         try layout.prepare(routeID: "r2", trainID: "2")
@@ -386,7 +398,7 @@ class ManualRoutingTests: BTTestCase {
         try p.assert("r2: {r2{b1 🛑🚂2 ≡ ≏ }} <t0(0,2)> ![b3 ≏ ≏ ] <t1(2,0)> ![b2 ≏ ≏ ] <t0(1,0)> !{r2{b1 ≡ ≏ }}")
         try p.assert("r2: {r2{b1 🛑🚂2 ≏ ≏ }} <t0(0,2)> ![b3 ≏ ≏ ] <t1(2,0)> ![b2 ≏ ≏ ] <t0(1,0)> !{r2{b1 ≡ ≏ }}")
 
-        try p.start(routeID: "r2", trainID: "2")
+        try p.start()
         
         try p.assert("r2: {r2{b1 🚂2 ≏ ≏ }} <r2<t0(0,2),l>> ![r2[b3 ≏ ≏ ]] <t1(2,0)> ![b2 ≏ ≏ ] <r2<t0(1,0),l>> !{r2{b1 ≏ ≏ }}")
         try p.assert("r2: {r2{b1 ≡ 🚂2 ≏ }} <r2<t0(0,2),l>> ![r2[b3 ≏ ≏ ]] <t1(2,0)> ![b2 ≏ ≏ ] <r2<t0(1,0),l>> !{r2{b1 ≏ ≏ }}")
@@ -401,14 +413,15 @@ class ManualRoutingTests: BTTestCase {
         
     func testStrictModeNextBlockFeedback() throws {
         let layout = LayoutACreator().newLayout()
-        let p = try setup(layout: layout, fromBlockId: "b1", route: layout.routes[0])
+        let p = Package(layout: layout)
+        try p.prepare(routeID: "r1", trainID: "1", fromBlockId: "b1")
 
         layout.strictRouteFeedbackStrategy = true
         layout.detectUnexpectedFeedback = true
         
         try p.assert("r1: {r1{b1 🛑🚂1 ≏ ≏ }} <t0> [b2 ≏ ≏ ] <t1(0,2)> [b3 ≏ ≏ ] <t0(2,0)> !{r1{b1 ≏ ≏ }}")
 
-        try p.start(routeID: "r1", trainID: "1")
+        try p.start()
 
         try p.assert("r1: {r1{b1 🚂1 ≏ ≏ }} <r1<t0>> [r1[b2 ≏ ≏ ]] <t1(0,2)> [b3 ≏ ≏ ] <r1<t0(2,0)>> !{r1{b1 ≏ ≏ }}")
         try p.assert("r1: {r1{b1 🚂1 ≏ ≏ }} <r1<t0>> [r1[b2 ≏ ≏ ]] <t1(0,2)> [b3 ≏ ≏ ] <r1<t0(2,0)>> !{r1{b1 ≏ ≏ }}")
@@ -419,14 +432,15 @@ class ManualRoutingTests: BTTestCase {
 
     func testStrictModeFeedbackTooFar() throws {
         let layout = LayoutACreator().newLayout()
-        let p = try setup(layout: layout, fromBlockId: "b1", route: layout.routes[0])
+        let p = Package(layout: layout)
+        try p.prepare(routeID: "r1", trainID: "1", fromBlockId: "b1")
 
         layout.strictRouteFeedbackStrategy = true
         layout.detectUnexpectedFeedback = true
         
         try p.assert("r1: {r1{b1 🛑🚂1 ≏ ≏ }} <t0> [b2 ≏ ≏ ] <t1(0,2)> [b3 ≏ ≏ ] <t0(2,0)> !{r1{b1 ≏ ≏ }}")
 
-        try p.start(routeID: "r1", trainID: "1")
+        try p.start()
 
         try p.assert("r1: {r1{b1 🚂1 ≏ ≏ }} <r1<t0>> [r1[b2 ≏ ≏ ]] <t1(0,2)> [b3 ≏ ≏ ] <r1<t0(2,0)>> !{r1{b1 ≏ ≏ }}")
         try p.assert("r1: {r1{b1 🚂1 ≏ ≏ }} <r1<t0>> [r1[b2 ≏ ≏ ]] <t1(0,2)> [b3 ≏ ≏ ] <r1<t0(2,0)>> !{r1{b1 ≏ ≏ }}")
@@ -437,14 +451,15 @@ class ManualRoutingTests: BTTestCase {
 
     func testRelaxModeNextModeFeedback() throws {
         let layout = LayoutACreator().newLayout()
-        let p = try setup(layout: layout, fromBlockId: "b1", route: layout.routes[0])
+        let p = Package(layout: layout)
+        try p.prepare(routeID: "r1", trainID: "1", fromBlockId: "b1")
 
         layout.strictRouteFeedbackStrategy = false
         layout.detectUnexpectedFeedback = true
 
         try p.assert("r1: {r1{b1 🛑🚂1 ≏ ≏ }} <t0> [b2 ≏ ≏ ] <t1(0,2)> [b3 ≏ ≏ ] <t0(2,0)> !{r1{b1 ≏ ≏ }}")
 
-        try p.start(routeID: "r1", trainID: "1")
+        try p.start()
 
         try p.assert("r1: {r1{b1 🚂1 ≏ ≏ }} <r1<t0>> [r1[b2 ≏ ≏ ]] <t1(0,2)> [b3 ≏ ≏ ] <r1<t0(2,0)>> !{r1{b1 ≏ ≏ }}")
         // The train should continue to the next block when the feedback of the next block is triggered
@@ -453,14 +468,15 @@ class ManualRoutingTests: BTTestCase {
 
     func testRelaxModeNextBlockFeedbackTooFar() throws {
         let layout = LayoutACreator().newLayout()
-        let p = try setup(layout: layout, fromBlockId: "b1", route: layout.routes[0])
+        let p = Package(layout: layout)
+        try p.prepare(routeID: "r1", trainID: "1", fromBlockId: "b1")
 
         layout.strictRouteFeedbackStrategy = false
         layout.detectUnexpectedFeedback = true
 
         try p.assert("r1: {r1{b1 🛑🚂1 ≏ ≏ }} <t0> [b2 ≏ ≏ ] <t1(0,2)> [b3 ≏ ≏ ] <t0(2,0)> !{r1{b1 ≏ ≏ }}")
 
-        try p.start(routeID: "r1", trainID: "1")
+        try p.start()
 
         try p.assert("r1: {r1{b1 🚂1 ≏ ≏ }} <r1<t0>> [r1[b2 ≏ ≏ ]] <t1(0,2)> [b3 ≏ ≏ ] <r1<t0(2,0)>> !{r1{b1 ≏ ≏ }}")
         // The train should stop because the next block feedback is triggered but it is not the one expected
@@ -470,14 +486,15 @@ class ManualRoutingTests: BTTestCase {
 
     func testRelaxModeNextAndPreviousFeedbacks() throws {
         let layout = LayoutACreator().newLayout()
-        let p = try setup(layout: layout, fromBlockId: "b1", route: layout.routes[0])
+        let p = Package(layout: layout)
+        try p.prepare(routeID: "r1", trainID: "1", fromBlockId: "b1")
 
         layout.strictRouteFeedbackStrategy = false
         layout.detectUnexpectedFeedback = true
         
         try p.assert("r1: {r1{b1 🛑🚂1 ≏ ≏ }} <t0> [b2 ≏ ≏ ] <t1(0,2)> [b3 ≏ ≏ ] <t0(2,0)> !{r1{b1 ≏ ≏ }}")
 
-        try p.start(routeID: "r1", trainID: "1")
+        try p.start()
 
         try p.assert("r1: {r1{b1 🚂1 ≏ ≏ }} <r1<t0>> [r1[b2 ≏ ≏ ]] <t1(0,2)> [b3 ≏ ≏ ] <r1<t0(2,0)>> !{r1{b1 ≏ ≏ }}")
         
@@ -489,11 +506,10 @@ class ManualRoutingTests: BTTestCase {
     func testNextBlockFeedbackHandling() throws {
         let layout = LayoutCCreator().newLayout()
         
-        try layout.prepare(routeID: "r1", trainID: "1")
-        try layout.prepare(routeID: "r3", trainID: "2")
-        
-        let p = try setup(layout: layout, fromBlockId: "b1", route: layout.routes[0])
-        
+        let p = Package(layout: layout)
+        try p.prepare(routeID: "r1", trainID: "1", fromBlockId: "b1")
+        try p.prepare(routeID: "r3", trainID: "2", fromBlockId: "b3")
+
         layout.strictRouteFeedbackStrategy = false
         
         try p.assert2("r1: {r1{b1 🛑🚂1 ≏ ≏ }} <t0> [b2 ≏ ≏ ] {r2{b3 🛑🚂2 ≏ ≏ }} <t1> [b4 ≏ ≏] {r1{b1 🛑🚂1 ≏ ≏ }}",
@@ -544,11 +560,10 @@ class ManualRoutingTests: BTTestCase {
     func testMoveRouteLoop() throws {
         let layout = LayoutCCreator().newLayout()
         
-        try layout.prepare(routeID: "r1", trainID: "1")
-        try layout.prepare(routeID: "r3", trainID: "2")
-        
-        let p = try setup(layout: layout, fromBlockId: "b1", route: layout.routes[0])
-        
+        let p = Package(layout: layout)
+        try p.prepare(routeID: "r1", trainID: "1", fromBlockId: "b1")
+        try p.prepare(routeID: "r3", trainID: "2", fromBlockId: "b3")
+                
         try p.assert2("r1: {r1{b1 🛑🚂1 ≏ ≏ }} <t0> [b2 ≏ ≏ ] {r2{b3 🛑🚂2 ≏ ≏ }} <t1> [b4 ≏ ≏] {r1{b1 🛑🚂1 ≏ ≏ }}",
                       "r3: {r2{b3 🛑🚂2 ≏ ≏ }} <t1(0,2)> [b5 ≏ ≏ ] <t0(2,0)> !{r1{b1 ≏ ≏ 🛑🚂1 }}")
         
@@ -631,7 +646,7 @@ class ManualRoutingTests: BTTestCase {
         try p.assert2("r1: {r1{b1 ≡ ≡ 🛑🚂1 }} <t0,r> [b2 ≏ ≏ ] {b3 ≏ ≏ } <t1> [b4 ≏ ≏ ] {r1{b1 ≡ ≡ 🛑🚂1 }}",
                       "r3: {b3 ≏ ≏ } <t1(0,2)> [b5 ≏ ≏ ] <t0(2,0),r> !{r1{b1  🛑🚂1 ≡ ≡ }}")
     }
- 
+
     func testEntryBrakeStopFeedbacks() throws {
         let layout = LayoutECreator().newLayout()
                         
@@ -645,7 +660,8 @@ class ManualRoutingTests: BTTestCase {
         XCTAssertEqual(b3.brakeFeedback(for: .next), Identifier<Feedback>(uuid: "fb3.1"))
         XCTAssertEqual(b3.stopFeedback(for: .next), Identifier<Feedback>(uuid: "fb3.2"))
 
-        var p = try setup(layout: layout, fromBlockId: "s1", route: layout.routes[0])
+        let p = Package(layout: layout)
+        try p.prepare(routeID: "0", trainID: "0", fromBlockId: "s1")
 
         layout.strictRouteFeedbackStrategy = false
 
@@ -678,13 +694,13 @@ class ManualRoutingTests: BTTestCase {
         XCTAssertEqual(train.state, .stopped)
 
         // Now let's reverse the train direction and pick the reverse route
-        p = try setup(layout: layout, fromBlockId: "s1", direction: .previous, route: layout.routes[1])
-        
+        try p.prepare(routeID: "1", trainID: "0", fromBlockId: "s1", direction: .previous)
+
         layout.strictRouteFeedbackStrategy = false
 
         try p.assert("1: !{r0{s1 🛑🚂0 ≏ }} <t6(2,0),r> <t5(1,0)> ![b3 ≏ ≏ ≏ ] <t4> ![b2 ≏ ] <t3(1,0)> ![b1 ≏ ] <t2,s> <t1(0,2),l> !{r0{s1 🛑🚂0 ≏}}")
         
-        try p.start()
+        try p.start(routeID: "1", trainID: "0")
         
         try p.assert("1: !{r0{s1 🚂0 ≏ }} <r0<t6(2,0),r>> <r0<t5(1,0)>> ![r0[b3 ≏ ≏ ≏ ]] <t4> ![b2 ≏ ] <t3(1,0)> ![b1 ≏ ] <t2,s> <t1(0,2),l> !{r0{s1 🚂0 ≏}}")
         try p.assert("1: !{r0{s1 ≡ 🚂0 }} <r0<t6(2,0),r>> <r0<t5(1,0)>> ![r0[b3 ≏ ≏ ≏ ]] <t4> ![b2 ≏ ] <t3(1,0)> ![b1 ≏ ] <t2,s> <t1(0,2),l> !{r0{s1 ≡ 🚂0 }}")
@@ -698,8 +714,9 @@ class ManualRoutingTests: BTTestCase {
     func testRouteStationRestart() throws {
         let layout = LayoutECreator().newLayout()
 
-        let p = try setup(layout: layout, fromBlockId: "s1", route: layout.routes[2])
-        
+        let p = Package(layout: layout)
+        try p.prepare(routeID: "2", trainID: "0", fromBlockId: "s1")
+
         try p.assert("2: {r0{s1 🛑🚂0 ≏ }} <t1(2,0),s> <t2(1,0),s> [b1 ≏ ] <t3> [b2 ≏ ] <t4(1,0)> [b3 ≏ ≏ ] <t5> <t6> {s2 ≏ } <t1(1,0),s> <t2(1,0),s> [b1 ≏ ] <t3> [b2 ≏ ] <t4(1,0)> [b3 ≏ ≏ ] <t5> <t6(0,2)> {r0{s1 🛑🚂0 ≏ }}")
 
         layout.strictRouteFeedbackStrategy = false
@@ -737,7 +754,9 @@ class ManualRoutingTests: BTTestCase {
     func testUpdateAutomaticRouteBrakingAndContinue() throws {
         let layout = LayoutHCreator().newLayout()
 
-        let p = try setup(layout: layout, fromBlockId: "A", position: .end, route: layout.routes[0])
+        let p = Package(layout: layout)
+        try p.prepare(routeID: "0", trainID: "0", fromBlockId: "A", position: .end)
+
         try p.start()
         
         try p.assert("0: |[r0[A ≏ ≏ 🚂0 ]] <r0<AB>> [r0[B ≏ ≏ ]] [C ≏ ≏ ] [D ≏ ≏ ] <DE(1,0)> [E ≏ ≏ ]|")
@@ -772,7 +791,8 @@ class ManualRoutingTests: BTTestCase {
         let train = layout.trains[0]
         train.wagonsPushedByLocomotive = true
 
-        let p = try setup(layout: layout, fromBlockId: "s1", position: .start, route: layout.routes[3])
+        let p = Package(layout: layout)
+        try p.prepare(routeID: "3", trainID: "0", fromBlockId: "s1")
 
         try p.assert("3: {r0{s1 🛑🚂0 ≏ 💺0 }} <r0<t1(2,0),l>> <r0<t2(1,0),s>> [r0[b1 💺0 ≏ 💺0 ]] <r0<t3>> [r0[b2 💺0 ≏ ]] <t4(1,0)> [b3 ≏ ≏ ] <t5> <t6,r> {s2 ≏ }")
         
@@ -791,7 +811,8 @@ class ManualRoutingTests: BTTestCase {
     func testStraightLine1() throws {
         let layout = LayoutHCreator().newLayout()
 
-        let p = try setup(layout: layout, fromBlockId: "A", position: .end, route: layout.routes[0])
+        let p = Package(layout: layout)
+        try p.prepare(routeID: "0", trainID: "0", fromBlockId: "A", position: .end)
 
         try p.assert("0: |[r0[A 💺0 ≏ 💺0 ≏ 🛑🚂0 ]] <AB> [B ≏ ≏ ] [C ≏ ≏ ] [D ≏ ≏ ] <DE(1,0)> [E ≏ ≏ ]|")
         
@@ -819,7 +840,8 @@ class ManualRoutingTests: BTTestCase {
         let layout = LayoutHCreator().newLayout()
         layout.trains[0].wagonsPushedByLocomotive = true
         
-        let p = try setup(layout: layout, fromBlockId: "A", position: .start, route: layout.routes[0])
+        let p = Package(layout: layout)
+        try p.prepare(routeID: "0", trainID: "0", fromBlockId: "A")
 
         try p.assert("0: |[r0[A 🛑🚂0 ≏ 💺0 ≏ 💺0 ]] <AB> [B ≏ ≏ ] [C ≏ ≏ ] [D ≏ ≏ ] <DE(1,0)> [E ≏ ≏ ]|")
         
@@ -847,7 +869,9 @@ class ManualRoutingTests: BTTestCase {
         let layout = LayoutHCreator().newLayout()
         layout.trains[0].wagonsPushedByLocomotive = true
         
-        let p = try setup(layout: layout, fromBlockId: "A", position: .start, route: layout.routes[0])
+        let p = Package(layout: layout)
+        try p.prepare(routeID: "0", trainID: "0", fromBlockId: "A")
+
         layout.blocks[3].reserved = .init(trainId: Identifier<Train>(uuid: "1"), direction: .next)
         
         try p.assert("0: |[r0[A 🛑🚂0 ≏ 💺0 ≏ 💺0 ]] <AB> [B ≏ ≏ ] [C ≏ ≏ ] [r1[D ≏ ≏ ]] <DE(1,0)> [E ≏ ≏ ]|")
@@ -874,7 +898,8 @@ class ManualRoutingTests: BTTestCase {
     func testStraightLine2() throws {
         let layout = LayoutHCreator().newLayout()
 
-        let p = try setup(layout: layout, fromBlockId: "A", position: .end, route: layout.routes[1])
+        let p = Package(layout: layout)
+        try p.prepare(routeID: "1", trainID: "0", fromBlockId: "A", position: .end)
 
         try p.assert("1: |[r0[A 💺0 ≏ 💺0 ≏ 🛑🚂0 ]] <AB(0,2)> [B2 ≏ ≏ ] ![C2 ≏ ≏ ] [D2 ≏ ≏ ] <DE(2,0)> [E ≏ ≏ ]|")
         
@@ -904,7 +929,8 @@ class ManualRoutingTests: BTTestCase {
         let route = layout.routes[0]
         let trainId = layout.trains[0].id
         
-        let p = try setup(layout: layout, fromBlockId: "b1", position: .start, route: route)
+        let p = Package(layout: layout)
+        try p.prepare(routeID: "r1", trainID: "1", fromBlockId: "b1", position: .start)
 
         XCTAssertEqual(try producer.stringFrom(route: route, trainId: trainId), "{r1{b1 🛑🚂1 ≏ ≏ }} <t0{sl}(0,1),s> [b2 ≏ ≏ ] <t1{sl}(0,2),s> [b3 ≏ ≏ ] <t0{sl}(2,0),s> !{r1{b1 🛑🚂1 ≏ ≏ }}")
         
@@ -939,17 +965,48 @@ class ManualRoutingTests: BTTestCase {
     // MARK: -- Utility
     
     // Convenience structure to test the layout and its route
-    private struct Package {
+    private class Package {
         let layout: Layout
-        let train: Train
-        let route: Route
         let asserter: LayoutAsserter
         let layoutController: LayoutController
+
+        var trains = [Train]()
+        var routes = [Route]()
+
+        var train: Train {
+            return trains[0]
+        }
+
+        var route: Route {
+            return routes[0]
+        }
+        
+        init(layout: Layout) {
+            self.layout = layout
+            self.layoutController = LayoutController(layout: layout, switchboard: nil, interface: MarklinInterface())
+            self.asserter = LayoutAsserter(layout: layout, layoutController: layoutController)
+            
+            layout.detectUnexpectedFeedback = true
+            layout.strictRouteFeedbackStrategy = true
+        }
+        
+        func prepare(routeID: String, trainID: String, fromBlockId: String, position: Position = .start, direction: Direction = .next) throws {
+            let train = layout.train(for: .init(uuid: trainID))!
+            let route = layout.route(for: .init(uuid: routeID), trainId: .init(uuid: trainID))!
+            
+            train.routeId = route.id
+            try layout.setTrainToBlock(train.id, Identifier<Block>(uuid: fromBlockId), position: position, direction: direction)
+            
+            XCTAssertEqual(train.speed.requestedKph, 0)
+            XCTAssertTrue(train.manualScheduling)
+            XCTAssertEqual(train.state, .stopped)
+            
+            trains.append(train)
+            routes.append(route)
+        }
         
         func start() throws {
-            try layoutController.start(routeID: route.id, trainID: train.id, destination: nil)
-            XCTAssertTrue(train.automaticScheduling)
-            XCTAssertEqual(train.state, .running)
+            try start(routeID: route.id.uuid, trainID: train.id.uuid)
         }
 
         func start(routeID: String, trainID: String) throws {
@@ -971,28 +1028,12 @@ class ManualRoutingTests: BTTestCase {
         }
 
         func assert(_ r1: String) throws {
-            try asserter.assert([r1], route:route, trains: [train])
+            try asserter.assert([r1], trains: trains)
         }
         
         func assert2(_ r1: String, _ r2: String) throws {
-            try asserter.assert([r1, r2], route:route, trains: [train])
+            try asserter.assert([r1, r2], trains: trains)
         }
     }
     
-    private func setup(layout: Layout, fromBlockId: String, position: Position = .start, direction: Direction = .next, route: Route) throws -> Package {
-        layout.detectUnexpectedFeedback = true
-        layout.strictRouteFeedbackStrategy = true
-
-        let train = layout.trains[0]
-        try layout.setTrainToBlock(train.id, Identifier<Block>(uuid: fromBlockId), position: position, direction: direction)
-        
-        XCTAssertEqual(train.speed.requestedKph, 0)
-        XCTAssertTrue(train.manualScheduling)
-        XCTAssertEqual(train.state, .stopped)
-
-        let layoutController = LayoutController(layout: layout, switchboard: nil, interface: MarklinInterface())
-        let asserter = LayoutAsserter(layout: layout, layoutController: layoutController)
-        return Package(layout: layout, train: train, route: route, asserter: asserter, layoutController: layoutController)
-    }
-
 }
