@@ -65,26 +65,26 @@ class MarklinInterfaceTests: XCTestCase {
     }
     
     func testDiscoverLocomotives() {
+        let doc = LayoutDocument(layout: Layout())
+        
         let completionExpectation = XCTestExpectation()
-        var locs = [CommandLocomotive]()
-        
-        mi.register { locomotives in
-            locs = locomotives
-            completionExpectation.fulfill()
+        doc.connectToSimulator(enable: true) { error in
+            doc.layoutController.discoverLocomotives(merge: false) {
+                completionExpectation.fulfill()
+            }
         }
-        
-        mi.execute(command: .locomotives()) { }
         
         wait(for: [completionExpectation], timeout: 1)
 
-        XCTAssertEqual(locs.count, 11)
+        doc.disconnect()
 
-        let loc1 = locs[0]
+        XCTAssertEqual(doc.layout.trains.count, 11)
+
+        let loc1 = doc.layout.trains[0]
         XCTAssertEqual(loc1.name, "460 106-8 SBB")
-        XCTAssertEqual(loc1.uid, 0x4006)
         XCTAssertEqual(loc1.address, 0x6)
     }
-
+    
     func testCallbackOrdering() {
         let firstCallbackExpectation = XCTestExpectation()
         let secondCallbackExpectation = XCTestExpectation()
