@@ -287,9 +287,9 @@ extension LayoutController: LayoutCommandExecuting {
         executor.sendTrainDirection(train: train, completion: completion)
     }
     
-    func sendTrainSpeed(train: Train, inertia: Bool?, completion: @escaping CompletionBlock) {
+    func sendTrainSpeed(train: Train, acceleration: TrainSpeedAcceleration.Acceleration?, completion: @escaping CompletionBlock) {
         if let controller = controllers[train.id] {
-            controller.inertiaController.changeSpeed(of: train, inertia: inertia, completion: completion)
+            controller.accelerationController.changeSpeed(of: train, acceleration: acceleration, completion: completion)
         } else {
             let msg = "There is no TrainController for \(train.name)"
             assertionFailure(msg)

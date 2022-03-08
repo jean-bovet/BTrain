@@ -13,11 +13,11 @@
 import Foundation
 import Combine
 
-// This class manages the inertia for a specific train. When a speed change is requested,
+// This class manages the acceleration/deceleration for a specific train. When a speed change is requested,
 // this class will progressively change the speed until it reaches the requested speed value.
 // The speed is incremented by a specified number of steps that is small enough to be executed
 // by the Digital Controller.
-final class TrainControllerInertia {
+final class TrainControllerAcceleration {
     
     typealias SpeedChangedCallback = (_ steps: SpeedStep, _ completed: Bool) -> Void
     
@@ -32,12 +32,13 @@ final class TrainControllerInertia {
     var desired: SpeedStep = .zero
     
     // The number of steps to increment when changing the speed
-    let stepIncrement = 4
+    let stepIncrement = 2
     
     // The delay between step increments, recommended to be about 100ms.
-    let stepDelay = 0.1
+    let stepDelay: TimeInterval = 0.1
     
     private var timer: Timer?
+    private var currentTime: TimeInterval = 0
     private var stepsDidChange: SpeedChangedCallback?
     
     init(train: Train, interface: CommandInterface) {
@@ -45,10 +46,10 @@ final class TrainControllerInertia {
         self.interface = interface
     }
         
-    func changeSpeed(of train: Train, inertia: Bool?, completion: @escaping CompletionBlock) {
+    func changeSpeed(of train: Train, acceleration: TrainSpeedAcceleration.Acceleration?, completion: @escaping CompletionBlock) {
         BTLogger.debug("Train \(train) request speed of \(train.speed.requestedKph) kph (\(train.speed.requestedSteps)) from actual speed of \(train.speed.actualKph) kph (\(train.speed.actualSteps))")
 
-        changeSpeed(from: train.speed.actualSteps, to: train.speed.requestedSteps, inertia: inertia ?? train.inertia) { [weak self] steps, finished in
+        changeSpeed(from: train.speed.actualSteps, to: train.speed.requestedSteps, acceleration: acceleration ?? train.acceleration) { [weak self] steps, finished in
             guard let interface = self?.interface else {
                 return
             }
@@ -79,14 +80,14 @@ final class TrainControllerInertia {
         }
     }
     
-    private func changeSpeed(from fromSteps: SpeedStep, to steps: SpeedStep, inertia: Bool, callback: @escaping SpeedChangedCallback) {
+    private func changeSpeed(from fromSteps: SpeedStep, to steps: SpeedStep, acceleration: TrainSpeedAcceleration.Acceleration, callback: @escaping SpeedChangedCallback) {
         cancelPrevious()
         
         stepsDidChange = callback
         actual = fromSteps
         desired = steps
 
-        guard inertia else {
+        guard acceleration != .none else {
             actual = steps
             finished()
             return
@@ -94,24 +95,27 @@ final class TrainControllerInertia {
         
         let delta = Int(desired.value) - Int(actual.value)
         if abs(delta) <= stepIncrement {
-            changeActual(with: delta)
+            setActualValue(value: Int(actual.value) + delta, accelerating: delta > 0)
         } else {
+            let tf = TrainSpeedAcceleration(fromSteps: Int(actual.value), toSteps: Int(desired.value), timeIncrement: stepDelay, stepIncrement: Int(stepIncrement), type: acceleration)
+            currentTime = stepDelay
+
             // Trigger a speed change immediately
-            changeActual(with: stepIncrement * delta.signum())
-            
+            setActualValue(value: tf.stepValue(at: stepDelay), accelerating: delta > 0)
+              
             // And scheduled the subsequent changes to be every `stepDelay` seconds.
             timer = Timer.scheduledTimer(withTimeInterval: stepDelay, repeats: true, block: { [weak self] timer in
                 guard let sSelf = self else {
                     return
                 }
-                
-                sSelf.changeActual(with: sSelf.stepIncrement * delta.signum())
+                sSelf.currentTime += sSelf.stepDelay
+                sSelf.setActualValue(value: tf.stepValue(at: sSelf.currentTime), accelerating: delta > 0)
             })
         }
     }
     
-    private func changeActual(with increment: Int) {
-        var newValue = Int(actual.value) + increment
+    private func setActualValue(value: Int, accelerating: Bool) {
+        var newValue = value
         if newValue < 0 {
             newValue = 0
         } else if newValue > train.decoder.steps {
@@ -123,7 +127,7 @@ final class TrainControllerInertia {
         if actual.value == desired.value {
             done = true
         } else {
-            if increment > 0 {
+            if accelerating {
                 if actual.value > desired.value {
                     actual = desired
                     done = true

@@ -108,14 +108,14 @@ extension Layout {
         return train.position
     }
     
-    func setTrainSpeed(_ train: Train, _ speed: TrainSpeed.UnitKph, inertia: Bool? = nil, completion: @escaping CompletionBlock) {
+    func setTrainSpeed(_ train: Train, _ speed: TrainSpeed.UnitKph, acceleration: TrainSpeedAcceleration.Acceleration? = nil, completion: @escaping CompletionBlock) {
         train.speed.requestedKph = speed
-        setTrainSpeed(train, train.speed.requestedSteps, inertia: inertia, completion: completion)
+        setTrainSpeed(train, train.speed.requestedSteps, acceleration: acceleration, completion: completion)
     }
 
-    func setTrainSpeed(_ train: Train, _ speed: SpeedStep, inertia: Bool? = nil, completion: @escaping CompletionBlock) {
+    func setTrainSpeed(_ train: Train, _ speed: SpeedStep, acceleration: TrainSpeedAcceleration.Acceleration? = nil, completion: @escaping CompletionBlock) {
         train.speed.requestedSteps = speed
-        executor.sendTrainSpeed(train: train, inertia: inertia) { [weak self] in
+        executor.sendTrainSpeed(train: train, acceleration: acceleration) { [weak self] in
             self?.didChange()
             completion()
         }
@@ -268,7 +268,7 @@ extension Layout {
             train.speed.requestedKph = 0
             train.state = .stopping
 
-            executor.sendTrainSpeed(train: train, inertia: nil) { [weak self] in
+            executor.sendTrainSpeed(train: train, acceleration: nil) { [weak self] in
                 train.state = .stopped
                 self?.didChange()
                 completion()

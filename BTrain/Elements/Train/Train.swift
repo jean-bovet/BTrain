@@ -120,7 +120,7 @@ final class Train: Element, ObservableObject {
     @Published var speed = TrainSpeed(kph: 0, decoderType: .MFX)
 
     // True if the train speed acceleration/deceleration uses takes into account inertia.
-    @Published var inertia = true
+    @Published var acceleration = TrainSpeedAcceleration.Acceleration.bezier
 
     // The time to wait after the locomotive has been asked to stop until it is considered effectively stopped.    
     @Published var stopSettleDelay: TimeInterval = 1.0
@@ -271,7 +271,7 @@ final class Train: Element, ObservableObject {
 extension Train: Codable {
     
     enum CodingKeys: CodingKey {
-      case id, enabled, name, address, length, magnetDistance, speed, inertia, stopSettleDelay, decoder, direction, wagonsPushedByLocomotive, route, routeIndex, block, position, maxLeadingBlocks, blocksToAvoid, turnoutsToAvoid
+      case id, enabled, name, address, length, magnetDistance, speed, acceleration, stopSettleDelay, decoder, direction, wagonsPushedByLocomotive, route, routeIndex, block, position, maxLeadingBlocks, blocksToAvoid, turnoutsToAvoid
     }
 
     convenience init(from decoder: Decoder) throws {
@@ -287,7 +287,7 @@ extension Train: Codable {
         self.length = try container.decodeIfPresent(Double.self, forKey: CodingKeys.length)
         self.magnetDistance = try container.decodeIfPresent(Double.self, forKey: CodingKeys.magnetDistance)
         self.speed = try container.decode(TrainSpeed.self, forKey: CodingKeys.speed)
-        self.inertia = try container.decodeIfPresent(Bool.self, forKey: CodingKeys.inertia) ?? true
+        self.acceleration = try container.decodeIfPresent(TrainSpeedAcceleration.Acceleration.self, forKey: CodingKeys.acceleration) ?? .bezier
         self.stopSettleDelay = try container.decodeIfPresent(TimeInterval.self, forKey: CodingKeys.stopSettleDelay) ?? 1.0
         self.directionForward = try container.decodeIfPresent(Bool.self, forKey: CodingKeys.direction) ?? true
         self.wagonsPushedByLocomotive = try container.decodeIfPresent(Bool.self, forKey: CodingKeys.wagonsPushedByLocomotive) ?? false
@@ -310,7 +310,7 @@ extension Train: Codable {
         try container.encode(length, forKey: CodingKeys.length)
         try container.encode(magnetDistance, forKey: CodingKeys.magnetDistance)
         try container.encode(speed, forKey: CodingKeys.speed)
-        try container.encode(inertia, forKey: CodingKeys.inertia)
+        try container.encode(acceleration, forKey: CodingKeys.acceleration)
         try container.encode(stopSettleDelay, forKey: CodingKeys.stopSettleDelay)
         try container.encode(directionForward, forKey: CodingKeys.direction)
         try container.encode(wagonsPushedByLocomotive, forKey: CodingKeys.wagonsPushedByLocomotive)

@@ -137,6 +137,7 @@ struct TrainDetailsSpeedSectionView: View {
     let document: LayoutDocument
 
     @ObservedObject var train: Train
+    
     @State private var speedExpanded = false
     @State private var showSpeedProfileSheet = false
     
@@ -161,10 +162,18 @@ struct TrainDetailsSpeedSectionView: View {
             SectionTitleView(label: "Speed")
 
             Form {
-                UndoProvider($train.inertia) { inertia in
-                    Toggle("Inertia", isOn: inertia)
+                UndoProvider($train.acceleration) { acceleration in
+                    Picker("Acceleration:", selection: acceleration) {
+                        ForEach(TrainSpeedAcceleration.Acceleration.allCases, id: \.self) { type in
+                            HStack {
+                                Text("\(type.description)")
+                                TrainSpeedTimingFunctionView(tf: TrainSpeedAcceleration(fromSteps: 0, toSteps: 100, timeIncrement: 0.1, stepIncrement: 4, type: type))
+                                    .frame(width: 100, height: 50)
+                            }
+                        }
+                    }
                 }
-                
+
                 UndoProvider($train.speed.maxSpeed) { maxSpeed in
                     TextField("Max Speed:", value: maxSpeed,
                               format: .number)

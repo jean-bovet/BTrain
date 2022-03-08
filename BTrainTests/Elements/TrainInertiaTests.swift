@@ -16,26 +16,44 @@ import XCTest
 
 class TrainInertiaTests: XCTestCase {
 
-    func testInertia() {
+    func testLinearAcceleration() {
         let t = Train()
-        let ic = TrainControllerInertia(train: t, interface: MockCommandInterface())
+        t.acceleration = .linear
+        let ic = TrainControllerAcceleration(train: t, interface: MockCommandInterface())
         
-        assertChangeSpeed(train: t, from: 0, to: 20, [4, 8, 12, 16, 20], ic)
-        assertChangeSpeed(train: t, from: 20, to: 13, [16, 13], ic)
+        assertChangeSpeed(train: t, from: 0, to: 20, [2, 4, 6, 8, 10, 12, 14, 15, 18, 19, 20], ic)
+        assertChangeSpeed(train: t, from: 20, to: 13, [18, 16, 14, 13], ic)
         assertChangeSpeed(train: t, from: 13, to: 14, [14], ic)
         assertChangeSpeed(train: t, from: 14, to: 13, [13], ic)
-        assertChangeSpeed(train: t, from: 13, to: 0, [9, 5, 1, 0], ic)
+        assertChangeSpeed(train: t, from: 13, to: 0, [11, 9, 7, 5, 3, 1, 0], ic)
         
         // Simulate a change in the actual speed by the Digital Controller.
         // This means the TrainInertiaController needs to take that into account.
         t.speed.actualSteps = SpeedStep(value: 10)
-        assertChangeSpeed(train: t, from: 0, to: 20, [14, 18, 20], ic)
+        assertChangeSpeed(train: t, from: 0, to: 20, [12, 14, 16, 18, 20], ic)
+    }
+
+    func testBezierAcceleration() {
+        let t = Train()
+        t.acceleration = .bezier
+        let ic = TrainControllerAcceleration(train: t, interface: MockCommandInterface())
+        
+        assertChangeSpeed(train: t, from: 0, to: 40, [0, 1, 2, 4, 6, 8, 11, 14, 17, 19, 22, 25, 28, 31, 33, 35, 37, 38, 39, 40], ic)
+        assertChangeSpeed(train: t, from: 40, to: 13, [39, 38, 36, 34, 32, 29, 26, 23, 20, 18, 16, 14, 13], ic)
+        assertChangeSpeed(train: t, from: 13, to: 14, [14], ic)
+        assertChangeSpeed(train: t, from: 14, to: 13, [13], ic)
+        assertChangeSpeed(train: t, from: 13, to: 0, [12, 10, 7, 5, 2, 0], ic)
+        
+        // Simulate a change in the actual speed by the Digital Controller.
+        // This means the TrainInertiaController needs to take that into account.
+        t.speed.actualSteps = SpeedStep(value: 10)
+        assertChangeSpeed(train: t, from: 0, to: 20, [11, 13, 16, 18, 20], ic)
     }
 
     func testWithNoInertia() {
         let t = Train()
-        t.inertia = false
-        let ic = TrainControllerInertia(train: t, interface: MockCommandInterface())
+        t.acceleration = .none
+        let ic = TrainControllerAcceleration(train: t, interface: MockCommandInterface())
 
         assertChangeSpeed(train: t, from: 0, to: 20, [20], ic)
         assertChangeSpeed(train: t, from: 20, to: 13, [13], ic)
@@ -46,14 +64,14 @@ class TrainInertiaTests: XCTestCase {
     
     func testActualSpeedChangeHappensAfterDigitalControllerResponse() {
         let t = Train()
-        t.inertia = false
+        t.acceleration = .none
         let mi = ManualCommandInterface()
-        let ic = TrainControllerInertia(train: t, interface: mi)
+        let ic = TrainControllerAcceleration(train: t, interface: mi)
 
         t.speed.requestedSteps = SpeedStep(value: 100)
         
         let expectation = expectation(description: "Completed")
-        ic.changeSpeed(of: t, inertia: nil) {
+        ic.changeSpeed(of: t, acceleration: nil) {
             expectation.fulfill()
         }
         
@@ -73,7 +91,7 @@ class TrainInertiaTests: XCTestCase {
         XCTAssertEqual(t.speed.requestedSteps, SpeedStep(value: 100))
     }
     
-    private func assertChangeSpeed(train: Train, from fromSteps: UInt16, to steps: UInt16, _ expectedSteps: [UInt16], _ ic: TrainControllerInertia) {
+    private func assertChangeSpeed(train: Train, from fromSteps: UInt16, to steps: UInt16, _ expectedSteps: [UInt16], _ ic: TrainControllerAcceleration) {
         XCTAssertEqual(ic.actual.value, fromSteps)
 
         let cmd = ic.interface as! MockCommandInterface
@@ -83,7 +101,7 @@ class TrainInertiaTests: XCTestCase {
         train.speed.requestedSteps = SpeedStep(value: steps)
         
         let expectation = expectation(description: "Completed")
-        ic.changeSpeed(of: train, inertia: nil) {
+        ic.changeSpeed(of: train, acceleration: nil) {
             expectation.fulfill()
         }
 

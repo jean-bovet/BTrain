@@ -194,7 +194,7 @@ final class TrainSpeedMeasurement {
                 let speedEntry = speedEntry(for: entryIndex)
                                 
                 // Set the speed without inertia to ensure the locomotive accelerates as fast as possible
-                layout.setTrainSpeed(train, speedEntry.steps, inertia: false) {
+                layout.setTrainSpeed(train, speedEntry.steps, acceleration: TrainSpeedAcceleration.Acceleration.none) {
                     continuation.resume(returning: ())
                 }
             }

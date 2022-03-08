@@ -149,6 +149,9 @@ final class LayoutDiagnostic: ObservableObject {
             checkForLengthAndDistance(&errors)
         }
         
+        errorCount = errors.count
+        hasErrors = errorCount > 0
+        
         return errors
     }
     
