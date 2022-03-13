@@ -56,6 +56,10 @@ struct TrainControlRouteView: View {
         return text
     }
     
+    var defaultRouteDescription: String {
+        return "􀼮→"
+    }
+    
     var routeItems: [RouteItem] {
         return layout.manualRoutes.map { RouteItem(name: $0.name, routeId: $0.id) }
     }
@@ -89,9 +93,16 @@ struct TrainControlRouteView: View {
                     .lineLimit(2)
                     .fixedSize(horizontal: false, vertical: true)
             }
-            Text(selectedRouteDescription)
-                .lineLimit(2)
-                .fixedSize(horizontal: false, vertical: true)
+            if selectedRouteDescription.isEmpty {
+                Text(defaultRouteDescription)
+                    .lineLimit(2)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .hidden()
+            } else {
+                Text(selectedRouteDescription)
+                    .lineLimit(2)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
         }
         .onAppear {
             if let routeId = train.routeId {
