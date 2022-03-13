@@ -23,7 +23,6 @@ struct SettingsKeys {
     static let strictRouteFeedbackStrategy = "strictRouteFeedbackStrategy"
 
     static let debugMode = "debugMode"
-    static let hideWelcomeScreen = "hideWelcomeScreen"
     static let recordDiagnosticLogs = "recordDiagnosticLogs"
     static let logRoutingResolutionSteps = "logRoutingResolutionSteps"
 

@@ -15,14 +15,13 @@ import SwiftUI
 struct DocumentView: View {
     
     @ObservedObject var document: LayoutDocument
-
-    @AppStorage(SettingsKeys.hideWelcomeScreen) var hideWelcomeScreen = false
-
+    @ObservedObject var layout: Layout
+    
     var body: some View {
-        if hideWelcomeScreen {
+        if layout.newLayoutWizardExecuted {
             MainView(document: document)
         } else {
-            WelcomeView(document: document)
+            NewLayoutWizardView(document: document)
         }
     }
 }
@@ -32,6 +31,6 @@ struct AppView_Previews: PreviewProvider {
     static let doc = LayoutDocument(layout: Layout())
     
     static var previews: some View {
-        DocumentView(document: doc)
+        DocumentView(document: doc, layout: doc.layout)
     }
 }

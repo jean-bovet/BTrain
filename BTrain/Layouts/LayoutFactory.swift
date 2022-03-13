@@ -24,13 +24,12 @@ final class LayoutFactory {
     static let DefaultBrakingSpeed: TrainSpeed.UnitKph = 30
 
     static let GlobalLayouts: [LayoutCreating] = [
-        LayoutACreator(),
-        LayoutBCreator(),
-        LayoutCCreator(),
-        LayoutDCreator(),
-        LayoutECreator(),
-        LayoutGCreator(),
+        LayoutEmptyCreator(),
         LayoutHCreator(),
+        LayoutBCreator(),
+        LayoutACreator(),
+        LayoutCCreator(),
+        LayoutECreator(),
         LayoutFCreator()
     ]
 

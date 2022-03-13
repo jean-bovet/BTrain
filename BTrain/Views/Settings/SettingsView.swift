@@ -27,7 +27,6 @@ struct SettingsView: View {
     @AppStorage(SettingsKeys.strictRouteFeedbackStrategy) var strictRouteFeedbackStrategy = false
 
     @AppStorage(SettingsKeys.debugMode) private var showDebugControls = false
-    @AppStorage(SettingsKeys.hideWelcomeScreen) private var hideWelcomeScreen = false
     @AppStorage(SettingsKeys.recordDiagnosticLogs) private var recordDiagnosticLogs = false
     @AppStorage(SettingsKeys.logRoutingResolutionSteps) private var logRoutingResolutionSteps = false
 
@@ -63,7 +62,6 @@ struct SettingsView: View {
            
             Form {
                 Toggle("Show Debug Controls", isOn: $showDebugControls)
-                Toggle("Hide Welcome Screen", isOn: $hideWelcomeScreen)
                 Toggle("Record Diagnostic Logs", isOn: $recordDiagnosticLogs)
                 Toggle("Log Routing Resolution Steps", isOn: $logRoutingResolutionSteps)
             }

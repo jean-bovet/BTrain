@@ -58,7 +58,7 @@ extension LayoutDocument: ReferenceFileDocument {
             iconDirectory.preferredFilename = "icons"
             
             for train in layout.trains {
-                if let icon = trainIconManager.imageFor(train: train) {
+                if let icon = trainIconManager.imageFor(trainId: train.id) {
                     if let pngData = icon.pngData() {
                         iconDirectory.addRegularFile(withContents: pngData, preferredFilename: "\(train.uuid).png")
                     } else if let data = icon.tiffRepresentation(using: .lzw, factor: 0) {

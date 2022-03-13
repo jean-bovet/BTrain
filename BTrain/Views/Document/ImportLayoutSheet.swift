@@ -49,7 +49,8 @@ struct ImportLayoutSheet: View {
                 SwitchBoardView(switchboard: switchboard,
                                 state: switchboard.state,
                                 layout: layout,
-                                layoutController: coordinator)
+                                layoutController: coordinator,
+                                gestureEnabled: false)
             }.frame(width: previewSize.width, height: previewSize.height)
             
             HStack {

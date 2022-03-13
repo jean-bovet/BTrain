@@ -20,9 +20,9 @@ final class TrainIconManager: ObservableObject {
     init(layout: Layout) {
         self.layout = layout
     }
-    
-    func imageFor(train: Train) -> NSImage? {
-        if let image = cache.object(forKey: train.id.uuid as NSString) {
+
+    func imageFor(trainId: Identifier<Train>) -> NSImage? {
+        if let image = cache.object(forKey: trainId.uuid as NSString) {
             return image
         }
         

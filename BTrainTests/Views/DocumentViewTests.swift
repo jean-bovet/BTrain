@@ -16,7 +16,7 @@ import SwiftUI
 
 @testable import BTrain
 
-extension WelcomeView: Inspectable { }
+extension NewLayoutWizardView: Inspectable { }
 extension DocumentView: Inspectable { }
 extension ConnectSheet: Inspectable { }
 extension DiagnosticsSheet: Inspectable { }
@@ -48,7 +48,7 @@ class DocumentViewTests: RootViewTests {
     }
 
     func testWelcome() throws {
-        let sut = WelcomeView(document: doc)
+        let sut = NewLayoutWizardView(document: doc)
         _ = try sut.inspect().find(button: "􀈷 New Document")
         _ = try sut.inspect().find(button: "􀉚 Use Predefined Layout")
     }
@@ -59,7 +59,7 @@ class DocumentViewTests: RootViewTests {
         _ = try sut.inspect().find(MainView.self)
         
         sut.hideWelcomeScreen = false
-        _ = try sut.inspect().find(WelcomeView.self)
+        _ = try sut.inspect().find(NewLayoutWizardView.self)
     }
     
     @Binding var connectAlertShowing: Bool = true

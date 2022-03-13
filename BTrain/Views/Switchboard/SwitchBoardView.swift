@@ -27,13 +27,15 @@ struct SwitchBoardView: View {
 
     let layoutController: LayoutController
 
+    let gestureEnabled: Bool
+
     // Watch for dark mode to change the color of switchboard
     @Environment(\.colorScheme) var colorScheme
 
     @AppStorage(SettingsKeys.fontSize) var fontSize = 12.0
     
     @Environment(\.undoManager) var undoManager
-
+    
     // Note: we pass `redraw` and `coordinator` to this method, even if unused,
     // in order to force SwitfUI to re-draw the view if one of them change.
     func draw(context: GraphicsContext, darkMode: Bool, coordinator: LayoutController, layout: Layout, state: SwitchBoard.State) {
@@ -58,18 +60,20 @@ struct SwitchBoardView: View {
 
             draw(context: context, darkMode: colorScheme == .dark, coordinator: layoutController, layout: layout, state: switchboard.state)
         }
-        .gesture(
-            DragGesture(minimumDistance: 0)
-                .onChanged { gesture in
-                    switchboard.drag.onDragChanged(location: gesture.location, translation: gesture.translation)
-                }
-                .onEnded { _ in
-                    switchboard.drag.onDragEnded()
-                    undoManager?.registerUndo(withTarget: layout, handler: { layout in
-                        switchboard.drag.restoreState()
-                    })
-                }
-        )
+        .if(gestureEnabled) {
+            $0.gesture(
+                DragGesture(minimumDistance: 0)
+                    .onChanged { gesture in
+                        switchboard.drag.onDragChanged(location: gesture.location, translation: gesture.translation)
+                    }
+                    .onEnded { _ in
+                        switchboard.drag.onDragEnded()
+                        undoManager?.registerUndo(withTarget: layout, handler: { layout in
+                            switchboard.drag.restoreState()
+                        })
+                    }
+            )
+        }
         .frame(idealWidth: switchboard.idealSize.width, idealHeight: switchboard.idealSize.height)
     }
 }
@@ -94,7 +98,8 @@ struct SwitchBoardView_Previews: PreviewProvider {
         SwitchBoardView(switchboard: doc.switchboard,
                         state: doc.switchboard.state,
                         layout: doc.layout,
-                        layoutController: doc.layoutController)
+                        layoutController: doc.layoutController,
+                        gestureEnabled: true)
             .environmentObject(doc)
             .previewLayout(.fixed(width: 800, height: 600))
     }

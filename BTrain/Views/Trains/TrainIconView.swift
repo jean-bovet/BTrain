@@ -41,7 +41,7 @@ struct TrainIconView: View, DropDelegate {
 
     var body: some View {
         HStack {
-            if let image = trainIconManager.imageFor(train: train) {
+            if let image = trainIconManager.imageFor(trainId: train.id) {
                 Image(nsImage: image)
                     .resizable()
                     .aspectRatio(contentMode: .fit)

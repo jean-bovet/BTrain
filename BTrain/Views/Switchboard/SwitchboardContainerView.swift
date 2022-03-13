@@ -44,7 +44,7 @@ struct SwitchboardContainerView: View {
                             }
                         }
                     } else {
-                        SwitchBoardView(switchboard: switchboard, state: state, layout: layout, layoutController: layoutController)
+                        SwitchBoardView(switchboard: switchboard, state: state, layout: layout, layoutController: layoutController, gestureEnabled: true)
                     }
                 }.background(Color(NSColor.windowBackgroundColor))
             }

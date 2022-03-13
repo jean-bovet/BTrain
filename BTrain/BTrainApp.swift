@@ -21,7 +21,7 @@ struct BTrainApp: App {
         DocumentGroup {
             LayoutDocument(layout: Layout(uuid: "new-layout"))
         } editor: { configuration in
-            DocumentView(document: configuration.document)
+            DocumentView(document: configuration.document, layout: configuration.document.layout)
         }
         .commands {
             CommandGroup(replacing: CommandGroupPlacement.help) {

@@ -26,6 +26,8 @@ final class Layout: Element, ObservableObject {
     let id: Identifier<Layout>
     
     var name = ""
+
+    @Published var newLayoutWizardExecuted = false
     
     @Published var blockMap = OrderedDictionary<Identifier<Block>, Block>()
 
@@ -187,13 +189,14 @@ final class Layout: Element, ObservableObject {
 extension Layout: Codable {
     
     enum CodingKeys: CodingKey {
-      case id, name, blocks, feedbacks, turnouts, trains, routes, transitions
+      case id, name, newLayoutWizardExecuted, blocks, feedbacks, turnouts, trains, routes, transitions
     }
 
     convenience init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         self.init(id: try container.decode(Identifier<Layout>.self, forKey: CodingKeys.id))
         self.name = try container.decode(String.self, forKey: CodingKeys.name)
+        self.newLayoutWizardExecuted = try container.decodeIfPresent(Bool.self, forKey: CodingKeys.newLayoutWizardExecuted) ?? true
         self.blocks = try container.decode([Block].self, forKey: CodingKeys.blocks)
         self.feedbacks = try container.decode([Feedback].self, forKey: CodingKeys.feedbacks)
         self.turnouts = try container.decode([Turnout].self, forKey: CodingKeys.turnouts)
@@ -206,6 +209,7 @@ extension Layout: Codable {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(id, forKey: CodingKeys.id)
         try container.encode(name, forKey: CodingKeys.name)
+        try container.encode(newLayoutWizardExecuted, forKey: CodingKeys.newLayoutWizardExecuted)
         try container.encode(blocks, forKey: CodingKeys.blocks)
         try container.encode(feedbacks, forKey: CodingKeys.feedbacks)
         try container.encode(turnouts, forKey: CodingKeys.turnouts)

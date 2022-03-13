@@ -209,12 +209,12 @@ struct TrainDetailsIconSectionView: View {
             HStack {
                 ZStack {
                     TrainIconView(trainIconManager: trainIconManager, train: train, size: .large, hideIfNotDefined: false)
-                    if trainIconManager.imageFor(train: train) == nil {
+                    if trainIconManager.imageFor(trainId: train.id) == nil {
                         Text("Drag an Image")
                     }
                 }
                 
-                if trainIconManager.imageFor(train: train) != nil {
+                if trainIconManager.imageFor(trainId: train.id) != nil {
                     Button("Remove") {
                         trainIconManager.removeImageFor(train: train)
                     }
