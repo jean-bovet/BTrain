@@ -46,19 +46,13 @@ class DocumentViewTests: RootViewTests {
         XCTAssertThrowsError(try sut.inspect().find(TurnoutListView.self))
         XCTAssertNoThrow(try sut.inspect().find(FeedbackEditListView.self))
     }
-
-    func testWelcome() throws {
-        let sut = NewLayoutWizardView(document: doc)
-        _ = try sut.inspect().find(button: "􀈷 New Document")
-        _ = try sut.inspect().find(button: "􀉚 Use Predefined Layout")
-    }
     
     func testDocumentView() throws {
-        let sut = DocumentView(document: doc)
-        sut.hideWelcomeScreen = true
+        let sut = DocumentView(document: doc, layout: doc.layout)
+        doc.layout.newLayoutWizardExecuted = true
         _ = try sut.inspect().find(MainView.self)
         
-        sut.hideWelcomeScreen = false
+        doc.layout.newLayoutWizardExecuted = false
         _ = try sut.inspect().find(NewLayoutWizardView.self)
     }
     

@@ -67,7 +67,7 @@ class TrainViewTests: RootViewTests {
 
         _ = try sut.inspect().hStack().image(0)
         
-        let image = tim.imageFor(train: t1)!
+        let image = tim.imageFor(trainId: t1.id)!
         XCTAssertNotNil(image.pngData())
     }
 

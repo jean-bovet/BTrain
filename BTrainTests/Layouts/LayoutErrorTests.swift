@@ -17,7 +17,7 @@ import XCTest
 class LayoutErrorTests: XCTestCase {
     
     lazy var layout: Layout = {
-        let layout =  LayoutFactory.createLayout(LayoutDCreator.id)
+        let layout =  LayoutDCreator().newLayout()
         return layout
     }()
     
