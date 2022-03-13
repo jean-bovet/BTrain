@@ -36,11 +36,7 @@ struct SwitchboardContainerView: View {
                             HStack {
                                 Button("􀈊 Edit Layout") {
                                     state.editable.toggle()
-                                }
-                                
-                                Button("􀈄 Import Predefined Layout") {
-                                    document.triggerImportPredefinedLayout.toggle()
-                                }
+                                }                                
                             }
                         }
                     } else {

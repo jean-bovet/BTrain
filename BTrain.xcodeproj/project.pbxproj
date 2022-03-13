@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		A711B1502739EBD7002FE7DB /* LayoutController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A711B14F2739EBD7002FE7DB /* LayoutController.swift */; };
 		A71690CC27475D5F008FE624 /* LayoutGCreator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A71690CB27475D5F008FE624 /* LayoutGCreator.swift */; };
-		A717157C2756E5BD00200F92 /* ImportLayoutSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A717157B2756E5BD00200F92 /* ImportLayoutSheet.swift */; };
 		A717157E2756EB7100200F92 /* LayoutBlankCreator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A717157D2756EB7100200F92 /* LayoutBlankCreator.swift */; };
 		A71715802757036B00200F92 /* LayoutFCreator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A717157F2757036B00200F92 /* LayoutFCreator.swift */; };
 		A7171582275738A300200F92 /* TrainShape.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7171581275738A300200F92 /* TrainShape.swift */; };
@@ -263,7 +262,6 @@
 /* Begin PBXFileReference section */
 		A711B14F2739EBD7002FE7DB /* LayoutController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutController.swift; sourceTree = "<group>"; };
 		A71690CB27475D5F008FE624 /* LayoutGCreator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutGCreator.swift; sourceTree = "<group>"; };
-		A717157B2756E5BD00200F92 /* ImportLayoutSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImportLayoutSheet.swift; sourceTree = "<group>"; };
 		A717157D2756EB7100200F92 /* LayoutBlankCreator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutBlankCreator.swift; sourceTree = "<group>"; };
 		A717157F2757036B00200F92 /* LayoutFCreator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutFCreator.swift; sourceTree = "<group>"; };
 		A7171581275738A300200F92 /* TrainShape.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainShape.swift; sourceTree = "<group>"; };
@@ -781,7 +779,6 @@
 				A7C8A2E6279BB89E000C7246 /* DocumentView.swift */,
 				A7B06AE02727786500BDD88C /* MainView.swift */,
 				A77A96DD2727767C009E7ECB /* ConnectSheet.swift */,
-				A717157B2756E5BD00200F92 /* ImportLayoutSheet.swift */,
 				A744D13A276714A2005C2F37 /* DiagnosticsSheet.swift */,
 				A7907992277EC86200771A60 /* DocumentToolbarContent.swift */,
 			);
@@ -1455,7 +1452,6 @@
 				A7710E6727799D5C00C08150 /* Layout+Trains.swift in Sources */,
 				A76507E6275AC7DA0079C71A /* ScheduledMessageQueue.swift in Sources */,
 				A785C081278BC527002FD538 /* TrainSpeedView.swift in Sources */,
-				A717157C2756E5BD00200F92 /* ImportLayoutSheet.swift in Sources */,
 				A7DB7D5027C7647C000893BA /* View+Extension.swift in Sources */,
 				A7171582275738A300200F92 /* TrainShape.swift in Sources */,
 				A7F779D4272BB38F00E73275 /* LayoutFactory.swift in Sources */,

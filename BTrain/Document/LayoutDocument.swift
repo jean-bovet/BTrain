@@ -60,9 +60,6 @@ final class LayoutDocument: ObservableObject {
     // Property used to perform the layout repair command
     @Published var triggerRepairLayout = false
     
-    // Property used to perform the import of a predefined layout command
-    @Published var triggerImportPredefinedLayout = false
-
     // Property used to confirm the download of the locomotives command
     @Published var discoverLocomotiveConfirmation = false
 

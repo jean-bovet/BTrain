@@ -19,7 +19,6 @@ struct MainView: View {
 
     @ObservedObject var document: LayoutDocument
     
-    @State private var showNewLayoutSheet = false
     @State private var connectAlertShowing = false
     @State private var showDiagnosticsSheet = false
     @State private var showDiscoverLocomotiveConfirmation = false
@@ -69,12 +68,6 @@ struct MainView: View {
                 document.discoverLocomotiveConfirmation = false
             }
         })
-        .onChange(of: document.triggerImportPredefinedLayout, perform: { v in
-            if document.triggerImportPredefinedLayout {
-                showNewLayoutSheet.toggle()
-                document.triggerImportPredefinedLayout = false
-            }
-        })
         .onAppear {
             if autoConnectSimulator {
                 document.connectToSimulator(enable: autoEnableSimulator)
@@ -84,9 +77,6 @@ struct MainView: View {
                                    connectAlertShowing: $connectAlertShowing)
         }.sheet(isPresented: $connectAlertShowing) {
             ConnectSheet(document: document, onConnectTasks: document.onConnectTasks)
-                .padding()
-        }.sheet(isPresented: $showNewLayoutSheet) {
-            ImportLayoutSheet(document: document)
                 .padding()
         }.sheet(isPresented: $showDiagnosticsSheet) {
             DiagnosticsSheet(layout: document.layout, options: .all)

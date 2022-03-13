@@ -20,7 +20,6 @@ extension NewLayoutWizardView: Inspectable { }
 extension DocumentView: Inspectable { }
 extension ConnectSheet: Inspectable { }
 extension DiagnosticsSheet: Inspectable { }
-extension ImportLayoutSheet: Inspectable { }
 
 class DocumentViewTests: RootViewTests {
 
@@ -75,11 +74,6 @@ class DocumentViewTests: RootViewTests {
         let sut = DiagnosticsSheet(layout: layout, options: .skipLengths)
         XCTAssertNoThrow(try sut.inspect().find(button: "OK"))
         XCTAssertNoThrow(try sut.inspect().find(text: "The layout is correct!"))
-    }
-
-    func testImportLayoutSheet() throws {
-        let sut = ImportLayoutSheet(document: doc)
-        _ = try sut.inspect().vStack().hStack(2).find(button: "Import")
     }
 
 }
