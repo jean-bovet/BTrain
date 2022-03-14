@@ -21,14 +21,17 @@ struct TrainDetailsDecoderSectionView: View {
             SectionTitleView(label: "Decoder")
 
             Form {
-                Picker("Type:", selection: $train.decoder) {
-                    ForEach(DecoderType.allCases, id:\.self) { proto in
-                        Text(proto.rawValue).tag(proto as DecoderType)
-                    }
-                }.fixedSize()
+                UndoProvider($train.decoder) { value in
+                    Picker("Type:", selection: value) {
+                        ForEach(DecoderType.allCases, id:\.self) { proto in
+                            Text(proto.rawValue).tag(proto as DecoderType)
+                        }
+                    }.fixedSize()
+                }
 
-                TextField("Address:", value: $train.address,
-                          format: .number)
+                UndoProvider($train.address) { value in
+                    TextField("Address:", value: value, format: .number)
+                }
             }.padding([.leading])
         }
     }
@@ -71,7 +74,9 @@ struct TrainDetailsReservationSectionView: View {
             SectionTitleView(label: "Reservation")
 
             Form {
-                Stepper("Leading: \(train.maxNumberOfLeadingReservedBlocks)", value: $train.maxNumberOfLeadingReservedBlocks, in: 1...10)
+                UndoProvider($train.maxNumberOfLeadingReservedBlocks) { value in
+                    Stepper("Leading: \(train.maxNumberOfLeadingReservedBlocks)", value: value, in: 1...10)
+                }
             }.padding([.leading])
         }
     }
@@ -89,11 +94,13 @@ struct TrainDetailsBlocksToAvoidSectionView: View {
             List {
                 ForEach($train.blocksToAvoid, id: \.self) { blockItem in
                     HStack {
-                        Picker("Block:", selection: blockItem.blockId) {
-                            ForEach(layout.blockMap.values, id:\.self) { block in
-                                Text("\(block.name) — \(block.category.description)").tag(block.id as Identifier<Block>)
-                            }
-                        }.labelsHidden()
+                        UndoProvider(blockItem.blockId) { value in
+                            Picker("Block:", selection: value) {
+                                ForEach(layout.blockMap.values, id:\.self) { block in
+                                    Text("\(block.name) — \(block.category.description)").tag(block.id as Identifier<Block>)
+                                }
+                            }.labelsHidden()
+                        }
                         Spacer()
                         Button("-") {
                             train.blocksToAvoid.removeAll(where: { $0.id == blockItem.id })
@@ -121,11 +128,13 @@ struct TrainDetailsTurnoutsToAvoidSectionView: View {
             List {
                 ForEach($train.turnoutsToAvoid, id: \.self) { turnoutItem in
                     HStack {
-                        Picker("Turnout:", selection: turnoutItem.turnoutId) {
-                            ForEach(layout.turnouts, id:\.self) { turnout in
-                                Text("\(turnout.name)").tag(turnout.id as Identifier<Turnout>)
-                            }
-                        }.labelsHidden()
+                        UndoProvider(turnoutItem.turnoutId) { value in
+                            Picker("Turnout:", selection: value) {
+                                ForEach(layout.turnouts, id:\.self) { turnout in
+                                    Text("\(turnout.name)").tag(turnout.id as Identifier<Turnout>)
+                                }
+                            }.labelsHidden()
+                        }
                         Spacer()
                         Button("-") {
                             train.turnoutsToAvoid.removeAll(where: { $0.id == turnoutItem.id })
