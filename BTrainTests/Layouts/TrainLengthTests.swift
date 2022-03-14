@@ -59,28 +59,28 @@ class TrainLengthTests: XCTestCase {
         t1.position = 2
         b1.train = .init(t1.id, .next)
         
-        t1.length = 100+40+100
+        t1.locomotiveLength = 100+40+100
         try layout.reservation.fillBlocks(train: t1)
         assert(b1, t1, [0:.wagon, 1:.wagon, 2:.locomotive])
         assert(b4, t1, [0:.wagon, 1:.wagon, 2:.wagon])
         assert(b3, t1, [0:.wagon, 1:.wagon, 2:.wagon])
         assert(b2, t1, [1:.wagon, 2:.wagon])
 
-        t1.length = 100+40+60
+        t1.locomotiveLength = 100+40+60
         try layout.reservation.fillBlocks(train: t1)
         assert(b1, t1, [0:.wagon, 1:.wagon, 2:.locomotive])
         assert(b4, t1, [0:.wagon, 1:.wagon, 2:.wagon])
         assert(b3, t1, [0:.wagon, 1:.wagon, 2:.wagon])
         assert(b2, t1, [2:.wagon])
 
-        t1.length = 80
+        t1.locomotiveLength = 80
         try layout.reservation.fillBlocks(train: t1)
         assert(b1, t1, [0:.wagon, 1:.wagon, 2:.locomotive])
         assert(b4, t1, [2:.wagon])
         assert(b3, nil, nil)
         assert(b2, nil, nil)
 
-        t1.length = 2000
+        t1.locomotiveLength = 2000
         XCTAssertThrowsError(try layout.reservation.fillBlocks(train: t1))
     }
 
@@ -116,28 +116,28 @@ class TrainLengthTests: XCTestCase {
         t1.position = 0
         b4.train = .init(t1.id, .next)
         
-        t1.length = 40+100+100+20
+        t1.locomotiveLength = 40+100+100+20
         try layout.reservation.fillBlocks(train: t1)
         assert(b4, t1, [0:.locomotive, 1:.wagon, 2:.wagon])
         assert(b1, t1, [0:.wagon, 1:.wagon, 2:.wagon])
         assert(b2, t1, [0:.wagon, 1:.wagon, 2:.wagon])
         assert(b3, t1, [0:.wagon])
 
-        t1.length = 40+100+100
+        t1.locomotiveLength = 40+100+100
         try layout.reservation.fillBlocks(train: t1)
         assert(b4, t1, [0:.locomotive, 1:.wagon, 2:.wagon])
         assert(b1, t1, [0:.wagon, 1:.wagon, 2:.wagon])
         assert(b2, t1, [0:.wagon, 1:.wagon, 2:.wagon])
         assert(b3, t1, [0:.wagon])
 
-        t1.length = 40
+        t1.locomotiveLength = 40
         try layout.reservation.fillBlocks(train: t1)
         assert(b4, t1, [0:.locomotive, 1:.wagon, 2:.wagon])
         assert(b1, t1, [0:.wagon])
         assert(b2, nil, nil)
         assert(b3, nil, nil)
 
-        t1.length = 2000
+        t1.locomotiveLength = 2000
         XCTAssertThrowsError(try layout.reservation.fillBlocks(train: t1))
     }
 

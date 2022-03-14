@@ -75,7 +75,8 @@ class ManualOperationTests: BTTestCase {
         b3.feedbacks[1].distance = 15
 
         let train = layout.trains[0]
-        train.length = 60
+        train.locomotiveLength = 20
+        train.wagonsLength = 40
         
 //        try layout.setLocomotiveDirection(train, forward: false)
 //        train.wagonsPushedByLocomotive = true
@@ -136,8 +137,9 @@ class ManualOperationTests: BTTestCase {
         b3.feedbacks[1].distance = 15
 
         let train = layout.trains[0]
-        train.length = 60
-        
+        train.locomotiveLength = 20
+        train.wagonsLength = 40
+
         layout.setLocomotiveDirection(train, forward: false)
         train.wagonsPushedByLocomotive = true
         

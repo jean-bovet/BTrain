@@ -232,8 +232,11 @@ final class Layout2Swift {
             code += ", name: \"\(train.name)\""
             code += ", address: \(train.address.toHex())"
             code += ", decoder: .\(train.decoder)"
-            if let length = train.length {
-                code += ", length: \(length)"
+            if let length = train.locomotiveLength {
+                code += ", locomotiveLength: \(length)"
+            }
+            if let length = train.wagonsLength {
+                code += ", wagonsLength: \(length)"
             }
             if let magnetDistance = train.magnetDistance {
                 code += ", magnetDistance: \(magnetDistance)"

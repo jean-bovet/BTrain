@@ -108,9 +108,24 @@ final class Train: Element, ObservableObject {
         }
     }
     
-    // Length of the train (in cm)
-    @Published var length: Double?
+    // Length of the locomotive (in cm)
+    @Published var locomotiveLength: Double?
+    
+    // Length of the wagons (in cm)
+    @Published var wagonsLength: Double?
 
+    var length: Double? {
+        if let locomotiveLength = locomotiveLength {
+            if let wagonsLength = wagonsLength {
+                return locomotiveLength + wagonsLength
+            } else {
+                return locomotiveLength
+            }
+        } else {
+            return nil
+        }
+    }
+    
     // Distance of the magnet from the front of the locomotive (in cm)
     // BTrain expects all the locomotives to have a magnet
     // to allow detection via a reed feedback.
@@ -251,17 +266,18 @@ final class Train: Element, ObservableObject {
     }
     
     convenience init(uuid: String = UUID().uuidString, name: String = "", address: UInt32 = 0, decoder: DecoderType = .MFX,
-                     length: Double? = nil, magnetDistance: Double? = nil, maxSpeed: TrainSpeed.UnitKph? = nil, maxNumberOfLeadingReservedBlocks: Int? = nil) {
+                     locomotiveLength: Double? = nil, wagonsLength: Double? = nil, magnetDistance: Double? = nil, maxSpeed: TrainSpeed.UnitKph? = nil, maxNumberOfLeadingReservedBlocks: Int? = nil) {
         self.init(id: Identifier(uuid: uuid), name: name, address: address, decoder: decoder,
-                  length: length, magnetDistance: magnetDistance, maxSpeed: maxSpeed, maxNumberOfLeadingReservedBlocks: maxNumberOfLeadingReservedBlocks)
+                  locomotiveLength: locomotiveLength, wagonsLength: wagonsLength, magnetDistance: magnetDistance, maxSpeed: maxSpeed, maxNumberOfLeadingReservedBlocks: maxNumberOfLeadingReservedBlocks)
     }
     
     init(id: Identifier<Train>, name: String, address: UInt32, decoder: DecoderType = .MFX,
-         length: Double? = nil, magnetDistance: Double? = nil, maxSpeed: TrainSpeed.UnitKph? = nil, maxNumberOfLeadingReservedBlocks: Int? = nil) {
+         locomotiveLength: Double? = nil, wagonsLength: Double? = nil, magnetDistance: Double? = nil, maxSpeed: TrainSpeed.UnitKph? = nil, maxNumberOfLeadingReservedBlocks: Int? = nil) {
         self.id = id
         self.name = name
         self.address = address
-        self.length = length
+        self.locomotiveLength = locomotiveLength
+        self.wagonsLength = wagonsLength
         self.magnetDistance = magnetDistance
         self.speed.maxSpeed = maxSpeed ?? self.speed.maxSpeed
         self.maxNumberOfLeadingReservedBlocks = maxNumberOfLeadingReservedBlocks ?? self.maxNumberOfLeadingReservedBlocks
@@ -271,7 +287,7 @@ final class Train: Element, ObservableObject {
 extension Train: Codable {
     
     enum CodingKeys: CodingKey {
-      case id, enabled, name, address, length, magnetDistance, speed, acceleration, stopSettleDelay, decoder, direction, wagonsPushedByLocomotive, route, routeIndex, block, position, maxLeadingBlocks, blocksToAvoid, turnoutsToAvoid
+      case id, enabled, name, address, locomotiveLength, wagonsLength, magnetDistance, speed, acceleration, stopSettleDelay, decoder, direction, wagonsPushedByLocomotive, route, routeIndex, block, position, maxLeadingBlocks, blocksToAvoid, turnoutsToAvoid
     }
 
     convenience init(from decoder: Decoder) throws {
@@ -284,7 +300,8 @@ extension Train: Codable {
         
         self.enabled = try container.decodeIfPresent(Bool.self, forKey: CodingKeys.enabled) ?? true
         self.decoder = try container.decode(DecoderType.self, forKey: CodingKeys.decoder)
-        self.length = try container.decodeIfPresent(Double.self, forKey: CodingKeys.length)
+        self.locomotiveLength = try container.decodeIfPresent(Double.self, forKey: CodingKeys.locomotiveLength)
+        self.wagonsLength = try container.decodeIfPresent(Double.self, forKey: CodingKeys.wagonsLength)
         self.magnetDistance = try container.decodeIfPresent(Double.self, forKey: CodingKeys.magnetDistance)
         self.speed = try container.decode(TrainSpeed.self, forKey: CodingKeys.speed)
         self.acceleration = try container.decodeIfPresent(TrainSpeedAcceleration.Acceleration.self, forKey: CodingKeys.acceleration) ?? .bezier
@@ -307,7 +324,8 @@ extension Train: Codable {
         try container.encode(name, forKey: CodingKeys.name)
         try container.encode(address, forKey: CodingKeys.address)
         try container.encode(decoder, forKey: CodingKeys.decoder)
-        try container.encode(length, forKey: CodingKeys.length)
+        try container.encode(wagonsLength, forKey: CodingKeys.wagonsLength)
+        try container.encode(locomotiveLength, forKey: CodingKeys.locomotiveLength)
         try container.encode(magnetDistance, forKey: CodingKeys.magnetDistance)
         try container.encode(speed, forKey: CodingKeys.speed)
         try container.encode(acceleration, forKey: CodingKeys.acceleration)

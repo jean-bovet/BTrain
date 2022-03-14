@@ -47,7 +47,10 @@ final class LayoutECreator: LayoutCreating {
     
     func newLayoutWithLengths() -> Layout {
         let l = newLayout()
-        l.trains.forEach { $0.length = 100 }
+        l.trains.forEach {
+            $0.locomotiveLength = 20
+            $0.wagonsLength = 80
+        }
         l.blocks.forEach { block in
             block.length = 60
             let fbDistanceIncrement = 60.0 / Double(block.feedbacks.count+1)

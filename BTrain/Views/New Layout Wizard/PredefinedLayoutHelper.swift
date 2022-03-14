@@ -39,7 +39,7 @@ final class PredefinedLayoutHelper: ObservableObject {
         for trainId in trains {
             if let train = predefinedDocument.layout.train(for: trainId) {
                 train.enabled = true
-                train.length = 0 // TODO: use locomotive length only!
+                train.wagonsLength = 0
                 train.blockId = nil
                 document.layout.trains.append(train)
             }

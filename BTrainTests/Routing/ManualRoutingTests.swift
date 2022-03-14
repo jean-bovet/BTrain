@@ -312,7 +312,9 @@ class ManualRoutingTests: BTTestCase {
         }
 
         let t1 = layout.trains[0]
-        t1.length = 150 // That way, the train always needs one occupied block reserved to account for its length
+        // That way, the train always needs one occupied block reserved to account for its length
+        t1.locomotiveLength = 20
+        t1.wagonsLength = 130
         t1.maxNumberOfLeadingReservedBlocks = 1
 
         let p = Package(layout: layout)
@@ -345,7 +347,9 @@ class ManualRoutingTests: BTTestCase {
         }
 
         let t1 = layout.trains[0]
-        t1.length = 140 // That way, the train always needs one occupied block reserved to account for its length
+        // That way, the train always needs one occupied block reserved to account for its length
+        t1.locomotiveLength = 20
+        t1.wagonsLength = 120
         t1.maxNumberOfLeadingReservedBlocks = 1
         
         let p = Package(layout: layout)

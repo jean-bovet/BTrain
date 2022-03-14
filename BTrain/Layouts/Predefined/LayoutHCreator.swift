@@ -160,7 +160,7 @@ final class LayoutHCreator: LayoutCreating {
 
         // Trains
 
-        l.addTrain(Train(uuid: "0", name: "IC", address: 0x0000, decoder: .MFX, length: 120.0, magnetDistance: 1.0, maxSpeed: 200, maxNumberOfLeadingReservedBlocks: 1))
+        l.addTrain(Train(uuid: "0", name: "IC", address: 0x0000, decoder: .MFX, locomotiveLength: 20, wagonsLength: 100, magnetDistance: 1.0, maxSpeed: 200, maxNumberOfLeadingReservedBlocks: 1))
         
         return l
     }

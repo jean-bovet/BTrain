@@ -43,11 +43,20 @@ struct TrainDetailsGeometrySectionView: View {
             SectionTitleView(label: "Geometry")
 
             Form {
-                TextField("Length (cm):", value: $train.length,
-                          format: .number)
+                UndoProvider($train.locomotiveLength) { value in
+                    TextField("Locomotive:", value: value, format: .number)
+                        .unitStyle("cm")
+                }
                 
-                TextField("Magnet Distance from Front (cm):", value: $train.magnetDistance,
-                          format: .number)
+                UndoProvider($train.wagonsLength) { value in
+                    TextField("Wagons:", value: value, format: .number)
+                        .unitStyle("cm")
+                }
+
+                UndoProvider($train.magnetDistance) { value in
+                    TextField("Magnet Distance from Front:", value: value, format: .number)
+                        .unitStyle("cm")
+                }
             }.padding([.leading])
         }
     }
@@ -175,13 +184,13 @@ struct TrainDetailsSpeedSectionView: View {
                 }
 
                 UndoProvider($train.speed.maxSpeed) { maxSpeed in
-                    TextField("Max Speed:", value: maxSpeed,
-                              format: .number)
+                    TextField("Max Speed:", value: maxSpeed, format: .number)
+                        .unitStyle("kph")
                 }
 
                 UndoProvider($train.stopSettleDelay) { stopSettleDelay in
-                    TextField("Stop Settle Delay:", value: stopSettleDelay,
-                              format: .number)
+                    TextField("Stop Settle Delay:", value: stopSettleDelay, format: .number)
+                        .unitStyle("sec.")
                         .help("Delay until the locomotive is effectively considered fully stopped after a speed of 0 has been sent to the Digital Controller")
                 }
 

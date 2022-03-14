@@ -126,8 +126,8 @@ final class LayoutICreator: LayoutCreating {
 
         // Trains
 
-        l.addTrain(Train(uuid: "0", name: "460 106-8 SBB", address: 0x0006, decoder: .MFX, length: 20.0, magnetDistance: 1.0, maxSpeed: 230, maxNumberOfLeadingReservedBlocks: 1))
-        l.addTrain(Train(uuid: "1", name: "474 003-1 SBBC", address: 0x0015, decoder: .MFX, length: 20.0, magnetDistance: 1.0, maxSpeed: 200, maxNumberOfLeadingReservedBlocks: 1))
+        l.addTrain(Train(uuid: "0", name: "460 106-8 SBB", address: 0x0006, decoder: .MFX, locomotiveLength: 20.0, magnetDistance: 1.0, maxSpeed: 230, maxNumberOfLeadingReservedBlocks: 1))
+        l.addTrain(Train(uuid: "1", name: "474 003-1 SBBC", address: 0x0015, decoder: .MFX, locomotiveLength: 20.0, magnetDistance: 1.0, maxSpeed: 200, maxNumberOfLeadingReservedBlocks: 1))
         return l
     }
 }

@@ -326,17 +326,17 @@ final class LayoutFCreator: LayoutCreating {
 
         // Trains
 
-        l.addTrain(Train(uuid: "16390", name: "460 106-8 SBB", address: 0x0006, decoder: .MFX, length: 129.0, magnetDistance: 1.0, maxSpeed: 200, maxNumberOfLeadingReservedBlocks: 2))
-        l.addTrain(Train(uuid: "16405", name: "474 003-1 SBBC", address: 0x0015, decoder: .MFX, length: 23.0, magnetDistance: 18.0, maxSpeed: 200, maxNumberOfLeadingReservedBlocks: 1))
-        l.addTrain(Train(uuid: "46", name: "BLS", address: 0x002E, decoder: .MM, length: 129.0, magnetDistance: 1.0, maxSpeed: 200, maxNumberOfLeadingReservedBlocks: 1))
-        l.addTrain(Train(uuid: "16392", name: "CFF 11414", address: 0x0008, decoder: .MFX, length: 22.0, magnetDistance: 0.5, maxSpeed: 200, maxNumberOfLeadingReservedBlocks: 1))
-        l.addTrain(Train(uuid: "16391", name: "Diesel", address: 0x0007, decoder: .MFX, length: 22.0, magnetDistance: 0.5, maxSpeed: 200, maxNumberOfLeadingReservedBlocks: 1))
-        l.addTrain(Train(uuid: "16396", name: "Ee 3/3 PTT 7", address: 0x000C, decoder: .MFX, length: 10.0, magnetDistance: 0.5, maxSpeed: 200, maxNumberOfLeadingReservedBlocks: 1))
-        l.addTrain(Train(uuid: "16394", name: "Ee3/3 16356 SBB", address: 0x000A, decoder: .MFX, length: 10.0, magnetDistance: 0.5, maxSpeed: 200, maxNumberOfLeadingReservedBlocks: 1))
-        l.addTrain(Train(uuid: "16389", name: "LION 420 202-4", address: 0x0005, decoder: .MFX, length: 100.0, magnetDistance: 13.0, maxSpeed: 200, maxNumberOfLeadingReservedBlocks: 1))
-        l.addTrain(Train(uuid: "16407", name: "ML 003", address: 0x0017, decoder: .MFX, length: 12.0, magnetDistance: 1.0, maxSpeed: 200, maxNumberOfLeadingReservedBlocks: 1))
-        l.addTrain(Train(uuid: "16393", name: "RAIL 2000", address: 0x0009, decoder: .MFX, length: 103.0, magnetDistance: 0.5, maxSpeed: 200, maxNumberOfLeadingReservedBlocks: 1))
-        l.addTrain(Train(uuid: "16395", name: "Re 4/4 I 409 SBB", address: 0x000B, decoder: .MFX, length: 18.0, magnetDistance: 0.5, maxSpeed: 200, maxNumberOfLeadingReservedBlocks: 1))
+        l.addTrain(Train(uuid: "16390", name: "460 106-8 SBB", address: 0x0006, decoder: .MFX, locomotiveLength: 21.0, wagonsLength: 129-21, magnetDistance: 1.0, maxSpeed: 200, maxNumberOfLeadingReservedBlocks: 2))
+        l.addTrain(Train(uuid: "16405", name: "474 003-1 SBBC", address: 0x0015, decoder: .MFX, locomotiveLength: 23.0, wagonsLength: 0, magnetDistance: 18.0, maxSpeed: 200, maxNumberOfLeadingReservedBlocks: 1))
+        l.addTrain(Train(uuid: "46", name: "BLS", address: 0x002E, decoder: .MM, locomotiveLength: 21.0, wagonsLength: 129-21, magnetDistance: 1.0, maxSpeed: 200, maxNumberOfLeadingReservedBlocks: 1))
+        l.addTrain(Train(uuid: "16392", name: "CFF 11414", address: 0x0008, decoder: .MFX, locomotiveLength: 22.0, wagonsLength: 0, magnetDistance: 0.5, maxSpeed: 200, maxNumberOfLeadingReservedBlocks: 1))
+        l.addTrain(Train(uuid: "16391", name: "Diesel", address: 0x0007, decoder: .MFX, locomotiveLength: 22.0, wagonsLength: 0, magnetDistance: 0.5, maxSpeed: 200, maxNumberOfLeadingReservedBlocks: 1))
+        l.addTrain(Train(uuid: "16396", name: "Ee 3/3 PTT 7", address: 0x000C, decoder: .MFX, locomotiveLength: 10.0, wagonsLength: 129-21, magnetDistance: 0.5, maxSpeed: 200, maxNumberOfLeadingReservedBlocks: 1))
+        l.addTrain(Train(uuid: "16394", name: "Ee3/3 16356 SBB", address: 0x000A, decoder: .MFX, locomotiveLength: 10.0, wagonsLength: 129-21, magnetDistance: 0.5, maxSpeed: 200, maxNumberOfLeadingReservedBlocks: 1))
+        l.addTrain(Train(uuid: "16389", name: "LION 420 202-4", address: 0x0005, decoder: .MFX, locomotiveLength: 18.0, wagonsLength: 100-18, magnetDistance: 13.0, maxSpeed: 200, maxNumberOfLeadingReservedBlocks: 1))
+        l.addTrain(Train(uuid: "16407", name: "ML 003", address: 0x0017, decoder: .MFX, locomotiveLength: 12.0, wagonsLength: 0, magnetDistance: 1.0, maxSpeed: 200, maxNumberOfLeadingReservedBlocks: 1))
+        l.addTrain(Train(uuid: "16393", name: "RAIL 2000", address: 0x0009, decoder: .MFX, locomotiveLength: 19.0, wagonsLength: 103-19, magnetDistance: 0.5, maxSpeed: 200, maxNumberOfLeadingReservedBlocks: 1))
+        l.addTrain(Train(uuid: "16395", name: "Re 4/4 I 409 SBB", address: 0x000B, decoder: .MFX, locomotiveLength: 18.0, wagonsLength: 0, magnetDistance: 0.5, maxSpeed: 200, maxNumberOfLeadingReservedBlocks: 1))
         
         return l
     }

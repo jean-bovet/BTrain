@@ -225,6 +225,7 @@
 		A7E1F75027DE98E9009FB75F /* WizardSelectLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7E1F74F27DE98E9009FB75F /* WizardSelectLayout.swift */; };
 		A7E1F75227DE9E51009FB75F /* PredefinedLayoutHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7E1F75127DE9E51009FB75F /* PredefinedLayoutHelper.swift */; };
 		A7E1F75527DE9E99009FB75F /* WizardCreateLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7E1F75427DE9E99009FB75F /* WizardCreateLayout.swift */; };
+		A7E1F75727DEDC0C009FB75F /* UnitView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7E1F75627DEDC0C009FB75F /* UnitView.swift */; };
 		A7E78C4227A08F9E004D1821 /* LayoutReservation.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7E78C4127A08F9E004D1821 /* LayoutReservation.swift */; };
 		A7E78C4427A09931004D1821 /* TrainPathFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7E78C4327A09931004D1821 /* TrainPathFactory.swift */; };
 		A7E78C4627A1D669004D1821 /* TrainInstance.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7E78C4527A1D669004D1821 /* TrainInstance.swift */; };
@@ -478,6 +479,7 @@
 		A7E1F74F27DE98E9009FB75F /* WizardSelectLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WizardSelectLayout.swift; sourceTree = "<group>"; };
 		A7E1F75127DE9E51009FB75F /* PredefinedLayoutHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PredefinedLayoutHelper.swift; sourceTree = "<group>"; };
 		A7E1F75427DE9E99009FB75F /* WizardCreateLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WizardCreateLayout.swift; sourceTree = "<group>"; };
+		A7E1F75627DEDC0C009FB75F /* UnitView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnitView.swift; sourceTree = "<group>"; };
 		A7E78C4127A08F9E004D1821 /* LayoutReservation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutReservation.swift; sourceTree = "<group>"; };
 		A7E78C4327A09931004D1821 /* TrainPathFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainPathFactory.swift; sourceTree = "<group>"; };
 		A7E78C4527A1D669004D1821 /* TrainInstance.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainInstance.swift; sourceTree = "<group>"; };
@@ -1141,6 +1143,7 @@
 			children = (
 				A7DB7D5527CB4953000893BA /* CustomSlider.swift */,
 				A7DB7D5727CBEAD2000893BA /* SpeedSlider.swift */,
+				A7E1F75627DEDC0C009FB75F /* UnitView.swift */,
 			);
 			path = "Custom Controls";
 			sourceTree = "<group>";
@@ -1452,6 +1455,7 @@
 				A7710E6727799D5C00C08150 /* Layout+Trains.swift in Sources */,
 				A76507E6275AC7DA0079C71A /* ScheduledMessageQueue.swift in Sources */,
 				A785C081278BC527002FD538 /* TrainSpeedView.swift in Sources */,
+				A7E1F75727DEDC0C009FB75F /* UnitView.swift in Sources */,
 				A7DB7D5027C7647C000893BA /* View+Extension.swift in Sources */,
 				A7171582275738A300200F92 /* TrainShape.swift in Sources */,
 				A7F779D4272BB38F00E73275 /* LayoutFactory.swift in Sources */,

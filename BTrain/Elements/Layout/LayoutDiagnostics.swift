@@ -330,7 +330,7 @@ final class LayoutDiagnostic: ObservableObject {
             }
         }
         for train in layout.trains {
-            if train.length == nil {
+            if train.locomotiveLength == nil {
                 errors.append(DiagnosticError.trainMissingLength(train: train))
             }
             if train.magnetDistance == nil {
