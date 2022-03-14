@@ -41,55 +41,55 @@ final class LayoutCCreator: LayoutCreating {
         l.name = name
 
         // Blocks
-        let b1 = Block("b1", type: .station, center: CGPoint(x: 100, y: 200), rotationAngle: -.pi/2)
-        let b2 = Block("b2", type: .free, center: CGPoint(x: 300, y: 80))
-        let b3 = Block("b3", type: .station, center: CGPoint(x: 500, y: 200), rotationAngle: .pi/2)
-        let b4 = Block("b4", type: .free, center: CGPoint(x: 300, y: 320), rotationAngle: .pi)
-        let b5 = Block("b5", type: .free, center: CGPoint(x: 300, y: 200), rotationAngle: -.pi*3/4)
-        l.add([b1, b2, b3, b4, b5])
+
+        let b_b1 = Block("b1", type: .station, center: CGPoint(x: 60.0, y: 180.0), rotationAngle: -.pi/2, waitingTime: 10.0)
+        let b_b2 = Block("b2", type: .free, center: CGPoint(x: 260.0, y: 60.0), rotationAngle: 0.0, waitingTime: 10.0)
+        let b_b3 = Block("b3", type: .station, center: CGPoint(x: 460.0, y: 180.0), rotationAngle: .pi/2, waitingTime: 10.0)
+        let b_b4 = Block("b4", type: .free, center: CGPoint(x: 260.0, y: 300.0), rotationAngle: .pi, waitingTime: 10.0)
+        let b_b5 = Block("b5", type: .free, center: CGPoint(x: 260.0, y: 180.0), rotationAngle: -2.356194490192345, waitingTime: 10.0)
+        l.add([b_b1,b_b2,b_b3,b_b4,b_b5])
 
         // Feedbacks
-        let f11 = Feedback("f11", deviceID: 1, contactID: 1)
-        let f12 = Feedback("f12", deviceID: 1, contactID: 2)
-        let f21 = Feedback("f21", deviceID: 2, contactID: 1)
-        let f22 = Feedback("f22", deviceID: 2, contactID: 2)
-        let f31 = Feedback("f31", deviceID: 3, contactID: 1)
-        let f32 = Feedback("f32", deviceID: 3, contactID: 2)
-        let f41 = Feedback("f41", deviceID: 4, contactID: 1)
-        let f42 = Feedback("f42", deviceID: 4, contactID: 2)
-        let f51 = Feedback("f51", deviceID: 5, contactID: 1)
-        let f52 = Feedback("f52", deviceID: 5, contactID: 2)
-        l.feedbacks.append(contentsOf: [f11, f12, f21, f22, f31, f32, f41, f42, f51, f52])
-        
-        b1.assign([f11.id, f12.id])
-        b2.assign([f21.id, f22.id])
-        b3.assign([f31.id, f32.id])
-        b4.assign([f41.id, f42.id])
-        b5.assign([f51.id, f52.id])
+
+        let f_f11 = Feedback("f11", deviceID: 1, contactID: 1)
+        let f_f12 = Feedback("f12", deviceID: 1, contactID: 2)
+        let f_f21 = Feedback("f21", deviceID: 2, contactID: 1)
+        let f_f22 = Feedback("f22", deviceID: 2, contactID: 2)
+        let f_f31 = Feedback("f31", deviceID: 3, contactID: 1)
+        let f_f32 = Feedback("f32", deviceID: 3, contactID: 2)
+        let f_f41 = Feedback("f41", deviceID: 4, contactID: 1)
+        let f_f42 = Feedback("f42", deviceID: 4, contactID: 2)
+        let f_f51 = Feedback("f51", deviceID: 5, contactID: 1)
+        let f_f52 = Feedback("f52", deviceID: 5, contactID: 2)
+        l.feedbacks.append(contentsOf: [f_f11,f_f12,f_f21,f_f22,f_f31,f_f32,f_f41,f_f42,f_f51,f_f52])
+        l.assign(b_b1, [f_f11,f_f12])
+        l.assign(b_b2, [f_f21,f_f22])
+        l.assign(b_b3, [f_f31,f_f32])
+        l.assign(b_b4, [f_f41,f_f42])
+        l.assign(b_b5, [f_f51,f_f52])
 
         // Turnouts
-        let t125 = Turnout("t0", type: .singleRight, address: .init(3, .DCC), center: CGPoint(x: 180, y: 80))
-        let t345 = Turnout("t1", type: .singleRight, address: .init(13, .DCC), center: CGPoint(x: 430, y: 320), rotationAngle: .pi)
 
-        l.turnouts.append(contentsOf: [t125, t345])
-        
+        let t_t0 = Turnout("t0", type: .singleRight, address: .init(3,.DCC), state: .straight, center: CGPoint(x: 140.0, y: 60.0), rotationAngle: 0.0)
+        let t_t1 = Turnout("t1", type: .singleRight, address: .init(13,.DCC), state: .straight, center: CGPoint(x: 390.0, y: 300.0), rotationAngle: .pi)
+        l.turnouts.append(contentsOf: [t_t0,t_t1])
+
         // Transitions
-        l.link("1", from: b1.next, to: t125.socket0)
-        l.link("2", from: t125.socket1, to: b2.previous)
-        l.link("3", from: t125.socket2, to: b5.next)
 
-        l.link("4", from: b2.next, to: b3.previous)
+        l.link(from: b_b1.next, to: t_t0.socket0)
+        l.link(from: t_t0.socket1, to: b_b2.previous)
+        l.link(from: t_t0.socket2, to: b_b5.next)
+        l.link(from: b_b2.next, to: b_b3.previous)
+        l.link(from: b_b3.next, to: t_t1.socket0)
+        l.link(from: t_t1.socket1, to: b_b4.previous)
+        l.link(from: t_t1.socket2, to: b_b5.previous)
+        l.link(from: b_b4.next, to: b_b1.previous)
 
-        l.link("5", from: b3.next, to: t345.socket0)
-        l.link("6", from: t345.socket1, to: b4.previous)
-        l.link("7", from: t345.socket2, to: b5.previous)
-        
-        l.link("8", from: b4.next, to: b1.previous)
+        // Routes
 
-        // Route
-        l.newRoute("r1", name: "Outer Loop", [Route.Step(b1, .next), Route.Step(b2, .next), Route.Step(b3, .next), Route.Step(b4, .next), Route.Step(b1, .next)])
-        l.newRoute("r2", name: "Short Route", [Route.Step(b3, .next), Route.Step(b4, .next), Route.Step(b1, .next)])
-        l.newRoute("r3", name: "S Route", [Route.Step(b3, .next), Route.Step(b5, .next), Route.Step(b1, .previous)])
+        l.newRoute("r1", name: "Outer Loop", [Route.Step(b_b1,.next, nil),Route.Step(b_b2,.next, nil),Route.Step(b_b3,.next, nil),Route.Step(b_b4,.next, nil),Route.Step(b_b1,.next, nil)])
+        l.newRoute("r2", name: "Short Route", [Route.Step(b_b3,.next, nil),Route.Step(b_b4,.next, nil),Route.Step(b_b1,.next, nil)])
+        l.newRoute("r3", name: "S Route", [Route.Step(b_b3,.next, nil),Route.Step(b_b5,.next, nil),Route.Step(b_b1,.previous, nil)])
         
         // Train
         l.addTrain(Train(uuid: "1", name: "Rail 2000", address: 0x4009))
