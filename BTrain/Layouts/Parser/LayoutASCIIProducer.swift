@@ -115,8 +115,12 @@ final class LayoutASCIIProducer {
         // <t0{sl}(0,1),s>
         text += "\(turnout.id)"
         text += "{\(turnoutType(turnout))}"
-        text += "(\(try step.entrySocketId()),\(try step.exitSocketId()))"
-        if let state = turnoutState(turnout) {
+        
+        let entrySocket = try step.entrySocketId()
+        let exitSocket = try step.exitSocketId()
+        text += "(\(entrySocket),\(exitSocket))"
+        
+        if let state = turnoutState(turnout.state(fromSocket: entrySocket, toSocket: exitSocket)) {
             text += ",\(state)"
         }
         if turnout.reserved != nil {
@@ -125,8 +129,8 @@ final class LayoutASCIIProducer {
         text += ">"
     }
     
-    func turnoutState(_ turnout: Turnout) -> String? {
-        switch turnout.state {
+    func turnoutState(_ state: Turnout.State) -> String? {        
+        switch state {
         case .straight:
             return "s"
         case .branch:
