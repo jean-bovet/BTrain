@@ -26,21 +26,25 @@ struct RouteView: View {
         VStack {
             Table(selection: $selection) {
                 TableColumn("Block") { step in
-                    Picker("Block:", selection: step.blockId) {
-                        ForEach(layout.blockMap.values, id:\.self) { block in
-                            Text("\(block.name) — \(block.category.description)").tag(block.id as Identifier<Block>?)
-                        }
-                    }.labelsHidden()
+                    UndoProvider(step.blockId) { blockId in
+                        Picker("Block:", selection: blockId) {
+                            ForEach(layout.blockMap.values, id:\.self) { block in
+                                Text("\(block.name) — \(block.category.description)").tag(block.id as Identifier<Block>?)
+                            }
+                        }.labelsHidden()
+                    }
                 }
                 
                 TableColumn("Direction in Block") { step in
-                    Picker("Direction:", selection: step.direction) {
-                        ForEach(Direction.allCases, id:\.self) { direction in
-                            Text(direction.description).tag(direction as Direction?)
+                    UndoProvider(step.direction) { direction in
+                        Picker("Direction:", selection: direction) {
+                            ForEach(Direction.allCases, id:\.self) { direction in
+                                Text(direction.description).tag(direction as Direction?)
+                            }
                         }
+                        .fixedSize()
+                        .labelsHidden()
                     }
-                    .fixedSize()
-                    .labelsHidden()
                 }
                 
                 TableColumn("Wait Time") { step in
