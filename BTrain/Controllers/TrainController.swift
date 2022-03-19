@@ -367,7 +367,7 @@ final class TrainController {
                 if brakeFeedback == f.id {
                     debug("Train \(train) is braking in \(currentBlock.name) at position \(train.position), direction \(direction)")
                     train.state = .braking
-                    layout.setTrainSpeed(train, LayoutFactory.DefaultBrakingSpeed) {}
+                    layout.setTrainSpeed(train, currentBlock.brakingSpeed ?? LayoutFactory.DefaultBrakingSpeed) {}
                     result = .processed
                 }
             }

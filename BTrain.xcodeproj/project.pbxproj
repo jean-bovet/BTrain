@@ -248,6 +248,7 @@
 		A7FBC8B4276E87B7009D49C3 /* LayoutECreator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7FBC8B3276E87B7009D49C3 /* LayoutECreator.swift */; };
 		A7FBC8B6276E8BB6009D49C3 /* PathFinderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7FBC8B5276E8BB6009D49C3 /* PathFinderTests.swift */; };
 		A7FBC8B8276EBB34009D49C3 /* PathFinder.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7FBC8B7276EBB34009D49C3 /* PathFinder.swift */; };
+		A7FFE05B27E63C40002B4A4A /* BlockSpeedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7FFE05A27E63C40002B4A4A /* BlockSpeedView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -504,6 +505,7 @@
 		A7FBC8B3276E87B7009D49C3 /* LayoutECreator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutECreator.swift; sourceTree = "<group>"; };
 		A7FBC8B5276E8BB6009D49C3 /* PathFinderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PathFinderTests.swift; sourceTree = "<group>"; };
 		A7FBC8B7276EBB34009D49C3 /* PathFinder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PathFinder.swift; sourceTree = "<group>"; };
+		A7FFE05A27E63C40002B4A4A /* BlockSpeedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockSpeedView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1106,6 +1108,7 @@
 				A7CA5EC0279649CF00171398 /* BlockFeedbacksView.swift */,
 				A73E0824276B99A8005F9D64 /* BlockAllFeedbacksView.swift */,
 				A7CA5EC227964AA500171398 /* BlockDirectionFeedbacksView.swift */,
+				A7FFE05A27E63C40002B4A4A /* BlockSpeedView.swift */,
 			);
 			path = Blocks;
 			sourceTree = "<group>";
@@ -1337,6 +1340,7 @@
 				A7C8A2E7279BB89E000C7246 /* DocumentView.swift in Sources */,
 				A7214916279A56FA0095E5EE /* LayoutController+Debug.swift in Sources */,
 				A7710E6527799CF800C08150 /* Layout+Routes.swift in Sources */,
+				A7FFE05B27E63C40002B4A4A /* BlockSpeedView.swift in Sources */,
 				A7710E6927799DA000C08150 /* Layout+Transitions.swift in Sources */,
 				A7E1F75227DE9E51009FB75F /* PredefinedLayoutHelper.swift in Sources */,
 				A783EA5B278530BF00E69B6D /* SimulatorTrain.swift in Sources */,

@@ -29,13 +29,22 @@ final class LayoutStringParser {
         self.index = ls.startIndex
     }
     
-    func matchesInteger() -> Int? {
+    func matchesSingleDigit() -> Int? {
         if let n = Int(String(c)) {
             eat()
             return n
         } else {
             return nil
         }
+    }
+    
+    func matchesInteger() -> Int? {
+        var intString = ""
+        while Int(String(c)) != nil {
+            intString += String(c)
+            eat()
+        }
+        return Int(intString)
     }
     
     func matches(_ char: Character) -> Bool {

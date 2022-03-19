@@ -144,7 +144,10 @@ final class LayoutRouteParser {
         var currentFeedbackIndex = 0
         parseBlockContent(block: block, newBlock: newBlock, type: type) { contentType in
             switch(contentType) {
-            case .stoppedLoc, .brakingLoc, .runningLoc, .wagon:
+            case .stoppedLoc, .runningLoc, .wagon:
+                _ = parseUUID()
+            case .brakingLoc:
+                _ = parseTrainSpeed()
                 _ = parseUUID()
             case .endStation(reserved: _):
                 break
@@ -177,7 +180,7 @@ final class LayoutRouteParser {
                 parseTrain(position: position, block: block, speed: 0)
                 
             case .brakingLoc:
-                parseTrain(position: position, block: block, speed: LayoutFactory.DefaultBrakingSpeed)
+                parseTrain(position: position, block: block, speed: parseTrainSpeed())
                 
             case .runningLoc:
                 parseTrain(position: position, block: block, speed: LayoutFactory.DefaultSpeed)
@@ -208,7 +211,7 @@ final class LayoutRouteParser {
         while (sp.more && parsingBlock) {
             if sp.matches("🛑🚂") {
                 callback(.stoppedLoc)
-            } else if sp.matches("🟨🚂") {
+            } else if sp.matches("🟨") {
                 callback(.brakingLoc)
             } else if sp.matches("}}") {
                 callback(.endStation(reserved: true))
@@ -292,6 +295,17 @@ final class LayoutRouteParser {
             uuid = route.id.uuid
         }
         return uuid
+    }
+    
+    func parseTrainSpeed() -> TrainSpeed.UnitKph {
+        let speed: TrainSpeed.UnitKph
+        if let specifiedSpeed = sp.matchesInteger() {
+            speed = TrainSpeed.UnitKph(specifiedSpeed)
+        } else {
+            speed = LayoutFactory.DefaultBrakingSpeed
+        }
+        _ = sp.matches("🚂")
+        return speed
     }
     
     func parseTrain(position: Int, block: Block, speed: UInt16) {

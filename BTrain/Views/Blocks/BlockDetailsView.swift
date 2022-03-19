@@ -50,6 +50,10 @@ struct BlockDetailsView: View {
             SectionTitleView(label: "Feedbacks")
 
             BlockFeedbacksView(layout: layout, block: block)
+
+            SectionTitleView(label: "Speed")
+
+            BlockSpeedView(block: block)
             
             Spacer()
         }

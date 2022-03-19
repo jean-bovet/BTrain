@@ -130,6 +130,9 @@ final class Block: Element, ObservableObject {
     @Published var brakeFeedbackPrevious: Identifier<Feedback>?
     @Published var stopFeedbackPrevious: Identifier<Feedback>?
 
+    // Optional block-specific braking speed. If nil, the default braking speed is used
+    @Published var brakingSpeed: TrainSpeed.UnitKph?
+    
     init(id: Identifier<Block>, name: String, type: Category, center: CGPoint, rotationAngle: CGFloat, waitingTime: TimeInterval? = nil, length: Double? = nil) {
         self.id = id
         self.name = name
@@ -152,6 +155,7 @@ extension Block: Codable {
         case id, enabled, name, type, length, waitingTime, reserved, train, feedbacks,
              entryFeedbackNext, brakeFeedbackNext, stopFeedbackNext,
              entryFeedbackPrevious, brakeFeedbackPrevious, stopFeedbackPrevious,
+             brakingSpeed,
              center, angle
     }
 
@@ -179,6 +183,8 @@ extension Block: Codable {
         self.entryFeedbackPrevious = try container.decodeIfPresent(Identifier<Feedback>.self, forKey: CodingKeys.entryFeedbackPrevious)
         self.brakeFeedbackPrevious = try container.decodeIfPresent(Identifier<Feedback>.self, forKey: CodingKeys.brakeFeedbackPrevious)
         self.stopFeedbackPrevious = try container.decodeIfPresent(Identifier<Feedback>.self, forKey: CodingKeys.stopFeedbackPrevious)
+        
+        self.brakingSpeed = try container.decodeIfPresent(TrainSpeed.UnitKph.self, forKey: CodingKeys.brakingSpeed)
     }
     
     func encode(to encoder: Encoder) throws {
@@ -200,6 +206,8 @@ extension Block: Codable {
         try container.encode(entryFeedbackPrevious, forKey: CodingKeys.entryFeedbackPrevious)
         try container.encode(brakeFeedbackPrevious, forKey: CodingKeys.brakeFeedbackPrevious)
         try container.encode(stopFeedbackPrevious, forKey: CodingKeys.stopFeedbackPrevious)
+
+        try container.encode(brakingSpeed, forKey: CodingKeys.brakingSpeed)
 
         try container.encode(center, forKey: CodingKeys.center)
         try container.encode(rotationAngle, forKey: CodingKeys.angle)

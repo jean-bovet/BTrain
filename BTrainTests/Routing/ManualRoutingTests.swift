@@ -95,6 +95,29 @@ class ManualRoutingTests: BTTestCase {
         try p.assert("r1:{b1 ≏ ≏ } <t0> [r1[b2 ≏ ≡ 🛑🚂1 ]] <t1(0,2),l> [b3 ≏ ≏ ] <t0(2,0)> !{b1 ≏ ≏ }")
     }
     
+    func testBlockBrakingSpeed() throws {
+        let layout = LayoutACreator().newLayout()
+        let p = Package(layout: layout)
+
+        try p.prepare(routeID: "r1", trainID: "1", fromBlockId: "b1")
+
+        layout.strictRouteFeedbackStrategy = false
+        layout.blocks[0].brakingSpeed = 17
+
+        try p.assert("r1:{r1{b1 🛑🚂1 ≏ ≏ }} <t0> [b2 ≏ ≏ ] <t1(0,2)> [b3 ≏ ≏ ] <t0(2,0)> !{r1{b1 ≏ ≏ }}")
+
+        try p.start()
+
+        try p.assert("r1:{r1{b1 🚂1 ≏ ≏ }} <r1<t0>> [r1[b2 ≏ ≏ ]] <t1(0,2)> [b3 ≏ ≏ ] <r1<t0(2,0)>> !{r1{b1 ≏ ≏ }}")
+        try p.assert("r1:{b1 ≏ ≏ } <t0> [r1[b2 ≡ 🚂1 ≏ ]] <r1<t1(0,2),l>> [r1[b3 ≏ ≏ ]] <t0(2,0)> !{b1 ≏ ≏ }")
+        try p.assert("r1:{r1{b1 ≏ ≏ }} <r1<t0,l>> [b2 ≏ ≏ ] <t1(0,2),l> [r1[b3 ≡ 🚂1 ≏ ]] <r1<t0(2,0),l>> !{r1{b1 ≏ ≏ }}")
+        try p.assert("r1:{r1{b1 ≏ 🟨17🚂1 ≡ }} <t0,l> [b2 ≏ ≏ ] <t1(0,2),l> [b3 ≏ ≏ ] <t0(2,0),l> !{r1{b1 ≡ 🟨17🚂1 ≏ }}")
+        
+        XCTAssertEqual(17, layout.trains[0].speed.actualKph)
+        
+        try p.assert("r1:{r1{b1 🛑🚂1 ≡ ≏ }} <t0,l> [b2 ≏ ≏ ] <t1(0,2),l> [b3 ≏ ≏ ] <t0(2,0),l> !{r1{b1 ≏ ≡ 🛑🚂1 }}")
+    }
+
     func testBlockDisabled() throws {
         let layout = LayoutACreator().newLayout()
         let p = Package(layout: layout)

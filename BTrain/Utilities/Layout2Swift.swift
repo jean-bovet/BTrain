@@ -135,6 +135,10 @@ final class Layout2Swift {
                 code += "\n\(block.symbol).feedbacks[\(index)].distance = \(distance)"
             }
         }
+
+        if let brakingSpeed = block.brakingSpeed {
+            code += "\n\(block.symbol).brakingSpeed = \(brakingSpeed)"
+        }
     }
             
     func add(turnouts: [Turnout]) {
