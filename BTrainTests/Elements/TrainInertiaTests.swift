@@ -16,9 +16,29 @@ import XCTest
 
 class TrainInertiaTests: XCTestCase {
 
+    func testTrainSpecificValues() {
+        let t = Train()
+
+        var ic = TrainControllerAcceleration(train: t, interface: MockCommandInterface())
+        XCTAssertEqual(TrainControllerAcceleration.DefaultStepSize, ic.stepIncrement)
+        XCTAssertEqual(TrainControllerAcceleration.DefaultStepDelay, ic.stepDelay)
+
+        t.speed.accelerationStepSize = 3
+        t.speed.accelerationStepDelay = 250
+
+        // The values don't change after initialization of the TrainControllerAcceleration
+        XCTAssertEqual(TrainControllerAcceleration.DefaultStepSize, ic.stepIncrement)
+        XCTAssertEqual(TrainControllerAcceleration.DefaultStepDelay, ic.stepDelay)
+
+        ic = TrainControllerAcceleration(train: t, interface: MockCommandInterface())
+
+        XCTAssertEqual(3, ic.stepIncrement)
+        XCTAssertEqual(0.250, ic.stepDelay)
+    }
+    
     func testLinearAcceleration() {
         let t = Train()
-        t.acceleration = .linear
+        t.speed.accelerationProfile = .linear
         let ic = TrainControllerAcceleration(train: t, interface: MockCommandInterface())
         
         assertChangeSpeed(train: t, from: 0, to: 20, [2, 4, 6, 8, 10, 12, 14, 15, 18, 19, 20], ic)
@@ -35,7 +55,7 @@ class TrainInertiaTests: XCTestCase {
 
     func testBezierAcceleration() {
         let t = Train()
-        t.acceleration = .bezier
+        t.speed.accelerationProfile = .bezier
         let ic = TrainControllerAcceleration(train: t, interface: MockCommandInterface())
         
         assertChangeSpeed(train: t, from: 0, to: 40, [0, 1, 2, 4, 6, 8, 11, 14, 17, 19, 22, 25, 28, 31, 33, 35, 37, 38, 39, 40], ic)
@@ -52,7 +72,7 @@ class TrainInertiaTests: XCTestCase {
 
     func testWithNoInertia() {
         let t = Train()
-        t.acceleration = .none
+        t.speed.accelerationProfile = .none
         let ic = TrainControllerAcceleration(train: t, interface: MockCommandInterface())
 
         assertChangeSpeed(train: t, from: 0, to: 20, [20], ic)
@@ -64,7 +84,7 @@ class TrainInertiaTests: XCTestCase {
     
     func testActualSpeedChangeHappensAfterDigitalControllerResponse() {
         let t = Train()
-        t.acceleration = .none
+        t.speed.accelerationProfile = .none
         let mi = ManualCommandInterface()
         let ic = TrainControllerAcceleration(train: t, interface: mi)
 

@@ -180,7 +180,7 @@ struct TrainDetailsSpeedSectionView: View {
             SectionTitleView(label: "Speed")
 
             Form {
-                UndoProvider($train.acceleration) { acceleration in
+                UndoProvider($train.speed.accelerationProfile) { acceleration in
                     Picker("Acceleration:", selection: acceleration) {
                         ForEach(TrainSpeedAcceleration.Acceleration.allCases, id: \.self) { type in
                             HStack {
@@ -197,7 +197,19 @@ struct TrainDetailsSpeedSectionView: View {
                         .unitStyle("kph")
                 }
 
-                UndoProvider($train.stopSettleDelay) { stopSettleDelay in
+                UndoProvider($train.speed.accelerationStepSize) { stepSize in
+                    TextField("Step Size:", value: stepSize, format: .number,
+                              prompt: Text("\(TrainControllerAcceleration.DefaultStepSize)"))
+                        .unitStyle("step")
+                }
+
+                UndoProvider($train.speed.accelerationStepDelay) { stepDelay in
+                    TextField("Step Delay:", value: stepDelay, format: .number,
+                              prompt: Text("\(TrainControllerAcceleration.DefaultStepDelay)"))
+                        .unitStyle("ms")
+                }
+
+                UndoProvider($train.speed.stopSettleDelay) { stopSettleDelay in
                     TextField("Stop Settle Delay:", value: stopSettleDelay, format: .number)
                         .unitStyle("sec.")
                         .help("Delay until the locomotive is effectively considered fully stopped after a speed of 0 has been sent to the Digital Controller")

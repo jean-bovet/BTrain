@@ -66,6 +66,18 @@ final class TrainSpeed: ObservableObject, Equatable, CustomStringConvertible {
     // Maximum speed of the train in kph
     @Published var maxSpeed: UnitKph = 200
         
+    // Train acceleration profile
+    @Published var accelerationProfile = TrainSpeedAcceleration.Acceleration.bezier
+
+    // The number of steps to use during acceleration/deceleration. If nil, default is used.
+    @Published var accelerationStepSize: Int?
+    
+    // The delay (in ms) between step changes during acceleration/deceleration. If nil, default is used.
+    @Published var accelerationStepDelay: Int?
+
+    // The time to wait after the locomotive has been asked to stop until it is considered effectively stopped.
+    @Published var stopSettleDelay: TimeInterval = 1.0
+    
     // Structure defining the number of steps corresponding
     // to a particular speed in kph.
     struct SpeedTableEntry: Identifiable, Codable {
@@ -268,13 +280,19 @@ final class TrainSpeed: ObservableObject, Equatable, CustomStringConvertible {
 
 extension TrainSpeed: Codable {
     enum CodingKeys: CodingKey {
-      case decoderType, maxSpeed, speedTable
+      case decoderType, maxSpeed, accelerationProfile, accelerationStepSize, accelerationStepDelay, stopSettleDelay, speedTable
     }
 
     convenience init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         self.init(decoderType: try container.decode(DecoderType.self, forKey: CodingKeys.decoderType))
-        maxSpeed = try container.decodeIfPresent(UnitKph.self, forKey: CodingKeys.maxSpeed) ?? 200
+        
+        self.maxSpeed = try container.decodeIfPresent(UnitKph.self, forKey: CodingKeys.maxSpeed) ?? 200
+        self.accelerationProfile = try container.decodeIfPresent(TrainSpeedAcceleration.Acceleration.self, forKey: CodingKeys.accelerationProfile) ?? .bezier
+        self.accelerationStepSize = try container.decodeIfPresent(Int.self, forKey: CodingKeys.accelerationStepSize)
+        self.accelerationStepDelay = try container.decodeIfPresent(Int.self, forKey: CodingKeys.accelerationStepDelay)
+        self.stopSettleDelay = try container.decodeIfPresent(TimeInterval.self, forKey: CodingKeys.stopSettleDelay) ?? 1.0
+
         if let speedTable = try container.decodeIfPresent([SpeedTableEntry].self, forKey: CodingKeys.speedTable) {
             self.speedTable = speedTable
         } else {
@@ -286,6 +304,10 @@ extension TrainSpeed: Codable {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(decoderType, forKey: CodingKeys.decoderType)
         try container.encode(maxSpeed, forKey: CodingKeys.maxSpeed)
+        try container.encode(accelerationProfile, forKey: CodingKeys.accelerationProfile)
+        try container.encode(accelerationStepSize, forKey: CodingKeys.accelerationStepSize)
+        try container.encode(accelerationStepDelay, forKey: CodingKeys.accelerationStepDelay)
+        try container.encode(stopSettleDelay, forKey: CodingKeys.stopSettleDelay)
         try container.encode(speedTable, forKey: CodingKeys.speedTable)
     }
 }

@@ -32,10 +32,14 @@ final class TrainControllerAcceleration {
     var desired: SpeedStep = .zero
     
     // The number of steps to increment when changing the speed
-    let stepIncrement = 2
+    let stepIncrement: Int
+    
+    static let DefaultStepSize = 2
     
     // The delay between step increments, recommended to be about 100ms.
-    let stepDelay: TimeInterval = 0.1
+    let stepDelay: TimeInterval
+    
+    static let DefaultStepDelay: TimeInterval = 0.1
     
     private var timer: Timer?
     private var currentTime: TimeInterval = 0
@@ -44,12 +48,18 @@ final class TrainControllerAcceleration {
     init(train: Train, interface: CommandInterface) {
         self.train = train
         self.interface = interface
+        self.stepIncrement = train.speed.accelerationStepSize ?? Self.DefaultStepSize
+        if let delay = train.speed.accelerationStepDelay {
+            self.stepDelay = Double(delay) / 1000
+        } else {
+            self.stepDelay = Self.DefaultStepDelay
+        }
     }
         
     func changeSpeed(of train: Train, acceleration: TrainSpeedAcceleration.Acceleration?, completion: @escaping CompletionBlock) {
         BTLogger.debug("Train \(train) request speed of \(train.speed.requestedKph) kph (\(train.speed.requestedSteps)) from actual speed of \(train.speed.actualKph) kph (\(train.speed.actualSteps))")
 
-        changeSpeed(from: train.speed.actualSteps, to: train.speed.requestedSteps, acceleration: acceleration ?? train.acceleration) { [weak self] steps, finished in
+        changeSpeed(from: train.speed.actualSteps, to: train.speed.requestedSteps, acceleration: acceleration ?? train.speed.accelerationProfile) { [weak self] steps, finished in
             guard let interface = self?.interface else {
                 return
             }
@@ -69,7 +79,7 @@ final class TrainControllerAcceleration {
                         // There is unfortunately no way to know without ambiguity from the Digital Controller if the
                         // train has stopped so this extra wait time can be configured in the UX, per locomotive, and
                         // adjusted by the user depending on the locomotive speed inertia behavior.
-                        DispatchQueue.main.asyncAfter(deadline: .now() + train.stopSettleDelay) {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + train.speed.stopSettleDelay) {
                             completion()
                         }
                     } else {

@@ -134,12 +134,6 @@ final class Train: Element, ObservableObject {
     // Speed of the locomotive
     @Published var speed = TrainSpeed(kph: 0, decoderType: .MFX)
 
-    // True if the train speed acceleration/deceleration uses takes into account inertia.
-    @Published var acceleration = TrainSpeedAcceleration.Acceleration.bezier
-
-    // The time to wait after the locomotive has been asked to stop until it is considered effectively stopped.    
-    @Published var stopSettleDelay: TimeInterval = 1.0
-    
     // Direction of travel of the locomotive
     @Published var directionForward = true
 
@@ -304,8 +298,6 @@ extension Train: Codable {
         self.wagonsLength = try container.decodeIfPresent(Double.self, forKey: CodingKeys.wagonsLength)
         self.magnetDistance = try container.decodeIfPresent(Double.self, forKey: CodingKeys.magnetDistance)
         self.speed = try container.decode(TrainSpeed.self, forKey: CodingKeys.speed)
-        self.acceleration = try container.decodeIfPresent(TrainSpeedAcceleration.Acceleration.self, forKey: CodingKeys.acceleration) ?? .bezier
-        self.stopSettleDelay = try container.decodeIfPresent(TimeInterval.self, forKey: CodingKeys.stopSettleDelay) ?? 1.0
         self.directionForward = try container.decodeIfPresent(Bool.self, forKey: CodingKeys.direction) ?? true
         self.wagonsPushedByLocomotive = try container.decodeIfPresent(Bool.self, forKey: CodingKeys.wagonsPushedByLocomotive) ?? false
         self.routeId = try container.decodeIfPresent(Identifier<Route>.self, forKey: CodingKeys.route)
@@ -328,8 +320,6 @@ extension Train: Codable {
         try container.encode(locomotiveLength, forKey: CodingKeys.locomotiveLength)
         try container.encode(magnetDistance, forKey: CodingKeys.magnetDistance)
         try container.encode(speed, forKey: CodingKeys.speed)
-        try container.encode(acceleration, forKey: CodingKeys.acceleration)
-        try container.encode(stopSettleDelay, forKey: CodingKeys.stopSettleDelay)
         try container.encode(directionForward, forKey: CodingKeys.direction)
         try container.encode(wagonsPushedByLocomotive, forKey: CodingKeys.wagonsPushedByLocomotive)
         try container.encode(routeId, forKey: CodingKeys.route)
