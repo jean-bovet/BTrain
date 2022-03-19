@@ -24,18 +24,6 @@ struct TrainControlRouteActionsView: View {
         
     var body: some View {
         HStack {
-            if document.showDebugModeControls {
-                Button("Reserve Blocks") {
-                    do {
-                        try document.layout.reservation.updateReservedBlocks(train: train)
-                        document.switchboard.state.triggerRedraw.toggle()
-                        self.error = nil
-                    } catch {
-                        self.error = error.localizedDescription
-                    }
-                }
-            }
-            
             if train.manualScheduling {
                 Button("Start") {
                     do {
