@@ -68,6 +68,7 @@ struct RouteListView: View {
 
             if let routeId = selection, let route = layout.route(for: routeId, trainId: nil) {
                 RouteView(layout: layout, route: route)
+                    .id(routeId) // SWIFTUI BUG: Need to re-create the view for each route otherwise it crashes when switching between certain routes
             } else {
                 CenteredLabelView(label: "No Selected Route")
             }

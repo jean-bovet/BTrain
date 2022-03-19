@@ -29,7 +29,7 @@ struct BlockAllFeedbacksView: View {
                     }
                     .fixedSize()
                     .labelsHidden()
-                    .id(block) // Forces SwiftUI to re-create the picker, otherwise it crashes when the selection changes from a block that has feedbacks to one that does not have any.
+                    .id(block) // SWIFTUI BUG: Forces SwiftUI to re-create the picker, otherwise it crashes when the selection changes from a block that has feedbacks to one that does not have any.
                 }
 
                 TableColumn("Distance from Start (cm)") { blockFeedback in

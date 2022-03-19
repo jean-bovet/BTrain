@@ -21,6 +21,7 @@ struct RouteView: View {
     @ObservedObject var route: Route
 
     @State private var selection: String? = nil
+    @State private var invalidRoute: Bool?
 
     var body: some View {
         VStack {
@@ -85,8 +86,46 @@ struct RouteView: View {
                         })
                     }
                 }.disabled(selection == nil)
-            }.padding()
+                
+                Spacer().fixedSpace()
+                
+                Button("􀄨") {
+                    if let index = route.steps.firstIndex(where: { $0.id == selection }), index > route.steps.startIndex  {
+                        route.steps.swapAt(index, route.steps.index(before: index))
+                    }
+                }.disabled(selection == nil)
+                
+                Button("􀄩") {
+                    if let index = route.steps.firstIndex(where: { $0.id == selection }), index < route.steps.endIndex  {
+                        route.steps.swapAt(index, route.steps.index(after: index))
+                    }
+                }.disabled(selection == nil)
+                
+                Spacer().fixedSpace()
+                
+                HStack {
+                    Button("Verify") {
+                        validateRoute()
+                    }
+                    if let invalidRoute = invalidRoute {
+                        if invalidRoute {
+                            Text("􀇾")
+                        } else {
+                            Text("􀁢")
+                        }
+                    }
+                }
+                
+            }
+            .padding()
         }
+    }
+    
+    func validateRoute() {
+        let diag = LayoutDiagnostic(layout: layout)
+        var errors = [DiagnosticError]()
+        diag.checkRoutes(&errors)
+        invalidRoute = !errors.isEmpty
     }
 }
 

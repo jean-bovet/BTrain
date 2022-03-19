@@ -36,6 +36,8 @@ enum DiagnosticError: Error, Equatable {
     case trainMissingMagnetDistance(train: Train)
     case blockFeedbackInvalidDistance(block: Block, feedback: Block.BlockFeedback)
     case blockFeedbackMissingDistance(block: Block, feedbackId: Identifier<Feedback>)
+    
+    case invalidRoute(route: Route)
 }
 
 extension DiagnosticError: LocalizedError {
@@ -87,6 +89,8 @@ extension DiagnosticError: LocalizedError {
             return "Train \(train.name) does not have a length defined"
         case .trainMissingMagnetDistance(train: let train):
             return "Train \(train.name) does not have a distance defined for the magnet"
+        case .invalidRoute(route: let route):
+            return "Route \"\(route.name)\" is invalid and cannot be resolved"
         }
     }
 }
@@ -99,9 +103,10 @@ final class LayoutDiagnostic: ObservableObject {
         static let lengths   = Options(rawValue: 1 << 0)
         static let duplicate = Options(rawValue: 1 << 1)
         static let orphaned  = Options(rawValue: 1 << 2)
+        static let routes  = Options(rawValue: 1 << 3)
 
         static let skipLengths: Options = [.duplicate, .orphaned]
-        static let all: Options = [.lengths, .duplicate, .orphaned]
+        static let all: Options = [.lengths, .duplicate, .orphaned, .routes]
     }
 
     let layout: Layout
@@ -147,6 +152,10 @@ final class LayoutDiagnostic: ObservableObject {
         
         if options.contains(.lengths) {
             checkForLengthAndDistance(&errors)
+        }
+        
+        if options.contains(.routes) {
+            checkRoutes(&errors)
         }
         
         errorCount = errors.count
@@ -335,6 +344,21 @@ final class LayoutDiagnostic: ObservableObject {
             }
             if train.magnetDistance == nil {
                 errors.append(DiagnosticError.trainMissingMagnetDistance(train: train))
+            }
+        }
+    }
+    
+    func checkRoutes(_ errors: inout [DiagnosticError]) {
+        let rr = RouteResolver(layout: layout)
+        for route in layout.routes {
+            do {
+                let steps = try rr.resolve(steps: ArraySlice(route.steps),
+                                           trainId: Identifier<Train>(uuid: UUID().uuidString))
+                if steps == nil {
+                    errors.append(DiagnosticError.invalidRoute(route: route))
+                }
+            } catch {
+                errors.append(DiagnosticError.invalidRoute(route: route))
             }
         }
     }
