@@ -21,14 +21,14 @@ class TrainInertiaTests: XCTestCase {
 
         var ic = TrainControllerAcceleration(train: t, interface: MockCommandInterface())
         XCTAssertEqual(TrainControllerAcceleration.DefaultStepSize, ic.stepIncrement)
-        XCTAssertEqual(TrainControllerAcceleration.DefaultStepDelay, ic.stepDelay)
+        XCTAssertEqual(Double(TrainControllerAcceleration.DefaultStepDelay)/1000, ic.stepDelay)
 
         t.speed.accelerationStepSize = 3
         t.speed.accelerationStepDelay = 250
 
         // The values don't change after initialization of the TrainControllerAcceleration
         XCTAssertEqual(TrainControllerAcceleration.DefaultStepSize, ic.stepIncrement)
-        XCTAssertEqual(TrainControllerAcceleration.DefaultStepDelay, ic.stepDelay)
+        XCTAssertEqual(Double(TrainControllerAcceleration.DefaultStepDelay)/1000, ic.stepDelay)
 
         ic = TrainControllerAcceleration(train: t, interface: MockCommandInterface())
 

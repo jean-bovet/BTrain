@@ -39,7 +39,7 @@ final class TrainControllerAcceleration {
     // The delay between step increments, recommended to be about 100ms.
     let stepDelay: TimeInterval
     
-    static let DefaultStepDelay: TimeInterval = 0.1
+    static let DefaultStepDelay = 100
     
     private var timer: Timer?
     private var currentTime: TimeInterval = 0
@@ -52,7 +52,7 @@ final class TrainControllerAcceleration {
         if let delay = train.speed.accelerationStepDelay {
             self.stepDelay = Double(delay) / 1000
         } else {
-            self.stepDelay = Self.DefaultStepDelay
+            self.stepDelay = Double(Self.DefaultStepDelay) / 1000
         }
     }
         
