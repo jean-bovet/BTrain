@@ -41,7 +41,7 @@ struct TrainIconView: View, DropDelegate {
 
     var body: some View {
         HStack {
-            if let image = trainIconManager.imageFor(trainId: train.id) {
+            if let image = trainIconManager.icon(for: train.id) {
                 Image(nsImage: image)
                     .resizable()
                     .aspectRatio(contentMode: .fit)
@@ -66,8 +66,11 @@ struct TrainIconView: View, DropDelegate {
                 DispatchQueue.main.async {
                     if let urlData = urlData as? Data {
                         let url = NSURL(absoluteURLWithDataRepresentation: urlData, relativeTo: nil) as URL
-                        if let image = NSImage(contentsOf: url) {
-                            trainIconManager.setIcon(image, toTrainId: train.id)
+                        do {
+                            let fw = try FileWrapper(url: url)
+                            trainIconManager.setIcon(fw, toTrainId: train.id)
+                        } catch {
+                            BTLogger.error("Unable to create the image for \(url): \(error)")
                         }
                     }
                 }
@@ -83,6 +86,6 @@ struct TrainIconView: View, DropDelegate {
 
 struct TrainIconView_Previews: PreviewProvider {
     static var previews: some View {
-        TrainIconView(trainIconManager: TrainIconManager(layout: Layout()), train: Train(), size: .large, hideIfNotDefined: false)
+        TrainIconView(trainIconManager: TrainIconManager(), train: Train(), size: .large, hideIfNotDefined: false)
     }
 }

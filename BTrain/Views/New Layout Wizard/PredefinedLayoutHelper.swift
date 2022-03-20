@@ -43,8 +43,8 @@ final class PredefinedLayoutHelper: ObservableObject {
                 train.blockId = nil
                 document.layout.trains.append(train)
             }
-            if let image = predefinedDocument.trainIconManager.imageFor(trainId: trainId) {
-                document.trainIconManager.setIcon(image, toTrainId: trainId)
+            if let fileWrapper = predefinedDocument.trainIconManager.fileWrapper(for: trainId) {
+                document.trainIconManager.setIcon(fileWrapper, toTrainId: trainId)
             }
         }
     }

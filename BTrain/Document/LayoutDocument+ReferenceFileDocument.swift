@@ -58,11 +58,24 @@ extension LayoutDocument: ReferenceFileDocument {
             iconDirectory.preferredFilename = "icons"
             
             for train in layout.trains {
-                if let icon = trainIconManager.imageFor(trainId: train.id) {
+                if let icon = trainIconManager.icon(for: train.id) {
+                    let key: String?
                     if let pngData = icon.pngData() {
-                        iconDirectory.addRegularFile(withContents: pngData, preferredFilename: "\(train.uuid).png")
+                        key = iconDirectory.addRegularFile(withContents: pngData, preferredFilename: "\(train.uuid).png")
                     } else if let data = icon.tiffRepresentation(using: .lzw, factor: 0) {
-                        iconDirectory.addRegularFile(withContents: data, preferredFilename: "\(train.uuid).tiff")
+                        key = iconDirectory.addRegularFile(withContents: data, preferredFilename: "\(train.uuid).tiff")
+                    } else {
+                        key = nil
+                    }
+                    
+                    // Update the FileWrapper inside the icon manager so it points to the most up to date FileWrapper definition
+                    if let key = key {
+                        if let fw = iconDirectory.fileWrappers?[key] {
+                            trainIconManager.setFileWrapper(fw, for: train.id)
+                        } else {
+                            BTLogger.error("Unable to retrieve the file wrapper for \(key)")
+                            throw CocoaError(.fileWriteUnknown)
+                        }
                     }
                 }
             }

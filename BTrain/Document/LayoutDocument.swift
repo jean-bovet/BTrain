@@ -84,7 +84,7 @@ final class LayoutDocument: ObservableObject {
         self.interface = interface
         self.simulator = simulator
         self.layoutDiagnostics = LayoutDiagnostic(layout: layout)
-        self.trainIconManager = TrainIconManager(layout: layout)
+        self.trainIconManager = TrainIconManager()
         self.switchboard = switchboard
         self.layoutController = layoutController
                 

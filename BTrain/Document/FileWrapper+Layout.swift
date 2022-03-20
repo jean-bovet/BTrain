@@ -31,12 +31,12 @@ extension FileWrapper {
         return layout
     }
     
-    func icons() throws -> [(Identifier<Train>,NSImage)] {
+    func icons() throws -> [(Identifier<Train>,FileWrapper)] {
         guard let files = fileWrappers else {
             throw CocoaError(.fileReadCorruptFile)
         }
         
-        var items = [(Identifier<Train>,NSImage)]()
+        var items = [(Identifier<Train>,FileWrapper)]()
         if let iconDirectory = files.first(where: {$0.value.isDirectory})?.value, let files = iconDirectory.fileWrappers?.values {
             for file in files {
                 guard let filename = file.filename else {
@@ -44,15 +44,12 @@ extension FileWrapper {
                 }
                 let trainId = (filename as NSString).deletingPathExtension
                 
-                guard let data = file.regularFileContents else {
+                // Check that the content can be read and returns something
+                guard file.regularFileContents != nil else {
                     throw CocoaError(.fileReadCorruptFile)
                 }
-                
-                guard let image = NSImage(data: data) else {
-                    throw CocoaError(.fileReadCorruptFile)
-                }
-                
-                items.append((Identifier<Train>(uuid: trainId), image))
+                                                
+                items.append((Identifier<Train>(uuid: trainId), file))
             }
         }
         return items

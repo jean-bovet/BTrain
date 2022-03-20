@@ -39,7 +39,7 @@ class TrainViewTests: RootViewTests {
         let layout = LayoutACreator().newLayout()
         let t1 = layout.trains[0]
         
-        let sut = TrainDetailsView(document: doc, train: t1, trainIconManager: TrainIconManager(layout: layout))
+        let sut = TrainDetailsView(document: doc, train: t1, trainIconManager: TrainIconManager())
         
         let decoderSection = try sut.inspect().find(TrainDetailsDecoderSectionView.self)
         _ = try decoderSection.find(text: "Type:")
@@ -54,7 +54,7 @@ class TrainViewTests: RootViewTests {
         let layout = LayoutACreator().newLayout()
         let t1 = layout.addTrain(Train(uuid: "16390"))
         
-        let tim = TrainIconManager(layout: layout)
+        let tim = TrainIconManager()
 
         let sut = TrainIconView(trainIconManager: tim, train: t1, size: .medium, hideIfNotDefined: false)
         _ = try sut.inspect().hStack().shape(0)
@@ -67,7 +67,7 @@ class TrainViewTests: RootViewTests {
 
         _ = try sut.inspect().hStack().image(0)
         
-        let image = tim.imageFor(trainId: t1.id)!
+        let image = tim.icon(for: t1.id)!
         XCTAssertNotNil(image.pngData())
     }
 

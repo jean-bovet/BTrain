@@ -239,14 +239,14 @@ struct TrainDetailsIconSectionView: View {
             HStack {
                 ZStack {
                     TrainIconView(trainIconManager: trainIconManager, train: train, size: .large, hideIfNotDefined: false)
-                    if trainIconManager.imageFor(trainId: train.id) == nil {
+                    if trainIconManager.icon(for: train.id) == nil {
                         Text("Drag an Image")
                     }
                 }
                 
-                if trainIconManager.imageFor(trainId: train.id) != nil {
+                if trainIconManager.icon(for: train.id) != nil {
                     Button("Remove") {
-                        trainIconManager.removeImageFor(train: train)
+                        trainIconManager.removeIconFor(train: train)
                     }
                 }
             }.padding([.leading])
@@ -279,7 +279,7 @@ struct TrainEditView_Previews: PreviewProvider {
     
     static var previews: some View {
         TrainDetailsView(document: doc, train: doc.layout.trains[0],
-                         trainIconManager: TrainIconManager(layout: doc.layout))
+                         trainIconManager: TrainIconManager())
             
     }
 }
