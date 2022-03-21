@@ -181,31 +181,53 @@ final class BlockShape: Shape, DraggableShape, ConnectableShape {
         
     func drawContent(ctx: CGContext, shapeContext: ShapeContext) {
         let showBlockName = shapeContext.showBlockName || block.category == .station && shapeContext.showStationName
+        let showIcon = shapeContext.showTrainIcon && prepareIcon() != nil
+
         if let train = train {
             if showBlockName {
-                let (_, blockLabelRect) = ctx.prepareText(text: block.name, color: shapeContext.color, fontSize: shapeContext.fontSize)
-                let (_, trainLabelRect) = ctx.prepareText(text: train.name, color: shapeContext.color, fontSize: shapeContext.fontSize)
+                let (_, blockNameRect) = ctx.prepareText(text: block.name, color: shapeContext.color, fontSize: shapeContext.fontSize)
+                let (_, trainNameRect) = ctx.prepareText(text: train.name, color: shapeContext.color, fontSize: shapeContext.fontSize)
 
-                let maxHeight = max(blockLabelRect.height, trainLabelRect.height)
+                let blockNameSize: CGSize = blockNameRect.size
+                let trainNameSize: CGSize
+                
+                if showIcon {
+                    trainNameSize = prepareIcon() ?? .zero
+                } else {
+                    trainNameSize = trainNameRect.size
+                }
+
+                let maxHeight = max(blockNameSize.height, trainNameSize.height)
                 
                 let space = 12.0
                 
-                let totalWidth = blockLabelRect.width + trainLabelRect.width + space
+                let totalWidth = trainNameSize.width + space + blockNameSize.width
                                 
                 ctx.with {
-                    let adjustHeight = maxHeight - blockLabelRect.height
+                    let adjustHeight = maxHeight - blockNameSize.height
                     drawLabel(ctx: ctx, label: block.name, at: center.translatedBy(x: -totalWidth/2, y: 0), verticalOffset: -size.height/2 - adjustHeight/2,
                                   color: shapeContext.color, fontSize: shapeContext.fontSize, borderColor: shapeContext.borderLabelColor, backgroundColor: shapeContext.backgroundLabelColor)
                 }
-                ctx.with {
-                    let adjustHeight = maxHeight - trainLabelRect.height
-                    drawLabel(ctx: ctx, label: train.name, at: center.translatedBy(x: blockLabelRect.width + space - totalWidth/2, y: 0), verticalOffset: -size.height/2 - adjustHeight/2,
-                              color: shapeContext.color, fontSize: shapeContext.fontSize, borderColor: shapeContext.trainColor(train), backgroundColor: shapeContext.backgroundLabelColor)
+                
+                let adjustHeight = maxHeight - trainNameSize.height
+                if showIcon {
+                    drawIcon(ctx: ctx, at: center,
+                             verticalOffset: size.height/2 + adjustHeight/2,
+                             horizontalOffset: totalWidth/2 - trainNameSize.width)
+                } else {
+                    ctx.with {
+                        drawLabel(ctx: ctx, label: train.name, at: center.translatedBy(x: blockNameSize.width + space - totalWidth/2, y: 0), verticalOffset: -size.height/2 - adjustHeight/2,
+                                  color: shapeContext.color, fontSize: shapeContext.fontSize, borderColor: shapeContext.trainColor(train), backgroundColor: shapeContext.backgroundLabelColor)
+                    }
                 }
             } else {
-                ctx.with {
-                    drawLabel(ctx: ctx, label: train.name, at: center, verticalOffset: -size.height/2, hAlignment: .center, color: shapeContext.color, fontSize: shapeContext.fontSize,
-                                          borderColor: shapeContext.trainColor(train), backgroundColor: shapeContext.backgroundLabelColor)
+                if showIcon {
+                    drawIcon(ctx: ctx, at: center, verticalOffset: size.height/2, hAlignment: .center)
+                } else {
+                    ctx.with {
+                        drawLabel(ctx: ctx, label: train.name, at: center, verticalOffset: -size.height/2, hAlignment: .center, color: shapeContext.color, fontSize: shapeContext.fontSize,
+                                              borderColor: shapeContext.trainColor(train), backgroundColor: shapeContext.backgroundLabelColor)
+                    }
                 }
             }
         } else {
@@ -256,16 +278,9 @@ final class BlockShape: Shape, DraggableShape, ConnectableShape {
     func drawLabel(ctx: CGContext, label: String, at location: CGPoint, verticalOffset: CGFloat, hAlignment: HTextAlignment = .left, vAlignment: VTextAlignment = .bottom, color: CGColor, fontSize: CGFloat, borderColor: CGColor? = nil, backgroundColor: CGColor? = nil) -> CGSize {
 
         // Always displays the text facing downwards so it is easer to read
-        let angle = rotationAngle.truncatingRemainder(dividingBy: 2 * .pi)
-        if abs(angle) <= .pi/2 || abs(angle) >= 2 * .pi*3/4 {
-            let textCenter = location.translatedBy(x: 0, y: verticalOffset).rotate(by: rotationAngle, around: rotationCenter)
-            return ctx.drawText(at: textCenter, vAlignment: vAlignment, hAlignment: hAlignment, rotation: angle,
-                                text: label, color: color, fontSize: fontSize, borderColor: borderColor, backgroundColor: backgroundColor)
-        } else {
-            let textCenter = location.translatedBy(x: 0, y: -verticalOffset).rotate(by: rotationAngle, around: rotationCenter)
-            return ctx.drawText(at: textCenter, vAlignment: vAlignment, hAlignment: hAlignment.inverse, rotation: angle + .pi,
-                                text: label, color: color, fontSize: fontSize, borderColor: borderColor, backgroundColor: backgroundColor)
-        }
+        let textCenter = location.translatedBy(x: 0, y: verticalOffset).rotate(by: labelRotationAngle, around: rotationCenter)
+        return ctx.drawText(at: textCenter, vAlignment: vAlignment, hAlignment: hAlignment, rotation: labelRotationAngle,
+                            text: label, color: color, fontSize: fontSize, borderColor: borderColor, backgroundColor: backgroundColor)
     }
 
     func drawTrainParts(ctx: CGContext, shapeContext: ShapeContext) {
@@ -291,6 +306,70 @@ final class BlockShape: Shape, DraggableShape, ConnectableShape {
         return path.contains(point)
     }
 
+}
+
+extension BlockShape {
+    
+    func prepareIcon() -> CGSize? {
+        guard let train = train else {
+            return nil
+        }
+        
+        guard let image = shapeContext.trainIconManager?.icon(for: train.id) else {
+            return nil
+        }
+                
+        let ratio = image.size.width / image.size.height
+        let height = shapeContext.fontSize * 2
+        let width = height * ratio
+
+        return CGSize(width: width, height: height)
+    }
+    
+    func drawIcon(ctx: CGContext, at center: CGPoint, verticalOffset: CGFloat = 0, horizontalOffset: CGFloat = 0, hAlignment: HTextAlignment = .left) {
+        guard let train = train else {
+            return
+        }
+        
+        guard let image = shapeContext.trainIconManager?.icon(for: train.id) else {
+            return
+        }
+        
+        guard let cgImage = image.cgImage(forProposedRect: nil, context: nil, hints: nil) else {
+            return
+        }
+        
+        let ratio = image.size.width / image.size.height
+        let height = shapeContext.fontSize * 2
+        let width = height * ratio
+
+        ctx.with {
+            // Maintain rotation such that the icon is always on top or to the left
+            var transform = CGAffineTransform.identity
+                .rotation(by: labelRotationAngle, around: center)
+
+            // Flip the icon vertically
+            transform = transform
+                .translatedBy(x: center.x, y: center.y)
+                .scaledBy(x: 1.0, y: -1.0)
+                .translatedBy(x: -center.x, y: -center.y)
+            
+            // Apply translation
+            switch hAlignment {
+            case .center:
+                transform = transform.translatedBy(x: -width/2, y: 0)
+            case .left:
+                break
+            case .right:
+                transform = transform.translatedBy(x: width/2, y: 0)
+            }
+
+            transform = transform.translatedBy(x: horizontalOffset, y: verticalOffset)
+            ctx.concatenate(transform)
+
+            ctx.draw(cgImage, in: CGRect(x: center.x, y: center.y, width: width, height: height))
+        }
+    }
 }
 
 // MARK: Arrows
@@ -340,8 +419,6 @@ extension BlockShape {
                 ctx.setStrokeColor(reserved != nil ? shapeContext.reservedColor : regularColor)
                 ctx.setLineWidth(shapeContext.trackWidth)
                 ctx.strokePath()
-
-                ctx.restoreGState()
             }
         } else {
             ctx.with {
@@ -491,6 +568,17 @@ extension BlockShape: RotableShape {
         }
         set {
             block.rotationAngle = newValue
+        }
+    }
+    
+    // The rotation angle adjust in order to always see the labels at the top
+    // of the block regardless of the rotationAngle
+    var labelRotationAngle: CGFloat {
+        let angle = rotationAngle.truncatingRemainder(dividingBy: 2 * .pi)
+        if abs(angle) <= .pi/2 || abs(angle) >= 2 * .pi*3/4 {
+            return angle
+        } else {
+            return angle + .pi
         }
     }
     

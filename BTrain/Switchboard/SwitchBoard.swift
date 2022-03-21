@@ -23,6 +23,7 @@ final class SwitchBoard: ObservableObject {
         @AppStorage("showBlockName") var showBlockName: Bool = false
         @AppStorage("showStationName") var showStationName: Bool = false
         @AppStorage("showTurnoutName") var showTurnoutName: Bool = false
+        @AppStorage("showTrainIcon") var showTrainIcon: Bool = false
 
         @Published var triggerRedraw: Bool = false // Used to trigger a redraw of the switchboard
 

@@ -18,10 +18,13 @@ final class ShapeContext {
             
     var simulator: Simulator?
 
+    var trainIconManager: TrainIconManager?
+    
     var darkMode = false
     var showBlockName = false
     var showStationName = false
     var showTurnoutName = false
+    var showTrainIcon = true
     
     var fontSize: CGFloat = 12.0
     
@@ -91,8 +94,9 @@ final class ShapeContext {
         NSColor.blue.cgColor
     }
 
-    init(simulator: Simulator? = nil) {
+    init(simulator: Simulator? = nil, trainIconManager: TrainIconManager? = nil) {
         self.simulator = simulator
+        self.trainIconManager = trainIconManager
     }
     
     func trainColor(_ train: Train) -> CGColor {

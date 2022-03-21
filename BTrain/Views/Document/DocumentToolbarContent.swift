@@ -42,6 +42,7 @@ struct DocumentToolbarContent: ToolbarContent {
                     CommandShowBlockNameView()
                     CommandShowStationNameView()
                     CommandShowTurnoutNameView()
+                    CommandShowTrainIconView()
                     
                     Divider()
                     
@@ -213,6 +214,15 @@ struct CommandShowTurnoutNameView: View {
 
     var body: some View {
         Toggle("Turnout Name", isOn: $state)
+    }
+}
+
+struct CommandShowTrainIconView: View {
+    
+    @AppStorage("showTrainIcon") var state: Bool = false
+
+    var body: some View {
+        Toggle("Train Icon", isOn: $state)
     }
 }
 

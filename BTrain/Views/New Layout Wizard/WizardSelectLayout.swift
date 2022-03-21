@@ -68,7 +68,7 @@ struct SwitchboardPreview: View {
     }
     
     var switchboard: SwitchBoard {
-        return SwitchBoardFactory.generateSwitchboard(layout: layout, simulator: nil)
+        return SwitchBoardFactory.generateSwitchboard(layout: layout, simulator: nil, trainIconManager: nil)
     }
     
     var coordinator: LayoutController {

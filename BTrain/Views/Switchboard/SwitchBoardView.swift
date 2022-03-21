@@ -42,6 +42,7 @@ struct SwitchBoardView: View {
         switchboard.context.showBlockName = state.showBlockName
         switchboard.context.showStationName = state.showStationName
         switchboard.context.showTurnoutName = state.showTurnoutName
+        switchboard.context.showTrainIcon = state.showTrainIcon
         switchboard.context.fontSize = fontSize
         switchboard.context.darkMode = darkMode
         context.withCGContext { cgContext in
