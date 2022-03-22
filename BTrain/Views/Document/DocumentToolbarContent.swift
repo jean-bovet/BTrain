@@ -34,20 +34,8 @@ struct DocumentToolbarContent: ToolbarContent {
             ToolDebugCommandsView(document: document)
 
             if let switchboard = document.switchboard, document.selectedView == .overview {
-                Menu("Switchboard") {
-                    CommandEditSwitchboardView(state: switchboard.state)
-
-                    Divider()
-
-                    CommandShowBlockNameView()
-                    CommandShowStationNameView()
-                    CommandShowTurnoutNameView()
-                    CommandShowTrainIconView()
-                    
-                    Divider()
-                    
-                    CommandShowSimulatorView()
-                }.disabled(document.selectedView != .overview)
+                SwitchboarSettingsButton(document: document)
+                SwitchboardEditButton(state: switchboard.state)
             }
             
             Menu("View") {
@@ -159,7 +147,7 @@ struct ToolDebugCommandsView: View {
     
     var body: some View {
         if document.showDebugModeControls {
-            Menu("Developer") {
+            Menu("􀤊") {
                 Button("Repair Layout") {
                     document.triggerRepairLayout.toggle()
                 }
@@ -176,61 +164,25 @@ struct ToolDebugCommandsView: View {
     }
 }
 
-struct CommandEditSwitchboardView: View {
+struct SwitchboardEditButton: View {
     
     @ObservedObject var state: SwitchBoard.State
     
     var body: some View {
-        let b = Binding {
-            state.editable
-        } set: {
-            state.editable = $0
-        }
-        Toggle("Edit", isOn: b)
+        Button("􀈊") {
+            state.editable.toggle()
+        }.help("Edit Switchboard")
     }
 }
 
-struct CommandShowBlockNameView: View {
+struct SwitchboarSettingsButton: View {
     
-    @AppStorage("showBlockName") var state: Bool = false
-    
-    var body: some View {
-        Toggle("Block Name", isOn: $state)
-    }
-}
-
-struct CommandShowStationNameView: View {
-    
-    @AppStorage("showStationName") var state: Bool = false
-    
-    var body: some View {
-        Toggle("Station Name", isOn: $state)
-    }
-}
-
-struct CommandShowTurnoutNameView: View {
-    
-    @AppStorage("showTurnoutName") var state: Bool = false
+    @ObservedObject var document: LayoutDocument
 
     var body: some View {
-        Toggle("Turnout Name", isOn: $state)
+        Button("􀋭") {
+            document.triggerSwitchboardSettings.toggle()
+        }.help("Switchboard Settings")
     }
-}
-
-struct CommandShowTrainIconView: View {
     
-    @AppStorage("showTrainIcon") var state: Bool = false
-
-    var body: some View {
-        Toggle("Train Icon", isOn: $state)
-    }
-}
-
-struct CommandShowSimulatorView: View {
-    
-    @AppStorage("showSimulator") var state: Bool = false
-
-    var body: some View {
-        Toggle("Simulator", isOn: $state)
-    }
 }

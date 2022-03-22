@@ -56,6 +56,7 @@ final class LayoutDocument: ObservableObject {
 
     // Property used to perform the layout diagnostic command
     @Published var triggerLayoutDiagnostic = false
+    @Published var triggerSwitchboardSettings = false
 
     // Property used to perform the layout repair command
     @Published var triggerRepairLayout = false
