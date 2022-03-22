@@ -16,7 +16,7 @@ extension Turnout {
     
     // Returns all the possible states for the turnout
     var allStates: [State] {
-        switch(category) {
+        switch category {
         case .singleLeft:
             return [.straight, .branchLeft]
         case .singleRight:
@@ -33,7 +33,7 @@ extension Turnout {
     // Returns the next state the turnout will take when toggling between
     // the states - see toggle() method below.
     var nextState: State {
-        switch(category) {
+        switch category {
         case .singleLeft:
             switch(state) {
             case .straight:

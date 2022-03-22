@@ -70,6 +70,10 @@ struct TurnoutDetailsView: View {
                 }
             }
             
+            SectionTitleView(label: "Speed Limits")
+
+            TurnoutStateSpeedLimitView(turnout: turnout)
+            
             SectionTitleView(label: "State")
 
             HStack {
@@ -93,6 +97,21 @@ struct TurnoutDetailsView: View {
                     layout.executor.sendTurnoutState(turnout: turnout) { }
                 }
             }
+        }
+    }
+}
+
+struct TurnoutStateSpeedLimitView: View {
+    
+    @ObservedObject var turnout: Turnout
+    
+    var body: some View {
+        ForEach(turnout.allStates, id: \.self) { state in
+            let binding = Binding(
+                get: { turnout.stateSpeedLimited[state] ?? false },
+                set: { turnout.stateSpeedLimited[state] = $0 }
+            )
+            Toggle(state.description, isOn: binding)
         }
     }
 }
@@ -132,6 +151,6 @@ extension Turnout {
 
 struct TurnoutDetailsView_Previews: PreviewProvider {
     static var previews: some View {
-        TurnoutDetailsView(layout: Layout(), turnout: Turnout(type: .doubleSlip, address: .init(0, nil)))
+        TurnoutDetailsView(layout: Layout(), turnout: Turnout(type: .singleLeft, address: .init(0, nil)))
     }
 }
