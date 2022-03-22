@@ -12,41 +12,6 @@
 
 import SwiftUI
 
-struct TurnoutStateCell: View {
-
-    @ObservedObject var layout: Layout
-
-    @Binding var turnout: Turnout
-    
-    // Note: not sure why this is needed but otherwise toggling the Turnout state does not refresh this view (SwiftUI bug?)
-    @State var refreshUI = false
-    
-    var body: some View {
-        HStack {
-            UndoProvider($turnout.state) { state in
-                Picker("State:", selection: state) {
-                    ForEach(turnout.allStates, id:\.self) { state in
-                        Text(state.description)
-                    }
-                }
-                .labelsHidden()
-            }
-
-            Spacer()
-
-            Button("Set") {
-                layout.executor.sendTurnoutState(turnout: turnout) { }
-            }
-            
-            Button("Toggle") {
-                turnout.toggleToNextState()
-                refreshUI.toggle()
-                layout.executor.sendTurnoutState(turnout: turnout) { }
-            }
-        }
-    }
-}
-
 struct TurnoutListView: View {
     
     @ObservedObject var layout: Layout
@@ -54,144 +19,70 @@ struct TurnoutListView: View {
     @Environment(\.undoManager) var undoManager
 
     var body: some View {
-        VStack {
-            Table(selection: $selection) {
-                TableColumn("Enabled") { turnout in
-                    UndoProvider(turnout.enabled) { enabled in
-                        Toggle("Enabled", isOn: enabled)
-                            .labelsHidden()
-                    }
-                }.width(80)
-
-                TableColumn("Name") { turnout in
-                    UndoProvider(turnout.name) { name in
-                        TextField("Name", text: name)
-                            .labelsHidden()
-                    }
-                }
-
-                TableColumn("Protocol") { turnout in
-                    UndoProvider(turnout.addressProtocol) { addressProtocol in
-                        Picker("Protocol", selection: addressProtocol) {
-                            ForEach(CommandTurnoutProtocol.allCases, id:\.self) { proto in
-                                Text(proto.rawValue).tag(proto as CommandTurnoutProtocol?)
-                            }
+        HStack {
+            VStack {
+                Table(selection: $selection) {
+                    TableColumn("Enabled") { turnout in
+                        UndoProvider(turnout.enabled) { enabled in
+                            Toggle("Enabled", isOn: enabled)
+                                .labelsHidden()
                         }
-                        .labelsHidden()
-                        .fixedSize()
-                    }
-                }
-                
-                TableColumn("Type") { turnout in
-                    UndoProvider(turnout.category) { category in
-                        Picker("Type:", selection: category) {
-                            ForEach(Turnout.Category.allCases, id:\.self) { type in
-                                Text(type.description)
-                            }
-                        }
-                        .labelsHidden()
-                        .fixedSize()
-                    }
-                }
-                
-                TableColumn("Address") { turnout in
-                    HStack {
-                        if turnout.wrappedValue.doubleAddress {
-                            UndoProvider(turnout.addressValue) { addressValue in
-                                TextField("Address 1", value: addressValue,
-                                          format: .number)
-                            }
-                            Text("|")
-                            UndoProvider(turnout.address2Value) { address2Value in
-                                TextField("Address 2", value: address2Value,
-                                          format: .number)
-                            }
-                        }
-                        else {
-                            UndoProvider(turnout.addressValue) { addressValue in
-                                TextField("Address", value: addressValue,
-                                          format: .number)
-                            }
+                    }.width(80)
+                    
+                    TableColumn("Name") { turnout in
+                        UndoProvider(turnout.name) { name in
+                            TextField("Name", text: name)
+                                .labelsHidden()
                         }
                     }
-                }
-                
-                TableColumn("Length (cm)") { turnout in
-                    UndoProvider(turnout.length) { length in
-                        TextField("", value: length, format: .number)
+                } rows: {
+                    ForEach($layout.turnouts) { turnout in
+                        TableRow(turnout)
                     }
                 }
-
-                TableColumn("State") { turnout in
-                    TurnoutStateCell(layout: layout, turnout: turnout)
-                }
-            } rows: {
-                ForEach($layout.turnouts) { turnout in
-                    TableRow(turnout)
-                }
-            }
-            HStack {
-                Text("\(layout.turnouts.count) turnouts")
-                
-                Spacer()
-                
-                Button("+") {
-                    let turnout = layout.newTurnout(name: "New Turnout", type: .singleLeft)
-                    undoManager?.registerUndo(withTarget: layout, handler: { layout in
-                        layout.remove(turnoutID: turnout.id)
-                    })
-                }
-                
-                Button("-") {
-                    if let turnout = layout.turnout(for: selection) {
-                        layout.remove(turnoutID: turnout.id)
+                HStack {
+                    Text("\(layout.turnouts.count) turnouts")
+                    
+                    Spacer()
+                    
+                    Button("+") {
+                        let turnout = layout.newTurnout(name: "New Turnout", type: .singleLeft)
                         undoManager?.registerUndo(withTarget: layout, handler: { layout in
-                            layout.turnouts.append(turnout)
+                            layout.remove(turnoutID: turnout.id)
                         })
                     }
-                }.disabled(selection == nil)
-                
-                Spacer().fixedSpace()
-                
-                Button("􀄬") {
-                    layout.sortTurnouts()
+                    
+                    Button("-") {
+                        if let turnout = layout.turnout(for: selection) {
+                            layout.remove(turnoutID: turnout.id)
+                            undoManager?.registerUndo(withTarget: layout, handler: { layout in
+                                layout.turnouts.append(turnout)
+                            })
+                        }
+                    }.disabled(selection == nil)
+                    
+                    Spacer().fixedSpace()
+                    
+                    Button("􀄬") {
+                        layout.sortTurnouts()
+                    }
+                }.padding()
+            }.frame(maxWidth: SideListFixedWidth)
+            
+            if let selection = selection, let turnout = layout.turnout(for: selection) {
+                ScrollView {
+                    TurnoutDetailsView(layout: layout, turnout: turnout)
+                        .padding()
                 }
-            }.padding()
+            } else {
+                CenteredLabelView(label: "No Selected Turnout")
+            }
+        }.onAppear {
+            if selection == nil {
+                selection = layout.turnouts.first?.id
+            }
         }
     }
-}
-
-extension Turnout {
-    
-    var addressProtocol: CommandTurnoutProtocol? {
-        get {
-            return address.protocol
-        }
-        set {
-            address = .init(address.address, newValue)
-            // Also change the protocol of address 2 but keep its value
-            address2 = .init(address2.address, newValue)
-        }
-    }
-    
-    var addressValue: Int {
-        get {
-            return Int(address.address)
-        }
-        set {
-            address = .init(UInt32(newValue), addressProtocol)
-        }
-    }
-    
-    var address2Value: Int {
-        get {
-            return Int(address2.address)
-        }
-        set {
-            address2 = .init(UInt32(newValue), addressProtocol)
-        }
-    }
-
 }
 
 struct TurnoutEditListView_Previews: PreviewProvider {

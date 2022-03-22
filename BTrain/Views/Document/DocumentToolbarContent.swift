@@ -38,7 +38,7 @@ struct DocumentToolbarContent: ToolbarContent {
                 SwitchboardEditButton(state: switchboard.state)
             }
             
-            Menu("View") {
+            Menu("􁉽") {
                 CommandSelectedView(viewType: .overview, label: "Switchboard")
                 CommandSelectedView(viewType: .routes, label: "Routes")
                 CommandSelectedView(viewType: .trains, label: "Trains")

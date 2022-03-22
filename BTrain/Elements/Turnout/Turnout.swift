@@ -47,7 +47,11 @@ final class Turnout: Element, ObservableObject {
 
     @Published var name = ""
     
-    @Published var category: Category = .singleLeft
+    @Published var category: Category = .singleLeft {
+        didSet {
+            updateStateSpeedLimits()
+        }
+    }
 
     @Published var address: CommandTurnoutAddress = .init(0, .MM)
     @Published var address2: CommandTurnoutAddress = .init(0, .MM)
@@ -78,6 +82,8 @@ final class Turnout: Element, ObservableObject {
         }
     }
 
+    @Published var stateSpeedLimited = [State:Bool]()
+    
     // Contains the reservation for the specified train
     var reserved: Reservation?
     
@@ -111,6 +117,36 @@ final class Turnout: Element, ObservableObject {
         self.init(id: Identifier(uuid: uuid), name: uuid, type: type, address: address, address2: address2, state: state, center: center, rotationAngle: rotationAngle, length: length)
     }
     
+    func updateStateSpeedLimits() {
+        let previous = stateSpeedLimited
+        stateSpeedLimited.removeAll()
+        for state in allStates {
+            stateSpeedLimited[state] = previous[state] ?? defaultStateSpeedLimit(state)
+        }
+    }
+    
+    func defaultStateSpeedLimit(_ state: State) -> Bool {
+        switch state {
+        case .straight:
+            return false
+        case .branch:
+            return true
+        case .branchLeft:
+            return true
+        case .branchRight:
+            return true
+        case .straight01:
+            return false
+        case .straight23:
+            return false
+        case .branch03:
+            return true
+        case .branch21:
+            return true
+        case .invalid:
+            return true
+        }
+    }
 }
 
 extension Turnout: Codable {
