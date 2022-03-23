@@ -104,19 +104,19 @@ class TransitionsTests: XCTestCase {
         try v8.start(routeID: r1.id, trainID: t1.id)
         try v8.start(routeID: r2.id, trainID: t2.id)
         
-        try assert(v8, r1, t1, "{r16390{NE1 💺16390 ≏ 💺16390 ≏ 🛑🚂16390 }} <B.4{sl}(2,0),l> <A.1{sl}(2,0),l> <A.34{ds2}(3,0),b03> [OL1 ≏ ≏ ] <D.1{sr}(0,1),s> [OL2 ≏ ≏ ] <E.1{sl}(1,0),s> [OL3 ≏ ≏ ] <F.3{sr}(0,1),s> <F.1{sr}(0,2),r> <E.4{sr}(0,2),r> {r16390{NE1 💺16390 ≏ 💺16390 ≏ 🛑🚂16390 }}")
-        try assert(v8, r2, t2, "{r16405{NE2 ≏ 💺16405 ≏ 🛑🚂16405 }} <B.4{sl}(1,0),s> <A.1{sl}(2,0),l> <A.34{ds2}(3,2),s23> <A.2{sr}(2,0),r> [IL1 ≏ ≏ ] <H.1{sl}(1,0),s> <D.2{ds2}(0,1),s01> [IL2 ≏ ≏ ≏ ] <E.3{sl}(0,1),s> <E.2{sl}(1,0),s> [IL3 ≏ ≏ ] <F.4{sr}(0,1),s> [IL4 ≏ ≏ ] <D.4{sl}(1,0),s> <A.2{sr}(1,0),s> [IL1 ≏ ≏ ] <H.1{sl}(1,0),s> <D.2{ds2}(0,1),s01> [IL2 ≏ ≏ ≏ ] <E.3{sl}(0,2),l> <E.1{sl}(2,0),l> [OL3 ≏ ≏ ] <F.3{sr}(0,1),s> <F.1{sr}(0,2),r> <E.4{sr}(0,1),s> {r16405{NE2 ≏ 💺16405 ≏ 🛑🚂16405 }}")
+        try assert(v8, r1, t1, "{r16390{NE1 💺16390 ≏ 💺16390 ≏ 🔴🚂16390 }} <B.4{sl}(2,0),l> <A.1{sl}(2,0),l> <A.34{ds2}(3,0),b03> [OL1 ≏ ≏ ] <D.1{sr}(0,1),s> [OL2 ≏ ≏ ] <E.1{sl}(1,0),s> [OL3 ≏ ≏ ] <F.3{sr}(0,1),s> <F.1{sr}(0,2),r> <E.4{sr}(0,2),r> {r16390{NE1 💺16390 ≏ 💺16390 ≏ 🔴🚂16390 }}")
+        try assert(v8, r2, t2, "{r16405{NE2 ≏ 💺16405 ≏ 🔴🚂16405 }} <B.4{sl}(1,0),s> <A.1{sl}(2,0),l> <A.34{ds2}(3,2),s23> <A.2{sr}(2,0),r> [IL1 ≏ ≏ ] <H.1{sl}(1,0),s> <D.2{ds2}(0,1),s01> [IL2 ≏ ≏ ≏ ] <E.3{sl}(0,1),s> <E.2{sl}(1,0),s> [IL3 ≏ ≏ ] <F.4{sr}(0,1),s> [IL4 ≏ ≏ ] <D.4{sl}(1,0),s> <A.2{sr}(1,0),s> [IL1 ≏ ≏ ] <H.1{sl}(1,0),s> <D.2{ds2}(0,1),s01> [IL2 ≏ ≏ ≏ ] <E.3{sl}(0,2),l> <E.1{sl}(2,0),l> [OL3 ≏ ≏ ] <F.3{sr}(0,1),s> <F.1{sr}(0,2),r> <E.4{sr}(0,1),s> {r16405{NE2 ≏ 💺16405 ≏ 🔴🚂16405 }}")
 
         try c1.run()
         try c2.run()
         
         // t1 starts but t2 cannot because t1 has reserved all the transitions
         // out of the first block - transitions that are shared with t2's route.
-        XCTAssertEqual(t1.speed.requestedKph, LayoutFactory.DefaultSpeed)
+        XCTAssertEqual(t1.speed.requestedKph, LayoutFactory.DefaultLimitedSpeed)
         XCTAssertEqual(t2.speed.requestedKph, 0)
         
-        try assert(v8, r1, t1, "{r16390{NE1 💺16390 ≏ 💺16390 ≏ 🚂16390 }} <r16390<B.4{sl}(2,0),l>> <r16390<A.1{sl}(2,0),l>> <r16390<A.34{ds2}(3,0),b03>> [r16390[OL1 ≏ ≏ ]] <r16390<D.1{sr}(0,1),s>> [r16390[OL2 ≏ ≏ ]] <E.1{sl}(1,0),s> [OL3 ≏ ≏ ] <F.3{sr}(0,1),s> <F.1{sr}(0,2),r> <E.4{sr}(0,2),r> {r16390{NE1 💺16390 ≏ 💺16390 ≏ 🚂16390 }}")
-        try assert(v8, r2, t2, "{r16405{NE2 ≏ 💺16405 ≏ 🛑🚂16405 }} <r16390<B.4{sl}(1,0),s>> <r16390<A.1{sl}(2,0),l>> <r16390<A.34{ds2}(3,2),s23>> <A.2{sr}(2,0),r> [IL1 ≏ ≏ ] <H.1{sl}(1,0),s> <D.2{ds2}(0,1),s01> [IL2 ≏ ≏ ≏ ] <E.3{sl}(0,1),s> <E.2{sl}(1,0),s> [IL3 ≏ ≏ ] <F.4{sr}(0,1),s> [IL4 ≏ ≏ ] <D.4{sl}(1,0),s> <A.2{sr}(1,0),s> [IL1 ≏ ≏ ] <H.1{sl}(1,0),s> <D.2{ds2}(0,1),s01> [IL2 ≏ ≏ ≏ ] <E.3{sl}(0,2),l> <E.1{sl}(2,0),l> [OL3 ≏ ≏ ] <F.3{sr}(0,1),s> <F.1{sr}(0,2),r> <E.4{sr}(0,1),s> {r16405{NE2 ≏ 💺16405 ≏ 🛑🚂16405 }}")
+        try assert(v8, r1, t1, "{r16390{NE1 💺16390 ≏ 💺16390 ≏ 🟢🚂16390 }} <r16390<B.4{sl}(2,0),l>> <r16390<A.1{sl}(2,0),l>> <r16390<A.34{ds2}(3,0),b03>> [r16390[OL1 ≏ ≏ ]] <r16390<D.1{sr}(0,1),s>> [r16390[OL2 ≏ ≏ ]] <E.1{sl}(1,0),s> [OL3 ≏ ≏ ] <F.3{sr}(0,1),s> <F.1{sr}(0,2),r> <E.4{sr}(0,2),r> {r16390{NE1 💺16390 ≏ 💺16390 ≏ 🟢🚂16390 }}")
+        try assert(v8, r2, t2, "{r16405{NE2 ≏ 💺16405 ≏ 🔴🚂16405 }} <r16390<B.4{sl}(1,0),s>> <r16390<A.1{sl}(2,0),l>> <r16390<A.34{ds2}(3,2),s23>> <A.2{sr}(2,0),r> [IL1 ≏ ≏ ] <H.1{sl}(1,0),s> <D.2{ds2}(0,1),s01> [IL2 ≏ ≏ ≏ ] <E.3{sl}(0,1),s> <E.2{sl}(1,0),s> [IL3 ≏ ≏ ] <F.4{sr}(0,1),s> [IL4 ≏ ≏ ] <D.4{sl}(1,0),s> <A.2{sr}(1,0),s> [IL1 ≏ ≏ ] <H.1{sl}(1,0),s> <D.2{ds2}(0,1),s01> [IL2 ≏ ≏ ≏ ] <E.3{sl}(0,2),l> <E.1{sl}(2,0),l> [OL3 ≏ ≏ ] <F.3{sr}(0,1),s> <F.1{sr}(0,2),r> <E.4{sr}(0,1),s> {r16405{NE2 ≏ 💺16405 ≏ 🔴🚂16405 }}")
 
         // NOTE: stop cannot free-up blocks automatically because
         // the train might be already in transit between two blocks!
@@ -130,11 +130,11 @@ class TransitionsTests: XCTestCase {
         try c2.run()
 
         try assert(v8, r1, t1, "{NE1 ≏ ≏ } <r16405<B.4{sl}(2,0),l>> <r16405<A.1{sl}(2,0),l>> <r16405<A.34{ds2}(3,0),b03>> [r16390[OL1 ≏ ≏ ]] <r16390<D.1{sr}(0,1),s>> [r16390[OL2 ≏ ≏ ]] <E.1{sl}(1,0),s> [OL3 ≏ ≏ ] <F.3{sr}(0,1),s> <F.1{sr}(0,2),r> <E.4{sr}(0,2),r> {NE1 ≏ ≏ }")
-        try assert(v8, r2, t2, "{r16405{NE2 ≏ 💺16405 ≏ 🚂16405 }} <r16405<B.4{sl}(1,0),s>> <r16405<A.1{sl}(2,0),l>> <r16405<A.34{ds2}(3,2),s23>> <r16405<A.2{sr}(2,0),r>> [r16405[IL1 ≏ ≏ ]] <H.1{sl}(1,0),s> <D.2{ds2}(0,1),s01> [IL2 ≏ ≏ ≏ ] <E.3{sl}(0,1),s> <E.2{sl}(1,0),s> [IL3 ≏ ≏ ] <F.4{sr}(0,1),s> [IL4 ≏ ≏ ] <D.4{sl}(1,0),s> <r16405<A.2{sr}(1,0),s>> [r16405[IL1 ≏ ≏ ]] <H.1{sl}(1,0),s> <D.2{ds2}(0,1),s01> [IL2 ≏ ≏ ≏ ] <E.3{sl}(0,2),l> <E.1{sl}(2,0),l> [OL3 ≏ ≏ ] <F.3{sr}(0,1),s> <F.1{sr}(0,2),r> <E.4{sr}(0,1),s> {r16405{NE2 ≏ 💺16405 ≏ 🚂16405 }}")
+        try assert(v8, r2, t2, "{r16405{NE2 ≏ 💺16405 ≏ 🟢🚂16405 }} <r16405<B.4{sl}(1,0),s>> <r16405<A.1{sl}(2,0),l>> <r16405<A.34{ds2}(3,2),s23>> <r16405<A.2{sr}(2,0),r>> [r16405[IL1 ≏ ≏ ]] <H.1{sl}(1,0),s> <D.2{ds2}(0,1),s01> [IL2 ≏ ≏ ≏ ] <E.3{sl}(0,1),s> <E.2{sl}(1,0),s> [IL3 ≏ ≏ ] <F.4{sr}(0,1),s> [IL4 ≏ ≏ ] <D.4{sl}(1,0),s> <r16405<A.2{sr}(1,0),s>> [r16405[IL1 ≏ ≏ ]] <H.1{sl}(1,0),s> <D.2{ds2}(0,1),s01> [IL2 ≏ ≏ ≏ ] <E.3{sl}(0,2),l> <E.1{sl}(2,0),l> [OL3 ≏ ≏ ] <F.3{sr}(0,1),s> <F.1{sr}(0,2),r> <E.4{sr}(0,1),s> {r16405{NE2 ≏ 💺16405 ≏ 🟢🚂16405 }}")
 
         // Now t2 starts because it can reserve the route
         XCTAssertEqual(t1.speed.requestedKph, 0)
-        XCTAssertEqual(t2.speed.requestedKph, LayoutFactory.DefaultSpeed)
+        XCTAssertEqual(t2.speed.requestedKph, LayoutFactory.DefaultLimitedSpeed)
     }
 
     private func assert(_ layout: Layout, _ route: Route, _ train: Train, _ expected: String) throws {

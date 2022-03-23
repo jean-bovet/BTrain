@@ -107,9 +107,19 @@ extension Layout {
         
         return train.position
     }
+        
+    func adjustSpeedLimit(_ train: Train) {
+        if train.state == .running {
+            setTrainSpeed(train, LayoutFactory.DefaultMaximumSpeed, speedLimit: true) { }
+        }
+    }
     
-    func setTrainSpeed(_ train: Train, _ speed: TrainSpeed.UnitKph, acceleration: TrainSpeedAcceleration.Acceleration? = nil, completion: @escaping CompletionBlock) {
-        train.speed.requestedKph = speed
+    func setTrainSpeed(_ train: Train, _ speed: TrainSpeed.UnitKph, speedLimit: Bool = true, acceleration: TrainSpeedAcceleration.Acceleration? = nil, completion: @escaping CompletionBlock) {
+        if speedLimit {
+            train.speed.requestedKph = min(speed, reservation.maximumSpeedAllowed(train: train))
+        } else {
+            train.speed.requestedKph = speed
+        }
         setTrainSpeed(train, train.speed.requestedSteps, acceleration: acceleration, completion: completion)
     }
 

@@ -16,10 +16,11 @@ import XCTest
 
 class TurnoutViewTests: RootViewTests {
     
-    func testStringValue() throws {
+    func testListView() throws {
         let sut = TurnoutListView(layout: LayoutCCreator().newLayout())
-        let value = try sut.inspect().vStack().hStack(1).text(0).string()
+        let value = try sut.inspect().hStack().vStack(0).hStack(1).text(0).string()
         XCTAssertEqual(value, "2 turnouts")
     }
-    
+
+    // TODO: finish with test similars to BlockViewTests
 }

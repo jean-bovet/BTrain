@@ -20,26 +20,26 @@ class ManualOperationTests: BTTestCase {
         let layout = LayoutACreator().newLayout()
         let p = try setup(layout: layout, fromBlockId: "b1")
         
-        p.setTrainSpeed(100)
+        p.setTrainSpeed(LayoutFactory.DefaultMaximumSpeed, speedLimit: false)
         
-        try p.assertTrain(inBlock: "b1", position: 0, speed: 100)
+        try p.assertTrain(inBlock: "b1", position: 0, speed: LayoutFactory.DefaultMaximumSpeed)
 
         try p.triggerFeedback("f21")
         
         try p.assertTrain(notInBlock: "b1")
-        try p.assertTrain(inBlock: "b2", position: 1, speed: 100)
+        try p.assertTrain(inBlock: "b2", position: 1, speed: LayoutFactory.DefaultMaximumSpeed)
         
         try p.triggerFeedback("f21", false)
         try p.triggerFeedback("f22")
         
         try p.assertTrain(notInBlock: "b1")
-        try p.assertTrain(inBlock: "b2", position: 2, speed: 100)
+        try p.assertTrain(inBlock: "b2", position: 2, speed: LayoutFactory.DefaultMaximumSpeed)
         
         try p.triggerFeedback("f22", false)
         try p.triggerFeedback("f11")
         
         try p.assertTrain(notInBlock: "b2")
-        try p.assertTrain(inBlock: "b1", position: 1, speed: 100)
+        try p.assertTrain(inBlock: "b1", position: 1, speed: LayoutFactory.DefaultMaximumSpeed)
 
         // Put another train in b2 and ensure the train is stopped when
         // it reaches the end of b1 as a protection mechanism
@@ -83,27 +83,27 @@ class ManualOperationTests: BTTestCase {
         
         let p = try setup(layout: layout, fromBlockId: "b1")
         
-        p.setTrainSpeed(100)
+        p.setTrainSpeed(LayoutFactory.DefaultMaximumSpeed, speedLimit: false)
 
-        try p.assertTrain(inBlock: "b1", position: 0, speed: 100)
+        try p.assertTrain(inBlock: "b1", position: 0, speed: LayoutFactory.DefaultMaximumSpeed)
 
         try p.triggerFeedback("f21")
         
-        try p.assertTrain(inBlock: "b1", position: 1, speed: 100)
-        try p.assertTrain(inBlock: "b2", position: 1, speed: 100)
+        try p.assertTrain(inBlock: "b1", position: 1, speed: LayoutFactory.DefaultMaximumSpeed)
+        try p.assertTrain(inBlock: "b2", position: 1, speed: LayoutFactory.DefaultMaximumSpeed)
         
         try p.triggerFeedback("f21", false)
         try p.triggerFeedback("f22")
         
-        try p.assertTrain(inBlock: "b1", position: 2, speed: 100)
-        try p.assertTrain(inBlock: "b2", position: 2, speed: 100)
+        try p.assertTrain(inBlock: "b1", position: 2, speed: LayoutFactory.DefaultMaximumSpeed)
+        try p.assertTrain(inBlock: "b2", position: 2, speed: LayoutFactory.DefaultMaximumSpeed)
         
         try p.triggerFeedback("f22", false)
         try p.triggerFeedback("f31")
         
-        try p.assertTrain(inBlock: "b1", position: 1, speed: 100)
-        try p.assertTrain(inBlock: "b2", position: 1, speed: 100)
-        try p.assertTrain(inBlock: "b3", position: 1, speed: 100)
+        try p.assertTrain(inBlock: "b1", position: 1, speed: LayoutFactory.DefaultMaximumSpeed)
+        try p.assertTrain(inBlock: "b2", position: 1, speed: LayoutFactory.DefaultMaximumSpeed)
+        try p.assertTrain(inBlock: "b3", position: 1, speed: LayoutFactory.DefaultMaximumSpeed)
         
         try p.triggerFeedback("f31", false)
         try p.triggerFeedback("f32")
@@ -145,7 +145,7 @@ class ManualOperationTests: BTTestCase {
         
         let p = try setup(layout: layout, fromBlockId: "b1")
         
-        p.setTrainSpeed(100)
+        p.setTrainSpeed(100, speedLimit: false)
 
         try p.assertTrain(inBlock: "b1", position: 0, speed: 100)
         try p.assertTrain(notInBlock: "b2")
@@ -196,8 +196,8 @@ class ManualOperationTests: BTTestCase {
             XCTAssertNil(block.train)
         }
         
-        func setTrainSpeed(_ speed: TrainSpeed.UnitKph) {
-            layout.setTrainSpeed(train, speed) { }
+        func setTrainSpeed(_ speed: TrainSpeed.UnitKph, speedLimit: Bool) {
+            layout.setTrainSpeed(train, speed, speedLimit: speedLimit) { }
             _ = layoutController.run()
         }
                 

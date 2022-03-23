@@ -28,11 +28,15 @@ import Foundation
 //    - state can be: s, l, r, s01, s23, b21, b03
 // 🚂 = train
 // 💺 = wagon (used to indicate occupation of the train in the various parts of the block (only when train and block length are defined)
-// 🛑🚂 = train stopped
-// 🟨🚂 = train braking
+// 🔴🚂 = train stopped
+// 🟡🚂 = train braking
+// 🟠🚂 = train stopping
+// 🟠🚂 = train stopping
+// 🟢🚂 = train running at full speed
+// 🔵🚂 = train running at limited speed
 // For example:
-// { ≏ ≏ } [r0[ ≏ ≏ 🚂 ]] [[ ≏ ≏ ]] [ ≏ ≏ ] {b0 ≏ ≏ }
-// { ≏ ≏ } <t0:0:1:0> [[r0b0 ≏ ≏ 🚂 ]] <t1:0:1:0> [[ ≏ ≏ ]] [ ≏ ≏ ] <t0:1:0:1> !{b0 ≏ ≏ }
+// { ≏ ≏ } [r0[ ≏ ≏ 🟢🚂 ]] [[ ≏ ≏ ]] [ ≏ ≏ ] {b0 ≏ ≏ }
+// { ≏ ≏ } <t0:0:1:0> [[r0b0 ≏ ≏ 🟢🚂 ]] <t1:0:1:0> [[ ≏ ≏ ]] [ ≏ ≏ ] <t0:1:0:1> !{b0 ≏ ≏ }
 final class LayoutParser {
             
     let routeStrings: [String]

@@ -17,7 +17,7 @@ import XCTest
 class LayoutParserTests: XCTestCase {
     
     func testParseRoute1() {
-        let layout = LayoutFactory.layoutFrom("r0:{r0{b1 🛑🚂0 ≏ ≏ }} [r0[b2 ≏ ≏ ]] [b3 ≏ ≏ ] {b4 ≏ ≏ }")
+        let layout = LayoutFactory.layoutFrom("r0:{r0{b1 🔴🚂0 ≏ ≏ }} [r0[b2 ≏ ≏ ]] [b3 ≏ ≏ ] {b4 ≏ ≏ }")
         
         let blocks = [
             BE(type: .station, uuid: "b1", train: TE(uuid: 0, position: 0, speed: 0), reserved: 0),
@@ -29,11 +29,11 @@ class LayoutParserTests: XCTestCase {
     }
     
     func testParseRoute2() {
-        let layout = LayoutFactory.layoutFrom("r0:{b1 ≏ ≏ } [r0[b2 ≏ 🚂0 ≏ ]] [r0[b3 ≏ ≏ ]] {b4 ≏ ≏ }")
+        let layout = LayoutFactory.layoutFrom("r0:{b1 ≏ ≏ } [r0[b2 ≏ 🟢🚂0 ≏ ]] [r0[b3 ≏ ≏ ]] {b4 ≏ ≏ }")
         
         let blocks = [
             BE(type: .station, uuid: "b1", train: nil, reserved: nil),
-            BE(type: .free, uuid: "b2", train: TE(uuid: 0, position: 1, speed: LayoutFactory.DefaultSpeed), reserved: 0),
+            BE(type: .free, uuid: "b2", train: TE(uuid: 0, position: 1, speed: LayoutFactory.DefaultMaximumSpeed), reserved: 0),
             BE(type: .free, uuid: "b3", train: nil, reserved: 0),
             BE(type: .station, uuid: "b4", train: nil, reserved: nil),
         ]
@@ -41,11 +41,11 @@ class LayoutParserTests: XCTestCase {
     }
     
     func testParseRoute3() {
-        let layout = LayoutFactory.layoutFrom("r0:{b1 ≏ ≏ } [r0[b2 ≏ 🚂0 ≏ ]] [r0[b3 ≏ ≏ ]] {b1 ≏ ≏ }")
+        let layout = LayoutFactory.layoutFrom("r0:{b1 ≏ ≏ } [r0[b2 ≏ 🟢🚂0 ≏ ]] [r0[b3 ≏ ≏ ]] {b1 ≏ ≏ }")
         
         let blocks = [
             BE(type: .station, uuid: "b1", train: nil, reserved: nil),
-            BE(type: .free, uuid: "b2", train: TE(uuid: 0, position: 1, speed: LayoutFactory.DefaultSpeed), reserved: 0),
+            BE(type: .free, uuid: "b2", train: TE(uuid: 0, position: 1, speed: LayoutFactory.DefaultMaximumSpeed), reserved: 0),
             BE(type: .free, uuid: "b3", train: nil, reserved: 0),
             BE(type: .station, uuid: "b1", train: nil, reserved: nil),
         ]
@@ -53,7 +53,7 @@ class LayoutParserTests: XCTestCase {
     }
     
     func testParseRouteMultipleTrains() {
-        let layout = LayoutFactory.layoutFrom("r0:{r0{b1 🛑🚂0 ≏ ≏ }} [r0[b2 ≏ ≏ ]] [r1[b3 🛑🚂1 ≏ ≏ ]] {b4 ≏ ≏ }")
+        let layout = LayoutFactory.layoutFrom("r0:{r0{b1 🔴🚂0 ≏ ≏ }} [r0[b2 ≏ ≏ ]] [r1[b3 🔴🚂1 ≏ ≏ ]] {b4 ≏ ≏ }")
         
         let blocks = [
             BE(type: .station, uuid: "b1", train: TE(uuid: 0, position: 0, speed: 0), reserved: 0),
@@ -65,11 +65,11 @@ class LayoutParserTests: XCTestCase {
     }
     
     func testParseRouteWithFeedbackDetected() {
-        let layout = LayoutFactory.layoutFrom("r0:{b1 ≡ ≏ } [r0[b2 ≏ 🚂0 ≏ ]] [r0[b3 ≏ ≏ ]] {b4 ≏ ≏ }")
+        let layout = LayoutFactory.layoutFrom("r0:{b1 ≡ ≏ } [r0[b2 ≏ 🟢🚂0 ≏ ]] [r0[b3 ≏ ≏ ]] {b4 ≏ ≏ }")
         
         let blocks = [
             BE(type: .station, uuid: "b1", train: nil, reserved: nil, feedbacks: [true, false]),
-            BE(type: .free, uuid: "b2", train: TE(uuid: 0, position: 1, speed: LayoutFactory.DefaultSpeed), reserved: 0, feedbacks: [false, false]),
+            BE(type: .free, uuid: "b2", train: TE(uuid: 0, position: 1, speed: LayoutFactory.DefaultMaximumSpeed), reserved: 0, feedbacks: [false, false]),
             BE(type: .free, uuid: "b3", train: nil, reserved: 0, feedbacks: [false, false]),
             BE(type: .station, uuid: "b4", train: nil, reserved: nil, feedbacks: [false, false]),
         ]
@@ -77,11 +77,11 @@ class LayoutParserTests: XCTestCase {
     }
     
     func testParseRouteWithReservation() {
-        let layout = LayoutFactory.layoutFrom("r0:{r0{b1 ≏ ≏ }} [r0[b2 ≏ 🚂0 ≏ ]] [r1[b3 ≏ ≏ ]] {b4 ≏ ≏ }")
+        let layout = LayoutFactory.layoutFrom("r0:{r0{b1 ≏ ≏ }} [r0[b2 ≏ 🟢🚂0 ≏ ]] [r1[b3 ≏ ≏ ]] {b4 ≏ ≏ }")
         
         let blocks = [
             BE(type: .station, uuid: "b1", train: nil, reserved: 0),
-            BE(type: .free, uuid: "b2", train: TE(uuid: 0, position: 1, speed: LayoutFactory.DefaultSpeed), reserved: 0),
+            BE(type: .free, uuid: "b2", train: TE(uuid: 0, position: 1, speed: LayoutFactory.DefaultMaximumSpeed), reserved: 0),
             BE(type: .free, uuid: "b3", train: nil, reserved: 1),
             BE(type: .station, uuid: "b4", train: nil, reserved: nil),
         ]
@@ -89,11 +89,11 @@ class LayoutParserTests: XCTestCase {
     }
     
     func testParseRouteWithTurnouts() {
-        let layout = LayoutFactory.layoutFrom("r0:{b1 ≏ ≏ } <t0> [r0[b2 ≏ 🚂0 ≏ ]] <t1> [r0[b3 ≏ ≏ ]] <t2,l> {b4 ≏ ≏ }")
+        let layout = LayoutFactory.layoutFrom("r0:{b1 ≏ ≏ } <t0> [r0[b2 ≏ 🟢🚂0 ≏ ]] <t1> [r0[b3 ≏ ≏ ]] <t2,l> {b4 ≏ ≏ }")
         
         let blocks = [
             BE(type: .station, uuid: "b1", turnouts: [T("t0", 0, 1, .straight)]),
-            BE(type: .free, uuid: "b2", train: TE(uuid: 0, position: 1, speed: LayoutFactory.DefaultSpeed), reserved: 0, turnouts: [T("t1", 0, 1, .straight)]),
+            BE(type: .free, uuid: "b2", train: TE(uuid: 0, position: 1, speed: LayoutFactory.DefaultMaximumSpeed), reserved: 0, turnouts: [T("t1", 0, 1, .straight)]),
             BE(type: .free, uuid: "b3", reserved: 0, turnouts: [T("t2", 0, 1, .branchLeft)]),
             BE(type: .station, uuid: "b4"),
         ]

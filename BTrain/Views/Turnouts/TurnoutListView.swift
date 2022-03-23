@@ -65,7 +65,7 @@ struct TurnoutListView: View {
                     
                     Button("􀄬") {
                         layout.sortTurnouts()
-                    }
+                    }.help("Sort Turnouts")
                 }.padding()
             }.frame(maxWidth: SideListFixedWidth)
             

@@ -39,7 +39,7 @@ struct TrainControlSpeedView: View {
                 .help("Change Direction of Travel")
                                 
                 SpeedSlider(speed: speed) {
-                    document.layout.setTrainSpeed(train, speed.requestedKph) { }
+                    document.layout.setTrainSpeed(train, speed.requestedKph, speedLimit: false) { }
                 }
             }.disabled(!document.connected || train.blockId == nil)
         }

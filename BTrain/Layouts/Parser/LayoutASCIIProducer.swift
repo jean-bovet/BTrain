@@ -193,13 +193,13 @@ final class LayoutASCIIProducer {
     func stringFrom(_ train: Train) -> String {
         switch train.state {
         case .running:
-            return "🚂\(train.id)"
+            return "🟢🚂\(train.id)"
         case .braking:
-            return "🟨🚂\(train.id)"
+            return "🟡🚂\(train.id)"
         case .stopping:
-            return "🟧🚂\(train.id)"
+            return "🟠🚂\(train.id)"
         case .stopped:
-            return "🛑🚂\(train.id)"
+            return "🔴🚂\(train.id)"
         }
     }
     

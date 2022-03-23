@@ -89,7 +89,7 @@ final class LayoutRouteParser {
         let blockHeader = parseBlockHeader(type: type, direction: direction)
         
         // Parse the optional digit that indicates a reference to an existing block
-        // Example: { ≏ ≏ } [[ ≏ 🚂 ≏ ]] [[ ≏ ≏ ]] {b0 ≏ ≏ }
+        // Example: { ≏ ≏ } [[ ≏ 🟢🚂 ≏ ]] [[ ≏ ≏ ]] {b0 ≏ ≏ }
         if let blockName = blockHeader.blockName {
             let blockID = Identifier<Block>(uuid: blockName)
             if let existingBlock = layout.block(for: blockID) {
@@ -128,7 +128,8 @@ final class LayoutRouteParser {
         case stoppedLoc
         case brakingLoc
         case runningLoc
-        
+        case runningLimitedLoc
+
         case wagon
         
         case endStation(reserved: Bool)
@@ -144,7 +145,7 @@ final class LayoutRouteParser {
         var currentFeedbackIndex = 0
         parseBlockContent(block: block, newBlock: newBlock, type: type) { contentType in
             switch(contentType) {
-            case .stoppedLoc, .runningLoc, .wagon:
+            case .stoppedLoc, .runningLoc, .runningLimitedLoc, .wagon:
                 _ = parseUUID()
             case .brakingLoc:
                 _ = parseTrainSpeed()
@@ -183,7 +184,10 @@ final class LayoutRouteParser {
                 parseTrain(position: position, block: block, speed: parseTrainSpeed())
                 
             case .runningLoc:
-                parseTrain(position: position, block: block, speed: LayoutFactory.DefaultSpeed)
+                parseTrain(position: position, block: block, speed: LayoutFactory.DefaultMaximumSpeed)
+                
+            case .runningLimitedLoc:
+                parseTrain(position: position, block: block, speed: LayoutFactory.DefaultLimitedSpeed)
                 
             case .wagon:
                 parseWagon(position: position, block: block)
@@ -209,10 +213,14 @@ final class LayoutRouteParser {
     func parseBlockContent(block: Block, newBlock: Bool, type: Block.Category, callback: BlockContentCallback) {
         var parsingBlock = true
         while (sp.more && parsingBlock) {
-            if sp.matches("🛑🚂") {
+            if sp.matches("🔴🚂") {
                 callback(.stoppedLoc)
-            } else if sp.matches("🟨") {
+            } else if sp.matches("🟡") {
                 callback(.brakingLoc)
+            } else if sp.matches("🟢🚂") {
+                callback(.runningLoc)
+            } else if sp.matches("🔵🚂") {
+                callback(.runningLimitedLoc)
             } else if sp.matches("}}") {
                 callback(.endStation(reserved: true))
                 parsingBlock = false
@@ -231,8 +239,6 @@ final class LayoutRouteParser {
             } else if sp.matches("]") {
                 callback(.endFreeOrSidingPrevious(reserved: true))
                 parsingBlock = false
-            } else if sp.matches("🚂") {
-                callback(.runningLoc)
             } else if sp.matches("≏") {
                 callback(.feedback(detected: false))
             } else if sp.matches("≡") {

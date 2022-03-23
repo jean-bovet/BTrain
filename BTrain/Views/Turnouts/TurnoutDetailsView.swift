@@ -108,10 +108,15 @@ struct TurnoutStateSpeedLimitView: View {
     var body: some View {
         ForEach(turnout.allStates, id: \.self) { state in
             let binding = Binding(
-                get: { turnout.stateSpeedLimited[state] ?? false },
+                get: { turnout.stateSpeedLimited[state] ?? .unlimited },
                 set: { turnout.stateSpeedLimited[state] = $0 }
             )
-            Toggle(state.description, isOn: binding)
+            Picker("\(state.description):", selection: binding) {
+                ForEach(Turnout.SpeedLimit.allCases, id:\.self) { speedLimit in
+                    Text(speedLimit.rawValue).tag(speedLimit as Turnout.SpeedLimit)
+                }
+            }
+            .fixedSize()
         }
     }
 }

@@ -183,7 +183,7 @@ final class TrainController {
             debug("Start train \(train.name) because the next blocks could be reserved (route: \(route.steps.debugDescription))")
             stopTrigger = nil
             train.state = .running
-            layout.setTrainSpeed(train, LayoutFactory.DefaultSpeed) { }
+            layout.setTrainSpeed(train, LayoutFactory.DefaultMaximumSpeed) { }
             return .processed
         }
 
@@ -419,13 +419,16 @@ final class TrainController {
                 try layout.setTrainPosition(train, position)
                 debug("Train \(train) moved to position \(train.position) in \(currentBlock.name), direction \(direction)")
                 result = .processed
+                
+                // TODO: SPEED HANDLING
+                layout.adjustSpeedLimit(train)
             }
                         
         }
         
         return result
     }
-    
+
     // This method handles the transition from one block to another, using
     // the entry feedback of the next block to determine when a train moves
     // to the next block.
@@ -467,6 +470,9 @@ final class TrainController {
         // but also the leading blocks so the train can continue to move automatically.
         try layout.setTrainToBlock(train.id, nextBlock.id, position: .custom(value: position), direction: direction, routeIndex: train.routeStepIndex + 1)
                                         
+        // TODO: SPEED HANDLING
+        layout.adjustSpeedLimit(train)
+
         // Handle any route-specific stop now that the train has moved to a new block
         if route.automatic {
             _ = try handleAutomaticRouteStop(route: route)

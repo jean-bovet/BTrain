@@ -82,7 +82,13 @@ final class Turnout: Element, ObservableObject {
         }
     }
 
-    @Published var stateSpeedLimited = [State:Bool]()
+    enum SpeedLimit: String, Codable, CaseIterable {
+        case unlimited
+        case limited
+    }
+
+    // TODO: persist
+    @Published var stateSpeedLimited = [State:SpeedLimit]()
     
     // Contains the reservation for the specified train
     var reserved: Reservation?
@@ -125,26 +131,26 @@ final class Turnout: Element, ObservableObject {
         }
     }
     
-    func defaultStateSpeedLimit(_ state: State) -> Bool {
+    func defaultStateSpeedLimit(_ state: State) -> SpeedLimit {
         switch state {
         case .straight:
-            return false
+            return .unlimited
         case .branch:
-            return true
+            return .limited
         case .branchLeft:
-            return true
+            return .limited
         case .branchRight:
-            return true
+            return .limited
         case .straight01:
-            return false
+            return .unlimited
         case .straight23:
-            return false
+            return .unlimited
         case .branch03:
-            return true
+            return .limited
         case .branch21:
-            return true
+            return .limited
         case .invalid:
-            return true
+            return .limited
         }
     }
 }
