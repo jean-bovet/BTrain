@@ -60,28 +60,30 @@ class TrainLengthTests: XCTestCase {
         b1.train = .init(t1.id, .next)
         
         t1.locomotiveLength = 100+40+100
-        try layout.reservation.fillBlocks(train: t1)
+        try layout.reservation.fillElementWith(train: t1)
         assert(b1, t1, [0:.wagon, 1:.wagon, 2:.locomotive])
         assert(b4, t1, [0:.wagon, 1:.wagon, 2:.wagon])
         assert(b3, t1, [0:.wagon, 1:.wagon, 2:.wagon])
         assert(b2, t1, [1:.wagon, 2:.wagon])
 
         t1.locomotiveLength = 100+40+60
-        try layout.reservation.fillBlocks(train: t1)
+        try layout.reservation.freeElements(train: t1)
+        try layout.reservation.fillElementWith(train: t1)
         assert(b1, t1, [0:.wagon, 1:.wagon, 2:.locomotive])
         assert(b4, t1, [0:.wagon, 1:.wagon, 2:.wagon])
         assert(b3, t1, [0:.wagon, 1:.wagon, 2:.wagon])
         assert(b2, t1, [2:.wagon])
 
         t1.locomotiveLength = 80
-        try layout.reservation.fillBlocks(train: t1)
+        try layout.reservation.freeElements(train: t1)
+        try layout.reservation.fillElementWith(train: t1)
         assert(b1, t1, [0:.wagon, 1:.wagon, 2:.locomotive])
         assert(b4, t1, [2:.wagon])
         assert(b3, nil, nil)
         assert(b2, nil, nil)
 
         t1.locomotiveLength = 2000
-        XCTAssertThrowsError(try layout.reservation.fillBlocks(train: t1))
+        XCTAssertThrowsError(try layout.reservation.fillElementWith(train: t1))
     }
 
     func testReserveWagonsPushedByLocomotive() throws {
@@ -117,28 +119,30 @@ class TrainLengthTests: XCTestCase {
         b4.train = .init(t1.id, .next)
         
         t1.locomotiveLength = 40+100+100+20
-        try layout.reservation.fillBlocks(train: t1)
+        try layout.reservation.fillElementWith(train: t1)
         assert(b4, t1, [0:.locomotive, 1:.wagon, 2:.wagon])
         assert(b1, t1, [0:.wagon, 1:.wagon, 2:.wagon])
         assert(b2, t1, [0:.wagon, 1:.wagon, 2:.wagon])
         assert(b3, t1, [0:.wagon])
 
         t1.locomotiveLength = 40+100+100
-        try layout.reservation.fillBlocks(train: t1)
+        try layout.reservation.freeElements(train: t1)
+        try layout.reservation.fillElementWith(train: t1)
         assert(b4, t1, [0:.locomotive, 1:.wagon, 2:.wagon])
         assert(b1, t1, [0:.wagon, 1:.wagon, 2:.wagon])
         assert(b2, t1, [0:.wagon, 1:.wagon, 2:.wagon])
         assert(b3, t1, [0:.wagon])
 
         t1.locomotiveLength = 40
-        try layout.reservation.fillBlocks(train: t1)
+        try layout.reservation.freeElements(train: t1)
+        try layout.reservation.fillElementWith(train: t1)
         assert(b4, t1, [0:.locomotive, 1:.wagon, 2:.wagon])
         assert(b1, t1, [0:.wagon])
         assert(b2, nil, nil)
         assert(b3, nil, nil)
 
         t1.locomotiveLength = 2000
-        XCTAssertThrowsError(try layout.reservation.fillBlocks(train: t1))
+        XCTAssertThrowsError(try layout.reservation.fillElementWith(train: t1))
     }
 
     func assert(_ block: Block, _ train: Train?, _ parts: [Int:TrainInstance.TrainPart]?) {

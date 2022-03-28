@@ -107,7 +107,7 @@ class AutomaticRoutingTests: BTTestCase {
         layout.trains[0].blocksToAvoid.append(.init(Identifier<Block>(uuid: "s1")))
 
         // There will be no possible route to find
-        _ = try setup(layout: layout, fromBlockId: s1.id, destination: nil, position: .end, routeSteps: [])
+        XCTAssertThrowsError(try setup(layout: layout, fromBlockId: s1.id, destination: nil, position: .end, routeSteps: []))
     }
     
     func testAutomaticRouteWithTurnoutToAvoid() throws {
@@ -122,7 +122,7 @@ class AutomaticRoutingTests: BTTestCase {
         layout.trains[0].turnoutsToAvoid.append(.init(Identifier<Turnout>(uuid: "t5")))
 
         // No route is possible with t5 to avoid
-        p = try setup(layout: layout, fromBlockId: s1.id, destination: nil, position: .end, routeSteps: [])
+        XCTAssertThrowsError(p = try setup(layout: layout, fromBlockId: s1.id, destination: nil, position: .end, routeSteps: []))
     }
 
     func testAutomaticRouteNoRouteToSiding() throws {
@@ -130,7 +130,7 @@ class AutomaticRoutingTests: BTTestCase {
 
         // There is no automatic route possible because there are no stations but only two siding blocks at each end of the route.
         // This will be supported in the future for certain type of train.
-        _ = try setup(layout: layout, fromBlockId: Identifier<Block>(uuid: "A"), destination: nil, position: .end, routeSteps: [])
+        XCTAssertThrowsError(_ = try setup(layout: layout, fromBlockId: Identifier<Block>(uuid: "A"), destination: nil, position: .end, routeSteps: []))
     }
 
     func testAutomaticRouteFinishing() throws {

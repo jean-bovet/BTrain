@@ -47,7 +47,7 @@ final class LayoutReservation {
         
         // Reserve and set the train and its wagon(s) using the necessary number of
         // elements (turnouts and blocks)
-        try fillBlocks(train: train)
+        try fillElementWith(train: train)
 
         // Reserve the number of leading blocks necessary
         return try reserveLeadingBlocks(train: train, trainStarting: trainStarting)
@@ -235,26 +235,7 @@ final class LayoutReservation {
     
     // This method reserves and occupies all the necessary blocks (and parts of the block) to fit
     // the specified train with all its length, taking into account the length of each block.
-    func fillBlocks(train: Train) throws {
-        guard let fromBlockId = train.blockId else {
-            throw LayoutError.trainNotAssignedToABlock(train: train)
-        }
-        
-        guard let fromBlock = layout.block(for: fromBlockId) else {
-            throw LayoutError.blockNotFound(blockId: fromBlockId)
-        }
-                        
-        // First, free all the reserved block "behind" the train so we can reserve them again
-        // using the length of the train in consideraion
-        try freeReservedElements(fromBlockId: fromBlockId,
-                                 direction: fromBlock.wagonDirection(for: train),
-                                 trainId: train.id)
-        
-        // Fill all the elements that are occupied by the train
-        try fillElementWith(train: train)
-    }
-    
-    private func fillElementWith(train: Train) throws {
+    func fillElementWith(train: Train) throws {
         let trainVisitor = TrainVisitor(layout: layout)
         try trainVisitor.visit(train: train) { transition in
             guard transition.reserved == nil else {
@@ -289,38 +270,9 @@ final class LayoutReservation {
             block.reserved = .init(trainId: train.id, direction: attributes.trainDirection)
         }
     }
-
-    private func freeReservedElements(fromBlockId: Identifier<Block>, direction: Direction, trainId: Identifier<Train>) throws {
-        try visitor.visit(fromBlockId: fromBlockId, direction: direction) { info in
-            if let transition = info.transition {
-                if transition.reserved == trainId {
-                    transition.reserved = nil
-                    transition.train = nil
-                } else {
-                    return .stop
-                }
-            } else if let turnout = info.turnout?.turnout {
-                if turnout.reserved?.train == trainId {
-                    turnout.reserved = nil
-                    turnout.train = nil
-                } else {
-                    return .stop
-                }
-            } else if let blockInfo = info.block, blockInfo.block.id != fromBlockId {
-                if blockInfo.block.reserved?.trainId == trainId {
-                    blockInfo.block.reserved = nil
-                    blockInfo.block.train = nil
-                } else {
-                    return .stop
-                }
-            }
-            
-            return .continue
-        }
-    }
-    
+        
     // This methods frees all the reserved elements except the block in which the locomotive is located
-    private func freeElements(train: Train) throws {
+    public func freeElements(train: Train) throws {
         layout.blockMap.values
             .filter { $0.reserved?.trainId == train.id }
             .forEach { block in
@@ -334,7 +286,6 @@ final class LayoutReservation {
         layout.transitions.filter { $0.reserved == train.id }.forEach { $0.reserved = nil; $0.train = nil }
     }
     
-    // This methods frees all the reserved elements except the block in which the locomotive is located
     // This method returns the maximum speed allowed by all the elements occupied by
     // the specified train, which includes blocks and turnouts.
     func maximumSpeedAllowed(train: Train) -> TrainSpeed.UnitKph {
