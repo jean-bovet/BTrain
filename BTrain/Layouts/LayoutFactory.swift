@@ -20,9 +20,15 @@ protocol LayoutCreating {
 
 final class LayoutFactory {
 
-    static let DefaultMaximumSpeed: TrainSpeed.UnitKph = 120
-    static let DefaultLimitedSpeed: TrainSpeed.UnitKph = 71
-    static let DefaultBrakingSpeed: TrainSpeed.UnitKph = 30
+    static let DefaultMaximumSpeed: TrainSpeed.UnitKph = {
+        TrainSpeed.UnitKph(SettingsKeys.integer(forKey: SettingsKeys.maximumSpeed, 120))
+    }()
+    static let DefaultLimitedSpeed: TrainSpeed.UnitKph = {
+        TrainSpeed.UnitKph(SettingsKeys.integer(forKey: SettingsKeys.limitedSpeed, 71))
+    }()
+    static let DefaultBrakingSpeed: TrainSpeed.UnitKph = {
+        TrainSpeed.UnitKph(SettingsKeys.integer(forKey: SettingsKeys.brakingSpeed, 30))
+    }()
 
     static let GlobalLayouts: [LayoutCreating] = [
         LayoutEmptyCreator(),

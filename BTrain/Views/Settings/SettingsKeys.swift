@@ -17,7 +17,11 @@ struct SettingsKeys {
     static let autoConnectSimulator = "autoConnectSimulator"
     static let autoEnableSimulator = "autoEnableSimulator"
     static let fontSize = "fontSize"
-    
+
+    static let maximumSpeed = "maximumSpeed"
+    static let limitedSpeed = "limitedSpeed"
+    static let brakingSpeed = "brakingSpeed"
+
     static let automaticRouteRandom = "automaticRouteRandom"
     static let detectUnexpectedFeedback = "detectUnexpectedFeedback"
     static let strictRouteFeedbackStrategy = "strictRouteFeedbackStrategy"
@@ -28,6 +32,13 @@ struct SettingsKeys {
 
     static func bool(forKey key: String) -> Bool {
         return UserDefaults.standard.bool(forKey: key)
+    }
+    
+    static func integer(forKey key: String, _ defaultValue: Int) -> Int {
+        if UserDefaults.standard.value(forKey: key) == nil {
+            UserDefaults.standard.set(defaultValue, forKey: key)
+        }
+        return UserDefaults.standard.integer(forKey: key)
     }
 }
 

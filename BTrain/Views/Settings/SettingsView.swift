@@ -15,12 +15,16 @@ import SwiftUI
 struct SettingsView: View {
     
     private enum Tabs: Hashable {
-        case general, routing, advanced
+        case general, speed, routing, advanced
     }
 
     @AppStorage(SettingsKeys.autoConnectSimulator) private var autoConnectSimulator = false
     @AppStorage(SettingsKeys.autoEnableSimulator) private var autoEnableSimulator = false
     @AppStorage(SettingsKeys.fontSize) private var fontSize = 12.0
+
+    @AppStorage(SettingsKeys.maximumSpeed) private var maximumSpeed = Int(LayoutFactory.DefaultMaximumSpeed)
+    @AppStorage(SettingsKeys.limitedSpeed) private var limitedSpeed = Int(LayoutFactory.DefaultLimitedSpeed)
+    @AppStorage(SettingsKeys.brakingSpeed) private var brakingSpeed = Int(LayoutFactory.DefaultBrakingSpeed)
 
     @AppStorage(SettingsKeys.automaticRouteRandom) private var automaticRouteRandom = true
     @AppStorage(SettingsKeys.detectUnexpectedFeedback) var detectUnexpectedFeedback = true
@@ -50,6 +54,19 @@ struct SettingsView: View {
             }
             .tag(Tabs.general)
 
+            Form {
+                TextField("Maximum Speed:", value: $maximumSpeed, format: .number)
+                    .unitStyle("kph")
+                TextField("Limited Speed:", value: $limitedSpeed, format: .number)
+                    .unitStyle("kph")
+                TextField("Braking Speed:", value: $brakingSpeed, format: .number)
+                    .unitStyle("kph")
+            }
+            .tabItem {
+                Label("Speed", systemImage: "speedometer")
+            }
+            .tag(Tabs.speed)
+           
             Form {
                 Toggle("Generate Automatic Route at Random", isOn: $automaticRouteRandom)
                 Toggle("Detect Unexpected Feedbacks", isOn: $detectUnexpectedFeedback)
