@@ -49,6 +49,8 @@ enum LayoutError: Error {
     case cannotReserveBlock(block: Block, train: Train, reserved: Reservation)
     
     case routeNotFound(routeId: Identifier<Route>)
+    case noPossibleRoute(train: Train)
+    
     case noSteps(routeId: Identifier<Route>)
     
     case destinationBlockMismatch(currentBlock: Block, destination: Destination)
@@ -114,6 +116,9 @@ extension LayoutError: LocalizedError {
 
         case .routeNotFound(routeId: let routeId):
             return "Route \(routeId) not found"
+        case .noPossibleRoute(train: let train):
+            return "No automatic route found for \(train.name)"
+
         case .noSteps(routeId: let routeId):
             return "No steps defined in route \(routeId)"
         case .alwaysOneAndOnlyOneTransition:

@@ -220,7 +220,10 @@ extension Layout {
             } else {
                 route.automaticMode = .endless
             }
-            try automaticRouting.updateAutomaticRoute(for: trainID)
+            let (success, _) = try automaticRouting.updateAutomaticRoute(for: trainID)
+            if !success {
+                throw LayoutError.noPossibleRoute(train: train)
+            }
         } else {
             // Check to make sure the train is somewhere along the route
             train.routeStepIndex = -1

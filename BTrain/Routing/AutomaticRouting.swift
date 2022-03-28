@@ -22,7 +22,6 @@ final class AutomaticRouting {
         self.pf = PathFinder(layout: layout)
     }
     
-    @discardableResult
     func updateAutomaticRoute(for trainId: Identifier<Train>) throws -> (Bool, Route) {
         let routeId = Route.automaticRouteId(for: trainId)
         
