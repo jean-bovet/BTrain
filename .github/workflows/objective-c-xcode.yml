@@ -16,14 +16,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
         
-      - name: Set Default Scheme
-        run: |
-          scheme_list=$(xcodebuild -list -json | tr -d "\n")
-          default=$(echo $scheme_list | ruby -e "require 'json'; puts JSON.parse(STDIN.gets)['project']['targets'][0]")
-          echo $default | cat >default
-          echo Using default scheme: $default        
-          
-      - name: Install the Apple certificate and provisioning profile
+      - name: Install Apple certificate and Provisioning Profile
         env:
           BUILD_CERTIFICATE_BASE64: ${{ secrets.BUILD_CERTIFICATE_BASE64 }}
           P12_PASSWORD: ${{ secrets.P12_PASSWORD }}
@@ -48,6 +41,13 @@ jobs:
           # apply provisioning profile
 #          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
 #          cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles
+          
+      - name: Set Default Scheme
+        run: |
+          scheme_list=$(xcodebuild -list -json | tr -d "\n")
+          default=$(echo $scheme_list | ruby -e "require 'json'; puts JSON.parse(STDIN.gets)['project']['targets'][0]")
+          echo $default | cat >default
+          echo Using default scheme: $default        
           
       - name: Build
         env:
