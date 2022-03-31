@@ -24,9 +24,7 @@ struct TrainControlRouteView: View {
     @ObservedObject var train: Train
 
     @State private var selectedRoute: Identifier<Route>?
-            
-    @State private var error: String?
-    
+                
     var layout: Layout {
         document.layout
     }
@@ -84,14 +82,9 @@ struct TrainControlRouteView: View {
                 Spacer()
                 
                 if let route = layout.route(for: selectedRoute, trainId: train.id) {
-                    TrainControlRouteActionsView(document: document, train: train, route: route, error: $error)
+                    TrainControlRouteActionsView(document: document, train: train, route: route)
                         .disabled(!document.connected)
                 }
-            }
-            if let error = error, !error.isEmpty {
-                Text(error)
-                    .lineLimit(2)
-                    .fixedSize(horizontal: false, vertical: true)
             }
             if selectedRouteDescription.isEmpty {
                 Text(defaultRouteDescription)

@@ -24,8 +24,6 @@ extension CustomSlider: Inspectable { }
 
 class TrainControlsViewTests: RootViewTests {
 
-    @Binding var error: String? = nil
-
     func testControlList() throws {
         doc.layout.trains[0].blockId = doc.layout.blockIds[0]
         
@@ -58,7 +56,7 @@ class TrainControlsViewTests: RootViewTests {
         let route = layout.routes[0]
         let train = layout.trains[0]
         
-        let sut = TrainControlRouteActionsView(document: doc, train: train, route: route, error: $error)
+        let sut = TrainControlRouteActionsView(document: doc, train: train, route: route)
 
         train.scheduling = .manual
         _ = try sut.inspect().find(button: "Start")

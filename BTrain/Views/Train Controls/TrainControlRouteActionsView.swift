@@ -19,8 +19,6 @@ struct TrainControlRouteActionsView: View {
     @ObservedObject var train: Train
 
     @ObservedObject var route: Route
-
-    @Binding var error: String?
         
     var body: some View {
         HStack {
@@ -28,26 +26,24 @@ struct TrainControlRouteActionsView: View {
                 Button("Start") {
                     do {
                         try document.start(train: train.id, withRoute: route.id, destination: nil)
-                        self.error = nil
+                        train.runtimeInfo = nil
                     } catch {
-                        self.error = error.localizedDescription
+                        train.runtimeInfo = error.localizedDescription
                     }
                 }
             } else {
                 Button("Stop") {
                     do {
                         try document.stop(train: train)
-                        self.error = nil
                     } catch {
-                        self.error = error.localizedDescription
+                        train.runtimeInfo = error.localizedDescription
                     }
                 }
                 Button("Finish") {
                     do {
                         try document.finish(train: train)
-                        self.error = nil
                     } catch {
-                        self.error = error.localizedDescription
+                        train.runtimeInfo = error.localizedDescription
                     }
                 }.disabled(train.automaticFinishingScheduling)
             }
@@ -60,7 +56,7 @@ struct TrainControlRouteActionsView_Previews: PreviewProvider {
     static let doc = LayoutDocument(layout: LayoutACreator().newLayout())
 
     static var previews: some View {
-        TrainControlRouteActionsView(document: doc, train: doc.layout.trains[0], route: doc.layout.routes[0], error: .constant(""))
+        TrainControlRouteActionsView(document: doc, train: doc.layout.trains[0], route: doc.layout.routes[0])
     }
 
 }

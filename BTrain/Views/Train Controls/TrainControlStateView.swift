@@ -16,6 +16,8 @@ struct TrainControlStateView: View {
     
     @ObservedObject var train: Train
     
+    @State private var showingAlert = false
+
     let size = 10.0
     
     var stateString: String {
@@ -59,8 +61,20 @@ struct TrainControlStateView: View {
     var body: some View {
         HStack {
             if let runtimeInfo = train.runtimeInfo {
-                Text("􀇾")
-                    .help(runtimeInfo)
+                Button("􀇾") {
+                    showingAlert.toggle()
+                }
+                .foregroundColor(.red)
+                .buttonStyle(.borderless)
+                .help(runtimeInfo)
+                .alert(runtimeInfo, isPresented: $showingAlert) {
+                    Button("OK", role: .cancel) {
+                    }.keyboardShortcut(.defaultAction)
+                    
+                    Button("Clear") {
+                        train.runtimeInfo = nil
+                    }
+                }
             }
             Circle()
                 .frame(width: size, height: size)
