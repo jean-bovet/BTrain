@@ -1,4 +1,4 @@
-[![Xcode - Build and Analyze](https://github.com/jean-bovet/BTrain/actions/workflows/objective-c-xcode.yml/badge.svg)](https://github.com/jean-bovet/BTrain/actions/workflows/objective-c-xcode.yml)
+[![Xcode - Build and Analyze](https://github.com/jean-bovet/BTrain/actions/workflows/swift-build.yml/badge.svg)](https://github.com/jean-bovet/BTrain/actions/workflows/swift-build.yml)
 
 **Welcome**
 
