@@ -88,7 +88,7 @@ struct SwitchboardPreview: View {
     
     var body: some View {
         Group {
-            if layoutId == LayoutEmptyCreator.id {
+            if layoutId == LayoutBlankCreator.id {
                 Text("Empty Layout")
             } else {
                 SwitchBoardView(switchboard: switchboard,

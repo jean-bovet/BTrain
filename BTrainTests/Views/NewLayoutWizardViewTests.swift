@@ -15,31 +15,36 @@ import XCTest
 @testable import BTrain
 import ViewInspector
 
-extension TurnoutShapeView: Inspectable { }
-extension TurnoutDetailsView: Inspectable { }
+extension WizardSelectLayout: Inspectable { }
+extension WizardSelectLocomotive: Inspectable { }
+extension WizardCreateLayout: Inspectable { }
 
-class TurnoutViewTests: RootViewTests {
+class NewLayoutWizardViewTests: RootViewTests {
+
+    func testNewLayoutWizardView() throws {
+        let sut = NewLayoutWizardView(document: doc)
+        _ = try sut.inspect().find(button: "Previous")
+        _ = try sut.inspect().find(button: "Next")
+    }
+
+    func testWizardSelectLayout() throws {
+        let sut = WizardSelectLayout(selectedLayout: .constant(doc.layout.id))
+        _ = try sut.inspect().find(text: "Select a Layout:")
+    }
     
-    func testListView() throws {
-        let sut = TurnoutListView(layout: LayoutCCreator().newLayout())
-        let value = try sut.inspect().hStack().vStack(0).hStack(1).text(0).string()
-        XCTAssertEqual(value, "2 turnouts")
+    func testWizardSelectLocomotive() throws {
+        let sut = WizardSelectLocomotive(document: doc, selectedTrains: .constant([doc.layout.trains[0].id]))
+        _ = try sut.inspect().find(text: "Select one ore more Locomotive:")
     }
 
-    func testShapeView() throws {
-        let sut = TurnoutShapeView(layout: doc.layout, category: .singleLeft)
-        _ = try sut.inspect().canvas(0)
+    func testWizardCreateLayout() throws {
+        let sut = WizardCreateLayout()
+        _ = try sut.inspect().find(text: "Creating Layout…")
     }
     
-    func testTurnoutDetailsView() throws {
-        let sut = TurnoutDetailsView(layout: doc.layout, turnout: Turnout(type: .singleLeft, address: .init(0, .DCC)))
-        _ = try sut.inspect().find(text: "Protocol:")
+    func testHelper() throws {
+        let helper = PredefinedLayoutHelper()
+        try helper.load()
+        helper.create(layoutId: doc.layout.id, trains: [doc.layout.trains[0].id], in: doc)
     }
-
-    func testTurnoutDetails2View() throws {
-        let sut = TurnoutDetailsView(layout: doc.layout, turnout: Turnout(type: .doubleSlip, address: .init(0, .DCC)))
-        _ = try sut.inspect().find(text: "Protocol:")
-    }
-
-    // TODO: finish with test similars to BlockViewTests
 }

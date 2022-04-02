@@ -31,7 +31,7 @@ final class LayoutFactory {
     }()
 
     static let GlobalLayouts: [LayoutCreating] = [
-        LayoutEmptyCreator(),
+        LayoutBlankCreator(),
         LayoutHCreator(),
         LayoutBCreator(),
         LayoutACreator(),

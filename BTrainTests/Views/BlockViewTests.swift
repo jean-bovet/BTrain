@@ -22,6 +22,7 @@ extension BlockShapeView: Inspectable { }
 extension BlockFeedbacksView: Inspectable { }
 extension BlockDirectionFeedbacksView: Inspectable { }
 extension BlockFeedbackDirectionView: Inspectable { }
+extension BlockSpeedView: Inspectable { }
 
 class BlockViewTests: RootViewTests {
     
@@ -62,4 +63,8 @@ class BlockViewTests: RootViewTests {
 
     }
 
+    func testBlockSpeedView() throws {
+        let sut = BlockSpeedView(block: layout.block(at: 0))
+        _ = try sut.inspect().find(text: "Braking:")
+    }
 }

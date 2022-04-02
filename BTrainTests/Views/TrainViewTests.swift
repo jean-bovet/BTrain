@@ -12,6 +12,8 @@
 
 import XCTest
 import ViewInspector
+import SwiftUI
+import AppKit
 
 @testable import BTrain
 
@@ -21,6 +23,8 @@ extension TrainSpeedView: Inspectable { }
 extension TrainIconView: Inspectable { }
 extension SectionTitleView: Inspectable { }
 extension TrainSpeedGraphView: Inspectable { }
+extension TrainSpeedColumnView: Inspectable { }
+extension TrainSpeedTimingFunctionView: Inspectable { }
 
 class TrainViewTests: RootViewTests {
     
@@ -33,6 +37,24 @@ class TrainViewTests: RootViewTests {
     func testSpeedView() throws {
         let sut = TrainSpeedView(document: doc, train: layout.trains[0], trainSpeed: TrainSpeed(kph: 50, decoderType: .MFX))
         _ = try sut.inspect().vStack().hStack(0).view(TrainSpeedGraphView.self, 1).canvas(0)
+    }
+
+    func testSpeedGraphView() throws {
+        let sut = TrainSpeedGraphView(trainSpeed: .init(kph: 10, decoderType: .DCC))
+            .frame(minWidth: 100, minHeight: 100)
+        let image = sut.renderAsImage()!
+        XCTAssertEqual(image.size, .init(width: 100, height: 100))
+        _ = try sut.inspect().find(TrainSpeedGraphView.self).canvas(0)
+    }
+    
+    func testSpeedColumnView() throws {
+        let sut = TrainSpeedColumnView(selection: .constant([]), currentSpeedEntry: .constant(nil), trainSpeed: TrainSpeed(kph: 0, decoderType: .MFX))
+        _ = try sut.inspect().find(button: "􁂥")
+    }
+
+    func testSpeedTimingFunctionView() throws {
+        let sut = TrainSpeedTimingFunctionView(tf: .init(fromSteps: 0, toSteps: 10, timeIncrement: 100, stepIncrement: 4, type: .bezier))
+        _ = try sut.inspect().canvas(0)
     }
 
     func testDetailsView() throws {

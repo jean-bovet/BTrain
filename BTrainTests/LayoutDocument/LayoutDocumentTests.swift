@@ -42,14 +42,11 @@ class LayoutDocumentTests: XCTestCase {
         let layout = LayoutACreator().newLayout()
         let doc = LayoutDocument(layout: layout)
 
-        let e = expectation(description: "connect")
-        doc.connectToSimulator(enable: false) { error in
-            e.fulfill()
+        connectToSimulator(doc: doc)
+        defer {
+            disconnectFromSimulator(doc: doc)
         }
-        waitForExpectations(timeout: 0.250, handler: nil)
-        
-        doc.enable() {}
-        
+
         let train = layout.trains[0]
         let route = layout.routes[0]
         train.blockId = route.steps[0].blockId
@@ -57,9 +54,6 @@ class LayoutDocumentTests: XCTestCase {
         
         try doc.start(train: train.id, withRoute: route.id, destination: nil)
         try doc.stop(train: train)
-        doc.disable() {}
-
-        doc.disconnect()
     }
     
     static weak var memoryLeakLayout: Layout?
@@ -70,5 +64,36 @@ class LayoutDocumentTests: XCTestCase {
         XCTAssertNotNil(LayoutDocumentTests.memoryLeakLayout)
         doc = nil
         XCTAssertNil(LayoutDocumentTests.memoryLeakLayout)
+    }
+    
+    func testOnConnectTasks() throws {
+        let doc = LayoutDocument(layout: LayoutACreator().newLayout())
+        let t = LayoutOnConnectTasks(layout: doc.layout, layoutController: doc.layoutController, interface: doc.interface)
+        
+        connectToSimulator(doc: doc)
+        defer {
+            disconnectFromSimulator(doc: doc)
+        }
+        
+        let expectation = expectation(description: "Completion")
+        t.performOnConnectTasks(activateTurnouts: true) {
+            expectation.fulfill()
+        }
+        wait(for: [expectation], timeout: 2)
+    }
+    
+    private func connectToSimulator(doc: LayoutDocument) {
+        let e = expectation(description: "connect")
+        doc.connectToSimulator(enable: false) { error in
+            e.fulfill()
+        }
+        waitForExpectations(timeout: 0.250, handler: nil)
+        
+        doc.enable() {}
+    }
+    
+    private func disconnectFromSimulator(doc: LayoutDocument) {
+        doc.disable() {}
+        doc.disconnect()
     }
 }

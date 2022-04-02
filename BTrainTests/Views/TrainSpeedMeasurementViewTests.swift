@@ -15,31 +15,19 @@ import XCTest
 @testable import BTrain
 import ViewInspector
 
-extension TurnoutShapeView: Inspectable { }
-extension TurnoutDetailsView: Inspectable { }
+extension TrainSpeedMeasurementsView: Inspectable { }
+extension TrainSpeedMeasureControlsView: Inspectable { }
 
-class TurnoutViewTests: RootViewTests {
-    
-    func testListView() throws {
-        let sut = TurnoutListView(layout: LayoutCCreator().newLayout())
-        let value = try sut.inspect().hStack().vStack(0).hStack(1).text(0).string()
-        XCTAssertEqual(value, "2 turnouts")
+class TrainSpeedMeasurementViewTests: RootViewTests {
+
+    func testMeasurementsView() throws {
+        let sut = TrainSpeedMeasurementsView(document: doc, layout: doc.layout)
+        _ = try sut.inspect().find(text: "Locomotive:")
     }
 
-    func testShapeView() throws {
-        let sut = TurnoutShapeView(layout: doc.layout, category: .singleLeft)
-        _ = try sut.inspect().canvas(0)
-    }
-    
-    func testTurnoutDetailsView() throws {
-        let sut = TurnoutDetailsView(layout: doc.layout, turnout: Turnout(type: .singleLeft, address: .init(0, .DCC)))
-        _ = try sut.inspect().find(text: "Protocol:")
+    func testMeasureControlsView() throws {
+        let sut = TrainSpeedMeasureControlsView(document: doc, train: doc.layout.trains[0], speedEntries: .constant([]), feedbackA: "a", feedbackB: "b", feedbackC: "c", distanceAB: .constant(10), distanceBC: .constant(20), running: .constant(false), currentSpeedEntry: .constant(nil))
+        _ = try sut.inspect().find(text: "Measure")
     }
 
-    func testTurnoutDetails2View() throws {
-        let sut = TurnoutDetailsView(layout: doc.layout, turnout: Turnout(type: .doubleSlip, address: .init(0, .DCC)))
-        _ = try sut.inspect().find(text: "Protocol:")
-    }
-
-    // TODO: finish with test similars to BlockViewTests
 }

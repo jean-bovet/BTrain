@@ -10,18 +10,45 @@
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-import Foundation
+import SwiftUI
 
-final class LayoutEmptyCreator: LayoutCreating {
-    static var id = Identifier<Layout>(uuid: "empty")
-    
-    var name: String {
-        return "Empty Layout"
+// From: https://stackoverflow.com/questions/69314578/convert-swiftui-view-to-nsimage
+class NoInsetHostingView<V>: NSHostingView<V> where V: View {
+    override var safeAreaInsets: NSEdgeInsets {
+        return .init()
     }
-    
-    func newLayout() -> Layout {
-        Layout()
-    }
-    
 }
 
+extension View {
+    
+    func renderAsImage() -> NSImage? {
+        let view = NoInsetHostingView(rootView: self)
+        view.setFrameSize(view.fittingSize)
+        return view.bitmapImage()
+    }
+
+}
+
+extension Image {
+    func renderAsImage() -> NSImage? {
+        let view = NoInsetHostingView(rootView: self)
+        view.setFrameSize(view.fittingSize)
+        return view.bitmapImage()
+    }
+}
+
+public extension NSView {
+    func bitmapImage() -> NSImage? {
+        guard let rep = bitmapImageRepForCachingDisplay(in: bounds) else {
+            return nil
+        }
+
+        cacheDisplay(in: bounds, to: rep)
+
+        guard let cgImage = rep.cgImage else {
+            return nil
+        }
+
+        return NSImage(cgImage: cgImage, size: bounds.size)
+    }
+}

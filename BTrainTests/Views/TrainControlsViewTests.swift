@@ -19,6 +19,8 @@ import ViewInspector
 extension TrainControlActionsView: Inspectable { }
 extension TrainControlRouteActionsView: Inspectable { }
 extension TrainControlSetLocationSheet: Inspectable { }
+extension TrainControlStateView: Inspectable { }
+
 extension SpeedSlider: Inspectable { }
 extension CustomSlider: Inspectable { }
 
@@ -85,4 +87,10 @@ class TrainControlsViewTests: RootViewTests {
         XCTAssertNoThrow(try sut.inspect().find(button: "Set"))
     }
 
+    func testTrainControlStateView() throws {
+        let train = doc.layout.trains[0]
+        train.runtimeInfo = "Error!"
+        let sut = TrainControlStateView(train: train)
+        _ = try sut.inspect().find(button: "􀇾")
+    }
 }

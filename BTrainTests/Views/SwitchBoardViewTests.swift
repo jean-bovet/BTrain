@@ -20,6 +20,7 @@ extension Canvas: Inspectable { }
 extension SwitchboardEditControlsView: Inspectable { }
 extension NewBlockSheet: Inspectable { }
 extension NewTurnoutSheet: Inspectable { }
+extension SwitchboardSettingsView: Inspectable { }
 
 class SwitchBoardViewTests: XCTestCase {
 
@@ -72,4 +73,8 @@ class SwitchBoardViewTests: XCTestCase {
         _ = try sut.inspect().find(button: "OK")
     }
 
+    func testSwitchboardSettings() throws {
+        let sut = SwitchboardSettingsView()
+        _ = try sut.inspect().find(text: "Block Name")
+    }
 }

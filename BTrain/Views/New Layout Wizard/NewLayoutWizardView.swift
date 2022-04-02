@@ -20,7 +20,7 @@ struct NewLayoutWizardView: View {
     
     @State private var errorString: String?
     
-    @State private var selectedLayout = LayoutEmptyCreator.id
+    @State private var selectedLayout = LayoutBlankCreator.id
     @State private var selectedTrains = Set<Identifier<Train>>()
 
     enum Stage {
