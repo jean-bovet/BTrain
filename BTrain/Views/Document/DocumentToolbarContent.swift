@@ -63,25 +63,37 @@ struct ConnectCommandsView: View {
     var body: some View {
         if document.connected {
             SimulatorIndicationView(simulator: document.simulator)
+                        
+            Spacer()
+
+            Button("􀋧") {
+                document.enable() {}
+            }
+            .disabled(!document.connected)
+            .help("Enable Power")
+            .foregroundColor(.green)
+
+            Button("􀋫") {
+                document.disable() {}
+            }
+            .disabled(!document.connected)
+            .help("Disable Power")
+            .foregroundColor(.red)
             
-            Button("􀡷 Disconnect") {
+            Spacer()
+
+            Button("􀡷") {
                 document.disconnect()
             }
+            .help("Disconnect")
+            .foregroundColor(.red)
         } else {
-            Button("􀡸 Connect") {
+            Button("􀡷") {
                 self.connectAlertShowing.toggle()
             }
+            .help("Connect")
+            .foregroundColor(.green)
         }
-
-        Spacer()
-
-        Button("􀋧 Enable") {
-            document.enable() {}
-        }.disabled(!document.connected)
-
-        Button("􀋫 Disable") {
-            document.disable() {}
-        }.disabled(!document.connected)
     }
 }
 
