@@ -36,7 +36,7 @@ extension Vector2D {
     }
 
     func angle(to vector: Vector2D) -> Double {
-        return acos(self.normalized • vector.normalized)
+        return acos(normalized • vector.normalized)
     }
     
     static func cross(left: Vector2D, right: Vector2D) -> Double {

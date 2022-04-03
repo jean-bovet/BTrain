@@ -23,27 +23,34 @@ extension LayoutDocument: ReferenceFileDocument {
     static let layoutFileName = "layout.json"
     
     convenience init(configuration: ReadConfiguration) throws {
-        switch configuration.contentType {
+        try self.init(contentType: configuration.contentType, file: configuration.file)
+    }
+    
+    convenience init(contentType: UTType, file: FileWrapper) throws {
+        switch contentType {
         case .json:
-            guard let data = configuration.file.regularFileContents else {
+            guard let data = file.regularFileContents else {
                 throw CocoaError(.fileReadCorruptFile)
             }
 
-            let layout = try LayoutDocument.layout(contentType: configuration.contentType, data: data)
+            let layout = try LayoutDocument.layout(contentType: contentType, data: data)
             self.init(layout: layout)
             
         case LayoutDocument.packageType:
-            self.init(layout: try configuration.file.layout())
-            trainIconManager.setIcons(try configuration.file.icons())
+            self.init(layout: try file.layout())
+            trainIconManager.setIcons(try file.icons())
 
         default:
             throw CocoaError(.fileReadUnsupportedScheme)
         }
+    }
 
+    func fileWrapper(snapshot: Data, configuration: WriteConfiguration) throws -> FileWrapper {
+        try fileWrapper(snapshot: snapshot, contentType: configuration.contentType)
     }
     
-    func fileWrapper(snapshot: Data, configuration: WriteConfiguration) throws -> FileWrapper {
-        switch configuration.contentType {
+    func fileWrapper(snapshot: Data, contentType: UTType) throws -> FileWrapper {
+        switch contentType {
         case .json:
             return .init(regularFileWithContents: snapshot)
             

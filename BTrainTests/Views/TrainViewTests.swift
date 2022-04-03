@@ -25,6 +25,8 @@ extension SectionTitleView: Inspectable { }
 extension TrainSpeedGraphView: Inspectable { }
 extension TrainSpeedColumnView: Inspectable { }
 extension TrainSpeedTimingFunctionView: Inspectable { }
+extension TrainDetailsIconSectionView: Inspectable { }
+extension UnitViewModifier: Inspectable { }
 
 class TrainViewTests: RootViewTests {
     
@@ -73,6 +75,11 @@ class TrainViewTests: RootViewTests {
         _ = try speedSection.find(text: "Max Speed:")
     }
     
+    func testIconSectionView() throws {
+        let sut = TrainDetailsIconSectionView(train: doc.layout.trains[0], trainIconManager: doc.trainIconManager)
+        _ = try sut.inspect().find(text: "Icon")
+    }
+    
     func testIconView() throws {
         let layout = LayoutACreator().newLayout()
         let t1 = layout.addTrain(Train(uuid: "16390"))
@@ -94,6 +101,12 @@ class TrainViewTests: RootViewTests {
         XCTAssertNotNil(image.pngData())
     }
 
+    func testUnitView() throws {
+        let sut = TextField("Distance", text: .constant("")).unitStyle("mm")
+        _ = try sut.inspect().find(text: "Distance")
+        _ = try sut.inspect().find(text: "mm")
+    }
+    
     func testSectionTitleView() throws {
         let sut = SectionTitleView(label: "This is a section")
         _ = try sut.inspect().find(text: "This is a section")

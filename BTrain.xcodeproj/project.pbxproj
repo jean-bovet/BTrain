@@ -112,6 +112,7 @@
 		A7710E71277A344300C08150 /* NewBlockSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7710E70277A344300C08150 /* NewBlockSheet.swift */; };
 		A7710E73277A3BC200C08150 /* NewTurnoutSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7710E72277A3BC200C08150 /* NewTurnoutSheet.swift */; };
 		A7710E75277A7AAC00C08150 /* Layout2Swift.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7710E74277A7AAC00C08150 /* Layout2Swift.swift */; };
+		A778407E27F96BFC00F87078 /* GeometryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A778407D27F96BFC00F87078 /* GeometryTests.swift */; };
 		A77A96DC27274A17009E7ECB /* MarklinCANMessagePrinter.swift in Sources */ = {isa = PBXBuildFile; fileRef = A77A96DB27274A17009E7ECB /* MarklinCANMessagePrinter.swift */; };
 		A77A96DE2727767C009E7ECB /* ConnectSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A77A96DD2727767C009E7ECB /* ConnectSheet.swift */; };
 		A783EA5B278530BF00E69B6D /* SimulatorTrain.swift in Sources */ = {isa = PBXBuildFile; fileRef = A783EA5A278530BF00E69B6D /* SimulatorTrain.swift */; };
@@ -374,6 +375,7 @@
 		A7710E70277A344300C08150 /* NewBlockSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewBlockSheet.swift; sourceTree = "<group>"; };
 		A7710E72277A3BC200C08150 /* NewTurnoutSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewTurnoutSheet.swift; sourceTree = "<group>"; };
 		A7710E74277A7AAC00C08150 /* Layout2Swift.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Layout2Swift.swift; sourceTree = "<group>"; };
+		A778407D27F96BFC00F87078 /* GeometryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeometryTests.swift; sourceTree = "<group>"; };
 		A77A96DB27274A17009E7ECB /* MarklinCANMessagePrinter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarklinCANMessagePrinter.swift; sourceTree = "<group>"; };
 		A77A96DD2727767C009E7ECB /* ConnectSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectSheet.swift; sourceTree = "<group>"; };
 		A783EA5A278530BF00E69B6D /* SimulatorTrain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimulatorTrain.swift; sourceTree = "<group>"; };
@@ -650,6 +652,7 @@
 				A775C62027A37C1300D712CF /* Routing */,
 				A73E07F3276974E6005F9D64 /* Views */,
 				A775C61E27A37B8800D712CF /* Utilities */,
+				A778407D27F96BFC00F87078 /* GeometryTests.swift */,
 			);
 			path = BTrainTests;
 			sourceTree = "<group>";
@@ -1543,6 +1546,7 @@
 				A7CA5EBD2795339000171398 /* AutomaticRoutingTests.swift in Sources */,
 				A73E0812276ACDA8005F9D64 /* ClientServerTests.swift in Sources */,
 				A7CA5ECC2797D1EB00171398 /* Layout+Extension.swift in Sources */,
+				A778407E27F96BFC00F87078 /* GeometryTests.swift in Sources */,
 				A7C6343827E6AF6700C37B46 /* TrainIconManagerTests.swift in Sources */,
 				A73E07F027697127005F9D64 /* FeedbackViewTests.swift in Sources */,
 				A73E080F276ACC79005F9D64 /* ScheduledMessageQueueTests.swift in Sources */,

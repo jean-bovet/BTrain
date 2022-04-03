@@ -17,25 +17,36 @@ import UniformTypeIdentifiers
 @testable import BTrain
 
 class LayoutDocumentTests: XCTestCase {
+    
+    func testReadPackageFile() throws {
+        let url = Bundle(for: LayoutDocument.self).url(forResource: "Predefined", withExtension: "btrain")!
+        
+        let fw = try FileWrapper(url: url, options: [])
 
-    func testWriteToFile() throws {
-        let layout = LayoutACreator().newLayout()
-        let doc = LayoutDocument(layout: layout)
-        let data = try doc.snapshot(contentType: .json)
-        XCTAssertFalse(data.isEmpty)
+        let doc = try LayoutDocument(contentType: LayoutDocument.packageType, file: fw)
+        let diag = LayoutDiagnostic(layout: doc.layout)
+        let errors = try diag.check(.skipLengths)
+        XCTAssertEqual(errors.count, 0)
+        
+        let snapshot = try doc.snapshot(contentType: LayoutDocument.packageType)
+        _ = try doc.fileWrapper(snapshot: snapshot, contentType: LayoutDocument.packageType)
     }
     
-    func testReadFromFile() throws {
+    func testReadJSONFile() throws {
         guard let url = Bundle(for: type(of: self )).url(forResource: "Layout", withExtension: "json") else {
             XCTFail("Unable to find the Layout.json file")
             return
         }
 
-        let data = try Data(contentsOf: url)
-        let layout = try LayoutDocument.layout(contentType: .json, data: data)
-        let diag = LayoutDiagnostic(layout: layout)
+        let fw = try FileWrapper(url: url, options: [])
+
+        let doc = try LayoutDocument(contentType: .json, file: fw)
+        let diag = LayoutDiagnostic(layout: doc.layout)
         let errors = try diag.check(.skipLengths)
         XCTAssertEqual(errors.count, 0)
+        
+        let snapshot = try doc.snapshot(contentType: .json)
+        _ = try doc.fileWrapper(snapshot: snapshot, contentType: .json)
     }
     
     func testUXCommands() throws {
