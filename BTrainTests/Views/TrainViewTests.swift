@@ -54,6 +54,7 @@ class TrainViewTests: RootViewTests {
 
     func testSpeedTimingFunctionView() throws {
         let sut = TrainSpeedTimingFunctionView(tf: .init(fromSteps: 0, toSteps: 10, timeIncrement: 100, stepIncrement: 4, type: .bezier))
+        _ = sut.renderAsImage()!
         _ = try sut.inspect().canvas(0)
     }
 

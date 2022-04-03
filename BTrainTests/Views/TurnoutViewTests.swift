@@ -28,6 +28,7 @@ class TurnoutViewTests: RootViewTests {
 
     func testShapeView() throws {
         let sut = TurnoutShapeView(layout: doc.layout, category: .singleLeft)
+        _ = sut.renderAsImage()!
         _ = try sut.inspect().canvas(0)
     }
     

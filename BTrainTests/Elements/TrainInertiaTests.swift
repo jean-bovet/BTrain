@@ -125,7 +125,7 @@ class TrainInertiaTests: XCTestCase {
             expectation.fulfill()
         }
 
-        wait(for: [expectation], timeout: 2.0)
+        wait(for: [expectation], timeout: 3.0)
         
         XCTAssertEqual(ic.desired.value, steps)
         XCTAssertEqual(ic.actual.value, steps)
