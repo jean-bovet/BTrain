@@ -40,12 +40,9 @@ An embedded Marklin Central 3 station simulator allows BTrain to simulate a layo
 - Support for Marklin Central Station 3
 - Layout simulator to simulate the movement of the trains, including feedbacks and turnouts, without having to connect to a real Central Station 3
 
-**Limitations**
-
-- Locomotives pushing their wagons is only partially supported today.
-
 **Known Issues**
 
+- Locomotives pushing their wagons is only partially supported today.
 - The document does not get marked as "Edited" for some changes.
 
 **Glossary**
@@ -55,6 +52,14 @@ An embedded Marklin Central 3 station simulator allows BTrain to simulate a layo
 - Feedback: an element that indicates when a train is present or not
 - Transition: any stretch of track between a block and turnout (and any combination of)
 - Route: a series of blocks that a train follows
+
+**Build from Source**
+
+To compile BTrain from source, the following versions are required:
+- macOS 12.x
+- Xcode 13.x
+
+Clone this repository and open the `BTrain.xcodeproj` in Xcode. Hit Command-R and enjoy!
 
 **References**
 
