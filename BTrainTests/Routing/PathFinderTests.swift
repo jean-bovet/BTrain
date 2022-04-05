@@ -136,8 +136,6 @@ class PathFinderTests: BTTestCase {
         
         let pf = PathFinder(layout: layout)
         pf.turnoutSocketSelectionOverride = { turnout, socketsId, context in
-            context.visitedSteps.removeAll()
-            
             let s1 = layout.block(for: Identifier<Block>(uuid: "s1"))!
             s1.reserved = Reservation("other", .next)
 
@@ -148,7 +146,8 @@ class PathFinderTests: BTTestCase {
         }
 
         do {
-            let settings = PathFinder.Settings(random: false, reservedBlockBehavior: .avoidReserved, verbose: false)
+            var settings = PathFinder.Settings(random: false, reservedBlockBehavior: .avoidReserved, verbose: false)
+            settings.avoidAlreadyVisitedBlocks = false
             _ = try pf.path(trainId: layout.trains[0].id, from: s1, direction: .next, settings: settings)
             XCTFail("Exception must be thrown")
         } catch PathFinder.PathError.overflow {

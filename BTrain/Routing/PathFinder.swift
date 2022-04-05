@@ -46,28 +46,46 @@ final class PathFinder {
         let settings: Settings
 
         // The list of steps defining this path
-        var steps = [Route.Step]()
+        let steps: [Route.Step]
 
         // The list of visited steps (block+direction),
         // used to ensure the algorithm does not
         // re-use a block and ends up in an infinite loop.
-        var visitedSteps = [Route.Step]()
+        let visitedSteps: [Route.Step]
         
-        init(train: Train?, destination: Destination?, overflow: Int, settings: Settings) {
+        var path: Path {
+            return Path(steps: steps, context: self)
+        }
+        
+        init(train: Train?, destination: Destination?, overflow: Int, settings: Settings, steps: [Route.Step] = [], visitedSteps: [Route.Step] = []) {
             self.train = train
             self.destination = destination
             self.overflow = overflow
             self.settings = settings
+            self.steps = steps
+            self.visitedSteps = visitedSteps
         }
         
         func hasVisited(_ step: Route.Step) -> Bool {
-            return visitedSteps.contains { $0.same(step) }
+            if settings.avoidAlreadyVisitedBlocks {
+                return visitedSteps.contains { $0.same(step) }
+            } else {
+                return false
+            }
         }
 
         var isOverflowing: Bool {
             return steps.count >= overflow
         }
         
+        func appending(_ step: Route.Step) -> Context {
+            return .init(train: train, destination: destination, overflow: overflow, settings: settings, steps: steps + [step], visitedSteps: visitedSteps)
+        }
+        
+        func visiting(_ step: Route.Step) -> Context {
+            return .init(train: train, destination: destination, overflow: overflow, settings: settings, steps: steps, visitedSteps: visitedSteps + [step])
+        }
+
         func print(_ msg: String) {
             if settings.verbose {
                 BTLogger.debug(" \(msg)")
@@ -106,6 +124,8 @@ final class PathFinder {
         // True if the first block that is found must match the destination.
         var firstBlockShouldMatchDestination = false
         
+        var avoidAlreadyVisitedBlocks = true
+        
         let verbose: Bool
     }
 
@@ -139,11 +159,9 @@ final class PathFinder {
         var smallestPath: Path?
         let overflow = (layout.turnouts.count + layout.blocks.count) * 4
         for _ in 1...numberOfPaths {
-            let context = Context(train: train, destination: destination, overflow: overflow, settings: settings)
-            context.steps.append(Route.Step(block.id, direction))
+            let context = Context(train: train, destination: destination, overflow: overflow, settings: settings, steps: [Route.Step(block.id, direction)])
             
-            if try findPath(from: block, direction: direction, context: context) {
-                let path = Path(steps: context.steps, context: context)
+            if let path = try findPath(from: block, direction: direction, context: context) {
                 generatedPathCallback?(path)
                 if smallestPath == nil {
                     smallestPath = path
@@ -157,7 +175,7 @@ final class PathFinder {
     
     // MARK: -- Recursive functions
     
-    private func findPath(from block: Block, direction: Direction, context: Context) throws -> Bool {
+    private func findPath(from block: Block, direction: Direction, context: Context) throws -> Path? {
         guard !context.isOverflowing else {
             throw PathError.overflow
         }
@@ -170,25 +188,25 @@ final class PathFinder {
         // is not a valid one to use.
         if context.hasVisited(step) {
             context.print("\(step) has been visited before, backtrack")
-            return false
+            return nil
         }
         
         // Remember this step in case we find it again during our analysis
-        context.visitedSteps.append(step)
+        let newContext = context.visiting(step)
 
         // Find out all the transitions out of this block `next` or `previous` socket,
         // depending on the direction of travel of the train
         let from = direction == .next ? block.next : block.previous
         if let transition = try layout.transition(from: from) {
             assert(transition.a.block == block.id)
-            if try findPath(from: transition, context: context) {
-                return true
+            if let path = try findPath(from: transition, context: newContext) {
+                return path
             }
         }
-        return false
+        return nil
     }
     
-    private func findPath(from turnout: Turnout, fromSocketId: Int, context: Context) throws -> Bool {
+    private func findPath(from turnout: Turnout, fromSocketId: Int, context: Context) throws -> Path? {
         guard !context.isOverflowing else {
             throw PathError.overflow
         }
@@ -201,30 +219,33 @@ final class PathFinder {
         context.print("Evaluating possible sockets \(nextSocketIds) from \(turnout):\(fromSocketId)")
         
         // Iterate over all the sockets
+        // TODO: return all possible paths to the destination from here?
         for id in nextSocketIds {
             let nextSocket = turnout.socket(id)
             if let transition = try layout.transition(from: nextSocket) {
                 assert(transition.a.turnout == turnout.id)
-                
+
+                let newContext: Context
                 if context.settings.includeTurnouts {
-                    context.steps.append(Route.Step(turnout.id, Socket.turnout(turnout.id, socketId: fromSocketId), nextSocket))
+                    newContext = context.appending(Route.Step(turnout.id, Socket.turnout(turnout.id, socketId: fromSocketId), nextSocket))
+                } else {
+                    newContext = context
                 }
 
                 // Drill down this transition to see if it leads to a valid path
-                if try findPath(from: transition, context: context) {
-                    return true
+                if let path = try findPath(from: transition, context: newContext) {
+                    return path
                 } else {
                     if context.settings.includeTurnouts {
                         context.print("Backtracking \(turnout.name) and socket \(id) and removing it")
-                        context.steps.removeLast()
                     }
                 }
             }
         }
-        return false
+        return nil
     }
 
-    private func findPath(from transition: ITransition, context: Context) throws -> Bool {
+    private func findPath(from transition: ITransition, context: Context) throws -> Path? {
         guard !context.isOverflowing else {
             throw PathError.overflow
         }
@@ -241,7 +262,7 @@ final class PathFinder {
             // Find out if the next block is allowed to be used for that train
             if let train = context.train, train.blocksToAvoid.contains(where: {$0.blockId == nextBlockId }) {
                 context.print("The next block \(nextBlockId) is marked as to be avoided by train \(train.name), backtracking")
-                return false
+                return nil
             }
             
             // Find out if the next block is already reserved
@@ -251,21 +272,21 @@ final class PathFinder {
             
             if !nextBlock.enabled && !context.settings.ignoreDisabledElements  {
                 context.print("The next block \(nextBlock) is disabled, backtracking")
-                return false
+                return nil
             } else if let reserved = nextBlock.reserved, reserved.trainId != context.train?.id {
                 // The next block is reserved for another train, determine what to do.
                 switch context.settings.reservedBlockBehavior {
                 case .avoidReserved:
                     context.print("The next block \(nextBlock) is reserved for \(nextBlock.reserved!), backtracking")
-                    return false
-                    
+                    return nil
+
                 case .avoidFirstReservedBlock:
                     // Count the number of blocks that the path contains so far.
                     // Note: remove one block because we don't take into account the first block which is the starting block
                     let numberOfBlocks = context.steps.dropFirst().filter { $0.blockId != nil }.count
                     if numberOfBlocks == 0 {
                         context.print("The next block \(nextBlock) is reserved for \(nextBlock.reserved!), backtracking")
-                        return false
+                        return nil
                     } else {
                         context.print("The next block \(nextBlock) is reserved for \(nextBlock.reserved!) but will be ignored because it is the first block")
                     }
@@ -276,7 +297,7 @@ final class PathFinder {
             }
             
             // Add this block to the path
-            context.steps.append(Route.Step(nextBlock.id, nextBlockDirection))
+            let newContext = context.appending(Route.Step(nextBlock.id, nextBlockDirection))
             
             // Return early if the block is a station,
             // because we have reached the end of the path
@@ -284,41 +305,37 @@ final class PathFinder {
                 if let toDirection = destination.direction {
                     if nextBlock.id == destination.blockId && nextBlockDirection == toDirection {
                         context.print("Reached the destination block \(destination.blockId) with desired direction of \(toDirection)")
-                        return true
+                        return newContext.path
                     } else if context.settings.firstBlockShouldMatchDestination {
-                        context.steps.removeLast()
-                        return false
+                        return nil
                     }
                 } else {
                     if nextBlock.id == destination.blockId {
                         context.print("Reached the destination block \(destination.blockId)")
-                        return true
+                        return newContext.path
                     } else if context.settings.firstBlockShouldMatchDestination {
-                        context.steps.removeLast()
-                        return false
+                        return nil
                     }
                 }
             } else if nextBlock.category == .station {
                 context.print("Reached a station at block \(nextBlock)")
-                return true
+                return newContext.path
             } else if nextBlock.category == .sidingNext || nextBlock.category == .sidingPrevious {
                 context.print("Reached a siding at block \(nextBlock)")
                 if context.settings.consideringStoppingAtSiding {
-                    return true
+                    return newContext.path
                 } else {
-                    context.steps.removeLast()
-                    return false
+                    return nil
                 }
             }
                         
             // If the block is not a station, let's continue recursively
-            if try findPath(from: nextBlock, direction: nextBlockDirection, context: context) {
-                return true
+            if let path = try findPath(from: nextBlock, direction: nextBlockDirection, context: newContext) {
+                return path
             } else {
                 // If there is no path out of this block, we need to backtrack one block
                 // and start again with another transitions.
                 context.print("Backtracking \(nextBlock) and removing it")
-                context.steps.removeLast()
             }
         } else if let nextTurnoutId = transition.b.turnout {
             // The transition ends up in a turnout
@@ -328,7 +345,7 @@ final class PathFinder {
             
             if !nextTurnout.enabled && !context.settings.ignoreDisabledElements  {
                 context.print("The next turnout \(nextTurnout) is disabled, backtracking")
-                return false
+                return nil
             }
             
             if let reserved = nextTurnout.reserved, reserved.train != context.train?.id {
@@ -336,7 +353,7 @@ final class PathFinder {
                 switch context.settings.reservedBlockBehavior {
                 case .avoidReserved:
                     context.print("The next turnout \(nextTurnout) is reserved for \(reserved.train), backtracking")
-                    return false
+                    return nil
                     
                 case .avoidFirstReservedBlock:
                     // Count the number of blocks that the path contains so far.
@@ -346,7 +363,7 @@ final class PathFinder {
                         context.print("The next turnout \(nextTurnout) is reserved for \(reserved.train) but will be ignored because it is before the first block")
                     } else {
                         context.print("The next turnout \(nextTurnout) is reserved for \(reserved.train), backtracking")
-                        return false
+                        return nil
                     }
                     
                 case .ignoreReserved:
@@ -357,17 +374,17 @@ final class PathFinder {
             // Find out if the next turnout is allowed to be used for that train
             if let train = context.train, train.turnoutsToAvoid.contains(where: {$0.turnoutId == nextTurnoutId }) {
                 context.print("The next turnout \(nextTurnoutId) is marked as to be avoided by train \(train.name), backtracking")
-                return false
+                return nil
             }
 
             // Find a valid path out of that turnout
-            if try findPath(from: nextTurnout, fromSocketId: transition.b.socketId!, context: context) {
-                return true
+            if let path = try findPath(from: nextTurnout, fromSocketId: transition.b.socketId!, context: context) {
+                return path
             }
         } else {
             assertionFailure("Unsupported scenario")
         }
-        return false
+        return nil
     }
     
     // This function takes a turnout and a `socket` it and returns all the sockets
