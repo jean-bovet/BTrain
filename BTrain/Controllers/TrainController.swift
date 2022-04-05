@@ -420,7 +420,8 @@ final class TrainController {
                 debug("Train \(train) moved to position \(train.position) in \(currentBlock.name), direction \(direction)")
                 result = .processed
                 
-                // TODO: SPEED HANDLING
+                // Always adjust the speed after the train has moved within a block because it might
+                // now be reaching out to element that have speed limits.
                 layout.adjustSpeedLimit(train)
             }
                         
@@ -470,7 +471,8 @@ final class TrainController {
         // but also the leading blocks so the train can continue to move automatically.
         try layout.setTrainToBlock(train.id, nextBlock.id, position: .custom(value: position), direction: direction, routeIndex: train.routeStepIndex + 1)
                                         
-        // TODO: SPEED HANDLING
+        // Always adjust the speed after the train enters a new block because it might
+        // now be reaching out to element that have speed limits.
         layout.adjustSpeedLimit(train)
 
         // Handle any route-specific stop now that the train has moved to a new block

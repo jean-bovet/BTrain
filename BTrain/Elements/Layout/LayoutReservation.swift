@@ -74,7 +74,11 @@ final class LayoutReservation {
             return false
         }
         assert(resolvedSteps.count >= stepsToReserve.count)
-
+        
+        return try reserveSteps(train: train, resolvedSteps: resolvedSteps)
+    }
+    
+    private func reserveSteps(train: Train, resolvedSteps: [Route.Step]) throws -> Bool {
         // Variable keeping track of the number of leading blocks that have been reserved.
         // At least one block must have been reserved to consider this function successfull.
         // Note: blocks that are reserved for the train and its wagons do not count against that count.
@@ -290,10 +294,11 @@ final class LayoutReservation {
     // the specified train, which includes blocks and turnouts.
     func maximumSpeedAllowed(train: Train) -> TrainSpeed.UnitKph {
         var maximumSpeedAllowed: TrainSpeed.UnitKph = LayoutFactory.DefaultMaximumSpeed
+        // TODO: block speed limit
 //        layout.blockMap.values
 //            .filter { $0.reserved?.trainId == train.id }
 //            .forEach { block in
-//                // TODO: block speed limit
+//
 //            }
         layout.turnouts.filter { $0.reserved?.train == train.id }.forEach { turnout in
             if let speedLimit = turnout.stateSpeedLimited[turnout.state] {

@@ -219,7 +219,6 @@ final class PathFinder {
         context.print("Evaluating possible sockets \(nextSocketIds) from \(turnout):\(fromSocketId)")
         
         // Iterate over all the sockets
-        // TODO: return all possible paths to the destination from here?
         for id in nextSocketIds {
             let nextSocket = turnout.socket(id)
             if let transition = try layout.transition(from: nextSocket) {

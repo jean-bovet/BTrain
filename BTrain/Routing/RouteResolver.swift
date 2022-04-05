@@ -59,6 +59,7 @@ final class RouteResolver {
                 throw LayoutError.missingDirection(step: previousStep)
             }
             
+            // TODO: Take into account already defined turnout in the original `steps` array.
             guard let block = layout.block(for: step.blockId) else {
                 continue
             }
