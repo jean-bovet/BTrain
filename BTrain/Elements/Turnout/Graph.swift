@@ -47,7 +47,12 @@ protocol Edge {
     var toNodeSocket: SocketId? { get }
 }
 
-struct PathElement {
+struct PathElement: Equatable {
+    
+    static func == (lhs: PathElement, rhs: PathElement) -> Bool {
+        return lhs.node.identifier == rhs.node.identifier && lhs.enterSocket == rhs.enterSocket && lhs.exitSocket == rhs.exitSocket
+    }
+    
     let node: Node
     let exitSocket: SocketId?
     let enterSocket: SocketId?
@@ -71,20 +76,22 @@ final class GraphPathFinder {
     
     func path(graph: Graph, from: Node, to: Node) -> GraphPath? {
         for socketId in from.sockets {
-            if let steps = path(graph: graph, from: from, fromSocketId: socketId, to: to, visitedNodes: [], currentPath: [PathElement.starting(from, socketId)]) {
-                return steps
+            for toSocketId in to.sockets {
+                if let steps = path(graph: graph, from: PathElement.starting(from, socketId), to: PathElement.ending(to, toSocketId), visitedNodes: [], currentPath: [PathElement.starting(from, socketId)]) {
+                    return steps
+                }
             }
         }
         return nil
     }
     
-    func path(graph: Graph, from: Node, fromSocketId: SocketId, to: Node, visitedNodes: [Node], currentPath: GraphPath) -> GraphPath? {
+    func path(graph: Graph, from: PathElement, to: PathElement, visitedNodes: [Node], currentPath: GraphPath) -> GraphPath? {
 
-        guard from.identifier != to.identifier else {
+        guard from != to else {
             return currentPath
         }
         
-        guard let edge = graph.edge(from: from, socketId: fromSocketId) else {
+        guard let edge = graph.edge(from: from.node, socketId: from.exitSocket!) else {
             return nil
         }
         
@@ -96,19 +103,21 @@ final class GraphPathFinder {
             return nil
         }
         
-        if node.identifier == to.identifier {
+        let endingElement = PathElement.ending(node, enterSocketId)
+        if endingElement == to {
             // We reached the destination node
-            return currentPath + [PathElement.ending(node, enterSocketId)]
-        } else {
-            // We haven't reached the destination node, keep going forward
-            // by exploring all the possible exit sockets from `node`
-            let exitSockets = node.reachableSockets(from: enterSocketId)
-            for exitSocket in exitSockets {
-                if let path = path(graph: graph, from: node, fromSocketId: exitSocket, to: to,
-                                   visitedNodes: visitedNodes + [node],
-                                   currentPath: currentPath + [PathElement.between(node, enterSocketId, exitSocket)]) {
-                    return path
-                }
+            return currentPath + [endingElement]
+        }
+
+        // We haven't reached the destination node, keep going forward
+        // by exploring all the possible exit sockets from `node`
+        let exitSockets = node.reachableSockets(from: enterSocketId)
+        for exitSocket in exitSockets {
+            let betweenElement = PathElement.between(node, enterSocketId, exitSocket)
+            if let path = path(graph: graph, from: betweenElement, to: to,
+                               visitedNodes: visitedNodes + [node],
+                               currentPath: currentPath + [PathElement.between(node, enterSocketId, exitSocket)]) {
+                return path
             }
         }
 
@@ -127,8 +136,7 @@ final class GraphPathResolver {
         resolvedPath.append(previousElement)
         for element in path.dropFirst() {
             let pf = GraphPathFinder()
-            // TODO: specify the enterSocket of the `to` node
-            if let p = pf.path(graph: graph, from: previousElement.node, fromSocketId: previousElement.exitSocket!, to: element.node, visitedNodes: [], currentPath: []) {
+            if let p = pf.path(graph: graph, from: previousElement, to: element, visitedNodes: [], currentPath: []) {
                 for resolvedElement in p.dropLast() {
                     resolvedPath.append(resolvedElement)
                 }

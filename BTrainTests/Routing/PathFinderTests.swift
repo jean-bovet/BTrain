@@ -13,23 +13,6 @@
 import XCTest
 @testable import BTrain
 
-extension Array where Element == PathElement {
-    
-    var description: [String] {
-        map { pathElement in
-            var text = ""
-            if let enterSocket = pathElement.enterSocket {
-                text += "\(enterSocket):"
-            }
-            text += pathElement.node.identifier
-            if let exitSocket = pathElement.exitSocket {
-                text += ":\(exitSocket)"
-            }
-            return text
-        }
-    }
-}
-
 class PathFinderTests: BTTestCase {
         
     func testSimplePath() throws {
@@ -43,30 +26,6 @@ class PathFinderTests: BTTestCase {
         XCTAssertEqual(path!.description, ["s1:next", "b1:next", "b2:next", "b3:next", "s2:next"])
     }
     
-    func testGraph() throws {
-        let layout = LayoutACreator().newLayout()
-        let b1 = layout.block(for: Identifier<Block>(uuid: "b1"))!
-        let b3 = layout.block(for: Identifier<Block>(uuid: "b3"))!
-        
-        let gf = GraphPathFinder()
-        let p = gf.path(graph: layout, from: b1, to: b3)!
-        XCTAssertEqual(p.description, ["b1:1", "0:t0:1", "0:b2:1", "0:t1:2", "0:b3"])
-    }
-
-    func testGraphResolve() throws {
-        let layout = LayoutACreator().newLayout()
-        let b1 = layout.block(for: Identifier<Block>(uuid: "b1"))!
-        let b3 = layout.block(for: Identifier<Block>(uuid: "b3"))!
-
-        // TODO: test with some turnout and no block
-        // TODO: test a complete path as well to ensure the same is returned (including and not including the edges?)
-        let partialPath = [ PathElement.starting(b1, 1), PathElement.ending(b3, 0) ]
-
-        let gr = GraphPathResolver()
-        let p = gr.resolve(graph: layout, partialPath)!
-        XCTAssertEqual(p.description, ["b1:1", "0:t0:1", "0:b2:1", "0:t1:2", "0:b3"])
-    }
-
     func testPathWithBacktrack() throws {
         let layout = LayoutECreator().newLayout()
         let s1 = layout.block(for: Identifier<Block>(uuid: "s1"))!
