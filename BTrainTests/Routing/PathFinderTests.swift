@@ -13,6 +13,25 @@
 import XCTest
 @testable import BTrain
 
+extension Layout {
+    
+    func description(_ steps: [GraphElementId]) -> [String] {
+        steps.compactMap { elementId in
+            if let block = block(for: Identifier<Block>(uuid: elementId)) {
+                return block.description
+            }
+            if let turnout = turnout(for: Identifier<Turnout>(uuid: elementId)) {
+                return turnout.description
+            }
+            if let transition = transition(for: Identifier<Transition>(uuid: elementId)) {
+                return "\(transition.a.socketId!):\(transition.b.socketId!)"
+            }
+            
+            return nil
+        }
+    }
+}
+
 class PathFinderTests: BTTestCase {
         
     func testSimplePath() throws {
@@ -33,7 +52,7 @@ class PathFinderTests: BTTestCase {
         
         let gf = GraphPathFinder()
         let p = gf.path(graph: layout, from: b1, to: b3)!
-        XCTAssertEqual(p, ["b1", "t0", "b2", "t1", "b3"])
+        XCTAssertEqual(layout.description(p), ["b1", "1:0", "t0", "1:0", "b2", "1:0", "t1", "2:0", "b3"])
     }
     
     func testPathWithBacktrack() throws {

@@ -33,6 +33,10 @@ extension Layout {
         transitions.removeAll(where: { $0.id == transitionID })        
     }
 
+    func transition(for transitionID: Identifier<Transition>) -> ITransition? {
+        return transitions.first(where: { $0.id == transitionID })
+    }
+    
     func transitions(from fromBlock: Identifier<Block>, to nextBlock: Identifier<Block>, direction: Direction) throws -> [ITransition] {
         guard let b1 = self.block(for: fromBlock) else {
             throw LayoutError.blockNotFound(blockId: fromBlock)

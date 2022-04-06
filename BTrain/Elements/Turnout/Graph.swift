@@ -61,7 +61,7 @@ final class GraphPathFinder {
     }
     
     func path(graph: Graph, from: Node, fromSocketId: SocketId, to: Node, visitedNodes: [Node], currentPath: PathSteps) -> PathSteps? {
-        print(" path from \(from) to \(to)")
+
         guard from.identifier != to.identifier else {
             return currentPath
         }
@@ -76,14 +76,14 @@ final class GraphPathFinder {
                 
         if node.identifier == to.identifier {
             // We reached the destination node
-            return currentPath + [to.identifier]
+            return currentPath + [edge.identifier, node.identifier]
         } else {
             // We haven't reached the destination node, keep going forward
             // by exploring all the possible exit sockets from `node`
             // TODO: handle edge.toNodeSocket nil, what does that mean here?
             let exitSockets = node.reachableSockets(from: edge.toNodeSocket!)
             for exitSocket in exitSockets {
-                if let path = path(graph: graph, from: node, fromSocketId: exitSocket, to: to, visitedNodes: visitedNodes + [node], currentPath: currentPath + [node.identifier]) {
+                if let path = path(graph: graph, from: node, fromSocketId: exitSocket, to: to, visitedNodes: visitedNodes + [node], currentPath: currentPath + [edge.identifier, node.identifier]) {
                     return path
                 }
             }
