@@ -19,6 +19,7 @@ import Foundation
 typealias SocketId = Int
 typealias GraphElementId = String
 
+// Defines a generic graph that returns nodes or edges
 protocol Graph {
     func edge(from: Node, socketId: SocketId) -> Edge?
     
@@ -146,101 +147,4 @@ final class GraphPathResolver {
         }
         return resolvedPath
     }
-}
-
-// Extensions
-
-extension Block: Node {
-    var identifier: GraphElementId {
-        id.uuid
-    }
-    
-    var sockets: [SocketId] {
-        allSockets.compactMap { $0.socketId }
-    }
-    
-    func reachableSockets(from socket: SocketId) -> [SocketId] {
-        if socket == Block.previousSocket {
-            return [Block.nextSocket]
-        } else {
-            return [Block.previousSocket]
-        }
-    }
-        
-}
-
-extension Turnout: Node {
-    var identifier: GraphElementId {
-        id.uuid
-    }
-    
-    var sockets: [SocketId] {
-        allSockets.compactMap { $0.socketId }
-    }
-    
-    func reachableSockets(from socket: SocketId) -> [SocketId] {
-        sockets(from: socket)
-    }
-    
-}
-
-extension ITransition {
-    var identifier: GraphElementId {
-        id.uuid
-    }
-    
-    var fromNode: GraphElementId {
-        if let block = a.block {
-            return block.uuid
-        } else if let turnout = a.turnout {
-            return turnout.uuid
-        } else {
-            fatalError("Socket must specify a block or a turnout")
-        }
-    }
-    
-    var fromNodeSocket: SocketId? {
-        return a.socketId
-    }
-    
-    var toNode: GraphElementId {
-        if let block = b.block {
-            return block.uuid
-        } else if let turnout = b.turnout {
-            return turnout.uuid
-        } else {
-            fatalError("Socket must specify a block or a turnout")
-        }
-    }
-    
-    var toNodeSocket: SocketId? {
-        return b.socketId
-    }
-    
-}
-
-extension Layout: Graph {
-    func edge(from: Node, socketId: SocketId) -> Edge? {
-        let socket: Socket
-        if let block = block(for: Identifier<Block>(uuid: from.identifier)) {
-            socket = Socket.block(block.id, socketId: socketId)
-        } else if let turnout = turnout(for: Identifier<Turnout>(uuid: from.identifier)) {
-            socket = Socket.turnout(turnout.id, socketId: socketId)
-        } else {
-            return nil
-        }
-
-        return try? transition(from: socket)
-    }
-    
-    func node(for elementId: GraphElementId) -> Node? {
-        if let block = block(for: Identifier<Block>(uuid: elementId)) {
-            return block
-        } else if let turnout = turnout(for: Identifier<Turnout>(uuid: elementId)) {
-            return turnout
-        } else {
-            return nil
-        }
-    }
-        
 }

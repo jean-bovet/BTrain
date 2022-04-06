@@ -152,6 +152,7 @@
 		A785C089278E59A4002FD538 /* CommandTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = A785C088278E59A4002FD538 /* CommandTypes.swift */; };
 		A78B996227FCC4080021EFE4 /* Graph.swift in Sources */ = {isa = PBXBuildFile; fileRef = A78B996127FCC4080021EFE4 /* Graph.swift */; };
 		A78B996427FD56D80021EFE4 /* GraphTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A78B996327FD56D80021EFE4 /* GraphTests.swift */; };
+		A78B996727FD57B20021EFE4 /* Graph+Elements.swift in Sources */ = {isa = PBXBuildFile; fileRef = A78B996627FD57B20021EFE4 /* Graph+Elements.swift */; };
 		A7907955277D071000771A60 /* CGContext+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7907954277D071000771A60 /* CGContext+Extension.swift */; };
 		A7907957277D136500771A60 /* CGAffineTransform+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7907956277D136500771A60 /* CGAffineTransform+Extension.swift */; };
 		A7907993277EC86200771A60 /* DocumentToolbarContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7907992277EC86200771A60 /* DocumentToolbarContent.swift */; };
@@ -416,6 +417,7 @@
 		A785C088278E59A4002FD538 /* CommandTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommandTypes.swift; sourceTree = "<group>"; };
 		A78B996127FCC4080021EFE4 /* Graph.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Graph.swift; sourceTree = "<group>"; };
 		A78B996327FD56D80021EFE4 /* GraphTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GraphTests.swift; sourceTree = "<group>"; };
+		A78B996627FD57B20021EFE4 /* Graph+Elements.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Graph+Elements.swift"; sourceTree = "<group>"; };
 		A7907954277D071000771A60 /* CGContext+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CGContext+Extension.swift"; sourceTree = "<group>"; };
 		A7907956277D136500771A60 /* CGAffineTransform+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CGAffineTransform+Extension.swift"; sourceTree = "<group>"; };
 		A7907992277EC86200771A60 /* DocumentToolbarContent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentToolbarContent.swift; sourceTree = "<group>"; };
@@ -622,6 +624,7 @@
 				A792DEF92783A0A1004B0439 /* Simulator */,
 				A74CCC73272A5A1C004E58F5 /* Elements */,
 				A7F779EE272F204D00E73275 /* Layouts */,
+				A78B996527FD57890021EFE4 /* Graph */,
 				A75829642792A5C200AA0649 /* Routing */,
 				A711B155273A28C3002FE7DB /* Command */,
 				A73AFEB92726680E00E1ED21 /* Marklin */,
@@ -740,7 +743,6 @@
 				A7218082275F0BFC00831998 /* Turnout+Socket.swift */,
 				A7218080275F0BDB00831998 /* Turnout+State.swift */,
 				A798BB4D27AF4477000BB4D1 /* Turnout+Reservation.swift */,
-				A78B996127FCC4080021EFE4 /* Graph.swift */,
 			);
 			path = Turnout;
 			sourceTree = "<group>";
@@ -1010,6 +1012,15 @@
 				A7E1F74727D71C03009FB75F /* TrainSpeedAcceleration.swift */,
 			);
 			path = Train;
+			sourceTree = "<group>";
+		};
+		A78B996527FD57890021EFE4 /* Graph */ = {
+			isa = PBXGroup;
+			children = (
+				A78B996127FCC4080021EFE4 /* Graph.swift */,
+				A78B996627FD57B20021EFE4 /* Graph+Elements.swift */,
+			);
+			path = Graph;
 			sourceTree = "<group>";
 		};
 		A79079A8277FCE6A00771A60 /* Predefined */ = {
@@ -1447,6 +1458,7 @@
 				A74CCC72272A5A18004E58F5 /* Transition.swift in Sources */,
 				A785C075278A5CE1002FD538 /* TrainIconManager.swift in Sources */,
 				A763F19727BF0FE100B3499A /* TrainSpeedGraphView.swift in Sources */,
+				A78B996727FD57B20021EFE4 /* Graph+Elements.swift in Sources */,
 				A7710E592777D7FE00C08150 /* RouteView.swift in Sources */,
 				A792DEF82783A09C004B0439 /* SimulatorTrainControlView.swift in Sources */,
 				A73B1639274B60A10073947D /* BTLogger.swift in Sources */,
