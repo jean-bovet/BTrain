@@ -12,7 +12,7 @@
 
 import Foundation
 
-extension Block: Node {
+extension Block: GraphNode {
     var identifier: GraphElementId {
         id.uuid
     }
@@ -31,7 +31,7 @@ extension Block: Node {
         
 }
 
-extension Turnout: Node {
+extension Turnout: GraphNode {
     var identifier: GraphElementId {
         id.uuid
     }
@@ -82,7 +82,7 @@ extension ITransition {
 }
 
 extension Layout: Graph {
-    func edge(from: Node, socketId: SocketId) -> Edge? {
+    func edge(from: GraphNode, socketId: SocketId) -> GraphEdge? {
         let socket: Socket
         if let block = block(for: Identifier<Block>(uuid: from.identifier)) {
             socket = Socket.block(block.id, socketId: socketId)
@@ -95,7 +95,7 @@ extension Layout: Graph {
         return try? transition(from: socket)
     }
     
-    func node(for elementId: GraphElementId) -> Node? {
+    func node(for elementId: GraphElementId) -> GraphNode? {
         if let block = block(for: Identifier<Block>(uuid: elementId)) {
             return block
         } else if let turnout = turnout(for: Identifier<Turnout>(uuid: elementId)) {

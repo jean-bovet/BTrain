@@ -21,13 +21,13 @@ typealias GraphElementId = String
 
 // Defines a generic graph that returns nodes or edges
 protocol Graph {
-    func edge(from: Node, socketId: SocketId) -> Edge?
+    func edge(from: GraphNode, socketId: SocketId) -> GraphEdge?
     
-    func node(for: GraphElementId) -> Node?
+    func node(for: GraphElementId) -> GraphNode?
 }
 
 // A node in a graph. Conceptually, a node represents either a turnout or a block.
-protocol Node {
+protocol GraphNode {
     var identifier: GraphElementId { get }
     
     // Returns all the sockets available for that node
@@ -38,7 +38,7 @@ protocol Node {
 }
 
 // Link between two nodes
-protocol Edge {
+protocol GraphEdge {
     var identifier: GraphElementId { get }
     
     var fromNode: GraphElementId { get }
@@ -48,37 +48,37 @@ protocol Edge {
     var toNodeSocket: SocketId? { get }
 }
 
-struct PathElement: Equatable {
+struct GraphPathElement: Equatable {
     
-    static func == (lhs: PathElement, rhs: PathElement) -> Bool {
+    static func == (lhs: GraphPathElement, rhs: GraphPathElement) -> Bool {
         return lhs.node.identifier == rhs.node.identifier && lhs.enterSocket == rhs.enterSocket && lhs.exitSocket == rhs.exitSocket
     }
     
-    let node: Node
+    let node: GraphNode
     let exitSocket: SocketId?
     let enterSocket: SocketId?
     
-    static func starting(_ node: Node, _ exitSocket: SocketId) -> PathElement {
+    static func starting(_ node: GraphNode, _ exitSocket: SocketId) -> GraphPathElement {
         .init(node: node, exitSocket: exitSocket, enterSocket: nil)
     }
     
-    static func ending(_ node: Node, _ enterSocket: SocketId) -> PathElement {
+    static func ending(_ node: GraphNode, _ enterSocket: SocketId) -> GraphPathElement {
         .init(node: node, exitSocket: nil, enterSocket: enterSocket)
     }
     
-    static func between(_ node: Node, _ enterSocket: SocketId, _ exitSocket: SocketId) -> PathElement {
+    static func between(_ node: GraphNode, _ enterSocket: SocketId, _ exitSocket: SocketId) -> GraphPathElement {
         .init(node: node, exitSocket: exitSocket, enterSocket: enterSocket)
     }
 }
 
-typealias GraphPath = [PathElement]
+typealias GraphPath = [GraphPathElement]
 
 final class GraphPathFinder {
     
-    func path(graph: Graph, from: Node, to: Node) -> GraphPath? {
+    func path(graph: Graph, from: GraphNode, to: GraphNode) -> GraphPath? {
         for socketId in from.sockets {
             for toSocketId in to.sockets {
-                if let steps = path(graph: graph, from: PathElement.starting(from, socketId), to: PathElement.ending(to, toSocketId), visitedNodes: [], currentPath: [PathElement.starting(from, socketId)]) {
+                if let steps = path(graph: graph, from: GraphPathElement.starting(from, socketId), to: GraphPathElement.ending(to, toSocketId), visitedNodes: [], currentPath: [GraphPathElement.starting(from, socketId)]) {
                     return steps
                 }
             }
@@ -86,7 +86,7 @@ final class GraphPathFinder {
         return nil
     }
     
-    func path(graph: Graph, from: PathElement, to: PathElement, visitedNodes: [Node], currentPath: GraphPath) -> GraphPath? {
+    func path(graph: Graph, from: GraphPathElement, to: GraphPathElement, visitedNodes: [GraphNode], currentPath: GraphPath) -> GraphPath? {
 
         guard from != to else {
             return currentPath
@@ -104,7 +104,7 @@ final class GraphPathFinder {
             return nil
         }
         
-        let endingElement = PathElement.ending(node, enterSocketId)
+        let endingElement = GraphPathElement.ending(node, enterSocketId)
         if endingElement == to {
             // We reached the destination node
             return currentPath + [endingElement]
@@ -114,10 +114,10 @@ final class GraphPathFinder {
         // by exploring all the possible exit sockets from `node`
         let exitSockets = node.reachableSockets(from: enterSocketId)
         for exitSocket in exitSockets {
-            let betweenElement = PathElement.between(node, enterSocketId, exitSocket)
+            let betweenElement = GraphPathElement.between(node, enterSocketId, exitSocket)
             if let path = path(graph: graph, from: betweenElement, to: to,
                                visitedNodes: visitedNodes + [node],
-                               currentPath: currentPath + [PathElement.between(node, enterSocketId, exitSocket)]) {
+                               currentPath: currentPath + [GraphPathElement.between(node, enterSocketId, exitSocket)]) {
                 return path
             }
         }
