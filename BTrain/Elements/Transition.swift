@@ -22,7 +22,7 @@ import Foundation
 //    │                             │
 //    ▼          Transition         ▼
 //    ○─────────────────────────────○
-protocol ITransition: AnyObject {
+protocol ITransition: AnyObject, Edge {
     
     var id: Identifier<Transition> { get }
         

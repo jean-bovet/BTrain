@@ -150,6 +150,7 @@
 		A785C081278BC527002FD538 /* TrainSpeedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A785C080278BC527002FD538 /* TrainSpeedView.swift */; };
 		A785C086278CFD7D002FD538 /* TrainSpeed.swift in Sources */ = {isa = PBXBuildFile; fileRef = A785C085278CFD7D002FD538 /* TrainSpeed.swift */; };
 		A785C089278E59A4002FD538 /* CommandTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = A785C088278E59A4002FD538 /* CommandTypes.swift */; };
+		A78B996227FCC4080021EFE4 /* Graph.swift in Sources */ = {isa = PBXBuildFile; fileRef = A78B996127FCC4080021EFE4 /* Graph.swift */; };
 		A7907955277D071000771A60 /* CGContext+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7907954277D071000771A60 /* CGContext+Extension.swift */; };
 		A7907957277D136500771A60 /* CGAffineTransform+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7907956277D136500771A60 /* CGAffineTransform+Extension.swift */; };
 		A7907993277EC86200771A60 /* DocumentToolbarContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7907992277EC86200771A60 /* DocumentToolbarContent.swift */; };
@@ -412,6 +413,7 @@
 		A785C080278BC527002FD538 /* TrainSpeedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainSpeedView.swift; sourceTree = "<group>"; };
 		A785C085278CFD7D002FD538 /* TrainSpeed.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainSpeed.swift; sourceTree = "<group>"; };
 		A785C088278E59A4002FD538 /* CommandTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommandTypes.swift; sourceTree = "<group>"; };
+		A78B996127FCC4080021EFE4 /* Graph.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Graph.swift; sourceTree = "<group>"; };
 		A7907954277D071000771A60 /* CGContext+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CGContext+Extension.swift"; sourceTree = "<group>"; };
 		A7907956277D136500771A60 /* CGAffineTransform+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CGAffineTransform+Extension.swift"; sourceTree = "<group>"; };
 		A7907992277EC86200771A60 /* DocumentToolbarContent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentToolbarContent.swift; sourceTree = "<group>"; };
@@ -736,6 +738,7 @@
 				A7218082275F0BFC00831998 /* Turnout+Socket.swift */,
 				A7218080275F0BDB00831998 /* Turnout+State.swift */,
 				A798BB4D27AF4477000BB4D1 /* Turnout+Reservation.swift */,
+				A78B996127FCC4080021EFE4 /* Graph.swift */,
 			);
 			path = Turnout;
 			sourceTree = "<group>";
@@ -1452,6 +1455,7 @@
 				A73AFEB527265A4B00E1ED21 /* ClientConnection.swift in Sources */,
 				A798BB4827A8EA06000BB4D1 /* LayoutControllerDebugger.swift in Sources */,
 				A71D97FA27A499A600EBEA06 /* LayoutOnConnectTasks.swift in Sources */,
+				A78B996227FCC4080021EFE4 /* Graph.swift in Sources */,
 				A7907955277D071000771A60 /* CGContext+Extension.swift in Sources */,
 				A7F779FA2734A8C500E73275 /* Element.swift in Sources */,
 				A7710E6B27799E2700C08150 /* Layout+Turnouts.swift in Sources */,

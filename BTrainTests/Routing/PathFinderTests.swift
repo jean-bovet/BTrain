@@ -26,6 +26,16 @@ class PathFinderTests: BTTestCase {
         XCTAssertEqual(path!.description, ["s1:next", "b1:next", "b2:next", "b3:next", "s2:next"])
     }
     
+    func testGraph() throws {
+        let layout = LayoutACreator().newLayout()
+        let b1 = layout.block(for: Identifier<Block>(uuid: "b1"))!
+        let b3 = layout.block(for: Identifier<Block>(uuid: "b3"))!
+        
+        let gf = GraphPathFinder()
+        let p = gf.path(graph: layout, from: b1, to: b3)!
+        XCTAssertEqual(p, ["b1", "t0", "b2", "t1", "b3"])
+    }
+    
     func testPathWithBacktrack() throws {
         let layout = LayoutECreator().newLayout()
         let s1 = layout.block(for: Identifier<Block>(uuid: "s1"))!
