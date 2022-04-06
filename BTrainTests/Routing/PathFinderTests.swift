@@ -13,21 +13,19 @@
 import XCTest
 @testable import BTrain
 
-extension Layout {
+extension Array where Element == PathElement {
     
-    func description(_ steps: [GraphElementId]) -> [String] {
-        steps.compactMap { elementId in
-            if let block = block(for: Identifier<Block>(uuid: elementId)) {
-                return block.description
+    var description: [String] {
+        map { pathElement in
+            var text = ""
+            if let enterSocket = pathElement.enterSocket {
+                text += "\(enterSocket):"
             }
-            if let turnout = turnout(for: Identifier<Turnout>(uuid: elementId)) {
-                return turnout.description
+            text += pathElement.node.identifier
+            if let exitSocket = pathElement.exitSocket {
+                text += ":\(exitSocket)"
             }
-            if let transition = transition(for: Identifier<Transition>(uuid: elementId)) {
-                return "\(transition.a.socketId!):\(transition.b.socketId!)"
-            }
-            
-            return nil
+            return text
         }
     }
 }
@@ -52,9 +50,23 @@ class PathFinderTests: BTTestCase {
         
         let gf = GraphPathFinder()
         let p = gf.path(graph: layout, from: b1, to: b3)!
-        XCTAssertEqual(layout.description(p), ["b1", "1:0", "t0", "1:0", "b2", "1:0", "t1", "2:0", "b3"])
+        XCTAssertEqual(p.description, ["b1:1", "0:t0:1", "0:b2:1", "0:t1:2", "0:b3"])
     }
-    
+
+    func testGraphResolve() throws {
+        let layout = LayoutACreator().newLayout()
+        let b1 = layout.block(for: Identifier<Block>(uuid: "b1"))!
+        let b3 = layout.block(for: Identifier<Block>(uuid: "b3"))!
+
+        // TODO: test with some turnout and no block
+        // TODO: test a complete path as well to ensure the same is returned (including and not including the edges?)
+        let partialPath = [ PathElement.starting(b1, 1), PathElement.ending(b3, 0) ]
+
+        let gr = GraphPathResolver()
+        let p = gr.resolve(graph: layout, partialPath)!
+        XCTAssertEqual(p.description, ["b1:1", "0:t0:1", "0:b2:1", "0:t1:2", "0:b3"])
+    }
+
     func testPathWithBacktrack() throws {
         let layout = LayoutECreator().newLayout()
         let s1 = layout.block(for: Identifier<Block>(uuid: "s1"))!

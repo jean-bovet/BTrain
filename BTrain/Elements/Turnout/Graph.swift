@@ -47,20 +47,38 @@ protocol Edge {
     var toNodeSocket: SocketId? { get }
 }
 
-typealias PathSteps = [GraphElementId]
+struct PathElement {
+    let node: Node
+    let exitSocket: SocketId?
+    let enterSocket: SocketId?
+    
+    static func starting(_ node: Node, _ exitSocket: SocketId) -> PathElement {
+        .init(node: node, exitSocket: exitSocket, enterSocket: nil)
+    }
+    
+    static func ending(_ node: Node, _ enterSocket: SocketId) -> PathElement {
+        .init(node: node, exitSocket: nil, enterSocket: enterSocket)
+    }
+    
+    static func between(_ node: Node, _ enterSocket: SocketId, _ exitSocket: SocketId) -> PathElement {
+        .init(node: node, exitSocket: exitSocket, enterSocket: enterSocket)
+    }
+}
+
+typealias GraphPath = [PathElement]
 
 final class GraphPathFinder {
     
-    func path(graph: Graph, from: Node, to: Node) -> PathSteps? {
+    func path(graph: Graph, from: Node, to: Node) -> GraphPath? {
         for socketId in from.sockets {
-            if let steps = path(graph: graph, from: from, fromSocketId: socketId, to: to, visitedNodes: [], currentPath: [from.identifier]) {
+            if let steps = path(graph: graph, from: from, fromSocketId: socketId, to: to, visitedNodes: [], currentPath: [PathElement.starting(from, socketId)]) {
                 return steps
             }
         }
         return nil
     }
     
-    func path(graph: Graph, from: Node, fromSocketId: SocketId, to: Node, visitedNodes: [Node], currentPath: PathSteps) -> PathSteps? {
+    func path(graph: Graph, from: Node, fromSocketId: SocketId, to: Node, visitedNodes: [Node], currentPath: GraphPath) -> GraphPath? {
 
         guard from.identifier != to.identifier else {
             return currentPath
@@ -74,16 +92,21 @@ final class GraphPathFinder {
             return nil
         }
                 
+        guard let enterSocketId = edge.toNodeSocket else {
+            return nil
+        }
+        
         if node.identifier == to.identifier {
             // We reached the destination node
-            return currentPath + [edge.identifier, node.identifier]
+            return currentPath + [PathElement.ending(node, enterSocketId)]
         } else {
             // We haven't reached the destination node, keep going forward
             // by exploring all the possible exit sockets from `node`
-            // TODO: handle edge.toNodeSocket nil, what does that mean here?
-            let exitSockets = node.reachableSockets(from: edge.toNodeSocket!)
+            let exitSockets = node.reachableSockets(from: enterSocketId)
             for exitSocket in exitSockets {
-                if let path = path(graph: graph, from: node, fromSocketId: exitSocket, to: to, visitedNodes: visitedNodes + [node], currentPath: currentPath + [edge.identifier, node.identifier]) {
+                if let path = path(graph: graph, from: node, fromSocketId: exitSocket, to: to,
+                                   visitedNodes: visitedNodes + [node],
+                                   currentPath: currentPath + [PathElement.between(node, enterSocketId, exitSocket)]) {
                     return path
                 }
             }
@@ -92,6 +115,29 @@ final class GraphPathFinder {
         return nil
     }
 
+}
+
+final class GraphPathResolver {
+
+    func resolve(graph: Graph, _ path: GraphPath) -> GraphPath? {
+        var resolvedPath = GraphPath()
+        guard var previousElement = path.first else {
+            return nil
+        }
+        resolvedPath.append(previousElement)
+        for element in path.dropFirst() {
+            let pf = GraphPathFinder()
+            // TODO: specify the enterSocket of the `to` node
+            if let p = pf.path(graph: graph, from: previousElement.node, fromSocketId: previousElement.exitSocket!, to: element.node, visitedNodes: [], currentPath: []) {
+                for resolvedElement in p.dropLast() {
+                    resolvedPath.append(resolvedElement)
+                }
+            }
+            resolvedPath.append(element)
+            previousElement = element
+        }
+        return resolvedPath
+    }
 }
 
 // Extensions
