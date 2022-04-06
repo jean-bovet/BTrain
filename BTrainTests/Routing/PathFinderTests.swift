@@ -130,33 +130,6 @@ class PathFinderTests: BTTestCase {
         XCTAssertEqual(path!.description, ["s1:next", "b1:next", "b5:previous", "b3:previous", "b2:previous", "b1:previous", "s2:previous"])
     }
 
-    func testPathOverflow() throws {
-        let layout = LayoutECreator().newLayout()
-        let s1 = layout.block(for: Identifier<Block>(uuid: "s1"))!
-        
-        let pf = PathFinder(layout: layout)
-        pf.turnoutSocketSelectionOverride = { turnout, socketsId, context in
-            let s1 = layout.block(for: Identifier<Block>(uuid: "s1"))!
-            s1.reserved = Reservation("other", .next)
-
-            let s2 = layout.block(for: Identifier<Block>(uuid: "s2"))!
-            s2.reserved = Reservation("other", .next)
-
-            return nil
-        }
-
-        do {
-            var settings = PathFinder.Settings(random: false, reservedBlockBehavior: .avoidReserved, verbose: false)
-            settings.avoidAlreadyVisitedBlocks = false
-            _ = try pf.path(trainId: layout.trains[0].id, from: s1, direction: .next, settings: settings)
-            XCTFail("Exception must be thrown")
-        } catch PathFinder.PathError.overflow {
-            
-        } catch {
-            XCTFail("Invalid exception \(error)")
-        }
-    }
-
     func testPathBetweenStations() throws {
         let layout = LayoutFCreator().newLayout()
         

@@ -67,11 +67,7 @@ final class PathFinder {
         }
         
         func hasVisited(_ step: Route.Step) -> Bool {
-            if settings.avoidAlreadyVisitedBlocks {
-                return visitedSteps.contains { $0.same(step) }
-            } else {
-                return false
-            }
+            return visitedSteps.contains { $0.same(step) }
         }
 
         var isOverflowing: Bool {
@@ -114,18 +110,14 @@ final class PathFinder {
         }
         
         let reservedBlockBehavior: ReservedBlockBehavior
-                
-        var consideringStoppingAtSiding = false
-        
+                        
         var includeTurnouts = false
         
         var ignoreDisabledElements = false
         
         // True if the first block that is found must match the destination.
         var firstBlockShouldMatchDestination = false
-        
-        var avoidAlreadyVisitedBlocks = true
-        
+                
         let verbose: Bool
     }
 
@@ -321,11 +313,7 @@ final class PathFinder {
                 return newContext.path
             } else if nextBlock.category == .sidingNext || nextBlock.category == .sidingPrevious {
                 context.print("Reached a siding at block \(nextBlock)")
-                if context.settings.consideringStoppingAtSiding {
-                    return newContext.path
-                } else {
-                    return nil
-                }
+                return nil
             }
                         
             // If the block is not a station, let's continue recursively
