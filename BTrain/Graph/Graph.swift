@@ -73,20 +73,42 @@ struct GraphPathElement: Equatable {
 
 typealias GraphPath = [GraphPathElement]
 
+protocol GraphPathFinderDelegate: AnyObject {
+    // Returns true if the specified node should be included in the path.
+    // If false, the algorithm backtracks to the previous node and finds
+    // an alternative edge if possible.
+    func shouldInclude(node: GraphNode) -> Bool
+    
+    // Returns true if the specified node is the destination node of the path.
+    func reachedDestination(node: GraphNode) -> Bool
+}
+
 final class GraphPathFinder {
     
-    func path(graph: Graph, from: GraphNode, to: GraphNode) -> GraphPath? {
+    weak var delegate: GraphPathFinderDelegate?
+    
+    func path(graph: Graph, from: GraphNode, to: GraphNode?) -> GraphPath? {
         for socketId in from.sockets {
-            for toSocketId in to.sockets {
-                if let steps = path(graph: graph, from: GraphPathElement.starting(from, socketId), to: GraphPathElement.ending(to, toSocketId), visitedNodes: [], currentPath: [GraphPathElement.starting(from, socketId)]) {
+            if let to = to {
+                for toSocketId in to.sockets {
+                    if let steps = path(graph: graph, from: GraphPathElement.starting(from, socketId), to: GraphPathElement.ending(to, toSocketId), visitedNodes: [], currentPath: [GraphPathElement.starting(from, socketId)]) {
+                        return steps
+                    }
+                }
+            } else {
+                if let steps = path(graph: graph, from: GraphPathElement.starting(from, socketId), to: nil, visitedNodes: [], currentPath: [GraphPathElement.starting(from, socketId)]) {
                     return steps
                 }
             }
         }
         return nil
     }
+
+    func path(graph: Graph, from: GraphPathElement, to: GraphPathElement?) -> GraphPath? {
+        return path(graph: graph, from: from, to: to, visitedNodes: [], currentPath: [from])
+    }
     
-    func path(graph: Graph, from: GraphPathElement, to: GraphPathElement, visitedNodes: [GraphNode], currentPath: GraphPath) -> GraphPath? {
+    private func path(graph: Graph, from: GraphPathElement, to: GraphPathElement?, visitedNodes: [GraphNode], currentPath: GraphPath) -> GraphPath? {
 
         guard from != to else {
             return currentPath
@@ -105,6 +127,16 @@ final class GraphPathFinder {
         }
         
         let endingElement = GraphPathElement.ending(node, enterSocketId)
+
+        if let delegate = delegate {
+            if !delegate.shouldInclude(node: node) {
+                return nil
+            }
+            if delegate.reachedDestination(node: node) {
+                return currentPath + [endingElement]
+            }
+        }
+        
         if endingElement == to {
             // We reached the destination node
             return currentPath + [endingElement]
@@ -137,12 +169,11 @@ final class GraphPathResolver {
         resolvedPath.append(previousElement)
         for element in path.dropFirst() {
             let pf = GraphPathFinder()
-            if let p = pf.path(graph: graph, from: previousElement, to: element, visitedNodes: [], currentPath: []) {
-                for resolvedElement in p.dropLast() {
+            if let p = pf.path(graph: graph, from: previousElement, to: element) {
+                for resolvedElement in p.dropFirst() {
                     resolvedPath.append(resolvedElement)
                 }
             }
-            resolvedPath.append(element)
             previousElement = element
         }
         return resolvedPath

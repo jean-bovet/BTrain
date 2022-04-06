@@ -15,20 +15,40 @@ import XCTest
 
 class GraphTests: XCTestCase {
 
-    func testGraph() throws {
+    func testSimplePath() throws {
         let layout = LayoutACreator().newLayout()
-        let b1 = layout.block(for: Identifier<Block>(uuid: "b1"))!
-        let b3 = layout.block(for: Identifier<Block>(uuid: "b3"))!
-        
+        let b1 = layout.block("b1")!
+        let b3 = layout.block("b3")!
+
         let gf = GraphPathFinder()
         let p = gf.path(graph: layout, from: b1, to: b3)!
         XCTAssertEqual(p.description, ["b1:1", "0:t0:1", "0:b2:1", "0:t1:2", "0:b3"])
     }
 
-    func testGraphResolve() throws {
+    func testSimplePathBetweenTwoElements() throws {
         let layout = LayoutACreator().newLayout()
-        let b1 = layout.block(for: Identifier<Block>(uuid: "b1"))!
-        let b3 = layout.block(for: Identifier<Block>(uuid: "b3"))!
+        let b1 = layout.block("b1")!
+        let b2 = layout.block("b2")!
+
+        let gf = GraphPathFinder()
+        let p = gf.path(graph: layout, from: GraphPathElement.starting(b1, 1), to: GraphPathElement.ending(b2, 0))!
+        XCTAssertEqual(p.description, ["b1:1", "0:t0:1", "0:b2"])
+    }
+
+    func testSimplePathBetweenBlockAndTurnout() throws {
+        let layout = LayoutACreator().newLayout()
+        let b1 = layout.block("b1")!
+        let t0 = layout.turnout("t0")!
+
+        let gf = GraphPathFinder()
+        let p = gf.path(graph: layout, from: GraphPathElement.starting(b1, 1), to: GraphPathElement.ending(t0, 0))!
+        XCTAssertEqual(p.description, ["b1:1", "0:t0"])
+    }
+
+    func testResolveSimplePath() throws {
+        let layout = LayoutACreator().newLayout()
+        let b1 = layout.block("b1")!
+        let b3 = layout.block("b3")!
 
         let partialPath = [ GraphPathElement.starting(b1, 1), GraphPathElement.ending(b3, 0) ]
 
@@ -37,10 +57,10 @@ class GraphTests: XCTestCase {
         XCTAssertEqual(p.description, ["b1:1", "0:t0:1", "0:b2:1", "0:t1:2", "0:b3"])
     }
 
-    func testGraphResolveWithTurnout() throws {
+    func testResolveSimplePathWithTurnout() throws {
         let layout = LayoutACreator().newLayout()
-        let b1 = layout.block(for: Identifier<Block>(uuid: "b1"))!
-        let b3 = layout.block(for: Identifier<Block>(uuid: "b3"))!
+        let b1 = layout.block("b1")!
+        let b3 = layout.block("b3")!
 
         let t0 = layout.turnout(for: Identifier<Turnout>(uuid: "t0"))!
 
@@ -51,10 +71,10 @@ class GraphTests: XCTestCase {
         XCTAssertEqual(p.description, ["b1:1", "0:t0:1", "0:b2:1", "0:t1:2", "0:b3"])
     }
 
-    func testGraphResolveWithTurnouts() throws {
+    func testResolveSimplePathWithTurnouts() throws {
         let layout = LayoutACreator().newLayout()
-        let b1 = layout.block(for: Identifier<Block>(uuid: "b1"))!
-        let b3 = layout.block(for: Identifier<Block>(uuid: "b3"))!
+        let b1 = layout.block("b1")!
+        let b3 = layout.block("b3")!
 
         let t0 = layout.turnout(for: Identifier<Turnout>(uuid: "t0"))!
         let t1 = layout.turnout(for: Identifier<Turnout>(uuid: "t1"))!
@@ -66,11 +86,11 @@ class GraphTests: XCTestCase {
         XCTAssertEqual(p.description, ["b1:1", "0:t0:1", "0:b2:1", "0:t1:2", "0:b3"])
     }
 
-    func testGraphResolveAlreadyFullPath() throws {
+    func testResolveSimplePathAlreadyFullPath() throws {
         let layout = LayoutACreator().newLayout()
-        let b1 = layout.block(for: Identifier<Block>(uuid: "b1"))!
-        let b3 = layout.block(for: Identifier<Block>(uuid: "b3"))!
-        
+        let b1 = layout.block("b1")!
+        let b3 = layout.block("b3")!
+
         let gf = GraphPathFinder()
         let p = gf.path(graph: layout, from: b1, to: b3)!
         XCTAssertEqual(p.description, ["b1:1", "0:t0:1", "0:b2:1", "0:t1:2", "0:b3"])
@@ -80,6 +100,57 @@ class GraphTests: XCTestCase {
         XCTAssertEqual(p, p2)
     }
 
+    func testFindPathWithReservedBlock() throws {
+        let layout = LayoutICreator().newLayout()
+        let s1 = layout.block("s1")!
+        let s2 = layout.block("s2")!
+        let b1 = layout.block("b1")!
+        
+        // Without block reserved, the straighforward path from s1 to s2 is s1-b1-s2
+        var p = layout.path(for: layout.trains[0], from: (s1, .next), to: (s2, .previous))!
+        XCTAssertEqual(p.description, ["s1:1", "0:t1:1", "0:t2:1", "0:b1:1", "1:t4:0", "0:s2"])
+        
+        // Reserve b1 so the algorithm needs to find the alternate route s1-b3-s2
+        b1.reserved = .init("foo", .next)
+                
+        p = layout.path(for: layout.trains[0], from: (s1, .next), to: (s2, .previous))!
+        XCTAssertEqual(p.description, ["s1:1", "0:t1:1", "0:t2:2", "2:t3:0", "0:b3:1", "2:t4:0", "0:s2"])
+    }
+
+    func testFindPathUntilStation() throws {
+        let layout = LayoutICreator().newLayout()
+        let s1 = layout.block("s1")!
+        
+        // Do not specify the destination block, so the algorithm will stop at the first station it finds
+        let p = layout.path(for: layout.trains[0], from: (s1, .next), to: nil)!
+        XCTAssertEqual(p.description, ["s1:1", "0:t1:1", "0:t2:1", "0:b1:1", "1:t4:0", "0:s2"])
+    }
+}
+
+extension Layout {
+    
+    func block(_ uuid: String) -> Block? {
+        return block(for: Identifier<Block>(uuid: uuid))
+    }
+    
+    func turnout(_ uuid: String) -> Turnout? {
+        return turnout(for: Identifier<Turnout>(uuid: uuid))
+    }
+    
+    func path(for train: Train, from: (Block, Direction), to: (Block, Direction)?) -> GraphPath? {
+        let gf = GraphPathFinder()
+        let gl = GraphLayout(layout: self, train: train)
+        gf.delegate = gl
+        
+        let fromElement = GraphPathElement.starting(from.0, from.1 == .next ? Block.nextSocket : Block.previousSocket)
+        let toElement: GraphPathElement?
+        if let to = to {
+            toElement = .ending(to.0, to.1 == .next ? Block.nextSocket : Block.previousSocket)
+        } else {
+            toElement = nil
+        }
+        return gf.path(graph: self, from: fromElement, to: toElement)
+    }
 }
 
 extension Array where Element == GraphPathElement {
