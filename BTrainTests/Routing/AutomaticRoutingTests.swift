@@ -125,6 +125,36 @@ class AutomaticRoutingTests: BTTestCase {
         XCTAssertThrowsError(p = try setup(layout: layout, fromBlockId: s1.id, destination: nil, position: .end, routeSteps: []))
     }
 
+    // This test ensures that the algorithm finds an alternative free path when multiple paths are available
+    // to reach the same block but one of the path is reserved. LayoutF will be used with the following scenario:
+    // OL3 to NE3:
+    // There are two direct paths that exist:
+    // (1) OL3 > F.3 > F.1 > F.2 > M.1 > C.1 > C.3 > NE3
+    // (2) OL3 > F.3 > F.1 > F.2 > C.3 > NE3
+    // Path (1) is chosen first because it is the most natural one. However, if M.1 is reserved, for example, then path (2) should be found.
+    func disabled_testAutomaticRouteWithAlternateRoute() throws {
+        let layout = LayoutFCreator().newLayout()
+        
+        let train = layout.trains[0]
+        let ol3 = layout.block(for: Identifier<Block>(uuid: "OL3"))!
+        let ne3 = layout.block(for: Identifier<Block>(uuid: "NE3"))!
+
+        let routeId = Route.automaticRouteId(for: train.id)
+        let route = layout.route(for: routeId, trainId: train.id)!
+        route.steps = [.init(ol3, .next), .init(ne3, .next)]
+
+        let m1 = layout.turnout(for: Identifier<Turnout>(uuid: "M.1"))!
+        m1.reserved = .init(train: Identifier<Train>(uuid: "foo"), sockets: nil)
+        
+        for _ in 0...10 {
+            let p = try setup(layout: layout, fromBlockId: ol3.id, destination: .init(ne3.id, direction: .next), position: .end, routeSteps: ["OL3:next", "NE3:next"])
+            while p.layoutController.run() == .processed {
+                
+            }
+            XCTAssertEqual(p.train.state, .running)
+        }
+    }
+
     func testAutomaticRouteNoRouteToSiding() throws {
         let layout = LayoutHCreator().newLayout()
 
