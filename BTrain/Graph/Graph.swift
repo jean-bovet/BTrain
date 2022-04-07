@@ -59,26 +59,38 @@ typealias GraphPath = [GraphPathElement]
 // Each element is a `node` with specified exit and enter sockets.
 // A starting element only has an exit socket while the last
 // element in the path only has an enter socket.
-struct GraphPathElement: Equatable {
+struct GraphPathElement: Equatable, CustomStringConvertible {
         
     let node: GraphNode
+    let entrySocket: SocketId?
     let exitSocket: SocketId?
-    let enterSocket: SocketId?
+
+    var description: String {
+        var text = ""
+        if let enterSocket = entrySocket {
+            text += "\(enterSocket):"
+        }
+        text += node.identifier
+        if let exitSocket = exitSocket {
+            text += ":\(exitSocket)"
+        }
+        return text
+    }
     
     static func starting(_ node: GraphNode, _ exitSocket: SocketId) -> GraphPathElement {
-        .init(node: node, exitSocket: exitSocket, enterSocket: nil)
+        .init(node: node, entrySocket: nil, exitSocket: exitSocket)
     }
     
-    static func ending(_ node: GraphNode, _ enterSocket: SocketId) -> GraphPathElement {
-        .init(node: node, exitSocket: nil, enterSocket: enterSocket)
+    static func ending(_ node: GraphNode, _ entrySocket: SocketId) -> GraphPathElement {
+        .init(node: node, entrySocket: entrySocket, exitSocket: nil)
     }
     
-    static func between(_ node: GraphNode, _ enterSocket: SocketId, _ exitSocket: SocketId) -> GraphPathElement {
-        .init(node: node, exitSocket: exitSocket, enterSocket: enterSocket)
+    static func between(_ node: GraphNode, _ entrySocket: SocketId, _ exitSocket: SocketId) -> GraphPathElement {
+        .init(node: node, entrySocket: entrySocket, exitSocket: exitSocket)
     }
     
     static func == (lhs: GraphPathElement, rhs: GraphPathElement) -> Bool {
-        return lhs.node.identifier == rhs.node.identifier && lhs.enterSocket == rhs.enterSocket && lhs.exitSocket == rhs.exitSocket
+        return lhs.node.identifier == rhs.node.identifier && lhs.entrySocket == rhs.entrySocket && lhs.exitSocket == rhs.exitSocket
     }
     
 }
@@ -94,10 +106,15 @@ extension GraphPath where Element == GraphPathElement {
 
 class GraphPathFinder {
         
+    var verbose = false
+    var random = false
+    // TODO: ask for the graph size and have the overflow be 4 times the size of the graph? What's in PathFinder again?
+    var overflow = 30
+    
     func path(graph: Graph, from: GraphNode, to: GraphNode?) -> GraphPath? {
-        for socketId in from.sockets {
+        for socketId in shuffled(from.sockets) {
             if let to = to {
-                for toSocketId in to.sockets {
+                for toSocketId in shuffled(to.sockets) {
                     if let steps = path(graph: graph, from: .starting(from, socketId), to: .ending(to, toSocketId), currentPath: [.starting(from, socketId)]) {
                         return steps
                     }
@@ -116,48 +133,71 @@ class GraphPathFinder {
     }
     
     private func path(graph: Graph, from: GraphPathElement, to: GraphPathElement?, currentPath: GraphPath) -> GraphPath? {
+        if let to = to {
+            print("From \(from.node) to \(to.node): \(currentPath.toStrings)")
+        } else {
+            print("From \(from.node): \(currentPath.toStrings)")
+        }
+        
+        guard currentPath.count < overflow else {
+            print("Current path is overflowing, backtracking")
+            return nil
+        }
+        
         guard from != to else {
             return currentPath
         }
         
-        guard let edge = graph.edge(from: from.node, socketId: from.exitSocket!) else {
+        guard let exitSocket = from.exitSocket else {
+            print("No exit socket defined for \(from.node)")
+            return nil
+        }
+        
+        guard let edge = graph.edge(from: from.node, socketId: exitSocket) else {
+            print("No edge found from \(from.node) and socket \(exitSocket)")
             return nil
         }
         
         guard let node = graph.node(for: edge.toNode) else {
+            print("No destination node found in graph for \(edge.toNode)")
             return nil
         }
                 
-        guard let enterSocketId = edge.toNodeSocket else {
+        guard let entrySocketId = edge.toNodeSocket else {
+            print("No entry socket for destination node \(node) in graph")
             return nil
         }
                 
-        let endingElement = GraphPathElement.ending(node, enterSocketId)
+        let endingElement = GraphPathElement.ending(node, entrySocketId)
         
         if !shouldInclude(node: node, currentPath: currentPath) {
+            print("Node \(node) should not be included, backtracking")
             return nil
         }
-        if reachedDestination(node: node) {
-            return currentPath + [endingElement]
-        }
-
+                
         if endingElement == to {
             // We reached the destination node
+            return currentPath + [endingElement]
+        } else if to == nil && reachedDestination(node: node) {
+            // If no target not is specified, let's determine if the node one that we should stop at.
             return currentPath + [endingElement]
         }
 
         // We haven't reached the destination node, keep going forward
         // by exploring all the possible exit sockets from `node`
-        let exitSockets = node.reachableSockets(from: enterSocketId)
-        for exitSocket in exitSockets {
-            let betweenElement = GraphPathElement.between(node, enterSocketId, exitSocket)
+        let exitSockets = node.reachableSockets(from: entrySocketId)
+        for exitSocket in shuffled(exitSockets) {
+            let betweenElement = GraphPathElement.between(node, entrySocketId, exitSocket)
             
             guard !currentPath.contains(betweenElement) else {
-                return nil
+                print("Node \(betweenElement) is already part of the path, backtracking")
+                // Continue to the next socket as this socket (in combination with the entrySocketId)
+                // has already been used in the path
+                continue
             }
             
             if let path = path(graph: graph, from: betweenElement, to: to,
-                               currentPath: currentPath + [.between(node, enterSocketId, exitSocket)]) {
+                               currentPath: currentPath + [.between(node, entrySocketId, exitSocket)]) {
                 return path
             }
         }
@@ -165,6 +205,14 @@ class GraphPathFinder {
         return nil
     }
 
+    private func shuffled(_ sockets: [SocketId]) -> [SocketId] {
+        if random {
+            return sockets.shuffled()
+        } else {
+            return sockets
+        }
+    }
+    
     // MARK: Behaviors subclasses can override
     
     // Returns true if the specified node should be included in the path.
@@ -179,6 +227,11 @@ class GraphPathFinder {
         return false
     }
 
+    func print(_ msg: String) {
+        if verbose {
+            BTLogger.debug(msg)
+        }
+    }
 }
 
 final class GraphPathResolver {
@@ -199,5 +252,33 @@ final class GraphPathResolver {
             previousElement = element
         }
         return resolvedPath
+    }
+}
+
+extension Array where Element == GraphPathElement {
+    
+    var toStrings: [String] {
+        map { $0.description }
+    }
+}
+
+extension Array where Element == GraphPathElement {
+    
+    var toSteps: [Route.Step] {
+        return self.compactMap { element in
+            if let block = element.node as? Block {
+                let direction: Direction
+                if let entrySocket = element.entrySocket {
+                    direction = entrySocket == Block.previousSocket ? .next : .previous
+                } else if let exitSocket = element.exitSocket {
+                    direction = exitSocket == Block.nextSocket ? .next : .previous
+                } else {
+                    return nil
+                }
+                return Route.Step(block, direction)
+            } else {
+                return nil
+            }
+        }
     }
 }

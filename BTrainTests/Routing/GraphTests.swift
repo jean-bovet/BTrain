@@ -22,7 +22,7 @@ class GraphTests: XCTestCase {
 
         let gf = GraphPathFinder()
         let p = gf.path(graph: layout, from: b1, to: b3)!
-        XCTAssertEqual(p.description, ["b1:1", "0:t0:1", "0:b2:1", "0:t1:2", "0:b3"])
+        XCTAssertEqual(p.toStrings, ["b1:1", "0:t0:1", "0:b2:1", "0:t1:2", "0:b3"])
     }
 
     func testSimplePathBetweenTwoElements() throws {
@@ -32,7 +32,7 @@ class GraphTests: XCTestCase {
 
         let gf = GraphPathFinder()
         let p = gf.path(graph: layout, from: GraphPathElement.starting(b1, 1), to: GraphPathElement.ending(b2, 0))!
-        XCTAssertEqual(p.description, ["b1:1", "0:t0:1", "0:b2"])
+        XCTAssertEqual(p.toStrings, ["b1:1", "0:t0:1", "0:b2"])
     }
 
     func testSimplePathBetweenBlockAndTurnout() throws {
@@ -42,7 +42,7 @@ class GraphTests: XCTestCase {
 
         let gf = GraphPathFinder()
         let p = gf.path(graph: layout, from: GraphPathElement.starting(b1, 1), to: GraphPathElement.ending(t0, 0))!
-        XCTAssertEqual(p.description, ["b1:1", "0:t0"])
+        XCTAssertEqual(p.toStrings, ["b1:1", "0:t0"])
     }
 
     func testResolveSimplePath() throws {
@@ -54,7 +54,7 @@ class GraphTests: XCTestCase {
 
         let gr = GraphPathResolver()
         let p = gr.resolve(graph: layout, partialPath)!
-        XCTAssertEqual(p.description, ["b1:1", "0:t0:1", "0:b2:1", "0:t1:2", "0:b3"])
+        XCTAssertEqual(p.toStrings, ["b1:1", "0:t0:1", "0:b2:1", "0:t1:2", "0:b3"])
     }
 
     func testResolveSimplePathWithTurnout() throws {
@@ -68,7 +68,7 @@ class GraphTests: XCTestCase {
 
         let gr = GraphPathResolver()
         let p = gr.resolve(graph: layout, partialPath)!
-        XCTAssertEqual(p.description, ["b1:1", "0:t0:1", "0:b2:1", "0:t1:2", "0:b3"])
+        XCTAssertEqual(p.toStrings, ["b1:1", "0:t0:1", "0:b2:1", "0:t1:2", "0:b3"])
     }
 
     func testResolveSimplePathWithTurnouts() throws {
@@ -83,7 +83,7 @@ class GraphTests: XCTestCase {
 
         let gr = GraphPathResolver()
         let p = gr.resolve(graph: layout, partialPath)!
-        XCTAssertEqual(p.description, ["b1:1", "0:t0:1", "0:b2:1", "0:t1:2", "0:b3"])
+        XCTAssertEqual(p.toStrings, ["b1:1", "0:t0:1", "0:b2:1", "0:t1:2", "0:b3"])
     }
 
     func testResolveSimplePathAlreadyFullPath() throws {
@@ -93,7 +93,7 @@ class GraphTests: XCTestCase {
 
         let gf = GraphPathFinder()
         let p = gf.path(graph: layout, from: b1, to: b3)!
-        XCTAssertEqual(p.description, ["b1:1", "0:t0:1", "0:b2:1", "0:t1:2", "0:b3"])
+        XCTAssertEqual(p.toStrings, ["b1:1", "0:t0:1", "0:b2:1", "0:t1:2", "0:b3"])
         
         let gr = GraphPathResolver()
         let p2 = gr.resolve(graph: layout, p)!
@@ -107,14 +107,14 @@ class GraphTests: XCTestCase {
         let b1 = layout.block("b1")
         
         // Without block reserved, the straighforward path from s1 to s2 is s1-b1-s2
-        var p = layout.path(for: layout.trains[0], from: (s1, .next), to: (s2, .previous))!
-        XCTAssertEqual(p.description, ["s1:1", "0:t1:1", "0:t2:1", "0:b1:1", "1:t4:0", "0:s2"])
+        var p = layout.path(for: layout.trains[0], from: (s1, .next), to: (s2, .next))!
+        XCTAssertEqual(p.toStrings, ["s1:1", "0:t1:1", "0:t2:1", "0:b1:1", "1:t4:0", "0:s2"])
         
         // Reserve b1 so the algorithm needs to find the alternate route s1-b3-s2
         b1.reserved = .init("foo", .next)
                 
-        p = layout.path(for: layout.trains[0], from: (s1, .next), to: (s2, .previous))!
-        XCTAssertEqual(p.description, ["s1:1", "0:t1:1", "0:t2:2", "2:t3:0", "0:b3:1", "2:t4:0", "0:s2"])
+        p = layout.path(for: layout.trains[0], from: (s1, .next), to: (s2, .next))!
+        XCTAssertEqual(p.toStrings, ["s1:1", "0:t1:1", "0:t2:2", "2:t3:0", "0:b3:1", "2:t4:0", "0:s2"])
     }
 
     func testFindPathUntilStation() throws {
@@ -123,7 +123,7 @@ class GraphTests: XCTestCase {
         
         // Do not specify the destination block, so the algorithm will stop at the first station it finds
         let p = layout.path(for: layout.trains[0], from: (s1, .next), to: nil)!
-        XCTAssertEqual(p.description, ["s1:1", "0:t1:1", "0:t2:1", "0:b1:1", "1:t4:0", "0:s2"])
+        XCTAssertEqual(p.toStrings, ["s1:1", "0:t1:1", "0:t2:1", "0:b1:1", "1:t4:0", "0:s2"])
     }
 }
 
@@ -137,54 +137,4 @@ extension Layout {
         return turnout(for: Identifier<Turnout>(uuid: uuid))!
     }
     
-    func path(for train: Train, from: (Block, Direction), to: (Block, Direction)?, reservedBlockBehavior: PathFinder.Settings.ReservedBlockBehavior = .avoidReserved) -> GraphPath? {
-        let gl = LayoutPathFinder(layout: self, train: train, reservedBlockBehavior: reservedBlockBehavior)
-        
-        let fromElement = GraphPathElement.starting(from.0, from.1 == .next ? Block.nextSocket : Block.previousSocket)
-        let toElement: GraphPathElement?
-        if let to = to {
-            toElement = .ending(to.0, to.1 == .next ? Block.nextSocket : Block.previousSocket)
-        } else {
-            toElement = nil
-        }
-        return gl.path(graph: self, from: fromElement, to: toElement)
-    }
-}
-
-extension Array where Element == GraphPathElement {
-    
-    var description: [String] {
-        map { pathElement in
-            var text = ""
-            if let enterSocket = pathElement.enterSocket {
-                text += "\(enterSocket):"
-            }
-            text += pathElement.node.identifier
-            if let exitSocket = pathElement.exitSocket {
-                text += ":\(exitSocket)"
-            }
-            return text
-        }
-    }
-}
-
-extension Array where Element == GraphPathElement {
-    
-    var toSteps: [Route.Step] {
-        return self.compactMap { element in
-            if let block = element.node as? Block {
-                let direction: Direction
-                if let entrySocket = element.enterSocket {
-                    direction = entrySocket == Block.previousSocket ? .next : .previous
-                } else if let exitSocket = element.exitSocket {
-                    direction = exitSocket == Block.nextSocket ? .next : .previous
-                } else {
-                    return nil
-                }
-                return Route.Step(block, direction)
-            } else {
-                return nil
-            }
-        }
-    }
 }
