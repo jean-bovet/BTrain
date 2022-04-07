@@ -137,8 +137,8 @@ extension Layout {
         return turnout(for: Identifier<Turnout>(uuid: uuid))
     }
     
-    func path(for train: Train, from: (Block, Direction), to: (Block, Direction)?) -> GraphPath? {
-        let gl = GraphLayout(layout: self, train: train)
+    func path(for train: Train, from: (Block, Direction), to: (Block, Direction)?, reservedBlockBehavior: PathFinder.Settings.ReservedBlockBehavior = .avoidReserved) -> GraphPath? {
+        let gl = LayoutPathFinder(layout: self, train: train, reservedBlockBehavior: reservedBlockBehavior)
         
         let fromElement = GraphPathElement.starting(from.0, from.1 == .next ? Block.nextSocket : Block.previousSocket)
         let toElement: GraphPathElement?

@@ -12,24 +12,45 @@
 
 import Foundation
 
-final class GraphLayout: GraphPathFinder {
+final class LayoutPathFinder: GraphPathFinder {
         
     let layout: Layout
     let train: Train
-    
-    init(layout: Layout, train: Train) {
+    let reservedBlockBehavior: PathFinder.Settings.ReservedBlockBehavior
+
+    init(layout: Layout, train: Train, reservedBlockBehavior: PathFinder.Settings.ReservedBlockBehavior = .ignoreReserved) {
         self.layout = layout
         self.train = train
+        self.reservedBlockBehavior = reservedBlockBehavior
     }
     
-    override func shouldInclude(node: GraphNode) -> Bool {
+    override func shouldInclude(node: GraphNode, currentPath: GraphPath) -> Bool {
         if let block = layout.block(for: Identifier<Block>(uuid: node.identifier)) {
             guard block.enabled else {
                 return false
             }
             
-            if let reserved = block.reserved, reserved.trainId != train.id {
-                return false
+            if let reserved = block.reserved {
+                let reservedForAnotherTrain = reserved.trainId != train.id
+                
+                switch reservedBlockBehavior {
+                case .avoidReserved:
+                    if reservedForAnotherTrain {
+                        return false
+                    }
+
+                case .ignoreReserved:
+                    break
+                    
+                case .avoidFirstReservedBlock:
+                    // Count how many blocks there is in the current path, ignoring the first block which
+                    // is the starting block. The "first reserved block" means the first block after
+                    // the starting block.
+                    if currentPath.dropFirst().filter({ $0.node is Block }).count == 0 {
+                        return false
+                    }
+                    break
+                }
             }
             
             return true
@@ -47,7 +68,7 @@ final class GraphLayout: GraphPathFinder {
             return true
         }
 
-        return super.shouldInclude(node: node)
+        return super.shouldInclude(node: node, currentPath: currentPath)
     }
     
     override func reachedDestination(node: GraphNode) -> Bool {

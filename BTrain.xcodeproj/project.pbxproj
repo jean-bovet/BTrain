@@ -153,7 +153,7 @@
 		A78B996227FCC4080021EFE4 /* Graph.swift in Sources */ = {isa = PBXBuildFile; fileRef = A78B996127FCC4080021EFE4 /* Graph.swift */; };
 		A78B996427FD56D80021EFE4 /* GraphTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A78B996327FD56D80021EFE4 /* GraphTests.swift */; };
 		A78B996727FD57B20021EFE4 /* Graph+Elements.swift in Sources */ = {isa = PBXBuildFile; fileRef = A78B996627FD57B20021EFE4 /* Graph+Elements.swift */; };
-		A78B996927FE41A90021EFE4 /* GraphLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = A78B996827FE41A90021EFE4 /* GraphLayout.swift */; };
+		A78B996927FE41A90021EFE4 /* LayoutPathFinder.swift in Sources */ = {isa = PBXBuildFile; fileRef = A78B996827FE41A90021EFE4 /* LayoutPathFinder.swift */; };
 		A7907955277D071000771A60 /* CGContext+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7907954277D071000771A60 /* CGContext+Extension.swift */; };
 		A7907957277D136500771A60 /* CGAffineTransform+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7907956277D136500771A60 /* CGAffineTransform+Extension.swift */; };
 		A7907993277EC86200771A60 /* DocumentToolbarContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7907992277EC86200771A60 /* DocumentToolbarContent.swift */; };
@@ -419,7 +419,7 @@
 		A78B996127FCC4080021EFE4 /* Graph.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Graph.swift; sourceTree = "<group>"; };
 		A78B996327FD56D80021EFE4 /* GraphTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GraphTests.swift; sourceTree = "<group>"; };
 		A78B996627FD57B20021EFE4 /* Graph+Elements.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Graph+Elements.swift"; sourceTree = "<group>"; };
-		A78B996827FE41A90021EFE4 /* GraphLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GraphLayout.swift; sourceTree = "<group>"; };
+		A78B996827FE41A90021EFE4 /* LayoutPathFinder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutPathFinder.swift; sourceTree = "<group>"; };
 		A7907954277D071000771A60 /* CGContext+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CGContext+Extension.swift"; sourceTree = "<group>"; };
 		A7907956277D136500771A60 /* CGAffineTransform+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CGAffineTransform+Extension.swift"; sourceTree = "<group>"; };
 		A7907992277EC86200771A60 /* DocumentToolbarContent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentToolbarContent.swift; sourceTree = "<group>"; };
@@ -1021,7 +1021,7 @@
 			children = (
 				A78B996127FCC4080021EFE4 /* Graph.swift */,
 				A78B996627FD57B20021EFE4 /* Graph+Elements.swift */,
-				A78B996827FE41A90021EFE4 /* GraphLayout.swift */,
+				A78B996827FE41A90021EFE4 /* LayoutPathFinder.swift */,
 			);
 			path = Graph;
 			sourceTree = "<group>";
@@ -1546,7 +1546,7 @@
 				A784137A273F4D5400381341 /* ConnectableShape.swift in Sources */,
 				A7E1F74A27D71E51009FB75F /* TrainSpeedTimingFunctionView.swift in Sources */,
 				A7CA5EBF2795D05A00171398 /* TrainControlActionsView.swift in Sources */,
-				A78B996927FE41A90021EFE4 /* GraphLayout.swift in Sources */,
+				A78B996927FE41A90021EFE4 /* LayoutPathFinder.swift in Sources */,
 				A73E0829276BF554005F9D64 /* TrainControlSetLocationSheet.swift in Sources */,
 				A792DEF627839F55004B0439 /* SimulatorView.swift in Sources */,
 			);

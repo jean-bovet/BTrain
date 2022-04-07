@@ -116,7 +116,7 @@ class GraphPathFinder {
         
         let endingElement = GraphPathElement.ending(node, enterSocketId)
 
-        if !shouldInclude(node: node) {
+        if !shouldInclude(node: node, currentPath: currentPath) {
             return nil
         }
         if reachedDestination(node: node) {
@@ -148,7 +148,7 @@ class GraphPathFinder {
     // Returns true if the specified node should be included in the path.
     // If false, the algorithm backtracks to the previous node and finds
     // an alternative edge if possible.
-    func shouldInclude(node: GraphNode) -> Bool {
+    func shouldInclude(node: GraphNode, currentPath: GraphPath) -> Bool {
         return true
     }
     
