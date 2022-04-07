@@ -83,18 +83,27 @@ struct GraphPathElement: Equatable {
     
 }
 
+extension GraphPath where Element == GraphPathElement {
+    
+    func contains(_ element: GraphPathElement) -> Bool {
+        return contains { otherElement in
+            return element == otherElement
+        }
+    }
+}
+
 class GraphPathFinder {
         
     func path(graph: Graph, from: GraphNode, to: GraphNode?) -> GraphPath? {
         for socketId in from.sockets {
             if let to = to {
                 for toSocketId in to.sockets {
-                    if let steps = path(graph: graph, from: .starting(from, socketId), to: .ending(to, toSocketId), visitedNodes: [], currentPath: [.starting(from, socketId)]) {
+                    if let steps = path(graph: graph, from: .starting(from, socketId), to: .ending(to, toSocketId), currentPath: [.starting(from, socketId)]) {
                         return steps
                     }
                 }
             } else {
-                if let steps = path(graph: graph, from: .starting(from, socketId), to: nil, visitedNodes: [], currentPath: [.starting(from, socketId)]) {
+                if let steps = path(graph: graph, from: .starting(from, socketId), to: nil, currentPath: [.starting(from, socketId)]) {
                     return steps
                 }
             }
@@ -103,10 +112,10 @@ class GraphPathFinder {
     }
 
     func path(graph: Graph, from: GraphPathElement, to: GraphPathElement?) -> GraphPath? {
-        return path(graph: graph, from: from, to: to, visitedNodes: [], currentPath: [from])
+        return path(graph: graph, from: from, to: to, currentPath: [from])
     }
     
-    private func path(graph: Graph, from: GraphPathElement, to: GraphPathElement?, visitedNodes: [GraphNode], currentPath: GraphPath) -> GraphPath? {
+    private func path(graph: Graph, from: GraphPathElement, to: GraphPathElement?, currentPath: GraphPath) -> GraphPath? {
         guard from != to else {
             return currentPath
         }
@@ -115,16 +124,16 @@ class GraphPathFinder {
             return nil
         }
         
-        guard let node = graph.node(for: edge.toNode), !visitedNodes.contains(where: { $0.identifier == node.identifier} ) else {
+        guard let node = graph.node(for: edge.toNode) else {
             return nil
         }
                 
         guard let enterSocketId = edge.toNodeSocket else {
             return nil
         }
-        
+                
         let endingElement = GraphPathElement.ending(node, enterSocketId)
-
+        
         if !shouldInclude(node: node, currentPath: currentPath) {
             return nil
         }
@@ -142,8 +151,12 @@ class GraphPathFinder {
         let exitSockets = node.reachableSockets(from: enterSocketId)
         for exitSocket in exitSockets {
             let betweenElement = GraphPathElement.between(node, enterSocketId, exitSocket)
+            
+            guard !currentPath.contains(betweenElement) else {
+                return nil
+            }
+            
             if let path = path(graph: graph, from: betweenElement, to: to,
-                               visitedNodes: visitedNodes + [node],
                                currentPath: currentPath + [.between(node, enterSocketId, exitSocket)]) {
                 return path
             }

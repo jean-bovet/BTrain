@@ -17,8 +17,8 @@ class GraphTests: XCTestCase {
 
     func testSimplePath() throws {
         let layout = LayoutACreator().newLayout()
-        let b1 = layout.block("b1")!
-        let b3 = layout.block("b3")!
+        let b1 = layout.block("b1")
+        let b3 = layout.block("b3")
 
         let gf = GraphPathFinder()
         let p = gf.path(graph: layout, from: b1, to: b3)!
@@ -27,8 +27,8 @@ class GraphTests: XCTestCase {
 
     func testSimplePathBetweenTwoElements() throws {
         let layout = LayoutACreator().newLayout()
-        let b1 = layout.block("b1")!
-        let b2 = layout.block("b2")!
+        let b1 = layout.block("b1")
+        let b2 = layout.block("b2")
 
         let gf = GraphPathFinder()
         let p = gf.path(graph: layout, from: GraphPathElement.starting(b1, 1), to: GraphPathElement.ending(b2, 0))!
@@ -37,8 +37,8 @@ class GraphTests: XCTestCase {
 
     func testSimplePathBetweenBlockAndTurnout() throws {
         let layout = LayoutACreator().newLayout()
-        let b1 = layout.block("b1")!
-        let t0 = layout.turnout("t0")!
+        let b1 = layout.block("b1")
+        let t0 = layout.turnout("t0")
 
         let gf = GraphPathFinder()
         let p = gf.path(graph: layout, from: GraphPathElement.starting(b1, 1), to: GraphPathElement.ending(t0, 0))!
@@ -47,8 +47,8 @@ class GraphTests: XCTestCase {
 
     func testResolveSimplePath() throws {
         let layout = LayoutACreator().newLayout()
-        let b1 = layout.block("b1")!
-        let b3 = layout.block("b3")!
+        let b1 = layout.block("b1")
+        let b3 = layout.block("b3")
 
         let partialPath = [ GraphPathElement.starting(b1, 1), GraphPathElement.ending(b3, 0) ]
 
@@ -59,8 +59,8 @@ class GraphTests: XCTestCase {
 
     func testResolveSimplePathWithTurnout() throws {
         let layout = LayoutACreator().newLayout()
-        let b1 = layout.block("b1")!
-        let b3 = layout.block("b3")!
+        let b1 = layout.block("b1")
+        let b3 = layout.block("b3")
 
         let t0 = layout.turnout(for: Identifier<Turnout>(uuid: "t0"))!
 
@@ -73,8 +73,8 @@ class GraphTests: XCTestCase {
 
     func testResolveSimplePathWithTurnouts() throws {
         let layout = LayoutACreator().newLayout()
-        let b1 = layout.block("b1")!
-        let b3 = layout.block("b3")!
+        let b1 = layout.block("b1")
+        let b3 = layout.block("b3")
 
         let t0 = layout.turnout(for: Identifier<Turnout>(uuid: "t0"))!
         let t1 = layout.turnout(for: Identifier<Turnout>(uuid: "t1"))!
@@ -88,8 +88,8 @@ class GraphTests: XCTestCase {
 
     func testResolveSimplePathAlreadyFullPath() throws {
         let layout = LayoutACreator().newLayout()
-        let b1 = layout.block("b1")!
-        let b3 = layout.block("b3")!
+        let b1 = layout.block("b1")
+        let b3 = layout.block("b3")
 
         let gf = GraphPathFinder()
         let p = gf.path(graph: layout, from: b1, to: b3)!
@@ -102,9 +102,9 @@ class GraphTests: XCTestCase {
 
     func testFindPathWithReservedBlock() throws {
         let layout = LayoutICreator().newLayout()
-        let s1 = layout.block("s1")!
-        let s2 = layout.block("s2")!
-        let b1 = layout.block("b1")!
+        let s1 = layout.block("s1")
+        let s2 = layout.block("s2")
+        let b1 = layout.block("b1")
         
         // Without block reserved, the straighforward path from s1 to s2 is s1-b1-s2
         var p = layout.path(for: layout.trains[0], from: (s1, .next), to: (s2, .previous))!
@@ -119,7 +119,7 @@ class GraphTests: XCTestCase {
 
     func testFindPathUntilStation() throws {
         let layout = LayoutICreator().newLayout()
-        let s1 = layout.block("s1")!
+        let s1 = layout.block("s1")
         
         // Do not specify the destination block, so the algorithm will stop at the first station it finds
         let p = layout.path(for: layout.trains[0], from: (s1, .next), to: nil)!
@@ -129,12 +129,12 @@ class GraphTests: XCTestCase {
 
 extension Layout {
     
-    func block(_ uuid: String) -> Block? {
-        return block(for: Identifier<Block>(uuid: uuid))
+    func block(_ uuid: String) -> Block {
+        return block(for: Identifier<Block>(uuid: uuid))!
     }
     
-    func turnout(_ uuid: String) -> Turnout? {
-        return turnout(for: Identifier<Turnout>(uuid: uuid))
+    func turnout(_ uuid: String) -> Turnout {
+        return turnout(for: Identifier<Turnout>(uuid: uuid))!
     }
     
     func path(for train: Train, from: (Block, Direction), to: (Block, Direction)?, reservedBlockBehavior: PathFinder.Settings.ReservedBlockBehavior = .avoidReserved) -> GraphPath? {
@@ -164,6 +164,27 @@ extension Array where Element == GraphPathElement {
                 text += ":\(exitSocket)"
             }
             return text
+        }
+    }
+}
+
+extension Array where Element == GraphPathElement {
+    
+    var toSteps: [Route.Step] {
+        return self.compactMap { element in
+            if let block = element.node as? Block {
+                let direction: Direction
+                if let entrySocket = element.enterSocket {
+                    direction = entrySocket == Block.previousSocket ? .next : .previous
+                } else if let exitSocket = element.exitSocket {
+                    direction = exitSocket == Block.nextSocket ? .next : .previous
+                } else {
+                    return nil
+                }
+                return Route.Step(block, direction)
+            } else {
+                return nil
+            }
         }
     }
 }

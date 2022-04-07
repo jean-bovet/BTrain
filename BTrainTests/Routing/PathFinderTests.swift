@@ -26,6 +26,15 @@ class PathFinderTests: BTTestCase {
         XCTAssertEqual(path!.description, ["s1:next", "b1:next", "b2:next", "b3:next", "s2:next"])
     }
     
+    func testSimplePath2() throws {
+        let layout = LayoutECreator().newLayout()
+        let s1 = layout.block("s1")
+        
+        let path = layout.path(for: layout.trains[0], from: (s1, .next), to: nil, reservedBlockBehavior: .avoidFirstReservedBlock)
+        XCTAssertNotNil(path)
+        XCTAssertEqual(path!.toSteps.description, ["s1:next", "b1:next", "b2:next", "b3:next", "s2:next"])
+    }
+
     func testPathWithBacktrack() throws {
         let layout = LayoutECreator().newLayout()
         let s1 = layout.block(for: Identifier<Block>(uuid: "s1"))!
@@ -44,6 +53,17 @@ class PathFinderTests: BTTestCase {
         XCTAssertEqual(path!.description, ["s1:next", "b1:next", "b2:next", "b3:next", "b5:next", "b1:previous", "s2:previous"])
     }
     
+    func testPathWithBacktrack2() throws {
+        let layout = LayoutECreator().newLayout()
+        let s1 = layout.block("s1")
+        let t6 = layout.turnout("t6")
+        t6.reserved = .init(train: Identifier<Train>(uuid: "foo"), sockets: nil)
+        
+        let path = layout.path(for: layout.trains[0], from: (s1, .next), to: nil, reservedBlockBehavior: .avoidFirstReservedBlock)
+        XCTAssertNotNil(path)
+        XCTAssertEqual(path!.toSteps.description, ["s1:next", "b1:next", "b2:next", "b3:next", "b5:next", "b1:previous", "s2:previous"])
+    }
+
     func testPathLookAhead() throws {
         let layout = LayoutECreator().newLayout()
         let s1 = layout.block(for: Identifier<Block>(uuid: "s1"))!
