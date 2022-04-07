@@ -16,6 +16,7 @@ import Foundation
 // to another (or to any station), making sure to avoid any reserved
 // block and block already taken. There is no guaranteed that the
 // path will be the shortest.
+// TODO: remove this class once we are done with testing
 final class PathFinder {
     
     enum PathError: Error {

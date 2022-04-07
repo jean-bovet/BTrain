@@ -77,11 +77,32 @@ struct GraphPathElement: Equatable, CustomStringConvertible {
         return text
     }
     
+    // Returns true if this element is the same as the other element, taking into account the fact that the entry or exit socket can be nil.
+    // The following rules are used:
+    // - Both element must refer to the same node identifier
+    // - If this element's entrySocket is not nil, it must correspond to the other element's entrySocket. Otherwise, the entrySocket is ignored.
+    // - If this element's exitSocket is not nil, it must correspond to the other element's exitSocket. Otherwise, the exitSocket is ignored.
+    func isSame(as other: GraphPathElement) -> Bool {
+        guard node.identifier == other.node.identifier else {
+            return false
+        }
+        
+        if let entrySocket = entrySocket, entrySocket != other.entrySocket {
+            return false
+        }
+        
+        if let exitSocket = exitSocket, exitSocket != other.exitSocket {
+            return false
+        }
+
+        return true
+    }
+    
     static func starting(_ node: GraphNode, _ exitSocket: SocketId) -> GraphPathElement {
         .init(node: node, entrySocket: nil, exitSocket: exitSocket)
     }
     
-    static func ending(_ node: GraphNode, _ entrySocket: SocketId) -> GraphPathElement {
+    static func ending(_ node: GraphNode, _ entrySocket: SocketId?) -> GraphPathElement {
         .init(node: node, entrySocket: entrySocket, exitSocket: nil)
     }
     
@@ -134,9 +155,9 @@ class GraphPathFinder {
     
     private func path(graph: Graph, from: GraphPathElement, to: GraphPathElement?, currentPath: GraphPath) -> GraphPath? {
         if let to = to {
-            print("From \(from.node) to \(to.node): \(currentPath.toStrings)")
+            print("From \(from) to \(to): \(currentPath.toStrings)")
         } else {
-            print("From \(from.node): \(currentPath.toStrings)")
+            print("From \(from): \(currentPath.toStrings)")
         }
         
         guard currentPath.count < overflow else {
@@ -175,7 +196,7 @@ class GraphPathFinder {
             return nil
         }
                 
-        if endingElement == to {
+        if let to = to, to.isSame(as: endingElement) {
             // We reached the destination node
             return currentPath + [endingElement]
         } else if to == nil && reachedDestination(node: node) {

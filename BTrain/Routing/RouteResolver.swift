@@ -17,6 +17,7 @@ import Foundation
 // with just a few blocks specified and it will be up to this class to find out the missing turnouts (and blocks) to
 // create a contiguous route.
 // At the moment, only missing turnouts will be handled but in a future release, missing blocks will be supported as well.
+// TODO: remove once testing is done
 final class RouteResolver {
     
     let layout: Layout

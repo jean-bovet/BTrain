@@ -53,6 +53,10 @@ final class LayoutPathFinder: GraphPathFinder {
                 }
             }
             
+            if train.blocksToAvoid.contains(where: { $0.blockId == block.id }) {
+                return false
+            }
+            
             return true
         }
         
@@ -65,6 +69,10 @@ final class LayoutPathFinder: GraphPathFinder {
                 return false
             }
             
+            if train.turnoutsToAvoid.contains(where: { $0.turnoutId == turnout.id }) {
+                return false
+            }
+
             return true
         }
 
