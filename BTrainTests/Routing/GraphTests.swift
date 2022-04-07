@@ -138,9 +138,7 @@ extension Layout {
     }
     
     func path(for train: Train, from: (Block, Direction), to: (Block, Direction)?) -> GraphPath? {
-        let gf = GraphPathFinder()
         let gl = GraphLayout(layout: self, train: train)
-        gf.delegate = gl
         
         let fromElement = GraphPathElement.starting(from.0, from.1 == .next ? Block.nextSocket : Block.previousSocket)
         let toElement: GraphPathElement?
@@ -149,7 +147,7 @@ extension Layout {
         } else {
             toElement = nil
         }
-        return gf.path(graph: self, from: fromElement, to: toElement)
+        return gl.path(graph: self, from: fromElement, to: toElement)
     }
 }
 

@@ -12,7 +12,7 @@
 
 import Foundation
 
-final class GraphLayout: GraphPathFinderDelegate {
+final class GraphLayout: GraphPathFinder {
         
     let layout: Layout
     let train: Train
@@ -22,19 +22,39 @@ final class GraphLayout: GraphPathFinderDelegate {
         self.train = train
     }
     
-    func shouldInclude(node: GraphNode) -> Bool {
+    override func shouldInclude(node: GraphNode) -> Bool {
         if let block = layout.block(for: Identifier<Block>(uuid: node.identifier)) {
-            return block.reserved == nil || block.reserved?.trainId == train.id
-        } else {
+            guard block.enabled else {
+                return false
+            }
+            
+            if let reserved = block.reserved, reserved.trainId != train.id {
+                return false
+            }
+            
             return true
         }
+        
+        if let turnout = layout.turnout(for: Identifier<Turnout>(uuid: node.identifier)) {
+            guard turnout.enabled else {
+                return false
+            }
+            
+            if let reserved = turnout.reserved, reserved.train != train.id {
+                return false
+            }
+            
+            return true
+        }
+
+        return super.shouldInclude(node: node)
     }
     
-    func reachedDestination(node: GraphNode) -> Bool {
+    override func reachedDestination(node: GraphNode) -> Bool {
         if let block = layout.block(for: Identifier<Block>(uuid: node.identifier)) {
             return block.category == .station
         } else {
-            return false
+            return super.reachedDestination(node: node)
         }
     }
 

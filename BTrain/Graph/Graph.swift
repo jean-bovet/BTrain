@@ -73,20 +73,8 @@ struct GraphPathElement: Equatable {
 
 typealias GraphPath = [GraphPathElement]
 
-protocol GraphPathFinderDelegate: AnyObject {
-    // Returns true if the specified node should be included in the path.
-    // If false, the algorithm backtracks to the previous node and finds
-    // an alternative edge if possible.
-    func shouldInclude(node: GraphNode) -> Bool
-    
-    // Returns true if the specified node is the destination node of the path.
-    func reachedDestination(node: GraphNode) -> Bool
-}
-
-final class GraphPathFinder {
-    
-    weak var delegate: GraphPathFinderDelegate?
-    
+class GraphPathFinder {
+        
     func path(graph: Graph, from: GraphNode, to: GraphNode?) -> GraphPath? {
         for socketId in from.sockets {
             if let to = to {
@@ -128,15 +116,13 @@ final class GraphPathFinder {
         
         let endingElement = GraphPathElement.ending(node, enterSocketId)
 
-        if let delegate = delegate {
-            if !delegate.shouldInclude(node: node) {
-                return nil
-            }
-            if delegate.reachedDestination(node: node) {
-                return currentPath + [endingElement]
-            }
+        if !shouldInclude(node: node) {
+            return nil
         }
-        
+        if reachedDestination(node: node) {
+            return currentPath + [endingElement]
+        }
+
         if endingElement == to {
             // We reached the destination node
             return currentPath + [endingElement]
@@ -155,6 +141,20 @@ final class GraphPathFinder {
         }
 
         return nil
+    }
+
+    // MARK: Behaviors
+    
+    // Returns true if the specified node should be included in the path.
+    // If false, the algorithm backtracks to the previous node and finds
+    // an alternative edge if possible.
+    func shouldInclude(node: GraphNode) -> Bool {
+        return true
+    }
+    
+    // Returns true if the specified node is the destination node of the path.
+    func reachedDestination(node: GraphNode) -> Bool {
+        return false
     }
 
 }
