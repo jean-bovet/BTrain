@@ -125,23 +125,43 @@ extension GraphPath where Element == GraphPathElement {
     }
 }
 
-class GraphPathFinder {
+protocol GraphPathFinding {
+    
+    func path(graph: Graph, from: GraphNode, to: GraphNode?, constraints: GraphPathFinderConstraints) -> GraphPath?
+    
+    func path(graph: Graph, from: GraphPathElement, to: GraphPathElement?, constraints: GraphPathFinderConstraints) -> GraphPath?
+    
+}
+
+struct GraphPathFinder: GraphPathFinding {
         
     var verbose = false
     var random = false
     // TODO: ask for the graph size and have the overflow be 4 times the size of the graph? What's in PathFinder again?
     var overflow = 30
     
-    func path(graph: Graph, from: GraphNode, to: GraphNode?) -> GraphPath? {
+    final class DefaultConstraints: GraphPathFinderConstraints {
+        
+        func shouldInclude(node: GraphNode, currentPath: GraphPath, to: GraphPathElement?) -> Bool {
+            return true
+        }
+        
+        func reachedDestination(node: GraphNode, to: GraphPathElement?) -> Bool {
+            return false
+        }
+
+    }
+
+    func path(graph: Graph, from: GraphNode, to: GraphNode?, constraints: GraphPathFinderConstraints = DefaultConstraints()) -> GraphPath? {
         for socketId in shuffled(from.sockets) {
             if let to = to {
                 for toSocketId in shuffled(to.sockets) {
-                    if let steps = path(graph: graph, from: .starting(from, socketId), to: .ending(to, toSocketId), currentPath: [.starting(from, socketId)]) {
+                    if let steps = path(graph: graph, from: .starting(from, socketId), to: .ending(to, toSocketId), currentPath: [.starting(from, socketId)], constraints: constraints) {
                         return steps
                     }
                 }
             } else {
-                if let steps = path(graph: graph, from: .starting(from, socketId), to: nil, currentPath: [.starting(from, socketId)]) {
+                if let steps = path(graph: graph, from: .starting(from, socketId), to: nil, currentPath: [.starting(from, socketId)], constraints: constraints) {
                     return steps
                 }
             }
@@ -149,11 +169,33 @@ class GraphPathFinder {
         return nil
     }
 
-    func path(graph: Graph, from: GraphPathElement, to: GraphPathElement?) -> GraphPath? {
-        return path(graph: graph, from: from, to: to, currentPath: [from])
+    func path(graph: Graph, from: GraphPathElement, to: GraphPathElement?, constraints: GraphPathFinderConstraints = DefaultConstraints()) -> GraphPath? {
+        return path(graph: graph, from: from, to: to, currentPath: [from], constraints: constraints)
     }
     
-    private func path(graph: Graph, from: GraphPathElement, to: GraphPathElement?, currentPath: GraphPath) -> GraphPath? {
+    func resolve(graph: Graph, _ path: GraphPath, constraints: GraphPathFinderConstraints = DefaultConstraints()) -> GraphPath? {
+        var resolvedPath = GraphPath()
+        guard var previousElement = path.first else {
+            return nil
+        }
+        resolvedPath.append(previousElement)
+        for element in path.dropFirst() {
+            if let p = self.path(graph: graph, from: previousElement, to: element, constraints: constraints) {
+                for resolvedElement in p.dropFirst() {
+                    resolvedPath.append(resolvedElement)
+                }
+            } else {
+                // A path should always be resolvable between two elements. If not, it means
+                // that some constraints imposed by a subclass prevents a path from being found
+                // so we always return here instead of continuing and returning an incomplete route.
+                return nil
+            }
+            previousElement = element
+        }
+        return resolvedPath
+    }
+
+    private func path(graph: Graph, from: GraphPathElement, to: GraphPathElement?, currentPath: GraphPath, constraints: GraphPathFinderConstraints = DefaultConstraints()) -> GraphPath? {
         if verbose {
             if let to = to {
                 debug("From \(from) to \(to): \(currentPath.toStrings)")
@@ -193,7 +235,7 @@ class GraphPathFinder {
                 
         let endingElement = GraphPathElement.ending(node, entrySocketId)
         
-        if !shouldInclude(node: node, currentPath: currentPath, to: to) {
+        if !constraints.shouldInclude(node: node, currentPath: currentPath, to: to) {
             debug("Node \(node) should not be included, backtracking")
             return nil
         }
@@ -201,7 +243,7 @@ class GraphPathFinder {
         if let to = to, to.isSame(as: endingElement) {
             // We reached the destination node
             return currentPath + [endingElement]
-        } else if reachedDestination(node: node, to: to) {
+        } else if constraints.reachedDestination(node: node, to: to) {
             // If no target node is specified, let's determine if the node one that we should stop at.
             return currentPath + [endingElement]
         }
@@ -220,7 +262,8 @@ class GraphPathFinder {
             }
             
             if let path = path(graph: graph, from: betweenElement, to: to,
-                               currentPath: currentPath + [.between(node, entrySocketId, exitSocket)]) {
+                               currentPath: currentPath + [.between(node, entrySocketId, exitSocket)],
+                               constraints: constraints) {
                 return path
             }
         }
@@ -236,53 +279,21 @@ class GraphPathFinder {
         }
     }
     
-    // MARK: Behaviors subclasses can override
-    
-    // Returns true if the specified node should be included in the path.
-    // If false, the algorithm backtracks to the previous node and finds
-    // an alternative edge if possible.
-    func shouldInclude(node: GraphNode, currentPath: GraphPath, to: GraphPathElement?) -> Bool {
-        return true
-    }
-    
-    // Returns true if the specified node is the destination node of the path.
-    func reachedDestination(node: GraphNode, to: GraphPathElement?) -> Bool {
-        return false
-    }
-
-    func debug(_ msg: String) {
+    private func debug(_ msg: String) {
         if verbose {
             BTLogger.debug(msg)
         }
     }
 }
 
-extension GraphPathFinder {
+protocol GraphPathFinderConstraints {
+    // Returns true if the specified node should be included in the path.
+    // If false, the algorithm backtracks to the previous node and finds
+    // an alternative edge if possible.
+    func shouldInclude(node: GraphNode, currentPath: GraphPath, to: GraphPathElement?) -> Bool
     
-    func resolve(graph: Graph, _ path: GraphPath) -> GraphPath? {
-        var resolvedPath = GraphPath()
-        guard var previousElement = path.first else {
-            return nil
-        }
-        resolvedPath.append(previousElement)
-        for element in path.dropFirst() {
-            if let p = self.path(graph: graph, from: previousElement, to: element) {
-                for resolvedElement in p.dropFirst() {
-                    resolvedPath.append(resolvedElement)
-                }
-            } else {
-                if let p2 = GraphPathFinder().path(graph: graph, from: previousElement, to: element) {
-                    for resolvedElement in p2.dropFirst() {
-                        resolvedPath.append(resolvedElement)
-                    }
-                } else {
-                    // TODO: throw an error because this should not happen
-                }
-            }
-            previousElement = element
-        }
-        return resolvedPath
-    }
+    // Returns true if the specified node is the destination node of the path.
+    func reachedDestination(node: GraphNode, to: GraphPathElement?) -> Bool
 
 }
 

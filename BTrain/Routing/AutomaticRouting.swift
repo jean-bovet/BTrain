@@ -59,8 +59,9 @@ final class AutomaticRouting {
 //                                           reservedBlockBehavior: destination == nil ? .avoidFirstReservedBlock : .avoidReserved,
 //                                           verbose: SettingsKeys.bool(forKey: SettingsKeys.logRoutingResolutionSteps))
         let pf = LayoutPathFinder(layout: layout, train: train, reservedBlockBehavior: destination == nil ? .avoidFirstReservedBlock : .avoidReserved)
-        pf.random = layout.automaticRouteRandom
-        pf.verbose = SettingsKeys.bool(forKey: SettingsKeys.logRoutingResolutionSteps) || true
+        // TODO: include again
+//        pf.random = layout.automaticRouteRandom
+//        pf.verbose = SettingsKeys.bool(forKey: SettingsKeys.logRoutingResolutionSteps)
         
         let to: (Block, Direction?)?
         if let destination = destination {
@@ -71,7 +72,7 @@ final class AutomaticRouting {
         } else {
             to = nil
         }
-        if let path = layout.path(for: train, from: (currentBlock, trainInstance.direction), to: to, pathFinder: pf) {
+        if let path = layout.path(for: train, from: (currentBlock, trainInstance.direction), to: to, pathFinder: pf, constraints: pf.constraints) {
 //        if let path = try pf.path(trainId: train.id, from: currentBlock, destination: destination, direction: trainInstance.direction, settings: settings) {
             route.steps = path.toBlockSteps
             train.routeStepIndex = 0

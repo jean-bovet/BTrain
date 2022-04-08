@@ -111,10 +111,10 @@ extension Layout {
         
     func path(for train: Train, from: (Block, Direction), to: (Block, Direction)?, reservedBlockBehavior: PathFinder.Settings.ReservedBlockBehavior = .avoidReserved) -> GraphPath? {
         let gl = LayoutPathFinder(layout: self, train: train, reservedBlockBehavior: reservedBlockBehavior)
-        return path(for: train, from: from, to: to, pathFinder: gl)
+        return path(for: train, from: from, to: to, pathFinder: gl, constraints: gl.constraints)
     }
     
-    func path(for train: Train, from: (Block, Direction), to: (Block, Direction?)?, pathFinder: GraphPathFinder) -> GraphPath? {
+    func path(for train: Train, from: (Block, Direction), to: (Block, Direction?)?, pathFinder: GraphPathFinding, constraints: GraphPathFinderConstraints) -> GraphPath? {
         // Note: when direction is `next`, it means we are leaving the starting element from its `nextSocket`
         let fromElement = GraphPathElement.starting(from.0, from.1 == .next ? Block.nextSocket : Block.previousSocket)
         let toElement: GraphPathElement?
@@ -130,16 +130,17 @@ extension Layout {
         } else {
             toElement = nil
         }
-        return pathFinder.path(graph: self, from: fromElement, to: toElement)
+        return pathFinder.path(graph: self, from: fromElement, to: toElement, constraints: constraints)
     }
     
     func shortestPaths(for train: Train, from: (Block, Direction), to: (Block, Direction)?, reservedBlockBehavior: PathFinder.Settings.ReservedBlockBehavior = .avoidReserved) -> [GraphPath] {
         let gl = LayoutPathFinder(layout: self, train: train, reservedBlockBehavior: reservedBlockBehavior)
-        gl.random = true
+        // TODO: put back
+//        gl.random = true
         
         var paths = [GraphPath]()
         for _ in 1...10 {
-            if let path = path(for: train, from: from, to: to, pathFinder: gl) {
+            if let path = path(for: train, from: from, to: to, pathFinder: gl, constraints: gl.constraints) {
                 paths.append(path)
             }
         }

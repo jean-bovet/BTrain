@@ -12,101 +12,123 @@
 
 import Foundation
 
-class LayoutPathFinder: GraphPathFinder {
+final class LayoutPathFinder: GraphPathFinding {
         
-    let layout: Layout
-    let train: Train
-    let reservedBlockBehavior: PathFinder.Settings.ReservedBlockBehavior
-
+    let constraints: LayoutConstraints
+    let gpf: GraphPathFinder
+    
     init(layout: Layout, train: Train, reservedBlockBehavior: PathFinder.Settings.ReservedBlockBehavior = .ignoreReserved) {
-        self.layout = layout
-        self.train = train
-        self.reservedBlockBehavior = reservedBlockBehavior
+        self.constraints = LayoutConstraints(layout: layout, train: train, reservedBlockBehavior: reservedBlockBehavior)
+        self.gpf = GraphPathFinder()
+    }
+
+    func path(graph: Graph, from: GraphNode, to: GraphNode?, constraints: GraphPathFinderConstraints) -> GraphPath? {
+        return gpf.path(graph: graph, from: from, to: to, constraints: constraints)
+    }
+
+    func path(graph: Graph, from: GraphPathElement, to: GraphPathElement?, constraints: GraphPathFinderConstraints) -> GraphPath? {
+        return gpf.path(graph: graph, from: from, to: to, constraints: constraints)
+    }
+
+    func resolve(graph: Graph, _ path: GraphPath, constraints: GraphPathFinderConstraints) -> GraphPath? {
+        return gpf.resolve(graph: graph, path, constraints: constraints)
     }
     
-    override func shouldInclude(node: GraphNode, currentPath: GraphPath, to: GraphPathElement?) -> Bool {
-        if let block = layout.block(for: Identifier<Block>(uuid: node.identifier)) {
-            guard block.enabled else {
-                return false
-            }
-            
-            if let reserved = block.reserved {
-                let reservedForAnotherTrain = reserved.trainId != train.id
-                
-                switch reservedBlockBehavior {
-                case .avoidReserved:
-                    if reservedForAnotherTrain {
-                        return false
-                    }
+    final class LayoutConstraints: GraphPathFinderConstraints {
+        
+        let layout: Layout
+        let train: Train
+        let reservedBlockBehavior: PathFinder.Settings.ReservedBlockBehavior
 
-                case .ignoreReserved:
-                    break
-                    
-                case .avoidFirstReservedBlock:
-                    // Count how many blocks there is in the current path, ignoring the first block which
-                    // is the starting block. The "first reserved block" means the first block after the starting block.
-                    if currentPath.numberOfBlocksIgnoringStartingBlock == 0 {
-                        // If there are zero blocks in the path, it means that `node` is the first block,
-                        // in which case we need to avoid it because it is reserved.
-                        return false
-                    }
-                    break
+        init(layout: Layout, train: Train, reservedBlockBehavior: PathFinder.Settings.ReservedBlockBehavior = .ignoreReserved) {
+            self.layout = layout
+            self.train = train
+            self.reservedBlockBehavior = reservedBlockBehavior
+        }
+
+        func shouldInclude(node: GraphNode, currentPath: GraphPath, to: GraphPathElement?) -> Bool {
+            if let block = layout.block(for: Identifier<Block>(uuid: node.identifier)) {
+                guard block.enabled else {
+                    return false
                 }
+                
+                if let reserved = block.reserved {
+                    let reservedForAnotherTrain = reserved.trainId != train.id
+                    
+                    switch reservedBlockBehavior {
+                    case .avoidReserved:
+                        if reservedForAnotherTrain {
+                            return false
+                        }
+                        
+                    case .ignoreReserved:
+                        break
+                        
+                    case .avoidFirstReservedBlock:
+                        // Count how many blocks there is in the current path, ignoring the first block which
+                        // is the starting block. The "first reserved block" means the first block after the starting block.
+                        if currentPath.numberOfBlocksIgnoringStartingBlock == 0 {
+                            // If there are zero blocks in the path, it means that `node` is the first block,
+                            // in which case we need to avoid it because it is reserved.
+                            return false
+                        }
+                        break
+                    }
+                }
+                
+                if train.blocksToAvoid.contains(where: { $0.blockId == block.id }) {
+                    return false
+                }
+                
+                return true
             }
             
-            if train.blocksToAvoid.contains(where: { $0.blockId == block.id }) {
-                return false
+            if let turnout = layout.turnout(for: Identifier<Turnout>(uuid: node.identifier)) {
+                guard turnout.enabled else {
+                    return false
+                }
+                
+                if let reserved = turnout.reserved {
+                    let reservedForAnotherTrain = reserved.train != train.id
+                    
+                    switch reservedBlockBehavior {
+                    case .avoidReserved:
+                        if reservedForAnotherTrain {
+                            return false
+                        }
+                        
+                    case .ignoreReserved:
+                        break
+                        
+                    case .avoidFirstReservedBlock:
+                        // Count how many blocks there is in the current path, ignoring the first block which
+                        // is the starting block. The "first reserved block" means the first block after the starting block.
+                        if currentPath.numberOfBlocksIgnoringStartingBlock == 0 {
+                            return false
+                        }
+                        break
+                    }
+                }
+                
+                if train.turnoutsToAvoid.contains(where: { $0.turnoutId == turnout.id }) {
+                    return false
+                }
+                
+                return true
             }
             
             return true
         }
         
-        if let turnout = layout.turnout(for: Identifier<Turnout>(uuid: node.identifier)) {
-            guard turnout.enabled else {
+        func reachedDestination(node: GraphNode, to: GraphPathElement?) -> Bool {
+            if let block = layout.block(for: Identifier<Block>(uuid: node.identifier)), to == nil {
+                // If no destination element is specified, we stop at the first station block
+                return block.category == .station
+            } else {
                 return false
             }
-            
-            if let reserved = turnout.reserved {
-                let reservedForAnotherTrain = reserved.train != train.id
-                
-                switch reservedBlockBehavior {
-                case .avoidReserved:
-                    if reservedForAnotherTrain {
-                        return false
-                    }
-
-                case .ignoreReserved:
-                    break
-                    
-                case .avoidFirstReservedBlock:
-                    // Count how many blocks there is in the current path, ignoring the first block which
-                    // is the starting block. The "first reserved block" means the first block after the starting block.
-                    if currentPath.numberOfBlocksIgnoringStartingBlock == 0 {
-                        return false
-                    }
-                    break
-                }
-            }
-            
-            if train.turnoutsToAvoid.contains(where: { $0.turnoutId == turnout.id }) {
-                return false
-            }
-
-            return true
-        }
-
-        return super.shouldInclude(node: node, currentPath: currentPath, to: to)
-    }
-    
-    override func reachedDestination(node: GraphNode, to: GraphPathElement?) -> Bool {
-        if let block = layout.block(for: Identifier<Block>(uuid: node.identifier)), to == nil {
-            // If no destination element is specified, we stop at the first station block
-            return block.category == .station
-        } else {
-            return super.reachedDestination(node: node, to: to)
         }
     }
-
 }
 
 extension Array where Element == GraphPathElement {
