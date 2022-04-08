@@ -13,10 +13,9 @@
 import Foundation
 
 // A socket identifier. A socket is where an edge exits (or enters) a node.
-// For example:
-// - A block is represented by a node with two sockets: an entry socket and an exit socket.
-// - A turnout is a node with 3 or more sockets: typically one entry socket and two exit sockets.
 typealias SocketId = Int
+
+// The identifier for an element in the graph (node or edge)
 typealias GraphElementId = String
 
 // Defines a generic graph consisting of nodes and edges.
@@ -38,6 +37,8 @@ protocol GraphNode {
     var sockets: [SocketId] { get }
     
     // Returns all the sockets reachable from a specific socket
+    // In other words, given a specific edge entering a node,
+    // what are the other edges that can be reached.
     func reachableSockets(from socket: SocketId) -> [SocketId]
 }
 
