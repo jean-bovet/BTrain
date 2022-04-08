@@ -107,6 +107,7 @@ final class PathFinder {
             
             // Avoid the first reserved block encountered,
             // then ignore all the others reserved blocks.
+            // TODO: shouldn't this be dependent on the number of leading block each train is actually reserving?
             case avoidFirstReservedBlock
         }
         

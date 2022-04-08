@@ -20,7 +20,6 @@ import Foundation
 final class LayoutReservation {
     
     let layout: Layout
-    let resolver: RouteResolver
     let visitor: ElementVisitor
 
     // Internal structure used to hold information
@@ -33,7 +32,6 @@ final class LayoutReservation {
 
     init(layout: Layout) {
         self.layout = layout
-        self.resolver = RouteResolver(layout: layout)
         self.visitor = ElementVisitor(layout: layout)
    }
     
@@ -70,7 +68,7 @@ final class LayoutReservation {
         let stepsToReserve = route.steps[startReservationIndex...route.lastStepIndex]
         
         // First of all, resolve the route to discover all non-specified turnouts and blocks
-        guard let resolvedSteps = try resolver.resolve(steps: stepsToReserve, trainId: train.id) else {
+        guard let resolvedSteps = try RouteResolver(layout: layout, train: train).resolve(steps: stepsToReserve) else {
             return false
         }
         assert(resolvedSteps.count >= stepsToReserve.count)

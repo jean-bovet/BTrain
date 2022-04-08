@@ -349,11 +349,10 @@ final class LayoutDiagnostic: ObservableObject {
     }
     
     func checkRoutes(_ errors: inout [DiagnosticError]) {
-        let rr = RouteResolver(layout: layout)
+        let rr = RouteResolver(layout: layout, train: Train(id: Identifier<Train>(uuid: UUID().uuidString), name: "", address: 0))
         for route in layout.routes {
             do {
-                let steps = try rr.resolve(steps: ArraySlice(route.steps),
-                                           trainId: Identifier<Train>(uuid: UUID().uuidString))
+                let steps = try rr.resolve(steps: ArraySlice(route.steps))
                 if steps == nil {
                     errors.append(DiagnosticError.invalidRoute(route: route))
                 }

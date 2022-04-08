@@ -73,7 +73,7 @@ final class AutomaticRouting {
         }
         if let path = layout.path(for: train, from: (currentBlock, trainInstance.direction), to: to, pathFinder: pf) {
 //        if let path = try pf.path(trainId: train.id, from: currentBlock, destination: destination, direction: trainInstance.direction, settings: settings) {
-            route.steps = path.toSteps
+            route.steps = path.toBlockSteps
             train.routeStepIndex = 0
             return (true, route)
         } else {

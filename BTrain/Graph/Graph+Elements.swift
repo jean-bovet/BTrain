@@ -148,4 +148,71 @@ extension Layout {
         }
         return paths
     }
+    
+    func graphPath(from steps: [Route.Step]) throws -> GraphPath {
+        return try steps.compactMap { step in
+            if let blockId = step.blockId {
+                guard let block = self.block(for: blockId) else {
+                    throw LayoutError.blockNotFound(blockId: blockId)
+                }
+                return GraphPathElement(node: block, entrySocket: try step.entrySocketId(), exitSocket: try step.exitSocketId())
+            } else if let turnoutId = step.turnoutId {
+                guard let turnout = self.turnout(for: turnoutId) else {
+                    throw LayoutError.turnoutNotFound(turnoutId: turnoutId)
+                }
+                return GraphPathElement(node: turnout, entrySocket: try step.entrySocketId(), exitSocket: try step.exitSocketId())
+            } else {
+                return nil
+            }
+        }
+    }
+
+}
+
+extension Array where Element == GraphPathElement {
+    
+    var toBlockSteps: [Route.Step] {
+        return self.compactMap { element in
+            if let block = element.node as? Block {
+                let direction: Direction
+                if let entrySocket = element.entrySocket {
+                    direction = entrySocket == Block.previousSocket ? .next : .previous
+                } else if let exitSocket = element.exitSocket {
+                    direction = exitSocket == Block.nextSocket ? .next : .previous
+                } else {
+                    return nil
+                }
+                return Route.Step(block, direction)
+            } else {
+                return nil
+            }
+        }
+    }
+    
+    var toSteps: [Route.Step] {
+        return self.compactMap { element in
+            if let block = element.node as? Block {
+                let direction: Direction
+                if let entrySocket = element.entrySocket {
+                    direction = entrySocket == Block.previousSocket ? .next : .previous
+                } else if let exitSocket = element.exitSocket {
+                    direction = exitSocket == Block.nextSocket ? .next : .previous
+                } else {
+                    return nil
+                }
+                return Route.Step(block, direction)
+            } else if let turnout = element.node as? Turnout {
+                guard let entrySocket = element.entrySocket else {
+                    return nil
+                }
+                guard let exitSocket = element.exitSocket else {
+                    return nil
+                }
+                return Route.Step(turnout.id, turnout.socket(entrySocket), turnout.socket(exitSocket))
+            } else {
+                return nil
+            }
+        }
+    }
+
 }

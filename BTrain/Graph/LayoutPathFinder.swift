@@ -12,7 +12,7 @@
 
 import Foundation
 
-final class LayoutPathFinder: GraphPathFinder {
+class LayoutPathFinder: GraphPathFinder {
         
     let layout: Layout
     let train: Train
@@ -24,7 +24,7 @@ final class LayoutPathFinder: GraphPathFinder {
         self.reservedBlockBehavior = reservedBlockBehavior
     }
     
-    override func shouldInclude(node: GraphNode, currentPath: GraphPath) -> Bool {
+    override func shouldInclude(node: GraphNode, currentPath: GraphPath, to: GraphPathElement?) -> Bool {
         if let block = layout.block(for: Identifier<Block>(uuid: node.identifier)) {
             guard block.enabled else {
                 return false
@@ -44,9 +44,10 @@ final class LayoutPathFinder: GraphPathFinder {
                     
                 case .avoidFirstReservedBlock:
                     // Count how many blocks there is in the current path, ignoring the first block which
-                    // is the starting block. The "first reserved block" means the first block after
-                    // the starting block.
-                    if currentPath.dropFirst().filter({ $0.node is Block }).count == 0 {
+                    // is the starting block. The "first reserved block" means the first block after the starting block.
+                    if currentPath.numberOfBlocksIgnoringStartingBlock == 0 {
+                        // If there are zero blocks in the path, it means that `node` is the first block,
+                        // in which case we need to avoid it because it is reserved.
                         return false
                     }
                     break
@@ -65,8 +66,26 @@ final class LayoutPathFinder: GraphPathFinder {
                 return false
             }
             
-            if let reserved = turnout.reserved, reserved.train != train.id {
-                return false
+            if let reserved = turnout.reserved {
+                let reservedForAnotherTrain = reserved.train != train.id
+                
+                switch reservedBlockBehavior {
+                case .avoidReserved:
+                    if reservedForAnotherTrain {
+                        return false
+                    }
+
+                case .ignoreReserved:
+                    break
+                    
+                case .avoidFirstReservedBlock:
+                    // Count how many blocks there is in the current path, ignoring the first block which
+                    // is the starting block. The "first reserved block" means the first block after the starting block.
+                    if currentPath.numberOfBlocksIgnoringStartingBlock == 0 {
+                        return false
+                    }
+                    break
+                }
             }
             
             if train.turnoutsToAvoid.contains(where: { $0.turnoutId == turnout.id }) {
@@ -76,15 +95,25 @@ final class LayoutPathFinder: GraphPathFinder {
             return true
         }
 
-        return super.shouldInclude(node: node, currentPath: currentPath)
+        return super.shouldInclude(node: node, currentPath: currentPath, to: to)
     }
     
-    override func reachedDestination(node: GraphNode) -> Bool {
-        if let block = layout.block(for: Identifier<Block>(uuid: node.identifier)) {
+    override func reachedDestination(node: GraphNode, to: GraphPathElement?) -> Bool {
+        if let block = layout.block(for: Identifier<Block>(uuid: node.identifier)), to == nil {
+            // If no destination element is specified, we stop at the first station block
             return block.category == .station
         } else {
-            return super.reachedDestination(node: node)
+            return super.reachedDestination(node: node, to: to)
         }
     }
 
+}
+
+extension Array where Element == GraphPathElement {
+    
+    var numberOfBlocksIgnoringStartingBlock: Int {
+        dropFirst() // Remove the starting block
+            .filter({ $0.node is Block }) // Filter out any element that is not a block
+            .count // Count the number of blocks
+    }
 }

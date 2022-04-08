@@ -17,25 +17,27 @@ import Foundation
 // with just a few blocks specified and it will be up to this class to find out the missing turnouts (and blocks) to
 // create a contiguous route.
 // At the moment, only missing turnouts will be handled but in a future release, missing blocks will be supported as well.
-// TODO: remove once testing is done
-final class RouteResolver {
+final class RouteResolver: LayoutPathFinder {
+        
+    // Resolve should always resolve to something because the route has been established before. It is only when establishing
+    // the route that blocks and turnouts are avoided based on various criterias.
+    // The only problem is that if there are two possible path to resolve to and one cannot be taken by the train (because a block
+    // is reserved), then the train will get stuck instead of taking the alternate path.
+    // Should we try to resolve first by applying the same set of constrains as the path finder mode and if no path can be resolved,
+    // the fall back to picking up the first path (or random path)?
     
-    let layout: Layout
-    let pf: PathFinder
+//    lazy var settings: PathFinder.Settings = {
+//        var settings = PathFinder.Settings(random: false,
+//                                           reservedBlockBehavior: .ignoreReserved,
+//                                           verbose: SettingsKeys.bool(forKey: SettingsKeys.logRoutingResolutionSteps))
+//        settings.includeTurnouts = true
+//        settings.ignoreDisabledElements = true
+//        settings.firstBlockShouldMatchDestination = true
+//        return settings
+//    }()
     
-    lazy var settings: PathFinder.Settings = {
-        var settings = PathFinder.Settings(random: false,
-                                           reservedBlockBehavior: .ignoreReserved,
-                                           verbose: SettingsKeys.bool(forKey: SettingsKeys.logRoutingResolutionSteps))
-        settings.includeTurnouts = true
-        settings.ignoreDisabledElements = true
-        settings.firstBlockShouldMatchDestination = true
-        return settings
-    }()
-    
-    init(layout: Layout) {
-        self.layout = layout
-        self.pf = PathFinder(layout: layout)
+    init(layout: Layout, train: Train) {
+        super.init(layout: layout, train: train, reservedBlockBehavior: .ignoreReserved)
     }
     
     // This function takes an array of steps and returns a resolved array of steps. The returned array
@@ -45,43 +47,27 @@ final class RouteResolver {
     // already reserved for the same train to be accepted as resolved steps.
     // Returns nil if the route cannot be resolved. This can happen, for example, if a turnout or block is already
     // reserved for another train and no other alternative path is found.
-    func resolve(steps: ArraySlice<Route.Step>, trainId: Identifier<Train>) throws -> [Route.Step]? {
-        guard var previousStep = steps.first else {
-            return []
+    func resolve(steps: ArraySlice<Route.Step>) throws -> [Route.Step]? {
+        let unresolvedPath = try layout.graphPath(from: Array(steps))
+        let resolvedPath = self.resolve(graph: layout, unresolvedPath)
+        return resolvedPath?.toSteps
+    }
+    
+    override func shouldInclude(node: GraphNode, currentPath: GraphPath, to: GraphPathElement?) -> Bool {
+        guard let to = to else {
+            return super.shouldInclude(node: node, currentPath: currentPath, to: to)
         }
-        var resolvedSteps = [previousStep]
-        for step in steps.dropFirst() {
-            guard let previousBlock = layout.block(for: previousStep.blockId) else {
-                continue
-            }
-            
-            guard let previousDirection = previousStep.direction else {
-                throw LayoutError.missingDirection(step: previousStep)
-            }
-            
-            // TODO: Take into account already defined turnout in the original `steps` array.
-            guard let block = layout.block(for: step.blockId) else {
-                continue
-            }
 
-            guard let direction = step.direction else {
-                throw LayoutError.missingDirection(step: step)
-            }
-
-            // Find the missing turnouts between `previousBlock` and `block`
-            let destination = Destination(block.id, direction: direction)
-            if let path = try pf.path(trainId: trainId, from: previousBlock, destination: destination, direction: previousDirection, settings: settings) {
-                // Insert the turnouts that have been discovered
-                for turnoutStep in path.steps.filter({ $0.turnoutId != nil }) {
-                    resolvedSteps.append(turnoutStep)
-                }
-            } else {
-                // Bail out if a path cannot be found between two blocks.
-                return nil
-            }
-            resolvedSteps.append(step)
-            previousStep = step
+        if node is Block && node.identifier != to.node.identifier {
+            // Backtrack if the first block is not the destination node.
+            // TODO: this is currently a limitation of the resolver in which it is expected that a route
+            // defines all the blocks in the route. The resolver just resolves the turnouts between two
+            // blocks but not an arbitrary long route with turnouts and blocks, which can be expensive
+            // to traverse until we have a breadth-first algorithm implementation to search for the shortest
+            // path between one block to another (arbitrary far away) block.
+            return false
+        } else {
+            return super.shouldInclude(node: node, currentPath: currentPath, to: to)
         }
-        return resolvedSteps
     }
 }

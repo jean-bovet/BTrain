@@ -32,7 +32,8 @@ class PathFinderTests: BTTestCase {
         
         let path = layout.path(for: layout.trains[0], from: (s1, .next), to: nil, reservedBlockBehavior: .avoidFirstReservedBlock)
         XCTAssertNotNil(path)
-        XCTAssertEqual(path!.toSteps.description, ["s1:next", "b1:next", "b2:next", "b3:next", "s2:next"])
+        XCTAssertEqual(path!.toBlockSteps.description, ["s1:next", "b1:next", "b2:next", "b3:next", "s2:next"])
+        XCTAssertEqual(path!.toSteps.description, ["s1:next", "t1:(2>0)", "t2:(1>0)", "b1:next", "t3:(0>1)", "b2:next", "t4:(1>0)", "b3:next", "t5:(0>1)", "t6:(0>1)", "s2:next"])
     }
 
     func testPathWithBacktrack() throws {
@@ -59,9 +60,9 @@ class PathFinderTests: BTTestCase {
         let t6 = layout.turnout("t6")
         t6.reserved = .init(train: Identifier<Train>(uuid: "foo"), sockets: nil)
         
-        let path = layout.path(for: layout.trains[0], from: (s1, .next), to: nil, reservedBlockBehavior: .avoidFirstReservedBlock)
+        let path = layout.path(for: layout.trains[0], from: (s1, .next), to: nil, reservedBlockBehavior: .avoidReserved)
         XCTAssertNotNil(path)
-        XCTAssertEqual(path!.toSteps.description, ["s1:next", "b1:next", "b2:next", "b3:next", "b5:next", "b1:previous", "s2:previous"])
+        XCTAssertEqual(path!.toBlockSteps.description, ["s1:next", "b1:next", "b2:next", "b3:next", "b5:next", "b1:previous", "s2:previous"])
     }
     
     func testPathLookAhead() throws {
@@ -103,7 +104,7 @@ class PathFinderTests: BTTestCase {
         // past the look ahead
         path = layout.path(for: layout.trains[0], from: (s1, .next), to: nil, reservedBlockBehavior: .avoidFirstReservedBlock)
         XCTAssertNotNil(path)
-        XCTAssertEqual(path!.toSteps.description, ["s1:next", "b1:next", "b2:next", "b3:next", "s2:next"])
+        XCTAssertEqual(path!.toBlockSteps.description, ["s1:next", "b1:next", "b2:next", "b3:next", "s2:next"])
     }
 
     func testPathReserved() throws {
@@ -134,13 +135,13 @@ class PathFinderTests: BTTestCase {
         b1.reserved = Reservation("other", .next)
 
         var path = layout.path(for: layout.trains[0], from: (s1, .next), to: nil, reservedBlockBehavior: .avoidReserved)
-        XCTAssertEqual(path!.toSteps.description, ["s1:next", "b3:next", "s2:next"])
+        XCTAssertEqual(path!.toBlockSteps.description, ["s1:next", "b3:next", "s2:next"])
         
         let t2 = layout.turnout("t2")
         t2.reserved = .init(train: Identifier<Train>(uuid: "foo"), sockets: nil)
         
         path = layout.path(for: layout.trains[0], from: (s1, .next), to: nil, reservedBlockBehavior: .avoidReserved)
-        XCTAssertEqual(path!.toSteps.description, ["s1:next", "b2:next", "b3:next", "s2:next"])
+        XCTAssertEqual(path!.toBlockSteps.description, ["s1:next", "b2:next", "b3:next", "s2:next"])
     }
 
     func testPathBlockDisabled() throws {
@@ -169,13 +170,13 @@ class PathFinderTests: BTTestCase {
         let s1 = layout.block("s1")
 
         var path = layout.path(for: layout.trains[0], from: (s1, .next), to: nil, reservedBlockBehavior: .avoidReserved)
-        XCTAssertEqual(path!.toSteps.description, ["s1:next", "b1:next", "s2:next"])
+        XCTAssertEqual(path!.toBlockSteps.description, ["s1:next", "b1:next", "s2:next"])
         
         let b1 = layout.block("b1")
         b1.enabled = false
         
         path = layout.path(for: layout.trains[0], from: (s1, .next), to: nil, reservedBlockBehavior: .avoidReserved)
-        XCTAssertEqual(path!.toSteps.description, ["s1:next", "b3:next", "s2:next"])
+        XCTAssertEqual(path!.toBlockSteps.description, ["s1:next", "b3:next", "s2:next"])
     }
 
     func testPathTurnoutDisabled() throws {
@@ -204,13 +205,13 @@ class PathFinderTests: BTTestCase {
         let s1 = layout.block("s1")
 
         var path = layout.path(for: layout.trains[0], from: (s1, .next), to: nil, reservedBlockBehavior: .avoidReserved)
-        XCTAssertEqual(path!.toSteps.description, ["s1:next", "b1:next", "s2:next"])
+        XCTAssertEqual(path!.toBlockSteps.description, ["s1:next", "b1:next", "s2:next"])
 
         let t2 = layout.turnout("t2")
         t2.enabled = false
         
         path = layout.path(for: layout.trains[0], from: (s1, .next), to: nil, reservedBlockBehavior: .avoidReserved)
-        XCTAssertEqual(path!.toSteps.description, ["s1:next", "b2:next", "b3:next", "s2:next"])
+        XCTAssertEqual(path!.toBlockSteps.description, ["s1:next", "b2:next", "b3:next", "s2:next"])
     }
 
     func testPathBetweenStations() throws {
@@ -244,7 +245,7 @@ class PathFinderTests: BTTestCase {
         let lcf1 = layout.block("LCF1")
 
         let path = layout.path(for: train, from: (ne1, .next), to: (lcf1, .next), reservedBlockBehavior: .avoidFirstReservedBlock)
-        XCTAssertEqual(path!.toSteps.description, ["NE1:next", "OL1:next", "IL2:next", "IL3:next", "S:next", "IL1:previous", "NE3:previous", "M1:next", "M2U:next", "LCF1:next"])
+        XCTAssertEqual(path!.toBlockSteps.description, ["NE1:next", "OL1:next", "IL2:next", "IL3:next", "S:next", "IL1:previous", "NE3:previous", "M1:next", "M2U:next", "LCF1:next"])
         
         self.measure {
             let path = layout.path(for: train, from: (ne1, .next), to: (lcf1, .next), reservedBlockBehavior: .avoidFirstReservedBlock)
@@ -278,7 +279,7 @@ class PathFinderTests: BTTestCase {
         let s2 = layout.block("s2")
 
         let path = layout.path(for: train, from: (s1, .next), to: (s2, .next), reservedBlockBehavior: .avoidFirstReservedBlock)
-        XCTAssertEqual(path!.toSteps.description, ["s1:next", "b1:next", "b2:next", "b3:next", "s2:next"])
+        XCTAssertEqual(path!.toBlockSteps.description, ["s1:next", "b1:next", "b2:next", "b3:next", "s2:next"])
     }
 
     func testShortestPathBetweenStations() throws {

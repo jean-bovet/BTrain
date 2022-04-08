@@ -154,10 +154,12 @@ class GraphPathFinder {
     }
     
     private func path(graph: Graph, from: GraphPathElement, to: GraphPathElement?, currentPath: GraphPath) -> GraphPath? {
-        if let to = to {
-            print("From \(from) to \(to): \(currentPath.toStrings)")
-        } else {
-            print("From \(from): \(currentPath.toStrings)")
+        if verbose {
+            if let to = to {
+                print("From \(from) to \(to): \(currentPath.toStrings)")
+            } else {
+                print("From \(from): \(currentPath.toStrings)")
+            }
         }
         
         guard currentPath.count < overflow else {
@@ -191,7 +193,7 @@ class GraphPathFinder {
                 
         let endingElement = GraphPathElement.ending(node, entrySocketId)
         
-        if !shouldInclude(node: node, currentPath: currentPath) {
+        if !shouldInclude(node: node, currentPath: currentPath, to: to) {
             print("Node \(node) should not be included, backtracking")
             return nil
         }
@@ -199,8 +201,8 @@ class GraphPathFinder {
         if let to = to, to.isSame(as: endingElement) {
             // We reached the destination node
             return currentPath + [endingElement]
-        } else if to == nil && reachedDestination(node: node) {
-            // If no target not is specified, let's determine if the node one that we should stop at.
+        } else if reachedDestination(node: node, to: to) {
+            // If no target node is specified, let's determine if the node one that we should stop at.
             return currentPath + [endingElement]
         }
 
@@ -239,12 +241,12 @@ class GraphPathFinder {
     // Returns true if the specified node should be included in the path.
     // If false, the algorithm backtracks to the previous node and finds
     // an alternative edge if possible.
-    func shouldInclude(node: GraphNode, currentPath: GraphPath) -> Bool {
+    func shouldInclude(node: GraphNode, currentPath: GraphPath, to: GraphPathElement?) -> Bool {
         return true
     }
     
     // Returns true if the specified node is the destination node of the path.
-    func reachedDestination(node: GraphNode) -> Bool {
+    func reachedDestination(node: GraphNode, to: GraphPathElement?) -> Bool {
         return false
     }
 
@@ -255,8 +257,8 @@ class GraphPathFinder {
     }
 }
 
-final class GraphPathResolver {
-
+extension GraphPathFinder {
+    
     func resolve(graph: Graph, _ path: GraphPath) -> GraphPath? {
         var resolvedPath = GraphPath()
         guard var previousElement = path.first else {
@@ -264,8 +266,7 @@ final class GraphPathResolver {
         }
         resolvedPath.append(previousElement)
         for element in path.dropFirst() {
-            let pf = GraphPathFinder()
-            if let p = pf.path(graph: graph, from: previousElement, to: element) {
+            if let p = self.path(graph: graph, from: previousElement, to: element) {
                 for resolvedElement in p.dropFirst() {
                     resolvedPath.append(resolvedElement)
                 }
@@ -274,32 +275,12 @@ final class GraphPathResolver {
         }
         return resolvedPath
     }
+
 }
 
 extension Array where Element == GraphPathElement {
     
     var toStrings: [String] {
         map { $0.description }
-    }
-}
-
-extension Array where Element == GraphPathElement {
-    
-    var toSteps: [Route.Step] {
-        return self.compactMap { element in
-            if let block = element.node as? Block {
-                let direction: Direction
-                if let entrySocket = element.entrySocket {
-                    direction = entrySocket == Block.previousSocket ? .next : .previous
-                } else if let exitSocket = element.exitSocket {
-                    direction = exitSocket == Block.nextSocket ? .next : .previous
-                } else {
-                    return nil
-                }
-                return Route.Step(block, direction)
-            } else {
-                return nil
-            }
-        }
     }
 }

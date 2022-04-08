@@ -52,7 +52,7 @@ class GraphTests: XCTestCase {
 
         let partialPath = [ GraphPathElement.starting(b1, 1), GraphPathElement.ending(b3, 0) ]
 
-        let gr = GraphPathResolver()
+        let gr = GraphPathFinder()
         let p = gr.resolve(graph: layout, partialPath)!
         XCTAssertEqual(p.toStrings, ["b1:1", "0:t0:1", "0:b2:1", "0:t1:2", "0:b3"])
     }
@@ -66,7 +66,7 @@ class GraphTests: XCTestCase {
 
         let partialPath = [ GraphPathElement.starting(b1, 1), GraphPathElement.between(t0, 0, 1), GraphPathElement.ending(b3, 0) ]
 
-        let gr = GraphPathResolver()
+        let gr = GraphPathFinder()
         let p = gr.resolve(graph: layout, partialPath)!
         XCTAssertEqual(p.toStrings, ["b1:1", "0:t0:1", "0:b2:1", "0:t1:2", "0:b3"])
     }
@@ -81,7 +81,7 @@ class GraphTests: XCTestCase {
 
         let partialPath = [ GraphPathElement.starting(b1, 1), GraphPathElement.between(t0, 0, 1), GraphPathElement.between(t1, 0, 2), GraphPathElement.ending(b3, 0) ]
 
-        let gr = GraphPathResolver()
+        let gr = GraphPathFinder()
         let p = gr.resolve(graph: layout, partialPath)!
         XCTAssertEqual(p.toStrings, ["b1:1", "0:t0:1", "0:b2:1", "0:t1:2", "0:b3"])
     }
@@ -95,7 +95,7 @@ class GraphTests: XCTestCase {
         let p = gf.path(graph: layout, from: b1, to: b3)!
         XCTAssertEqual(p.toStrings, ["b1:1", "0:t0:1", "0:b2:1", "0:t1:2", "0:b3"])
         
-        let gr = GraphPathResolver()
+        let gr = GraphPathFinder()
         let p2 = gr.resolve(graph: layout, p)!
         XCTAssertEqual(p, p2)
     }

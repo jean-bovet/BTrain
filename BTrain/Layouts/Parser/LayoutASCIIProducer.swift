@@ -15,17 +15,18 @@ import Foundation
 final class LayoutASCIIProducer {
     
     let layout: Layout
-    let resolver: RouteResolver
     
     init(layout: Layout) {
         self.layout = layout
-        self.resolver = RouteResolver(layout: layout)
     }
     
     func stringFrom(route: Route, trainId: Identifier<Train>) throws -> String {
         var text = ""
                 
-        guard let resolvedSteps = try resolver.resolve(steps: ArraySlice(route.steps), trainId: trainId) else {
+        guard let train = layout.train(for: trainId) else {
+            throw LayoutError.trainNotFound(trainId: trainId)
+        }
+        guard let resolvedSteps = try RouteResolver(layout: layout, train: train).resolve(steps: ArraySlice(route.steps)) else {
             return text
         }
         
