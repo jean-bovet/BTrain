@@ -14,12 +14,19 @@ import Foundation
 
 final class LayoutPathFinder: GraphPathFinding {
         
+    let settings: Settings
     let constraints: LayoutConstraints
     let gpf: GraphPathFinder
     
-    init(layout: Layout, train: Train, reservedBlockBehavior: PathFinder.Settings.ReservedBlockBehavior = .ignoreReserved) {
-        self.constraints = LayoutConstraints(layout: layout, train: train, reservedBlockBehavior: reservedBlockBehavior)
-        self.gpf = GraphPathFinder()
+    struct Settings {
+        let reservedBlockBehavior: PathFinder.Settings.ReservedBlockBehavior
+        let baseSettings: GraphPathFinder.Settings
+    }
+    
+    init(layout: Layout, train: Train, settings: Settings) {
+        self.settings = settings
+        self.constraints = LayoutConstraints(layout: layout, train: train, settings: settings)
+        self.gpf = GraphPathFinder(settings: settings.baseSettings)
     }
 
     func path(graph: Graph, from: GraphNode, to: GraphNode?, constraints: GraphPathFinderConstraints) -> GraphPath? {
@@ -38,12 +45,12 @@ final class LayoutPathFinder: GraphPathFinding {
         
         let layout: Layout
         let train: Train
-        let reservedBlockBehavior: PathFinder.Settings.ReservedBlockBehavior
+        let settings: Settings
 
-        init(layout: Layout, train: Train, reservedBlockBehavior: PathFinder.Settings.ReservedBlockBehavior = .ignoreReserved) {
+        init(layout: Layout, train: Train, settings: Settings) {
             self.layout = layout
             self.train = train
-            self.reservedBlockBehavior = reservedBlockBehavior
+            self.settings = settings
         }
 
         func shouldInclude(node: GraphNode, currentPath: GraphPath, to: GraphPathElement?) -> Bool {
@@ -55,7 +62,7 @@ final class LayoutPathFinder: GraphPathFinding {
                 if let reserved = block.reserved {
                     let reservedForAnotherTrain = reserved.trainId != train.id
                     
-                    switch reservedBlockBehavior {
+                    switch settings.reservedBlockBehavior {
                     case .avoidReserved:
                         if reservedForAnotherTrain {
                             return false
@@ -91,7 +98,7 @@ final class LayoutPathFinder: GraphPathFinding {
                 if let reserved = turnout.reserved {
                     let reservedForAnotherTrain = reserved.train != train.id
                     
-                    switch reservedBlockBehavior {
+                    switch settings.reservedBlockBehavior {
                     case .avoidReserved:
                         if reservedForAnotherTrain {
                             return false

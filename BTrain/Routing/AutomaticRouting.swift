@@ -55,13 +55,12 @@ final class AutomaticRouting {
         // just avoid the reserved block in front of the current one but ignore the others
         // (the automatic route will re-evaluate itself if it encounters a reserved block later
         // during execution, to avoid deadlocking).
-//        let settings = PathFinder.Settings(random: layout.automaticRouteRandom,
-//                                           reservedBlockBehavior: destination == nil ? .avoidFirstReservedBlock : .avoidReserved,
-//                                           verbose: SettingsKeys.bool(forKey: SettingsKeys.logRoutingResolutionSteps))
-        let pf = LayoutPathFinder(layout: layout, train: train, reservedBlockBehavior: destination == nil ? .avoidFirstReservedBlock : .avoidReserved)
-        // TODO: include again
-//        pf.random = layout.automaticRouteRandom
-//        pf.verbose = SettingsKeys.bool(forKey: SettingsKeys.logRoutingResolutionSteps)
+        let baseSettings = GraphPathFinder.Settings(verbose: SettingsKeys.bool(forKey: SettingsKeys.logRoutingResolutionSteps),
+                                                    random: layout.automaticRouteRandom,
+                                                    overflow: layout.pathFinderOverflowLimit)
+        let settings = LayoutPathFinder.Settings(reservedBlockBehavior: destination == nil ? .avoidFirstReservedBlock : .avoidReserved,
+                                                 baseSettings: baseSettings)
+        let pf = LayoutPathFinder(layout: layout, train: train, settings: settings)
         
         let to: (Block, Direction?)?
         if let destination = destination {

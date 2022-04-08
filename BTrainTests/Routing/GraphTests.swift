@@ -15,12 +15,16 @@ import XCTest
 
 class GraphTests: XCTestCase {
 
+    private func settings(layout: Layout) -> GraphPathFinder.Settings {
+        return .init(verbose: false, random: false, overflow: layout.pathFinderOverflowLimit)
+    }
+    
     func testSimplePath() throws {
         let layout = LayoutACreator().newLayout()
         let b1 = layout.block("b1")
         let b3 = layout.block("b3")
 
-        let gf = GraphPathFinder()
+        let gf = GraphPathFinder(settings: settings(layout: layout))
         let p = gf.path(graph: layout, from: b1, to: b3)!
         XCTAssertEqual(p.toStrings, ["b1:1", "0:t0:1", "0:b2:1", "0:t1:2", "0:b3"])
     }
@@ -30,7 +34,7 @@ class GraphTests: XCTestCase {
         let b1 = layout.block("b1")
         let b2 = layout.block("b2")
 
-        let gf = GraphPathFinder()
+        let gf = GraphPathFinder(settings: settings(layout: layout))
         let p = gf.path(graph: layout, from: GraphPathElement.starting(b1, 1), to: GraphPathElement.ending(b2, 0))!
         XCTAssertEqual(p.toStrings, ["b1:1", "0:t0:1", "0:b2"])
     }
@@ -40,7 +44,7 @@ class GraphTests: XCTestCase {
         let b1 = layout.block("b1")
         let t0 = layout.turnout("t0")
 
-        let gf = GraphPathFinder()
+        let gf = GraphPathFinder(settings: settings(layout: layout))
         let p = gf.path(graph: layout, from: GraphPathElement.starting(b1, 1), to: GraphPathElement.ending(t0, 0))!
         XCTAssertEqual(p.toStrings, ["b1:1", "0:t0"])
     }
@@ -52,7 +56,7 @@ class GraphTests: XCTestCase {
 
         let partialPath = [ GraphPathElement.starting(b1, 1), GraphPathElement.ending(b3, 0) ]
 
-        let gr = GraphPathFinder()
+        let gr = GraphPathFinder(settings: settings(layout: layout))
         let p = gr.resolve(graph: layout, partialPath)!
         XCTAssertEqual(p.toStrings, ["b1:1", "0:t0:1", "0:b2:1", "0:t1:2", "0:b3"])
     }
@@ -66,7 +70,7 @@ class GraphTests: XCTestCase {
 
         let partialPath = [ GraphPathElement.starting(b1, 1), GraphPathElement.between(t0, 0, 1), GraphPathElement.ending(b3, 0) ]
 
-        let gr = GraphPathFinder()
+        let gr = GraphPathFinder(settings: settings(layout: layout))
         let p = gr.resolve(graph: layout, partialPath)!
         XCTAssertEqual(p.toStrings, ["b1:1", "0:t0:1", "0:b2:1", "0:t1:2", "0:b3"])
     }
@@ -81,7 +85,7 @@ class GraphTests: XCTestCase {
 
         let partialPath = [ GraphPathElement.starting(b1, 1), GraphPathElement.between(t0, 0, 1), GraphPathElement.between(t1, 0, 2), GraphPathElement.ending(b3, 0) ]
 
-        let gr = GraphPathFinder()
+        let gr = GraphPathFinder(settings: settings(layout: layout))
         let p = gr.resolve(graph: layout, partialPath)!
         XCTAssertEqual(p.toStrings, ["b1:1", "0:t0:1", "0:b2:1", "0:t1:2", "0:b3"])
     }
@@ -91,11 +95,11 @@ class GraphTests: XCTestCase {
         let b1 = layout.block("b1")
         let b3 = layout.block("b3")
 
-        let gf = GraphPathFinder()
+        let gf = GraphPathFinder(settings: settings(layout: layout))
         let p = gf.path(graph: layout, from: b1, to: b3)!
         XCTAssertEqual(p.toStrings, ["b1:1", "0:t0:1", "0:b2:1", "0:t1:2", "0:b3"])
         
-        let gr = GraphPathFinder()
+        let gr = GraphPathFinder(settings: settings(layout: layout))
         let p2 = gr.resolve(graph: layout, p)!
         XCTAssertEqual(p, p2)
     }

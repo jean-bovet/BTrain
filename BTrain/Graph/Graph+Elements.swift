@@ -109,11 +109,10 @@ extension Layout: Graph {
 
 extension Layout {
         
-    func path(for train: Train, from: (Block, Direction), to: (Block, Direction)?, reservedBlockBehavior: PathFinder.Settings.ReservedBlockBehavior = .avoidReserved) -> GraphPath? {
-        let gl = LayoutPathFinder(layout: self, train: train, reservedBlockBehavior: reservedBlockBehavior)
-        return path(for: train, from: from, to: to, pathFinder: gl, constraints: gl.constraints)
+    var pathFinderOverflowLimit: Int {
+        return (turnouts.count + blocks.count) * 4
     }
-    
+        
     func path(for train: Train, from: (Block, Direction), to: (Block, Direction?)?, pathFinder: GraphPathFinding, constraints: GraphPathFinderConstraints) -> GraphPath? {
         // Note: when direction is `next`, it means we are leaving the starting element from its `nextSocket`
         let fromElement = GraphPathElement.starting(from.0, from.1 == .next ? Block.nextSocket : Block.previousSocket)
@@ -132,24 +131,7 @@ extension Layout {
         }
         return pathFinder.path(graph: self, from: fromElement, to: toElement, constraints: constraints)
     }
-    
-    func shortestPaths(for train: Train, from: (Block, Direction), to: (Block, Direction)?, reservedBlockBehavior: PathFinder.Settings.ReservedBlockBehavior = .avoidReserved) -> [GraphPath] {
-        let gl = LayoutPathFinder(layout: self, train: train, reservedBlockBehavior: reservedBlockBehavior)
-        // TODO: put back
-//        gl.random = true
         
-        var paths = [GraphPath]()
-        for _ in 1...10 {
-            if let path = path(for: train, from: from, to: to, pathFinder: gl, constraints: gl.constraints) {
-                paths.append(path)
-            }
-        }
-        paths.sort { p1, p2 in
-            p1.count < p2.count
-        }
-        return paths
-    }
-    
     func graphPath(from steps: [Route.Step]) throws -> GraphPath {
         return try steps.compactMap { step in
             if let blockId = step.blockId {

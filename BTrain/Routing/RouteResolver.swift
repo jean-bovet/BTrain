@@ -18,31 +18,12 @@ import Foundation
 // create a contiguous route.
 // At the moment, only missing turnouts will be handled but in a future release, missing blocks will be supported as well.
 final class RouteResolver {
-        
-    // Resolve should always resolve to something because the route has been established before. It is only when establishing
-    // the route that blocks and turnouts are avoided based on various criterias.
-    // The only problem is that if there are two possible path to resolve to and one cannot be taken by the train (because a block
-    // is reserved), then the train will get stuck instead of taking the alternate path.
-    // Should we try to resolve first by applying the same set of constrains as the path finder mode and if no path can be resolved,
-    // the fall back to picking up the first path (or random path)?
-    
-//    lazy var settings: PathFinder.Settings = {
-//        var settings = PathFinder.Settings(random: false,
-//                                           reservedBlockBehavior: .ignoreReserved,
-//                                           verbose: SettingsKeys.bool(forKey: SettingsKeys.logRoutingResolutionSteps))
-//        settings.includeTurnouts = true
-//        settings.ignoreDisabledElements = true
-//        settings.firstBlockShouldMatchDestination = true
-//        return settings
-//    }()
-    
     let layout: Layout
     let train: Train
     
     init(layout: Layout, train: Train) {
         self.layout = layout
         self.train = train
-//        super.init(layout: layout, train: train, reservedBlockBehavior: .ignoreReserved)
     }
     
     // This function takes an array of steps and returns a resolved array of steps. The returned array
@@ -55,7 +36,13 @@ final class RouteResolver {
     func resolve(steps: ArraySlice<Route.Step>) throws -> [Route.Step]? {
         let unresolvedPath = try layout.graphPath(from: Array(steps))
         
-        let pf = LayoutPathFinder(layout: layout, train: train, reservedBlockBehavior: .ignoreReserved)
+        let baseSettings = GraphPathFinder.Settings(verbose: SettingsKeys.bool(forKey: SettingsKeys.logRoutingResolutionSteps),
+                                                    random: false,
+                                                    overflow: layout.pathFinderOverflowLimit)
+        let settings = LayoutPathFinder.Settings(reservedBlockBehavior: .ignoreReserved,
+                                                 baseSettings: baseSettings)
+
+        let pf = LayoutPathFinder(layout: layout, train: train, settings: settings)
         
         // Try to resolve the route using the standard constraints (which are a super set of the constraints
         // when finding a new route, which provides consistent behavior when resolving a route).

@@ -245,7 +245,9 @@ class PathFinderTests: BTTestCase {
         let lcf1 = layout.block("LCF1")
 
         let path = layout.path(for: train, from: (ne1, .next), to: (lcf1, .next), reservedBlockBehavior: .avoidFirstReservedBlock)
-        XCTAssertEqual(path!.toBlockSteps.description, ["NE1:next", "OL1:next", "IL2:next", "IL3:next", "S:next", "IL1:previous", "NE3:previous", "M1:next", "M2U:next", "LCF1:next"])
+        XCTAssertEqual(path!.toBlockSteps.description, ["NE1:next", "OL1:next", "OL2:next", "OL3:next", "NE4:next", "IL1:next", "IL2:next", "IL3:next", "S:next", "IL1:previous", "IL4:previous", "IL3:previous", "IL2:previous", "OL1:previous", "NE3:previous", "M1:next", "M2U:next", "LCF1:next"])
+        
+        // TODO: try with settings random=true and this time the shortest path should be returned
         
         self.measure {
             let path = layout.path(for: train, from: (ne1, .next), to: (lcf1, .next), reservedBlockBehavior: .avoidFirstReservedBlock)
@@ -308,6 +310,7 @@ class PathFinderTests: BTTestCase {
         XCTAssertEqual(path!.description, shortestPath.description)
     }
     
+    // TODO: investigate why this is so slow
     func testShortestPathBetweenStations_New() throws {
         let layout = LayoutFCreator().newLayout()
         
@@ -336,7 +339,29 @@ extension Layout {
     func free(_ block: String) {
         self.block(for: Identifier<Block>(uuid: block))?.reserved = nil
     }
-
+    
+    func path(for train: Train, from: (Block, Direction), to: (Block, Direction)?, reservedBlockBehavior: PathFinder.Settings.ReservedBlockBehavior = .avoidReserved) -> GraphPath? {
+        let settings = LayoutPathFinder.Settings(reservedBlockBehavior: reservedBlockBehavior, baseSettings: GraphPathFinder.Settings(verbose: false, random: false, overflow: pathFinderOverflowLimit))
+        let gl = LayoutPathFinder(layout: self, train: train, settings: settings)
+        return path(for: train, from: from, to: to, pathFinder: gl, constraints: gl.constraints)
+    }
+    
+    func shortestPaths(for train: Train, from: (Block, Direction), to: (Block, Direction)?, reservedBlockBehavior: PathFinder.Settings.ReservedBlockBehavior = .avoidReserved) -> [GraphPath] {
+        let settings = LayoutPathFinder.Settings(reservedBlockBehavior: reservedBlockBehavior, baseSettings: GraphPathFinder.Settings(verbose: false, random: true, overflow: pathFinderOverflowLimit))
+        let gl = LayoutPathFinder(layout: self, train: train, settings: settings)
+        
+        var paths = [GraphPath]()
+        for _ in 1...10 {
+            if let path = path(for: train, from: from, to: to, pathFinder: gl, constraints: gl.constraints) {
+                paths.append(path)
+            }
+        }
+        paths.sort { p1, p2 in
+            p1.count < p2.count
+        }
+        return paths
+    }
+    
 }
 
 extension Array where Element == Route.Step {

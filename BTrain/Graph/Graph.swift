@@ -134,11 +134,18 @@ protocol GraphPathFinding {
 }
 
 struct GraphPathFinder: GraphPathFinding {
-        
-    var verbose = false
-    var random = false
-    // TODO: ask for the graph size and have the overflow be 4 times the size of the graph? What's in PathFinder again?
-    var overflow = 30
+            
+    struct Settings {
+        let verbose: Bool
+        let random: Bool
+        let overflow: Int
+    }
+    
+    let settings: Settings
+    
+    init(settings: Settings) {
+        self.settings = settings
+    }
     
     final class DefaultConstraints: GraphPathFinderConstraints {
         
@@ -196,7 +203,7 @@ struct GraphPathFinder: GraphPathFinding {
     }
 
     private func path(graph: Graph, from: GraphPathElement, to: GraphPathElement?, currentPath: GraphPath, constraints: GraphPathFinderConstraints = DefaultConstraints()) -> GraphPath? {
-        if verbose {
+        if settings.verbose {
             if let to = to {
                 debug("From \(from) to \(to): \(currentPath.toStrings)")
             } else {
@@ -204,7 +211,7 @@ struct GraphPathFinder: GraphPathFinding {
             }
         }
         
-        guard currentPath.count < overflow else {
+        guard currentPath.count < settings.overflow else {
             debug("Current path is overflowing, backtracking")
             return nil
         }
@@ -272,7 +279,7 @@ struct GraphPathFinder: GraphPathFinding {
     }
 
     private func shuffled(_ sockets: [SocketId]) -> [SocketId] {
-        if random {
+        if settings.random {
             return sockets.shuffled()
         } else {
             return sockets
@@ -280,7 +287,7 @@ struct GraphPathFinder: GraphPathFinding {
     }
     
     private func debug(_ msg: String) {
-        if verbose {
+        if settings.verbose {
             BTLogger.debug(msg)
         }
     }
