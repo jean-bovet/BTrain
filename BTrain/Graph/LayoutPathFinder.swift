@@ -86,14 +86,10 @@ final class LayoutPathFinder: GraphPathFinding {
                     return false
                 }
                 
-                if let reserved = block.reserved {
-                    let reservedForAnotherTrain = reserved.trainId != train.id
-                    
+                if let reserved = block.reserved, reserved.trainId != train.id {
                     switch settings.reservedBlockBehavior {
                     case .avoidReserved:
-                        if reservedForAnotherTrain {
-                            return false
-                        }
+                        return false
                         
                     case .ignoreReserved:
                         break
@@ -122,14 +118,10 @@ final class LayoutPathFinder: GraphPathFinding {
                     return false
                 }
                 
-                if let reserved = turnout.reserved {
-                    let reservedForAnotherTrain = reserved.train != train.id
-                    
+                if let reserved = turnout.reserved, reserved.train != train.id {
                     switch settings.reservedBlockBehavior {
                     case .avoidReserved:
-                        if reservedForAnotherTrain {
-                            return false
-                        }
+                        return false
                         
                     case .ignoreReserved:
                         break

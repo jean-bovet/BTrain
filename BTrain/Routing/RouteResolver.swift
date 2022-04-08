@@ -39,15 +39,16 @@ final class RouteResolver {
         let baseSettings = GraphPathFinder.Settings(verbose: SettingsKeys.bool(forKey: SettingsKeys.logRoutingResolutionSteps),
                                                     random: false,
                                                     overflow: layout.pathFinderOverflowLimit)
-        let settings = LayoutPathFinder.Settings(reservedBlockBehavior: .ignoreReserved,
+        // Note: avoid all reserved block when resolving to ensure maximum constraints.
+        // If that fails, the algorithm will retry without constraints.
+        let settings = LayoutPathFinder.Settings(reservedBlockBehavior: .avoidReserved,
                                                  baseSettings: baseSettings)
 
         let pf = LayoutPathFinder(layout: layout, train: train, settings: settings)
         
         // Try to resolve the route using the standard constraints (which are a super set of the constraints
         // when finding a new route, which provides consistent behavior when resolving a route).
-        let constraints = ResolverConstraints(layoutConstraints: pf.constraints)
-        if let resolvedPath = pf.resolve(graph: layout, unresolvedPath, constraints: constraints) {
+        if let resolvedPath = pf.resolve(graph: layout, unresolvedPath, constraints: ResolverConstraints(layoutConstraints: pf.constraints)) {
             return resolvedPath.elements.toSteps
         }
         
@@ -55,7 +56,7 @@ final class RouteResolver {
         // that satisfies the constraints; for example, a fixed route has a disable block that makes it impossible to resolve.
         // Let's try again to resolve the route using the basic constraints at the graph-level - this means, all layout-specific
         // constraints (such as block reserved, disabled, etc) are ignored.
-        if let resolvedPath = pf.resolve(graph: layout, unresolvedPath, constraints: GraphPathFinder.DefaultConstraints()) {
+        if let resolvedPath = pf.resolve(graph: layout, unresolvedPath, constraints: ResolverConstraints(layoutConstraints: GraphPathFinder.DefaultConstraints())) {
             return resolvedPath.elements.toSteps
         }
 
@@ -65,19 +66,19 @@ final class RouteResolver {
     
     final class ResolverConstraints: GraphPathFinderConstraints {
         
-        let layoutConstraints: LayoutPathFinder.LayoutConstraints
+        let delegatedConstraints: GraphPathFinderConstraints
         
-        init(layoutConstraints: LayoutPathFinder.LayoutConstraints) {
-            self.layoutConstraints = layoutConstraints
+        init(layoutConstraints: GraphPathFinderConstraints) {
+            self.delegatedConstraints = layoutConstraints
         }
         
         func reachedDestination(node: GraphNode, to: GraphPathElement?) -> Bool {
-            return layoutConstraints.reachedDestination(node: node, to: to)
+            return delegatedConstraints.reachedDestination(node: node, to: to)
         }
         
         func shouldInclude(node: GraphNode, currentPath: GraphPath, to: GraphPathElement?) -> Bool {
             guard let to = to else {
-                return layoutConstraints.shouldInclude(node: node, currentPath: currentPath, to: to)
+                return delegatedConstraints.shouldInclude(node: node, currentPath: currentPath, to: to)
             }
             
             if node is Block && node.identifier != to.node.identifier {
@@ -89,7 +90,7 @@ final class RouteResolver {
                 // path between one block to another (arbitrary far away) block.
                 return false
             } else {
-                return layoutConstraints.shouldInclude(node: node, currentPath: currentPath, to: to)
+                return delegatedConstraints.shouldInclude(node: node, currentPath: currentPath, to: to)
             }
         }
     }
