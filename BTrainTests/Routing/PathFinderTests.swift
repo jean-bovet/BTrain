@@ -131,24 +131,6 @@ class PathFinderTests: BTTestCase {
         XCTAssertEqual(path.elements.toBlockSteps.description, ["s1:next", "b1:next", "b2:next", "b3:next", "s2:next"])
     }
     
-    // TODO: investigate why this is so slow
-    func testShortestPathBetweenStations() throws {
-        let layout = LayoutFCreator().newLayout()
-        
-        layout.reserve("NE1", with: "1", direction: .next)
-        
-        let train = layout.trains[0]
-        let ne1 = layout.block("NE1")
-        let hls_p1 = layout.block("HLS_P1")
-
-        let paths = layout.shortestPaths(for: train, from: (ne1, .next), to: (hls_p1, .next), reservedBlockBehavior: .avoidFirstReservedBlock)
-        XCTAssertEqual(paths.count, 10)
-        
-        for path in paths {
-            XCTAssertTrue(path.count >= paths[0].count)
-        }
-    }
-
 }
 
 extension Layout {
@@ -165,22 +147,6 @@ extension Layout {
         let settings = LayoutPathFinder.Settings(reservedBlockBehavior: reservedBlockBehavior, baseSettings: GraphPathFinder.Settings(verbose: false, random: random, overflow: pathFinderOverflowLimit))
         let gl = LayoutPathFinder(layout: self, train: train, settings: settings)
         return path(for: train, from: from, to: to, pathFinder: gl, constraints: gl.constraints)
-    }
-    
-    func shortestPaths(for train: Train, from: (Block, Direction), to: (Block, Direction)?, reservedBlockBehavior: LayoutPathFinder.ReservedBlockBehavior = .avoidReserved) -> [GraphPath] {
-        let settings = LayoutPathFinder.Settings(reservedBlockBehavior: reservedBlockBehavior, baseSettings: GraphPathFinder.Settings(verbose: false, random: true, overflow: pathFinderOverflowLimit))
-        let gl = LayoutPathFinder(layout: self, train: train, settings: settings)
-        
-        var paths = [GraphPath]()
-        for _ in 1...10 {
-            if let path = path(for: train, from: from, to: to, pathFinder: gl, constraints: gl.constraints) {
-                paths.append(path)
-            }
-        }
-        paths.sort { p1, p2 in
-            p1.count < p2.count
-        }
-        return paths
     }
     
 }

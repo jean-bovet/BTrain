@@ -15,10 +15,8 @@ import Foundation
 // A path consists of an array of elements.
 struct GraphPath: Equatable {
     let elements: [GraphPathElement]
-    let elementsSet: Set<GraphPathElement>
         
     var count: Int {
-        assert(elements.count == elementsSet.count)
         return elements.count
     }
         
@@ -28,11 +26,10 @@ struct GraphPath: Equatable {
 
     init(_ elements: [GraphPathElement]) {
         self.elements = elements
-        self.elementsSet = Set<GraphPathElement>(self.elements)
     }
     
     func contains(_ element: GraphPathElement) -> Bool {
-        return elementsSet.contains(element)
+        return elements.contains(element)
     }
     
     func appending(_ element: GraphPathElement) -> GraphPath {
