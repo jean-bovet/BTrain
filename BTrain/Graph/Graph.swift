@@ -156,14 +156,14 @@ class GraphPathFinder {
     private func path(graph: Graph, from: GraphPathElement, to: GraphPathElement?, currentPath: GraphPath) -> GraphPath? {
         if verbose {
             if let to = to {
-                print("From \(from) to \(to): \(currentPath.toStrings)")
+                debug("From \(from) to \(to): \(currentPath.toStrings)")
             } else {
-                print("From \(from): \(currentPath.toStrings)")
+                debug("From \(from): \(currentPath.toStrings)")
             }
         }
         
         guard currentPath.count < overflow else {
-            print("Current path is overflowing, backtracking")
+            debug("Current path is overflowing, backtracking")
             return nil
         }
         
@@ -172,29 +172,29 @@ class GraphPathFinder {
         }
         
         guard let exitSocket = from.exitSocket else {
-            print("No exit socket defined for \(from.node)")
+            debug("No exit socket defined for \(from.node)")
             return nil
         }
         
         guard let edge = graph.edge(from: from.node, socketId: exitSocket) else {
-            print("No edge found from \(from.node) and socket \(exitSocket)")
+            debug("No edge found from \(from.node) and socket \(exitSocket)")
             return nil
         }
         
         guard let node = graph.node(for: edge.toNode) else {
-            print("No destination node found in graph for \(edge.toNode)")
+            debug("No destination node found in graph for \(edge.toNode)")
             return nil
         }
                 
         guard let entrySocketId = edge.toNodeSocket else {
-            print("No entry socket for destination node \(node) in graph")
+            debug("No entry socket for destination node \(node) in graph")
             return nil
         }
                 
         let endingElement = GraphPathElement.ending(node, entrySocketId)
         
         if !shouldInclude(node: node, currentPath: currentPath, to: to) {
-            print("Node \(node) should not be included, backtracking")
+            debug("Node \(node) should not be included, backtracking")
             return nil
         }
                 
@@ -213,7 +213,7 @@ class GraphPathFinder {
             let betweenElement = GraphPathElement.between(node, entrySocketId, exitSocket)
             
             guard !currentPath.contains(betweenElement) else {
-                print("Node \(betweenElement) is already part of the path, backtracking")
+                debug("Node \(betweenElement) is already part of the path, backtracking")
                 // Continue to the next socket as this socket (in combination with the entrySocketId)
                 // has already been used in the path
                 continue
@@ -250,7 +250,7 @@ class GraphPathFinder {
         return false
     }
 
-    func print(_ msg: String) {
+    func debug(_ msg: String) {
         if verbose {
             BTLogger.debug(msg)
         }
@@ -269,6 +269,14 @@ extension GraphPathFinder {
             if let p = self.path(graph: graph, from: previousElement, to: element) {
                 for resolvedElement in p.dropFirst() {
                     resolvedPath.append(resolvedElement)
+                }
+            } else {
+                if let p2 = GraphPathFinder().path(graph: graph, from: previousElement, to: element) {
+                    for resolvedElement in p2.dropFirst() {
+                        resolvedPath.append(resolvedElement)
+                    }
+                } else {
+                    // TODO: throw an error because this should not happen
                 }
             }
             previousElement = element
