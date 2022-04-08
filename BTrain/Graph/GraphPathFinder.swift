@@ -151,7 +151,9 @@ struct GraphPathFinder: GraphPathFinding {
         }
         
         guard currentPath.count < settings.overflow else {
-            debug("Current path is overflowing, backtracking")
+            if settings.verbose {
+                debug("Current path is overflowing, backtracking")
+            }
             return nil
         }
         
@@ -160,22 +162,30 @@ struct GraphPathFinder: GraphPathFinding {
         }
         
         guard let exitSocket = from.exitSocket else {
-            debug("No exit socket defined for \(from.node)")
+            if settings.verbose {
+                debug("No exit socket defined for \(from.node)")
+            }
             return nil
         }
         
         guard let edge = graph.edge(from: from.node, socketId: exitSocket) else {
-            debug("No edge found from \(from.node) and socket \(exitSocket)")
+            if settings.verbose {
+                debug("No edge found from \(from.node) and socket \(exitSocket)")
+            }
             return nil
         }
         
         guard let node = graph.node(for: edge.toNode) else {
-            debug("No destination node found in graph for \(edge.toNode)")
+            if settings.verbose {
+                debug("No destination node found in graph for \(edge.toNode)")
+            }
             return nil
         }
                 
         guard let entrySocketId = edge.toNodeSocket else {
-            debug("No entry socket for destination node \(node) in graph")
+            if settings.verbose {
+                debug("No entry socket for destination node \(node) in graph")
+            }
             return nil
         }
                 
@@ -200,8 +210,10 @@ struct GraphPathFinder: GraphPathFinding {
         for exitSocket in shuffled(exitSockets) {
             let betweenElement = GraphPathElement.between(node, entrySocketId, exitSocket)
             
-            guard !currentPath.contains(betweenElement) else {
-                debug("Node \(betweenElement) is already part of the path, backtracking")
+            guard !currentPath.hasAlready(betweenElement) else {
+                if settings.verbose {
+                    debug("Node \(betweenElement) is already part of the path, backtracking")
+                }
                 // Continue to the next socket as this socket (in combination with the entrySocketId)
                 // has already been used in the path
                 continue
@@ -234,7 +246,7 @@ struct GraphPathFinder: GraphPathFinding {
 
 extension GraphPath where Element == GraphPathElement {
     
-    func contains(_ element: GraphPathElement) -> Bool {
+    func hasAlready(_ element: GraphPathElement) -> Bool {
         return contains { otherElement in
             return element == otherElement
         }
