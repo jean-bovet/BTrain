@@ -12,14 +12,32 @@
 
 import Foundation
 
+// This class finds path from one block to another in the layout, taking
+// into consideration various constraints, such as disabled block, reserved blocks, etc.
 final class LayoutPathFinder: GraphPathFinding {
         
     let settings: Settings
     let constraints: LayoutConstraints
     let gpf: GraphPathFinder
     
+    enum ReservedBlockBehavior {
+        // Avoid all reserved blocks (that is, avoid any block
+        // that is reserved for another train).
+        case avoidReserved
+        
+        // Ignore all reserved blocks (that is,
+        // take them into account even if they are
+        // reserved for another train).
+        case ignoreReserved
+        
+        // Avoid the first reserved block encountered,
+        // then ignore all the others reserved blocks.
+        // TODO: shouldn't this be dependent on the number of leading block each train is actually reserving?
+        case avoidFirstReservedBlock
+    }
+
     struct Settings {
-        let reservedBlockBehavior: PathFinder.Settings.ReservedBlockBehavior
+        let reservedBlockBehavior: ReservedBlockBehavior
         let baseSettings: GraphPathFinder.Settings
     }
     
@@ -30,11 +48,20 @@ final class LayoutPathFinder: GraphPathFinding {
     }
 
     func path(graph: Graph, from: GraphNode, to: GraphNode?, constraints: GraphPathFinderConstraints) -> GraphPath? {
-        return gpf.path(graph: graph, from: from, to: to, constraints: constraints)
+        // TODO: should this shortestPath selection be based on a proper settings instead of being implied here?
+        if to != nil && settings.baseSettings.random {
+            return gpf.shortestPath(graph: graph, from: from, to: to, constraints: constraints)
+        } else {
+            return gpf.path(graph: graph, from: from, to: to, constraints: constraints)
+        }
     }
 
     func path(graph: Graph, from: GraphPathElement, to: GraphPathElement?, constraints: GraphPathFinderConstraints) -> GraphPath? {
-        return gpf.path(graph: graph, from: from, to: to, constraints: constraints)
+        if to != nil && settings.baseSettings.random {
+            return gpf.shortestPath(graph: graph, from: from, to: to, constraints: constraints)
+        } else {
+            return gpf.path(graph: graph, from: from, to: to, constraints: constraints)
+        }
     }
 
     func resolve(graph: Graph, _ path: GraphPath, constraints: GraphPathFinderConstraints) -> GraphPath? {

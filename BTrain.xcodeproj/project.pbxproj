@@ -257,7 +257,6 @@
 		A7F779FE2734D55100E73275 /* LayoutRouteParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7F779FD2734D55100E73275 /* LayoutRouteParser.swift */; };
 		A7FBC8B4276E87B7009D49C3 /* LayoutECreator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7FBC8B3276E87B7009D49C3 /* LayoutECreator.swift */; };
 		A7FBC8B6276E8BB6009D49C3 /* PathFinderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7FBC8B5276E8BB6009D49C3 /* PathFinderTests.swift */; };
-		A7FBC8B8276EBB34009D49C3 /* PathFinder.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7FBC8B7276EBB34009D49C3 /* PathFinder.swift */; };
 		A7FFE05B27E63C40002B4A4A /* BlockSpeedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7FFE05A27E63C40002B4A4A /* BlockSpeedView.swift */; };
 /* End PBXBuildFile section */
 
@@ -524,7 +523,6 @@
 		A7F779FD2734D55100E73275 /* LayoutRouteParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutRouteParser.swift; sourceTree = "<group>"; };
 		A7FBC8B3276E87B7009D49C3 /* LayoutECreator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutECreator.swift; sourceTree = "<group>"; };
 		A7FBC8B5276E8BB6009D49C3 /* PathFinderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PathFinderTests.swift; sourceTree = "<group>"; };
-		A7FBC8B7276EBB34009D49C3 /* PathFinder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PathFinder.swift; sourceTree = "<group>"; };
 		A7FFE05A27E63C40002B4A4A /* BlockSpeedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockSpeedView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -860,7 +858,6 @@
 		A75829642792A5C200AA0649 /* Routing */ = {
 			isa = PBXGroup;
 			children = (
-				A7FBC8B7276EBB34009D49C3 /* PathFinder.swift */,
 				A798BB4927ABAB6F000BB4D1 /* RouteResolver.swift */,
 				A795A03027AF6C8D00AE90EB /* AutomaticRouting.swift */,
 			);
@@ -1424,7 +1421,6 @@
 				A7710E71277A344300C08150 /* NewBlockSheet.swift in Sources */,
 				A7CA5EC7279654EB00171398 /* Block+Feedback.swift in Sources */,
 				A7F779CE272B445B00E73275 /* Feedback.swift in Sources */,
-				A7FBC8B8276EBB34009D49C3 /* PathFinder.swift in Sources */,
 				A798BB4027A6E7F1000BB4D1 /* LayoutHCreator.swift in Sources */,
 				A78413862740791C00381341 /* CGContext+DrawText.swift in Sources */,
 				A7E78C4227A08F9E004D1821 /* LayoutReservation.swift in Sources */,

@@ -159,6 +159,18 @@ struct GraphPathFinder: GraphPathFinding {
 
     }
 
+    func shortestPath(graph: Graph, from: GraphNode, to: GraphNode?, constraints: GraphPathFinderConstraints = DefaultConstraints()) -> GraphPath? {
+        return shortestPath {
+            path(graph: graph, from: from, to: to, constraints: constraints)
+        }
+    }
+    
+    func shortestPath(graph: Graph, from: GraphPathElement, to: GraphPathElement?, constraints: GraphPathFinderConstraints = DefaultConstraints()) -> GraphPath? {
+        return shortestPath {
+            path(graph: graph, from: from, to: to, constraints: constraints)
+        }
+    }
+    
     func path(graph: Graph, from: GraphNode, to: GraphNode?, constraints: GraphPathFinderConstraints = DefaultConstraints()) -> GraphPath? {
         for socketId in shuffled(from.sockets) {
             if let to = to {
@@ -202,6 +214,23 @@ struct GraphPathFinder: GraphPathFinding {
         return resolvedPath
     }
 
+    // Note: until we have a proper algorithm that finds the shortest path in a single pass,
+    // we will generate a few paths and pick the shortest one.
+    private func shortestPath(pathGenerator: () -> GraphPath?) -> GraphPath? {
+        let numberOfPaths = 10
+        var smallestPath: GraphPath?
+        for _ in 1...numberOfPaths {
+            if let path = pathGenerator() {
+                if smallestPath == nil {
+                    smallestPath = path
+                } else if let sp = smallestPath, path.count < sp.count {
+                    smallestPath = path
+                }
+            }
+        }
+        return smallestPath
+    }
+    
     private func path(graph: Graph, from: GraphPathElement, to: GraphPathElement?, currentPath: GraphPath, constraints: GraphPathFinderConstraints = DefaultConstraints()) -> GraphPath? {
         if settings.verbose {
             if let to = to {
