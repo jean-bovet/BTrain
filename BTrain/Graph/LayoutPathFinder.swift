@@ -165,10 +165,11 @@ final class LayoutPathFinder: GraphPathFinding {
     }
 }
 
-extension Array where Element == GraphPathElement {
+extension GraphPath {
     
     var numberOfBlocksIgnoringStartingBlock: Int {
-        dropFirst() // Remove the starting block
+        elements
+            .dropFirst() // Remove the starting block
             .filter({ $0.node is Block }) // Filter out any element that is not a block
             .count // Count the number of blocks
     }

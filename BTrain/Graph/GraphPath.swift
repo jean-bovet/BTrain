@@ -13,12 +13,65 @@
 import Foundation
 
 // A path consists of an array of elements.
-typealias GraphPath = [GraphPathElement]
+struct GraphPath: Equatable {
+    let elements: [GraphPathElement]
+    let elementsSet: Set<GraphPathElement>
+        
+    var count: Int {
+        assert(elements.count == elementsSet.count)
+        return elements.count
+    }
+        
+    var toStrings: [String] {
+        elements.map { $0.description }
+    }
+
+    init(_ elements: [GraphPathElement]) {
+        self.elements = elements
+        self.elementsSet = Set<GraphPathElement>(self.elements)
+    }
+    
+    func contains(_ element: GraphPathElement) -> Bool {
+        return elementsSet.contains(element)
+    }
+    
+    func appending(_ element: GraphPathElement) -> GraphPath {
+        return GraphPath(elements + [element])
+    }
+    
+    static func == (lhs: GraphPath, rhs: GraphPath) -> Bool {
+        return lhs.elements == rhs.elements
+    }
+
+}
+
+extension GraphPath {
+    
+    init(steps: [Route.Step], layout: Layout) throws {
+        let elements: [GraphPathElement] = try steps.compactMap { step in
+            if let blockId = step.blockId {
+                guard let block = layout.block(for: blockId) else {
+                    throw LayoutError.blockNotFound(blockId: blockId)
+                }
+                return GraphPathElement(node: block, entrySocket: try step.entrySocketId(), exitSocket: try step.exitSocketId())
+            } else if let turnoutId = step.turnoutId {
+                guard let turnout = layout.turnout(for: turnoutId) else {
+                    throw LayoutError.turnoutNotFound(turnoutId: turnoutId)
+                }
+                return GraphPathElement(node: turnout, entrySocket: try step.entrySocketId(), exitSocket: try step.exitSocketId())
+            } else {
+                return nil
+            }
+        }
+        self.init(elements)
+    }
+
+}
 
 // Each element is a `node` with specified exit and enter sockets.
 // A starting element only has an exit socket while the last
 // element in the path only has an enter socket.
-struct GraphPathElement: Equatable, CustomStringConvertible {
+struct GraphPathElement: Equatable, Hashable, CustomStringConvertible {
         
     let node: GraphNode
     let entrySocket: SocketId?
@@ -36,6 +89,12 @@ struct GraphPathElement: Equatable, CustomStringConvertible {
         return text
     }
     
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(node.identifier)
+        hasher.combine(entrySocket)
+        hasher.combine(exitSocket)
+    }
+
     // Returns true if this element is the same as the other element, taking into account the fact that the entry or exit socket can be nil.
     // The following rules are used:
     // - Both element must refer to the same node identifier

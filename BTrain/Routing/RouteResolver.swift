@@ -34,7 +34,7 @@ final class RouteResolver {
     // Returns nil if the route cannot be resolved. This can happen, for example, if a turnout or block is already
     // reserved for another train and no other alternative path is found.
     func resolve(steps: ArraySlice<Route.Step>) throws -> [Route.Step]? {
-        let unresolvedPath = try layout.graphPath(from: Array(steps))
+        let unresolvedPath = try GraphPath(steps: Array(steps), layout: layout)
         
         let baseSettings = GraphPathFinder.Settings(verbose: SettingsKeys.bool(forKey: SettingsKeys.logRoutingResolutionSteps),
                                                     random: false,
@@ -48,7 +48,7 @@ final class RouteResolver {
         // when finding a new route, which provides consistent behavior when resolving a route).
         let constraints = ResolverConstraints(layoutConstraints: pf.constraints)
         if let resolvedPath = pf.resolve(graph: layout, unresolvedPath, constraints: constraints) {
-            return resolvedPath.toSteps
+            return resolvedPath.elements.toSteps
         }
         
         // If we are not able to resolve the route using the standard constraints, it means there are no path available
@@ -56,7 +56,7 @@ final class RouteResolver {
         // Let's try again to resolve the route using the basic constraints at the graph-level - this means, all layout-specific
         // constraints (such as block reserved, disabled, etc) are ignored.
         if let resolvedPath = pf.resolve(graph: layout, unresolvedPath, constraints: GraphPathFinder.DefaultConstraints()) {
-            return resolvedPath.toSteps
+            return resolvedPath.elements.toSteps
         }
 
         // If we reach that point, it means the graph itself has a problem with its node and edges and not path can be found.

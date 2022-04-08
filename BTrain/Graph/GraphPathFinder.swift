@@ -85,12 +85,12 @@ struct GraphPathFinder: GraphPathFinding {
         for socketId in shuffled(from.sockets) {
             if let to = to {
                 for toSocketId in shuffled(to.sockets) {
-                    if let steps = path(graph: graph, from: .starting(from, socketId), to: .ending(to, toSocketId), currentPath: [.starting(from, socketId)], constraints: constraints) {
+                    if let steps = path(graph: graph, from: .starting(from, socketId), to: .ending(to, toSocketId), currentPath: GraphPath([.starting(from, socketId)]), constraints: constraints) {
                         return steps
                     }
                 }
             } else {
-                if let steps = path(graph: graph, from: .starting(from, socketId), to: nil, currentPath: [.starting(from, socketId)], constraints: constraints) {
+                if let steps = path(graph: graph, from: .starting(from, socketId), to: nil, currentPath: GraphPath([.starting(from, socketId)]), constraints: constraints) {
                     return steps
                 }
             }
@@ -99,18 +99,18 @@ struct GraphPathFinder: GraphPathFinding {
     }
 
     func path(graph: Graph, from: GraphPathElement, to: GraphPathElement?, constraints: GraphPathFinderConstraints = DefaultConstraints()) -> GraphPath? {
-        return path(graph: graph, from: from, to: to, currentPath: [from], constraints: constraints)
+        return path(graph: graph, from: from, to: to, currentPath: GraphPath([from]), constraints: constraints)
     }
     
     func resolve(graph: Graph, _ path: GraphPath, constraints: GraphPathFinderConstraints = DefaultConstraints()) -> GraphPath? {
-        var resolvedPath = GraphPath()
-        guard var previousElement = path.first else {
+        var resolvedPath = [GraphPathElement]()
+        guard var previousElement = path.elements.first else {
             return nil
         }
         resolvedPath.append(previousElement)
-        for element in path.dropFirst() {
+        for element in path.elements.dropFirst() {
             if let p = self.path(graph: graph, from: previousElement, to: element, constraints: constraints) {
-                for resolvedElement in p.dropFirst() {
+                for resolvedElement in p.elements.dropFirst() {
                     resolvedPath.append(resolvedElement)
                 }
             } else {
@@ -121,7 +121,7 @@ struct GraphPathFinder: GraphPathFinding {
             }
             previousElement = element
         }
-        return resolvedPath
+        return GraphPath(resolvedPath)
     }
 
     // Note: until we have a proper algorithm that finds the shortest path in a single pass,
@@ -197,11 +197,11 @@ struct GraphPathFinder: GraphPathFinding {
         }
                 
         if let to = to, to.isSame(as: endingElement) {
-            // We reached the destination node
-            return currentPath + [endingElement]
+            // If the destination node is specified and is the same as the current element,
+            // we have reached the destination node
+            return currentPath.appending(endingElement)
         } else if constraints.reachedDestination(node: node, to: to) {
-            // If no target node is specified, let's determine if the node one that we should stop at.
-            return currentPath + [endingElement]
+            return currentPath.appending(endingElement)
         }
 
         // We haven't reached the destination node, keep going forward
@@ -210,7 +210,7 @@ struct GraphPathFinder: GraphPathFinding {
         for exitSocket in shuffled(exitSockets) {
             let betweenElement = GraphPathElement.between(node, entrySocketId, exitSocket)
             
-            guard !currentPath.hasAlready(betweenElement) else {
+            guard !currentPath.contains(betweenElement) else {
                 if settings.verbose {
                     debug("Node \(betweenElement) is already part of the path, backtracking")
                 }
@@ -220,7 +220,7 @@ struct GraphPathFinder: GraphPathFinding {
             }
             
             if let path = path(graph: graph, from: betweenElement, to: to,
-                               currentPath: currentPath + [.between(node, entrySocketId, exitSocket)],
+                               currentPath: currentPath.appending(.between(node, entrySocketId, exitSocket)),
                                constraints: constraints) {
                 return path
             }
@@ -241,21 +241,5 @@ struct GraphPathFinder: GraphPathFinding {
         if settings.verbose {
             BTLogger.debug(msg)
         }
-    }
-}
-
-extension GraphPath where Element == GraphPathElement {
-    
-    func hasAlready(_ element: GraphPathElement) -> Bool {
-        return contains { otherElement in
-            return element == otherElement
-        }
-    }
-}
-
-extension Array where Element == GraphPathElement {
-    
-    var toStrings: [String] {
-        map { $0.description }
     }
 }

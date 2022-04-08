@@ -132,24 +132,6 @@ extension Layout {
         return pathFinder.path(graph: self, from: fromElement, to: toElement, constraints: constraints)
     }
         
-    func graphPath(from steps: [Route.Step]) throws -> GraphPath {
-        return try steps.compactMap { step in
-            if let blockId = step.blockId {
-                guard let block = self.block(for: blockId) else {
-                    throw LayoutError.blockNotFound(blockId: blockId)
-                }
-                return GraphPathElement(node: block, entrySocket: try step.entrySocketId(), exitSocket: try step.exitSocketId())
-            } else if let turnoutId = step.turnoutId {
-                guard let turnout = self.turnout(for: turnoutId) else {
-                    throw LayoutError.turnoutNotFound(turnoutId: turnoutId)
-                }
-                return GraphPathElement(node: turnout, entrySocket: try step.entrySocketId(), exitSocket: try step.exitSocketId())
-            } else {
-                return nil
-            }
-        }
-    }
-
 }
 
 extension Array where Element == GraphPathElement {
