@@ -181,7 +181,7 @@ final class BlockShape: Shape, DraggableShape, ConnectableShape {
         
     func drawContent(ctx: CGContext, shapeContext: ShapeContext) {
         let showBlockName = shapeContext.showBlockName || block.category == .station && shapeContext.showStationName
-        let showIcon = shapeContext.showTrainIcon && prepareIcon() != nil
+        let showIcon = shapeContext.showTrainIcon && prepareIcon() != nil && block.blockContainsLocomotive
 
         if let train = train {
             if showBlockName {
