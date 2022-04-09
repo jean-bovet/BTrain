@@ -70,4 +70,19 @@ extension Layout {
         return self
     }
     
+    func removeTurnoutGeometry() -> Layout {
+        turnouts.forEach { $0.length = nil }
+        return self
+    }
+
+    func removeBlockGeometry() -> Layout {
+        blocks.forEach { block in
+            block.length = nil
+            for index in block.feedbacks.indices {
+                block.feedbacks[index].distance = nil
+            }
+        }
+        return self
+    }
+
 }

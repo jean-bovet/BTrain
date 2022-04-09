@@ -243,7 +243,7 @@ class ManualRoutingTests: BTTestCase {
     }
 
     func testMoveWith2LeadingReservationWithLoop() throws {
-        let layout = LayoutBCreator().newLayout()
+        let layout = LayoutBCreator().newLayout().removeTrainGeometry()
         let p = Package(layout: layout)
         try p.prepare(routeID: "r1", trainID: "1", fromBlockId: "b1")
 
@@ -265,7 +265,7 @@ class ManualRoutingTests: BTTestCase {
     }
 
     func testMoveWith3LeadingReservationWithLoop() throws {
-        let layout = LayoutBCreator().newLayout()
+        let layout = LayoutBCreator().newLayout().removeTrainGeometry()
         let p = Package(layout: layout)
         try p.prepare(routeID: "r1", trainID: "1", fromBlockId: "b1")
 
@@ -327,7 +327,7 @@ class ManualRoutingTests: BTTestCase {
     //    └─▶│ Block 3 │───────────────┘        └─────│ Block 1 │◀─┘
     //       └─────────┘                              └─────────┘
     func testMoveWith1OccupiedReservationNoFeedbacks() throws {
-        let layout = LayoutBCreator().newLayout()
+        let layout = LayoutBCreator().newLayout().removeBlockGeometry().removeTrainGeometry()
         
         // Let's only define block length and omit feedback distances
         for block in layout.blocks {

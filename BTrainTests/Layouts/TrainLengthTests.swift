@@ -28,7 +28,7 @@ import XCTest
 class TrainLengthTests: XCTestCase {
     
     func testReserveWagonsPulledByLocomotive() throws {
-        let layout = LayoutBCreator().newLayout()
+        let layout = LayoutBCreator().newLayout().removeTurnoutGeometry()
 
         let b1 = layout.blocks[0]
         let b2 = layout.blocks[1]
@@ -87,7 +87,7 @@ class TrainLengthTests: XCTestCase {
     }
 
     func testReserveWagonsPushedByLocomotive() throws {
-        let layout = LayoutBCreator().newLayout()
+        let layout = LayoutBCreator().newLayout().removeTurnoutGeometry()
 
         let b1 = layout.blocks[0]
         let b2 = layout.blocks[1]
