@@ -185,6 +185,12 @@ final class TrainController {
             train.state = .running
             layout.setTrainSpeed(train, LayoutFactory.DefaultMaximumSpeed) { }
             return .processed
+            // TODO: re-introduce this once the Graph is complete
+//        } else {
+//            if route.automatic {
+//                debug("Generating a new route for \(train) at block \(currentBlock.name) with mode \(route.automaticMode) because the leading block(s) cannot be reserved")
+//                return try updateAutomaticRoute(for: train.id)
+//            }
         }
 
         return .none
@@ -420,7 +426,8 @@ final class TrainController {
                 debug("Train \(train) moved to position \(train.position) in \(currentBlock.name), direction \(direction)")
                 result = .processed
                 
-                // TODO: SPEED HANDLING
+                // Always adjust the speed after the train has moved within a block because it might
+                // now be reaching out to element that have speed limits.
                 layout.adjustSpeedLimit(train)
             }
                         
@@ -470,7 +477,8 @@ final class TrainController {
         // but also the leading blocks so the train can continue to move automatically.
         try layout.setTrainToBlock(train.id, nextBlock.id, position: .custom(value: position), direction: direction, routeIndex: train.routeStepIndex + 1)
                                         
-        // TODO: SPEED HANDLING
+        // Always adjust the speed after the train enters a new block because it might
+        // now be reaching out to element that have speed limits.
         layout.adjustSpeedLimit(train)
 
         // Handle any route-specific stop now that the train has moved to a new block
@@ -486,6 +494,19 @@ final class TrainController {
                 // If it is not possible, then stop the train in this block
                 debug("Train \(train) will stop here (\(nextBlock)) because the next block(s) cannot be reserved")
                 stopTrigger = StopTrigger.temporaryStop()
+                // TODO: re-introduce this once the Graph is complete
+//                if route.automatic {
+//                    debug("Generating a new route for \(train) at block \(currentBlock.name) with mode \(route.automaticMode) because the block(s) ahead cannot be reserved")
+//                    if try updateAutomaticRoute(for: train.id) == .none {
+//                        // If it is not possible, then stop the train in this block
+//                        debug("Train \(train) will stop here (\(nextBlock)) because the next block(s) cannot be reserved")
+//                        stopTrigger = StopTrigger.temporaryStop()
+//                    }
+//                } else {
+//                    // If it is not possible, then stop the train in this block
+//                    debug("Train \(train) will stop here (\(nextBlock)) because the next block(s) cannot be reserved")
+//                    stopTrigger = StopTrigger.temporaryStop()
+//                }
             }
         }
 

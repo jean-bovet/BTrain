@@ -263,7 +263,11 @@ final class LayoutRouteParser {
 
         var reservedTrainNumber: String?
         if sp.matches("r") {
-            reservedTrainNumber = String(sp.eat())
+            if let n = sp.matchesInteger() {
+                reservedTrainNumber = String(n)
+            } else {
+                assertionFailure("Unexpected train number reservation")
+            }
         }
         
         var reserved  = false
@@ -376,8 +380,12 @@ final class LayoutRouteParser {
     func parseTurnouts() {
         var reservedTrainNumber: String?
         if sp.matches("r") {
-            reservedTrainNumber = String(sp.eat())
-            sp.eat("<")
+            if let n = sp.matchesInteger() {
+                reservedTrainNumber = String(n)
+                sp.eat("<")
+            } else {
+                assertionFailure("Unexpected turnout identifier")
+            }
         }
         
         let turnoutName = sp.matchString(["{", "(", ",", ">"])

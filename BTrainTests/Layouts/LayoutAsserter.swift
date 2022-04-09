@@ -43,7 +43,6 @@ final class LayoutAsserter {
 
         // Now assert the routes to see if they match the real layout
         var assertedAtLeastOneRoute = false
-        let resolver = RouteResolver(layout: layout)
         for route in layout.routes {
             guard let expectedRoute = expectedLayout.routes.first(where: { $0.id == route.id }) else {
                 continue
@@ -56,7 +55,7 @@ final class LayoutAsserter {
             }
             
             let resolvedRoute = Route(id: route.id, automatic: route.automatic)
-            guard let resolvedSteps = try resolver.resolve(steps: ArraySlice(route.steps), trainId: train.id) else {
+            guard let resolvedSteps = try RouteResolver(layout: layout, train: train).resolve(steps: ArraySlice(route.steps)) else {
                 continue
             }
             
@@ -95,8 +94,12 @@ final class LayoutAsserter {
             XCTAssertEqual(train.position, expectedTrain.position, "Mismatching train position for train \(expectedTrain.id), route \(route.id)")
             XCTAssertEqual(train.speed, expectedTrain.speed, "Mismatching train speed for train \(expectedTrain.id), route \(route.id)")
         }
+                
+        guard route.steps.count == expectedRoute.steps.count else {
+            XCTFail("Mismatching number of steps for route \(route): expecting \(expectedRoute.steps.count) but got \(route.steps.count)")
+            return
+        }
         
-        XCTAssertEqual(route.steps.count, expectedRoute.steps.count, "Mismatching number of steps for route \(route)")
         var previousStep: Route.Step?
         for index in 0..<route.steps.count {
             let step = route.steps[index]

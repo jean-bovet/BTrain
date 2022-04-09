@@ -20,7 +20,6 @@ import Foundation
 final class LayoutReservation {
     
     let layout: Layout
-    let resolver: RouteResolver
     let visitor: ElementVisitor
 
     // Internal structure used to hold information
@@ -33,7 +32,6 @@ final class LayoutReservation {
 
     init(layout: Layout) {
         self.layout = layout
-        self.resolver = RouteResolver(layout: layout)
         self.visitor = ElementVisitor(layout: layout)
    }
     
@@ -70,11 +68,16 @@ final class LayoutReservation {
         let stepsToReserve = route.steps[startReservationIndex...route.lastStepIndex]
         
         // First of all, resolve the route to discover all non-specified turnouts and blocks
-        guard let resolvedSteps = try resolver.resolve(steps: stepsToReserve, trainId: train.id) else {
+        // TODO: think about how to propagate back the resolved route to the original route so it easier to debug
+        guard let resolvedSteps = try RouteResolver(layout: layout, train: train).resolve(steps: stepsToReserve) else {
             return false
         }
         assert(resolvedSteps.count >= stepsToReserve.count)
-
+        
+        return try reserveSteps(train: train, resolvedSteps: resolvedSteps)
+    }
+    
+    private func reserveSteps(train: Train, resolvedSteps: [Route.Step]) throws -> Bool {
         // Variable keeping track of the number of leading blocks that have been reserved.
         // At least one block must have been reserved to consider this function successfull.
         // Note: blocks that are reserved for the train and its wagons do not count against that count.
@@ -290,10 +293,11 @@ final class LayoutReservation {
     // the specified train, which includes blocks and turnouts.
     func maximumSpeedAllowed(train: Train) -> TrainSpeed.UnitKph {
         var maximumSpeedAllowed: TrainSpeed.UnitKph = LayoutFactory.DefaultMaximumSpeed
+        // TODO: block speed limit
 //        layout.blockMap.values
 //            .filter { $0.reserved?.trainId == train.id }
 //            .forEach { block in
-//                // TODO: block speed limit
+//
 //            }
         layout.turnouts.filter { $0.reserved?.train == train.id }.forEach { turnout in
             if let speedLimit = turnout.stateSpeedLimited[turnout.state] {

@@ -150,6 +150,12 @@
 		A785C081278BC527002FD538 /* TrainSpeedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A785C080278BC527002FD538 /* TrainSpeedView.swift */; };
 		A785C086278CFD7D002FD538 /* TrainSpeed.swift in Sources */ = {isa = PBXBuildFile; fileRef = A785C085278CFD7D002FD538 /* TrainSpeed.swift */; };
 		A785C089278E59A4002FD538 /* CommandTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = A785C088278E59A4002FD538 /* CommandTypes.swift */; };
+		A78B996227FCC4080021EFE4 /* Graph.swift in Sources */ = {isa = PBXBuildFile; fileRef = A78B996127FCC4080021EFE4 /* Graph.swift */; };
+		A78B996427FD56D80021EFE4 /* GraphTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A78B996327FD56D80021EFE4 /* GraphTests.swift */; };
+		A78B996727FD57B20021EFE4 /* Graph+Elements.swift in Sources */ = {isa = PBXBuildFile; fileRef = A78B996627FD57B20021EFE4 /* Graph+Elements.swift */; };
+		A78B996927FE41A90021EFE4 /* LayoutPathFinder.swift in Sources */ = {isa = PBXBuildFile; fileRef = A78B996827FE41A90021EFE4 /* LayoutPathFinder.swift */; };
+		A78B996B2800BA4D0021EFE4 /* GraphPathFinder.swift in Sources */ = {isa = PBXBuildFile; fileRef = A78B996A2800BA4D0021EFE4 /* GraphPathFinder.swift */; };
+		A78B996D2800BABB0021EFE4 /* GraphPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = A78B996C2800BABB0021EFE4 /* GraphPath.swift */; };
 		A7907955277D071000771A60 /* CGContext+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7907954277D071000771A60 /* CGContext+Extension.swift */; };
 		A7907957277D136500771A60 /* CGAffineTransform+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7907956277D136500771A60 /* CGAffineTransform+Extension.swift */; };
 		A7907993277EC86200771A60 /* DocumentToolbarContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7907992277EC86200771A60 /* DocumentToolbarContent.swift */; };
@@ -253,7 +259,6 @@
 		A7F779FE2734D55100E73275 /* LayoutRouteParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7F779FD2734D55100E73275 /* LayoutRouteParser.swift */; };
 		A7FBC8B4276E87B7009D49C3 /* LayoutECreator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7FBC8B3276E87B7009D49C3 /* LayoutECreator.swift */; };
 		A7FBC8B6276E8BB6009D49C3 /* PathFinderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7FBC8B5276E8BB6009D49C3 /* PathFinderTests.swift */; };
-		A7FBC8B8276EBB34009D49C3 /* PathFinder.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7FBC8B7276EBB34009D49C3 /* PathFinder.swift */; };
 		A7FFE05B27E63C40002B4A4A /* BlockSpeedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7FFE05A27E63C40002B4A4A /* BlockSpeedView.swift */; };
 /* End PBXBuildFile section */
 
@@ -412,6 +417,12 @@
 		A785C080278BC527002FD538 /* TrainSpeedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainSpeedView.swift; sourceTree = "<group>"; };
 		A785C085278CFD7D002FD538 /* TrainSpeed.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainSpeed.swift; sourceTree = "<group>"; };
 		A785C088278E59A4002FD538 /* CommandTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommandTypes.swift; sourceTree = "<group>"; };
+		A78B996127FCC4080021EFE4 /* Graph.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Graph.swift; sourceTree = "<group>"; };
+		A78B996327FD56D80021EFE4 /* GraphTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GraphTests.swift; sourceTree = "<group>"; };
+		A78B996627FD57B20021EFE4 /* Graph+Elements.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Graph+Elements.swift"; sourceTree = "<group>"; };
+		A78B996827FE41A90021EFE4 /* LayoutPathFinder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutPathFinder.swift; sourceTree = "<group>"; };
+		A78B996A2800BA4D0021EFE4 /* GraphPathFinder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GraphPathFinder.swift; sourceTree = "<group>"; };
+		A78B996C2800BABB0021EFE4 /* GraphPath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GraphPath.swift; sourceTree = "<group>"; };
 		A7907954277D071000771A60 /* CGContext+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CGContext+Extension.swift"; sourceTree = "<group>"; };
 		A7907956277D136500771A60 /* CGAffineTransform+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CGAffineTransform+Extension.swift"; sourceTree = "<group>"; };
 		A7907992277EC86200771A60 /* DocumentToolbarContent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentToolbarContent.swift; sourceTree = "<group>"; };
@@ -516,7 +527,6 @@
 		A7F779FD2734D55100E73275 /* LayoutRouteParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutRouteParser.swift; sourceTree = "<group>"; };
 		A7FBC8B3276E87B7009D49C3 /* LayoutECreator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutECreator.swift; sourceTree = "<group>"; };
 		A7FBC8B5276E8BB6009D49C3 /* PathFinderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PathFinderTests.swift; sourceTree = "<group>"; };
-		A7FBC8B7276EBB34009D49C3 /* PathFinder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PathFinder.swift; sourceTree = "<group>"; };
 		A7FFE05A27E63C40002B4A4A /* BlockSpeedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockSpeedView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -618,6 +628,7 @@
 				A792DEF92783A0A1004B0439 /* Simulator */,
 				A74CCC73272A5A1C004E58F5 /* Elements */,
 				A7F779EE272F204D00E73275 /* Layouts */,
+				A78B996527FD57890021EFE4 /* Graph */,
 				A75829642792A5C200AA0649 /* Routing */,
 				A711B155273A28C3002FE7DB /* Command */,
 				A73AFEB92726680E00E1ED21 /* Marklin */,
@@ -851,7 +862,6 @@
 		A75829642792A5C200AA0649 /* Routing */ = {
 			isa = PBXGroup;
 			children = (
-				A7FBC8B7276EBB34009D49C3 /* PathFinder.swift */,
 				A798BB4927ABAB6F000BB4D1 /* RouteResolver.swift */,
 				A795A03027AF6C8D00AE90EB /* AutomaticRouting.swift */,
 			);
@@ -928,6 +938,7 @@
 				A7CA5EBC2795339000171398 /* AutomaticRoutingTests.swift */,
 				A7E78C4927A22B23004D1821 /* ManualOperationTests.swift */,
 				A798BB4B27ACD8E8000BB4D1 /* RouteResolverTests.swift */,
+				A78B996327FD56D80021EFE4 /* GraphTests.swift */,
 			);
 			path = Routing;
 			sourceTree = "<group>";
@@ -1004,6 +1015,18 @@
 				A7E1F74727D71C03009FB75F /* TrainSpeedAcceleration.swift */,
 			);
 			path = Train;
+			sourceTree = "<group>";
+		};
+		A78B996527FD57890021EFE4 /* Graph */ = {
+			isa = PBXGroup;
+			children = (
+				A78B996127FCC4080021EFE4 /* Graph.swift */,
+				A78B996C2800BABB0021EFE4 /* GraphPath.swift */,
+				A78B996A2800BA4D0021EFE4 /* GraphPathFinder.swift */,
+				A78B996627FD57B20021EFE4 /* Graph+Elements.swift */,
+				A78B996827FE41A90021EFE4 /* LayoutPathFinder.swift */,
+			);
+			path = Graph;
 			sourceTree = "<group>";
 		};
 		A79079A8277FCE6A00771A60 /* Predefined */ = {
@@ -1379,6 +1402,7 @@
 				A77A96DE2727767C009E7ECB /* ConnectSheet.swift in Sources */,
 				A7B06AF4272783F600BDD88C /* MarklinCANMessageFactory.swift in Sources */,
 				A7218083275F0BFC00831998 /* Turnout+Socket.swift in Sources */,
+				A78B996D2800BABB0021EFE4 /* GraphPath.swift in Sources */,
 				A717158427574B1C00200F92 /* ShapeProvider.swift in Sources */,
 				A7C8A2ED279BEA6D000C7246 /* FileWrapper+Layout.swift in Sources */,
 				A7841376273DD5A200381341 /* Vector2D.swift in Sources */,
@@ -1404,7 +1428,6 @@
 				A7710E71277A344300C08150 /* NewBlockSheet.swift in Sources */,
 				A7CA5EC7279654EB00171398 /* Block+Feedback.swift in Sources */,
 				A7F779CE272B445B00E73275 /* Feedback.swift in Sources */,
-				A7FBC8B8276EBB34009D49C3 /* PathFinder.swift in Sources */,
 				A798BB4027A6E7F1000BB4D1 /* LayoutHCreator.swift in Sources */,
 				A78413862740791C00381341 /* CGContext+DrawText.swift in Sources */,
 				A7E78C4227A08F9E004D1821 /* LayoutReservation.swift in Sources */,
@@ -1441,6 +1464,7 @@
 				A74CCC72272A5A18004E58F5 /* Transition.swift in Sources */,
 				A785C075278A5CE1002FD538 /* TrainIconManager.swift in Sources */,
 				A763F19727BF0FE100B3499A /* TrainSpeedGraphView.swift in Sources */,
+				A78B996727FD57B20021EFE4 /* Graph+Elements.swift in Sources */,
 				A7710E592777D7FE00C08150 /* RouteView.swift in Sources */,
 				A792DEF82783A09C004B0439 /* SimulatorTrainControlView.swift in Sources */,
 				A73B1639274B60A10073947D /* BTLogger.swift in Sources */,
@@ -1452,6 +1476,7 @@
 				A73AFEB527265A4B00E1ED21 /* ClientConnection.swift in Sources */,
 				A798BB4827A8EA06000BB4D1 /* LayoutControllerDebugger.swift in Sources */,
 				A71D97FA27A499A600EBEA06 /* LayoutOnConnectTasks.swift in Sources */,
+				A78B996227FCC4080021EFE4 /* Graph.swift in Sources */,
 				A7907955277D071000771A60 /* CGContext+Extension.swift in Sources */,
 				A7F779FA2734A8C500E73275 /* Element.swift in Sources */,
 				A7710E6B27799E2700C08150 /* Layout+Turnouts.swift in Sources */,
@@ -1501,6 +1526,7 @@
 				A7841371273CE02000381341 /* LinkShape.swift in Sources */,
 				A784136F273CE00C00381341 /* BlockShape.swift in Sources */,
 				A798BB4627A7B093000BB4D1 /* LayoutASCIIProducer.swift in Sources */,
+				A78B996B2800BA4D0021EFE4 /* GraphPathFinder.swift in Sources */,
 				A7C8A2EF279DD19A000C7246 /* SectionTitleView.swift in Sources */,
 				A785C071278A4561002FD538 /* TrainDetailsView.swift in Sources */,
 				A71715802757036B00200F92 /* LayoutFCreator.swift in Sources */,
@@ -1524,6 +1550,7 @@
 				A784137A273F4D5400381341 /* ConnectableShape.swift in Sources */,
 				A7E1F74A27D71E51009FB75F /* TrainSpeedTimingFunctionView.swift in Sources */,
 				A7CA5EBF2795D05A00171398 /* TrainControlActionsView.swift in Sources */,
+				A78B996927FE41A90021EFE4 /* LayoutPathFinder.swift in Sources */,
 				A73E0829276BF554005F9D64 /* TrainControlSetLocationSheet.swift in Sources */,
 				A792DEF627839F55004B0439 /* SimulatorView.swift in Sources */,
 			);
@@ -1555,6 +1582,7 @@
 				A7145F8C27F911F000BF5F61 /* TrainSpeedMeasurementViewTests.swift in Sources */,
 				A73E07F227697285005F9D64 /* TrainViewTests.swift in Sources */,
 				A73E0818276B1059005F9D64 /* SwitchBoardViewTests.swift in Sources */,
+				A78B996427FD56D80021EFE4 /* GraphTests.swift in Sources */,
 				A7145F8E27F91D0A00BF5F61 /* View+Snapshot.swift in Sources */,
 				A7FBC8B6276E8BB6009D49C3 /* PathFinderTests.swift in Sources */,
 				A73E0816276B0BC0005F9D64 /* ManualRoutingTests.swift in Sources */,

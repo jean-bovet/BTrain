@@ -18,24 +18,12 @@ import Foundation
 // create a contiguous route.
 // At the moment, only missing turnouts will be handled but in a future release, missing blocks will be supported as well.
 final class RouteResolver {
-    
     let layout: Layout
-    let pf: PathFinder
+    let train: Train
     
-    lazy var settings: PathFinder.Settings = {
-        var settings = PathFinder.Settings(random: false,
-                                           reservedBlockBehavior: .ignoreReserved,
-                                           consideringStoppingAtSiding: false,
-                                           verbose: SettingsKeys.bool(forKey: SettingsKeys.logRoutingResolutionSteps))
-        settings.includeTurnouts = true
-        settings.ignoreDisabledElements = true
-        settings.firstBlockShouldMatchDestination = true
-        return settings
-    }()
-    
-    init(layout: Layout) {
+    init(layout: Layout, train: Train) {
         self.layout = layout
-        self.pf = PathFinder(layout: layout)
+        self.train = train
     }
     
     // This function takes an array of steps and returns a resolved array of steps. The returned array
@@ -45,42 +33,66 @@ final class RouteResolver {
     // already reserved for the same train to be accepted as resolved steps.
     // Returns nil if the route cannot be resolved. This can happen, for example, if a turnout or block is already
     // reserved for another train and no other alternative path is found.
-    func resolve(steps: ArraySlice<Route.Step>, trainId: Identifier<Train>) throws -> [Route.Step]? {
-        guard var previousStep = steps.first else {
-            return []
+    func resolve(steps: ArraySlice<Route.Step>,
+                 verbose: Bool = SettingsKeys.bool(forKey: SettingsKeys.logRoutingResolutionSteps)) throws -> [Route.Step]? {
+        let unresolvedPath = try GraphPath(steps: Array(steps), layout: layout)
+        
+        let baseSettings = GraphPathFinder.Settings(verbose: verbose,
+                                                    random: false,
+                                                    overflow: layout.pathFinderOverflowLimit)
+        // Note: avoid all reserved block when resolving to ensure maximum constraints.
+        // If that fails, the algorithm will retry without constraints.
+        let settings = LayoutPathFinder.Settings(reservedBlockBehavior: .avoidReserved,
+                                                 baseSettings: baseSettings)
+
+        let pf = LayoutPathFinder(layout: layout, train: train, settings: settings)
+        
+        // Try to resolve the route using the standard constraints (which are a super set of the constraints
+        // when finding a new route, which provides consistent behavior when resolving a route).
+        if let resolvedPath = pf.resolve(graph: layout, unresolvedPath, constraints: ResolverConstraints(layoutConstraints: pf.constraints)) {
+            return resolvedPath.elements.toSteps
         }
-        var resolvedSteps = [previousStep]
-        for step in steps.dropFirst() {
-            guard let previousBlock = layout.block(for: previousStep.blockId) else {
-                continue
+        
+        // If we are not able to resolve the route using the standard constraints, it means there are no path available
+        // that satisfies the constraints; for example, a fixed route has a disable block that makes it impossible to resolve.
+        // Let's try again to resolve the route using the basic constraints at the graph-level - this means, all layout-specific
+        // constraints (such as block reserved, disabled, etc) are ignored.
+        if let resolvedPath = pf.resolve(graph: layout, unresolvedPath, constraints: ResolverConstraints(layoutConstraints: GraphPathFinder.DefaultConstraints())) {
+            return resolvedPath.elements.toSteps
+        }
+
+        // If we reach that point, it means the graph itself has a problem with its node and edges and not path can be found.
+        return nil
+    }
+    
+    final class ResolverConstraints: GraphPathFinderConstraints {
+        
+        let delegatedConstraints: GraphPathFinderConstraints
+        
+        init(layoutConstraints: GraphPathFinderConstraints) {
+            self.delegatedConstraints = layoutConstraints
+        }
+        
+        func reachedDestination(node: GraphNode, to: GraphPathElement?) -> Bool {
+            return delegatedConstraints.reachedDestination(node: node, to: to)
+        }
+        
+        func shouldInclude(node: GraphNode, currentPath: GraphPath, to: GraphPathElement?) -> Bool {
+            guard let to = to else {
+                return delegatedConstraints.shouldInclude(node: node, currentPath: currentPath, to: to)
             }
             
-            guard let previousDirection = previousStep.direction else {
-                throw LayoutError.missingDirection(step: previousStep)
-            }
-            
-            guard let block = layout.block(for: step.blockId) else {
-                continue
-            }
-
-            guard let direction = step.direction else {
-                throw LayoutError.missingDirection(step: step)
-            }
-
-            // Find the missing turnouts between `previousBlock` and `block`
-            let destination = Destination(block.id, direction: direction)
-            if let path = try pf.path(trainId: trainId, from: previousBlock, destination: destination, direction: previousDirection, settings: settings) {
-                // Insert the turnouts that have been discovered
-                for turnoutStep in path.steps.filter({ $0.turnoutId != nil }) {
-                    resolvedSteps.append(turnoutStep)
-                }
+            if node is Block && node.identifier != to.node.identifier {
+                // Backtrack if the first block is not the destination node.
+                // TODO: this is currently a limitation of the resolver in which it is expected that a route
+                // defines all the blocks in the route. The resolver just resolves the turnouts between two
+                // blocks but not an arbitrary long route with turnouts and blocks, which can be expensive
+                // to traverse until we have a breadth-first algorithm implementation to search for the shortest
+                // path between one block to another (arbitrary far away) block.
+                return false
             } else {
-                // Bail out if a path cannot be found between two blocks.
-                return nil
+                return delegatedConstraints.shouldInclude(node: node, currentPath: currentPath, to: to)
             }
-            resolvedSteps.append(step)
-            previousStep = step
         }
-        return resolvedSteps
     }
 }

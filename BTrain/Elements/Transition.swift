@@ -22,7 +22,7 @@ import Foundation
 //    │                             │
 //    ▼          Transition         ▼
 //    ○─────────────────────────────○
-protocol ITransition: AnyObject {
+protocol ITransition: AnyObject, GraphEdge {
     
     var id: Identifier<Transition> { get }
         

@@ -42,5 +42,4 @@ class TurnoutViewTests: RootViewTests {
         _ = try sut.inspect().find(text: "Protocol:")
     }
 
-    // TODO: finish with test similars to BlockViewTests
 }

@@ -20,8 +20,8 @@ class RouteResolverTests: XCTestCase {
         let route = layout.routes[0]
         let train = layout.trains[0]
         
-        let resolver = RouteResolver(layout: layout)
-        let resolvedSteps = try resolver.resolve(steps: ArraySlice(route.steps), trainId: train.id)
+        let resolver = RouteResolver(layout: layout, train: train)
+        let resolvedSteps = try resolver.resolve(steps: ArraySlice(route.steps))
         
         XCTAssertEqual(route.steps.map({$0.description}), ["A:next", "B:next", "C:next", "D:next", "E:next"])
         XCTAssertEqual(resolvedSteps.map({$0.description}), ["A:next", "AB:(0>1)", "B:next", "C:next", "D:next", "DE:(1>0)", "E:next"])
@@ -32,16 +32,30 @@ class RouteResolverTests: XCTestCase {
         let train = layout.trains[0]
         let route = layout.newRoute(id: "OL3-NE3", [("OL3", .next), ("NE3", .next)])
         
-        let resolver = RouteResolver(layout: layout)
-        var resolvedSteps = try resolver.resolve(steps: ArraySlice(route.steps), trainId: train.id)
+        let resolver = RouteResolver(layout: layout, train: train)
+        var resolvedSteps = try resolver.resolve(steps: ArraySlice(route.steps))
         
         XCTAssertEqual(route.steps.map({$0.description}), ["OL3:next", "NE3:next"])
         XCTAssertEqual(resolvedSteps.map({$0.description}), ["OL3:next", "F.3:(0>1)", "F.1:(0>1)", "F.2:(0>1)", "M.1:(2>0)", "C.1:(0>2)", "C.3:(2>0)", "NE3:next"])
         
         train.turnoutsToAvoid = [.init(Identifier<Turnout>(uuid: "C.1"))]
         
-        resolvedSteps = try resolver.resolve(steps: ArraySlice(route.steps), trainId: train.id)
+        resolvedSteps = try resolver.resolve(steps: ArraySlice(route.steps))
         XCTAssertEqual(resolvedSteps.map({$0.description}), ["OL3:next", "F.3:(0>1)", "F.1:(0>1)", "F.2:(0>2)", "C.3:(1>0)", "NE3:next"])
     }
 
+    func testResolveRoute() throws {
+        let layout = LayoutCCreator().newLayout()
+        let train = layout.trains[0]
+        
+        let b3 = layout.block("b3")
+        b3.reserved = .init("foo", .next)
+        
+        let route = layout.newRoute(id: "route-1", [("b1", .next), ("b2", .next), ("b3", .next), ("b4", .next), ("b1", .next)])
+
+        let resolver = RouteResolver(layout: layout, train: train)
+        let resolvedSteps = try resolver.resolve(steps: ArraySlice(route.steps))!
+
+        XCTAssertEqual(resolvedSteps.description, ["b1:next", "t0:(0>1)", "b2:next", "b3:next", "t1:(0>1)", "b4:next", "b1:next"])
+    }
 }

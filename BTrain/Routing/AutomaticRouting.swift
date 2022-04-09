@@ -15,11 +15,9 @@ import Foundation
 final class AutomaticRouting {
     
     let layout: Layout
-    let pf: PathFinder
     
     init(layout: Layout) {
         self.layout = layout
-        self.pf = PathFinder(layout: layout)
     }
     
     func updateAutomaticRoute(for trainId: Identifier<Train>) throws -> (Bool, Route) {
@@ -57,12 +55,25 @@ final class AutomaticRouting {
         // just avoid the reserved block in front of the current one but ignore the others
         // (the automatic route will re-evaluate itself if it encounters a reserved block later
         // during execution, to avoid deadlocking).
-        let settings = PathFinder.Settings(random: layout.automaticRouteRandom,
-                                           reservedBlockBehavior: destination == nil ? .avoidFirstReservedBlock : .avoidReserved,
-                                           consideringStoppingAtSiding: false,
-                                           verbose: SettingsKeys.bool(forKey: SettingsKeys.logRoutingResolutionSteps))
-        if let path = try pf.path(trainId: train.id, from: currentBlock, destination: destination, direction: trainInstance.direction, settings: settings) {
-            route.steps = path.steps
+        let baseSettings = GraphPathFinder.Settings(verbose: SettingsKeys.bool(forKey: SettingsKeys.logRoutingResolutionSteps),
+                                                    random: layout.automaticRouteRandom,
+                                                    overflow: layout.pathFinderOverflowLimit)
+        let settings = LayoutPathFinder.Settings(reservedBlockBehavior: destination == nil ? .avoidFirstReservedBlock : .avoidReserved,
+                                                 baseSettings: baseSettings)
+        let pf = LayoutPathFinder(layout: layout, train: train, settings: settings)
+        
+        let to: (Block, Direction?)?
+        if let destination = destination {
+            guard let block = layout.block(for: destination.blockId) else {
+                throw LayoutError.blockNotFound(blockId: destination.blockId)
+            }
+            to = (block, destination.direction)
+        } else {
+            to = nil
+        }
+        if let path = layout.path(for: train, from: (currentBlock, trainInstance.direction), to: to, pathFinder: pf, constraints: pf.constraints) {
+//        if let path = try pf.path(trainId: train.id, from: currentBlock, destination: destination, direction: trainInstance.direction, settings: settings) {
+            route.steps = path.elements.toBlockSteps
             train.routeStepIndex = 0
             return (true, route)
         } else {
