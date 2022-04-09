@@ -20,6 +20,7 @@
 		A717158B275844AE00200F92 /* SwitchBoardTrainDragging.swift in Sources */ = {isa = PBXBuildFile; fileRef = A717158A275844AE00200F92 /* SwitchBoardTrainDragging.swift */; };
 		A717158D275845F000200F92 /* ShapeContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = A717158C275845F000200F92 /* ShapeContext.swift */; };
 		A719FEB32802305900D5FBE1 /* GraphElementTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A719FEB22802305900D5FBE1 /* GraphElementTests.swift */; };
+		A719FEB528023CD800D5FBE1 /* Layouts in Resources */ = {isa = PBXBuildFile; fileRef = A719FEB428023CD800D5FBE1 /* Layouts */; };
 		A71D97FA27A499A600EBEA06 /* LayoutOnConnectTasks.swift in Sources */ = {isa = PBXBuildFile; fileRef = A71D97F927A499A600EBEA06 /* LayoutOnConnectTasks.swift */; };
 		A71D97FC27A6210300EBEA06 /* Block+Occupation.swift in Sources */ = {isa = PBXBuildFile; fileRef = A71D97FB27A6210300EBEA06 /* Block+Occupation.swift */; };
 		A7214916279A56FA0095E5EE /* LayoutController+Debug.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7214915279A56FA0095E5EE /* LayoutController+Debug.swift */; };
@@ -290,6 +291,7 @@
 		A717158A275844AE00200F92 /* SwitchBoardTrainDragging.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwitchBoardTrainDragging.swift; sourceTree = "<group>"; };
 		A717158C275845F000200F92 /* ShapeContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShapeContext.swift; sourceTree = "<group>"; };
 		A719FEB22802305900D5FBE1 /* GraphElementTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GraphElementTests.swift; sourceTree = "<group>"; };
+		A719FEB428023CD800D5FBE1 /* Layouts */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Layouts; sourceTree = "<group>"; };
 		A71D97F727A3C5FE00EBEA06 /* All.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = All.xctestplan; sourceTree = "<group>"; };
 		A71D97F927A499A600EBEA06 /* LayoutOnConnectTasks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutOnConnectTasks.swift; sourceTree = "<group>"; };
 		A71D97FB27A6210300EBEA06 /* Block+Occupation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Block+Occupation.swift"; sourceTree = "<group>"; };
@@ -618,6 +620,7 @@
 				A71D97F727A3C5FE00EBEA06 /* All.xctestplan */,
 				A73D39DA2780C31100EBE409 /* README.md */,
 				A79079A6277FB8E700771A60 /* Credits.rtf */,
+				A719FEB428023CD800D5FBE1 /* Layouts */,
 				A73AFE842726594600E1ED21 /* BTrain */,
 				A73AFE962726594800E1ED21 /* BTrainTests */,
 				A73AFE832726594600E1ED21 /* Products */,
@@ -1357,6 +1360,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A719FEB528023CD800D5FBE1 /* Layouts in Resources */,
 				A7218079275DA74500831998 /* Locomotives.cs2 in Resources */,
 				A73AFE8D2726594800E1ED21 /* Preview Assets.xcassets in Resources */,
 				A73AFE8A2726594800E1ED21 /* Assets.xcassets in Resources */,

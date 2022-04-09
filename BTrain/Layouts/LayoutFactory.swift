@@ -62,4 +62,10 @@ final class LayoutFactory {
         return parser.layout
     }
     
+    static func layoutFromBundle(named: String) -> Layout {
+        let file = Bundle.main.url(forResource: named, withExtension: "btrain", subdirectory: "Layouts")!
+        let fw = try! FileWrapper(url: file)
+        return try! fw.layout()
+    }
+
 }

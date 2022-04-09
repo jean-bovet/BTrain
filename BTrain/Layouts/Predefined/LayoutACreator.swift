@@ -35,8 +35,7 @@ final class LayoutACreator: LayoutCreating {
     }
     
     func newLayout() -> Layout {
-        let layoutFile = NSDataAsset(name: "layout_a")!
-        return try! LayoutDocument.layout(contentType: .json, data: layoutFile.data)
+        LayoutFactory.layoutFromBundle(named: "Layout A")
     }
         
 }
