@@ -58,6 +58,8 @@ class ManualOperationTests: BTTestCase {
         
         layout.turnouts[1].state = .branchLeft
         
+        layout.turnouts.forEach { $0.length = nil }
+        
         let b1 = layout.blocks[0]
         let b2 = layout.blocks[1]
         let b3 = layout.blocks[2]
@@ -119,7 +121,8 @@ class ManualOperationTests: BTTestCase {
         let layout = LayoutACreator().newLayout()
         
         layout.turnouts[1].state = .branchLeft
-        
+        layout.turnouts.forEach { $0.length = nil }
+
         let b1 = layout.blocks[0]
         let b2 = layout.blocks[1]
         let b3 = layout.blocks[2]

@@ -130,19 +130,3 @@ class GraphTests: XCTestCase {
         XCTAssertEqual(p.toStrings, ["s1:1", "0:t1:1", "0:t2:1", "0:b1:1", "1:t4:0", "0:s2"])
     }
 }
-
-extension Layout {
-    
-    func block(_ uuid: String) -> Block {
-        return block(for: Identifier<Block>(uuid: uuid))!
-    }
-    
-    func block(named name: String) -> Block {
-        return blocks.first { $0.name == name }!
-    }
-
-    func turnout(_ uuid: String) -> Turnout {
-        return turnout(for: Identifier<Turnout>(uuid: uuid))!
-    }
-    
-}

@@ -113,7 +113,7 @@ class ManualRoutingTests: BTTestCase {
         try p.assert("r1:{r1{b1 ≏ ≏ }} <r1<t0,l>> [b2 ≏ ≏ ] <t1(0,2),l> [r1[b3 ≡ 🔵🚂1 ≏ ]] <r1<t0(2,0),l>> !{r1{b1 ≏ ≏ }}")
         try p.assert("r1:{r1{b1 ≏ 🟡17🚂1 ≡ }} <t0,l> [b2 ≏ ≏ ] <t1(0,2),l> [b3 ≏ ≏ ] <t0(2,0),l> !{r1{b1 ≡ 🟡17🚂1 ≏ }}")
         
-        XCTAssertEqual(17, layout.trains[0].speed.actualKph)
+        XCTAssertEqual(17, layout.train("1").speed.actualKph)
         
         try p.assert("r1:{r1{b1 🔴🚂1 ≡ ≏ }} <t0,l> [b2 ≏ ≏ ] <t1(0,2),l> [b3 ≏ ≏ ] <t0(2,0),l> !{r1{b1 ≏ ≡ 🔴🚂1 }}")
     }
@@ -218,7 +218,7 @@ class ManualRoutingTests: BTTestCase {
     
     func testMoveWith2LeadingReservation() throws {
         let layout = LayoutACreator().newLayout()
-        let t1 = layout.trains[0]
+        let t1 = layout.train("1")
         t1.maxNumberOfLeadingReservedBlocks = 2
         
         let p = Package(layout: layout)
@@ -291,7 +291,7 @@ class ManualRoutingTests: BTTestCase {
 
     func testMoveWith3LeadingReservation() throws {
         let layout = LayoutACreator().newLayout()
-        let t1 = layout.trains[0]
+        let t1 = layout.train("1")
         t1.maxNumberOfLeadingReservedBlocks = 3
         
         let p = Package(layout: layout)

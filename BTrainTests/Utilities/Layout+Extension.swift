@@ -49,4 +49,19 @@ extension Layout {
         }
     }
 
+    func block(_ uuid: String) -> Block {
+        return block(for: Identifier<Block>(uuid: uuid))!
+    }
+    
+    func block(named name: String) -> Block {
+        return blocks.first { $0.name == name }!
+    }
+
+    func turnout(_ uuid: String) -> Turnout {
+        return turnout(for: Identifier<Turnout>(uuid: uuid))!
+    }
+    
+    func train(_ uuid: String) -> Train {
+        return train(for: Identifier<Train>(uuid: uuid))!
+    }
 }
