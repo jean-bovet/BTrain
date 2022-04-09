@@ -68,7 +68,7 @@ class ManualRoutingTests: BTTestCase {
     }
 
     func testBlockReserved() throws {
-        let layout = LayoutACreator().newLayout()
+        let layout = LayoutACreator().newLayout().removeTrainGeometry()
         let p = Package(layout: layout)
         try p.prepare(routeID: "r1", trainID: "1", fromBlockId: "b1")
 
@@ -96,7 +96,7 @@ class ManualRoutingTests: BTTestCase {
     }
     
     func testBlockBrakingSpeed() throws {
-        let layout = LayoutACreator().newLayout()
+        let layout = LayoutACreator().newLayout().removeTrainGeometry()
         let p = Package(layout: layout)
 
         try p.prepare(routeID: "r1", trainID: "1", fromBlockId: "b1")
@@ -119,7 +119,7 @@ class ManualRoutingTests: BTTestCase {
     }
 
     func testBlockDisabled() throws {
-        let layout = LayoutACreator().newLayout()
+        let layout = LayoutACreator().newLayout().removeTrainGeometry()
         let p = Package(layout: layout)
         try p.prepare(routeID: "r1", trainID: "1", fromBlockId: "b1")
 
@@ -192,7 +192,7 @@ class ManualRoutingTests: BTTestCase {
     }
 
     func testMoveInsideBlock() throws {
-        let layout = LayoutACreator().newLayout()
+        let layout = LayoutACreator().newLayout().removeTrainGeometry()
         let p = Package(layout: layout)
         try p.prepare(routeID: "r1", trainID: "1", fromBlockId: "b1")
 
@@ -217,7 +217,7 @@ class ManualRoutingTests: BTTestCase {
     }
     
     func testMoveWith2LeadingReservation() throws {
-        let layout = LayoutACreator().newLayout()
+        let layout = LayoutACreator().newLayout().removeTrainGeometry()
         let t1 = layout.train("1")
         t1.maxNumberOfLeadingReservedBlocks = 2
         
@@ -290,7 +290,7 @@ class ManualRoutingTests: BTTestCase {
     }
 
     func testMoveWith3LeadingReservation() throws {
-        let layout = LayoutACreator().newLayout()
+        let layout = LayoutACreator().newLayout().removeTrainGeometry()
         let t1 = layout.train("1")
         t1.maxNumberOfLeadingReservedBlocks = 3
         
@@ -415,7 +415,7 @@ class ManualRoutingTests: BTTestCase {
     }
 
     func testRouteReverseLoop() throws {
-        let layout = LayoutACreator().newLayout()
+        let layout = LayoutACreator().newLayout().removeTrainGeometry()
         let p = Package(layout: layout)
         try p.prepare(routeID: "r2", trainID: "2", fromBlockId: "b1")
 
@@ -439,7 +439,7 @@ class ManualRoutingTests: BTTestCase {
     }
         
     func testStrictModeNextBlockFeedback() throws {
-        let layout = LayoutACreator().newLayout()
+        let layout = LayoutACreator().newLayout().removeTrainGeometry()
         let p = Package(layout: layout)
         try p.prepare(routeID: "r1", trainID: "1", fromBlockId: "b1")
 
@@ -458,7 +458,7 @@ class ManualRoutingTests: BTTestCase {
     }
 
     func testStrictModeFeedbackTooFar() throws {
-        let layout = LayoutACreator().newLayout()
+        let layout = LayoutACreator().newLayout().removeTrainGeometry()
         let p = Package(layout: layout)
         try p.prepare(routeID: "r1", trainID: "1", fromBlockId: "b1")
 
@@ -477,7 +477,7 @@ class ManualRoutingTests: BTTestCase {
     }
 
     func testRelaxModeNextModeFeedback() throws {
-        let layout = LayoutACreator().newLayout()
+        let layout = LayoutACreator().newLayout().removeTrainGeometry()
         let p = Package(layout: layout)
         try p.prepare(routeID: "r1", trainID: "1", fromBlockId: "b1")
 
@@ -494,7 +494,7 @@ class ManualRoutingTests: BTTestCase {
     }
 
     func testRelaxModeNextBlockFeedbackTooFar() throws {
-        let layout = LayoutACreator().newLayout()
+        let layout = LayoutACreator().newLayout().removeTrainGeometry()
         let p = Package(layout: layout)
         try p.prepare(routeID: "r1", trainID: "1", fromBlockId: "b1")
 
@@ -512,7 +512,7 @@ class ManualRoutingTests: BTTestCase {
     }
 
     func testRelaxModeNextAndPreviousFeedbacks() throws {
-        let layout = LayoutACreator().newLayout()
+        let layout = LayoutACreator().newLayout().removeTrainGeometry()
         let p = Package(layout: layout)
         try p.prepare(routeID: "r1", trainID: "1", fromBlockId: "b1")
 
@@ -951,7 +951,7 @@ class ManualRoutingTests: BTTestCase {
     }
 
     func testASCIIProducer() throws {
-        let layout = LayoutACreator().newLayout()
+        let layout = LayoutACreator().newLayout().removeTrainGeometry()
         let producer = LayoutASCIIProducer(layout: layout)
         let route = layout.routes[0]
         let trainId = layout.trains[0].id

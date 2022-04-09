@@ -64,4 +64,10 @@ extension Layout {
     func train(_ uuid: String) -> Train {
         return train(for: Identifier<Train>(uuid: uuid))!
     }
+    
+    func removeTrainGeometry() -> Layout {
+        trains.forEach { $0.locomotiveLength = nil; $0.wagonsLength = nil; $0.magnetDistance = nil }
+        return self
+    }
+    
 }

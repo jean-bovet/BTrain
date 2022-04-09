@@ -111,6 +111,7 @@ final class Block: Element, ObservableObject {
     // Returns the current train (and its direction of travel) inside this block
     @Published var train: TrainInstance?
     
+    // Returns true if this block contains the locomotive
     var blockContainsLocomotive: Bool {
         if let train = train {
             return train.parts.values.contains(.locomotive)
