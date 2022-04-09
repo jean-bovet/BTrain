@@ -87,8 +87,10 @@ final class Turnout: Element, ObservableObject {
         case limited
     }
 
-    // TODO: persist
-    @Published var stateSpeedLimited = [State:SpeedLimit]()
+    typealias StateSpeedLimits = [State:SpeedLimit]
+    
+    // A dictionary of speed limit for each state of the turnout
+    @Published var stateSpeedLimit = StateSpeedLimits()
     
     // Contains the reservation for the specified train
     var reserved: Reservation?
@@ -124,10 +126,10 @@ final class Turnout: Element, ObservableObject {
     }
     
     func updateStateSpeedLimits() {
-        let previous = stateSpeedLimited
-        stateSpeedLimited.removeAll()
+        let previous = stateSpeedLimit
+        stateSpeedLimit.removeAll()
         for state in allStates {
-            stateSpeedLimited[state] = previous[state] ?? defaultStateSpeedLimit(state)
+            stateSpeedLimit[state] = previous[state] ?? defaultStateSpeedLimit(state)
         }
     }
     
@@ -158,7 +160,7 @@ final class Turnout: Element, ObservableObject {
 extension Turnout: Codable {
     
     enum CodingKeys: CodingKey {
-      case id, enabled, type, name, address, address2, length, state, reserved, train, center, angle
+      case id, enabled, type, name, address, address2, length, state, stateSpeedLimit, reserved, train, center, angle
     }
 
     convenience init(from decoder: Decoder) throws {
@@ -181,6 +183,9 @@ extension Turnout: Codable {
             self.reserved = try container.decodeIfPresent(Turnout.Reservation.self, forKey: CodingKeys.reserved)
         }
         self.train = try container.decodeIfPresent(Identifier<Train>.self, forKey: CodingKeys.train)
+        self.stateSpeedLimit = try container.decodeIfPresent(StateSpeedLimits.self, forKey: CodingKeys.stateSpeedLimit) ?? [:]
+        
+        updateStateSpeedLimits()
     }
     
     func encode(to encoder: Encoder) throws {
@@ -193,6 +198,7 @@ extension Turnout: Codable {
         try container.encode(address2, forKey: CodingKeys.address2)
         try container.encode(length, forKey: CodingKeys.length)
         try container.encode(state, forKey: CodingKeys.state)
+        try container.encode(stateSpeedLimit, forKey: CodingKeys.stateSpeedLimit)
         try container.encode(reserved, forKey: CodingKeys.reserved)
         try container.encode(train, forKey: CodingKeys.train)
 

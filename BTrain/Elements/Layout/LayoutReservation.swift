@@ -300,7 +300,7 @@ final class LayoutReservation {
 //
 //            }
         layout.turnouts.filter { $0.reserved?.train == train.id }.forEach { turnout in
-            if let speedLimit = turnout.stateSpeedLimited[turnout.state] {
+            if let speedLimit = turnout.stateSpeedLimit[turnout.state] {
                 switch speedLimit {
                 case .unlimited:
                     break
