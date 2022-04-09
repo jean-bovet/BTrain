@@ -37,7 +37,7 @@ enum DiagnosticError: Error, Equatable {
     case blockFeedbackInvalidDistance(block: Block, feedback: Block.BlockFeedback)
     case blockFeedbackMissingDistance(block: Block, feedbackId: Identifier<Feedback>)
     
-    case invalidRoute(route: Route)
+    case invalidRoute(route: Route, error: String)
 }
 
 extension DiagnosticError: LocalizedError {
@@ -89,8 +89,8 @@ extension DiagnosticError: LocalizedError {
             return "Train \(train.name) does not have a length defined"
         case .trainMissingMagnetDistance(train: let train):
             return "Train \(train.name) does not have a distance defined for the magnet"
-        case .invalidRoute(route: let route):
-            return "Route \"\(route.name)\" is invalid and cannot be resolved"
+        case .invalidRoute(route: let route, error: let error):
+            return "Route \"\(route.name)\" is invalid and cannot be resolved: \(error)"
         }
     }
 }
@@ -350,14 +350,15 @@ final class LayoutDiagnostic: ObservableObject {
     
     func checkRoutes(_ errors: inout [DiagnosticError]) {
         let rr = RouteResolver(layout: layout, train: Train(id: Identifier<Train>(uuid: UUID().uuidString), name: "", address: 0))
-        for route in layout.routes {
+        // Only check manually created routes
+        for route in layout.routes.filter({ $0.automatic == false }) {
             do {
-                let steps = try rr.resolve(steps: ArraySlice(route.steps))
+                let steps = try rr.resolve(steps: ArraySlice(route.steps), verbose: true)
                 if steps == nil {
-                    errors.append(DiagnosticError.invalidRoute(route: route))
+                    errors.append(DiagnosticError.invalidRoute(route: route, error: "No path found"))
                 }
             } catch {
-                errors.append(DiagnosticError.invalidRoute(route: route))
+                errors.append(DiagnosticError.invalidRoute(route: route, error: error.localizedDescription))
             }
         }
     }

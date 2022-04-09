@@ -33,10 +33,11 @@ final class RouteResolver {
     // already reserved for the same train to be accepted as resolved steps.
     // Returns nil if the route cannot be resolved. This can happen, for example, if a turnout or block is already
     // reserved for another train and no other alternative path is found.
-    func resolve(steps: ArraySlice<Route.Step>) throws -> [Route.Step]? {
+    func resolve(steps: ArraySlice<Route.Step>,
+                 verbose: Bool = SettingsKeys.bool(forKey: SettingsKeys.logRoutingResolutionSteps)) throws -> [Route.Step]? {
         let unresolvedPath = try GraphPath(steps: Array(steps), layout: layout)
         
-        let baseSettings = GraphPathFinder.Settings(verbose: SettingsKeys.bool(forKey: SettingsKeys.logRoutingResolutionSteps),
+        let baseSettings = GraphPathFinder.Settings(verbose: verbose,
                                                     random: false,
                                                     overflow: layout.pathFinderOverflowLimit)
         // Note: avoid all reserved block when resolving to ensure maximum constraints.
