@@ -81,7 +81,7 @@ final class LayoutPathFinder: GraphPathFinding {
         }
 
         func shouldInclude(node: GraphNode, currentPath: GraphPath, to: GraphPathElement?) -> Bool {
-            if let block = layout.block(for: Identifier<Block>(uuid: node.identifier)) {
+            if let block = layout.block(node) {
                 guard block.enabled else {
                     return false
                 }
@@ -113,7 +113,7 @@ final class LayoutPathFinder: GraphPathFinding {
                 return true
             }
             
-            if let turnout = layout.turnout(for: Identifier<Turnout>(uuid: node.identifier)) {
+            if let turnout = layout.turnout(node) {
                 guard turnout.enabled else {
                     return false
                 }
@@ -147,7 +147,7 @@ final class LayoutPathFinder: GraphPathFinding {
         }
         
         func reachedDestination(node: GraphNode, to: GraphPathElement?) -> Bool {
-            if let block = layout.block(for: Identifier<Block>(uuid: node.identifier)), to == nil {
+            if let block = layout.block(node), to == nil {
                 // If no destination element is specified, we stop at the first station block
                 return block.category == .station
             } else {

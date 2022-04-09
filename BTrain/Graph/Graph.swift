@@ -16,7 +16,12 @@ import Foundation
 typealias SocketId = Int
 
 // The identifier for an element in the graph (node or edge)
-typealias GraphElementId = String
+protocol GraphElementIdentifier {
+    
+    // Returns the unique identifier
+    var uuid: String { get }
+    
+}
 
 // Defines a generic graph consisting of nodes and edges.
 // See https://en.wikipedia.org/wiki/Graph_(discrete_mathematics)
@@ -25,13 +30,15 @@ protocol Graph {
     func edge(from: GraphNode, socketId: SocketId) -> GraphEdge?
     
     // Returns the node corresponding to the identifier by `for`
-    func node(for: GraphElementId) -> GraphNode?
+    func node(for: GraphElementIdentifier) -> GraphNode?
 }
 
 // A node in a graph. Conceptually, a node represents either a turnout or a block.
 protocol GraphNode {
     // The unique identifier of the node
-    var identifier: GraphElementId { get }
+    var identifier: GraphElementIdentifier { get }
+    
+    var name: String { get }
     
     // Returns all the sockets available for that node
     var sockets: [SocketId] { get }
@@ -45,11 +52,11 @@ protocol GraphNode {
 // Link between two nodes
 protocol GraphEdge {
     // The unique identifier of the edge
-    var identifier: GraphElementId { get }
+    var identifier: GraphElementIdentifier { get }
     
-    var fromNode: GraphElementId { get }
+    var fromNode: GraphElementIdentifier { get }
     var fromNodeSocket: SocketId? { get }
     
-    var toNode: GraphElementId { get }
+    var toNode: GraphElementIdentifier { get }
     var toNodeSocket: SocketId? { get }
 }

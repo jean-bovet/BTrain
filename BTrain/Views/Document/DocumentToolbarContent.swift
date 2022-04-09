@@ -161,19 +161,22 @@ struct ToolDebugCommandsView: View {
         if document.showDebugModeControls {
             Menu("􀤊") {
                 Button("Repair Layout") {
-                    document.triggerRepairLayout.toggle()
+                    DeveloperTools.repair(layout: document.layout)
                 }
                 
                 Divider()
 
                 Button("Generate Swift Code") {
-                    let code = Layout2Swift(layout: document.layout).swift()
-                    NSPasteboard.general.declareTypes([.string], owner: nil)
-                    NSPasteboard.general.setString(code, forType: .string)
+                    DeveloperTools.generateSwiftCode(layout: document.layout)
                 }
+                
+                Button("Export Layout for Testing") {
+                    DeveloperTools.exportForTesting(layout: document.layout)
+                }
+
             }
         }
-    }
+    }    
 }
 
 struct SwitchboardEditButton: View {

@@ -137,6 +137,10 @@ extension Layout {
         return block(for: Identifier<Block>(uuid: uuid))!
     }
     
+    func block(named name: String) -> Block {
+        return blocks.first { $0.name == name }!
+    }
+
     func turnout(_ uuid: String) -> Turnout {
         return turnout(for: Identifier<Turnout>(uuid: uuid))!
     }

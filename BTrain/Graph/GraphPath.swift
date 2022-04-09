@@ -21,7 +21,7 @@ struct GraphPath: Equatable {
     }
         
     var toStrings: [String] {
-        elements.map { $0.description }
+        elements.map { $0.toString }
     }
 
     init(_ elements: [GraphPathElement]) {
@@ -69,18 +69,18 @@ extension GraphPath {
 // Each element is a `node` with specified exit and enter sockets.
 // A starting element only has an exit socket while the last
 // element in the path only has an enter socket.
-struct GraphPathElement: Equatable, Hashable, CustomStringConvertible {
+struct GraphPathElement: Equatable, Hashable {
         
     let node: GraphNode
     let entrySocket: SocketId?
     let exitSocket: SocketId?
 
-    var description: String {
+    var toString: String {
         var text = ""
         if let enterSocket = entrySocket {
             text += "\(enterSocket):"
         }
-        text += node.identifier
+        text += node.name
         if let exitSocket = exitSocket {
             text += ":\(exitSocket)"
         }
@@ -88,7 +88,7 @@ struct GraphPathElement: Equatable, Hashable, CustomStringConvertible {
     }
     
     func hash(into hasher: inout Hasher) {
-        hasher.combine(node.identifier)
+        hasher.combine(node.identifier.uuid)
         hasher.combine(entrySocket)
         hasher.combine(exitSocket)
     }
@@ -99,7 +99,7 @@ struct GraphPathElement: Equatable, Hashable, CustomStringConvertible {
     // - If this element's entrySocket is not nil, it must correspond to the other element's entrySocket. Otherwise, the entrySocket is ignored.
     // - If this element's exitSocket is not nil, it must correspond to the other element's exitSocket. Otherwise, the exitSocket is ignored.
     func isSame(as other: GraphPathElement) -> Bool {
-        guard node.identifier == other.node.identifier else {
+        guard node.identifier.uuid == other.node.identifier.uuid else {
             return false
         }
         
@@ -127,7 +127,7 @@ struct GraphPathElement: Equatable, Hashable, CustomStringConvertible {
     }
     
     static func == (lhs: GraphPathElement, rhs: GraphPathElement) -> Bool {
-        return lhs.node.identifier == rhs.node.identifier && lhs.entrySocket == rhs.entrySocket && lhs.exitSocket == rhs.exitSocket
+        return lhs.node.identifier.uuid == rhs.node.identifier.uuid && lhs.entrySocket == rhs.entrySocket && lhs.exitSocket == rhs.exitSocket
     }
     
 }

@@ -82,7 +82,7 @@ final class RouteResolver {
                 return delegatedConstraints.shouldInclude(node: node, currentPath: currentPath, to: to)
             }
             
-            if node is Block && node.identifier != to.node.identifier {
+            if node is Block && node.identifier.uuid != to.node.identifier.uuid {
                 // Backtrack if the first block is not the destination node.
                 // TODO: this is currently a limitation of the resolver in which it is expected that a route
                 // defines all the blocks in the route. The resolver just resolves the turnouts between two

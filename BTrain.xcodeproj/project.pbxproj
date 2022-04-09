@@ -19,6 +19,7 @@
 		A71715892758448D00200F92 /* CGRect+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A71715882758448D00200F92 /* CGRect+Extension.swift */; };
 		A717158B275844AE00200F92 /* SwitchBoardTrainDragging.swift in Sources */ = {isa = PBXBuildFile; fileRef = A717158A275844AE00200F92 /* SwitchBoardTrainDragging.swift */; };
 		A717158D275845F000200F92 /* ShapeContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = A717158C275845F000200F92 /* ShapeContext.swift */; };
+		A719FEB32802305900D5FBE1 /* GraphElementTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A719FEB22802305900D5FBE1 /* GraphElementTests.swift */; };
 		A71D97FA27A499A600EBEA06 /* LayoutOnConnectTasks.swift in Sources */ = {isa = PBXBuildFile; fileRef = A71D97F927A499A600EBEA06 /* LayoutOnConnectTasks.swift */; };
 		A71D97FC27A6210300EBEA06 /* Block+Occupation.swift in Sources */ = {isa = PBXBuildFile; fileRef = A71D97FB27A6210300EBEA06 /* Block+Occupation.swift */; };
 		A7214916279A56FA0095E5EE /* LayoutController+Debug.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7214915279A56FA0095E5EE /* LayoutController+Debug.swift */; };
@@ -112,6 +113,9 @@
 		A7710E71277A344300C08150 /* NewBlockSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7710E70277A344300C08150 /* NewBlockSheet.swift */; };
 		A7710E73277A3BC200C08150 /* NewTurnoutSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7710E72277A3BC200C08150 /* NewTurnoutSheet.swift */; };
 		A7710E75277A7AAC00C08150 /* Layout2Swift.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7710E74277A7AAC00C08150 /* Layout2Swift.swift */; };
+		A774B8E52801FA6F00E8043C /* PointToLoopLayoutTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A774B8E42801FA6F00E8043C /* PointToLoopLayoutTests.swift */; };
+		A774B8E72801FAE100E8043C /* point_to_loop.json in Resources */ = {isa = PBXBuildFile; fileRef = A774B8E62801FAE100E8043C /* point_to_loop.json */; };
+		A774B8E928021E6B00E8043C /* DeveloperTools.swift in Sources */ = {isa = PBXBuildFile; fileRef = A774B8E828021E6B00E8043C /* DeveloperTools.swift */; };
 		A778407E27F96BFC00F87078 /* GeometryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A778407D27F96BFC00F87078 /* GeometryTests.swift */; };
 		A77A96DC27274A17009E7ECB /* MarklinCANMessagePrinter.swift in Sources */ = {isa = PBXBuildFile; fileRef = A77A96DB27274A17009E7ECB /* MarklinCANMessagePrinter.swift */; };
 		A77A96DE2727767C009E7ECB /* ConnectSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A77A96DD2727767C009E7ECB /* ConnectSheet.swift */; };
@@ -285,6 +289,7 @@
 		A71715882758448D00200F92 /* CGRect+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CGRect+Extension.swift"; sourceTree = "<group>"; };
 		A717158A275844AE00200F92 /* SwitchBoardTrainDragging.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwitchBoardTrainDragging.swift; sourceTree = "<group>"; };
 		A717158C275845F000200F92 /* ShapeContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShapeContext.swift; sourceTree = "<group>"; };
+		A719FEB22802305900D5FBE1 /* GraphElementTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GraphElementTests.swift; sourceTree = "<group>"; };
 		A71D97F727A3C5FE00EBEA06 /* All.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = All.xctestplan; sourceTree = "<group>"; };
 		A71D97F927A499A600EBEA06 /* LayoutOnConnectTasks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutOnConnectTasks.swift; sourceTree = "<group>"; };
 		A71D97FB27A6210300EBEA06 /* Block+Occupation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Block+Occupation.swift"; sourceTree = "<group>"; };
@@ -380,6 +385,9 @@
 		A7710E70277A344300C08150 /* NewBlockSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewBlockSheet.swift; sourceTree = "<group>"; };
 		A7710E72277A3BC200C08150 /* NewTurnoutSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewTurnoutSheet.swift; sourceTree = "<group>"; };
 		A7710E74277A7AAC00C08150 /* Layout2Swift.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Layout2Swift.swift; sourceTree = "<group>"; };
+		A774B8E42801FA6F00E8043C /* PointToLoopLayoutTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PointToLoopLayoutTests.swift; sourceTree = "<group>"; };
+		A774B8E62801FAE100E8043C /* point_to_loop.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = point_to_loop.json; sourceTree = "<group>"; };
+		A774B8E828021E6B00E8043C /* DeveloperTools.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeveloperTools.swift; sourceTree = "<group>"; };
 		A778407D27F96BFC00F87078 /* GeometryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeometryTests.swift; sourceTree = "<group>"; };
 		A77A96DB27274A17009E7ECB /* MarklinCANMessagePrinter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarklinCANMessagePrinter.swift; sourceTree = "<group>"; };
 		A77A96DD2727767C009E7ECB /* ConnectSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectSheet.swift; sourceTree = "<group>"; };
@@ -573,6 +581,15 @@
 				A7907956277D136500771A60 /* CGAffineTransform+Extension.swift */,
 			);
 			path = Geometry;
+			sourceTree = "<group>";
+		};
+		A719FEB12802303F00D5FBE1 /* PointToLoop */ = {
+			isa = PBXGroup;
+			children = (
+				A774B8E62801FAE100E8043C /* point_to_loop.json */,
+				A774B8E42801FA6F00E8043C /* PointToLoopLayoutTests.swift */,
+			);
+			path = PointToLoop;
 			sourceTree = "<group>";
 		};
 		A71D97F827A45B3B00EBEA06 /* Marklin */ = {
@@ -775,6 +792,7 @@
 		A73E07F4276974F1005F9D64 /* Layouts */ = {
 			isa = PBXGroup;
 			children = (
+				A719FEB12802303F00D5FBE1 /* PointToLoop */,
 				A796FA2D2775642B00FA41BA /* LayoutAsserter.swift */,
 				A7582965279380C000AA0649 /* LayoutTests.swift */,
 				A73E080C276ABB5C005F9D64 /* LayoutErrorTests.swift */,
@@ -799,6 +817,7 @@
 				A790799C277ED8B000771A60 /* PluggableShapeTests.swift */,
 				A73E0808276ABA09005F9D64 /* SwitchboardTests.swift */,
 				A73E0826276BAED3005F9D64 /* SwitchboardRenderingTests.swift */,
+				A719FEB22802305900D5FBE1 /* GraphElementTests.swift */,
 			);
 			path = Elements;
 			sourceTree = "<group>";
@@ -1157,6 +1176,7 @@
 		A7BD6257276D39CA0039B6C2 /* Utilities */ = {
 			isa = PBXGroup;
 			children = (
+				A774B8E828021E6B00E8043C /* DeveloperTools.swift */,
 				A7710E74277A7AAC00C08150 /* Layout2Swift.swift */,
 				A785C074278A5CE1002FD538 /* TrainIconManager.swift */,
 				A785C06E2789F323002FD538 /* UndoProvider.swift */,
@@ -1350,6 +1370,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				A796FA2B2772BB5400FA41BA /* Layout.json in Resources */,
+				A774B8E72801FAE100E8043C /* point_to_loop.json in Resources */,
 				A74C0E80275C9F490043FEE5 /* Locomotives.cs2 in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1457,6 +1478,7 @@
 				A7218071275D398000831998 /* CS2DocumentParser.swift in Sources */,
 				A71715892758448D00200F92 /* CGRect+Extension.swift in Sources */,
 				A7BE36AA2751BDC300286709 /* ConnectorPlug.swift in Sources */,
+				A774B8E928021E6B00E8043C /* DeveloperTools.swift in Sources */,
 				A73E080B276ABA91005F9D64 /* LayoutDCreator.swift in Sources */,
 				A785C07E278A64C1002FD538 /* CommandInterface.swift in Sources */,
 				A7E1F74827D71C03009FB75F /* TrainSpeedAcceleration.swift in Sources */,
@@ -1575,6 +1597,7 @@
 				A7CA5ECC2797D1EB00171398 /* Layout+Extension.swift in Sources */,
 				A778407E27F96BFC00F87078 /* GeometryTests.swift in Sources */,
 				A7C6343827E6AF6700C37B46 /* TrainIconManagerTests.swift in Sources */,
+				A774B8E52801FA6F00E8043C /* PointToLoopLayoutTests.swift in Sources */,
 				A73E07F027697127005F9D64 /* FeedbackViewTests.swift in Sources */,
 				A73E080F276ACC79005F9D64 /* ScheduledMessageQueueTests.swift in Sources */,
 				A763F18F27BE01C300B3499A /* XCTestCase+Extension.swift in Sources */,
@@ -1595,6 +1618,7 @@
 				A7BD6259276D50380039B6C2 /* LayoutDocumentTests.swift in Sources */,
 				A73E07FD276A8BAC005F9D64 /* TrainControlsViewTests.swift in Sources */,
 				A7E78C4A27A22B23004D1821 /* ManualOperationTests.swift in Sources */,
+				A719FEB32802305900D5FBE1 /* GraphElementTests.swift in Sources */,
 				A792DEFD27850834004B0439 /* SimulatorViewTests.swift in Sources */,
 				A798BB4C27ACD8E8000BB4D1 /* RouteResolverTests.swift in Sources */,
 				A721807F275F099100831998 /* TurnoutTests.swift in Sources */,

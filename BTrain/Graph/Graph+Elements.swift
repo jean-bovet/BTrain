@@ -12,9 +12,19 @@
 
 import Foundation
 
+struct BlockGraphElementIdentifier: GraphElementIdentifier {
+    let uuid: String
+    let blockId: Identifier<Block>
+    
+    init(_ blockId: Identifier<Block>) {
+        self.uuid = "b" + blockId.uuid
+        self.blockId = blockId
+    }
+}
+
 extension Block: GraphNode {
-    var identifier: GraphElementId {
-        id.uuid
+    var identifier: GraphElementIdentifier {
+        BlockGraphElementIdentifier(id)
     }
     
     var sockets: [SocketId] {
@@ -31,9 +41,18 @@ extension Block: GraphNode {
         
 }
 
+struct TurnoutGraphElementIdentifier: GraphElementIdentifier {
+    let uuid: String
+    let turnoutId: Identifier<Turnout>
+    init(_ turnoutId: Identifier<Turnout>) {
+        self.uuid = "t" + turnoutId.uuid
+        self.turnoutId = turnoutId
+    }
+}
+
 extension Turnout: GraphNode {
-    var identifier: GraphElementId {
-        id.uuid
+    var identifier: GraphElementIdentifier {
+        TurnoutGraphElementIdentifier(id)
     }
     
     var sockets: [SocketId] {
@@ -46,16 +65,25 @@ extension Turnout: GraphNode {
     
 }
 
+struct TransitionGraphElementIdentifier: GraphElementIdentifier {
+    let uuid: String
+    let transitionId: Identifier<Transition>
+    init(_ transitionId: Identifier<Transition>) {
+        self.uuid = "tr" + transitionId.uuid
+        self.transitionId = transitionId
+    }
+}
+
 extension ITransition {
-    var identifier: GraphElementId {
-        id.uuid
+    var identifier: GraphElementIdentifier {
+        TransitionGraphElementIdentifier(id)
     }
     
-    var fromNode: GraphElementId {
+    var fromNode: GraphElementIdentifier {
         if let block = a.block {
-            return block.uuid
+            return BlockGraphElementIdentifier(block)
         } else if let turnout = a.turnout {
-            return turnout.uuid
+            return TurnoutGraphElementIdentifier(turnout)
         } else {
             fatalError("Socket must specify a block or a turnout")
         }
@@ -65,11 +93,11 @@ extension ITransition {
         return a.socketId
     }
     
-    var toNode: GraphElementId {
+    var toNode: GraphElementIdentifier {
         if let block = b.block {
-            return block.uuid
+            return BlockGraphElementIdentifier(block)
         } else if let turnout = b.turnout {
-            return turnout.uuid
+            return TurnoutGraphElementIdentifier(turnout)
         } else {
             fatalError("Socket must specify a block or a turnout")
         }
@@ -81,12 +109,38 @@ extension ITransition {
     
 }
 
+extension Layout {
+    
+    func block(_ node: GraphNode) -> Block? {
+        return block(node.identifier)
+    }
+
+    func block(_ identifier: GraphElementIdentifier) -> Block? {
+        guard let blockIdentifier = identifier as? BlockGraphElementIdentifier else {
+            return nil
+        }
+    
+        return block(for: blockIdentifier.blockId)
+    }
+
+    func turnout(_ node: GraphNode) -> Turnout? {
+        return turnout(node.identifier)
+    }
+    
+    func turnout(_ identifier: GraphElementIdentifier) -> Turnout? {
+        guard let turnoutIdentifier = identifier as? TurnoutGraphElementIdentifier else {
+            return nil
+        }
+        return turnout(for: turnoutIdentifier.turnoutId)
+    }
+}
+
 extension Layout: Graph {
     func edge(from: GraphNode, socketId: SocketId) -> GraphEdge? {
         let socket: Socket
-        if let block = block(for: Identifier<Block>(uuid: from.identifier)) {
+        if let block = block(from) {
             socket = Socket.block(block.id, socketId: socketId)
-        } else if let turnout = turnout(for: Identifier<Turnout>(uuid: from.identifier)) {
+        } else if let turnout = turnout(from) {
             socket = Socket.turnout(turnout.id, socketId: socketId)
         } else {
             return nil
@@ -95,10 +149,10 @@ extension Layout: Graph {
         return try? transition(from: socket)
     }
     
-    func node(for elementId: GraphElementId) -> GraphNode? {
-        if let block = block(for: Identifier<Block>(uuid: elementId)) {
+    func node(for elementId: GraphElementIdentifier) -> GraphNode? {
+        if let block = block(elementId) {
             return block
-        } else if let turnout = turnout(for: Identifier<Turnout>(uuid: elementId)) {
+        } else if let turnout = turnout(elementId) {
             return turnout
         } else {
             return nil

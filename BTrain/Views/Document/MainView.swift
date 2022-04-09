@@ -52,12 +52,6 @@ struct MainView: View {
                 document.triggerLayoutDiagnostic = false
             }
         })
-        .onChange(of: document.triggerRepairLayout, perform: { v in
-            if document.triggerRepairLayout {
-                LayoutDiagnostic(layout: document.layout).repair()
-                document.triggerRepairLayout = false
-            }
-        })
         .onChange(of: document.discoverLocomotiveConfirmation, perform: { v in
             if document.discoverLocomotiveConfirmation {
                 if document.layout.trains.isEmpty {
