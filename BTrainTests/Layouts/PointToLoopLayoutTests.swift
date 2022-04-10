@@ -16,15 +16,7 @@ import XCTest
 class PointToLoopLayoutTests: XCTestCase {
 
     func testAutomaticRoute() throws {
-        guard let url = Bundle(for: type(of: self )).url(forResource: "point_to_loop", withExtension: "json") else {
-            XCTFail("Unable to find the Layout.json file")
-            return
-        }
-
-        let fw = try FileWrapper(url: url, options: [])
-
-        let doc = try LayoutDocument(contentType: .json, file: fw)
-        let layout = doc.layout
+        let layout = LayoutFactory.layoutFromBundle(named: "Point to Loop")
         
         let train = layout.trains[0]
         let blockA = layout.block(named: "A")

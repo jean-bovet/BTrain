@@ -115,7 +115,6 @@
 		A7710E73277A3BC200C08150 /* NewTurnoutSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7710E72277A3BC200C08150 /* NewTurnoutSheet.swift */; };
 		A7710E75277A7AAC00C08150 /* Layout2Swift.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7710E74277A7AAC00C08150 /* Layout2Swift.swift */; };
 		A774B8E52801FA6F00E8043C /* PointToLoopLayoutTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A774B8E42801FA6F00E8043C /* PointToLoopLayoutTests.swift */; };
-		A774B8E72801FAE100E8043C /* point_to_loop.json in Resources */ = {isa = PBXBuildFile; fileRef = A774B8E62801FAE100E8043C /* point_to_loop.json */; };
 		A774B8E928021E6B00E8043C /* DeveloperTools.swift in Sources */ = {isa = PBXBuildFile; fileRef = A774B8E828021E6B00E8043C /* DeveloperTools.swift */; };
 		A778407E27F96BFC00F87078 /* GeometryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A778407D27F96BFC00F87078 /* GeometryTests.swift */; };
 		A77A96DC27274A17009E7ECB /* MarklinCANMessagePrinter.swift in Sources */ = {isa = PBXBuildFile; fileRef = A77A96DB27274A17009E7ECB /* MarklinCANMessagePrinter.swift */; };
@@ -388,7 +387,6 @@
 		A7710E72277A3BC200C08150 /* NewTurnoutSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewTurnoutSheet.swift; sourceTree = "<group>"; };
 		A7710E74277A7AAC00C08150 /* Layout2Swift.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Layout2Swift.swift; sourceTree = "<group>"; };
 		A774B8E42801FA6F00E8043C /* PointToLoopLayoutTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PointToLoopLayoutTests.swift; sourceTree = "<group>"; };
-		A774B8E62801FAE100E8043C /* point_to_loop.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = point_to_loop.json; sourceTree = "<group>"; };
 		A774B8E828021E6B00E8043C /* DeveloperTools.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeveloperTools.swift; sourceTree = "<group>"; };
 		A778407D27F96BFC00F87078 /* GeometryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeometryTests.swift; sourceTree = "<group>"; };
 		A77A96DB27274A17009E7ECB /* MarklinCANMessagePrinter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarklinCANMessagePrinter.swift; sourceTree = "<group>"; };
@@ -583,15 +581,6 @@
 				A7907956277D136500771A60 /* CGAffineTransform+Extension.swift */,
 			);
 			path = Geometry;
-			sourceTree = "<group>";
-		};
-		A719FEB12802303F00D5FBE1 /* PointToLoop */ = {
-			isa = PBXGroup;
-			children = (
-				A774B8E62801FAE100E8043C /* point_to_loop.json */,
-				A774B8E42801FA6F00E8043C /* PointToLoopLayoutTests.swift */,
-			);
-			path = PointToLoop;
 			sourceTree = "<group>";
 		};
 		A71D97F827A45B3B00EBEA06 /* Marklin */ = {
@@ -795,7 +784,7 @@
 		A73E07F4276974F1005F9D64 /* Layouts */ = {
 			isa = PBXGroup;
 			children = (
-				A719FEB12802303F00D5FBE1 /* PointToLoop */,
+				A774B8E42801FA6F00E8043C /* PointToLoopLayoutTests.swift */,
 				A796FA2D2775642B00FA41BA /* LayoutAsserter.swift */,
 				A7582965279380C000AA0649 /* LayoutTests.swift */,
 				A73E080C276ABB5C005F9D64 /* LayoutErrorTests.swift */,
@@ -1374,7 +1363,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				A796FA2B2772BB5400FA41BA /* Layout.json in Resources */,
-				A774B8E72801FAE100E8043C /* point_to_loop.json in Resources */,
 				A74C0E80275C9F490043FEE5 /* Locomotives.cs2 in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -39,17 +39,17 @@ extension Layout {
     }
     
     func remove(blockID: Identifier<Block>) {
+        transitions.removeAll { transition in
+            return transition.a.block == blockID ||
+            transition.b.block == blockID
+        }
+
         blockMap.removeValue(forKey: blockID)
 
         trains.forEach { train in
             if train.blockId == blockID {
                 train.blockId = nil
             }
-        }
-        
-        transitions.removeAll { transition in
-            return transition.a.block == blockID ||
-            transition.b.block == blockID
         }
     }
     
