@@ -18,6 +18,10 @@ Each train's direction, speed, and position is controlled via a dedicated sectio
 
 ![Train](Assets/train.png)
 
+BTrain allows routes to be defined manually or automatically without any effort. The integrated CS 3 simulator simulates the entire layout before connecting to the real CS 3.
+
+![Train](Assets/loop-to-loop.gif)
+
 BTrain allows each locomotive's speed to be measured using 3 feedbacks. This measurement enables the locomotive speed to represent its prototype accurately and ensures all locomotives move at the same speed regardless of their decoder type.
 
 ![Speed Measurements](Assets/speed.png)
