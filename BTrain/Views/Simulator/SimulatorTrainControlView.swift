@@ -65,7 +65,7 @@ private extension SimulatorTrain {
 
 struct SimulatorTrainControlView_Previews: PreviewProvider {
 
-    static let layout = LayoutACreator().newLayout()
+    static let layout = LayoutLoop1().newLayout()
     
     static let simulatorTrain = SimulatorTrain(train: layout.trains[0])
     

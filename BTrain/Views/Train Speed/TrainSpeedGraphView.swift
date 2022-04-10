@@ -103,7 +103,7 @@ struct TrainSpeedGraphView: View {
 }
 
 struct TrainSpeedGraphView_Previews: PreviewProvider {
-    static let doc = LayoutDocument(layout: LayoutFCreator().newLayout())
+    static let doc = LayoutDocument(layout: LayoutComplex().newLayout())
 
     static var previews: some View {
         TrainSpeedGraphView(trainSpeed: doc.layout.trains[0].speed)

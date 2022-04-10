@@ -98,7 +98,7 @@ class MarklinInterfaceTests: XCTestCase {
 
         XCTAssertEqual(mi.feedbackChangeCallbacks.count, 2)
 
-        let layout = LayoutFCreator().newLayout()
+        let layout = LayoutComplex().newLayout()
         let f = layout.feedbacks[0]
         simulator.triggerFeedback(feedback: f)
         

@@ -71,7 +71,7 @@ struct SwitchboardEditControlsView: View {
 struct SwitchboardEditControlsView_Previews: PreviewProvider {
     
     static let doc: LayoutDocument = {
-        let doc = LayoutDocument(layout: LayoutCCreator().newLayout())
+        let doc = LayoutDocument(layout: LayoutLoop2().newLayout())
         doc.switchboard.state.editable = true
         return doc
     }()

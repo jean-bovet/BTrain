@@ -62,7 +62,7 @@ struct BlockDetailsView: View {
 
 struct BlockEditView_Previews: PreviewProvider {
     
-    static let layout = LayoutCCreator().newLayout()
+    static let layout = LayoutLoop2().newLayout()
     static var previews: some View {
         BlockDetailsView(layout: layout, block: layout.block(at: 0))
     }

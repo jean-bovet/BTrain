@@ -88,6 +88,6 @@ struct TurnoutListView: View {
 struct TurnoutEditListView_Previews: PreviewProvider {
 
     static var previews: some View {
-        TurnoutListView(layout: LayoutCCreator().newLayout())
+        TurnoutListView(layout: LayoutLoop2().newLayout())
     }
 }

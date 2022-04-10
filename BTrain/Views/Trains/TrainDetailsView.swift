@@ -275,7 +275,7 @@ struct TrainDetailsView: View {
 
 struct TrainEditView_Previews: PreviewProvider {
     
-    static let doc = LayoutDocument(layout: LayoutACreator().newLayout())
+    static let doc = LayoutDocument(layout: LayoutLoop1().newLayout())
     
     static var previews: some View {
         TrainDetailsView(document: doc, train: doc.layout.trains[0],

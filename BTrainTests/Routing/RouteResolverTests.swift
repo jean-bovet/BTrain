@@ -16,7 +16,7 @@ import XCTest
 class RouteResolverTests: XCTestCase {
 
     func testResolveSimpleRoute() throws {
-        let layout = LayoutHCreator().newLayout()
+        let layout = LayoutPointToPoint().newLayout()
         let route = layout.routes[0]
         let train = layout.trains[0]
         
@@ -28,7 +28,7 @@ class RouteResolverTests: XCTestCase {
     }
     
     func testResolveMultipleTurnoutsChoice() throws {
-        let layout = LayoutFCreator().newLayout()
+        let layout = LayoutComplex().newLayout()
         let train = layout.trains[0]
         let route = layout.newRoute(id: "OL3-NE3", [("OL3", .next), ("NE3", .next)])
         
@@ -48,7 +48,7 @@ class RouteResolverTests: XCTestCase {
     }
 
     func testResolveRoute() throws {
-        let layout = LayoutCCreator().newLayout()
+        let layout = LayoutLoop2().newLayout()
         let train = layout.trains[0]
         
         let b3 = layout.block("b3")

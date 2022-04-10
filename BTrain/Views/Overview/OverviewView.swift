@@ -39,7 +39,7 @@ struct OverviewView: View {
 
 struct OverviewView_Previews: PreviewProvider {
     
-    static let doc = LayoutDocument(layout: LayoutCCreator().newLayout())
+    static let doc = LayoutDocument(layout: LayoutLoop2().newLayout())
 
     static var previews: some View {
         OverviewView(document: doc)

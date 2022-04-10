@@ -61,7 +61,7 @@ class TrainViewTests: RootViewTests {
     }
 
     func testDetailsView() throws {
-        let layout = LayoutACreator().newLayout()
+        let layout = LayoutLoop1().newLayout()
         let t1 = layout.trains[0]
         
         let sut = TrainDetailsView(document: doc, train: t1, trainIconManager: TrainIconManager())
@@ -81,7 +81,7 @@ class TrainViewTests: RootViewTests {
     }
     
     func testIconView() throws {
-        let layout = LayoutACreator().newLayout()
+        let layout = LayoutLoop1().newLayout()
         let t1 = layout.addTrain(Train(uuid: "16390"))
         
         let tim = TrainIconManager()

@@ -84,7 +84,7 @@ struct SwitchBoardView_Previews: PreviewProvider {
     static let doc = LayoutDocument(layout: generateLayout())
 
     static func generateLayout() -> Layout {
-        let lt = LayoutCCreator().newLayout()
+        let lt = LayoutLoop2().newLayout()
         
         try! lt.setTrainPosition(lt.trains[0], 1)
         try! lt.setTrainPosition(lt.trains[1], 2)

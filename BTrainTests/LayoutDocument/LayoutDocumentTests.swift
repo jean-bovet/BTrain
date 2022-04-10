@@ -50,7 +50,7 @@ class LayoutDocumentTests: XCTestCase {
     }
     
     func testUXCommands() throws {
-        let layout = LayoutACreator().newLayout()
+        let layout = LayoutLoop1().newLayout()
         let doc = LayoutDocument(layout: layout)
 
         connectToSimulator(doc: doc)
@@ -70,7 +70,7 @@ class LayoutDocumentTests: XCTestCase {
     static weak var memoryLeakLayout: Layout?
     
     func testMemoryLeak() {
-        var doc: LayoutDocument? = LayoutDocument(layout: LayoutACreator().newLayout())
+        var doc: LayoutDocument? = LayoutDocument(layout: LayoutLoop1().newLayout())
         LayoutDocumentTests.memoryLeakLayout = doc!.layout
         XCTAssertNotNil(LayoutDocumentTests.memoryLeakLayout)
         doc = nil
@@ -78,7 +78,7 @@ class LayoutDocumentTests: XCTestCase {
     }
     
     func testOnConnectTasks() throws {
-        let doc = LayoutDocument(layout: LayoutACreator().newLayout())
+        let doc = LayoutDocument(layout: LayoutLoop1().newLayout())
         let t = LayoutOnConnectTasks(layout: doc.layout, layoutController: doc.layoutController, interface: doc.interface)
         
         connectToSimulator(doc: doc)

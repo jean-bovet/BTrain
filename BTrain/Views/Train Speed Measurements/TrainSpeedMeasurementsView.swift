@@ -196,7 +196,7 @@ struct TrainSpeedMeasureDistanceView: View {
 
 struct TrainSpeedMeasureWizardView_Previews: PreviewProvider {
     
-    static let doc = LayoutDocument(layout: LayoutFCreator().newLayout())
+    static let doc = LayoutDocument(layout: LayoutComplex().newLayout())
 
     static var previews: some View {
         TrainSpeedMeasurementsView(document: doc, layout: doc.layout)

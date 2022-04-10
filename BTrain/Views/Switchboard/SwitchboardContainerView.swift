@@ -56,7 +56,7 @@ struct SwitchboardContainerView: View {
 
 struct OverviewSwitchboardView_Previews: PreviewProvider {
     
-    static let doc = LayoutDocument(layout: LayoutCCreator().newLayout())
+    static let doc = LayoutDocument(layout: LayoutLoop2().newLayout())
 
     static var previews: some View {
         SwitchboardContainerView(layout: doc.layout, layoutController: doc.layoutController, document: doc, switchboard: doc.switchboard, state: doc.switchboard.state)

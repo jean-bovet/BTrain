@@ -98,7 +98,7 @@ struct TrainListView: View {
 
 struct TrainListView_Previews: PreviewProvider {
     
-    static let doc = LayoutDocument(layout: LayoutCCreator().newLayout())
+    static let doc = LayoutDocument(layout: LayoutLoop2().newLayout())
     
     static var previews: some View {
         TrainListView(document: doc, layout: doc.layout)

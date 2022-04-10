@@ -16,7 +16,7 @@ import XCTest
 class PathFinderTests: BTTestCase {
             
     func testSimplePath() throws {
-        let layout = LayoutECreator().newLayout()
+        let layout = LayoutComplexLoop().newLayout()
         let s1 = layout.block("s1")
         
         let path = layout.path(for: layout.trains[0], from: (s1, .next), to: nil, reservedBlockBehavior: .avoidFirstReservedBlock)!
@@ -25,7 +25,7 @@ class PathFinderTests: BTTestCase {
     }
     
     func testPathWithReservedTurnout() throws {
-        let layout = LayoutECreator().newLayout()
+        let layout = LayoutComplexLoop().newLayout()
         let s1 = layout.block("s1")
         let t6 = layout.turnout("t6")
         t6.reserved = .init(train: Identifier<Train>(uuid: "foo"), sockets: nil)
@@ -35,7 +35,7 @@ class PathFinderTests: BTTestCase {
     }
     
     func testPathLookAhead() throws {
-        let layout = LayoutECreator().newLayout()
+        let layout = LayoutComplexLoop().newLayout()
         let s1 = layout.block("s1")
         let b2 = layout.block("b2")
         b2.reserved = Reservation("other", .next)
@@ -53,7 +53,7 @@ class PathFinderTests: BTTestCase {
     }
 
     func testPathWithReservedBlock() throws {
-        let layout = LayoutICreator().newLayout()
+        let layout = LayoutLoopWithStation().newLayout()
         let s1 = layout.block(named: "s1")
         let b1 = layout.block(named: "b1")
         b1.reserved = Reservation("other", .next)
@@ -69,7 +69,7 @@ class PathFinderTests: BTTestCase {
     }
 
     func testPathBlockDisabled() throws {
-        let layout = LayoutICreator().newLayout()
+        let layout = LayoutLoopWithStation().newLayout()
         let s1 = layout.block(named: "s1")
 
         var path = layout.path(for: layout.trains[0], from: (s1, .next), to: nil, reservedBlockBehavior: .avoidReserved)!
@@ -83,7 +83,7 @@ class PathFinderTests: BTTestCase {
     }
 
     func testPathTurnoutDisabled() throws {
-        let layout = LayoutICreator().newLayout()
+        let layout = LayoutLoopWithStation().newLayout()
         let s1 = layout.block(named: "s1")
 
         var path = layout.path(for: layout.trains[0], from: (s1, .next), to: nil, reservedBlockBehavior: .avoidReserved)!
@@ -97,7 +97,7 @@ class PathFinderTests: BTTestCase {
     }
 
     func testPathBetweenStations() throws {
-        let layout = LayoutFCreator().newLayout().removeTrains()
+        let layout = LayoutComplex().newLayout().removeTrains()
         
         layout.reserve("NE1", with: "1", direction: .next)
         
@@ -125,7 +125,7 @@ class PathFinderTests: BTTestCase {
     }
 
     func testPathBetweenStations2() throws {
-        let layout = LayoutECreator().newLayout()
+        let layout = LayoutComplexLoop().newLayout()
         
         layout.reserve("s1", with: "1", direction: .next)
         

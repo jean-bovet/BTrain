@@ -28,16 +28,16 @@ import Foundation
 //     │                       ┌─────────┐                          │
 //     └───────────────────────│ Block 4 │◀─────────   t345   ◀─────┘
 //                             └─────────┘
-final class LayoutCCreator: LayoutCreating {
+final class LayoutLoop2: LayoutCreating {
     
     static let id = Identifier<Layout>(uuid: "layout-c")
 
     var name: String {
-        return "Loop and Diagonal"
+        return "Loop 2"
     }
     
     func newLayout() -> Layout {
-        LayoutFactory.layoutFromBundle(named: "Layout C")
+        LayoutFactory.layoutFromBundle(named: "Loop 2")
     }
     
 }

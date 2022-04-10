@@ -48,7 +48,7 @@ struct TrainSpeedView: View {
 
 struct TrainSpeedView_Previews: PreviewProvider {
         
-    static let doc = LayoutDocument(layout: LayoutFCreator().newLayout())
+    static let doc = LayoutDocument(layout: LayoutComplex().newLayout())
     
     static var previews: some View {
         TrainSpeedView(document: doc, train: Train(), trainSpeed: TrainSpeed(decoderType: .MFX))

@@ -37,12 +37,12 @@ import Foundation
 //     │           / t1          ┌─────────┐       t6   \                  │
 //     └───────── –––– ◀─────────│   S2    │◀──────––––––––––◀─────────────┘
 //                               └─────────┘
-final class LayoutECreator: LayoutCreating {
+final class LayoutComplexLoop: LayoutCreating {
     
     static let id = Identifier<Layout>(uuid: "layout-e")
 
     var name: String {
-        return "Loop with Alternatives"
+        return "Complex Loop"
     }
     
     func newLayoutWithLengths(_ l: Layout) -> Layout {
@@ -63,7 +63,7 @@ final class LayoutECreator: LayoutCreating {
     }
     
     func newLayout() -> Layout {
-        LayoutFactory.layoutFromBundle(named: "Layout E")
+        LayoutFactory.layoutFromBundle(named: "Complex Loop")
     }
     
 }

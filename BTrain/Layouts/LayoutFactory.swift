@@ -32,13 +32,13 @@ final class LayoutFactory {
 
     static let GlobalLayouts: [LayoutCreating] = [
         LayoutBlankCreator(),
-        LayoutHCreator(),
-        LayoutBCreator(),
-        LayoutACreator(),
-        LayoutCCreator(),
-        LayoutECreator(),
-        LayoutICreator(),
-        LayoutFCreator()
+        LayoutPointToPoint(),
+        LayoutFigure8(),
+        LayoutLoop1(),
+        LayoutLoop2(),
+        LayoutComplexLoop(),
+        LayoutLoopWithStation(),
+        LayoutComplex()
     ]
 
     static let GlobalLayoutIDs: [Identifier<Layout>] = {

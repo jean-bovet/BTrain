@@ -17,7 +17,7 @@ import XCTest
 class LayoutTests: XCTestCase {
 
     func testValidation() throws {
-        let layout = LayoutECreator().newLayout()
+        let layout = LayoutComplexLoop().newLayout()
         let diag = LayoutDiagnostic(layout: layout)
         let errors = try diag.check(.skipLengths)
         XCTAssertEqual(errors.count, 0)
@@ -79,7 +79,7 @@ class LayoutTests: XCTestCase {
     }
     
     func testTrainDirection() throws {
-        let layout = LayoutBCreator().newLayout()
+        let layout = LayoutFigure8().newLayout()
         let train1 = layout.trains[0]
         let block1 = layout.blocks[0]
         
@@ -111,7 +111,7 @@ class LayoutTests: XCTestCase {
     }
     
     func testTrainStopCompletely() throws {
-        let doc = LayoutDocument(layout: LayoutBCreator().newLayout())
+        let doc = LayoutDocument(layout: LayoutFigure8().newLayout())
         let layout = doc.layout
         let train1 = layout.trains[0]
         let block1 = layout.blocks[0]

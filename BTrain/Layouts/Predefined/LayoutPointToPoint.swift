@@ -19,15 +19,15 @@ import Foundation
 //                 │    ┌──────┐   ┌──────┐  ┌──────┐      │
 //                 └───▶│  B2  │──▶│ !C2  │─▶│  D2  │──────┘
 //                      └──────┘   └──────┘  └──────┘
-final class LayoutHCreator: LayoutCreating {
+final class LayoutPointToPoint: LayoutCreating {
     
     static let id = Identifier<Layout>(uuid: "layout-h")
 
     var name: String {
-        return "Layout with Straight Lines"
+        return "Point to Point"
     }
     
     func newLayout() -> Layout {
-        LayoutFactory.layoutFromBundle(named: "Layout H")
+        LayoutFactory.layoutFromBundle(named: "Point to Point")
     }
 }

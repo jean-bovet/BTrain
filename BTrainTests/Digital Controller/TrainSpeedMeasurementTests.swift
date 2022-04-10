@@ -47,7 +47,7 @@ class TrainSpeedMeasurementTests: XCTestCase {
     }
 
     func testCancelMeasure() throws {
-        let layout = LayoutFCreator().newLayout()
+        let layout = LayoutComplex().newLayout()
         
         let train = layout.trains[0]
         train.blockId = layout.blocks[0].id
@@ -91,7 +91,7 @@ class TrainSpeedMeasurementTests: XCTestCase {
     }
     
     func testMeasureOneStep() throws {
-        let layout = LayoutFCreator().newLayout()
+        let layout = LayoutComplex().newLayout()
         
         let train = layout.trains[0]
         train.blockId = layout.blocks[0].id
@@ -187,7 +187,7 @@ class TrainSpeedMeasurementTests: XCTestCase {
     }
     
     func testMeasureTwoStep() throws {
-        let layout = LayoutFCreator().newLayout()
+        let layout = LayoutComplex().newLayout()
         
         let train = layout.trains[0]
         train.blockId = layout.blocks[0].id

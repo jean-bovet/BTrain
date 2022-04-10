@@ -21,7 +21,7 @@ extension TurnoutDetailsView: Inspectable { }
 class TurnoutViewTests: RootViewTests {
     
     func testListView() throws {
-        let sut = TurnoutListView(layout: LayoutCCreator().newLayout())
+        let sut = TurnoutListView(layout: LayoutLoop2().newLayout())
         let value = try sut.inspect().hStack().vStack(0).hStack(1).text(0).string()
         XCTAssertEqual(value, "2 turnouts")
     }

@@ -87,7 +87,7 @@ struct TrainSpeedColumnView: View {
 
 struct TrainSpeedColumnView_Previews: PreviewProvider {
     
-    static let doc = LayoutDocument(layout: LayoutFCreator().newLayout())
+    static let doc = LayoutDocument(layout: LayoutComplex().newLayout())
 
     static var previews: some View {
         TrainSpeedColumnView(selection: .constant([]), currentSpeedEntry: .constant(nil), trainSpeed: doc.layout.trains[0].speed)

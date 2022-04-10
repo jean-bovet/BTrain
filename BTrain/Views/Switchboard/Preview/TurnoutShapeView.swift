@@ -45,7 +45,7 @@ struct TurnoutShapeView: View {
 
 struct TurnoutShapeView_Previews: PreviewProvider {
     
-    static let layout = LayoutACreator().newLayout()
+    static let layout = LayoutLoop1().newLayout()
     
     static var previews: some View {
         ForEach(Turnout.Category.allCases, id:\.self) { category in

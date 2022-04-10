@@ -12,7 +12,7 @@
 
 import Foundation
 
-// This layout is a 8-style loop used to test out routes
+// This layout is a Figure 8 used to test out routes
 // that can cross each other via the central turnouts.
 //   ┌─────────┐                              ┌─────────┐
 //┌──│ Block 2 │◀────┐         ┌─────────────▶│ Block 4 │──┐
@@ -25,16 +25,16 @@ import Foundation
 //│  ┌─────────┐               │        │     ┌─────────┐  │
 //└─▶│ Block 3 │───────────────┘        └─────│ Block 1 │◀─┘
 //   └─────────┘                              └─────────┘
-final class LayoutBCreator: LayoutCreating {
+final class LayoutFigure8: LayoutCreating {
     
     static let id = Identifier<Layout>(uuid: "layout-b")
 
     var name: String {
-        return "8-style Loop"
+        return "Figure 8"
     }
     
     func newLayout() -> Layout {
-        LayoutFactory.layoutFromBundle(named: "Layout B")
+        LayoutFactory.layoutFromBundle(named: "Figure 8")
     }
     
 }

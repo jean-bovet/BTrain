@@ -12,7 +12,7 @@
 
 import Foundation
 
-final class LayoutFCreator: LayoutCreating {
+final class LayoutComplex: LayoutCreating {
     
     static let id = Identifier<Layout>(uuid: "layout-f")
 
@@ -21,7 +21,7 @@ final class LayoutFCreator: LayoutCreating {
     }
     
     func newLayout() -> Layout {
-        LayoutFactory.layoutFromBundle(named: "Layout F")
+        LayoutFactory.layoutFromBundle(named: "Complex Layout")
     }
     
 }

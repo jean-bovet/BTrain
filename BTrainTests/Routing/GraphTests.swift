@@ -20,7 +20,7 @@ class GraphTests: XCTestCase {
     }
     
     func testSimplePath() throws {
-        let layout = LayoutACreator().newLayout()
+        let layout = LayoutLoop1().newLayout()
         let b1 = layout.block("b1")
         let b3 = layout.block("b3")
 
@@ -30,7 +30,7 @@ class GraphTests: XCTestCase {
     }
 
     func testSimplePathBetweenTwoElements() throws {
-        let layout = LayoutACreator().newLayout()
+        let layout = LayoutLoop1().newLayout()
         let b1 = layout.block("b1")
         let b2 = layout.block("b2")
 
@@ -40,7 +40,7 @@ class GraphTests: XCTestCase {
     }
 
     func testSimplePathBetweenBlockAndTurnout() throws {
-        let layout = LayoutACreator().newLayout()
+        let layout = LayoutLoop1().newLayout()
         let b1 = layout.block("b1")
         let t0 = layout.turnout("t0")
 
@@ -50,7 +50,7 @@ class GraphTests: XCTestCase {
     }
 
     func testResolveSimplePath() throws {
-        let layout = LayoutACreator().newLayout()
+        let layout = LayoutLoop1().newLayout()
         let b1 = layout.block("b1")
         let b3 = layout.block("b3")
 
@@ -62,7 +62,7 @@ class GraphTests: XCTestCase {
     }
 
     func testResolveSimplePathWithTurnout() throws {
-        let layout = LayoutACreator().newLayout()
+        let layout = LayoutLoop1().newLayout()
         let b1 = layout.block("b1")
         let b3 = layout.block("b3")
 
@@ -76,7 +76,7 @@ class GraphTests: XCTestCase {
     }
 
     func testResolveSimplePathWithTurnouts() throws {
-        let layout = LayoutACreator().newLayout()
+        let layout = LayoutLoop1().newLayout()
         let b1 = layout.block("b1")
         let b3 = layout.block("b3")
 
@@ -91,7 +91,7 @@ class GraphTests: XCTestCase {
     }
 
     func testResolveSimplePathAlreadyFullPath() throws {
-        let layout = LayoutACreator().newLayout()
+        let layout = LayoutLoop1().newLayout()
         let b1 = layout.block("b1")
         let b3 = layout.block("b3")
 
@@ -105,7 +105,7 @@ class GraphTests: XCTestCase {
     }
 
     func testFindPathWithReservedBlock() throws {
-        let layout = LayoutICreator().newLayout()
+        let layout = LayoutLoopWithStation().newLayout()
         let s1 = layout.block(named: "s1")
         let s2 = layout.block(named: "s2")
         let b1 = layout.block(named: "b1")
@@ -122,7 +122,7 @@ class GraphTests: XCTestCase {
     }
 
     func testFindPathUntilStation() throws {
-        let layout = LayoutICreator().newLayout()
+        let layout = LayoutLoopWithStation().newLayout()
         let s1 = layout.block(named: "s1")
         
         // Do not specify the destination block, so the algorithm will stop at the first station it finds

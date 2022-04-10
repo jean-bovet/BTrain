@@ -17,7 +17,7 @@ class ManualOperationTests: BTTestCase {
 
     // b1 > b2 > b1
     func testFollowManualOperation() throws {
-        let layout = LayoutACreator().newLayout()
+        let layout = LayoutLoop1().newLayout()
         let p = try setup(layout: layout, fromBlockId: "b1")
         
         p.setTrainSpeed(LayoutFactory.DefaultMaximumSpeed, speedLimit: false)
@@ -54,7 +54,7 @@ class ManualOperationTests: BTTestCase {
 
     // b1 > b2 > b3 > !b1
     func testPullingLongTrain() throws {
-        let layout = LayoutACreator().newLayout()
+        let layout = LayoutLoop1().newLayout()
         
         layout.turnouts[1].state = .branchLeft
         
@@ -118,7 +118,7 @@ class ManualOperationTests: BTTestCase {
     
     // b1 > b2 > b3 > !b1
     func testPushingLongTrain() throws {
-        let layout = LayoutACreator().newLayout()
+        let layout = LayoutLoop1().newLayout()
         
         layout.turnouts[1].state = .branchLeft
         layout.turnouts.forEach { $0.length = nil }

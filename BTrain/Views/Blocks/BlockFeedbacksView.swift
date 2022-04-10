@@ -39,7 +39,7 @@ struct BlockFeedbacksView: View {
 
 struct BlockFeedbacksView_Previews: PreviewProvider {
     
-    static let layout = LayoutCCreator().newLayout()
+    static let layout = LayoutLoop2().newLayout()
 
     static var previews: some View {
         BlockFeedbacksView(layout: layout, block: layout.blocks[0])

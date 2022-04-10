@@ -53,7 +53,7 @@ struct TrainControlRouteActionsView: View {
 
 struct TrainControlRouteActionsView_Previews: PreviewProvider {
     
-    static let doc = LayoutDocument(layout: LayoutACreator().newLayout())
+    static let doc = LayoutDocument(layout: LayoutLoop1().newLayout())
 
     static var previews: some View {
         TrainControlRouteActionsView(document: doc, train: doc.layout.trains[0], route: doc.layout.routes[0])

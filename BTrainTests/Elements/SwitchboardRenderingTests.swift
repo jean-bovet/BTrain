@@ -22,7 +22,7 @@ class SwitchboardRenderingTests: XCTestCase {
     }
     
     func testDrawBoard() {
-        let layout = LayoutACreator().newLayout()
+        let layout = LayoutLoop1().newLayout()
         let context = ShapeContext()
         let provider = ShapeProvider(layout: layout, context: context)
 

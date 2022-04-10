@@ -93,6 +93,6 @@ struct BlockListView: View {
 struct BlockEditListView_Previews: PreviewProvider {
 
     static var previews: some View {
-        BlockListView(layout: LayoutCCreator().newLayout())
+        BlockListView(layout: LayoutLoop2().newLayout())
     }
 }

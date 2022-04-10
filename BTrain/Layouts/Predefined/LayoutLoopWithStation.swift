@@ -24,15 +24,15 @@ import Foundation
 //    ┌─────────┐                                              ┌─────────┐
 //    │   b5    │◀─────────────────────────────────────────────│   b4    │
 //    └─────────┘                                              └─────────┘
-final class LayoutICreator: LayoutCreating {
+final class LayoutLoopWithStation: LayoutCreating {
     
     static let id = Identifier<Layout>(uuid: "layout-i")
 
     var name: String {
-        return "Layout with Alternate Lines"
+        return "Loop with Station"
     }
     
     func newLayout() -> Layout {
-        LayoutFactory.layoutFromBundle(named: "Layout I")
+        LayoutFactory.layoutFromBundle(named: "Loop with Station")
     }
 }

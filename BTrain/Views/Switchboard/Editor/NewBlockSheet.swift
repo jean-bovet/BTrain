@@ -58,6 +58,6 @@ struct NewBlockSheet: View {
 struct NewBlockSheet_Previews: PreviewProvider {
     
     static var previews: some View {
-        NewBlockSheet(layout: LayoutCCreator().newLayout())
+        NewBlockSheet(layout: LayoutLoop2().newLayout())
     }
 }

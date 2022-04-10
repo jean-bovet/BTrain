@@ -58,6 +58,6 @@ struct NewTurnoutSheet: View {
 struct NewTurnoutSheet_Previews: PreviewProvider {
     
     static var previews: some View {
-        NewTurnoutSheet(layout: LayoutCCreator().newLayout())
+        NewTurnoutSheet(layout: LayoutLoop2().newLayout())
     }
 }

@@ -27,13 +27,13 @@ extension BlockSpeedView: Inspectable { }
 class BlockViewTests: RootViewTests {
     
     func testListView() throws {
-        let sut = BlockListView(layout: LayoutCCreator().newLayout())
+        let sut = BlockListView(layout: LayoutLoop2().newLayout())
         let value = try sut.inspect().vStack().hStack(0).vStack(0).hStack(1).text(0).string()
         XCTAssertEqual(value, "5 blocks")
     }
     
     func testBlockEditView() throws {
-        let layout = LayoutCCreator().newLayout()
+        let layout = LayoutLoop2().newLayout()
         let sut = BlockDetailsView(layout: layout, block: layout.blocks[0])
         let feedbacks = try sut.inspect().find(BlockFeedbacksView.self)
         _ = try feedbacks.find(text: "Previous Direction")

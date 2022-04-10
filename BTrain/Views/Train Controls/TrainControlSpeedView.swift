@@ -49,7 +49,7 @@ struct TrainControlSpeedView: View {
 struct TrainControlView_Previews: PreviewProvider {
     
     static let doc: LayoutDocument = {
-        let layout = LayoutACreator().newLayout()
+        let layout = LayoutLoop1().newLayout()
         return LayoutDocument(layout: layout)
     }()
 

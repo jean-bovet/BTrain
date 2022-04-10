@@ -21,14 +21,14 @@ extension CenteredLabelView: Inspectable { }
 class RouteViewTests: XCTestCase {
 
     func testLayout() throws {
-        let layout = LayoutACreator().newLayout()
+        let layout = LayoutLoop1().newLayout()
         let sut = RouteView(layout: layout, route: layout.routes[0])
         
         _ = try sut.inspect().find(text: "4 steps")
     }
 
     func testRouteListView() throws {
-        let layout = LayoutACreator().newLayout()
+        let layout = LayoutLoop1().newLayout()
         let sut = RouteListView(layout: layout)
         
         _ = try sut.inspect().find(text: "2 routes")

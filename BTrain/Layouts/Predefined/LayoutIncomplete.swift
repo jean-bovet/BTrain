@@ -17,7 +17,7 @@ import Foundation
 //┌─────────┐                              ┌─────────┐
 //│ Block 1 │           Turnout12          │ Block 2 │
 //└─────────┘                              └─────────┘
-final class LayoutDCreator: LayoutCreating {
+final class LayoutIncomplete: LayoutCreating {
     
     static let id = Identifier<Layout>(uuid: "layout-d")
 
@@ -26,7 +26,7 @@ final class LayoutDCreator: LayoutCreating {
     }
     
     func newLayout() -> Layout {
-        let l = Layout(uuid: LayoutDCreator.id.uuid)
+        let l = Layout(uuid: LayoutIncomplete.id.uuid)
         l.name = name
 
         // Blocks

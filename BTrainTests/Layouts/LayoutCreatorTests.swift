@@ -24,31 +24,31 @@ class LayoutCreatorTests: XCTestCase {
     }
 
     func testLayoutA() {
-        let c = LayoutACreator()
-        XCTAssertEqual(c.name, "Loop with Reverse")
+        let c = LayoutLoop1()
+        XCTAssertEqual(c.name, "Loop 1")
         
         let layout = c.newLayout()
         XCTAssertEqual(layout.blockMap.count, 3)
     }
 
     func testLayoutB() {
-        let c = LayoutBCreator()
-        XCTAssertEqual(c.name, "8-style Loop")
+        let c = LayoutFigure8()
+        XCTAssertEqual(c.name, "Figure 8")
         
         let layout = c.newLayout()
         XCTAssertEqual(layout.blockMap.count, 4)
     }
 
     func testLayoutC() {
-        let c = LayoutCCreator()
-        XCTAssertEqual(c.name, "Loop and Diagonal")
+        let c = LayoutLoop2()
+        XCTAssertEqual(c.name, "Loop 2")
         
         let layout = c.newLayout()
         XCTAssertEqual(layout.blockMap.count, 5)
     }
 
     func testLayoutD() {
-        let c = LayoutDCreator()
+        let c = LayoutIncomplete()
         XCTAssertEqual(c.name, "Incomplete Layout")
         
         let layout = c.newLayout()
@@ -56,15 +56,15 @@ class LayoutCreatorTests: XCTestCase {
     }
 
     func testLayoutE() {
-        let c = LayoutECreator()
-        XCTAssertEqual(c.name, "Loop with Alternatives")
+        let c = LayoutComplexLoop()
+        XCTAssertEqual(c.name, "Complex Loop")
         
         let layout = c.newLayout()
         XCTAssertEqual(layout.blockMap.count, 8)
     }
 
     func testLayoutF() {
-        let c = LayoutFCreator()
+        let c = LayoutComplex()
         XCTAssertEqual(c.name, "Complex Layout")
         
         let layout = c.newLayout()

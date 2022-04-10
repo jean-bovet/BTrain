@@ -25,7 +25,7 @@ extension SwitchboardSettingsView: Inspectable { }
 class SwitchBoardViewTests: XCTestCase {
 
     func testSwitchboardView() throws {
-        let layout = LayoutACreator().newLayout()
+        let layout = LayoutLoop1().newLayout()
         let context = ShapeContext()
         let provider = ShapeProvider(layout: layout, context: context)
         let switchboard = SwitchBoard(layout: layout, provider: provider, context: context)
@@ -40,7 +40,7 @@ class SwitchBoardViewTests: XCTestCase {
     }
 
     func testEditControls() throws {
-        let layout = LayoutACreator().newLayout()
+        let layout = LayoutLoop1().newLayout()
         let doc = LayoutDocument(layout: layout)
         let state = doc.switchboard.state
         

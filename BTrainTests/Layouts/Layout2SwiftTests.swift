@@ -16,7 +16,7 @@ import XCTest
 class Layout2SwiftTests: XCTestCase {
 
     func testCodeGeneration() {
-        let layout = LayoutFCreator().newLayout()
+        let layout = LayoutComplex().newLayout()
         let g = Layout2Swift(layout: layout)
         let code = g.swift()
         XCTAssertFalse(code.isEmpty)

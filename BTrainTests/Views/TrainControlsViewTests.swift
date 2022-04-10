@@ -53,7 +53,7 @@ class TrainControlsViewTests: RootViewTests {
     }
     
     func testRouteActions() throws {
-        let layout = LayoutACreator().newLayout()
+        let layout = LayoutLoop1().newLayout()
         let doc = LayoutDocument(layout: layout)
         let route = layout.routes[0]
         let train = layout.trains[0]

@@ -25,16 +25,16 @@ import Foundation
 //│                                 ┌─────────┐    │
 //└─▶Turnout21 ────────────────────▶│ Block 1 │────┘
 //                                  └─────────┘
-final class LayoutACreator: LayoutCreating {
+final class LayoutLoop1: LayoutCreating {
 
     static let id = Identifier<Layout>(uuid: "layout-a")
     
     var name: String {
-        return "Loop with Reverse"
+        return "Loop 1"
     }
     
     func newLayout() -> Layout {
-        LayoutFactory.layoutFromBundle(named: "Layout A")
+        LayoutFactory.layoutFromBundle(named: "Loop 1")
     }
         
 }

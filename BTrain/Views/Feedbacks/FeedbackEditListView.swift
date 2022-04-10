@@ -86,6 +86,6 @@ struct FeedbackEditListView: View {
 
 struct FeedbackEditListView_Previews: PreviewProvider {
     static var previews: some View {
-        FeedbackEditListView(layout: LayoutCCreator().newLayout())
+        FeedbackEditListView(layout: LayoutLoop2().newLayout())
     }
 }

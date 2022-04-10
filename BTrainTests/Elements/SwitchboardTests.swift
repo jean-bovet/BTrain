@@ -23,7 +23,7 @@ class SwitchboardTests: XCTestCase {
     var controller: LayoutController!
     
     override func setUp() {
-        layout = LayoutDCreator().newLayout()
+        layout = LayoutIncomplete().newLayout()
         XCTAssertEqual(layout.transitions.count, 0)
         controller = LayoutController(layout: layout, switchboard: nil, interface: MarklinInterface())
         

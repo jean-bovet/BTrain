@@ -131,7 +131,7 @@ struct RouteView: View {
 
 struct RouteView_Previews: PreviewProvider {
     
-    static let layout = LayoutCCreator().newLayout()
+    static let layout = LayoutLoop2().newLayout()
     
     static var previews: some View {
         RouteView(layout: layout, route: layout.routes[0])

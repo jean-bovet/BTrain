@@ -45,7 +45,7 @@ struct BlockShapeView: View {
 
 struct BlockShapeView_Previews: PreviewProvider {
     
-    static let layout = LayoutACreator().newLayout()
+    static let layout = LayoutLoop1().newLayout()
     
     static var previews: some View {
         ForEach(Block.Category.allCases, id:\.self) { category in

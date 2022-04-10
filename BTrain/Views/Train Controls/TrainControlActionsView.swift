@@ -54,7 +54,7 @@ struct TrainControlActionsView: View {
 }
 
 struct TrainControlActionsView_Previews: PreviewProvider {
-    static let doc = LayoutDocument(layout: LayoutCCreator().newLayout())
+    static let doc = LayoutDocument(layout: LayoutLoop2().newLayout())
 
     static var previews: some View {
         TrainControlActionsView(layout: doc.layout, document: doc)

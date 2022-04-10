@@ -46,10 +46,10 @@ struct TrainControlContainerView: View {
 
 struct TrainControlContainerView_Previews: PreviewProvider {
         
-    static let doc1 = LayoutDocument(layout: LayoutACreator().newLayout())
+    static let doc1 = LayoutDocument(layout: LayoutLoop1().newLayout())
 
     static let doc2: LayoutDocument = {
-        let layout = LayoutACreator().newLayout()
+        let layout = LayoutLoop1().newLayout()
         layout.trains[0].blockId = layout.block(at: 0).id
         return LayoutDocument(layout: layout)
     }()

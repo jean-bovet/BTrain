@@ -82,7 +82,7 @@ struct RouteListView: View {
 struct RouteListView_Previews: PreviewProvider {
     
     static var previews: some View {
-        RouteListView(layout: LayoutCCreator().newLayout())
+        RouteListView(layout: LayoutLoop2().newLayout())
     }
 
 }

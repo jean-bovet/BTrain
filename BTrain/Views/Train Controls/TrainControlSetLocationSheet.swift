@@ -198,7 +198,7 @@ private extension Block {
 
 struct TrainControlSetLocationSheet_Previews: PreviewProvider {
     
-    static let doc = LayoutDocument(layout: LayoutCCreator().newLayout())
+    static let doc = LayoutDocument(layout: LayoutLoop2().newLayout())
     
     static var previews: some View {
         TrainControlSetLocationSheet(layout: doc.layout, controller: doc.layoutController, train: doc.layout.trains[0])

@@ -24,7 +24,7 @@ class FeedbackViewTests: RootViewTests {
 
     
     func testEditList() throws {
-        let sut = FeedbackEditListView(layout: LayoutCCreator().newLayout())
+        let sut = FeedbackEditListView(layout: LayoutLoop2().newLayout())
         let value = try sut.inspect().vStack().hStack(1).text(0).string()
         XCTAssertEqual(value, "10 feedbacks")
     }

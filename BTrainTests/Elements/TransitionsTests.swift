@@ -87,7 +87,7 @@ class TransitionsTests: XCTestCase {
     }
     
     func testReserveBehavior() throws {
-        let v8 = LayoutFCreator().newLayout().removeTrains()
+        let v8 = LayoutComplex().newLayout().removeTrains()
         
         let t1 = v8.trains[0]
         let t2 = v8.trains[1]

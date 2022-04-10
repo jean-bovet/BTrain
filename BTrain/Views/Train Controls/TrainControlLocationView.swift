@@ -52,9 +52,9 @@ struct TrainControlLocationView: View {
 
 struct TrainControlLocationView_Previews: PreviewProvider {
     
-    static let doc = LayoutDocument(layout: LayoutCCreator().newLayout())
+    static let doc = LayoutDocument(layout: LayoutLoop2().newLayout())
     static let doc2: LayoutDocument = {
-       let doc = LayoutDocument(layout: LayoutCCreator().newLayout())
+       let doc = LayoutDocument(layout: LayoutLoop2().newLayout())
         doc.layout.trains[0].blockId = doc.layout.blockIds[0]
         return doc
     }()
