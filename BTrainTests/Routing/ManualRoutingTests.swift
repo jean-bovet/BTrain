@@ -147,7 +147,7 @@ class ManualRoutingTests: BTTestCase {
     }
 
     func testStartNotInRoute() throws {
-        let layout = LayoutCCreator().newLayout()
+        let layout = LayoutCCreator().newLayout().removeTrainGeometry()
         let p = Package(layout: layout)
         try p.prepare(routeID: "r1", trainID: "1", fromBlockId: "b5")
 
@@ -167,7 +167,7 @@ class ManualRoutingTests: BTTestCase {
     }
     
     func testStartInRouteButReversedDirection() throws {
-        let layout = LayoutCCreator().newLayout()
+        let layout = LayoutCCreator().newLayout().removeTrainGeometry()
         let p = Package(layout: layout)
         try p.prepare(routeID: "r1", trainID: "1", fromBlockId: "b1", direction: .previous)
         
@@ -531,7 +531,7 @@ class ManualRoutingTests: BTTestCase {
     }
 
     func testNextBlockFeedbackHandling() throws {
-        let layout = LayoutCCreator().newLayout()
+        let layout = LayoutCCreator().newLayout().removeTrainGeometry()
         
         let p = Package(layout: layout)
         try p.prepare(routeID: "r1", trainID: "1", fromBlockId: "b1")
@@ -585,7 +585,7 @@ class ManualRoutingTests: BTTestCase {
     }
     
     func testMoveRouteLoop() throws {
-        let layout = LayoutCCreator().newLayout()
+        let layout = LayoutCCreator().newLayout().removeTrainGeometry()
         
         let p = Package(layout: layout)
         try p.prepare(routeID: "r1", trainID: "1", fromBlockId: "b1")

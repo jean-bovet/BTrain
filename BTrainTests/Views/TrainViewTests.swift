@@ -33,7 +33,7 @@ class TrainViewTests: RootViewTests {
     func testStringValue() throws {
         let sut = TrainListView(document: doc, layout: doc.layout)
         let value = try sut.inspect().hStack().vStack(0).hStack(1).text(0).string()
-        XCTAssertEqual(value, "2 trains")
+        XCTAssertEqual(value, "3 trains")
     }
 
     func testSpeedView() throws {
