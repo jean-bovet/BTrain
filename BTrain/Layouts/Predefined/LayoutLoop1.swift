@@ -27,14 +27,10 @@ import Foundation
 //                                  └─────────┘
 final class LayoutLoop1: LayoutCreating {
 
-    static let id = Identifier<Layout>(uuid: "layout-a")
-    
-    var name: String {
-        return "Loop 1"
-    }
-    
+    static let id = Identifier<Layout>(uuid: "Loop 1")
+        
     func newLayout() -> Layout {
-        LayoutFactory.layoutFromBundle(named: "Loop 1")
+        LayoutFactory.layoutFromBundle(named: LayoutLoop1.id.uuid)
     }
         
 }

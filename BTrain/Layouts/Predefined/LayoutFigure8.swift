@@ -27,14 +27,10 @@ import Foundation
 //   └─────────┘                              └─────────┘
 final class LayoutFigure8: LayoutCreating {
     
-    static let id = Identifier<Layout>(uuid: "layout-b")
-
-    var name: String {
-        return "Figure 8"
-    }
+    static let id = Identifier<Layout>(uuid: "Figure 8")
     
     func newLayout() -> Layout {
-        LayoutFactory.layoutFromBundle(named: "Figure 8")
+        LayoutFactory.layoutFromBundle(named: LayoutFigure8.id.uuid)
     }
     
 }

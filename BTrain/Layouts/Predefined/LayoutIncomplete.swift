@@ -19,15 +19,11 @@ import Foundation
 //└─────────┘                              └─────────┘
 final class LayoutIncomplete: LayoutCreating {
     
-    static let id = Identifier<Layout>(uuid: "layout-d")
-
-    var name: String {
-        return "Incomplete Layout"
-    }
+    static let id = Identifier<Layout>(uuid: "Incomplete Layout")
     
     func newLayout() -> Layout {
         let l = Layout(uuid: LayoutIncomplete.id.uuid)
-        l.name = name
+        l.name = LayoutIncomplete.id.uuid
 
         // Blocks
         let b1 = l.newBlock(name: "1", category: .free)

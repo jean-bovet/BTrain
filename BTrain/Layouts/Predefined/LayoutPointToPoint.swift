@@ -21,13 +21,9 @@ import Foundation
 //                      └──────┘   └──────┘  └──────┘
 final class LayoutPointToPoint: LayoutCreating {
     
-    static let id = Identifier<Layout>(uuid: "layout-h")
-
-    var name: String {
-        return "Point to Point"
-    }
+    static let id = Identifier<Layout>(uuid: "Point to Point")
     
     func newLayout() -> Layout {
-        LayoutFactory.layoutFromBundle(named: "Point to Point")
+        LayoutFactory.layoutFromBundle(named: LayoutPointToPoint.id.uuid)
     }
 }

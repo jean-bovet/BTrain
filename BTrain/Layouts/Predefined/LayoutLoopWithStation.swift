@@ -26,13 +26,9 @@ import Foundation
 //    └─────────┘                                              └─────────┘
 final class LayoutLoopWithStation: LayoutCreating {
     
-    static let id = Identifier<Layout>(uuid: "layout-i")
-
-    var name: String {
-        return "Loop with Station"
-    }
+    static let id = Identifier<Layout>(uuid: "Loop with Station")
     
     func newLayout() -> Layout {
-        LayoutFactory.layoutFromBundle(named: "Loop with Station")
+        LayoutFactory.layoutFromBundle(named: LayoutLoopWithStation.id.uuid)
     }
 }

@@ -14,7 +14,6 @@ import Foundation
 
 protocol LayoutCreating {
     static var id: Identifier<Layout> { get }
-    var name: String { get }
     func newLayout() -> Layout
 }
 
@@ -44,11 +43,7 @@ final class LayoutFactory {
     static let GlobalLayoutIDs: [Identifier<Layout>] = {
         return GlobalLayouts.map { type(of: $0).id }
     }()
-    
-    static func globalLayoutName(_ id: Identifier<Layout>) -> String {
-        return GlobalLayouts.filter { type(of: $0).id == id }.first!.name
-    }
-    
+        
     static func createLayout(_ id: Identifier<Layout>) -> Layout {
         return GlobalLayouts.filter { type(of: $0).id == id }.first!.newLayout()
     }

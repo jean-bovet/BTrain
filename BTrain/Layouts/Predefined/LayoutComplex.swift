@@ -14,14 +14,10 @@ import Foundation
 
 final class LayoutComplex: LayoutCreating {
     
-    static let id = Identifier<Layout>(uuid: "layout-f")
+    static let id = Identifier<Layout>(uuid: "Complex Layout")
 
-    var name: String {
-        return "Complex Layout"
-    }
-    
     func newLayout() -> Layout {
-        LayoutFactory.layoutFromBundle(named: "Complex Layout")
+        LayoutFactory.layoutFromBundle(named: LayoutComplex.id.uuid)
     }
     
 }

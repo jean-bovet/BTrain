@@ -39,11 +39,7 @@ import Foundation
 //                               └─────────┘
 final class LayoutComplexLoop: LayoutCreating {
     
-    static let id = Identifier<Layout>(uuid: "layout-e")
-
-    var name: String {
-        return "Complex Loop"
-    }
+    static let id = Identifier<Layout>(uuid: "Complex Loop")
     
     func newLayoutWithLengths(_ l: Layout) -> Layout {
         l.trains.forEach {
@@ -63,7 +59,7 @@ final class LayoutComplexLoop: LayoutCreating {
     }
     
     func newLayout() -> Layout {
-        LayoutFactory.layoutFromBundle(named: "Complex Loop")
+        LayoutFactory.layoutFromBundle(named: LayoutComplexLoop.id.uuid)
     }
     
 }

@@ -17,57 +17,50 @@ import XCTest
 class LayoutCreatorTests: XCTestCase {
 
     func testEmptyLayout() {
-        let c = LayoutBlankCreator()
-        XCTAssertEqual(c.name, "New Layout")
-        let layout = c.newLayout()
+        XCTAssertEqual(LayoutBlankCreator.id.uuid, "layout")
+        let layout = LayoutBlankCreator().newLayout()
         XCTAssertEqual(layout.blockMap.count, 0)
     }
 
     func testLayoutA() {
-        let c = LayoutLoop1()
-        XCTAssertEqual(c.name, "Loop 1")
+        XCTAssertEqual(LayoutLoop1.id.uuid, "Loop 1")
         
-        let layout = c.newLayout()
+        let layout = LayoutLoop1().newLayout()
         XCTAssertEqual(layout.blockMap.count, 3)
     }
 
     func testLayoutB() {
-        let c = LayoutFigure8()
-        XCTAssertEqual(c.name, "Figure 8")
+        XCTAssertEqual(LayoutFigure8.id.uuid, "Figure 8")
         
-        let layout = c.newLayout()
+        let layout = LayoutFigure8().newLayout()
         XCTAssertEqual(layout.blockMap.count, 4)
     }
 
     func testLayoutC() {
-        let c = LayoutLoop2()
-        XCTAssertEqual(c.name, "Loop 2")
+        XCTAssertEqual(LayoutLoop2.id.uuid, "Loop 2")
         
-        let layout = c.newLayout()
+        let layout = LayoutLoop2().newLayout()
         XCTAssertEqual(layout.blockMap.count, 5)
     }
 
     func testLayoutD() {
-        let c = LayoutIncomplete()
-        XCTAssertEqual(c.name, "Incomplete Layout")
+        XCTAssertEqual(LayoutIncomplete.id.uuid, "Incomplete Layout")
         
-        let layout = c.newLayout()
+        let layout = LayoutIncomplete().newLayout()
         XCTAssertEqual(layout.blockMap.count, 2)
     }
 
     func testLayoutE() {
-        let c = LayoutComplexLoop()
-        XCTAssertEqual(c.name, "Complex Loop")
+        XCTAssertEqual(LayoutComplexLoop.id.uuid, "Complex Loop")
         
-        let layout = c.newLayout()
+        let layout = LayoutComplexLoop().newLayout()
         XCTAssertEqual(layout.blockMap.count, 8)
     }
 
     func testLayoutF() {
-        let c = LayoutComplex()
-        XCTAssertEqual(c.name, "Complex Layout")
+        XCTAssertEqual(LayoutComplex.id.uuid, "Complex Layout")
         
-        let layout = c.newLayout()
+        let layout = LayoutComplex().newLayout()
         XCTAssertEqual(layout.blockMap.count, 29)
     }
 

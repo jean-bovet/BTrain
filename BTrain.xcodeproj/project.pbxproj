@@ -1044,14 +1044,14 @@
 		A79079A8277FCE6A00771A60 /* Predefined */ = {
 			isa = PBXGroup;
 			children = (
-				A7F779EA272F1E7700E73275 /* LayoutLoop1.swift */,
-				A7F779EC272F1E8800E73275 /* LayoutFigure8.swift */,
-				A7F779EF272F2EFC00E73275 /* LayoutLoop2.swift */,
-				A73E080A276ABA91005F9D64 /* LayoutIncomplete.swift */,
-				A7FBC8B3276E87B7009D49C3 /* LayoutComplexLoop.swift */,
-				A717157F2757036B00200F92 /* LayoutComplex.swift */,
 				A798BB3F27A6E7F1000BB4D1 /* LayoutPointToPoint.swift */,
+				A7F779EC272F1E8800E73275 /* LayoutFigure8.swift */,
+				A7F779EA272F1E7700E73275 /* LayoutLoop1.swift */,
+				A7F779EF272F2EFC00E73275 /* LayoutLoop2.swift */,
+				A7FBC8B3276E87B7009D49C3 /* LayoutComplexLoop.swift */,
 				A7E1F74527D40904009FB75F /* LayoutLoopWithStation.swift */,
+				A717157F2757036B00200F92 /* LayoutComplex.swift */,
+				A73E080A276ABA91005F9D64 /* LayoutIncomplete.swift */,
 			);
 			path = Predefined;
 			sourceTree = "<group>";

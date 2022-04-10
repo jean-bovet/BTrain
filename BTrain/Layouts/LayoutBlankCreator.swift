@@ -17,10 +17,6 @@ final class LayoutBlankCreator: LayoutCreating {
         return Identifier<Layout>(uuid: "layout")
     }
     
-    var name: String {
-        return "New Layout"
-    }
-    
     func newLayout() -> Layout {
         return Layout(id: LayoutBlankCreator.id)
     }
