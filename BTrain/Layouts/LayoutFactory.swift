@@ -37,6 +37,7 @@ final class LayoutFactory {
         LayoutACreator(),
         LayoutCCreator(),
         LayoutECreator(),
+        LayoutICreator(),
         LayoutFCreator()
     ]
 

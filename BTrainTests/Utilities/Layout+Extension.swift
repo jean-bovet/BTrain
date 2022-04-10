@@ -60,7 +60,11 @@ extension Layout {
     func turnout(_ uuid: String) -> Turnout {
         return turnout(for: Identifier<Turnout>(uuid: uuid))!
     }
-    
+
+    func turnout(named name: String) -> Turnout {
+        return turnouts.first { $0.name == name }!
+    }
+
     func train(_ uuid: String) -> Train {
         return train(for: Identifier<Train>(uuid: uuid))!
     }
