@@ -21,30 +21,41 @@ struct TrainControlLocationView: View {
     @ObservedObject var train: Train
         
     @State private var setTrainLocationSheet = false
-    
-    var trainLocation: String {
-        if let blockId = train.blockId, let block = layout.block(for: blockId) {
-            return "\(block.name)"
-        } else {
-            return "􀅄"
-        }
-    }
-    
+    @State private var removeTrainSheet = false
+
     var body: some View {
         VStack {
             HStack {
                 HStack {
                     Text("Location:")
                         .font(Font.body.weight(.medium))
-                    Button("\(trainLocation)") {
-                        setTrainLocationSheet.toggle()
+                    
+                    if let blockId = train.blockId, let block = layout.block(for: blockId) {
+                        Text("\(block.name)")
+                        
+                        Spacer()
+                        
+                        Button("􀅄") {
+                            setTrainLocationSheet.toggle()
+                        }.help("Set Location")
+
+                        Button("􀄨") {
+                            removeTrainSheet.toggle()
+                        }.help("Remove Train")
+                    } else {
+                        Button("Set Location 􀅄") {
+                            setTrainLocationSheet.toggle()
+                        }.help("Set Location")
                     }
                 }
 
                 Spacer()
             }
         }.sheet(isPresented: $setTrainLocationSheet) {
-            TrainControlSetLocationSheet(layout: layout, controller: controller, train: train)
+            TrainControlSetLocationSheet(layout: layout, controller: controller, actionSet: .setOnly, train: train)
+                .padding()
+        }.sheet(isPresented: $removeTrainSheet) {
+            TrainControlSetLocationSheet(layout: layout, controller: controller, actionSet: .removeOnly, train: train)
                 .padding()
         }
     }

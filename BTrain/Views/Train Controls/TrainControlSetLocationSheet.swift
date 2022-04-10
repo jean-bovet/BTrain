@@ -19,6 +19,14 @@ struct TrainControlSetLocationSheet: View {
     // Optional information resulting from dragging the train on the switchboard
     var trainDragInfo: SwitchBoard.State.TrainDragInfo?
         
+    enum ActionSet {
+        case setOnly
+        case moveOrSet
+        case removeOnly
+    }
+    
+    let actionSet: ActionSet
+    
     @ObservedObject var train: Train
     
     @State private var blockId: Identifier<Block>? = nil
@@ -69,16 +77,17 @@ struct TrainControlSetLocationSheet: View {
     var body: some View {
         VStack {
             HStack {
-                if train.blockId == nil {
+                switch actionSet {
+                case .setOnly:
                     Text("Set")
                         .onAppear {
                             action = .set
                         }
-                } else {
+                    
+                case .moveOrSet:
                     Picker("Action:", selection: $action) {
                         Text("Set").tag(Action.set)
                         Text("Move").tag(Action.move)
-                        Text("Remove").tag(Action.remove)
                     }
                     .pickerStyle(.radioGroup)
                     .fixedSize()
@@ -90,26 +99,41 @@ struct TrainControlSetLocationSheet: View {
                             action = .move
                         }
                     }
+
+                case .removeOnly:
+                    Text("Remove")
+                        .onAppear {
+                            action = .remove
+                        }
                 }
                 
                 Text("\"\(train.name)\"")
                 
-                Picker(action == .remove ? "from block" : "to block", selection: $blockId) {
-                    ForEach(sortedBlockIds, id:\.self) { blockId in
-                        if let block = layout.block(for: blockId) {
-                            Text(block.nameForLocation).tag(blockId as Identifier<Block>?)
-                        } else {
-                            Text(blockId.uuid).tag(blockId as Identifier<Block>?)
+                if action == .remove {
+                    Text("from block")
+                    if let block = layout.block(for: blockId) {
+                        Text(block.nameForLocation)
+                    } else if let blockId = blockId {
+                        Text(blockId.uuid)
+                    }
+                } else {
+                    Picker("to block", selection: $blockId) {
+                        ForEach(sortedBlockIds, id:\.self) { blockId in
+                            if let block = layout.block(for: blockId) {
+                                Text(block.nameForLocation).tag(blockId as Identifier<Block>?)
+                            } else {
+                                Text(blockId.uuid).tag(blockId as Identifier<Block>?)
+                            }
                         }
                     }
-                }
-                .disabled(action == .remove)
-                .fixedSize()
-                .onAppear {
-                    if let trainDragInfo = trainDragInfo {
-                        blockId = trainDragInfo.blockId
-                    } else {
-                        blockId = train.blockId
+                    .disabled(action == .remove)
+    //                .fixedSize()
+                    .onAppear {
+                        if let trainDragInfo = trainDragInfo {
+                            blockId = trainDragInfo.blockId
+                        } else {
+                            blockId = train.blockId
+                        }
                     }
                 }
                 
@@ -201,7 +225,11 @@ struct TrainControlSetLocationSheet_Previews: PreviewProvider {
     static let doc = LayoutDocument(layout: LayoutLoop2().newLayout())
     
     static var previews: some View {
-        TrainControlSetLocationSheet(layout: doc.layout, controller: doc.layoutController, train: doc.layout.trains[0])
+        Group {
+            TrainControlSetLocationSheet(layout: doc.layout, controller: doc.layoutController, actionSet: .setOnly, train: doc.layout.trains[0])
+            TrainControlSetLocationSheet(layout: doc.layout, controller: doc.layoutController, actionSet: .removeOnly, train: doc.layout.trains[0])
+            TrainControlSetLocationSheet(layout: doc.layout, controller: doc.layoutController, actionSet: .moveOrSet, train: doc.layout.trains[0])
+        }
     }
     
 }
