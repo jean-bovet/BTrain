@@ -23,8 +23,8 @@ class RouteResolverTests: XCTestCase {
         let resolver = RouteResolver(layout: layout, train: train)
         let resolvedSteps = try resolver.resolve(steps: ArraySlice(route.steps))!
         
-        XCTAssertEqual(route.steps.toStrings, ["A:next", "B:next", "C:next", "D:next", "E:next"])
-        XCTAssertEqual(resolvedSteps.toStrings, ["A:next", "AB:(0>1)", "B:next", "C:next", "D:next", "DE:(1>0)", "E:next"])
+        XCTAssertEqual(route.steps.toStrings(layout), ["A:next", "B:next", "C:next", "D:next", "E:next"])
+        XCTAssertEqual(resolvedSteps.toStrings(layout), ["A:next", "AB:(0>1)", "B:next", "C:next", "D:next", "DE:(1>0)", "E:next"])
     }
     
     func testResolveMultipleTurnoutsChoice() throws {
@@ -35,13 +35,13 @@ class RouteResolverTests: XCTestCase {
         let resolver = RouteResolver(layout: layout, train: train)
         var resolvedSteps = try resolver.resolve(steps: ArraySlice(route.steps))!
         
-        XCTAssertEqual(route.steps.toStrings, ["OL3:next", "NE3:next"])
-        XCTAssertEqual(resolvedSteps.toStrings, ["OL3:next", "F.3:(0>1)", "F.1:(0>1)", "F.2:(0>1)", "M.1:(2>0)", "C.1:(0>2)", "C.3:(2>0)", "NE3:next"])
+        XCTAssertEqual(route.steps.toStrings(layout), ["OL3:next", "NE3:next"])
+        XCTAssertEqual(resolvedSteps.toStrings(layout), ["OL3:next", "F.3:(0>1)", "F.1:(0>1)", "F.2:(0>1)", "M.1:(2>0)", "C.1:(0>2)", "C.3:(2>0)", "NE3:next"])
         
         train.turnoutsToAvoid = [.init(Identifier<Turnout>(uuid: "C.1"))]
         
         resolvedSteps = try resolver.resolve(steps: ArraySlice(route.steps))!
-        XCTAssertEqual(resolvedSteps.toStrings, ["OL3:next", "F.3:(0>1)", "F.1:(0>1)", "F.2:(0>2)", "C.3:(1>0)", "NE3:next"])
+        XCTAssertEqual(resolvedSteps.toStrings(layout), ["OL3:next", "F.3:(0>1)", "F.1:(0>1)", "F.2:(0>2)", "C.3:(1>0)", "NE3:next"])
     }
 
     func testResolveRoute() throws {
@@ -56,6 +56,6 @@ class RouteResolverTests: XCTestCase {
         let resolver = RouteResolver(layout: layout, train: train)
         let resolvedSteps = try resolver.resolve(steps: ArraySlice(route.steps))!
 
-        XCTAssertEqual(resolvedSteps.toStrings, ["b1:next", "t0:(0>1)", "b2:next", "b3:next", "t1:(0>1)", "b4:next", "b1:next"])
+        XCTAssertEqual(resolvedSteps.toStrings(layout), ["b1:next", "t0:(0>1)", "b2:next", "b3:next", "t1:(0>1)", "b4:next", "b1:next"])
     }
 }

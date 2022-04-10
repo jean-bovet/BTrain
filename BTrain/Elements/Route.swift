@@ -49,7 +49,7 @@ final class Route: Element, ObservableObject {
     @Published var name = ""
     
     // A step of the route
-    struct Step: Codable, Equatable, Identifiable, CustomStringConvertible {
+    struct Step: Codable, Equatable, Identifiable {
         let id: String
         
         // The block identifier
@@ -85,16 +85,6 @@ final class Route: Element, ObservableObject {
         // If nil, the block waitingTime is used instead.
         var waitingTime: TimeInterval?
         
-        var description: String {
-            if let blockId = blockId {
-                return "\(blockId):\(direction!)"
-            } else if let turnoutId = turnoutId {
-                return "\(turnoutId):(\(entrySocket!.socketId!)>\(exitSocket!.socketId!))"
-            } else {
-                return "Invalid state because no block nor turnout is defined"
-            }
-        }
-
         // Returns the socket where the train will exit
         // the block represented by this step, taking
         // into account the direction of travel of the train.

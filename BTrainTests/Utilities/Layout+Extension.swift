@@ -90,3 +90,19 @@ extension Layout {
     }
 
 }
+
+extension Array where Element == Route.Step {
+    
+    func toStrings(_ layout: Layout, useNameInsteadOfId: Bool = true) -> [String] {
+        return self.map { step in
+            if let blockId = step.blockId, let block = layout.block(for: blockId) {
+                return "\(useNameInsteadOfId ? block.name:block.id.uuid):\(step.direction!)"
+            } else if let turnoutId = step.turnoutId, let turnout = layout.turnout(for: turnoutId) {
+                return "\(useNameInsteadOfId ? turnout.name:turnout.id.uuid):(\(step.entrySocket!.socketId!)>\(step.exitSocket!.socketId!))"
+            } else {
+                fatalError("Invalid state because no block nor turnout is defined")
+            }
+        }
+    }
+
+}

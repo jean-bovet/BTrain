@@ -48,11 +48,11 @@ struct Socket: Codable, Equatable, CustomStringConvertible {
         return Socket(block: id, turnout: nil, socketId: nil)
     }
 
-    static func block(_ id: Identifier<Block>, socketId: Int) -> Socket {
+    static func block(_ id: Identifier<Block>, socketId: Int?) -> Socket {
         return Socket(block: id, turnout: nil, socketId: socketId)
     }
 
-    static func turnout(_ id: Identifier<Turnout>, socketId: Int) -> Socket {
+    static func turnout(_ id: Identifier<Turnout>, socketId: Int?) -> Socket {
         return Socket(block: nil, turnout: id, socketId: socketId)
     }
 

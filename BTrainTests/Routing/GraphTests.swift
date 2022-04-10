@@ -106,9 +106,9 @@ class GraphTests: XCTestCase {
 
     func testFindPathWithReservedBlock() throws {
         let layout = LayoutICreator().newLayout()
-        let s1 = layout.block("s1")
-        let s2 = layout.block("s2")
-        let b1 = layout.block("b1")
+        let s1 = layout.block(named: "s1")
+        let s2 = layout.block(named: "s2")
+        let b1 = layout.block(named: "b1")
         
         // Without block reserved, the straighforward path from s1 to s2 is s1-b1-s2
         var p = layout.path(for: layout.trains[0], from: (s1, .next), to: (s2, .next))!
@@ -123,7 +123,7 @@ class GraphTests: XCTestCase {
 
     func testFindPathUntilStation() throws {
         let layout = LayoutICreator().newLayout()
-        let s1 = layout.block("s1")
+        let s1 = layout.block(named: "s1")
         
         // Do not specify the destination block, so the algorithm will stop at the first station it finds
         let p = layout.path(for: layout.trains[0], from: (s1, .next), to: nil)!

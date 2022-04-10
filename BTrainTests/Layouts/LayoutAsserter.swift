@@ -73,15 +73,15 @@ final class LayoutAsserter {
     private func applyFeedbacks(route: Route, expectedRoute: Route, expectedLayout: Layout) {
         for expectedStep in expectedRoute.blockSteps {
             let expectedBlock = expectedLayout.block(for: expectedStep.blockId)!
-            let block = layout.block(for: expectedStep.blockId)
+            let block = layout.block(for: expectedStep.blockId) ?? layout.block(named: expectedStep.blockId!.uuid)
             for (index, expectedBlockFeedback) in expectedBlock.feedbacks.enumerated() {
                 let expectedFeedback = expectedLayout.feedback(for: expectedBlockFeedback.feedbackId)!
                 // The expectedFeedbackId is only valid for the expectedLayout because
                 // the ASCII representation does not allow to specify an ID for the feedback,
                 // which means they will have random UUID. It is best to use the index
                 // of the feedback within the block instead.
-                let blockFeedback = block?.feedbacks[index]
-                let feedback = layout.feedback(for: blockFeedback?.feedbackId)!
+                let blockFeedback = block.feedbacks[index]
+                let feedback = layout.feedback(for: blockFeedback.feedbackId)!
                 feedback.detected = expectedFeedback.detected
             }
         }
@@ -106,14 +106,14 @@ final class LayoutAsserter {
             let expectedStep = expectedRoute.steps[index]
             
             if let blockId = step.blockId {
-                XCTAssertEqual(step.blockId, expectedStep.blockId, "Step blockId mismatch at index \(index)")
-                XCTAssertEqual(step.entrySocket, expectedStep.entrySocket, "Step entrySocket mismatch at block \(blockId)")
-                XCTAssertEqual(step.exitSocket, expectedStep.exitSocket, "Step exitSocket mismatch at block \(blockId)")
+                XCTAssertEqual(namedId(step.blockId), expectedStep.blockId, "Step blockId mismatch at index \(index)")
+                XCTAssertEqual(namedId(step.entrySocket), expectedStep.entrySocket, "Step entrySocket mismatch at block \(blockId)")
+                XCTAssertEqual(namedId(step.exitSocket), expectedStep.exitSocket, "Step exitSocket mismatch at block \(blockId)")
                 assertBlockAt(index: index, route: route, step: step, expectedStep: expectedStep, expectedLayout: expectedLayout)
             } else if let turnoutId = step.turnoutId {
-                XCTAssertEqual(step.turnoutId, expectedStep.turnoutId, "Step turnoutId mismatch at index \(index)")
-                XCTAssertEqual(step.entrySocket, expectedStep.entrySocket, "Step entrySocket mismatch at turnout \(turnoutId)")
-                XCTAssertEqual(step.exitSocket, expectedStep.exitSocket, "Step exitSocket mismatch at turnout \(turnoutId)")
+                XCTAssertEqual(namedId(step.turnoutId), expectedStep.turnoutId, "Step turnoutId mismatch at index \(index)")
+                XCTAssertEqual(namedId(step.entrySocket), expectedStep.entrySocket, "Step entrySocket mismatch at turnout \(turnoutId)")
+                XCTAssertEqual(namedId(step.exitSocket), expectedStep.exitSocket, "Step exitSocket mismatch at turnout \(turnoutId)")
                 assertTurnoutAt(index: index, route: route, step: step, expectedStep: expectedStep, expectedLayout: expectedLayout)
             } else {
                 XCTFail("Unsupported step configuration without blockId nor turnoutId")
@@ -230,8 +230,38 @@ final class LayoutAsserter {
             XCTFail("Expected turnout \(String(describing: expectedStep.turnoutId)) not found")
             return
         }
-        XCTAssertEqual(turnout.id, expectedTurnout.id, "Mismatching turnout ID at index \(index), route \(route)")
+        XCTAssertEqual(namedId(turnout.id), expectedTurnout.id, "Mismatching turnout ID at index \(index), route \(route)")
         XCTAssertEqual(turnout.state, expectedTurnout.state, "Mismatching turnout state for \(turnout) at index \(index), route \(route)")
         XCTAssertEqual(turnout.reserved?.train, expectedTurnout.reserved?.train, "Mismatching turnout reservation for \(turnout) at index \(index), route \(route)")
     }
+}
+
+// This extension converts an identifier to another one that uses the name of the element as the uuid.
+// Note: this is because in the unit tests, the assertion is done using the easier to remember name instead of uuid.
+extension LayoutAsserter {
+    
+    private func namedId(_ blockId: Identifier<Block>?) -> Identifier<Block>? {
+        if let block = layout.block(for: blockId) {
+            return .init(uuid: block.name)
+        } else {
+            return blockId
+        }
+    }
+
+    private func namedId(_ turnoutId: Identifier<Turnout>?) -> Identifier<Turnout>? {
+        if let turnout = layout.turnout(for: turnoutId) {
+            return .init(uuid: turnout.name)
+        } else {
+            return turnoutId
+        }
+    }
+
+    private func namedId(_ socket: Socket?) -> Socket? {
+        guard let socket = socket else {
+            return nil
+        }
+
+        return .init(block: namedId(socket.block), turnout: namedId(socket.turnout), socketId: socket.socketId)
+    }
+
 }
