@@ -78,7 +78,7 @@ struct SettingsView: View {
             .tag(Tabs.routing)
            
             Form {
-                Toggle("Show Debug Controls", isOn: $showDebugControls)
+                Toggle("Developer Tools", isOn: $showDebugControls)
                 Toggle("Record Diagnostic Logs", isOn: $recordDiagnosticLogs)
                 Toggle("Log Routing Resolution Steps", isOn: $logRoutingResolutionSteps)
             }

@@ -163,17 +163,6 @@ struct ToolDebugCommandsView: View {
                 Button("Repair Layout") {
                     DeveloperTools.repair(layout: document.layout)
                 }
-                
-                Divider()
-
-                Button("Generate Swift Code") {
-                    DeveloperTools.generateSwiftCode(layout: document.layout)
-                }
-                
-                Button("Export Layout for Testing") {
-                    DeveloperTools.exportForTesting(layout: document.layout)
-                }
-
             }
         }
     }    

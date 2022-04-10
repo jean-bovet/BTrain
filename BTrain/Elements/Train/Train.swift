@@ -129,6 +129,7 @@ final class Train: Element, ObservableObject {
     // Distance of the magnet from the front of the locomotive (in cm)
     // BTrain expects all the locomotives to have a magnet
     // to allow detection via a reed feedback.
+    // TODO: use this in distance calculation?
     @Published var magnetDistance: Double?
 
     // Speed of the locomotive

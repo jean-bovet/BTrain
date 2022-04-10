@@ -17,27 +17,5 @@ struct DeveloperTools {
     static func repair(layout: Layout) {
         LayoutDiagnostic(layout: layout).repair()
     }
-    
-    static func generateSwiftCode(layout: Layout) {
-        let code = Layout2Swift(layout: layout).swift()
-        NSPasteboard.general.declareTypes([.string], owner: nil)
-        NSPasteboard.general.setString(code, forType: .string)
-    }
-    
-    static func exportForTesting(layout: Layout) {
-        let savePanel = NSSavePanel()
-        savePanel.allowedContentTypes = [.json]
-        savePanel.canCreateDirectories = true
-        savePanel.title = "Export Layout for Testing"
-        let response = savePanel.runModal()
-        if let url = savePanel.url, response == .OK {
-            do {
-                let data = try layout.encode()
-                try data.write(to: url)
-            } catch {
-                BTLogger.error("Error exporting layout: \(error)")
-            }
-        }        
-    }
-    
+        
 }
