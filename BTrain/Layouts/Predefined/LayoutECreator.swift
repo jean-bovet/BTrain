@@ -45,8 +45,7 @@ final class LayoutECreator: LayoutCreating {
         return "Loop with Alternatives"
     }
     
-    func newLayoutWithLengths() -> Layout {
-        let l = newLayout()
+    func newLayoutWithLengths(_ l: Layout) -> Layout {
         l.trains.forEach {
             $0.locomotiveLength = 20
             $0.wagonsLength = 80
@@ -64,91 +63,7 @@ final class LayoutECreator: LayoutCreating {
     }
     
     func newLayout() -> Layout {
-        let l = Layout(uuid: LayoutDCreator.id.uuid)
-        l.name = name
-
-        // Blocks
-
-        let b_b1 = Block("b1", type: .free, center: CGPoint(x: 55.0, y: 155.0), rotationAngle: -.pi/2)
-        let b_b2 = Block("b2", type: .free, center: CGPoint(x: 285.0, y: 55.0), rotationAngle: 0.0)
-        let b_b3 = Block("b3", type: .free, center: CGPoint(x: 535.0, y: 195.0), rotationAngle: .pi/2)
-        let b_b4 = Block("b4", type: .free, center: CGPoint(x: 285.0, y: 285.0), rotationAngle: -.pi)
-        let b_b5 = Block("b5", type: .free, center: CGPoint(x: 285.0, y: 115.0), rotationAngle: -.pi)
-        let b_b6 = Block("b6", type: .free, center: CGPoint(x: 285.0, y: 205.0), rotationAngle: -.pi)
-        let b_s1 = Block("s1", type: .station, center: CGPoint(x: 275.0, y: 345.0), rotationAngle: -.pi)
-        let b_s2 = Block("s2", type: .station, center: CGPoint(x: 275.0, y: 395.0), rotationAngle: -.pi)
-        l.add([b_b1,b_b2,b_b3,b_b4,b_b5,b_b6,b_s1,b_s2])
-
-        // Feedbacks
-
-        let f_fb1 = Feedback("fb1", deviceID: 1, contactID: 1)
-        let f_fb2 = Feedback("fb2", deviceID: 1, contactID: 2)
-        let f_fb3_1 = Feedback("fb3.1", deviceID: 1, contactID: 31)
-        let f_fb3_2 = Feedback("fb3.2", deviceID: 1, contactID: 32)
-        let f_fb3_3 = Feedback("fb3.3", deviceID: 1, contactID: 33)
-        let f_fb4 = Feedback("fb4", deviceID: 1, contactID: 4)
-        let f_fb5 = Feedback("fb5", deviceID: 1, contactID: 5)
-        let f_fb6 = Feedback("fb6", deviceID: 1, contactID: 6)
-        let f_fs1 = Feedback("fs1", deviceID: 1, contactID: 7)
-        let f_fs2 = Feedback("fs2", deviceID: 1, contactID: 8)
-        l.feedbacks.append(contentsOf: [f_fb1,f_fb2,f_fb3_1,f_fb3_2,f_fb3_3,f_fb4,f_fb5,f_fb6,f_fs1,f_fs2])
-        l.assign(b_b1, [f_fb1])
-        l.assign(b_b2, [f_fb2])
-        l.assign(b_b3, [f_fb3_1,f_fb3_2,f_fb3_3])
-        l.assign(b_b4, [f_fb4])
-        l.assign(b_b5, [f_fb5])
-        l.assign(b_b6, [f_fb6])
-        l.assign(b_s1, [f_fs1])
-        l.assign(b_s2, [f_fs2])
-
-        // Turnouts
-
-        let t_t1 = Turnout("t1", type: .singleLeft, address: .init(3,.MM), state: .straight, center: CGPoint(x: 105.0, y: 395.0), rotationAngle: 0.0)
-        let t_t2 = Turnout("t2", type: .singleLeft, address: .init(3,.MM), state: .straight, center: CGPoint(x: 55.0, y: 245.0), rotationAngle: .pi/2)
-        let t_t3 = Turnout("t3", type: .singleRight, address: .init(3,.MM), state: .straight, center: CGPoint(x: 125.0, y: 55.0), rotationAngle: 0.0)
-        let t_t4 = Turnout("t4", type: .singleLeft, address: .init(3,.MM), state: .straight, center: CGPoint(x: 455.0, y: 55.0), rotationAngle: .pi)
-        let t_t5 = Turnout("t5", type: .singleRight, address: .init(3,.MM), state: .straight, center: CGPoint(x: 535.0, y: 245.0), rotationAngle: .pi/2)
-        let t_t6 = Turnout("t6", type: .singleRight, address: .init(3,.MM), state: .straight, center: CGPoint(x: 475.0, y: 395.0), rotationAngle: .pi)
-        let t_t7 = Turnout("t7", type: .singleRight, address: .init(3,.MM), state: .straight, center: CGPoint(x: 425.0, y: 285.0), rotationAngle: .pi)
-        let t_t8 = Turnout("t8", type: .singleLeft, address: .init(3,.MM), state: .straight, center: CGPoint(x: 145.0, y: 285.0), rotationAngle: 0.0)
-        l.turnouts.append(contentsOf: [t_t1,t_t2,t_t3,t_t4,t_t5,t_t6,t_t7,t_t8])
-
-        // Transitions
-
-        l.link(from: b_s1.next, to: t_t1.socket2)
-        l.link(from: t_t1.socket0, to: t_t2.socket1)
-        l.link(from: t_t2.socket0, to: b_b1.previous)
-        l.link(from: b_b1.next, to: t_t3.socket0)
-        l.link(from: t_t3.socket1, to: b_b2.previous)
-        l.link(from: b_b2.next, to: t_t4.socket1)
-        l.link(from: t_t4.socket0, to: b_b3.previous)
-        l.link(from: b_b3.next, to: t_t5.socket0)
-        l.link(from: t_t5.socket1, to: t_t6.socket0)
-        l.link(from: t_t6.socket2, to: b_s1.previous)
-        l.link(from: b_s2.next, to: t_t1.socket1)
-        l.link(from: t_t6.socket1, to: b_s2.previous)
-        l.link(from: t_t5.socket2, to: t_t7.socket0)
-        l.link(from: t_t7.socket1, to: b_b4.previous)
-        l.link(from: b_b4.next, to: t_t8.socket1)
-        l.link(from: t_t8.socket0, to: t_t2.socket2)
-        l.link(from: t_t7.socket2, to: b_b5.previous)
-        l.link(from: b_b5.next, to: t_t3.socket2)
-        l.link(from: t_t4.socket2, to: b_b6.previous)
-        l.link(from: b_b6.next, to: t_t8.socket2)
-
-        // Routes
-
-        l.newRoute("0", name: "S1 to S1", [Route.Step(b_s1,.next),Route.Step(b_b1,.next),Route.Step(b_b2,.next),Route.Step(b_b3,.next),Route.Step(b_s1,.next)])
-        l.newRoute("1", name: "S1 to S1 Reversed", [Route.Step(b_s1,.previous),Route.Step(b_b3,.previous),Route.Step(b_b2,.previous),Route.Step(b_b1,.previous),Route.Step(b_s1,.previous)])
-        l.newRoute("2", name: "S1 to S2 to S1", [Route.Step(b_s1,.next),Route.Step(b_b1,.next),Route.Step(b_b2,.next),Route.Step(b_b3,.next),Route.Step(b_s2,.next),Route.Step(b_b1,.next),Route.Step(b_b2,.next),Route.Step(b_b3,.next),Route.Step(b_s1,.next)])
-        l.newRoute("3", name: "S1 to S2", [Route.Step(b_s1,.next),Route.Step(b_b1,.next),Route.Step(b_b2,.next),Route.Step(b_b3,.next),Route.Step(b_s2,.next)])
-
-        // Trains
-
-        l.addTrain(.init(uuid: "0", name: "Rail 2000"))
-        l.addTrain(.init(uuid: "1", name: "Old Loco"))
-        
-        return l
+        LayoutFactory.layoutFromBundle(named: "Layout E")
     }
     
 }

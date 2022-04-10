@@ -386,7 +386,7 @@ class AutomaticRoutingTests: BTTestCase {
     }
 
     func testAutomaticRouteModeOnceWithReservedBlock() throws {
-        let layout = LayoutECreator().newLayout()
+        let layout = LayoutECreator().newLayout().removeTrainGeometry()
         let s2 = layout.block(for: Identifier<Block>(uuid: "s2"))!
         let b3 = layout.block(for: Identifier<Block>(uuid: "b3"))!
 

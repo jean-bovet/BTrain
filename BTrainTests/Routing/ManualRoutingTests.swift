@@ -675,7 +675,7 @@ class ManualRoutingTests: BTTestCase {
     }
 
     func testEntryBrakeStopFeedbacks() throws {
-        let layout = LayoutECreator().newLayout()
+        let layout = LayoutECreator().newLayout().removeTrainGeometry()
                         
         let train = layout.trains[0]
         
@@ -739,7 +739,7 @@ class ManualRoutingTests: BTTestCase {
     }
     
     func testRouteStationRestart() throws {
-        let layout = LayoutECreator().newLayout()
+        let layout = LayoutECreator().newLayout().removeTrainGeometry()
 
         let p = Package(layout: layout)
         try p.prepare(routeID: "2", trainID: "0", fromBlockId: "s1")
@@ -811,7 +811,7 @@ class ManualRoutingTests: BTTestCase {
     }
 
     func testTrainWithWagonsInFront() throws {
-        let layout = LayoutECreator().newLayoutWithLengths()
+        let layout = LayoutECreator().newLayoutWithLengths(LayoutECreator().newLayout().removeTrainGeometry().removeTurnoutGeometry())
         layout.turnouts[0].state = .branchLeft
         layout.turnouts[5].state = .branchRight
 
