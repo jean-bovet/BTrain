@@ -32,6 +32,8 @@ final class LayoutFactory {
     static let GlobalLayouts: [LayoutCreating] = [
         LayoutBlankCreator(),
         LayoutPointToPoint(),
+        LayoutPointToLoop(),
+        LayoutLoopToLoop(),
         LayoutFigure8(),
         LayoutLoop1(),
         LayoutLoop2(),
