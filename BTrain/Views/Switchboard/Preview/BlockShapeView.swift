@@ -21,7 +21,10 @@ struct BlockShapeView: View {
     let viewSize = CGSize(width: 104, height: 34)
     
     var block: Block {
-        return Block("", type: category, center: .init(x: viewSize.width/2, y: viewSize.height/2), rotationAngle: 0)
+        let b = Block(name: "")
+        b.category = category
+        b.center = .init(x: viewSize.width/2, y: viewSize.height/2)
+        return b
     }
     
     var shape: BlockShape {

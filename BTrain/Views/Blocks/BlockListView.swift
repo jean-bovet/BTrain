@@ -50,7 +50,7 @@ struct BlockListView: View {
                         Spacer()
 
                         Button("+") {
-                            let block = layout.newBlock(name: "New Block", type: .free)
+                            let block = layout.newBlock(name: "New Block", category: .free)
                             undoManager?.registerUndo(withTarget: layout, handler: { layout in
                                 layout.remove(blockID: block.id)
                             })

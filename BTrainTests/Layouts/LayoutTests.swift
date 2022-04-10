@@ -27,8 +27,8 @@ class LayoutTests: XCTestCase {
         let layout = Layout()
         
         let t1 = layout.addTrain(Train(uuid: "t1", name: "t1", address: 0))
-        let b1 = layout.newBlock(name: "b1", type: .free)
-        let b2 = layout.newBlock(name: "b2", type: .free)
+        let b1 = layout.newBlock(name: "b1", category: .free)
+        let b2 = layout.newBlock(name: "b2", category: .free)
         layout.link(from: b1.next, to: b2.previous)
         layout.link(from: b2.next, to: b1.previous)
 
@@ -47,7 +47,7 @@ class LayoutTests: XCTestCase {
 
     func testAddAndRemoveFeedback() throws {
         let layout = Layout()
-        let b1 = layout.newBlock(name: "b1", type: .free)
+        let b1 = layout.newBlock(name: "b1", category: .free)
 
         let f1 = layout.newFeedback()
         layout.assign(b1, [f1])
@@ -63,7 +63,7 @@ class LayoutTests: XCTestCase {
     
     func testAddAndRemoveTurnout() throws {
         let layout = Layout()
-        let b1 = layout.newBlock(name: "b1", type: .free)
+        let b1 = layout.newBlock(name: "b1", category: .free)
 
         let t1 = layout.newTurnout(name: "t1", category: .doubleSlip)
         layout.link(from: b1.next, to: t1.socket0)

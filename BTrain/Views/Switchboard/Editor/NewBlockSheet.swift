@@ -47,7 +47,7 @@ struct NewBlockSheet: View {
                 Spacer().fixedSpace()
                 
                 Button("OK") {
-                    layout.newBlock(name: name, type: category)
+                    layout.newBlock(name: name, category: category)
                     presentationMode.wrappedValue.dismiss()
                 }.keyboardShortcut(.defaultAction)
             }

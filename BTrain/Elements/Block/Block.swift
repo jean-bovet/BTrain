@@ -90,7 +90,7 @@ final class Block: Element, ObservableObject {
     @Published var name: String
     
     // The category of the block
-    @Published var category: Category
+    @Published var category: Category = .free
     
     // Length of the block (in cm)
     @Published var length: Double?
@@ -142,18 +142,13 @@ final class Block: Element, ObservableObject {
     // Optional block-specific braking speed. If nil, the default braking speed is used
     @Published var brakingSpeed: TrainSpeed.UnitKph?
     
-    init(id: Identifier<Block>, name: String, type: Category, center: CGPoint, rotationAngle: CGFloat, waitingTime: TimeInterval? = nil, length: Double? = nil) {
+    init(id: Identifier<Block>, name: String = "") {
         self.id = id
         self.name = name
-        self.category = type
-        self.center = center
-        self.rotationAngle = rotationAngle
-        self.waitingTime = waitingTime ?? 10.0
-        self.length = length
     }
     
-    convenience init(_ uuid: String = UUID().uuidString, type: Category, center: CGPoint = .zero, rotationAngle: CGFloat = 0, waitingTime: TimeInterval? = nil, length: Double? = nil) {
-        self.init(id: Identifier(uuid: uuid), name: uuid, type: type, center: center, rotationAngle: rotationAngle, waitingTime: waitingTime, length: length)
+    convenience init(name: String = UUID().uuidString) {
+        self.init(id: Identifier<Block>(uuid: name), name: name)
     }
         
 }
@@ -172,14 +167,17 @@ extension Block: Codable {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         let id = try container.decode(Identifier<Block>.self, forKey: CodingKeys.id)
         let name = try container.decode(String.self, forKey: CodingKeys.name)
-        let category = try container.decode(Category.self, forKey: CodingKeys.type)
-        let center = try container.decode(CGPoint.self, forKey: CodingKeys.center)
-        let rotationAngle = try container.decode(Double.self, forKey: CodingKeys.angle)
-        let waitingTime = try container.decodeIfPresent(TimeInterval.self, forKey: CodingKeys.waitingTime)
-        let length = try container.decodeIfPresent(Double.self, forKey: CodingKeys.length)
 
-        self.init(id: id, name: name, type: category, center: center, rotationAngle: rotationAngle, waitingTime: waitingTime, length: length)
-        
+        self.init(id: id, name: name)
+
+        self.category = try container.decode(Category.self, forKey: CodingKeys.type)
+        self.center = try container.decode(CGPoint.self, forKey: CodingKeys.center)
+        self.rotationAngle = try container.decode(Double.self, forKey: CodingKeys.angle)
+        if let waitingTime = try container.decodeIfPresent(TimeInterval.self, forKey: CodingKeys.waitingTime) {
+            self.waitingTime = waitingTime
+        }
+        self.length = try container.decodeIfPresent(Double.self, forKey: CodingKeys.length)
+
         self.enabled = try container.decodeIfPresent(Bool.self, forKey: CodingKeys.enabled) ?? true
         self.reserved = try container.decodeIfPresent(Reservation.self, forKey: CodingKeys.reserved)
         self.train = try container.decodeIfPresent(TrainInstance.self, forKey: CodingKeys.train)

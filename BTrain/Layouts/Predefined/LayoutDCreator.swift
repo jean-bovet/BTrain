@@ -30,9 +30,11 @@ final class LayoutDCreator: LayoutCreating {
         l.name = name
 
         // Blocks
-        let b1 = Block("1", type: .free, center: CGPoint(x: 100, y: 100))
-        let b2 = Block("2", type: .free, center: CGPoint(x: 300, y: 100))
-        l.add([b1, b2])
+        let b1 = l.newBlock(name: "1", category: .free)
+        b1.center = CGPoint(x: 100, y: 100)
+
+        let b2 = l.newBlock(name: "2", category: .free)
+        b2.center = CGPoint(x: 300, y: 100)
 
         // Feedbacks
         let f11 = Feedback("f11", deviceID: 1, contactID: 1)

@@ -30,8 +30,10 @@ extension Layout {
     }
 
     @discardableResult
-    func newBlock(name: String, type: Block.Category) -> Block {
-        let block = Block(id: Layout.newIdentity(blockMap), name: name, type: type, center: .init(x: 100, y: 100), rotationAngle: 0)
+    func newBlock(name: String, category: Block.Category) -> Block {
+        let block = Block(id: Layout.newIdentity(blockMap), name: name)
+        block.category = category
+        block.center = .init(x: 100, y: 100)
         blockMap[block.id] = block
         return block
     }

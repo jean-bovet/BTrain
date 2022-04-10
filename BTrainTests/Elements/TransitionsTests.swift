@@ -16,8 +16,9 @@ import XCTest
 class TransitionsTests: XCTestCase {
 
     func testCodable() throws {
-        let b1 = Block("b1", type: .station, center: .zero, rotationAngle: 0)
-        let b2 = Block("b2", type: .free, center: .zero, rotationAngle: 0)
+        let b1 = Block(name: "b1")
+        b1.category = .station
+        let b2 = Block(name: "b2")
 
         let t1 = Transition(id: "1", a: Socket.block(b1.id, socketId: Block.nextSocket), b: Socket.block(b2.id, socketId: Block.previousSocket))
         
@@ -33,8 +34,9 @@ class TransitionsTests: XCTestCase {
     }
     
     func testReverse() {
-        let b1 = Block("b1", type: .station, center: .zero, rotationAngle: 0)
-        let b2 = Block("b2", type: .free, center: .zero, rotationAngle: 0)
+        let b1 = Block(name: "b1")
+        b1.category = .station
+        let b2 = Block(name: "b2")
 
         let t1 = Transition(id: "1", a: Socket.block(b1.id, socketId: Block.nextSocket), b: Socket.block(b2.id, socketId: Block.previousSocket))
 
@@ -64,8 +66,9 @@ class TransitionsTests: XCTestCase {
     }
     
     func testSame() {
-        let b1 = Block("b1", type: .station, center: .zero, rotationAngle: 0)
-        let b2 = Block("b2", type: .free, center: .zero, rotationAngle: 0)
+        let b1 = Block(name: "b1")
+        b1.category = .station
+        let b2 = Block(name: "b2")
 
         let t1 = Transition(id: "1", a: Socket.block(b1.id, socketId: Block.nextSocket), b: Socket.block(b2.id, socketId: Block.previousSocket))
         let t2 = Transition(id: "2", a: Socket.block(b2.id, socketId: Block.nextSocket), b: Socket.block(b1.id, socketId: Block.previousSocket))

@@ -46,15 +46,15 @@ final class LayoutRouteParser {
         
         while (sp.more) {
             if sp.matches("!{") {
-                parseBlock(type: .station, direction: .previous)
+                parseBlock(category: .station, direction: .previous)
             } else if sp.matches("{") {
-                parseBlock(type: .station, direction: .next)
+                parseBlock(category: .station, direction: .next)
             } else if sp.matches("![") {
-                parseBlock(type: .free, direction: .previous)
+                parseBlock(category: .free, direction: .previous)
             } else if sp.matches("|[") {
-                parseBlock(type: .sidingPrevious, direction: .next)
+                parseBlock(category: .sidingPrevious, direction: .next)
             } else if sp.matches("[") {
-                parseBlock(type: .free, direction: .next)
+                parseBlock(category: .free, direction: .next)
             } else if sp.matches("<") {
                 parseTurnouts()
             } else if sp.matches(" ") {
@@ -82,11 +82,11 @@ final class LayoutRouteParser {
         }
     }
             
-    func parseBlock(type: Block.Category, direction: Direction) {
+    func parseBlock(category: Block.Category, direction: Direction) {
         let block: Block
         let newBlock: Bool
         
-        let blockHeader = parseBlockHeader(type: type, direction: direction)
+        let blockHeader = parseBlockHeader(type: category, direction: direction)
         
         // Parse the optional digit that indicates a reference to an existing block
         // Example: { ≏ ≏ } [[ ≏ 🟢🚂 ≏ ]] [[ ≏ ≏ ]] {b0 ≏ ≏ }
@@ -94,30 +94,32 @@ final class LayoutRouteParser {
             let blockID = Identifier<Block>(uuid: blockName)
             if let existingBlock = layout.block(for: blockID) {
                 block = existingBlock
-                assert(block.category == type, "The existing block \(blockID) does not match the type defined in the ASCII representation")
+                assert(block.category == category, "The existing block \(blockID) does not match the type defined in the ASCII representation")
                 assert(block.reserved == blockHeader.reserved, "The existing block \(blockID) does not match the reserved type defined in the ASCII representation")
                 assert(block.reserved?.direction == blockHeader.reserved?.direction, "The existing block \(blockID) does not match the reserved type defined in the ASCII representation")
                 newBlock = false
             } else {
-                block = Block(blockID.uuid, type: type)
+                block = Block(name: blockID.uuid)
+                block.category = category
                 block.reserved = blockHeader.reserved
                 newBlock = true
             }
         } else {
             // Note: use a UUID that is using the number of blocks created so far
             // so the UUID is easy to unit test
-            block = Block(String(route.steps.count), type: type)
+            block = Block(name: String(route.steps.count))
+            block.category = category
             block.reserved = blockHeader.reserved
             newBlock = true
         }
                     
         if direction == .previous {
             let index = sp.index
-            let numberOfFeedbacks = parseNumberOfFeedbacks(block: block, newBlock: newBlock, type: type)
+            let numberOfFeedbacks = parseNumberOfFeedbacks(block: block, newBlock: newBlock, type: category)
             sp.index = index
-            parseBlockContent(block: block, newBlock: newBlock, type: type, numberOfFeedbacks: numberOfFeedbacks)
+            parseBlockContent(block: block, newBlock: newBlock, type: category, numberOfFeedbacks: numberOfFeedbacks)
         } else {
-            parseBlockContent(block: block, newBlock: newBlock, type: type, numberOfFeedbacks: nil)
+            parseBlockContent(block: block, newBlock: newBlock, type: category, numberOfFeedbacks: nil)
         }
         
         blocks.insert(block)

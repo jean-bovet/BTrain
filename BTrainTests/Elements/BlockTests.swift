@@ -23,7 +23,10 @@ extension Reservation {
 class BlockTests: XCTestCase {
     
     func testBlockDirection() {
-        let b1 = Block("1", type: .station, center: .init(x: 10, y: 20), rotationAngle: .pi)
+        let b1 = Block(name: "empty")
+        b1.category = .station
+        b1.center = .init(x: 10, y: 20)
+        b1.rotationAngle = .pi
         b1.reserved = Reservation("t1", .previous)
         b1.train = .init(b1.reserved!.trainId, .previous)
         XCTAssertEqual(b1.train?.direction, .previous)
@@ -33,8 +36,11 @@ class BlockTests: XCTestCase {
     }
     
     func testBlockSockets() {
-        let b1 = Block("1", type: .station, center: .init(x: 10, y: 20), rotationAngle: .pi)
-        
+        let b1 = Block(name: "empty")
+        b1.category = .station
+        b1.center = .init(x: 10, y: 20)
+        b1.rotationAngle = .pi
+
         XCTAssertNil(b1.previous.turnout)
         XCTAssertEqual(b1.previous.block, b1.id)
         XCTAssertEqual(b1.previous.socketId, Block.previousSocket)
@@ -49,7 +55,10 @@ class BlockTests: XCTestCase {
     }
     
     func testCodable() throws {
-        let b1 = Block("1", type: .station, center: .init(x: 10, y: 20), rotationAngle: .pi)
+        let b1 = Block(name: "empty")
+        b1.category = .station
+        b1.center = .init(x: 10, y: 20)
+        b1.rotationAngle = .pi
         b1.reserved = Reservation("t1", .previous)
         b1.train = .init(b1.reserved!.trainId, .previous)
         
@@ -76,7 +85,7 @@ class BlockTests: XCTestCase {
     }
 
     func testFeedbacksForEmptyBlock() {
-        let block = Block("empty", type: .free, center: .zero, rotationAngle: 0)
+        let block = Block(name: "empty")
 
         XCTAssertNil(block.entryFeedback(for: .next))
         XCTAssertNil(block.entryFeedback(for: .previous))
@@ -94,7 +103,7 @@ class BlockTests: XCTestCase {
     let f4 = Identifier<Feedback>(uuid: "f4")
 
     func testFeedbacksForBlockWith1Feedback() {
-        let block = Block("empty", type: .free, center: .zero, rotationAngle: 0)
+        let block = Block(name: "empty")
         block.assign([f1])
         
         XCTAssertEqual(block.entryFeedback(for: .next), f1)
@@ -108,7 +117,7 @@ class BlockTests: XCTestCase {
     }
     
     func testFeedbacksForBlockWith2Feedbacks() {
-        let block = Block("empty", type: .free, center: .zero, rotationAngle: 0)
+        let block = Block(name: "empty")
         block.assign([f1, f2])
         
         XCTAssertEqual(block.entryFeedback(for: .next), f1)
@@ -122,7 +131,7 @@ class BlockTests: XCTestCase {
     }
     
     func testFeedbacksForBlockWith3Feedbacks() {
-        let block = Block("empty", type: .free, center: .zero, rotationAngle: 0)
+        let block = Block(name: "empty")
         block.assign([f1, f2, f3])
         
         XCTAssertEqual(block.entryFeedback(for: .next), f1)
@@ -136,7 +145,7 @@ class BlockTests: XCTestCase {
     }
     
     func testFeedbacksForBlockWith4Feedbacks() {
-        let block = Block("empty", type: .free, center: .zero, rotationAngle: 0)
+        let block = Block(name: "empty")
         block.assign([f1, f2, f3, f4])
 
         XCTAssertEqual(block.entryFeedback(for: .next), f1)

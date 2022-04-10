@@ -28,6 +28,6 @@ struct BlockSpeedView: View {
 
 struct BlockSpeedView_Previews: PreviewProvider {
     static var previews: some View {
-        BlockSpeedView(block: Block(type: .free))
+        BlockSpeedView(block: Block())
     }
 }
