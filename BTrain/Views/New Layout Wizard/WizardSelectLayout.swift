@@ -36,23 +36,26 @@ struct WizardSelectLayout: View {
             ScrollView(.horizontal) {
                 LazyHStack {
                     ForEach(LayoutFactory.GlobalLayoutIDs, id:\.self) { layout in
-                        ZStack {
-                            Rectangle()
-                                .frame(width: previewSize.width, height: previewSize.height)
-                                .cornerRadius(5)
-                                .foregroundColor(backgroundColor)
-                                .shadow(radius: 5)
-                            SwitchboardPreview(previewSize: previewSize, layoutId: layout)
-                                .frame(width: previewSize.width, height: previewSize.height)
-                            Rectangle()
-                                .frame(width: previewSize.width, height: previewSize.height)
-                                .background(.clear)
-                                .foregroundColor(.clear)
-                                .border(.tint, width: 3)
-                                .hidden(layout != selectedLayout)
-                        }
-                        .onTapGesture {
-                            selectedLayout = layout
+                        VStack {
+                            ZStack {
+                                Rectangle()
+                                    .frame(width: previewSize.width, height: previewSize.height)
+                                    .cornerRadius(5)
+                                    .foregroundColor(backgroundColor)
+                                    .shadow(radius: 5)
+                                SwitchboardPreview(previewSize: previewSize, layoutId: layout)
+                                    .frame(width: previewSize.width, height: previewSize.height)
+                                Rectangle()
+                                    .frame(width: previewSize.width, height: previewSize.height)
+                                    .background(.clear)
+                                    .foregroundColor(.clear)
+                                    .border(.tint, width: 3)
+                                    .hidden(layout != selectedLayout)
+                            }
+                            .onTapGesture {
+                                selectedLayout = layout
+                            }
+                            Text(layout.uuid)
                         }
                         .padding()
                     }
@@ -87,19 +90,13 @@ struct SwitchboardPreview: View {
     }
     
     var body: some View {
-        Group {
-            if layoutId == LayoutBlankCreator.id {
-                Text("Empty Layout")
-            } else {
-                SwitchBoardView(switchboard: switchboard,
-                                state: switchboard.state,
-                                layout: layout,
-                                layoutController: coordinator,
-                                gestureEnabled: false)
-                    .frame(width: switchboard.idealSize.width, height: switchboard.idealSize.height)
-                    .scaleEffect(scale)
-            }
-        }
+        SwitchBoardView(switchboard: switchboard,
+                        state: switchboard.state,
+                        layout: layout,
+                        layoutController: coordinator,
+                        gestureEnabled: false)
+            .frame(width: switchboard.idealSize.width, height: switchboard.idealSize.height)
+            .scaleEffect(scale)
     }
 }
 

@@ -17,7 +17,7 @@ import XCTest
 class LayoutCreatorTests: XCTestCase {
 
     func testEmptyLayout() {
-        XCTAssertEqual(LayoutBlankCreator.id.uuid, "layout")
+        XCTAssertEqual(LayoutBlankCreator.id.uuid, "Empty Layout")
         let layout = LayoutBlankCreator().newLayout()
         XCTAssertEqual(layout.blockMap.count, 0)
     }
