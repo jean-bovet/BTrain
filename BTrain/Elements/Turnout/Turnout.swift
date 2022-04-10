@@ -106,25 +106,15 @@ final class Turnout: Element, ObservableObject {
         category == .threeWay
     }
     
-    init(id: Identifier<Turnout>, name: String, type: Category, address: CommandTurnoutAddress, address2: CommandTurnoutAddress? = nil,
-         state: State = .straight, center: CGPoint, rotationAngle: CGFloat, length: Double? = nil) {
+    init(id: Identifier<Turnout>, name: String = "") {
         self.id = id
         self.name = name
-        self.category = type
-        self.address = address
-        if let address2 = address2 {
-            self.address2 = address2
-        }
-        self.state = state
-        self.center = center
-        self.rotationAngle = rotationAngle
-        self.length = length
-    }
-
-    convenience init(_ uuid: String = UUID().uuidString, type: Category, address: CommandTurnoutAddress, address2: CommandTurnoutAddress? = nil, state: State = .straight, center: CGPoint = .zero, rotationAngle: CGFloat = 0, length: Double? = nil) {
-        self.init(id: Identifier(uuid: uuid), name: uuid, type: type, address: address, address2: address2, state: state, center: center, rotationAngle: rotationAngle, length: length)
     }
     
+    convenience init(name: String = UUID().uuidString) {
+        self.init(id: Identifier<Turnout>(uuid: name), name: name)
+    }
+        
     func updateStateSpeedLimits() {
         let previous = stateSpeedLimit
         stateSpeedLimit.removeAll()
@@ -166,17 +156,19 @@ extension Turnout: Codable {
     convenience init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         let id = try container.decode(Identifier<Turnout>.self, forKey: CodingKeys.id)
-        let name = try container.decode(String.self, forKey: CodingKeys.name)
-        let type = try container.decode(Category.self, forKey: CodingKeys.type)
-        let address = try container.decode(CommandTurnoutAddress.self, forKey: CodingKeys.address)
-        let address2 = try container.decodeIfPresent(CommandTurnoutAddress.self, forKey: CodingKeys.address2)
-        let center = try container.decode(CGPoint.self, forKey: CodingKeys.center)
-        let rotationAngle = try container.decode(Double.self, forKey: CodingKeys.angle)
-        let length = try container.decodeIfPresent(Double.self, forKey: CodingKeys.length)
-        let state = try container.decode(State.self, forKey: CodingKeys.state)
 
-        self.init(id: id, name: name, type: type, address: address, address2: address2, state: state, center: center, rotationAngle: rotationAngle, length: length)
+        self.init(id: id)
         self.enabled = try container.decodeIfPresent(Bool.self, forKey: CodingKeys.enabled) ?? true
+        self.name = try container.decode(String.self, forKey: CodingKeys.name)
+        self.category = try container.decode(Category.self, forKey: CodingKeys.type)
+        self.address = try container.decode(CommandTurnoutAddress.self, forKey: CodingKeys.address)
+        if let address2 = try container.decodeIfPresent(CommandTurnoutAddress.self, forKey: CodingKeys.address2) {
+            self.address2 = address2
+        }
+        self.center = try container.decode(CGPoint.self, forKey: CodingKeys.center)
+        self.rotationAngle = try container.decode(Double.self, forKey: CodingKeys.angle)
+        self.length = try container.decodeIfPresent(Double.self, forKey: CodingKeys.length)
+        self.state = try container.decode(State.self, forKey: CodingKeys.state)
         if let reserved = try? container.decodeIfPresent(Identifier<Train>.self, forKey: CodingKeys.reserved) {
             self.reserved = .init(train: reserved, sockets: nil)
         } else {

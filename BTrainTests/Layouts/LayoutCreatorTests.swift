@@ -71,12 +71,4 @@ class LayoutCreatorTests: XCTestCase {
         XCTAssertEqual(layout.blockMap.count, 29)
     }
 
-    func testLayoutG() {
-        let c = LayoutGCreator()
-        XCTAssertEqual(c.name, "Layout with All Elements")
-        
-        let layout = c.newLayout()
-        XCTAssertEqual(layout.blockMap.count, 8)
-    }
-
 }

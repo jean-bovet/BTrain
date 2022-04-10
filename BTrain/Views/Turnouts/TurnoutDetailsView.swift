@@ -158,6 +158,6 @@ extension Turnout {
 
 struct TurnoutDetailsView_Previews: PreviewProvider {
     static var previews: some View {
-        TurnoutDetailsView(layout: Layout(), turnout: Turnout(type: .singleLeft, address: .init(0, nil)))
+        TurnoutDetailsView(layout: Layout(), turnout: Turnout())
     }
 }

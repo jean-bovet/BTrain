@@ -46,7 +46,7 @@ struct TurnoutListView: View {
                     Spacer()
                     
                     Button("+") {
-                        let turnout = layout.newTurnout(name: "New Turnout", type: .singleLeft)
+                        let turnout = layout.newTurnout(name: "New Turnout", category: .singleLeft)
                         undoManager?.registerUndo(withTarget: layout, handler: { layout in
                             layout.remove(turnoutID: turnout.id)
                         })

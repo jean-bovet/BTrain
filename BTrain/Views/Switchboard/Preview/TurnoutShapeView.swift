@@ -21,7 +21,10 @@ struct TurnoutShapeView: View {
     let viewSize = CGSize(width: 104, height: 34)
     
     var turnout: Turnout {
-        Turnout("", type: category, address: .init(0, .DCC), state: .straight, center: .init(x: viewSize.width/2, y: viewSize.height/2), rotationAngle: 0)
+        let t = Turnout()
+        t.category = category
+        t.center = .init(x: viewSize.width/2, y: viewSize.height/2)
+        return t
     }
     
     var shape: TurnoutShape {

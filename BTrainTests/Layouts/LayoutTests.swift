@@ -65,7 +65,7 @@ class LayoutTests: XCTestCase {
         let layout = Layout()
         let b1 = layout.newBlock(name: "b1", type: .free)
 
-        let t1 = layout.newTurnout(name: "t1", type: .doubleSlip)
+        let t1 = layout.newTurnout(name: "t1", category: .doubleSlip)
         layout.link(from: b1.next, to: t1.socket0)
         layout.link(from: t1.socket1, to: b1.previous)
         XCTAssertEqual(layout.transitions.count, 2)

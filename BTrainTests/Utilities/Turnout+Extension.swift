@@ -12,39 +12,52 @@
 
 import Foundation
 
-extension Layout {
+@testable import BTrain
+
+extension Turnout {
     
-    @discardableResult
-    func newTurnout(name: String, category: Turnout.Category) -> Turnout {
-        let turnout = Turnout(id: Identifier<Turnout>(uuid: Layout.newIdentity(turnouts)), name: name)
-        turnout.category = category
-        turnout.address = CommandTurnoutAddress(0, .MM)
-        turnout.center = .init(x: 100, y: 100)
-        turnouts.append(turnout)
-        return turnout
+    static func singleLeft() -> Turnout {
+        let t1 = Turnout(name: "1")
+        t1.category = .singleLeft
+        t1.address = .init(1, .MM)
+        t1.state = .straight
+        return t1
+    }
+    
+    static func singleRight() -> Turnout {
+        let t1 = Turnout(name: "1")
+        t1.category = .singleRight
+        t1.address = .init(1, .MM)
+        t1.state = .straight
+        return t1
     }
 
-    func remove(turnoutID: Identifier<Turnout>) {
-        turnouts.removeAll(where: { $0.id == turnoutID })
-        
-        transitions.removeAll { transition in
-            return transition.a.turnout == turnoutID ||
-            transition.b.turnout == turnoutID
-        }
+    static func doubleSlip() -> Turnout {
+        let t1 = Turnout(name: "1")
+        t1.category = .doubleSlip
+        t1.address = .init(1, .MM)
+        t1.address2 = .init(2, .MM)
+        t1.state = .straight
+        return t1
     }
 
-    func turnout(for id: Identifier<Turnout>?) -> Turnout? {
-        return turnouts.first(where: { $0.id == id })
+    static func doubleSlip2() -> Turnout {
+        let t1 = Turnout(name: "1")
+        t1.category = .doubleSlip2
+        t1.address = .init(1, .MM)
+        t1.address2 = .init(2, .MM)
+        t1.state = .straight01
+        return t1
     }
 
-    func sortTurnouts() {
-        turnouts.sort {
-            $0.name < $1.name
-        }
+    static func threeWay() -> Turnout {
+        let t1 = Turnout(name: "1")
+        t1.category = .threeWay
+        t1.address = .init(1, .MM)
+        t1.address2 = .init(2, .MM)
+        t1.state = .straight
+        return t1
     }
 
-    func toggleTurnoutToNextState(turnout: Turnout) {
-        turnout.toggleToNextState()
-        executor.sendTurnoutState(turnout: turnout) {}
-    }
 }
+

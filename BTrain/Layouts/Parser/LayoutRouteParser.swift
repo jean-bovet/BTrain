@@ -466,7 +466,9 @@ final class LayoutRouteParser {
             assert(existingTurnout.state == state, "Mismatching turnout state for turnout \(turnoutName)")
             assert(existingTurnout.reserved?.train.uuid == reservedTrainNumber, "Mismatching turnout reservation for turnout \(turnoutName)")
         } else {
-            let turnout = Turnout(turnoutName, type: type, address: .init(0, .MM), state: state)
+            let turnout = Turnout(id: Identifier<Turnout>(uuid: turnoutName))
+            turnout.category = type
+            turnout.state = state
             if let reservedTrainNumber = reservedTrainNumber {
                 turnout.reserved = .init(train: Identifier<Train>(uuid: reservedTrainNumber), sockets: .init(fromSocketId: fromSocket, toSocketId: toSocket))
             }

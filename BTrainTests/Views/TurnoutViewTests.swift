@@ -33,12 +33,12 @@ class TurnoutViewTests: RootViewTests {
     }
     
     func testTurnoutDetailsView() throws {
-        let sut = TurnoutDetailsView(layout: doc.layout, turnout: Turnout(type: .singleLeft, address: .init(0, .DCC)))
+        let sut = TurnoutDetailsView(layout: doc.layout, turnout: Turnout.singleLeft())
         _ = try sut.inspect().find(text: "Protocol:")
     }
 
     func testTurnoutDetails2View() throws {
-        let sut = TurnoutDetailsView(layout: doc.layout, turnout: Turnout(type: .doubleSlip, address: .init(0, .DCC)))
+        let sut = TurnoutDetailsView(layout: doc.layout, turnout: Turnout.doubleSlip())
         _ = try sut.inspect().find(text: "Protocol:")
     }
 

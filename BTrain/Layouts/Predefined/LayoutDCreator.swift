@@ -43,8 +43,8 @@ final class LayoutDCreator: LayoutCreating {
         l.assign(b2, [f21, f22])
 
         // Turnouts
-        let t12 = Turnout("0", type: .singleRight, address: .init(3, .DCC), center: CGPoint(x: 200, y: 100))
-        l.turnouts.append(contentsOf: [t12])
+        let t = l.newTurnout(name: "0", category: .singleRight)
+        t.center = CGPoint(x: 200, y: 100)
         
         // Train
         l.newTrain()

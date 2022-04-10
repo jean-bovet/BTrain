@@ -24,7 +24,7 @@ class GraphElementTests: XCTestCase {
         
         let layout = Layout()
         layout.blocks.append(Block(id: blockA, name: "A", type: .free, center: .zero, rotationAngle: 0))
-        layout.turnouts.append(Turnout(id: turnoutA, name: "A", type: .doubleSlip, address: .init(0, .DCC), center: .zero, rotationAngle: 0))
+        layout.turnouts.append(Turnout(id: turnoutA, name: "A"))
         
         let blockIdentifier = layout.blocks[0].identifier
         let turnoutIdentifier = layout.turnouts[0].identifier

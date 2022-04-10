@@ -76,7 +76,7 @@ class LayoutErrorTests: XCTestCase {
             try layout.free(fromBlock: b1.id, toBlockNotIncluded: b2.id, direction: .next)
             XCTFail("Must throw an exception")
         } catch {
-            XCTAssertEqual(error.localizedDescription, "Turnout 0 not found")
+            XCTAssertEqual(error.localizedDescription, "Turnout 1 not found")
         }
     }
 
