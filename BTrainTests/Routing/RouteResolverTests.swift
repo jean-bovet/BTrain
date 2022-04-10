@@ -33,6 +33,9 @@ class RouteResolverTests: XCTestCase {
         let route = layout.newRoute(id: "OL3-NE3", [("OL3", .next), ("NE3", .next)])
         
         let resolver = RouteResolver(layout: layout, train: train)
+        
+        train.turnoutsToAvoid = []
+
         var resolvedSteps = try resolver.resolve(steps: ArraySlice(route.steps))!
         
         XCTAssertEqual(route.steps.toStrings(layout), ["OL3:next", "NE3:next"])

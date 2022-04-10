@@ -97,7 +97,7 @@ class PathFinderTests: BTTestCase {
     }
 
     func testPathBetweenStations() throws {
-        let layout = LayoutFCreator().newLayout()
+        let layout = LayoutFCreator().newLayout().removeTrains()
         
         layout.reserve("NE1", with: "1", direction: .next)
         
@@ -105,7 +105,13 @@ class PathFinderTests: BTTestCase {
         let ne1 = layout.block("NE1")
         let lcf1 = layout.block("LCF1")
 
-        let path = layout.path(for: train, from: (ne1, .next), to: (lcf1, .next), reservedBlockBehavior: .avoidFirstReservedBlock)!
+        train.blocksToAvoid = []
+        train.turnoutsToAvoid = []
+        
+        guard let path = layout.path(for: train, from: (ne1, .next), to: (lcf1, .next), reservedBlockBehavior: .avoidFirstReservedBlock) else {
+            XCTFail("Unable to find path from NE1 to LCF1")
+            return
+        }
         XCTAssertEqual(path.elements.toBlockSteps.toStrings(layout), ["NE1:next", "OL1:next", "OL2:next", "OL3:next", "NE4:next", "IL1:next", "IL2:next", "IL3:next", "S:next", "IL1:previous", "IL4:previous", "IL3:previous", "IL2:previous", "OL1:previous", "NE3:previous", "M1:next", "M2U:next", "LCF1:next"])
         
         // Note: by enabling random routing and specifying a destination, the shortest path will be returned

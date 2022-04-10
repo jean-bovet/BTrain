@@ -92,7 +92,7 @@ final class LayoutAsserter {
             let train = layout.train(for: expectedTrain.id)!
             XCTAssertEqual(train.id, expectedTrain.id, "Unexpected train mismatch at index \(index), route \(route.id)")
             XCTAssertEqual(train.position, expectedTrain.position, "Mismatching train position for train \(expectedTrain.id), route \(route.id)")
-            XCTAssertEqual(train.speed, expectedTrain.speed, "Mismatching train speed for train \(expectedTrain.id), route \(route.id)")
+            XCTAssertEqual(train.speed.requestedKph, expectedTrain.speed.requestedKph, accuracy: 1, "Mismatching train speed for train \(expectedTrain.id), route \(route.id)")
         }
                 
         guard route.steps.count == expectedRoute.steps.count else {

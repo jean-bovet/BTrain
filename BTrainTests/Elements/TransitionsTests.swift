@@ -84,7 +84,7 @@ class TransitionsTests: XCTestCase {
     }
     
     func testReserveBehavior() throws {
-        let v8 = LayoutFCreator().newLayout()
+        let v8 = LayoutFCreator().newLayout().removeTrains()
         
         let t1 = v8.trains[0]
         let t2 = v8.trains[1]
@@ -112,7 +112,7 @@ class TransitionsTests: XCTestCase {
         
         // t1 starts but t2 cannot because t1 has reserved all the transitions
         // out of the first block - transitions that are shared with t2's route.
-        XCTAssertEqual(t1.speed.requestedKph, LayoutFactory.DefaultLimitedSpeed)
+        XCTAssertEqual(t1.speed.requestedKph, LayoutFactory.DefaultLimitedSpeed, accuracy: 1)
         XCTAssertEqual(t2.speed.requestedKph, 0)
         
         try assert(v8, r1, t1, "{r16390{NE1 💺16390 ≏ 💺16390 ≏ 🟢🚂16390 }} <r16390<B.4{sl}(2,0),l>> <r16390<A.1{sl}(2,0),l>> <r16390<A.34{ds2}(3,0),b03>> [r16390[OL1 ≏ ≏ ]] <r16390<D.1{sr}(0,1),s>> [r16390[OL2 ≏ ≏ ]] <E.1{sl}(1,0),s> [OL3 ≏ ≏ ] <F.3{sr}(0,1),s> <F.1{sr}(0,2),r> <E.4{sr}(0,2),r> {r16390{NE1 💺16390 ≏ 💺16390 ≏ 🟢🚂16390 }}")

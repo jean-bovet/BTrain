@@ -21,7 +21,7 @@ struct GraphPath: Equatable {
     }
         
     var toStrings: [String] {
-        elements.map { $0.toString }
+        elements.map { $0.description }
     }
 
     init(_ elements: [GraphPathElement]) {
@@ -69,13 +69,13 @@ extension GraphPath {
 // Each element is a `node` with specified exit and enter sockets.
 // A starting element only has an exit socket while the last
 // element in the path only has an enter socket.
-struct GraphPathElement: Equatable, Hashable {
+struct GraphPathElement: Equatable, Hashable, CustomStringConvertible {
         
     let node: GraphNode
     let entrySocket: SocketId?
     let exitSocket: SocketId?
 
-    var toString: String {
+    var description: String {
         var text = ""
         if let enterSocket = entrySocket {
             text += "\(enterSocket):"

@@ -88,6 +88,11 @@ extension Layout {
         }
         return self
     }
+    
+    func removeTrains() -> Layout {
+        removeAllTrains()
+        return self
+    }
 
 }
 
