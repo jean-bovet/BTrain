@@ -16,8 +16,22 @@ protocol TrainControllerDelegate: AnyObject {
     func scheduleRestartTimer(train: Train)
 }
 
-// This class manages a single train in the layout, by starting and stopping it,
-// managing the monitoring when it transition from one block to another, etc.
+/**
+ This class manages a single train in the layout. It takes care of starting and stopping it, monitoring
+ feedbacks when it moves inside a block or from one block to another, etc.
+ 
+ There are two kinds of routes:
+ 1. Manual routes: these routes are entered manually by the user and are fixed (they do not change dynamically).
+ 2. Automatic routes: these routes are created dynamically on-the-fly when a train starts. They are updated as the train moves
+ if there are unavailable blocks ahead of the train. The rules for automatic routes are as follow:
+     - BTrain find a random route from the train position until a station block is found. During the search, block or turnout that
+ should be avoided will be ignored. However, elements reserved for other trains will be taken into account because the reservations
+ will change as the trains move in the layout.
+     - BTrain resolves the route before moving the train. Resolving a route means finding all the non-specific elements of the route,
+ for examples the turnouts. This search tries to avoid elements that are reserved for other trains.
+     - The automatic route is updated (that is, another alternative route is searched) if BTrain cannot reserve the leading blocks (which
+ are the blocks in front of the moving train). If a route cannot be found, the train is stopped until one can be found.
+ */
 final class TrainController {
     
     // Most method in this class returns a result
@@ -185,12 +199,6 @@ final class TrainController {
             train.state = .running
             layout.setTrainSpeed(train, LayoutFactory.DefaultMaximumSpeed) { }
             return .processed
-            // TODO: re-introduce this once the Graph is complete
-//        } else {
-//            if route.automatic {
-//                debug("Generating a new route for \(train) at block \(currentBlock.name) with mode \(route.automaticMode) because the leading block(s) cannot be reserved")
-//                return try updateAutomaticRoute(for: train.id)
-//            }
         }
 
         return .none
@@ -494,19 +502,6 @@ final class TrainController {
                 // If it is not possible, then stop the train in this block
                 debug("Train \(train) will stop here (\(nextBlock)) because the next block(s) cannot be reserved")
                 stopTrigger = StopTrigger.temporaryStop()
-                // TODO: re-introduce this once the Graph is complete
-//                if route.automatic {
-//                    debug("Generating a new route for \(train) at block \(currentBlock.name) with mode \(route.automaticMode) because the block(s) ahead cannot be reserved")
-//                    if try updateAutomaticRoute(for: train.id) == .none {
-//                        // If it is not possible, then stop the train in this block
-//                        debug("Train \(train) will stop here (\(nextBlock)) because the next block(s) cannot be reserved")
-//                        stopTrigger = StopTrigger.temporaryStop()
-//                    }
-//                } else {
-//                    // If it is not possible, then stop the train in this block
-//                    debug("Train \(train) will stop here (\(nextBlock)) because the next block(s) cannot be reserved")
-//                    stopTrigger = StopTrigger.temporaryStop()
-//                }
             }
         }
 
