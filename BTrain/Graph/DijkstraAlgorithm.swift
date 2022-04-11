@@ -40,7 +40,7 @@ final class DijkstraAlgorithm {
             print("\(item.key) = \(item.value)")
         }
         
-        return buildShortestPath(from: to, to: from, path: [])
+        return buildShortestPath(from: to, to: from, path: [to.identifier])
     }
     
     private func buildShortestPath(from: GraphNode, to: GraphNode, path: [GraphElementIdentifier]) -> [GraphElementIdentifier] {

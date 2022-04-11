@@ -46,8 +46,6 @@ class DijkstraAlgorithmTests: XCTestCase {
         ]
         
         for (from, to) in links {
-            graph.add(from)
-            graph.add(to)
             graph.linkNodes(from, to)
         }
         
@@ -55,40 +53,41 @@ class DijkstraAlgorithmTests: XCTestCase {
             XCTAssertNotNil(graph.edge(from: from, to: to))
             XCTAssertNotNil(graph.edge(from: to, to: from))
         }
-
         
         XCTAssertEqual(graph.nodes.count, 9)
         XCTAssertEqual(graph.edges.count, 28)
 
         let dijkstra = DijkstraAlgorithm(graph: graph)
-        let path = dijkstra.shortestPath(from: n0, to: n4)
-        print(path)
+        let path = dijkstra.shortestPath(from: n0, to: n4).reversed().map { $0.uuid }
+        XCTAssertEqual(path, ["0", "7", "6", "5", "4"])
     }
 
 }
 
-class TestGraph: Graph {
+final class TestGraph: Graph {
     
     var nodes = [GraphNode]()
     var edges = [GraphEdge]()
     
-    func add(_ node: GraphNode) {
+    func add(_ node: TestNode) {
         if !nodes.contains(where: { $0.identifier.uuid == node.identifier.uuid }) {
             nodes.append(node)
         }
     }
     
-    func linkNodes(_ from: GraphNode, _ to: GraphNode) {
+    func linkNodes(_ from: TestNode, _ to: TestNode) {
+        add(from)
+        add(to)
         link(from, to)
         link(to, from)
     }
 
-    private func link(_ from: GraphNode, _ to: GraphNode) {
+    private func link(_ from: TestNode, _ to: TestNode) {
         let fromSocketId = from.sockets.count
         let toSocketId = to.sockets.count
-        let edge = TestEdge(UUID().uuidString, fromNode: from.identifier, fromNodeSocket: fromSocketId, toNode: to.identifier, toNodeSocket: toSocketId)
-        (from as! TestNode).sockets.append(fromSocketId)
-        (to as! TestNode).sockets.append(toSocketId)
+        let edge = TestEdge(fromNode: from.identifier, fromNodeSocket: fromSocketId, toNode: to.identifier, toNodeSocket: toSocketId)
+        from.sockets.append(fromSocketId)
+        to.sockets.append(toSocketId)
         edges.append(edge)
     }
 
@@ -106,7 +105,7 @@ class TestGraph: Graph {
         
 }
 
-class TestNode: GraphNode {
+final class TestNode: GraphNode {
     
     let uuid: String
     
@@ -127,16 +126,17 @@ class TestNode: GraphNode {
         self.weight = weight
     }
     
+    // Any sockets other than `from` is reachable, which means any edge out of
+    // this node is reachable (except the edge identified by `from`).
     func reachableSockets(from socket: SocketId) -> [SocketId] {
         sockets.filter({ $0 != socket })
     }
-    
-    
+        
 }
 
-class TestEdge: GraphEdge {
+struct TestEdge: GraphEdge {
     
-    let uuid: String
+    let uuid: String = UUID().uuidString
     
     var identifier: GraphElementIdentifier {
         TestGraphElementIdentifier(uuid: uuid)
@@ -150,14 +150,6 @@ class TestEdge: GraphEdge {
     
     var toNodeSocket: SocketId?
     
-    init(_ uuid: String, fromNode: GraphElementIdentifier, fromNodeSocket: SocketId, toNode: GraphElementIdentifier, toNodeSocket: SocketId) {
-        self.uuid = uuid
-        self.fromNode = fromNode
-        self.fromNodeSocket = fromNodeSocket
-        self.toNode = toNode
-        self.toNodeSocket = toNodeSocket
-    }
-
 }
 
 struct TestGraphElementIdentifier: GraphElementIdentifier, CustomStringConvertible {
