@@ -26,6 +26,10 @@ extension Block: GraphNode {
     var identifier: GraphElementIdentifier {
         BlockGraphElementIdentifier(id)
     }
+     
+    var weight: Double {
+        return length ?? 0
+    }
     
     var sockets: [SocketId] {
         allSockets.compactMap { $0.socketId }
@@ -55,6 +59,10 @@ extension Turnout: GraphNode {
         TurnoutGraphElementIdentifier(id)
     }
     
+    var weight: Double {
+        return length ?? 0
+    }
+
     var sockets: [SocketId] {
         allSockets.compactMap { $0.socketId }
     }

@@ -40,6 +40,8 @@ protocol GraphNode {
     
     var name: String { get }
     
+    var weight: Double { get }
+    
     // Returns all the sockets available for that node
     var sockets: [SocketId] { get }
     
