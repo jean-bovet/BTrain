@@ -83,7 +83,7 @@ class TrainControlsViewTests: RootViewTests {
     }
     
     func testSetLocationSheet() throws {
-        let sut = TrainControlSetLocationSheet(layout: layout, controller: doc.layoutController, train: layout.trains[0])
+        let sut = TrainControlSetLocationSheet(layout: layout, controller: doc.layoutController, actionSet: .setOnly, train: layout.trains[0])
         XCTAssertNoThrow(try sut.inspect().find(button: "Set"))
     }
 

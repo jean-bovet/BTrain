@@ -57,6 +57,8 @@ struct GraphPathFinder: GraphPathFinding {
         self.settings = settings
     }
     
+    
+    /// The default constraints for the graph
     final class DefaultConstraints: GraphPathFinderConstraints {
         
         func shouldInclude(node: GraphNode, currentPath: GraphPath, to: GraphPathElement?) -> Bool {
@@ -69,18 +71,22 @@ struct GraphPathFinder: GraphPathFinding {
 
     }
 
+    
+    /// Returns the pseudo-shortest path between two nodes.
     func shortestPath(graph: Graph, from: GraphNode, to: GraphNode?, constraints: GraphPathFinderConstraints = DefaultConstraints()) -> GraphPath? {
         return shortestPath {
             path(graph: graph, from: from, to: to, constraints: constraints)
         }
     }
     
+    /// Returns the pseudo-shortest path between two nodes.
     func shortestPath(graph: Graph, from: GraphPathElement, to: GraphPathElement?, constraints: GraphPathFinderConstraints = DefaultConstraints()) -> GraphPath? {
         return shortestPath {
             path(graph: graph, from: from, to: to, constraints: constraints)
         }
     }
     
+    /// Returns a path between two nodes.
     func path(graph: Graph, from: GraphNode, to: GraphNode?, constraints: GraphPathFinderConstraints = DefaultConstraints()) -> GraphPath? {
         for socketId in shuffled(from.sockets) {
             if let to = to {
@@ -98,10 +104,12 @@ struct GraphPathFinder: GraphPathFinding {
         return nil
     }
 
+    /// Returns a path between two nodes.
     func path(graph: Graph, from: GraphPathElement, to: GraphPathElement?, constraints: GraphPathFinderConstraints = DefaultConstraints()) -> GraphPath? {
         return path(graph: graph, from: from, to: to, currentPath: GraphPath([from]), constraints: constraints)
     }
     
+    /// Returns a resolved path given a path and the specified constraints.
     func resolve(graph: Graph, _ path: GraphPath, constraints: GraphPathFinderConstraints = DefaultConstraints()) -> GraphPath? {
         var resolvedPath = [GraphPathElement]()
         guard var previousElement = path.elements.first else {
@@ -124,8 +132,8 @@ struct GraphPathFinder: GraphPathFinding {
         return GraphPath(resolvedPath)
     }
 
-    // Note: until we have a proper algorithm that finds the shortest path in a single pass,
-    // we will generate a few paths and pick the shortest one.
+    /// Note: until we have a proper algorithm that finds the shortest path in a single pass,
+    /// we will generate a few paths and pick the shortest one.
     private func shortestPath(pathGenerator: () -> GraphPath?) -> GraphPath? {
         let numberOfPaths = 10
         var smallestPath: GraphPath?
