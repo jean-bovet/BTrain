@@ -18,7 +18,7 @@ Each train's direction, speed, and position is controlled via a dedicated sectio
 
 ![Train](Assets/train.png)
 
-BTrain allows routes to be defined manually or automatically without any effort. The integrated CS 3 simulator simulates the entire layout before connecting to the real CS 3.
+BTrain allows routes to be defined manually or automatically without any effort. Automatic route allows a train to be moved on the layout without the need to define a route ahead of time. The integrated CS 3 simulator simulates the entire layout before connecting to the real CS 3.
 
 ![Train](Assets/loop-to-loop.gif)
 
