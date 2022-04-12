@@ -13,6 +13,23 @@
 import XCTest
 @testable import BTrain
 
+//             ┌────┐   ┌────┐    ┌────┐
+//            ╱│ 1  │───│ 2  │────│ 3  │╲
+//           ╱ └────┘   └────┘    └────┘ ╲
+//          ╱     │        ╲         │    ╲
+//         ╱      │        │╲        │     ╲
+//        ╱       │        │ ╲       │      ╲
+//       ╱        │        │  ╲      │       ╲
+//    ┌────┐      │     ┌────┐ ╲     │    ┌────┐
+//    │ 0  │      │    ╱│ 8  │  ╲    │    │ 4  │
+//    └────┘      │   ╱ └────┘   ╲   │    └────┘
+//       ╲        │  ╱     │      ╲  │       ╱
+//        ╲       │ ╱      │       ╲ │      ╱
+//         ╲      │╱       │        ╲│     ╱
+//          ╲     ╱        │         ╲    ╱
+//           ╲ ┌────┐   ┌────┐    ┌────┐ ╱
+//            ╲│ 7  │───│ 6  │────│ 5  │╱
+//             └────┘   └────┘    └────┘
 class DijkstraAlgorithmTests: XCTestCase {
 
     let graph = TestGraph()
@@ -56,9 +73,7 @@ class DijkstraAlgorithmTests: XCTestCase {
         
         XCTAssertEqual(graph.nodes.count, 9)
         XCTAssertEqual(graph.edges.count, 28)
-    }
-    
-    func testShortestPath0() throws {
+        
         n0.weight = 0
         n1.weight = 4
         n2.weight = 8
@@ -68,36 +83,24 @@ class DijkstraAlgorithmTests: XCTestCase {
         n6.weight = 1
         n7.weight = 8
         n8.weight = 2
+    }
+    
+    func testShortestPath0() throws {
 
         let path = try DijkstraAlgorithm.shortestPath(graph: graph, from: n0, to: n4).map { $0.uuid }
         XCTAssertEqual(path, ["0", "7", "6", "5", "4"])
     }
     
     func testShortestPath1() throws {
-        n0.weight = 0
-        n1.weight = 4
-        n2.weight = 8
-        n3.weight = 7
-        n4.weight = 5
-        n5.weight = 8
         n6.weight = 19
-        n7.weight = 8
-        n8.weight = 2
 
         let path = try DijkstraAlgorithm.shortestPath(graph: graph, from: n0, to: n4).map { $0.uuid }
         XCTAssertEqual(path, ["0", "1", "2", "3", "4"])
     }
     
     func testShortestPath2() throws {
-        n0.weight = 0
-        n1.weight = 4
-        n2.weight = 8
-        n3.weight = 7
-        n4.weight = 5
         n5.weight = 3
         n6.weight = 19
-        n7.weight = 8
-        n8.weight = 2
 
         let path = try DijkstraAlgorithm.shortestPath(graph: graph, from: n0, to: n4).map { $0.uuid }
         XCTAssertEqual(path, ["0", "1", "2", "5", "4"])
@@ -116,6 +119,20 @@ class DijkstraAlgorithmTests: XCTestCase {
         
         let path = try DijkstraAlgorithm.shortestPath(graph: graph, from: n0, to: n4).map { $0.uuid }
         XCTAssertEqual(path, ["0", "1", "2", "3", "4"])
+    }
+
+    func testShortestPathBetween1and5() throws {
+        var path = try DijkstraAlgorithm.shortestPath(graph: graph, from: n1, to: n5).map { $0.uuid }
+        XCTAssertEqual(path, ["1", "2", "5"])
+        
+        n2.weight = 18
+        path = try DijkstraAlgorithm.shortestPath(graph: graph, from: n1, to: n5).map { $0.uuid }
+        XCTAssertEqual(path, ["1", "0", "7", "6", "5"])
+    }
+
+    func testShortestPathBetween0and0() throws {
+        let path = try DijkstraAlgorithm.shortestPath(graph: graph, from: n0, to: n0).map { $0.uuid }
+        XCTAssertEqual(path, ["0"])
     }
 
 }

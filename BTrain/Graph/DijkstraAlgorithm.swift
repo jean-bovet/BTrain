@@ -12,6 +12,8 @@
 
 import Foundation
 
+/// This class implements the Dijkstra algorithm that finds the shortest path in a graph
+/// See https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm
 final class DijkstraAlgorithm {
     
     enum DijkstraError: Error {
