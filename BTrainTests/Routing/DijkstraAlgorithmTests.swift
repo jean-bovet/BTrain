@@ -15,19 +15,19 @@ import XCTest
 
 class DijkstraAlgorithmTests: XCTestCase {
 
-    func testShortestPath() throws {
-        let graph = TestGraph()
-        
-        let n0 = TestNode("0", 0)
-        let n1 = TestNode("1", 4)
-        let n2 = TestNode("2", 8)
-        let n3 = TestNode("3", 7)
-        let n4 = TestNode("4", 5)
-        let n5 = TestNode("5", 8)
-        let n6 = TestNode("6", 1)
-        let n7 = TestNode("7", 8)
-        let n8 = TestNode("8", 2)
+    let graph = TestGraph()
 
+    let n0 = TestNode("0", 0)
+    let n1 = TestNode("1", 4)
+    let n2 = TestNode("2", 8)
+    let n3 = TestNode("3", 7)
+    let n4 = TestNode("4", 5)
+    let n5 = TestNode("5", 8)
+    let n6 = TestNode("6", 1)
+    let n7 = TestNode("7", 8)
+    let n8 = TestNode("8", 2)
+
+    override func setUp() async throws {
         let links = [
             (n0, n1),
             (n0, n7),
@@ -56,10 +56,66 @@ class DijkstraAlgorithmTests: XCTestCase {
         
         XCTAssertEqual(graph.nodes.count, 9)
         XCTAssertEqual(graph.edges.count, 28)
+    }
+    
+    func testShortestPath0() throws {
+        n0.weight = 0
+        n1.weight = 4
+        n2.weight = 8
+        n3.weight = 7
+        n4.weight = 5
+        n5.weight = 8
+        n6.weight = 1
+        n7.weight = 8
+        n8.weight = 2
 
-        let dijkstra = DijkstraAlgorithm(graph: graph)
-        let path = dijkstra.shortestPath(from: n0, to: n4).reversed().map { $0.uuid }
+        let path = try DijkstraAlgorithm.shortestPath(graph: graph, from: n0, to: n4).map { $0.uuid }
         XCTAssertEqual(path, ["0", "7", "6", "5", "4"])
+    }
+    
+    func testShortestPath1() throws {
+        n0.weight = 0
+        n1.weight = 4
+        n2.weight = 8
+        n3.weight = 7
+        n4.weight = 5
+        n5.weight = 8
+        n6.weight = 19
+        n7.weight = 8
+        n8.weight = 2
+
+        let path = try DijkstraAlgorithm.shortestPath(graph: graph, from: n0, to: n4).map { $0.uuid }
+        XCTAssertEqual(path, ["0", "1", "2", "3", "4"])
+    }
+    
+    func testShortestPath2() throws {
+        n0.weight = 0
+        n1.weight = 4
+        n2.weight = 8
+        n3.weight = 7
+        n4.weight = 5
+        n5.weight = 3
+        n6.weight = 19
+        n7.weight = 8
+        n8.weight = 2
+
+        let path = try DijkstraAlgorithm.shortestPath(graph: graph, from: n0, to: n4).map { $0.uuid }
+        XCTAssertEqual(path, ["0", "1", "2", "5", "4"])
+    }
+    
+    func testWithAllZeroWeights() throws {
+        n0.weight = 0
+        n1.weight = 0
+        n2.weight = 0
+        n3.weight = 0
+        n4.weight = 0
+        n5.weight = 0
+        n6.weight = 0
+        n7.weight = 0
+        n8.weight = 0
+        
+        let path = try DijkstraAlgorithm.shortestPath(graph: graph, from: n0, to: n4).map { $0.uuid }
+        XCTAssertEqual(path, ["0", "1", "2", "3", "4"])
     }
 
 }

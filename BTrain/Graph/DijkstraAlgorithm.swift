@@ -14,6 +14,12 @@ import Foundation
 
 final class DijkstraAlgorithm {
     
+    enum DijkstraError: Error {
+        case shortestDistanceNodeNotFound(node: GraphNode)
+        case nodeNotFound(identifier: GraphElementIdentifier)
+        case elementIdentifierNotFound(uuid: String)
+    }
+    
     let graph: Graph
     
     var elementIdentifiers = [String:GraphElementIdentifier]()
@@ -21,35 +27,38 @@ final class DijkstraAlgorithm {
     var visitedNodes = Set<String>()
     var evaluatedButNotVisitedNodes = Set<String>()
 
-    init(graph: Graph) {
+    private init(graph: Graph) {
         self.graph = graph
     }
     
-    func shortestPath(from: GraphNode, to: GraphNode) -> [GraphElementIdentifier] {
-        distances.removeAll()
-        
+    static func shortestPath(graph: Graph, from: GraphNode, to: GraphNode) throws -> [GraphElementIdentifier] {
+        return try DijkstraAlgorithm(graph: graph).shortestPath(from: from, to: to).reversed()
+    }
+    
+    private func shortestPath(from: GraphNode, to: GraphNode) throws -> [GraphElementIdentifier] {
         distances[from.identifier.uuid] = 0
         evaluatedButNotVisitedNodes.insert(from.identifier.uuid)
         elementIdentifiers[from.identifier.uuid] = from.identifier
         
-        visitGraph(from: from, to: to)
+        try visitGraph(from: from, to: to)
         
         // Now go from to back until from is reached, following the nodes
         // with the smallest distance.
+        print("Distances:")
         for item in distances.sorted(by: { $0.key < $1.key }) {
             print("\(item.key) = \(item.value)")
         }
         
-        return buildShortestPath(from: to, to: from, path: [to.identifier])
+        return try buildShortestPath(from: to, to: from, path: [to.identifier])
     }
     
-    private func buildShortestPath(from: GraphNode, to: GraphNode, path: [GraphElementIdentifier]) -> [GraphElementIdentifier] {
+    private func buildShortestPath(from: GraphNode, to: GraphNode, path: [GraphElementIdentifier]) throws -> [GraphElementIdentifier] {
         if from.identifier.uuid == to.identifier.uuid {
             return path
         }
         
-        var smallestDistance: Double = .infinity
-        var smallestDistanceNode: GraphElementIdentifier?
+        var shortestDistance: Double = .infinity
+        var shortestDistanceNodeIdentifier: GraphElementIdentifier?
         
         for socket in from.sockets {
             guard let edge = graph.edge(from: from, socketId: socket) else {
@@ -57,20 +66,24 @@ final class DijkstraAlgorithm {
             }
             
             let toIdentifier = edge.toNode.uuid
-            if let distance = distances[toIdentifier], distance < smallestDistance {
-                smallestDistance = distance
-                smallestDistanceNode = edge.toNode
+            if let distance = distances[toIdentifier], distance < shortestDistance {
+                shortestDistance = distance
+                shortestDistanceNodeIdentifier = edge.toNode
             }
         }
         
-        if let smallestDistanceNode = smallestDistanceNode, let node = graph.node(for: smallestDistanceNode) {
-            return buildShortestPath(from: node, to: to, path: path + [smallestDistanceNode])
-        } else {
-            fatalError()
+        guard let shortestDistanceNodeIdentifier = shortestDistanceNodeIdentifier else {
+            throw DijkstraError.shortestDistanceNodeNotFound(node: from)
         }
+        
+        guard let node = graph.node(for: shortestDistanceNodeIdentifier) else {
+            throw DijkstraError.nodeNotFound(identifier: shortestDistanceNodeIdentifier)
+        }
+        
+        return try buildShortestPath(from: node, to: to, path: path + [shortestDistanceNodeIdentifier])
     }
     
-    private func visitGraph(from: GraphNode, to: GraphNode) {
+    private func visitGraph(from: GraphNode, to: GraphNode) throws {
         guard !visitedNodes.contains(from.identifier.uuid) else {
             return
         }
@@ -103,19 +116,34 @@ final class DijkstraAlgorithm {
         }
         
         // Pick the node with the smallest distance
-        let evaluatedNodes: [GraphNode] = evaluatedButNotVisitedNodes.compactMap { uuid in
+        let evaluatedNodes: [GraphNode] = try evaluatedButNotVisitedNodes.compactMap { uuid in
             guard let identifier = elementIdentifiers[uuid] else {
-                return nil
+                throw DijkstraError.elementIdentifierNotFound(uuid: uuid)
             }
             return graph.node(for: identifier)
         }
         
         guard let smallestNode = evaluatedNodes.sorted(by: { distances[$0.identifier.uuid]! < distances[$1.identifier.uuid]! }).first else {
+            // This happens when there are no edges out of the `from` node or when all the adjacent nodes of `from` have been evaluated.
             return
         }
                 
         print("Smallest distance node is \(smallestNode.identifier.uuid) with distance \(distances[smallestNode.identifier.uuid]!)")
 
-        visitGraph(from: smallestNode, to: to)
+        try visitGraph(from: smallestNode, to: to)
+    }
+}
+
+extension DijkstraAlgorithm.DijkstraError: LocalizedError {
+    
+    var errorDescription: String? {
+        switch self {
+        case .shortestDistanceNodeNotFound(node: let node):
+            return "Shortest distance adjacent node not found for \(node.identifier)"
+        case .nodeNotFound(identifier: let identifier):
+            return "Node \(identifier) not found in graph"
+        case .elementIdentifierNotFound(uuid: let uuid):
+            return "Element identifier \(uuid) not found"
+        }
     }
 }
