@@ -86,26 +86,25 @@ class DijkstraAlgorithmTests: XCTestCase {
     }
     
     func testShortestPath0() throws {
-
-        let path = try DijkstraAlgorithm.shortestPath(graph: graph, from: n0, to: n4).map { $0.uuid }
+        let path = try DijkstraAlgorithm.shortestPath(graph: graph, from: .any(n0), to: .any(n4)).toStrings
         XCTAssertEqual(path, ["0", "7", "6", "5", "4"])
     }
     
     func testShortestPath1() throws {
         n6.weight = 19
 
-        let path = try DijkstraAlgorithm.shortestPath(graph: graph, from: n0, to: n4).map { $0.uuid }
+        let path = try DijkstraAlgorithm.shortestPath(graph: graph, from: .any(n0), to: .any(n4)).toStrings
         XCTAssertEqual(path, ["0", "1", "2", "3", "4"])
     }
-    
+
     func testShortestPath2() throws {
         n5.weight = 3
         n6.weight = 19
 
-        let path = try DijkstraAlgorithm.shortestPath(graph: graph, from: n0, to: n4).map { $0.uuid }
+        let path = try DijkstraAlgorithm.shortestPath(graph: graph, from: .any(n0), to: .any(n4)).toStrings
         XCTAssertEqual(path, ["0", "1", "2", "5", "4"])
     }
-    
+
     func testWithAllZeroWeights() throws {
         n0.weight = 0
         n1.weight = 0
@@ -116,22 +115,22 @@ class DijkstraAlgorithmTests: XCTestCase {
         n6.weight = 0
         n7.weight = 0
         n8.weight = 0
-        
-        let path = try DijkstraAlgorithm.shortestPath(graph: graph, from: n0, to: n4).map { $0.uuid }
+
+        let path = try DijkstraAlgorithm.shortestPath(graph: graph, from: .any(n0), to: .any(n4)).toStrings
         XCTAssertEqual(path, ["0", "1", "2", "3", "4"])
     }
 
     func testShortestPathBetween1and5() throws {
-        var path = try DijkstraAlgorithm.shortestPath(graph: graph, from: n1, to: n5).map { $0.uuid }
+        var path = try DijkstraAlgorithm.shortestPath(graph: graph, from: .any(n1), to: .any(n5)).toStrings
         XCTAssertEqual(path, ["1", "2", "5"])
-        
+
         n2.weight = 18
-        path = try DijkstraAlgorithm.shortestPath(graph: graph, from: n1, to: n5).map { $0.uuid }
+        path = try DijkstraAlgorithm.shortestPath(graph: graph, from: .any(n1), to: .any(n5)).toStrings
         XCTAssertEqual(path, ["1", "0", "7", "6", "5"])
     }
 
     func testShortestPathBetween0and0() throws {
-        let path = try DijkstraAlgorithm.shortestPath(graph: graph, from: n0, to: n0).map { $0.uuid }
+        let path = try DijkstraAlgorithm.shortestPath(graph: graph, from: .any(n0), to: .any(n0)).toStrings
         XCTAssertEqual(path, ["0"])
     }
 
