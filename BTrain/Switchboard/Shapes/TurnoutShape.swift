@@ -301,7 +301,7 @@ final class TurnoutShape: Shape, DraggableShape, ConnectableShape {
             ctx.addPath(path)
             ctx.drawPath(using: .stroke)
             
-            ctx.setStrokeColor(reserved != nil ? shapeContext.reservedColor : shapeContext.color)
+            ctx.setStrokeColor(shapeContext.pathColor(reserved != nil, train: turnout.train != nil))
             ctx.setLineWidth(shapeContext.trackWidth)
             ctx.addPath(activePath())
             ctx.drawPath(using: .stroke)

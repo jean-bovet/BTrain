@@ -36,7 +36,7 @@ protocol ITransition: AnyObject, GraphEdge {
     // or nil if no train has reserved it.
     var reserved: Identifier<Train>? { get set }
 
-    // The identifier of the train located inde this transition
+    // The identifier of the train located inside this transition
     var train: Identifier<Train>? { get set }
 
     // Returns the inverse of this transition

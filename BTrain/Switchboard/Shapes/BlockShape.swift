@@ -166,7 +166,7 @@ final class BlockShape: Shape, DraggableShape, ConnectableShape {
 
         ctx.with {
             ctx.addPath(trackPath)
-            ctx.setStrokeColor(reserved != nil ? shapeContext.reservedColor : shapeContext.color)
+            ctx.setStrokeColor(shapeContext.pathColor(reserved != nil, train: block.train != nil))
             ctx.setLineWidth(shapeContext.trackWidth)
             if !block.enabled {
                 ctx.setLineDash(phase: 0, lengths: [6, 6])
@@ -259,7 +259,7 @@ final class BlockShape: Shape, DraggableShape, ConnectableShape {
             ctx.fillPath()
             
             ctx.addPath(path)
-            ctx.setStrokeColor(reserved != nil ? shapeContext.reservedColor : shapeContext.color)
+            ctx.setStrokeColor(shapeContext.pathColor(reserved != nil, train: block.train != nil))
             ctx.strokePath()
             
             if let feedbackIds = shapeContext.expectedFeedbackIds, feedbackIds.contains(feedback.feedbackId) {
@@ -416,7 +416,7 @@ extension BlockShape {
         if direction == .next {
             ctx.with {
                 ctx.addPath(previousArrowPath(side: .previous, direction: .next))
-                ctx.setStrokeColor(reserved != nil ? shapeContext.reservedColor : regularColor)
+                ctx.setStrokeColor(shapeContext.pathColor(reserved != nil, train: block.train != nil))
                 ctx.setLineWidth(shapeContext.trackWidth)
                 ctx.strokePath()
             }
@@ -430,7 +430,7 @@ extension BlockShape {
 
             ctx.with {
                 ctx.addPath(previousArrowPath(side: .next, direction: .previous))
-                ctx.setStrokeColor(reserved != nil ? shapeContext.reservedColor : regularColor)
+                ctx.setStrokeColor(shapeContext.pathColor(reserved != nil, train: block.train != nil))
                 ctx.setLineWidth(shapeContext.trackWidth)
                 ctx.strokePath()
             }

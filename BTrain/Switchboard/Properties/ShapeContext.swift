@@ -42,7 +42,11 @@ final class ShapeContext {
         NSColor.textColor.cgColor
     }
 
-    var reservedColor: CGColor {
+    var reservedOnlyColor: CGColor {
+        NSColor.orange.cgColor
+    }
+
+    var occupiedColor: CGColor {
         NSColor.red.cgColor
     }
 
@@ -97,6 +101,24 @@ final class ShapeContext {
     init(simulator: Simulator? = nil, trainIconManager: TrainIconManager? = nil) {
         self.simulator = simulator
         self.trainIconManager = trainIconManager
+    }
+    
+    
+    /// Returns the color of the path given the reservation status and the presence of a train
+    /// - Parameters:
+    ///   - reserved: true if the element is reserved
+    ///   - train: true if the element contains a train
+    /// - Returns: The color of the path
+    func pathColor(_ reserved: Bool, train: Bool) -> CGColor {
+        if reserved {
+            if train {
+                return occupiedColor
+            } else {
+                return reservedOnlyColor
+            }
+        } else {
+            return color
+        }
     }
     
     func trainColor(_ train: Train) -> CGColor {
