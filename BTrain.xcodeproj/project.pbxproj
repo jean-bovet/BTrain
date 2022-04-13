@@ -165,7 +165,6 @@
 		A79079A5277FAB7200771A60 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A79079A4277FAB7100771A60 /* SettingsView.swift */; };
 		A79079A7277FB8E700771A60 /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = A79079A6277FB8E700771A60 /* Credits.rtf */; };
 		A791EEBE28035645008F58C8 /* LayoutsPredefined.swift in Sources */ = {isa = PBXBuildFile; fileRef = A791EEBD28035645008F58C8 /* LayoutsPredefined.swift */; };
-		A791EEC02804A945008F58C8 /* DijkstraAlgorithm.swift in Sources */ = {isa = PBXBuildFile; fileRef = A791EEBF2804A945008F58C8 /* DijkstraAlgorithm.swift */; };
 		A792DEF627839F55004B0439 /* SimulatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A792DEF527839F55004B0439 /* SimulatorView.swift */; };
 		A792DEF82783A09C004B0439 /* SimulatorTrainControlView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A792DEF72783A09C004B0439 /* SimulatorTrainControlView.swift */; };
 		A792DEFB27841B35004B0439 /* LayoutCommandExecutor.swift in Sources */ = {isa = PBXBuildFile; fileRef = A792DEFA27841B35004B0439 /* LayoutCommandExecutor.swift */; };
@@ -173,6 +172,7 @@
 		A792DEFF278508B0004B0439 /* LayoutCreatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A792DEFE278508B0004B0439 /* LayoutCreatorTests.swift */; };
 		A792DF012785095B004B0439 /* SettingsViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A792DF002785095B004B0439 /* SettingsViewTests.swift */; };
 		A79406552807463E00F6A427 /* ShortestPathComplexTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A79406542807463E00F6A427 /* ShortestPathComplexTests.swift */; };
+		A7940658280789B300F6A427 /* GraphShortestPathFinder.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7940657280789B300F6A427 /* GraphShortestPathFinder.swift */; };
 		A79466CC279B64D2006E2A4C /* MainThreadQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = A79466CB279B64D2006E2A4C /* MainThreadQueue.swift */; };
 		A79466CE279B775D006E2A4C /* NSImage+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A79466CD279B775D006E2A4C /* NSImage+Extension.swift */; };
 		A79466D1279B948F006E2A4C /* Simulator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A79466D0279B948F006E2A4C /* Simulator.swift */; };
@@ -429,7 +429,6 @@
 		A79079A4277FAB7100771A60 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		A79079A6277FB8E700771A60 /* Credits.rtf */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; path = Credits.rtf; sourceTree = "<group>"; };
 		A791EEBD28035645008F58C8 /* LayoutsPredefined.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutsPredefined.swift; sourceTree = "<group>"; };
-		A791EEBF2804A945008F58C8 /* DijkstraAlgorithm.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DijkstraAlgorithm.swift; sourceTree = "<group>"; };
 		A792DEF527839F55004B0439 /* SimulatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimulatorView.swift; sourceTree = "<group>"; };
 		A792DEF72783A09C004B0439 /* SimulatorTrainControlView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimulatorTrainControlView.swift; sourceTree = "<group>"; };
 		A792DEFA27841B35004B0439 /* LayoutCommandExecutor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutCommandExecutor.swift; sourceTree = "<group>"; };
@@ -437,6 +436,7 @@
 		A792DEFE278508B0004B0439 /* LayoutCreatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutCreatorTests.swift; sourceTree = "<group>"; };
 		A792DF002785095B004B0439 /* SettingsViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewTests.swift; sourceTree = "<group>"; };
 		A79406542807463E00F6A427 /* ShortestPathComplexTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShortestPathComplexTests.swift; sourceTree = "<group>"; };
+		A7940657280789B300F6A427 /* GraphShortestPathFinder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GraphShortestPathFinder.swift; sourceTree = "<group>"; };
 		A79466CB279B64D2006E2A4C /* MainThreadQueue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainThreadQueue.swift; sourceTree = "<group>"; };
 		A79466CD279B775D006E2A4C /* NSImage+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSImage+Extension.swift"; sourceTree = "<group>"; };
 		A79466D0279B948F006E2A4C /* Simulator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Simulator.swift; sourceTree = "<group>"; };
@@ -1023,7 +1023,7 @@
 				A78B996A2800BA4D0021EFE4 /* GraphPathFinder.swift */,
 				A78B996627FD57B20021EFE4 /* Graph+Elements.swift */,
 				A78B996827FE41A90021EFE4 /* LayoutPathFinder.swift */,
-				A791EEBF2804A945008F58C8 /* DijkstraAlgorithm.swift */,
+				A7940657280789B300F6A427 /* GraphShortestPathFinder.swift */,
 			);
 			path = Graph;
 			sourceTree = "<group>";
@@ -1358,6 +1358,7 @@
 				A7281840278E9EDC007BE810 /* Direction.swift in Sources */,
 				A763F19327BE26CF00B3499A /* TrainSpeedMeasurementsView.swift in Sources */,
 				A79466CC279B64D2006E2A4C /* MainThreadQueue.swift in Sources */,
+				A7940658280789B300F6A427 /* GraphShortestPathFinder.swift in Sources */,
 				A7DB7D5427C9E33D000893BA /* Line2D.swift in Sources */,
 				A798BB4227A79CFE000BB4D1 /* TurnoutShapeView.swift in Sources */,
 				A7907993277EC86200771A60 /* DocumentToolbarContent.swift in Sources */,
@@ -1382,7 +1383,6 @@
 				A74CCC6A272A59F9004E58F5 /* Block.swift in Sources */,
 				A785C073278A4852002FD538 /* TrainIconView.swift in Sources */,
 				A791EEBE28035645008F58C8 /* LayoutsPredefined.swift in Sources */,
-				A791EEC02804A945008F58C8 /* DijkstraAlgorithm.swift in Sources */,
 				A7710E5C27784B1900C08150 /* TrainControlRouteActionsView.swift in Sources */,
 				A785C07B278A648B002FD538 /* LayoutDocument+Commands.swift in Sources */,
 				A7F779FE2734D55100E73275 /* LayoutRouteParser.swift in Sources */,

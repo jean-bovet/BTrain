@@ -12,9 +12,14 @@
 
 import Foundation
 
-/// This class implements the Dijkstra algorithm that finds the shortest path in a graph
-/// See https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm
-final class DijkstraAlgorithm {
+/// This class implements the Dijkstra algorithm that finds the shortest path in a graph.
+///
+/// The algorithm is specifically crafted to take into account the fact that node in a graph
+/// represents block and turnout that have a direction of travel. This means that a node alone
+/// is not enough to evaluate the distance but rather a node **and** its direction of travel is the key
+/// that is used to keep track of the distances.
+/// See [Dijkstra on Wikipedia](https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm)
+final class GraphShortestPathFinder {
 
     // The comments in this class will follow this graph as an illustration
     //┌─────────┐                      ┌─────────┐             ┌─────────┐
@@ -30,7 +35,6 @@ final class DijkstraAlgorithm {
     //│   b5    │◀─────────────────────────────────────────────│   b4    │
     //└─────────┘                                              └─────────┘
 
-
     enum DijkstraError: Error {
         case shortestDistanceNodeNotFound(node: GraphPathElement)
         case nodeNotFound(identifier: GraphElementIdentifier)
@@ -39,9 +43,15 @@ final class DijkstraAlgorithm {
     
     private let graph: Graph    
     private let verbose: Bool
-    
+        
+    /// Map of the distances between each element of the graph and the starting element
     private var distances = [GraphPathElement:Double]()
+        
+    /// Set of elements that have been already visited.
     private var visitedElements = Set<GraphPathElement>()
+        
+    /// Set of elements that have been evaluated (that is, a distance has been computed for that element)
+    /// but have not yet been visited.
     private var evaluatedButNotVisitedElements = Set<GraphPathElement>()
 
     private init(graph: Graph, verbose: Bool = false) {
@@ -56,12 +66,16 @@ final class DijkstraAlgorithm {
     ///   - to: the destination element
     /// - Returns: the shortest path or nil if no path found
     static func shortestPath(graph: Graph, from: GraphPathElement, to: GraphPathElement) throws -> GraphPath? {
-        return try DijkstraAlgorithm(graph: graph).shortestPath(from: from, to: to)?.reversed
+        return try GraphShortestPathFinder(graph: graph).shortestPath(from: from, to: to)?.reversed
+    }
+    
+    private func setDistance(_ distance: Double, to: GraphPathElement) {
+        distances[to] = distance
+        evaluatedButNotVisitedElements.insert(to)
     }
     
     private func shortestPath(from: GraphPathElement, to: GraphPathElement) throws -> GraphPath? {
-        distances[from] = 0
-        evaluatedButNotVisitedElements.insert(from)
+        setDistance(0, to: from)
         
         // Visit the graph and assign distances to all the nodes until the `to` node is reached
         try visitGraph(from: from, to: to)
@@ -179,8 +193,7 @@ final class DijkstraAlgorithm {
             }
             
             // Otherwise, assign the new distance to the adjacent node
-            distances[adjacentElement] = distance
-            evaluatedButNotVisitedElements.insert(adjacentElement)
+            setDistance(distance, to: adjacentElement)
         }
     }
         
@@ -284,7 +297,7 @@ final class DijkstraAlgorithm {
     
 }
 
-extension DijkstraAlgorithm.DijkstraError: LocalizedError {
+extension GraphShortestPathFinder.DijkstraError: LocalizedError {
     
     var errorDescription: String? {
         switch self {
@@ -308,6 +321,7 @@ extension GraphPathElement {
         } else if let exitSocket = exitSocket {
             return .ending(node, exitSocket)
         } else {
+            // TODO: avoid any fatalError in BTrain otherwise the whole layout is not managed anymore. Convert to a function that throws
             fatalError("Invalid element")
         }
     }

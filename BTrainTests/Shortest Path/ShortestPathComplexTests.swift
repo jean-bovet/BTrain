@@ -37,7 +37,7 @@ class ShortestPathComplexTests: XCTestCase {
         let ne1 = layout.block(named: "NE1")
         let hsl_p1 = layout.block(named: "HLS_P1")        
         measure {
-            _ = try? DijkstraAlgorithm.shortestPath(graph: layout,
+            _ = try? GraphShortestPathFinder.shortestPath(graph: layout,
                                                     from: ne1.elementDirectionNext,
                                                     to: hsl_p1.elementDirectionNext)
         }
@@ -55,9 +55,9 @@ extension Layout {
     func shortestPath(from: (String, Direction), to: (String, Direction)) throws -> GraphPath? {
         let fromBlock = self.block(named: from.0)
         let toBlock = self.block(named: to.0)
-        let path = try DijkstraAlgorithm.shortestPath(graph: self,
-                                                      from: from.1 == .next ? fromBlock.elementDirectionNext:fromBlock.elementDirectionPrevious,
-                                                      to: to.1 == .next ? toBlock.elementDirectionNext:toBlock.elementDirectionPrevious)!
+        let path = try GraphShortestPathFinder.shortestPath(graph: self,
+                                                            from: from.1 == .next ? fromBlock.elementDirectionNext:fromBlock.elementDirectionPrevious,
+                                                            to: to.1 == .next ? toBlock.elementDirectionNext:toBlock.elementDirectionPrevious)!
         return path
     }
 }
