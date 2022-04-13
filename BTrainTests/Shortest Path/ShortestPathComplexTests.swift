@@ -45,11 +45,19 @@ class ShortestPathComplexTests: XCTestCase {
     
     private func assert(_ from: (String, Direction), _ to: (String, Direction), _ expectedPath: [String]) throws {
         let layout = LayoutComplex().newLayout()
-        let fromBlock = layout.block(named: from.0)
-        let toBlock = layout.block(named: to.0)
-        let path = try DijkstraAlgorithm.shortestPath(graph: layout,
+        let path = try layout.shortestPath(from: from, to: to)!
+        XCTAssertEqual(path.toStrings, expectedPath)
+    }
+}
+
+extension Layout {
+    
+    func shortestPath(from: (String, Direction), to: (String, Direction)) throws -> GraphPath? {
+        let fromBlock = self.block(named: from.0)
+        let toBlock = self.block(named: to.0)
+        let path = try DijkstraAlgorithm.shortestPath(graph: self,
                                                       from: from.1 == .next ? fromBlock.elementDirectionNext:fromBlock.elementDirectionPrevious,
                                                       to: to.1 == .next ? toBlock.elementDirectionNext:toBlock.elementDirectionPrevious)!
-        XCTAssertEqual(path.toStrings, expectedPath)
+        return path
     }
 }
