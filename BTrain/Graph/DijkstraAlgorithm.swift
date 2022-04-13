@@ -37,16 +37,16 @@ final class DijkstraAlgorithm {
         case elementIdentifierNotFound(uuid: String)
     }
     
-    let graph: Graph
-    
-    private let verbose = true
+    private let graph: Graph    
+    private let verbose: Bool
     
     private var distances = [GraphPathElement:Double]()
     private var visitedElements = Set<GraphPathElement>()
     private var evaluatedButNotVisitedElements = Set<GraphPathElement>()
 
-    private init(graph: Graph) {
+    private init(graph: Graph, verbose: Bool = false) {
         self.graph = graph
+        self.verbose = verbose
     }
         
     /// Find and return the shortest path between to element of the graph.
@@ -127,7 +127,9 @@ final class DijkstraAlgorithm {
             return
         }
                 
-        print("Smallest distance node is \(shortestDistanceElement) with distance \(distances[shortestDistanceElement]!)")
+        if verbose {
+            print("Smallest distance node is \(shortestDistanceElement) with distance \(distances[shortestDistanceElement]!)")
+        }
 
         // Continue to evaluate the distances recursively, starting now with the element with the shortest distance
         try visitGraph(from: shortestDistanceElement, to: to)
@@ -193,7 +195,10 @@ final class DijkstraAlgorithm {
     ///   - to: destination element
     /// - Returns: the shortest path between the two elements
     private func buildShortestPath(from: GraphPathElement, to: GraphPathElement) throws -> GraphPath? {
-        print("Building path from \(from) to \(to)")
+        if verbose {
+            print("Building path from \(from) to \(to)")
+        }
+        
         // Note: swap `to` and `from` to build the path in reverse order (needed by the Dijkstra algorithm)
         // and make sure to inverse each element so the entry and exit sockets are also inverted.
         return try buildShortestPath(from: to.inverse, to: from.inverse, path: .init([to]))
@@ -238,13 +243,23 @@ final class DijkstraAlgorithm {
             if path.contains(element) {
                 continue
             }
-            
+
+            // Ignore this element if there is no distance defined for it. This happens
+            // when the visiting algorithm didn't visit a node from a certain direction.
+            // For example, if there is a siding block, that block might not be visited
+            // in the direction from the siding.
             guard let distance = distances[element] else {
-                // TODO: throw
-                fatalError()
+                if verbose {
+                    print("No distance found for \(element.description) at path \(path.reversed)")
+                }
+                continue
             }
             
-            print(" * \(element) = \(distance) and shortest distance so far is \(shortestDistance)")
+            if verbose {
+                print(" * \(element) = \(distance) and shortest distance so far is \(shortestDistance)")
+            }
+            
+            // Remember the element with the shortest distance
             if distance < shortestDistance {
                 shortestDistance = distance
                 shortestDistanceElement = element
@@ -257,7 +272,10 @@ final class DijkstraAlgorithm {
             return nil
         }
 
-        print("Selected \(shortestDistanceElement.description) with distance \(shortestDistance)")
+        if verbose {
+            print("Selected \(shortestDistanceElement.description) with distance \(shortestDistance)")
+        }
+        
         // Continue recursively to build the path by taking the newly found shortest distance element.
         // Note: because we are walking the path backwards, we need to inverse the `shortestDistanceElement`
         // in order for the algorithm to continue "backwards".

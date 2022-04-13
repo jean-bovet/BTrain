@@ -430,7 +430,6 @@
 		A79079A6277FB8E700771A60 /* Credits.rtf */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; path = Credits.rtf; sourceTree = "<group>"; };
 		A791EEBD28035645008F58C8 /* LayoutsPredefined.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutsPredefined.swift; sourceTree = "<group>"; };
 		A791EEBF2804A945008F58C8 /* DijkstraAlgorithm.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DijkstraAlgorithm.swift; sourceTree = "<group>"; };
-		A791EEC12804ADC8008F58C8 /* DijkstraAlgorithmTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DijkstraAlgorithmTests.swift; sourceTree = "<group>"; };
 		A792DEF527839F55004B0439 /* SimulatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimulatorView.swift; sourceTree = "<group>"; };
 		A792DEF72783A09C004B0439 /* SimulatorTrainControlView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimulatorTrainControlView.swift; sourceTree = "<group>"; };
 		A792DEFA27841B35004B0439 /* LayoutCommandExecutor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutCommandExecutor.swift; sourceTree = "<group>"; };
@@ -657,6 +656,7 @@
 				A73E07F5276974F9005F9D64 /* Elements */,
 				A73E07F4276974F1005F9D64 /* Layouts */,
 				A775C62027A37C1300D712CF /* Routing */,
+				A79406562807842300F6A427 /* Shortest Path */,
 				A73E07F3276974E6005F9D64 /* Views */,
 				A775C61E27A37B8800D712CF /* Utilities */,
 				A778407D27F96BFC00F87078 /* GeometryTests.swift */,
@@ -937,9 +937,6 @@
 				A7E78C4927A22B23004D1821 /* ManualOperationTests.swift */,
 				A798BB4B27ACD8E8000BB4D1 /* RouteResolverTests.swift */,
 				A78B996327FD56D80021EFE4 /* GraphTests.swift */,
-				A791EEC12804ADC8008F58C8 /* DijkstraAlgorithmTests.swift */,
-				A7C6C3AC2806780F00D43AC2 /* ShortestPathTests.swift */,
-				A79406542807463E00F6A427 /* ShortestPathComplexTests.swift */,
 			);
 			path = Routing;
 			sourceTree = "<group>";
@@ -1039,6 +1036,15 @@
 				A783EA5A278530BF00E69B6D /* SimulatorTrain.swift */,
 			);
 			path = Simulator;
+			sourceTree = "<group>";
+		};
+		A79406562807842300F6A427 /* Shortest Path */ = {
+			isa = PBXGroup;
+			children = (
+				A7C6C3AC2806780F00D43AC2 /* ShortestPathTests.swift */,
+				A79406542807463E00F6A427 /* ShortestPathComplexTests.swift */,
+			);
+			path = "Shortest Path";
 			sourceTree = "<group>";
 		};
 		A79466CF279B8B22006E2A4C /* Simulator */ = {
