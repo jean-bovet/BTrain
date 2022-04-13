@@ -44,7 +44,16 @@ class ShortestPathTests: XCTestCase {
         let s1 = layout.block(named: "s1")
         let s2 = layout.block(named: "s2")
         let path = try DijkstraAlgorithm.shortestPath(graph: layout, from: .starting(s1, Block.nextSocket), to: .ending(s2, Block.previousSocket))
-        XCTAssertEqual(path.toStrings, ["0:s1:1", "0:t1:1", "0:t2:1", "0:b1:1", "1:t4:0", "s2:0"])
+        XCTAssertEqual(path.toStrings, ["0:s1:1", "0:t1:1", "0:t2:1", "0:b1:1", "1:t4:0", "0:s2"])
+    }
+
+    func testPath1Reverse() throws {
+        let layout = LayoutLoopWithStation().newLayout()
+        let s1 = layout.block(named: "s1")
+        let s2 = layout.block(named: "s2")
+        let path = try DijkstraAlgorithm.shortestPath(graph: layout, from: .starting(s2, Block.previousSocket), to: .ending(s1, Block.nextSocket))
+        // TODO: last block should be 1:s1
+        XCTAssertEqual(path.toStrings, ["1:s2:0", "0:t4:1", "1:b1:0", "1:t2:0", "1:t1:0", "1:s1"])
     }
 
     func testPath2() throws {
@@ -54,7 +63,19 @@ class ShortestPathTests: XCTestCase {
         let b1 = layout.block(named: "b1")
         b1.length = 500
         let path = try DijkstraAlgorithm.shortestPath(graph: layout, from: .starting(s1, Block.nextSocket), to: .ending(s2, Block.previousSocket))
-        XCTAssertEqual(path.toStrings, ["0:s1:1", "0:t1:1", "0:t2:2", "2:t3:0", "0:b3:1", "2:t4:0", "s2:0"])
+        XCTAssertEqual(path.toStrings, ["0:s1:1", "0:t1:1", "0:t2:2", "2:t3:0", "0:b3:1", "2:t4:0", "0:s2"])
+    }
+
+    func testPath3() throws {
+        let layout = LayoutLoopWithStation().newLayout()
+        let s1 = layout.block(named: "s1")
+        let s2 = layout.block(named: "s2")
+        let b1 = layout.block(named: "b1")
+        b1.length = 500
+        let t2 = layout.turnout(named: "t2")
+        t2.length = 200
+        let path = try DijkstraAlgorithm.shortestPath(graph: layout, from: .starting(s1, Block.nextSocket), to: .ending(s2, Block.previousSocket))
+        XCTAssertEqual(path.toStrings, ["0:s1:1", "0:t1:2", "0:b2:1", "1:t3:0", "0:b3:1", "2:t4:0", "0:s2"])
     }
 
 }

@@ -40,6 +40,7 @@ final class DijkstraAlgorithm {
         distances[from] = 0
         evaluatedButNotVisitedElements.insert(from)
         
+        // Visit the graph and assign distances to all the nodes until the `to` node is reached
         try visitGraph(from: from, to: to)
         
         // Now go from to back until from is reached, following the nodes
@@ -49,8 +50,19 @@ final class DijkstraAlgorithm {
             print("\(item.key) = \(item.value)")
         }
         
-        print("Build path \(to.inverse) > \(from.inverse)")
-        return try buildShortestPath(from: to.inverse, to: from.inverse, path: .init([to]))
+        // Now that the distances are assigned, find the shortest path
+        return try buildShortestPath(from: from, to: to)
+    }
+    
+    // Now that the graph has been evaluated and distances assigned to all the nodes,
+    // we need to find the shortest path from the node `from` to `to`. This is done
+    // by starting with the `to` node, walking backwards until we find `from`, by choosing
+    // the node that has the shortest distance assigned to it.
+    private func buildShortestPath(from: GraphPathElement, to: GraphPathElement) throws -> GraphPath {
+        let buildFrom = to.inverse
+        let buildTo = from.inverse
+        print("Build path \(buildFrom) > \(buildTo)")
+        return try buildShortestPath(from: buildFrom, to: buildTo, path: .init([buildFrom]))
     }
     
     private func buildShortestPath(from: GraphPathElement, to: GraphPathElement, path: GraphPath) throws -> GraphPath {
