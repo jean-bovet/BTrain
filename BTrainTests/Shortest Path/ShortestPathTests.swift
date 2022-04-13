@@ -74,6 +74,10 @@ class ShortestPathTests: XCTestCase {
         try assert(("s2", .previous), ("s1", .previous), ["1:s2:0", "0:t4:2", "1:b3:0", "0:t3:1", "1:b2:0", "2:t1:0", "1:s1:0"], layout)
     }
 
+    func testPath4() throws {
+        try assert(("s1", .next), ("s1", .next), ["0:s1:1", "0:t1:1", "0:t2:1", "0:b1:1", "1:t4:0", "0:s2:1", "0:b4:1", "0:b5:1", "0:s1:1"])
+    }
+
     private func assert(_ from: (String, Direction), _ to: (String, Direction), _ expectedPath: [String], _ layout: Layout = LayoutLoopWithStation().newLayout()) throws {
         let path = try layout.shortestPath(from: from, to: to)!
         XCTAssertEqual(path.toStrings, expectedPath)

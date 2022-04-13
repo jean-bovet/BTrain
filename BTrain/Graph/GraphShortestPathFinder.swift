@@ -21,6 +21,9 @@ import Foundation
 /// See [Dijkstra on Wikipedia](https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm)
 final class GraphShortestPathFinder {
 
+    // TODO: implement same constraints as GraphPathFinder
+    // TODO: implement same overflow check
+    
     // The comments in this class will follow this graph as an illustration
     //┌─────────┐                      ┌─────────┐             ┌─────────┐
     //│   s1    │───▶  t1  ───▶  t2  ─▶│   b1    │─▶  t4  ────▶│   s2    │
@@ -44,7 +47,12 @@ final class GraphShortestPathFinder {
     private let graph: Graph    
     private let verbose: Bool
         
-    /// Map of the distances between each element of the graph and the starting element
+    /// Map of the distances between each element of the graph and the starting element.
+    ///
+    /// An element is identifier by its node and its entry and exit sockets. For example:
+    /// - 0:s1:1 indicates the block s1 in the direction of travel "next".
+    /// - 1:s1:0 indicates the block s1 in the direction of travel "previous".
+    /// - 0:t1:2 indicates the turnout t1 with the exit socket (2) indicating the right-branch.
     private var distances = [GraphPathElement:Double]()
         
     /// Set of elements that have been already visited.
@@ -54,7 +62,7 @@ final class GraphShortestPathFinder {
     /// but have not yet been visited.
     private var evaluatedButNotVisitedElements = Set<GraphPathElement>()
 
-    private init(graph: Graph, verbose: Bool = false) {
+    private init(graph: Graph, verbose: Bool = true ) {
         self.graph = graph
         self.verbose = verbose
     }
@@ -219,7 +227,7 @@ final class GraphShortestPathFinder {
     
     private func buildShortestPath(from: GraphPathElement, to: GraphPathElement, path: GraphPath) throws -> GraphPath? {
         // Returns when the `from` element is the same as `to`, which means the destination has been reached.
-        if to.isSame(as: from) {
+        if to.isSame(as: from) && path.count > 1 {
             return path
         }
 
@@ -254,7 +262,14 @@ final class GraphShortestPathFinder {
             
             // Ignore this element if it is already part of the path
             if path.contains(element) {
-                continue
+                // If the element is already present and is the first one in the path,
+                // do not skip it because it likely means the destination node is the
+                // same as the starting node. If this is not true, the next time this
+                // code is executed, the element will be stored at a later place
+                // in the path and it will be skipped.
+                if let index = path.elements.lastIndex(of: element), index > 0 {
+                    continue
+                }
             }
 
             // Ignore this element if there is no distance defined for it. This happens

@@ -32,6 +32,14 @@ class ShortestPathComplexTests: XCTestCase {
         try assert(("HS1", .next), ("NE1", .next), ["0:HS1:1", "2:H.4:0", "2:D.4:0", "1:A.2:0", "0:IL1:1", "1:H.1:0", "0:D.2:1", "0:IL2:1", "0:E.3:2", "2:E.1:0", "0:OL3:1", "0:F.3:1", "0:F.1:2", "0:E.4:2", "0:NE1:1"])
     }
 
+    func testPath4() throws {
+        try assert(("NE1", .next), ("NE2", .next), ["0:NE1:1", "2:B.4:0", "2:A.1:0", "3:A.34:2", "2:A.2:0", "0:IL1:1", "1:H.1:0", "0:D.2:1", "0:IL2:1", "0:E.3:2", "2:E.1:0", "0:OL3:1", "0:F.3:1", "0:F.1:2", "0:E.4:1", "0:NE2:1"])
+    }
+
+    func testPath5() throws {
+        try assert(("NE1", .next), ("NE1", .next), ["0:NE1:1", "2:B.4:0", "2:A.1:0", "3:A.34:2", "2:A.2:0", "0:IL1:1", "1:H.1:0", "0:D.2:1", "0:IL2:1", "0:E.3:2", "2:E.1:0", "0:OL3:1", "0:F.3:1", "0:F.1:2", "0:E.4:2", "0:NE1:1"])
+    }
+
     func testPerformancePath1() throws {
         let layout = LayoutComplex().newLayout()
         let ne1 = layout.block(named: "NE1")

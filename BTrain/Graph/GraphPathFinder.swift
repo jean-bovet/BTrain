@@ -57,7 +57,6 @@ struct GraphPathFinder: GraphPathFinding {
         self.settings = settings
     }
     
-    
     /// The default constraints for the graph
     final class DefaultConstraints: GraphPathFinderConstraints {
         
@@ -71,7 +70,6 @@ struct GraphPathFinder: GraphPathFinding {
 
     }
 
-    
     /// Returns the pseudo-shortest path between two nodes.
     func shortestPath(graph: Graph, from: GraphNode, to: GraphNode?, constraints: GraphPathFinderConstraints = DefaultConstraints()) -> GraphPath? {
         return shortestPath {

@@ -1021,9 +1021,9 @@
 				A78B996127FCC4080021EFE4 /* Graph.swift */,
 				A78B996C2800BABB0021EFE4 /* GraphPath.swift */,
 				A78B996A2800BA4D0021EFE4 /* GraphPathFinder.swift */,
+				A7940657280789B300F6A427 /* GraphShortestPathFinder.swift */,
 				A78B996627FD57B20021EFE4 /* Graph+Elements.swift */,
 				A78B996827FE41A90021EFE4 /* LayoutPathFinder.swift */,
-				A7940657280789B300F6A427 /* GraphShortestPathFinder.swift */,
 			);
 			path = Graph;
 			sourceTree = "<group>";
