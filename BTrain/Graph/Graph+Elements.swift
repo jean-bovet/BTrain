@@ -45,6 +45,18 @@ extension Block: GraphNode {
         
 }
 
+extension Block {
+    
+    var elementDirectionNext: GraphPathElement {
+        return .between(self, Block.previousSocket, Block.nextSocket)
+    }
+    
+    var elementDirectionPrevious: GraphPathElement {
+        return .between(self, Block.nextSocket, Block.previousSocket)
+    }
+
+}
+
 struct TurnoutGraphElementIdentifier: GraphElementIdentifier {
     let uuid: String
     let turnoutId: Identifier<Turnout>
