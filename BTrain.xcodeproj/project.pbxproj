@@ -206,6 +206,7 @@
 		A7BE36A82751BDAB00286709 /* ConnectorSocket.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7BE36A72751BDAB00286709 /* ConnectorSocket.swift */; };
 		A7BE36AA2751BDC300286709 /* ConnectorPlug.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7BE36A92751BDC300286709 /* ConnectorPlug.swift */; };
 		A7C6343827E6AF6700C37B46 /* TrainIconManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7C6343727E6AF6700C37B46 /* TrainIconManagerTests.swift */; };
+		A7C6C3AD2806780F00D43AC2 /* ShortestPathTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7C6C3AC2806780F00D43AC2 /* ShortestPathTests.swift */; };
 		A7C8A2E7279BB89E000C7246 /* DocumentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7C8A2E6279BB89E000C7246 /* DocumentView.swift */; };
 		A7C8A2E9279BB8A6000C7246 /* NewLayoutWizardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7C8A2E8279BB8A6000C7246 /* NewLayoutWizardView.swift */; };
 		A7C8A2EB279BDE52000C7246 /* Predefined.btrain in Resources */ = {isa = PBXBuildFile; fileRef = A7C8A2EA279BDE52000C7246 /* Predefined.btrain */; };
@@ -468,6 +469,7 @@
 		A7BE36A72751BDAB00286709 /* ConnectorSocket.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectorSocket.swift; sourceTree = "<group>"; };
 		A7BE36A92751BDC300286709 /* ConnectorPlug.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectorPlug.swift; sourceTree = "<group>"; };
 		A7C6343727E6AF6700C37B46 /* TrainIconManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainIconManagerTests.swift; sourceTree = "<group>"; };
+		A7C6C3AC2806780F00D43AC2 /* ShortestPathTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShortestPathTests.swift; sourceTree = "<group>"; };
 		A7C8A2E6279BB89E000C7246 /* DocumentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentView.swift; sourceTree = "<group>"; };
 		A7C8A2E8279BB8A6000C7246 /* NewLayoutWizardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewLayoutWizardView.swift; sourceTree = "<group>"; };
 		A7C8A2EA279BDE52000C7246 /* Predefined.btrain */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = Predefined.btrain; sourceTree = "<group>"; };
@@ -935,6 +937,7 @@
 				A798BB4B27ACD8E8000BB4D1 /* RouteResolverTests.swift */,
 				A78B996327FD56D80021EFE4 /* GraphTests.swift */,
 				A791EEC12804ADC8008F58C8 /* DijkstraAlgorithmTests.swift */,
+				A7C6C3AC2806780F00D43AC2 /* ShortestPathTests.swift */,
 			);
 			path = Routing;
 			sourceTree = "<group>";
@@ -1577,6 +1580,7 @@
 				A721806C275D2D0400831998 /* CS2DocumentParsingTests.swift in Sources */,
 				A721807B275DD95900831998 /* TrainTests.swift in Sources */,
 				A7DB7D5B27CBF378000893BA /* SpeedSlider+Extension.swift in Sources */,
+				A7C6C3AD2806780F00D43AC2 /* ShortestPathTests.swift in Sources */,
 				A79079A1277EDAA700771A60 /* RouteViewTests.swift in Sources */,
 				A7145F8A27F90FBA00BF5F61 /* NewLayoutWizardViewTests.swift in Sources */,
 				A73E0814276AD1D0005F9D64 /* MarklinInterfaceTests.swift in Sources */,

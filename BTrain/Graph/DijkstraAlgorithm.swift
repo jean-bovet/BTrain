@@ -49,40 +49,48 @@ final class DijkstraAlgorithm {
             print("\(item.key) = \(item.value)")
         }
         
-        return try buildShortestPath(from: to, to: from, path: .init([to]))
+        print("Build path \(to.inverse) > \(from.inverse)")
+        return try buildShortestPath(from: to.inverse, to: from.inverse, path: .init([to]))
     }
     
     private func buildShortestPath(from: GraphPathElement, to: GraphPathElement, path: GraphPath) throws -> GraphPath {
-        if from == to {
+        if to.isSame(as: from) {
             return path
+        }
+
+        //TODO: exitSocket can be nil!
+        guard let edge = graph.edge(from: from.node, socketId: from.exitSocket!) else {
+            fatalError()
+        }
+        
+        guard let node = graph.node(for: edge.toNode) else {
+            throw DijkstraError.nodeNotFound(identifier: edge.toNode)
         }
 
         var shortestDistance: Double = .infinity
         var shortestDistanceElement: GraphPathElement?
 
-        for socket in from.node.sockets {
-            guard let edge = graph.edge(from: from.node, socketId: socket) else {
-                continue
-            }
-
-            guard let previousNode = graph.node(for: edge.toNode) else {
-                throw DijkstraError.nodeNotFound(identifier: edge.toNode)
-            }
-
-            // TODO: need to introduce some constraints here when using the turnout/block
-//            let element = GraphPathElement.starting(previousNode, socket)
-            let element = GraphPathElement.any(previousNode)
-            if let distance = distances[element], distance < shortestDistance {
-                shortestDistance = distance
-                shortestDistanceElement = element
+        // TODO: toNodeSocket can be nil!
+        print("From \(from.description): \(node.reachableSockets(from: edge.toNodeSocket!))")
+        for socket in node.reachableSockets(from: edge.toNodeSocket!) {
+            let element = GraphPathElement.between(node, socket, edge.toNodeSocket!)
+            if let distance = distances[element] {
+                print(" * \(element) = \(distance) and shortest distance so far is \(shortestDistance)")
+                if distance < shortestDistance {
+                    shortestDistance = distance
+                    shortestDistanceElement = element
+                }
+            } else {
+                fatalError()
             }
         }
 
-        guard let shortestDistanceNodeIdentifier = shortestDistanceElement else {
+        guard let shortestDistanceElement = shortestDistanceElement?.inverse else {
             throw DijkstraError.shortestDistanceNodeNotFound(node: from)
         }
 
-        return try buildShortestPath(from: shortestDistanceNodeIdentifier, to: to, path: path.appending(shortestDistanceNodeIdentifier))
+        print("Selected \(shortestDistanceElement.description) with distance \(shortestDistance)")
+        return try buildShortestPath(from: shortestDistanceElement, to: to, path: path.appending(shortestDistanceElement))
     }
     
     private func visitGraph(from: GraphPathElement, to: GraphPathElement) throws {
@@ -102,21 +110,26 @@ final class DijkstraAlgorithm {
             guard let adjacentNode = graph.node(for: edge.toNode) else {
                 continue
             }
-                        
-            // TODO: need to introduce some constraints here when using the turnout/block
-//            let adjacentElement = GraphPathElement.ending(adjacentNode, socket)
-            let adjacentElement = GraphPathElement.any(adjacentNode)
-            guard !visitedElements.contains(adjacentElement) else {
-                continue
+                
+            guard let entrySocket = edge.toNodeSocket else {
+                // TODO: throw exception if edge.toNotSocket is nil
+                fatalError()
             }
             
-            let adjacentNodeDistance = fromNodeDistance + adjacentNode.weight
-            if let existingDistance = distances[adjacentElement], existingDistance < adjacentNodeDistance {
-                continue
+            for exitSocket in adjacentNode.reachableSockets(from: entrySocket) {
+                let adjacentElement = GraphPathElement.between(adjacentNode, entrySocket, exitSocket)
+                guard !visitedElements.contains(adjacentElement) else {
+                    continue
+                }
+                
+                let adjacentNodeDistance = fromNodeDistance + adjacentNode.weight
+                if let existingDistance = distances[adjacentElement], existingDistance < adjacentNodeDistance {
+                    continue
+                }
+                
+                distances[adjacentElement] = adjacentNodeDistance
+                evaluatedButNotVisitedElements.insert(adjacentElement)
             }
-            
-            distances[adjacentElement] = adjacentNodeDistance
-            evaluatedButNotVisitedElements.insert(adjacentElement)
         }
         
         // Pick the node with the smallest distance
@@ -141,6 +154,21 @@ extension DijkstraAlgorithm.DijkstraError: LocalizedError {
             return "Node \(identifier) not found in graph"
         case .elementIdentifierNotFound(uuid: let uuid):
             return "Element identifier \(uuid) not found"
+        }
+    }
+}
+
+extension GraphPathElement {
+    
+    var inverse: GraphPathElement {
+        if let entrySocket = entrySocket, let exitSocket = exitSocket {
+            return .between(node, exitSocket, entrySocket)
+        } else if let entrySocket = entrySocket {
+            return .starting(node, entrySocket)
+        } else if let exitSocket = exitSocket {
+            return .ending(node, exitSocket)
+        } else {
+            fatalError("Invalid element")
         }
     }
 }
