@@ -25,7 +25,7 @@ struct GraphPath: Equatable {
     }
 
     var reversed: GraphPath {
-        return .init(elements.reversed().map { $0.inverse })
+        return .init(elements.reversed().map { $0 })
     }
     
     init(_ elements: [GraphPathElement]) {

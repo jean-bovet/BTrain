@@ -25,6 +25,12 @@ class ShortestPathComplexTests: XCTestCase {
                                                       from: ne1.elementDirectionNext,
                                                       to: hsl_p1.elementDirectionNext)!
         XCTAssertEqual(path.toStrings, ["0:NE1:1", "2:B.4:0", "2:A.1:0", "3:A.34:2", "2:A.2:0", "0:IL1:1", "1:H.1:0", "0:D.2:3", "1:S:0", "2:F.4:0", "1:IL3:0", "0:E.2:1", "1:E.3:0", "1:IL2:0", "1:D.2:0", "0:H.1:2", "0:HL1:1", "0:H.2:2", "0:HLS_P1:1"])
+        
+        measure {
+            _ = try? DijkstraAlgorithm.shortestPath(graph: layout,
+                                                    from: ne1.elementDirectionNext,
+                                                    to: hsl_p1.elementDirectionNext)
+        }
     }
 
 }
