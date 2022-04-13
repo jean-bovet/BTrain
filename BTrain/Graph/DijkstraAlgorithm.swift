@@ -32,11 +32,11 @@ final class DijkstraAlgorithm {
         self.graph = graph
     }
     
-    static func shortestPath(graph: Graph, from: GraphPathElement, to: GraphPathElement) throws -> GraphPath {
-        return try DijkstraAlgorithm(graph: graph).shortestPath(from: from, to: to).reversed
+    static func shortestPath(graph: Graph, from: GraphPathElement, to: GraphPathElement) throws -> GraphPath? {
+        return try DijkstraAlgorithm(graph: graph).shortestPath(from: from, to: to)?.reversed
     }
     
-    private func shortestPath(from: GraphPathElement, to: GraphPathElement) throws -> GraphPath {
+    private func shortestPath(from: GraphPathElement, to: GraphPathElement) throws -> GraphPath? {
         distances[from] = 0
         evaluatedButNotVisitedElements.insert(from)
         
@@ -58,14 +58,14 @@ final class DijkstraAlgorithm {
     // we need to find the shortest path from the node `from` to `to`. This is done
     // by starting with the `to` node, walking backwards until we find `from`, by choosing
     // the node that has the shortest distance assigned to it.
-    private func buildShortestPath(from: GraphPathElement, to: GraphPathElement) throws -> GraphPath {
+    private func buildShortestPath(from: GraphPathElement, to: GraphPathElement) throws -> GraphPath? {
         let buildFrom = to.inverse
         let buildTo = from.inverse
         print("Build path \(buildFrom) > \(buildTo)")
         return try buildShortestPath(from: buildFrom, to: buildTo, path: .init([buildFrom]))
     }
     
-    private func buildShortestPath(from: GraphPathElement, to: GraphPathElement, path: GraphPath) throws -> GraphPath {
+    private func buildShortestPath(from: GraphPathElement, to: GraphPathElement, path: GraphPath) throws -> GraphPath? {
         if to.isSame(as: from) {
             return path
         }
@@ -86,6 +86,12 @@ final class DijkstraAlgorithm {
         print("From \(from.description): \(node.reachableSockets(from: edge.toNodeSocket!))")
         for socket in node.reachableSockets(from: edge.toNodeSocket!) {
             let element = GraphPathElement.between(node, socket, edge.toNodeSocket!)
+            
+            // Ignore element that are already part of the path
+            if path.contains(element.inverse) {
+                continue
+            }
+            
             if let distance = distances[element] {
                 print(" * \(element) = \(distance) and shortest distance so far is \(shortestDistance)")
                 if distance < shortestDistance {
@@ -98,7 +104,8 @@ final class DijkstraAlgorithm {
         }
 
         guard let shortestDistanceElement = shortestDistanceElement?.inverse else {
-            throw DijkstraError.shortestDistanceNodeNotFound(node: from)
+            return nil
+//            throw DijkstraError.shortestDistanceNodeNotFound(node: from)
         }
 
         print("Selected \(shortestDistanceElement.description) with distance \(shortestDistance)")
@@ -113,8 +120,10 @@ final class DijkstraAlgorithm {
         visitedElements.insert(from)
         evaluatedButNotVisitedElements.remove(from)
 
+        // TODO: review all forced ! in this code
         let fromNodeDistance = distances[from]!
-        for socket in from.node.sockets {
+        // TODO: no need of the loop?
+        for socket in [from.exitSocket!] {
             guard let edge = graph.edge(from: from.node, socketId: socket) else {
                 continue
             }

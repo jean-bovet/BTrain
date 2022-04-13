@@ -15,7 +15,6 @@ import XCTest
 
 import XCTest
 
-                                                                    
 //
 //┌─────────┐                      ┌─────────┐             ┌─────────┐
 //│   s1    │───▶  t1  ───▶  t2  ─▶│   b1    │─▶  t4  ────▶│   s2    │
@@ -31,21 +30,13 @@ import XCTest
 //└─────────┘                                              └─────────┘
 class ShortestPathTests: XCTestCase {
 
-    override func setUpWithError() throws {
-        // Put setup code here. This method is called before the invocation of each test method in the class.
-    }
-
-    override func tearDownWithError() throws {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
-    }
-
     func testPath1() throws {
         let layout = LayoutLoopWithStation().newLayout()
         let s1 = layout.block(named: "s1")
         let s2 = layout.block(named: "s2")
         let path = try DijkstraAlgorithm.shortestPath(graph: layout,
                                                       from: s1.elementDirectionNext,
-                                                      to: s2.elementDirectionNext)
+                                                      to: s2.elementDirectionNext)!
         XCTAssertEqual(path.toStrings, ["0:s1:1", "0:t1:1", "0:t2:1", "0:b1:1", "1:t4:0", "0:s2:1"])
     }
 
@@ -55,7 +46,7 @@ class ShortestPathTests: XCTestCase {
         let s2 = layout.block(named: "s2")
         let path = try DijkstraAlgorithm.shortestPath(graph: layout,
                                                       from: s2.elementDirectionPrevious,
-                                                      to: s1.elementDirectionPrevious)
+                                                      to: s1.elementDirectionPrevious)!
         XCTAssertEqual(path.toStrings, ["1:s2:0", "0:t4:1", "1:b1:0", "1:t2:0", "1:t1:0", "1:s1:0"])
     }
 
@@ -67,7 +58,7 @@ class ShortestPathTests: XCTestCase {
         b1.length = 500
         let path = try DijkstraAlgorithm.shortestPath(graph: layout,
                                                       from: s1.elementDirectionNext,
-                                                      to: s2.elementDirectionNext)
+                                                      to: s2.elementDirectionNext)!
         XCTAssertEqual(path.toStrings, ["0:s1:1", "0:t1:1", "0:t2:2", "2:t3:0", "0:b3:1", "2:t4:0", "0:s2:1"])
     }
 
@@ -79,7 +70,7 @@ class ShortestPathTests: XCTestCase {
         b1.length = 500
         let path = try DijkstraAlgorithm.shortestPath(graph: layout,
                                                       from: s2.elementDirectionPrevious,
-                                                      to: s1.elementDirectionPrevious)
+                                                      to: s1.elementDirectionPrevious)!
         XCTAssertEqual(path.toStrings, ["1:s2:0", "0:t4:2", "1:b3:0", "0:t3:2", "2:t2:0", "1:t1:0", "1:s1:0"])
     }
 
@@ -93,7 +84,7 @@ class ShortestPathTests: XCTestCase {
         t2.length = 200
         let path = try DijkstraAlgorithm.shortestPath(graph: layout,
                                                       from: s1.elementDirectionNext,
-                                                      to: s2.elementDirectionNext)
+                                                      to: s2.elementDirectionNext)!
         XCTAssertEqual(path.toStrings, ["0:s1:1", "0:t1:2", "0:b2:1", "1:t3:0", "0:b3:1", "2:t4:0", "0:s2:1"])
     }
     
@@ -107,7 +98,7 @@ class ShortestPathTests: XCTestCase {
         t2.length = 200
         let path = try DijkstraAlgorithm.shortestPath(graph: layout,
                                                       from: s2.elementDirectionPrevious,
-                                                      to: s1.elementDirectionPrevious)
+                                                      to: s1.elementDirectionPrevious)!
         XCTAssertEqual(path.toStrings, ["1:s2:0", "0:t4:2", "1:b3:0", "0:t3:1", "1:b2:0", "2:t1:0", "1:s1:0"])
     }
 
