@@ -57,9 +57,9 @@ final class ScheduledMessageQueue {
         printStats()
     }
         
-    private func execute(scheduledBlock: ScheduledBlock) {
+    private func execute(scheduledBlock: ScheduledBlock) -> Bool {
         guard !executing else {
-            return
+            return false
         }
         executing = true
 
@@ -69,6 +69,8 @@ final class ScheduledMessageQueue {
                 self.printStats()
             }
         }
+        
+        return true
     }
     
     private func scheduleSendData() {
@@ -78,7 +80,10 @@ final class ScheduledMessageQueue {
             }
             if !sSelf.scheduledQueue.isEmpty {
                 let scheduledBlock = sSelf.scheduledQueue.removeFirst()
-                sSelf.execute(scheduledBlock: scheduledBlock)
+                if sSelf.execute(scheduledBlock: scheduledBlock) == false {
+                    // Schedule again the block it is could not be executed
+                    sSelf.scheduledQueue.insert(scheduledBlock, at: 0)
+                }
             }
         }
     }

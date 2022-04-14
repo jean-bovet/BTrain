@@ -88,6 +88,12 @@ class ClientConnection {
     
     func send(data: Data, priority: Bool, onCompletion: @escaping () -> Void) {
         dataQueue.schedule(priority: priority) { completion in
+            guard self.nwConnection.state == .ready else {
+                NSLog("[Client] Connection is not ready, message is discarded but completion block called.")
+                completion()
+                return
+            }
+            
             self.nwConnection.send(content: data, completion: .contentProcessed( { error in
                 let msg = MarklinCANMessage.decode(from: [UInt8](data))
                 NSLog("[Client] > \(MarklinCANMessagePrinter.debugDescription(msg: msg))")
