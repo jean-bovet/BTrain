@@ -353,7 +353,7 @@ final class LayoutDiagnostic: ObservableObject {
         // Only check manually created routes
         for route in layout.routes.filter({ $0.automatic == false }) {
             do {
-                let steps = try rr.resolve(steps: ArraySlice(route.steps), verbose: true)
+                let steps = try rr.resolve(steps: ArraySlice(route.steps))
                 if steps == nil {
                     errors.append(DiagnosticError.invalidRoute(route: route, error: "No path found"))
                 }
