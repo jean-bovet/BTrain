@@ -61,7 +61,8 @@ final class Route: Element, ObservableObject {
                 if blockId != nil {
                     return exitSocket?.socketId == Block.nextSocket ? .next : .previous
                 } else {
-                    fatalError("It is an error to request the direction for a step that does not refer to a block")
+                    assertionFailure("It is an error to request the direction for a step that does not refer to a block")
+                    return nil
                 }
             }
             set {
@@ -74,7 +75,7 @@ final class Route: Element, ObservableObject {
                         entrySocket = Socket.block(blockId, socketId: 1)
                     }
                 } else {
-                    fatalError("It is an error to set the direction of a step that does not refer to a block")
+                    assertionFailure("It is an error to set the direction of a step that does not refer to a block")
                 }
             }
         }

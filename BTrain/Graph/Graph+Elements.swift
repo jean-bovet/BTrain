@@ -94,6 +94,10 @@ struct TransitionGraphElementIdentifier: GraphElementIdentifier {
     }
 }
 
+struct InvalidElementIdentifier: GraphElementIdentifier {
+    var uuid: String = UUID().uuidString
+}
+
 extension ITransition {
     var identifier: GraphElementIdentifier {
         TransitionGraphElementIdentifier(id)
@@ -105,7 +109,8 @@ extension ITransition {
         } else if let turnout = a.turnout {
             return TurnoutGraphElementIdentifier(turnout)
         } else {
-            fatalError("Socket must specify a block or a turnout")
+            assertionFailure("Socket must specify a block or a turnout")
+            return InvalidElementIdentifier()
         }
     }
     
@@ -119,7 +124,8 @@ extension ITransition {
         } else if let turnout = b.turnout {
             return TurnoutGraphElementIdentifier(turnout)
         } else {
-            fatalError("Socket must specify a block or a turnout")
+            assertionFailure("Socket must specify a block or a turnout")
+            return InvalidElementIdentifier()
         }
     }
     

@@ -57,6 +57,9 @@ enum LayoutError: Error {
     case destinationDirectionMismatch(currentBlock: Block, destination: Destination)
     
     case missingDirection(step: Route.Step)
+    case invalidDirectionRequest(step: Route.Step)
+    case invalidDirectionAssignment(step: Route.Step)
+    case invalidState(step: Route.Step)
     
     case invalidPartIndex(index: Int, block: Block)
 }
@@ -138,9 +141,15 @@ extension LayoutError: LocalizedError {
             
         case .missingDirection(step: let step):
             return "Direction is missing from \(step)"
-            
+        case .invalidState(step: let step):
+            return "Invalid step \(step)"
+
         case .invalidPartIndex(index: let index, block: let block):
             return "Invalid part index \(index) in \(block.name)"
+        case .invalidDirectionRequest(step: let step):
+            return "It is an error to request the direction for a step that does not refer to a block: \(step)"
+        case .invalidDirectionAssignment(step: let step):
+            return "It is an error to set the direction of a step that does not refer to a block: \(step)"
         }
     }
 }

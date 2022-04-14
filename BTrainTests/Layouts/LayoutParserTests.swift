@@ -215,7 +215,7 @@ private extension Layout {
         for transition in transitions {
             if let turnoutId = transition.b.turnout {
                 guard let turnout = turnout(for: turnoutId) else {
-                    fatalError("Unable to find turnout \(turnoutId)")
+                    throw LayoutError.turnoutNotFound(turnoutId: turnoutId)
                 }
                 turnouts.append(turnout)
             }

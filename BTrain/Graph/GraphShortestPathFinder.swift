@@ -38,10 +38,13 @@ final class GraphShortestPathFinder {
     //│   b5    │◀─────────────────────────────────────────────│   b4    │
     //└─────────┘                                              └─────────┘
 
-    enum DijkstraError: Error {
-        case shortestDistanceNodeNotFound(node: GraphPathElement)
+    enum PathFinderError: Error {
+        case missingExitSocket(from: GraphPathElement)
+        case distanceNotFound(`for`: GraphPathElement)
         case nodeNotFound(identifier: GraphElementIdentifier)
-        case elementIdentifierNotFound(uuid: String)
+        case destinationSocketNotFound(`for`: GraphEdge)
+        case edgeNotFound(`for`: GraphNode, socketId: SocketId)
+        case invalidElement(_ element: GraphPathElement)
     }
     
     private let graph: Graph    
@@ -127,10 +130,9 @@ final class GraphShortestPathFinder {
 
         // Find out if there is an element reachable from `from`.
         // For example: following "s1' in the next direction, the next element is "t1".
-        if let nextElement = nextElement(from: from) {
+        if let nextElement = try nextElement(from: from) {
             guard let fromNodeDistance = distances[from] else {
-                // TODO: throw
-                fatalError()
+                throw PathFinderError.distanceNotFound(for: from)
             }
             // Compute the new distance to the adjacent node
             // For example: if nextElement is "t1", the distance will be distance(s1) + distance(t1).
@@ -162,10 +164,9 @@ final class GraphShortestPathFinder {
         let entrySocket: SocketId
     }
     
-    private func nextElement(from: GraphPathElement) -> NextElement? {
+    private func nextElement(from: GraphPathElement) throws -> NextElement? {
         guard let fromExitSocket = from.exitSocket else {
-            // TODO: throw
-            fatalError()
+            throw PathFinderError.missingExitSocket(from: from)
         }
         
         guard let edge = graph.edge(from: from.node, socketId: fromExitSocket) else {
@@ -173,13 +174,11 @@ final class GraphShortestPathFinder {
         }
         
         guard let node = graph.node(for: edge.toNode) else {
-            // TODO: throw
-            fatalError()
+            throw PathFinderError.nodeNotFound(identifier: edge.toNode)
         }
             
         guard let entrySocket = edge.toNodeSocket else {
-            // TODO: throw
-            fatalError()
+            throw PathFinderError.destinationSocketNotFound(for: edge)
         }
         
         return NextElement(node: node, entrySocket: entrySocket)
@@ -222,7 +221,7 @@ final class GraphShortestPathFinder {
         
         // Note: swap `to` and `from` to build the path in reverse order (needed by the Dijkstra algorithm)
         // and make sure to inverse each element so the entry and exit sockets are also inverted.
-        return try buildShortestPath(from: to.inverse, to: from.inverse, path: .init([to]))
+        return try buildShortestPath(from: try to.inverse(), to: try from.inverse(), path: .init([to]))
     }
     
     private func buildShortestPath(from: GraphPathElement, to: GraphPathElement, path: GraphPath) throws -> GraphPath? {
@@ -233,25 +232,22 @@ final class GraphShortestPathFinder {
 
         // Find the node that follows `from` given its `exitSocket`.
         guard let fromExitSocket = from.exitSocket else {
-            // TODO: throw
-            fatalError()
+            throw PathFinderError.missingExitSocket(from: from)
         }
         
         guard let edge = graph.edge(from: from.node, socketId: fromExitSocket) else {
-            // TODO: throw
-            fatalError()
+            throw PathFinderError.edgeNotFound(for: from.node, socketId: fromExitSocket)
         }
         
         guard let node = graph.node(for: edge.toNode) else {
-            throw DijkstraError.nodeNotFound(identifier: edge.toNode)
+            throw PathFinderError.nodeNotFound(identifier: edge.toNode)
         }
 
         var shortestDistance: Double = .infinity
         var shortestDistanceElement: GraphPathElement?
 
         guard let toNodeSocket = edge.toNodeSocket else {
-            // TODO: throw
-            fatalError()
+            throw PathFinderError.destinationSocketNotFound(for: edge)
         }
         
         // Iterate over all the reachable sockets of `node` and pick
@@ -307,28 +303,34 @@ final class GraphShortestPathFinder {
         // Continue recursively to build the path by taking the newly found shortest distance element.
         // Note: because we are walking the path backwards, we need to inverse the `shortestDistanceElement`
         // in order for the algorithm to continue "backwards".
-        return try buildShortestPath(from: shortestDistanceElement.inverse, to: to, path: path.appending(shortestDistanceElement))
+        return try buildShortestPath(from: try shortestDistanceElement.inverse(), to: to, path: path.appending(shortestDistanceElement))
     }
     
 }
 
-extension GraphShortestPathFinder.DijkstraError: LocalizedError {
+extension GraphShortestPathFinder.PathFinderError: LocalizedError {
     
     var errorDescription: String? {
         switch self {
-        case .shortestDistanceNodeNotFound(node: let node):
-            return "Shortest distance adjacent node not found for \(node)"
+        case .missingExitSocket(from: let from):
+            return "Missing exit socket from \(from)"
+        case .distanceNotFound(for: let element):
+            return "Distance not found for \(element)"
         case .nodeNotFound(identifier: let identifier):
-            return "Node \(identifier) not found in graph"
-        case .elementIdentifierNotFound(uuid: let uuid):
-            return "Element identifier \(uuid) not found"
+            return "Node not found for \(identifier)"
+        case .destinationSocketNotFound(for: let element):
+            return "Destination socketnot found for \(element)"
+        case .edgeNotFound(for: let node, socketId: let socketId):
+            return "Edge not found for \(node) and socket \(socketId)"
+        case .invalidElement(element: let element):
+            return "Invalid element \(element)"
         }
     }
 }
 
 extension GraphPathElement {
     
-    var inverse: GraphPathElement {
+    func inverse() throws -> GraphPathElement {
         if let entrySocket = entrySocket, let exitSocket = exitSocket {
             return .between(node, exitSocket, entrySocket)
         } else if let entrySocket = entrySocket {
@@ -336,8 +338,7 @@ extension GraphPathElement {
         } else if let exitSocket = exitSocket {
             return .ending(node, exitSocket)
         } else {
-            // TODO: avoid any fatalError in BTrain otherwise the whole layout is not managed anymore. Convert to a function that throws
-            fatalError("Invalid element")
+            throw GraphShortestPathFinder.PathFinderError.invalidElement(self)
         }
     }
 }

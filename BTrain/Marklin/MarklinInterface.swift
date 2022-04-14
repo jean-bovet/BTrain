@@ -95,7 +95,9 @@ final class MarklinInterface: CommandInterface {
     }
     
     func execute(command: Command, onCompletion: @escaping () -> Void) {
-        let (message, priority) = MarklinCANMessage.from(command: command)
+        guard let (message, priority) = MarklinCANMessage.from(command: command) else {
+            return
+        }
         send(message: message, priority: priority, onCompletion: onCompletion)
     }
 

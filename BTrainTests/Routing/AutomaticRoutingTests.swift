@@ -256,7 +256,7 @@ class AutomaticRoutingTests: BTTestCase {
         XCTAssertTrue(p.train.speed.requestedKph > 0)
         
         // When restarting, the train automatic route will be updated
-        XCTAssertEqual(p.route.steps.toStrings(layout), ["s2:next", "b1:next", "b2:next", "b3:next", "s2:next"])
+        XCTAssertEqual(try p.route.steps.toStrings(layout), ["s2:next", "b1:next", "b2:next", "b3:next", "s2:next"])
 
         // Assert that the train has restarted and is moving in the correct direction
         try p.assert("automatic-0: {r0{s2 ≏ 🟢🚂0 }} <r0<t1(1,0),s>> <r0<t2(1,0),s>> [r0[b1 ≏ ]] <t3> [b2 ≏ ] <t4(1,0)> [b3 ≏ ≏ ≏ ] <t5> <t6> {r0{s2 ≏ 🟢🚂0 }}")
@@ -293,7 +293,7 @@ class AutomaticRoutingTests: BTTestCase {
         XCTAssertTrue(p.train.speed.requestedKph == 0)
         
         // When restarting, the train automatic route will be updated
-        XCTAssertEqual(p.route.steps.toStrings(layout), ["s2:next", "b1:next", "b2:next", "b3:next", "s2:next"])
+        XCTAssertEqual(try p.route.steps.toStrings(layout), ["s2:next", "b1:next", "b2:next", "b3:next", "s2:next"])
 
         try p.assert("automatic-0: {r0{s2 ≡ 🔴🚂0 }} <t1(1,0),s> <t2(1,0),s> [b1 ≏ ] <t3> [b2 ≏ ] <t4(1,0)> [b3 ≏ ≏ ≏ ] <t5> <t6> {r0{s2 ≡ 🔴🚂0 }}")
     }
@@ -330,7 +330,7 @@ class AutomaticRoutingTests: BTTestCase {
         XCTAssertEqual(p.layoutController.run(), .none)
 
         // When restarting, the train automatic route will be updated
-        XCTAssertEqual(p.route.steps.toStrings(layout), ["s2:next", "b1:next", "b2:next", "b3:next", "s2:next"])
+        XCTAssertEqual(try p.route.steps.toStrings(layout), ["s2:next", "b1:next", "b2:next", "b3:next", "s2:next"])
 
         // Assert that the train has restarted and is moving in the correct direction
         try p.assert("automatic-0: {r0{s2 ≏ 🟢🚂0 }} <r0<t1(1,0),s>> <r0<t2(1,0),s>> [r0[b1 ≏ ]] <t3> [b2 ≏ ] <t4(1,0)> [b3 ≏ ≏ ] <t5> <t6> {r0{s2 ≏ 🟢🚂0 }}")
@@ -402,7 +402,7 @@ class AutomaticRoutingTests: BTTestCase {
         
         // The automatic route is now updated to find an alternative path
         XCTAssertEqual(p.layoutController.run(), .processed)
-        XCTAssertEqual(p.route.steps.toStrings(layout), ["b1:next", "b5:previous", "b3:previous"])
+        XCTAssertEqual(try p.route.steps.toStrings(layout), ["b1:next", "b5:previous", "b3:previous"])
 
         // And now the train restarts following the new route
         try p.assert("automatic-0: [r0[b1 ≏ 🔵🚂0 ]] <r0<t3(0,2),r>> ![r0[b5 ≏ ]] <t7(2,0)> <t5(2,0)> ![b3 ≏ ≏ ≏]")
@@ -470,7 +470,7 @@ class AutomaticRoutingTests: BTTestCase {
         try layoutController.start(routeID: routeId, trainID: train.id, destination: destination)
 
         let route = layout.route(for: routeId, trainId: train.id)!
-        XCTAssertEqual(route.steps.toStrings(layout), routeSteps)
+        XCTAssertEqual(try route.steps.toStrings(layout), routeSteps)
         XCTAssertTrue(train.automaticScheduling)
 
         let asserter = LayoutAsserter(layout: layout, layoutController: layoutController)
