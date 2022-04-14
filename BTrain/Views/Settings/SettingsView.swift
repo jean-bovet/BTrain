@@ -27,6 +27,7 @@ struct SettingsView: View {
     @AppStorage(SettingsKeys.brakingSpeed) private var brakingSpeed = Int(LayoutFactory.DefaultBrakingSpeed)
 
     @AppStorage(SettingsKeys.automaticRouteRandom) private var automaticRouteRandom = true
+    @AppStorage(SettingsKeys.shortestRouteEnabled) private var shortestRouteEnabled = false
     @AppStorage(SettingsKeys.detectUnexpectedFeedback) var detectUnexpectedFeedback = true
     @AppStorage(SettingsKeys.strictRouteFeedbackStrategy) var strictRouteFeedbackStrategy = false
 
@@ -69,6 +70,7 @@ struct SettingsView: View {
            
             Form {
                 Toggle("Generate Automatic Route at Random", isOn: $automaticRouteRandom)
+                Toggle("Shortest Route (beta)", isOn: $shortestRouteEnabled)
                 Toggle("Detect Unexpected Feedbacks", isOn: $detectUnexpectedFeedback)
                 Toggle("Strict Route Feedback Detection", isOn: $strictRouteFeedbackStrategy)
             }

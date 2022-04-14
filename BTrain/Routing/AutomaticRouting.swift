@@ -72,7 +72,14 @@ final class AutomaticRouting {
             to = nil
         }
         
-        if let path = layout.path(for: train, from: (currentBlock, trainInstance.direction), to: to, pathFinder: pf, constraints: pf.constraints) {
+        let path: GraphPath?
+        if let to = to, let toBlockDirection = to.1, SettingsKeys.bool(forKey: SettingsKeys.shortestRouteEnabled) {
+            path = try layout.shortestPath(for: train, from: (currentBlock, trainInstance.direction), to: (to.0, toBlockDirection), pathFinder: pf, constraints: pf.constraints)
+        } else {
+            path = layout.path(for: train, from: (currentBlock, trainInstance.direction), to: to, pathFinder: pf, constraints: pf.constraints)
+        }
+        
+        if let path = path {
             route.steps = path.elements.toBlockSteps
             train.routeStepIndex = 0
             return (true, route)

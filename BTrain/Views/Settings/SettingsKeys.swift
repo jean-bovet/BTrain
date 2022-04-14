@@ -23,6 +23,7 @@ struct SettingsKeys {
     static let brakingSpeed = "brakingSpeed"
 
     static let automaticRouteRandom = "automaticRouteRandom"
+    static let shortestRouteEnabled = "shortestRouteEnabled"
     static let detectUnexpectedFeedback = "detectUnexpectedFeedback"
     static let strictRouteFeedbackStrategy = "strictRouteFeedbackStrategy"
 
