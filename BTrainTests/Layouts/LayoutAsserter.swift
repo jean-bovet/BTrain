@@ -28,7 +28,7 @@ final class LayoutAsserter {
     }
     
     func assert(_ strings: [String], trains: [Train]) throws {
-        let expectedLayout = LayoutFactory.layoutFrom(strings)
+        let expectedLayout = try LayoutFactory.layoutFrom(strings)
         let expectedTrains = expectedLayout.trains
         
         // First apply all the feedbacks

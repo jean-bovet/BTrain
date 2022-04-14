@@ -49,16 +49,6 @@ final class LayoutFactory {
     static func createLayout(_ id: Identifier<Layout>) -> Layout {
         return GlobalLayouts.filter { type(of: $0).id == id }.first!.newLayout()
     }
-
-    static func layoutFrom(_ routeString: String) -> Layout {
-        return layoutFrom([routeString])
-    }
-    
-    static func layoutFrom(_ routeStrings: [String]) -> Layout {
-        let parser = LayoutParser(routeStrings)
-        parser.parse()
-        return parser.layout
-    }
     
     static func layoutFromBundle(named: String) -> Layout {
         let file = Bundle.main.url(forResource: named, withExtension: "btrain", subdirectory: "Layouts")!

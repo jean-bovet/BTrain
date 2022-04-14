@@ -11,6 +11,7 @@
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 import Foundation
+@testable import BTrain
 
 final class LayoutRouteParser {
     
@@ -25,15 +26,19 @@ final class LayoutRouteParser {
     
     let sp: LayoutStringParser
     
+    enum ParserError: Error {
+        case parserError(message: String)
+    }
+    
     init(ls: String, id: String, layout: Layout) {
         self.sp = LayoutStringParser(ls: ls)
         self.layout = layout
     }
     
-    func parseRouteName() -> Route {
+    func parseRouteName() throws -> Route {
         let routeName = sp.matchString(":")
         guard !routeName.isEmpty else {
-            fatalError("Route name must be specified for each route")
+            throw ParserError.parserError(message: "Route name must be specified for each route")
         }
         
         sp.eat(":")
@@ -41,26 +46,26 @@ final class LayoutRouteParser {
         return Route(uuid: routeName, automatic: false)
     }
     
-    func parse() {
-        route = parseRouteName()
+    func parse() throws {
+        route = try parseRouteName()
         
         while (sp.more) {
             if sp.matches("!{") {
-                parseBlock(category: .station, direction: .previous)
+                try parseBlock(category: .station, direction: .previous)
             } else if sp.matches("{") {
-                parseBlock(category: .station, direction: .next)
+                try parseBlock(category: .station, direction: .next)
             } else if sp.matches("![") {
-                parseBlock(category: .free, direction: .previous)
+                try parseBlock(category: .free, direction: .previous)
             } else if sp.matches("|[") {
-                parseBlock(category: .sidingPrevious, direction: .next)
+                try parseBlock(category: .sidingPrevious, direction: .next)
             } else if sp.matches("[") {
-                parseBlock(category: .free, direction: .next)
+                try parseBlock(category: .free, direction: .next)
             } else if sp.matches("<") {
-                parseTurnouts()
+                try parseTurnouts()
             } else if sp.matches(" ") {
                 // Ignore white space
             } else {
-                fatalError("Unexpected character '\(sp.c)' found while parsing block definition")
+                throw ParserError.parserError(message: "Unexpected character '\(sp.c)' found while parsing block definition")
             }
         }
         
@@ -82,11 +87,11 @@ final class LayoutRouteParser {
         }
     }
             
-    func parseBlock(category: Block.Category, direction: Direction) {
+    func parseBlock(category: Block.Category, direction: Direction) throws {
         let block: Block
         let newBlock: Bool
         
-        let blockHeader = parseBlockHeader(type: category, direction: direction)
+        let blockHeader = try parseBlockHeader(type: category, direction: direction)
         
         // Parse the optional digit that indicates a reference to an existing block
         // Example: { ≏ ≏ } [[ ≏ 🟢🚂 ≏ ]] [[ ≏ ≏ ]] {b0 ≏ ≏ }
@@ -115,11 +120,11 @@ final class LayoutRouteParser {
                     
         if direction == .previous {
             let index = sp.index
-            let numberOfFeedbacks = parseNumberOfFeedbacks(block: block, newBlock: newBlock, type: category)
+            let numberOfFeedbacks = try parseNumberOfFeedbacks(block: block, newBlock: newBlock, type: category)
             sp.index = index
-            parseBlockContent(block: block, newBlock: newBlock, type: category, numberOfFeedbacks: numberOfFeedbacks)
+            try parseBlockContent(block: block, newBlock: newBlock, type: category, numberOfFeedbacks: numberOfFeedbacks)
         } else {
-            parseBlockContent(block: block, newBlock: newBlock, type: category, numberOfFeedbacks: nil)
+            try parseBlockContent(block: block, newBlock: newBlock, type: category, numberOfFeedbacks: nil)
         }
         
         blocks.insert(block)
@@ -143,9 +148,9 @@ final class LayoutRouteParser {
     
     typealias BlockContentCallback = (BlockContentType) -> Void
     
-    func parseNumberOfFeedbacks(block: Block, newBlock: Bool, type: Block.Category) -> Int {
+    func parseNumberOfFeedbacks(block: Block, newBlock: Bool, type: Block.Category) throws -> Int {
         var currentFeedbackIndex = 0
-        parseBlockContent(block: block, newBlock: newBlock, type: type) { contentType in
+        try parseBlockContent(block: block, newBlock: newBlock, type: type) { contentType in
             switch(contentType) {
             case .stoppedLoc, .runningLoc, .runningLimitedLoc, .wagon:
                 _ = parseUUID()
@@ -165,9 +170,9 @@ final class LayoutRouteParser {
         return currentFeedbackIndex
     }
     
-    func parseBlockContent(block: Block, newBlock: Bool, type: Block.Category, numberOfFeedbacks: Int?) {
+    func parseBlockContent(block: Block, newBlock: Bool, type: Block.Category, numberOfFeedbacks: Int?) throws {
         var currentFeedbackIndex = 0
-        parseBlockContent(block: block, newBlock: newBlock, type: type) { contentType in
+        try parseBlockContent(block: block, newBlock: newBlock, type: type) { contentType in
             let feedbackIndex: Int
             let position: Int
             if let numberOfFeedbacks = numberOfFeedbacks {
@@ -212,7 +217,7 @@ final class LayoutRouteParser {
         }
     }
     
-    func parseBlockContent(block: Block, newBlock: Bool, type: Block.Category, callback: BlockContentCallback) {
+    func parseBlockContent(block: Block, newBlock: Bool, type: Block.Category, callback: BlockContentCallback) throws {
         var parsingBlock = true
         while (sp.more && parsingBlock) {
             if sp.matches("🔴🚂") {
@@ -250,7 +255,7 @@ final class LayoutRouteParser {
             } else if sp.matches("💺") {
                 callback(.wagon)
             } else {
-                fatalError("Unknown character '\(sp.c)'")
+                throw ParserError.parserError(message: "Unknown character '\(sp.c)'")
             }
         }
     }
@@ -260,7 +265,7 @@ final class LayoutRouteParser {
         var reserved: Reservation?
     }
     
-    func parseBlockHeader(type: Block.Category, direction: Direction) -> BlockHeader {
+    func parseBlockHeader(type: Block.Category, direction: Direction) throws -> BlockHeader {
         var header = BlockHeader()
 
         var reservedTrainNumber: String?
@@ -268,7 +273,7 @@ final class LayoutRouteParser {
             if let n = sp.matchesInteger() {
                 reservedTrainNumber = String(n)
             } else {
-                assertionFailure("Unexpected train number reservation")
+                throw ParserError.parserError(message: "Unexpected train number reservation")
             }
         }
         
@@ -285,13 +290,13 @@ final class LayoutRouteParser {
             if let reservedTrainNumber = reservedTrainNumber {
                 header.reserved = .init(trainId: Identifier<Train>(uuid: reservedTrainNumber), direction: direction)
             } else {
-                assertionFailure("A reserved block must have a reservation train number specified!")
+                throw ParserError.parserError(message: "A reserved block must have a reservation train number specified!")
             }
         }
         
         let blockName = sp.matchString()
         if blockName.isEmpty {
-            assertionFailure("Expecting a block name")
+            throw ParserError.parserError(message: "Expecting a block name")
         } else {
             header.blockName = blockName
         }
@@ -379,21 +384,20 @@ final class LayoutRouteParser {
     // <t0(0,1)>
     // <r0<t0>> : reserved turnout
     // Where the state portion can be: s, l, r, s01, s23, b21, b03
-    func parseTurnouts() {
+    func parseTurnouts() throws {
         var reservedTrainNumber: String?
         if sp.matches("r") {
             if let n = sp.matchesInteger() {
                 reservedTrainNumber = String(n)
                 sp.eat("<")
             } else {
-                assertionFailure("Unexpected turnout identifier")
+                throw ParserError.parserError(message: "Unexpected turnout identifier")
             }
         }
         
         let turnoutName = sp.matchString(["{", "(", ",", ">"])
         guard !turnoutName.isEmpty else {
-            assertionFailure("Turnout must have its name specified")
-            return
+            throw ParserError.parserError(message: "Turnout must have its name specified")
         }
 
         // Default values, if not specified
@@ -406,8 +410,7 @@ final class LayoutRouteParser {
         if sp.matches("{") {
             let typeString = sp.matchString(["}"])
             guard !typeString.isEmpty else {
-                assertionFailure("Turnout type must be specfied within { }")
-                return
+                throw ParserError.parserError(message: "Turnout type must be specfied within { }")
             }
             switch(typeString) {
             case "sl":
@@ -421,7 +424,7 @@ final class LayoutRouteParser {
             case "ds2":
                 type = .doubleSlip2
             default:
-                assertionFailure("Invalid turnout type \(typeString)")
+                throw ParserError.parserError(message: "Invalid turnout type \(typeString)")
             }
             assert(sp.matches("}"), "Expecting closing '}' after type definition")
         }
@@ -453,7 +456,7 @@ final class LayoutRouteParser {
             } else if sp.matches("b") {
                 state = .branch
             } else {
-                assertionFailure("Invalid turnout state")
+                throw ParserError.parserError(message: "Invalid turnout state")
             }
         }
 
