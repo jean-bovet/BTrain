@@ -115,8 +115,9 @@ class PathFinderTests: BTTestCase {
         XCTAssertEqual(path.elements.toBlockSteps.toStrings(layout), ["NE1:next", "OL1:next", "OL2:next", "OL3:next", "NE4:next", "IL1:next", "IL2:next", "IL3:next", "S:next", "IL1:previous", "IL4:previous", "IL3:previous", "IL2:previous", "OL1:previous", "NE3:previous", "M1:next", "M2U:next", "LCF1:next"])
         
         // Note: by enabling random routing and specifying a destination, the shortest path will be returned
-        let shortestPath = layout.path(for: train, from: (ne1, .next), to: (lcf1, .next), reservedBlockBehavior: .avoidFirstReservedBlock, random: true)!
+        let shortestPath = try layout.shortestPath(for: train, from: (ne1, .next), to: (lcf1, .next), reservedBlockBehavior: .avoidFirstReservedBlock)!
         XCTAssertTrue(shortestPath.elements.toBlockSteps.count < path.elements.toBlockSteps.count)
+        XCTAssertEqual(shortestPath.elements.toBlockSteps.toStrings(layout), ["NE1:next", "IL1:next", "S:previous", "IL3:previous", "IL2:previous", "IL1:previous", "NE4:previous", "M1:next", "M2U:next", "LCF1:next"])
 
         self.measure {
             let path = layout.path(for: train, from: (ne1, .next), to: (lcf1, .next), reservedBlockBehavior: .avoidFirstReservedBlock)
@@ -154,5 +155,11 @@ extension Layout {
         let gl = LayoutPathFinder(layout: self, train: train, settings: settings)
         return path(for: train, from: from, to: to, pathFinder: gl, constraints: gl.constraints)
     }
-    
+
+    func shortestPath(for train: Train, from: (Block, Direction), to: (Block, Direction), reservedBlockBehavior: LayoutPathFinder.ReservedBlockBehavior = .avoidReserved) throws -> GraphPath? {
+        let settings = LayoutPathFinder.Settings(reservedBlockBehavior: reservedBlockBehavior, baseSettings: GraphPathFinder.Settings(verbose: false, random: false, overflow: pathFinderOverflowLimit))
+        let gl = LayoutPathFinder(layout: self, train: train, settings: settings)
+        return try shortestPath(for: train, from: from, to: to, pathFinder: gl, constraints: gl.constraints)
+    }
+
 }

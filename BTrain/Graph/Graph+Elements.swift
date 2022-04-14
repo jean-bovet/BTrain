@@ -205,7 +205,14 @@ extension Layout {
         }
         return pathFinder.path(graph: self, from: fromElement, to: toElement, constraints: constraints)
     }
-        
+ 
+    func shortestPath(for train: Train, from: (Block, Direction), to: (Block, Direction), pathFinder: GraphPathFinding, constraints: GraphPathFinderConstraints) throws -> GraphPath? {
+        let fromElement = from.1 == .next ? from.0.elementDirectionNext:from.0.elementDirectionPrevious
+        let toElement = to.1 == .next ? to.0.elementDirectionNext:to.0.elementDirectionPrevious
+
+        return try pathFinder.shortestPath(graph: self, from: fromElement, to: toElement, constraints: constraints)
+    }
+    
 }
 
 extension Array where Element == GraphPathElement {
