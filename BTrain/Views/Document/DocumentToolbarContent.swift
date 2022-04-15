@@ -35,7 +35,7 @@ struct DocumentToolbarContent: ToolbarContent {
 
             if let switchboard = document.switchboard, document.selectedView == .overview {
                 SwitchboarSettingsButton(document: document)
-                SwitchboardEditButton(state: switchboard.state)
+                SwitchboardEditButton(document: document, state: switchboard.state)
             }
             
             Menu("􁉽") {
@@ -168,12 +168,15 @@ struct ToolDebugCommandsView: View {
 
 struct SwitchboardEditButton: View {
     
+    @ObservedObject var document: LayoutDocument
     @ObservedObject var state: SwitchBoard.State
     
     var body: some View {
-        Button("􀈊") {
-            state.editable.toggle()
-        }.help("Edit Switchboard")
+        if !document.connected {
+            Button("􀈊") {
+                state.editable.toggle()
+            }.help("Edit Switchboard")
+        }
     }
 }
 
