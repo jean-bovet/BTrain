@@ -232,7 +232,7 @@ class AutomaticRoutingTests: BTTestCase {
         // Artificially set the restart time to 0 which will make the train restart again
         layout.trains[0].timeUntilAutomaticRestart = 0
         
-        XCTAssertEqual(p.layoutController.run(), .none) // Route is updated
+        XCTAssertEqual(p.layoutController.run(), .processed) // Route is updated
         XCTAssertEqual(p.layoutController.run(), .processed) // Train is started
 
         XCTAssertTrue(p.train.speed.requestedKph > 0)

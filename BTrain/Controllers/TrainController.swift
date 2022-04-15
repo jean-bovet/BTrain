@@ -187,7 +187,8 @@ final class TrainController {
         train.startRouteIndex = train.routeStepIndex
         
         // And try to reserve the necessary leading blocks
-        if try reserveLeadBlocks(route: route, currentBlock: currentBlock, trainStarting: true) {
+        let result = try reserveLeadBlocks(route: route, currentBlock: currentBlock, trainStarting: true)
+        if result.success {
             debug("Start train \(train.name) because the next blocks could be reserved (route: \(route.steps.debugDescription))")
             stopTrigger = nil
             train.state = .running
@@ -195,7 +196,7 @@ final class TrainController {
             return .processed
         }
 
-        return .none
+        return result.result
     }
      
     // This method handles any stop trigger related to the automatic route, which are:
@@ -453,7 +454,8 @@ final class TrainController {
             return .processed
         }
         
-        if try reserveLeadBlocks(route: route, currentBlock: currentBlock) == false {
+        let result = try reserveLeadBlocks(route: route, currentBlock: currentBlock)
+        if result.success == false {
             debug("Train \(train) will stop here (\(nextBlock)) because the next block(s) cannot be reserved")
             stopTrigger = StopTrigger.temporaryStop()
         }
@@ -479,13 +481,13 @@ final class TrainController {
     ///   - currentBlock: the current block
     ///   - trainStarting: true if the train is starting, defaults to false
     /// - Returns: true if the leading blocks could be reserved, false otherwise.
-    private func reserveLeadBlocks(route: Route, currentBlock: Block, trainStarting: Bool = false) throws -> Bool {
+    private func reserveLeadBlocks(route: Route, currentBlock: Block, trainStarting: Bool = false) throws -> (success: Bool, result: Result) {
         if try layout.reservation.updateReservedBlocks(train: train, trainStarting: trainStarting) {
-            return true
+            return (true, .processed)
         }
         
         guard route.automatic else {
-            return false
+            return (false, .none)
         }
         
         debug("Generating a new route for \(train) at block \(currentBlock.name) because the next blocks could not be reserved (route: \(route.steps.debugDescription))")
@@ -493,9 +495,9 @@ final class TrainController {
         // Update the automatic route
         if try updateAutomaticRoute(for: train.id) {
             // And try to reserve the lead blocks again
-            return try layout.reservation.updateReservedBlocks(train: train, trainStarting: trainStarting)
+            return (try layout.reservation.updateReservedBlocks(train: train, trainStarting: trainStarting), .processed) // .processed because the route has been updated
         } else {
-            return false
+            return (false, .none)
         }
     }
 
