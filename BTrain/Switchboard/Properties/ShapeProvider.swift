@@ -120,9 +120,13 @@ final class ShapeProvider: ShapeProviding {
         }
         
         for transition in layout.transitions {
-            append(LinkShape(from: socketInstance(for: transition.a, shapes: self),
-                             to: socketInstance(for: transition.b, shapes: self),
-                             transition: transition, shapeContext: context))
+            do {
+                append(LinkShape(from: try socketInstance(for: transition.a, shapes: self),
+                                 to: try socketInstance(for: transition.b, shapes: self),
+                                 transition: transition, shapeContext: context))
+            } catch {
+                BTLogger.error("Error updating the link shapes: \(error)")
+            }
         }
         
         if let trains = trains {
@@ -165,20 +169,20 @@ final class ShapeProvider: ShapeProviding {
             .first
     }
     
-    func socketInstance(for socket: Socket, shapes: ShapeProviding) -> ConnectorSocketInstance {
+    func socketInstance(for socket: Socket, shapes: ShapeProviding) throws -> ConnectorSocketInstance {
         guard let socketId = socket.socketId else {
-            fatalError("SocketId must be specified for \(socket)")
+            throw LayoutError.socketIdNotFound(socket: socket)
         }
         
-        if let shape = shape(for: socket, shapes: shapes) {
+        if let shape = try shape(for: socket, shapes: shapes) {
             return ConnectorSocketInstance(shape: shape, socketId: socketId)
         } else {
-            fatalError("Unable to find a shape for socket \(socket)")
+            throw LayoutError.shapeNotFoundForSocket(socket: socket)
         }
     }
     
-    func shape(for socket: Socket, shapes: ShapeProviding) -> ConnectableShape? {
-        return shapes.connectableShapes.first { shape in
+    func shape(for socket: Socket, shapes: ShapeProviding) throws -> ConnectableShape? {
+        return try shapes.connectableShapes.first { shape in
             if let blockId = socket.block {
                 if let blockShape = shape as? BlockShape {
                     return blockShape.block.id == blockId
@@ -188,7 +192,7 @@ final class ShapeProvider: ShapeProviding {
                     return turnoutShape.turnout.id == turnoutId
                 }
             } else {
-                fatalError("Socket must have either its block or turnout defined")
+                throw LayoutError.invalidSocket(socket: socket)
             }
             return false
         }

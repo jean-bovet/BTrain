@@ -40,7 +40,9 @@ struct Socket: Codable, Equatable, CustomStringConvertible {
                 return "Socket[turnout \(turnout), any socket]"
             }
         } else {
-            fatalError("Orphaned socket!")
+            let msg = "Orphaned socket!"
+            assertionFailure(msg)
+            return msg
         }
     }
 

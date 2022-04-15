@@ -84,7 +84,7 @@ final class RouteResolver {
             
             if node is Block && node.identifier.uuid != to.node.identifier.uuid {
                 // Backtrack if the first block is not the destination node.
-                // TODO: this is currently a limitation of the resolver in which it is expected that a route
+                // Note: this is currently a limitation of the resolver in which it is expected that a route
                 // defines all the blocks in the route. The resolver just resolves the turnouts between two
                 // blocks but not an arbitrary long route with turnouts and blocks, which can be expensive
                 // to traverse until we have a breadth-first algorithm implementation to search for the shortest

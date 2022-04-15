@@ -16,8 +16,8 @@ import XCTest
 
 class LayoutParserTests: XCTestCase {
     
-    func testParseRoute1() {
-        let layout = LayoutFactory.layoutFrom("r0:{r0{b1 🔴🚂0 ≏ ≏ }} [r0[b2 ≏ ≏ ]] [b3 ≏ ≏ ] {b4 ≏ ≏ }")
+    func testParseRoute1() throws {
+        let layout = try LayoutFactory.layoutFrom("r0:{r0{b1 🔴🚂0 ≏ ≏ }} [r0[b2 ≏ ≏ ]] [b3 ≏ ≏ ] {b4 ≏ ≏ }")
         
         let blocks = [
             BE(type: .station, uuid: "b1", train: TE(uuid: 0, position: 0, speed: 0), reserved: 0),
@@ -28,8 +28,8 @@ class LayoutParserTests: XCTestCase {
         assertLayout(layout: layout, expectations: blocks)
     }
     
-    func testParseRoute2() {
-        let layout = LayoutFactory.layoutFrom("r0:{b1 ≏ ≏ } [r0[b2 ≏ 🟢🚂0 ≏ ]] [r0[b3 ≏ ≏ ]] {b4 ≏ ≏ }")
+    func testParseRoute2() throws {
+        let layout = try LayoutFactory.layoutFrom("r0:{b1 ≏ ≏ } [r0[b2 ≏ 🟢🚂0 ≏ ]] [r0[b3 ≏ ≏ ]] {b4 ≏ ≏ }")
         
         let blocks = [
             BE(type: .station, uuid: "b1", train: nil, reserved: nil),
@@ -40,8 +40,8 @@ class LayoutParserTests: XCTestCase {
         assertLayout(layout: layout, expectations: blocks)
     }
     
-    func testParseRoute3() {
-        let layout = LayoutFactory.layoutFrom("r0:{b1 ≏ ≏ } [r0[b2 ≏ 🟢🚂0 ≏ ]] [r0[b3 ≏ ≏ ]] {b1 ≏ ≏ }")
+    func testParseRoute3() throws {
+        let layout = try LayoutFactory.layoutFrom("r0:{b1 ≏ ≏ } [r0[b2 ≏ 🟢🚂0 ≏ ]] [r0[b3 ≏ ≏ ]] {b1 ≏ ≏ }")
         
         let blocks = [
             BE(type: .station, uuid: "b1", train: nil, reserved: nil),
@@ -52,8 +52,8 @@ class LayoutParserTests: XCTestCase {
         assertLayout(layout: layout, expectations: blocks)
     }
     
-    func testParseRouteMultipleTrains() {
-        let layout = LayoutFactory.layoutFrom("r0:{r0{b1 🔴🚂0 ≏ ≏ }} [r0[b2 ≏ ≏ ]] [r1[b3 🔴🚂1 ≏ ≏ ]] {b4 ≏ ≏ }")
+    func testParseRouteMultipleTrains() throws {
+        let layout = try LayoutFactory.layoutFrom("r0:{r0{b1 🔴🚂0 ≏ ≏ }} [r0[b2 ≏ ≏ ]] [r1[b3 🔴🚂1 ≏ ≏ ]] {b4 ≏ ≏ }")
         
         let blocks = [
             BE(type: .station, uuid: "b1", train: TE(uuid: 0, position: 0, speed: 0), reserved: 0),
@@ -64,8 +64,8 @@ class LayoutParserTests: XCTestCase {
         assertLayout(layout: layout, expectations: blocks)
     }
     
-    func testParseRouteWithFeedbackDetected() {
-        let layout = LayoutFactory.layoutFrom("r0:{b1 ≡ ≏ } [r0[b2 ≏ 🟢🚂0 ≏ ]] [r0[b3 ≏ ≏ ]] {b4 ≏ ≏ }")
+    func testParseRouteWithFeedbackDetected() throws {
+        let layout = try LayoutFactory.layoutFrom("r0:{b1 ≡ ≏ } [r0[b2 ≏ 🟢🚂0 ≏ ]] [r0[b3 ≏ ≏ ]] {b4 ≏ ≏ }")
         
         let blocks = [
             BE(type: .station, uuid: "b1", train: nil, reserved: nil, feedbacks: [true, false]),
@@ -76,8 +76,8 @@ class LayoutParserTests: XCTestCase {
         assertLayout(layout: layout, expectations: blocks)
     }
     
-    func testParseRouteWithReservation() {
-        let layout = LayoutFactory.layoutFrom("r0:{r0{b1 ≏ ≏ }} [r0[b2 ≏ 🟢🚂0 ≏ ]] [r1[b3 ≏ ≏ ]] {b4 ≏ ≏ }")
+    func testParseRouteWithReservation() throws {
+        let layout = try LayoutFactory.layoutFrom("r0:{r0{b1 ≏ ≏ }} [r0[b2 ≏ 🟢🚂0 ≏ ]] [r1[b3 ≏ ≏ ]] {b4 ≏ ≏ }")
         
         let blocks = [
             BE(type: .station, uuid: "b1", train: nil, reserved: 0),
@@ -88,8 +88,8 @@ class LayoutParserTests: XCTestCase {
         assertLayout(layout: layout, expectations: blocks)
     }
     
-    func testParseRouteWithTurnouts() {
-        let layout = LayoutFactory.layoutFrom("r0:{b1 ≏ ≏ } <t0> [r0[b2 ≏ 🟢🚂0 ≏ ]] <t1> [r0[b3 ≏ ≏ ]] <t2,l> {b4 ≏ ≏ }")
+    func testParseRouteWithTurnouts() throws {
+        let layout = try LayoutFactory.layoutFrom("r0:{b1 ≏ ≏ } <t0> [r0[b2 ≏ 🟢🚂0 ≏ ]] <t1> [r0[b3 ≏ ≏ ]] <t2,l> {b4 ≏ ≏ }")
         
         let blocks = [
             BE(type: .station, uuid: "b1", turnouts: [T("t0", 0, 1, .straight)]),
@@ -215,7 +215,7 @@ private extension Layout {
         for transition in transitions {
             if let turnoutId = transition.b.turnout {
                 guard let turnout = turnout(for: turnoutId) else {
-                    fatalError("Unable to find turnout \(turnoutId)")
+                    throw LayoutError.turnoutNotFound(turnoutId: turnoutId)
                 }
                 turnouts.append(turnout)
             }

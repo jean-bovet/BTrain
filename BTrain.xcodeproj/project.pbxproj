@@ -111,7 +111,6 @@
 		A7710E71277A344300C08150 /* NewBlockSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7710E70277A344300C08150 /* NewBlockSheet.swift */; };
 		A7710E73277A3BC200C08150 /* NewTurnoutSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7710E72277A3BC200C08150 /* NewTurnoutSheet.swift */; };
 		A774B8E52801FA6F00E8043C /* PointToLoopLayoutTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A774B8E42801FA6F00E8043C /* PointToLoopLayoutTests.swift */; };
-		A774B8E928021E6B00E8043C /* DeveloperTools.swift in Sources */ = {isa = PBXBuildFile; fileRef = A774B8E828021E6B00E8043C /* DeveloperTools.swift */; };
 		A778407E27F96BFC00F87078 /* GeometryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A778407D27F96BFC00F87078 /* GeometryTests.swift */; };
 		A77A96DC27274A17009E7ECB /* MarklinCANMessagePrinter.swift in Sources */ = {isa = PBXBuildFile; fileRef = A77A96DB27274A17009E7ECB /* MarklinCANMessagePrinter.swift */; };
 		A77A96DE2727767C009E7ECB /* ConnectSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A77A96DD2727767C009E7ECB /* ConnectSheet.swift */; };
@@ -171,6 +170,11 @@
 		A792DEFD27850834004B0439 /* SimulatorViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A792DEFC27850834004B0439 /* SimulatorViewTests.swift */; };
 		A792DEFF278508B0004B0439 /* LayoutCreatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A792DEFE278508B0004B0439 /* LayoutCreatorTests.swift */; };
 		A792DF012785095B004B0439 /* SettingsViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A792DF002785095B004B0439 /* SettingsViewTests.swift */; };
+		A79406552807463E00F6A427 /* ShortestPathComplexTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A79406542807463E00F6A427 /* ShortestPathComplexTests.swift */; };
+		A7940658280789B300F6A427 /* GraphShortestPathFinder.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7940657280789B300F6A427 /* GraphShortestPathFinder.swift */; };
+		A794065928087C1800F6A427 /* LayoutParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7F779E0272E1E3F00E73275 /* LayoutParser.swift */; };
+		A794065A28087C2100F6A427 /* LayoutRouteParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7F779FD2734D55100E73275 /* LayoutRouteParser.swift */; };
+		A794065B28087C2600F6A427 /* LayoutStringParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7F779FB2734D53B00E73275 /* LayoutStringParser.swift */; };
 		A79466CC279B64D2006E2A4C /* MainThreadQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = A79466CB279B64D2006E2A4C /* MainThreadQueue.swift */; };
 		A79466CE279B775D006E2A4C /* NSImage+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A79466CD279B775D006E2A4C /* NSImage+Extension.swift */; };
 		A79466D1279B948F006E2A4C /* Simulator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A79466D0279B948F006E2A4C /* Simulator.swift */; };
@@ -204,6 +208,7 @@
 		A7BE36A82751BDAB00286709 /* ConnectorSocket.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7BE36A72751BDAB00286709 /* ConnectorSocket.swift */; };
 		A7BE36AA2751BDC300286709 /* ConnectorPlug.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7BE36A92751BDC300286709 /* ConnectorPlug.swift */; };
 		A7C6343827E6AF6700C37B46 /* TrainIconManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7C6343727E6AF6700C37B46 /* TrainIconManagerTests.swift */; };
+		A7C6C3AD2806780F00D43AC2 /* ShortestPathTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7C6C3AC2806780F00D43AC2 /* ShortestPathTests.swift */; };
 		A7C8A2E7279BB89E000C7246 /* DocumentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7C8A2E6279BB89E000C7246 /* DocumentView.swift */; };
 		A7C8A2E9279BB8A6000C7246 /* NewLayoutWizardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7C8A2E8279BB8A6000C7246 /* NewLayoutWizardView.swift */; };
 		A7C8A2EB279BDE52000C7246 /* Predefined.btrain in Resources */ = {isa = PBXBuildFile; fileRef = A7C8A2EA279BDE52000C7246 /* Predefined.btrain */; };
@@ -245,13 +250,10 @@
 		A7F31BA1277C3D7B00FE0C65 /* BlockDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7F31BA0277C3D7A00FE0C65 /* BlockDetailsView.swift */; };
 		A7F779CE272B445B00E73275 /* Feedback.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7F779CD272B445B00E73275 /* Feedback.swift */; };
 		A7F779D4272BB38F00E73275 /* LayoutFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7F779D3272BB38F00E73275 /* LayoutFactory.swift */; };
-		A7F779E1272E1E3F00E73275 /* LayoutParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7F779E0272E1E3F00E73275 /* LayoutParser.swift */; };
 		A7F779E3272E20F500E73275 /* TrainControlListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7F779E2272E20F500E73275 /* TrainControlListView.swift */; };
 		A7F779F6273214AF00E73275 /* TrainListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7F779F5273214AF00E73275 /* TrainListView.swift */; };
 		A7F779F82732407E00E73275 /* TrainControlContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7F779F72732407E00E73275 /* TrainControlContainerView.swift */; };
 		A7F779FA2734A8C500E73275 /* Element.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7F779F92734A8C500E73275 /* Element.swift */; };
-		A7F779FC2734D53B00E73275 /* LayoutStringParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7F779FB2734D53B00E73275 /* LayoutStringParser.swift */; };
-		A7F779FE2734D55100E73275 /* LayoutRouteParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7F779FD2734D55100E73275 /* LayoutRouteParser.swift */; };
 		A7FBC8B6276E8BB6009D49C3 /* PathFinderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7FBC8B5276E8BB6009D49C3 /* PathFinderTests.swift */; };
 		A7FFE05B27E63C40002B4A4A /* BlockSpeedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7FFE05A27E63C40002B4A4A /* BlockSpeedView.swift */; };
 /* End PBXBuildFile section */
@@ -373,7 +375,6 @@
 		A7710E70277A344300C08150 /* NewBlockSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewBlockSheet.swift; sourceTree = "<group>"; };
 		A7710E72277A3BC200C08150 /* NewTurnoutSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewTurnoutSheet.swift; sourceTree = "<group>"; };
 		A774B8E42801FA6F00E8043C /* PointToLoopLayoutTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PointToLoopLayoutTests.swift; sourceTree = "<group>"; };
-		A774B8E828021E6B00E8043C /* DeveloperTools.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeveloperTools.swift; sourceTree = "<group>"; };
 		A778407D27F96BFC00F87078 /* GeometryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeometryTests.swift; sourceTree = "<group>"; };
 		A77A96DB27274A17009E7ECB /* MarklinCANMessagePrinter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarklinCANMessagePrinter.swift; sourceTree = "<group>"; };
 		A77A96DD2727767C009E7ECB /* ConnectSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectSheet.swift; sourceTree = "<group>"; };
@@ -432,6 +433,8 @@
 		A792DEFC27850834004B0439 /* SimulatorViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimulatorViewTests.swift; sourceTree = "<group>"; };
 		A792DEFE278508B0004B0439 /* LayoutCreatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutCreatorTests.swift; sourceTree = "<group>"; };
 		A792DF002785095B004B0439 /* SettingsViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewTests.swift; sourceTree = "<group>"; };
+		A79406542807463E00F6A427 /* ShortestPathComplexTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShortestPathComplexTests.swift; sourceTree = "<group>"; };
+		A7940657280789B300F6A427 /* GraphShortestPathFinder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GraphShortestPathFinder.swift; sourceTree = "<group>"; };
 		A79466CB279B64D2006E2A4C /* MainThreadQueue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainThreadQueue.swift; sourceTree = "<group>"; };
 		A79466CD279B775D006E2A4C /* NSImage+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSImage+Extension.swift"; sourceTree = "<group>"; };
 		A79466D0279B948F006E2A4C /* Simulator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Simulator.swift; sourceTree = "<group>"; };
@@ -464,6 +467,7 @@
 		A7BE36A72751BDAB00286709 /* ConnectorSocket.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectorSocket.swift; sourceTree = "<group>"; };
 		A7BE36A92751BDC300286709 /* ConnectorPlug.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectorPlug.swift; sourceTree = "<group>"; };
 		A7C6343727E6AF6700C37B46 /* TrainIconManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainIconManagerTests.swift; sourceTree = "<group>"; };
+		A7C6C3AC2806780F00D43AC2 /* ShortestPathTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShortestPathTests.swift; sourceTree = "<group>"; };
 		A7C8A2E6279BB89E000C7246 /* DocumentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentView.swift; sourceTree = "<group>"; };
 		A7C8A2E8279BB8A6000C7246 /* NewLayoutWizardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewLayoutWizardView.swift; sourceTree = "<group>"; };
 		A7C8A2EA279BDE52000C7246 /* Predefined.btrain */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = Predefined.btrain; sourceTree = "<group>"; };
@@ -650,6 +654,7 @@
 				A73E07F5276974F9005F9D64 /* Elements */,
 				A73E07F4276974F1005F9D64 /* Layouts */,
 				A775C62027A37C1300D712CF /* Routing */,
+				A79406562807842300F6A427 /* Shortest Path */,
 				A73E07F3276974E6005F9D64 /* Views */,
 				A775C61E27A37B8800D712CF /* Utilities */,
 				A778407D27F96BFC00F87078 /* GeometryTests.swift */,
@@ -771,6 +776,7 @@
 				A7F779DE272DB21000E73275 /* LayoutParserTests.swift */,
 				A792DEFE278508B0004B0439 /* LayoutCreatorTests.swift */,
 				A7C8A2F2279FA56C000C7246 /* TrainLengthTests.swift */,
+				A794065C28087C5000F6A427 /* Parser */,
 			);
 			path = Layouts;
 			sourceTree = "<group>";
@@ -1014,6 +1020,7 @@
 				A78B996127FCC4080021EFE4 /* Graph.swift */,
 				A78B996C2800BABB0021EFE4 /* GraphPath.swift */,
 				A78B996A2800BA4D0021EFE4 /* GraphPathFinder.swift */,
+				A7940657280789B300F6A427 /* GraphShortestPathFinder.swift */,
 				A78B996627FD57B20021EFE4 /* Graph+Elements.swift */,
 				A78B996827FE41A90021EFE4 /* LayoutPathFinder.swift */,
 			);
@@ -1028,6 +1035,25 @@
 				A783EA5A278530BF00E69B6D /* SimulatorTrain.swift */,
 			);
 			path = Simulator;
+			sourceTree = "<group>";
+		};
+		A79406562807842300F6A427 /* Shortest Path */ = {
+			isa = PBXGroup;
+			children = (
+				A7C6C3AC2806780F00D43AC2 /* ShortestPathTests.swift */,
+				A79406542807463E00F6A427 /* ShortestPathComplexTests.swift */,
+			);
+			path = "Shortest Path";
+			sourceTree = "<group>";
+		};
+		A794065C28087C5000F6A427 /* Parser */ = {
+			isa = PBXGroup;
+			children = (
+				A7F779E0272E1E3F00E73275 /* LayoutParser.swift */,
+				A7F779FD2734D55100E73275 /* LayoutRouteParser.swift */,
+				A7F779FB2734D53B00E73275 /* LayoutStringParser.swift */,
+			);
+			path = Parser;
 			sourceTree = "<group>";
 		};
 		A79466CF279B8B22006E2A4C /* Simulator */ = {
@@ -1132,7 +1158,6 @@
 		A7BD6257276D39CA0039B6C2 /* Utilities */ = {
 			isa = PBXGroup;
 			children = (
-				A774B8E828021E6B00E8043C /* DeveloperTools.swift */,
 				A785C074278A5CE1002FD538 /* TrainIconManager.swift */,
 				A785C06E2789F323002FD538 /* UndoProvider.swift */,
 				A73B1638274B60A10073947D /* BTLogger.swift */,
@@ -1210,9 +1235,6 @@
 		A7F779FF2734D56800E73275 /* Parser */ = {
 			isa = PBXGroup;
 			children = (
-				A7F779E0272E1E3F00E73275 /* LayoutParser.swift */,
-				A7F779FD2734D55100E73275 /* LayoutRouteParser.swift */,
-				A7F779FB2734D53B00E73275 /* LayoutStringParser.swift */,
 				A798BB4527A7B093000BB4D1 /* LayoutASCIIProducer.swift */,
 			);
 			path = Parser;
@@ -1341,6 +1363,7 @@
 				A7281840278E9EDC007BE810 /* Direction.swift in Sources */,
 				A763F19327BE26CF00B3499A /* TrainSpeedMeasurementsView.swift in Sources */,
 				A79466CC279B64D2006E2A4C /* MainThreadQueue.swift in Sources */,
+				A7940658280789B300F6A427 /* GraphShortestPathFinder.swift in Sources */,
 				A7DB7D5427C9E33D000893BA /* Line2D.swift in Sources */,
 				A798BB4227A79CFE000BB4D1 /* TurnoutShapeView.swift in Sources */,
 				A7907993277EC86200771A60 /* DocumentToolbarContent.swift in Sources */,
@@ -1367,7 +1390,6 @@
 				A791EEBE28035645008F58C8 /* LayoutsPredefined.swift in Sources */,
 				A7710E5C27784B1900C08150 /* TrainControlRouteActionsView.swift in Sources */,
 				A785C07B278A648B002FD538 /* LayoutDocument+Commands.swift in Sources */,
-				A7F779FE2734D55100E73275 /* LayoutRouteParser.swift in Sources */,
 				A763F19C27BF4A1300B3499A /* FeedbackMonitor.swift in Sources */,
 				A7BE36A82751BDAB00286709 /* ConnectorSocket.swift in Sources */,
 				A7E1F75027DE98E9009FB75F /* WizardSelectLayout.swift in Sources */,
@@ -1427,7 +1449,6 @@
 				A7218071275D398000831998 /* CS2DocumentParser.swift in Sources */,
 				A71715892758448D00200F92 /* CGRect+Extension.swift in Sources */,
 				A7BE36AA2751BDC300286709 /* ConnectorPlug.swift in Sources */,
-				A774B8E928021E6B00E8043C /* DeveloperTools.swift in Sources */,
 				A785C07E278A64C1002FD538 /* CommandInterface.swift in Sources */,
 				A7E1F74827D71C03009FB75F /* TrainSpeedAcceleration.swift in Sources */,
 				A795A03327B0894800AE90EB /* CenteredLabelView.swift in Sources */,
@@ -1438,7 +1459,6 @@
 				A7710E592777D7FE00C08150 /* RouteView.swift in Sources */,
 				A792DEF82783A09C004B0439 /* SimulatorTrainControlView.swift in Sources */,
 				A73B1639274B60A10073947D /* BTLogger.swift in Sources */,
-				A7F779FC2734D53B00E73275 /* LayoutStringParser.swift in Sources */,
 				A784139127423A8D00381341 /* Command.swift in Sources */,
 				A7841384273F973D00381341 /* SwitchBoardDragOperation.swift in Sources */,
 				A74CCC70272A5A10004E58F5 /* Turnout.swift in Sources */,
@@ -1466,7 +1486,6 @@
 				A721806A275D1CA700831998 /* MarklinCommand.swift in Sources */,
 				A7B0B5172762FB6500F11A3E /* BlockListView.swift in Sources */,
 				A758295F27925DE300AA0649 /* LayoutController+Listeners.swift in Sources */,
-				A7F779E1272E1E3F00E73275 /* LayoutParser.swift in Sources */,
 				A7710E6727799D5C00C08150 /* Layout+Trains.swift in Sources */,
 				A76507E6275AC7DA0079C71A /* ScheduledMessageQueue.swift in Sources */,
 				A785C081278BC527002FD538 /* TrainSpeedView.swift in Sources */,
@@ -1549,7 +1568,9 @@
 				A7145F8C27F911F000BF5F61 /* TrainSpeedMeasurementViewTests.swift in Sources */,
 				A73E07F227697285005F9D64 /* TrainViewTests.swift in Sources */,
 				A73E0818276B1059005F9D64 /* SwitchBoardViewTests.swift in Sources */,
+				A794065B28087C2600F6A427 /* LayoutStringParser.swift in Sources */,
 				A78B996427FD56D80021EFE4 /* GraphTests.swift in Sources */,
+				A794065928087C1800F6A427 /* LayoutParser.swift in Sources */,
 				A7145F8E27F91D0A00BF5F61 /* View+Snapshot.swift in Sources */,
 				A7FBC8B6276E8BB6009D49C3 /* PathFinderTests.swift in Sources */,
 				A73E0816276B0BC0005F9D64 /* ManualRoutingTests.swift in Sources */,
@@ -1569,6 +1590,7 @@
 				A721806C275D2D0400831998 /* CS2DocumentParsingTests.swift in Sources */,
 				A721807B275DD95900831998 /* TrainTests.swift in Sources */,
 				A7DB7D5B27CBF378000893BA /* SpeedSlider+Extension.swift in Sources */,
+				A7C6C3AD2806780F00D43AC2 /* ShortestPathTests.swift in Sources */,
 				A79079A1277EDAA700771A60 /* RouteViewTests.swift in Sources */,
 				A7145F8A27F90FBA00BF5F61 /* NewLayoutWizardViewTests.swift in Sources */,
 				A73E0814276AD1D0005F9D64 /* MarklinInterfaceTests.swift in Sources */,
@@ -1576,7 +1598,9 @@
 				A73E0809276ABA09005F9D64 /* SwitchboardTests.swift in Sources */,
 				A73E0827276BAED3005F9D64 /* SwitchboardRenderingTests.swift in Sources */,
 				A7C8A2F3279FA56C000C7246 /* TrainLengthTests.swift in Sources */,
+				A794065A28087C2100F6A427 /* LayoutRouteParser.swift in Sources */,
 				A73E07F72769B5A1005F9D64 /* DocumentViewTests.swift in Sources */,
+				A79406552807463E00F6A427 /* ShortestPathComplexTests.swift in Sources */,
 				A73E0803276AB757005F9D64 /* TurnoutViewTests.swift in Sources */,
 				A73AFE982726594800E1ED21 /* CANMessageTests.swift in Sources */,
 			);

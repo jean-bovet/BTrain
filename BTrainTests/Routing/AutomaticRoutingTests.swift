@@ -29,20 +29,9 @@ class AutomaticRoutingTests: BTTestCase {
         try p.assert("automatic-0: {r0{s1 ≏ 🔵🚂0 }} <r0<t1(2,0),l>> <r0<t2(1,0),s>> [r0[b1 ≏ ]] <t3> [r1[b2 ≏ ]] <t4(1,0)> [b3 ≏ ≏ ] <t5> <t6> {s2 ≏ }")
 
         // Move s1 -> b1
-        try p.assert("automatic-0: {s1 ≏ } <t1(2,0),l> <t2(1,0),s> [r0[b1 ≡ 🔴🚂0 ]] <t3> [r1[b2 ≏ ]] <t4(1,0)> [b3 ≏ ≏ ] <t5> <t6> {s2 ≏ }")
-
         // The controller will generate a new automatic route because "b2" is occupied.
-        XCTAssertEqual(p.layoutController.run(), .processed)
+        try p.assert("automatic-0: [r0[b1 💺0 ≡ 🟢🚂0 ]] <r0<t3(0,2),r>> ![r0[b5 ≏ ]] <t7{sr}(2,0),s> <t5{sr}(2,0),s> ![b3 ≏ ≏ ≏ ] <t4{sl}(0,1),s> ![r1[b2 ≏ ]] <r0<t3(1,0),r>> ![r0[b1 🟢🚂0 ≡ 💺0 ]] <t2{sl}(0,1),s> <t1{sl}(0,1),l> !{s2 ≏ }")
         
-        // The controller will start the train again because the next block of the new route is free
-        XCTAssertEqual(p.layoutController.run(), .processed)
-        
-        // Nothing more should happen now
-        XCTAssertEqual(p.layoutController.run(), .none)
-
-        // Because block b2 is occupied, a new route will be generated automatically
-        try p.assert("automatic-0: [r0[b1 ≏ 🔵🚂0 ]] <r0<t3(0,2),r>> ![r0[b5 ≏ ]] <t7(2,0)> <t5(2,0)> ![b3 ≏ ≏ ] <t4(0,1)> ![r1[b2 ≏ ]] <r0<t3(1,0),r>> ![b1 ≏ ] <t2(0,1)> <t1(0,1),l> !{s2 ≏ }")
-
         // Move b1 -> b5
         try p.assert("automatic-0: [b1 ≏ ] <t3(0,2),r> ![r0[b5 ≡ 🔵🚂0 ]] <r0<t7(2,0),r>> <r0<t5(2,0),r>> ![r0[b3 ≏ ≏ ]] <t4(0,1)> ![r1[b2 ≏ ]] <t3(1,0),r> ![b1 ≏ ] <t2(0,1)> <t1(0,1),l> !{s2 ≏ }")
 
@@ -91,23 +80,25 @@ class AutomaticRoutingTests: BTTestCase {
     func testUpdateAutomaticRouteWithBlockToAvoid() throws {
         let layout = LayoutComplexLoop().newLayout()
         let s1 = layout.block(for: Identifier<Block>(uuid: "s1"))!
-
+        let train = layout.trains[0]
+        
         // The route will choose "s2" as the arrival block
         var p = try setup(layout: layout, fromBlockId: s1.id, destination: nil, position: .end, routeSteps: ["s1:next", "b1:next", "b2:next", "b3:next", "s2:next"])
-        try p.layoutController.stop(trainID: layout.trains[0].id, completely: true)
+        try p.layoutController.stop(trainID: train.id, completely: true)
         
         // Let's mark "s2" as to avoid
-        layout.trains[0].blocksToAvoid.append(.init(Identifier<Block>(uuid: "s2")))
+        train.blocksToAvoid.append(.init(Identifier<Block>(uuid: "s2")))
 
         // The route will choose "s1" instead
         p = try setup(layout: layout, fromBlockId: s1.id, destination: nil, position: .end, routeSteps: ["s1:next", "b1:next", "b2:next", "b3:next", "s1:next"])
-        try p.layoutController.stop(trainID: layout.trains[0].id, completely: true)
+        try p.layoutController.stop(trainID: train.id, completely: true)
 
         // Now let's mark also "s1" as to avoid
-        layout.trains[0].blocksToAvoid.append(.init(Identifier<Block>(uuid: "s1")))
+        train.blocksToAvoid.append(.init(Identifier<Block>(uuid: "s1")))
 
         // There will be no possible route to find
-        XCTAssertThrowsError(try setup(layout: layout, fromBlockId: s1.id, destination: nil, position: .end, routeSteps: []))
+        p = try setup(layout: layout, fromBlockId: s1.id, destination: nil, position: .end, routeSteps: [])
+        XCTAssertEqual(p.route.steps.count, 0)
     }
     
     func testAutomaticRouteWithTurnoutToAvoid() throws {
@@ -122,7 +113,8 @@ class AutomaticRoutingTests: BTTestCase {
         layout.trains[0].turnoutsToAvoid.append(.init(Identifier<Turnout>(uuid: "t5")))
 
         // No route is possible with t5 to avoid
-        XCTAssertThrowsError(p = try setup(layout: layout, fromBlockId: s1.id, destination: nil, position: .end, routeSteps: []))
+        p = try setup(layout: layout, fromBlockId: s1.id, destination: nil, position: .end, routeSteps: [])
+        XCTAssertEqual(p.route.steps.count, 0)
     }
 
     // This test ensures that the algorithm finds an alternative free path when multiple paths are available
@@ -156,7 +148,8 @@ class AutomaticRoutingTests: BTTestCase {
 
         // There is no automatic route possible because there are no stations but only two siding blocks at each end of the route.
         // This will be supported in the future for certain type of train.
-        XCTAssertThrowsError(_ = try setup(layout: layout, fromBlockId: Identifier<Block>(uuid: "A"), destination: nil, position: .end, routeSteps: []))
+        let p = try setup(layout: layout, fromBlockId: Identifier<Block>(uuid: "A"), destination: nil, position: .end, routeSteps: [])
+        XCTAssertEqual(p.route.steps.count, 0)
     }
 
     func testAutomaticRouteFinishing() throws {
@@ -196,19 +189,9 @@ class AutomaticRoutingTests: BTTestCase {
         XCTAssertTrue(p.train.automaticFinishingScheduling)
 
         try p.assert("automatic-0: {r0{s1 ≏ 🔵🚂0 }} <r0<t1(2,0),l>> <r0<t2(1,0),s>> [r0[b1 ≏ ]] <t3> [r1[b2 ≏ ]] <t4(1,0)> [b3 ≏ ≏ ] <t5> <t6> {s2 ≏ }")
-        try p.assert("automatic-0: {s1 ≏ } <t1(2,0),l> <t2(1,0),s> [r0[b1 ≡ 🔴🚂0 ]] <t3> [r1[b2 ≏ ]] <t4(1,0)> [b3 ≏ ≏ ] <t5> <t6> {s2 ≏ }")
-
-        // The controller will generate a new automatic route because "b2" is occupied.
-        XCTAssertEqual(p.layoutController.run(), .processed)
         
-        // The controller will start the train again because the next block of the new route is free
-        XCTAssertEqual(p.layoutController.run(), .processed)
-        
-        // Nothing more should happen now
-        XCTAssertEqual(p.layoutController.run(), .none)
-
-        // Because block b2 is occupied, a new route will be generated automatically
-        try p.assert("automatic-0: [r0[b1 ≏ 🔵🚂0 ]] <r0<t3(0,2),r>> ![r0[b5 ≏ ]] <t7(2,0)> <t5(2,0)> ![b3 ≏ ≏ ] <t4(0,1)> ![r1[b2 ≏ ]] <r0<t3(1,0),r>> ![b1 ≏ ] <t2(0,1)> <t1(0,1),l> !{s2 ≏ }")
+        // Move from s1 to b1, the controller will generate a new automatic route because "b2" is occupied.
+        try p.assert("automatic-0: [r0[b1 💺0 ≡ 🟢🚂0 ]] <r0<t3{sr}(0,2),r>> ![r0[b5 ≏ ]] <t7{sr}(2,0),s> <t5{sr}(2,0),s> ![b3 ≏ ≏ ≏ ] <t4{sl}(0,1),s> ![r1[b2 ≏ ]] <r0<t3{sr}(1,0),r>> ![r0[b1 🟢🚂0 ≡ 💺0 ]] <t2{sl}(0,1),s> <t1{sl}(0,1),l> !{s2 ≏ }")
 
         // Move b1 -> b5
         try p.assert("automatic-0: [b1 ≏ ] <t3(0,2),r> ![r0[b5 ≡ 🔵🚂0 ]] <r0<t7(2,0),r>> <r0<t5(2,0),r>> ![r0[b3 ≏ ≏ ]] <t4(0,1)> ![r1[b2 ≏ ]] <t3(1,0),r> ![b1 ≏ ] <t2(0,1)> <t1(0,1),l> !{s2 ≏ }")
@@ -224,7 +207,7 @@ class AutomaticRoutingTests: BTTestCase {
         try p.assert("automatic-0: [r0[b1 ≏ ]] <r0<t3(0,2)>> ![b5 ≏ ] <t7(2,0),r> <t5(2,0),r> ![b3 ≏ ≏ ≏ ] <t4(0,1)> ![r0[b2 ≡ 🟢🚂0 ]] <r0<t3(1,0)>> ![r0[b1 ≏ ]] <t2(0,1)> <t1(0,1),l> !{s2 ≏ }")
         try p.assert("automatic-0: [r0[b1 🟢🚂0 ≡ ]] <t3(0,2)> ![b5 ≏ ] <t7(2,0),r> <t5(2,0),r> ![b3 ≏ ≏ ≏ ] <t4(0,1)> ![b2 ≏ ] <t3(1,0)> ![r0[b1 ≡ 🟢🚂0 ]] <r0<t2(0,1)>> <r0<t1(0,1)>> !{r0{s2 ≏ }}")
         try p.assert("automatic-0: [b1 ≏ ] <t3(0,2)> ![b5 ≏ ] <t7(2,0),r> <t5(2,0),r> ![b3 ≏ ≏ ≏ ] <t4(0,1)> ![b2 ≏ ] <t3(1,0)> ![b1 ≏ ] <t2(0,1)> <t1(0,1)> !{r0{s2 ≡ 🔴🚂0 }}")
-        
+
         // The train has stopped because it has been asked to finish the route
         XCTAssertTrue(p.train.manualScheduling)
     }
@@ -249,14 +232,13 @@ class AutomaticRoutingTests: BTTestCase {
         // Artificially set the restart time to 0 which will make the train restart again
         layout.trains[0].timeUntilAutomaticRestart = 0
         
-        XCTAssertEqual(p.layoutController.run(), .processed) // Automatic route is re-generated
-        XCTAssertEqual(p.layoutController.run(), .processed) // Train is re-started
-        XCTAssertEqual(p.layoutController.run(), .none)
+        XCTAssertEqual(p.layoutController.run(), .none) // Route is updated
+        XCTAssertEqual(p.layoutController.run(), .processed) // Train is started
 
         XCTAssertTrue(p.train.speed.requestedKph > 0)
         
         // When restarting, the train automatic route will be updated
-        XCTAssertEqual(p.route.steps.toStrings(layout), ["s2:next", "b1:next", "b2:next", "b3:next", "s2:next"])
+        XCTAssertEqual(try p.route.steps.toStrings(layout), ["s2:next", "b1:next", "b2:next", "b3:next", "s2:next"])
 
         // Assert that the train has restarted and is moving in the correct direction
         try p.assert("automatic-0: {r0{s2 ≏ 🟢🚂0 }} <r0<t1(1,0),s>> <r0<t2(1,0),s>> [r0[b1 ≏ ]] <t3> [b2 ≏ ] <t4(1,0)> [b3 ≏ ≏ ≏ ] <t5> <t6> {r0{s2 ≏ 🟢🚂0 }}")
@@ -293,7 +275,7 @@ class AutomaticRoutingTests: BTTestCase {
         XCTAssertTrue(p.train.speed.requestedKph == 0)
         
         // When restarting, the train automatic route will be updated
-        XCTAssertEqual(p.route.steps.toStrings(layout), ["s2:next", "b1:next", "b2:next", "b3:next", "s2:next"])
+        XCTAssertEqual(try p.route.steps.toStrings(layout), ["s2:next", "b1:next", "b2:next", "b3:next", "s2:next"])
 
         try p.assert("automatic-0: {r0{s2 ≡ 🔴🚂0 }} <t1(1,0),s> <t2(1,0),s> [b1 ≏ ] <t3> [b2 ≏ ] <t4(1,0)> [b3 ≏ ≏ ≏ ] <t5> <t6> {r0{s2 ≡ 🔴🚂0 }}")
     }
@@ -325,12 +307,11 @@ class AutomaticRoutingTests: BTTestCase {
         // Now remove the train from the block b1 in order for the train in s2 to start again properly this time
         try layout.remove(trainID: layout.trains[1].id)
         
-        XCTAssertEqual(p.layoutController.run(), .processed) // Automatic route is re-generated
-        XCTAssertEqual(p.layoutController.run(), .processed) // Train is re-started
+        XCTAssertEqual(p.layoutController.run(), .processed) // Route is updated and train started
         XCTAssertEqual(p.layoutController.run(), .none)
 
         // When restarting, the train automatic route will be updated
-        XCTAssertEqual(p.route.steps.toStrings(layout), ["s2:next", "b1:next", "b2:next", "b3:next", "s2:next"])
+        XCTAssertEqual(try p.route.steps.toStrings(layout), ["s2:next", "b1:next", "b2:next", "b3:next", "s2:next"])
 
         // Assert that the train has restarted and is moving in the correct direction
         try p.assert("automatic-0: {r0{s2 ≏ 🟢🚂0 }} <r0<t1(1,0),s>> <r0<t2(1,0),s>> [r0[b1 ≏ ]] <t3> [b2 ≏ ] <t4(1,0)> [b3 ≏ ≏ ] <t5> <t6> {r0{s2 ≏ 🟢🚂0 }}")
@@ -398,14 +379,11 @@ class AutomaticRoutingTests: BTTestCase {
         try layout.setTrainToBlock(layout.trains[1].id, Identifier<Block>(uuid: "b2"), direction: .next)
 
         try p.assert("automatic-0: {r0{s2 ≡ 🟢🚂0 }} <r0<t1(1,0),s>> <r0<t2(1,0),s>> [r0[b1 ≏ ]] <t3> [r1[b2 🔴🚂1 ≏ ]] <t4(1,0)> [b3 ≏ ≏ ≏ ]")
-        try p.assert("automatic-0: {s2 ≏ } <t1(1,0),s> <t2(1,0),s> [r0[b1 ≡ 🔴🚂0 ]] <t3> [r1[b2 🔴🚂1 ≏ ]] <t4(1,0)> [b3 ≏ ≏ ≏ ]")
-        
-        // The automatic route is now updated to find an alternative path
-        XCTAssertEqual(p.layoutController.run(), .processed)
-        XCTAssertEqual(p.route.steps.toStrings(layout), ["b1:next", "b5:previous", "b3:previous"])
+        try p.assert("automatic-0: {r0{s2 ≏ 🟢🚂0 }} <r0<t1(1,0),s>> <r0<t2(1,0),s>> [r0[b1 ≏ ]] <t3> [r1[b2 🔴🚂1 ≏ ]] <t4(1,0)> [b3 ≏ ≏ ≏ ]")
 
-        // And now the train restarts following the new route
-        try p.assert("automatic-0: [r0[b1 ≏ 🔵🚂0 ]] <r0<t3(0,2),r>> ![r0[b5 ≏ ]] <t7(2,0)> <t5(2,0)> ![b3 ≏ ≏ ≏]")
+        // Move from s2 to b1, the route is also updated because b2 is occupied
+        try p.assert("automatic-0: [r0[b1 ≡ 🟢🚂0 ]] <r0<t3{sr}(0,2),r>> ![r0[b5 ≏ ]] <t7{sr}(2,0),s> <t5{sr}(2,0),s> ![b3 ≏ ≏ ≏ ]")
+
         try p.assert("automatic-0: [b1 ≏ ] <t3(0,2),r> ![r0[b5 ≡ 🔵🚂0 ]] <r0<t7(2,0),r>> <r0<t5(2,0),r>> ![r0[b3 ≏ ≏ ≏ ]]")
         try p.assert("automatic-0: [b1 ≏ ] <t3(0,2),r> ![b5 ≏ ] <t7(2,0),r> <t5(2,0),r> ![r0[b3 ≡ 🟢🚂0 ≏ ≏ ]]")
         try p.assert("automatic-0: [b1 ≏ ] <t3(0,2),r> ![b5 ≏ ] <t7(2,0),r> <t5(2,0),r> ![r0[b3 ≏ ≡ 🟡🚂0 ≏ ]]")
@@ -470,7 +448,7 @@ class AutomaticRoutingTests: BTTestCase {
         try layoutController.start(routeID: routeId, trainID: train.id, destination: destination)
 
         let route = layout.route(for: routeId, trainId: train.id)!
-        XCTAssertEqual(route.steps.toStrings(layout), routeSteps)
+        XCTAssertEqual(try route.steps.toStrings(layout), routeSteps)
         XCTAssertTrue(train.automaticScheduling)
 
         let asserter = LayoutAsserter(layout: layout, layoutController: layoutController)

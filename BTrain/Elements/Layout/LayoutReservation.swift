@@ -21,7 +21,8 @@ final class LayoutReservation {
     
     let layout: Layout
     let visitor: ElementVisitor
-
+    let verbose: Bool
+    
     // Internal structure used to hold information
     // about an upcoming turnout reservation
     internal struct TurnoutReservation {
@@ -30,9 +31,10 @@ final class LayoutReservation {
         let sockets: Turnout.Reservation.Sockets
     }
 
-    init(layout: Layout) {
+    init(layout: Layout, verbose: Bool) {
         self.layout = layout
         self.visitor = ElementVisitor(layout: layout)
+        self.verbose = verbose
    }
     
     // This function will try to reserve as many blocks as specified (maxNumberOfLeadingReservedBlocks)
@@ -59,16 +61,16 @@ final class LayoutReservation {
         
         // The route must be defined and not be empty
         guard let route = layout.route(for: train.routeId, trainId: train.id), !route.steps.isEmpty else {
+            debug("Cannot reserve leading blocks because route is empty")
             return false
         }
 
         // We are going to iterate over all the remaining steps of the route until we
-        // either (1) reach the end of the route or (2)) we have reserved enough blocks.
+        // either (1) reach the end of the route or (2) we have reserved enough blocks.
         let startReservationIndex = min(route.lastStepIndex, train.routeStepIndex)
         let stepsToReserve = route.steps[startReservationIndex...route.lastStepIndex]
         
         // First of all, resolve the route to discover all non-specified turnouts and blocks
-        // TODO: think about how to propagate back the resolved route to the original route so it easier to debug
         guard let resolvedSteps = try RouteResolver(layout: layout, train: train).resolve(steps: stepsToReserve) else {
             return false
         }
@@ -141,7 +143,7 @@ final class LayoutReservation {
             // Note: we are not incrementing `numberOfLeadingBlocksReserved` because
             // an occupied block does not count as a "leading" block; it is occupied because
             // the train (or portion of it) occupies it.
-            BTLogger.debug("Already occupied (and reserved) \(block.name) for \(train.name)")
+            debug("Block \(block.name) is already reserved (and occupied) for \(train.name), nothing more to do.")
         } else {
             guard block.canBeReserved(withTrain: train, direction: direction) else {
                 return false
@@ -159,7 +161,7 @@ final class LayoutReservation {
                 guard transition.reserved == nil || (transition.reserved == train.id && transition.train == train.id) else {
                     throw LayoutError.transitionAlreadyReserved(transition: transition)
                 }
-                BTLogger.debug("Reserved transition \(transition) for \(train)")
+                debug("Reserving transition \(transition) for \(train)")
                 transition.reserved = train.id
             }
             transitions.removeAll()
@@ -168,7 +170,7 @@ final class LayoutReservation {
             let reservation = Reservation(trainId: train.id, direction: direction)
             block.reserved = reservation
             numberOfLeadingBlocksReserved += 1
-            BTLogger.debug("Reserved block \(block.name) for \(reservation)")
+            debug("Reserving block \(block.name) for \(reservation)")
         }
         
         // Stop reserving as soon as a block that is going to
@@ -192,7 +194,7 @@ final class LayoutReservation {
         turnout.reserved = .init(train: train.id, sockets: reservation.sockets)
         
         layout.executor.sendTurnoutState(turnout: turnout) { }
-        BTLogger.debug("Reserved turnout \(turnout.name) for \(train) and state \(turnout.state)")
+        debug("Set turnout \(turnout.name) for \(train) and state \(turnout.state)")
     }
     
     private func rememberTurnoutToReserve(turnout: Turnout, train: Train, step: Route.Step, numberOfLeadingBlocksReserved: inout Int, turnouts: inout [TurnoutReservation]) throws -> Bool {
@@ -202,7 +204,7 @@ final class LayoutReservation {
 
         if turnout.isOccupied(by: train.id) {
             // The turnout is already reserved and contains a portion of the train
-            BTLogger.debug("Already occupied (and reserved) \(turnout.name) for \(train.name)")
+            debug("Turnout \(turnout.name) is already reserved (and occupied) for \(train.name)")
             
             // If the turnout state is not what we are expecting, this means it is a turnout that is occupied
             // by the wagons behind the train; we are basically looping back into ourself here so stop reserving.
@@ -311,6 +313,12 @@ final class LayoutReservation {
         }
         
         return maximumSpeedAllowed
+    }
+
+    private func debug(_ msg: String) {
+        if verbose {
+            BTLogger.debug(msg)
+        }
     }
 
 }

@@ -21,7 +21,8 @@ enum LayoutError: Error {
     case trainNotAssignedToARoute(train: Train)
     
     case headWagonNotFound(train: Train)
-
+    case invalidHeadWagonConfiguration(train: Train)
+    
     case blockNotFound(blockId: Identifier<Block>)
     case turnoutNotFound(turnoutId: Identifier<Turnout>)
     case feedbackNotFound(feedbackId: Identifier<Feedback>)
@@ -29,6 +30,7 @@ enum LayoutError: Error {
         
     case entrySocketNotFound(step: Route.Step)
     case exitSocketNotFound(step: Route.Step)
+    case invalidSocket(socket: Socket)
 
     case brakeFeedbackNotFound(block: Block)
     case stopFeedbackNotFound(block: Block)
@@ -45,6 +47,7 @@ enum LayoutError: Error {
     case noTransition(fromBlockId: Identifier<Block>, toBlockId: Identifier<Block>)
     case lastTransitionToBlock(transition: Identifier<Transition>, blockId: Identifier<Block>)
     case alwaysOneAndOnlyOneTransition
+    case invalidTransition(transition: ITransition)
     
     case cannotReserveBlock(block: Block, train: Train, reserved: Reservation)
     
@@ -57,8 +60,13 @@ enum LayoutError: Error {
     case destinationDirectionMismatch(currentBlock: Block, destination: Destination)
     
     case missingDirection(step: Route.Step)
+    case invalidDirectionRequest(step: Route.Step)
+    case invalidDirectionAssignment(step: Route.Step)
+    case invalidState(step: Route.Step)
     
     case invalidPartIndex(index: Int, block: Block)
+    
+    case shapeNotFoundForSocket(socket: Socket)
 }
     
 extension LayoutError: LocalizedError {
@@ -99,6 +107,8 @@ extension LayoutError: LocalizedError {
             return "There is no entry socket defined for \(step)"
         case .exitSocketNotFound(step: let step):
             return "There is no exit socket defined for \(step)"
+        case .invalidSocket(socket: let socket):
+            return "Socket \(socket) must have either its block or turnout defined"
 
         case .trainNotAssignedToABlock(train: let train):
             return "Train \(train.name) does not have any assigned block (train.blockId is nil)"
@@ -113,6 +123,8 @@ extension LayoutError: LocalizedError {
             
         case .headWagonNotFound(train: let train):
             return "No head wagon found for train \(train.name)"
+        case .invalidHeadWagonConfiguration(train: let train):
+            return "It is an error to ask for the head wagon when the locomotive is not pushing its wagons: \(train)"
 
         case .routeNotFound(routeId: let routeId):
             return "Route \(routeId) not found"
@@ -138,9 +150,19 @@ extension LayoutError: LocalizedError {
             
         case .missingDirection(step: let step):
             return "Direction is missing from \(step)"
-            
+        case .invalidState(step: let step):
+            return "Invalid step \(step)"
+
         case .invalidPartIndex(index: let index, block: let block):
             return "Invalid part index \(index) in \(block.name)"
+        case .invalidDirectionRequest(step: let step):
+            return "It is an error to request the direction for a step that does not refer to a block: \(step)"
+        case .invalidDirectionAssignment(step: let step):
+            return "It is an error to set the direction of a step that does not refer to a block: \(step)"
+        case .invalidTransition(transition: let transition):
+            return "Invalid transition \(transition)"
+        case .shapeNotFoundForSocket(socket: let socket):
+            return "Unable to find a shape for socket \(socket)"
         }
     }
 }

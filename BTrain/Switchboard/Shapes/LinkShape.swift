@@ -61,6 +61,16 @@ final class LinkShape: Shape, PluggableShape {
         }
     }
     
+    var occupied: Bool {
+        if let transition = transition {
+            return transition.train != nil
+        } else {
+            // Note: during the switchboard editing, a LinkShape can exist without a transition
+            // while the shape is being dragged on the screen.
+            return false
+        }
+    }
+
     init(from: ConnectorSocketInstance?, to: ConnectorSocketInstance?, transition: Transition?, shapeContext: ShapeContext) {
         self.from.socket = from
         self.to.socket = to
@@ -72,7 +82,7 @@ final class LinkShape: Shape, PluggableShape {
         ctx.saveGState()
 
         ctx.addPath(path)
-        ctx.setStrokeColor(reserved ? shapeContext.reservedColor : shapeContext.color)
+        ctx.setStrokeColor(shapeContext.pathColor(reserved, train: occupied))
         ctx.setLineWidth(shapeContext.trackWidth)
         ctx.drawPath(using: .stroke)
         

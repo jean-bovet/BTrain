@@ -95,7 +95,9 @@ final class MarklinInterface: CommandInterface {
     }
     
     func execute(command: Command, onCompletion: @escaping () -> Void) {
-        let (message, priority) = MarklinCANMessage.from(command: command)
+        guard let (message, priority) = MarklinCANMessage.from(command: command) else {
+            return
+        }
         send(message: message, priority: priority, onCompletion: onCompletion)
     }
 
@@ -139,7 +141,13 @@ final class MarklinInterface: CommandInterface {
     }
 
     private func send(message: MarklinCANMessage, priority: Command.Priority, onCompletion: @escaping () -> Void) {
-        client?.send(data: message.data, priority: priority == .high, onCompletion: onCompletion)
+        guard let client = client else {
+            BTLogger.error("Cannot send message to Digital Controller because the client is nil!")
+            onCompletion()
+            return
+        }
+        
+        client.send(data: message.data, priority: priority == .high, onCompletion: onCompletion)
     }
         
 }

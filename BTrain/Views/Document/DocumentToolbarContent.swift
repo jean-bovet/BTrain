@@ -62,36 +62,34 @@ struct ConnectCommandsView: View {
     
     var body: some View {
         if document.connected {
+            Button("Disconnect") {
+                document.disconnect()
+            }
+            .foregroundColor(.red)
+
+            Spacer()
+            
             SimulatorIndicationView(simulator: document.simulator)
                         
             Spacer()
 
-            Button("􀋧") {
+            Button("Go") {
                 document.enable() {}
             }
             .disabled(!document.connected)
             .help("Enable Power")
             .foregroundColor(.green)
 
-            Button("􀋫") {
+            Button("Stop") {
                 document.disable() {}
             }
             .disabled(!document.connected)
             .help("Disable Power")
             .foregroundColor(.red)
-            
-            Spacer()
-
-            Button("􀡷") {
-                document.disconnect()
-            }
-            .help("Disconnect")
-            .foregroundColor(.red)
         } else {
-            Button("􀡷") {
+            Button("Connect") {
                 self.connectAlertShowing.toggle()
             }
-            .help("Connect")
             .foregroundColor(.green)
         }
     }
@@ -161,7 +159,7 @@ struct ToolDebugCommandsView: View {
         if document.showDebugModeControls {
             Menu("􀤊") {
                 Button("Repair Layout") {
-                    DeveloperTools.repair(layout: document.layout)
+                    LayoutDiagnostic(layout: document.layout).repair()
                 }
             }
         }

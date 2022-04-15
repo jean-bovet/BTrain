@@ -24,6 +24,10 @@ struct GraphPath: Equatable {
         elements.map { $0.description }
     }
 
+    var reversed: GraphPath {
+        return .init(elements.reversed().map { $0 })
+    }
+    
     init(_ elements: [GraphPathElement]) {
         self.elements = elements
     }
@@ -66,9 +70,9 @@ extension GraphPath {
 
 }
 
-// Each element is a `node` with specified exit and enter sockets.
+// Each element is a `node` with specified exit and entry sockets.
 // A starting element only has an exit socket while the last
-// element in the path only has an enter socket.
+// element in the path only has an entry socket.
 struct GraphPathElement: Equatable, Hashable, CustomStringConvertible {
         
     let node: GraphNode
@@ -124,6 +128,10 @@ struct GraphPathElement: Equatable, Hashable, CustomStringConvertible {
     
     static func between(_ node: GraphNode, _ entrySocket: SocketId, _ exitSocket: SocketId) -> GraphPathElement {
         .init(node: node, entrySocket: entrySocket, exitSocket: exitSocket)
+    }
+    
+    static func any(_ node: GraphNode) -> GraphPathElement {
+        return .init(node: node, entrySocket: nil, exitSocket: nil)
     }
     
     static func == (lhs: GraphPathElement, rhs: GraphPathElement) -> Bool {

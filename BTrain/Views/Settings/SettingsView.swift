@@ -27,12 +27,14 @@ struct SettingsView: View {
     @AppStorage(SettingsKeys.brakingSpeed) private var brakingSpeed = Int(LayoutFactory.DefaultBrakingSpeed)
 
     @AppStorage(SettingsKeys.automaticRouteRandom) private var automaticRouteRandom = true
+    @AppStorage(SettingsKeys.shortestRouteEnabled) private var shortestRouteEnabled = false
     @AppStorage(SettingsKeys.detectUnexpectedFeedback) var detectUnexpectedFeedback = true
     @AppStorage(SettingsKeys.strictRouteFeedbackStrategy) var strictRouteFeedbackStrategy = false
 
     @AppStorage(SettingsKeys.debugMode) private var showDebugControls = false
     @AppStorage(SettingsKeys.recordDiagnosticLogs) private var recordDiagnosticLogs = false
     @AppStorage(SettingsKeys.logRoutingResolutionSteps) private var logRoutingResolutionSteps = false
+    @AppStorage(SettingsKeys.logReservation) private var logReservation = false
 
     var body: some View {
         TabView {
@@ -69,6 +71,7 @@ struct SettingsView: View {
            
             Form {
                 Toggle("Generate Automatic Route at Random", isOn: $automaticRouteRandom)
+                Toggle("Shortest Route (beta)", isOn: $shortestRouteEnabled)
                 Toggle("Detect Unexpected Feedbacks", isOn: $detectUnexpectedFeedback)
                 Toggle("Strict Route Feedback Detection", isOn: $strictRouteFeedbackStrategy)
             }
@@ -81,6 +84,7 @@ struct SettingsView: View {
                 Toggle("Developer Tools", isOn: $showDebugControls)
                 Toggle("Record Diagnostic Logs", isOn: $recordDiagnosticLogs)
                 Toggle("Log Routing Resolution Steps", isOn: $logRoutingResolutionSteps)
+                Toggle("Log Block and Turnout Reservation", isOn: $logReservation)
             }
             .tabItem {
                 Label("Advanced", systemImage: "star")

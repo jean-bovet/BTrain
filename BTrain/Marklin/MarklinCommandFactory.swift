@@ -138,7 +138,7 @@ extension Command {
 
 extension MarklinCANMessage {
     
-    static func from(command: Command) -> (MarklinCANMessage, Command.Priority) {
+    static func from(command: Command) -> (MarklinCANMessage, Command.Priority)? {
         switch(command) {
         case .go(priority: let priority, descriptor: _):
             return (MarklinCANMessageFactory.go(), priority)
@@ -159,8 +159,8 @@ extension MarklinCANMessage {
             case .backward:
                 return (MarklinCANMessageFactory.backward(addr: address.actualAddress(for: decoderType)), priority)
             case .unknown:
-                fatalError("Unknown direction command \(String(describing: descriptor?.description))")
-                break
+                assertionFailure("Unknown direction command \(String(describing: descriptor?.description))")
+                return nil
             }
         case .queryDirection(address: let address, decoderType: let decoderType, priority: let priority, descriptor: _):
             return (MarklinCANMessageFactory.direction(addr: address.actualAddress(for: decoderType)), priority)
@@ -176,7 +176,8 @@ extension MarklinCANMessage {
             return (MarklinCANMessageFactory.locomotives(), priority)
             
         case .unknown(command: _, priority: _, descriptor: let descriptor):
-            fatalError("Unknown command \(String(describing: descriptor?.description))")
+            assertionFailure("Unknown command \(String(describing: descriptor?.description))")
+            return nil
         }
     }
 }

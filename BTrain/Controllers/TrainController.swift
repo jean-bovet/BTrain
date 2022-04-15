@@ -21,16 +21,23 @@ protocol TrainControllerDelegate: AnyObject {
  feedbacks when it moves inside a block or from one block to another, etc.
  
  There are two kinds of routes:
- 1. Manual routes: these routes are entered manually by the user and are fixed (they do not change dynamically).
- 2. Automatic routes: these routes are created dynamically on-the-fly when a train starts. They are updated as the train moves
- if there are unavailable blocks ahead of the train. The rules for automatic routes are as follow:
-     - BTrain find a random route from the train position until a station block is found. During the search, block or turnout that
+ 
+ *Manual Route*
+ 
+ A manual route is created manually by the user and does not change when the train is running. This controller ensures the train follows the manual route
+ and stops the train if the block(s) ahead cannot be reserved. The train is restarted when the block(s) ahead can be reserved again.
+ 
+ *Automatic Route*
+ 
+ An automatic route is created and managed automatically by BTrain:
+ - An automatic route is created each time a train starts
+ - An automatic route is updated when the train moves into a new block and the block(s) ahead cannot be reserved
+ 
+ An automatic route is created using the following rules:
+ - If there is a destination defined (ie the user as specified to which block the train should move to), the automatic route is created using the shortest path algorithm.
+ - If there are no destination specified, BTrain finds a random route from the train position until a station block is found. During the search, block or turnout that
  should be avoided will be ignored. However, elements reserved for other trains will be taken into account because the reservations
  will change as the trains move in the layout.
-     - BTrain resolves the route before moving the train. Resolving a route means finding all the non-specific elements of the route,
- for examples the turnouts. This search tries to avoid elements that are reserved for other trains.
-     - The automatic route is updated (that is, another alternative route is searched) if BTrain cannot reserve the leading blocks (which
- are the blocks in front of the moving train). If a route cannot be found, the train is stopped until one can be found.
  */
 final class TrainController {
     
@@ -123,11 +130,7 @@ final class TrainController {
         if try handleTrainStop() == .processed {
             result = .processed
         }
-        
-        if try handleTrainAutomaticRouteUpdate(route: route) == .processed {
-            result = .processed
-        }
-        
+                
         if try handleTrainStop() == .processed {
             result = .processed
         }
@@ -179,21 +182,12 @@ final class TrainController {
             try layout.stopCompletely(train.id)
             return .processed
         }
-        
-        let nextBlock = layout.nextBlock(train: train)
-        
-        // Update the automatic route if the next block is not defined and if the automatic route
-        // does not have a destinationBlock.
-        if nextBlock == nil && route.automatic && route.automaticMode == .endless {
-            debug("Generating a new route for \(train) at block \(currentBlock.name) with mode \(route.automaticMode) because the next block is not defined")
-            return try updateAutomaticRoute(for: train.id)
-        }
                 
         // Setup the start route index of the train
         train.startRouteIndex = train.routeStepIndex
         
         // And try to reserve the necessary leading blocks
-        if try layout.reservation.updateReservedBlocks(train: train, trainStarting: true) {
+        if try reserveLeadBlocks(route: route, currentBlock: currentBlock, trainStarting: true) {
             debug("Start train \(train.name) because the next blocks could be reserved (route: \(route.steps.debugDescription))")
             stopTrigger = nil
             train.state = .running
@@ -203,49 +197,7 @@ final class TrainController {
 
         return .none
     }
-    
-    // This method updates the automatic route, if selected, in case the next block is occupied.
-    private func handleTrainAutomaticRouteUpdate(route: Route) throws -> Result {
-        guard route.automatic else {
-            return .none
-        }
-        
-        guard let currentBlock = layout.currentBlock(train: train) else {
-            return .none
-        }
-
-        guard let nextBlock = layout.nextBlock(train: train) else {
-            return .none
-        }
-        
-        // TODO: check if all the turnouts going to that block are free!!!
-        var nextBlockNotAvailable = false
-        // If the next block is disabled, we need to re-compute a new route
-        if !nextBlock.enabled {
-            nextBlockNotAvailable = true
-        }
-
-        // If the next block contains a train, we need to re-compute a new route
-        if nextBlock.train != nil {
-            nextBlockNotAvailable = true
-        }
-        
-        // If the next block is reserved for another train, we need to re-compute a new route
-        if let reserved = nextBlock.reserved, reserved.trainId != train.id {
-            nextBlockNotAvailable = true
-        }
-        
-        guard nextBlockNotAvailable else {
-            return .none
-        }
-        
-        // Generate a new route if one is available
-        debug("Generating a new route for \(train) at block \(currentBlock.name) because the next block \(nextBlock.name) is occupied or disabled")
-
-        // Update the automatic route
-        return try updateAutomaticRoute(for: train.id)
-    }
-        
+     
     // This method handles any stop trigger related to the automatic route, which are:
     // - The train reaches the end of the route (that does not affect `endless` automatic route)
     // - The train reaches a block that stops the train for a while (ie station)
@@ -278,7 +230,7 @@ final class TrainController {
                     throw LayoutError.destinationDirectionMismatch(currentBlock: currentBlock, destination: destination)
                 }
                                 
-                debug("Stopping completely \(train) because it has reached the end of the route")
+                debug("Requesting \(train) to stop completely because it has reached the end of the route")
                 stopTrigger = StopTrigger.completeStop()
                 return .processed
             }
@@ -331,7 +283,7 @@ final class TrainController {
         }
                 
         if train.automaticFinishingScheduling {
-            debug("Stopping completely \(train) because it has reached a station and was finishing the route")
+            debug("Requesting \(train) to stop completely because it has reached a station and was finishing the route")
             stopTrigger = StopTrigger.completeStop()
             return .processed
         } else {
@@ -495,19 +447,20 @@ final class TrainController {
         } else {
             _ = try handleManualRouteStop(route: route)
         }
+                
+        // If the train is not stopping in this block...
+        guard stopTrigger == nil else {
+            return .processed
+        }
         
-        // If the train is not stopping in this block, reserve the block(s) ahead.
-        if stopTrigger == nil {
-            if try layout.reservation.updateReservedBlocks(train: train) == false {
-                // If it is not possible, then stop the train in this block
-                debug("Train \(train) will stop here (\(nextBlock)) because the next block(s) cannot be reserved")
-                stopTrigger = StopTrigger.temporaryStop()
-            }
+        if try reserveLeadBlocks(route: route, currentBlock: currentBlock) == false {
+            debug("Train \(train) will stop here (\(nextBlock)) because the next block(s) cannot be reserved")
+            stopTrigger = StopTrigger.temporaryStop()
         }
 
         return .processed
     }
-        
+
     func stop(completely: Bool = false) throws -> Result {
         stopTrigger = nil
                                 
@@ -518,14 +471,42 @@ final class TrainController {
         return .processed
     }
         
-    private func updateAutomaticRoute(for trainId: Identifier<Train>) throws -> Result {
+    
+    /// This method tries to reserve the leading blocks for the train. If the blocks cannot be reserved and the route is automatic,
+    /// the route is updated and the leading blocks reserved again.
+    /// - Parameters:
+    ///   - route: the route
+    ///   - currentBlock: the current block
+    ///   - trainStarting: true if the train is starting, defaults to false
+    /// - Returns: true if the leading blocks could be reserved, false otherwise.
+    private func reserveLeadBlocks(route: Route, currentBlock: Block, trainStarting: Bool = false) throws -> Bool {
+        if try layout.reservation.updateReservedBlocks(train: train, trainStarting: trainStarting) {
+            return true
+        }
+        
+        guard route.automatic else {
+            return false
+        }
+        
+        debug("Generating a new route for \(train) at block \(currentBlock.name) because the next blocks could not be reserved (route: \(route.steps.debugDescription))")
+
+        // Update the automatic route
+        if try updateAutomaticRoute(for: train.id) {
+            // And try to reserve the lead blocks again
+            return try layout.reservation.updateReservedBlocks(train: train, trainStarting: trainStarting)
+        } else {
+            return false
+        }
+    }
+
+    private func updateAutomaticRoute(for trainId: Identifier<Train>) throws -> Bool {
         let (success, route) = try layout.automaticRouting.updateAutomaticRoute(for: train.id)
         if success {
             debug("Generated route is: \(route.steps)")
-            return .processed
+            return true
         } else {
             BTLogger.warning("Unable to find a suitable route for train \(train)")
-            return .none
+            return false
         }
     }
     

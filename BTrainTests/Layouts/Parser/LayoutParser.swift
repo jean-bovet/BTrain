@@ -11,6 +11,7 @@
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 import Foundation
+@testable import BTrain
 
 // n: = Route number at the beginning of the string
 // {  = station block
@@ -52,15 +53,14 @@ final class LayoutParser {
         self.routeStrings = routeStrings
     }
     
-    func parse() {
-        
+    func parse() throws {
         var blocks = Set<Block>()
         var trains = Set<Train>()
         var feedbacks = Set<Feedback>()
         
         for (index, rs) in routeStrings.enumerated() {
             let parser = LayoutRouteParser(ls: rs, id: String(index), layout: layout)
-            parser.parse()
+            try parser.parse()
 
             for train in parser.trains {
                 if let existingTrain = trains.first(where: {$0.id == train.id}) {
@@ -89,4 +89,18 @@ final class LayoutParser {
         layout.add(blocks.map { $0 }.sorted().reversed())
     }
     
+}
+
+extension LayoutFactory {
+    
+    static func layoutFrom(_ routeString: String) throws -> Layout {
+        return try layoutFrom([routeString])
+    }
+    
+    static func layoutFrom(_ routeStrings: [String]) throws -> Layout {
+        let parser = LayoutParser(routeStrings)
+        try parser.parse()
+        return parser.layout
+    }
+
 }

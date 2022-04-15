@@ -48,7 +48,8 @@ final class LayoutASCIIProducer {
             throw LayoutError.blockNotFound(blockId: blockId)
         }
         
-        if step.direction == .previous {
+        let reverse = step.direction == .previous
+        if reverse {
             text += "!"
         }
         switch(block.category) {
@@ -68,24 +69,49 @@ final class LayoutASCIIProducer {
             text += "\(block.id)"
         }
                     
-        if let part = train(block, 0) {
-            text += " " + part
+        // 0 | 1 | 2
+        // [ A ≏ B ≏ C ]
+        // 2 | 1 | 0
+        // [ C ≏ B ≏ A ]
+        if !reverse {
+            if let part = train(block, 0) {
+                text += " " + part
+            }
         }
 
-        for (index, feedback) in block.feedbacks.enumerated() {
+        let feedbacks = reverse ? block.feedbacks.reversed() : block.feedbacks
+        for index in feedbacks.indices {
+            let actualIndex = reverse ? feedbacks.count - index - 1 : index
+            
+            let feedback = feedbacks[actualIndex]
             guard let f = layout.feedback(for: feedback.feedbackId) else {
                 throw LayoutError.feedbackNotFound(feedbackId: feedback.feedbackId)
             }
+            
+            if reverse {
+                if let part = train(block, actualIndex+1) {
+                    text += " " + part
+                }
+            }
+            
             if f.detected {
                 text += " ≡"
             } else {
                 text += " ≏"
             }
-            if let part = train(block, index+1) {
-                text += " " + part
+            
+            if !reverse {
+                if let part = train(block, actualIndex+1) {
+                    text += " " + part
+                }
             }
         }
         
+        if reverse {
+            if let part = train(block, 0) {
+                text += " " + part
+            }
+        }
         switch(block.category) {
         case .station:
             if block.reserved != nil {

@@ -26,6 +26,10 @@ extension Block: GraphNode {
     var identifier: GraphElementIdentifier {
         BlockGraphElementIdentifier(id)
     }
+     
+    var weight: Double {
+        return length ?? 0
+    }
     
     var sockets: [SocketId] {
         allSockets.compactMap { $0.socketId }
@@ -39,6 +43,18 @@ extension Block: GraphNode {
         }
     }
         
+}
+
+extension Block {
+    
+    var elementDirectionNext: GraphPathElement {
+        return .between(self, Block.previousSocket, Block.nextSocket)
+    }
+    
+    var elementDirectionPrevious: GraphPathElement {
+        return .between(self, Block.nextSocket, Block.previousSocket)
+    }
+
 }
 
 struct TurnoutGraphElementIdentifier: GraphElementIdentifier {
@@ -55,6 +71,10 @@ extension Turnout: GraphNode {
         TurnoutGraphElementIdentifier(id)
     }
     
+    var weight: Double {
+        return length ?? 0
+    }
+
     var sockets: [SocketId] {
         allSockets.compactMap { $0.socketId }
     }
@@ -74,6 +94,10 @@ struct TransitionGraphElementIdentifier: GraphElementIdentifier {
     }
 }
 
+struct InvalidElementIdentifier: GraphElementIdentifier {
+    var uuid: String = UUID().uuidString
+}
+
 extension ITransition {
     var identifier: GraphElementIdentifier {
         TransitionGraphElementIdentifier(id)
@@ -85,7 +109,8 @@ extension ITransition {
         } else if let turnout = a.turnout {
             return TurnoutGraphElementIdentifier(turnout)
         } else {
-            fatalError("Socket must specify a block or a turnout")
+            assertionFailure("Socket must specify a block or a turnout")
+            return InvalidElementIdentifier()
         }
     }
     
@@ -99,7 +124,8 @@ extension ITransition {
         } else if let turnout = b.turnout {
             return TurnoutGraphElementIdentifier(turnout)
         } else {
-            fatalError("Socket must specify a block or a turnout")
+            assertionFailure("Socket must specify a block or a turnout")
+            return InvalidElementIdentifier()
         }
     }
     
@@ -185,7 +211,14 @@ extension Layout {
         }
         return pathFinder.path(graph: self, from: fromElement, to: toElement, constraints: constraints)
     }
-        
+ 
+    func shortestPath(for train: Train, from: (Block, Direction), to: (Block, Direction), pathFinder: GraphPathFinding, constraints: GraphPathFinderConstraints) throws -> GraphPath? {
+        let fromElement = from.1 == .next ? from.0.elementDirectionNext:from.0.elementDirectionPrevious
+        let toElement = to.1 == .next ? to.0.elementDirectionNext:to.0.elementDirectionPrevious
+
+        return try pathFinder.shortestPath(graph: self, from: fromElement, to: toElement, constraints: constraints)
+    }
+    
 }
 
 extension Array where Element == GraphPathElement {

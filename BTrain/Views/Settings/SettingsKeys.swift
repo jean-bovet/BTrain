@@ -23,12 +23,14 @@ struct SettingsKeys {
     static let brakingSpeed = "brakingSpeed"
 
     static let automaticRouteRandom = "automaticRouteRandom"
+    static let shortestRouteEnabled = "shortestRouteEnabled"
     static let detectUnexpectedFeedback = "detectUnexpectedFeedback"
     static let strictRouteFeedbackStrategy = "strictRouteFeedbackStrategy"
 
     static let debugMode = "debugMode"
     static let recordDiagnosticLogs = "recordDiagnosticLogs"
     static let logRoutingResolutionSteps = "logRoutingResolutionSteps"
+    static let logReservation = "logReservation"
 
     static func bool(forKey key: String) -> Bool {
         return UserDefaults.standard.bool(forKey: key)

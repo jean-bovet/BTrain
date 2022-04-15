@@ -220,10 +220,11 @@ extension Layout {
             } else {
                 route.automaticMode = .endless
             }
-            let (success, _) = try automaticRouting.updateAutomaticRoute(for: trainID)
-            if !success {
-                throw LayoutError.noPossibleRoute(train: train)
-            }
+            
+            // Reset the route - the route will be automatically updated by
+            // the TrainController when the train is started.
+            train.routeStepIndex = 0
+            route.steps.removeAll()
         } else {
             // Check to make sure the train is somewhere along the route
             train.routeStepIndex = -1
