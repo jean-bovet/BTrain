@@ -473,6 +473,8 @@ final class TrainController {
             return .processed
         }
 
+        debug("Generating a new route for \(train) at block \(currentBlock.name) because the next blocks could not be reserved (route: \(route.steps.debugDescription))")
+
         if try updateAutomaticRoute(for: train.id) == .none {
             // If it is not possible, then stop the train in this block
             debug("Train \(train) will stop here (\(nextBlock)) because the next block(s) cannot be reserved")

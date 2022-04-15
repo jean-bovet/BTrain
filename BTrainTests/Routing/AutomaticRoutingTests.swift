@@ -387,14 +387,11 @@ class AutomaticRoutingTests: BTTestCase {
         try layout.setTrainToBlock(layout.trains[1].id, Identifier<Block>(uuid: "b2"), direction: .next)
 
         try p.assert("automatic-0: {r0{s2 ≡ 🟢🚂0 }} <r0<t1(1,0),s>> <r0<t2(1,0),s>> [r0[b1 ≏ ]] <t3> [r1[b2 🔴🚂1 ≏ ]] <t4(1,0)> [b3 ≏ ≏ ≏ ]")
-        try p.assert("automatic-0: {s2 ≏ } <t1(1,0),s> <t2(1,0),s> [r0[b1 ≡ 🔴🚂0 ]] <t3> [r1[b2 🔴🚂1 ≏ ]] <t4(1,0)> [b3 ≏ ≏ ≏ ]")
-        
-        // The automatic route is now updated to find an alternative path
-        XCTAssertEqual(p.layoutController.run(), .processed)
-        XCTAssertEqual(try p.route.steps.toStrings(layout), ["b1:next", "b5:previous", "b3:previous"])
+        try p.assert("automatic-0: {r0{s2 ≏ 🟢🚂0 }} <r0<t1(1,0),s>> <r0<t2(1,0),s>> [r0[b1 ≏ ]] <t3> [r1[b2 🔴🚂1 ≏ ]] <t4(1,0)> [b3 ≏ ≏ ≏ ]")
 
-        // And now the train restarts following the new route
-        try p.assert("automatic-0: [r0[b1 ≏ 🔵🚂0 ]] <r0<t3(0,2),r>> ![r0[b5 ≏ ]] <t7(2,0)> <t5(2,0)> ![b3 ≏ ≏ ≏]")
+        // Move from s2 to b1, the route is also updated because b2 is occupied
+        try p.assert("automatic-0: [r0[b1 ≡ 🟢🚂0 ]] <r0<t3{sr}(0,2),r>> ![r0[b5 ≏ ]] <t7{sr}(2,0),s> <t5{sr}(2,0),s> ![b3 ≏ ≏ ≏ ]")
+
         try p.assert("automatic-0: [b1 ≏ ] <t3(0,2),r> ![r0[b5 ≡ 🔵🚂0 ]] <r0<t7(2,0),r>> <r0<t5(2,0),r>> ![r0[b3 ≏ ≏ ≏ ]]")
         try p.assert("automatic-0: [b1 ≏ ] <t3(0,2),r> ![b5 ≏ ] <t7(2,0),r> <t5(2,0),r> ![r0[b3 ≡ 🟢🚂0 ≏ ≏ ]]")
         try p.assert("automatic-0: [b1 ≏ ] <t3(0,2),r> ![b5 ≏ ] <t7(2,0),r> <t5(2,0),r> ![r0[b3 ≏ ≡ 🟡🚂0 ≏ ]]")
