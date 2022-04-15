@@ -34,6 +34,7 @@ struct SettingsView: View {
     @AppStorage(SettingsKeys.debugMode) private var showDebugControls = false
     @AppStorage(SettingsKeys.recordDiagnosticLogs) private var recordDiagnosticLogs = false
     @AppStorage(SettingsKeys.logRoutingResolutionSteps) private var logRoutingResolutionSteps = false
+    @AppStorage(SettingsKeys.logReservation) private var logReservation = false
 
     var body: some View {
         TabView {
@@ -83,6 +84,7 @@ struct SettingsView: View {
                 Toggle("Developer Tools", isOn: $showDebugControls)
                 Toggle("Record Diagnostic Logs", isOn: $recordDiagnosticLogs)
                 Toggle("Log Routing Resolution Steps", isOn: $logRoutingResolutionSteps)
+                Toggle("Log Block and Turnout Reservation", isOn: $logReservation)
             }
             .tabItem {
                 Label("Advanced", systemImage: "star")

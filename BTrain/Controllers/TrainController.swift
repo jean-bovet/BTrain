@@ -237,7 +237,7 @@ final class TrainController {
                     throw LayoutError.destinationDirectionMismatch(currentBlock: currentBlock, destination: destination)
                 }
                                 
-                debug("Stopping completely \(train) because it has reached the end of the route")
+                debug("Requesting \(train) to stop completely because it has reached the end of the route")
                 stopTrigger = StopTrigger.completeStop()
                 return .processed
             }
@@ -290,7 +290,7 @@ final class TrainController {
         }
                 
         if train.automaticFinishingScheduling {
-            debug("Stopping completely \(train) because it has reached a station and was finishing the route")
+            debug("Requesting \(train) to stop completely because it has reached a station and was finishing the route")
             stopTrigger = StopTrigger.completeStop()
             return .processed
         } else {

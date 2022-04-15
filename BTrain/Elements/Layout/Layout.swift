@@ -85,7 +85,7 @@ final class Layout: Element, ObservableObject {
     @Published var runtimeError: String?
 
     lazy var reservation: LayoutReservation = {
-        return LayoutReservation(layout: self)
+        return LayoutReservation(layout: self, verbose: SettingsKeys.bool(forKey: SettingsKeys.logReservation))
     }()
     
     lazy var automaticRouting: AutomaticRouting = {
