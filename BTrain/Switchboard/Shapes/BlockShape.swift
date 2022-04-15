@@ -154,32 +154,87 @@ final class BlockShape: Shape, DraggableShape, ConnectableShape {
     }
         
     func draw(ctx: CGContext) {
-        if block.category == .station {
-            ctx.with {
-                ctx.addPath(path)
-                ctx.setFillColor(shapeContext.backgroundStationBlockColor)
-                ctx.fillPath()
-            }
-        }
         
-        drawArrows(ctx: ctx)
+        ctx.with {
+            drawBackground(ctx: ctx)
+        }
 
         ctx.with {
-            ctx.addPath(trackPath)
-            ctx.setStrokeColor(shapeContext.pathColor(reserved != nil, train: block.train != nil))
-            ctx.setLineWidth(shapeContext.trackWidth)
-            if !block.enabled {
-                ctx.setLineDash(phase: 0, lengths: [6, 6])
-            }
-            ctx.strokePath()
+            drawArrows(ctx: ctx)
+        }
+
+        ctx.with {
+            drawTracks(ctx: ctx)
         }
         
         ctx.with {
-            drawContent(ctx: ctx, shapeContext: shapeContext)
-        }                
-    }
+            drawFeedbacks(ctx: ctx)
+        }
         
-    func drawContent(ctx: CGContext, shapeContext: ShapeContext) {
+        ctx.with {
+            drawTrainParts(ctx: ctx, shapeContext: shapeContext)
+        }
+
+        ctx.with {
+            drawTimeRemaining(ctx: ctx)
+        }
+        
+        ctx.with {
+            drawLabels(ctx: ctx)
+        }
+    }
+
+    private func drawBackground(ctx: CGContext) {
+        if block.category == .station {
+            ctx.addPath(path)
+            ctx.setFillColor(shapeContext.backgroundStationBlockColor)
+            ctx.fillPath()
+        }
+    }
+    
+    private func drawTracks(ctx: CGContext) {
+        ctx.addPath(trackPath)
+        ctx.setStrokeColor(shapeContext.pathColor(reserved != nil, train: block.train != nil))
+        ctx.setLineWidth(shapeContext.trackWidth)
+        if !block.enabled {
+            ctx.setLineDash(phase: 0, lengths: [6, 6])
+        }
+        ctx.strokePath()
+    }
+    
+    private func drawFeedbacks(ctx: CGContext) {
+        for (index, feedback) in block.feedbacks.enumerated() {
+            if let f = layout?.feedback(for: feedback.feedbackId), f.detected {
+                ctx.setFillColor(shapeContext.activeFeedbackColor)
+            } else {
+                ctx.setFillColor(shapeContext.inactiveFeedbackColor)
+            }
+            
+            let path = feedbackPath(at: index)
+            ctx.addPath(path)
+            ctx.fillPath()
+            
+            ctx.addPath(path)
+            ctx.setStrokeColor(shapeContext.pathColor(reserved != nil, train: block.train != nil))
+            ctx.strokePath()
+            
+            if let feedbackIds = shapeContext.expectedFeedbackIds, feedbackIds.contains(feedback.feedbackId) {
+                let path = expectedFeedbackPath(at: index)
+                ctx.addPath(path)
+                ctx.strokePath()
+            }
+        }
+    }
+    
+    private func drawTimeRemaining(ctx: CGContext) {
+        // Display the time remaining until the train starts again
+        if let train = train, train.timeUntilAutomaticRestart > 0 {
+            drawLabel(ctx: ctx, label: "\(Int(train.timeUntilAutomaticRestart)) s.", at: center, verticalOffset: size.height/2, hAlignment: .center, vAlignment: .top,
+                      color: shapeContext.color, fontSize: shapeContext.fontSize, borderColor: shapeContext.borderLabelColor, backgroundColor: shapeContext.backgroundLabelColor)
+        }
+    }
+    
+    private func drawLabels(ctx: CGContext) {
         let showBlockName = shapeContext.showBlockName || block.category == .station && shapeContext.showStationName
         let showIcon = shapeContext.showTrainIcon && prepareIcon() != nil && block.blockContainsLocomotive
 
@@ -215,62 +270,22 @@ final class BlockShape: Shape, DraggableShape, ConnectableShape {
                              verticalOffset: size.height/2 + adjustHeight/2,
                              horizontalOffset: totalWidth/2 - trainNameSize.width)
                 } else {
-                    ctx.with {
-                        drawLabel(ctx: ctx, label: train.name, at: center.translatedBy(x: blockNameSize.width + space - totalWidth/2, y: 0), verticalOffset: -size.height/2 - adjustHeight/2,
-                                  color: shapeContext.color, fontSize: shapeContext.fontSize, borderColor: shapeContext.trainColor(train), backgroundColor: shapeContext.backgroundLabelColor)
-                    }
+                    drawLabel(ctx: ctx, label: train.name, at: center.translatedBy(x: blockNameSize.width + space - totalWidth/2, y: 0), verticalOffset: -size.height/2 - adjustHeight/2,
+                              color: shapeContext.color, fontSize: shapeContext.fontSize, borderColor: shapeContext.trainColor(train), backgroundColor: shapeContext.backgroundLabelColor)
                 }
             } else {
                 if showIcon {
                     drawIcon(ctx: ctx, at: center, verticalOffset: size.height/2, hAlignment: .center)
                 } else {
-                    ctx.with {
-                        drawLabel(ctx: ctx, label: train.name, at: center, verticalOffset: -size.height/2, hAlignment: .center, color: shapeContext.color, fontSize: shapeContext.fontSize,
-                                              borderColor: shapeContext.trainColor(train), backgroundColor: shapeContext.backgroundLabelColor)
-                    }
+                    drawLabel(ctx: ctx, label: train.name, at: center, verticalOffset: -size.height/2, hAlignment: .center, color: shapeContext.color, fontSize: shapeContext.fontSize,
+                                          borderColor: shapeContext.trainColor(train), backgroundColor: shapeContext.backgroundLabelColor)
                 }
             }
         } else {
             if showBlockName {
-                ctx.with {
-                    drawLabel(ctx: ctx, label: block.name, at: center, verticalOffset: -size.height/2, hAlignment: .center,
-                              color: shapeContext.color, fontSize: shapeContext.fontSize, borderColor: shapeContext.borderLabelColor, backgroundColor: shapeContext.backgroundLabelColor)
-                }
-            }
-        }
-        
-        // Display the time remaining until the train starts again
-        if let train = train, train.timeUntilAutomaticRestart > 0 {
-            ctx.with {
-                drawLabel(ctx: ctx, label: "\(Int(train.timeUntilAutomaticRestart)) s.", at: center, verticalOffset: size.height/2, hAlignment: .center, vAlignment: .top,
+                drawLabel(ctx: ctx, label: block.name, at: center, verticalOffset: -size.height/2, hAlignment: .center,
                           color: shapeContext.color, fontSize: shapeContext.fontSize, borderColor: shapeContext.borderLabelColor, backgroundColor: shapeContext.backgroundLabelColor)
             }
-        }
-        
-        for (index, feedback) in block.feedbacks.enumerated() {
-            if let f = layout?.feedback(for: feedback.feedbackId), f.detected {
-                ctx.setFillColor(shapeContext.activeFeedbackColor)
-            } else {
-                ctx.setFillColor(shapeContext.inactiveFeedbackColor)
-            }
-            
-            let path = feedbackPath(at: index)
-            ctx.addPath(path)
-            ctx.fillPath()
-            
-            ctx.addPath(path)
-            ctx.setStrokeColor(shapeContext.pathColor(reserved != nil, train: block.train != nil))
-            ctx.strokePath()
-            
-            if let feedbackIds = shapeContext.expectedFeedbackIds, feedbackIds.contains(feedback.feedbackId) {
-                let path = expectedFeedbackPath(at: index)
-                ctx.addPath(path)
-                ctx.strokePath()
-            }
-        }
-
-        ctx.with {
-            drawTrainParts(ctx: ctx, shapeContext: shapeContext)
         }
     }
 
@@ -291,11 +306,10 @@ final class BlockShape: Shape, DraggableShape, ConnectableShape {
         let factory = TrainPathFactory(shapeContext: shapeContext)
         ctx.setFillColor(shapeContext.trainColor(train))
         for index in 0...trainCellCount {
-            // Only draw the wagon because the train is already handled by the TrainShape
-            if let part = parts[index], part == .wagon {
+            if let part = parts[index] {
                 let rect = trainCellFrame(at: index)
                 let path: CGPath
-                path = factory.wagon(center: rect.center, rotationCenter: center, rotationAngle: rotationAngle)
+                path = factory.path(for: part, center: rect.center, rotationCenter: center, rotationAngle: rotationAngle)
                 ctx.addPath(path)
                 ctx.fillPath()
             }
@@ -414,26 +428,20 @@ extension BlockShape {
         let regularColor = shapeContext.color.copy(alpha: 0.5)!
         let direction = directionOfTravel()
         if direction == .next {
-            ctx.with {
-                ctx.addPath(previousArrowPath(side: .previous, direction: .next))
-                ctx.setStrokeColor(shapeContext.pathColor(reserved != nil, train: block.train != nil))
-                ctx.setLineWidth(shapeContext.trackWidth)
-                ctx.strokePath()
-            }
+            ctx.addPath(previousArrowPath(side: .previous, direction: .next))
+            ctx.setStrokeColor(shapeContext.pathColor(reserved != nil, train: block.train != nil))
+            ctx.setLineWidth(shapeContext.trackWidth)
+            ctx.strokePath()
         } else {
-            ctx.with {
-                ctx.addPath(previousArrowPath(side: .previous, direction: .next))
-                ctx.setStrokeColor(regularColor)
-                ctx.setLineWidth(shapeContext.trackWidth)
-                ctx.strokePath()
-            }
-
-            ctx.with {
-                ctx.addPath(previousArrowPath(side: .next, direction: .previous))
-                ctx.setStrokeColor(shapeContext.pathColor(reserved != nil, train: block.train != nil))
-                ctx.setLineWidth(shapeContext.trackWidth)
-                ctx.strokePath()
-            }
+            ctx.addPath(previousArrowPath(side: .previous, direction: .next))
+            ctx.setStrokeColor(regularColor)
+            ctx.setLineWidth(shapeContext.trackWidth)
+            ctx.strokePath()
+            
+            ctx.addPath(previousArrowPath(side: .next, direction: .previous))
+            ctx.setStrokeColor(shapeContext.pathColor(reserved != nil, train: block.train != nil))
+            ctx.setLineWidth(shapeContext.trackWidth)
+            ctx.strokePath()
         }
     }
     

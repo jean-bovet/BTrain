@@ -23,6 +23,15 @@ struct TrainPathFactory {
         return CGSize(width: 16, height: shapeContext.trackWidth*4)
     }
 
+    func path(for part: TrainInstance.TrainPart, center: CGPoint, rotationCenter: CGPoint, rotationAngle: Double) -> CGPath {
+        switch part {
+        case .locomotive:
+            return locomotive(center: center, rotationCenter: rotationCenter, rotationAngle: rotationAngle)
+        case .wagon:
+            return wagon(center: center, rotationCenter: rotationCenter, rotationAngle: rotationAngle)
+        }
+    }
+    
     func locomotive(center: CGPoint, rotationCenter: CGPoint, rotationAngle: Double) -> CGPath {
         let rect = CGRect(origin: CGPoint(x: center.x-size.width/2, y: center.y-size.height/2), size: size)
         let path = CGMutablePath()
