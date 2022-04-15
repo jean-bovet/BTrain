@@ -123,11 +123,7 @@ final class TrainController {
         if try handleTrainStop() == .processed {
             result = .processed
         }
-        
-        if try handleTrainAutomaticRouteUpdate(route: route) == .processed {
-            result = .processed
-        }
-        
+                
         if try handleTrainStop() == .processed {
             result = .processed
         }
@@ -199,53 +195,16 @@ final class TrainController {
             train.state = .running
             layout.setTrainSpeed(train, LayoutFactory.DefaultMaximumSpeed) { }
             return .processed
+        } else if route.automatic {
+            debug("Generating a new route for \(train) at block \(currentBlock.name) because the next blocks could not be reserved (route: \(route.steps.debugDescription))")
+
+            // Update the automatic route
+            return try updateAutomaticRoute(for: train.id)
         }
 
         return .none
     }
-    
-    // This method updates the automatic route, if selected, in case the next block is occupied.
-    private func handleTrainAutomaticRouteUpdate(route: Route) throws -> Result {
-        guard route.automatic else {
-            return .none
-        }
-        
-        guard let currentBlock = layout.currentBlock(train: train) else {
-            return .none
-        }
-
-        guard let nextBlock = layout.nextBlock(train: train) else {
-            return .none
-        }
-        
-        // TODO: check if all the turnouts going to that block are free!!!
-        var nextBlockNotAvailable = false
-        // If the next block is disabled, we need to re-compute a new route
-        if !nextBlock.enabled {
-            nextBlockNotAvailable = true
-        }
-
-        // If the next block contains a train, we need to re-compute a new route
-        if nextBlock.train != nil {
-            nextBlockNotAvailable = true
-        }
-        
-        // If the next block is reserved for another train, we need to re-compute a new route
-        if let reserved = nextBlock.reserved, reserved.trainId != train.id {
-            nextBlockNotAvailable = true
-        }
-        
-        guard nextBlockNotAvailable else {
-            return .none
-        }
-        
-        // Generate a new route if one is available
-        debug("Generating a new route for \(train) at block \(currentBlock.name) because the next block \(nextBlock.name) is occupied or disabled")
-
-        // Update the automatic route
-        return try updateAutomaticRoute(for: train.id)
-    }
-        
+            
     // This method handles any stop trigger related to the automatic route, which are:
     // - The train reaches the end of the route (that does not affect `endless` automatic route)
     // - The train reaches a block that stops the train for a while (ie station)
@@ -495,9 +454,31 @@ final class TrainController {
         } else {
             _ = try handleManualRouteStop(route: route)
         }
+                
+        // If the train is not stopping in this block...
+        guard stopTrigger == nil else {
+            return .processed
+        }
         
-        // If the train is not stopping in this block, reserve the block(s) ahead.
-        if stopTrigger == nil {
+        // ...try reserve the necessary lead blocks
+        guard try layout.reservation.updateReservedBlocks(train: train) == false else {
+            return .processed
+        }
+        
+        // If it is not possible to reserve the lead blocks, update the automatic route
+        guard route.automatic else {
+            debug("Train \(train) will stop here (\(nextBlock)) because the next block(s) cannot be reserved")
+            stopTrigger = StopTrigger.temporaryStop()
+
+            return .processed
+        }
+
+        if try updateAutomaticRoute(for: train.id) == .none {
+            // If it is not possible, then stop the train in this block
+            debug("Train \(train) will stop here (\(nextBlock)) because the next block(s) cannot be reserved")
+            stopTrigger = StopTrigger.temporaryStop()
+        } else {
+            // If it is possible to update the automatic route, try again to reserve the lead blocks
             if try layout.reservation.updateReservedBlocks(train: train) == false {
                 // If it is not possible, then stop the train in this block
                 debug("Train \(train) will stop here (\(nextBlock)) because the next block(s) cannot be reserved")
