@@ -54,4 +54,18 @@ final class EphemeralDraggedTrainShape: EphemeralDraggableShape {
         return bounds.contains(point)
     }
     
+    func droppableShape(_ shapes: [Shape]) -> Shape? {
+        shapes.first { shape in
+            guard shape.inside(center) else {
+                return false
+            }
+            
+            guard let blockShape = shape as? BlockShape else {
+                return false
+            }
+                        
+            return blockShape.block.reserved == nil && blockShape.block.train == nil
+        }
+    }
+
 }
