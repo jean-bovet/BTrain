@@ -80,23 +80,25 @@ class AutomaticRoutingTests: BTTestCase {
     func testUpdateAutomaticRouteWithBlockToAvoid() throws {
         let layout = LayoutComplexLoop().newLayout()
         let s1 = layout.block(for: Identifier<Block>(uuid: "s1"))!
-
+        let train = layout.trains[0]
+        
         // The route will choose "s2" as the arrival block
         var p = try setup(layout: layout, fromBlockId: s1.id, destination: nil, position: .end, routeSteps: ["s1:next", "b1:next", "b2:next", "b3:next", "s2:next"])
-        try p.layoutController.stop(trainID: layout.trains[0].id, completely: true)
+        try p.layoutController.stop(trainID: train.id, completely: true)
         
         // Let's mark "s2" as to avoid
-        layout.trains[0].blocksToAvoid.append(.init(Identifier<Block>(uuid: "s2")))
+        train.blocksToAvoid.append(.init(Identifier<Block>(uuid: "s2")))
 
         // The route will choose "s1" instead
         p = try setup(layout: layout, fromBlockId: s1.id, destination: nil, position: .end, routeSteps: ["s1:next", "b1:next", "b2:next", "b3:next", "s1:next"])
-        try p.layoutController.stop(trainID: layout.trains[0].id, completely: true)
+        try p.layoutController.stop(trainID: train.id, completely: true)
 
         // Now let's mark also "s1" as to avoid
-        layout.trains[0].blocksToAvoid.append(.init(Identifier<Block>(uuid: "s1")))
+        train.blocksToAvoid.append(.init(Identifier<Block>(uuid: "s1")))
 
         // There will be no possible route to find
-        XCTAssertThrowsError(try setup(layout: layout, fromBlockId: s1.id, destination: nil, position: .end, routeSteps: []))
+        p = try setup(layout: layout, fromBlockId: s1.id, destination: nil, position: .end, routeSteps: [])
+        XCTAssertEqual(p.route.steps.count, 0)
     }
     
     func testAutomaticRouteWithTurnoutToAvoid() throws {
@@ -111,7 +113,8 @@ class AutomaticRoutingTests: BTTestCase {
         layout.trains[0].turnoutsToAvoid.append(.init(Identifier<Turnout>(uuid: "t5")))
 
         // No route is possible with t5 to avoid
-        XCTAssertThrowsError(p = try setup(layout: layout, fromBlockId: s1.id, destination: nil, position: .end, routeSteps: []))
+        p = try setup(layout: layout, fromBlockId: s1.id, destination: nil, position: .end, routeSteps: [])
+        XCTAssertEqual(p.route.steps.count, 0)
     }
 
     // This test ensures that the algorithm finds an alternative free path when multiple paths are available
@@ -145,7 +148,8 @@ class AutomaticRoutingTests: BTTestCase {
 
         // There is no automatic route possible because there are no stations but only two siding blocks at each end of the route.
         // This will be supported in the future for certain type of train.
-        XCTAssertThrowsError(_ = try setup(layout: layout, fromBlockId: Identifier<Block>(uuid: "A"), destination: nil, position: .end, routeSteps: []))
+        let p = try setup(layout: layout, fromBlockId: Identifier<Block>(uuid: "A"), destination: nil, position: .end, routeSteps: [])
+        XCTAssertEqual(p.route.steps.count, 0)
     }
 
     func testAutomaticRouteFinishing() throws {

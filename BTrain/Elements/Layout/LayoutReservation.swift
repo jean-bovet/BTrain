@@ -61,11 +61,12 @@ final class LayoutReservation {
         
         // The route must be defined and not be empty
         guard let route = layout.route(for: train.routeId, trainId: train.id), !route.steps.isEmpty else {
+            debug("Cannot reserve leading blocks because route is empty")
             return false
         }
 
         // We are going to iterate over all the remaining steps of the route until we
-        // either (1) reach the end of the route or (2)) we have reserved enough blocks.
+        // either (1) reach the end of the route or (2) we have reserved enough blocks.
         let startReservationIndex = min(route.lastStepIndex, train.routeStepIndex)
         let stepsToReserve = route.steps[startReservationIndex...route.lastStepIndex]
         
