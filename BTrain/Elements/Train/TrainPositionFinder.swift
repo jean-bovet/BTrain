@@ -18,7 +18,7 @@ final class TrainPositionFinder {
     // which is the "lead wagon" when the locomotive pushes the train.
     static func headWagonBlockFor(train: Train, startAtNextPosition: Bool = false, layout: Layout) throws -> Block? {
         guard train.wagonsPushedByLocomotive else {
-            fatalError("It is an error to ask for the head wagon when the locomotive is not pushing its wagons")
+            throw LayoutError.invalidHeadWagonConfiguration(train: train)
         }
         
         let visitor = TrainVisitor(layout: layout)

@@ -153,7 +153,7 @@ extension Layout {
                 return []
             }
         } else {
-            fatalError("Unsupported configuration")
+            throw LayoutError.invalidTransition(transition: transition)
         }
     }
 
