@@ -228,9 +228,8 @@ class AutomaticRoutingTests: BTTestCase {
         // Artificially set the restart time to 0 which will make the train restart again
         layout.trains[0].timeUntilAutomaticRestart = 0
         
-        XCTAssertEqual(p.layoutController.run(), .processed) // Automatic route is re-generated
-        XCTAssertEqual(p.layoutController.run(), .processed) // Train is re-started
-        XCTAssertEqual(p.layoutController.run(), .none)
+        XCTAssertEqual(p.layoutController.run(), .none) // Route is updated
+        XCTAssertEqual(p.layoutController.run(), .processed) // Train is started
 
         XCTAssertTrue(p.train.speed.requestedKph > 0)
         
@@ -304,8 +303,7 @@ class AutomaticRoutingTests: BTTestCase {
         // Now remove the train from the block b1 in order for the train in s2 to start again properly this time
         try layout.remove(trainID: layout.trains[1].id)
         
-        XCTAssertEqual(p.layoutController.run(), .processed) // Automatic route is re-generated
-        XCTAssertEqual(p.layoutController.run(), .processed) // Train is re-started
+        XCTAssertEqual(p.layoutController.run(), .processed) // Route is updated and train started
         XCTAssertEqual(p.layoutController.run(), .none)
 
         // When restarting, the train automatic route will be updated
