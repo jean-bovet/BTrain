@@ -159,7 +159,7 @@ struct ToolDebugCommandsView: View {
         if document.showDebugModeControls {
             Menu("􀤊") {
                 Button("Repair Layout") {
-                    DeveloperTools.repair(layout: document.layout)
+                    LayoutDiagnostic(layout: document.layout).repair()
                 }
             }
         }

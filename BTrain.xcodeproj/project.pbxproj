@@ -111,7 +111,6 @@
 		A7710E71277A344300C08150 /* NewBlockSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7710E70277A344300C08150 /* NewBlockSheet.swift */; };
 		A7710E73277A3BC200C08150 /* NewTurnoutSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7710E72277A3BC200C08150 /* NewTurnoutSheet.swift */; };
 		A774B8E52801FA6F00E8043C /* PointToLoopLayoutTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A774B8E42801FA6F00E8043C /* PointToLoopLayoutTests.swift */; };
-		A774B8E928021E6B00E8043C /* DeveloperTools.swift in Sources */ = {isa = PBXBuildFile; fileRef = A774B8E828021E6B00E8043C /* DeveloperTools.swift */; };
 		A778407E27F96BFC00F87078 /* GeometryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A778407D27F96BFC00F87078 /* GeometryTests.swift */; };
 		A77A96DC27274A17009E7ECB /* MarklinCANMessagePrinter.swift in Sources */ = {isa = PBXBuildFile; fileRef = A77A96DB27274A17009E7ECB /* MarklinCANMessagePrinter.swift */; };
 		A77A96DE2727767C009E7ECB /* ConnectSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A77A96DD2727767C009E7ECB /* ConnectSheet.swift */; };
@@ -376,7 +375,6 @@
 		A7710E70277A344300C08150 /* NewBlockSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewBlockSheet.swift; sourceTree = "<group>"; };
 		A7710E72277A3BC200C08150 /* NewTurnoutSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewTurnoutSheet.swift; sourceTree = "<group>"; };
 		A774B8E42801FA6F00E8043C /* PointToLoopLayoutTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PointToLoopLayoutTests.swift; sourceTree = "<group>"; };
-		A774B8E828021E6B00E8043C /* DeveloperTools.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeveloperTools.swift; sourceTree = "<group>"; };
 		A778407D27F96BFC00F87078 /* GeometryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeometryTests.swift; sourceTree = "<group>"; };
 		A77A96DB27274A17009E7ECB /* MarklinCANMessagePrinter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarklinCANMessagePrinter.swift; sourceTree = "<group>"; };
 		A77A96DD2727767C009E7ECB /* ConnectSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectSheet.swift; sourceTree = "<group>"; };
@@ -1160,7 +1158,6 @@
 		A7BD6257276D39CA0039B6C2 /* Utilities */ = {
 			isa = PBXGroup;
 			children = (
-				A774B8E828021E6B00E8043C /* DeveloperTools.swift */,
 				A785C074278A5CE1002FD538 /* TrainIconManager.swift */,
 				A785C06E2789F323002FD538 /* UndoProvider.swift */,
 				A73B1638274B60A10073947D /* BTLogger.swift */,
@@ -1452,7 +1449,6 @@
 				A7218071275D398000831998 /* CS2DocumentParser.swift in Sources */,
 				A71715892758448D00200F92 /* CGRect+Extension.swift in Sources */,
 				A7BE36AA2751BDC300286709 /* ConnectorPlug.swift in Sources */,
-				A774B8E928021E6B00E8043C /* DeveloperTools.swift in Sources */,
 				A785C07E278A64C1002FD538 /* CommandInterface.swift in Sources */,
 				A7E1F74827D71C03009FB75F /* TrainSpeedAcceleration.swift in Sources */,
 				A795A03327B0894800AE90EB /* CenteredLabelView.swift in Sources */,
