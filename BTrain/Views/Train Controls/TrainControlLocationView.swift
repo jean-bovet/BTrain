@@ -21,6 +21,7 @@ struct TrainControlLocationView: View {
     @ObservedObject var train: Train
         
     @State private var setTrainLocationSheet = false
+    @State private var moveTrainLocationSheet = false
     @State private var removeTrainSheet = false
 
     var body: some View {
@@ -37,11 +38,21 @@ struct TrainControlLocationView: View {
                         
                         Button("􀅄") {
                             setTrainLocationSheet.toggle()
-                        }.help("Set Location")
-
+                        }
+                        .help("Set Location")
+                        .buttonStyle(.borderless)
+                        
+                        Button("􀅂") {
+                            moveTrainLocationSheet.toggle()
+                        }
+                        .help("Move Train")
+                        .buttonStyle(.borderless)
+                        
                         Button("􀄨") {
                             removeTrainSheet.toggle()
-                        }.help("Remove Train")
+                        }
+                        .help("Remove Train")
+                        .buttonStyle(.borderless)
                     } else {
                         Button("Set Location 􀅄") {
                             setTrainLocationSheet.toggle()
@@ -53,6 +64,9 @@ struct TrainControlLocationView: View {
             }
         }.sheet(isPresented: $setTrainLocationSheet) {
             TrainControlSetLocationSheet(layout: layout, controller: controller, actionSet: .setOnly, train: train)
+                .padding()
+        }.sheet(isPresented: $moveTrainLocationSheet) {
+            TrainControlSetLocationSheet(layout: layout, controller: controller, actionSet: .moveOrSet, train: train)
                 .padding()
         }.sheet(isPresented: $removeTrainSheet) {
             TrainControlSetLocationSheet(layout: layout, controller: controller, actionSet: .removeOnly, train: train)
