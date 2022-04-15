@@ -12,15 +12,18 @@
 
 import Foundation
 
-// This class holds information about the train
-// that is being dragged on the switchboard.
-final class SwitchBoardTrainDragging {
-    let shape: TrainShape
+/// The ephemeral drag info for a train
+final class SwitchBoardTrainDragInfo: EphemeralDragInfo {
+    let trainId: Identifier<Train>
 
+    let shape: DraggableShape
+    
     var dropPath: CGPath?
+
     var dropBlock: Block?
     
-    init(shape: TrainShape) {
+    init(trainId: Identifier<Train>, shape: DraggableShape) {
+        self.trainId = trainId
         self.shape = shape
     }
 }

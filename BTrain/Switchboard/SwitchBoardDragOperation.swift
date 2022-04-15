@@ -91,18 +91,13 @@ final class SwitchBoardDragOperation {
                 if performAction(at: location) {
                     dragState = .ignore
                 } else {
-                    // Find out if a train is located at the tap location so it can be dragged
-                    if let trainShape = provider.trainShapes.first(where: { $0.inside(location) }),
-                       let layout = trainShape.layout, let shapeProvider = trainShape.shapeProvider,
-                       trainShape.train.manualScheduling {
-                        let draggedTrainShape = TrainShape(layout: layout, train: trainShape.train, shapeProvider: shapeProvider, shapeContext: trainShape.shapeContext)
-                        draggedTrainShape.rotationAngle = trainShape.rotationAngle
-                        draggedTrainShape.center = trainShape.center
-                        draggedTrainShape.dragged = true
-                        renderer.trainDragging = SwitchBoardTrainDragging(shape: draggedTrainShape)
-                        state.selectedShape = draggedTrainShape
-                    } else {
-                        dragState = .ignore
+                    dragState = .ignore
+                    for provider in provider.dragOnTapProviders {
+                        if let shape = provider.draggableShape(at: location) {
+                            state.selectedShape = shape
+                            renderer.ephemeralDragInfo = shape.dragInfo
+                            break
+                        }
                     }
                 }
             }
@@ -198,17 +193,14 @@ final class SwitchBoardDragOperation {
             plug?.socket = findClosestSocket(at: location)
             plug?.freePoint = location
         }
-        
-        // For TrainShape, see if we are dragging it over a block
-        if let trainShape = state.selectedShape as? TrainShape {
-            let location = trainShape.center
-            if let blockShape = provider.blockShapes.first(where: { $0.inside(location) }) {
-                renderer.trainDragging?.shape.rotationAngle = blockShape.rotationAngle
-                renderer.trainDragging?.dropBlock = blockShape.block
-                renderer.trainDragging?.dropPath = blockShape.path
+
+        if let ephemeralDraggableShape = state.selectedShape as? EphemeralDraggableShape {
+            if let blockShape = provider.blockShapes.first(where: { $0.inside(ephemeralDraggableShape.center) }) {
+                renderer.ephemeralDragInfo?.dropBlock = blockShape.block
+                renderer.ephemeralDragInfo?.dropPath = blockShape.path
             } else {
-                renderer.trainDragging?.dropBlock = nil
-                renderer.trainDragging?.dropPath = nil
+                renderer.ephemeralDragInfo?.dropBlock = nil
+                renderer.ephemeralDragInfo?.dropPath = nil
             }
         }
         
@@ -247,20 +239,20 @@ final class SwitchBoardDragOperation {
             state.selectedShape = nil
         }
         
-        if let trainDragging = renderer.trainDragging, let dropBlock = trainDragging.dropBlock {
-            // Trigger the drop action in the UI where the user will decided what to do
-            state.trainDragInfo = .init(trainId: trainDragging.shape.train.id, blockId: dropBlock.id)
+        if let trainDragging = renderer.ephemeralDragInfo as? SwitchBoardTrainDragInfo, let dropBlock = trainDragging.dropBlock {
+            // Trigger the drop action in the UI
+            state.trainDragInfo = .init(trainId: trainDragging.trainId, blockId: dropBlock.id)
             state.trainDroppedInBlockAction.toggle()
         }
         
         // Always nil out the selected shape if it is a train in order
         // to avoid any further drag operation because the train is already
         // positioned at its new location.
-        if state.selectedShape is TrainShape {
+        if state.selectedShape is EphemeralDraggableShape {
             state.selectedShape = nil
         }
         
-        renderer.trainDragging = nil
+        renderer.ephemeralDragInfo = nil
         renderer.showAvailableSockets = false
         dragState = .none
         

@@ -154,7 +154,6 @@ final class BlockShape: Shape, DraggableShape, ConnectableShape {
     }
         
     func draw(ctx: CGContext) {
-        
         ctx.with {
             drawBackground(ctx: ctx)
         }
@@ -172,7 +171,7 @@ final class BlockShape: Shape, DraggableShape, ConnectableShape {
         }
         
         ctx.with {
-            drawTrainParts(ctx: ctx, shapeContext: shapeContext)
+            drawTrainParts(ctx: ctx)
         }
 
         ctx.with {
@@ -234,8 +233,8 @@ final class BlockShape: Shape, DraggableShape, ConnectableShape {
         }
     }
     
-    private func drawLabels(ctx: CGContext) {
-        let showBlockName = shapeContext.showBlockName || block.category == .station && shapeContext.showStationName
+    func drawLabels(ctx: CGContext, forceHideBlockName: Bool = false) {
+        let showBlockName = (shapeContext.showBlockName || block.category == .station && shapeContext.showStationName) && !forceHideBlockName
         let showIcon = shapeContext.showTrainIcon && prepareIcon() != nil && block.blockContainsLocomotive
 
         if let train = train {
@@ -298,7 +297,7 @@ final class BlockShape: Shape, DraggableShape, ConnectableShape {
                             text: label, color: color, fontSize: fontSize, borderColor: borderColor, backgroundColor: backgroundColor)
     }
 
-    func drawTrainParts(ctx: CGContext, shapeContext: ShapeContext) {
+    func drawTrainParts(ctx: CGContext) {
         guard let parts = block.train?.parts, let train = train else {
             return
         }

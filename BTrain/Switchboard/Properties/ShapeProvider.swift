@@ -27,7 +27,7 @@ protocol ShapeProviding: AnyObject {
 
     var actionableShapes: [ActionableShape] { get }
 
-    var trainShapes: [TrainShape] { get }
+    var dragOnTapProviders: [EphemeralDragProvider] { get }
 
     var blockShapes: [BlockShape] { get }
 
@@ -66,8 +66,8 @@ final class ShapeProvider: ShapeProviding {
         return shapes.compactMap({$0 as? ActionableShape})
     }
 
-    var trainShapes: [TrainShape] {
-        return shapes.compactMap({$0 as? TrainShape})
+    var dragOnTapProviders: [EphemeralDragProvider] {
+        return shapes.compactMap({$0 as? EphemeralDragProvider})
     }
 
     var blockShapes: [BlockShape] {
@@ -83,12 +83,6 @@ final class ShapeProvider: ShapeProviding {
         self.observer = LayoutObserver(layout: layout)
         self.context = context
         
-        observer.registerForTrainChange { [weak self] trains in
-            // Note: need to pass the `trains` parameter here because the layout.blocks
-            // has not yet had the time to be updated
-            self?.updateShapes(trains: trains)
-        }
-
         observer.registerForBlockChange { [weak self] blocks in
             // Note: need to pass the `blocks` parameter here because the layout.blocks
             // has not yet had the time to be updated
@@ -104,7 +98,7 @@ final class ShapeProvider: ShapeProviding {
         updateShapes()
     }
         
-    func updateShapes(blocks: [Block]? = nil, turnouts: [Turnout]? = nil, trains: [Train]? = nil) {
+    func updateShapes(blocks: [Block]? = nil, turnouts: [Turnout]? = nil) {
         shapes.removeAll()
 
         if let blocks = blocks {
@@ -128,12 +122,6 @@ final class ShapeProvider: ShapeProviding {
                 BTLogger.error("Error updating the link shapes: \(error)")
             }
         }
-        
-        if let trains = trains {
-            updateTrains(trains: trains)
-        } else {
-            updateTrains(trains: layout.trains)
-        }
     }
     
     func updateBlocks(blocks: [Block]) {
@@ -147,13 +135,7 @@ final class ShapeProvider: ShapeProviding {
             append(TurnoutShape(layout: layout, turnout: turnout, shapeContext: context))
         }
     }
-    
-    func updateTrains(trains: [Train]) {
-        for train in trains {
-            append(TrainShape(layout: layout, train: train, shapeProvider: self, shapeContext: context))
-        }
-    }
-    
+        
     func append(_ shape: Shape) {
         shapes.append(shape)
     }

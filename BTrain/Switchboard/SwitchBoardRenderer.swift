@@ -17,7 +17,7 @@ final class SwitchBoardRenderer {
     let provider: ShapeProviding
     let shapeContext: ShapeContext
     
-    var trainDragging: SwitchBoardTrainDragging?
+    var ephemeralDragInfo: EphemeralDragInfo?
     
     var showAvailableSockets = false
     
@@ -59,17 +59,17 @@ final class SwitchBoardRenderer {
             }
         }
         
-        if let potentialDropTrainPath = trainDragging?.dropPath {
+        if let ephemeralDropPath = ephemeralDragInfo?.dropPath {
             context.with {
-                context.setFillColor(shapeContext.dropTrainPathColor.copy(alpha: 0.5)!)
-                context.addPath(potentialDropTrainPath)
+                context.setFillColor(shapeContext.dropPathColor.copy(alpha: 0.5)!)
+                context.addPath(ephemeralDropPath)
                 context.fillPath()
             }
         }
 
-        if let draggedTrainShape = trainDragging?.shape {
+        if let ephemeralDragShape = ephemeralDragInfo?.shape {
             context.with {
-                draggedTrainShape.draw(ctx: context)
+                ephemeralDragShape.draw(ctx: context)
             }
         }
 

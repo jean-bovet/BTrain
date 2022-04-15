@@ -1,6 +1,15 @@
 {
   "pins" : [
     {
+      "identity" : "graphicsrenderer",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/shaps80/GraphicsRenderer",
+      "state" : {
+        "revision" : "fa9b28096ea13eb59333a02d616244482ad6039f",
+        "version" : "1.4.4"
+      }
+    },
+    {
       "identity" : "gzipswift",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/1024jp/GzipSwift",

@@ -74,7 +74,7 @@ final class ShapeContext {
         }
     }
 
-    var dropTrainPathColor: CGColor {
+    var dropPathColor: CGColor {
         NSColor.selectedTextBackgroundColor.cgColor
     }
 
