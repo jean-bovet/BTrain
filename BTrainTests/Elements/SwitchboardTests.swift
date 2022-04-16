@@ -39,7 +39,7 @@ class SwitchboardTests: XCTestCase {
     
     func testDragCreateLink() throws {
         state.editable = true
-        XCTAssertEqual(provider.shapes.count, 5)
+        XCTAssertEqual(provider.shapes.count, 3)
         
         let b1 = provider.blockShapes[0]
         let b2 = provider.blockShapes[1]
@@ -90,8 +90,6 @@ class SwitchboardTests: XCTestCase {
         try layout.setTrainToBlock(train.id, b1.block.id, direction: .next)
         XCTAssertEqual(train.blockId, b1.block.id)
         XCTAssertEqual(train.position, 0)
-
-        provider.trainShapes[0].updatePosition()
         
         let c = b1.trainPath(at: 0).boundingBox.center
         let c2 = b1.trainPath(at: 1).boundingBox.center
@@ -100,11 +98,9 @@ class SwitchboardTests: XCTestCase {
         dragOp.onDragChanged(location: c2, translation: c.distance(to: c2))
         dragOp.onDragEnded()
                 
-        let dragInfo = dragOp.state.trainDragInfo!
-        try? layout.setTrainToBlock(dragInfo.trainId, dragInfo.blockId, direction: .next)
-
-        XCTAssertEqual(train.blockId, b1.block.id)
-        XCTAssertEqual(train.position, 0)
+        // Info must be nil because the same block cannot be used as a drop target
+        // because it already has a train in it!
+        XCTAssertNil(dragOp.state.trainDragInfo)
     }
     
     func testDragTrainDifferentBlocks() throws {
@@ -116,8 +112,6 @@ class SwitchboardTests: XCTestCase {
         let train = layout.trains[0]
         try layout.setTrainToBlock(train.id, b1.block.id, direction: .next)
         XCTAssertEqual(train.blockId, b1.block.id)
-
-        provider.trainShapes[0].updatePosition()
         
         let c = b1.trainPath(at: 0).boundingBox.center
         let c2 = b2.trainPath(at: 0).boundingBox.center

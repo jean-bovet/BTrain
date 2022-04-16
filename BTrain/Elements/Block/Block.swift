@@ -114,7 +114,13 @@ final class Block: Element, ObservableObject {
     // Returns true if this block contains the locomotive
     var blockContainsLocomotive: Bool {
         if let train = train {
-            return train.parts.values.contains(.locomotive)
+            if train.parts.isEmpty {
+                // If there are no parts defined, it means the train has not length defined,
+                // so we can consider the entire block as containing the locomotive
+                return true
+            } else {
+                return train.parts.values.contains(.locomotive)
+            }
         } else {
             return false
         }
