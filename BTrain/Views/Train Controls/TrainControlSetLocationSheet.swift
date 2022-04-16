@@ -158,12 +158,12 @@ struct TrainControlSetLocationSheet: View {
             }
             
             HStack {
-                Spacer()
                 Toggle("Wagons Pushed by the Locomotive", isOn: $wagonsPushedByLocomotive)
                     .hidden(action != .set)
                     .onAppear {
                         wagonsPushedByLocomotive = train.wagonsPushedByLocomotive
                     }
+                Spacer()
             }
             
             if let errorStatus = errorStatus {
