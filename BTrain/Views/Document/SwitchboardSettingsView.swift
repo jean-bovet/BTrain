@@ -14,6 +14,8 @@ import SwiftUI
 
 struct SwitchboardSettingsView: View {
     
+    let document: LayoutDocument
+    
     @Environment(\.presentationMode) var presentationMode
 
     @AppStorage("showBlockName") var showBlockName: Bool = false
@@ -29,7 +31,9 @@ struct SwitchboardSettingsView: View {
                 Toggle("Station Name", isOn: $showStationName)
                 Toggle("Turnout Name", isOn: $showTurnoutName)
                 Toggle("Train Icon", isOn: $showTrainIcon)
-                Toggle("Simulator", isOn: $showSimulator)
+                if document.simulator.enabled {
+                    Toggle("Simulator", isOn: $showSimulator)
+                }
             }.padding()
             Divider()
             HStack {
@@ -43,6 +47,6 @@ struct SwitchboardSettingsView: View {
 
 struct SwitchboardSettingsView_Previews: PreviewProvider {
     static var previews: some View {
-        SwitchboardSettingsView()
+        SwitchboardSettingsView(document: LayoutDocument(layout: Layout()))
     }
 }
