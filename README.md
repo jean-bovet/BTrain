@@ -78,6 +78,7 @@ Clone this repository and open the `BTrain.xcodeproj` in Xcode. Hit Command-R an
 - [GzipSwift](https://github.com/1024jp/GzipSwift) (c) 2014-2020 1024jp
 - [Undo Provider](https://github.com/LostMoa/UndoProviderExample) (c) 2020 by Matthaus Woolard
 - [Custom Slider](https://betterprogramming.pub/reusable-components-in-swiftui-custom-sliders-8c115914b856) (c) 2020 Aubree Quiroz
+- [GraphicsRenderer](https://github.com/shaps80/GraphicsRenderer) (c) 2016 by [Shaps Benkau](mailto:shapsuk@me.com)
 - Unit tests use [ViewInspector](https://github.com/nalexn/ViewInspector) by Alexey Naumov
     
 **Copyright 2021-22 Jean Bovet**
