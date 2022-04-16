@@ -94,8 +94,10 @@ final class SwitchBoardDragOperation {
                     dragState = .ignore
                     for provider in provider.dragOnTapProviders {
                         if let shape = provider.draggableShape(at: location) {
-                            state.selectedShape = shape
+                            state.ephemeralDraggableShape = shape
+                            originalCenter = shape.center
                             renderer.ephemeralDragInfo = shape.dragInfo
+                            dragState = .dragging
                             break
                         }
                     }
@@ -187,6 +189,9 @@ final class SwitchBoardDragOperation {
         } else if let shape = state.selectedShape as? DraggableShape, dragState == .dragging {
             shape.center.x = gridX(originalCenter.x + translation.width)
             shape.center.y = gridY(originalCenter.y + translation.height)
+        } else if let shape = state.ephemeralDraggableShape, dragState == .dragging {
+            shape.center.x = originalCenter.x + translation.width
+            shape.center.y = originalCenter.y + translation.height
         } else if let shape = state.selectedShape as? PluggableShape,
                     let selectedPlugId = selectedPlugId, dragState == .draggingPlug {
             let plug = shape.plugs.first { $0.id == selectedPlugId }
@@ -194,7 +199,7 @@ final class SwitchBoardDragOperation {
             plug?.freePoint = location
         }
 
-        if let ephemeralDraggableShape = state.selectedShape as? EphemeralDraggableShape {
+        if let ephemeralDraggableShape = state.ephemeralDraggableShape {
             if let blockShape = ephemeralDraggableShape.droppableShape(provider.blockShapes) as? BlockShape {
                 renderer.ephemeralDragInfo?.dropBlock = blockShape.block
                 renderer.ephemeralDragInfo?.dropPath = blockShape.path
@@ -245,13 +250,7 @@ final class SwitchBoardDragOperation {
             state.trainDroppedInBlockAction.toggle()
         }
         
-        // Always nil out the selected shape if it is a train in order
-        // to avoid any further drag operation because the train is already
-        // positioned at its new location.
-        if state.selectedShape is EphemeralDraggableShape {
-            state.selectedShape = nil
-        }
-        
+        state.ephemeralDraggableShape = nil
         renderer.ephemeralDragInfo = nil
         renderer.showAvailableSockets = false
         dragState = .none

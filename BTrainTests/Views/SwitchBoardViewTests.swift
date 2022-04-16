@@ -74,7 +74,7 @@ class SwitchBoardViewTests: XCTestCase {
     }
 
     func testSwitchboardSettings() throws {
-        let sut = SwitchboardSettingsView()
+        let sut = SwitchboardSettingsView(document: LayoutDocument(layout: Layout()))
         _ = try sut.inspect().find(text: "Block Name")
     }
 }

@@ -17,6 +17,7 @@ final class SwitchBoard: ObservableObject {
 
     final class State: ObservableObject {
         @Published var selectedShape: Shape?
+        @Published var ephemeralDraggableShape: EphemeralDraggableShape?
         @Published var editable: Bool = false
         @AppStorage("snapToGrid") var snapToGrid: Bool = true
 
