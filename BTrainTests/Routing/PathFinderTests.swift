@@ -113,11 +113,11 @@ class PathFinderTests: BTTestCase {
             return
         }
         XCTAssertEqual(try path.elements.toBlockSteps.toStrings(layout), ["NE1:next", "OL1:next", "OL2:next", "OL3:next", "NE4:next", "IL1:next", "IL2:next", "IL3:next", "S:next", "IL1:previous", "IL4:previous", "IL3:previous", "IL2:previous", "OL1:previous", "NE3:previous", "M1:next", "M2U:next", "LCF1:next"])
-        
-        // Note: by enabling random routing and specifying a destination, the shortest path will be returned
+
+        // Now find out the shortest path
         let shortestPath = try layout.shortestPath(for: train, from: (ne1, .next), to: (lcf1, .next), reservedBlockBehavior: .avoidFirstReservedBlock)!
         XCTAssertTrue(shortestPath.elements.toBlockSteps.count < path.elements.toBlockSteps.count)
-        XCTAssertEqual(try shortestPath.elements.toBlockSteps.toStrings(layout), ["NE1:next", "IL1:next", "S:previous", "IL3:previous", "IL2:previous", "IL1:previous", "NE4:previous", "M1:next", "M2U:next", "LCF1:next"])
+        XCTAssertEqual(try shortestPath.elements.toBlockSteps.toStrings(layout), ["NE1:next", "IL1:next", "IL2:next", "IL3:next", "S:next", "IL1:previous", "NE4:previous", "M1:next", "M2U:next", "LCF1:next"])
 
         self.measure {
             let path = layout.path(for: train, from: (ne1, .next), to: (lcf1, .next), reservedBlockBehavior: .avoidFirstReservedBlock)

@@ -172,14 +172,14 @@ struct GraphPathFinder: GraphPathFinding {
             }
             return nil
         }
-                
-        let endingElement = GraphPathElement.ending(node, entrySocketId)
-        
+                        
         if !constraints.shouldInclude(node: node, currentPath: currentPath, to: to) {
             debug("Node \(node) should not be included, backtracking")
             return nil
         }
                 
+        let endingElement = GraphPathElement.ending(node, entrySocketId)
+
         if let to = to, to.isSame(as: endingElement) {
             // If the destination node is specified and is the same as the current element,
             // we have reached the destination node

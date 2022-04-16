@@ -11,6 +11,7 @@
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 import Foundation
+import OrderedCollections
 
 /// This class implements the Dijkstra algorithm that finds the shortest path in a graph.
 ///
@@ -41,6 +42,7 @@ final class GraphShortestPathFinder {
     enum PathFinderError: Error {
         case missingExitSocket(from: GraphPathElement)
         case distanceNotFound(`for`: GraphPathElement)
+        case pathNotFound(`for`: GraphPathElement)
         case nodeNotFound(identifier: GraphElementIdentifier)
         case destinationSocketNotFound(`for`: GraphEdge)
         case edgeNotFound(`for`: GraphNode, socketId: SocketId)
@@ -57,15 +59,28 @@ final class GraphShortestPathFinder {
     /// - 1:s1:0 indicates the block s1 in the direction of travel "previous".
     /// - 0:t1:2 indicates the turnout t1 with the exit socket (2) indicating the right-branch.
     private var distances = [GraphPathElement:Double]()
-        
+    
+    /// Map of the path from the starting node to the element. This is used to build the shortest path
+    /// as the algorithm visits all the nodes. Each time a node is visited with a distance shorter than
+    /// any previous distance assigned to the node, the path is set for that node. The next time the
+    /// algorithm picks that node to continue the evaluation, it knows which path to use.
+    private var paths = [GraphPathElement:GraphPath]()
+
     /// Set of elements that have been already visited.
     private var visitedElements = Set<GraphPathElement>()
         
     /// Set of elements that have been evaluated (that is, a distance has been computed for that element)
     /// but have not yet been visited.
-    private var evaluatedButNotVisitedElements = Set<GraphPathElement>()
-
-    private init(graph: Graph, verbose: Bool = true ) {
+    ///
+    /// Note: use `OrderedSet` to ensure stable outcome of the algorithm.
+    private var evaluatedButNotVisitedElements = OrderedSet<GraphPathElement>()
+    
+    /// The shortest path found so far. This variable is updated each time the destination node is reached
+    /// with a distance that's shorter than the previous one.
+    /// nil if the algorithm is not able to reach the destination node.
+    private var shortestPath: GraphPath?
+    
+    private init(graph: Graph, verbose: Bool = false) {
         self.graph = graph
         self.verbose = verbose
     }
@@ -75,26 +90,27 @@ final class GraphShortestPathFinder {
     ///   - graph: the graph
     ///   - from: the starting element
     ///   - to: the destination element
+    ///   - constraints: the constraints to apply to the graph
     /// - Returns: the shortest path or nil if no path found
-    static func shortestPath(graph: Graph, from: GraphPathElement, to: GraphPathElement) throws -> GraphPath? {
-        return try GraphShortestPathFinder(graph: graph).shortestPath(from: from, to: to)?.reversed
+    static func shortestPath(graph: Graph, from: GraphPathElement, to: GraphPathElement, constraints: GraphPathFinderConstraints = GraphPathFinder.DefaultConstraints()) throws -> GraphPath? {
+        return try GraphShortestPathFinder(graph: graph).shortestPath(from: from, to: to, constraints: constraints)
     }
     
-    private func setDistance(_ distance: Double, to: GraphPathElement) {
-        distances[to] = distance
-        evaluatedButNotVisitedElements.insert(to)
-    }
-    
-    private func shortestPath(from: GraphPathElement, to: GraphPathElement) throws -> GraphPath? {
-        setDistance(0, to: from)
+    private func shortestPath(from: GraphPathElement, to: GraphPathElement, constraints: GraphPathFinderConstraints) throws -> GraphPath? {
+        setDistance(0, to: from, path: GraphPath([]))
         
         // Visit the graph and assign distances to all the nodes until the `to` node is reached
-        try visitGraph(from: from, to: to)
+        try visitGraph(from: from, to: to, currentPath: GraphPath([from]), constraints: constraints)
         
         printDistances()
         
-        // Now that the distances are assigned, find the shortest path
-        return try buildShortestPath(from: from, to: to)
+        return shortestPath
+    }
+    
+    private func setDistance(_ distance: Double, to: GraphPathElement, path: GraphPath) {
+        distances[to] = distance
+        paths[to] = path
+        evaluatedButNotVisitedElements.append(to)
     }
     
     private func printDistances() {
@@ -117,12 +133,18 @@ final class GraphShortestPathFinder {
     /// - Parameters:
     ///   - from: the starting element
     ///   - to: the destination element
-    private func visitGraph(from: GraphPathElement, to: GraphPathElement) throws {
+    private func visitGraph(from: GraphPathElement, to: GraphPathElement, currentPath: GraphPath, constraints: GraphPathFinderConstraints) throws {
         // Do not visit an element that has already been visited
         guard !visitedElements.contains(from) else {
             return
         }
-        
+                
+        // TODO: constraints
+//        if !constraints.shouldInclude(node: from.node, currentPath: currentPath, to: to) {
+//            debug("Node \(node) should not be included, backtracking")
+//            return nil
+//        }
+
         // Remember this element as `visited` and remove it from the list of evaluated
         // elements that have not been visited yet.
         visitedElements.insert(from)
@@ -142,7 +164,7 @@ final class GraphShortestPathFinder {
             let nextElementDistance = fromNodeDistance + nextElement.node.weight
             
             // Assign to all the adjacent nodes of `nextElement` the distance of `nextElement`
-            assignDistanceToAdjacentNodesOf(element: nextElement, distance: nextElementDistance)
+            assignDistanceToAdjacentNodesOf(element: nextElement, to: to, distance: nextElementDistance, path: currentPath)
         }
         
         // Pick the node with the smallest distance
@@ -155,8 +177,12 @@ final class GraphShortestPathFinder {
             print("Smallest distance node is \(shortestDistanceElement) with distance \(distances[shortestDistanceElement]!)")
         }
 
+        guard let path = paths[shortestDistanceElement] else {
+            throw PathFinderError.pathNotFound(for: shortestDistanceElement)
+        }
+        
         // Continue to evaluate the distances recursively, starting now with the element with the shortest distance
-        try visitGraph(from: shortestDistanceElement, to: to)
+        try visitGraph(from: shortestDistanceElement, to: to, currentPath: path, constraints: constraints)
     }
     
     struct NextElement {
@@ -184,127 +210,32 @@ final class GraphShortestPathFinder {
         return NextElement(node: node, entrySocket: entrySocket)
     }
     
-    private func assignDistanceToAdjacentNodesOf(element: NextElement, distance: Double) {
+    private func assignDistanceToAdjacentNodesOf(element: NextElement, to: GraphPathElement, distance: Double, path: GraphPath) {
         for exitSocket in element.node.reachableSockets(from: element.entrySocket) {
             let adjacentElement = GraphPathElement.between(element.node, element.entrySocket, exitSocket)
             
             // Skip any element that has been visited before
             guard !visitedElements.contains(adjacentElement) else {
+                if adjacentElement == to && shortestPath == nil {
+                    shortestPath = path.appending(adjacentElement)
+                }
                 continue
             }
-                            
+
             // If the adjacent element already has a distance assigned to it and
             // this distance is still the shortest distance, do nothing.
-            if let existingDistance = distances[adjacentElement], existingDistance < distance {
+            if let existingDistance = distances[adjacentElement], existingDistance <= distance {
                 continue
             }
-            
+                                        
             // Otherwise, assign the new distance to the adjacent node
-            setDistance(distance, to: adjacentElement)
-        }
-    }
-        
-    // MARK: -
-    // MARK: Building of the shortest path
-    
-    /// Build and return the shortest path in the graph. This method is called after all the distances are evaluated and it
-    /// follows the path in reverse order: it starts with the destination node backwards until it reaches the starting node,
-    /// taking at each step the node that has the shortest distance assigned to it.
-    /// - Parameters:
-    ///   - from: starting element
-    ///   - to: destination element
-    /// - Returns: the shortest path between the two elements
-    private func buildShortestPath(from: GraphPathElement, to: GraphPathElement) throws -> GraphPath? {
-        if verbose {
-            print("Building path from \(from) to \(to)")
-        }
-        
-        // Note: swap `to` and `from` to build the path in reverse order (needed by the Dijkstra algorithm)
-        // and make sure to inverse each element so the entry and exit sockets are also inverted.
-        return try buildShortestPath(from: try to.inverse(), to: try from.inverse(), path: .init([to]))
-    }
-    
-    private func buildShortestPath(from: GraphPathElement, to: GraphPathElement, path: GraphPath) throws -> GraphPath? {
-        // Returns when the `from` element is the same as `to`, which means the destination has been reached.
-        if to.isSame(as: from) && path.count > 1 {
-            return path
-        }
-
-        // Find the node that follows `from` given its `exitSocket`.
-        guard let fromExitSocket = from.exitSocket else {
-            throw PathFinderError.missingExitSocket(from: from)
-        }
-        
-        guard let edge = graph.edge(from: from.node, socketId: fromExitSocket) else {
-            throw PathFinderError.edgeNotFound(for: from.node, socketId: fromExitSocket)
-        }
-        
-        guard let node = graph.node(for: edge.toNode) else {
-            throw PathFinderError.nodeNotFound(identifier: edge.toNode)
-        }
-
-        var shortestDistance: Double = .infinity
-        var shortestDistanceElement: GraphPathElement?
-
-        guard let toNodeSocket = edge.toNodeSocket else {
-            throw PathFinderError.destinationSocketNotFound(for: edge)
-        }
-        
-        // Iterate over all the reachable sockets of `node` and pick
-        // the element that has the shortest distance assigned to it.
-        for socket in node.reachableSockets(from: toNodeSocket) {
-            // Build the element by inverting the entry and exit socket because we are walking the path backwards.
-            let element = GraphPathElement.between(node, socket, toNodeSocket)
-            
-            // Ignore this element if it is already part of the path
-            if path.contains(element) {
-                // If the element is already present and is the first one in the path,
-                // do not skip it because it likely means the destination node is the
-                // same as the starting node. If this is not true, the next time this
-                // code is executed, the element will be stored at a later place
-                // in the path and it will be skipped.
-                if let index = path.elements.lastIndex(of: element), index > 0 {
-                    continue
-                }
+            if adjacentElement == to {
+                shortestPath = path.appending(adjacentElement)
             }
 
-            // Ignore this element if there is no distance defined for it. This happens
-            // when the visiting algorithm didn't visit a node from a certain direction.
-            // For example, if there is a siding block, that block might not be visited
-            // in the direction from the siding.
-            guard let distance = distances[element] else {
-                if verbose {
-                    print("No distance found for \(element.description) at path \(path.reversed)")
-                }
-                continue
-            }
-            
-            if verbose {
-                print(" * \(element) = \(distance) and shortest distance so far is \(shortestDistance)")
-            }
-            
-            // Remember the element with the shortest distance
-            if distance < shortestDistance {
-                shortestDistance = distance
-                shortestDistanceElement = element
-            }
+            setDistance(distance, to: adjacentElement, path: path.appending(adjacentElement))
         }
-
-        // Return nil if there is no shortest distance node found, which can happen for example
-        // when the path is trying to pick an element that is already part of the path (to avoid cycle).
-        guard let shortestDistanceElement = shortestDistanceElement else {
-            return nil
-        }
-
-        if verbose {
-            print("Selected \(shortestDistanceElement.description) with distance \(shortestDistance)")
-        }
-        
-        // Continue recursively to build the path by taking the newly found shortest distance element.
-        // Note: because we are walking the path backwards, we need to inverse the `shortestDistanceElement`
-        // in order for the algorithm to continue "backwards".
-        return try buildShortestPath(from: try shortestDistanceElement.inverse(), to: to, path: path.appending(shortestDistanceElement))
-    }
+    }    
     
 }
 
@@ -316,6 +247,8 @@ extension GraphShortestPathFinder.PathFinderError: LocalizedError {
             return "Missing exit socket from \(from)"
         case .distanceNotFound(for: let element):
             return "Distance not found for \(element)"
+        case .pathNotFound(for: let element):
+            return "Path not found for \(element)"
         case .nodeNotFound(identifier: let identifier):
             return "Node not found for \(identifier)"
         case .destinationSocketNotFound(for: let element):
