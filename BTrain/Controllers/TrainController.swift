@@ -389,7 +389,10 @@ final class TrainController {
                 
                 // Always adjust the speed after the train has moved within a block because it might
                 // now be reaching out to element that have speed limits.
-                layout.adjustSpeedLimit(train)
+                // Note: only do that when the train is not under manual control!
+                if !train.manualScheduling {
+                    layout.adjustSpeedLimit(train)
+                }
             }
                         
         }
