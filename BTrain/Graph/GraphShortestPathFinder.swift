@@ -80,7 +80,7 @@ final class GraphShortestPathFinder {
     /// nil if the algorithm is not able to reach the destination node.
     private var shortestPath: GraphPath?
     
-    private init(graph: Graph, verbose: Bool = true) {
+    private init(graph: Graph, verbose: Bool) {
         self.graph = graph
         self.verbose = verbose
     }
@@ -92,8 +92,8 @@ final class GraphShortestPathFinder {
     ///   - to: the destination element
     ///   - constraints: the constraints to apply to the graph
     /// - Returns: the shortest path or nil if no path found
-    static func shortestPath(graph: Graph, from: GraphPathElement, to: GraphPathElement, constraints: GraphPathFinderConstraints = GraphPathFinder.DefaultConstraints()) throws -> GraphPath? {
-        return try GraphShortestPathFinder(graph: graph).shortestPath(from: from, to: to, constraints: constraints)
+    static func shortestPath(graph: Graph, from: GraphPathElement, to: GraphPathElement, constraints: GraphPathFinderConstraints = GraphPathFinder.DefaultConstraints(), verbose: Bool) throws -> GraphPath? {
+        return try GraphShortestPathFinder(graph: graph, verbose: verbose).shortestPath(from: from, to: to, constraints: constraints)
     }
     
     private func shortestPath(from: GraphPathElement, to: GraphPathElement, constraints: GraphPathFinderConstraints) throws -> GraphPath? {

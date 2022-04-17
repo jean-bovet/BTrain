@@ -52,7 +52,8 @@ class ShortestPathComplexTests: XCTestCase {
         measure {
             _ = try? GraphShortestPathFinder.shortestPath(graph: layout,
                                                           from: ne1.elementDirectionNext,
-                                                          to: hsl_p1.elementDirectionNext)
+                                                          to: hsl_p1.elementDirectionNext,
+                                                          verbose: false)
         }
     }
     
