@@ -19,26 +19,11 @@ import OrderedCollections
 /// represents block and turnout that have a direction of travel. This means that a node alone
 /// is not enough to evaluate the distance but rather a node **and** its direction of travel is the key
 /// that is used to keep track of the distances.
+///
 /// See [Dijkstra on Wikipedia](https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm)
 final class GraphShortestPathFinder {
-
-    // TODO: implement same constraints as GraphPathFinder
-    // TODO: implement same overflow check
     
-    // The comments in this class will follow this graph as an illustration
-    //┌─────────┐                      ┌─────────┐             ┌─────────┐
-    //│   s1    │───▶  t1  ───▶  t2  ─▶│   b1    │─▶  t4  ────▶│   s2    │
-    //└─────────┘                      └─────────┘             └─────────┘
-    //     ▲            │         │                    ▲            │
-    //     │            │         │                    │            │
-    //     │            ▼         ▼                    │            │
-    //     │       ┌─────────┐                    ┌─────────┐       │
-    //     │       │   b2    │─▶ t3  ────────────▶│   b3    │       │
-    //     │       └─────────┘                    └─────────┘       ▼
-    //┌─────────┐                                              ┌─────────┐
-    //│   b5    │◀─────────────────────────────────────────────│   b4    │
-    //└─────────┘                                              └─────────┘
-
+    /// The error this class can throw
     enum PathFinderError: Error {
         case missingExitSocket(from: GraphPathElement)
         case distanceNotFound(`for`: GraphPathElement)
@@ -49,7 +34,10 @@ final class GraphShortestPathFinder {
         case invalidElement(_ element: GraphPathElement)
     }
     
-    private let graph: Graph    
+    /// The graph to analyze
+    private let graph: Graph
+    
+    /// True to output debugging information
     private let verbose: Bool
         
     /// Map of the distances between each element of the graph and the starting element.
@@ -80,6 +68,50 @@ final class GraphShortestPathFinder {
     /// nil if the algorithm is not able to reach the destination node.
     private var shortestPath: GraphPath?
     
+    // The comments in this class will follow this graph as an illustration
+    //┌─────────┐                      ┌─────────┐             ┌─────────┐
+    //│   s1    │───▶  t1  ───▶  t2  ─▶│   b1    │─▶  t4  ────▶│   s2    │
+    //└─────────┘                      └─────────┘             └─────────┘
+    //     ▲            │         │                    ▲            │
+    //     │            │         │                    │            │
+    //     │            ▼         ▼                    │            │
+    //     │       ┌─────────┐                    ┌─────────┐       │
+    //     │       │   b2    │─▶ t3  ────────────▶│   b3    │       │
+    //     │       └─────────┘                    └─────────┘       ▼
+    //┌─────────┐                                              ┌─────────┐
+    //│   b5    │◀─────────────────────────────────────────────│   b4    │
+    //└─────────┘                                              └─────────┘
+    // The length of each block and turnout are used as the "weight" of the algorithm,
+    // which is traditionally indicated on the edges:
+    //┌─────────┐                      ┌─────────┐             ┌─────────┐
+    //│   100   │───▶  15  ───▶  15  ─▶│   100   │─▶  15  ────▶│   100   │
+    //└─────────┘                      └─────────┘             └─────────┘
+    //     ▲            │         │                    ▲            │
+    //     │            │         │                    │            │
+    //     │            ▼         ▼                    │            │
+    //     │       ┌─────────┐                    ┌─────────┐       │
+    //     │       │   100   │─▶ 15  ────────────▶│   100   │       │
+    //     │       └─────────┘                    └─────────┘       ▼
+    //┌─────────┐                                              ┌─────────┐
+    //│   100   │◀─────────────────────────────────────────────│   100   │
+    //└─────────┘                                              └─────────┘
+    // The algorithm will run and produce the following output at each stage:
+    // Set distance 0.0 to 0:s1:1, with path []
+    // Set distance 15.0 to 0:t1:1, with path [0:s1:1, 0:t1:1]
+    // Set distance 15.0 to 0:t1:2, with path [0:s1:1, 0:t1:2]
+    // Set distance 30.0 to 0:t2:1, with path [0:s1:1, 0:t1:1, 0:t2:1]
+    // Set distance 30.0 to 0:t2:2, with path [0:s1:1, 0:t1:1, 0:t2:2]
+    // Set distance 115.0 to 0:b2:1, with path [0:s1:1, 0:t1:2, 0:b2:1]
+    // Set distance 130.0 to 0:b1:1, with path [0:s1:1, 0:t1:1, 0:t2:1, 0:b1:1]
+    // Set distance 45.0 to 2:t3:0, with path [0:s1:1, 0:t1:1, 0:t2:2, 2:t3:0]
+    // Set distance 145.0 to 0:b3:1, with path [0:s1:1, 0:t1:1, 0:t2:2, 2:t3:0, 0:b3:1]
+    // Set distance 130.0 to 1:t3:0, with path [0:s1:1, 0:t1:2, 0:b2:1, 1:t3:0]
+    // Set distance 145.0 to 1:t4:0, with path [0:s1:1, 0:t1:1, 0:t2:1, 0:b1:1, 1:t4:0]
+    // Set distance 160.0 to 2:t4:0, with path [0:s1:1, 0:t1:1, 0:t2:2, 2:t3:0, 0:b3:1, 2:t4:0]
+    // Set distance 245.0 to 0:s2:1, with path [0:s1:1, 0:t1:1, 0:t2:1, 0:b1:1, 1:t4:0, 0:s2:1]
+    // Shortest path is [0:s1:1, 0:t1:1, 0:t2:1, 0:b1:1, 1:t4:0, 0:s2:1]
+    // Set distance 345.0 to 0:b4:1, with path [0:s1:1, 0:t1:1, 0:t2:1, 0:b1:1, 1:t4:0, 0:s2:1, 0:b4:1]
+    // Set distance 445.0 to 0:b5:1, with path [0:s1:1, 0:t1:1, 0:t2:1, 0:b1:1, 1:t4:0, 0:s2:1, 0:b4:1, 0:b5:1]
     private init(graph: Graph, verbose: Bool) {
         self.graph = graph
         self.verbose = verbose
@@ -106,7 +138,12 @@ final class GraphShortestPathFinder {
         // Visit the graph and assign distances to all the nodes until the `to` node is reached
         try visitGraph(from: from, to: to, currentPath: GraphPath([from]), constraints: constraints)
         
-        printDistances()
+        if verbose {
+            BTLogger.debug("Distances:")
+            for item in distances.sorted(by: { $0.key.node.identifier.uuid < $1.key.node.identifier.uuid }) {
+                BTLogger.debug("\(item.key) = \(item.value)")
+            }
+        }
                 
         return shortestPath
     }
@@ -115,18 +152,8 @@ final class GraphShortestPathFinder {
         distances[to] = distance
         paths[to] = path
         evaluatedButNotVisitedElements.append(to)
-    }
-    
-    private func printDistances() {
-        guard verbose else {
-            return
-        }
-        
-        // Now go from to back until from is reached, following the nodes
-        // with the smallest distance.
-        print("Distances:")
-        for item in distances.sorted(by: { $0.key.node.identifier.uuid < $1.key.node.identifier.uuid }) {
-            print("\(item.key) = \(item.value)")
+        if verbose {
+            BTLogger.debug("Set distance \(distance) to \(to.description), with path \(path.elements.description)")
         }
     }
         
@@ -176,7 +203,7 @@ final class GraphShortestPathFinder {
         }
                 
         if verbose {
-            print("Shortest distance element is \(shortestDistanceElement) with distance \(distances[shortestDistanceElement]!)")
+            BTLogger.debug("Shortest distance element is \(shortestDistanceElement) with distance \(distances[shortestDistanceElement]!)")
         }
 
         // Retrieve the shortest path for the shortest distance element.
@@ -249,7 +276,9 @@ final class GraphShortestPathFinder {
 
             // Apply any constraints to this element, in order to skip it if necessary
             if !constraints.shouldInclude(node: elementConfiguration.node, currentPath: path, to: to) {
-                BTLogger.debug("Element \(elementConfiguration) should not be included, will not include it")
+                if verbose {
+                    BTLogger.debug("Element \(elementConfiguration) should not be included, will not include it")
+                }
                 return
             }
 
@@ -265,6 +294,9 @@ final class GraphShortestPathFinder {
             // If the element is also the destination element, remember the shortest path
             if elementConfiguration == to {
                 shortestPath = path.appending(elementConfiguration)
+                if verbose {
+                    BTLogger.debug("Shortest path is \(shortestPath!.elements.description)")
+                }
             }
         }
     }    

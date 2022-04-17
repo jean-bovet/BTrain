@@ -89,4 +89,12 @@ class ShortestPathTests: XCTestCase {
         try layout.assertShortPath(("s1", .next), ("s2", .next), ["0:s1:1", "0:t1:1", "0:t2:2", "2:t3:0", "0:b3:1", "2:t4:0", "0:s2:1"])
     }
 
+    func testPathWithDisabledBlock() throws {
+        let layout = LayoutLoopWithStation().newLayout()
+        let b1 = layout.block(named: "b1")
+        b1.enabled = false
+        
+        try layout.assertShortPath(("s1", .next), ("s2", .next), ["0:s1:1", "0:t1:1", "0:t2:2", "2:t3:0", "0:b3:1", "2:t4:0", "0:s2:1"])
+    }
+
 }
