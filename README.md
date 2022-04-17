@@ -33,16 +33,16 @@ An embedded Marklin Central 3 station simulator allows BTrain to simulate a layo
 **Features**
 
 - Easy to use layout editor where blocks and turnouts can be added in one click and linked together by dragging and dropping links between them.
-- Locomotive speed, acceleration and direction control
-- Locomotive speed measurements
-- Turnouts state control
-- Automatic (or manual) routing management of one or more trains simultaneously with collision avoidance
+- Locomotive speed, acceleration and direction control.
+- Locomotive speed measurements.
+- Turnouts state control.
+- Automatic or manual routing management of one or more trains simultaneously with collision avoidance and shortest path detection.
 - Take into account the length of the train, block, turnout, and feedback position to accurately understand the location of each train to reserve the necessary block to avoid a collision.
-- Visual feedback of the exact location of the train, including the locomotive and its wagons, within blocks
-- Unexpected feedback detection
-- Automatic discovery of locomotives
-- Support for Marklin Central Station 3
-- Layout simulator to simulate the movement of the trains, including feedbacks and turnouts, without having to connect to a real Central Station 3
+- Visual feedback of the exact location of the train, including the locomotive and its wagons, within blocks.
+- Unexpected feedback detection.
+- Automatic discovery of locomotives.
+- Support for Marklin Central Station 3.
+- Layout simulator to simulate the movement of the trains, including feedbacks and turnouts, without having to connect to a real Central Station 3.
 
 **Known Issues**
 
