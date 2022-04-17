@@ -80,7 +80,7 @@ final class GraphShortestPathFinder {
     /// nil if the algorithm is not able to reach the destination node.
     private var shortestPath: GraphPath?
     
-    private init(graph: Graph, verbose: Bool = false) {
+    private init(graph: Graph, verbose: Bool = true) {
         self.graph = graph
         self.verbose = verbose
     }
@@ -103,7 +103,7 @@ final class GraphShortestPathFinder {
         try visitGraph(from: from, to: to, currentPath: GraphPath([from]), constraints: constraints)
         
         printDistances()
-        
+                
         return shortestPath
     }
     
@@ -114,6 +114,7 @@ final class GraphShortestPathFinder {
     }
     
     private func printDistances() {
+        // TODO: use settings for verbose
         guard verbose else {
             return
         }
@@ -139,12 +140,6 @@ final class GraphShortestPathFinder {
             return
         }
                 
-        // TODO: constraints
-//        if !constraints.shouldInclude(node: from.node, currentPath: currentPath, to: to) {
-//            debug("Node \(node) should not be included, backtracking")
-//            return nil
-//        }
-
         // Remember this element as `visited` and remove it from the list of evaluated
         // elements that have not been visited yet.
         visitedElements.insert(from)
@@ -152,10 +147,12 @@ final class GraphShortestPathFinder {
 
         // Find out if there is an element reachable from `from`.
         // For example: following "s1' in the next direction, the next element is "t1".
+        // TODO: better comment with help of ASCII art to understand exactly what is going on!
         if let nextElement = try nextElement(from: from) {
             guard let fromNodeDistance = distances[from] else {
                 throw PathFinderError.distanceNotFound(for: from)
             }
+            
             // Compute the new distance to the adjacent node
             // For example: if nextElement is "t1", the distance will be distance(s1) + distance(t1).
             // In effect, the distance is the length of each node (which is actually the length of each
@@ -164,7 +161,7 @@ final class GraphShortestPathFinder {
             let nextElementDistance = fromNodeDistance + nextElement.node.weight
             
             // Assign to all the adjacent nodes of `nextElement` the distance of `nextElement`
-            assignDistanceToAdjacentNodesOf(element: nextElement, to: to, distance: nextElementDistance, path: currentPath)
+            assignDistanceToAdjacentNodesOf(element: nextElement, to: to, distance: nextElementDistance, path: currentPath, constraints: constraints)
         }
         
         // Pick the node with the smallest distance
@@ -210,7 +207,7 @@ final class GraphShortestPathFinder {
         return NextElement(node: node, entrySocket: entrySocket)
     }
     
-    private func assignDistanceToAdjacentNodesOf(element: NextElement, to: GraphPathElement, distance: Double, path: GraphPath) {
+    private func assignDistanceToAdjacentNodesOf(element: NextElement, to: GraphPathElement, distance: Double, path: GraphPath, constraints: GraphPathFinderConstraints) {
         for exitSocket in element.node.reachableSockets(from: element.entrySocket) {
             let adjacentElement = GraphPathElement.between(element.node, element.entrySocket, exitSocket)
             
@@ -220,6 +217,12 @@ final class GraphShortestPathFinder {
                     shortestPath = path.appending(adjacentElement)
                 }
                 continue
+            }
+
+            // Apply any constraints to the adjacent element, in order to skip it if necessary
+            if !constraints.shouldInclude(node: adjacentElement.node, currentPath: path, to: to) {
+                BTLogger.debug("Element \(adjacentElement) should not be included, will not include it")
+                return
             }
 
             // If the adjacent element already has a distance assigned to it and

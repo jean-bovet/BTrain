@@ -75,8 +75,7 @@ struct GraphPathFinder: GraphPathFinding {
 
     /// Returns the shortest path between two nodes.
     func shortestPath(graph: Graph, from: GraphPathElement, to: GraphPathElement, constraints: GraphPathFinderConstraints = DefaultConstraints()) throws -> GraphPath? {
-        // TODO: plugin the constraints
-        return try GraphShortestPathFinder.shortestPath(graph: graph, from: from, to: to)
+        return try GraphShortestPathFinder.shortestPath(graph: graph, from: from, to: to, constraints: constraints)
     }
     
     /// Returns a path between two nodes.

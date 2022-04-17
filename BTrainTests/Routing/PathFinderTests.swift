@@ -162,4 +162,18 @@ extension Layout {
         return try shortestPath(for: train, from: from, to: to, pathFinder: gl, constraints: gl.constraints)
     }
 
+    func assertShortPath(_ from: (String, Direction), _ to: (String, Direction), _ expectedPath: [String]) throws {
+        // Note: it is important to remove all the trains from the layout to avoid unexpected reserved blocks!
+        let layout = self.removeTrains()
+        
+        // Let's use a brand new train
+        let train = Train(id: Identifier<Train>(uuid: "foo"), name: "foo", address: 0)
+
+        let fromBlock = layout.block(named: from.0)
+        let toBlock = layout.block(named: to.0)
+
+        let path = try layout.shortestPath(for: train, from: (fromBlock, from.1), to: (toBlock, to.1))!
+        XCTAssertEqual(path.toStrings, expectedPath)
+    }
+
 }
