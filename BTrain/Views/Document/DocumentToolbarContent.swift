@@ -31,7 +31,7 @@ struct DocumentToolbarContent: ToolbarContent {
 
             Spacer()
 
-            ToolDebugCommandsView(document: document)
+            DeveloperCommandsView(document: document)
 
             if let switchboard = document.switchboard, document.selectedView == .overview {
                 SwitchboarSettingsButton(document: document)
@@ -151,16 +151,21 @@ struct CommandSelectedView: View {
     }
 }
 
-struct ToolDebugCommandsView: View {
+struct DeveloperCommandsView: View {
     
     @ObservedObject var document: LayoutDocument
-    
+    @AppStorage("switchboardWhiteBackground") var switchboardWhiteBackground = false
+
     var body: some View {
         if document.showDebugModeControls {
             Menu("􀤊") {
                 Button("Repair Layout") {
                     LayoutDiagnostic(layout: document.layout).repair()
                 }
+                
+                Divider()
+                
+                Toggle("White Background", isOn: $switchboardWhiteBackground)
             }
         }
     }    

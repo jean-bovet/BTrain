@@ -24,6 +24,18 @@ struct SwitchboardContainerView: View {
     
     @ObservedObject var state: SwitchBoard.State
     
+    @AppStorage("switchboardWhiteBackground") var whiteBackground = false
+        
+    /// Background color of the switchboard, which can be white if the appropriate developer flag
+    /// is turned on in order to to proper screenshots.
+    var backgroundColor: Color {
+        if whiteBackground {
+            return .white
+        } else {
+            return Color(NSColor.windowBackgroundColor)
+        }
+    }
+    
     var body: some View {
         VStack(spacing: 0) {
             VStack(spacing: 0) {
@@ -42,7 +54,7 @@ struct SwitchboardContainerView: View {
                     } else {
                         SwitchBoardView(switchboard: switchboard, state: state, layout: layout, layoutController: layoutController, gestureEnabled: true)
                     }
-                }.background(Color(NSColor.windowBackgroundColor))
+                }.background(backgroundColor)
             }
             if layout.runtimeError != nil {
                 SwitchboardRuntimeErrorView(debugger: document.layoutController.debugger, error: $layout.runtimeError)
