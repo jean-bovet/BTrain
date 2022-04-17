@@ -308,9 +308,10 @@ final class BlockShape: Shape, DraggableShape, ConnectableShape {
         var partsCenter = [CGPoint]()
         for index in 0...trainCellCount {
             if let part = parts[index] {
-                let rect = trainCellFrame(at: index)
-                let path: CGPath
-                path = factory.path(for: part, center: rect.center, rotationCenter: center, rotationAngle: rotationAngle)
+                let rect = trainCellPath(at: index)
+                let center = rect.boundingBox.center
+                let rotationAngle = directionOfTravel() == .next ? rotationAngle : rotationAngle + .pi // take into account the direction of travel of the train
+                let path = factory.path(for: part, center: center, rotationCenter: center, rotationAngle: rotationAngle)
                 ctx.addPath(path)
                 ctx.fillPath()
                 
@@ -509,6 +510,12 @@ extension BlockShape {
         return rect
     }
 
+    func trainCellPath(at index: Int) -> CGPath {
+        let rect = trainCellFrame(at: index)
+        var t = CGAffineTransform(translationX: center.x, y: center.y).rotated(by: rotationAngle).translatedBy(x: -center.x, y: -center.y)
+        return CGPath(rect: rect, transform: &t)
+    }
+
     func feedbackCellFrame(at index: Int) -> CGRect {
         let x = leftSide.x + edge + arrowLength + CGFloat(index) * feedbackWidth + CGFloat(index + 1) * trainSpaceWidth
         let y = center.y-size.height/2
@@ -532,29 +539,6 @@ extension BlockShape {
         path.addPath(CGPath(rect: CGRect(x: rect.origin.x, y: rect.origin.y + rect.height * 3/4, width: rect.width, height: 1), transform: &t))
         path.addPath(CGPath(rect: CGRect(x: rect.origin.x, y: rect.origin.y + rect.height * 1/4, width: rect.width, height: -1), transform: &t))
         return path
-    }
-
-    func trainPath(at index: Int) -> CGPath {
-        let rect = trainCellFrame(at: index)
-        var t = CGAffineTransform(translationX: center.x, y: center.y).rotated(by: rotationAngle).translatedBy(x: -center.x, y: -center.y)
-        let path = CGPath(ellipseIn: rect, transform: &t)
-        return path
-    }
-    
-    func trainCellPath(at index: Int) -> CGPath {
-        let rect = trainCellFrame(at: index)
-        var t = CGAffineTransform(translationX: center.x, y: center.y).rotated(by: rotationAngle).translatedBy(x: -center.x, y: -center.y)
-        return CGPath(rect: rect, transform: &t)
-    }
-
-    func trainCellPath(at location: CGPoint) -> (Int, CGPath)? {
-        for index in 0..<trainCellCount {
-            let path = trainCellPath(at: index)
-            if path.contains(location) {
-                return (index, path)
-            }
-        }
-        return nil
     }
 
 }

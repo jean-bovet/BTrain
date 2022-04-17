@@ -91,8 +91,8 @@ class SwitchboardTests: XCTestCase {
         XCTAssertEqual(train.blockId, b1.block.id)
         XCTAssertEqual(train.position, 0)
         
-        let c = b1.trainPath(at: 0).boundingBox.center
-        let c2 = b1.trainPath(at: 1).boundingBox.center
+        let c = b1.trainCellPath(at: 0).boundingBox.center
+        let c2 = b1.trainCellPath(at: 1).boundingBox.center
 
         dragOp.onDragChanged(location: c, translation: .zero)
         dragOp.onDragChanged(location: c2, translation: c.distance(to: c2))
@@ -113,8 +113,8 @@ class SwitchboardTests: XCTestCase {
         try layout.setTrainToBlock(train.id, b1.block.id, direction: .next)
         XCTAssertEqual(train.blockId, b1.block.id)
         
-        let c = b1.trainPath(at: 0).boundingBox.center
-        let c2 = b2.trainPath(at: 0).boundingBox.center
+        let c = b1.trainCellPath(at: 0).boundingBox.center
+        let c2 = b2.trainCellPath(at: 0).boundingBox.center
 
         dragOp.onDragChanged(location: c, translation: .zero)
         dragOp.onDragChanged(location: c2, translation: c.distance(to: c2))
