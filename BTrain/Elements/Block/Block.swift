@@ -144,10 +144,18 @@ final class Block: Element, ObservableObject {
     @Published var entryFeedbackPrevious: Identifier<Feedback>?
     @Published var brakeFeedbackPrevious: Identifier<Feedback>?
     @Published var stopFeedbackPrevious: Identifier<Feedback>?
-
+    
     // Optional block-specific braking speed. If nil, the default braking speed is used
     @Published var brakingSpeed: TrainSpeed.UnitKph?
+
+    enum SpeedLimit: String, Codable, CaseIterable {
+        case unlimited
+        case limited
+    }
     
+    /// Speed limit for this block, defaults to unlimited
+    @Published var speedLimit: SpeedLimit = .unlimited
+
     init(id: Identifier<Block>, name: String = "") {
         self.id = id
         self.name = name
@@ -165,7 +173,7 @@ extension Block: Codable {
         case id, enabled, name, type, length, waitingTime, reserved, train, feedbacks,
              entryFeedbackNext, brakeFeedbackNext, stopFeedbackNext,
              entryFeedbackPrevious, brakeFeedbackPrevious, stopFeedbackPrevious,
-             brakingSpeed,
+             brakingSpeed, speedLimit,
              center, angle
     }
 
@@ -198,6 +206,7 @@ extension Block: Codable {
         self.stopFeedbackPrevious = try container.decodeIfPresent(Identifier<Feedback>.self, forKey: CodingKeys.stopFeedbackPrevious)
         
         self.brakingSpeed = try container.decodeIfPresent(TrainSpeed.UnitKph.self, forKey: CodingKeys.brakingSpeed)
+        self.speedLimit = try container.decodeIfPresent(SpeedLimit.self, forKey: CodingKeys.speedLimit) ?? .unlimited
     }
     
     func encode(to encoder: Encoder) throws {
@@ -221,6 +230,7 @@ extension Block: Codable {
         try container.encode(stopFeedbackPrevious, forKey: CodingKeys.stopFeedbackPrevious)
 
         try container.encode(brakingSpeed, forKey: CodingKeys.brakingSpeed)
+        try container.encode(speedLimit, forKey: CodingKeys.speedLimit)
 
         try container.encode(center, forKey: CodingKeys.center)
         try container.encode(rotationAngle, forKey: CodingKeys.angle)

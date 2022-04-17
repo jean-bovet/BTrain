@@ -22,6 +22,14 @@ struct BlockSpeedView: View {
                 TextField("Braking:", value: speed, format: .number, prompt: Text("\(LayoutFactory.DefaultBrakingSpeed)"))
                     .unitStyle("kph")
             }
+            
+            UndoProvider($block.speedLimit) { speedLimit in
+                Picker("Speed Limit:", selection: speedLimit) {
+                    ForEach(Block.SpeedLimit.allCases, id:\.self) { speedLimit in
+                        Text(speedLimit.rawValue).tag(speedLimit as Block.SpeedLimit)
+                    }
+                }.fixedSize()
+            }
         }
     }
 }

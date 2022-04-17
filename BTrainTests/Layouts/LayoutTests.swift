@@ -159,4 +159,32 @@ class LayoutTests: XCTestCase {
         doc.disconnect()
     }
   
+    func testBlockSpeedLimit() throws {
+        let layout = LayoutLoopWithStation().newLayout()
+        let train = layout.trains[0]
+        let s1 = layout.block(named: "s1")
+        try layout.setTrainToBlock(train.id, s1.id, direction: .next)
+        
+        XCTAssertEqual(layout.reservation.maximumSpeedAllowed(train: train), LayoutFactory.DefaultMaximumSpeed)
+        
+        s1.speedLimit = .limited
+        XCTAssertEqual(layout.reservation.maximumSpeedAllowed(train: train), LayoutFactory.DefaultLimitedSpeed)
+    }
+
+    func testTurnoutSpeedLimit() throws {
+        let doc = LayoutDocument(layout: LayoutLoopWithStation().newLayout())
+        let layout = doc.layout
+        let train = layout.trains[0]
+        let s1 = layout.block(named: "s1")
+        try layout.setTrainToBlock(train.id, s1.id, direction: .next)
+        
+        XCTAssertEqual(layout.reservation.maximumSpeedAllowed(train: train), LayoutFactory.DefaultMaximumSpeed)
+
+        let b2 = layout.block(named: "b2")
+        let route = layout.newRoute(id: "s1-b2", [(s1.id.uuid, .next), (b2.id.uuid, .next)])
+        
+        try doc.start(train: train.id, withRoute: route.id, destination: .init(b2.id, direction: .next))
+        
+        XCTAssertEqual(layout.reservation.maximumSpeedAllowed(train: train), LayoutFactory.DefaultLimitedSpeed)
+    }
 }

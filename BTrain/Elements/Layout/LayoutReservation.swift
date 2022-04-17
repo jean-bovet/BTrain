@@ -277,7 +277,7 @@ final class LayoutReservation {
     }
         
     // This methods frees all the reserved elements except the block in which the locomotive is located
-    public func freeElements(train: Train) throws {
+    func freeElements(train: Train) throws {
         layout.blockMap.values
             .filter { $0.reserved?.trainId == train.id }
             .forEach { block in
@@ -291,16 +291,20 @@ final class LayoutReservation {
         layout.transitions.filter { $0.reserved == train.id }.forEach { $0.reserved = nil; $0.train = nil }
     }
     
-    // This method returns the maximum speed allowed by all the elements occupied by
-    // the specified train, which includes blocks and turnouts.
+    /// This method returns the maximum speed allowed by all the elements occupied by
+    /// the specified train, which includes blocks and turnouts.
     func maximumSpeedAllowed(train: Train) -> TrainSpeed.UnitKph {
         var maximumSpeedAllowed: TrainSpeed.UnitKph = LayoutFactory.DefaultMaximumSpeed
-        // TODO: block speed limit
-//        layout.blockMap.values
-//            .filter { $0.reserved?.trainId == train.id }
-//            .forEach { block in
-//
-//            }
+        
+        layout.blocks.filter({ $0.reserved?.trainId == train.id }).forEach { block in
+            switch block.speedLimit {
+            case .unlimited:
+                break
+            case .limited:
+                maximumSpeedAllowed = min(maximumSpeedAllowed, LayoutFactory.DefaultLimitedSpeed)
+            }
+        }
+        
         layout.turnouts.filter { $0.reserved?.train == train.id }.forEach { turnout in
             if let speedLimit = turnout.stateSpeedLimit[turnout.state] {
                 switch speedLimit {
