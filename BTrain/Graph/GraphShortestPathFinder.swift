@@ -85,7 +85,7 @@ final class GraphShortestPathFinder {
         self.verbose = verbose
     }
         
-    /// Find and return the shortest path between to element of the graph.
+    /// Find and return the shortest path between two element of the graph.
     /// - Parameters:
     ///   - graph: the graph
     ///   - from: the starting element
@@ -96,7 +96,11 @@ final class GraphShortestPathFinder {
         return try GraphShortestPathFinder(graph: graph, verbose: verbose).shortestPath(from: from, to: to, constraints: constraints)
     }
     
+    // For example:
+    // from = 0:s1:1 (which means, block "s1" with entry socket 0 and exit socket 1, indicating a natural direction of "next" in the block)
+    // to = 0:s2:1
     private func shortestPath(from: GraphPathElement, to: GraphPathElement, constraints: GraphPathFinderConstraints) throws -> GraphPath? {
+        // Set the distance of the starting element `from` to 0 as well as an empty path.
         setDistance(0, to: from, path: GraphPath([]))
         
         // Visit the graph and assign distances to all the nodes until the `to` node is reached
@@ -114,7 +118,6 @@ final class GraphShortestPathFinder {
     }
     
     private func printDistances() {
-        // TODO: use settings for verbose
         guard verbose else {
             return
         }
@@ -140,15 +143,16 @@ final class GraphShortestPathFinder {
             return
         }
                 
-        // Remember this element as `visited` and remove it from the list of evaluated
-        // elements that have not been visited yet.
+        // Remember this element as `visited`
         visitedElements.insert(from)
+        
+        // And remove it from the list of evaluated elements that have not been visited.
         evaluatedButNotVisitedElements.remove(from)
 
         // Find out if there is an element reachable from `from`.
-        // For example: following "s1' in the next direction, the next element is "t1".
-        // TODO: better comment with help of ASCII art to understand exactly what is going on!
-        if let nextElement = try nextElement(from: from) {
+        // For example: with from = 0:s1:1, the next element is "t1" with entry socket 0.
+        if let nextElement = try nextElement(of: from) {
+            // Retrieve the distance of the `from` node.
             guard let fromNodeDistance = distances[from] else {
                 throw PathFinderError.distanceNotFound(for: from)
             }
@@ -161,19 +165,22 @@ final class GraphShortestPathFinder {
             let nextElementDistance = fromNodeDistance + nextElement.node.weight
             
             // Assign to all the adjacent nodes of `nextElement` the distance of `nextElement`
-            assignDistanceToAdjacentNodesOf(element: nextElement, to: to, distance: nextElementDistance, path: currentPath, constraints: constraints)
+            assignDistanceToPathConfigurationsOf(element: nextElement, to: to, distance: nextElementDistance, path: currentPath, constraints: constraints)
         }
         
-        // Pick the node with the smallest distance
+        // Now, from all the elements that have been evaluated, that is, assigned a distance, pick the element
+        // that has the shortest distance. In our example, from s1, we evaluated "0:t1:1" and "0:t1:2".
         guard let shortestDistanceElement = evaluatedButNotVisitedElements.sorted(by: { distances[$0]! < distances[$1]! }).first else {
             // This happens when there are no edges out of the `from` node or when all the adjacent nodes of `from` have been evaluated.
             return
         }
                 
         if verbose {
-            print("Smallest distance node is \(shortestDistanceElement) with distance \(distances[shortestDistanceElement]!)")
+            print("Shortest distance element is \(shortestDistanceElement) with distance \(distances[shortestDistanceElement]!)")
         }
 
+        // Retrieve the shortest path for the shortest distance element.
+        // It should exist because we computed it in `assignDistanceToPathConfigurationsOf`.
         guard let path = paths[shortestDistanceElement] else {
             throw PathFinderError.pathNotFound(for: shortestDistanceElement)
         }
@@ -187,12 +194,14 @@ final class GraphShortestPathFinder {
         let entrySocket: SocketId
     }
     
-    private func nextElement(from: GraphPathElement) throws -> NextElement? {
-        guard let fromExitSocket = from.exitSocket else {
-            throw PathFinderError.missingExitSocket(from: from)
+    /// Returns the element following the specified `element`. There is always zero or one element following
+    /// an element (zero in case of a siding block).
+    private func nextElement(of element: GraphPathElement) throws -> NextElement? {
+        guard let fromExitSocket = element.exitSocket else {
+            throw PathFinderError.missingExitSocket(from: element)
         }
         
-        guard let edge = graph.edge(from: from.node, socketId: fromExitSocket) else {
+        guard let edge = graph.edge(from: element.node, socketId: fromExitSocket) else {
             return nil
         }
         
@@ -207,36 +216,56 @@ final class GraphShortestPathFinder {
         return NextElement(node: node, entrySocket: entrySocket)
     }
     
-    private func assignDistanceToAdjacentNodesOf(element: NextElement, to: GraphPathElement, distance: Double, path: GraphPath, constraints: GraphPathFinderConstraints) {
+    /// Assign the distance computed for an element to all the paths that this element can produce to the next element(s).
+    ///
+    /// For example, starting our example with element "0:s1:1", the next element `element` is "t1", which is a turnout. This turnout
+    /// can lead to two different elements, based on its configuration:
+    /// - configuration "0:t1:1" leads to "t2"
+    /// - configuration "0:t1:2" leads to "b2".
+    ///
+    /// We need to assign the distance computed so far to each of these configurations. Later on, the algorithm will pick the node configuration
+    /// with the shortest distance and will start again from there, to either "t2" or "b2.
+    ///
+    /// - Parameters:
+    ///   - element: the element whose configurations should have a distance assigned to
+    ///   - to: the destination node
+    ///   - distance: the shortest distance up to `element`
+    ///   - path: the current shortest path
+    ///   - constraints: the constraints
+    private func assignDistanceToPathConfigurationsOf(element: NextElement, to: GraphPathElement, distance: Double, path: GraphPath, constraints: GraphPathFinderConstraints) {
         for exitSocket in element.node.reachableSockets(from: element.entrySocket) {
-            let adjacentElement = GraphPathElement.between(element.node, element.entrySocket, exitSocket)
+            // Build up a particular element configuration using the specified exitSocket.
+            // For example, starting with element "0:t1", we will have:
+            // 0:t1:1 and 0:t1:2
+            let elementConfiguration = GraphPathElement.between(element.node, element.entrySocket, exitSocket)
             
             // Skip any element that has been visited before
-            guard !visitedElements.contains(adjacentElement) else {
-                if adjacentElement == to && shortestPath == nil {
-                    shortestPath = path.appending(adjacentElement)
+            guard !visitedElements.contains(elementConfiguration) else {
+                if elementConfiguration == to && shortestPath == nil {
+                    shortestPath = path.appending(elementConfiguration)
                 }
                 continue
             }
 
-            // Apply any constraints to the adjacent element, in order to skip it if necessary
-            if !constraints.shouldInclude(node: adjacentElement.node, currentPath: path, to: to) {
-                BTLogger.debug("Element \(adjacentElement) should not be included, will not include it")
+            // Apply any constraints to this element, in order to skip it if necessary
+            if !constraints.shouldInclude(node: elementConfiguration.node, currentPath: path, to: to) {
+                BTLogger.debug("Element \(elementConfiguration) should not be included, will not include it")
                 return
             }
 
-            // If the adjacent element already has a distance assigned to it and
-            // this distance is still the shortest distance, do nothing.
-            if let existingDistance = distances[adjacentElement], existingDistance <= distance {
+            // If this element already has a distance assigned to it and this distance is still the shortest distance,
+            // do nothing and continue to the next configuration possible.
+            if let existingDistance = distances[elementConfiguration], existingDistance <= distance {
                 continue
             }
                                         
-            // Otherwise, assign the new distance to the adjacent node
-            if adjacentElement == to {
-                shortestPath = path.appending(adjacentElement)
+            // Otherwise, assign the new distance to the element
+            setDistance(distance, to: elementConfiguration, path: path.appending(elementConfiguration))
+            
+            // If the element is also the destination element, remember the shortest path
+            if elementConfiguration == to {
+                shortestPath = path.appending(elementConfiguration)
             }
-
-            setDistance(distance, to: adjacentElement, path: path.appending(adjacentElement))
         }
     }    
     
