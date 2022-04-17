@@ -297,13 +297,15 @@ final class BlockShape: Shape, DraggableShape, ConnectableShape {
                             text: label, color: color, fontSize: fontSize, borderColor: borderColor, backgroundColor: backgroundColor)
     }
 
-    func drawTrainParts(ctx: CGContext) {
+    func drawTrainParts(ctx: CGContext, lineBetweenParts: Bool = false) {
         guard let parts = block.train?.parts, let train = train else {
             return
         }
         
         let factory = TrainPathFactory(shapeContext: shapeContext)
         ctx.setFillColor(shapeContext.trainColor(train))
+        
+        var partsCenter = [CGPoint]()
         for index in 0...trainCellCount {
             if let part = parts[index] {
                 let rect = trainCellFrame(at: index)
@@ -311,7 +313,16 @@ final class BlockShape: Shape, DraggableShape, ConnectableShape {
                 path = factory.path(for: part, center: rect.center, rotationCenter: center, rotationAngle: rotationAngle)
                 ctx.addPath(path)
                 ctx.fillPath()
+                
+                partsCenter.append(path.boundingBox.center)
             }
+        }
+        
+        if !partsCenter.isEmpty && lineBetweenParts {
+            ctx.addLines(between: partsCenter)
+            ctx.setStrokeColor(shapeContext.pathColor(reserved != nil, train: block.train != nil))
+            ctx.setLineWidth(shapeContext.trackWidth)
+            ctx.strokePath()
         }
     }
     

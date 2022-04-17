@@ -31,7 +31,7 @@ extension BlockShape: EphemeralDragProvider {
             
             let ctx = context.cgContext
             ctx.with {
-                drawTrainParts(ctx: ctx)
+                drawTrainParts(ctx: ctx, lineBetweenParts: true)
             }
             
             ctx.with {
