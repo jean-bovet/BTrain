@@ -67,7 +67,7 @@ class ClientConnection {
 
                     let msg = MarklinCANMessage.decode(from: [UInt8](slice))
                     if let description = MarklinCANMessagePrinter.debugDescription(msg: msg) {
-                        BTLogger.debug("[Client] < \(description)")
+                        BTLogger.network.debug("[Client] < \(description)")
                     }
                     self?.didReceiveCallback?(msg)
                 }
@@ -91,7 +91,7 @@ class ClientConnection {
     func send(data: Data, priority: Bool, onCompletion: @escaping () -> Void) {
         dataQueue.schedule(priority: priority) { completion in
             guard self.nwConnection.state == .ready else {
-                BTLogger.debug("[Client] Connection is not ready, message is discarded but completion block called.")
+                BTLogger.network.debug("[Client] Connection is not ready, message is discarded but completion block called.")
                 completion()
                 return
             }
@@ -99,7 +99,7 @@ class ClientConnection {
             self.nwConnection.send(content: data, completion: .contentProcessed( { error in
                 let msg = MarklinCANMessage.decode(from: [UInt8](data))
                 if let description = MarklinCANMessagePrinter.debugDescription(msg: msg) {
-                    BTLogger.debug("[Client] > \(description)")
+                    BTLogger.network.debug("[Client] > \(description)")
                 }
 
                 DispatchQueue.main.async {
@@ -120,18 +120,18 @@ class ClientConnection {
     }
 
     func stop() {
-        BTLogger.debug("[Client] will stop")
+        BTLogger.network.debug("[Client] will stop")
         nwConnection.cancel()
     }
     
     private func connectionDidFail(error: Error) {
-        BTLogger.debug("[Client] did fail, error: \(error)")
+        BTLogger.network.error("[Client] did fail, error: \(error.localizedDescription)")
         didFailCallback?(error)
         stop()
     }
     
     private func connectionDidEnd() {
-        BTLogger.debug("[Client] did end")
+        BTLogger.network.debug("[Client] did end")
         stop()
     }
     

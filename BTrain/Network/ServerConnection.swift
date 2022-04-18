@@ -32,7 +32,7 @@ final class ServerConnection {
     var receiveMessageCallback: ((Command) -> Void)? = nil
     
     func start() {
-        NSLog("connection \(id) will start")
+        BTLogger.network.debug("connection \(self.id) will start")
         connection.stateUpdateHandler = { [weak self] state in
             self?.stateDidChange(to: state)
         }
@@ -45,7 +45,7 @@ final class ServerConnection {
         case .waiting(let error):
             connectionDidFail(error: error)
         case .ready:
-            NSLog("connection \(id) ready")
+            BTLogger.network.debug("connection \(self.id) ready")
         case .failed(let error):
             connectionDidFail(error: error)
         default:
@@ -70,7 +70,7 @@ final class ServerConnection {
             if let data = data, !data.isEmpty {
                 let msg = MarklinCANMessage.decode(from: [UInt8](data))
                 if let description = MarklinCANMessagePrinter.debugDescription(msg: msg) {
-                    BTLogger.debug("[Server] < \(description) - \(sSelf.id)")
+                    BTLogger.network.debug("[Server] < \(description) - \(sSelf.id)")
                 }
                 let cmd = Command.from(message: msg)
                 sSelf.receiveMessageCallback?(cmd)
@@ -91,7 +91,7 @@ final class ServerConnection {
         self.connection.send(content: data, completion: .contentProcessed( { error in
             let msg = MarklinCANMessage.decode(from: [UInt8](data))
             if let description = MarklinCANMessagePrinter.debugDescription(msg: msg) {
-                BTLogger.debug("[Server] > \(description) - \(self.id)")
+                BTLogger.network.debug("[Server] > \(description) - \(self.id)")
             }
 
             DispatchQueue.main.async {
@@ -106,17 +106,17 @@ final class ServerConnection {
     }
     
     func stop() {
-        BTLogger.debug("[Server] \(id) will stop")
+        BTLogger.network.debug("[Server] \(self.id) will stop")
         stop(error: nil)
     }
         
     private func connectionDidFail(error: Error) {
-        BTLogger.debug("[Server] \(id) did fail, error: \(error)")
+        BTLogger.network.error("[Server] \(self.id) did fail, error: \(error.localizedDescription)")
         stop(error: error)
     }
     
     private func connectionDidEnd() {
-        BTLogger.debug("[Server] \(id) did end")
+        BTLogger.network.debug("[Server] \(self.id) did end")
         stop(error: nil)
     }
     

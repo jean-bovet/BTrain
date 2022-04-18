@@ -11,9 +11,30 @@
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 import Foundation
+import OSLog
 
+/// Manages all the logging happening inside BTrain.
+///
+/// The underlying implementation uses the unified [OS logging system](https://developer.apple.com/documentation/os/logging).
 final class BTLogger {
+    
+    /// Return a new network logger instance
+    static private var newNetworkLogger: Logger {
+        SettingsKeys.bool(forKey: SettingsKeys.logCategoryNetwork) ? Logger(subsystem: "ch.arizona-software.BTrain", category: "network") : Logger(OSLog.disabled)
+    }
         
+    /// The public network logger instance
+    static var network = newNetworkLogger
+    
+    static let controller = Logger(subsystem: "ch.arizona-software.BTrain", category: "controller")
+    
+    static let router = Logger(subsystem: "ch.arizona-software.BTrain", category: "router")
+    
+    /// Re-created the network logger using the latest settings
+    static func updateNetworkLogger() {
+        network = newNetworkLogger
+    }
+    
     static func error(_ msg: String) {
         NSLog("⛔️ \(msg)")
     }

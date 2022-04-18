@@ -13,7 +13,7 @@
 import XCTest
 @testable import BTrain
 
-class CANMessageTests: XCTestCase {
+class CANMessageTests: BTTestCase {
 
     func testEnable() {
         assert(msg: MarklinCANMessageFactory.go(),
@@ -66,6 +66,7 @@ class CANMessageTests: XCTestCase {
     }
 
     func testUnknown() {
+        UserDefaults.standard.set(true, forKey: SettingsKeys.logUnknownMessages)
         let byteArray: [UInt8] = [ 0x00, 0x20, 0x93, 0x70, 0x08, 0x00, 0x01, 0x00, 0x0e, 0x00, 0x01, 0xff, 0xff ]
         let msg = MarklinCANMessage.decode(from: byteArray)
         let string = MarklinCANMessagePrinter.description(message: msg)

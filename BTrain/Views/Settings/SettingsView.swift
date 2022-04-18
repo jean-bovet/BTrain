@@ -15,7 +15,7 @@ import SwiftUI
 struct SettingsView: View {
     
     private enum Tabs: Hashable {
-        case general, speed, routing, advanced
+        case general, speed, routing, logging, advanced
     }
 
     @AppStorage(SettingsKeys.autoConnectSimulator) private var autoConnectSimulator = false
@@ -36,6 +36,8 @@ struct SettingsView: View {
     @AppStorage(SettingsKeys.logRoutingResolutionSteps) private var logRoutingResolutionSteps = false
     @AppStorage(SettingsKeys.logReservation) private var logReservation = false
     @AppStorage(SettingsKeys.logUnknownMessages) private var logUnknownMessages = false
+    
+    @AppStorage(SettingsKeys.logCategoryNetwork) private var logCategoryNetwork = false
 
     var body: some View {
         TabView {
@@ -82,11 +84,22 @@ struct SettingsView: View {
             .tag(Tabs.routing)
            
             Form {
-                Toggle("Developer Tools", isOn: $showDebugControls)
                 Toggle("Record Diagnostic Logs", isOn: $recordDiagnosticLogs)
                 Toggle("Log Routing Resolution Steps", isOn: $logRoutingResolutionSteps)
                 Toggle("Log Block and Turnout Reservation", isOn: $logReservation)
                 Toggle("Log Unknown Digital Controller Commands", isOn: $logUnknownMessages)
+                Section(header: Text("Log Category")) {
+                    Toggle("Network", isOn: $logCategoryNetwork)
+                }
+            }
+            .onChange(of: logCategoryNetwork, perform: { _ in BTLogger.updateNetworkLogger() })
+            .tabItem {
+                Label("Logging", systemImage: "doc.text.fill")
+            }
+            .tag(Tabs.advanced)
+            
+            Form {
+                Toggle("Developer Tools", isOn: $showDebugControls)
             }
             .tabItem {
                 Label("Advanced", systemImage: "star")
@@ -94,7 +107,7 @@ struct SettingsView: View {
             .tag(Tabs.advanced)
         }
         .padding(20)
-        .frame(width: 450, height: 160)
+        .frame(width: 450, height: 180)
     }
 }
 

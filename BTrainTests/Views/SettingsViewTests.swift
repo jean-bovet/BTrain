@@ -26,7 +26,8 @@ class SettingsViewTests: XCTestCase {
         XCTAssertEqual(try t0.form(0).tabItem().label(0).title().text(0).string(), "General")
         XCTAssertEqual(try t0.form(1).tabItem().label(0).title().text(0).string(), "Speed")
         XCTAssertEqual(try t0.form(2).tabItem().label(0).title().text(0).string(), "Routing")
-        XCTAssertEqual(try t0.form(3).tabItem().label(0).title().text(0).string(), "Advanced")
+        XCTAssertEqual(try t0.form(3).tabItem().label(0).title().text(0).string(), "Logging")
+        XCTAssertEqual(try t0.form(4).tabItem().label(0).title().text(0).string(), "Advanced")
     }
 
 }

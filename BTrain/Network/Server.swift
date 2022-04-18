@@ -36,7 +36,7 @@ class Server {
     }
     
     func start() throws {
-        NSLog("Server starting...")
+        BTLogger.network.debug("Server starting...")
         listener.stateUpdateHandler = { [weak self] state in
             self?.stateDidChange(to: state)
         }
@@ -49,9 +49,9 @@ class Server {
     func stateDidChange(to newState: NWListener.State) {
         switch newState {
         case .ready:
-            NSLog("Server ready.")
+            BTLogger.network.debug("Server ready.")
         case .failed(let error):
-            NSLog("Server failure, error: \(error.localizedDescription)")
+            BTLogger.network.error("Server failure, error: \(error.localizedDescription)")
         default:
             break
         }
@@ -65,12 +65,12 @@ class Server {
         }
         connection.start()
         didAcceptConnection?(connection)
-        NSLog("server did open connection \(connection.id)")
+        BTLogger.network.debug("server did open connection \(connection.id)")
     }
     
     private func connectionDidStop(_ connection: ServerConnection) {
         self.connectionsByID.removeValue(forKey: connection.id)
-        NSLog("server did close connection \(connection.id)")
+        BTLogger.network.debug("server did close connection \(connection.id)")
     }
     
     func stop() {
