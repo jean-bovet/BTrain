@@ -27,8 +27,10 @@ protocol EphemeralDraggableShape: DraggableShape {
     
     /// Given an array of shapes, returns the shape that can be used as a drop target
     /// - Parameter shapes: the array of shapes
+    ///   - shapes: the array of shapes
+    ///   - location: the location of the drop
     /// - Returns: a shape for the drop target or nil if no shape can be a drop target
-    func droppableShape(_ shapes: [Shape]) -> Shape?
+    func droppableShape(_ shapes: [Shape], at location: CGPoint) -> Shape?
 }
 
 /// The information relative to the ephemeral drag operation

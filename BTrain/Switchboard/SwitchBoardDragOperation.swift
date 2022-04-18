@@ -200,7 +200,7 @@ final class SwitchBoardDragOperation {
         }
 
         if let ephemeralDraggableShape = state.ephemeralDraggableShape {
-            if let blockShape = ephemeralDraggableShape.droppableShape(provider.blockShapes) as? BlockShape {
+            if let blockShape = ephemeralDraggableShape.droppableShape(provider.blockShapes, at: location) as? BlockShape {
                 renderer.ephemeralDragInfo?.dropBlock = blockShape.block
                 renderer.ephemeralDragInfo?.dropPath = blockShape.path
             } else {
