@@ -69,7 +69,9 @@ final class ServerConnection {
             }
             if let data = data, !data.isEmpty {
                 let msg = MarklinCANMessage.decode(from: [UInt8](data))
-                NSLog("[Server] < \(MarklinCANMessagePrinter.debugDescription(msg: msg)) - \(sSelf.id)")
+                if let description = MarklinCANMessagePrinter.debugDescription(msg: msg) {
+                    BTLogger.debug("[Server] < \(description) - \(sSelf.id)")
+                }
                 let cmd = Command.from(message: msg)
                 sSelf.receiveMessageCallback?(cmd)
             }
@@ -88,7 +90,9 @@ final class ServerConnection {
     func send(data: Data, completion: CompletionBlock? = nil) {
         self.connection.send(content: data, completion: .contentProcessed( { error in
             let msg = MarklinCANMessage.decode(from: [UInt8](data))
-            NSLog("[Server] > \(MarklinCANMessagePrinter.debugDescription(msg: msg)) - \(self.id)")
+            if let description = MarklinCANMessagePrinter.debugDescription(msg: msg) {
+                BTLogger.debug("[Server] > \(description) - \(self.id)")
+            }
 
             DispatchQueue.main.async {
                 if let error = error {
@@ -102,17 +106,17 @@ final class ServerConnection {
     }
     
     func stop() {
-        NSLog("[Server] \(id) will stop")
+        BTLogger.debug("[Server] \(id) will stop")
         stop(error: nil)
     }
         
     private func connectionDidFail(error: Error) {
-        NSLog("[Server] \(id) did fail, error: \(error)")
+        BTLogger.debug("[Server] \(id) did fail, error: \(error)")
         stop(error: error)
     }
     
     private func connectionDidEnd() {
-        NSLog("[Server] \(id) did end")
+        BTLogger.debug("[Server] \(id) did end")
         stop(error: nil)
     }
     
@@ -124,4 +128,5 @@ final class ServerConnection {
             didStopCallback(error)
         }
     }
+    
 }

@@ -66,7 +66,9 @@ class ClientConnection {
                     let slice = data[start..<end]
 
                     let msg = MarklinCANMessage.decode(from: [UInt8](slice))
-                    NSLog("[Client] < \(MarklinCANMessagePrinter.debugDescription(msg: msg))")
+                    if let description = MarklinCANMessagePrinter.debugDescription(msg: msg) {
+                        BTLogger.debug("[Client] < \(description)")
+                    }
                     self?.didReceiveCallback?(msg)
                 }
             }
@@ -89,14 +91,16 @@ class ClientConnection {
     func send(data: Data, priority: Bool, onCompletion: @escaping () -> Void) {
         dataQueue.schedule(priority: priority) { completion in
             guard self.nwConnection.state == .ready else {
-                NSLog("[Client] Connection is not ready, message is discarded but completion block called.")
+                BTLogger.debug("[Client] Connection is not ready, message is discarded but completion block called.")
                 completion()
                 return
             }
             
             self.nwConnection.send(content: data, completion: .contentProcessed( { error in
                 let msg = MarklinCANMessage.decode(from: [UInt8](data))
-                NSLog("[Client] > \(MarklinCANMessagePrinter.debugDescription(msg: msg))")
+                if let description = MarklinCANMessagePrinter.debugDescription(msg: msg) {
+                    BTLogger.debug("[Client] > \(description)")
+                }
 
                 DispatchQueue.main.async {
                     if let error = error {
@@ -116,18 +120,18 @@ class ClientConnection {
     }
 
     func stop() {
-        NSLog("[Client] will stop")
+        BTLogger.debug("[Client] will stop")
         nwConnection.cancel()
     }
     
     private func connectionDidFail(error: Error) {
-        NSLog("[Client] did fail, error: \(error)")
+        BTLogger.debug("[Client] did fail, error: \(error)")
         didFailCallback?(error)
         stop()
     }
     
     private func connectionDidEnd() {
-        NSLog("[Client] did end")
+        BTLogger.debug("[Client] did end")
         stop()
     }
     

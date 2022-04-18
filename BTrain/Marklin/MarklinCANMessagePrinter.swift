@@ -14,11 +14,11 @@ import Foundation
 
 struct MarklinCANMessagePrinter {
 
-    static func debugDescription(msg: MarklinCANMessage) -> String {
+    static func debugDescription(msg: MarklinCANMessage) -> String? {
         if let description = MarklinCANMessagePrinter.description(message: msg) {
             return "\(description), data: \(msg.data as NSData)"
         } else {
-            return "No description, data: \(msg.data as NSData)"
+            return nil
         }
     }
     
@@ -58,7 +58,11 @@ struct MarklinCANMessagePrinter {
             case .configDataStream(length: _, data: _, descriptor: let descriptor):
                 return descriptor?.description
             case .none:
-                return descriptor?.description
+                if SettingsKeys.bool(forKey: SettingsKeys.logUnknownMessages) {
+                    return descriptor?.description
+                } else {
+                    return nil
+                }
             }
         }
     }

@@ -32,7 +32,8 @@ struct SettingsKeys {
     static let recordDiagnosticLogs = "recordDiagnosticLogs"
     static let logRoutingResolutionSteps = "logRoutingResolutionSteps"
     static let logReservation = "logReservation"
-
+    static let logUnknownMessages = "logUnknownMessages"
+    
     static func bool(forKey key: String) -> Bool {
         return UserDefaults.standard.bool(forKey: key)
     }

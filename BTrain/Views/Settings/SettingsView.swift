@@ -35,6 +35,7 @@ struct SettingsView: View {
     @AppStorage(SettingsKeys.recordDiagnosticLogs) private var recordDiagnosticLogs = false
     @AppStorage(SettingsKeys.logRoutingResolutionSteps) private var logRoutingResolutionSteps = false
     @AppStorage(SettingsKeys.logReservation) private var logReservation = false
+    @AppStorage(SettingsKeys.logUnknownMessages) private var logUnknownMessages = false
 
     var body: some View {
         TabView {
@@ -85,6 +86,7 @@ struct SettingsView: View {
                 Toggle("Record Diagnostic Logs", isOn: $recordDiagnosticLogs)
                 Toggle("Log Routing Resolution Steps", isOn: $logRoutingResolutionSteps)
                 Toggle("Log Block and Turnout Reservation", isOn: $logReservation)
+                Toggle("Log Unknown Digital Controller Commands", isOn: $logUnknownMessages)
             }
             .tabItem {
                 Label("Advanced", systemImage: "star")
