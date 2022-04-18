@@ -156,8 +156,8 @@ final class Train: Element, ObservableObject {
         
     // The maximum number of blocks that should be reserved ahead of the train.
     // The actual number of blocks might be smaller if a block cannot be reserved.
-    // The default is 1.
-    @Published var maxNumberOfLeadingReservedBlocks = 1
+    // The default is 2.
+    @Published var maxNumberOfLeadingReservedBlocks = 2
     
     enum Schedule {
         // The train is stopped and cannot be started again
