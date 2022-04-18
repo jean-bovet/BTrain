@@ -19,7 +19,11 @@ class Server {
     let listener: NWListener
     
     var didAcceptConnection: ((ServerConnection) -> Void)? = nil
-
+    
+    /// Internal callback block that will be invoked when the listener has been cancelled
+    private var didCancelListener: (()->Void)? = nil
+    
+    /// Map of connections with their IDs as keys
     private var connectionsByID: [Int: ServerConnection] = [:]
     
     var connections: [ServerConnection] {
@@ -32,11 +36,12 @@ class Server {
     }
     
     deinit {
-        stop()
+        stop() { }
     }
     
     func start() throws {
-        BTLogger.network.debug("Server starting...")
+        BTLogger.network.debug("Server starting at port \(self.port.debugDescription)...")
+
         listener.stateUpdateHandler = { [weak self] state in
             self?.stateDidChange(to: state)
         }
@@ -52,6 +57,10 @@ class Server {
             BTLogger.network.debug("Server ready.")
         case .failed(let error):
             BTLogger.network.error("Server failure, error: \(error.localizedDescription)")
+        case .cancelled:
+            BTLogger.network.debug("Server listener has been cancelled.")
+            didCancelListener?()
+            didCancelListener = nil
         default:
             break
         }
@@ -73,9 +82,12 @@ class Server {
         BTLogger.network.debug("server did close connection \(connection.id)")
     }
     
-    func stop() {
-        listener.stateUpdateHandler = nil
+    func stop(_ completion: @escaping CompletionBlock) {
         listener.newConnectionHandler = nil
+        assert(didCancelListener == nil, "Cancel listener block should be nil")
+        didCancelListener = {
+            completion()
+        }
         listener.cancel()
         for connection in self.connectionsByID.values {
             connection.didStopCallback = nil

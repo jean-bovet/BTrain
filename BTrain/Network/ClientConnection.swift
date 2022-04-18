@@ -93,6 +93,7 @@ class ClientConnection {
             guard self.nwConnection.state == .ready else {
                 BTLogger.network.debug("[Client] Connection is not ready, message is discarded but completion block called.")
                 completion()
+                onCompletion()
                 return
             }
             

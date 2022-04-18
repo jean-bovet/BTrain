@@ -65,8 +65,14 @@ class ClientServerTests: XCTestCase {
         client.send(data: msg.data, priority: priority == .high) {}
         wait(for: [serverReceivedMessageExpectation], timeout: 1.0)
         
-        server.stop()
+        let stopExpectation = XCTestExpectation(description: "Stop")
+
+        server.stop() {
+            stopExpectation.fulfill()
+        }
         client.stop()
+        
+        wait(for: [stopExpectation], timeout: 0.5)
     }
 
 }

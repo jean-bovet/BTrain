@@ -126,17 +126,27 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
     
     func start() {
         server = Server(port: 15731)
-        server?.didAcceptConnection = { [weak self] connection in
+        server!.didAcceptConnection = { [weak self] connection in
             self?.register(with: connection)
         }
-        try! server?.start()
+        try! server!.start()
         started = true
     }
         
-    func stop() {
-        server?.stop()
-        started = false
-        enabled = false
+    func stop(_ completion: @escaping CompletionBlock) {
+        let onCompletionBlock = { [weak self] in
+            self?.started = false
+            self?.enabled = false
+            completion()
+        }
+        
+        if let server = server {
+            server.stop() {
+                onCompletionBlock()
+            }
+        } else {
+            onCompletionBlock()
+        }
     }
     
     func scheduleTimer() {

@@ -118,12 +118,12 @@ class LayoutTests: XCTestCase {
 
         try layout.setTrainToBlock(train1.id, block1.id, direction: .next)
 
-        let connected = expectation(description: "Connected")
-        doc.connectToSimulator(enable: true) { error in
-            connected.fulfill()
-        }
-        wait(for: [connected], timeout: 2.0)
+        connectToSimulator(doc: doc) { }
 
+        defer {
+            disconnectFromSimulator(doc: doc)
+        }
+        
         XCTAssertEqual(train1.state, .stopped)
         XCTAssertTrue(train1.manualScheduling)
 
@@ -155,8 +155,6 @@ class LayoutTests: XCTestCase {
 
         XCTAssertEqual(train1.state, .stopped)
         XCTAssertTrue(train1.manualScheduling)
-
-        doc.disconnect()
     }
   
     func testBlockSpeedLimit() throws {

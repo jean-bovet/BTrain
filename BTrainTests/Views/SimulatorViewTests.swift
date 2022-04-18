@@ -32,7 +32,10 @@ class SimulatorViewTests: RootViewTests {
         XCTAssertTrue(t1.directionForward)
         XCTAssertEqual(t1.speed.requestedKph, 0)
             
-        connectToSimulator()
+        connectToSimulator(doc: doc) { }
+        defer {
+            disconnectFromSimulator(doc: doc)
+        }
             
         let simulatorTrain1 = doc.simulator.trains[0]
 
@@ -90,25 +93,8 @@ class SimulatorViewTests: RootViewTests {
         trainSlider.setRequestedKph(kph: 0)
         XCTAssertEqual(t1.speed.requestedKph, 0)
         wait(for: simulatorTrain1, steps: .zero)
-        
-        doc.disable { }
-        doc.disconnect()
     }
-    
-    func connectToSimulator() {
-        let expectation = expectation(description: "ConnectToSimulator")
-        doc.connectToSimulator(enable: false) { error in
-            expectation.fulfill()
-        }
-        waitForExpectations(timeout: 1.0, handler: nil)
         
-        doc.enable() {}
-        
-        wait(for: {
-            doc.simulator.enabled
-        }, timeout: 2.0)
-    }
-    
     func wait(for train: Train, directionForward: Bool) {
         wait(for: {
             return train.directionForward == directionForward

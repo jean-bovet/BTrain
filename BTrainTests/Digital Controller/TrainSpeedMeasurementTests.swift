@@ -15,39 +15,14 @@ import XCTest
 
 class TrainSpeedMeasurementTests: XCTestCase {
 
-    var mi: MarklinInterface!
-    var simulator: MarklinCommandSimulator!
-
-    override func setUp() {
-        let connectedExpection = XCTestExpectation()
-        mi = MarklinInterface()
-        
-        simulator = MarklinCommandSimulator(layout: Layout(), interface: mi)
-        simulator.start()
-
-        mi.connect(server: "localhost", port: 15731) {
-            connectedExpection.fulfill()
-        } onError: { error in
-            XCTAssertNil(error)
-        } onStop: {
-            
-        }
-
-        wait(for: [connectedExpection], timeout: 0.5)
-    }
-    
-    override func tearDown() {
-        simulator.stop()
-        
-        let disconnectExpectation = XCTestExpectation()
-        mi.disconnect() {
-            disconnectExpectation.fulfill()
-        }
-        wait(for: [disconnectExpectation], timeout: 5.0)
-    }
-
     func testCancelMeasure() throws {
         let layout = LayoutComplex().newLayout()
+        let doc = LayoutDocument(layout: layout)
+        
+        connectToSimulator(doc: doc) { }
+        defer {
+            disconnectFromSimulator(doc: doc)
+        }
         
         let train = layout.trains[0]
         train.blockId = layout.blocks[0].id
@@ -59,7 +34,7 @@ class TrainSpeedMeasurementTests: XCTestCase {
 
         let step = 10
 
-        let sm = TrainSpeedMeasurement(layout: layout, interface: mi, train: train,
+        let sm = TrainSpeedMeasurement(layout: layout, interface: doc.interface, train: train,
                                        speedEntries: [UInt16(step)],
                                        feedbackA: fa.id, feedbackB: fb.id, feedbackC: fc.id,
                                        distanceAB: 95, distanceBC: 18,
@@ -92,7 +67,13 @@ class TrainSpeedMeasurementTests: XCTestCase {
     
     func testMeasureOneStep() throws {
         let layout = LayoutComplex().newLayout()
+        let doc = LayoutDocument(layout: layout)
         
+        connectToSimulator(doc: doc) { }
+        defer {
+            disconnectFromSimulator(doc: doc)
+        }
+
         let train = layout.trains[0]
         train.blockId = layout.blocks[0].id
         layout.blocks[0].train = .init(train.id, .next)
@@ -106,7 +87,7 @@ class TrainSpeedMeasurementTests: XCTestCase {
         train.speed.speedTable[step] = .init(steps: SpeedStep(value: UInt16(step)), speed: nil)
         XCTAssertNil(train.speed.speedTable[step].speed)
 
-        let sm = TrainSpeedMeasurement(layout: layout, interface: mi, train: train,
+        let sm = TrainSpeedMeasurement(layout: layout, interface: doc.interface, train: train,
                                        speedEntries: [UInt16(step)],
                                        feedbackA: fa.id, feedbackB: fb.id, feedbackC: fc.id,
                                        distanceAB: 95, distanceBC: 18,
@@ -139,17 +120,17 @@ class TrainSpeedMeasurementTests: XCTestCase {
         
         wait(for: [trainStartedExpectation], timeout: 5.0)
 
-        simulator.triggerFeedback(feedback: fa)
+        doc.simulator.triggerFeedback(feedback: fa)
 
         wait(for: [feedbackAExpectation], timeout: 5.0)
 
-        simulator.triggerFeedback(feedback: fb)
+        doc.simulator.triggerFeedback(feedback: fb)
 
         wait(for: [feedbackBExpectation], timeout: 5.0)
 
         wait(for: 0.2)
 
-        simulator.triggerFeedback(feedback: fc)
+        doc.simulator.triggerFeedback(feedback: fc)
 
         wait(for: [callbackExpectation], timeout: 5.0)
 
@@ -188,7 +169,13 @@ class TrainSpeedMeasurementTests: XCTestCase {
     
     func testMeasureTwoStep() throws {
         let layout = LayoutComplex().newLayout()
+        let doc = LayoutDocument(layout: layout)
         
+        connectToSimulator(doc: doc) { }
+        defer {
+            disconnectFromSimulator(doc: doc)
+        }
+
         let train = layout.trains[0]
         train.blockId = layout.blocks[0].id
         layout.blocks[0].train = .init(train.id, .next)
@@ -205,7 +192,7 @@ class TrainSpeedMeasurementTests: XCTestCase {
         XCTAssertNil(train.speed.speedTable[step1].speed)
         XCTAssertNil(train.speed.speedTable[step2].speed)
 
-        let sm = TrainSpeedMeasurement(layout: layout, interface: mi, train: train,
+        let sm = TrainSpeedMeasurement(layout: layout, interface: doc.interface, train: train,
                                        speedEntries: [UInt16(step1), UInt16(step2)],
                                        feedbackA: fa.id, feedbackB: fb.id, feedbackC: fc.id,
                                        distanceAB: 95, distanceBC: 18, simulator: true)
@@ -228,34 +215,34 @@ class TrainSpeedMeasurementTests: XCTestCase {
         
         infoStepAsserter.assert(step: .trainStarted)
                 
-        simulator.triggerFeedback(feedback: fa)
+        doc.simulator.triggerFeedback(feedback: fa)
 
         infoStepAsserter.assert(step: .feedbackA)
 
-        simulator.triggerFeedback(feedback: fb)
+        doc.simulator.triggerFeedback(feedback: fb)
 
         infoStepAsserter.assert(step: .feedbackB)
 
         wait(for: 0.2)
 
-        simulator.triggerFeedback(feedback: fc)
+        doc.simulator.triggerFeedback(feedback: fc)
 
         infoStepAsserter.assert(step: .feedbackC)
         infoStepAsserter.assert(step: .trainStopped)
         infoStepAsserter.assert(step: .trainDirectionToggle)
         infoStepAsserter.assert(step: .trainStarted)
 
-        simulator.triggerFeedback(feedback: fc)
+        doc.simulator.triggerFeedback(feedback: fc)
 
         infoStepAsserter.assert(step: .feedbackC)
 
-        simulator.triggerFeedback(feedback: fb)
+        doc.simulator.triggerFeedback(feedback: fb)
 
         infoStepAsserter.assert(step: .feedbackB)
 
         wait(for: 0.2)
 
-        simulator.triggerFeedback(feedback: fa)
+        doc.simulator.triggerFeedback(feedback: fa)
         
         infoStepAsserter.assert(step: .feedbackA)
         infoStepAsserter.assert(step: .trainDirectionToggle)

@@ -1,0 +1,31 @@
+{
+  "configurations" : [
+    {
+      "id" : "063AFB86-A96B-4F60-BA2F-1B2F64AE3D59",
+      "name" : "Configuration 1",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "testTimeoutsEnabled" : true
+  },
+  "testTargets" : [
+    {
+      "selectedTests" : [
+        "ClientServerTests\/testClientWithSimulator()",
+        "LayoutDocumentTests\/testOnConnectTasks()",
+        "LayoutDocumentTests\/testUXCommands()",
+        "MarklinInterfaceTests\/testGo()",
+        "SimulatorViewTests\/testSimulatorView()"
+      ],
+      "target" : {
+        "containerPath" : "container:BTrain.xcodeproj",
+        "identifier" : "A73AFE922726594800E1ED21",
+        "name" : "BTrainTests"
+      }
+    }
+  ],
+  "version" : 1
+}

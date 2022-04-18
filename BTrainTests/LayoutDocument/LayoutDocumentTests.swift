@@ -53,7 +53,8 @@ class LayoutDocumentTests: XCTestCase {
         let layout = LayoutLoop1().newLayout()
         let doc = LayoutDocument(layout: layout)
 
-        connectToSimulator(doc: doc)
+        connectToSimulator(doc: doc) { }
+        
         defer {
             disconnectFromSimulator(doc: doc)
         }
@@ -81,7 +82,7 @@ class LayoutDocumentTests: XCTestCase {
         let doc = LayoutDocument(layout: LayoutLoop1().newLayout())
         let t = LayoutOnConnectTasks(layout: doc.layout, layoutController: doc.layoutController, interface: doc.interface)
         
-        connectToSimulator(doc: doc)
+        connectToSimulator(doc: doc) { }
         defer {
             disconnectFromSimulator(doc: doc)
         }
@@ -91,20 +92,6 @@ class LayoutDocumentTests: XCTestCase {
             expectation.fulfill()
         }
         wait(for: [expectation], timeout: 2)
-    }
+    }    
     
-    private func connectToSimulator(doc: LayoutDocument) {
-        let e = expectation(description: "connect")
-        doc.connectToSimulator(enable: false) { error in
-            e.fulfill()
-        }
-        waitForExpectations(timeout: 0.250, handler: nil)
-        
-        doc.enable() {}
-    }
-    
-    private func disconnectFromSimulator(doc: LayoutDocument) {
-        doc.disable() {}
-        doc.disconnect()
-    }
 }

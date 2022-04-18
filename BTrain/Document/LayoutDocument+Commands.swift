@@ -79,9 +79,12 @@ extension LayoutDocument {
         }
     }
     
-    func disconnect() {
-        simulator.stop()
-        interface.disconnect() { }
+    func disconnect(_ completion: @escaping CompletionBlock) {
+        simulator.stop() {
+            self.interface.disconnect() {
+                completion()
+            }
+        }
     }
 
 }

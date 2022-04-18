@@ -15,52 +15,27 @@ import XCTest
 
 class MarklinInterfaceTests: XCTestCase {
     
-    var mi: MarklinInterface!
-    var simulator: MarklinCommandSimulator!
-    
-    override func setUp() {
-        let connectedExpection = XCTestExpectation()
-        mi = MarklinInterface()
-        
-        simulator = MarklinCommandSimulator(layout: Layout(), interface: mi)
-        simulator.start()
-
-        mi.connect(server: "localhost", port: 15731) {
-            connectedExpection.fulfill()
-        } onError: { error in
-            XCTAssertNil(error)
-        } onStop: {
-            
-        }
-
-        wait(for: [connectedExpection], timeout: 0.5)
-    }
-    
-    override func tearDown() {
-        simulator.stop()
-        
-        let disconnectExpectation = XCTestExpectation()
-        mi.disconnect() {
-            disconnectExpectation.fulfill()
-        }
-        wait(for: [disconnectExpectation], timeout: 5.0)
-    }
-    
     func testGo() {
-        XCTAssertFalse(simulator.enabled)
+        let doc = LayoutDocument(layout: Layout())
+        XCTAssertFalse(doc.simulator.enabled)
+        
+        connectToSimulator(doc: doc) { }
+        defer {
+            disconnectFromSimulator(doc: doc)
+        }
         
         let enabledExpectation = XCTestExpectation()
-        let cancellable = simulator.$enabled.sink { value in
+        let cancellable = doc.simulator.$enabled.sink { value in
             if value {
                 enabledExpectation.fulfill()
             }
         }
 
-        mi.execute(command: .go()) {}
+        doc.interface.execute(command: .go()) {}
         
         wait(for: [enabledExpectation], timeout: ScheduledMessageQueue.DefaultDelay)
         
-        XCTAssertTrue(simulator.enabled)
+        XCTAssertTrue(doc.simulator.enabled)
         XCTAssertNotNil(cancellable)
     }
     
@@ -68,7 +43,7 @@ class MarklinInterfaceTests: XCTestCase {
         let doc = LayoutDocument(layout: Layout())
         
         let completionExpectation = XCTestExpectation()
-        doc.connectToSimulator(enable: true) { error in
+        connectToSimulator(doc: doc) {
             doc.layoutController.discoverLocomotives(merge: false) {
                 completionExpectation.fulfill()
             }
@@ -76,7 +51,9 @@ class MarklinInterfaceTests: XCTestCase {
         
         wait(for: [completionExpectation], timeout: 1)
 
-        doc.disconnect()
+        defer {
+            disconnectFromSimulator(doc: doc)
+        }
 
         XCTAssertEqual(doc.layout.trains.count, 11)
 
@@ -86,13 +63,23 @@ class MarklinInterfaceTests: XCTestCase {
     }
     
     func testCallbackOrdering() {
-        let firstCallbackExpectation = XCTestExpectation()
-        let secondCallbackExpectation = XCTestExpectation()
+        let doc = LayoutDocument(layout: Layout())
+        
+        connectToSimulator(doc: doc) { }
+        defer {
+            disconnectFromSimulator(doc: doc)
+        }
+        
+        let firstCallbackExpectation = XCTestExpectation(description: "first")
+        let secondCallbackExpectation = XCTestExpectation(description: "second")
 
-        let uuid1 = mi.register(forFeedbackChange: { deviceID,contactID,value in
+        let mi = doc.interface as! MarklinInterface
+        mi.feedbackChangeCallbacks.removeAll()
+        
+        let uuid1 = doc.interface.register(forFeedbackChange: { deviceID,contactID,value in
             firstCallbackExpectation.fulfill()
         })
-        let uuid2 = mi.register(forFeedbackChange: { deviceID,contactID,value in
+        let uuid2 = doc.interface.register(forFeedbackChange: { deviceID,contactID,value in
             secondCallbackExpectation.fulfill()
         })
 
@@ -100,12 +87,12 @@ class MarklinInterfaceTests: XCTestCase {
 
         let layout = LayoutComplex().newLayout()
         let f = layout.feedbacks[0]
-        simulator.triggerFeedback(feedback: f)
+        doc.simulator.triggerFeedback(feedback: f)
         
         wait(for: [firstCallbackExpectation, secondCallbackExpectation], timeout: 1.0, enforceOrder: true)
         
-        mi.unregister(uuid: uuid1)
-        mi.unregister(uuid: uuid2)
+        doc.interface.unregister(uuid: uuid1)
+        doc.interface.unregister(uuid: uuid2)
 
         XCTAssertEqual(mi.feedbackChangeCallbacks.count, 0)
     }
