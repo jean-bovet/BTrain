@@ -111,3 +111,13 @@ extension Array where Element == Route.Step {
     }
 
 }
+
+extension Array where Element == Block {
+    
+    func toStrings(useNameInsteadOfId: Bool = true) -> [String] {
+        return self.map { block in
+            return "\(useNameInsteadOfId ? block.name:block.id.uuid)"
+        }
+    }
+
+}

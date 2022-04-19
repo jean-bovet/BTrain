@@ -20,7 +20,6 @@ import Foundation
 final class LayoutReservation {
     
     let layout: Layout
-    let visitor: ElementVisitor
     let verbose: Bool
     
     // Internal structure used to hold information
@@ -33,7 +32,6 @@ final class LayoutReservation {
 
     init(layout: Layout, verbose: Bool) {
         self.layout = layout
-        self.visitor = ElementVisitor(layout: layout)
         self.verbose = verbose
    }
     
@@ -169,6 +167,7 @@ final class LayoutReservation {
             // Now reserve the block
             let reservation = Reservation(trainId: train.id, direction: direction)
             block.reserved = reservation
+            train.leadingBlocks.append(block)
             numberOfLeadingBlocksReserved += 1
             debug("Reserving block \(block.name) for \(reservation)")
         }
@@ -237,7 +236,7 @@ final class LayoutReservation {
         let trs = try layout.transitions(from: fromSocket, to: toSocket)
         transitions.append(contentsOf: trs)
     }
-    
+        
     // This method reserves and occupies all the necessary blocks (and parts of the block) to fit
     // the specified train with all its length, taking into account the length of each block.
     func fillElementWith(train: Train) throws {
@@ -278,6 +277,8 @@ final class LayoutReservation {
         
     // This methods frees all the reserved elements except the block in which the locomotive is located
     func freeElements(train: Train) throws {
+        train.leadingBlocks.removeAll()
+
         layout.blockMap.values
             .filter { $0.reserved?.trainId == train.id }
             .forEach { block in
@@ -315,7 +316,17 @@ final class LayoutReservation {
                 }
             }
         }
-        
+                
+        // If there is a leading reserved block where the train needs to stop,
+        // make sure the speed is limited, otherwise the train will likely overshoot
+        // the block in which it must stop.
+        for block in train.leadingBlocks {
+            if layout.trainShouldStop(train: train, block: block) {
+                maximumSpeedAllowed = min(maximumSpeedAllowed, LayoutFactory.DefaultLimitedSpeed)
+                break
+            }
+        }
+
         return maximumSpeedAllowed
     }
 

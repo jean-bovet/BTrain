@@ -159,6 +159,13 @@ final class Train: Element, ObservableObject {
     // The default is 2.
     @Published var maxNumberOfLeadingReservedBlocks = 2
     
+    /// Array of leading blocks that have been reserved in front of the train.
+    ///
+    /// This array is updated by the ``LayoutReservation`` class each time the reserved
+    /// blocks are updated. The leading blocks are stored here for quick access instead
+    /// of re-computing them on the fly all the time.
+    var leadingBlocks = [Block]()
+    
     enum Schedule {
         // The train is stopped and cannot be started again
         // unless the user takes an explicit action (ie Start button)
