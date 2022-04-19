@@ -327,6 +327,11 @@ final class LayoutReservation {
             }
         }
 
+        // Limit the speed if the train is one block away from the destination block
+        if let route = layout.route(for: train.routeId, trainId: train.id), train.routeStepIndex >= route.lastStepIndex - 1 {
+            maximumSpeedAllowed = min(maximumSpeedAllowed, LayoutFactory.DefaultLimitedSpeed)
+        }
+        
         return maximumSpeedAllowed
     }
 
