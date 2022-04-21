@@ -107,8 +107,21 @@ extension Layout {
         
         return train.position
     }
-        
+            
+    /// Adjusts the speed of the train to the maximum allowed speed authorized.
+    ///
+    /// The maximum speed takes several factors into condition, including the blocks and turnouts
+    /// speed restrictions that the train is located on, as well as the leading reserved blocks distance
+    /// to make sure the train has enough distance to safely brake to a halt if necessary.
+    ///
+    /// This method only affects trains running in automatic scheduling. Manual scheduling is not monitored.
+    /// - Parameter train: the train to adjust the speed
     func adjustSpeedLimit(_ train: Train) {
+        // Note: only do that when the train is not under manual control!
+        guard !train.manualScheduling else {
+            return
+        }
+
         if train.state == .running {
             setTrainSpeed(train, LayoutFactory.DefaultMaximumSpeed, speedLimit: true) { }
         }

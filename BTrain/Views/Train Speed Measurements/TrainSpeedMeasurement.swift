@@ -253,9 +253,7 @@ final class TrainSpeedMeasurement {
         let modelDistanceKm = distance / 100000
         let realDistanceKm = modelDistanceKm * 87
         let speedInKph = realDistanceKm / durationInHour
-        
-        print("Duration is \(duration): \(speedInKph)")
-                
+                        
         let entry = speedEntry(for: entryIndex)
         setSpeedEntry(.init(steps: entry.steps, speed: TrainSpeed.UnitKph(speedInKph)), for: entryIndex)
     }
