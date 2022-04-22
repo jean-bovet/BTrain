@@ -11,6 +11,7 @@
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 import Foundation
+import OrderedCollections
 
 protocol TrainControllerDelegate: AnyObject {
     func scheduleRestartTimer(train: Train)
@@ -47,7 +48,7 @@ final class TrainController {
     // the LayoutController to re-run the TrainController
     // in case there are any changes to be applied.
     struct Result {
-        let events: Set<TrainEvent>
+        let events: [TrainEvent]
 
         static func none() -> Result {
             .init(events: [])
@@ -58,11 +59,11 @@ final class TrainController {
         }
         
         func appending(_ event: TrainEvent) -> Result {
-            .init(events: self.events.union([event]))
+            .init(events: self.events + [event])
         }
         
         func appending(_ result: Result) -> Result {
-            .init(events: self.events.union(result.events))
+            .init(events: self.events + result.events)
         }
     }
         
