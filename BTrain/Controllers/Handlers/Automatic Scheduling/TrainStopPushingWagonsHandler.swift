@@ -63,29 +63,32 @@ import Foundation
 //   - If the HWP is past the block it needs to stop in, stop the train.
 //   - If the HWP is past the stopping feedback of the block it needs to stop in, stop the train.
 //   - If the HWP is past the braking feedback of the block it needs to stop in, brake the train.
-extension TrainController {
+final class TrainStopPushingWagonsHandler: TrainAutomaticRouteHandling {
+    var events: Set<TrainEvent> {
+        [.movedInsideBlock, .movedToNextBlock]
+    }
     
-    func handleTrainStopPushingWagons() throws -> Result {
+    func process(layout: Layout, train: Train, route: Route, event: TrainEvent, controller: TrainController) throws -> TrainController.Result {
         guard train.speed.requestedKph > 0 else {
-            return .none
+            return .none()
         }
         
         guard train.wagonsPushedByLocomotive else {
-            return .none
+            return .none()
         }
                 
         // Now determine the position of the head wagon given the next locomotive position
         guard let hwb = try TrainPositionFinder.headWagonBlockFor(train: train, startAtNextPosition: true, layout: layout) else {
             // Stop the train if there is no head wagon block found
-            return try stop(completely: true)
+            return try controller.stop(completely: true)
         }
         
         if hwb.reserved != nil && hwb.reserved?.trainId != train.id {
             // Stop the train if the head wagon block is reserved for another train.
-            return try stop(completely: true)
+            return try controller.stop(completely: true)
         }
         
-        return .none
-    }
-      
+        return .none()
+    }    
+    
 }

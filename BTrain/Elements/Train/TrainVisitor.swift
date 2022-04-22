@@ -44,11 +44,20 @@ final class TrainVisitor {
         self.visitor = ElementVisitor(layout: layout)
     }
     
+    /// Visit all the elements that a train occupies - transitions, turnouts and blocks.
+    ///
+    /// - Parameters:
+    ///   - train: the train
+    ///   - startAtNextPosition: true to start at the next position of the train, which is used to evaluate if the entire train fits into the blocks when it moves into the next position, so it can be stopped in case there is not enough room.
+    ///   - transitionCallback: the callback invoked for each transition visited
+    ///   - turnoutCallback: the callback invoked for each turnout visited
+    ///   - blockCallback: the callback invoked for each block visited
+    /// - Returns: true if all the train fits into the blocks, false otherwise.
     func visit(train: Train,
                startAtNextPosition: Bool = false,
                transitionCallback: TransitionCallbackBlock,
                turnoutCallback: TurnoutCallbackBlock,
-               blockCallback: BlockCallbackBlock) throws {
+               blockCallback: BlockCallbackBlock) throws -> Bool {
         guard let locomotiveBlockId = train.blockId else {
             throw LayoutError.trainNotAssignedToABlock(train: train)
         }
@@ -64,7 +73,7 @@ final class TrainVisitor {
         guard let trainLength = train.length else {
             // If the train length is not defined, we invoke once the callback for the entire block
             try blockCallback(locomotiveBlock, BlockAttributes(headBlock: true, trainDirection: trainInstance.direction))
-            return
+            return true
         }
         
         var trainPosition = train.position
@@ -80,21 +89,23 @@ final class TrainVisitor {
                     let (_, direction) = try layout.entryFeedback(from: locomotiveBlock, to: nextBlock)
                     if trainInstance.direction == direction {
                         // No change in direction relative to the new block
-                        trainPosition = 0
+                        // Note: the trainPosition will be 1 because the train is detected in the new block only after passing over the first feedback
+                        trainPosition = 1
                     } else {
                         // The train will enter the next block in the previous direction relative to the block
-                        trainPosition = nextBlock.feedbacks.count
+                        // Note: the trainPosition will be just before the last feedback because this is when it will be detected
+                        trainPosition = nextBlock.feedbacks.count - 1
                         wagonDirection = wagonDirection.opposite
                     }
                     locomotiveBlock = nextBlock
                 } else {
-                    return
+                    return false
                 }
             }
         }
 
-        try visit(trainLength: trainLength, trainPosition: trainPosition, wagonDirection: wagonDirection, wagonsPushedByLocomotive: train.wagonsPushedByLocomotive, trainBlock: locomotiveBlock,
-                  transitionCallback: transitionCallback, turnoutCallback: turnoutCallback, blockCallback: blockCallback)
+        return try visit(trainLength: trainLength, trainPosition: trainPosition, wagonDirection: wagonDirection, wagonsPushedByLocomotive: train.wagonsPushedByLocomotive, trainBlock: locomotiveBlock,
+                         transitionCallback: transitionCallback, turnoutCallback: turnoutCallback, blockCallback: blockCallback)
     }
     
     func visit(trainLength: Double,
@@ -104,7 +115,7 @@ final class TrainVisitor {
                trainBlock: Block,
                transitionCallback: TransitionCallbackBlock,
                turnoutCallback: TurnoutCallbackBlock,
-               blockCallback: BlockCallbackBlock) throws {
+               blockCallback: BlockCallbackBlock) throws -> Bool {
         // Keep track of the remaining train length that needs to have reserved blocks
         var remainingTrainLength = trainLength
 
@@ -137,6 +148,9 @@ final class TrainVisitor {
                 return .stop
             }
         })
+        
+        // Returns true if all the train length has been visited
+        return remainingTrainLength <= 0
     }
     
     private func visitBlockParts(trainPosition: Int, remainingTrainLength: Double, block: Block, headBlock: Bool, wagonDirection: Direction, trainDirection: Direction, blockCallback: BlockCallbackBlock) throws -> Double {

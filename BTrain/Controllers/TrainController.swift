@@ -46,11 +46,26 @@ final class TrainController {
     // or not. This is useful information that will help
     // the LayoutController to re-run the TrainController
     // in case there are any changes to be applied.
-    enum Result {
-        case none
-        case processed
+    struct Result {
+        let events: Set<TrainEvent>
+
+        static func none() -> Result {
+            .init(events: [])
+        }
+
+        static func one(_ event: TrainEvent) -> Result {
+            .init(events: [event])
+        }
+        
+        func appending(_ event: TrainEvent) -> Result {
+            .init(events: self.events.union([event]))
+        }
+        
+        func appending(_ result: Result) -> Result {
+            .init(events: self.events.union(result.events))
+        }
     }
-    
+        
     let layout: Layout
     let train: Train
     
@@ -60,45 +75,29 @@ final class TrainController {
     
     weak var delegate: TrainControllerDelegate?
         
-    // Structure indicating when the train should stop and
-    // the associated behavior when it does effectively stop.
-    struct StopTrigger {
-        // If > 0, the train will be restarted after the specified delay
-        let restartDelay: TimeInterval
-        
-        // If true, the train scheduling will be stopped as well,
-        // otherwise the train stops temporarily until it can restart.
-        let stopCompletely: Bool
-        
-        var isTemporary: Bool {
-            return restartDelay == 0 && stopCompletely == false
-        }
-        
-        static func completeStop() -> StopTrigger {
-            return .init(restartDelay: 0, stopCompletely: true)
-        }
-        
-        static func temporaryStop() -> StopTrigger {
-            return .init(restartDelay: 0, stopCompletely: false)
-        }
-        
-        static func stopAndRestart(after delay: TimeInterval) -> StopTrigger {
-            return .init(restartDelay: delay, stopCompletely: false)
-        }
+    var automaticRouteHandlers = [TrainAutomaticRouteHandling]()
+    var manualRouteHandlers = [TrainManualRouteHandling]()
 
-    }
-    
-    // If this variable is not nil, it means the train
-    // has been asked to stop at the next opportunity.
-    var stopTrigger: StopTrigger? = nil
-        
     init(layout: Layout, train: Train, interface: CommandInterface, delegate: TrainControllerDelegate? = nil) {
         self.layout = layout
         self.train = train
         self.accelerationController = TrainControllerAcceleration(train: train, interface: interface)
-        self.delegate = delegate    
+        self.delegate = delegate
+        
+        automaticRouteHandlers.append(TrainStartHandler())
+        automaticRouteHandlers.append(TrainMoveWithinBlockHandler())
+        automaticRouteHandlers.append(TrainMoveToNextBlockHandler())
+        automaticRouteHandlers.append(TrainDetectStopHandler())
+        automaticRouteHandlers.append(TrainExecuteStopInBlockHandler())
+        automaticRouteHandlers.append(TrainSpeedLimitEventHandler())
+        automaticRouteHandlers.append(TrainReserveLeadingBlocksHandler())
+        automaticRouteHandlers.append(TrainStopPushingWagonsHandler())
+
+        manualRouteHandlers.append(TrainStateHandler())
+        manualRouteHandlers.append(TrainManualMoveToNextBlockHandler())
+        manualRouteHandlers.append(TrainManualStopTriggerDetectionHandler())
     }
-            
+                        
     // This is the main method to call to manage the changes for the train.
     // If this method returns Result.processed, it is expected to be called again
     // in order to process any changes remaining.
@@ -106,374 +105,45 @@ final class TrainController {
     // the currentBlock and nextBlock (as well as the train speed and other parameters),
     // always have each function retrieve what it needs.
     @discardableResult
-    func run() throws -> Result {
-        // Handle automatic scheduling, otherwise handle manual operations
-        guard train.automaticScheduling else {
-            return try handleManualOperation()
-        }
-
-        // Stop the train if there is no route associated with it
-        guard let route = layout.route(for: train.routeId, trainId: train.id) else {
-            return try stop()
-        }
+    func run(_ event: TrainEvent) throws -> Result {
+        var result: Result = .none()
         
-        var result: Result = .none
+        BTLogger.debug("* Evaluating \(train) for \(event) and \(train.scheduling)")
         
-        if try handleTrainStart() == .processed {
-            result = .processed
+        if train.automaticScheduling {
+            // Stop the train if there is no route associated with it
+            guard let route = layout.route(for: train.routeId, trainId: train.id) else {
+                return try stop()
+            }
+            
+            let interestedHandlers = automaticRouteHandlers.filter({ $0.events.contains(event) })
+            for handler in interestedHandlers {
+                BTLogger.debug("* \(handler) for \(train)")
+                result = result.appending(try handler.process(layout: layout, train: train, route: route, event: event, controller: self))
+            }
+        } else {
+            let interestedHandlers = manualRouteHandlers.filter({ $0.events.contains(event) })
+            for handler in interestedHandlers {
+                BTLogger.debug("* \(handler) for \(train)")
+                result = result.appending(try handler.process(layout: layout, train: train, event: event, controller: self))
+            }
         }
 
-        if try handleTrainMove() == .processed {
-            result = .processed
-        }
-        
-        if try handleTrainStop() == .processed {
-            result = .processed
-        }
-                
-        if try handleTrainStop() == .processed {
-            result = .processed
-        }
-
-        if try handleTrainMoveToNextBlock(route: route) == .processed {
-            result = .processed
-        }
-
-        if try handleTrainStopPushingWagons() == .processed {
-            result = .processed
-        }
-
-        if try handleTrainStop() == .processed {
-            result = .processed
-        }
+        BTLogger.debug("* Resulting events: \(result.events) for \(train)")
 
         return result
     }
     
-    private func handleTrainStart() throws -> Result {
-        // Note: we also want to start a train that is braking to stop temporarily, which can happen
-        // when the next block that was occupied (and caused the train to brake in the first place) becomes free.
-        guard train.state == .stopped || (train.state == .braking && stopTrigger?.isTemporary == true) else {
-            return .none
-        }
-
-        guard let currentBlock = layout.currentBlock(train: train) else {
-            return .none
-        }
-
-        guard let routeId = train.routeId else {
-            return .none
-        }
-
-        guard let route = layout.route(for: routeId, trainId: train.id) else {
-            return .none
-        }
-
-        // Do not start the train if there is still time for the train until it has to restart
-        guard train.timeUntilAutomaticRestart == 0 else {
-            return .none
-        }
-        
-        // If the train was scheduled to finish, make sure it is finished but only
-        // if it has reached the last block of the route (otherwise, a train can
-        // be stopped in the middle of the route if that route was blocked for some reason).
-        if train.automaticFinishingScheduling && train.routeStepIndex == route.lastStepIndex {
-            // The train is already stopped but make sure to update the scheduling status
-            try layout.stopCompletely(train.id)
-            return .processed
-        }
-                
-        // Setup the start route index of the train
-        train.startRouteIndex = train.routeStepIndex
-        
-        // And try to reserve the necessary leading blocks
-        let result = try reserveLeadBlocks(route: route, currentBlock: currentBlock, trainStarting: true)
-        if result.success {
-            debug("Start train \(train.name) because the next blocks could be reserved (route: \(route.steps.debugDescription))")
-            stopTrigger = nil
-            train.state = .running
-            layout.setTrainSpeed(train, LayoutFactory.DefaultMaximumSpeed) { }
-            return .processed
-        }
-
-        return result.result
-    }
-     
-    // This method handles any stop trigger related to the automatic route, which are:
-    // - The train reaches the end of the route (that does not affect `endless` automatic route)
-    // - The train reaches a block that stops the train for a while (ie station)
-    private func handleAutomaticRouteStop(route: Route) throws -> Result {
-        guard let currentBlock = layout.currentBlock(train: train) else {
-            return .none
-        }
-        
-        guard route.automatic else {
-            return .none
-        }
-        
-        // The train is not in the first step of the route
-        guard train.routeStepIndex != train.startRouteIndex else {
-            return .none
-        }
-        
-        switch(route.automaticMode) {
-        case .once(destination: let destination):
-            if train.routeStepIndex == route.lastStepIndex {
-                // Double-check that the train is located in the block specified by the destination.
-                // This should never fail.
-                guard currentBlock.id == destination.blockId else {
-                    throw LayoutError.destinationBlockMismatch(currentBlock: currentBlock, destination: destination)
-                }
-                
-                // Double-check that the train is moving in the direction specified by the destination, if specified.
-                // This should never fail.
-                if let direction = destination.direction, currentBlock.train?.direction != direction {
-                    throw LayoutError.destinationDirectionMismatch(currentBlock: currentBlock, destination: destination)
-                }
-                                
-                debug("Requesting \(train) to stop completely because it has reached the end of the route")
-                stopTrigger = StopTrigger.completeStop()
-                return .processed
-            }
-            
-        case .endless:
-            if handleTrainStopByBlock(route: route, block: currentBlock) == .processed {
-                return .processed
-            }
-        }
-                                
-        return .none
-    }
-        
-    // This method handles any stop trigger related to the manual route, which are:
-    // - The train reaches the end of the route
-    // - The train reaches a block that stops the train for a while (ie station)
-    private func handleManualRouteStop(route: Route) throws -> Result {
-        guard let currentBlock = layout.currentBlock(train: train) else {
-            return .none
-        }
-        
-        guard !route.automatic else {
-            return .none
-        }
-        
-        // The train is not in the first step of the route
-        guard train.routeStepIndex != train.startRouteIndex else {
-            return .none
-        }
-        
-        if train.routeStepIndex == route.lastStepIndex {
-            debug("Train \(train) will stop here (\(currentBlock)) because it has reached the end of the route")
-            stopTrigger = StopTrigger.completeStop()
-            return .processed
-        }
-        
-        if handleTrainStopByBlock(route: route, block: currentBlock) == .processed {
-            return .processed
-        }
-        
-        return .none
-    }
-    
-    // This method takes care to trigger a stop of the train located in
-    // the specified `block`, depending on the block characteristics.
-    // For now, only "station" blocks make the train stop.
-    private func handleTrainStopByBlock(route: Route, block: Block) -> Result {
-        guard layout.trainShouldStop(train: train, block: block) else {
-            return .none
-        }
-                
-        if train.automaticFinishingScheduling {
-            debug("Requesting \(train) to stop completely because it has reached a station and was finishing the route")
-            stopTrigger = StopTrigger.completeStop()
-            return .processed
-        } else {
-            let delay = waitingTime(route: route, train: train, block: block)
-            stopTrigger = StopTrigger.stopAndRestart(after: delay)
-            return .processed
-        }
-    }
-
-    private func waitingTime(route: Route, train: Train, block: Block) -> TimeInterval {
-        if let step = route.steps.element(at: train.routeStepIndex), let time = step.waitingTime {
-            return time
-        } else {
-            // Use the block waiting time if the route itself has nothing specified
-            return block.waitingTime
-        }
-    }
-        
-    private func handleTrainStop() throws -> Result {
-        guard train.state != .stopped && train.state != .stopping else {
-            return .none
-        }
-                
-        guard let currentBlock = layout.currentBlock(train: train) else {
-            return .none
-        }
-
-        guard let trainInstance = currentBlock.train else {
-            return .none
-        }
-        
-        guard let stopTrigger = stopTrigger else {
-            return .none
-        }
-        
-        let direction = trainInstance.direction
-        var result: Result = .none
-        for feedback in currentBlock.feedbacks {
-            guard let f = layout.feedback(for: feedback.feedbackId), f.detected else {
-                continue
-            }
-            
-            if train.state == .running {
-                guard let brakeFeedback = currentBlock.brakeFeedback(for: direction) else {
-                    throw LayoutError.brakeFeedbackNotFound(block: currentBlock)
-                }
-                if brakeFeedback == f.id {
-                    debug("Train \(train) is braking in \(currentBlock.name) at position \(train.position), direction \(direction)")
-                    train.state = .braking
-                    layout.setTrainSpeed(train, currentBlock.brakingSpeed ?? LayoutFactory.DefaultBrakingSpeed) {}
-                    result = .processed
-                }
-            }
-            
-            if train.state == .braking {
-                guard let stopFeedback = currentBlock.stopFeedback(for: direction) else {
-                    throw LayoutError.stopFeedbackNotFound(block: currentBlock)
-                }
-                if stopFeedback == f.id {
-                    debug("Train \(train) is stopping in \(currentBlock.name) at position \(train.position), direction \(direction)")
-                    result = try stop(completely: stopTrigger.stopCompletely)
-                    
-                    // Reschedule if necessary
-                    if stopTrigger.restartDelay > 0 {
-                        debug("Schedule timer to restart train \(train) in \(stopTrigger.restartDelay) seconds")
-                        
-                        // The layout controller is going to schedule the appropriate timer given the `restartDelayTime` value
-                        train.timeUntilAutomaticRestart = stopTrigger.restartDelay
-                        delegate?.scheduleRestartTimer(train: train)
-                    }
-                }
-            }
-        }
-        return result
-    }
-    
-    func handleTrainMove() throws -> Result {
-        guard train.state != .stopped else {
-            return .none
-        }
-                
-        guard let currentBlock = layout.currentBlock(train: train) else {
-            return .none
-        }
-
-        guard let trainInstance = currentBlock.train else {
-            return .none
-        }
-        
-        let direction = trainInstance.direction
-        var result: Result = .none
-        for (index, feedback) in currentBlock.feedbacks.enumerated() {
-            guard let f = layout.feedback(for: feedback.feedbackId), f.detected else {
-                continue
-            }
-            
-            let position = layout.newPosition(forTrain: train, enabledFeedbackIndex: index, direction: direction)
-            if train.position != position {
-                try layout.setTrainPosition(train, position)
-                debug("Train \(train) moved to position \(train.position) in \(currentBlock.name), direction \(direction)")
-                result = .processed
-                
-                // Always adjust the speed after the train has moved within a block because it might
-                // now be reaching out to element that have speed limits.
-                layout.adjustSpeedLimit(train)
-            }
-                        
-        }
-        
-        return result
-    }
-
-    // This method handles the transition from one block to another, using
-    // the entry feedback of the next block to determine when a train moves
-    // to the next block.
-    // When the train moves to another block:
-    // - Occupied and leading reservation blocks are updated.
-    // - Stop trigger is evaluated depending on the nature of the route
-    private func handleTrainMoveToNextBlock(route: Route) throws -> Result {
-        guard train.state != .stopped else {
-            return .none
-        }
-        
-        guard try layout.shouldHandleTrainMoveToNextBlock(train: train) else {
-            return .none
-        }
-        
-        guard let currentBlock = layout.currentBlock(train: train) else {
-            return .none
-        }
-
-        guard let nextBlock = layout.nextBlock(train: train) else {
-            return .none
-        }
-
-        // Find out what is the entry feedback for the next block
-        let (entryFeedback, direction) = try layout.entryFeedback(from: currentBlock, to: nextBlock)
-        
-        guard let entryFeedback = entryFeedback, entryFeedback.detected else {
-            // The entry feedback is not yet detected, nothing more to do
-            return .none
-        }
-        
-        guard let position = nextBlock.indexOfTrain(forFeedback: entryFeedback.id, direction: direction) else {
-            throw LayoutError.feedbackNotFound(feedbackId: entryFeedback.id)
-        }
-                
-        debug("Train \(train) enters block \(nextBlock) at position \(position), direction \(direction)")
-                
-        // Set the train to its new block. This methdo also takes care of updated the reserved blocks for the train itself
-        // but also the leading blocks so the train can continue to move automatically.
-        try layout.setTrainToBlock(train.id, nextBlock.id, position: .custom(value: position), direction: direction, routeIndex: train.routeStepIndex + 1)
-                                        
-        // Always adjust the speed after the train enters a new block because it might
-        // now be reaching out to element that have speed limits.
-        layout.adjustSpeedLimit(train)
-
-        // Handle any route-specific stop now that the train has moved to a new block
-        if route.automatic {
-            _ = try handleAutomaticRouteStop(route: route)
-        } else {
-            _ = try handleManualRouteStop(route: route)
-        }
-                
-        // If the train is not stopping in this block...
-        guard stopTrigger == nil else {
-            return .processed
-        }
-        
-        let result = try reserveLeadBlocks(route: route, currentBlock: currentBlock)
-        if result.success == false {
-            debug("Train \(train) will stop here (\(nextBlock)) because the next block(s) cannot be reserved")
-            stopTrigger = StopTrigger.temporaryStop()
-        }
-
-        return .processed
-    }
-
     func stop(completely: Bool = false) throws -> Result {
-        stopTrigger = nil
+        train.stopTrigger = nil
                                 
         debug("Stop train \(train)")
         
         try layout.stopTrain(train.id, completely: completely) { }
                 
-        return .processed
+        return .none()
     }
-        
-    
+            
     /// This method tries to reserve the leading blocks for the train. If the blocks cannot be reserved and the route is automatic,
     /// the route is updated and the leading blocks reserved again.
     /// - Parameters:
@@ -481,13 +151,13 @@ final class TrainController {
     ///   - currentBlock: the current block
     ///   - trainStarting: true if the train is starting, defaults to false
     /// - Returns: true if the leading blocks could be reserved, false otherwise.
-    private func reserveLeadBlocks(route: Route, currentBlock: Block, trainStarting: Bool = false) throws -> (success: Bool, result: Result) {
+    func reserveLeadBlocks(route: Route, currentBlock: Block, trainStarting: Bool = false) throws -> Bool {
         if try layout.reservation.updateReservedBlocks(train: train, trainStarting: trainStarting) {
-            return (true, .processed)
+            return true
         }
         
         guard route.automatic else {
-            return (false, .none)
+            return false
         }
         
         debug("Generating a new route for \(train) at block \(currentBlock.name) because the next blocks could not be reserved (route: \(route.steps.debugDescription))")
@@ -495,9 +165,9 @@ final class TrainController {
         // Update the automatic route
         if try updateAutomaticRoute(for: train.id) {
             // And try to reserve the lead blocks again
-            return (try layout.reservation.updateReservedBlocks(train: train, trainStarting: trainStarting), .processed) // .processed because the route has been updated
+            return try layout.reservation.updateReservedBlocks(train: train, trainStarting: trainStarting)
         } else {
-            return (false, .none)
+            return false
         }
     }
 

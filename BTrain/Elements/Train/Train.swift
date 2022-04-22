@@ -216,6 +216,38 @@ final class Train: Element, ObservableObject {
     // The state of the train
     @Published var state: State = .stopped
 
+    // Structure indicating when the train should stop and
+    // the associated behavior when it does effectively stop.
+    struct StopTrigger {
+        // If > 0, the train will be restarted after the specified delay
+        let restartDelay: TimeInterval
+        
+        // If true, the train scheduling will be stopped as well,
+        // otherwise the train stops temporarily until it can restart.
+        let stopCompletely: Bool
+        
+        var isTemporary: Bool {
+            return restartDelay == 0 && stopCompletely == false
+        }
+        
+        static func completeStop() -> StopTrigger {
+            return .init(restartDelay: 0, stopCompletely: true)
+        }
+        
+        static func temporaryStop() -> StopTrigger {
+            return .init(restartDelay: 0, stopCompletely: false)
+        }
+        
+        static func stopAndRestart(after delay: TimeInterval) -> StopTrigger {
+            return .init(restartDelay: delay, stopCompletely: false)
+        }
+
+    }
+    
+    // If this variable is not nil, it means the train
+    // has been asked to stop at the next opportunity.
+    @Published var stopTrigger: StopTrigger? = nil
+        
     // The block where the locomotive is located
     @Published var blockId: Identifier<Block>?
     

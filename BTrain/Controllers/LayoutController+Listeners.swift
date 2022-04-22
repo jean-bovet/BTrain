@@ -23,7 +23,7 @@ extension LayoutController {
                 if let feedback = sSelf.layout.feedbacks.find(deviceID: deviceID, contactID: contactID) {
                     feedback.detected = value == 1
                     BTLogger.debug("Feedback \(feedback) changed to \(feedback.detected)")
-                    sSelf.runControllers()
+                    sSelf.runControllers(.feedbackTriggered)
                 }
             }
         })
@@ -39,7 +39,8 @@ extension LayoutController {
                 if let train = layout.trains.find(address: address, decoder: decoder) {
                     train.speed.actualSteps = interface.speedSteps(for: value, decoder: train.decoder)
                     BTLogger.debug("Actual speed changed to \(train.speed.actualKph) for \(train.name)")
-                    self?.runControllers()
+                    // TODO: do we want to run the controllers? That would only by applicable for the speed limit
+//                    self?.runControllers()
                     self?.switchboard?.state.triggerRedraw.toggle()
                 }
             }
@@ -88,7 +89,6 @@ extension LayoutController {
                 if let turnout = layout.turnouts.find(address: address) {
                     BTLogger.debug("Turnout \(turnout.name) changed state \(state) for address \(address.actualAddress.toHex())")
                     turnout.setState(value: state, for: address.actualAddress)
-                    BTLogger.debug(" > Turnout \(turnout.name) changed to state \(turnout.state)")
                     layout.didChange()
                 } else {
                     BTLogger.error("Unknown turnout for address \(address.actualAddress.toHex())")

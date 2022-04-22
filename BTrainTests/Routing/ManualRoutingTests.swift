@@ -86,8 +86,13 @@ class ManualRoutingTests: BTTestCase {
         try p.assert("r1:{b1 ≏ ≏ } <t0> [r1[b2 ≡ 🟡🚂1 ≏ ]] <t1(0,2)> [r2[b3 ≏ ≏ ]] <t0(2,0)> !{b1 ≏ ≏ }")
         try p.assert("r1:{b1 ≏ ≏ } <t0> [r1[b2 ≏ ≡ 🔴🚂1 ]] <t1(0,2)> [r2[b3 ≏ ≏ ]] <t0(2,0)> !{b1 ≏ ≏ }")
         
-        // The train re-starts after the block is `unreserved`
+        // Free block b3
         try layout.free(block: b3.id)
+        
+        // Which is a simulation of a train moving out of b3, so trigger that event
+        // so train 1 will restart
+        p.layoutController.runControllers(.movedToNextBlock)
+        
         try p.assert("r1:{b1 ≏ ≏ } <t0> [r1[b2 ≏ ≡ 🔵🚂1 ]] <r1<t1(0,2),l>> [r1[b3 ≏ ≏ ]] <t0(2,0)> !{b1 ≏ ≏ }")
         
         try layout.stopTrain(Identifier<Train>(uuid: "1"), completely: true) { }
@@ -139,6 +144,8 @@ class ManualRoutingTests: BTTestCase {
         
         // Re-enable b3
         b3.enabled = true
+        p.layoutController.runControllers(.movedToNextBlock)
+
         try p.assert("r1:{b1 ≏ ≏ } <t0> [r1[b2 ≏ ≡ 🔵🚂1 ]] <r1<t1(0,2),l>> [r1[b3 ≏ ≏ ]] <t0(2,0)> !{b1 ≏ ≏ }")
         
         try layout.stopTrain(Identifier<Train>(uuid: "1"), completely: true) { }
@@ -394,12 +401,13 @@ class ManualRoutingTests: BTTestCase {
         try p.assert("r1: {r1{b1 ≏ 💺1 ≏ 💺1 }} <r1<t1{ds2},s01>> [r1[b2 💺1 ≏ 💺1 ≡ 🔵🚂1 ]] [r1[b3 ≏ ≏ ]] <r1<t1{ds2}(2,3),s01>> [b4 ≏ ≏ ] {r1{b1 ≏ 💺1 ≏ 💺1}}")
         
         // b1: { 20 | 60 | w20 } b2: [ w20 | w60 | w20 ] b3: [ w20 | >60 | 20 ] b4: [ 20 | 60 | 20 ]
-        // Note: train is slowing down to stop because b4 cannot be reserved because the trail of the train still occupies the turnout
+        // Note: train is slowing down to stop because b4 cannot be reserved because the tail of the train still occupies the turnout
         try p.assert("r1: {r1{b1 ≏ ≏ 💺1 }} <r1<t1{ds2},s01>> [r1[b2 💺1 ≏ 💺1 ≏ 💺1 ]] [r1[b3 💺1 ≡ 🟡🚂1 ≏ ]] <r1<t1{ds2}(2,3),s01>> [b4 ≏ ≏ ] {r1{b1 ≏ ≏ 💺1 }}")
         
         // b1: { 20 | 60 | 20 } b2: [ 20 | w60 | w20 ] b3: [ w20 | w60 | >20 ] b4: [ 20 | 60 | 20 ]
-        try p.assert("r1: {b1 ≏ ≏ } <t1{ds2},s01> [r1[b2 ≏ 💺1 ≏ 💺1 ]] [r1[b3 💺1 ≏ 💺1 ≡ 🔴🚂1 ]] <t1{ds2}(2,3),s01> [b4 ≏ ≏ ] {b1 ≏ ≏ }")
-        try p.assert("r1: {b1 ≏ ≏ } <r1<t1{ds2},s23>> [r1[b2 ≏ 💺1 ≏ 💺1 ]] [r1[b3 💺1 ≏ 💺1 ≏ 🔵🚂1 ]] <r1<t1{ds2}(2,3),s23>> [r1[b4 ≏ ≏ ]] {b1 ≏ ≏ }")
+        // Note: the train accelerates again because the leading blocks can be reserved again now that the tail of the train
+        // does not occupy turnout 1 anymore.
+        try p.assert("r1: {b1 ≏ ≏ } <r1<t1{ds2},s23>> [r1[b2 ≏ 💺1 ≏ 💺1 ]] [r1[b3 💺1 ≏ 💺1 ≡ 🔵🚂1 ]] <r1<t1{ds2}(2,3),s23>> [r1[b4 ≏ ≏ ]] {b1 ≏ ≏ }")
         
         // b1: { 20 | 60 | 20 } b2: [ 20 | 60 | w20 ] b3: [ w20 | w60 | w20 ] b4: [ w20 | >60 | 20 ]
         try p.assert("r1: {r1{b1 ≏ ≏ }} <r1<t1{ds2},s23>> [r1[b2 ≏ ≏ 💺1 ]] [r1[b3 💺1 ≏ 💺1 ≏ 💺1 ]] <r1<t1{ds2}(2,3),s23>> [r1[b4 💺1 ≡ 🔵🚂1 ≏ ]] {r1{b1 ≏ ≏ }}")
@@ -647,9 +655,7 @@ class ManualRoutingTests: BTTestCase {
 
         // Artificially set the restart time to 0 which will make train 1 restart again
         layout.trains[0].timeUntilAutomaticRestart = 0
-        
-        XCTAssertEqual(p.layoutController.run(), .processed) // Train 1 is re-started
-        XCTAssertEqual(p.layoutController.run(), .none)
+        p.layoutController.runControllers(.stateChanged)
 
         try p.assert2("r1: {r2{b1 🔴🚂2 ≏ ≏ }} <t0,r> [b2 ≏ ≏ ] {r1{b3 ≏ ≏ 🔵🚂1 }} <r1<t1>> [r1[b4 ≏ ≏]] {r2{b1 🔴🚂2 ≏ ≏ }}",
                       "r3: {r1{b3 ≏ ≏ 🔵🚂1 }} <r1<t1(0,2)>> [b5 ≏ ≏ ] <t0(2,0),r> !{r2{b1 ≏ ≏ 🔴🚂2 }}")
@@ -663,6 +669,8 @@ class ManualRoutingTests: BTTestCase {
 
         // Let's remove train 2 artificially to allow train 1 to stop at the station b1
         try layout.remove(trainID: Identifier<Train>(uuid: "2"))
+        p.layoutController.runControllers(.movedToNextBlock)
+
         try p.assert2("r1: {r1{b1 ≏ ≏ }} <t0,r> [b2 ≏ ≏ ] {b3 ≏ ≏ } <t1> [r1[b4 ≡ ≡ 🔵🚂1 ]] {r1{b1 ≏ ≏ }}",
                       "r3: {b3 ≏ ≏ } <t1(0,2)> [b5 ≏ ≏ ] <t0(2,0),r> !{r1{b1 ≏ ≏ }}")
 
@@ -712,6 +720,7 @@ class ManualRoutingTests: BTTestCase {
         
         // Free s1 so the train finishes its route
         layout.free("s1")
+        p.layoutController.runControllers(.movedToNextBlock)
         
         try p.assert("0: {r0{s1 ≏ }} <t1(2,0),l> <t2(1,0),s> [b1 ≏ ] <t3> [b2 ≏ ] <t4(1,0)> [r0[b3 ≏ ≏ 🔵🚂0 ≏ ]] <r0<t5>> <r0<t6(0,2),r>> {r0{s1 ≏ }}")
         try p.assert("0: {r0{s1 ≏ }} <t1(2,0),l> <t2(1,0),s> [b1 ≏ ] <t3> [b2 ≏ ] <t4(1,0)> [r0[b3 ≏ ≏ ≡ 🔵🚂0 ]] <r0<t5>> <r0<t6(0,2),r>> {r0{s1 ≏ }}")
@@ -762,9 +771,7 @@ class ManualRoutingTests: BTTestCase {
 
         // Artificially set the restart time to 0 which will make the train restart again
         layout.trains[0].timeUntilAutomaticRestart = 0
-
-        XCTAssertEqual(p.layoutController.run(), .processed) // Train is re-started
-        XCTAssertEqual(p.layoutController.run(), .none)
+        p.layoutController.runControllers(.stateChanged)
 
         XCTAssertTrue(p.train.speed.requestedKph > 0)
         
@@ -798,6 +805,7 @@ class ManualRoutingTests: BTTestCase {
         
         // And now we free D...
         layout.free("D")
+        p.layoutController.runControllers(.movedToNextBlock)
 
         // Which means the train should start accelerating again
         try p.assert("0: |[A ≏ ≏ ] <AB> [r0[B 💺0 ≏ 💺0 ≏ 💺0 ]] [r0[C 💺0 ≏ 💺0 ≡ 🔵🚂0 ]] [r0[D ≏ ≏ ]] <DE(1,0)> [E ≏ ≏ ]|")
@@ -1045,13 +1053,12 @@ class ManualRoutingTests: BTTestCase {
         
         func toggle(_ feedback: String) {
             layout.feedback(for: Identifier<Feedback>(uuid: feedback))?.detected.toggle()
-            _ = layoutController.run()
+            layoutController.runControllers(.feedbackTriggered)
         }
 
         func toggle2(_ f1: String, _ f2: String) {
             toggle(f1)
             toggle(f2)
-            _ = layoutController.run()
         }
 
         func assert(_ r1: String, _ leadingBlocks: [String]? = nil) throws {

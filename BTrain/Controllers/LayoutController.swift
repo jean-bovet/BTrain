@@ -61,11 +61,12 @@ final class LayoutController: TrainControllerDelegate {
         // Run the controllers each time a change is detected in the layout.
         // For example, changing the direction of a train, adding or removing
         // an element, etc.
-        layoutChangeSink = layout.objectWillChange.sink { [weak self] void in
-            DispatchQueue.main.async {
-                self?.runControllers()
-            }
-        }
+        // TODO: see if that code can be removed, we would like to be much more explicit. For example, if the direction change is needed (check the expected feedback in the UI), do that with a changeDirection event.
+//        layoutChangeSink = layout.objectWillChange.sink { [weak self] void in
+//            DispatchQueue.main.async {
+//                self?.runControllers()
+//            }
+//        }
     }
         
     func registerForChange() {
@@ -88,25 +89,26 @@ final class LayoutController: TrainControllerDelegate {
         })
     }
 
-    func runControllers() {
-        if run() == .processed {
+    func runControllers(_ event: TrainEvent) {
+        let result = run(event)
+        if result.events.count > 0 {
             // As long as something has changed in the layout processing,
             // make sure to run the controllers again so the layout can
             // be further updated (ie a feedback change might cause a train
             // to further stop or start).
-            DispatchQueue.main.async {
-                self.runControllers()
+            for event in result.events {
+                runControllers(event)
             }
         }
         redrawSwitchboard()
     }
         
-    func run() -> TrainController.Result {
+    func run(_ event: TrainEvent) -> TrainController.Result {
         if let runtimeError = layout.runtimeError {
             BTLogger.controller.error("⚙ Cannot evaluate the layout because there is a runtime error: \(runtimeError, privacy: .public)")
-            return .none
+            return .none()
         }
-        BTLogger.controller.debug("⚙ Evaluating the layout")
+        BTLogger.controller.debug("⚙ Evaluating the layout for \(event.rawValue, privacy: .public)")
 
         // Process the latest changes
         updateControllers()
@@ -114,7 +116,7 @@ final class LayoutController: TrainControllerDelegate {
         // Run each controller one by one, using
         // the sorted keys to ensure they always
         // run in the same order.
-        var result: TrainController.Result = .none
+        var result: TrainController.Result = .none()
         do {
             // Update and detect any unexpected feedbacks
             try updateExpectedFeedbacks()
@@ -126,9 +128,7 @@ final class LayoutController: TrainControllerDelegate {
             // to process the new state of each train (speed, position,
             // reserved blocks, etc).
             for controller in controllers.values {
-                if try controller.run() == .processed {
-                    result = .processed
-                }
+                result = result.appending(try controller.run(event))
             }
             
             // Update and detect any unexpected feedbacks
@@ -187,7 +187,7 @@ final class LayoutController: TrainControllerDelegate {
     
     func start(routeID: Identifier<Route>, trainID: Identifier<Train>, destination: Destination?) throws {
         try layout.start(routeID: routeID, trainID: trainID, destination: destination)
-        _ = run()
+        _ = run(.schedulingChanged)
     }
     
     func startAll() {
@@ -204,7 +204,7 @@ final class LayoutController: TrainControllerDelegate {
     
     func stop(trainID: Identifier<Train>, completely: Bool) throws {
         try layout.stopTrain(trainID, completely: completely) { }
-        _ = run()
+        _ = run(.stateChanged)
     }
 
     func stopAll(includingManualTrains: Bool) throws {
@@ -225,7 +225,7 @@ final class LayoutController: TrainControllerDelegate {
 
     func finish(trainID: Identifier<Train>) throws {
         try layout.finishTrain(trainID)
-        _ = run()
+        _ = run(.schedulingChanged)
     }
     
     func finishAll() throws {
@@ -259,7 +259,7 @@ final class LayoutController: TrainControllerDelegate {
                 // when it sees that this timer has reached 0 and all other parameters are valid.
                 train.timeUntilAutomaticRestart = 0
                 timer.invalidate()
-                self?.runControllers()
+                self?.runControllers(.stateChanged)
             }
             // Redraw the switchboard so the time interval is refreshed
             self?.redrawSwitchboard()

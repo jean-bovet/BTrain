@@ -24,7 +24,7 @@ final class TrainPositionFinder {
         let visitor = TrainVisitor(layout: layout)
         
         var lastVisitedBlock: Block? = nil
-        try visitor.visit(train: train, startAtNextPosition: startAtNextPosition) { transition in
+        let result = try visitor.visit(train: train, startAtNextPosition: startAtNextPosition) { transition in
             // Transition is only a virtual element, nothing to do.
         } turnoutCallback: { turnout in
             // Note: we are ignoring any occupied turnout that might
@@ -35,7 +35,13 @@ final class TrainPositionFinder {
             lastVisitedBlock = block
         }
         
-        return lastVisitedBlock
+        if result {
+            return lastVisitedBlock
+        } else {
+            // The visitor could not visit all the blocks necessary to fit the train,
+            // which means the train is taking more space than available!
+            return nil
+        }
     }
     
     // Returns true if the block in front of the block containing the head wagon is free.
