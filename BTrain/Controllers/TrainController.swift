@@ -11,15 +11,13 @@
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 import Foundation
-import OrderedCollections
 
 protocol TrainControllerDelegate: AnyObject {
     func scheduleRestartTimer(train: Train)
 }
 
 /**
- This class manages a single train in the layout. It takes care of starting and stopping it, monitoring
- feedbacks when it moves inside a block or from one block to another, etc.
+ This class manages a single train in the layout. It relies on a set of handler classes to manage the starting, stopping and monitoring of the train movement inside blocks.
  
  There are two kinds of routes:
  
@@ -42,32 +40,10 @@ protocol TrainControllerDelegate: AnyObject {
  */
 final class TrainController {
     
-    // Most method in this class returns a result
-    // that indicates if that method has done something
-    // or not. This is useful information that will help
-    // the LayoutController to re-run the TrainController
-    // in case there are any changes to be applied.
-    struct Result {
-        let events: [TrainEvent]
-
-        static func none() -> Result {
-            .init(events: [])
-        }
-
-        static func one(_ event: TrainEvent) -> Result {
-            .init(events: [event])
-        }
-        
-        func appending(_ event: TrainEvent) -> Result {
-            .init(events: self.events + [event])
-        }
-        
-        func appending(_ result: Result) -> Result {
-            .init(events: self.events + result.events)
-        }
-    }
-        
+    /// The layout associated with this controller
     let layout: Layout
+    
+    /// The train managed by this controller
     let train: Train
     
     // The train acceleration controller instance that is monitoring the specified train
@@ -75,9 +51,12 @@ final class TrainController {
     let accelerationController: TrainControllerAcceleration
     
     weak var delegate: TrainControllerDelegate?
-        
-    var automaticRouteHandlers = [TrainAutomaticRouteHandling]()
-    var manualRouteHandlers = [TrainManualRouteHandling]()
+            
+    /// The array of handlers when the train runs in automatic scheduling mode
+    private var automaticSchedulingHandlers = [TrainAutomaticSchedulingHandler]()
+    
+    /// The array of handlers when the train runs in manual scheduling mode
+    private var manualSchedulingHandlers = [TrainManualSchedulingHandler]()
 
     init(layout: Layout, train: Train, interface: CommandInterface, delegate: TrainControllerDelegate? = nil) {
         self.layout = layout
@@ -85,29 +64,34 @@ final class TrainController {
         self.accelerationController = TrainControllerAcceleration(train: train, interface: interface)
         self.delegate = delegate
         
-        automaticRouteHandlers.append(TrainStartHandler())
-        automaticRouteHandlers.append(TrainMoveWithinBlockHandler())
-        automaticRouteHandlers.append(TrainMoveToNextBlockHandler())
-        automaticRouteHandlers.append(TrainDetectStopHandler())
-        automaticRouteHandlers.append(TrainExecuteStopInBlockHandler())
-        automaticRouteHandlers.append(TrainSpeedLimitEventHandler())
-        automaticRouteHandlers.append(TrainReserveLeadingBlocksHandler())
-        automaticRouteHandlers.append(TrainStopPushingWagonsHandler())
-
-        manualRouteHandlers.append(TrainStateHandler())
-        manualRouteHandlers.append(TrainMoveWithinBlockHandler())
-        manualRouteHandlers.append(TrainManualMoveToNextBlockHandler())
-        manualRouteHandlers.append(TrainManualStopTriggerDetectionHandler())
+        registerHandlers()
     }
                         
-    // This is the main method to call to manage the changes for the train.
-    // If this method returns Result.processed, it is expected to be called again
-    // in order to process any changes remaining.
-    // Note: because each function below has a side effect that can affect
-    // the currentBlock and nextBlock (as well as the train speed and other parameters),
-    // always have each function retrieve what it needs.
-    func run(_ event: TrainEvent) throws -> Result {
-        var result: Result = .none()
+    private func registerHandlers() {
+        automaticSchedulingHandlers.append(TrainStartHandler())
+        automaticSchedulingHandlers.append(TrainMoveWithinBlockHandler())
+        automaticSchedulingHandlers.append(TrainMoveToNextBlockHandler())
+        automaticSchedulingHandlers.append(TrainDetectStopHandler())
+        automaticSchedulingHandlers.append(TrainExecuteStopInBlockHandler())
+        automaticSchedulingHandlers.append(TrainSpeedLimitEventHandler())
+        automaticSchedulingHandlers.append(TrainReserveLeadingBlocksHandler())
+        automaticSchedulingHandlers.append(TrainStopPushingWagonsHandler())
+
+        manualSchedulingHandlers.append(TrainStateHandler())
+        manualSchedulingHandlers.append(TrainMoveWithinBlockHandler())
+        manualSchedulingHandlers.append(TrainManualMoveToNextBlockHandler())
+        manualSchedulingHandlers.append(TrainManualStopTriggerDetectionHandler())
+    }
+        
+    /// This is the main method to call to manage the train associated with this controller.
+    ///
+    /// This method executs all the handlers interested in the specified event and return the result which might
+    /// contain more events to further process. The ``LayoutController`` is responsible to call this class
+    /// again until all the events are processed.
+    /// - Parameter event: the event to process
+    /// - Returns: the result of the event processing
+    func run(_ event: TrainEvent) throws -> TrainHandlerResult {
+        var result: TrainHandlerResult = .none()
         
         BTLogger.debug("* Evaluating \(train) for \(event) and \(train.scheduling)")
         
@@ -117,13 +101,13 @@ final class TrainController {
                 return try stop()
             }
             
-            let interestedHandlers = automaticRouteHandlers.filter({ $0.events.contains(event) })
+            let interestedHandlers = automaticSchedulingHandlers.filter({ $0.events.contains(event) })
             for handler in interestedHandlers {
                 BTLogger.debug("* \(handler) for \(train)")
                 result = result.appending(try handler.process(layout: layout, train: train, route: route, event: event, controller: self))
             }
         } else {
-            let interestedHandlers = manualRouteHandlers.filter({ $0.events.contains(event) })
+            let interestedHandlers = manualSchedulingHandlers.filter({ $0.events.contains(event) })
             for handler in interestedHandlers {
                 BTLogger.debug("* \(handler) for \(train)")
                 result = result.appending(try handler.process(layout: layout, train: train, event: event, controller: self))
@@ -135,10 +119,14 @@ final class TrainController {
         return result
     }
     
-    func stop(completely: Bool = false) throws -> Result {
+    /// Stop the train by setting its speed to 0.
+    ///
+    /// - Parameter completely: true if the train stops completely, false otherwise. A train that stops completely will have its ``Train/scheduling`` changed to ``Train/Schedule/manual``.
+    /// - Returns: the result
+    func stop(completely: Bool = false) throws -> TrainHandlerResult {
         train.stopTrigger = nil
                                 
-        debug("Stop train \(train)")
+        BTLogger.debug("Stop train \(train)")
         
         try layout.stopTrain(train.id, completely: completely) { }
                 
@@ -147,6 +135,7 @@ final class TrainController {
             
     /// This method tries to reserve the leading blocks for the train. If the blocks cannot be reserved and the route is automatic,
     /// the route is updated and the leading blocks reserved again.
+    ///
     /// - Parameters:
     ///   - route: the route
     ///   - currentBlock: the current block
@@ -161,7 +150,7 @@ final class TrainController {
             return false
         }
         
-        debug("Generating a new route for \(train) at block \(currentBlock.name) because the next blocks could not be reserved (route: \(route.steps.debugDescription))")
+        BTLogger.debug("Generating a new route for \(train) at block \(currentBlock.name) because the next blocks could not be reserved (route: \(route.steps.debugDescription))")
 
         // Update the automatic route
         if try updateAutomaticRoute(for: train.id) {
@@ -175,7 +164,7 @@ final class TrainController {
     private func updateAutomaticRoute(for trainId: Identifier<Train>) throws -> Bool {
         let (success, route) = try layout.automaticRouting.updateAutomaticRoute(for: train.id)
         if success {
-            debug("Generated route is: \(route.steps)")
+            BTLogger.debug("Generated route is: \(route.steps)")
             return true
         } else {
             BTLogger.warning("Unable to find a suitable route for train \(train)")
@@ -183,8 +172,4 @@ final class TrainController {
         }
     }
     
-    func debug(_ message: String) {
-        BTLogger.debug(message)
-    }
-
 }

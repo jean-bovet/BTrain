@@ -12,13 +12,13 @@
 
 import Foundation
 
-final class TrainSpeedLimitEventHandler: TrainAutomaticRouteHandling {
+final class TrainSpeedLimitEventHandler: TrainAutomaticSchedulingHandler {
     
     var events: Set<TrainEvent> {
         [.movedToNextBlock, .movedInsideBlock]
     }
     
-    func process(layout: Layout, train: Train, route: Route, event: TrainEvent, controller: TrainController) throws -> TrainController.Result {
+    func process(layout: Layout, train: Train, route: Route, event: TrainEvent, controller: TrainController) throws -> TrainHandlerResult {
         
         // Always adjust the speed after the train enters a new block because it might
         // now be reaching out to element that have speed limits.

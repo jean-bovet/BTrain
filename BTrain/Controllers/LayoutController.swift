@@ -103,7 +103,7 @@ final class LayoutController: TrainControllerDelegate {
         redrawSwitchboard()
     }
         
-    func run(_ event: TrainEvent) -> TrainController.Result {
+    func run(_ event: TrainEvent) -> TrainHandlerResult {
         if let runtimeError = layout.runtimeError {
             BTLogger.controller.error("⚙ Cannot evaluate the layout because there is a runtime error: \(runtimeError, privacy: .public)")
             return .none()
@@ -116,7 +116,7 @@ final class LayoutController: TrainControllerDelegate {
         // Run each controller one by one, using
         // the sorted keys to ensure they always
         // run in the same order.
-        var result: TrainController.Result = .none()
+        var result: TrainHandlerResult = .none()
         do {
             // Update and detect any unexpected feedbacks
             try updateExpectedFeedbacks()
@@ -187,7 +187,7 @@ final class LayoutController: TrainControllerDelegate {
     
     func start(routeID: Identifier<Route>, trainID: Identifier<Train>, destination: Destination?) throws {
         try layout.start(routeID: routeID, trainID: trainID, destination: destination)
-        _ = run(.schedulingChanged)
+        runControllers(.schedulingChanged)
     }
     
     func startAll() {
@@ -204,7 +204,7 @@ final class LayoutController: TrainControllerDelegate {
     
     func stop(trainID: Identifier<Train>, completely: Bool) throws {
         try layout.stopTrain(trainID, completely: completely) { }
-        _ = run(.stateChanged)
+        runControllers(.schedulingChanged)
     }
 
     func stopAll(includingManualTrains: Bool) throws {
@@ -225,7 +225,7 @@ final class LayoutController: TrainControllerDelegate {
 
     func finish(trainID: Identifier<Train>) throws {
         try layout.finishTrain(trainID)
-        _ = run(.schedulingChanged)
+        runControllers(.schedulingChanged)
     }
     
     func finishAll() throws {
@@ -273,7 +273,7 @@ final class LayoutController: TrainControllerDelegate {
     
     func restartTimerFired(_ train: Train) {
         train.timeUntilAutomaticRestart = 0
-        runControllers(.stateChanged)
+        runControllers(.restartTimerExpired)
     }
     
     private func redrawSwitchboard() {

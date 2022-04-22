@@ -12,13 +12,13 @@
 
 import Foundation
 
-final class TrainReserveLeadingBlocksHandler: TrainAutomaticRouteHandling {
+final class TrainReserveLeadingBlocksHandler: TrainAutomaticSchedulingHandler {
     
     var events: Set<TrainEvent> {
-        return [.movedToNextBlock, .movedInsideBlock]
+        [.movedToNextBlock, .movedInsideBlock]
     }
     
-    func process(layout: Layout, train: Train, route: Route, event: TrainEvent, controller: TrainController) throws -> TrainController.Result {
+    func process(layout: Layout, train: Train, route: Route, event: TrainEvent, controller: TrainController) throws -> TrainHandlerResult {
         // If the train is not stopping in this block...
         guard train.stopTrigger == nil else {
             return .none()

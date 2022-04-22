@@ -126,10 +126,7 @@ class LayoutTests: XCTestCase {
         
         XCTAssertEqual(train1.state, .stopped)
         XCTAssertTrue(train1.manualScheduling)
-
-        try layout.start(routeID: layout.routes[0].id, trainID: train1.id, destination: nil)
-        
-        doc.layoutController.runControllers(.stateChanged)
+        try doc.start(train: train1.id, withRoute: layout.routes[0].id, destination: nil)
         
         XCTAssertEqual(train1.state, .running)
         XCTAssertTrue(train1.automaticScheduling)

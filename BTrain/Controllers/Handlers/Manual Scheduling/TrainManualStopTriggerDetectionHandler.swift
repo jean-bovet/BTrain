@@ -12,13 +12,13 @@
 
 import Foundation
 
-final class TrainManualStopTriggerDetectionHandler: TrainManualRouteHandling {
+final class TrainManualStopTriggerDetectionHandler: TrainManualSchedulingHandler {
     
     var events: Set<TrainEvent> {
         [.feedbackTriggered]
     }
     
-    func process(layout: Layout, train: Train, event: TrainEvent, controller: TrainController) throws -> TrainController.Result {
+    func process(layout: Layout, train: Train, event: TrainEvent, controller: TrainController) throws -> TrainHandlerResult {
         guard train.state != .stopped && train.state != .stopping else {
             return .none()
         }

@@ -63,12 +63,12 @@ import Foundation
 //   - If the HWP is past the block it needs to stop in, stop the train.
 //   - If the HWP is past the stopping feedback of the block it needs to stop in, stop the train.
 //   - If the HWP is past the braking feedback of the block it needs to stop in, brake the train.
-final class TrainStopPushingWagonsHandler: TrainAutomaticRouteHandling {
+final class TrainStopPushingWagonsHandler: TrainAutomaticSchedulingHandler {
     var events: Set<TrainEvent> {
         [.movedInsideBlock, .movedToNextBlock]
     }
     
-    func process(layout: Layout, train: Train, route: Route, event: TrainEvent, controller: TrainController) throws -> TrainController.Result {
+    func process(layout: Layout, train: Train, route: Route, event: TrainEvent, controller: TrainController) throws -> TrainHandlerResult {
         guard train.speed.requestedKph > 0 else {
             return .none()
         }

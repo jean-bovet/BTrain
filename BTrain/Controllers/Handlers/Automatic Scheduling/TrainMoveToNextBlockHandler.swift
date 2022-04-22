@@ -12,7 +12,7 @@
 
 import Foundation
 
-final class TrainMoveToNextBlockHandler: TrainAutomaticRouteHandling {
+final class TrainMoveToNextBlockHandler: TrainAutomaticSchedulingHandler {
     
     var events: Set<TrainEvent> {
         [.feedbackTriggered]
@@ -24,7 +24,7 @@ final class TrainMoveToNextBlockHandler: TrainAutomaticRouteHandling {
     // When the train moves to another block:
     // - Occupied and leading reservation blocks are updated.
     // - Stop trigger is evaluated depending on the nature of the route
-    func process(layout: Layout, train: Train, route: Route, event: TrainEvent, controller: TrainController) throws -> TrainController.Result {
+    func process(layout: Layout, train: Train, route: Route, event: TrainEvent, controller: TrainController) throws -> TrainHandlerResult {
         guard train.state != .stopped else {
             return .none()
         }

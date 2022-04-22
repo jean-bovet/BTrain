@@ -12,18 +12,24 @@
 
 import Foundation
 
-final class TrainStartHandler: TrainAutomaticRouteHandling {
+final class TrainStartHandler: TrainAutomaticSchedulingHandler {
     
     var events: Set<TrainEvent> {
-        [.schedulingChanged, .stateChanged, .movedToNextBlock,
-         // A train can stop in a block because no blocks can be reserved ahead.
-         // But when it finally moves to the last part of the block, the block
-         // ahead can be reserved (ie the tail of the train frees a turnout),
-         // we want to make sure to restart it.
-         .movedInsideBlock]
+        [
+            .schedulingChanged, .stateChanged, .movedToNextBlock,
+            
+            // When the restart timer expired, this handler restarts the train
+            .restartTimerExpired,
+            
+            // A train can stop in a block because no blocks can be reserved ahead.
+            // But when it finally moves to the last part of the block, the block
+            // ahead can be reserved (ie the tail of the train frees a turnout),
+            // we want to make sure to restart it.
+            .movedInsideBlock
+        ]
     }
 
-    func process(layout: Layout, train: Train, route: Route, event: TrainEvent, controller: TrainController) throws -> TrainController.Result {
+    func process(layout: Layout, train: Train, route: Route, event: TrainEvent, controller: TrainController) throws -> TrainHandlerResult {
         // Note: we also want to start a train that is braking to stop temporarily, which can happen
         // when the next block that was occupied (and caused the train to brake in the first place) becomes free.
         guard train.state == .stopped || (train.state == .braking && train.stopTrigger?.isTemporary == true) else {

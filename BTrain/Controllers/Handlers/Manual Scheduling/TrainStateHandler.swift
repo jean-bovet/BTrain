@@ -12,13 +12,13 @@
 
 import Foundation
 
-final class TrainStateHandler: TrainManualRouteHandling {
+final class TrainStateHandler: TrainManualSchedulingHandler {
     
     var events: Set<TrainEvent> {
         [.stateChanged]
     }
     
-    func process(layout: Layout, train: Train, event: TrainEvent, controller: TrainController) throws -> TrainController.Result {
+    func process(layout: Layout, train: Train, event: TrainEvent, controller: TrainController) throws -> TrainHandlerResult {
         if train.state == .stopped && train.speed.actualKph > 0 {
             train.state = .running
             return .one(.stateChanged)

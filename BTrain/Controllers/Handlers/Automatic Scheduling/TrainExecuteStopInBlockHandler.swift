@@ -12,13 +12,13 @@
 
 import Foundation
 
-final class TrainExecuteStopInBlockHandler: TrainAutomaticRouteHandling {
+final class TrainExecuteStopInBlockHandler: TrainAutomaticSchedulingHandler {
     
     var events: Set<TrainEvent> {
         [.stopRequested, .feedbackTriggered]
     }
 
-    func process(layout: Layout, train: Train, route: Route, event: TrainEvent, controller: TrainController) throws -> TrainController.Result {
+    func process(layout: Layout, train: Train, route: Route, event: TrainEvent, controller: TrainController) throws -> TrainHandlerResult {
         guard train.state != .stopped && train.state != .stopping else {
             return .none()
         }
@@ -36,7 +36,7 @@ final class TrainExecuteStopInBlockHandler: TrainAutomaticRouteHandling {
         }
         
         let direction = trainInstance.direction
-        var result: TrainController.Result = .none()
+        var result: TrainHandlerResult = .none()
         for feedback in currentBlock.feedbacks {
             guard let f = layout.feedback(for: feedback.feedbackId), f.detected else {
                 continue

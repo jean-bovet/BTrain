@@ -12,17 +12,17 @@
 
 import Foundation
 
-final class TrainMoveWithinBlockHandler: TrainAutomaticRouteHandling, TrainManualRouteHandling {
+final class TrainMoveWithinBlockHandler: TrainAutomaticSchedulingHandler, TrainManualSchedulingHandler {
         
     var events: Set<TrainEvent> {
         [.feedbackTriggered]
     }
 
-    func process(layout: Layout, train: Train, route: Route, event: TrainEvent, controller: TrainController) throws -> TrainController.Result {
+    func process(layout: Layout, train: Train, route: Route, event: TrainEvent, controller: TrainController) throws -> TrainHandlerResult {
         return try process(layout: layout, train: train, event: event, controller: controller)
     }
     
-    func process(layout: Layout, train: Train, event: TrainEvent, controller: TrainController) throws -> TrainController.Result {
+    func process(layout: Layout, train: Train, event: TrainEvent, controller: TrainController) throws -> TrainHandlerResult {
         guard let currentBlock = layout.currentBlock(train: train) else {
             return .none()
         }
@@ -36,7 +36,7 @@ final class TrainMoveWithinBlockHandler: TrainAutomaticRouteHandling, TrainManua
         }
         
         let direction = trainInstance.direction
-        var result: TrainController.Result = .none()
+        var result: TrainHandlerResult = .none()
         for (index, feedback) in currentBlock.feedbacks.enumerated() {
             guard let f = layout.feedback(for: feedback.feedbackId), f.detected else {
                 continue

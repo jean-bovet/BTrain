@@ -202,7 +202,7 @@
 		A7ACCE972810E04D006F4310 /* TrainMoveWithinBlockHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7ACCE962810E04D006F4310 /* TrainMoveWithinBlockHandler.swift */; };
 		A7ACCE992810E093006F4310 /* TrainMoveToNextBlockHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7ACCE982810E093006F4310 /* TrainMoveToNextBlockHandler.swift */; };
 		A7ACCE9B2810E479006F4310 /* TrainDetectStopHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7ACCE9A2810E479006F4310 /* TrainDetectStopHandler.swift */; };
-		A7ACCE9F2810E5BA006F4310 /* TrainAutomaticRouteHandling.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7ACCE9E2810E5BA006F4310 /* TrainAutomaticRouteHandling.swift */; };
+		A7ACCE9F2810E5BA006F4310 /* TrainHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7ACCE9E2810E5BA006F4310 /* TrainHandler.swift */; };
 		A7ACCEA12810E767006F4310 /* TrainSpeedLimitEventHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7ACCEA02810E767006F4310 /* TrainSpeedLimitEventHandler.swift */; };
 		A7ACCEA42811AB23006F4310 /* TrainReserveLeadingBlocksHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7ACCEA32811AB23006F4310 /* TrainReserveLeadingBlocksHandler.swift */; };
 		A7B06AE12727786500BDD88C /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7B06AE02727786500BDD88C /* MainView.swift */; };
@@ -475,7 +475,7 @@
 		A7ACCE962810E04D006F4310 /* TrainMoveWithinBlockHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainMoveWithinBlockHandler.swift; sourceTree = "<group>"; };
 		A7ACCE982810E093006F4310 /* TrainMoveToNextBlockHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainMoveToNextBlockHandler.swift; sourceTree = "<group>"; };
 		A7ACCE9A2810E479006F4310 /* TrainDetectStopHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainDetectStopHandler.swift; sourceTree = "<group>"; };
-		A7ACCE9E2810E5BA006F4310 /* TrainAutomaticRouteHandling.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainAutomaticRouteHandling.swift; sourceTree = "<group>"; };
+		A7ACCE9E2810E5BA006F4310 /* TrainHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainHandler.swift; sourceTree = "<group>"; };
 		A7ACCEA02810E767006F4310 /* TrainSpeedLimitEventHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainSpeedLimitEventHandler.swift; sourceTree = "<group>"; };
 		A7ACCEA32811AB23006F4310 /* TrainReserveLeadingBlocksHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainReserveLeadingBlocksHandler.swift; sourceTree = "<group>"; };
 		A7B06AE02727786500BDD88C /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
@@ -1165,7 +1165,7 @@
 		A7ACCEA22811A9C5006F4310 /* Handlers */ = {
 			isa = PBXGroup;
 			children = (
-				A7ACCE9E2810E5BA006F4310 /* TrainAutomaticRouteHandling.swift */,
+				A7ACCE9E2810E5BA006F4310 /* TrainHandler.swift */,
 				A7ACCE962810E04D006F4310 /* TrainMoveWithinBlockHandler.swift */,
 				A7C30BE42811AD2C00CC4251 /* Automatic Scheduling */,
 				A7C30BE32811AD2300CC4251 /* Manual Scheduling */,
@@ -1592,7 +1592,7 @@
 				A72180852760428E00831998 /* Socket.swift in Sources */,
 				A7E78C4427A09931004D1821 /* TrainPathFactory.swift in Sources */,
 				A71D97FC27A6210300EBEA06 /* Block+Occupation.swift in Sources */,
-				A7ACCE9F2810E5BA006F4310 /* TrainAutomaticRouteHandling.swift in Sources */,
+				A7ACCE9F2810E5BA006F4310 /* TrainHandler.swift in Sources */,
 				A7710E572777D69400C08150 /* RouteListView.swift in Sources */,
 				A79466D1279B948F006E2A4C /* Simulator.swift in Sources */,
 				A795A03827B6848000AE90EB /* TrainVisitor.swift in Sources */,
