@@ -12,18 +12,26 @@
 
 import Foundation
 
-final class TrainMoveWithinBlockHandler: TrainAutomaticRouteHandling {
-    
+final class TrainMoveWithinBlockHandler: TrainAutomaticRouteHandling, TrainManualRouteHandling {
+        
     var events: Set<TrainEvent> {
         [.feedbackTriggered]
     }
 
     func process(layout: Layout, train: Train, route: Route, event: TrainEvent, controller: TrainController) throws -> TrainController.Result {
+        return try process(layout: layout, train: train, event: event, controller: controller)
+    }
+    
+    func process(layout: Layout, train: Train, event: TrainEvent, controller: TrainController) throws -> TrainController.Result {
         guard let currentBlock = layout.currentBlock(train: train) else {
             return .none()
         }
 
         guard let trainInstance = currentBlock.train else {
+            return .none()
+        }
+        
+        guard train.state != .stopped else {
             return .none()
         }
         

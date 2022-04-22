@@ -241,7 +241,7 @@ final class LayoutReservation {
     // the specified train with all its length, taking into account the length of each block.
     func fillElementWith(train: Train) throws {
         let trainVisitor = TrainVisitor(layout: layout)
-        try trainVisitor.visit(train: train) { transition in
+        let result = try trainVisitor.visit(train: train) { transition in
             guard transition.reserved == nil else {
                 throw LayoutError.transitionAlreadyReserved(transition: transition)
             }
@@ -249,7 +249,7 @@ final class LayoutReservation {
             transition.train = train.id
         } turnoutCallback: { turnoutInfo in
             let turnout = turnoutInfo.turnout
-
+            
             guard turnout.reserved == nil else {
                 throw LayoutError.turnoutAlreadyReserved(turnout: turnout)
             }
@@ -259,10 +259,10 @@ final class LayoutReservation {
             guard block.reserved == nil || attributes.headBlock else {
                 throw LayoutError.blockAlreadyReserved(block: block)
             }
-
+            
             let trainInstance = TrainInstance(train.id, attributes.trainDirection)
             block.train = trainInstance
-
+            
             for (index, position) in attributes.positions.enumerated() {
                 if index == 0 {
                     trainInstance.parts[position] = attributes.headBlock ? .locomotive : .wagon
@@ -270,8 +270,11 @@ final class LayoutReservation {
                     trainInstance.parts[position] = .wagon
                 }
             }
-
+            
             block.reserved = .init(trainId: train.id, direction: attributes.trainDirection)
+        }
+        if !result {
+            throw LayoutError.cannotReserveAllElements(train: train)
         }
     }
         

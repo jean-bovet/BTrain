@@ -1166,6 +1166,7 @@
 			isa = PBXGroup;
 			children = (
 				A7ACCE9E2810E5BA006F4310 /* TrainAutomaticRouteHandling.swift */,
+				A7ACCE962810E04D006F4310 /* TrainMoveWithinBlockHandler.swift */,
 				A7C30BE42811AD2C00CC4251 /* Automatic Scheduling */,
 				A7C30BE32811AD2300CC4251 /* Manual Scheduling */,
 			);
@@ -1239,7 +1240,6 @@
 				A7ACCE922810DF7F006F4310 /* TrainStartHandler.swift */,
 				A7ACCE942810DFD1006F4310 /* TrainExecuteStopInBlockHandler.swift */,
 				A7ACCE9A2810E479006F4310 /* TrainDetectStopHandler.swift */,
-				A7ACCE962810E04D006F4310 /* TrainMoveWithinBlockHandler.swift */,
 				A7ACCE982810E093006F4310 /* TrainMoveToNextBlockHandler.swift */,
 				A7ACCEA02810E767006F4310 /* TrainSpeedLimitEventHandler.swift */,
 				A7ACCEA32811AB23006F4310 /* TrainReserveLeadingBlocksHandler.swift */,

@@ -95,6 +95,7 @@ final class TrainController {
         automaticRouteHandlers.append(TrainStopPushingWagonsHandler())
 
         manualRouteHandlers.append(TrainStateHandler())
+        manualRouteHandlers.append(TrainMoveWithinBlockHandler())
         manualRouteHandlers.append(TrainManualMoveToNextBlockHandler())
         manualRouteHandlers.append(TrainManualStopTriggerDetectionHandler())
     }
@@ -105,7 +106,6 @@ final class TrainController {
     // Note: because each function below has a side effect that can affect
     // the currentBlock and nextBlock (as well as the train speed and other parameters),
     // always have each function retrieve what it needs.
-    @discardableResult
     func run(_ event: TrainEvent) throws -> Result {
         var result: Result = .none()
         
