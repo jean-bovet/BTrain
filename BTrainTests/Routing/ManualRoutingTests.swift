@@ -654,8 +654,7 @@ class ManualRoutingTests: BTTestCase {
                       "r3: {r1{b3 ≏ ≏ 🔴🚂1 }} <t1(0,2),r> [b5 ≏ ≏ ] <t0(2,0),r> !{r2{b1 ≏ ≏ 🔴🚂2 }}")
 
         // Artificially set the restart time to 0 which will make train 1 restart again
-        layout.trains[0].timeUntilAutomaticRestart = 0
-        p.layoutController.runControllers(.stateChanged)
+        p.layoutController.restartTimerFired(layout.trains[0])
 
         try p.assert2("r1: {r2{b1 🔴🚂2 ≏ ≏ }} <t0,r> [b2 ≏ ≏ ] {r1{b3 ≏ ≏ 🔵🚂1 }} <r1<t1>> [r1[b4 ≏ ≏]] {r2{b1 🔴🚂2 ≏ ≏ }}",
                       "r3: {r1{b3 ≏ ≏ 🔵🚂1 }} <r1<t1(0,2)>> [b5 ≏ ≏ ] <t0(2,0),r> !{r2{b1 ≏ ≏ 🔴🚂2 }}")
@@ -770,8 +769,7 @@ class ManualRoutingTests: BTTestCase {
         XCTAssertTrue(p.train.automaticScheduling)
 
         // Artificially set the restart time to 0 which will make the train restart again
-        layout.trains[0].timeUntilAutomaticRestart = 0
-        p.layoutController.runControllers(.stateChanged)
+        p.layoutController.restartTimerFired(layout.trains[0])
 
         XCTAssertTrue(p.train.speed.requestedKph > 0)
         

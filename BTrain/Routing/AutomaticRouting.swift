@@ -82,10 +82,12 @@ final class AutomaticRouting {
         if let path = path {
             route.steps = path.elements.toBlockSteps
             train.routeStepIndex = 0
+            train.startRouteIndex = 0
             return (true, route)
         } else {
             route.steps.removeAll()
             train.routeStepIndex = 0
+            train.startRouteIndex = 0
             return (false, route)
         }
     }

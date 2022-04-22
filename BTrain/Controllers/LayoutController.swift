@@ -257,9 +257,8 @@ final class LayoutController: TrainControllerDelegate {
                 BTLogger.controller.debug("It is now time to restart train \(train, privacy: .public)")
                 // The TrainController is the class that actually restarts the train
                 // when it sees that this timer has reached 0 and all other parameters are valid.
-                train.timeUntilAutomaticRestart = 0
+                self?.restartTimerFired(train)
                 timer.invalidate()
-                self?.runControllers(.stateChanged)
             }
             // Redraw the switchboard so the time interval is refreshed
             self?.redrawSwitchboard()
@@ -270,6 +269,11 @@ final class LayoutController: TrainControllerDelegate {
     func purgeRestartTimers() {
         // Remove any expired timer
         pausedTrainTimers = pausedTrainTimers.filter({$0.value.isValid})
+    }
+    
+    func restartTimerFired(_ train: Train) {
+        train.timeUntilAutomaticRestart = 0
+        runControllers(.stateChanged)
     }
     
     private func redrawSwitchboard() {
