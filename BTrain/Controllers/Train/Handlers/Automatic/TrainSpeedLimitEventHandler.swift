@@ -12,6 +12,9 @@
 
 import Foundation
 
+/// This class manages the speed limit in automatic scheduling. For example, when a train enters a new block or moves
+/// within a block, the speed might need to be adjusted given the reserved elements in front of the train: blocks or turnouts can
+/// have speed limitation that needs to be honored.
 final class TrainSpeedLimitEventHandler: TrainAutomaticSchedulingHandler {
     
     var events: Set<TrainEvent> {
@@ -19,15 +22,7 @@ final class TrainSpeedLimitEventHandler: TrainAutomaticSchedulingHandler {
     }
     
     func process(layout: Layout, train: Train, route: Route, event: TrainEvent, controller: TrainControlling) throws -> TrainHandlerResult {
-        
-        // Always adjust the speed after the train enters a new block because it might
-        // now be reaching out to element that have speed limits.
         layout.adjustSpeedLimit(train)
-
-        // Always adjust the speed after the train has moved within a block because it might
-        // now be reaching out to element that have speed limits.
-//        layout.adjustSpeedLimit(train)
-
         return .none()
     }    
 }

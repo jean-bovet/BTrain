@@ -12,10 +12,16 @@
 
 import Foundation
 
+/// This classes manages to stop a train inside a block when a stop trigger is detected.
 final class TrainExecuteStopInBlockHandler: TrainAutomaticSchedulingHandler {
     
     var events: Set<TrainEvent> {
-        [.stopRequested, .feedbackTriggered]
+        [
+            // When a stop is requested, this handler must be invoked
+            .stopRequested,
+            
+            // When a feedback is triggered, this handler must be invoked
+            .feedbackTriggered]
     }
 
     func process(layout: Layout, train: Train, route: Route, event: TrainEvent, controller: TrainControlling) throws -> TrainHandlerResult {
