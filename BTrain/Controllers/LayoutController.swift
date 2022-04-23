@@ -57,16 +57,6 @@ final class LayoutController: TrainControllerDelegate {
         registerForChange()
         
         updateControllers()
-        
-        // Run the controllers each time a change is detected in the layout.
-        // For example, changing the direction of a train, adding or removing
-        // an element, etc.
-        // TODO: see if that code can be removed, we would like to be much more explicit. For example, if the direction change is needed (check the expected feedback in the UI), do that with a changeDirection event.
-//        layoutChangeSink = layout.objectWillChange.sink { [weak self] void in
-//            DispatchQueue.main.async {
-//                self?.runControllers()
-//            }
-//        }
     }
         
     func registerForChange() {
@@ -103,7 +93,7 @@ final class LayoutController: TrainControllerDelegate {
         redrawSwitchboard()
     }
         
-    func run(_ event: TrainEvent) -> TrainHandlerResult {
+    private func run(_ event: TrainEvent) -> TrainHandlerResult {
         if let runtimeError = layout.runtimeError {
             BTLogger.controller.error("⚙ Cannot evaluate the layout because there is a runtime error: \(runtimeError, privacy: .public)")
             return .none()

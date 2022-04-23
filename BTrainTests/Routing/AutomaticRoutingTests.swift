@@ -423,7 +423,7 @@ class AutomaticRoutingTests: BTTestCase {
         
         func toggle(_ feedback: String) {
             layout.feedback(for: Identifier<Feedback>(uuid: feedback))?.detected.toggle()
-            _ = layoutController.run(.feedbackTriggered)
+            layoutController.runControllers(.feedbackTriggered)
         }
     }
     
