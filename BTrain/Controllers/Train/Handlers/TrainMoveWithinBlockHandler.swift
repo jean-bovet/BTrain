@@ -12,8 +12,9 @@
 
 import Foundation
 
+/// This class detects when a train moves within a block by relying on the feedbacks of the block. It works on both automatic and manual scheduling.
 final class TrainMoveWithinBlockHandler: TrainAutomaticSchedulingHandler, TrainManualSchedulingHandler {
-        
+    
     var events: Set<TrainEvent> {
         [.feedbackTriggered]
     }
@@ -37,6 +38,8 @@ final class TrainMoveWithinBlockHandler: TrainAutomaticSchedulingHandler, TrainM
         
         let direction = trainInstance.direction
         var result: TrainHandlerResult = .none()
+        
+        // Iterate over all the feedbacks of the block and react to those who are triggered (aka detected)
         for (index, feedback) in currentBlock.feedbacks.enumerated() {
             guard let f = layout.feedback(for: feedback.feedbackId), f.detected else {
                 continue

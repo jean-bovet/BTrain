@@ -12,13 +12,21 @@
 
 import Foundation
 
+/// This class handles the starting (or re-starting) of a train in an automatic scheduling mode.
 final class TrainStartHandler: TrainAutomaticSchedulingHandler {
     
     var events: Set<TrainEvent> {
         [
-            .schedulingChanged, .stateChanged, .movedToNextBlock,
+            // React when the scheduling mode changes, which happens for example
+            // when a train is started for the first time by request from the user.
+            .schedulingChanged,
             
-            // When the restart timer expired, this handler restarts the train
+            // React when a train has moved to another block, because this means
+            // that the train managed by this handler might be able to start or restart
+            // as the blocks ahead might be free.
+            .movedToNextBlock,
+            
+            // When the restart timer expires, this handler restarts the train
             .restartTimerExpired,
             
             // A train can stop in a block because no blocks can be reserved ahead.

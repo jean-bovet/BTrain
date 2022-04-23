@@ -1164,6 +1164,31 @@
 			path = Preview;
 			sourceTree = "<group>";
 		};
+		A7A568792813B7D300394B75 /* Train */ = {
+			isa = PBXGroup;
+			children = (
+				A7218077275D922300831998 /* TrainController.swift */,
+				A776209F2813794600F765BA /* TrainController+TrainControlling.swift */,
+				A7DB7D4727C21D7C000893BA /* TrainControllerAcceleration.swift */,
+				A7ACCEA22811A9C5006F4310 /* Handlers */,
+			);
+			path = Train;
+			sourceTree = "<group>";
+		};
+		A7A5687A2813B7E000394B75 /* Layout */ = {
+			isa = PBXGroup;
+			children = (
+				A711B14F2739EBD7002FE7DB /* LayoutController.swift */,
+				A758295E27925DE300AA0649 /* LayoutController+Listeners.swift */,
+				A795A03C27B87CCE00AE90EB /* LayoutController+Locomotives.swift */,
+				A7214915279A56FA0095E5EE /* LayoutController+Debug.swift */,
+				A7DB7D4D27C714E2000893BA /* LayoutControllerCommandExecutor.swift */,
+				A798BB4727A8EA06000BB4D1 /* LayoutControllerDebugger.swift */,
+				A783EAA82788C1F700E69B6D /* LayoutFeedbackMonitor.swift */,
+			);
+			path = Layout;
+			sourceTree = "<group>";
+		};
 		A7ACCEA22811A9C5006F4310 /* Handlers */ = {
 			isa = PBXGroup;
 			children = (
@@ -1286,17 +1311,8 @@
 		A7F779DD272C75BA00E73275 /* Controllers */ = {
 			isa = PBXGroup;
 			children = (
-				A711B14F2739EBD7002FE7DB /* LayoutController.swift */,
-				A758295E27925DE300AA0649 /* LayoutController+Listeners.swift */,
-				A795A03C27B87CCE00AE90EB /* LayoutController+Locomotives.swift */,
-				A7214915279A56FA0095E5EE /* LayoutController+Debug.swift */,
-				A7DB7D4D27C714E2000893BA /* LayoutControllerCommandExecutor.swift */,
-				A798BB4727A8EA06000BB4D1 /* LayoutControllerDebugger.swift */,
-				A783EAA82788C1F700E69B6D /* LayoutFeedbackMonitor.swift */,
-				A7218077275D922300831998 /* TrainController.swift */,
-				A776209F2813794600F765BA /* TrainController+TrainControlling.swift */,
-				A7DB7D4727C21D7C000893BA /* TrainControllerAcceleration.swift */,
-				A7ACCEA22811A9C5006F4310 /* Handlers */,
+				A7A5687A2813B7E000394B75 /* Layout */,
+				A7A568792813B7D300394B75 /* Train */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
