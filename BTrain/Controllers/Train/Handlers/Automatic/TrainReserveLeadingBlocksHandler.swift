@@ -30,7 +30,7 @@ final class TrainReserveLeadingBlocksHandler: TrainAutomaticSchedulingHandler {
 
         let result = try controller.reserveLeadBlocks(route: route, currentBlock: currentBlock)
         if result == false {
-            BTLogger.debug("Train \(train) will stop here (\(currentBlock)) because the next block(s) cannot be reserved")
+            BTLogger.router.debug("\(train, privacy: .public): requesting to stop temporarily here \(currentBlock, privacy: .public) because the leading blocks cannot be reserved")
             train.stateChangeRequest = .stopTemporarily
             return .one(.stopRequested)
         }

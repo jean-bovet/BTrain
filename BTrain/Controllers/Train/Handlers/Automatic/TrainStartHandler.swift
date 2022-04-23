@@ -73,12 +73,13 @@ final class TrainStartHandler: TrainAutomaticSchedulingHandler {
         // Try to reserve the necessary leading blocks and, if successfull, ensure that the train is actually running
         let result = try controller.reserveLeadBlocks(route: route, currentBlock: currentBlock)
         if result {
-            BTLogger.debug("Start train \(train.name) because the next blocks could be reserved (route: \(route.steps.debugDescription))")
+            BTLogger.router.debug("\(train, privacy: .public): start because the leading blocks could be reserved for \(route.steps.debugDescription, privacy: .public)")
             train.stateChangeRequest = nil
             train.state = .running
             layout.setTrainSpeed(train, LayoutFactory.DefaultMaximumSpeed) { }
             return .one(.stateChanged)
         } else {
+            BTLogger.router.debug("\(train, privacy: .public): could not start because the leading blocks could not be reserved for \(route.steps.debugDescription, privacy: .public)")
             // If the train was starting, let's stop it because the leading blocks could not be reserved
             if train.state == .starting {
                 train.state = .stopped

@@ -25,9 +25,7 @@ final class BTLogger {
         
     /// The public network logger instance
     static var network = newNetworkLogger
-    
-    static let controller = Logger(subsystem: "ch.arizona-software.BTrain", category: "controller")
-    
+        
     static let router = Logger(subsystem: "ch.arizona-software.BTrain", category: "router")
     
     /// Re-created the network logger using the latest settings

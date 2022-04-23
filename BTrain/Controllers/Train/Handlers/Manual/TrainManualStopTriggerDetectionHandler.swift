@@ -33,14 +33,14 @@ final class TrainManualStopTriggerDetectionHandler: TrainManualSchedulingHandler
         
         if train.wagonsPushedByLocomotive {
             train.runtimeInfo = "Stopped because no next block detected"
-            BTLogger.warning("No next block detected, stopping \(train.name) by precaution.")
+            BTLogger.router.warning("\(train, privacy: .public): no next block detected, stopping by precaution")
             return try controller.stop(completely: true)
         } else {
             // If there are no possible next block detected, we need to stop the train
             // when it reaches the end of the block to avoid a collision.
             if try layout.atEndOfBlock(train: train) {
                 train.runtimeInfo = "Stopped because no next block detected"
-                BTLogger.warning("No next block detected, stopping \(train.name) by precaution.")
+                BTLogger.router.warning("\(train, privacy: .public): no next block detected, stopping by precaution")
                 return try controller.stop(completely: true)
             }
         }

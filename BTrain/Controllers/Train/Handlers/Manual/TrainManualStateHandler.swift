@@ -20,9 +20,11 @@ final class TrainManualStateHandler: TrainManualSchedulingHandler {
     
     func process(layout: Layout, train: Train, event: TrainEvent, controller: TrainControlling) throws -> TrainHandlerResult {
         if train.state == .stopped && train.speed.actualKph > 0 {
+            BTLogger.router.debug("\(train, privacy: .public): detected that train is now running")
             train.state = .running
             return .one(.stateChanged)
         } else if train.state != .stopped && train.state != .stopping && train.speed.actualKph == 0 {
+            BTLogger.router.debug("\(train, privacy: .public): detected that train is now stopped")
             train.state = .stopped
             return .one(.stateChanged)
         }

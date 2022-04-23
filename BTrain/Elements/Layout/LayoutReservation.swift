@@ -348,7 +348,7 @@ final class LayoutReservation {
             }
         }
 
-        BTLogger.router.debug("Maximum speed allowed for \(train, privacy: .public) is \(maximumSpeedAllowed)")
+        BTLogger.router.debug("\(train, privacy: .public): maximum allowed speed is \(maximumSpeedAllowed)kph")
         
         return maximumSpeedAllowed
     }
@@ -386,8 +386,11 @@ final class LayoutReservation {
         // The braking distance is respected if it is shorter or equal
         // to the leading distance available.
         let respected = brakingDistanceH0cm <= leadingDistance
-        let icon = respected ? "" : "⚠️"
-        BTLogger.router.debug("\(icon, privacy: .public) \(train, privacy: .public) can come to a fullstop in \(brakingDistanceH0cm, format: .fixed(precision: 1))cm (in \(brakingDelaySeconds, format: .fixed(precision: 1))s) at \(speedKph, format: .fixed(precision: 1))kph. The leading distance is \(leadingDistance, format: .fixed(precision: 1))cm with blocks \(train.leadingBlocks, privacy: .public)")
+        if respected {
+            BTLogger.router.debug("\(train, privacy: .public): can come to a fullstop in \(brakingDistanceH0cm, format: .fixed(precision: 1))cm (in \(brakingDelaySeconds, format: .fixed(precision: 1))s) at \(speedKph, format: .fixed(precision: 1))kph. The leading distance is \(leadingDistance, format: .fixed(precision: 1))cm with blocks \(train.leadingBlocks, privacy: .public)")
+        } else {
+            BTLogger.router.debug("\(train, privacy: .public): ⚠️ cannot come to a fullstop in \(brakingDistanceH0cm, format: .fixed(precision: 1))cm (in \(brakingDelaySeconds, format: .fixed(precision: 1))s) at \(speedKph, format: .fixed(precision: 1))kph because the leading distance is \(leadingDistance, format: .fixed(precision: 1))cm with blocks \(train.leadingBlocks, privacy: .public)")
+        }
         return respected
     }
     

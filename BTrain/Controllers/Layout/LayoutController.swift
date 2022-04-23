@@ -95,10 +95,10 @@ final class LayoutController: TrainControllerDelegate {
         
     private func run(_ event: TrainEvent) -> TrainHandlerResult {
         if let runtimeError = layout.runtimeError {
-            BTLogger.controller.error("⚙ Cannot evaluate the layout because there is a runtime error: \(runtimeError, privacy: .public)")
+            BTLogger.router.error("⚙ Cannot evaluate the layout because there is a runtime error: \(runtimeError, privacy: .public)")
             return .none()
         }
-        BTLogger.controller.debug("⚙ Evaluating the layout for \(event.rawValue, privacy: .public)")
+        BTLogger.router.debug("⚙ Evaluating the layout for '\(event.rawValue, privacy: .public)'")
 
         // Process the latest changes
         updateControllers()
@@ -129,7 +129,7 @@ final class LayoutController: TrainControllerDelegate {
             try updateExpectedFeedbacks()
         } catch {
             // Stop everything in case there is a problem processing the layout
-            BTLogger.controller.error("Stopping all trains because there is an error processing the layout: \(error.localizedDescription, privacy: .public)")
+            BTLogger.router.error("Stopping all trains because there is an error processing the layout: \(error.localizedDescription, privacy: .public)")
             layout.runtimeError = error.localizedDescription
             dumpAll()
             haltAll()
@@ -154,7 +154,7 @@ final class LayoutController: TrainControllerDelegate {
         do {
             try stopAll(includingManualTrains: true)
         } catch {
-            BTLogger.controller.error("Unable to stop all the trains because \(error.localizedDescription, privacy: .public)")
+            BTLogger.router.error("Unable to stop all the trains because \(error.localizedDescription, privacy: .public)")
         }
         
         // Stop the Digital Controller to ensure nothing moves further
@@ -186,7 +186,7 @@ final class LayoutController: TrainControllerDelegate {
                 do {
                     try start(routeID: routeId, trainID: train.id, destination: nil)
                 } catch {
-                    BTLogger.controller.error("Unable to start \(train.name): \(error.localizedDescription, privacy: .public)")
+                    BTLogger.router.error("Unable to start \(train.name): \(error.localizedDescription, privacy: .public)")
                 }
             }
         }
@@ -208,7 +208,7 @@ final class LayoutController: TrainControllerDelegate {
             do {
                 try stop(trainID: train.id, completely: true)
             } catch {
-                BTLogger.controller.error("Unable to stop \(train.name): \(error.localizedDescription, privacy: .public)")
+                BTLogger.router.error("\(train, privacy: .public): unable to stop because: \(error.localizedDescription, privacy: .public)")
             }
         }
     }
@@ -244,7 +244,7 @@ final class LayoutController: TrainControllerDelegate {
         let timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true, block: { [weak self] timer in
             train.timeUntilAutomaticRestart -= 1
             if train.timeUntilAutomaticRestart <= 0 {
-                BTLogger.controller.debug("It is now time to restart train \(train, privacy: .public)")
+                BTLogger.router.debug("It is now time to restart train \(train, privacy: .public)")
                 // The TrainController is the class that actually restarts the train
                 // when it sees that this timer has reached 0 and all other parameters are valid.
                 self?.restartTimerFired(train)
@@ -286,7 +286,7 @@ extension LayoutController: LayoutCommandExecuting {
             controller.accelerationController.changeSpeed(of: train, acceleration: acceleration, completion: completion)
         } else {
             assertionFailure("There is no TrainController for \(train.name)")
-            BTLogger.controller.error("There is no TrainController for \(train.name, privacy: .public)")
+            BTLogger.router.error("There is no TrainController for \(train.name, privacy: .public)")
             completion()
         }
     }

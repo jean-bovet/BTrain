@@ -20,9 +20,7 @@ extension TrainController: TrainControlling {
     
     func stop(completely: Bool) throws -> TrainHandlerResult {
         train.stateChangeRequest = nil
-                                
-        BTLogger.debug("Stop train \(train)")
-        
+                                        
         try layout.stopTrain(train.id, completely: completely) { }
                 
         return .none()
@@ -37,7 +35,7 @@ extension TrainController: TrainControlling {
             return false
         }
         
-        BTLogger.debug("Generating a new route for \(train) at block \(currentBlock.name) because the next blocks could not be reserved (route: \(route.steps.debugDescription))")
+        BTLogger.router.debug("\(self.train, privacy: .public): generating a new route at \(currentBlock.name, privacy: .public) because the leading blocks could not be reserved for \(route.steps.debugDescription, privacy: .public)")
 
         // Update the automatic route
         if try updateAutomaticRoute(for: train.id) {
@@ -51,10 +49,10 @@ extension TrainController: TrainControlling {
     private func updateAutomaticRoute(for trainId: Identifier<Train>) throws -> Bool {
         let (success, route) = try layout.automaticRouting.updateAutomaticRoute(for: train.id)
         if success {
-            BTLogger.debug("Generated route is: \(route.steps)")
+            BTLogger.router.debug("\(self.train, privacy: .public): generated route is \(route.steps.debugDescription, privacy: .public)")
             return true
         } else {
-            BTLogger.warning("Unable to find a suitable route for train \(train)")
+            BTLogger.router.warning("\(self.train, privacy: .public): unable to find a suitable route")
             return false
         }
     }

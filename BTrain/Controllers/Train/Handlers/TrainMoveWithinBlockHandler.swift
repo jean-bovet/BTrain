@@ -48,7 +48,8 @@ final class TrainMoveWithinBlockHandler: TrainAutomaticSchedulingHandler, TrainM
             let position = layout.newPosition(forTrain: train, enabledFeedbackIndex: index, direction: direction)
             if train.position != position {
                 try layout.setTrainPosition(train, position)
-                BTLogger.debug("Train \(train) moved to position \(train.position) in \(currentBlock.name), direction \(direction)")
+                
+                BTLogger.router.debug("\(train, privacy: .public): moved to position \(train.position) in \(currentBlock.name, privacy: .public), direction \(direction)")
                 
                 result = result.appending(.movedInsideBlock)
             }                        

@@ -79,12 +79,12 @@ final class TrainStopPushingWagonsHandler: TrainAutomaticSchedulingHandler {
                 
         // Now determine the position of the head wagon given the next locomotive position
         guard let hwb = try TrainPositionFinder.headWagonBlockFor(train: train, startAtNextPosition: true, layout: layout) else {
-            // Stop the train if there is no head wagon block found
+            BTLogger.router.debug("\(train, privacy: .public): stop completely because there is no head wagon block found")
             return try controller.stop(completely: true)
         }
         
         if hwb.reserved != nil && hwb.reserved?.trainId != train.id {
-            // Stop the train if the head wagon block is reserved for another train.
+            BTLogger.router.debug("\(train, privacy: .public): stop completely because the head wagon block is reserved for another train")
             return try controller.stop(completely: true)
         }
         

@@ -21,7 +21,8 @@ final class TrainExecuteStopInBlockHandler: TrainAutomaticSchedulingHandler {
             .stopRequested,
             
             // When a feedback is triggered, this handler must be invoked
-            .feedbackTriggered]
+            .feedbackTriggered
+        ]
     }
 
     func process(layout: Layout, train: Train, route: Route, event: TrainEvent, controller: TrainControlling) throws -> TrainHandlerResult {
@@ -54,7 +55,7 @@ final class TrainExecuteStopInBlockHandler: TrainAutomaticSchedulingHandler {
                     throw LayoutError.brakeFeedbackNotFound(block: currentBlock)
                 }
                 if brakeFeedback == f.id {
-                    BTLogger.debug("Train \(train) is braking in \(currentBlock.name) at position \(train.position), direction \(direction)")
+                    BTLogger.router.debug("\(train, privacy: .public): braking in \(currentBlock.name, privacy: .public) at position \(train.position), direction \(direction)")
                     train.state = .braking
                     layout.setTrainSpeed(train, currentBlock.brakingSpeed ?? LayoutFactory.DefaultBrakingSpeed) {}
                     result = .one(.stateChanged)
@@ -66,12 +67,12 @@ final class TrainExecuteStopInBlockHandler: TrainAutomaticSchedulingHandler {
                     throw LayoutError.stopFeedbackNotFound(block: currentBlock)
                 }
                 if stopFeedback == f.id {
-                    BTLogger.debug("Train \(train) is stopping in \(currentBlock.name) at position \(train.position), direction \(direction)")
+                    BTLogger.router.debug("\(train, privacy: .public): stopping in \(currentBlock.name, privacy: .public) at position \(train.position), direction \(direction)")
                     result = try controller.stop(completely: stateChangeRequest == .stopCompletely)
                     
                     // Reschedule if necessary
                     if case let .stopAndRestart(delay) = stateChangeRequest, delay > 0 {
-                        BTLogger.debug("Schedule timer to restart train \(train) in \(delay) seconds")
+                        BTLogger.router.debug("\(train, privacy: .public): schedule timer to restart train in \(delay, format: .fixed(precision: 1)) seconds")
                         
                         // The layout controller is going to schedule the appropriate timer given the `restartDelayTime` value
                         train.timeUntilAutomaticRestart = delay

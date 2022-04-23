@@ -52,8 +52,8 @@ final class TrainMoveToNextBlockHandler: TrainAutomaticSchedulingHandler {
         guard let position = nextBlock.indexOfTrain(forFeedback: entryFeedback.id, direction: direction) else {
             throw LayoutError.feedbackNotFound(feedbackId: entryFeedback.id)
         }
-                
-        BTLogger.debug("Train \(train) enters block \(nextBlock) at position \(position), direction \(direction)")
+         
+        BTLogger.router.debug("\(train, privacy: .public): enters block \(nextBlock, privacy: .public) at position \(position), direction \(direction)")
                 
         // Set the train to its new block. This method also takes care of updating the reserved blocks for the train itself
         // but also the leading blocks so the train can continue to move automatically.

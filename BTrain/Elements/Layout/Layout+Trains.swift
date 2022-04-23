@@ -289,7 +289,7 @@ extension Layout {
             throw LayoutError.trainNotFound(trainId: trainId)
         }
                 
-        BTLogger.debug("Stopping train \(train.name) \(completely ? "completely." : "until it can be restarted.")")
+        BTLogger.router.debug("\(train): stopping \(completely ? "completely." : "until it can be restarted.")")
 
         if train.state != .stopped && train.state != .stopping {
             train.speed.requestedKph = 0

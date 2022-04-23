@@ -218,7 +218,8 @@ final class Train: Element, ObservableObject {
     @Published var state: State = .stopped
     
     /// Enumartion that indicates a request to change the state of train, like starting or stopping the train.
-    enum StateChangeRequest: Equatable {
+    enum StateChangeRequest: CustomStringConvertible, Equatable {
+        
         // TODO: might want to move the starting state here!
         
         /// The train will be fully stopped and the scheduling placed back to ``Train/Schedule/manual``.
@@ -230,6 +231,17 @@ final class Train: Element, ObservableObject {
         /// The train will stop temporarily and restart as soon as the leading blocks can be reserved again
         case stopTemporarily
         
+        var description: String {
+            switch self {
+            case .stopCompletely:
+                return "stopCompletely"
+            case .stopAndRestart(delay: let delay):
+                return "stopAndRestart(after: \(delay))"
+            case .stopTemporarily:
+                return "stopTemporarily"
+            }
+        }
+
         static func ==(lhs: StateChangeRequest, rhs: StateChangeRequest) -> Bool {
             switch (lhs, rhs) {
             case (.stopCompletely, .stopCompletely):
@@ -295,7 +307,12 @@ final class Train: Element, ObservableObject {
     var timeUntilAutomaticRestart: TimeInterval = 0
 
     var description: String {
-        return "\(name) (\(id))"
+        var text = "Train '\(name)' (id=\(id), \(state)"
+        if let stateChangeRequest = stateChangeRequest {
+            text += ", \(stateChangeRequest)"
+        }
+        text += ", \(speed.actualKph)kph)"
+        return text
     }
     
     convenience init(uuid: String = UUID().uuidString, name: String = "", address: UInt32 = 0, decoder: DecoderType = .MFX,

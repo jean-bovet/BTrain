@@ -43,7 +43,7 @@ final class TrainManualMoveToNextBlockHandler: TrainManualSchedulingHandler {
             throw LayoutError.feedbackNotFound(feedbackId: entryFeedback.id)
         }
                 
-        BTLogger.debug("Train \(train) enters block \(nextBlock) at position \(position), direction \(direction)")
+        BTLogger.router.debug("\(train, privacy: .public): enters block \(nextBlock, privacy: .public) at position \(position), direction \(direction)")
                 
         try layout.setTrainToBlock(train.id, nextBlock.id, position: .custom(value: position), direction: direction)
                             

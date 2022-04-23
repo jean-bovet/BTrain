@@ -93,8 +93,8 @@ final class TrainController {
     func run(_ event: TrainEvent) throws -> TrainHandlerResult {
         var result: TrainHandlerResult = .none()
         
-        BTLogger.debug("* Evaluating \(train) for \(event) and \(train.scheduling)")
-        
+        BTLogger.router.debug("\(self.train, privacy: .public): evaluating event '\(String(describing: event), privacy: .public)' for \(String(describing: self.train.scheduling), privacy: .public)")
+
         if train.automaticScheduling {
             // Stop the train if there is no route associated with it
             guard let route = layout.route(for: train.routeId, trainId: train.id) else {
@@ -103,18 +103,18 @@ final class TrainController {
             
             let interestedHandlers = automaticSchedulingHandlers.filter({ $0.events.contains(event) })
             for handler in interestedHandlers {
-                BTLogger.debug("* \(handler) for \(train)")
+                BTLogger.router.debug("\(self.train, privacy: .public): \(String(describing: handler), privacy: .public)")
                 result = result.appending(try handler.process(layout: layout, train: train, route: route, event: event, controller: self))
             }
         } else {
             let interestedHandlers = manualSchedulingHandlers.filter({ $0.events.contains(event) })
             for handler in interestedHandlers {
-                BTLogger.debug("* \(handler) for \(train)")
+                BTLogger.router.debug("\(self.train, privacy: .public): \(String(describing: handler), privacy: .public)")
                 result = result.appending(try handler.process(layout: layout, train: train, event: event, controller: self))
             }
         }
 
-        BTLogger.debug("* Resulting events: \(result.events) for \(train)")
+        BTLogger.router.debug("\(self.train, privacy: .public): resulting events are \(String(describing: result.events), privacy: .public)")
 
         return result
     }

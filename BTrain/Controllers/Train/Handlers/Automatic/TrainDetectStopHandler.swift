@@ -54,7 +54,8 @@ final class TrainDetectStopHandler: TrainAutomaticSchedulingHandler {
                     throw LayoutError.destinationDirectionMismatch(currentBlock: currentBlock, destination: destination)
                 }
                                 
-                BTLogger.debug("Requesting \(train) to stop completely because it has reached the end of the route")
+                BTLogger.router.debug("\(train, privacy: .public): requesting to stop completely because it has reached the end of the route \(route.name)")
+
                 train.stateChangeRequest = .stopCompletely
                 return .one(.stopRequested)
             }
@@ -80,7 +81,7 @@ final class TrainDetectStopHandler: TrainAutomaticSchedulingHandler {
         }
         
         if train.routeStepIndex == route.lastStepIndex {
-            BTLogger.debug("Train \(train) will stop here (\(currentBlock)) because it has reached the end of the route")
+            BTLogger.router.debug("\(train, privacy: .public): requesting to stop completely here \(currentBlock, privacy: .public) because it has reached the end of the route \(route.name)")
             train.stateChangeRequest = .stopCompletely
             return .one(.stopRequested)
         }
@@ -97,12 +98,12 @@ final class TrainDetectStopHandler: TrainAutomaticSchedulingHandler {
         }
                 
         if train.automaticFinishingScheduling {
-            BTLogger.debug("Requesting \(train) to stop completely because it has reached a station and was finishing the route")
+            BTLogger.router.debug("\(train, privacy: .public): requesting to stop completely because it has reached a station and was finishing the route \(route.name)")
             train.stateChangeRequest = .stopCompletely
             return .one(.stopRequested)
         } else {
             let delay = waitingTime(route: route, train: train, block: block)
-            BTLogger.debug("Requesting \(train) to stop at \(block) for \(delay)s and then restart")
+            BTLogger.router.debug("\(train, privacy: .public): requesting to stop at \(block, privacy: .public) for \(delay)s and then restart. Route \(route.name)")
             train.stateChangeRequest = .stopAndRestart(delay: delay)
             return .one(.stopRequested)
         }
