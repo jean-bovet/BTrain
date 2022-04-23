@@ -22,6 +22,8 @@ struct TrainControlStateView: View {
     
     var stateString: String {
         switch train.state {
+        case .starting:
+            return "Starting"
         case .running:
             return "Running"
         case .braking:
@@ -47,6 +49,8 @@ struct TrainControlStateView: View {
     
     var stateColor: Color {
         switch(train.state) {
+        case .starting:
+            return .green
         case .running:
             return .green
         case .braking:

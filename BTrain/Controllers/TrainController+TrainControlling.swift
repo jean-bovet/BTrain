@@ -28,8 +28,8 @@ extension TrainController: TrainControlling {
         return .none()
     }
             
-    func reserveLeadBlocks(route: Route, currentBlock: Block, trainStarting: Bool) throws -> Bool {
-        if try layout.reservation.updateReservedBlocks(train: train, trainStarting: trainStarting) {
+    func reserveLeadBlocks(route: Route, currentBlock: Block) throws -> Bool {
+        if try layout.reservation.updateReservedBlocks(train: train) {
             return true
         }
         
@@ -42,7 +42,7 @@ extension TrainController: TrainControlling {
         // Update the automatic route
         if try updateAutomaticRoute(for: train.id) {
             // And try to reserve the lead blocks again
-            return try layout.reservation.updateReservedBlocks(train: train, trainStarting: trainStarting)
+            return try layout.reservation.updateReservedBlocks(train: train)
         } else {
             return false
         }

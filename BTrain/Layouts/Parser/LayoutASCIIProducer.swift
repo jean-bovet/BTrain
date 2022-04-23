@@ -219,6 +219,8 @@ final class LayoutASCIIProducer {
     
     func stringFrom(_ train: Train) -> String {
         switch train.state {
+        case .starting:
+            return "🟢🚂\(train.id)"
         case .running:
             return "🟢🚂\(train.id)"
         case .braking:

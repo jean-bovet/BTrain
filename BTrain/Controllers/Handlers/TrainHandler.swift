@@ -99,9 +99,8 @@ protocol TrainControlling {
     /// - Parameters:
     ///   - route: the route
     ///   - currentBlock: the current block
-    ///   - trainStarting: true if the train is starting, defaults to false
     /// - Returns: true if the leading blocks could be reserved, false otherwise.
-    func reserveLeadBlocks(route: Route, currentBlock: Block, trainStarting: Bool) throws -> Bool
+    func reserveLeadBlocks(route: Route, currentBlock: Block) throws -> Bool
 
 }
 

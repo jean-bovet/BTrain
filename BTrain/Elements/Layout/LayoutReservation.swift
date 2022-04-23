@@ -48,13 +48,15 @@ final class LayoutReservation {
         try fillElementWith(train: train)
 
         // Reserve the number of leading blocks necessary
-        return try reserveLeadingBlocks(train: train, trainStarting: trainStarting)
+        return try reserveLeadingBlocks(train: train)
     }
 
-    private func reserveLeadingBlocks(train: Train, trainStarting: Bool) throws -> Bool {
-        // The train must be running (or we have the specific force flag which happens when the train starts)
-        // TODO: able to do without trainStarting!?!
-        guard train.state == .running || trainStarting else {
+    private func reserveLeadingBlocks(train: Train) throws -> Bool {
+        // The leading blocks can only be reserved when one of the following conditions is true:
+        // - The train is running
+        // - The train is starting
+        // - The train is braking to stop temporarily (because the route cannot be reserved in front of the train)
+        guard train.state == .running || train.state == .starting || (train.state == .braking && train.stopTrigger?.isTemporary == true) else {
             return false
         }
         

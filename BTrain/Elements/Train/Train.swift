@@ -207,6 +207,7 @@ final class Train: Element, ObservableObject {
     }
 
     enum State {
+        case starting
         case running
         case braking
         case stopping
@@ -216,6 +217,7 @@ final class Train: Element, ObservableObject {
     // The state of the train
     @Published var state: State = .stopped
 
+    // TODO: could this be integrated inside the State structure?
     // Structure indicating when the train should stop and
     // the associated behavior when it does effectively stop.
     struct StopTrigger {

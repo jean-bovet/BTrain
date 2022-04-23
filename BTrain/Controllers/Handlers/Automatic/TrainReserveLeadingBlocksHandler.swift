@@ -28,7 +28,7 @@ final class TrainReserveLeadingBlocksHandler: TrainAutomaticSchedulingHandler {
             return .none()
         }
 
-        let result = try controller.reserveLeadBlocks(route: route, currentBlock: currentBlock, trainStarting: false)
+        let result = try controller.reserveLeadBlocks(route: route, currentBlock: currentBlock)
         if result == false {
             BTLogger.debug("Train \(train) will stop here (\(currentBlock)) because the next block(s) cannot be reserved")
             train.stopTrigger = .temporaryStop()

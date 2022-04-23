@@ -123,6 +123,8 @@ final class ShapeContext {
     
     func trainColor(_ train: Train) -> CGColor {
         switch(train.state) {
+        case .starting:
+            return NSColor.systemGreen.cgColor
         case .running:
             return NSColor.systemGreen.cgColor
         case .braking:

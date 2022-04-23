@@ -56,15 +56,25 @@ final class TrainStartHandler: TrainAutomaticSchedulingHandler {
                 
         // Setup the start route index of the train
         train.startRouteIndex = train.routeStepIndex
+                
+        // If the train is stopped, start it
+        if train.state == .stopped {
+            train.state = .starting
+        }
         
-        // And try to reserve the necessary leading blocks
-        let result = try controller.reserveLeadBlocks(route: route, currentBlock: currentBlock, trainStarting: true)
+        // Try to reserve the necessary leading blocks and, if successfull, ensure that the train is actually running
+        let result = try controller.reserveLeadBlocks(route: route, currentBlock: currentBlock)
         if result {
             BTLogger.debug("Start train \(train.name) because the next blocks could be reserved (route: \(route.steps.debugDescription))")
             train.stopTrigger = nil
             train.state = .running
             layout.setTrainSpeed(train, LayoutFactory.DefaultMaximumSpeed) { }
             return .one(.stateChanged)
+        } else {
+            // If the train was starting, let's stop it because the leading blocks could not be reserved
+            if train.state == .starting {
+                train.state = .stopped
+            }
         }
 
         return .none()
