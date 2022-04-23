@@ -77,7 +77,7 @@ final class TrainController {
         automaticSchedulingHandlers.append(TrainReserveLeadingBlocksHandler())
         automaticSchedulingHandlers.append(TrainStopPushingWagonsHandler())
 
-        manualSchedulingHandlers.append(TrainStateHandler())
+        manualSchedulingHandlers.append(TrainManualStateHandler())
         manualSchedulingHandlers.append(TrainMoveWithinBlockHandler())
         manualSchedulingHandlers.append(TrainManualMoveToNextBlockHandler())
         manualSchedulingHandlers.append(TrainManualStopTriggerDetectionHandler())
@@ -117,55 +117,6 @@ final class TrainController {
         BTLogger.debug("* Resulting events: \(result.events) for \(train)")
 
         return result
-    }
-    
-}
-
-extension TrainController: TrainControlling {
-    
-    func scheduleRestartTimer(train: Train) {
-        delegate?.scheduleRestartTimer(train: train)
-    }
-    
-    func stop(completely: Bool) throws -> TrainHandlerResult {
-        train.stopTrigger = nil
-                                
-        BTLogger.debug("Stop train \(train)")
-        
-        try layout.stopTrain(train.id, completely: completely) { }
-                
-        return .none()
-    }
-            
-    func reserveLeadBlocks(route: Route, currentBlock: Block, trainStarting: Bool) throws -> Bool {
-        if try layout.reservation.updateReservedBlocks(train: train, trainStarting: trainStarting) {
-            return true
-        }
-        
-        guard route.automatic else {
-            return false
-        }
-        
-        BTLogger.debug("Generating a new route for \(train) at block \(currentBlock.name) because the next blocks could not be reserved (route: \(route.steps.debugDescription))")
-
-        // Update the automatic route
-        if try updateAutomaticRoute(for: train.id) {
-            // And try to reserve the lead blocks again
-            return try layout.reservation.updateReservedBlocks(train: train, trainStarting: trainStarting)
-        } else {
-            return false
-        }
-    }
-
-    private func updateAutomaticRoute(for trainId: Identifier<Train>) throws -> Bool {
-        let (success, route) = try layout.automaticRouting.updateAutomaticRoute(for: train.id)
-        if success {
-            BTLogger.debug("Generated route is: \(route.steps)")
-            return true
-        } else {
-            BTLogger.warning("Unable to find a suitable route for train \(train)")
-            return false
-        }
     }
     
 }

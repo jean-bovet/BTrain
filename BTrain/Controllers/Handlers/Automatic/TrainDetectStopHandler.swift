@@ -19,7 +19,6 @@ final class TrainDetectStopHandler: TrainAutomaticSchedulingHandler {
     }
 
     func process(layout: Layout, train: Train, route: Route, event: TrainEvent, controller: TrainControlling) throws -> TrainHandlerResult {
-        // TODO: split into two handlers?
         if route.automatic {
             return try handleStopAutomaticRoute(layout: layout, train: train, route: route, event: event)
         } else {
@@ -30,12 +29,8 @@ final class TrainDetectStopHandler: TrainAutomaticSchedulingHandler {
     // This method handles any stop trigger related to the automatic route, which are:
     // - The train reaches the end of the route (that does not affect `endless` automatic route)
     // - The train reaches a block that stops the train for a while (ie station)
-    func handleStopAutomaticRoute(layout: Layout, train: Train, route: Route, event: TrainEvent) throws -> TrainHandlerResult {
+    private func handleStopAutomaticRoute(layout: Layout, train: Train, route: Route, event: TrainEvent) throws -> TrainHandlerResult {
         guard let currentBlock = layout.currentBlock(train: train) else {
-            return .none()
-        }
-        
-        guard route.automatic else {
             return .none()
         }
         
@@ -74,12 +69,8 @@ final class TrainDetectStopHandler: TrainAutomaticSchedulingHandler {
     // This method handles any stop trigger related to the manual route, which are:
     // - The train reaches the end of the route
     // - The train reaches a block that stops the train for a while (ie station)
-    func handleStopManualRoute(layout: Layout, train: Train, route: Route, event: TrainEvent) throws -> TrainHandlerResult {
+    private func handleStopManualRoute(layout: Layout, train: Train, route: Route, event: TrainEvent) throws -> TrainHandlerResult {
         guard let currentBlock = layout.currentBlock(train: train) else {
-            return .none()
-        }
-        
-        guard !route.automatic else {
             return .none()
         }
         

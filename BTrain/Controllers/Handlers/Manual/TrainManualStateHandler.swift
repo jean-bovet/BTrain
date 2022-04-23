@@ -12,7 +12,7 @@
 
 import Foundation
 
-final class TrainStateHandler: TrainManualSchedulingHandler {
+final class TrainManualStateHandler: TrainManualSchedulingHandler {
     
     var events: Set<TrainEvent> {
         [.stateChanged]
