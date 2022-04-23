@@ -56,7 +56,7 @@ final class LayoutReservation {
         // - The train is running
         // - The train is starting
         // - The train is braking to stop temporarily (because the route cannot be reserved in front of the train)
-        guard train.state == .running || train.state == .starting || (train.state == .braking && train.stateChangeRequest == .stopTemporarily) else {
+        guard train.state == .running || (train.state == .stopped && train.stateChangeRequest == .start) || (train.state == .braking && train.stateChangeRequest == .stopTemporarily) else {
             return false
         }
         

@@ -67,7 +67,7 @@ final class TrainStartHandler: TrainAutomaticSchedulingHandler {
                 
         // If the train is stopped, start it
         if train.state == .stopped {
-            train.state = .starting
+            train.stateChangeRequest = .start
         }
         
         // Try to reserve the necessary leading blocks and, if successfull, ensure that the train is actually running
@@ -80,10 +80,7 @@ final class TrainStartHandler: TrainAutomaticSchedulingHandler {
             return .one(.stateChanged)
         } else {
             BTLogger.router.debug("\(train, privacy: .public): could not start because the leading blocks could not be reserved for \(route.steps.debugDescription, privacy: .public)")
-            // If the train was starting, let's stop it because the leading blocks could not be reserved
-            if train.state == .starting {
-                train.state = .stopped
-            }
+            train.stateChangeRequest = nil
         }
 
         return .none()

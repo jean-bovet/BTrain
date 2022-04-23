@@ -207,7 +207,6 @@ final class Train: Element, ObservableObject {
     }
 
     enum State {
-        case starting
         case running
         case braking
         case stopping
@@ -219,8 +218,9 @@ final class Train: Element, ObservableObject {
     
     /// Enumartion that indicates a request to change the state of train, like starting or stopping the train.
     enum StateChangeRequest: CustomStringConvertible, Equatable {
-        
-        // TODO: might want to move the starting state here!
+
+        /// The train is requested to start
+        case start
         
         /// The train will be fully stopped and the scheduling placed back to ``Train/Schedule/manual``.
         case stopCompletely
@@ -233,6 +233,8 @@ final class Train: Element, ObservableObject {
         
         var description: String {
             switch self {
+            case .start:
+                return "start"
             case .stopCompletely:
                 return "stopCompletely"
             case .stopAndRestart(delay: let delay):
@@ -244,6 +246,8 @@ final class Train: Element, ObservableObject {
 
         static func ==(lhs: StateChangeRequest, rhs: StateChangeRequest) -> Bool {
             switch (lhs, rhs) {
+            case (.start, .start):
+                return true
             case (.stopCompletely, .stopCompletely):
                 return true
             case (.stopAndRestart(delay: let d1), .stopAndRestart(delay: let d2)):
