@@ -55,7 +55,7 @@ final class TrainDetectStopHandler: TrainAutomaticSchedulingHandler {
                 }
                                 
                 BTLogger.debug("Requesting \(train) to stop completely because it has reached the end of the route")
-                train.stopTrigger = Train.StopTrigger.completeStop()
+                train.stateChangeRequest = .stopCompletely
                 return .one(.stopRequested)
             }
             
@@ -81,7 +81,7 @@ final class TrainDetectStopHandler: TrainAutomaticSchedulingHandler {
         
         if train.routeStepIndex == route.lastStepIndex {
             BTLogger.debug("Train \(train) will stop here (\(currentBlock)) because it has reached the end of the route")
-            train.stopTrigger = .completeStop()
+            train.stateChangeRequest = .stopCompletely
             return .one(.stopRequested)
         }
         
@@ -98,12 +98,12 @@ final class TrainDetectStopHandler: TrainAutomaticSchedulingHandler {
                 
         if train.automaticFinishingScheduling {
             BTLogger.debug("Requesting \(train) to stop completely because it has reached a station and was finishing the route")
-            train.stopTrigger = .completeStop()
+            train.stateChangeRequest = .stopCompletely
             return .one(.stopRequested)
         } else {
             let delay = waitingTime(route: route, train: train, block: block)
             BTLogger.debug("Requesting \(train) to stop at \(block) for \(delay)s and then restart")
-            train.stopTrigger = .stopAndRestart(after: delay)
+            train.stateChangeRequest = .stopAndRestart(delay: delay)
             return .one(.stopRequested)
         }
     }

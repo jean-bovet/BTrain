@@ -19,7 +19,7 @@ extension TrainController: TrainControlling {
     }
     
     func stop(completely: Bool) throws -> TrainHandlerResult {
-        train.stopTrigger = nil
+        train.stateChangeRequest = nil
                                 
         BTLogger.debug("Stop train \(train)")
         

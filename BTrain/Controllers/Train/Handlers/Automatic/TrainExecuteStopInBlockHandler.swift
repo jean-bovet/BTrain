@@ -37,7 +37,7 @@ final class TrainExecuteStopInBlockHandler: TrainAutomaticSchedulingHandler {
             return .none()
         }
         
-        guard let stopTrigger = train.stopTrigger else {
+        guard let stateChangeRequest = train.stateChangeRequest else {
             return .none()
         }
         
@@ -67,14 +67,14 @@ final class TrainExecuteStopInBlockHandler: TrainAutomaticSchedulingHandler {
                 }
                 if stopFeedback == f.id {
                     BTLogger.debug("Train \(train) is stopping in \(currentBlock.name) at position \(train.position), direction \(direction)")
-                    result = try controller.stop(completely: stopTrigger.stopCompletely)
+                    result = try controller.stop(completely: stateChangeRequest == .stopCompletely)
                     
                     // Reschedule if necessary
-                    if stopTrigger.restartDelay > 0 {
-                        BTLogger.debug("Schedule timer to restart train \(train) in \(stopTrigger.restartDelay) seconds")
+                    if case let .stopAndRestart(delay) = stateChangeRequest, delay > 0 {
+                        BTLogger.debug("Schedule timer to restart train \(train) in \(delay) seconds")
                         
                         // The layout controller is going to schedule the appropriate timer given the `restartDelayTime` value
-                        train.timeUntilAutomaticRestart = stopTrigger.restartDelay
+                        train.timeUntilAutomaticRestart = delay
                         controller.scheduleRestartTimer(train: train)
                     }
                 }
