@@ -68,7 +68,7 @@ final class TrainStopPushingWagonsHandler: TrainAutomaticSchedulingHandler {
         [.movedInsideBlock, .movedToNextBlock]
     }
     
-    func process(layout: Layout, train: Train, route: Route, event: TrainEvent, controller: TrainController) throws -> TrainHandlerResult {
+    func process(layout: Layout, train: Train, route: Route, event: TrainEvent, controller: TrainControlling) throws -> TrainHandlerResult {
         guard train.speed.requestedKph > 0 else {
             return .none()
         }

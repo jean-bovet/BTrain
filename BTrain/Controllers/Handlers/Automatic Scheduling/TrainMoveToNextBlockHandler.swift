@@ -24,7 +24,7 @@ final class TrainMoveToNextBlockHandler: TrainAutomaticSchedulingHandler {
     // When the train moves to another block:
     // - Occupied and leading reservation blocks are updated.
     // - Stop trigger is evaluated depending on the nature of the route
-    func process(layout: Layout, train: Train, route: Route, event: TrainEvent, controller: TrainController) throws -> TrainHandlerResult {
+    func process(layout: Layout, train: Train, route: Route, event: TrainEvent, controller: TrainControlling) throws -> TrainHandlerResult {
         guard train.state != .stopped else {
             return .none()
         }

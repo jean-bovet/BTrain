@@ -18,7 +18,7 @@ final class TrainStateHandler: TrainManualSchedulingHandler {
         [.stateChanged]
     }
     
-    func process(layout: Layout, train: Train, event: TrainEvent, controller: TrainController) throws -> TrainHandlerResult {
+    func process(layout: Layout, train: Train, event: TrainEvent, controller: TrainControlling) throws -> TrainHandlerResult {
         if train.state == .stopped && train.speed.actualKph > 0 {
             train.state = .running
             return .one(.stateChanged)

@@ -79,7 +79,32 @@ struct TrainHandlerResult {
         .init(events: self.events + result.events)
     }
 }
+
+/// Protocol defining some common controlling functions that handlers can use
+protocol TrainControlling {
     
+    /// Request to restart the train after a specific amount of time specified by the route and block.
+    /// - Parameter train: the train to restart after some amount of time
+    func scheduleRestartTimer(train: Train)
+    
+    /// Stop the train by setting its speed to 0.
+    ///
+    /// - Parameter completely: true if the train stops completely, false otherwise. A train that stops completely will have its ``Train/scheduling`` changed to ``Train/Schedule/manual``.
+    /// - Returns: the result
+    func stop(completely: Bool) throws -> TrainHandlerResult
+    
+    /// This method tries to reserve the leading blocks for the train. If the blocks cannot be reserved and the route is automatic,
+    /// the route is updated and the leading blocks reserved again.
+    ///
+    /// - Parameters:
+    ///   - route: the route
+    ///   - currentBlock: the current block
+    ///   - trainStarting: true if the train is starting, defaults to false
+    /// - Returns: true if the leading blocks could be reserved, false otherwise.
+    func reserveLeadBlocks(route: Route, currentBlock: Block, trainStarting: Bool) throws -> Bool
+
+}
+
 /// Defines a protocol for a handler that gets invoked during the automatic scheduling of a train (when the train is automatically managed by BTrain).
 protocol TrainAutomaticSchedulingHandler {
     
@@ -95,7 +120,7 @@ protocol TrainAutomaticSchedulingHandler {
     ///   - event: the event that triggered this method invocation
     ///   - controller: the train controller
     /// - Returns: returns the result of the process, which can include one or more follow up events
-    func process(layout: Layout, train: Train, route: Route, event: TrainEvent, controller: TrainController) throws -> TrainHandlerResult
+    func process(layout: Layout, train: Train, route: Route, event: TrainEvent, controller: TrainControlling) throws -> TrainHandlerResult
 
 }
 
@@ -114,6 +139,6 @@ protocol TrainManualSchedulingHandler {
     ///   - event: the event that triggered this method invocation
     ///   - controller: the train controller
     /// - Returns: returns the result of the process, which can include one or more follow up events
-    func process(layout: Layout, train: Train, event: TrainEvent, controller: TrainController) throws -> TrainHandlerResult
+    func process(layout: Layout, train: Train, event: TrainEvent, controller: TrainControlling) throws -> TrainHandlerResult
 
 }

@@ -18,7 +18,7 @@ final class TrainDetectStopHandler: TrainAutomaticSchedulingHandler {
         [.movedToNextBlock]
     }
 
-    func process(layout: Layout, train: Train, route: Route, event: TrainEvent, controller: TrainController) throws -> TrainHandlerResult {
+    func process(layout: Layout, train: Train, route: Route, event: TrainEvent, controller: TrainControlling) throws -> TrainHandlerResult {
         // TODO: split into two handlers?
         if route.automatic {
             return try handleStopAutomaticRoute(layout: layout, train: train, route: route, event: event)

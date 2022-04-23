@@ -18,7 +18,7 @@ final class TrainManualMoveToNextBlockHandler: TrainManualSchedulingHandler {
         [.feedbackTriggered]
     }
     
-    func process(layout: Layout, train: Train, event: TrainEvent, controller: TrainController) throws -> TrainHandlerResult {
+    func process(layout: Layout, train: Train, event: TrainEvent, controller: TrainControlling) throws -> TrainHandlerResult {
         guard train.state != .stopped else {
             return .none()
         }

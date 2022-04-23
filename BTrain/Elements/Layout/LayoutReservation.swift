@@ -53,6 +53,7 @@ final class LayoutReservation {
 
     private func reserveLeadingBlocks(train: Train, trainStarting: Bool) throws -> Bool {
         // The train must be running (or we have the specific force flag which happens when the train starts)
+        // TODO: able to do without trainStarting!?!
         guard train.state == .running || trainStarting else {
             return false
         }

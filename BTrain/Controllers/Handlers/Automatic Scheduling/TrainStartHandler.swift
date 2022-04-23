@@ -29,7 +29,7 @@ final class TrainStartHandler: TrainAutomaticSchedulingHandler {
         ]
     }
 
-    func process(layout: Layout, train: Train, route: Route, event: TrainEvent, controller: TrainController) throws -> TrainHandlerResult {
+    func process(layout: Layout, train: Train, route: Route, event: TrainEvent, controller: TrainControlling) throws -> TrainHandlerResult {
         // Note: we also want to start a train that is braking to stop temporarily, which can happen
         // when the next block that was occupied (and caused the train to brake in the first place) becomes free.
         guard train.state == .stopped || (train.state == .braking && train.stopTrigger?.isTemporary == true) else {

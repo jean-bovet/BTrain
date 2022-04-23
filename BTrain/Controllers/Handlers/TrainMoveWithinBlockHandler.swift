@@ -18,11 +18,11 @@ final class TrainMoveWithinBlockHandler: TrainAutomaticSchedulingHandler, TrainM
         [.feedbackTriggered]
     }
 
-    func process(layout: Layout, train: Train, route: Route, event: TrainEvent, controller: TrainController) throws -> TrainHandlerResult {
+    func process(layout: Layout, train: Train, route: Route, event: TrainEvent, controller: TrainControlling) throws -> TrainHandlerResult {
         return try process(layout: layout, train: train, event: event, controller: controller)
     }
     
-    func process(layout: Layout, train: Train, event: TrainEvent, controller: TrainController) throws -> TrainHandlerResult {
+    func process(layout: Layout, train: Train, event: TrainEvent, controller: TrainControlling) throws -> TrainHandlerResult {
         guard let currentBlock = layout.currentBlock(train: train) else {
             return .none()
         }

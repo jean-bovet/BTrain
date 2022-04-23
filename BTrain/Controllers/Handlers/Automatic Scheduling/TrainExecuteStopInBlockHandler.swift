@@ -18,7 +18,7 @@ final class TrainExecuteStopInBlockHandler: TrainAutomaticSchedulingHandler {
         [.stopRequested, .feedbackTriggered]
     }
 
-    func process(layout: Layout, train: Train, route: Route, event: TrainEvent, controller: TrainController) throws -> TrainHandlerResult {
+    func process(layout: Layout, train: Train, route: Route, event: TrainEvent, controller: TrainControlling) throws -> TrainHandlerResult {
         guard train.state != .stopped && train.state != .stopping else {
             return .none()
         }
@@ -69,7 +69,7 @@ final class TrainExecuteStopInBlockHandler: TrainAutomaticSchedulingHandler {
                         
                         // The layout controller is going to schedule the appropriate timer given the `restartDelayTime` value
                         train.timeUntilAutomaticRestart = stopTrigger.restartDelay
-                        controller.delegate?.scheduleRestartTimer(train: train)
+                        controller.scheduleRestartTimer(train: train)
                     }
                 }
             }

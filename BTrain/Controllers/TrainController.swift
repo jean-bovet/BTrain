@@ -98,7 +98,7 @@ final class TrainController {
         if train.automaticScheduling {
             // Stop the train if there is no route associated with it
             guard let route = layout.route(for: train.routeId, trainId: train.id) else {
-                return try stop()
+                return try stop(completely: false)
             }
             
             let interestedHandlers = automaticSchedulingHandlers.filter({ $0.events.contains(event) })
@@ -119,11 +119,15 @@ final class TrainController {
         return result
     }
     
-    /// Stop the train by setting its speed to 0.
-    ///
-    /// - Parameter completely: true if the train stops completely, false otherwise. A train that stops completely will have its ``Train/scheduling`` changed to ``Train/Schedule/manual``.
-    /// - Returns: the result
-    func stop(completely: Bool = false) throws -> TrainHandlerResult {
+}
+
+extension TrainController: TrainControlling {
+    
+    func scheduleRestartTimer(train: Train) {
+        delegate?.scheduleRestartTimer(train: train)
+    }
+    
+    func stop(completely: Bool) throws -> TrainHandlerResult {
         train.stopTrigger = nil
                                 
         BTLogger.debug("Stop train \(train)")
@@ -133,15 +137,7 @@ final class TrainController {
         return .none()
     }
             
-    /// This method tries to reserve the leading blocks for the train. If the blocks cannot be reserved and the route is automatic,
-    /// the route is updated and the leading blocks reserved again.
-    ///
-    /// - Parameters:
-    ///   - route: the route
-    ///   - currentBlock: the current block
-    ///   - trainStarting: true if the train is starting, defaults to false
-    /// - Returns: true if the leading blocks could be reserved, false otherwise.
-    func reserveLeadBlocks(route: Route, currentBlock: Block, trainStarting: Bool = false) throws -> Bool {
+    func reserveLeadBlocks(route: Route, currentBlock: Block, trainStarting: Bool) throws -> Bool {
         if try layout.reservation.updateReservedBlocks(train: train, trainStarting: trainStarting) {
             return true
         }

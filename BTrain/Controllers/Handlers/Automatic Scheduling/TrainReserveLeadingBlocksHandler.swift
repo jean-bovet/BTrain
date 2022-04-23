@@ -18,7 +18,7 @@ final class TrainReserveLeadingBlocksHandler: TrainAutomaticSchedulingHandler {
         [.movedToNextBlock, .movedInsideBlock]
     }
     
-    func process(layout: Layout, train: Train, route: Route, event: TrainEvent, controller: TrainController) throws -> TrainHandlerResult {
+    func process(layout: Layout, train: Train, route: Route, event: TrainEvent, controller: TrainControlling) throws -> TrainHandlerResult {
         // If the train is not stopping in this block...
         guard train.stopTrigger == nil else {
             return .none()
@@ -28,11 +28,7 @@ final class TrainReserveLeadingBlocksHandler: TrainAutomaticSchedulingHandler {
             return .none()
         }
 
-//        guard let nextBlock = layout.nextBlock(train: train) else {
-//            return .none()
-//        }
-
-        let result = try controller.reserveLeadBlocks(route: route, currentBlock: currentBlock)
+        let result = try controller.reserveLeadBlocks(route: route, currentBlock: currentBlock, trainStarting: false)
         if result == false {
             BTLogger.debug("Train \(train) will stop here (\(currentBlock)) because the next block(s) cannot be reserved")
             train.stopTrigger = .temporaryStop()

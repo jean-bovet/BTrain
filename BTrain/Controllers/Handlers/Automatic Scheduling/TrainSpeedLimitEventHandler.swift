@@ -18,7 +18,7 @@ final class TrainSpeedLimitEventHandler: TrainAutomaticSchedulingHandler {
         [.movedToNextBlock, .movedInsideBlock]
     }
     
-    func process(layout: Layout, train: Train, route: Route, event: TrainEvent, controller: TrainController) throws -> TrainHandlerResult {
+    func process(layout: Layout, train: Train, route: Route, event: TrainEvent, controller: TrainControlling) throws -> TrainHandlerResult {
         
         // Always adjust the speed after the train enters a new block because it might
         // now be reaching out to element that have speed limits.
