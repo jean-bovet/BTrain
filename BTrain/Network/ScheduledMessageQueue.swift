@@ -34,6 +34,7 @@ final class ScheduledMessageQueue {
     
     private var executing = false
     
+    // Default delay of 50ms between commands
     static let DefaultDelay = 50.0 / 1000.0
     
     let delay: TimeInterval
