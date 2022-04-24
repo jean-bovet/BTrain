@@ -39,8 +39,7 @@ extension LayoutController {
                 if let train = layout.trains.find(address: address, decoder: decoder) {
                     train.speed.actualSteps = interface.speedSteps(for: value, decoder: train.decoder)
                     BTLogger.debug("Actual speed changed to \(train.speed.actualKph) for \(train.name)")
-                    // TODO: do we want to run the controllers? That would only by applicable for the speed limit
-//                    self?.runControllers()
+                    self?.runControllers(.speedChanged)
                     self?.switchboard?.state.triggerRedraw.toggle()
                 }
             }

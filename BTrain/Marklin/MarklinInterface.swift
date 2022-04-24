@@ -23,7 +23,11 @@ final class MarklinInterface: CommandInterface {
     // this has many implications: for example, the layout controller is expecting to be
     // the first one to process changes from the layout before other components.
     var feedbackChangeCallbacks = OrderedDictionary<UUID, FeedbackChangeCallback>()
+        
+    /// These callbacks are invoked when the speed is changed either by the Digital Controller (a message is received from the Digital Controller)
+    /// or from an action from BTrain (a message is sent to the Digital Controller).
     var speedChangeCallbacks = [SpeedChangeCallback]()
+    
     var directionChangeCallbacks = [DirectionChangeCallback]()
     var turnoutChangeCallbacks = [TurnoutChangeCallback]()
     var locomotivesQueryCallbacks = [QueryLocomotiveCallback]()
@@ -99,6 +103,12 @@ final class MarklinInterface: CommandInterface {
             onCompletion()
             return
         }
+        
+        // Invoke the speed change callbacks when the speed is effectively changed.
+        if case .speed(address: let address, decoderType: let decoderType, value: let value, priority: _, descriptor: _) = command {
+            self.speedChangeCallbacks.forEach { $0(address, decoderType, value) }
+        }
+        
         send(message: message, priority: priority, onCompletion: onCompletion)
     }
 

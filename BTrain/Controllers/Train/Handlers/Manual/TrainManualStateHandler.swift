@@ -15,7 +15,7 @@ import Foundation
 final class TrainManualStateHandler: TrainManualSchedulingHandler {
     
     var events: Set<TrainEvent> {
-        [.stateChanged]
+        [.stateChanged, .speedChanged]
     }
     
     func process(layout: Layout, train: Train, event: TrainEvent, controller: TrainControlling) throws -> TrainHandlerResult {
