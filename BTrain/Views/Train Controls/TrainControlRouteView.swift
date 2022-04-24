@@ -31,21 +31,25 @@ struct TrainControlRouteView: View {
         var text = ""
         if let route = layout.route(for: train.routeId, trainId: train.id),
            let train = layout.train(for: train.id) {
-            for (index, step) in route.blockSteps.enumerated() {
-                if !text.isEmpty {
-                    text += "→"
-                }
-                if let block = layout.block(for: step.blockId) {
-                    text += "\(block.name)"
-                } else if let blockId = step.blockId {
-                    text += "\(blockId)"
-                } else {
-                    text += "?"
-                }
-                if train.routeStepIndex == index {
-                    // Indicate the block in the route where the train
-                    // is currently located
-                    text += "􀼮"
+            if let message = route.lastMessage {
+                text = message
+            } else {
+                for (index, step) in route.blockSteps.enumerated() {
+                    if !text.isEmpty {
+                        text += "→"
+                    }
+                    if let block = layout.block(for: step.blockId) {
+                        text += "\(block.name)"
+                    } else if let blockId = step.blockId {
+                        text += "\(blockId)"
+                    } else {
+                        text += "?"
+                    }
+                    if train.routeStepIndex == index {
+                        // Indicate the block in the route where the train
+                        // is currently located
+                        text += "􀼮"
+                    }
                 }
             }
         }

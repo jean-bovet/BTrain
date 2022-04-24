@@ -170,7 +170,10 @@ final class Route: Element, ObservableObject {
     
     // The list of steps for this route
     @Published var steps = [Step]()
-            
+    
+    /// The last message about the status of the route, or nil if there is no problem with the route.
+    @Published var lastMessage: String?
+    
     var blockSteps: [Step] {
         return steps.filter({$0.blockId != nil})
     }

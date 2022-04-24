@@ -25,8 +25,8 @@ struct TrainControlRouteActionsView: View {
             if train.manualScheduling {
                 Button("Start") {
                     do {
-                        try document.start(train: train.id, withRoute: route.id, destination: nil)
                         train.runtimeInfo = nil
+                        try document.start(train: train.id, withRoute: route.id, destination: nil)
                     } catch {
                         train.runtimeInfo = error.localizedDescription
                     }
@@ -34,6 +34,7 @@ struct TrainControlRouteActionsView: View {
             } else {
                 Button("Stop") {
                     do {
+                        route.lastMessage = nil
                         try document.stop(train: train)
                     } catch {
                         train.runtimeInfo = error.localizedDescription
@@ -41,6 +42,7 @@ struct TrainControlRouteActionsView: View {
                 }
                 Button("Finish") {
                     do {
+                        route.lastMessage = nil
                         try document.finish(train: train)
                     } catch {
                         train.runtimeInfo = error.localizedDescription
