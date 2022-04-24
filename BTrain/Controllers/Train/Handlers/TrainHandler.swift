@@ -33,6 +33,9 @@ enum TrainEvent: String {
     /// should restart again.
     case restartTimerExpired
     
+    /// A turnout state changed
+    case turnoutChanged
+    
     /// A train direction has changed
     case directionChanged
     
