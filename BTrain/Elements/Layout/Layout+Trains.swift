@@ -170,8 +170,7 @@ extension Layout {
     // Set the direction of travel of the locomotive
     func setLocomotiveDirection(_ train: Train, forward: Bool, completion: CompletionBlock? = nil) {
         if train.directionForward != forward {
-            train.directionForward = forward
-            executor.sendTrainDirection(train: train) {
+            executor.sendTrainDirection(train: train, forward: forward) {
                 completion?()
             }
         } else {

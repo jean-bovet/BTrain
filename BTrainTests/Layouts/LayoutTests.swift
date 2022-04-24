@@ -79,33 +79,33 @@ class LayoutTests: XCTestCase {
     }
     
     func testTrainDirection() throws {
-        let layout = LayoutFigure8().newLayout()
-        let train1 = layout.trains[0]
-        let block1 = layout.blocks[0]
+        let doc = LayoutDocument(layout: LayoutFigure8().newLayout())
+        let train1 = doc.layout.trains[0]
+        let block1 = doc.layout.blocks[0]
         
-        try layout.setTrainToBlock(train1.id, block1.id, direction: .next)
-        
+        try doc.layout.setTrainToBlock(train1.id, block1.id, direction: .next)
         XCTAssertEqual(train1.directionForward, true)
 
-        // Set the train direction
-        layout.setLocomotiveDirection(train1, forward: false)
+        // Change the train direction
+        doc.layout.setLocomotiveDirection(train1, forward: false)
+        wait(for: {
+            train1.directionForward == false
+        }, timeout: 0.1)
         XCTAssertEqual(train1.directionForward, false)
+        XCTAssertEqual(block1.train!.direction, .previous)
 
         // Set the train inside a block with a specific direction which
         // is opposite of the train direction itself
-        try layout.setTrainToBlock(train1.id, block1.id, direction: .next)
+        try doc.layout.setTrainToBlock(train1.id, block1.id, direction: .next)
         XCTAssertEqual(block1.train!.direction, .next)
         XCTAssertEqual(train1.directionForward, false)
 
-        // Change the train direction - which should not affect the direction
-        // of the train within the block (we need to explicitly call the toggle
-        // method for this to happen!)
-        layout.setLocomotiveDirection(train1, forward: true)
-        XCTAssertEqual(train1.directionForward, true)
-        XCTAssertEqual(block1.train!.direction, .next)
-        
-        // Now toggle the direction within the block itself
-        try layout.toggleTrainDirectionInBlock(train1)
+        // Change the train direction
+        doc.layout.setLocomotiveDirection(train1, forward: true)
+        wait(for: {
+            train1.directionForward == true
+        }, timeout: 0.1)
+
         XCTAssertEqual(train1.directionForward, true)
         XCTAssertEqual(block1.train!.direction, .previous)
     }

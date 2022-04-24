@@ -104,14 +104,22 @@ final class MarklinInterface: CommandInterface {
             return
         }
         
-        // Invoke the speed change callbacks when the speed is effectively changed.
-        if case .speed(address: let address, decoderType: let decoderType, value: let value, priority: _, descriptor: _) = command {
-            self.speedChangeCallbacks.forEach { $0(address, decoderType, value) }
-        }
+        // Invoke the callbacks registered to listen for a particular event.
+        invokeCallbacks(for: command)
         
         send(message: message, priority: priority, onCompletion: onCompletion)
     }
 
+    private func invokeCallbacks(for command: Command) {
+        if case .speed(address: let address, decoderType: let decoderType, value: let value, priority: _, descriptor: _) = command {
+            speedChangeCallbacks.forEach { $0(address, decoderType, value) }
+        }
+        
+        if case .direction(address: let address, decoderType: let decoderType, direction: let direction, priority: _, descriptor: _) = command {
+            directionChangeCallbacks.forEach { $0(address, decoderType, direction) }
+        }
+    }
+    
     // Maximum value of the speed parameters that can be specified in the CAN message.
     static let maxCANSpeedValue = 1000
 

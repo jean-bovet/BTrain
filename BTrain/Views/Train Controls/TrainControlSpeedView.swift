@@ -18,22 +18,12 @@ struct TrainControlSpeedView: View {
 
     @ObservedObject var train: Train
     @ObservedObject var speed: TrainSpeed
-
-    func trainDirectionToggle() {
-        do {
-            document.layout.setLocomotiveDirection(train, forward: !train.directionForward)
-            try document.layout.toggleTrainDirectionInBlock(train)
-            train.runtimeInfo = nil
-        } catch {
-            train.runtimeInfo = error.localizedDescription
-        }
-    }
     
     var body: some View {
         VStack(alignment: .leading) {
             HStack {
                 Button(train.directionForward ? "􀄫" : "􀄪") {
-                    trainDirectionToggle()
+                    document.layout.setLocomotiveDirection(train, forward: !train.directionForward)
                 }
                 .buttonStyle(.borderless)
                 .help("Change Direction of Travel")

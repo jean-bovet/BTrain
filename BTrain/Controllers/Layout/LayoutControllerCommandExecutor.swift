@@ -63,15 +63,15 @@ final class LayoutCommandExecutor {
         }
     }
 
-    func sendTrainDirection(train: Train, completion: @escaping CompletionBlock) {
-        BTLogger.debug("Train \(train.name) changed direction to \(train.directionForward ? "forward" : "backward" )")
+    func sendTrainDirection(train: Train, forward: Bool, completion: @escaping CompletionBlock) {
+        BTLogger.debug("Train \(train.name) changed direction to \(forward ? "forward" : "backward" )")
         guard let interface = interface else {
             completion()
             return
         }
 
         let command: Command
-        if train.directionForward {
+        if forward {
             command = .direction(address: train.address, decoderType: train.decoder, direction: .forward)
         } else {
             command = .direction(address: train.address, decoderType: train.decoder, direction: .backward)

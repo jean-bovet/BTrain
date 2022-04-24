@@ -65,10 +65,18 @@ class SimulatorViewTests: RootViewTests {
         let trainToggleButton = try trainSpeedView.vStack().hStack(0).button(0)
         
         try trainToggleButton.tap()
+        wait(for: {
+            t1.directionForward == false
+        }, timeout: 0.1)
+
         XCTAssertFalse(t1.directionForward)
         wait(for: simulatorTrain1, directionForward: false)
 
         try trainToggleButton.tap()
+        wait(for: {
+            t1.directionForward == true
+        }, timeout: 0.1)
+
         XCTAssertTrue(t1.directionForward)
         wait(for: simulatorTrain1, directionForward: true)
 

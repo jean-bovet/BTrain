@@ -41,9 +41,6 @@ final class LayoutController: TrainControllerDelegate {
     // The executor that will send commands to the Digital Controller
     private var executor: LayoutCommandExecutor
     
-    // Retain the sink to observe any change to the layout
-    private var layoutChangeSink: AnyCancellable?
-
     let debugger: LayoutControllerDebugger
 
     init(layout: Layout, switchboard: SwitchBoard?, interface: CommandInterface) {
@@ -275,8 +272,8 @@ extension LayoutController: LayoutCommandExecuting {
         executor.sendTurnoutState(turnout: turnout, completion: completion)
     }
     
-    func sendTrainDirection(train: Train, completion: @escaping CompletionBlock) {
-        executor.sendTrainDirection(train: train, completion: completion)
+    func sendTrainDirection(train: Train, forward: Bool, completion: @escaping CompletionBlock) {
+        executor.sendTrainDirection(train: train, forward: forward, completion: completion)
     }
     
     func sendTrainSpeed(train: Train, acceleration: TrainSpeedAcceleration.Acceleration?, completion: @escaping CompletionBlock) {

@@ -17,7 +17,7 @@ typealias CompletionBlock = (() -> Void)
 protocol LayoutCommandExecuting: AnyObject {
     
     func sendTurnoutState(turnout: Turnout, completion: @escaping CompletionBlock)
-    func sendTrainDirection(train: Train, completion: @escaping CompletionBlock)
+    func sendTrainDirection(train: Train, forward: Bool, completion: @escaping CompletionBlock)
     func sendTrainSpeed(train: Train, acceleration: TrainSpeedAcceleration.Acceleration?, completion: @escaping CompletionBlock)
 
 }
@@ -27,7 +27,7 @@ final class DefaultCommandExecutor: LayoutCommandExecuting {
         completion()
     }
     
-    func sendTrainDirection(train: Train, completion: @escaping CompletionBlock) {
+    func sendTrainDirection(train: Train, forward: Bool, completion: @escaping CompletionBlock) {
         completion()
     }
     
