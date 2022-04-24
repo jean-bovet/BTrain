@@ -23,13 +23,8 @@ class ManualRoutingTests: BTTestCase {
         try layout.prepare(routeID: layout.routes[0].id, trainID: layout.trains[0].id)
         
         // Assert the expectations before the train circulates
-        guard let routeId = train.routeId else {
-            XCTFail("No route defined for train \(train)")
-            return
-        }
-
-        guard let route = layout.route(for: routeId, trainId: train.id) else {
-            XCTFail("Unable to find route \(routeId)")
+        guard let route = layout.route(for: train.routeId, trainId: train.id) else {
+            XCTFail("Unable to find route \(train.routeId)")
             return
         }
         XCTAssertEqual(4, route.steps.count)

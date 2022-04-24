@@ -55,7 +55,7 @@ extension LayoutController {
     
     static func attributesFor(train: Train, layout: Layout) -> String {
         var info = "\(train)"
-        if let routeId = train.routeId, let route = layout.route(for: routeId, trainId: train.id) {
+        if let route = layout.route(for: train.routeId, trainId: train.id) {
             info += ": route \(route.name) at step \(train.routeStepIndex)"
         } else {
             info += ": no route assigned"

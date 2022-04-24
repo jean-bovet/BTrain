@@ -144,7 +144,7 @@ final class Train: Element, ObservableObject {
     @Published var wagonsPushedByLocomotive = false
     
     // The route this train is associated with
-    @Published var routeId: Identifier<Route>?
+    @Published var routeId: Identifier<Route>
     
     // Keeping track of the route index when the train starts,
     // to avoid stopping it immediately if it is still starting
@@ -328,6 +328,7 @@ final class Train: Element, ObservableObject {
     init(id: Identifier<Train>, name: String, address: UInt32, decoder: DecoderType = .MFX,
          locomotiveLength: Double? = nil, wagonsLength: Double? = nil, magnetDistance: Double? = nil, maxSpeed: TrainSpeed.UnitKph? = nil, maxNumberOfLeadingReservedBlocks: Int? = nil) {
         self.id = id
+        self.routeId = Route.automaticRouteId(for: id)
         self.name = name
         self.address = address
         self.locomotiveLength = locomotiveLength
@@ -360,7 +361,7 @@ extension Train: Codable {
         self.speed = try container.decode(TrainSpeed.self, forKey: CodingKeys.speed)
         self.directionForward = try container.decodeIfPresent(Bool.self, forKey: CodingKeys.direction) ?? true
         self.wagonsPushedByLocomotive = try container.decodeIfPresent(Bool.self, forKey: CodingKeys.wagonsPushedByLocomotive) ?? false
-        self.routeId = try container.decodeIfPresent(Identifier<Route>.self, forKey: CodingKeys.route)
+        self.routeId = try container.decodeIfPresent(Identifier<Route>.self, forKey: CodingKeys.route) ?? Route.automaticRouteId(for: id)
         self.routeStepIndex = try container.decode(Int.self, forKey: CodingKeys.routeIndex)
         self.blockId = try container.decodeIfPresent(Identifier<Block>.self, forKey: CodingKeys.block)
         self.position = try container.decode(Int.self, forKey: CodingKeys.position)

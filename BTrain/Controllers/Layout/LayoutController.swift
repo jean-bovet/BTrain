@@ -182,12 +182,10 @@ final class LayoutController: TrainControllerDelegate {
     
     func startAll() {
         for train in layout.trainsThatCanBeStarted() {
-            if let routeId = train.routeId {
-                do {
-                    try start(routeID: routeId, trainID: train.id, destination: nil)
-                } catch {
-                    BTLogger.router.error("Unable to start \(train.name): \(error.localizedDescription, privacy: .public)")
-                }
+            do {
+                try start(routeID: train.routeId, trainID: train.id, destination: nil)
+            } catch {
+                BTLogger.router.error("Unable to start \(train.name): \(error.localizedDescription, privacy: .public)")
             }
         }
     }

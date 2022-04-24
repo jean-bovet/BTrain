@@ -68,9 +68,9 @@ struct TrainControlRouteView: View {
         VStack(alignment: .leading) {
             HStack {
                 Picker("Route:", selection: $train.routeId) {
-                    Text("Automatic").tag(automaticRouteId as Identifier<Route>?)
+                    Text("Automatic").tag(automaticRouteId as Identifier<Route>)
                     ForEach(routeItems, id:\.self) { item in
-                        Text(item.name).tag(item.routeId as Identifier<Route>?)
+                        Text(item.name).tag(item.routeId as Identifier<Route>)
                     }
                 }
                                     
