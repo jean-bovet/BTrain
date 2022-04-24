@@ -22,8 +22,6 @@ struct TrainControlRouteView: View {
     @ObservedObject var document: LayoutDocument
 
     @ObservedObject var train: Train
-
-    @State private var selectedRoute: Identifier<Route>?
                 
     var layout: Layout {
         document.layout
@@ -31,7 +29,7 @@ struct TrainControlRouteView: View {
     
     var selectedRouteDescription: String {
         var text = ""
-        if let route = layout.route(for: selectedRoute, trainId: train.id),
+        if let route = layout.route(for: train.routeId, trainId: train.id),
            let train = layout.train(for: train.id) {
             for (index, step) in route.blockSteps.enumerated() {
                 if !text.isEmpty {
@@ -69,19 +67,16 @@ struct TrainControlRouteView: View {
     var body: some View {
         VStack(alignment: .leading) {
             HStack {
-                Picker("Route:", selection: $selectedRoute) {
+                Picker("Route:", selection: $train.routeId) {
                     Text("Automatic").tag(automaticRouteId as Identifier<Route>?)
                     ForEach(routeItems, id:\.self) { item in
                         Text(item.name).tag(item.routeId as Identifier<Route>?)
                     }
                 }
-                .onChange(of: selectedRoute) { route in
-                    train.routeId = selectedRoute
-                }
                                     
                 Spacer()
                 
-                if let route = layout.route(for: selectedRoute, trainId: train.id) {
+                if let route = layout.route(for: train.routeId, trainId: train.id) {
                     TrainControlRouteActionsView(document: document, train: train, route: route)
                         .disabled(!document.connected)
                 }
@@ -95,13 +90,6 @@ struct TrainControlRouteView: View {
                 Text(selectedRouteDescription)
                     .lineLimit(2)
                     .fixedSize(horizontal: false, vertical: true)
-            }
-        }
-        .onAppear {
-            if let routeId = train.routeId {
-                selectedRoute = routeId
-            } else {
-                selectedRoute = automaticRouteId
             }
         }
     }
