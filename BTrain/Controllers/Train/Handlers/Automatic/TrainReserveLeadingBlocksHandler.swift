@@ -19,8 +19,11 @@ final class TrainReserveLeadingBlocksHandler: TrainAutomaticSchedulingHandler {
     }
     
     func process(layout: Layout, train: Train, route: Route, event: TrainEvent, controller: TrainControlling) throws -> TrainHandlerResult {
-        // If the train is not stopping in this block...
         guard train.stateChangeRequest == nil else {
+            return .none()
+        }
+        
+        guard train.state != .stopped else {
             return .none()
         }
         
