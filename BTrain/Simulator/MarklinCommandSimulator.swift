@@ -213,6 +213,12 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
                 train.directionForward = direction == .forward
             }
         }
+        
+        // Send back the acknowledgement for this command
+        DispatchQueue.global(qos: .background).async {
+            let message = MarklinCANMessageFactory.direction(addr: address, direction: direction == .forward ? 1 : 2)
+            self.send(message)
+        }
     }
 
     func provideLocomotives() {

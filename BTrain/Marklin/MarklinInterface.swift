@@ -109,17 +109,10 @@ final class MarklinInterface: CommandInterface {
     }
 
     private func invokeCallbacks(for command: Command) {
+        // TODO: should not need this one either
         if case .speed(address: let address, decoderType: let decoderType, value: let value, priority: _, descriptor: _) = command {
             speedChangeCallbacks.forEach { $0(address, decoderType, value) }
         }
-        
-//        if case .direction(address: let address, decoderType: let decoderType, direction: let direction, priority: _, descriptor: _) = command {
-//            directionChangeCallbacks.forEach { $0(address, decoderType, direction) }
-//        }
-        
-//        if case .turnout(address: let address, state: let state, power: let power, priority: _, descriptor: _) = command {
-//            turnoutChangeCallbacks.forEach { $0(address, state, power) }
-//        }
     }
     
     // Maximum value of the speed parameters that can be specified in the CAN message.

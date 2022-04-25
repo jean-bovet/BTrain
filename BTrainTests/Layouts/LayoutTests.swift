@@ -83,6 +83,12 @@ class LayoutTests: XCTestCase {
         let train1 = doc.layout.trains[0]
         let block1 = doc.layout.blocks[0]
         
+        connectToSimulator(doc: doc) { }
+
+        defer {
+            disconnectFromSimulator(doc: doc)
+        }
+
         try doc.layout.setTrainToBlock(train1.id, block1.id, direction: .next)
         XCTAssertEqual(train1.directionForward, true)
 
