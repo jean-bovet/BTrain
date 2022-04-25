@@ -12,9 +12,9 @@
 
 import Foundation
 
-// List of commands that can be sent to a Digital Control System.
-// These commands are agnostic of any particular manufacturer.
-
+/// List of commands that can be sent to a Digital Control System.
+///
+/// These commands are agnostic of any particular manufacturer.
 enum Command {
     enum Priority {
         case high

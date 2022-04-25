@@ -34,6 +34,11 @@ struct MarklinCANMessage: Equatable, Hashable {
     var ack: MarklinCANMessage {
         .init(prio: prio, command: command, resp: 1, hash: hash, dlc: dlc, byte0: byte0, byte1: byte1, byte2: byte2, byte3: byte3, byte4: byte4, byte5: byte5, byte6: byte6, byte7: byte7)
     }
+    
+    /// Returns true if this message is an acknowledgement
+    var isAck: Bool {
+        return resp == 1
+    }
 }
 
 // MARK: Utility

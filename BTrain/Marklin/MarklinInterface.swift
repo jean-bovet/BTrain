@@ -40,45 +40,7 @@ final class MarklinInterface: CommandInterface {
         client?.start {
             onReady()
         } onData: { [weak self] msg in
-            if let cmd = MarklinCommand.from(message: msg) {
-                switch(cmd) {
-                case .configDataStream(length: _, data: _, descriptor: _):
-                    let status = self?.locomotiveConfig.process(cmd)
-                    if case .completed(let locomotives) = status {
-                        DispatchQueue.main.async {
-                            let locomotives = locomotives.map { $0.commandLocomotive }
-                            self?.locomotivesQueryCallbacks.forEach { $0(locomotives) }
-                        }
-                    }
-                }
-            } else {
-                let cmd = Command.from(message: msg)
-                if case .feedback(deviceID: let deviceID, contactID: let contactID, oldValue: _, newValue: let newValue, time: _, priority: _, descriptor: _) = cmd {
-                    self?.feedbackChangeCallbacks.forEach { $0.value(deviceID, contactID, newValue) }
-                }
-                if case .turnout(address: let address, state: let state, power: let power, priority: _, descriptor: _) = cmd {
-                    if msg.resp == 1 {
-                        self?.turnoutChangeCallbacks.forEach { $0(address, state, power) }
-                    }
-                }
-                if case .speed(address: let address, decoderType: let decoderType, value: let value, priority: _, descriptor: _) = cmd {
-                    if msg.resp == 1 {
-                        self?.speedChangeCallbacks.forEach { $0(address, decoderType, value) }
-                    }
-                }
-                if case .emergencyStop(address: let address, decoderType: let decoderType, priority: _, descriptor: _) = cmd {
-                    // Execute a command to query the direction of the locomotive at this particular address
-                    DispatchQueue.main.async {
-                        // The response from this command is going to be processed below in the case .direction
-                        self?.execute(command: .queryDirection(address: address, decoderType: decoderType)) { }
-                    }
-                }
-                if case .direction(address: let address, decoderType: let decoderType, direction: let direction, priority: _, descriptor: _) = cmd {
-                    if msg.resp == 1 {
-                        self?.directionChangeCallbacks.forEach { $0(address, decoderType, direction) }
-                    }
-                }
-            }
+            self?.handleMessage(msg)
         } onError: { [weak self] error in
             self?.client = nil
             onError(error)
@@ -144,6 +106,53 @@ final class MarklinInterface: CommandInterface {
         feedbackChangeCallbacks.removeValue(forKey: uuid)
     }
 
+    private func handleMessage(_ msg: MarklinCANMessage) {
+        if let cmd = MarklinCommand.from(message: msg) {
+            // Handle any Marklin-specific command first
+            switch(cmd) {
+            case .configDataStream(length: _, data: _, descriptor: _):
+                let status = locomotiveConfig.process(cmd)
+                if case .completed(let locomotives) = status {
+                    DispatchQueue.main.async {
+                        let locomotives = locomotives.map { $0.commandLocomotive }
+                        self.locomotivesQueryCallbacks.forEach { $0(locomotives) }
+                    }
+                }
+            }
+            return
+        }
+        
+        // Handle generic command
+        let cmd = Command.from(message: msg)
+        if case .feedback(deviceID: let deviceID, contactID: let contactID, oldValue: _, newValue: let newValue, time: _, priority: _, descriptor: _) = cmd {
+            if msg.isAck {
+                feedbackChangeCallbacks.forEach { $0.value(deviceID, contactID, newValue) }
+            }
+        }
+        if case .turnout(address: let address, state: let state, power: let power, priority: _, descriptor: _) = cmd {
+            if msg.isAck {
+                turnoutChangeCallbacks.forEach { $0(address, state, power) }
+            }
+        }
+        if case .speed(address: let address, decoderType: let decoderType, value: let value, priority: _, descriptor: _) = cmd {
+            if msg.isAck {
+                speedChangeCallbacks.forEach { $0(address, decoderType, value) }
+            }
+        }
+        if case .emergencyStop(address: let address, decoderType: let decoderType, priority: _, descriptor: _) = cmd {
+            // Execute a command to query the direction of the locomotive at this particular address
+            DispatchQueue.main.async {
+                // The response from this command is going to be processed below in the case .direction
+                self.execute(command: .queryDirection(address: address, decoderType: decoderType)) { }
+            }
+        }
+        if case .direction(address: let address, decoderType: let decoderType, direction: let direction, priority: _, descriptor: _) = cmd {
+            if msg.isAck {
+                directionChangeCallbacks.forEach { $0(address, decoderType, direction) }
+            }
+        }
+    }
+    
     private func send(message: MarklinCANMessage, priority: Command.Priority, onCompletion: @escaping () -> Void) {
         guard let client = client else {
             BTLogger.error("Cannot send message to Digital Controller because the client is nil!")
