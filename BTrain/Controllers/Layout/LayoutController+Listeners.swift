@@ -95,8 +95,6 @@ extension LayoutController {
                     BTLogger.debug("Turnout \(turnout.name) changed state \(state) for address \(address.actualAddress.toHex())")
                     turnout.setState(value: state, for: address.actualAddress)
                     self?.runControllers(.turnoutChanged)
-                    // TODO: is that didChange still necessary?
-                    layout.didChange()
                 } else {
                     BTLogger.error("Unknown turnout for address \(address.actualAddress.toHex())")
                 }

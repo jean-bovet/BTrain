@@ -14,7 +14,7 @@ import SwiftUI
 
 struct TrainControlListView: View {
     
-    // Note: necesary to have the layout as a separate property in order for SwiftUI to detect changes
+    // Note: necessary to have the layout as a separate property in order for SwiftUI to detect changes
     @ObservedObject var layout: Layout
     @ObservedObject var document: LayoutDocument
 

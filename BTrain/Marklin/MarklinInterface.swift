@@ -57,16 +57,12 @@ final class MarklinInterface: CommandInterface {
                     self?.feedbackChangeCallbacks.forEach { $0.value(deviceID, contactID, newValue) }
                 }
                 if case .turnout(address: let address, state: let state, power: let power, priority: _, descriptor: _) = cmd {
-                    if msg.resp == 0 {
-                        // Only report turnout change when the message is initiated from
-                        // the Digital Controller. This is because when BTrain sends
-                        // a turnout command, the Digital Controller will respond
-                        // with an acknowledgement with msg.resp == 1, which should be ignored here.
+                    if msg.resp == 1 {
                         self?.turnoutChangeCallbacks.forEach { $0(address, state, power) }
                     }
                 }
                 if case .speed(address: let address, decoderType: let decoderType, value: let value, priority: _, descriptor: _) = cmd {
-                    if msg.resp == 0 {
+                    if msg.resp == 1 {
                         self?.speedChangeCallbacks.forEach { $0(address, decoderType, value) }
                     }
                 }
@@ -78,7 +74,9 @@ final class MarklinInterface: CommandInterface {
                     }
                 }
                 if case .direction(address: let address, decoderType: let decoderType, direction: let direction, priority: _, descriptor: _) = cmd {
-                    self?.directionChangeCallbacks.forEach { $0(address, decoderType, direction) }
+                    if msg.resp == 1 {
+                        self?.directionChangeCallbacks.forEach { $0(address, decoderType, direction) }
+                    }
                 }
             }
         } onError: { [weak self] error in
@@ -115,13 +113,13 @@ final class MarklinInterface: CommandInterface {
             speedChangeCallbacks.forEach { $0(address, decoderType, value) }
         }
         
-        if case .direction(address: let address, decoderType: let decoderType, direction: let direction, priority: _, descriptor: _) = command {
-            directionChangeCallbacks.forEach { $0(address, decoderType, direction) }
-        }
+//        if case .direction(address: let address, decoderType: let decoderType, direction: let direction, priority: _, descriptor: _) = command {
+//            directionChangeCallbacks.forEach { $0(address, decoderType, direction) }
+//        }
         
-        if case .turnout(address: let address, state: let state, power: let power, priority: _, descriptor: _) = command {
-            turnoutChangeCallbacks.forEach { $0(address, state, power) }
-        }
+//        if case .turnout(address: let address, state: let state, power: let power, priority: _, descriptor: _) = command {
+//            turnoutChangeCallbacks.forEach { $0(address, state, power) }
+//        }
     }
     
     // Maximum value of the speed parameters that can be specified in the CAN message.

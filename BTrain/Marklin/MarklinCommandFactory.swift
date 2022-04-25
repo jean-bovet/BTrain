@@ -52,21 +52,22 @@ extension Command {
     
     static func from(message: MarklinCANMessage) -> Command {
         let cmd = message.command
+        let ack = message.resp == 1 ? "ack" : "cmd"
         if cmd == 0x00 && message.byte4 == 0x1 {
-            return .go(descriptor: CommandDescriptor(data: message.data, description: "0x00 System Go"))
+            return .go(descriptor: CommandDescriptor(data: message.data, description: "0x00 System Go - \(ack)"))
         }
         if cmd == 0x00 && message.byte4 == 0x0 {
-            return .stop(descriptor: CommandDescriptor(data: message.data, description: "0x00 System Stop"))
+            return .stop(descriptor: CommandDescriptor(data: message.data, description: "0x00 System Stop - \(ack)"))
         }
         if cmd == 0x00 && message.byte4 == 0x3 {
             let address: UInt32 = UInt32(message.byte0) << 24 | UInt32(message.byte1) << 16 | UInt32(message.byte2) << 8 | UInt32(message.byte3) << 0
-            return .emergencyStop(address: address, decoderType: nil, descriptor: CommandDescriptor(data: message.data, description: "0x00 System Emergency Stop"))
+            return .emergencyStop(address: address, decoderType: nil, descriptor: CommandDescriptor(data: message.data, description: "0x00 System Emergency Stop - \(ack)"))
         }
         if cmd == 0x04 {
             let address: UInt32 = UInt32(message.byte0) << 24 | UInt32(message.byte1) << 16 | UInt32(message.byte2) << 8 | UInt32(message.byte3) << 0
             let value: UInt16 = UInt16(message.byte4) << 8 | UInt16(message.byte5) << 0
             return .speed(address: address, decoderType: nil, value: SpeedValue(value: value),
-                          descriptor: CommandDescriptor(data: message.data, description: "\(cmd.toHex()) speed \(value) for \(address.toHex())"))
+                          descriptor: CommandDescriptor(data: message.data, description: "\(cmd.toHex()) speed \(value) for \(address.toHex()) - \(ack)"))
         }
         if cmd == 0x05 {
             let address: UInt32 = UInt32(message.byte0) << 24 | UInt32(message.byte1) << 16 | UInt32(message.byte2) << 8 | UInt32(message.byte3) << 0
@@ -78,10 +79,10 @@ extension Command {
                         break
                     case 1: // forward
                         return .direction(address: address, decoderType: nil, direction: .forward,
-                                        descriptor: CommandDescriptor(data: message.data, description: "\(cmd.toHex()) forward for \(address.toHex())"))
+                                        descriptor: CommandDescriptor(data: message.data, description: "\(cmd.toHex()) forward for \(address.toHex()) - \(ack)"))
                     case 2: // backward
                         return .direction(address: address, decoderType: nil, direction: .backward,
-                                         descriptor: CommandDescriptor(data: message.data, description: "\(cmd.toHex()) backward for \(address.toHex())"))
+                                         descriptor: CommandDescriptor(data: message.data, description: "\(cmd.toHex()) backward for \(address.toHex()) - \(ack)"))
                     case 3: // toggle
                         break
                     default: // unknown
@@ -90,7 +91,7 @@ extension Command {
                 } else {
                     // Query of direction.
                     return .queryDirection(address: address, decoderType: nil,
-                                           descriptor: CommandDescriptor(data: message.data, description: "\(cmd.toHex()) query direction for \(address.toHex())"))
+                                           descriptor: CommandDescriptor(data: message.data, description: "\(cmd.toHex()) query direction for \(address.toHex()) - \(ack)"))
                 }
             } else {
                 // Set direction
@@ -99,10 +100,10 @@ extension Command {
                     break
                 case 1: // forward
                     return .direction(address: address, decoderType: nil, direction: .forward,
-                                    descriptor: CommandDescriptor(data: message.data, description: "\(cmd.toHex()) forward for \(address.toHex())"))
+                                    descriptor: CommandDescriptor(data: message.data, description: "\(cmd.toHex()) forward for \(address.toHex()) - \(ack)"))
                 case 2: // backward
                     return .direction(address: address, decoderType: nil, direction: .backward,
-                                     descriptor: CommandDescriptor(data: message.data, description: "\(cmd.toHex()) backward for \(address.toHex())"))
+                                     descriptor: CommandDescriptor(data: message.data, description: "\(cmd.toHex()) backward for \(address.toHex()) - \(ack)"))
                 case 3: // toggle
                     break
                 default: // unknown
@@ -116,7 +117,7 @@ extension Command {
             let power: UInt8 = message.byte5
             return .turnout(address: CommandTurnoutAddress(address, nil),
                             state: state, power: power,
-                            descriptor: CommandDescriptor(data: message.data, description: "\(cmd.toHex()) accessory \(state)-\(power) for \(address.toHex())"))
+                            descriptor: CommandDescriptor(data: message.data, description: "\(cmd.toHex()) accessory \(state)-\(power) for \(address.toHex()) - \(ack)"))
         }
         if cmd == 0x11 {
             let deviceID: UInt16 = UInt16(message.byte0) << 8 | UInt16(message.byte1)
@@ -124,11 +125,11 @@ extension Command {
             let oldValue: UInt8 = message.byte4
             let newValue: UInt8 = message.byte5
             let time: UInt32 = UInt32((UInt16(message.byte6) << 8 | UInt16(message.byte7))) * 10 // ms
-            let descriptor = CommandDescriptor(data: message.data, description: "\(cmd.toHex()) feedback: \(deviceID):\(contactID), from \(oldValue) to \(newValue), t = \(time)ms")
+            let descriptor = CommandDescriptor(data: message.data, description: "\(cmd.toHex()) feedback: \(deviceID):\(contactID), from \(oldValue) to \(newValue), t = \(time)ms - \(ack)")
             return .feedback(deviceID: deviceID, contactID: contactID, oldValue: oldValue, newValue: newValue, time: time, descriptor: descriptor)
         }
         if cmd == 0x20 {
-            let descriptor = CommandDescriptor(data: message.data, description: "\(cmd.toHex()) request locomotives")
+            let descriptor = CommandDescriptor(data: message.data, description: "\(cmd.toHex()) request locomotives - \(ack)")
             return .locomotives(descriptor: descriptor)
         }
         let description = "Unknown command \(cmd.toHex()), data: \(message.data as NSData)"
