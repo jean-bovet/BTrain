@@ -41,9 +41,6 @@ final class LayoutController: TrainControllerDelegate {
     // The executor that will send commands to the Digital Controller
     private var executor: LayoutCommandExecutor
     
-    // Retain the sink to observe any change to the layout
-    private var layoutChangeSink: AnyCancellable?
-
     let debugger: LayoutControllerDebugger
 
     init(layout: Layout, switchboard: SwitchBoard?, interface: CommandInterface) {
@@ -57,15 +54,6 @@ final class LayoutController: TrainControllerDelegate {
         registerForChange()
         
         updateControllers()
-        
-        // Run the controllers each time a change is detected in the layout.
-        // For example, changing the direction of a train, adding or removing
-        // an element, etc.
-        layoutChangeSink = layout.objectWillChange.sink { [weak self] void in
-            DispatchQueue.main.async {
-                self?.runControllers()
-            }
-        }
     }
         
     func registerForChange() {
@@ -88,25 +76,26 @@ final class LayoutController: TrainControllerDelegate {
         })
     }
 
-    func runControllers() {
-        if run() == .processed {
+    func runControllers(_ event: TrainEvent) {
+        let result = run(event)
+        if result.events.count > 0 {
             // As long as something has changed in the layout processing,
             // make sure to run the controllers again so the layout can
             // be further updated (ie a feedback change might cause a train
             // to further stop or start).
-            DispatchQueue.main.async {
-                self.runControllers()
+            for event in result.events {
+                runControllers(event)
             }
         }
         redrawSwitchboard()
     }
         
-    func run() -> TrainController.Result {
+    private func run(_ event: TrainEvent) -> TrainHandlerResult {
         if let runtimeError = layout.runtimeError {
-            BTLogger.controller.error("⚙ Cannot evaluate the layout because there is a runtime error: \(runtimeError, privacy: .public)")
-            return .none
+            BTLogger.router.error("⚙ Cannot evaluate the layout because there is a runtime error: \(runtimeError, privacy: .public)")
+            return .none()
         }
-        BTLogger.controller.debug("⚙ Evaluating the layout")
+        BTLogger.router.debug("⚙ Evaluating the layout for '\(event.rawValue, privacy: .public)'")
 
         // Process the latest changes
         updateControllers()
@@ -114,7 +103,7 @@ final class LayoutController: TrainControllerDelegate {
         // Run each controller one by one, using
         // the sorted keys to ensure they always
         // run in the same order.
-        var result: TrainController.Result = .none
+        var result: TrainHandlerResult = .none()
         do {
             // Update and detect any unexpected feedbacks
             try updateExpectedFeedbacks()
@@ -126,9 +115,7 @@ final class LayoutController: TrainControllerDelegate {
             // to process the new state of each train (speed, position,
             // reserved blocks, etc).
             for controller in controllers.values {
-                if try controller.run() == .processed {
-                    result = .processed
-                }
+                result = result.appending(try controller.run(event))
             }
             
             // Update and detect any unexpected feedbacks
@@ -139,7 +126,7 @@ final class LayoutController: TrainControllerDelegate {
             try updateExpectedFeedbacks()
         } catch {
             // Stop everything in case there is a problem processing the layout
-            BTLogger.controller.error("Stopping all trains because there is an error processing the layout: \(error.localizedDescription, privacy: .public)")
+            BTLogger.router.error("Stopping all trains because there is an error processing the layout: \(error.localizedDescription, privacy: .public)")
             layout.runtimeError = error.localizedDescription
             dumpAll()
             haltAll()
@@ -164,7 +151,7 @@ final class LayoutController: TrainControllerDelegate {
         do {
             try stopAll(includingManualTrains: true)
         } catch {
-            BTLogger.controller.error("Unable to stop all the trains because \(error.localizedDescription, privacy: .public)")
+            BTLogger.router.error("Unable to stop all the trains because \(error.localizedDescription, privacy: .public)")
         }
         
         // Stop the Digital Controller to ensure nothing moves further
@@ -187,24 +174,22 @@ final class LayoutController: TrainControllerDelegate {
     
     func start(routeID: Identifier<Route>, trainID: Identifier<Train>, destination: Destination?) throws {
         try layout.start(routeID: routeID, trainID: trainID, destination: destination)
-        _ = run()
+        runControllers(.schedulingChanged)
     }
     
     func startAll() {
         for train in layout.trainsThatCanBeStarted() {
-            if let routeId = train.routeId {
-                do {
-                    try start(routeID: routeId, trainID: train.id, destination: nil)
-                } catch {
-                    BTLogger.controller.error("Unable to start \(train.name): \(error.localizedDescription, privacy: .public)")
-                }
+            do {
+                try start(routeID: train.routeId, trainID: train.id, destination: nil)
+            } catch {
+                BTLogger.router.error("Unable to start \(train.name): \(error.localizedDescription, privacy: .public)")
             }
         }
     }
     
     func stop(trainID: Identifier<Train>, completely: Bool) throws {
         try layout.stopTrain(trainID, completely: completely) { }
-        _ = run()
+        runControllers(.schedulingChanged)
     }
 
     func stopAll(includingManualTrains: Bool) throws {
@@ -218,14 +203,14 @@ final class LayoutController: TrainControllerDelegate {
             do {
                 try stop(trainID: train.id, completely: true)
             } catch {
-                BTLogger.controller.error("Unable to stop \(train.name): \(error.localizedDescription, privacy: .public)")
+                BTLogger.router.error("\(train, privacy: .public): unable to stop because: \(error.localizedDescription, privacy: .public)")
             }
         }
     }
 
     func finish(trainID: Identifier<Train>) throws {
         try layout.finishTrain(trainID)
-        _ = run()
+        runControllers(.schedulingChanged)
     }
     
     func finishAll() throws {
@@ -254,12 +239,11 @@ final class LayoutController: TrainControllerDelegate {
         let timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true, block: { [weak self] timer in
             train.timeUntilAutomaticRestart -= 1
             if train.timeUntilAutomaticRestart <= 0 {
-                BTLogger.controller.debug("It is now time to restart train \(train, privacy: .public)")
+                BTLogger.router.debug("It is now time to restart train \(train, privacy: .public)")
                 // The TrainController is the class that actually restarts the train
                 // when it sees that this timer has reached 0 and all other parameters are valid.
-                train.timeUntilAutomaticRestart = 0
+                self?.restartTimerFired(train)
                 timer.invalidate()
-                self?.runControllers()
             }
             // Redraw the switchboard so the time interval is refreshed
             self?.redrawSwitchboard()
@@ -270,6 +254,11 @@ final class LayoutController: TrainControllerDelegate {
     func purgeRestartTimers() {
         // Remove any expired timer
         pausedTrainTimers = pausedTrainTimers.filter({$0.value.isValid})
+    }
+    
+    func restartTimerFired(_ train: Train) {
+        train.timeUntilAutomaticRestart = 0
+        runControllers(.restartTimerExpired)
     }
     
     private func redrawSwitchboard() {
@@ -283,8 +272,8 @@ extension LayoutController: LayoutCommandExecuting {
         executor.sendTurnoutState(turnout: turnout, completion: completion)
     }
     
-    func sendTrainDirection(train: Train, completion: @escaping CompletionBlock) {
-        executor.sendTrainDirection(train: train, completion: completion)
+    func sendTrainDirection(train: Train, forward: Bool, completion: @escaping CompletionBlock) {
+        executor.sendTrainDirection(train: train, forward: forward, completion: completion)
     }
     
     func sendTrainSpeed(train: Train, acceleration: TrainSpeedAcceleration.Acceleration?, completion: @escaping CompletionBlock) {
@@ -292,7 +281,7 @@ extension LayoutController: LayoutCommandExecuting {
             controller.accelerationController.changeSpeed(of: train, acceleration: acceleration, completion: completion)
         } else {
             assertionFailure("There is no TrainController for \(train.name)")
-            BTLogger.controller.error("There is no TrainController for \(train.name, privacy: .public)")
+            BTLogger.router.error("There is no TrainController for \(train.name, privacy: .public)")
             completion()
         }
     }

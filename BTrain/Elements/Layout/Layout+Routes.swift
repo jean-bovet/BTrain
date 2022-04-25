@@ -18,11 +18,7 @@ extension Layout {
         return routes.filter({!$0.automatic})
     }
     
-    func route(for routeId: Identifier<Route>?, trainId: Identifier<Train>?) -> Route? {
-        guard let routeId = routeId else {
-            return nil
-        }
-
+    func route(for routeId: Identifier<Route>, trainId: Identifier<Train>?) -> Route? {
         if let trainId = trainId, routeId == Route.automaticRouteId(for: trainId), route(for: routeId) == nil {
             // Automatic route, ensure it exists for the train
             let automaticRoute = Route(id: routeId, automatic: true)
@@ -62,7 +58,7 @@ extension Layout {
         }
         trains.forEach { train in
             if train.routeId == routeId {
-                train.routeId = nil
+                train.routeId = Route.automaticRouteId(for: train.id)
             }
         }
     }

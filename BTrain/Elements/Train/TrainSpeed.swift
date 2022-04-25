@@ -69,7 +69,7 @@ final class TrainSpeed: ObservableObject, Equatable, CustomStringConvertible {
     // Train acceleration profile
     @Published var accelerationProfile = TrainSpeedAcceleration.Acceleration.bezier
 
-    // The number of steps to use during acceleration/deceleration. If nil, default is used.
+    /// The number of steps to use during acceleration/deceleration. If nil, defaults to ``TrainControllerAcceleration/DefaultStepSize``.
     @Published var accelerationStepSize: Int?
     
     // The delay (in ms) between step changes during acceleration/deceleration. If nil, default is used.

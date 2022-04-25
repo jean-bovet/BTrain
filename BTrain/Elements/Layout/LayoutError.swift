@@ -50,6 +50,7 @@ enum LayoutError: Error {
     case invalidTransition(transition: ITransition)
     
     case cannotReserveBlock(block: Block, train: Train, reserved: Reservation)
+    case cannotReserveAllElements(train: Train)
     
     case routeNotFound(routeId: Identifier<Route>)
     case noPossibleRoute(train: Train)
@@ -100,7 +101,9 @@ extension LayoutError: LocalizedError {
             return "The last transition \(transition) should be to block \(blockId)"
         case .cannotReserveBlock(block: let block, train: let train, reserved: let reserved):
             return "Cannot reserve block \(block.name) for train \(train.name) because the block is already reserved for \(reserved)"
-            
+        case .cannotReserveAllElements(train: let train):
+            return "Cannot reserve all the elements that train \(train.name) occupies"
+
         case .socketIdNotFound(socket: let socket):
             return "There is no socket defined for \(socket)"
         case .entrySocketNotFound(step: let step):

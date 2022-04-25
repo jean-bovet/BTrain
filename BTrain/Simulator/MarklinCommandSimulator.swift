@@ -298,12 +298,8 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
             guard let simulatorTrain = trains.first(where: {$0.train.id == train.id}), simulatorTrain.simulate else {
                 continue
             }
-            
-            guard let routeId = train.routeId else {
-                continue
-            }
-            
-            guard let route = layout.route(for: routeId, trainId: train.id) else {
+                        
+            guard let route = layout.route(for: train.routeId, trainId: train.id) else {
                 continue
             }
             

@@ -12,28 +12,25 @@
 
 import Foundation
 
-typealias CompletionBlock = (() -> Void)
-
-protocol LayoutCommandExecuting: AnyObject {
+final class TrainManualStateHandler: TrainManualSchedulingHandler {
     
-    func sendTurnoutState(turnout: Turnout, completion: @escaping CompletionBlock)
-    func sendTrainDirection(train: Train, forward: Bool, completion: @escaping CompletionBlock)
-    func sendTrainSpeed(train: Train, acceleration: TrainSpeedAcceleration.Acceleration?, completion: @escaping CompletionBlock)
-
-}
-
-final class DefaultCommandExecutor: LayoutCommandExecuting {
-    func sendTurnoutState(turnout: Turnout, completion: @escaping CompletionBlock) {
-        completion()
+    var events: Set<TrainEvent> {
+        [.stateChanged, .speedChanged]
     }
     
-    func sendTrainDirection(train: Train, forward: Bool, completion: @escaping CompletionBlock) {
-        completion()
+    func process(layout: Layout, train: Train, event: TrainEvent, controller: TrainControlling) throws -> TrainHandlerResult {
+        if train.state == .stopped && train.speed.actualKph > 0 {
+            BTLogger.router.debug("\(train, privacy: .public): detected that train is now running")
+            train.state = .running
+            return .one(.stateChanged)
+        } else if train.state != .stopped && train.state != .stopping && train.speed.actualKph == 0 {
+            BTLogger.router.debug("\(train, privacy: .public): detected that train is now stopped")
+            train.state = .stopped
+            return .one(.stateChanged)
+        }
+        
+        return .none()
     }
     
-    func sendTrainSpeed(train: Train, acceleration: TrainSpeedAcceleration.Acceleration?, completion: @escaping CompletionBlock) {
-        train.speed.actualSteps = train.speed.requestedSteps
-        completion()
-    }
     
 }

@@ -48,12 +48,15 @@ final class LayoutReservation {
         try fillElementWith(train: train)
 
         // Reserve the number of leading blocks necessary
-        return try reserveLeadingBlocks(train: train, trainStarting: trainStarting)
+        return try reserveLeadingBlocks(train: train)
     }
 
-    private func reserveLeadingBlocks(train: Train, trainStarting: Bool) throws -> Bool {
-        // The train must be running (or we have the specific force flag which happens when the train starts)
-        guard train.state == .running || trainStarting else {
+    private func reserveLeadingBlocks(train: Train) throws -> Bool {
+        // The leading blocks can only be reserved when one of the following conditions is true:
+        // - The train is running
+        // - The train is starting
+        // - The train is braking to stop temporarily (because the route cannot be reserved in front of the train)
+        guard train.state == .running || (train.state == .stopped && train.stateChangeRequest == .start) || (train.state == .braking && train.stateChangeRequest == .stopTemporarily) else {
             return false
         }
         
@@ -241,7 +244,7 @@ final class LayoutReservation {
     // the specified train with all its length, taking into account the length of each block.
     func fillElementWith(train: Train) throws {
         let trainVisitor = TrainVisitor(layout: layout)
-        try trainVisitor.visit(train: train) { transition in
+        let result = try trainVisitor.visit(train: train) { transition in
             guard transition.reserved == nil else {
                 throw LayoutError.transitionAlreadyReserved(transition: transition)
             }
@@ -249,7 +252,7 @@ final class LayoutReservation {
             transition.train = train.id
         } turnoutCallback: { turnoutInfo in
             let turnout = turnoutInfo.turnout
-
+            
             guard turnout.reserved == nil else {
                 throw LayoutError.turnoutAlreadyReserved(turnout: turnout)
             }
@@ -259,10 +262,10 @@ final class LayoutReservation {
             guard block.reserved == nil || attributes.headBlock else {
                 throw LayoutError.blockAlreadyReserved(block: block)
             }
-
+            
             let trainInstance = TrainInstance(train.id, attributes.trainDirection)
             block.train = trainInstance
-
+            
             for (index, position) in attributes.positions.enumerated() {
                 if index == 0 {
                     trainInstance.parts[position] = attributes.headBlock ? .locomotive : .wagon
@@ -270,8 +273,11 @@ final class LayoutReservation {
                     trainInstance.parts[position] = .wagon
                 }
             }
-
+            
             block.reserved = .init(trainId: train.id, direction: attributes.trainDirection)
+        }
+        if !result {
+            throw LayoutError.cannotReserveAllElements(train: train)
         }
     }
         
@@ -316,7 +322,7 @@ final class LayoutReservation {
                 }
             }
         }
-                
+                        
         // If there is a leading reserved block where the train needs to stop,
         // make sure the speed is limited, otherwise the train will likely overshoot
         // the block in which it must stop.
@@ -328,13 +334,66 @@ final class LayoutReservation {
         }
 
         // Limit the speed if the train is one block away from the destination block
-        if let route = layout.route(for: train.routeId, trainId: train.id), train.routeStepIndex >= route.lastStepIndex - 1 {
+        if let route = layout.route(for: train.routeId, trainId: train.id), route.steps.count > 0, train.routeStepIndex >= route.lastStepIndex - 1 {
             maximumSpeedAllowed = min(maximumSpeedAllowed, LayoutFactory.DefaultLimitedSpeed)
         }
         
+        // Check if the current maximum speed is allowed
+        if !isBrakingDistanceRespected(train: train, speed: maximumSpeedAllowed) {
+            // If not, check if the default limited speed is allowed
+            maximumSpeedAllowed = min(maximumSpeedAllowed, LayoutFactory.DefaultLimitedSpeed)
+            if !isBrakingDistanceRespected(train: train, speed: maximumSpeedAllowed) {
+                // If not, the braking speed is used
+                maximumSpeedAllowed = min(maximumSpeedAllowed, LayoutFactory.DefaultBrakingSpeed)
+            }
+        }
+
+        BTLogger.router.debug("\(train, privacy: .public): maximum allowed speed is \(maximumSpeedAllowed)kph")
+        
         return maximumSpeedAllowed
     }
-
+    
+    /// Returns true if the train can stop within the available lead distance at the specified speed.
+    ///
+    /// The leading distance is the distance of all the reserved leading blocks in front of the train.
+    /// The goal is to ensure that a train can stop safely at any moment with the leading distance
+    /// available - otherwise, it might overshoot the leading blocks in case a stop is requested.
+    ///
+    /// - Parameters:
+    ///   - train: the train
+    ///   - speed: the speed to evaluate
+    /// - Returns: true if the train can stop with the available leading distance, false otherwise
+    func isBrakingDistanceRespected(train: Train, speed: TrainSpeed.UnitKph) -> Bool {
+        let leadingDistance = train.leadingBlocks.reduce(0.0) { partialResult, block in
+            if let blockLength = block.length {
+                return partialResult + blockLength
+            } else {
+                return partialResult
+            }
+        }
+        
+        // Compute the distance necessary to bring the train to a full stop
+        let steps = train.speed.steps(for: speed).value
+        let brakingStepSize = train.speed.accelerationStepSize ?? TrainControllerAcceleration.DefaultStepSize
+        let brakingStepDelay = Double(train.speed.accelerationStepDelay ?? TrainControllerAcceleration.DefaultStepDelay) / 1000.0
+        
+        let brakingDelaySeconds = Double(steps) / Double(brakingStepSize) * Double(brakingStepDelay) + train.speed.stopSettleDelay
+        
+        let speedKph = Double(speed)
+        let brakingDistanceKm = speedKph * (brakingDelaySeconds / 3600.0)
+        let brakingDistanceH0cm = (brakingDistanceKm * 1000*100) / 87.0
+                            
+        // The braking distance is respected if it is shorter or equal
+        // to the leading distance available.
+        let respected = brakingDistanceH0cm <= leadingDistance
+        if respected {
+            BTLogger.router.debug("\(train, privacy: .public): can come to a fullstop in \(brakingDistanceH0cm, format: .fixed(precision: 1))cm (in \(brakingDelaySeconds, format: .fixed(precision: 1))s) at \(speedKph, format: .fixed(precision: 1))kph. The leading distance is \(leadingDistance, format: .fixed(precision: 1))cm with blocks \(train.leadingBlocks, privacy: .public)")
+        } else {
+            BTLogger.router.debug("\(train, privacy: .public): ⚠️ cannot come to a fullstop in \(brakingDistanceH0cm, format: .fixed(precision: 1))cm (in \(brakingDelaySeconds, format: .fixed(precision: 1))s) at \(speedKph, format: .fixed(precision: 1))kph because the leading distance is \(leadingDistance, format: .fixed(precision: 1))cm with blocks \(train.leadingBlocks, privacy: .public)")
+        }
+        return respected
+    }
+    
     private func debug(_ msg: String) {
         if verbose {
             BTLogger.debug(msg)

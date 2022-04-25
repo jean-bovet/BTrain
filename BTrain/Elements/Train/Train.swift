@@ -144,7 +144,7 @@ final class Train: Element, ObservableObject {
     @Published var wagonsPushedByLocomotive = false
     
     // The route this train is associated with
-    @Published var routeId: Identifier<Route>?
+    @Published var routeId: Identifier<Route>
     
     // Keeping track of the route index when the train starts,
     // to avoid stopping it immediately if it is still starting
@@ -215,7 +215,54 @@ final class Train: Element, ObservableObject {
     
     // The state of the train
     @Published var state: State = .stopped
+    
+    /// Enumartion that indicates a request to change the state of train, like starting or stopping the train.
+    enum StateChangeRequest: CustomStringConvertible, Equatable {
 
+        /// The train is requested to start
+        case start
+        
+        /// The train will be fully stopped and the scheduling placed back to ``Train/Schedule/manual``.
+        case stopCompletely
+        
+        /// The train will stop and be restarted after the specified delay
+        case stopAndRestart(delay: TimeInterval)
+        
+        /// The train will stop temporarily and restart as soon as the leading blocks can be reserved again
+        case stopTemporarily
+        
+        var description: String {
+            switch self {
+            case .start:
+                return "start"
+            case .stopCompletely:
+                return "stopCompletely"
+            case .stopAndRestart(delay: let delay):
+                return "stopAndRestart(after: \(delay))"
+            case .stopTemporarily:
+                return "stopTemporarily"
+            }
+        }
+
+        static func ==(lhs: StateChangeRequest, rhs: StateChangeRequest) -> Bool {
+            switch (lhs, rhs) {
+            case (.start, .start):
+                return true
+            case (.stopCompletely, .stopCompletely):
+                return true
+            case (.stopAndRestart(delay: let d1), .stopAndRestart(delay: let d2)):
+                return d1 == d2
+            case (.stopTemporarily, .stopTemporarily):
+                return true
+            default:
+                return false
+            }
+        }
+    }
+            
+    /// If not nil, this variable indicates a request to change the state of the train
+    @Published var stateChangeRequest: StateChangeRequest? = nil
+        
     // The block where the locomotive is located
     @Published var blockId: Identifier<Block>?
     
@@ -264,7 +311,12 @@ final class Train: Element, ObservableObject {
     var timeUntilAutomaticRestart: TimeInterval = 0
 
     var description: String {
-        return "\(name) (\(id))"
+        var text = "Train '\(name)' (id=\(id), \(state)"
+        if let stateChangeRequest = stateChangeRequest {
+            text += ", \(stateChangeRequest)"
+        }
+        text += ", \(speed.actualKph)kph)"
+        return text
     }
     
     convenience init(uuid: String = UUID().uuidString, name: String = "", address: UInt32 = 0, decoder: DecoderType = .MFX,
@@ -276,6 +328,7 @@ final class Train: Element, ObservableObject {
     init(id: Identifier<Train>, name: String, address: UInt32, decoder: DecoderType = .MFX,
          locomotiveLength: Double? = nil, wagonsLength: Double? = nil, magnetDistance: Double? = nil, maxSpeed: TrainSpeed.UnitKph? = nil, maxNumberOfLeadingReservedBlocks: Int? = nil) {
         self.id = id
+        self.routeId = Route.automaticRouteId(for: id)
         self.name = name
         self.address = address
         self.locomotiveLength = locomotiveLength
@@ -308,7 +361,7 @@ extension Train: Codable {
         self.speed = try container.decode(TrainSpeed.self, forKey: CodingKeys.speed)
         self.directionForward = try container.decodeIfPresent(Bool.self, forKey: CodingKeys.direction) ?? true
         self.wagonsPushedByLocomotive = try container.decodeIfPresent(Bool.self, forKey: CodingKeys.wagonsPushedByLocomotive) ?? false
-        self.routeId = try container.decodeIfPresent(Identifier<Route>.self, forKey: CodingKeys.route)
+        self.routeId = try container.decodeIfPresent(Identifier<Route>.self, forKey: CodingKeys.route) ?? Route.automaticRouteId(for: id)
         self.routeStepIndex = try container.decode(Int.self, forKey: CodingKeys.routeIndex)
         self.blockId = try container.decodeIfPresent(Identifier<Block>.self, forKey: CodingKeys.block)
         self.position = try container.decode(Int.self, forKey: CodingKeys.position)

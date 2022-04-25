@@ -57,7 +57,7 @@ final class TrainControllerAcceleration {
     }
         
     func changeSpeed(of train: Train, acceleration: TrainSpeedAcceleration.Acceleration?, completion: @escaping CompletionBlock) {
-        BTLogger.debug("Train \(train) request speed of \(train.speed.requestedKph) kph (\(train.speed.requestedSteps)) from actual speed of \(train.speed.actualKph) kph (\(train.speed.actualSteps))")
+        BTLogger.router.debug("\(train, privacy: .public): requesting speed of \(train.speed.requestedKph)kph (\(train.speed.requestedSteps)) from actual speed of \(train.speed.actualKph) kph (\(train.speed.actualSteps))")
 
         changeSpeed(from: train.speed.actualSteps, to: train.speed.requestedSteps, acceleration: acceleration ?? train.speed.accelerationProfile) { [weak self] steps, finished in
             guard let interface = self?.interface else {
@@ -65,11 +65,11 @@ final class TrainControllerAcceleration {
             }
             
             let value = interface.speedValue(for: steps, decoder: train.decoder)
-            BTLogger.debug("Train \(train) execute speed value \(value) (\(steps)) towards Digital Controller \(finished ? "- completed":"- in progress")")
+            BTLogger.router.debug("\(train, privacy: .public): execute speed value \(value) (\(steps)) towards Digital Controller \(finished ? "- completed":"- in progress", privacy: .public)")
             interface.execute(command: .speed(address: train.address, decoderType: train.decoder, value: value)) {
                 // Change the actualSteps only after we know the command has been sent to the Digital Controller
                 train.speed.actualSteps = steps
-                BTLogger.debug("Train \(train) actual speed is \(train.speed.actualKph) kph (\(train.speed.actualSteps)) \(finished ? "- completed":"- in progress")")
+                BTLogger.router.debug("\(train, privacy: .public): actual speed is \(train.speed.actualKph) kph (\(train.speed.actualSteps)) \(finished ? "- completed":"- in progress", privacy: .public)")
                 if finished {
                     if steps == .zero {
                         // When stopping a locomotive, we need to wait a bit more to ensure the locomotive
@@ -159,7 +159,7 @@ final class TrainControllerAcceleration {
     
     private func cancelPrevious() {
         if let stepsDidChange = stepsDidChange {
-            BTLogger.debug("Interrupting in-progress speed change from \(actual.value) steps to \(desired.value) steps for \(train.name)")
+            BTLogger.router.warning("\(self.train, privacy: .public): interrupting in-progress speed change from \(self.actual.value) steps to \(self.desired.value) steps")
             stepsDidChange(actual, true)
         }
         stepsDidChange = nil

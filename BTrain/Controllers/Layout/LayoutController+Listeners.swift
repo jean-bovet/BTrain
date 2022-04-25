@@ -23,7 +23,7 @@ extension LayoutController {
                 if let feedback = sSelf.layout.feedbacks.find(deviceID: deviceID, contactID: contactID) {
                     feedback.detected = value == 1
                     BTLogger.debug("Feedback \(feedback) changed to \(feedback.detected)")
-                    sSelf.runControllers()
+                    sSelf.runControllers(.feedbackTriggered)
                 }
             }
         })
@@ -39,7 +39,7 @@ extension LayoutController {
                 if let train = layout.trains.find(address: address, decoder: decoder) {
                     train.speed.actualSteps = interface.speedSteps(for: value, decoder: train.decoder)
                     BTLogger.debug("Actual speed changed to \(train.speed.actualKph) for \(train.name)")
-                    self?.runControllers()
+                    self?.runControllers(.speedChanged)
                     self?.switchboard?.state.triggerRedraw.toggle()
                 }
             }
@@ -55,26 +55,32 @@ extension LayoutController {
     }
     
     func directionDidChange(address: UInt32, decoder: DecoderType?, direction: Command.Direction) {
-        if let train = layout.trains.find(address: address, decoder: decoder) {
-            BTLogger.debug("Direction changed to \(direction) for \(train.name)")
-            switch(direction) {
-            case .forward:
-                if train.directionForward == false {
-                    train.directionForward = true
-                    try? layout.toggleTrainDirectionInBlock(train)
-                    switchboard?.state.triggerRedraw.toggle()
+        do {
+            if let train = layout.trains.find(address: address, decoder: decoder) {
+                BTLogger.debug("Direction changed to \(direction) for \(train.name)")
+                switch(direction) {
+                case .forward:
+                    if train.directionForward == false {
+                        train.directionForward = true
+                        try layout.toggleTrainDirectionInBlock(train)
+                        runControllers(.directionChanged)
+                        switchboard?.state.triggerRedraw.toggle()
+                    }
+                case .backward:
+                    if train.directionForward {
+                        train.directionForward = false
+                        try layout.toggleTrainDirectionInBlock(train)
+                        runControllers(.directionChanged)
+                        switchboard?.state.triggerRedraw.toggle()
+                    }
+                case .unknown:
+                    BTLogger.error("Unknown direction \(direction) for \(address.toHex())")
                 }
-            case .backward:
-                if train.directionForward {
-                    train.directionForward = false
-                    try? layout.toggleTrainDirectionInBlock(train)
-                    switchboard?.state.triggerRedraw.toggle()
-                }
-            case .unknown:
-                BTLogger.error("Unknown direction \(direction) for \(address.toHex())")
+            } else {
+                BTLogger.error("Unknown address \(address.toHex()) for change in direction event")
             }
-        } else {
-            BTLogger.error("Unknown address \(address.toHex()) for change in direction event")
+        } catch {
+            BTLogger.error("Error handling a direction change: \(error.localizedDescription)")
         }
     }
     
@@ -88,8 +94,7 @@ extension LayoutController {
                 if let turnout = layout.turnouts.find(address: address) {
                     BTLogger.debug("Turnout \(turnout.name) changed state \(state) for address \(address.actualAddress.toHex())")
                     turnout.setState(value: state, for: address.actualAddress)
-                    BTLogger.debug(" > Turnout \(turnout.name) changed to state \(turnout.state)")
-                    layout.didChange()
+                    self?.runControllers(.turnoutChanged)
                 } else {
                     BTLogger.error("Unknown turnout for address \(address.actualAddress.toHex())")
                 }

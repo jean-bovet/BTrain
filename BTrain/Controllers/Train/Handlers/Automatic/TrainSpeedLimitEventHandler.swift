@@ -12,28 +12,17 @@
 
 import Foundation
 
-typealias CompletionBlock = (() -> Void)
-
-protocol LayoutCommandExecuting: AnyObject {
+/// This class manages the speed limit in automatic scheduling. For example, when a train enters a new block or moves
+/// within a block, the speed might need to be adjusted given the reserved elements in front of the train: blocks or turnouts can
+/// have speed limitation that needs to be honored.
+final class TrainSpeedLimitEventHandler: TrainAutomaticSchedulingHandler {
     
-    func sendTurnoutState(turnout: Turnout, completion: @escaping CompletionBlock)
-    func sendTrainDirection(train: Train, forward: Bool, completion: @escaping CompletionBlock)
-    func sendTrainSpeed(train: Train, acceleration: TrainSpeedAcceleration.Acceleration?, completion: @escaping CompletionBlock)
-
-}
-
-final class DefaultCommandExecutor: LayoutCommandExecuting {
-    func sendTurnoutState(turnout: Turnout, completion: @escaping CompletionBlock) {
-        completion()
+    var events: Set<TrainEvent> {
+        [.movedToNextBlock, .movedInsideBlock]
     }
     
-    func sendTrainDirection(train: Train, forward: Bool, completion: @escaping CompletionBlock) {
-        completion()
-    }
-    
-    func sendTrainSpeed(train: Train, acceleration: TrainSpeedAcceleration.Acceleration?, completion: @escaping CompletionBlock) {
-        train.speed.actualSteps = train.speed.requestedSteps
-        completion()
-    }
-    
+    func process(layout: Layout, train: Train, route: Route, event: TrainEvent, controller: TrainControlling) throws -> TrainHandlerResult {
+        layout.adjustSpeedLimit(train)
+        return .none()
+    }    
 }

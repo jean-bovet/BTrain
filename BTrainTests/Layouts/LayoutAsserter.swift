@@ -39,7 +39,7 @@ final class LayoutAsserter {
         }
         
         // Then run the controller to update the real layout states
-        _ = layoutController.run()
+        layoutController.runControllers(.feedbackTriggered)
 
         // Now assert the routes to see if they match the real layout
         var assertedAtLeastOneRoute = false

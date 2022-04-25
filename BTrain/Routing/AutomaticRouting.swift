@@ -80,12 +80,20 @@ final class AutomaticRouting {
         }
         
         if let path = path {
+            route.lastMessage = nil
             route.steps = path.elements.toBlockSteps
             train.routeStepIndex = 0
+            train.startRouteIndex = 0
             return (true, route)
         } else {
+            if let to = to {
+                route.lastMessage = "Unable to find a suitable route to \(to.0.name)"
+            } else {
+                route.lastMessage = "Unable to find a suitable route"
+            }
             route.steps.removeAll()
             train.routeStepIndex = 0
+            train.startRouteIndex = 0
             return (false, route)
         }
     }

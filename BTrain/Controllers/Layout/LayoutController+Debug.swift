@@ -15,20 +15,21 @@ import Foundation
 extension LayoutController {
     
     func dumpAll() {
-        BTLogger.debug("*******************************************")
-        BTLogger.debug("Enabled Trains:")
+        var text = "*******************************************"
+        text += "\nEnabled Trains:"
         for train in layout.trains.filter({$0.enabled}) {
-            BTLogger.debug(" "+LayoutController.attributesFor(train: train, layout: layout))
+            text += "\n "+LayoutController.attributesFor(train: train, layout: layout)
         }
-        BTLogger.debug("Interesting Blocks:")
+        text += "\nInteresting Blocks:"
         for block in layout.blocks.filter({$0.enabled && ($0.reserved != nil || $0.train != nil)}) {
-            BTLogger.debug(" "+LayoutController.attributesFor(block: block, layout: layout))
+            text += "\n "+LayoutController.attributesFor(block: block, layout: layout)
         }
-        BTLogger.debug("Routes:")
+        text += "\nRoutes:"
         for route in layout.routes {
-            BTLogger.debug(" "+LayoutController.attributesFor(route: route, layout: layout))
+            text += "\n "+LayoutController.attributesFor(route: route, layout: layout)
         }
-        BTLogger.debug("*******************************************")
+        text += "*******************************************"
+        BTLogger.router.error("\(text, privacy: .public)")
     }
     
     static func attributesFor(route: Route, layout: Layout) -> String {
@@ -53,8 +54,8 @@ extension LayoutController {
     }
     
     static func attributesFor(train: Train, layout: Layout) -> String {
-        var info = "\(train.name)-[\(train.id)]"
-        if let routeId = train.routeId, let route = layout.route(for: routeId, trainId: train.id) {
+        var info = "\(train)"
+        if let route = layout.route(for: train.routeId, trainId: train.id) {
             info += ": route \(route.name) at step \(train.routeStepIndex)"
         } else {
             info += ": no route assigned"

@@ -52,6 +52,19 @@ class ManualOperationTests: BTTestCase {
         try p.assertTrain(inBlock: "b1", position: 2, speed: 0)
     }
 
+    //                 ┌─────────┐
+    //┌────────────────│ Block 2 │◀────────────────────┐
+    //│                └─────────┘                     │
+    //│                                                │
+    //│                                                │
+    //│                ┌─────────┐
+    //│       ┌───────▶│ Block 3 │────────────────▶Turnout12
+    //│       │        └─────────┘
+    //│       │                                        ▲
+    //│       │                                        │
+    //│                                 ┌─────────┐    │
+    //└─▶Turnout21 ────────────────────▶│ Block 1 │────┘
+    //                                  └─────────┘
     // b1 > b2 > b3 > !b1
     func testPullingLongTrain() throws {
         let layout = LayoutLoop1().newLayout()
@@ -79,15 +92,12 @@ class ManualOperationTests: BTTestCase {
         let train = layout.trains[0]
         train.locomotiveLength = 20
         train.wagonsLength = 40
-        
-//        try layout.setLocomotiveDirection(train, forward: false)
-//        train.wagonsPushedByLocomotive = true
-        
-        let p = try setup(layout: layout, fromBlockId: "b1")
+                
+        let p = try setup(layout: layout, fromBlockId: "b1", position: .end)
         
         p.setTrainSpeed(LayoutFactory.DefaultMaximumSpeed, speedLimit: false)
 
-        try p.assertTrain(inBlock: "b1", position: 0, speed: LayoutFactory.DefaultMaximumSpeed)
+        try p.assertTrain(inBlock: "b1", position: 2, speed: LayoutFactory.DefaultMaximumSpeed)
 
         try p.triggerFeedback("f21")
         
@@ -201,7 +211,7 @@ class ManualOperationTests: BTTestCase {
         
         func setTrainSpeed(_ speed: TrainSpeed.UnitKph, speedLimit: Bool) {
             layout.setTrainSpeed(train, speed, speedLimit: speedLimit) { }
-            _ = layoutController.run()
+            layoutController.runControllers(.stateChanged)
         }
                 
         func triggerFeedback(_ named: String, _ detected: Bool = true) throws {
@@ -211,7 +221,7 @@ class ManualOperationTests: BTTestCase {
             }
 
             feedback.detected = detected
-            _ = layoutController.run()
+            layoutController.runControllers(.feedbackTriggered)
         }
     }
     

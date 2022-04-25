@@ -18,8 +18,9 @@ final class LayoutCommandExecutor {
     weak var interface: CommandInterface?
     
     // Queue to ensure that sending of command for each turnout does happen
-    // every 250ms in order to avoid a spike in current on the real layout.
-    let turnoutQueue = ScheduledMessageQueue(delay: 0.25, name: "Turnout")
+    // every 100ms in order to avoid a spike in current on the real layout.
+    // TODO: expose that as a settings
+    let turnoutQueue = ScheduledMessageQueue(delay: 0.100, name: "Turnout")
     
     // Time until the turnout state power is turned off.
     let activationTime: TimeInterval = 0.2
@@ -62,15 +63,15 @@ final class LayoutCommandExecutor {
         }
     }
 
-    func sendTrainDirection(train: Train, completion: @escaping CompletionBlock) {
-        BTLogger.debug("Train \(train.name) changed direction to \(train.directionForward ? "forward" : "backward" )")
+    func sendTrainDirection(train: Train, forward: Bool, completion: @escaping CompletionBlock) {
+        BTLogger.debug("Train \(train.name) changed direction to \(forward ? "forward" : "backward" )")
         guard let interface = interface else {
             completion()
             return
         }
 
         let command: Command
-        if train.directionForward {
+        if forward {
             command = .direction(address: train.address, decoderType: train.decoder, direction: .forward)
         } else {
             command = .direction(address: train.address, decoderType: train.decoder, direction: .backward)

@@ -12,28 +12,33 @@
 
 import Foundation
 
-typealias CompletionBlock = (() -> Void)
-
-protocol LayoutCommandExecuting: AnyObject {
+final class TrainReserveLeadingBlocksHandler: TrainAutomaticSchedulingHandler {
     
-    func sendTurnoutState(turnout: Turnout, completion: @escaping CompletionBlock)
-    func sendTrainDirection(train: Train, forward: Bool, completion: @escaping CompletionBlock)
-    func sendTrainSpeed(train: Train, acceleration: TrainSpeedAcceleration.Acceleration?, completion: @escaping CompletionBlock)
-
-}
-
-final class DefaultCommandExecutor: LayoutCommandExecuting {
-    func sendTurnoutState(turnout: Turnout, completion: @escaping CompletionBlock) {
-        completion()
+    var events: Set<TrainEvent> {
+        [.movedToNextBlock, .movedInsideBlock]
     }
     
-    func sendTrainDirection(train: Train, forward: Bool, completion: @escaping CompletionBlock) {
-        completion()
+    func process(layout: Layout, train: Train, route: Route, event: TrainEvent, controller: TrainControlling) throws -> TrainHandlerResult {
+        guard train.stateChangeRequest == nil else {
+            return .none()
+        }
+        
+        guard train.state != .stopped else {
+            return .none()
+        }
+        
+        guard let currentBlock = layout.currentBlock(train: train) else {
+            return .none()
+        }
+
+        let result = try controller.reserveLeadBlocks(route: route, currentBlock: currentBlock)
+        if result == false {
+            BTLogger.router.debug("\(train, privacy: .public): requesting to stop temporarily here \(currentBlock, privacy: .public) because the leading blocks cannot be reserved")
+            train.stateChangeRequest = .stopTemporarily
+            return .one(.stopRequested)
+        }
+
+        return .none()
     }
-    
-    func sendTrainSpeed(train: Train, acceleration: TrainSpeedAcceleration.Acceleration?, completion: @escaping CompletionBlock) {
-        train.speed.actualSteps = train.speed.requestedSteps
-        completion()
-    }
-    
+        
 }

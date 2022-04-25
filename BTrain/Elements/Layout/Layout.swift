@@ -113,7 +113,7 @@ final class Layout: Element, ObservableObject {
     
     func trainsThatCanBeStarted() -> [Train] {
         return trains.filter { train in
-            return train.enabled && train.blockId != nil && train.routeId != nil && train.manualScheduling
+            return train.enabled && train.blockId != nil && train.manualScheduling
         }
     }
     
@@ -156,6 +156,7 @@ final class Layout: Element, ObservableObject {
     // to re-draw itself. This is necessary because changes
     // in children parameters of the layout (ie the speed of a train),
     // is not propagated to the layout object itself.
+    // TODO: still necessary?
     func didChange() {
         objectWillChange.send()
     }
