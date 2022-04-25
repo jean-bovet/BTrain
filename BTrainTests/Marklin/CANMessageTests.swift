@@ -18,51 +18,51 @@ class CANMessageTests: BTTestCase {
     func testEnable() {
         assert(msg: MarklinCANMessageFactory.go(),
                byteArray: [ 0x00, 0x00, 0xbf, 0x46, 0x05, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00 ],
-               description: "0x00 System Go")
+               description: "0x00 System Go - cmd")
     }
 
     func testDisable() {
         assert(msg: MarklinCANMessageFactory.stop(),
                byteArray: [ 0x00, 0x00, 0xbf, 0x46, 0x05, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 ],
-               description: "0x00 System Stop")
+               description: "0x00 System Stop - cmd")
     }
 
     func testSpeed() {
         assert(msg: MarklinCANMessageFactory.speed(addr: 0x4009, speed: 113),
                byteArray: [ 0x00, 0x08, 0xbf, 0x46, 0x06, 0x00, 0x00, 0x40, 0x09, 0x00, 0x71, 0x00, 0x00 ],
-               description: "0x04 speed 113 for 0x4009")
+               description: "0x04 speed 113 for 0x4009 - cmd")
     }
 
     func testForward() {
         assert(msg: MarklinCANMessageFactory.forward(addr: 0x4009),
                byteArray: [ 0x00, 0x0A, 0xbf, 0x46, 0x05, 0x00, 0x00, 0x40, 0x09, 0x01, 0x00, 0x00, 0x00 ],
-               description: "0x05 forward for 0x4009")
+               description: "0x05 forward for 0x4009 - cmd")
     }
 
     func testBackward() {
         assert(msg: MarklinCANMessageFactory.backward(addr: 0x4009),
                byteArray: [ 0x00, 0x0A, 0xbf, 0x46, 0x05, 0x00, 0x00, 0x40, 0x09, 0x02, 0x00, 0x00, 0x00 ],
-               description: "0x05 backward for 0x4009")
+               description: "0x05 backward for 0x4009 - cmd")
     }
 
     func testAccessory() {
         assert(msg: MarklinCANMessageFactory.accessory(addr: 0x4009, state: 0x2, power: 0x1),
                byteArray: [ 0x00, 0x16, 0xbf, 0x46, 0x06, 0x00, 0x00, 0x40, 0x09, 0x02, 0x01, 0x00, 0x00 ],
-               description: "0x0B accessory 2-1 for 0x4009")
+               description: "0x0B accessory 2-1 for 0x4009 - cmd")
     }
 
     func testFeedback1() {
         let (msg, _) = MarklinCANMessage.from(command: MarklinTestMessageFactory.feedback1())!
         assert(msg: msg,
                byteArray: MarklinTestMessageFactory.feedback1ByteArray,
-               description: "0x11 feedback: 1:14, from 0 to 1, t = 655350ms")
+               description: "0x11 feedback: 1:14, from 0 to 1, t = 655350ms - cmd")
     }
 
     func testFeedback2() {
         let (msg, _) = MarklinCANMessage.from(command: MarklinTestMessageFactory.feedback2())!
         assert(msg: msg,
                byteArray: MarklinTestMessageFactory.feedback2ByteArray,
-               description: "0x11 feedback: 1:16, from 1 to 0, t = 29100ms")
+               description: "0x11 feedback: 1:16, from 1 to 0, t = 29100ms - cmd")
     }
 
     func testUnknown() {
