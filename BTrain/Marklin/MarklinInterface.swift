@@ -101,18 +101,8 @@ final class MarklinInterface: CommandInterface {
             onCompletion()
             return
         }
-        
-        // Invoke the callbacks registered to listen for a particular event.
-        invokeCallbacks(for: command)
-        
+                
         send(message: message, priority: priority, onCompletion: onCompletion)
-    }
-
-    private func invokeCallbacks(for command: Command) {
-        // TODO: should not need this one either
-        if case .speed(address: let address, decoderType: let decoderType, value: let value, priority: _, descriptor: _) = command {
-            speedChangeCallbacks.forEach { $0(address, decoderType, value) }
-        }
     }
     
     // Maximum value of the speed parameters that can be specified in the CAN message.

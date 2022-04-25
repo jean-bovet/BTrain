@@ -29,6 +29,11 @@ struct MarklinCANMessage: Equatable, Hashable {
     let byte5: UInt8
     let byte6: UInt8
     let byte7: UInt8
+    
+    /// Returns the same message but with the response bit set to 1 (acknowledgement)
+    var ack: MarklinCANMessage {
+        .init(prio: prio, command: command, resp: 1, hash: hash, dlc: dlc, byte0: byte0, byte1: byte1, byte2: byte2, byte3: byte3, byte4: byte4, byte5: byte5, byte6: byte6, byte7: byte7)
+    }
 }
 
 // MARK: Utility

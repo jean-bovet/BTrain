@@ -275,10 +275,13 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
         send(message)
     }
     
+    /// Simulates a change in speed from the Central Station 3
+    /// - Parameter train: the train that had his speed changed
     func setTrainSpeed(train: SimulatorTrain) {
         let value = interface.speedValue(for: train.speed, decoder: train.train.decoder)
         let message = MarklinCANMessageFactory.speed(addr: train.train.actualAddress, speed: value.value)
         send(message)
+        send(message.ack) // Send also the acknowledgement
     }
     
     func send(_ message: MarklinCANMessage) {
