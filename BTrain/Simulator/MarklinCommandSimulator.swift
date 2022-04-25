@@ -178,7 +178,8 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
                 self?.directionChanged(address: address, decoderType: decoderType, direction: direction)
                 break
                 
-            case .turnout(address: _, state: _, power: _, priority: _, descriptor: _):
+            case .turnout(address: let address, state: let state, power: let power, priority: _, descriptor: _):
+                self?.turnoutChanged(address: address, state: state, power: power)
                 break
                 
             case .feedback(deviceID: _, contactID: _, oldValue: _, newValue: _, time: _, priority: _, descriptor: _):
@@ -198,6 +199,11 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
         }
     }
     
+    func turnoutChanged(address: CommandTurnoutAddress, state: UInt8, power: UInt8) {
+        let message = MarklinCANMessageFactory.accessory(addr: address.actualAddress, state: state, power: power)
+        send(message.ack)
+    }
+    
     func speedChanged(address: UInt32, decoderType: DecoderType?, value: SpeedValue) {
         for train in trains {
             if train.train.actualAddress == address.actualAddress(for: decoderType) {
@@ -205,6 +211,8 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
                 train.speed = steps
             }
         }
+        let message = MarklinCANMessageFactory.speed(addr: address, speed: value.value)
+        send(message.ack)
     }
 
     func directionChanged(address: UInt32, decoderType: DecoderType?, direction: Command.Direction) {
@@ -262,7 +270,7 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
     func setFeedback(feedback: Feedback, value: UInt8) {
         let oldValue: UInt8 = feedback.detected ? 1 : 0
         let message = MarklinCANMessageFactory.feedback(deviceID: feedback.deviceID, contactID: feedback.contactID, oldValue: oldValue, newValue: value, time: 0)
-        send(message)
+        send(message.ack)
     }
 
     func setTrainDirection(train: SimulatorTrain, directionForward: Bool) {
