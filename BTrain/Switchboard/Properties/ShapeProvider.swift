@@ -95,10 +95,14 @@ final class ShapeProvider: ShapeProviding {
             self?.updateShapes(turnouts: turnouts)
         }
         
+        observer.registerForTransitioChange { [weak self] transitions in
+            self?.updateShapes(transitions: transitions)
+        }
+        
         updateShapes()
     }
         
-    func updateShapes(blocks: [Block]? = nil, turnouts: [Turnout]? = nil) {
+    func updateShapes(blocks: [Block]? = nil, turnouts: [Turnout]? = nil, transitions: [Transition]? = nil) {
         shapes.removeAll()
 
         if let blocks = blocks {
@@ -113,7 +117,7 @@ final class ShapeProvider: ShapeProviding {
             updateTurnouts(turnouts: layout.turnouts)
         }
         
-        for transition in layout.transitions {
+        for transition in transitions ?? layout.transitions {
             do {
                 append(LinkShape(from: try socketInstance(for: transition.a, shapes: self),
                                  to: try socketInstance(for: transition.b, shapes: self),
