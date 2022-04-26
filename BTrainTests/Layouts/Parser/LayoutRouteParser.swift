@@ -128,7 +128,7 @@ final class LayoutRouteParser {
         }
         
         blocks.insert(block)
-        route.steps.append(Route.Step(String(route.steps.count), block.id, direction))
+        route.steps.append(RouteStep(String(route.steps.count), block.id, direction))
     }
  
     enum BlockContentType {
@@ -480,7 +480,7 @@ final class LayoutRouteParser {
             layout.turnouts.append(turnout)
         }
         
-        let step = Route.Step(turnoutId, Socket.turnout(turnoutId, socketId: fromSocket), Socket.turnout(turnoutId, socketId: toSocket))
+        let step = RouteStep(turnoutId, Socket.turnout(turnoutId, socketId: fromSocket), Socket.turnout(turnoutId, socketId: toSocket))
         route.steps.append(step)
     }
 

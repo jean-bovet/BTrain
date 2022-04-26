@@ -80,7 +80,7 @@ final class LayoutReservation {
         return try reserveSteps(train: train, resolvedSteps: resolvedSteps)
     }
     
-    private func reserveSteps(train: Train, resolvedSteps: [Route.Step]) throws -> Bool {
+    private func reserveSteps(train: Train, resolvedSteps: [RouteStep]) throws -> Bool {
         // Variable keeping track of the number of leading blocks that have been reserved.
         // At least one block must have been reserved to consider this function successfull.
         // Note: blocks that are reserved for the train and its wagons do not count against that count.
@@ -99,7 +99,7 @@ final class LayoutReservation {
         var transitions = [ITransition]()
         
         // Remember the previous step so we can determine the transitions between two elements.
-        var previousStep: Route.Step?
+        var previousStep: RouteStep?
 
         // Iterate over all the resolved steps
         for step in resolvedSteps {
@@ -199,7 +199,7 @@ final class LayoutReservation {
         debug("Set turnout \(turnout.name) for \(train) and state \(turnout.state)")
     }
     
-    private func rememberTurnoutToReserve(turnout: Turnout, train: Train, step: Route.Step, numberOfLeadingBlocksReserved: inout Int, turnouts: inout [TurnoutReservation]) throws -> Bool {
+    private func rememberTurnoutToReserve(turnout: Turnout, train: Train, step: RouteStep, numberOfLeadingBlocksReserved: inout Int, turnouts: inout [TurnoutReservation]) throws -> Bool {
         let fromSocketId = try step.entrySocketId()
         let toSocketId = try step.exitSocketId()
         let state = turnout.state(fromSocket: fromSocketId, toSocket: toSocketId)
@@ -230,7 +230,7 @@ final class LayoutReservation {
         return true
     }
     
-    private func rememberTransitions(from previousStep: Route.Step?, to step: Route.Step, transitions: inout [ITransition]) throws {
+    private func rememberTransitions(from previousStep: RouteStep?, to step: RouteStep, transitions: inout [ITransition]) throws {
         guard let previousStep = previousStep else {
             return
         }

@@ -28,8 +28,8 @@ enum LayoutError: Error {
     case feedbackNotFound(feedbackId: Identifier<Feedback>)
     case socketIdNotFound(socket: Socket)
         
-    case entrySocketNotFound(step: Route.Step)
-    case exitSocketNotFound(step: Route.Step)
+    case entrySocketNotFound(step: RouteStep)
+    case exitSocketNotFound(step: RouteStep)
     case invalidSocket(socket: Socket)
 
     case brakeFeedbackNotFound(block: Block)
@@ -60,10 +60,10 @@ enum LayoutError: Error {
     case destinationBlockMismatch(currentBlock: Block, destination: Destination)
     case destinationDirectionMismatch(currentBlock: Block, destination: Destination)
     
-    case missingDirection(step: Route.Step)
-    case invalidDirectionRequest(step: Route.Step)
-    case invalidDirectionAssignment(step: Route.Step)
-    case invalidState(step: Route.Step)
+    case missingDirection(step: RouteStep)
+    case invalidDirectionRequest(step: RouteStep)
+    case invalidDirectionAssignment(step: RouteStep)
+    case invalidState(step: RouteStep)
     
     case invalidPartIndex(index: Int, block: Block)
     

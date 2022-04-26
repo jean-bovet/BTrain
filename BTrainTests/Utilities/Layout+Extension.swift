@@ -18,7 +18,7 @@ extension Layout {
     
     func newRoute(id: String, _ steps: [(String, Direction)]) -> Route {
         return newRoute(id, name: id, steps.map({ step in
-            return Route.Step(Identifier<Block>(uuid: step.0), step.1)
+            return RouteStep(Identifier<Block>(uuid: step.0), step.1)
         }))
     }
     
@@ -96,7 +96,7 @@ extension Layout {
 
 }
 
-extension Array where Element == Route.Step {
+extension Array where Element == RouteStep {
     
     func toStrings(_ layout: Layout, useNameInsteadOfId: Bool = true) throws -> [String] {
         return try self.map { step in

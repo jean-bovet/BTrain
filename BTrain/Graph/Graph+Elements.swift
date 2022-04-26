@@ -223,7 +223,7 @@ extension Layout {
 
 extension Array where Element == GraphPathElement {
     
-    var toBlockSteps: [Route.Step] {
+    var toBlockSteps: [RouteStep] {
         return self.compactMap { element in
             if let block = element.node as? Block {
                 let direction: Direction
@@ -234,14 +234,14 @@ extension Array where Element == GraphPathElement {
                 } else {
                     return nil
                 }
-                return Route.Step(block, direction)
+                return RouteStep(block, direction)
             } else {
                 return nil
             }
         }
     }
     
-    var toSteps: [Route.Step] {
+    var toSteps: [RouteStep] {
         return self.compactMap { element in
             if let block = element.node as? Block {
                 let direction: Direction
@@ -252,7 +252,7 @@ extension Array where Element == GraphPathElement {
                 } else {
                     return nil
                 }
-                return Route.Step(block, direction)
+                return RouteStep(block, direction)
             } else if let turnout = element.node as? Turnout {
                 guard let entrySocket = element.entrySocket else {
                     return nil
@@ -260,7 +260,7 @@ extension Array where Element == GraphPathElement {
                 guard let exitSocket = element.exitSocket else {
                     return nil
                 }
-                return Route.Step(turnout.id, turnout.socket(entrySocket), turnout.socket(exitSocket))
+                return RouteStep(turnout.id, turnout.socket(entrySocket), turnout.socket(exitSocket))
             } else {
                 return nil
             }

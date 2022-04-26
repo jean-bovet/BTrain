@@ -34,10 +34,10 @@ class RouteTests: XCTestCase {
     }
     
     func testStep() {
-        let s1 = Route.Step("1", Identifier<Block>(uuid: "1"), .next)
-        let s2 = Route.Step("2", Identifier<Block>(uuid: "1"), .previous)
-        let s3 = Route.Step("3", Identifier<Block>(uuid: "2"), .next)
-        let s4 = Route.Step("3", Identifier<Block>(uuid: "2"), .next)
+        let s1 = RouteStep("1", Identifier<Block>(uuid: "1"), .next)
+        let s2 = RouteStep("2", Identifier<Block>(uuid: "1"), .previous)
+        let s3 = RouteStep("3", Identifier<Block>(uuid: "2"), .next)
+        let s4 = RouteStep("3", Identifier<Block>(uuid: "2"), .next)
         XCTAssertEqual(s1, s1)
         XCTAssertNotEqual(s1, s2)
         XCTAssertNotEqual(s2, s3)

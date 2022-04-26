@@ -67,7 +67,7 @@ struct RouteView: View {
                 Spacer()
                 
                 Button("+") {
-                    let step = Route.Step(String(route.steps.count+1), layout.block(at: 0).id, .next)
+                    let step = RouteStep(String(route.steps.count+1), layout.block(at: 0).id, .next)
                     route.steps.append(step)
                     undoManager?.registerUndo(withTarget: route, handler: { route in
                         route.steps.removeAll { s in
