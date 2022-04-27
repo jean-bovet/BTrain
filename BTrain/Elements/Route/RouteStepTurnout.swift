@@ -18,12 +18,12 @@ struct RouteStepTurnout: RouteStep, Equatable, Codable {
 
     var turnoutId: Identifier<Turnout>
     
-    var exitSocket: Socket?
+    var exitSocket: Socket
     
-    var entrySocket: Socket?
+    var entrySocket: Socket
 
     var description: String {
-        return "\(turnoutId):(\(entrySocket!.socketId!)>\(exitSocket!.socketId!))"
+        return "\(turnoutId):(\(entrySocket.socketId!)>\(exitSocket.socketId!))"
     }
     
     init(_ turnoutId: Identifier<Turnout>, _ fromSocket: Socket, _ toSocket: Socket) {

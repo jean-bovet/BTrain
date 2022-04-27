@@ -16,32 +16,20 @@ import Foundation
 protocol RouteStep {
         
     /// Returns the socket where the train will enter the element represented by this step.
-    var entrySocket: Socket? { get }
+    var entrySocket: Socket { get }
 
     /// Returns the socket where the train will exit the element represented by this step.
-    var exitSocket: Socket? { get }
+    var exitSocket: Socket { get }
     
-    func entrySocketOrThrow() throws -> Socket
-
     func entrySocketId() throws -> Int
-
-    func exitSocketOrThrow() throws -> Socket
-
+    
     func exitSocketId() throws -> Int
 
 }
 
 extension RouteStep {
     
-    func entrySocketOrThrow() throws -> Socket {
-        guard let entrySocket = entrySocket else {
-            throw LayoutError.entrySocketNotFound(step: self)
-        }
-        return entrySocket
-    }
-
     func entrySocketId() throws -> Int {
-        let entrySocket = try entrySocketOrThrow()
         guard let socketId = entrySocket.socketId else {
             throw LayoutError.socketIdNotFound(socket: entrySocket)
         }
@@ -49,30 +37,23 @@ extension RouteStep {
         return socketId
     }
 
-    func exitSocketOrThrow() throws -> Socket {
-        guard let exitSocket = exitSocket else {
-            throw LayoutError.exitSocketNotFound(step: self)
-        }
-
-        return exitSocket
-    }
-
     func exitSocketId() throws -> Int {
-        let exitSocket = try exitSocketOrThrow()
         guard let socketId = exitSocket.socketId else {
             throw LayoutError.socketIdNotFound(socket: exitSocket)
         }
 
         return socketId
     }
-
+    
 }
 
 struct RouteStep_v1: Codable {
     let id: String
     
     var blockId: Identifier<Block>?
-        
+    
+    var direction: Direction?
+    
     var turnoutId: Identifier<Turnout>?
     
     // The number of seconds a train will wait in that block
@@ -104,7 +85,11 @@ extension RouteStep_v1 {
     
     var toRouteStep: RouteItem {
         if let blockId = blockId {
-            return .block(RouteStepBlock(blockId, entrySocket: entrySocket, exitSocket: exitSocket, waitingTime))
+            if let direction = direction {
+                return .block(RouteStepBlock(blockId, direction, waitingTime))
+            } else {
+                return .block(RouteStepBlock(blockId, entrySocket: entrySocket!, exitSocket: exitSocket!, waitingTime))
+            }
         } else if let turnoutId = turnoutId {
             return .turnout(RouteStepTurnout(turnoutId, entrySocket!, exitSocket!))
         } else {

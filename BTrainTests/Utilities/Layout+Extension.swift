@@ -109,9 +109,9 @@ extension Array where Element == RouteItem {
                 }
             case .turnout(let stepTurnout):
                 if let turnout = layout.turnout(for: stepTurnout.turnoutId) {
-                    return "\(useNameInsteadOfId ? turnout.name:turnout.id.uuid):(\(stepTurnout.entrySocket!.socketId!)>\(stepTurnout.exitSocket!.socketId!))"
+                    return "\(useNameInsteadOfId ? turnout.name:turnout.id.uuid):(\(stepTurnout.entrySocket.socketId!)>\(stepTurnout.exitSocket.socketId!))"
                 } else {
-                    return "\(stepTurnout.turnoutId.uuid):(\(stepTurnout.entrySocket!.socketId!)>\(stepTurnout.exitSocket!.socketId!))"
+                    return "\(stepTurnout.turnoutId.uuid):(\(stepTurnout.entrySocket.socketId!)>\(stepTurnout.exitSocket.socketId!))"
                 }
             }
         }

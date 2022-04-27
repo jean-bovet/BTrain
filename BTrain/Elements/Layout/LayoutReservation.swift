@@ -231,8 +231,8 @@ final class LayoutReservation {
         guard let previousStep = previousStep else {
             return
         }
-        let fromSocket = try previousStep.exitSocketOrThrow()
-        let toSocket = try step.entrySocketOrThrow()
+        let fromSocket = previousStep.exitSocket
+        let toSocket = step.entrySocket
         let trs = try layout.transitions(from: fromSocket, to: toSocket)
         transitions.append(contentsOf: trs)
     }

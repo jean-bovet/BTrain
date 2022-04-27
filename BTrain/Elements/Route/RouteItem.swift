@@ -48,33 +48,20 @@ enum RouteItem: Identifiable, Equatable, CustomStringConvertible {
         }
     }
     
-    func entrySocketOrThrow() throws -> Socket {
+    var entrySocket: Socket {
         switch self {
-        case .block(let block): return try block.entrySocketOrThrow()
-        case .turnout(let turnout): return try turnout.entrySocketOrThrow()
+        case .block(let block): return block.entrySocket
+        case .turnout(let turnout): return turnout.entrySocket
         }
     }
 
-    func entrySocketId() throws -> Int {
+    var exitSocket: Socket {
         switch self {
-        case .block(let block): return try block.entrySocketId()
-        case .turnout(let turnout): return try turnout.entrySocketId()
+        case .block(let block): return block.exitSocket
+        case .turnout(let turnout): return turnout.exitSocket
         }
     }
 
-    func exitSocketOrThrow() throws -> Socket {
-        switch self {
-        case .block(let block): return try block.exitSocketOrThrow()
-        case .turnout(let turnout): return try turnout.exitSocketOrThrow()
-        }
-    }
-
-    func exitSocketId() throws -> Int {
-        switch self {
-        case .block(let block): return try block.exitSocketId()
-        case .turnout(let turnout): return try turnout.exitSocketId()
-        }
-    }
 }
 
 extension RouteItem: Codable {

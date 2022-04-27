@@ -23,9 +23,9 @@ struct RouteStepBlock: RouteStep, Equatable, Codable, CustomStringConvertible {
     // If nil, the block waitingTime is used instead.
     var waitingTime: TimeInterval?
 
-    var exitSocket: Socket?
+    var exitSocket: Socket
     
-    var entrySocket: Socket?
+    var entrySocket: Socket
     
     var description: String {
         return "\(blockId):\(direction)"
@@ -34,7 +34,7 @@ struct RouteStepBlock: RouteStep, Equatable, Codable, CustomStringConvertible {
     // The direction of travel of the train within that block
     var direction: Direction {
         get {
-            return exitSocket?.socketId == Block.nextSocket ? .next : .previous
+            return exitSocket.socketId == Block.nextSocket ? .next : .previous
         }
         set {
             if newValue == .next {
@@ -53,11 +53,13 @@ struct RouteStepBlock: RouteStep, Equatable, Codable, CustomStringConvertible {
 
     init(_ blockId: Identifier<Block>, _ direction: Direction, _ waitingTime: TimeInterval? = nil) {
         self.blockId = blockId
+        self.entrySocket = .block(blockId)
+        self.exitSocket = .block(blockId)
         self.direction = direction
         self.waitingTime = waitingTime
     }
     
-    init(_ blockId: Identifier<Block>, entrySocket: Socket?, exitSocket: Socket?, _ waitingTime: TimeInterval? = nil) {
+    init(_ blockId: Identifier<Block>, entrySocket: Socket, exitSocket: Socket, _ waitingTime: TimeInterval? = nil) {
         self.blockId = blockId
         self.entrySocket = entrySocket
         self.exitSocket = exitSocket
