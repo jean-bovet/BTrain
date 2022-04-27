@@ -241,7 +241,11 @@ extension Layout {
             // Check to make sure the train is somewhere along the route
             train.routeStepIndex = -1
             for (index, step) in route.steps.enumerated() {
-                guard train.blockId == step.blockId else {
+                guard let stepBlock = step as? RouteStep_Block else {
+                    continue
+                }
+                
+                guard train.blockId == stepBlock.blockId else {
                     continue
                 }
                 
@@ -254,7 +258,7 @@ extension Layout {
                 }
                 
                 // Check that the train direction matches as well.
-                if trainInstance.direction == step.direction {
+                if trainInstance.direction == stepBlock.direction {
                     train.routeStepIndex = index
                     break
                 }

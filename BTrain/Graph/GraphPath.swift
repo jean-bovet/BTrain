@@ -51,16 +51,16 @@ extension GraphPath {
     // Create a path using steps of a route.
     init(steps: [RouteStep], layout: Layout) throws {
         let elements: [GraphPathElement] = try steps.compactMap { step in
-            if let blockId = step.blockId {
-                guard let block = layout.block(for: blockId) else {
-                    throw LayoutError.blockNotFound(blockId: blockId)
+            if let stepBlock = step as? RouteStep_Block {
+                guard let block = layout.block(for: stepBlock.blockId) else {
+                    throw LayoutError.blockNotFound(blockId: stepBlock.blockId)
                 }
-                return GraphPathElement(node: block, entrySocket: try step.entrySocketId(), exitSocket: try step.exitSocketId())
-            } else if let turnoutId = step.turnoutId {
-                guard let turnout = layout.turnout(for: turnoutId) else {
-                    throw LayoutError.turnoutNotFound(turnoutId: turnoutId)
+                return GraphPathElement(node: block, entrySocket: try stepBlock.entrySocketId(), exitSocket: try stepBlock.exitSocketId())
+            } else if let stepTurnout = step as? RouteStep_Turnout {
+                guard let turnout = layout.turnout(for: stepTurnout.turnoutId) else {
+                    throw LayoutError.turnoutNotFound(turnoutId: stepTurnout.turnoutId)
                 }
-                return GraphPathElement(node: turnout, entrySocket: try step.entrySocketId(), exitSocket: try step.exitSocketId())
+                return GraphPathElement(node: turnout, entrySocket: try stepTurnout.entrySocketId(), exitSocket: try stepTurnout.exitSocketId())
             } else {
                 return nil
             }

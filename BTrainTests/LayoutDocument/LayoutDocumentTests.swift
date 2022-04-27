@@ -61,7 +61,7 @@ class LayoutDocumentTests: XCTestCase {
 
         let train = layout.trains[0]
         let route = layout.routes[0]
-        train.blockId = route.steps[0].blockId
+        train.blockId = route.steps[0].stepBlockId
         layout.block(for: train.blockId!)?.train = .init(train.id, .next)
         
         try doc.start(train: train.id, withRoute: route.id, destination: nil)

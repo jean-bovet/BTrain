@@ -38,13 +38,15 @@ struct TrainControlRouteView: View {
                     if !text.isEmpty {
                         text += "→"
                     }
-                    if let block = layout.block(for: step.blockId) {
-                        text += "\(block.name)"
-                    } else if let blockId = step.blockId {
-                        text += "\(blockId)"
-                    } else {
-                        text += "?"
+                    
+                    if let stepBlock = step as? RouteStep_Block {
+                        if let block = layout.block(for: stepBlock.blockId) {
+                            text += "\(block.name)"
+                        } else {
+                            text += "\(stepBlock.blockId)"
+                        }
                     }
+                    
                     if train.routeStepIndex == index {
                         // Indicate the block in the route where the train
                         // is currently located

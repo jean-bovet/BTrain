@@ -105,24 +105,20 @@ final class LayoutReservation {
         for step in resolvedSteps {
             try rememberTransitions(from: previousStep, to: step, transitions: &transitions)
 
-            if let blockId = step.blockId {
-                guard let block = layout.block(for: blockId) else {
-                    throw LayoutError.blockNotFound(blockId: blockId)
+            if let stepBlock = step as? RouteStep_Block {
+                guard let block = layout.block(for: stepBlock.blockId) else {
+                    throw LayoutError.blockNotFound(blockId: stepBlock.blockId)
                 }
                                 
-                guard let direction = step.direction else {
-                    throw LayoutError.missingDirection(step: step)
-                }
-
-                if try !reserveBlock(block: block, direction: direction, train: train, numberOfLeadingBlocksReserved: &numberOfLeadingBlocksReserved, turnouts: &turnouts, transitions: &transitions) {
+                if try !reserveBlock(block: block, direction: stepBlock.direction, train: train, numberOfLeadingBlocksReserved: &numberOfLeadingBlocksReserved, turnouts: &turnouts, transitions: &transitions) {
                     return numberOfLeadingBlocksReserved > 0
                 }
-            } else if let turnoutId = step.turnoutId {
-                guard let turnout = layout.turnout(for: turnoutId) else {
-                    throw LayoutError.turnoutNotFound(turnoutId: turnoutId)
+            } else if let stepTurnout = step as? RouteStep_Turnout {
+                guard let turnout = layout.turnout(for: stepTurnout.turnoutId) else {
+                    throw LayoutError.turnoutNotFound(turnoutId: stepTurnout.turnoutId)
                 }
                 
-                if try !rememberTurnoutToReserve(turnout: turnout, train: train, step: step, numberOfLeadingBlocksReserved: &numberOfLeadingBlocksReserved, turnouts: &turnouts) {
+                if try !rememberTurnoutToReserve(turnout: turnout, train: train, step: stepTurnout, numberOfLeadingBlocksReserved: &numberOfLeadingBlocksReserved, turnouts: &turnouts) {
                     return numberOfLeadingBlocksReserved > 0
                 }
             }
@@ -199,7 +195,7 @@ final class LayoutReservation {
         debug("Set turnout \(turnout.name) for \(train) and state \(turnout.state)")
     }
     
-    private func rememberTurnoutToReserve(turnout: Turnout, train: Train, step: RouteStep, numberOfLeadingBlocksReserved: inout Int, turnouts: inout [TurnoutReservation]) throws -> Bool {
+    private func rememberTurnoutToReserve(turnout: Turnout, train: Train, step: RouteStep_Turnout, numberOfLeadingBlocksReserved: inout Int, turnouts: inout [TurnoutReservation]) throws -> Bool {
         let fromSocketId = try step.entrySocketId()
         let toSocketId = try step.exitSocketId()
         let state = turnout.state(fromSocket: fromSocketId, toSocket: toSocketId)

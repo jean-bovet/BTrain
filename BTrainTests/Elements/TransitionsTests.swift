@@ -123,7 +123,7 @@ class TransitionsTests: XCTestCase {
         try v8.stopTrain(t1.id) { }
         
         // So we manually free up the first block and all the transitions to the next one
-        try v8.free(fromBlock: r1.steps[0].blockId!, toBlockNotIncluded: r1.steps[1].blockId!, direction: .next)
+        try v8.free(fromBlock: r1.steps[0].stepBlockId!, toBlockNotIncluded: r1.steps[1].stepBlockId!, direction: .next)
         doc.layoutController.runControllers(.movedToNextBlock)
         
         // Note: train t1 has been stopped so only train t2 can actually start

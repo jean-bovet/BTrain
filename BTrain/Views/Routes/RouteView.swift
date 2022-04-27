@@ -25,41 +25,11 @@ struct RouteView: View {
 
     var body: some View {
         VStack {
-            Table(selection: $selection) {
-                TableColumn("Block") { step in
-                    UndoProvider(step.blockId) { blockId in
-                        Picker("Block:", selection: blockId) {
-                            ForEach(layout.blockMap.values, id:\.self) { block in
-                                Text("\(block.name) — \(block.category.description)").tag(block.id as Identifier<Block>?)
-                            }
-                        }.labelsHidden()
-                    }
+            List(route.steps, selection: $selection) { step in
+                if let stepBlock = step as? RouteStep_Block {
+                    RouteStepBlockView(layout: layout, stepBlock: stepBlock)
                 }
-                
-                TableColumn("Direction in Block") { step in
-                    UndoProvider(step.direction) { direction in
-                        Picker("Direction:", selection: direction) {
-                            ForEach(Direction.allCases, id:\.self) { direction in
-                                Text(direction.description).tag(direction as Direction?)
-                            }
-                        }
-                        .fixedSize()
-                        .labelsHidden()
-                    }
-                }
-                
-                TableColumn("Wait Time") { step in
-                    if let block = layout.block(for: step.blockId.wrappedValue)  {
-                        TextField("", value: step.waitingTime, format: .number)
-                            .disabled(block.category != .station)
-                    }
-                }
-
-            } rows: {
-                ForEach($route.steps) { step in
-                    TableRow(step)
-                }
-            }
+            }.listStyle(.inset(alternatesRowBackgrounds: true))
             
             HStack {
                 Text("\(route.steps.count) steps")
@@ -67,7 +37,7 @@ struct RouteView: View {
                 Spacer()
                 
                 Button("+") {
-                    let step = RouteStep(String(route.steps.count+1), layout.block(at: 0).id, .next)
+                    let step = RouteStep_Block(String(route.steps.count+1), layout.block(at: 0).id, .next)
                     route.steps.append(step)
                     undoManager?.registerUndo(withTarget: route, handler: { route in
                         route.steps.removeAll { s in

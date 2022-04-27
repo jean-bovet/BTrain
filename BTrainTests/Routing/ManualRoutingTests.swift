@@ -29,10 +29,10 @@ class ManualRoutingTests: BTTestCase {
         }
         XCTAssertEqual(4, route.steps.count)
         
-        let b1 = route.steps[0]
-        let b2 = route.steps[1]
-        let b3 = route.steps[2]
-        let b4 = route.steps[3]
+        let b1 = route.steps[0] as! RouteStep_Block
+        let b2 = route.steps[1] as! RouteStep_Block
+        let b3 = route.steps[2] as! RouteStep_Block
+        let b4 = route.steps[3] as! RouteStep_Block
 
         XCTAssertNotEqual(b1.blockId, b2.blockId)
         XCTAssertNotEqual(b2.blockId, b3.blockId)
@@ -42,7 +42,7 @@ class ManualRoutingTests: BTTestCase {
         XCTAssertEqual(b1.blockId, layout.currentBlock(train: train)?.id)
         XCTAssertEqual(b2.blockId, layout.nextBlock(train: train)?.id)
         
-        let transitions = try layout.transitions(from: b1.blockId!, to: b2.blockId!, direction: b1.direction!)
+        let transitions = try layout.transitions(from: b1.blockId, to: b2.blockId, direction: b1.direction)
         XCTAssertEqual(transitions.count, 2)
         
         XCTAssertEqual(transitions[0].a.block, b1.blockId)
@@ -68,7 +68,7 @@ class ManualRoutingTests: BTTestCase {
         try p.prepare(routeID: "r1", trainID: "1", fromBlockId: "b1")
 
         // Reserve a block with another route to make the train stop
-        let b3 = layout.block(for: p.route.steps[2].blockId)!
+        let b3 = layout.block(for: p.route.steps[2].stepBlockId)!
         b3.reserved = .init("2", .next)
         
         try p.assert("r1:{r1{b1 🔴🚂1 ≏ ≏ }} <t0> [b2 ≏ ≏ ] <t1(0,2)> [r2[b3 ≏ ≏ ]] <t0(2,0)> !{r1{b1 ≏ ≏ }}")
@@ -124,7 +124,7 @@ class ManualRoutingTests: BTTestCase {
         try p.prepare(routeID: "r1", trainID: "1", fromBlockId: "b1")
 
         // Disable a block to make the train stop
-        let b3 = layout.block(for: p.route.steps[2].blockId)!
+        let b3 = layout.block(for: p.route.steps[2].stepBlockId)!
         b3.enabled = false
         
         try p.assert("r1:{r1{b1 🔴🚂1 ≏ ≏ }} <t0> [b2 ≏ ≏ ] <t1(0,2)> [b3 ≏ ≏ ] <t0(2,0)> !{r1{b1 ≏ ≏ }}")

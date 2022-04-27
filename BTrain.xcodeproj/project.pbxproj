@@ -84,6 +84,10 @@
 		A74F37FC28176BC90013FD23 /* MarklinSimulatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A74F37FB28176BC90013FD23 /* MarklinSimulatorTests.swift */; };
 		A74F37FE2817BC940013FD23 /* Station.swift in Sources */ = {isa = PBXBuildFile; fileRef = A74F37FD2817BC940013FD23 /* Station.swift */; };
 		A74F38002817C1330013FD23 /* RouteStep.swift in Sources */ = {isa = PBXBuildFile; fileRef = A74F37FF2817C1330013FD23 /* RouteStep.swift */; };
+		A74F38022818C0C80013FD23 /* RouteStep_Block.swift in Sources */ = {isa = PBXBuildFile; fileRef = A74F38012818C0C80013FD23 /* RouteStep_Block.swift */; };
+		A74F38052818C0E50013FD23 /* RouteStep_Turnout.swift in Sources */ = {isa = PBXBuildFile; fileRef = A74F38042818C0E50013FD23 /* RouteStep_Turnout.swift */; };
+		A74F38072818C4410013FD23 /* Route+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A74F38062818C4410013FD23 /* Route+Extension.swift */; };
+		A74F38092818C7B10013FD23 /* RouteStepBlockView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A74F38082818C7B10013FD23 /* RouteStepBlockView.swift */; };
 		A758295F27925DE300AA0649 /* LayoutController+Listeners.swift in Sources */ = {isa = PBXBuildFile; fileRef = A758295E27925DE300AA0649 /* LayoutController+Listeners.swift */; };
 		A7582966279380C000AA0649 /* LayoutTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7582965279380C000AA0649 /* LayoutTests.swift */; };
 		A75933E527E9774600ECB7A0 /* SwitchboardSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A75933E427E9774600ECB7A0 /* SwitchboardSettingsView.swift */; };
@@ -368,6 +372,10 @@
 		A74F37FB28176BC90013FD23 /* MarklinSimulatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarklinSimulatorTests.swift; sourceTree = "<group>"; };
 		A74F37FD2817BC940013FD23 /* Station.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Station.swift; sourceTree = "<group>"; };
 		A74F37FF2817C1330013FD23 /* RouteStep.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteStep.swift; sourceTree = "<group>"; };
+		A74F38012818C0C80013FD23 /* RouteStep_Block.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteStep_Block.swift; sourceTree = "<group>"; };
+		A74F38042818C0E50013FD23 /* RouteStep_Turnout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteStep_Turnout.swift; sourceTree = "<group>"; };
+		A74F38062818C4410013FD23 /* Route+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Route+Extension.swift"; sourceTree = "<group>"; };
+		A74F38082818C7B10013FD23 /* RouteStepBlockView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteStepBlockView.swift; sourceTree = "<group>"; };
 		A758295E27925DE300AA0649 /* LayoutController+Listeners.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LayoutController+Listeners.swift"; sourceTree = "<group>"; };
 		A7582965279380C000AA0649 /* LayoutTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutTests.swift; sourceTree = "<group>"; };
 		A75933E427E9774600ECB7A0 /* SwitchboardSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwitchboardSettingsView.swift; sourceTree = "<group>"; };
@@ -881,8 +889,6 @@
 				A7CA5EBA27952ECF00171398 /* Destination.swift */,
 				A7710E5D277850F000C08150 /* Reservation.swift */,
 				A728183F278E9EDC007BE810 /* Direction.swift */,
-				A74CCC6D272A5A08004E58F5 /* Route.swift */,
-				A74F37FF2817C1330013FD23 /* RouteStep.swift */,
 				A7F779CD272B445B00E73275 /* Feedback.swift */,
 				A74CCC71272A5A18004E58F5 /* Transition.swift */,
 				A72180842760428E00831998 /* Socket.swift */,
@@ -892,8 +898,20 @@
 				A785C087278D0EE4002FD538 /* Train */,
 				A76507F5275BEEC50079C71A /* Layout */,
 				A73B164B274E1EA50073947D /* Turnout */,
+				A74F38032818C0D60013FD23 /* Route */,
 			);
 			path = Elements;
+			sourceTree = "<group>";
+		};
+		A74F38032818C0D60013FD23 /* Route */ = {
+			isa = PBXGroup;
+			children = (
+				A74CCC6D272A5A08004E58F5 /* Route.swift */,
+				A74F37FF2817C1330013FD23 /* RouteStep.swift */,
+				A74F38012818C0C80013FD23 /* RouteStep_Block.swift */,
+				A74F38042818C0E50013FD23 /* RouteStep_Turnout.swift */,
+			);
+			path = Route;
 			sourceTree = "<group>";
 		};
 		A75829642792A5C200AA0649 /* Routing */ = {
@@ -940,6 +958,7 @@
 			children = (
 				A7710E562777D69400C08150 /* RouteListView.swift */,
 				A7710E582777D7FE00C08150 /* RouteView.swift */,
+				A74F38082818C7B10013FD23 /* RouteStepBlockView.swift */,
 			);
 			path = Routes;
 			sourceTree = "<group>";
@@ -952,6 +971,7 @@
 				A7C6343727E6AF6700C37B46 /* TrainIconManagerTests.swift */,
 				A7CA5ECB2797D1EB00171398 /* Layout+Extension.swift */,
 				A714CD7C2802939E0020486D /* Turnout+Extension.swift */,
+				A74F38062818C4410013FD23 /* Route+Extension.swift */,
 				A763F18E27BE01C300B3499A /* XCTestCase+Extension.swift */,
 				A7C5E95A280E04DE00A5DB12 /* XCTestCase+Simulator.swift */,
 				A7DB7D5A27CBF378000893BA /* SpeedSlider+Extension.swift */,
@@ -1561,6 +1581,7 @@
 				A744D1372765C5A3005C2F37 /* LayoutError.swift in Sources */,
 				A7218071275D398000831998 /* CS2DocumentParser.swift in Sources */,
 				A71715892758448D00200F92 /* CGRect+Extension.swift in Sources */,
+				A74F38052818C0E50013FD23 /* RouteStep_Turnout.swift in Sources */,
 				A7BE36AA2751BDC300286709 /* ConnectorPlug.swift in Sources */,
 				A785C07E278A64C1002FD538 /* CommandInterface.swift in Sources */,
 				A7E1F74827D71C03009FB75F /* TrainSpeedAcceleration.swift in Sources */,
@@ -1577,6 +1598,7 @@
 				A73B1639274B60A10073947D /* BTLogger.swift in Sources */,
 				A784139127423A8D00381341 /* Command.swift in Sources */,
 				A7841384273F973D00381341 /* SwitchBoardDragOperation.swift in Sources */,
+				A74F38022818C0C80013FD23 /* RouteStep_Block.swift in Sources */,
 				A7ACCEA42811AB23006F4310 /* TrainReserveLeadingBlocksHandler.swift in Sources */,
 				A74CCC70272A5A10004E58F5 /* Turnout.swift in Sources */,
 				A73AFEB427265A4B00E1ED21 /* Client.swift in Sources */,
@@ -1636,6 +1658,7 @@
 				A798BB4627A7B093000BB4D1 /* LayoutASCIIProducer.swift in Sources */,
 				A78B996B2800BA4D0021EFE4 /* GraphPathFinder.swift in Sources */,
 				A7C8A2EF279DD19A000C7246 /* SectionTitleView.swift in Sources */,
+				A74F38092818C7B10013FD23 /* RouteStepBlockView.swift in Sources */,
 				A785C071278A4561002FD538 /* TrainDetailsView.swift in Sources */,
 				A7C8A2E9279BB8A6000C7246 /* NewLayoutWizardView.swift in Sources */,
 				A78413882740DD2D00381341 /* SwitchBoardFactory.swift in Sources */,
@@ -1673,6 +1696,7 @@
 				A790799D277ED8B000771A60 /* PluggableShapeTests.swift in Sources */,
 				A783EAA12787D12200E69B6D /* BTTestCase.swift in Sources */,
 				A792DEFF278508B0004B0439 /* LayoutCreatorTests.swift in Sources */,
+				A74F38072818C4410013FD23 /* Route+Extension.swift in Sources */,
 				A7BE366C2751AAF300286709 /* LayoutParserTests.swift in Sources */,
 				A7DB7D4A27C29B32000893BA /* TrainInertiaTests.swift in Sources */,
 				A73E0801276A8DA9005F9D64 /* BlockViewTests.swift in Sources */,

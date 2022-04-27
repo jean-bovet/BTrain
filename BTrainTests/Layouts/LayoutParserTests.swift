@@ -146,7 +146,7 @@ class LayoutParserTests: XCTestCase {
         
         for (index, expectation) in expectations.enumerated() {
             let step = blockSteps[index]
-            let blockId = step.blockId
+            let blockId = (step as RouteStep).stepBlockId
             
             XCTAssertEqual(blockId, Identifier<Block>(uuid: String(expectation.uuid)), "Mismatching block identifier at index \(index)")
             
@@ -183,7 +183,7 @@ class LayoutParserTests: XCTestCase {
             // Assert the turnouts
             if let expectedTurnouts = expectation.turnouts {
                 let nextStep = route.steps[index+1]
-                guard let nextBlockId = nextStep.blockId else {
+                guard let nextBlockId = nextStep.stepBlockId else {
                     return
                 }
                 
@@ -192,7 +192,7 @@ class LayoutParserTests: XCTestCase {
                     return
                 }
                 
-                let turnouts = try! layout.turnouts(from: block, to: nextBlock, direction: step.direction!)
+                let turnouts = try! layout.turnouts(from: block, to: nextBlock, direction: step.direction)
                 XCTAssertEqual(expectedTurnouts.count, turnouts.count, "Mismatching number of turnouts between \(block) and \(nextBlock)")
                 
                 for index in 0..<turnouts.count {

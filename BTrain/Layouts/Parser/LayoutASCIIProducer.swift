@@ -31,21 +31,21 @@ final class LayoutASCIIProducer {
         }
         
         for step in resolvedSteps {
-            if let turnoutId = step.turnoutId {
+            if let stepTurnout = step as? RouteStep_Turnout {
                 addSpace(&text)
-                try generateTurnout(turnoutId: turnoutId, step: step, text: &text)
-            } else if let blockId = step.blockId {
+                try generateTurnout(step: stepTurnout, text: &text)
+            } else if let stepBlock = step as? RouteStep_Block {
                 addSpace(&text)
-                try generateBlock(blockId: blockId, step: step, text: &text)
+                try generateBlock(step: stepBlock, text: &text)
             }
         }
         
         return text
     }
 
-    private func generateBlock(blockId: Identifier<Block>, step: RouteStep, text: inout String) throws {
-        guard let block = layout.block(for: blockId) else {
-            throw LayoutError.blockNotFound(blockId: blockId)
+    private func generateBlock(step: RouteStep_Block, text: inout String) throws {
+        guard let block = layout.block(for: step.blockId) else {
+            throw LayoutError.blockNotFound(blockId: step.blockId)
         }
         
         let reverse = step.direction == .previous
@@ -128,9 +128,9 @@ final class LayoutASCIIProducer {
         }
     }
     
-    func generateTurnout(turnoutId: Identifier<Turnout>, step: RouteStep, text: inout String) throws {
-        guard let turnout = layout.turnout(for: turnoutId) else {
-            throw LayoutError.turnoutNotFound(turnoutId: turnoutId)
+    func generateTurnout(step: RouteStep_Turnout, text: inout String) throws {
+        guard let turnout = layout.turnout(for: step.turnoutId) else {
+            throw LayoutError.turnoutNotFound(turnoutId: step.turnoutId)
         }
         
         text += "<"

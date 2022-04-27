@@ -54,8 +54,8 @@ final class Route: Element, ObservableObject {
     /// The last message about the status of the route, or nil if there is no problem with the route.
     @Published var lastMessage: String?
     
-    var blockSteps: [RouteStep] {
-        return steps.filter({$0.blockId != nil})
+    var blockSteps: [RouteStep_Block] {
+        return steps.compactMap { $0 as? RouteStep_Block }
     }
     
     var lastStepIndex: Int {
@@ -79,7 +79,7 @@ final class Route: Element, ObservableObject {
 extension Route: Codable {
     
     enum CodingKeys: CodingKey {
-      case id, name, steps, automatic
+      case id, name, steps, stepsv2, automatic
     }
 
     convenience init(from decoder: Decoder) throws {
@@ -88,15 +88,82 @@ extension Route: Codable {
         let automatic = try container.decode(Bool.self, forKey: CodingKeys.automatic)
         self.init(id: id, automatic: automatic)
         self.name = try container.decode(String.self, forKey: CodingKeys.name)
-        self.steps = try container.decode([RouteStep].self, forKey: CodingKeys.steps)
+        if container.contains(CodingKeys.steps) {
+            self.steps = try container.decode([RouteStep_v1].self, forKey: CodingKeys.steps).toRouteSteps
+        } else {
+            let contentArray = try container.decode([Content].self, forKey: CodingKeys.stepsv2)
+            self.steps = contentArray.map({ content in
+                switch content {
+                case .block(let block):
+                    return block
+                case .turnout(let turnout):
+                    return turnout
+                }
+            })
+        }
     }
     
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(id, forKey: CodingKeys.id)
         try container.encode(name, forKey: CodingKeys.name)
-        try container.encode(steps, forKey: CodingKeys.steps)
+        
+        let routeContent: [Content] = steps.map { step in
+            if let stepBlock = step as? RouteStep_Block {
+                return .block(stepBlock)
+            }
+            if let stepTurnout = step as? RouteStep_Turnout {
+                return .turnout(stepTurnout)
+            }
+            fatalError("Unknown step type: \(step)")
+        }
+        
+        try container.encode(routeContent, forKey: CodingKeys.stepsv2)
         try container.encode(automatic, forKey: CodingKeys.automatic)
+    }
+
+    // See https://paul-samuels.com/blog/2019/01/02/swift-heterogeneous-codable-array/
+    enum Content: Codable {
+        case block(RouteStep_Block)
+        case turnout(RouteStep_Turnout)
+
+        var unassociated: Unassociated {
+            switch self {
+            case .block:    return .block
+            case .turnout: return .turnout
+            }
+        }
+
+        init(from decoder: Decoder) throws {
+            let container = try decoder.container(keyedBy: CodingKeys.self)
+
+            switch try container.decode(String.self, forKey: .type) {
+            case Unassociated.block.rawValue: self = .block(try container.decode(RouteStep_Block.self, forKey: .attributes))
+            case Unassociated.turnout.rawValue: self = .turnout(try container.decode(RouteStep_Turnout.self, forKey: .attributes))
+            default: fatalError("Unknown type")
+            }
+        }
+
+        func encode(to encoder: Encoder) throws {
+            var container = encoder.container(keyedBy: CodingKeys.self)
+
+            switch self {
+            case .block(let block): try container.encode(block, forKey: .attributes)
+            case .turnout(let turnout): try container.encode(turnout, forKey: .attributes)
+            }
+
+            try container.encode(unassociated.rawValue, forKey: .type)
+        }
+
+        enum Unassociated: String {
+            case block
+            case turnout
+        }
+
+        private enum CodingKeys: String, CodingKey {
+            case attributes
+            case type
+        }
     }
 
 }

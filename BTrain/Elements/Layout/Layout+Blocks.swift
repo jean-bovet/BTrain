@@ -99,16 +99,20 @@ extension Layout {
     }
 
     func nextBlock(train: Train) -> Block? {
-        if let route = route(for: train.routeId, trainId: train.id) {
-            if train.routeStepIndex + 1 < route.steps.count {
-                let nextBlockId = route.steps[train.routeStepIndex+1].blockId
-                return block(for: nextBlockId)
-            } else {
-                return nil
-            }
-        } else {
+        guard let route = route(for: train.routeId, trainId: train.id) else {
             return nil
         }
+        
+        guard train.routeStepIndex + 1 < route.steps.count else {
+            return nil
+        }
+        
+        let step = route.steps[train.routeStepIndex+1]
+        guard let stepBlock = step as? RouteStep_Block else {
+            return nil
+        }
+        
+        return block(for: stepBlock.blockId)
     }
 
     func atEndOfBlock(train: Train) throws -> Bool {
