@@ -18,7 +18,7 @@ extension Layout {
     
     func newRoute(id: String, _ steps: [(String, Direction)]) -> Route {
         return newRoute(id, name: id, steps.map({ step in
-            return RouteStep_Block(Identifier<Block>(uuid: step.0), step.1)
+            return .block(RouteStep_Block(Identifier<Block>(uuid: step.0), step.1))
         }))
     }
     
@@ -96,16 +96,23 @@ extension Layout {
 
 }
 
-extension Array where Element == RouteStep {
+extension Array where Element == Route.Content {
     
-    func toStrings(_ layout: Layout, useNameInsteadOfId: Bool = true) throws -> [String] {
-        return try self.map { step in
-            if let stepBlock = step as? RouteStep_Block, let block = layout.block(for: stepBlock.blockId) {
-                return "\(useNameInsteadOfId ? block.name:block.id.uuid):\(stepBlock.direction)"
-            } else if let turnoutId = step.stepTurnoutId, let turnout = layout.turnout(for: turnoutId) {
-                return "\(useNameInsteadOfId ? turnout.name:turnout.id.uuid):(\(step.entrySocket!.socketId!)>\(step.exitSocket!.socketId!))"
-            } else {
-                throw LayoutError.invalidState(step: step)
+    func toStrings(_ layout: Layout, useNameInsteadOfId: Bool = true) -> [String] {
+        return self.map { step in
+            switch step {
+            case .block(let stepBlock):
+                if let block = layout.block(for: stepBlock.blockId) {
+                    return "\(useNameInsteadOfId ? block.name:block.id.uuid):\(stepBlock.direction)"
+                } else {
+                    return "\(stepBlock.blockId.uuid):\(stepBlock.direction)"
+                }
+            case .turnout(let stepTurnout):
+                if let turnout = layout.turnout(for: stepTurnout.turnoutId) {
+                    return "\(useNameInsteadOfId ? turnout.name:turnout.id.uuid):(\(stepTurnout.entrySocket!.socketId!)>\(stepTurnout.exitSocket!.socketId!))"
+                } else {
+                    return "\(stepTurnout.turnoutId.uuid):(\(stepTurnout.entrySocket!.socketId!)>\(stepTurnout.exitSocket!.socketId!))"
+                }
             }
         }
     }

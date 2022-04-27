@@ -100,25 +100,30 @@ final class LayoutAsserter {
             return
         }
         
-        var previousStep: RouteStep?
+        var previousStep: Route.Content?
         for index in 0..<route.steps.count {
             let step = route.steps[index]
             let expectedStep = expectedRoute.steps[index]
             
-            if let stepBlock = step as? RouteStep_Block {
-                let expectedStepBlock = expectedStep as! RouteStep_Block
+            switch step {
+            case .block(let stepBlock):
+                guard case .block(let expectedStepBlock) = expectedStep else {
+                    XCTFail("Expected step should be a block \(expectedStep)")
+                    return
+                }
                 XCTAssertEqual(namedId(stepBlock.blockId), expectedStepBlock.blockId, "Step blockId mismatch at index \(index)")
                 XCTAssertEqual(namedId(stepBlock.entrySocket), expectedStepBlock.entrySocket, "Step entrySocket mismatch at block \(stepBlock.blockId)")
                 XCTAssertEqual(namedId(stepBlock.exitSocket), expectedStepBlock.exitSocket, "Step exitSocket mismatch at block \(stepBlock.blockId)")
                 assertBlockAt(index: index, route: route, step: stepBlock, expectedStep: expectedStepBlock, expectedLayout: expectedLayout)
-            } else if let stepTurnout = step as? RouteStep_Turnout {
-                let expectedStepTurnout = expectedStep as! RouteStep_Turnout
+            case .turnout(let stepTurnout):
+                guard case .turnout(let expectedStepTurnout) = expectedStep else {
+                    XCTFail("Expected step should be a turnout \(expectedStep)")
+                    return
+                }
                 XCTAssertEqual(namedId(stepTurnout.turnoutId), expectedStepTurnout.turnoutId, "Step turnoutId mismatch at index \(index)")
                 XCTAssertEqual(namedId(stepTurnout.entrySocket), expectedStepTurnout.entrySocket, "Step entrySocket mismatch at turnout \(stepTurnout.turnoutId)")
                 XCTAssertEqual(namedId(stepTurnout.exitSocket), expectedStepTurnout.exitSocket, "Step exitSocket mismatch at turnout \(stepTurnout.turnoutId)")
                 assertTurnoutAt(index: index, route: route, step: stepTurnout, expectedStep: expectedStepTurnout, expectedLayout: expectedLayout)
-            } else {
-                XCTFail("Unsupported step configuration without blockId nor turnoutId")
             }
             
             // Check that the transitions between two elements that are reserved are also reserved

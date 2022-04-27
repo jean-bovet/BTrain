@@ -110,7 +110,7 @@ final class TrainDetectStopHandler: TrainAutomaticSchedulingHandler {
     }
 
     private func waitingTime(route: Route, train: Train, block: Block) -> TimeInterval {
-        if let step = route.steps.element(at: train.routeStepIndex), let stepBlock = step as? RouteStep_Block, let time = stepBlock.waitingTime {
+        if let step = route.steps.element(at: train.routeStepIndex), case .block(let stepBlock) = step, let time = stepBlock.waitingTime {
             return time
         } else {
             // Use the block waiting time if the route itself has nothing specified

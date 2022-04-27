@@ -29,10 +29,10 @@ class ManualRoutingTests: BTTestCase {
         }
         XCTAssertEqual(4, route.steps.count)
         
-        let b1 = route.steps[0] as! RouteStep_Block
-        let b2 = route.steps[1] as! RouteStep_Block
-        let b3 = route.steps[2] as! RouteStep_Block
-        let b4 = route.steps[3] as! RouteStep_Block
+        let b1 = route.blockSteps[0]
+        let b2 = route.blockSteps[1]
+        let b3 = route.blockSteps[2]
+        let b4 = route.blockSteps[3]
 
         XCTAssertNotEqual(b1.blockId, b2.blockId)
         XCTAssertNotEqual(b2.blockId, b3.blockId)

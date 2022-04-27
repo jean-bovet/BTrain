@@ -18,9 +18,9 @@ class RouteTests: XCTestCase {
     func testCodable() throws {
         let r1 = Route(uuid: "1")
         r1.name = "r1"
-        r1.steps = [RouteStep_Block(Identifier<Block>(uuid: "1"), .next),
-                    RouteStep_Block(Identifier<Block>(uuid: "2"), .previous),
-                    RouteStep_Block(Identifier<Block>(uuid: "3"), .next)]
+        r1.steps = [.block(RouteStep_Block(Identifier<Block>(uuid: "1"), .next)),
+                    .block(RouteStep_Block(Identifier<Block>(uuid: "2"), .previous)),
+                    .block(RouteStep_Block(Identifier<Block>(uuid: "3"), .next))]
         
         let encoder = JSONEncoder()
         let data = try encoder.encode(r1)

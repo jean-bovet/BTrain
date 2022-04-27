@@ -121,7 +121,7 @@ struct RouteStep_v1: Codable {
 
 extension Array where Element == RouteStep_v1 {
     
-    var toRouteSteps: [RouteStep] {
+    var toRouteSteps: [Route.Content] {
         self.map { routeStepv1 in
             routeStepv1.toRouteStep
         }
@@ -130,11 +130,11 @@ extension Array where Element == RouteStep_v1 {
 
 extension RouteStep_v1 {
     
-    var toRouteStep: RouteStep {
+    var toRouteStep: Route.Content {
         if let blockId = blockId {
-            return RouteStep_Block(id, blockId, entrySocket: entrySocket, exitSocket: exitSocket, waitingTime)
+            return .block(RouteStep_Block(id, blockId, entrySocket: entrySocket, exitSocket: exitSocket, waitingTime))
         } else if let turnoutId = turnoutId {
-            return RouteStep_Turnout(turnoutId, entrySocket!, exitSocket!)
+            return .turnout(RouteStep_Turnout(turnoutId, entrySocket!, exitSocket!))
         } else {
             fatalError("Unknown step configuration: \(self)")
         }

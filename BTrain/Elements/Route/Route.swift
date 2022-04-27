@@ -49,13 +49,19 @@ final class Route: Element, ObservableObject {
     @Published var name = ""
     
     // The list of steps for this route
-    @Published var steps = [RouteStep]()
+    @Published var steps = [Content]()
     
     /// The last message about the status of the route, or nil if there is no problem with the route.
     @Published var lastMessage: String?
     
     var blockSteps: [RouteStep_Block] {
-        return steps.compactMap { $0 as? RouteStep_Block }
+        return steps.compactMap {
+            if case .block(let stepBlock) = $0 {
+                return stepBlock
+            } else {
+                return nil
+            }
+        }
     }
     
     var lastStepIndex: Int {
@@ -91,15 +97,7 @@ extension Route: Codable {
         if container.contains(CodingKeys.steps) {
             self.steps = try container.decode([RouteStep_v1].self, forKey: CodingKeys.steps).toRouteSteps
         } else {
-            let contentArray = try container.decode([Content].self, forKey: CodingKeys.stepsv2)
-            self.steps = contentArray.map({ content in
-                switch content {
-                case .block(let block):
-                    return block
-                case .turnout(let turnout):
-                    return turnout
-                }
-            })
+            self.steps = try container.decode([Content].self, forKey: CodingKeys.stepsv2)
         }
     }
     
@@ -107,63 +105,96 @@ extension Route: Codable {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(id, forKey: CodingKeys.id)
         try container.encode(name, forKey: CodingKeys.name)
-        
-        let routeContent: [Content] = steps.map { step in
-            if let stepBlock = step as? RouteStep_Block {
-                return .block(stepBlock)
-            }
-            if let stepTurnout = step as? RouteStep_Turnout {
-                return .turnout(stepTurnout)
-            }
-            fatalError("Unknown step type: \(step)")
-        }
-        
-        try container.encode(routeContent, forKey: CodingKeys.stepsv2)
+        try container.encode(steps, forKey: CodingKeys.stepsv2)
         try container.encode(automatic, forKey: CodingKeys.automatic)
     }
 
     // See https://paul-samuels.com/blog/2019/01/02/swift-heterogeneous-codable-array/
-    enum Content: Codable {
+    enum Content: Identifiable, Equatable, CustomStringConvertible {
         case block(RouteStep_Block)
         case turnout(RouteStep_Turnout)
 
+        var id: String {
+            switch self {
+            case .block(let block): return block.id
+            case .turnout(let turnout): return turnout.id
+            }
+        }
+        
         var unassociated: Unassociated {
             switch self {
-            case .block:    return .block
+            case .block: return .block
             case .turnout: return .turnout
             }
         }
 
-        init(from decoder: Decoder) throws {
-            let container = try decoder.container(keyedBy: CodingKeys.self)
-
-            switch try container.decode(String.self, forKey: .type) {
-            case Unassociated.block.rawValue: self = .block(try container.decode(RouteStep_Block.self, forKey: .attributes))
-            case Unassociated.turnout.rawValue: self = .turnout(try container.decode(RouteStep_Turnout.self, forKey: .attributes))
-            default: fatalError("Unknown type")
-            }
-        }
-
-        func encode(to encoder: Encoder) throws {
-            var container = encoder.container(keyedBy: CodingKeys.self)
-
+        var description: String {
             switch self {
-            case .block(let block): try container.encode(block, forKey: .attributes)
-            case .turnout(let turnout): try container.encode(turnout, forKey: .attributes)
+            case .block(let block): return block.description
+            case .turnout(let turnout): return turnout.description
             }
-
-            try container.encode(unassociated.rawValue, forKey: .type)
+        }
+        
+        func entrySocketOrThrow() throws -> Socket {
+            switch self {
+            case .block(let block): return try block.entrySocketOrThrow()
+            case .turnout(let turnout): return try turnout.entrySocketOrThrow()
+            }
         }
 
-        enum Unassociated: String {
-            case block
-            case turnout
+        func entrySocketId() throws -> Int {
+            switch self {
+            case .block(let block): return try block.entrySocketId()
+            case .turnout(let turnout): return try turnout.entrySocketId()
+            }
         }
 
-        private enum CodingKeys: String, CodingKey {
-            case attributes
-            case type
+        func exitSocketOrThrow() throws -> Socket {
+            switch self {
+            case .block(let block): return try block.exitSocketOrThrow()
+            case .turnout(let turnout): return try turnout.exitSocketOrThrow()
+            }
+        }
+
+        func exitSocketId() throws -> Int {
+            switch self {
+            case .block(let block): return try block.exitSocketId()
+            case .turnout(let turnout): return try turnout.exitSocketId()
+            }
         }
     }
 
+}
+
+extension Route.Content: Codable {
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+
+        switch try container.decode(String.self, forKey: .type) {
+        case Unassociated.block.rawValue: self = .block(try container.decode(RouteStep_Block.self, forKey: .attributes))
+        case Unassociated.turnout.rawValue: self = .turnout(try container.decode(RouteStep_Turnout.self, forKey: .attributes))
+        default: fatalError("Unknown type")
+        }
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+
+        switch self {
+        case .block(let block): try container.encode(block, forKey: .attributes)
+        case .turnout(let turnout): try container.encode(turnout, forKey: .attributes)
+        }
+
+        try container.encode(unassociated.rawValue, forKey: .type)
+    }
+    
+    enum Unassociated: String {
+        case block
+        case turnout
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case attributes
+        case type
+    }
 }

@@ -241,7 +241,7 @@ extension Layout {
             // Check to make sure the train is somewhere along the route
             train.routeStepIndex = -1
             for (index, step) in route.steps.enumerated() {
-                guard let stepBlock = step as? RouteStep_Block else {
+                guard case .block(let stepBlock) = step else {
                     continue
                 }
                 

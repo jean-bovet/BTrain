@@ -146,7 +146,7 @@ class LayoutParserTests: XCTestCase {
         
         for (index, expectation) in expectations.enumerated() {
             let step = blockSteps[index]
-            let blockId = (step as RouteStep).stepBlockId
+            let blockId = step.blockId
             
             XCTAssertEqual(blockId, Identifier<Block>(uuid: String(expectation.uuid)), "Mismatching block identifier at index \(index)")
             

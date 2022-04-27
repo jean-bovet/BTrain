@@ -39,12 +39,10 @@ struct TrainControlRouteView: View {
                         text += "→"
                     }
                     
-                    if let stepBlock = step as? RouteStep_Block {
-                        if let block = layout.block(for: stepBlock.blockId) {
-                            text += "\(block.name)"
-                        } else {
-                            text += "\(stepBlock.blockId)"
-                        }
+                    if let block = layout.block(for: step.blockId) {
+                        text += "\(block.name)"
+                    } else {
+                        text += "\(step.blockId)"
                     }
                     
                     if train.routeStepIndex == index {

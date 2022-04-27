@@ -108,7 +108,7 @@ extension Layout {
         }
         
         let step = route.steps[train.routeStepIndex+1]
-        guard let stepBlock = step as? RouteStep_Block else {
+        guard case .block(let stepBlock) = step else {
             return nil
         }
         

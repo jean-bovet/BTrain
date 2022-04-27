@@ -26,8 +26,11 @@ struct RouteView: View {
     var body: some View {
         VStack {
             List(route.steps, selection: $selection) { step in
-                if let stepBlock = step as? RouteStep_Block {
+                switch step {
+                case .block(let stepBlock):
                     RouteStepBlockView(layout: layout, stepBlock: stepBlock)
+                case .turnout(_):
+                    Text("Unsupported")
                 }
             }.listStyle(.inset(alternatesRowBackgrounds: true))
             
@@ -38,7 +41,7 @@ struct RouteView: View {
                 
                 Button("+") {
                     let step = RouteStep_Block(String(route.steps.count+1), layout.block(at: 0).id, .next)
-                    route.steps.append(step)
+                    route.steps.append(.block(step))
                     undoManager?.registerUndo(withTarget: route, handler: { route in
                         route.steps.removeAll { s in
                             return s.id == step.id

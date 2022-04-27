@@ -14,13 +14,40 @@ import Foundation
 
 @testable import BTrain
 
-extension RouteStep {
+extension Route.Content {
     
     var stepBlockId: Identifier<Block>? {
-        (self as? RouteStep_Block)?.blockId
+        if case .block(let stepBlock) = self {
+            return stepBlock.blockId
+        } else {
+            return nil
+        }
     }
     
     var stepTurnoutId: Identifier<Turnout>? {
-        (self as? RouteStep_Turnout)?.turnoutId
+        if case .turnout(let stepTurnout) = self {
+            return stepTurnout.turnoutId
+        } else {
+            return nil
+        }
     }
+    
+    var entrySocket: Socket? {
+        switch self {
+        case .block(let stepBlock):
+            return stepBlock.entrySocket
+        case .turnout(let stepTurnout):
+            return stepTurnout.entrySocket
+        }
+    }
+
+    var exitSocket: Socket? {
+        switch self {
+        case .block(let stepBlock):
+            return stepBlock.exitSocket
+        case .turnout(let stepTurnout):
+            return stepTurnout.exitSocket
+        }
+    }
+    
 }

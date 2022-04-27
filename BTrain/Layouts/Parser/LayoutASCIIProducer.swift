@@ -31,12 +31,13 @@ final class LayoutASCIIProducer {
         }
         
         for step in resolvedSteps {
-            if let stepTurnout = step as? RouteStep_Turnout {
-                addSpace(&text)
-                try generateTurnout(step: stepTurnout, text: &text)
-            } else if let stepBlock = step as? RouteStep_Block {
+            switch step {
+            case .block(let stepBlock):
                 addSpace(&text)
                 try generateBlock(step: stepBlock, text: &text)
+            case .turnout(let stepTurnout):
+                addSpace(&text)
+                try generateTurnout(step: stepTurnout, text: &text)
             }
         }
         

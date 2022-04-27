@@ -223,25 +223,17 @@ extension Layout {
 
 extension Array where Element == GraphPathElement {
     
-    var toBlockSteps: [RouteStep] {
-        return self.compactMap { element in
-            if let block = element.node as? Block {
-                let direction: Direction
-                if let entrySocket = element.entrySocket {
-                    direction = entrySocket == Block.previousSocket ? .next : .previous
-                } else if let exitSocket = element.exitSocket {
-                    direction = exitSocket == Block.nextSocket ? .next : .previous
-                } else {
-                    return nil
-                }
-                return RouteStep_Block(block, direction)
+    var toBlockSteps: [Route.Content] {
+        return self.toSteps.compactMap { step in
+            if case .block(_) = step {
+                return step
             } else {
                 return nil
             }
         }
     }
     
-    var toSteps: [RouteStep] {
+    var toSteps: [Route.Content] {
         return self.compactMap { element in
             if let block = element.node as? Block {
                 let direction: Direction
@@ -252,7 +244,7 @@ extension Array where Element == GraphPathElement {
                 } else {
                     return nil
                 }
-                return RouteStep_Block(block, direction)
+                return .block(RouteStep_Block(block, direction))
             } else if let turnout = element.node as? Turnout {
                 guard let entrySocket = element.entrySocket else {
                     return nil
@@ -260,7 +252,7 @@ extension Array where Element == GraphPathElement {
                 guard let exitSocket = element.exitSocket else {
                     return nil
                 }
-                return RouteStep_Turnout(turnout.id, turnout.socket(entrySocket), turnout.socket(exitSocket))
+                return .turnout(RouteStep_Turnout(turnout.id, turnout.socket(entrySocket), turnout.socket(exitSocket)))
             } else {
                 return nil
             }
