@@ -223,7 +223,7 @@ extension Layout {
 
 extension Array where Element == GraphPathElement {
     
-    var toBlockSteps: [Route.Content] {
+    var toBlockSteps: [RouteItem] {
         return self.toSteps.compactMap { step in
             if case .block(_) = step {
                 return step
@@ -233,7 +233,7 @@ extension Array where Element == GraphPathElement {
         }
     }
     
-    var toSteps: [Route.Content] {
+    var toSteps: [RouteItem] {
         return self.compactMap { element in
             if let block = element.node as? Block {
                 let direction: Direction

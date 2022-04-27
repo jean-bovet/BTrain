@@ -49,7 +49,7 @@ struct GraphPath: Equatable {
 extension GraphPath {
     
     // Create a path using steps of a route.
-    init(steps: [Route.Content], layout: Layout) throws {
+    init(steps: [RouteItem], layout: Layout) throws {
         let elements: [GraphPathElement] = try steps.compactMap { step in
             switch step {
             case .block(let stepBlock):

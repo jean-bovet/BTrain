@@ -36,7 +36,7 @@ extension Layout {
     }
     
     func newRoute(_ id: String, name: String, automatic: Bool = false, _ steps: [(Block, Direction, TimeInterval?)]) {
-        var routeSteps = [Route.Content]()
+        var routeSteps = [RouteItem]()
         for (index, step) in steps.enumerated() {
             routeSteps.append(.block(RouteStep_Block(String(index), step.0.id, step.1, step.2)))
         }
@@ -44,7 +44,7 @@ extension Layout {
     }
     
     @discardableResult
-    func newRoute(_ id: String, name: String, automatic: Bool = false, _ steps: [Route.Content]) -> Route {
+    func newRoute(_ id: String, name: String, automatic: Bool = false, _ steps: [RouteItem]) -> Route {
         let route = Route(uuid: id, automatic: automatic)
         route.name = name
         route.steps = steps

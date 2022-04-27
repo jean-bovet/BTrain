@@ -14,7 +14,7 @@ import Foundation
 
 @testable import BTrain
 
-extension Route.Content {
+extension RouteItem {
     
     var stepBlockId: Identifier<Block>? {
         if case .block(let stepBlock) = self {

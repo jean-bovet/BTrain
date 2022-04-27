@@ -96,7 +96,7 @@ extension Layout {
 
 }
 
-extension Array where Element == Route.Content {
+extension Array where Element == RouteItem {
     
     func toStrings(_ layout: Layout, useNameInsteadOfId: Bool = true) -> [String] {
         return self.map { step in

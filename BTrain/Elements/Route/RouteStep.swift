@@ -121,7 +121,7 @@ struct RouteStep_v1: Codable {
 
 extension Array where Element == RouteStep_v1 {
     
-    var toRouteSteps: [Route.Content] {
+    var toRouteSteps: [RouteItem] {
         self.map { routeStepv1 in
             routeStepv1.toRouteStep
         }
@@ -130,7 +130,7 @@ extension Array where Element == RouteStep_v1 {
 
 extension RouteStep_v1 {
     
-    var toRouteStep: Route.Content {
+    var toRouteStep: RouteItem {
         if let blockId = blockId {
             return .block(RouteStep_Block(id, blockId, entrySocket: entrySocket, exitSocket: exitSocket, waitingTime))
         } else if let turnoutId = turnoutId {

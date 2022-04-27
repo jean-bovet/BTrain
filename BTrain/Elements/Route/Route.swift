@@ -49,7 +49,7 @@ final class Route: Element, ObservableObject {
     @Published var name = ""
     
     // The list of steps for this route
-    @Published var steps = [Content]()
+    @Published var steps = [RouteItem]()
     
     /// The last message about the status of the route, or nil if there is no problem with the route.
     @Published var lastMessage: String?
@@ -97,7 +97,7 @@ extension Route: Codable {
         if container.contains(CodingKeys.steps) {
             self.steps = try container.decode([RouteStep_v1].self, forKey: CodingKeys.steps).toRouteSteps
         } else {
-            self.steps = try container.decode([Content].self, forKey: CodingKeys.stepsv2)
+            self.steps = try container.decode([RouteItem].self, forKey: CodingKeys.stepsv2)
         }
     }
     
@@ -109,92 +109,4 @@ extension Route: Codable {
         try container.encode(automatic, forKey: CodingKeys.automatic)
     }
 
-    // See https://paul-samuels.com/blog/2019/01/02/swift-heterogeneous-codable-array/
-    enum Content: Identifiable, Equatable, CustomStringConvertible {
-        case block(RouteStep_Block)
-        case turnout(RouteStep_Turnout)
-
-        var id: String {
-            switch self {
-            case .block(let block): return block.id
-            case .turnout(let turnout): return turnout.id
-            }
-        }
-        
-        var unassociated: Unassociated {
-            switch self {
-            case .block: return .block
-            case .turnout: return .turnout
-            }
-        }
-
-        var description: String {
-            switch self {
-            case .block(let block): return block.description
-            case .turnout(let turnout): return turnout.description
-            }
-        }
-        
-        func entrySocketOrThrow() throws -> Socket {
-            switch self {
-            case .block(let block): return try block.entrySocketOrThrow()
-            case .turnout(let turnout): return try turnout.entrySocketOrThrow()
-            }
-        }
-
-        func entrySocketId() throws -> Int {
-            switch self {
-            case .block(let block): return try block.entrySocketId()
-            case .turnout(let turnout): return try turnout.entrySocketId()
-            }
-        }
-
-        func exitSocketOrThrow() throws -> Socket {
-            switch self {
-            case .block(let block): return try block.exitSocketOrThrow()
-            case .turnout(let turnout): return try turnout.exitSocketOrThrow()
-            }
-        }
-
-        func exitSocketId() throws -> Int {
-            switch self {
-            case .block(let block): return try block.exitSocketId()
-            case .turnout(let turnout): return try turnout.exitSocketId()
-            }
-        }
-    }
-
-}
-
-extension Route.Content: Codable {
-    init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-
-        switch try container.decode(String.self, forKey: .type) {
-        case Unassociated.block.rawValue: self = .block(try container.decode(RouteStep_Block.self, forKey: .attributes))
-        case Unassociated.turnout.rawValue: self = .turnout(try container.decode(RouteStep_Turnout.self, forKey: .attributes))
-        default: fatalError("Unknown type")
-        }
-    }
-
-    func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: CodingKeys.self)
-
-        switch self {
-        case .block(let block): try container.encode(block, forKey: .attributes)
-        case .turnout(let turnout): try container.encode(turnout, forKey: .attributes)
-        }
-
-        try container.encode(unassociated.rawValue, forKey: .type)
-    }
-    
-    enum Unassociated: String {
-        case block
-        case turnout
-    }
-
-    private enum CodingKeys: String, CodingKey {
-        case attributes
-        case type
-    }
 }

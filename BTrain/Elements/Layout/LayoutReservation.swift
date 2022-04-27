@@ -80,7 +80,7 @@ final class LayoutReservation {
         return try reserveSteps(train: train, resolvedSteps: resolvedSteps)
     }
     
-    private func reserveSteps(train: Train, resolvedSteps: [Route.Content]) throws -> Bool {
+    private func reserveSteps(train: Train, resolvedSteps: [RouteItem]) throws -> Bool {
         // Variable keeping track of the number of leading blocks that have been reserved.
         // At least one block must have been reserved to consider this function successfull.
         // Note: blocks that are reserved for the train and its wagons do not count against that count.
@@ -99,7 +99,7 @@ final class LayoutReservation {
         var transitions = [ITransition]()
         
         // Remember the previous step so we can determine the transitions between two elements.
-        var previousStep: Route.Content?
+        var previousStep: RouteItem?
 
         // Iterate over all the resolved steps
         for step in resolvedSteps {
@@ -227,7 +227,7 @@ final class LayoutReservation {
         return true
     }
     
-    private func rememberTransitions(from previousStep: Route.Content?, to step: Route.Content, transitions: inout [ITransition]) throws {
+    private func rememberTransitions(from previousStep: RouteItem?, to step: RouteItem, transitions: inout [ITransition]) throws {
         guard let previousStep = previousStep else {
             return
         }

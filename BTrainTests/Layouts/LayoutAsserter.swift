@@ -100,7 +100,7 @@ final class LayoutAsserter {
             return
         }
         
-        var previousStep: Route.Content?
+        var previousStep: RouteItem?
         for index in 0..<route.steps.count {
             let step = route.steps[index]
             let expectedStep = expectedRoute.steps[index]
