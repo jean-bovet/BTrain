@@ -84,8 +84,8 @@
 		A74F37FC28176BC90013FD23 /* MarklinSimulatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A74F37FB28176BC90013FD23 /* MarklinSimulatorTests.swift */; };
 		A74F37FE2817BC940013FD23 /* Station.swift in Sources */ = {isa = PBXBuildFile; fileRef = A74F37FD2817BC940013FD23 /* Station.swift */; };
 		A74F38002817C1330013FD23 /* RouteStep.swift in Sources */ = {isa = PBXBuildFile; fileRef = A74F37FF2817C1330013FD23 /* RouteStep.swift */; };
-		A74F38022818C0C80013FD23 /* RouteStep_Block.swift in Sources */ = {isa = PBXBuildFile; fileRef = A74F38012818C0C80013FD23 /* RouteStep_Block.swift */; };
-		A74F38052818C0E50013FD23 /* RouteStep_Turnout.swift in Sources */ = {isa = PBXBuildFile; fileRef = A74F38042818C0E50013FD23 /* RouteStep_Turnout.swift */; };
+		A74F38022818C0C80013FD23 /* RouteStepBlock.swift in Sources */ = {isa = PBXBuildFile; fileRef = A74F38012818C0C80013FD23 /* RouteStepBlock.swift */; };
+		A74F38052818C0E50013FD23 /* RouteStepTurnout.swift in Sources */ = {isa = PBXBuildFile; fileRef = A74F38042818C0E50013FD23 /* RouteStepTurnout.swift */; };
 		A74F38072818C4410013FD23 /* Route+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A74F38062818C4410013FD23 /* Route+Extension.swift */; };
 		A74F38092818C7B10013FD23 /* RouteStepBlockView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A74F38082818C7B10013FD23 /* RouteStepBlockView.swift */; };
 		A74F380B2819108A0013FD23 /* RouteItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = A74F380A2819108A0013FD23 /* RouteItem.swift */; };
@@ -373,8 +373,8 @@
 		A74F37FB28176BC90013FD23 /* MarklinSimulatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarklinSimulatorTests.swift; sourceTree = "<group>"; };
 		A74F37FD2817BC940013FD23 /* Station.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Station.swift; sourceTree = "<group>"; };
 		A74F37FF2817C1330013FD23 /* RouteStep.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteStep.swift; sourceTree = "<group>"; };
-		A74F38012818C0C80013FD23 /* RouteStep_Block.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteStep_Block.swift; sourceTree = "<group>"; };
-		A74F38042818C0E50013FD23 /* RouteStep_Turnout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteStep_Turnout.swift; sourceTree = "<group>"; };
+		A74F38012818C0C80013FD23 /* RouteStepBlock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteStepBlock.swift; sourceTree = "<group>"; };
+		A74F38042818C0E50013FD23 /* RouteStepTurnout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteStepTurnout.swift; sourceTree = "<group>"; };
 		A74F38062818C4410013FD23 /* Route+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Route+Extension.swift"; sourceTree = "<group>"; };
 		A74F38082818C7B10013FD23 /* RouteStepBlockView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteStepBlockView.swift; sourceTree = "<group>"; };
 		A74F380A2819108A0013FD23 /* RouteItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteItem.swift; sourceTree = "<group>"; };
@@ -911,8 +911,8 @@
 				A74CCC6D272A5A08004E58F5 /* Route.swift */,
 				A74F380A2819108A0013FD23 /* RouteItem.swift */,
 				A74F37FF2817C1330013FD23 /* RouteStep.swift */,
-				A74F38012818C0C80013FD23 /* RouteStep_Block.swift */,
-				A74F38042818C0E50013FD23 /* RouteStep_Turnout.swift */,
+				A74F38012818C0C80013FD23 /* RouteStepBlock.swift */,
+				A74F38042818C0E50013FD23 /* RouteStepTurnout.swift */,
 			);
 			path = Route;
 			sourceTree = "<group>";
@@ -1584,7 +1584,7 @@
 				A744D1372765C5A3005C2F37 /* LayoutError.swift in Sources */,
 				A7218071275D398000831998 /* CS2DocumentParser.swift in Sources */,
 				A71715892758448D00200F92 /* CGRect+Extension.swift in Sources */,
-				A74F38052818C0E50013FD23 /* RouteStep_Turnout.swift in Sources */,
+				A74F38052818C0E50013FD23 /* RouteStepTurnout.swift in Sources */,
 				A7BE36AA2751BDC300286709 /* ConnectorPlug.swift in Sources */,
 				A785C07E278A64C1002FD538 /* CommandInterface.swift in Sources */,
 				A7E1F74827D71C03009FB75F /* TrainSpeedAcceleration.swift in Sources */,
@@ -1601,7 +1601,7 @@
 				A73B1639274B60A10073947D /* BTLogger.swift in Sources */,
 				A784139127423A8D00381341 /* Command.swift in Sources */,
 				A7841384273F973D00381341 /* SwitchBoardDragOperation.swift in Sources */,
-				A74F38022818C0C80013FD23 /* RouteStep_Block.swift in Sources */,
+				A74F38022818C0C80013FD23 /* RouteStepBlock.swift in Sources */,
 				A7ACCEA42811AB23006F4310 /* TrainReserveLeadingBlocksHandler.swift in Sources */,
 				A74CCC70272A5A10004E58F5 /* Turnout.swift in Sources */,
 				A73AFEB427265A4B00E1ED21 /* Client.swift in Sources */,

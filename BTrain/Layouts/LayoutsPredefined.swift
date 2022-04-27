@@ -248,7 +248,7 @@ final class LayoutIncomplete: LayoutCreating {
         l.newTrain()
 
         // Routes
-        l.newRoute("0", name: "Simple Route", [.block(RouteStep_Block(b1, .next)), .block(RouteStep_Block(b2, .next))])
+        l.newRoute("0", name: "Simple Route", [.block(RouteStepBlock(b1, .next)), .block(RouteStepBlock(b2, .next))])
         
         return l
     }

@@ -12,7 +12,7 @@
 
 import Foundation
 
-struct RouteStep_Block: RouteStep, Equatable, Codable, CustomStringConvertible {
+struct RouteStepBlock: RouteStep, Equatable, Codable, CustomStringConvertible {
 
     var id = UUID().uuidString
     

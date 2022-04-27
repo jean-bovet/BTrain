@@ -38,7 +38,7 @@ extension Layout {
     func newRoute(_ id: String, name: String, automatic: Bool = false, _ steps: [(Block, Direction, TimeInterval?)]) {
         var routeSteps = [RouteItem]()
         for step in steps {
-            routeSteps.append(.block(RouteStep_Block(step.0.id, step.1, step.2)))
+            routeSteps.append(.block(RouteStepBlock(step.0.id, step.1, step.2)))
         }
         newRoute(id, name: name, automatic: automatic, routeSteps)
     }

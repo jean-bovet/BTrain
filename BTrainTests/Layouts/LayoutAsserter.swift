@@ -199,7 +199,7 @@ final class LayoutAsserter {
         }
     }
     
-    private func assertBlockAt(index: Int, route: Route, step: RouteStep_Block, expectedStep: RouteStep_Block, expectedLayout: Layout) {
+    private func assertBlockAt(index: Int, route: Route, step: RouteStepBlock, expectedStep: RouteStepBlock, expectedLayout: Layout) {
         XCTAssertEqual(step.direction, expectedStep.direction, "Step direction mismatch at index \(index)")
 
         let block = layout.block(for: step.blockId)!
@@ -228,7 +228,7 @@ final class LayoutAsserter {
         }
     }
     
-    private func assertTurnoutAt(index: Int, route: Route, step: RouteStep_Turnout, expectedStep: RouteStep_Turnout, expectedLayout: Layout) {
+    private func assertTurnoutAt(index: Int, route: Route, step: RouteStepTurnout, expectedStep: RouteStepTurnout, expectedLayout: Layout) {
         guard let turnout = layout.turnout(for: step.turnoutId) else {
             XCTFail("Turnout \(String(describing: step.turnoutId)) not found")
             return

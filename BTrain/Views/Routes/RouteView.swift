@@ -23,8 +23,8 @@ struct RouteView: View {
     @State private var selection: String? = nil
     @State private var invalidRoute: Bool?
 
-    func stepBlockBinding(_ routeItem: Binding<RouteItem>) -> Binding<RouteStep_Block> {
-        Binding<RouteStep_Block>(
+    func stepBlockBinding(_ routeItem: Binding<RouteItem>) -> Binding<RouteStepBlock> {
+        Binding<RouteStepBlock>(
             get: {
                 if case .block(let stepBlock) = routeItem.wrappedValue {
                     return stepBlock
@@ -55,7 +55,7 @@ struct RouteView: View {
                 Spacer()
                 
                 Button("+") {
-                    let step = RouteStep_Block(layout.block(at: 0).id, .next)
+                    let step = RouteStepBlock(layout.block(at: 0).id, .next)
                     route.steps.append(.block(step))
                     undoManager?.registerUndo(withTarget: route, handler: { route in
                         route.steps.removeAll { s in

@@ -196,7 +196,7 @@ final class LayoutReservation {
         debug("Set turnout \(turnout.name) for \(train) and state \(turnout.state)")
     }
     
-    private func rememberTurnoutToReserve(turnout: Turnout, train: Train, step: RouteStep_Turnout, numberOfLeadingBlocksReserved: inout Int, turnouts: inout [TurnoutReservation]) throws -> Bool {
+    private func rememberTurnoutToReserve(turnout: Turnout, train: Train, step: RouteStepTurnout, numberOfLeadingBlocksReserved: inout Int, turnouts: inout [TurnoutReservation]) throws -> Bool {
         let fromSocketId = try step.entrySocketId()
         let toSocketId = try step.exitSocketId()
         let state = turnout.state(fromSocket: fromSocketId, toSocket: toSocketId)

@@ -12,18 +12,15 @@
 
 import Foundation
 
+/// Protocol defining the common interface of the step of a route.
 protocol RouteStep {
-    
-    // Returns the socket where the train will exit
-    // the block represented by this step, taking
-    // into account the direction of travel of the train.
-    var exitSocket: Socket? { get }
-    
-    // Returns the socket where the train will enter
-    // the block represented by this step, taking
-    // into account the direction of travel of the train.
+        
+    /// Returns the socket where the train will enter the element represented by this step.
     var entrySocket: Socket? { get }
 
+    /// Returns the socket where the train will exit the element represented by this step.
+    var exitSocket: Socket? { get }
+    
     func entrySocketOrThrow() throws -> Socket
 
     func entrySocketId() throws -> Int
@@ -107,9 +104,9 @@ extension RouteStep_v1 {
     
     var toRouteStep: RouteItem {
         if let blockId = blockId {
-            return .block(RouteStep_Block(blockId, entrySocket: entrySocket, exitSocket: exitSocket, waitingTime))
+            return .block(RouteStepBlock(blockId, entrySocket: entrySocket, exitSocket: exitSocket, waitingTime))
         } else if let turnoutId = turnoutId {
-            return .turnout(RouteStep_Turnout(turnoutId, entrySocket!, exitSocket!))
+            return .turnout(RouteStepTurnout(turnoutId, entrySocket!, exitSocket!))
         } else {
             fatalError("Unknown step configuration: \(self)")
         }

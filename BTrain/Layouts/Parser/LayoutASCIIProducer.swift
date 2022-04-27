@@ -44,7 +44,7 @@ final class LayoutASCIIProducer {
         return text
     }
 
-    private func generateBlock(step: RouteStep_Block, text: inout String) throws {
+    private func generateBlock(step: RouteStepBlock, text: inout String) throws {
         guard let block = layout.block(for: step.blockId) else {
             throw LayoutError.blockNotFound(blockId: step.blockId)
         }
@@ -129,7 +129,7 @@ final class LayoutASCIIProducer {
         }
     }
     
-    func generateTurnout(step: RouteStep_Turnout, text: inout String) throws {
+    func generateTurnout(step: RouteStepTurnout, text: inout String) throws {
         guard let turnout = layout.turnout(for: step.turnoutId) else {
             throw LayoutError.turnoutNotFound(turnoutId: step.turnoutId)
         }

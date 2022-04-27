@@ -12,7 +12,12 @@
 
 import Foundation
 
-// See https://paul-samuels.com/blog/2019/01/02/swift-heterogeneous-codable-array/
+/// This enumeration holds a single step type and is used by the ``Route`` to create an array of steps.
+///
+/// A route is composed of several steps. Each step is identified by this ``RouteItem`` that provides an enum
+/// of the various types of steps available.
+///
+/// See [this blog](https://paul-samuels.com/blog/2019/01/02/swift-heterogeneous-codable-array/)
 enum RouteItem: Identifiable, Equatable, CustomStringConvertible {
     
     static func == (lhs: RouteItem, rhs: RouteItem) -> Bool {
@@ -26,8 +31,8 @@ enum RouteItem: Identifiable, Equatable, CustomStringConvertible {
         }
     }
     
-    case block(RouteStep_Block)
-    case turnout(RouteStep_Turnout)
+    case block(RouteStepBlock)
+    case turnout(RouteStepTurnout)
 
     var id: String {
         switch self {
@@ -85,8 +90,8 @@ extension RouteItem: Codable {
         let container = try decoder.container(keyedBy: CodingKeys.self)
 
         switch try container.decode(String.self, forKey: .type) {
-        case Unassociated.block.rawValue: self = .block(try container.decode(RouteStep_Block.self, forKey: .attributes))
-        case Unassociated.turnout.rawValue: self = .turnout(try container.decode(RouteStep_Turnout.self, forKey: .attributes))
+        case Unassociated.block.rawValue: self = .block(try container.decode(RouteStepBlock.self, forKey: .attributes))
+        case Unassociated.turnout.rawValue: self = .turnout(try container.decode(RouteStepTurnout.self, forKey: .attributes))
         default: fatalError("Unknown type")
         }
     }

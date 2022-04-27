@@ -12,7 +12,7 @@
 
 import Foundation
 
-struct RouteStep_Turnout: RouteStep, Equatable, Codable {
+struct RouteStepTurnout: RouteStep, Equatable, Codable {
     
     var id = UUID().uuidString
 
