@@ -34,10 +34,11 @@ class RouteTests: XCTestCase {
     }
     
     func testStep() {
-        let s1 = RouteStep_Block("1", Identifier<Block>(uuid: "1"), .next)
-        let s2 = RouteStep_Block("2", Identifier<Block>(uuid: "1"), .previous)
-        let s3 = RouteStep_Block("3", Identifier<Block>(uuid: "2"), .next)
-        let s4 = RouteStep_Block("3", Identifier<Block>(uuid: "2"), .next)
+        let s1 = RouteStep_Block(Identifier<Block>(uuid: "1"), .next)
+        let s2 = RouteStep_Block(Identifier<Block>(uuid: "1"), .previous)
+        let s3 = RouteStep_Block(Identifier<Block>(uuid: "2"), .next)
+        var s4 = RouteStep_Block(Identifier<Block>(uuid: "2"), .next)
+        s4.id = s3.id
         XCTAssertEqual(s1, s1)
         XCTAssertNotEqual(s1, s2)
         XCTAssertNotEqual(s2, s3)

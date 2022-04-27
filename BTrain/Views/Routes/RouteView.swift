@@ -23,12 +23,27 @@ struct RouteView: View {
     @State private var selection: String? = nil
     @State private var invalidRoute: Bool?
 
+    func stepBlockBinding(_ routeItem: Binding<RouteItem>) -> Binding<RouteStep_Block> {
+        Binding<RouteStep_Block>(
+            get: {
+                if case .block(let stepBlock) = routeItem.wrappedValue {
+                    return stepBlock
+                } else {
+                    fatalError()
+                }
+            },
+            set: { newValue in
+                routeItem.wrappedValue = .block(newValue)
+            }
+        )
+    }
+
     var body: some View {
         VStack {
-            List(route.steps, selection: $selection) { step in
-                switch step {
-                case .block(let stepBlock):
-                    RouteStepBlockView(layout: layout, stepBlock: stepBlock)
+            List($route.steps, selection: $selection) { step in
+                switch step.wrappedValue {
+                case .block(_):
+                    RouteStepBlockView(layout: layout, stepBlock: stepBlockBinding(step))
                 case .turnout(_):
                     Text("Unsupported")
                 }
@@ -40,7 +55,7 @@ struct RouteView: View {
                 Spacer()
                 
                 Button("+") {
-                    let step = RouteStep_Block(String(route.steps.count+1), layout.block(at: 0).id, .next)
+                    let step = RouteStep_Block(layout.block(at: 0).id, .next)
                     route.steps.append(.block(step))
                     undoManager?.registerUndo(withTarget: route, handler: { route in
                         route.steps.removeAll { s in

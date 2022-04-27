@@ -12,23 +12,24 @@
 
 import Foundation
 
-final class RouteStep_Turnout: RouteStep {
+struct RouteStep_Turnout: RouteStep, Equatable, Codable {
     
+    var id = UUID().uuidString
+
     var turnoutId: Identifier<Turnout>
     
-    override var description: String {
+    var exitSocket: Socket?
+    
+    var entrySocket: Socket?
+
+    var description: String {
         return "\(turnoutId):(\(entrySocket!.socketId!)>\(exitSocket!.socketId!))"
     }
     
     init(_ turnoutId: Identifier<Turnout>, _ fromSocket: Socket, _ toSocket: Socket) {
         self.turnoutId = turnoutId
-        super.init(id: UUID().uuidString)
         self.entrySocket = fromSocket
         self.exitSocket = toSocket
-    }
-    
-    required init(from decoder: Decoder) throws {
-        fatalError("init(from:) has not been implemented")
     }
     
 }

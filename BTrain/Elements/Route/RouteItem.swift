@@ -14,6 +14,18 @@ import Foundation
 
 // See https://paul-samuels.com/blog/2019/01/02/swift-heterogeneous-codable-array/
 enum RouteItem: Identifiable, Equatable, CustomStringConvertible {
+    
+    static func == (lhs: RouteItem, rhs: RouteItem) -> Bool {
+        switch (lhs, rhs) {
+        case (.block(let b1), .block(let b2)):
+            return b1.id == b2.id
+        case (.turnout(let b1), .turnout(let b2)):
+            return b1.id == b2.id
+        default:
+            return false
+        }
+    }
+    
     case block(RouteStep_Block)
     case turnout(RouteStep_Turnout)
 

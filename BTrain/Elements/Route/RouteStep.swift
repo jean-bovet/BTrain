@@ -12,36 +12,29 @@
 
 import Foundation
 
-// A step of the route
-class RouteStep: Codable, Equatable, Hashable, Identifiable, CustomStringConvertible {
+protocol RouteStep {
     
-    static func == (lhs: RouteStep, rhs: RouteStep) -> Bool {
-        lhs.id == rhs.id
-    }
-    
-    func hash(into hasher: inout Hasher) {
-        hasher.combine(id)
-    }
-
-    let id: String
-        
-    var description: String {
-        fatalError("This step must be instantiated from one of its concrete subclass")
-    }
-
     // Returns the socket where the train will exit
     // the block represented by this step, taking
     // into account the direction of travel of the train.
-    var exitSocket: Socket?
+    var exitSocket: Socket? { get }
     
     // Returns the socket where the train will enter
     // the block represented by this step, taking
     // into account the direction of travel of the train.
-    var entrySocket: Socket?
-    
-    init(id: String) {
-        self.id = id
-    }
+    var entrySocket: Socket? { get }
+
+    func entrySocketOrThrow() throws -> Socket
+
+    func entrySocketId() throws -> Int
+
+    func exitSocketOrThrow() throws -> Socket
+
+    func exitSocketId() throws -> Int
+
+}
+
+extension RouteStep {
     
     func entrySocketOrThrow() throws -> Socket {
         guard let entrySocket = entrySocket else {
@@ -74,24 +67,6 @@ class RouteStep: Codable, Equatable, Hashable, Identifiable, CustomStringConvert
         }
 
         return socketId
-    }
-    
-    enum CodingKeys: CodingKey {
-      case id, entrySocket, exitSocket
-    }
-        
-    required init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        self.id = try container.decode(String.self, forKey: CodingKeys.id)
-        self.entrySocket = try container.decodeIfPresent(Socket.self, forKey: CodingKeys.entrySocket)
-        self.exitSocket = try container.decodeIfPresent(Socket.self, forKey: CodingKeys.exitSocket)
-    }
-
-    func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encode(id, forKey: CodingKeys.id)
-        try container.encode(entrySocket, forKey: CodingKeys.entrySocket)
-        try container.encode(exitSocket, forKey: CodingKeys.exitSocket)
     }
 
 }
@@ -132,7 +107,7 @@ extension RouteStep_v1 {
     
     var toRouteStep: RouteItem {
         if let blockId = blockId {
-            return .block(RouteStep_Block(id, blockId, entrySocket: entrySocket, exitSocket: exitSocket, waitingTime))
+            return .block(RouteStep_Block(blockId, entrySocket: entrySocket, exitSocket: exitSocket, waitingTime))
         } else if let turnoutId = turnoutId {
             return .turnout(RouteStep_Turnout(turnoutId, entrySocket!, exitSocket!))
         } else {

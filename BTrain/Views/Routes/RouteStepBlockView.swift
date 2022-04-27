@@ -15,7 +15,7 @@ import SwiftUI
 struct RouteStepBlockView: View {
     
     let layout: Layout
-    @ObservedObject var stepBlock: RouteStep_Block
+    @Binding var stepBlock: RouteStep_Block
     
     var body: some View {
         HStack {
@@ -52,6 +52,6 @@ struct RouteStepBlockView_Previews: PreviewProvider {
     static let layout = LayoutLoop2().newLayout()
 
     static var previews: some View {
-        RouteStepBlockView(layout: layout, stepBlock: layout.routes[0].blockSteps[0])
+        RouteStepBlockView(layout: layout, stepBlock: .constant(layout.routes[0].blockSteps[0]))
     }
 }

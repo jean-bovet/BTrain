@@ -128,7 +128,7 @@ final class LayoutRouteParser {
         }
         
         blocks.insert(block)
-        route.steps.append(.block(RouteStep_Block(String(route.steps.count), block.id, direction)))
+        route.steps.append(.block(RouteStep_Block(block.id, direction)))
     }
  
     enum BlockContentType {

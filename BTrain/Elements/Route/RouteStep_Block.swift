@@ -12,15 +12,22 @@
 
 import Foundation
 
-final class RouteStep_Block: RouteStep, ObservableObject {
+struct RouteStep_Block: RouteStep, Equatable, Codable, CustomStringConvertible {
+
+    var id = UUID().uuidString
+    
     // The block identifier
     var blockId: Identifier<Block>
 
     // The number of seconds a train will wait in that block
     // If nil, the block waitingTime is used instead.
     var waitingTime: TimeInterval?
+
+    var exitSocket: Socket?
     
-    override var description: String {
+    var entrySocket: Socket?
+    
+    var description: String {
         return "\(blockId):\(direction)"
     }
 
@@ -40,45 +47,21 @@ final class RouteStep_Block: RouteStep, ObservableObject {
         }
     }
 
-    convenience init(_ blockId: Identifier<Block>, _ direction: Direction, _ waitingTime: TimeInterval? = nil) {
-        self.init(UUID().uuidString, blockId, direction, waitingTime)
+    init(_ block: Block, _ direction: Direction, _ waitingTime: TimeInterval? = nil) {
+        self.init(block.id, direction, waitingTime)
     }
 
-    convenience init(_ block: Block, _ direction: Direction, _ waitingTime: TimeInterval? = nil) {
-        self.init(UUID().uuidString, block.id, direction, waitingTime)
-    }
-
-    init(_ id: String, _ blockId: Identifier<Block>, _ direction: Direction, _ waitingTime: TimeInterval? = nil) {
+    init(_ blockId: Identifier<Block>, _ direction: Direction, _ waitingTime: TimeInterval? = nil) {
         self.blockId = blockId
-        super.init(id: id)
         self.direction = direction
         self.waitingTime = waitingTime
     }
     
-    init(_ id: String, _ blockId: Identifier<Block>, entrySocket: Socket?, exitSocket: Socket?, _ waitingTime: TimeInterval? = nil) {
+    init(_ blockId: Identifier<Block>, entrySocket: Socket?, exitSocket: Socket?, _ waitingTime: TimeInterval? = nil) {
         self.blockId = blockId
-        super.init(id: id)
         self.entrySocket = entrySocket
         self.exitSocket = exitSocket
         self.waitingTime = waitingTime
-    }
-
-    enum CodingKeys: CodingKey {
-      case blockId, waitingTime
-    }
-
-    required init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        blockId = try container.decode(Identifier<Block>.self, forKey: CodingKeys.blockId)
-        waitingTime = try container.decodeIfPresent(TimeInterval.self, forKey: CodingKeys.waitingTime)
-        try super.init(from: decoder)
-    }
-        
-    override func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encode(blockId, forKey: CodingKeys.blockId)
-        try container.encode(waitingTime, forKey: CodingKeys.waitingTime)
-        try super.encode(to: encoder)
     }
 
 }
