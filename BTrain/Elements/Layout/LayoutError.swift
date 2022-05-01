@@ -24,6 +24,8 @@ enum LayoutError: Error {
     case invalidHeadWagonConfiguration(train: Train)
     
     case blockNotFound(blockId: Identifier<Block>)
+    case blockNotFoundInStation(stationId: Identifier<Station>)
+    case stationNotFound(stationId: Identifier<Station>)
     case turnoutNotFound(turnoutId: Identifier<Turnout>)
     case feedbackNotFound(feedbackId: Identifier<Feedback>)
     case socketIdNotFound(socket: Socket)
@@ -77,6 +79,10 @@ extension LayoutError: LocalizedError {
             return "Train \(trainId) not found"
         case .blockNotFound(blockId: let blockId):
             return "Block \(blockId) not found"
+        case .blockNotFoundInStation(stationId: let stationId):
+            return "No block found in station \(stationId)"
+        case .stationNotFound(stationId: let stationId):
+            return "Station \(stationId) not found"
         case .turnoutNotFound(turnoutId: let turnoutId):
             return "Turnout \(turnoutId) not found"
         case .feedbackNotFound(feedbackId: let feedbackId):

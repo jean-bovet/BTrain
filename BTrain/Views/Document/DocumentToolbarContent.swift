@@ -42,6 +42,7 @@ struct DocumentToolbarContent: ToolbarContent {
                 CommandSelectedView(viewType: .overview, label: "Switchboard")
                 CommandSelectedView(viewType: .routes, label: "Routes")
                 CommandSelectedView(viewType: .trains, label: "Trains")
+                CommandSelectedView(viewType: .stations, label: "Stations")
                 CommandSelectedView(viewType: .blocks, label: "Blocks")
                 CommandSelectedView(viewType: .turnouts, label: "Turnouts")
                 CommandSelectedView(viewType: .feedback, label: "Feedback")

@@ -72,18 +72,22 @@ final class LayoutRouteParser {
         addTransitions()
     }
     
+    var steps: [ResolvedRouteItem] {
+        route.resolvedSteps
+    }
+    
     func addTransitions() {
-        for index in 0..<route.steps.count {
-            if index + 1 == route.steps.count {
+        for index in 0..<steps.count {
+            if index + 1 == steps.count {
                 // We have reached the last step, there is no transitions out of it
                 continue
             }
-                        
-            let step = route.steps[index]
-            let nextStep = route.steps[index+1]
 
-            layout.link(from: step.exitSocket!,
-                        to: nextStep.entrySocket!)
+            let step = steps[index]
+            let nextStep = steps[index+1]
+
+            layout.link(from: step.exitSocket,
+                        to: nextStep.entrySocket)
         }
     }
             
@@ -112,7 +116,7 @@ final class LayoutRouteParser {
         } else {
             // Note: use a UUID that is using the number of blocks created so far
             // so the UUID is easy to unit test
-            block = Block(name: String(route.steps.count))
+            block = Block(name: String(steps.count))
             block.category = category
             block.reserved = blockHeader.reserved
             newBlock = true
@@ -128,7 +132,7 @@ final class LayoutRouteParser {
         }
         
         blocks.insert(block)
-        route.steps.append(.block(RouteStepBlock(block.id, direction)))
+        route.resolvedSteps.append(.block(.init(block: block, direction: direction)))
     }
  
     enum BlockContentType {
@@ -338,7 +342,7 @@ final class LayoutRouteParser {
         } else {
             let train = Train(uuid: uuid)
             train.position = position
-            train.routeStepIndex = route.steps.count
+            train.routeStepIndex = steps.count
             train.speed = .init(kph: speed, decoderType: .MFX)
             train.routeId = route.id
             if block.train == nil {
@@ -480,8 +484,8 @@ final class LayoutRouteParser {
             layout.turnouts.append(turnout)
         }
         
-        let step = RouteStepTurnout(turnoutId, Socket.turnout(turnoutId, socketId: fromSocket), Socket.turnout(turnoutId, socketId: toSocket))
-        route.steps.append(.turnout(step))
+        let turnout = layout.turnout(for: turnoutId)!
+        route.resolvedSteps.append(.turnout(.init(turnout: turnout, entrySocketId: fromSocket, exitSocketId: toSocket)))
     }
 
 }

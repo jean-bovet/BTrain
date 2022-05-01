@@ -23,6 +23,8 @@ struct RouteView: View {
     @State private var selection: String? = nil
     @State private var invalidRoute: Bool?
 
+    @State private var showAddRouteElementSheet = false
+    
     func stepBlockBinding(_ routeItem: Binding<RouteItem>) -> Binding<RouteStepBlock> {
         Binding<RouteStepBlock>(
             get: {
@@ -37,6 +39,21 @@ struct RouteView: View {
             }
         )
     }
+    
+    func stepStationBinding(_ routeItem: Binding<RouteItem>) -> Binding<RouteStepStation> {
+        Binding<RouteStepStation>(
+            get: {
+                if case .station(let stepStation) = routeItem.wrappedValue {
+                    return stepStation
+                } else {
+                    fatalError()
+                }
+            },
+            set: { newValue in
+                routeItem.wrappedValue = .station(newValue)
+            }
+        )
+    }
 
     var body: some View {
         VStack {
@@ -44,8 +61,8 @@ struct RouteView: View {
                 switch step.wrappedValue {
                 case .block(_):
                     RouteStepBlockView(layout: layout, stepBlock: stepBlockBinding(step))
-                case .turnout(_):
-                    Text("Unsupported")
+                case .turnout, .station:
+                    RouteStepStationView(layout: layout, stepStation: stepStationBinding(step))
                 }
             }.listStyle(.inset(alternatesRowBackgrounds: true))
             
@@ -55,13 +72,7 @@ struct RouteView: View {
                 Spacer()
                 
                 Button("+") {
-                    let step = RouteStepBlock(layout.block(at: 0).id, .next)
-                    route.steps.append(.block(step))
-                    undoManager?.registerUndo(withTarget: route, handler: { route in
-                        route.steps.removeAll { s in
-                            return s.id == step.id
-                        }
-                    })
+                    showAddRouteElementSheet.toggle()
                 }
                 Button("-") {
                     if let step = route.steps.first(where: { $0.id == selection }) {
@@ -77,18 +88,9 @@ struct RouteView: View {
                 
                 Spacer().fixedSpace()
                 
-                Button("􀄨") {
-                    if let index = route.steps.firstIndex(where: { $0.id == selection }), index > route.steps.startIndex  {
-                        route.steps.swapAt(index, route.steps.index(before: index))
-                    }
-                }.disabled(selection == nil)
-                
-                Button("􀄩") {
-                    if let index = route.steps.firstIndex(where: { $0.id == selection }), index < route.steps.endIndex  {
-                        route.steps.swapAt(index, route.steps.index(after: index))
-                    }
-                }.disabled(selection == nil)
-                
+                MoveUpButtonView(selection: $selection, elements: $route.steps)
+                MoveDownButtonView(selection: $selection, elements: $route.steps)
+
                 Spacer().fixedSpace()
                 
                 HStack {
@@ -106,6 +108,9 @@ struct RouteView: View {
                 
             }
             .padding()
+        }.sheet(isPresented: $showAddRouteElementSheet) {
+            RouteNewElementSheet(layout: layout, route: route)
+                .padding()
         }
     }
     

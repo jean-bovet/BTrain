@@ -26,28 +26,27 @@ final class LayoutASCIIProducer {
         guard let train = layout.train(for: trainId) else {
             throw LayoutError.trainNotFound(trainId: trainId)
         }
-        guard let resolvedSteps = try RouteResolver(layout: layout, train: train).resolve(steps: ArraySlice(route.steps)) else {
+        
+        guard try route.resolve(layout: layout, train: train) else {
             return text
         }
         
-        for step in resolvedSteps {
+        for step in route.resolvedSteps {
             switch step {
             case .block(let stepBlock):
                 addSpace(&text)
                 try generateBlock(step: stepBlock, text: &text)
             case .turnout(let stepTurnout):
                 addSpace(&text)
-                try generateTurnout(step: stepTurnout, text: &text)
+                generateTurnout(step: stepTurnout, text: &text)
             }
         }
         
         return text
     }
 
-    private func generateBlock(step: RouteStepBlock, text: inout String) throws {
-        guard let block = layout.block(for: step.blockId) else {
-            throw LayoutError.blockNotFound(blockId: step.blockId)
-        }
+    private func generateBlock(step: ResolvedRouteItemBlock, text: inout String) throws {
+        let block = step.block
         
         let reverse = step.direction == .previous
         if reverse {
@@ -129,10 +128,8 @@ final class LayoutASCIIProducer {
         }
     }
     
-    func generateTurnout(step: RouteStepTurnout, text: inout String) throws {
-        guard let turnout = layout.turnout(for: step.turnoutId) else {
-            throw LayoutError.turnoutNotFound(turnoutId: step.turnoutId)
-        }
+    func generateTurnout(step: ResolvedRouteItemTurnout, text: inout String) {
+        let turnout = step.turnout
         
         text += "<"
         if let reserved = turnout.reserved?.train {
@@ -143,11 +140,11 @@ final class LayoutASCIIProducer {
         // <t0{sl}(0,1),s>
         text += "\(turnout.id)"
         text += "{\(turnoutType(turnout))}"
-        
-        let entrySocket = try step.entrySocketId()
-        let exitSocket = try step.exitSocketId()
+  
+        let entrySocket = step.entrySocketId
+        let exitSocket = step.exitSocketId
         text += "(\(entrySocket),\(exitSocket))"
-        
+
         if let state = turnoutState(turnout.state(fromSocket: entrySocket, toSocket: exitSocket)) {
             text += ",\(state)"
         }

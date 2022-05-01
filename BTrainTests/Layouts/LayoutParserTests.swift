@@ -140,7 +140,7 @@ class LayoutParserTests: XCTestCase {
     
     func assertLayout(layout: Layout, expectations: [BE]) {
         let route = layout.routes.first!
-        let blockSteps = route.blockSteps
+        let blockSteps = route.resolvedBlockSteps
         
         XCTAssertEqual(blockSteps.count, expectations.count)
         
@@ -182,10 +182,12 @@ class LayoutParserTests: XCTestCase {
             
             // Assert the turnouts
             if let expectedTurnouts = expectation.turnouts {
-                let nextStep = route.steps[index+1]
-                guard let nextBlockId = nextStep.stepBlockId else {
+                let nextStep = route.resolvedSteps[index+1]
+                guard case .block(let resolvedBlockItem) = nextStep else {
                     return
                 }
+                
+                let nextBlockId = resolvedBlockItem.blockId
                 
                 guard let nextBlock = layout.block(for: nextBlockId) else {
                     XCTFail("Unable to find block \(nextBlockId)")

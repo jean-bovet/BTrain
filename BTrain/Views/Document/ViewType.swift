@@ -17,6 +17,7 @@ enum ViewType: Int {
     case overview
     case routes
     case trains
+    case stations
     case blocks
     case turnouts
     case feedback

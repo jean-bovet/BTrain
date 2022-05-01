@@ -23,19 +23,20 @@ struct BlockGraphElementIdentifier: GraphElementIdentifier {
 }
 
 extension Block: GraphNode {
+    
     var identifier: GraphElementIdentifier {
         BlockGraphElementIdentifier(id)
     }
      
-    var weight: Double {
-        return length ?? 0
+    func weight(_ constraints: GraphPathFinderConstraints) -> Double {
+        length ?? 0
     }
     
-    var sockets: [SocketId] {
+    func sockets(_ constraints: GraphPathFinderConstraints) -> [SocketId] {
         allSockets.compactMap { $0.socketId }
     }
     
-    func reachableSockets(from socket: SocketId) -> [SocketId] {
+    func reachableSockets(from socket: SocketId, _ constraints: GraphPathFinderConstraints) -> [SocketId] {
         if socket == Block.previousSocket {
             return [Block.nextSocket]
         } else {
@@ -57,6 +58,44 @@ extension Block {
 
 }
 
+struct StationGraphElementIdentifier: GraphElementIdentifier {
+    let uuid: String
+    let stationId: Identifier<Station>
+    
+    init(_ stationId: Identifier<Station>) {
+        self.uuid = "st" + stationId.uuid
+        self.stationId = stationId
+    }
+}
+
+extension Station: GraphNode {
+    
+    var identifier: GraphElementIdentifier {
+        StationGraphElementIdentifier(id)
+    }
+     
+    func weight(_ constraints: GraphPathFinderConstraints) -> Double {
+        block(constraints)?.weight(constraints) ?? 0
+    }
+    
+    func sockets(_ constraints: GraphPathFinderConstraints) -> [SocketId] {
+        block(constraints)?.sockets(constraints) ?? []
+    }
+    
+    func reachableSockets(from socket: SocketId, _ constraints: GraphPathFinderConstraints) -> [SocketId] {
+        block(constraints)?.reachableSockets(from: socket, constraints) ?? []
+    }
+
+    func block(_ constraints: GraphPathFinderConstraints) -> Block? {
+        //TODO: return the appropriate block from the station given the layout and train
+        guard let lc = constraints.layoutConstraints else {
+            return nil
+        }
+        return lc.layout.block(for: self.elements.first?.blockId)
+    }
+            
+}
+
 struct TurnoutGraphElementIdentifier: GraphElementIdentifier {
     let uuid: String
     let turnoutId: Identifier<Turnout>
@@ -67,22 +106,23 @@ struct TurnoutGraphElementIdentifier: GraphElementIdentifier {
 }
 
 extension Turnout: GraphNode {
+    
     var identifier: GraphElementIdentifier {
         TurnoutGraphElementIdentifier(id)
     }
-    
-    var weight: Double {
-        return length ?? 0
+        
+    func weight(_ constraints: GraphPathFinderConstraints) -> Double {
+        length ?? 0
     }
-
-    var sockets: [SocketId] {
+    
+    func sockets(_ constraints: GraphPathFinderConstraints) -> [SocketId] {
         allSockets.compactMap { $0.socketId }
     }
     
-    func reachableSockets(from socket: SocketId) -> [SocketId] {
+    func reachableSockets(from socket: SocketId, _ constraints: GraphPathFinderConstraints) -> [SocketId] {
         sockets(from: socket)
     }
-    
+
 }
 
 struct TransitionGraphElementIdentifier: GraphElementIdentifier {
@@ -149,6 +189,14 @@ extension Layout {
         return block(for: blockIdentifier.blockId)
     }
 
+    func station(_ identifier: GraphElementIdentifier) -> Station? {
+        guard let stationIdentifier = identifier as? StationGraphElementIdentifier else {
+            return nil
+        }
+    
+        return station(for: stationIdentifier.stationId)
+    }
+
     func turnout(_ node: GraphNode) -> Turnout? {
         return turnout(node.identifier)
     }
@@ -162,12 +210,16 @@ extension Layout {
 }
 
 extension Layout: Graph {
-    func edge(from: GraphNode, socketId: SocketId) -> GraphEdge? {
+    
+    func edge(from: GraphNode, socketId: SocketId, constraints: GraphPathFinderConstraints) -> GraphEdge? {
         let socket: Socket
         if let block = block(from) {
             socket = Socket.block(block.id, socketId: socketId)
         } else if let turnout = turnout(from) {
             socket = Socket.turnout(turnout.id, socketId: socketId)
+        } else if let station = station(from.identifier), let block = station.block(constraints) {
+            // TODO: what socket id to pick? socketId here is about the station...
+            socket = Socket.block(block.id, socketId: Block.nextSocket)
         } else {
             return nil
         }
@@ -175,11 +227,13 @@ extension Layout: Graph {
         return try? transition(from: socket)
     }
     
-    func node(for elementId: GraphElementIdentifier) -> GraphNode? {
+    func node(for elementId: GraphElementIdentifier, constraints: GraphPathFinderConstraints) -> GraphNode? {
         if let block = block(elementId) {
             return block
         } else if let turnout = turnout(elementId) {
             return turnout
+        } else if let station = station(elementId) {
+            return station.block(constraints)
         } else {
             return nil
         }
@@ -233,6 +287,7 @@ extension Array where Element == GraphPathElement {
         }
     }
     
+    // TODO: used anymore?
     var toSteps: [RouteItem] {
         return self.compactMap { element in
             if let block = element.node as? Block {
@@ -257,6 +312,52 @@ extension Array where Element == GraphPathElement {
                 return nil
             }
         }
+    }
+    
+    var toResolvedRouteItems: [ResolvedRouteItem] {
+        return self.compactMap { element in
+            if let block = element.node as? Block {
+                let direction: Direction
+                if let entrySocket = element.entrySocket {
+                    direction = entrySocket == Block.previousSocket ? .next : .previous
+                } else if let exitSocket = element.exitSocket {
+                    direction = exitSocket == Block.nextSocket ? .next : .previous
+                } else {
+                    // TODO: throw
+                    fatalError()
+                }
+                
+                return .block(.init(block: block, direction: direction))
+            } else if let turnout = element.node as? Turnout {
+                guard let entrySocket = element.entrySocket else {
+                    // TODO: throw
+                    fatalError()
+                }
+                guard let exitSocket = element.exitSocket else {
+                    // TODO: throw
+                    fatalError()
+                }
+                return .turnout(.init(turnout: turnout, entrySocketId: entrySocket, exitSocketId: exitSocket))
+            } else {
+                return nil
+            }
+        }
+    }
+
+
+}
+
+extension GraphPathFinderConstraints {
+    
+    var layoutConstraints: LayoutPathFinder.LayoutConstraints? {
+        if let lc = self as? LayoutPathFinder.LayoutConstraints {
+            return lc
+        } else if let rc = self as? RouteResolver.ResolverConstraints {
+            if let lc = rc.delegatedConstraints as? LayoutPathFinder.LayoutConstraints {
+                return lc
+            }
+        }
+        return nil
     }
 
 }

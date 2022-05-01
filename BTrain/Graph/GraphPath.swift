@@ -46,30 +46,15 @@ struct GraphPath: Equatable {
 
 }
 
-extension GraphPath {
-    
-    // Create a path using steps of a route.
-    init(steps: [RouteItem], layout: Layout) throws {
-        let elements: [GraphPathElement] = try steps.compactMap { step in
-            switch step {
-            case .block(let stepBlock):
-                guard let block = layout.block(for: stepBlock.blockId) else {
-                    throw LayoutError.blockNotFound(blockId: stepBlock.blockId)
-                }
-                return GraphPathElement(node: block, entrySocket: try stepBlock.entrySocketId(), exitSocket: try stepBlock.exitSocketId())
-            case .turnout(let stepTurnout):
-                guard let turnout = layout.turnout(for: stepTurnout.turnoutId) else {
-                    throw LayoutError.turnoutNotFound(turnoutId: stepTurnout.turnoutId)
-                }
-                return GraphPathElement(node: turnout, entrySocket: try stepTurnout.entrySocketId(), exitSocket: try stepTurnout.exitSocketId())
-            }
-        }
-        self.init(elements)
-    }
+typealias UnresolvedGraphPath = [UnresolvedGraphPathElement]
 
+protocol UnresolvedGraphPathElement {
+    
+    func resolve(_ constraints: GraphPathFinderConstraints, _ context: GraphPathFinderContext) -> GraphPathElement?
+    
 }
 
-// Each element is a `node` with specified exit and entry sockets.
+// Each element is a `node` with specific exit and entry sockets.
 // A starting element only has an exit socket while the last
 // element in the path only has an entry socket.
 struct GraphPathElement: Equatable, Hashable, CustomStringConvertible {
@@ -137,4 +122,11 @@ struct GraphPathElement: Equatable, Hashable, CustomStringConvertible {
         return lhs.node.identifier.uuid == rhs.node.identifier.uuid && lhs.entrySocket == rhs.entrySocket && lhs.exitSocket == rhs.exitSocket
     }
     
+}
+
+// TODO: is that only useful for testing?
+extension GraphPathElement: UnresolvedGraphPathElement {
+    func resolve(_ constraints: GraphPathFinderConstraints, _ context: GraphPathFinderContext) -> GraphPathElement? {
+        return self
+    }
 }

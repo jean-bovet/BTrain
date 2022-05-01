@@ -49,8 +49,18 @@ final class Route: Element, ObservableObject {
     @Published var name = ""
     
     // The list of steps for this route
+    
+    /// The list of unresolved steps. An unresolved step is a step that specify partially an item of
+    /// the route; for example, a station is an unresolved step because a station contains one or more
+    /// blocks that need to be picked up when the train moves along the route. This is done when
+    /// the route is resolved, where each station returns a single block satisfying the constraints of the layout.
     @Published var steps = [RouteItem]()
     
+    // TODO: have a ResolvedRoute structure instead
+    /// The list of resolved steps for this route. The route is not automatically resolved
+    /// when the ``steps`` array is modified, you must call ``resolve(layout:train:)``.
+    @Published var resolvedSteps = [ResolvedRouteItem]()
+
     /// The last message about the status of the route, or nil if there is no problem with the route.
     @Published var lastMessage: String?
     
@@ -63,7 +73,17 @@ final class Route: Element, ObservableObject {
             }
         }
     }
-    
+
+    var resolvedBlockSteps: [ResolvedRouteItemBlock] {
+        return resolvedSteps.compactMap {
+            if case .block(let stepBlock) = $0 {
+                return stepBlock
+            } else {
+                return nil
+            }
+        }
+    }
+
     var lastStepIndex: Int {
         return steps.count - 1
     }
@@ -75,6 +95,24 @@ final class Route: Element, ObservableObject {
     init(id: Identifier<Route>, automatic: Bool = false) {
         self.id = id
         self.automatic = automatic
+    }
+    
+    /// Resolve this route by filling the ``resolvedSteps`` with all the steps of the route.
+    ///
+    /// Resolving a route means that all the steps of a route are resolved:
+    /// - Station is resolved by picking the best block according to the specified constraints
+    /// - Missing block and turnout between two steps are resolved by respecting the current constraints of the layout
+    /// - Parameters:
+    ///   - layout: the layout
+    ///   - train: the train to use to resolve the route. A train is important because it can limit which blocks or turnouts can be used if the train has specific constraints.
+    /// - Returns: true if the route could be resolved, false otherwise.
+    func resolve(layout: Layout, train: Train) throws -> Bool {
+        guard let resolvedSteps = try RouteResolver(layout: layout, train: train).resolve(steps: ArraySlice(steps), verbose: false) else {
+            resolvedSteps.removeAll()
+            return false
+        }
+        self.resolvedSteps = resolvedSteps
+        return true
     }
 
     static func automaticRouteId(for trainId: Identifier<Train>) -> Identifier<Route> {

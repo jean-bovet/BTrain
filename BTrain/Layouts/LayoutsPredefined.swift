@@ -149,6 +149,18 @@ final class LayoutLoopWithStation: LayoutCreating {
     }
 }
 
+/// Pretty similar to ``LayoutLoopWithStation`` but with proper stations defined
+/// - Station N: n1, n2
+/// - Station S: s1, s2
+final class LayoutLoopWithStations: LayoutCreating {
+    
+    static let id = Identifier<Layout>(uuid: "Loop with Stations")
+    
+    func newLayout() -> Layout {
+        LayoutFactory.layoutFromBundle(named: LayoutLoopWithStations.id.uuid)
+    }
+}
+
 //              t3               ┌─────────┐              t4
 //     ┌─────▶––––––––––────────▶│ Block 2 │─────────────▶––––––––––───────┐
 //     │          \              └─────────┘                   /           │

@@ -12,34 +12,38 @@
 
 import Foundation
 
-struct RouteStepTurnout: RouteStep, Equatable, Codable {
+extension Layout {
     
-    var id = UUID().uuidString
-
-    var turnoutId: Identifier<Turnout>
-    
-    var exitSocket: Socket
-    
-    var entrySocket: Socket
-
-    var description: String {
-        return "\(turnoutId):(\(entrySocket.socketId!)>\(exitSocket.socketId!))"
+    /// Returns an array of stations
+    var stations: [Station] {
+        get {
+            return stationMap.values.map { $0 }
+        }
+        set {
+            stationMap.removeAll()
+            newValue.forEach { stationMap[$0.id] = $0 }
+        }
     }
     
-    init(_ turnoutId: Identifier<Turnout>, _ fromSocket: Socket, _ toSocket: Socket) {
-        self.turnoutId = turnoutId
-        self.entrySocket = fromSocket
-        self.exitSocket = toSocket
+    func newStation() -> Station {
+        let station = Station(id: Layout.newIdentity(stationMap), name: "", elements: [])
+        stationMap[station.id] = station
+        return station
     }
     
-    func resolve(_ constraints: GraphPathFinderConstraints, _ context: GraphPathFinderContext) -> GraphPathElement? {
-        // TODO: finish
-        guard let lc = context as? LayoutPathFinder.LayoutContext else {
+    func remove(stationId: Identifier<Station>) {
+        stationMap.removeValue(forKey: stationId)
+    }
+    
+    /// Returns the station identified by ``stationId``
+    /// - Parameter stationId: the station ID
+    /// - Returns: the station or nil if not found
+    func station(for stationId: Identifier<Station>?) -> Station? {
+        if let stationId = stationId {
+            return stationMap[stationId]
+        } else {
             return nil
         }
-        let turnout = lc.layout.turnout(for: turnoutId)!
-        return .init(node: turnout, entrySocket: entrySocket.socketId, exitSocket: exitSocket.socketId)
-
     }
 
 }

@@ -239,8 +239,14 @@ extension Layout {
             route.steps.removeAll()
         } else {
             // Check to make sure the train is somewhere along the route
+            // and resolve the route to get all the missing blocks and turnouts.
+            guard try route.resolve(layout: self, train: train) else {
+                // TODO: throw
+                fatalError("Error")
+            }
+            
             train.routeStepIndex = -1
-            for (index, step) in route.steps.enumerated() {
+            for (index, step) in route.resolvedSteps.enumerated() {                
                 guard case .block(let stepBlock) = step else {
                     continue
                 }

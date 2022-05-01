@@ -96,29 +96,6 @@ extension Layout {
 
 }
 
-extension Array where Element == RouteItem {
-    
-    func toStrings(_ layout: Layout, useNameInsteadOfId: Bool = true) -> [String] {
-        return self.map { step in
-            switch step {
-            case .block(let stepBlock):
-                if let block = layout.block(for: stepBlock.blockId) {
-                    return "\(useNameInsteadOfId ? block.name:block.id.uuid):\(stepBlock.direction)"
-                } else {
-                    return "\(stepBlock.blockId.uuid):\(stepBlock.direction)"
-                }
-            case .turnout(let stepTurnout):
-                if let turnout = layout.turnout(for: stepTurnout.turnoutId) {
-                    return "\(useNameInsteadOfId ? turnout.name:turnout.id.uuid):(\(stepTurnout.entrySocket.socketId!)>\(stepTurnout.exitSocket.socketId!))"
-                } else {
-                    return "\(stepTurnout.turnoutId.uuid):(\(stepTurnout.entrySocket.socketId!)>\(stepTurnout.exitSocket.socketId!))"
-                }
-            }
-        }
-    }
-
-}
-
 extension Array where Element == Block {
     
     func toStrings(useNameInsteadOfId: Bool = true) -> [String] {

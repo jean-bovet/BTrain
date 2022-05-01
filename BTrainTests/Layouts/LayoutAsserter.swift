@@ -44,6 +44,7 @@ final class LayoutAsserter {
         // Now assert the routes to see if they match the real layout
         var assertedAtLeastOneRoute = false
         for route in layout.routes {
+            // Expected route comes from the ASCII definition and is already a resolved route
             guard let expectedRoute = expectedLayout.routes.first(where: { $0.id == route.id }) else {
                 continue
             }
@@ -54,13 +55,16 @@ final class LayoutAsserter {
                 continue
             }
             
-            let resolvedRoute = Route(id: route.id, automatic: route.automatic)
-            guard let resolvedSteps = try RouteResolver(layout: layout, train: train).resolve(steps: ArraySlice(route.steps)) else {
+            // Resolve the route
+            if try route.resolve(layout: layout, train: train) == false {
                 continue
             }
             
-            resolvedRoute.steps = resolvedSteps
-            try assert(route: resolvedRoute, expectedRoute: expectedRoute,
+            let producer = LayoutASCIIProducer(layout: layout)
+            let routeString = try! producer.stringFrom(route: route, trainId: train.id)
+            print(routeString)
+            
+            try assert(route: route, expectedRoute: expectedRoute,
                        trains: trains, expectedTrains: expectedTrains,
                        expectedLayout: expectedLayout)
 
@@ -71,18 +75,24 @@ final class LayoutAsserter {
     }
     
     private func applyFeedbacks(route: Route, expectedRoute: Route, expectedLayout: Layout) {
-        for expectedStep in expectedRoute.blockSteps {
-            let expectedBlock = expectedLayout.block(for: expectedStep.blockId)!
-            let block = layout.block(for: expectedStep.blockId) ?? layout.block(named: expectedStep.blockId.uuid)
-            for (index, expectedBlockFeedback) in expectedBlock.feedbacks.enumerated() {
-                let expectedFeedback = expectedLayout.feedback(for: expectedBlockFeedback.feedbackId)!
-                // The expectedFeedbackId is only valid for the expectedLayout because
-                // the ASCII representation does not allow to specify an ID for the feedback,
-                // which means they will have random UUID. It is best to use the index
-                // of the feedback within the block instead.
-                let blockFeedback = block.feedbacks[index]
-                let feedback = layout.feedback(for: blockFeedback.feedbackId)!
-                feedback.detected = expectedFeedback.detected
+        for expectedStep in expectedRoute.resolvedSteps {
+            switch expectedStep {
+            case .block(let resolvedRouteItemBlock):
+                let expectedBlock = resolvedRouteItemBlock.block
+                for (index, expectedBlockFeedback) in expectedBlock.feedbacks.enumerated() {
+                    let expectedFeedback = expectedLayout.feedback(for: expectedBlockFeedback.feedbackId)!
+                    // The expectedFeedbackId is only valid for the expectedLayout because
+                    // the ASCII representation does not allow to specify an ID for the feedback,
+                    // which means they will have random UUID. It is best to use the index
+                    // of the feedback within the block instead.
+                    let block = layout.block(for: expectedBlock.id) ?? layout.block(named: expectedBlock.id.uuid)
+                    let blockFeedback = block.feedbacks[index]
+                    let feedback = layout.feedback(for: blockFeedback.feedbackId)!
+                    feedback.detected = expectedFeedback.detected
+                }
+
+            case .turnout(_):
+                break
             }
         }
     }
@@ -95,15 +105,15 @@ final class LayoutAsserter {
             XCTAssertEqual(train.speed.requestedKph, expectedTrain.speed.requestedKph, accuracy: 1, "Mismatching train speed for train \(expectedTrain.id), route \(route.id)")
         }
                 
-        guard route.steps.count == expectedRoute.steps.count else {
-            XCTFail("Mismatching number of steps for route \(route): expecting \(expectedRoute.steps.count) but got \(route.steps.count)")
+        guard route.resolvedSteps.count == expectedRoute.resolvedSteps.count else {
+            XCTFail("Mismatching number of steps for route \(route): expecting \(expectedRoute.resolvedSteps.count) but got \(route.resolvedSteps.count)")
             return
         }
         
-        var previousStep: RouteItem?
-        for index in 0..<route.steps.count {
-            let step = route.steps[index]
-            let expectedStep = expectedRoute.steps[index]
+        var previousStep: ResolvedRouteItem?
+        for index in 0..<route.resolvedSteps.count {
+            let step = route.resolvedSteps[index]
+            let expectedStep = expectedRoute.resolvedSteps[index]
             
             switch step {
             case .block(let stepBlock):
@@ -112,17 +122,17 @@ final class LayoutAsserter {
                     return
                 }
                 XCTAssertEqual(namedId(stepBlock.blockId), expectedStepBlock.blockId, "Step blockId mismatch at index \(index)")
-                XCTAssertEqual(namedId(stepBlock.entrySocket), expectedStepBlock.entrySocket, "Step entrySocket mismatch at block \(stepBlock.blockId)")
-                XCTAssertEqual(namedId(stepBlock.exitSocket), expectedStepBlock.exitSocket, "Step exitSocket mismatch at block \(stepBlock.blockId)")
+                XCTAssertEqual(namedId(step.entrySocket), expectedStep.entrySocket, "Step entrySocket mismatch at block \(stepBlock.blockId)")
+                XCTAssertEqual(namedId(step.exitSocket), expectedStep.exitSocket, "Step exitSocket mismatch at block \(stepBlock.blockId)")
                 assertBlockAt(index: index, route: route, step: stepBlock, expectedStep: expectedStepBlock, expectedLayout: expectedLayout)
             case .turnout(let stepTurnout):
                 guard case .turnout(let expectedStepTurnout) = expectedStep else {
                     XCTFail("Expected step should be a turnout \(expectedStep)")
                     return
                 }
-                XCTAssertEqual(namedId(stepTurnout.turnoutId), expectedStepTurnout.turnoutId, "Step turnoutId mismatch at index \(index)")
-                XCTAssertEqual(namedId(stepTurnout.entrySocket), expectedStepTurnout.entrySocket, "Step entrySocket mismatch at turnout \(stepTurnout.turnoutId)")
-                XCTAssertEqual(namedId(stepTurnout.exitSocket), expectedStepTurnout.exitSocket, "Step exitSocket mismatch at turnout \(stepTurnout.turnoutId)")
+                XCTAssertEqual(namedId(stepTurnout.turnout.id), expectedStepTurnout.turnout.id, "Step turnoutId mismatch at index \(index)")
+                XCTAssertEqual(namedId(step.entrySocket), expectedStep.entrySocket, "Step entrySocket mismatch at turnout \(stepTurnout.turnout.id)")
+                XCTAssertEqual(namedId(step.exitSocket), expectedStep.exitSocket, "Step exitSocket mismatch at turnout \(stepTurnout.turnout.id)")
                 assertTurnoutAt(index: index, route: route, step: stepTurnout, expectedStep: expectedStepTurnout, expectedLayout: expectedLayout)
             }
             
@@ -149,42 +159,45 @@ final class LayoutAsserter {
                 var reserved: Identifier<Train>?
                 var fromElementName: String
                 var toElementName: String
-                if let previousBlock = layout.block(for: previousStep.stepBlockId) {
-                    reserved = previousBlock.reserved?.trainId
-                    fromElementName = previousBlock.name
-                } else if let previousTurnout = layout.turnout(for: previousStep.stepTurnoutId) {
-                    reserved = previousTurnout.reserved?.train
-                    fromElementName = previousTurnout.name
+                switch previousStep {
+                case .block(let resolvedRouteItemBlock):
+                    reserved = resolvedRouteItemBlock.block.reserved?.trainId
+                    fromElementName = resolvedRouteItemBlock.block.name
+
+                case .turnout(let resolvedRouteItemTurnout):
+                    reserved = resolvedRouteItemTurnout.turnout.reserved?.train
+                    fromElementName = resolvedRouteItemTurnout.turnout.name
                     // Check that the actual exitSocket is one that the state of the turnout allows, otherwise
                     // this means that this transition is not going to be used for the reservation and can be skipped.
-                    if previousTurnout.socketId(fromSocketId: previousStep.exitSocket!.socketId!, withState: previousTurnout.state) == nil {
+                    if resolvedRouteItemTurnout.turnout.socketId(fromSocketId: resolvedRouteItemTurnout.exitSocketId, withState: resolvedRouteItemTurnout.turnout.state) == nil {
                         reserved = nil
                     }
-                } else {
-                    fromElementName = "?"
+
                 }
                 
-                if let block = layout.block(for: step.stepBlockId) {
-                    toElementName = block.name
-                    if reserved != block.reserved?.trainId {
+                switch step {
+                case .block(let resolvedRouteItemBlock):
+                    toElementName = resolvedRouteItemBlock.block.name
+                    if reserved != resolvedRouteItemBlock.block.reserved?.trainId {
                         reserved = nil
                     }
-                } else if let turnout = layout.turnout(for: step.stepTurnoutId) {
+                case .turnout(let resolvedRouteItemTurnout):
+                    let turnout = resolvedRouteItemTurnout.turnout
                     toElementName = turnout.name
                     if reserved != turnout.reserved?.train {
                         reserved = nil
                     } else {
                         // Check that the actual entrySocket is one that the state of the turnout allows, otherwise
                         // this means that this transition is not going to be used for the reservation and can be skipped.
-                        if turnout.socketId(fromSocketId: step.entrySocket!.socketId!, withState: turnout.state) == nil {
+                        if turnout.socketId(fromSocketId: resolvedRouteItemTurnout.entrySocketId, withState: turnout.state) == nil {
                             reserved = nil
                         }
                     }
-                } else {
-                    toElementName = "?"
                 }
 
-                if let exitSocket = previousStep.exitSocket, let entrySocket = step.entrySocket, reserved != nil {
+                let exitSocket = previousStep.exitSocket
+                let entrySocket = step.entrySocket
+                if reserved != nil {
                     let transitions = try layout.transitions(from: exitSocket, to: entrySocket)
                     XCTAssertFalse(transitions.isEmpty)
                     for transition in transitions {
@@ -199,7 +212,7 @@ final class LayoutAsserter {
         }
     }
     
-    private func assertBlockAt(index: Int, route: Route, step: RouteStepBlock, expectedStep: RouteStepBlock, expectedLayout: Layout) {
+    private func assertBlockAt(index: Int, route: Route, step: ResolvedRouteItemBlock, expectedStep: ResolvedRouteItemBlock, expectedLayout: Layout) {
         XCTAssertEqual(step.direction, expectedStep.direction, "Step direction mismatch at index \(index)")
 
         let block = layout.block(for: step.blockId)!
@@ -228,15 +241,9 @@ final class LayoutAsserter {
         }
     }
     
-    private func assertTurnoutAt(index: Int, route: Route, step: RouteStepTurnout, expectedStep: RouteStepTurnout, expectedLayout: Layout) {
-        guard let turnout = layout.turnout(for: step.turnoutId) else {
-            XCTFail("Turnout \(String(describing: step.turnoutId)) not found")
-            return
-        }
-        guard let expectedTurnout = expectedLayout.turnout(for: expectedStep.turnoutId) else {
-            XCTFail("Expected turnout \(String(describing: expectedStep.turnoutId)) not found")
-            return
-        }
+    private func assertTurnoutAt(index: Int, route: Route, step: ResolvedRouteItemTurnout, expectedStep: ResolvedRouteItemTurnout, expectedLayout: Layout) {
+        let turnout = step.turnout
+        let expectedTurnout = expectedStep.turnout
         XCTAssertEqual(namedId(turnout.id), expectedTurnout.id, "Mismatching turnout ID at index \(index), route \(route)")
         XCTAssertEqual(turnout.state, expectedTurnout.state, "Mismatching turnout state for \(turnout) at index \(index), route \(route)")
         XCTAssertEqual(turnout.reserved?.train, expectedTurnout.reserved?.train, "Mismatching turnout reservation for \(turnout) at index \(index), route \(route)")

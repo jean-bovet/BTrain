@@ -12,78 +12,73 @@
 
 import SwiftUI
 
-struct RouteListView: View {
+struct StationListView: View {
     
     @Environment(\.undoManager) var undoManager
     
     @ObservedObject var layout: Layout
     
-    @State private var selection: Identifier<Route>? = nil
-
-    var routes: [Route] {
-        return layout.manualRoutes
-    }
+    @State private var selection: Identifier<Station>? = nil
     
     var body: some View {
         HStack {
             VStack(alignment: .leading) {
                 Table(selection: $selection) {
-                    TableColumn("Name") { route in
-                        TextField("Route", text: route.name)
+                    TableColumn("Name") { station in
+                        TextField("Station", text: station.name)
                             .labelsHidden()
                     }
                 } rows: {
-                    ForEach($layout.routes.filter({ !$0.wrappedValue.automatic })) { route in
-                        TableRow(route)
+                    ForEach($layout.stations) { station in
+                        TableRow(station)
                     }
                 }
 
                 HStack {
-                    Text("\(layout.manualRoutes.count) routes")
+                    Text("\(layout.stations.count) stations")
                     
                     Spacer()
                     
                     Button("+") {
-                        let route = layout.newRoute(UUID().uuidString, name: "New Route", [RouteItem]())
-                        selection = route.id
+                        let station = layout.newStation()
+                        selection = station.id
                         undoManager?.registerUndo(withTarget: layout, handler: { layout in
-                            layout.remove(routeId: route.id)
+                            layout.remove(stationId: station.id)
                         })
                     }
+                    
                     Button("-") {
-                        let route = layout.route(for: selection!, trainId: nil)!
-                        layout.remove(routeId: route.id)
+                        let station = layout.station(for: selection!)!
+                        layout.remove(stationId: station.id)
                         undoManager?.registerUndo(withTarget: layout, handler: { layout in
-                            layout.routes.append(route)
+                            layout.stationMap[station.id] = station
                         })
                     }.disabled(selection == nil)
                     
                     Spacer().fixedSpace()
                     
                     Button("􀄬") {
+                        // TODO: sort stations
                         layout.sortRoutes()
                     }
                 }.padding()
             }.frame(maxWidth: SideListFixedWidth)
 
-            if let routeId = selection, let route = layout.route(for: routeId, trainId: nil) {
-                RouteView(layout: layout, route: route)
-                    .id(routeId) // SWIFTUI BUG: Need to re-create the view for each route otherwise it crashes when switching between certain routes
+            if let stationId = selection, let station = layout.station(for: stationId) {
+                StationView(layout: layout, station: station)
+                    .id(stationId) // SWIFTUI BUG: Need to re-create the view for each route otherwise it crashes when switching between certain routes
             } else {
-                CenteredLabelView(label: "No Selected Route")
+                CenteredLabelView(label: "No Selected Station")
             }
         }.onAppear() {
             if selection == nil {
-                selection = layout.routes.first?.id
+                selection = layout.stations.first?.id
             }
         }
-    }
-}
+    }}
 
-struct RouteListView_Previews: PreviewProvider {
-    
+struct StationListView_Previews: PreviewProvider {
     static var previews: some View {
-        RouteListView(layout: LayoutLoop2().newLayout())
+        StationListView(layout: LayoutLoop1().newLayout())
     }
-
 }

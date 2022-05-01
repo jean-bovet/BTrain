@@ -17,6 +17,7 @@ import Foundation
 final class LayoutPathFinder: GraphPathFinding {    
         
     let settings: Settings
+    let context: LayoutContext
     let constraints: LayoutConstraints
     let gpf: GraphPathFinder
     
@@ -42,6 +43,7 @@ final class LayoutPathFinder: GraphPathFinding {
     
     init(layout: Layout, train: Train, settings: Settings) {
         self.settings = settings
+        self.context = LayoutContext(layout: layout, train: train)
         self.constraints = LayoutConstraints(layout: layout, train: train, settings: settings)
         self.gpf = GraphPathFinder(settings: settings.baseSettings)
     }
@@ -58,8 +60,13 @@ final class LayoutPathFinder: GraphPathFinding {
         return try gpf.shortestPath(graph: graph, from: from, to: to, constraints: constraints)
     }
     
-    func resolve(graph: Graph, _ path: GraphPath, constraints: GraphPathFinderConstraints) -> GraphPath? {
-        return gpf.resolve(graph: graph, path, constraints: constraints)
+    func resolve(graph: Graph, _ path: UnresolvedGraphPath, constraints: GraphPathFinderConstraints, context: GraphPathFinderContext) -> GraphPath? {
+        return gpf.resolve(graph: graph, path, constraints: constraints, context: context)
+    }
+    
+    struct LayoutContext: GraphPathFinderContext {
+        let layout: Layout
+        let train: Train
     }
     
     final class LayoutConstraints: GraphPathFinderConstraints {
@@ -141,12 +148,15 @@ final class LayoutPathFinder: GraphPathFinding {
         }
         
         func reachedDestination(node: GraphNode, to: GraphPathElement?) -> Bool {
-            if let block = layout.block(node), to == nil {
-                // If no destination element is specified, we stop at the first station block
-                return block.category == .station
-            } else {
-                return false
+            if let block = layout.block(node) {
+                if let station = to?.node as? Station {
+                    return station.contains(blockId: block.id)
+                } else if to == nil {
+                    // If no destination element is specified, we stop at the first station block
+                    return block.category == .station
+                }
             }
+            return false
         }
     }
 }

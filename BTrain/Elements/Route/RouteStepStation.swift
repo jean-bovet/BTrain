@@ -12,34 +12,27 @@
 
 import Foundation
 
-struct RouteStepTurnout: RouteStep, Equatable, Codable {
+struct RouteStepStation: RouteStep, Equatable, Codable {
     
     var id = UUID().uuidString
 
-    var turnoutId: Identifier<Turnout>
+    var stationId: Identifier<Station>
     
-    var exitSocket: Socket
-    
-    var entrySocket: Socket
-
     var description: String {
-        return "\(turnoutId):(\(entrySocket.socketId!)>\(exitSocket.socketId!))"
+        return "\(stationId)"
     }
-    
-    init(_ turnoutId: Identifier<Turnout>, _ fromSocket: Socket, _ toSocket: Socket) {
-        self.turnoutId = turnoutId
-        self.entrySocket = fromSocket
-        self.exitSocket = toSocket
-    }
-    
+        
     func resolve(_ constraints: GraphPathFinderConstraints, _ context: GraphPathFinderContext) -> GraphPathElement? {
         // TODO: finish
         guard let lc = context as? LayoutPathFinder.LayoutContext else {
             return nil
         }
-        let turnout = lc.layout.turnout(for: turnoutId)!
-        return .init(node: turnout, entrySocket: entrySocket.socketId, exitSocket: exitSocket.socketId)
-
+        let station = lc.layout.station(for: stationId)!
+        let element = station.elements.first!
+        let block = lc.layout.block(for: element.blockId)!
+        // TODO: when direction is nil, this means previous or next can be chose. Should resolve return multiple elements?
+        let entrySocket = element.direction == .next ? Block.previousSocket : Block.nextSocket
+        let exitSocket = element.direction == .next ? Block.nextSocket : Block.previousSocket
+        return .init(node: block, entrySocket:  entrySocket, exitSocket: exitSocket)
     }
-
 }

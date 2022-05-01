@@ -14,6 +14,7 @@ import Foundation
 
 struct RouteStepBlock: RouteStep, Equatable, Codable, CustomStringConvertible {
 
+    // TODO: equality should only be done with this ID for all the steps
     var id = UUID().uuidString
     
     // The block identifier
@@ -23,6 +24,7 @@ struct RouteStepBlock: RouteStep, Equatable, Codable, CustomStringConvertible {
     // If nil, the block waitingTime is used instead.
     var waitingTime: TimeInterval?
 
+    // TODO: technically could be nil, right? Should we only use the direction to be more clear?
     var exitSocket: Socket
     
     var entrySocket: Socket
@@ -66,5 +68,13 @@ struct RouteStepBlock: RouteStep, Equatable, Codable, CustomStringConvertible {
         self.waitingTime = waitingTime
     }
 
+    func resolve(_ constraints: GraphPathFinderConstraints, _ context: GraphPathFinderContext) -> GraphPathElement? {
+        // TODO: finish
+        guard let lc = context as? LayoutPathFinder.LayoutContext else {
+            return nil
+        }
+        let block = lc.layout.block(for: blockId)!
+        return .init(node: block, entrySocket: entrySocket.socketId, exitSocket: exitSocket.socketId)
+    }
 }
 

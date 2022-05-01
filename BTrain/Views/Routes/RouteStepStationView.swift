@@ -10,36 +10,31 @@
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-import Foundation
+import SwiftUI
 
-struct RouteStepTurnout: RouteStep, Equatable, Codable {
+struct RouteStepStationView: View {
     
-    var id = UUID().uuidString
+    let layout: Layout
+    @Binding var stepStation: RouteStepStation
 
-    var turnoutId: Identifier<Turnout>
-    
-    var exitSocket: Socket
-    
-    var entrySocket: Socket
-
-    var description: String {
-        return "\(turnoutId):(\(entrySocket.socketId!)>\(exitSocket.socketId!))"
-    }
-    
-    init(_ turnoutId: Identifier<Turnout>, _ fromSocket: Socket, _ toSocket: Socket) {
-        self.turnoutId = turnoutId
-        self.entrySocket = fromSocket
-        self.exitSocket = toSocket
-    }
-    
-    func resolve(_ constraints: GraphPathFinderConstraints, _ context: GraphPathFinderContext) -> GraphPathElement? {
-        // TODO: finish
-        guard let lc = context as? LayoutPathFinder.LayoutContext else {
-            return nil
+    var body: some View {
+        HStack {
+            UndoProvider($stepStation.stationId) { stationId in
+                Picker("Station:", selection: stationId) {
+                    ForEach(layout.stations, id:\.self) { station in
+                        Text("\(station.name)").tag(station.id as Identifier<Station>)
+                    }
+                }
+            }
         }
-        let turnout = lc.layout.turnout(for: turnoutId)!
-        return .init(node: turnout, entrySocket: entrySocket.socketId, exitSocket: exitSocket.socketId)
-
     }
+}
 
+struct RouteStepStationView_Previews: PreviewProvider {
+    
+    static let layout = LayoutLoopWithStations().newLayout()
+
+    static var previews: some View {
+        RouteStepStationView(layout: layout, stepStation: .constant(.init(stationId: layout.stations[0].id)))
+    }
 }

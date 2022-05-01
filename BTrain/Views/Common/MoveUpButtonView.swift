@@ -10,36 +10,31 @@
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-import Foundation
+import SwiftUI
 
-struct RouteStepTurnout: RouteStep, Equatable, Codable {
+// TODO: move to separate class and see if there are other views to extract that handles the split view of many views
+struct MoveUpButtonView<T:Identifiable>: View {
     
-    var id = UUID().uuidString
-
-    var turnoutId: Identifier<Turnout>
+    @Binding var selection: T.ID?
+    @Binding var elements: [T]
     
-    var exitSocket: Socket
-    
-    var entrySocket: Socket
-
-    var description: String {
-        return "\(turnoutId):(\(entrySocket.socketId!)>\(exitSocket.socketId!))"
-    }
-    
-    init(_ turnoutId: Identifier<Turnout>, _ fromSocket: Socket, _ toSocket: Socket) {
-        self.turnoutId = turnoutId
-        self.entrySocket = fromSocket
-        self.exitSocket = toSocket
-    }
-    
-    func resolve(_ constraints: GraphPathFinderConstraints, _ context: GraphPathFinderContext) -> GraphPathElement? {
-        // TODO: finish
-        guard let lc = context as? LayoutPathFinder.LayoutContext else {
-            return nil
-        }
-        let turnout = lc.layout.turnout(for: turnoutId)!
-        return .init(node: turnout, entrySocket: entrySocket.socketId, exitSocket: exitSocket.socketId)
-
+    var body: some View {
+        Button("􀄨") {
+            guard let index = elements.firstIndex(where: { $0.id == selection }) else {
+                return
+            }
+            
+            guard index > elements.startIndex else {
+                return
+            }
+            
+            let indexBefore = elements.index(before: index)
+            guard indexBefore >= elements.startIndex else {
+                return
+            }
+            
+            elements.swapAt(index, indexBefore)
+        }.disabled(selection == nil)
     }
 
 }

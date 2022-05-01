@@ -80,7 +80,7 @@ final class LayoutReservation {
         return try reserveSteps(train: train, resolvedSteps: resolvedSteps)
     }
     
-    private func reserveSteps(train: Train, resolvedSteps: [RouteItem]) throws -> Bool {
+    private func reserveSteps(train: Train, resolvedSteps: [ResolvedRouteItem]) throws -> Bool {
         // Variable keeping track of the number of leading blocks that have been reserved.
         // At least one block must have been reserved to consider this function successfull.
         // Note: blocks that are reserved for the train and its wagons do not count against that count.
@@ -99,7 +99,7 @@ final class LayoutReservation {
         var transitions = [ITransition]()
         
         // Remember the previous step so we can determine the transitions between two elements.
-        var previousStep: RouteItem?
+        var previousStep: ResolvedRouteItem?
 
         // Iterate over all the resolved steps
         for step in resolvedSteps {
@@ -107,19 +107,12 @@ final class LayoutReservation {
 
             switch step {
             case .block(let stepBlock):
-                guard let block = layout.block(for: stepBlock.blockId) else {
-                    throw LayoutError.blockNotFound(blockId: stepBlock.blockId)
-                }
-                                
-                if try !reserveBlock(block: block, direction: stepBlock.direction, train: train, numberOfLeadingBlocksReserved: &numberOfLeadingBlocksReserved, turnouts: &turnouts, transitions: &transitions) {
+                if try !reserveBlock(block: stepBlock.block, direction: stepBlock.direction, train: train, numberOfLeadingBlocksReserved: &numberOfLeadingBlocksReserved, turnouts: &turnouts, transitions: &transitions) {
                     return numberOfLeadingBlocksReserved > 0
                 }
-            case .turnout(let stepTurnout):
-                guard let turnout = layout.turnout(for: stepTurnout.turnoutId) else {
-                    throw LayoutError.turnoutNotFound(turnoutId: stepTurnout.turnoutId)
-                }
                 
-                if try !rememberTurnoutToReserve(turnout: turnout, train: train, step: stepTurnout, numberOfLeadingBlocksReserved: &numberOfLeadingBlocksReserved, turnouts: &turnouts) {
+            case .turnout(let stepTurnout):
+                if !rememberTurnoutToReserve(turnout: stepTurnout.turnout, train: train, step: stepTurnout, numberOfLeadingBlocksReserved: &numberOfLeadingBlocksReserved, turnouts: &turnouts) {
                     return numberOfLeadingBlocksReserved > 0
                 }
             }
@@ -196,9 +189,9 @@ final class LayoutReservation {
         debug("Set turnout \(turnout.name) for \(train) and state \(turnout.state)")
     }
     
-    private func rememberTurnoutToReserve(turnout: Turnout, train: Train, step: RouteStepTurnout, numberOfLeadingBlocksReserved: inout Int, turnouts: inout [TurnoutReservation]) throws -> Bool {
-        let fromSocketId = try step.entrySocketId()
-        let toSocketId = try step.exitSocketId()
+    private func rememberTurnoutToReserve(turnout: Turnout, train: Train, step: ResolvedRouteItemTurnout, numberOfLeadingBlocksReserved: inout Int, turnouts: inout [TurnoutReservation]) -> Bool {
+        let fromSocketId = step.entrySocketId
+        let toSocketId = step.exitSocketId
         let state = turnout.state(fromSocket: fromSocketId, toSocket: toSocketId)
 
         if turnout.isOccupied(by: train.id) {
@@ -227,7 +220,7 @@ final class LayoutReservation {
         return true
     }
     
-    private func rememberTransitions(from previousStep: RouteItem?, to step: RouteItem, transitions: inout [ITransition]) throws {
+    private func rememberTransitions(from previousStep: ResolvedRouteItem?, to step: ResolvedRouteItem, transitions: inout [ITransition]) throws {
         guard let previousStep = previousStep else {
             return
         }

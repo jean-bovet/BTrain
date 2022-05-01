@@ -31,23 +31,49 @@ extension RouteItem {
             return nil
         }
     }
+        
+}
+
+extension Array where Element == RouteItem {
     
-    var entrySocket: Socket? {
-        switch self {
-        case .block(let stepBlock):
-            return stepBlock.entrySocket
-        case .turnout(let stepTurnout):
-            return stepTurnout.entrySocket
+    func toStrings(_ layout: Layout, useNameInsteadOfId: Bool = true) -> [String] {
+        return self.map { step in
+            switch step {
+            case .block(let stepBlock):
+                if let block = layout.block(for: stepBlock.blockId) {
+                    return "\(useNameInsteadOfId ? block.name:block.id.uuid):\(stepBlock.direction)"
+                } else {
+                    return "\(stepBlock.blockId.uuid):\(stepBlock.direction)"
+                }
+            case .turnout(let stepTurnout):
+                if let turnout = layout.turnout(for: stepTurnout.turnoutId) {
+                    return "\(useNameInsteadOfId ? turnout.name:turnout.id.uuid):(\(stepTurnout.entrySocket.socketId!)>\(stepTurnout.exitSocket.socketId!))"
+                } else {
+                    return "\(stepTurnout.turnoutId.uuid):(\(stepTurnout.entrySocket.socketId!)>\(stepTurnout.exitSocket.socketId!))"
+                }
+            case .station(let stepStation):
+                if let station = layout.station(for: stepStation.stationId) {
+                    return "\(useNameInsteadOfId ? station.name:station.id.uuid)"
+                } else {
+                    return "\(stepStation.stationId.uuid)"
+                }
+            }
         }
     }
 
-    var exitSocket: Socket? {
-        switch self {
-        case .block(let stepBlock):
-            return stepBlock.exitSocket
-        case .turnout(let stepTurnout):
-            return stepTurnout.exitSocket
+}
+
+extension Array where Element == ResolvedRouteItem {
+    
+    func toStrings(_ layout: Layout, useNameInsteadOfId: Bool = true) -> [String] {
+        return self.map { step in
+            switch step {
+            case .block(let stepBlock):
+                return "\(useNameInsteadOfId ? stepBlock.block.name:stepBlock.block.id.uuid):\(stepBlock.direction)"
+            case .turnout(let stepTurnout):
+                return "\(useNameInsteadOfId ? stepTurnout.turnout.name:stepTurnout.turnout.id.uuid):(\(stepTurnout.entrySocketId)>\(stepTurnout.exitSocketId))"
+            }
         }
     }
-    
+
 }

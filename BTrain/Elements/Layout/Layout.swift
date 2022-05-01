@@ -31,6 +31,8 @@ final class Layout: Element, ObservableObject {
     
     @Published var blockMap = OrderedDictionary<Identifier<Block>, Block>()
 
+    @Published var stationMap = OrderedDictionary<Identifier<Station>, Station>()
+
     @Published var feedbacks = [Feedback]()
     
     @Published var turnouts = [Turnout]()
@@ -104,6 +106,7 @@ final class Layout: Element, ObservableObject {
 
     func apply(other: Layout) {
         self.blockMap = other.blockMap
+        self.stations = other.stations
         self.feedbacks = other.feedbacks
         self.turnouts = other.turnouts
         self.transitions = other.transitions
@@ -190,7 +193,7 @@ final class Layout: Element, ObservableObject {
 extension Layout: Codable {
     
     enum CodingKeys: CodingKey {
-      case id, name, newLayoutWizardExecuted, blocks, feedbacks, turnouts, trains, routes, transitions
+      case id, name, newLayoutWizardExecuted, blocks, stations, feedbacks, turnouts, trains, routes, transitions
     }
 
     convenience init(from decoder: Decoder) throws {
@@ -199,6 +202,7 @@ extension Layout: Codable {
         self.name = try container.decode(String.self, forKey: CodingKeys.name)
         self.newLayoutWizardExecuted = try container.decodeIfPresent(Bool.self, forKey: CodingKeys.newLayoutWizardExecuted) ?? true
         self.blocks = try container.decode([Block].self, forKey: CodingKeys.blocks)
+        self.stations = try container.decodeIfPresent([Station].self, forKey: CodingKeys.stations) ?? []
         self.feedbacks = try container.decode([Feedback].self, forKey: CodingKeys.feedbacks)
         self.turnouts = try container.decode([Turnout].self, forKey: CodingKeys.turnouts)
         self.trains = try container.decode([Train].self, forKey: CodingKeys.trains)
@@ -212,6 +216,7 @@ extension Layout: Codable {
         try container.encode(name, forKey: CodingKeys.name)
         try container.encode(newLayoutWizardExecuted, forKey: CodingKeys.newLayoutWizardExecuted)
         try container.encode(blocks, forKey: CodingKeys.blocks)
+        try container.encode(stations, forKey: CodingKeys.stations)
         try container.encode(feedbacks, forKey: CodingKeys.feedbacks)
         try container.encode(turnouts, forKey: CodingKeys.turnouts)
         try container.encode(trains, forKey: CodingKeys.trains)

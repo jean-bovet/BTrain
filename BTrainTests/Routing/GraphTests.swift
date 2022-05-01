@@ -54,7 +54,7 @@ class GraphTests: XCTestCase {
         let b1 = layout.block("b1")
         let b3 = layout.block("b3")
 
-        let partialPath = GraphPath([ GraphPathElement.starting(b1, 1), GraphPathElement.ending(b3, 0) ])
+        let partialPath: UnresolvedGraphPath = [ GraphPathElement.starting(b1, 1), GraphPathElement.ending(b3, 0) ]
 
         let gr = GraphPathFinder(settings: settings(layout: layout))
         let p = gr.resolve(graph: layout, partialPath)!
@@ -68,7 +68,7 @@ class GraphTests: XCTestCase {
 
         let t0 = layout.turnout(for: Identifier<Turnout>(uuid: "t0"))!
 
-        let partialPath = GraphPath([ GraphPathElement.starting(b1, 1), GraphPathElement.between(t0, 0, 1), GraphPathElement.ending(b3, 0) ])
+        let partialPath: UnresolvedGraphPath = [ GraphPathElement.starting(b1, 1), GraphPathElement.between(t0, 0, 1), GraphPathElement.ending(b3, 0) ]
 
         let gr = GraphPathFinder(settings: settings(layout: layout))
         let p = gr.resolve(graph: layout, partialPath)!
@@ -83,7 +83,7 @@ class GraphTests: XCTestCase {
         let t0 = layout.turnout(for: Identifier<Turnout>(uuid: "t0"))!
         let t1 = layout.turnout(for: Identifier<Turnout>(uuid: "t1"))!
 
-        let partialPath = GraphPath([ GraphPathElement.starting(b1, 1), GraphPathElement.between(t0, 0, 1), GraphPathElement.between(t1, 0, 2), GraphPathElement.ending(b3, 0) ])
+        let partialPath: UnresolvedGraphPath = [ GraphPathElement.starting(b1, 1), GraphPathElement.between(t0, 0, 1), GraphPathElement.between(t1, 0, 2), GraphPathElement.ending(b3, 0) ]
 
         let gr = GraphPathFinder(settings: settings(layout: layout))
         let p = gr.resolve(graph: layout, partialPath)!
@@ -100,7 +100,8 @@ class GraphTests: XCTestCase {
         XCTAssertEqual(p.toStrings, ["b1:1", "0:t0:1", "0:b2:1", "0:t1:2", "0:b3"])
         
         let gr = GraphPathFinder(settings: settings(layout: layout))
-        let p2 = gr.resolve(graph: layout, p)!
+        let up: UnresolvedGraphPath = p.elements.map { $0 }
+        let p2 = gr.resolve(graph: layout, up)!
         XCTAssertEqual(p, p2)
     }
 

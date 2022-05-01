@@ -13,37 +13,9 @@
 import Foundation
 
 /// Protocol defining the common interface of the step of a route.
-protocol RouteStep {
+protocol RouteStep: UnresolvedGraphPathElement {
         
-    /// Returns the socket where the train will enter the element represented by this step.
-    var entrySocket: Socket { get }
-
-    /// Returns the socket where the train will exit the element represented by this step.
-    var exitSocket: Socket { get }
-    
-    func entrySocketId() throws -> Int
-    
-    func exitSocketId() throws -> Int
-
-}
-
-extension RouteStep {
-    
-    func entrySocketId() throws -> Int {
-        guard let socketId = entrySocket.socketId else {
-            throw LayoutError.socketIdNotFound(socket: entrySocket)
-        }
-
-        return socketId
-    }
-
-    func exitSocketId() throws -> Int {
-        guard let socketId = exitSocket.socketId else {
-            throw LayoutError.socketIdNotFound(socket: exitSocket)
-        }
-
-        return socketId
-    }
+    var id: String { get }
     
 }
 

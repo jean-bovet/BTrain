@@ -26,6 +26,8 @@ enum RouteItem: Identifiable, Equatable, CustomStringConvertible {
             return b1.id == b2.id
         case (.turnout(let b1), .turnout(let b2)):
             return b1.id == b2.id
+        case (.station(let b1), .station(let b2)):
+            return b1.id == b2.id
         default:
             return false
         }
@@ -33,11 +35,13 @@ enum RouteItem: Identifiable, Equatable, CustomStringConvertible {
     
     case block(RouteStepBlock)
     case turnout(RouteStepTurnout)
+    case station(RouteStepStation)
 
     var id: String {
         switch self {
         case .block(let block): return block.id
         case .turnout(let turnout): return turnout.id
+        case .station(let station): return station.id
         }
     }
     
@@ -45,23 +49,20 @@ enum RouteItem: Identifiable, Equatable, CustomStringConvertible {
         switch self {
         case .block(let block): return block.description
         case .turnout(let turnout): return turnout.description
+        case .station(let station): return station.description
         }
     }
     
-    var entrySocket: Socket {
-        switch self {
-        case .block(let block): return block.entrySocket
-        case .turnout(let turnout): return turnout.entrySocket
-        }
-    }
+}
 
-    var exitSocket: Socket {
+extension RouteItem: UnresolvedGraphPathElement {
+    func resolve(_ constraints: GraphPathFinderConstraints, _ context: GraphPathFinderContext) -> GraphPathElement? {
         switch self {
-        case .block(let block): return block.exitSocket
-        case .turnout(let turnout): return turnout.exitSocket
+        case .block(let block): return block.resolve(constraints, context)
+        case .turnout(let turnout): return turnout.resolve(constraints, context)
+        case .station(let station): return station.resolve(constraints, context)
         }
-    }
-
+    }    
 }
 
 extension RouteItem: Codable {
@@ -70,6 +71,7 @@ extension RouteItem: Codable {
         switch self {
         case .block: return .block
         case .turnout: return .turnout
+        case .station: return .station
         }
     }
 
@@ -79,6 +81,7 @@ extension RouteItem: Codable {
         switch try container.decode(String.self, forKey: .type) {
         case Unassociated.block.rawValue: self = .block(try container.decode(RouteStepBlock.self, forKey: .attributes))
         case Unassociated.turnout.rawValue: self = .turnout(try container.decode(RouteStepTurnout.self, forKey: .attributes))
+        case Unassociated.station.rawValue: self = .station(try container.decode(RouteStepStation.self, forKey: .attributes))
         default: fatalError("Unknown type")
         }
     }
@@ -89,6 +92,7 @@ extension RouteItem: Codable {
         switch self {
         case .block(let block): try container.encode(block, forKey: .attributes)
         case .turnout(let turnout): try container.encode(turnout, forKey: .attributes)
+        case .station(let station): try container.encode(station, forKey: .attributes)
         }
 
         try container.encode(unassociated.rawValue, forKey: .type)
@@ -97,6 +101,7 @@ extension RouteItem: Codable {
     enum Unassociated: String {
         case block
         case turnout
+        case station
     }
 
     private enum CodingKeys: String, CodingKey {
