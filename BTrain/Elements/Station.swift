@@ -45,6 +45,12 @@ final class Station: Element, ObservableObject {
         }
     }
 
+    func blockWith(train: Train, layout: Layout) -> StationElement? {
+        elements.first(where: { element in
+            element.blockId == train.blockId
+        })
+    }
+
     struct StationElement: Identifiable, Codable {
         var id = UUID().uuidString
         var blockId: Identifier<Block>?

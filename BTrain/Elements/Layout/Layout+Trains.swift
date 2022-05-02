@@ -241,12 +241,33 @@ extension Layout {
             // Check to make sure the train is somewhere along the route
             train.routeStepIndex = -1
             for (index, step) in route.steps.enumerated() {
-                // TODO: station!!!
-                guard case .block(let stepBlock) = step else {
+                let blockId: Identifier<Block>
+                let direction: Direction
+                
+                switch step {
+                case .block(let stepBlock):
+                    blockId = stepBlock.blockId
+                    direction = stepBlock.direction
+
+                case .station(let stepStation):
+                    guard let station = self.station(for: stepStation.stationId) else {
+                        continue
+                    }
+                    guard let item = station.blockWith(train: train, layout: self) else {
+                        continue
+                    }
+                    
+                    guard let bid = item.blockId, let bd = item.direction else {
+                        continue
+                    }
+                    blockId = bid
+                    direction = bd
+                    
+                case .turnout(_):
                     continue
                 }
                 
-                guard train.blockId == stepBlock.blockId else {
+                guard train.blockId == blockId else {
                     continue
                 }
                 
@@ -259,7 +280,7 @@ extension Layout {
                 }
                 
                 // Check that the train direction matches as well.
-                if trainInstance.direction == stepBlock.direction {
+                if trainInstance.direction == direction {
                     train.routeStepIndex = index
                     break
                 }
