@@ -27,11 +27,11 @@ final class LayoutASCIIProducer {
             throw LayoutError.trainNotFound(trainId: trainId)
         }
         
-        guard try route.resolve(layout: layout, train: train) else {
+        guard let resolvedSteps = try route.resolve(layout: layout, train: train) else {
             return text
         }
         
-        for step in route.resolvedSteps {
+        for step in resolvedSteps {
             switch step {
             case .block(let stepBlock):
                 addSpace(&text)

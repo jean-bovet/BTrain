@@ -15,39 +15,37 @@ import Foundation
 
 final class LayoutRouteParser {
     
-    let layout: Layout
+    let layout: LayoutParser.ParsedLayout
+        
+    final class ParsedRoute {
+        var routeId: Identifier<Route>!
+        var resolvedSteps = [ResolvedRouteItem]()
+    }
     
-    var blocks = Set<Block>()
-    var feedbacks = Set<Feedback>()
-    
-    var route: Route!
-
-    var trains = [Train]()
-    
+    let route = ParsedRoute()
+            
     let sp: LayoutStringParser
     
     enum ParserError: Error {
         case parserError(message: String)
     }
     
-    init(ls: String, id: String, layout: Layout) {
+    init(ls: String, id: String, layout: LayoutParser.ParsedLayout) {
         self.sp = LayoutStringParser(ls: ls)
         self.layout = layout
     }
     
-    func parseRouteName() throws -> Route {
+    func parseRouteName() throws {
         let routeName = sp.matchString(":")
         guard !routeName.isEmpty else {
             throw ParserError.parserError(message: "Route name must be specified for each route")
         }
-        
+        route.routeId = Identifier<Route>(uuid: routeName)
         sp.eat(":")
-        
-        return Route(uuid: routeName, automatic: false)
     }
     
     func parse() throws {
-        route = try parseRouteName()
+        try parseRouteName()
         
         while (sp.more) {
             if sp.matches("!{") {
@@ -71,20 +69,16 @@ final class LayoutRouteParser {
         
         addTransitions()
     }
-    
-    var steps: [ResolvedRouteItem] {
-        route.resolvedSteps
-    }
-    
+        
     func addTransitions() {
-        for index in 0..<steps.count {
-            if index + 1 == steps.count {
+        for index in 0..<route.resolvedSteps.count {
+            if index + 1 == route.resolvedSteps.count {
                 // We have reached the last step, there is no transitions out of it
                 continue
             }
 
-            let step = steps[index]
-            let nextStep = steps[index+1]
+            let step = route.resolvedSteps[index]
+            let nextStep = route.resolvedSteps[index+1]
 
             layout.link(from: step.exitSocket,
                         to: nextStep.entrySocket)
@@ -101,11 +95,10 @@ final class LayoutRouteParser {
         // Example: { ≏ ≏ } [[ ≏ 🟢🚂 ≏ ]] [[ ≏ ≏ ]] {b0 ≏ ≏ }
         if let blockName = blockHeader.blockName {
             let blockID = Identifier<Block>(uuid: blockName)
-            if let existingBlock = layout.block(for: blockID) {
+            if let existingBlock = layout.blocks.first(where: { $0.id == blockID }) {
                 block = existingBlock
                 assert(block.category == category, "The existing block \(blockID) does not match the type defined in the ASCII representation")
                 assert(block.reserved == blockHeader.reserved, "The existing block \(blockID) does not match the reserved type defined in the ASCII representation")
-                assert(block.reserved?.direction == blockHeader.reserved?.direction, "The existing block \(blockID) does not match the reserved type defined in the ASCII representation")
                 newBlock = false
             } else {
                 block = Block(name: blockID.uuid)
@@ -116,7 +109,7 @@ final class LayoutRouteParser {
         } else {
             // Note: use a UUID that is using the number of blocks created so far
             // so the UUID is easy to unit test
-            block = Block(name: String(steps.count))
+            block = Block(name: String(route.resolvedSteps.count))
             block.category = category
             block.reserved = blockHeader.reserved
             newBlock = true
@@ -131,7 +124,7 @@ final class LayoutRouteParser {
             try parseBlockContent(block: block, newBlock: newBlock, type: category, numberOfFeedbacks: nil)
         }
         
-        blocks.insert(block)
+        layout.blocks.insert(block)
         route.resolvedSteps.append(.block(.init(block: block, direction: direction)))
     }
  
@@ -313,7 +306,7 @@ final class LayoutRouteParser {
             uuid = String(n)
         } else {
             // Note: by default, let's use the route.id for the train id
-            uuid = route.id.uuid
+            uuid = route.routeId.uuid
         }
         return uuid
     }
@@ -332,7 +325,7 @@ final class LayoutRouteParser {
     func parseTrain(position: Int, block: Block, speed: UInt16) {
         let uuid = parseUUID()
         
-        if let train = trains.first(where: { $0.id.uuid == uuid }) {
+        if let train = layout.trains.first(where: { $0.id.uuid == uuid }) {
             assert(train.speed.requestedKph == speed, "Mismatching speed definition for train \(uuid)")
             assert(train.position == position, "Mismatching position definition for train \(uuid)")
             if block.train == nil {
@@ -342,14 +335,14 @@ final class LayoutRouteParser {
         } else {
             let train = Train(uuid: uuid)
             train.position = position
-            train.routeStepIndex = steps.count
+            train.routeStepIndex = route.resolvedSteps.count
             train.speed = .init(kph: speed, decoderType: .MFX)
-            train.routeId = route.id
+            train.routeId = route.routeId
             if block.train == nil {
                 block.train = TrainInstance(train.id, .next)
             }
             block.train?.parts[position] = .locomotive
-            trains.append(train)
+            layout.trains.insert(train)
         }
     }
         
@@ -373,10 +366,10 @@ final class LayoutRouteParser {
             } else {
                 block.add(f.id)
             }
-            feedbacks.insert(f)
+            layout.feedbacks.insert(f)
         } else {
             let feedback = block.feedbacks[feedbackIndex]
-            let f = feedbacks.first(where: { $0.id == feedback.feedbackId })!
+            let f = layout.feedbacks.first(where: { $0.id == feedback.feedbackId })!
             assert(f.detected == detected, "The existing feedback does not match the `detected` defined in the ASCII representation")
             f.detected = detected
         }
@@ -470,21 +463,22 @@ final class LayoutRouteParser {
             assert(sp.matches(">"), "Expecting closing reserved turnout character")
         }
         
+        let turnout: Turnout
         let turnoutId = Identifier<Turnout>(uuid: turnoutName)
-        if let existingTurnout = layout.turnout(for: turnoutId) {
+        if let existingTurnout = layout.turnouts.first(where: { $0.id == turnoutId }) {
             assert(existingTurnout.state == state, "Mismatching turnout state for turnout \(turnoutName)")
             assert(existingTurnout.reserved?.train.uuid == reservedTrainNumber, "Mismatching turnout reservation for turnout \(turnoutName)")
+            turnout = existingTurnout
         } else {
-            let turnout = Turnout(id: Identifier<Turnout>(uuid: turnoutName))
+            turnout = Turnout(id: Identifier<Turnout>(uuid: turnoutName))
             turnout.category = type
             turnout.state = state
             if let reservedTrainNumber = reservedTrainNumber {
                 turnout.reserved = .init(train: Identifier<Train>(uuid: reservedTrainNumber), sockets: .init(fromSocketId: fromSocket, toSocketId: toSocket))
             }
-            layout.turnouts.append(turnout)
+            layout.turnouts.insert(turnout)
         }
         
-        let turnout = layout.turnout(for: turnoutId)!
         route.resolvedSteps.append(.turnout(.init(turnout: turnout, entrySocketId: fromSocket, exitSocketId: toSocket)))
     }
 
