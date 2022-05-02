@@ -836,31 +836,6 @@ class ManualRoutingTests: BTTestCase {
         try p.assert("3: {r0{s1 ≡ 🟡🚂0 }} <r0<t1(2,0),l>> <r0<t2(1,0),s>> [r0[b1 💺0 ≏ 💺0 ]] <r0<t3>> [r0[b2 💺0 ≏ 💺0 ]] <r0<t4(1,0)>> [r0[b3 ≏ ≏ ]] <t5> <t6,r> {s2 ≏ }")
     }
     
-    func testLoopWithStations1() throws {
-        let layout = LayoutLoopWithStations().newLayout()
-
-        let p = Package(layout: layout)
-        try p.prepare(routeID: "C844F586-908C-452B-BEE4-9FC12EB60640", trainID: "16390", fromBlockId: "1" /*s1*/, position: .end)
-        
-        try p.assert("C844F586-908C-452B-BEE4-9FC12EB60640: {r16390{s1 ≏ 💺16390 ≏ 🔴🚂16390 }} <ts2(1,0),s> <t1(0,1),s> <t2(0,1),s> [b1 ≏ ≏ ] <t4(1,0)> <tn1(0,1)> {n1 ≏ ≏ }")
-
-        try p.start()
-
-        XCTAssertTrue(p.train.automaticScheduling)
-
-        try p.assert("C844F586-908C-452B-BEE4-9FC12EB60640: {r16390{s1 ≏ 💺16390 ≏ 🟢🚂16390 }} <r16390<ts2{sl}(1,0),s>> <r16390<t1{sr}(0,1),s>> <r16390<t2{sr}(0,1),s>> [r16390[b1 ≏ ≏ ]] <r16390<t4{sl}(1,0),s>> <r16390<tn1{sr}(0,1),s>> {r16390{n1 ≏ ≏ }}")
-        
-        try p.assert("C844F586-908C-452B-BEE4-9FC12EB60640: {s1 ≏ ≏ } <ts2{sl}(1,0),s> <t1{sr}(0,1),s> <t2{sr}(0,1),s> [r16390[b1 💺16390 ≡ 🔵🚂16390 ≏ ]] <r16390<t4{sl}(1,0),s>> <r16390<tn1{sr}(0,1),s>> {r16390{n1 ≏ ≏ }}")
-
-        try p.assert("C844F586-908C-452B-BEE4-9FC12EB60640: {s1 ≏ ≏ } <ts2{sl}(1,0),s> <t1{sr}(0,1),s> <t2{sr}(0,1),s> [r16390[b1 ≏ 💺16390 ≡ 🔵🚂16390 ]] <r16390<t4{sl}(1,0),s>> <r16390<tn1{sr}(0,1),s>> {r16390{n1 ≏ ≏ }}")
-
-        try p.assert("C844F586-908C-452B-BEE4-9FC12EB60640: {s1 ≏ ≏ } <ts2{sl}(1,0),s> <t1{sr}(0,1),s> <t2{sr}(0,1),s> [b1 ≏ ≏ ] <t4{sl}(1,0),s> <tn1{sr}(0,1),s> {r16390{n1 💺16390 ≡ 🟡🚂16390 ≏ }}")
-
-        try p.assert("C844F586-908C-452B-BEE4-9FC12EB60640: {s1 ≏ ≏ } <ts2{sl}(1,0),s> <t1{sr}(0,1),s> <t2{sr}(0,1),s> [b1 ≏ ≏ ] <t4{sl}(1,0),s> <tn1{sr}(0,1),s> {r16390{n1 ≏ 💺16390 ≡ 🔴🚂16390 }}")
-
-        XCTAssertFalse(p.train.automaticScheduling)
-    }
-    
     func testStraightLine1() throws {
         let layout = LayoutPointToPoint().newLayout()
 
@@ -1018,7 +993,7 @@ class ManualRoutingTests: BTTestCase {
     // MARK: -- Utility
     
     // Convenience structure to test the layout and its route
-    private class Package {
+    public class Package {
         let layout: Layout
         let asserter: LayoutAsserter
         let layoutController: LayoutController

@@ -86,8 +86,8 @@ final class TrainVisitor {
             trainPosition += 1
             if trainPosition > locomotiveBlock.feedbacks.count {
                 if let nextBlock = try ElementVisitor.blockAfter(block: locomotiveBlock, direction: trainInstance.direction, layout: layout) {
-                    let (_, direction) = try layout.entryFeedback(from: locomotiveBlock, to: nextBlock)
-                    if trainInstance.direction == direction {
+                    let entryFeedback = try layout.entryFeedback(from: locomotiveBlock, to: nextBlock)
+                    if trainInstance.direction == entryFeedback?.direction {
                         // No change in direction relative to the new block
                         // Note: the trainPosition will be 1 because the train is detected in the new block only after passing over the first feedback
                         trainPosition = 1

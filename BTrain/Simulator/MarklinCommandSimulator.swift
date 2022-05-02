@@ -351,8 +351,7 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
                 triggerFeedback(feedback: feedback)
             }
         } else if let nextBlock = layout.nextBlock(train: train), try layout.atEndOfBlock(train: train) {
-            let (feedback, _) = try layout.entryFeedback(from: block, to: nextBlock)
-            if let feedback = feedback {
+            if let entryFeedback = try layout.entryFeedback(from: block, to: nextBlock) {
                 // Ensure all the feedbacks of the current block is turned off, otherwise there will be
                 // an unexpected feedback error in the layout. This happens when there is less than 250ms
                 // between the time the feedback was triggered (because the feedback gets reset after 250ms)
@@ -362,8 +361,8 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
                     }
                 }
                 
-                BTLogger.debug("[Simulator] Trigger feedback \(feedback.name) to move train \(train.name) to next block \(nextBlock.name)")
-                triggerFeedback(feedback: feedback)
+                BTLogger.debug("[Simulator] Trigger feedback \(entryFeedback.feedback.name) to move train \(train.name) to next block \(nextBlock.name)")
+                triggerFeedback(feedback: entryFeedback.feedback)
             }
         } else {
             BTLogger.debug("[Simulator] Nothing to process for route \(route)")

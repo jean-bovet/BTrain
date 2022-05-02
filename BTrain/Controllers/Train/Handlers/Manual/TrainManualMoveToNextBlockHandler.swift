@@ -23,32 +23,21 @@ final class TrainManualMoveToNextBlockHandler: TrainManualSchedulingHandler {
             return .none()
         }
                 
-        guard let currentBlock = layout.currentBlock(train: train) else {
-            return .none()
-        }
-
-        guard let nextBlock = try layout.nextValidBlockForLocomotive(from: currentBlock, train: train) else {
-            return .none()
-        }
-        
         // Find out what is the entry feedback for the next block
-        let (entryFeedback, direction) = try layout.entryFeedback(from: currentBlock, to: nextBlock)
-        
-        guard let entryFeedback = entryFeedback, entryFeedback.detected else {
+        guard let entryFeedback = try layout.entryFeedback(for: train), entryFeedback.feedback.detected else {
             // The entry feedback is not yet detected, nothing more to do
             return .none()
         }
         
-        guard let position = nextBlock.indexOfTrain(forFeedback: entryFeedback.id, direction: direction) else {
-            throw LayoutError.feedbackNotFound(feedbackId: entryFeedback.id)
+        guard let position = entryFeedback.block.indexOfTrain(forFeedback: entryFeedback.feedback.id, direction: entryFeedback.direction) else {
+            throw LayoutError.feedbackNotFound(feedbackId: entryFeedback.feedback.id)
         }
                 
-        BTLogger.router.debug("\(train, privacy: .public): enters block \(nextBlock, privacy: .public) at position \(position), direction \(direction)")
+        BTLogger.router.debug("\(train, privacy: .public): enters block \(entryFeedback.block, privacy: .public) at position \(position), direction \(entryFeedback.direction)")
                 
-        try layout.setTrainToBlock(train.id, nextBlock.id, position: .custom(value: position), direction: direction)
+        try layout.setTrainToBlock(train.id, entryFeedback.block.id, position: .custom(value: position), direction: entryFeedback.direction)
                             
         return .one(.movedToNextBlock)
     }
-    
-    
+        
 }

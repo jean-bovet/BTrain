@@ -131,29 +131,7 @@ final class Layout: Element, ObservableObject {
             return train.automaticScheduling && !train.automaticFinishingScheduling
         }
     }
-    
-    // Returns true if the specified train can be considered at a valid
-    // location to be monitored to move to the next block.
-    func shouldHandleTrainMoveToNextBlock(train: Train) throws -> Bool {
-        // There must exist a next block
-        guard let nextBlock = nextBlock(train: train) else {
-            return false
-        }
         
-        // The next block should either be reserved for this train or free
-        guard nextBlock.reserved?.trainId == train.id || nextBlock.reserved == nil else {
-            return false
-        }
-        
-        if strictRouteFeedbackStrategy {
-            // Strict route stratey requires the train to be at the end of the block
-            // before moving to the next block.
-            return try atEndOfBlock(train: train)
-        } else {
-            return true
-        }
-    }
-    
     // Programmatically trigger a change event for the layout,
     // which is used by other object, such as the switchboard,
     // to re-draw itself. This is necessary because changes

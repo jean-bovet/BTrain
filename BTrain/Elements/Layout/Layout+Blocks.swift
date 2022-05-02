@@ -97,7 +97,8 @@ extension Layout {
             return nil
         }
     }
-
+    
+    // TODO: find the usage of this method. It returns the next block as defined by the unresolved steps of a route!
     func nextBlock(train: Train) -> Block? {
         guard let route = route(for: train.routeId, trainId: train.id) else {
             return nil
@@ -113,14 +114,9 @@ extension Layout {
         case .block(let stepBlock):
             return block(for: stepBlock.blockId)
 
-        case .station(let stepStation):
-            guard let station = self.station(for: stepStation.stationId) else {
-                // TODO: throw?
-                return nil
-            }
-            // TODO: use resolved route
-            return station.blockFor(train: train, layout: self)
-            
+        case .station(_):
+            return nil
+
         case .turnout(_):
             return nil
         }        

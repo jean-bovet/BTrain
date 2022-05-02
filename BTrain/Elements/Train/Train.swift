@@ -166,6 +166,13 @@ final class Train: Element, ObservableObject {
     /// of re-computing them on the fly all the time.
     var leadingBlocks = [Block]()
     
+    /// Array of blocks occpied by the train and its cars.
+    ///
+    /// This array is updated by the ``LayoutReservation`` class each time the reserved
+    /// blocks are updated. The occupied blocks are stored here for quick access instead
+    /// of re-computing them on the fly all the time.
+    var occupiedBlocks = [Block]()
+
     enum Schedule {
         // The train is stopped and cannot be started again
         // unless the user takes an explicit action (ie Start button)
@@ -176,6 +183,7 @@ final class Train: Element, ObservableObject {
         // be in a running state. This happens when the train stops because
         // the next block is occupied or it has reached a station.
         // If `finishing` is set to true, the train will stop when it finishes the route.
+        // TODO: rename to managed and manual=unmanaged?
         case automatic(finishing: Bool)
     }
     

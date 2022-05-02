@@ -45,7 +45,7 @@ final class LayoutReservation {
         
         // Reserve and set the train and its wagon(s) using the necessary number of
         // elements (turnouts and blocks)
-        try fillElementWith(train: train)
+        try occupyBlockWith(train: train)
 
         // Reserve the number of leading blocks necessary
         return try reserveLeadingBlocks(train: train)
@@ -232,7 +232,7 @@ final class LayoutReservation {
         
     // This method reserves and occupies all the necessary blocks (and parts of the block) to fit
     // the specified train with all its length, taking into account the length of each block.
-    func fillElementWith(train: Train) throws {
+    func occupyBlockWith(train: Train) throws {
         let trainVisitor = TrainVisitor(layout: layout)
         let result = try trainVisitor.visit(train: train) { transition in
             guard transition.reserved == nil else {
@@ -265,6 +265,7 @@ final class LayoutReservation {
             }
             
             block.reserved = .init(trainId: train.id, direction: attributes.trainDirection)
+            train.occupiedBlocks.append(block)
         }
         if !result {
             throw LayoutError.cannotReserveAllElements(train: train)
@@ -274,6 +275,7 @@ final class LayoutReservation {
     // This methods frees all the reserved elements except the block in which the locomotive is located
     func freeElements(train: Train) throws {
         train.leadingBlocks.removeAll()
+        train.occupiedBlocks.removeAll()
 
         layout.blockMap.values
             .filter { $0.reserved?.trainId == train.id }
@@ -388,6 +390,7 @@ final class LayoutReservation {
         if verbose {
             BTLogger.debug(msg)
         }
+        BTLogger.debug(msg)
     }
 
 }

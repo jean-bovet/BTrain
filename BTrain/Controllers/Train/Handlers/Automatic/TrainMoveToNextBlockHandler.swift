@@ -29,35 +29,23 @@ final class TrainMoveToNextBlockHandler: TrainAutomaticSchedulingHandler {
             return .none()
         }
         
-        guard try layout.shouldHandleTrainMoveToNextBlock(train: train) else {
-            return .none()
-        }
-        
-        guard let currentBlock = layout.currentBlock(train: train) else {
-            return .none()
-        }
-
-        guard let nextBlock = layout.nextBlock(train: train) else {
-            return .none()
-        }
-
         // Find out what is the entry feedback for the next block
-        let (entryFeedback, direction) = try layout.entryFeedback(from: currentBlock, to: nextBlock)
+        let entryFeedback = try layout.entryFeedback(for: train)
         
-        guard let entryFeedback = entryFeedback, entryFeedback.detected else {
+        guard let entryFeedback = entryFeedback, entryFeedback.feedback.detected else {
             // The entry feedback is not yet detected, nothing more to do
             return .none()
         }
         
-        guard let position = nextBlock.indexOfTrain(forFeedback: entryFeedback.id, direction: direction) else {
-            throw LayoutError.feedbackNotFound(feedbackId: entryFeedback.id)
+        guard let position = entryFeedback.block.indexOfTrain(forFeedback: entryFeedback.feedback.id, direction: entryFeedback.direction) else {
+            throw LayoutError.feedbackNotFound(feedbackId: entryFeedback.feedback.id)
         }
          
-        BTLogger.router.debug("\(train, privacy: .public): enters block \(nextBlock, privacy: .public) at position \(position), direction \(direction)")
+        BTLogger.router.debug("\(train, privacy: .public): enters block \(entryFeedback.block, privacy: .public) at position \(position), direction \(entryFeedback.direction)")
                 
         // Set the train to its new block. This method also takes care of updating the reserved blocks for the train itself
         // but also the leading blocks so the train can continue to move automatically.
-        try layout.setTrainToBlock(train.id, nextBlock.id, position: .custom(value: position), direction: direction, routeIndex: train.routeStepIndex + 1)
+        try layout.setTrainToBlock(train.id, entryFeedback.block.id, position: .custom(value: position), direction: entryFeedback.direction, routeIndex: train.routeStepIndex + 1)
                              
         return .one(.movedToNextBlock)
     }
