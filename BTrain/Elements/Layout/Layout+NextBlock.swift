@@ -37,7 +37,7 @@ extension Layout {
 
         let nextBlock: Block
 
-        if train.manualScheduling {
+        if train.unmanagedScheduling {
             guard let nb = try nextValidBlockForLocomotive(from: currentBlock, train: train) else {
                 return nil
             }

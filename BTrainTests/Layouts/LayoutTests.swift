@@ -131,11 +131,11 @@ class LayoutTests: XCTestCase {
         }
         
         XCTAssertEqual(train1.state, .stopped)
-        XCTAssertTrue(train1.manualScheduling)
+        XCTAssertTrue(train1.unmanagedScheduling)
         try doc.start(train: train1.id, withRoute: layout.routes[0].id, destination: nil)
         
         XCTAssertEqual(train1.state, .running)
-        XCTAssertTrue(train1.automaticScheduling)
+        XCTAssertTrue(train1.managedScheduling)
 
         let stopped = expectation(description: "Stopped")
         try layout.stopTrain(train1.id, completely: false) {
@@ -143,12 +143,12 @@ class LayoutTests: XCTestCase {
         }
 
         XCTAssertEqual(train1.state, .stopping)
-        XCTAssertTrue(train1.automaticScheduling)
+        XCTAssertTrue(train1.managedScheduling)
 
         wait(for: [stopped], timeout: 2.0)
         
         XCTAssertEqual(train1.state, .stopped)
-        XCTAssertTrue(train1.automaticScheduling)
+        XCTAssertTrue(train1.managedScheduling)
 
         let stoppedFully = expectation(description: "StoppedFully")
         try layout.stopTrain(train1.id, completely: true) {
@@ -157,7 +157,7 @@ class LayoutTests: XCTestCase {
         wait(for: [stoppedFully], timeout: 2.0)
 
         XCTAssertEqual(train1.state, .stopped)
-        XCTAssertTrue(train1.manualScheduling)
+        XCTAssertTrue(train1.unmanagedScheduling)
     }
   
     func testBlockSpeedLimit() throws {

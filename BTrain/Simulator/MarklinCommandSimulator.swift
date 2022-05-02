@@ -308,7 +308,7 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
         }
 
         for train in layout.trains {
-            guard train.automaticScheduling else {
+            guard train.managedScheduling else {
                 continue
             }
             

@@ -97,7 +97,7 @@ final class TrainDetectStopHandler: TrainAutomaticSchedulingHandler {
             return .none()
         }
                 
-        if train.automaticFinishingScheduling {
+        if train.managedFinishingScheduling {
             BTLogger.router.debug("\(train, privacy: .public): requesting to stop completely because it has reached a station and was finishing the route \(route.name)")
             train.stateChangeRequest = .stopCompletely
             return .one(.stopRequested)

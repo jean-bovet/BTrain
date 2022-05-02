@@ -34,11 +34,11 @@ struct TrainControlStateView: View {
     }
     
     var statusInformation: String {
-        if train.automaticFinishingScheduling {
+        if train.managedFinishingScheduling {
             return "\(stateString) - finishing"
         }
         
-        if train.automaticScheduling {
+        if train.managedScheduling {
             return "\(stateString) - automatic"
         }
         

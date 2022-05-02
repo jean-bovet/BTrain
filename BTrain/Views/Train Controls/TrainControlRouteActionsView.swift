@@ -22,7 +22,7 @@ struct TrainControlRouteActionsView: View {
         
     var body: some View {
         HStack {
-            if train.manualScheduling {
+            if train.unmanagedScheduling {
                 Button("Start") {
                     do {
                         train.runtimeInfo = nil
@@ -47,7 +47,7 @@ struct TrainControlRouteActionsView: View {
                     } catch {
                         train.runtimeInfo = error.localizedDescription
                     }
-                }.disabled(train.automaticFinishingScheduling)
+                }.disabled(train.managedFinishingScheduling)
             }
         }
     }

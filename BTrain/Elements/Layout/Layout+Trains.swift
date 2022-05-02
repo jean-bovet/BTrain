@@ -118,7 +118,7 @@ extension Layout {
     /// - Parameter train: the train to adjust the speed
     func adjustSpeedLimit(_ train: Train) {
         // Note: only do that when the train is not under manual control!
-        guard !train.manualScheduling else {
+        guard !train.unmanagedScheduling else {
             return
         }
 
@@ -291,7 +291,7 @@ extension Layout {
             }
         }
 
-        train.scheduling = .automatic(finishing: false)
+        train.scheduling = .managed(finishing: false)
     }
     
     func trainShouldStop(train: Train, block: Block) -> Bool {
@@ -341,7 +341,7 @@ extension Layout {
             throw LayoutError.trainNotFound(trainId: trainId)
         }
         
-        train.scheduling = .manual
+        train.scheduling = .unmanaged
         try reservation.updateReservedBlocks(train: train)
     }
     
@@ -351,7 +351,7 @@ extension Layout {
             throw LayoutError.trainNotFound(trainId: trainId)
         }
 
-        train.scheduling = .automatic(finishing: true)
+        train.scheduling = .managed(finishing: true)
     }
 
     // This method sets the train in a specific block and updates the reserved blocks (occupied and leading blocks).

@@ -95,7 +95,7 @@ final class TrainController {
         
         BTLogger.router.debug("\(self.train, privacy: .public): evaluating event '\(String(describing: event), privacy: .public)' for \(String(describing: self.train.scheduling), privacy: .public)")
 
-        if train.automaticScheduling {
+        if train.managedScheduling {
             // Stop the train if there is no route associated with it
             guard let route = layout.route(for: train.routeId, trainId: train.id) else {
                 return try stop(completely: false)
