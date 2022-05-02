@@ -12,7 +12,6 @@
 
 import SwiftUI
 
-// TODO: move to separate class and see if there are other views to extract that handles the split view of many views
 struct MoveUpButtonView<T:Identifiable>: View {
     
     @Binding var selection: T.ID?

@@ -20,6 +20,7 @@
 		A717FB17281DEE5E00310B5D /* Layout+Stations.swift in Sources */ = {isa = PBXBuildFile; fileRef = A717FB16281DEE5E00310B5D /* Layout+Stations.swift */; };
 		A717FB19281E5F4800310B5D /* MoveUpButtonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A717FB18281E5F4800310B5D /* MoveUpButtonView.swift */; };
 		A717FB1B281E5F6400310B5D /* MoveDownButtonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A717FB1A281E5F6400310B5D /* MoveDownButtonView.swift */; };
+		A717FB1F281F980300310B5D /* Graph+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A717FB1E281F980300310B5D /* Graph+Extension.swift */; };
 		A719FEB32802305900D5FBE1 /* GraphElementTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A719FEB22802305900D5FBE1 /* GraphElementTests.swift */; };
 		A719FEB528023CD800D5FBE1 /* Layouts in Resources */ = {isa = PBXBuildFile; fileRef = A719FEB428023CD800D5FBE1 /* Layouts */; };
 		A71D97FA27A499A600EBEA06 /* LayoutOnConnectTasks.swift in Sources */ = {isa = PBXBuildFile; fileRef = A71D97F927A499A600EBEA06 /* LayoutOnConnectTasks.swift */; };
@@ -315,6 +316,7 @@
 		A717FB16281DEE5E00310B5D /* Layout+Stations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Layout+Stations.swift"; sourceTree = "<group>"; };
 		A717FB18281E5F4800310B5D /* MoveUpButtonView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoveUpButtonView.swift; sourceTree = "<group>"; };
 		A717FB1A281E5F6400310B5D /* MoveDownButtonView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoveDownButtonView.swift; sourceTree = "<group>"; };
+		A717FB1E281F980300310B5D /* Graph+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Graph+Extension.swift"; sourceTree = "<group>"; };
 		A719FEB22802305900D5FBE1 /* GraphElementTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GraphElementTests.swift; sourceTree = "<group>"; };
 		A719FEB428023CD800D5FBE1 /* Layouts */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Layouts; sourceTree = "<group>"; };
 		A71D97F727A3C5FE00EBEA06 /* All.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = All.xctestplan; sourceTree = "<group>"; };
@@ -1004,6 +1006,7 @@
 				A783EAA02787D12200E69B6D /* BTTestCase.swift */,
 				A778407D27F96BFC00F87078 /* GeometryTests.swift */,
 				A7C6343727E6AF6700C37B46 /* TrainIconManagerTests.swift */,
+				A717FB1E281F980300310B5D /* Graph+Extension.swift */,
 				A7CA5ECB2797D1EB00171398 /* Layout+Extension.swift */,
 				A714CD7C2802939E0020486D /* Turnout+Extension.swift */,
 				A74F38062818C4410013FD23 /* Route+Extension.swift */,
@@ -1786,6 +1789,7 @@
 				A721807B275DD95900831998 /* TrainTests.swift in Sources */,
 				A7DB7D5B27CBF378000893BA /* SpeedSlider+Extension.swift in Sources */,
 				A7C6C3AD2806780F00D43AC2 /* ShortestPathTests.swift in Sources */,
+				A717FB1F281F980300310B5D /* Graph+Extension.swift in Sources */,
 				A74F37FC28176BC90013FD23 /* MarklinSimulatorTests.swift in Sources */,
 				A79079A1277EDAA700771A60 /* RouteViewTests.swift in Sources */,
 				A7145F8A27F90FBA00BF5F61 /* NewLayoutWizardViewTests.swift in Sources */,

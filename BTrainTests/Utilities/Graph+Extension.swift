@@ -12,27 +12,10 @@
 
 import Foundation
 
-struct RouteStepStation: RouteStep, Equatable, Codable {
-    
-    var id = UUID().uuidString
+@testable import BTrain
 
-    var stationId: Identifier<Station>
-    
-    var description: String {
-        return "\(stationId)"
-    }
-        
-    func resolve(_ constraints: GraphPathFinderConstraints, _ context: GraphPathFinderContext) -> GraphPathElement? {
-        // TODO: finish
-        guard let lc = context as? LayoutPathFinder.LayoutContext else {
-            return nil
-        }
-        let station = lc.layout.station(for: stationId)!
-        let element = station.elements.first!
-        let block = lc.layout.block(for: element.blockId)!
-        // TODO: when direction is nil, this means previous or next can be chosen. Should resolve return multiple elements?
-        let entrySocket = element.direction == .next ? Block.previousSocket : Block.nextSocket
-        let exitSocket = element.direction == .next ? Block.nextSocket : Block.previousSocket
-        return .init(node: block, entrySocket:  entrySocket, exitSocket: exitSocket)
+extension GraphPathElement: UnresolvedGraphPathElement {
+    public func resolve(_ constraints: GraphPathFinderConstraints, _ context: GraphPathFinderContext) -> GraphPathElement? {
+        return self
     }
 }

@@ -123,10 +123,3 @@ struct GraphPathElement: Equatable, Hashable, CustomStringConvertible {
     }
     
 }
-
-// TODO: is that only useful for testing?
-extension GraphPathElement: UnresolvedGraphPathElement {
-    func resolve(_ constraints: GraphPathFinderConstraints, _ context: GraphPathFinderContext) -> GraphPathElement? {
-        return self
-    }
-}
