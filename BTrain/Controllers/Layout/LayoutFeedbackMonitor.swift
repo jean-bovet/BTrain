@@ -33,6 +33,7 @@ final class LayoutFeedbackMonitor {
         }
     }
     
+    // TODO: should actually be using the resolvedSteps because later when we support gap in blocks, this won't work
     private func updateExpectedFeedbacks(train: Train) throws {
         guard let currentBlock = layout.currentBlock(train: train) else {
             return

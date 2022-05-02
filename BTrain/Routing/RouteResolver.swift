@@ -39,8 +39,7 @@ final class RouteResolver {
         // TODO: cannot create a path from steps without applying constraints to the steps.
         // We should try to resolve the steps "as we go" below, resolving each step one at a time
         // as we apply the constraints.
-//        let unresolvedPath = try GraphPath(steps: Array(steps), train: train, layout: layout)
-        let unresolvedPath: [UnresolvedGraphPathElement] = steps.map { $0 }
+        let unresolvedPath: UnresolvedGraphPath = steps.map { $0 }
         
         let baseSettings = GraphPathFinder.Settings(verbose: verbose,
                                                     random: false,

@@ -108,11 +108,22 @@ extension Layout {
         }
         
         let step = route.steps[train.routeStepIndex+1]
-        guard case .block(let stepBlock) = step else {
-            return nil
-        }
         
-        return block(for: stepBlock.blockId)
+        switch step {
+        case .block(let stepBlock):
+            return block(for: stepBlock.blockId)
+
+        case .station(let stepStation):
+            guard let station = self.station(for: stepStation.stationId) else {
+                // TODO: throw?
+                return nil
+            }
+            // TODO: use resolved route
+            return station.blockFor(train: train, layout: self)
+            
+        case .turnout(_):
+            return nil
+        }        
     }
 
     func atEndOfBlock(train: Train) throws -> Bool {

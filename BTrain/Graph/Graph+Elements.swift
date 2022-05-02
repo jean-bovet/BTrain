@@ -287,7 +287,6 @@ extension Array where Element == GraphPathElement {
         }
     }
     
-    // TODO: used anymore?
     var toSteps: [RouteItem] {
         return self.compactMap { element in
             if let block = element.node as? Block {
