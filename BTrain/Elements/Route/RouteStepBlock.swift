@@ -14,7 +14,10 @@ import Foundation
 
 struct RouteStepBlock: RouteStep, Equatable, Codable, CustomStringConvertible {
 
-    // TODO: equality should only be done with this ID for all the steps
+    static func ==(lhs: RouteStepBlock, rhs: RouteStepBlock) -> Bool {
+        return lhs.id == rhs.id
+    }
+
     var id = UUID().uuidString
     
     // The block identifier

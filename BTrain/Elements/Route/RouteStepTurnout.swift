@@ -14,6 +14,10 @@ import Foundation
 
 struct RouteStepTurnout: RouteStep, Equatable, Codable {
     
+    static func ==(lhs: RouteStepTurnout, rhs: RouteStepTurnout) -> Bool {
+        return lhs.id == rhs.id
+    }
+
     var id = UUID().uuidString
 
     var turnoutId: Identifier<Turnout>

@@ -14,6 +14,10 @@ import Foundation
 
 struct RouteStepStation: RouteStep, Equatable, Codable {
     
+    static func ==(lhs: RouteStepStation, rhs: RouteStepStation) -> Bool {
+        return lhs.id == rhs.id
+    }
+
     var id = UUID().uuidString
 
     var stationId: Identifier<Station>
