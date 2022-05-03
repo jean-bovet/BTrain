@@ -40,11 +40,13 @@ final class AutomaticRouting {
         }
         
         let destination: Destination?
-        switch(route.automaticMode) {
-        case .once(destination: let routeDestination):
+        switch(route.mode) {
+        case .automaticOnce(destination: let routeDestination):
             destination = routeDestination
-        case .endless:
+        case .automatic:
             destination = nil
+        case .fixed:
+            throw LayoutError.routeIsNotAutomatic(route: route)
         }
         
         guard let trainInstance = currentBlock.train else {

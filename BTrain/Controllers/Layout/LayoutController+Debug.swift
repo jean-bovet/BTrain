@@ -34,15 +34,13 @@ extension LayoutController {
     
     static func attributesFor(route: Route, layout: Layout) -> String {
         var info = "\(route.name)-[\(route.id)]"
-        if route.automatic {
-            switch(route.automaticMode) {
-            case .once(destination: let destination):
-                info += " (automatic once to \(destination.blockId), direction \(String(describing: destination.direction))"
-            case .endless:
-                info += " (automatic endless mode)"
-            }
-        } else {
-            info += " (manual)"
+        switch(route.mode) {
+        case .automaticOnce(destination: let destination):
+            info += " (automatic once to \(destination.blockId), direction \(String(describing: destination.direction))"
+        case .automatic:
+            info += " (automatic endless mode)"
+        case .fixed:
+            info += " (fixed)"
         }
         info += ". \(route.steps.count) steps: "
         for step in route.steps {

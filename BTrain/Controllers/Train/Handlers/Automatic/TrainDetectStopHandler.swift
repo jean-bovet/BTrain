@@ -19,17 +19,6 @@ final class TrainDetectStopHandler: TrainAutomaticSchedulingHandler {
     }
 
     func process(layout: Layout, train: Train, route: Route, event: TrainEvent, controller: TrainControlling) throws -> TrainHandlerResult {
-        if route.automatic {
-            return try handleStopAutomaticRoute(layout: layout, train: train, route: route, event: event)
-        } else {
-            return try handleStopManualRoute(layout: layout, train: train, route: route, event: event)
-        }
-    }
-
-    // This method handles any stop trigger related to the automatic route, which are:
-    // - The train reaches the end of the route (that does not affect `endless` automatic route)
-    // - The train reaches a block that stops the train for a while (ie station)
-    private func handleStopAutomaticRoute(layout: Layout, train: Train, route: Route, event: TrainEvent) throws -> TrainHandlerResult {
         guard let currentBlock = layout.currentBlock(train: train) else {
             return .none()
         }
@@ -39,8 +28,11 @@ final class TrainDetectStopHandler: TrainAutomaticSchedulingHandler {
             return .none()
         }
         
-        switch(route.automaticMode) {
-        case .once(destination: let destination):
+        switch(route.mode) {
+        case .automaticOnce(destination: let destination):
+            // This method handles any stop trigger related to the automatic route, which are:
+            // - The train reaches the end of the route (that does not affect `endless` automatic route)
+            // - The train reaches a block that stops the train for a while (ie station)
             if train.routeStepIndex == route.lastStepIndex {
                 // Double-check that the train is located in the block specified by the destination.
                 // This should never fail.
@@ -60,35 +52,25 @@ final class TrainDetectStopHandler: TrainAutomaticSchedulingHandler {
                 return .one(.stopRequested)
             }
             
-        case .endless:
+        case .automatic:
+            return handleTrainStopByBlock(layout: layout, train: train, route: route, block: currentBlock)
+            
+        case .fixed:
+            // This method handles any stop trigger related to the manual route, which are:
+            // - The train reaches the end of the route
+            // - The train reaches a block that stops the train for a while (ie station)
+            if train.routeStepIndex == route.lastStepIndex {
+                BTLogger.router.debug("\(train, privacy: .public): requesting to stop completely here \(currentBlock, privacy: .public) because it has reached the end of the route \(route.name)")
+                train.stateChangeRequest = .stopCompletely
+                return .one(.stopRequested)
+            }
+            
             return handleTrainStopByBlock(layout: layout, train: train, route: route, block: currentBlock)
         }
                                 
         return .none()
     }
-        
-    // This method handles any stop trigger related to the manual route, which are:
-    // - The train reaches the end of the route
-    // - The train reaches a block that stops the train for a while (ie station)
-    private func handleStopManualRoute(layout: Layout, train: Train, route: Route, event: TrainEvent) throws -> TrainHandlerResult {
-        guard let currentBlock = layout.currentBlock(train: train) else {
-            return .none()
-        }
-        
-        // The train is not in the first step of the route
-        guard train.routeStepIndex != train.startRouteIndex else {
-            return .none()
-        }
-        
-        if train.routeStepIndex == route.lastStepIndex {
-            BTLogger.router.debug("\(train, privacy: .public): requesting to stop completely here \(currentBlock, privacy: .public) because it has reached the end of the route \(route.name)")
-            train.stateChangeRequest = .stopCompletely
-            return .one(.stopRequested)
-        }
-        
-        return handleTrainStopByBlock(layout: layout, train: train, route: route, block: currentBlock)
-    }
-    
+            
     // This method takes care to trigger a stop of the train located in
     // the specified `block`, depending on the block characteristics.
     // For now, only "station" blocks make the train stop.

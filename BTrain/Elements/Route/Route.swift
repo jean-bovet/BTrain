@@ -27,24 +27,39 @@ final class Route: Element, ObservableObject {
         
     let id: Identifier<Route>
     
-    // True if the route is automatically generated,
-    // which means that if the train cannot continue
-    // to follow it, a new one will be generated
-    let automatic: Bool
-    
-    enum AutomaticMode: Equatable {
+    /// Mode of the route. There are 3 possible modes:
+    /// - fixed: the route is created ahead of time by the user and does not change
+    /// - automatic: the route is automatically created by BTrain and is updated as the train moves. The train stops only when the user explicitely requests it.
+    /// - automaticOnce: like automatic but the train stops at the next station using the shortest path.
+    enum Mode: Equatable, Codable {
+        // Fixed route specified by the user
+        case fixed
+                
+        // Run the automatic route as long as the user does not explicitely stop the train
+        case automatic
+        
         // Run onces the automatic route until it reaches the specified block.
         // The automatic route will try to pick the shortest route.
-        case once(destination: Destination)
-        
-        // Run the automatic route as long as the user does not explicitely stop the train
-        case endless
+        case automaticOnce(destination: Destination)
     }
     
     // When automatic is true, this defines the mode in which
     // the automatic route is defined.
-    var automaticMode = AutomaticMode.endless
+    var mode = Mode.automatic
     
+    /// Returns true if the route is automatic.
+    ///
+    /// An automatic route is automatically updated as the train moves in the layout, depending
+    /// on the block occupation and constraints of the train.
+    var automatic: Bool {
+        switch mode {
+        case .fixed:
+            return false
+        case .automaticOnce(_), .automatic:
+            return true
+        }
+    }
+
     // User-facing name of the route
     @Published var name = ""
         
@@ -71,13 +86,13 @@ final class Route: Element, ObservableObject {
         return steps.count - 1
     }
     
-    convenience init(uuid: String = UUID().uuidString, automatic: Bool = false) {
-        self.init(id: Identifier(uuid: uuid), automatic: automatic)
+    convenience init(uuid: String = UUID().uuidString, mode: Route.Mode = .fixed) {
+        self.init(id: Identifier(uuid: uuid), mode: mode)
     }
     
-    init(id: Identifier<Route>, automatic: Bool = false) {
+    init(id: Identifier<Route>, mode: Route.Mode = .fixed) {
         self.id = id
-        self.automatic = automatic
+        self.mode = mode
     }
     
     /// Resolve this route by filling the ``resolvedSteps`` with all the steps of the route.
@@ -104,14 +119,21 @@ final class Route: Element, ObservableObject {
 extension Route: Codable {
     
     enum CodingKeys: CodingKey {
-      case id, name, steps, stepsv2, automatic
+        case id, name, steps, stepsv2, automatic, mode
     }
 
     convenience init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         let id = try container.decode(Identifier<Route>.self, forKey: CodingKeys.id)
-        let automatic = try container.decode(Bool.self, forKey: CodingKeys.automatic)
-        self.init(id: id, automatic: automatic)
+        let mode: Route.Mode
+        if let value = try container.decodeIfPresent(Bool.self, forKey: CodingKeys.automatic), value == true {
+            mode = .automatic
+        } else if let m = try container.decodeIfPresent(Route.Mode.self, forKey: CodingKeys.mode) {
+            mode = m
+        } else {
+            mode = .fixed
+        }
+        self.init(id: id, mode: mode)
         self.name = try container.decode(String.self, forKey: CodingKeys.name)
         if container.contains(CodingKeys.steps) {
             self.steps = try container.decode([RouteStep_v1].self, forKey: CodingKeys.steps).toRouteSteps
@@ -125,7 +147,7 @@ extension Route: Codable {
         try container.encode(id, forKey: CodingKeys.id)
         try container.encode(name, forKey: CodingKeys.name)
         try container.encode(steps, forKey: CodingKeys.stepsv2)
-        try container.encode(automatic, forKey: CodingKeys.automatic)
+        try container.encode(mode, forKey: CodingKeys.mode)
     }
 
 }

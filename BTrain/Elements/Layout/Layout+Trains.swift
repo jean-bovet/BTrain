@@ -228,9 +228,9 @@ extension Layout {
             // Ensure the automatic route associated with the train is updated
             // Note: remember the destination block
             if let destination = destination {
-                route.automaticMode = .once(destination: destination)
+                route.mode = .automaticOnce(destination: destination)
             } else {
-                route.automaticMode = .endless
+                route.mode = .automatic
             }
             
             // Reset the route - the route will be automatically updated by
@@ -244,6 +244,7 @@ extension Layout {
                 let blockId: Identifier<Block>
                 let direction: Direction
                 
+                // TODO: move this code inside RouteStep?
                 switch step {
                 case .block(let stepBlock):
                     blockId = stepBlock.blockId

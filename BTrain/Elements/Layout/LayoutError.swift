@@ -56,6 +56,7 @@ enum LayoutError: Error {
     
     case routeNotFound(routeId: Identifier<Route>)
     case noPossibleRoute(train: Train)
+    case routeIsNotAutomatic(route: Route)
     
     case noSteps(routeId: Identifier<Route>)
     
@@ -139,6 +140,8 @@ extension LayoutError: LocalizedError {
             return "Route \(routeId) not found"
         case .noPossibleRoute(train: let train):
             return "No automatic route found for \(train.name)"
+        case .routeIsNotAutomatic(route: let route):
+            return "The route \(route.name) is not automatic"
 
         case .noSteps(routeId: let routeId):
             return "No steps defined in route \(routeId)"
