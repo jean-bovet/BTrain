@@ -12,11 +12,42 @@
 
 import Foundation
 
-// This class handles the occupied and leading blocks reservation for a specified train.
-// - A occupied block is a block, either behind or in front of the locomotive, that contains the wagons of the train.
-//   Note that if a locomotive pushes the wagon, the occupied blocks are actually "in front" of the train.
-// - A leading block is a block in front of the train that is reserved in order for the train to be
-//   able to move into it safely without risking a collision with another train.
+/**
+ This class handles the reservation of blocks for the train.
+
+ There are two types of reserved blocks:
+ - **Leading** Blocks: the blocks that are in front of the train (in the direction of travel). These blocks are reserved in order for the train to be able to move into them safely without risking a collision with another train..
+ - **Occupied** Blocks: the blocks that are occupied by the train itself (locomotive and cars included). These blocks are usually behind the train in the opposite direction of travel,
+ unless the locomotive is pushing the wagons, in which case they are in front of the locomotive.
+ 
+ ````
+                   Train (Locomotive + 2 cars)
+
+                         ┌────┐  ┌────┐
+                         │ C2 │  │ C1 │▶
+                         └────┘  └────┘
+
+┌───────┐  ┌───────┐  ╔═══════╗  ╔═══════╗  ┏━━━━━━━┓  ┏━━━━━━━┓
+│  B5   │──│  B4   │──║  B3   ║──║  B2   ║──┃ | B1  ┃──┃  B0   ┃
+└───────┘  └───────┘  ╚═══════╝  ╚═══════╝  ┗━━━━━━━┛  ┗━━━━━━━┛
+
+     Free Blocks        Occupied Blocks        Heading Blocks
+
+
+
+                   Train (Locomotive + 2 cars)
+
+                         ┌────┐  ┌────┐
+                         │ C2 │  │ C1 │◀
+                         └────┘  └────┘
+
+┏━━━━━━━┓  ┏━━━━━━━┓  ╔═══════╗  ╔═══════╗  ┌───────┐  ┌───────┐
+┃  B5   ┃──┃  B4   ┃──║ B3 |  ║──║  B2   ║──│  B1   │──│  B0   │
+┗━━━━━━━┛  ┗━━━━━━━┛  ╚═══════╝  ╚═══════╝  └───────┘  └───────┘
+
+   Heading Blocks       Occupied Blocks       Free Blocks
+ ````
+*/
 final class LayoutReservation {
     
     let layout: Layout
