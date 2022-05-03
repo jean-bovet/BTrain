@@ -343,26 +343,24 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
                        
         BTLogger.debug("[Simulator] Simulating route \(route.name) for \(train.name)")
 
-        if try !layout.atEndOfBlock(train: train)  {
+        if let entryFeedback = try layout.entryFeedback(for: train) {
+            // Ensure all the feedbacks of the current block is turned off, otherwise there will be
+            // an unexpected feedback error in the layout. This happens when there is less than 250ms
+            // between the time the feedback was triggered (because the feedback gets reset after 250ms)
+            for bf in block.feedbacks {
+                if let feedback = layout.feedback(for: bf.feedbackId) {
+                    setFeedback(feedback: feedback, value: 0)
+                }
+            }
+            
+            BTLogger.debug("[Simulator] Trigger feedback \(entryFeedback.feedback.name) to move train \(train.name) to next block \(entryFeedback.block.name)")
+            triggerFeedback(feedback: entryFeedback.feedback)
+        } else if try layout.atEndOfBlock(train: train) == false {
             let naturalDirection = block.train?.direction == .next
             let feedback = block.feedbacks[naturalDirection ? train.position : train.position - 1]
             if let feedback = layout.feedback(for: feedback.feedbackId) {
                 BTLogger.debug("[Simulator] Trigger feedback \(feedback.name) to move train \(train.name) within \(block.name)")
                 triggerFeedback(feedback: feedback)
-            }
-        } else if let nextBlock = layout.nextBlock(train: train), try layout.atEndOfBlock(train: train) {
-            if let entryFeedback = try layout.entryFeedback(from: block, to: nextBlock) {
-                // Ensure all the feedbacks of the current block is turned off, otherwise there will be
-                // an unexpected feedback error in the layout. This happens when there is less than 250ms
-                // between the time the feedback was triggered (because the feedback gets reset after 250ms)
-                for bf in block.feedbacks {
-                    if let feedback = layout.feedback(for: bf.feedbackId) {
-                        setFeedback(feedback: feedback, value: 0)
-                    }
-                }
-                
-                BTLogger.debug("[Simulator] Trigger feedback \(entryFeedback.feedback.name) to move train \(train.name) to next block \(nextBlock.name)")
-                triggerFeedback(feedback: entryFeedback.feedback)
             }
         } else {
             BTLogger.debug("[Simulator] Nothing to process for route \(route)")

@@ -98,30 +98,6 @@ extension Layout {
         }
     }
     
-    // TODO: find the usage of this method. It returns the next block as defined by the unresolved steps of a route!
-    func nextBlock(train: Train) -> Block? {
-        guard let route = route(for: train.routeId, trainId: train.id) else {
-            return nil
-        }
-        
-        guard train.routeStepIndex + 1 < route.steps.count else {
-            return nil
-        }
-        
-        let step = route.steps[train.routeStepIndex+1]
-        
-        switch step {
-        case .block(let stepBlock):
-            return block(for: stepBlock.blockId)
-
-        case .station(_):
-            return nil
-
-        case .turnout(_):
-            return nil
-        }        
-    }
-
     func atEndOfBlock(train: Train) throws -> Bool {
         if let currentBlock = currentBlock(train: train) {
             guard let ti = currentBlock.train else {
