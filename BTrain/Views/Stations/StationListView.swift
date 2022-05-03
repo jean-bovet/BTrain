@@ -58,8 +58,7 @@ struct StationListView: View {
                     Spacer().fixedSpace()
                     
                     Button("􀄬") {
-                        // TODO: sort stations
-                        layout.sortRoutes()
+                        layout.sortStations()
                     }
                 }.padding()
             }.frame(maxWidth: SideListFixedWidth)

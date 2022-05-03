@@ -46,4 +46,10 @@ extension Layout {
         }
     }
 
+    func sortStations() {
+        stations.sort {
+            $0.name < $1.name
+        }
+    }
+
 }
