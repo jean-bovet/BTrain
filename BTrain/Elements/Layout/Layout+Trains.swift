@@ -241,30 +241,7 @@ extension Layout {
             // Check to make sure the train is somewhere along the route
             train.routeStepIndex = -1
             for (index, step) in route.steps.enumerated() {
-                let blockId: Identifier<Block>
-                let direction: Direction
-                
-                // TODO: move this code inside RouteStep?
-                switch step {
-                case .block(let stepBlock):
-                    blockId = stepBlock.blockId
-                    direction = stepBlock.direction
-
-                case .station(let stepStation):
-                    guard let station = self.station(for: stepStation.stationId) else {
-                        continue
-                    }
-                    guard let item = station.blockWith(train: train, layout: self) else {
-                        continue
-                    }
-                    
-                    guard let bid = item.blockId, let bd = item.direction else {
-                        continue
-                    }
-                    blockId = bid
-                    direction = bd
-                    
-                case .turnout(_):
+                guard let (blockId, direction) = self.block(for: train, step: step) else {
                     continue
                 }
                 
@@ -470,4 +447,27 @@ extension Layout {
         didChange()
     }
 
+    func block(for train: Train, step: RouteItem) -> (Identifier<Block>, Direction)? {
+        switch step {
+        case .block(let stepBlock):
+            return (stepBlock.blockId, stepBlock.direction)
+
+        case .station(let stepStation):
+            guard let station = self.station(for: stepStation.stationId) else {
+                return nil
+            }
+            guard let item = station.blockWith(train: train, layout: self) else {
+                return nil
+            }
+            
+            guard let bid = item.blockId, let bd = item.direction else {
+                return nil
+            }
+            
+            return (bid, bd)
+            
+        case .turnout(_):
+            return nil
+        }
+    }
 }
