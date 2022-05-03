@@ -41,7 +41,7 @@ class ManualRoutingTests: BTTestCase {
 
         XCTAssertEqual(b1.blockId, layout.currentBlock(train: train)?.id)
         
-        let transitions = try layout.transitions(from: b1.blockId, to: b2.blockId, direction: b1.direction)
+        let transitions = try layout.transitions(from: b1.blockId, to: b2.blockId, direction: b1.direction!)
         XCTAssertEqual(transitions.count, 2)
         
         XCTAssertEqual(transitions[0].a.block, b1.blockId)

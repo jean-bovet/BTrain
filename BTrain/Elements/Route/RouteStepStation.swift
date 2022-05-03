@@ -27,16 +27,28 @@ struct RouteStepStation: RouteStep, Equatable, Codable {
     }
         
     func resolve(_ constraints: GraphPathFinderConstraints, _ context: GraphPathFinderContext) -> GraphPathElement? {
-        // TODO: finish
         guard let lc = context as? LayoutPathFinder.LayoutContext else {
             return nil
         }
-        let station = lc.layout.station(for: stationId)!
-        let element = station.elements.first!
-        let block = lc.layout.block(for: element.blockId)!
-        // TODO: when direction is nil, this means previous or next can be chosen. Should resolve return multiple elements?
-        let entrySocket = element.direction == .next ? Block.previousSocket : Block.nextSocket
-        let exitSocket = element.direction == .next ? Block.nextSocket : Block.previousSocket
+        guard let station = lc.layout.station(for: stationId) else {
+            return nil
+        }
+        
+        // TODO: pick the first element that is free or contains the train
+        guard let element = station.elements.first else {
+            return nil
+        }
+        
+        guard let block = lc.layout.block(for: element.blockId) else {
+            return nil
+        }
+        
+        guard let direction = element.direction else {
+            // TODO: support direction being nil, which means two elements can be returned, one for each direction
+            return nil
+        }
+        let entrySocket = direction == .next ? Block.previousSocket : Block.nextSocket
+        let exitSocket = direction == .next ? Block.nextSocket : Block.previousSocket
         return .init(node: block, entrySocket:  entrySocket, exitSocket: exitSocket)
     }
 }

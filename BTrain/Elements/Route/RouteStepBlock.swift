@@ -26,31 +26,17 @@ struct RouteStepBlock: RouteStep, Equatable, Codable, CustomStringConvertible {
     // The number of seconds a train will wait in that block
     // If nil, the block waitingTime is used instead.
     var waitingTime: TimeInterval?
-
-    // TODO: technically could be nil, right? Should we only use the direction to be more clear?
-    var exitSocket: Socket
-    
-    var entrySocket: Socket
     
     var description: String {
-        return "\(blockId):\(direction)"
+        if let direction = direction {
+            return "\(blockId):\(direction)"
+        } else {
+            return "\(blockId)"
+        }
     }
 
     // The direction of travel of the train within that block
-    var direction: Direction {
-        get {
-            return exitSocket.socketId == Block.nextSocket ? .next : .previous
-        }
-        set {
-            if newValue == .next {
-                exitSocket = Socket.block(blockId, socketId: 1)
-                entrySocket = Socket.block(blockId, socketId: 0)
-            } else {
-                exitSocket = Socket.block(blockId, socketId: 0)
-                entrySocket = Socket.block(blockId, socketId: 1)
-            }
-        }
-    }
+    var direction: Direction?
 
     init(_ block: Block, _ direction: Direction, _ waitingTime: TimeInterval? = nil) {
         self.init(block.id, direction, waitingTime)
@@ -58,26 +44,23 @@ struct RouteStepBlock: RouteStep, Equatable, Codable, CustomStringConvertible {
 
     init(_ blockId: Identifier<Block>, _ direction: Direction, _ waitingTime: TimeInterval? = nil) {
         self.blockId = blockId
-        self.entrySocket = .block(blockId)
-        self.exitSocket = .block(blockId)
         self.direction = direction
         self.waitingTime = waitingTime
     }
     
-    init(_ blockId: Identifier<Block>, entrySocket: Socket, exitSocket: Socket, _ waitingTime: TimeInterval? = nil) {
-        self.blockId = blockId
-        self.entrySocket = entrySocket
-        self.exitSocket = exitSocket
-        self.waitingTime = waitingTime
-    }
-
     func resolve(_ constraints: GraphPathFinderConstraints, _ context: GraphPathFinderContext) -> GraphPathElement? {
-        // TODO: finish
         guard let lc = context as? LayoutPathFinder.LayoutContext else {
             return nil
         }
-        let block = lc.layout.block(for: blockId)!
-        return .init(node: block, entrySocket: entrySocket.socketId, exitSocket: exitSocket.socketId)
+        
+        guard let block = lc.layout.block(for: blockId) else {
+            return nil
+        }
+        
+        let entrySocketId = (direction ?? .next) == .next ? Block.previousSocket : Block.nextSocket
+        let exitSocketId = (direction ?? .next) == .next ? Block.nextSocket : Block.previousSocket
+
+        return GraphPathElement(node: block, entrySocket: entrySocketId, exitSocket: exitSocketId)
     }
 }
 

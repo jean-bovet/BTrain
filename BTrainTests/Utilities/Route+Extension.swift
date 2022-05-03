@@ -41,9 +41,9 @@ extension Array where Element == RouteItem {
             switch step {
             case .block(let stepBlock):
                 if let block = layout.block(for: stepBlock.blockId) {
-                    return "\(useNameInsteadOfId ? block.name:block.id.uuid):\(stepBlock.direction)"
+                    return "\(useNameInsteadOfId ? block.name:block.id.uuid):\(stepBlock.direction!)"
                 } else {
-                    return "\(stepBlock.blockId.uuid):\(stepBlock.direction)"
+                    return "\(stepBlock.blockId.uuid):\(stepBlock.direction!)"
                 }
             case .turnout(let stepTurnout):
                 if let turnout = layout.turnout(for: stepTurnout.turnoutId) {

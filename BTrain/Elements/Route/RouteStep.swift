@@ -60,7 +60,11 @@ extension RouteStep_v1 {
             if let direction = direction {
                 return .block(RouteStepBlock(blockId, direction, waitingTime))
             } else {
-                return .block(RouteStepBlock(blockId, entrySocket: entrySocket!, exitSocket: exitSocket!, waitingTime))
+                if entrySocket?.socketId == Block.previousSocket {
+                    return .block(RouteStepBlock(blockId, .next, waitingTime))
+                } else {
+                    return .block(RouteStepBlock(blockId, .previous, waitingTime))
+                }
             }
         } else if let turnoutId = turnoutId {
             return .turnout(RouteStepTurnout(turnoutId, entrySocket!, exitSocket!))
