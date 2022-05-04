@@ -117,7 +117,7 @@ struct RouteView: View {
     func validateRoute() {
         let diag = LayoutDiagnostic(layout: layout)
         var errors = [DiagnosticError]()
-        diag.checkRoutes(&errors)
+        diag.checkRoute(route: route, &errors)
         invalidRoute = !errors.isEmpty
     }
 }

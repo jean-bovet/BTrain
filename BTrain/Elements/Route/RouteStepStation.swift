@@ -34,8 +34,7 @@ struct RouteStepStation: RouteStep, Equatable, Codable {
             return nil
         }
         
-        // TODO: pick the first element that is free or contains the train
-        guard let element = station.elements.first else {
+        guard let element = firstAvailableElement(station: station, train: lc.train, layout: lc.layout) else {
             return nil
         }
         
@@ -50,5 +49,17 @@ struct RouteStepStation: RouteStep, Equatable, Codable {
         let entrySocket = direction == .next ? Block.previousSocket : Block.nextSocket
         let exitSocket = direction == .next ? Block.nextSocket : Block.previousSocket
         return .init(node: block, entrySocket:  entrySocket, exitSocket: exitSocket)
+    }
+    
+    func firstAvailableElement(station: Station, train: Train, layout: Layout) -> Station.StationElement? {
+        for element in station.elements {
+            guard let block = layout.block(for: element.blockId) else {
+                continue
+            }
+            if block.enabled && (block.reserved == nil || block.reserved?.trainId == train.id) {
+                return element
+            }
+        }
+        return nil
     }
 }

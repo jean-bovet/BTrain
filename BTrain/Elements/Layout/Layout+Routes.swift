@@ -14,7 +14,7 @@ import Foundation
 
 extension Layout {
     
-    var manualRoutes: [Route] {
+    var fixedRoutes: [Route] {
         return routes.filter({!$0.automatic})
     }
     
@@ -67,5 +67,66 @@ extension Layout {
             $0.name < $1.name
         }
     }
+    
+    func routeDescription(for train: Train) -> String {
+        var text = ""
+        if let route = self.route(for: train.routeId, trainId: train.id),
+           let train = self.train(for: train.id) {
+            if let message = route.lastMessage {
+                text = message
+            } else {
+                var index = 0
+                for step in route.steps {
+                    guard let description = self.description(of: step) else {
+                        continue
+                    }
+                    
+                    if !text.isEmpty {
+                        text += "→"
+                    }
+                    
+                    text += description
+                    
+                    if train.routeStepIndex == index {
+                        // Indicate the block in the route where the train
+                        // is currently located
+                        text += "􀼮"
+                    }
+                    
+                    index += 1
+                }
+            }
+        }
+        return text
+    }
+    
+    func description(of item: RouteItem) -> String? {
+        switch item {
+        case .block(let stepBlock):
+            return description(of: stepBlock.blockId)
 
+        case .station(let stepStation):
+            if let station = station(for: stepStation.stationId) {
+                return "\(station.name)"
+            } else {
+                return "\(stepStation.stationId)"
+            }
+            
+        case .turnout(_):
+            return nil
+        }
+    }
+    
+    func description(of blockId: Identifier<Block>) -> String {
+        if let block = block(for: blockId) {
+            return "\(block.name)"
+        } else {
+            return "\(blockId)"
+        }
+    }
+    
+    var defaultRouteDescription: String {
+        return "􀼮→"
+    }
+            
 }

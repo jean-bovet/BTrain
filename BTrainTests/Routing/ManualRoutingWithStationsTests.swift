@@ -41,4 +41,5 @@ class ManualRoutingWithStationsTests: XCTestCase {
         XCTAssertFalse(p.train.managedScheduling)
     }
     
+    // TODO: test with a destination station whose reserved block change as the train move (ie after the train start, another one comes and blocks the initial blocks of the station so the route must be updated again).
 }

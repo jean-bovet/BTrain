@@ -21,7 +21,7 @@ struct RouteListView: View {
     @State private var selection: Identifier<Route>? = nil
 
     var routes: [Route] {
-        return layout.manualRoutes
+        return layout.fixedRoutes
     }
     
     var body: some View {
@@ -39,7 +39,7 @@ struct RouteListView: View {
                 }
 
                 HStack {
-                    Text("\(layout.manualRoutes.count) routes")
+                    Text("\(layout.fixedRoutes.count) routes")
                     
                     Spacer()
                     

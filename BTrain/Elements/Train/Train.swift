@@ -152,6 +152,7 @@ final class Train: Element, ObservableObject {
     @Published var startRouteIndex: Int?
 
     // Index of the current route step that the train is located in.
+    // TODO: can we use the RouteItem ID instead of the index so it is less confusing?
     @Published var routeStepIndex = 0
         
     // The maximum number of blocks that should be reserved ahead of the train.

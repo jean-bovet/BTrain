@@ -198,7 +198,7 @@ extension Layout: Codable {
         try container.encode(feedbacks, forKey: CodingKeys.feedbacks)
         try container.encode(turnouts, forKey: CodingKeys.turnouts)
         try container.encode(trains, forKey: CodingKeys.trains)
-        try container.encode(manualRoutes, forKey: CodingKeys.routes)
+        try container.encode(fixedRoutes, forKey: CodingKeys.routes)
         try container.encode(transitions, forKey: CodingKeys.transitions)
     }
     

@@ -30,7 +30,7 @@ struct RouteStepBlockView: View {
             UndoProvider($stepBlock.direction) { direction in
                 Picker("Direction:", selection: direction) {
                     ForEach(Direction.allCases, id:\.self) { direction in
-                        Text(direction.description).tag(direction as Direction)
+                        Text(direction.description).tag(direction as Direction?)
                     }
                 }
                 .fixedSize()

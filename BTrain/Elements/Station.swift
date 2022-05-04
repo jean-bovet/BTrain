@@ -29,10 +29,6 @@ final class Station: Element, ObservableObject {
         self.elements = elements
     }
 
-    func blockFor(train: Train, layout: Layout) -> Block? {
-        return layout.block(for: elements.first?.blockId)
-    }
-
     func contains(blockId: Identifier<Block>) -> Bool {
         elements.contains { element in
             element.blockId == blockId
