@@ -14,9 +14,11 @@ import XCTest
 
 @testable import BTrain
 
+/// These tests focus on the handling and management of a station, which is a group of blocks.
 class ManualRoutingWithStationsTests: XCTestCase {
 
-    func testLoopWithStations1() throws {
+    /// This test simulates a train traveling from one station (s) to another (n).
+    func testStationToStation() throws {
         let layout = LayoutLoopWithStations().newLayout()
 
         let p = ManualRoutingTests.Package(layout: layout)
@@ -40,6 +42,37 @@ class ManualRoutingWithStationsTests: XCTestCase {
 
         XCTAssertFalse(p.train.managedScheduling)
     }
-    
-    // TODO: test with a destination station whose reserved block change as the train move (ie after the train start, another one comes and blocks the initial blocks of the station so the route must be updated again).
+        
+    /// This test simulates a train traveling from one station (s) to another (n) and having another train reserving a block in the destination station (n) while the first train
+    /// is already running to ensure the route for that train is updated to pick up the other free block of the station (n).
+    func testStationToStationWithReservation() throws {
+        let layout = LayoutLoopWithStations().newLayout()
+        layout.trains[0].maxNumberOfLeadingReservedBlocks = 1
+        
+        let p = ManualRoutingTests.Package(layout: layout)
+        try p.prepare(routeID: "r1", trainID: "16390", fromBlockId: "1" /*s1*/, position: .end)
+        
+        try p.assert("r1: {r16390{s1 ≏ 💺16390 ≏ 🔴🚂16390 }} <ts2(1,0),s> <t1(0,1),s> <t2(0,1),s> [b1 ≏ ≏ ] <t4(1,0)> <tn1(0,1)> {n1 ≏ ≏ }")
+
+        try p.start()
+
+        XCTAssertTrue(p.train.managedScheduling)
+
+        try p.assert("r1: {r16390{s1 ≏ 💺16390 ≏ 🔵🚂16390 }} <r16390<ts2{sl}(1,0),s>> <r16390<t1{sr}(0,1),s>> <r16390<t2{sr}(0,1),s>> [r16390[b1 ≏ ≏ ]] <t4{sl}(1,0),s> <tn1{sr}(0,1),s> {n1 ≏ ≏ }")
+        
+        // Simulate a train reserving block "n1", which means that the train 16390 route will need to be updated to pick up the other free block in the station, "n2"
+        let n1 = layout.block(named: "n1")
+        n1.reserved = .init("foo", .next)
+
+        try p.assert("r1: {s1 ≏ ≏ } <ts2{sl}(1,0),s> <t1{sr}(0,1),s> <t2{sr}(0,1),s> [r16390[b1 💺16390 ≡ 🔵🚂16390 ≏ ]] <r16390<t4{sl}(1,0),s>> <r16390<tn1{sr}(0,2),r>> {r16390{n2 ≏ ≏ }}")
+
+        try p.assert("r1: {s1 ≏ ≏ } <ts2{sl}(1,0),s> <t1{sr}(0,1),s> <t2{sr}(0,1),s> [r16390[b1 ≏ 💺16390 ≡ 🔵🚂16390 ]] <r16390<t4{sl}(1,0),s>> <r16390<tn1{sr}(0,2),r>> {r16390{n2 ≏ ≏ }}")
+
+        try p.assert("r1: {s1 ≏ ≏ } <ts2{sl}(1,0),s> <t1{sr}(0,1),s> <t2{sr}(0,1),s> [b1 ≏ ≏ ] <t4{sl}(1,0),s> <tn1{sr}(0,2),r> {r16390{n2 💺16390 ≡ 🟡🚂16390 ≏ }}")
+
+        try p.assert("r1: {s1 ≏ ≏ } <ts2{sl}(1,0),s> <t1{sr}(0,1),s> <t2{sr}(0,1),s> [b1 ≏ ≏ ] <t4{sl}(1,0),s> <tn1{sr}(0,2),r> {r16390{n2 ≏ 💺16390 ≡ 🔴🚂16390 }}")
+
+        XCTAssertFalse(p.train.managedScheduling)
+    }
+
 }
