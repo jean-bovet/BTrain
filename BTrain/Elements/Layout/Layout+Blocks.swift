@@ -31,7 +31,7 @@ extension Layout {
 
     @discardableResult
     func newBlock(name: String, category: Block.Category) -> Block {
-        let block = Block(id: Layout.newIdentity(blockMap), name: name)
+        let block = Block(id: LayoutIdentity.newIdentity(blockMap, prefix: .block), name: name)
         block.category = category
         block.center = .init(x: 100, y: 100)
         blockMap[block.id] = block

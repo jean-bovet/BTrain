@@ -142,28 +142,6 @@ final class Layout: Element, ObservableObject {
         objectWillChange.send()
     }
     
-    // MARK: Identity
-    
-    static func newIdentity<T>(_ elements: OrderedDictionary<Identifier<T>, T>) -> Identifier<T> {
-        var index = 1
-        var id = Identifier<T>(uuid: String(index))
-        while elements[id] != nil {
-            index += 1
-            id = Identifier<T>(uuid: String(index))
-        }
-        return id
-    }
-    
-    static func newIdentity<T:ElementUUID>(_ elements: [T]) -> String {
-        var index = 1
-        var id = String(index)
-        while elements.first(where: { $0.uuid == id }) != nil {
-            index += 1
-            id = String(index)
-        }
-        return id
-    }
-
 }
 
 // MARK: Codable

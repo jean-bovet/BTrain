@@ -17,7 +17,7 @@ import Foundation
 extension Layout {
     
     func newRoute(id: String, _ steps: [(String, Direction)]) -> Route {
-        return newRoute(id, name: id, steps.map({ step in
+        return newRoute(Identifier<Route>(uuid: id), name: id, steps.map({ step in
             return .block(RouteStepBlock(Identifier<Block>(uuid: step.0), step.1))
         }))
     }

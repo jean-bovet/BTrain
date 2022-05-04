@@ -26,7 +26,7 @@ extension Layout {
     }
     
     func newStation() -> Station {
-        let station = Station(id: Layout.newIdentity(stationMap), name: "", elements: [])
+        let station = Station(id: LayoutIdentity.newIdentity(stationMap, prefix: .station), name: "", elements: [])
         stationMap[station.id] = station
         return station
     }

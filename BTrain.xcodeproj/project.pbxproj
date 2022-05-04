@@ -106,6 +106,7 @@
 		A7582966279380C000AA0649 /* LayoutTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7582965279380C000AA0649 /* LayoutTests.swift */; };
 		A75933E527E9774600ECB7A0 /* SwitchboardSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A75933E427E9774600ECB7A0 /* SwitchboardSettingsView.swift */; };
 		A75933E727E9903E00ECB7A0 /* TurnoutDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A75933E627E9903E00ECB7A0 /* TurnoutDetailsView.swift */; };
+		A75C2DCB28233C2F0043D462 /* LayoutIdentity.swift in Sources */ = {isa = PBXBuildFile; fileRef = A75C2DCA28233C2F0043D462 /* LayoutIdentity.swift */; };
 		A763F18D27BDD82A00B3499A /* TrainSpeedMeasurementTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A763F18C27BDD82A00B3499A /* TrainSpeedMeasurementTests.swift */; };
 		A763F18F27BE01C300B3499A /* XCTestCase+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A763F18E27BE01C300B3499A /* XCTestCase+Extension.swift */; };
 		A763F19327BE26CF00B3499A /* TrainSpeedMeasurementsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A763F19227BE26CF00B3499A /* TrainSpeedMeasurementsView.swift */; };
@@ -407,6 +408,7 @@
 		A7582965279380C000AA0649 /* LayoutTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutTests.swift; sourceTree = "<group>"; };
 		A75933E427E9774600ECB7A0 /* SwitchboardSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwitchboardSettingsView.swift; sourceTree = "<group>"; };
 		A75933E627E9903E00ECB7A0 /* TurnoutDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TurnoutDetailsView.swift; sourceTree = "<group>"; };
+		A75C2DCA28233C2F0043D462 /* LayoutIdentity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutIdentity.swift; sourceTree = "<group>"; };
 		A763F18C27BDD82A00B3499A /* TrainSpeedMeasurementTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainSpeedMeasurementTests.swift; sourceTree = "<group>"; };
 		A763F18E27BE01C300B3499A /* XCTestCase+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "XCTestCase+Extension.swift"; sourceTree = "<group>"; };
 		A763F19227BE26CF00B3499A /* TrainSpeedMeasurementsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainSpeedMeasurementsView.swift; sourceTree = "<group>"; };
@@ -976,6 +978,7 @@
 			isa = PBXGroup;
 			children = (
 				A74CCC67272A59F0004E58F5 /* Layout.swift */,
+				A75C2DCA28233C2F0043D462 /* LayoutIdentity.swift */,
 				A7710E6227799C9F00C08150 /* Layout+Blocks.swift */,
 				A717FB16281DEE5E00310B5D /* Layout+Stations.swift */,
 				A7710E6427799CF800C08150 /* Layout+Routes.swift */,
@@ -1606,6 +1609,7 @@
 				A7F779CE272B445B00E73275 /* Feedback.swift in Sources */,
 				A78413862740791C00381341 /* CGContext+DrawText.swift in Sources */,
 				A7E78C4227A08F9E004D1821 /* LayoutReservation.swift in Sources */,
+				A75C2DCB28233C2F0043D462 /* LayoutIdentity.swift in Sources */,
 				A73E0825276B99A8005F9D64 /* BlockAllFeedbacksView.swift in Sources */,
 				A785C086278CFD7D002FD538 /* TrainSpeed.swift in Sources */,
 				A7940668280A294000F6A427 /* EphemeralDrapAndDrop.swift in Sources */,

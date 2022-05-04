@@ -19,7 +19,7 @@ extension Layout {
     }
 
     func link(from: Socket, to: Socket) {
-        add(Transition(id: Layout.newIdentity(transitions), a: from, b: to))
+        add(Transition(id: LayoutIdentity.newIdentity(transitions, prefix: .transition), a: from, b: to))
     }
     
     func add(_ transition: Transition) {

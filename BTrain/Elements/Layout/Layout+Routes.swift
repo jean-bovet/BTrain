@@ -34,17 +34,20 @@ extension Layout {
         return routes.first(where: { $0.id == routeId })
     }
     
-    func newRoute(_ id: String, name: String, _ steps: [(Block, Direction, TimeInterval?)]) {
+    func newRoute(_ id: String, name: String, _ steps: [(Block, Direction, TimeInterval?)]) -> Route {
         var routeSteps = [RouteItem]()
         for step in steps {
             routeSteps.append(.block(RouteStepBlock(step.0.id, step.1, step.2)))
         }
-        newRoute(id, name: name, routeSteps)
+        return newRoute(Identifier<Route>(uuid: id), name: name, routeSteps)
     }
     
-    @discardableResult
-    func newRoute(_ id: String, name: String, _ steps: [RouteItem]) -> Route {
-        let route = Route(uuid: id)
+    func newRoute() -> Route {
+        return newRoute(LayoutIdentity.newIdentity(routes, prefix: .route), name: "", [])
+    }
+    
+    func newRoute(_ id: Identifier<Route>, name: String, _ steps: [RouteItem]) -> Route {
+        let route = Route(id: id)
         route.name = name
         route.steps = steps
         routes.append(route)

@@ -149,7 +149,7 @@ final class LayoutLoopWithStation: LayoutCreating {
     }
 }
 
-/// Pretty similar to ``LayoutLoopWithStation`` but with proper stations defined
+/// Similar to ``LayoutLoopWithStation`` but with stations defined
 /// - Station N: n1, n2
 /// - Station S: s1, s2
 final class LayoutLoopWithStations: LayoutCreating {
@@ -260,7 +260,8 @@ final class LayoutIncomplete: LayoutCreating {
         l.newTrain()
 
         // Routes
-        l.newRoute("0", name: "Simple Route", [.block(RouteStepBlock(b1, .next)), .block(RouteStepBlock(b2, .next))])
+        _ = l.newRoute(Identifier<Route>(uuid: "0"), name: "Simple Route",
+                       [.block(RouteStepBlock(b1, .next)), .block(RouteStepBlock(b2, .next))])
         
         return l
     }

@@ -44,7 +44,7 @@ struct RouteListView: View {
                     Spacer()
                     
                     Button("+") {
-                        let route = layout.newRoute(UUID().uuidString, name: "New Route", [RouteItem]())
+                        let route = layout.newRoute()
                         selection = route.id
                         undoManager?.registerUndo(withTarget: layout, handler: { layout in
                             layout.remove(routeId: route.id)

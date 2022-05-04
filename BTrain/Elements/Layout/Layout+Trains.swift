@@ -22,8 +22,8 @@ extension Layout {
     
     @discardableResult
     func newTrain() -> Train {
-        let id = Layout.newIdentity(trains)
-        return addTrain(Train(uuid: id, name: id))
+        let id = LayoutIdentity.newIdentity(trains, prefix: .train)
+        return addTrain(Train(id: id, name: id.uuid, address: 0))
     }
     
     @discardableResult
