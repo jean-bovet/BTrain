@@ -75,4 +75,18 @@ class ManualRoutingWithStationsTests: XCTestCase {
         XCTAssertFalse(p.train.managedScheduling)
     }
 
+    func testMultipleTrains() throws {
+        let layout = LayoutComplex().newLayout().removeTrains()
+        
+        let p = ManualRoutingTests.Package(layout: layout)
+        try p.prepare(routeID: "r1", trainID: "16389", fromBlockId: "NE2", position: .end)
+        
+        try p.assert("r1: {r16389{NE2 ≏ 💺16389 ≏ 🔴🚂16389 }} <B.4{sl}(1,0),s> <A.1{sl}(2,0),s> <A.34{ds2}(3,2),b03> <A.2{sr}(2,0),r> [IL1 ≏ ≏ ] <H.1{sl}(1,0),s> <D.2{ds2}(0,1),s01> [IL2 ≏ ≏ ≏ ] <E.3{sl}(0,2),l> <E.1{sl}(2,0),l> [OL3 ≏ ≏ ] <F.3{sr}(0,1),s> <F.1{sr}(0,2),r> <E.4{sr}(0,1),s> {r16389{NE2 ≏ 💺16389 ≏ 🔴🚂16389 }}")
+        
+        try p.start()
+
+        XCTAssertTrue(p.train.managedScheduling)
+        
+        try p.assert("r1: {r16389{NE2 ≏ 💺16389 ≏ 🔵🚂16389 }} <r16389<B.4{sl}(1,0),s>> <r16389<A.1{sl}(2,0),l>> <r16389<A.34{ds2}(3,2),s23>> <r16389<A.2{sr}(2,0),r>> [r16389[IL1 ≏ ≏ ]] <r16389<H.1{sl}(1,0),s>> <r16389<D.2{ds2}(0,1),s01>> [r16389[IL2 ≏ ≏ ≏ ]] <E.3{sl}(0,2),l> <E.1{sl}(2,0),l> [OL3 ≏ ≏ ] <F.3{sr}(0,1),s> <F.1{sr}(0,2),r> <E.4{sr}(0,1),s> {r16389{NE2 ≏ 💺16389 ≏ 🔵🚂16389 }}")
+    }
 }

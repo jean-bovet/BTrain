@@ -357,7 +357,7 @@ final class LayoutDiagnostic: ObservableObject {
     func checkRoute(route: Route, _ errors: inout [DiagnosticError]) {
         let rr = RouteResolver(layout: layout, train: Train(id: Identifier<Train>(uuid: UUID().uuidString), name: "", address: 0))
         do {
-            let steps = try rr.resolve(steps: ArraySlice(route.steps), verbose: true)
+            let steps = try rr.resolve(steps: ArraySlice(route.steps))
             if steps == nil {
                 errors.append(DiagnosticError.invalidRoute(route: route, error: "No path found"))
             }

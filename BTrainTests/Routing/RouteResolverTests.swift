@@ -28,7 +28,7 @@ class RouteResolverTests: XCTestCase {
     }
     
     func testResolveMultipleTurnoutsChoice() throws {
-        let layout = LayoutComplex().newLayout()
+        let layout = LayoutComplex().newLayout().removeTrains()
         let train = layout.trains[0]
         let route = layout.newRoute(id: "OL3-NE3", [("OL3", .next), ("NE3", .next)])
         

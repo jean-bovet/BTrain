@@ -91,8 +91,12 @@ class TransitionsTests: XCTestCase {
         let doc = LayoutDocument(layout: v8)
 
         let t1 = v8.trains[0]
+        t1.wagonsPushedByLocomotive = false
+        t1.maxNumberOfLeadingReservedBlocks = 2
         let t2 = v8.trains[1]
-        
+        t2.wagonsPushedByLocomotive = false
+        t2.maxNumberOfLeadingReservedBlocks = 1
+
         let r1 = v8.routes[0]
         let r2 = v8.routes[1]
         

@@ -118,7 +118,7 @@ class AutomaticRoutingTests: BTTestCase {
     }
 
     // This test ensures that the algorithm finds an alternative free path when multiple paths are available
-    // to reach the same block but one of the path is reserved. LayoutF will be used with the following scenario:
+    // to reach the same block but one of the path is reserved. "Layout Complex" will be used with the following scenario:
     // OL3 to NE3:
     // There are two direct paths that exist:
     // (1) OL3 > F.3 > F.1 > F.2 > M.1 > C.1 > C.3 > NE3
@@ -126,7 +126,7 @@ class AutomaticRoutingTests: BTTestCase {
     // Path (1) is chosen first because it is the most natural one.
     // However, if M.1 is reserved, for example, then path (2) should be found.
     func testAutomaticRouteWithAlternateRoute() throws {
-        let layout = LayoutComplex().newLayout()
+        let layout = LayoutComplex().newLayout().removeTrains()
         
         let train = layout.trains[0]
         let ol3 = layout.block("OL3")
