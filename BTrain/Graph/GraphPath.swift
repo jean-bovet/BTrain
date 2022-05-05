@@ -50,6 +50,8 @@ typealias UnresolvedGraphPath = [UnresolvedGraphPathElement]
 
 protocol UnresolvedGraphPathElement {
     
+    var description: String { get }
+    
     func resolve(_ constraints: GraphPathFinderConstraints, _ context: GraphPathFinderContext) -> GraphPathElement?
     
 }

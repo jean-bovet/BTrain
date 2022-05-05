@@ -110,7 +110,7 @@ struct GraphPathFinder: GraphPathFinding {
         return path(graph: graph, from: from, to: to, currentPath: GraphPath([from]), constraints: constraints)
     }
     
-    /// Returns a resolved path given a path and the specified constraints.
+    /// Returns a resolved path given an unresolved path and the specified constraints.
     func resolve(graph: Graph, _ unresolvedPath: UnresolvedGraphPath, constraints: GraphPathFinderConstraints = DefaultConstraints(), context: GraphPathFinderContext = DefaultContext()) -> GraphPath? {
         var resolvedPath = [GraphPathElement]()
         guard var previousElement = unresolvedPath.first?.resolve(constraints, context) else {
@@ -120,8 +120,8 @@ struct GraphPathFinder: GraphPathFinding {
         resolvedPath.append(previousElement)
         for unresolvedElement in unresolvedPath.dropFirst() {
             guard let element = unresolvedElement.resolve(constraints, context) else {
-                // TODO: throw
-                fatalError("Unable to resolve element \(unresolvedElement)")
+                BTLogger.router.error("Unable to resolve element \(unresolvedElement.description, privacy: .public)")
+                return nil
             }
             if let p = self.path(graph: graph, from: previousElement, to: element, constraints: constraints) {
                 for resolvedElement in p.elements.dropFirst() {

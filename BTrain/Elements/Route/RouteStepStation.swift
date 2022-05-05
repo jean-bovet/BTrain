@@ -33,8 +33,8 @@ struct RouteStepStation: RouteStep, Equatable, Codable {
         guard let station = lc.layout.station(for: stationId) else {
             return nil
         }
-        
-        guard let element = firstAvailableElement(station: station, train: lc.train, layout: lc.layout) else {
+                
+        guard let element = bestElement(station: station, train: lc.train, layout: lc.layout) else {
             return nil
         }
         
@@ -52,6 +52,18 @@ struct RouteStepStation: RouteStep, Equatable, Codable {
         let exitSocket = direction == .next ? Block.nextSocket : Block.previousSocket
         return .init(node: block, entrySocket:  entrySocket, exitSocket: exitSocket)
     }
+
+    func bestElement(station: Station, train: Train, layout: Layout) -> Station.StationElement? {
+        if let element = elementWithTrain(station: station, train: train, layout: layout) {
+            return element
+        }
+        
+        if let element = firstAvailableElement(station: station, train: train, layout: layout) {
+            return element
+        }
+        
+        return nil
+    }
     
     func firstAvailableElement(station: Station, train: Train, layout: Layout) -> Station.StationElement? {
         for element in station.elements {
@@ -59,6 +71,18 @@ struct RouteStepStation: RouteStep, Equatable, Codable {
                 continue
             }
             if block.enabled && (block.reserved == nil || block.reserved?.trainId == train.id) {
+                return element
+            }
+        }
+        return nil
+    }
+    
+    func elementWithTrain(station: Station, train: Train, layout: Layout) -> Station.StationElement? {
+        for element in station.elements {
+            guard let block = layout.block(for: element.blockId) else {
+                continue
+            }
+            if block.id == train.blockId {
                 return element
             }
         }
