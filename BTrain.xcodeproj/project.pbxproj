@@ -384,6 +384,7 @@
 		A744D1362765C5A3005C2F37 /* LayoutError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutError.swift; sourceTree = "<group>"; };
 		A744D13A276714A2005C2F37 /* DiagnosticsSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiagnosticsSheet.swift; sourceTree = "<group>"; };
 		A74BDD6C2829ED4200BA7160 /* TrainStateHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainStateHandler.swift; sourceTree = "<group>"; };
+		A74BDD6E282C725800BA7160 /* Routing.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; name = Routing.xctestplan; path = BTrain.xcodeproj/Routing.xctestplan; sourceTree = "<group>"; };
 		A74C0E7D275C9E900043FEE5 /* MarklinLocomotiveConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarklinLocomotiveConfig.swift; sourceTree = "<group>"; };
 		A74C0E7F275C9F490043FEE5 /* Locomotives.cs2 */ = {isa = PBXFileReference; lastKnownFileType = text; path = Locomotives.cs2; sourceTree = "<group>"; };
 		A74CCC67272A59F0004E58F5 /* Layout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Layout.swift; sourceTree = "<group>"; };
@@ -541,7 +542,7 @@
 		A7C30BE12811ACED00CC4251 /* TrainManualMoveToNextBlockHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainManualMoveToNextBlockHandler.swift; sourceTree = "<group>"; };
 		A7C30BE52811AD4D00CC4251 /* TrainManualStopTriggerDetectionHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainManualStopTriggerDetectionHandler.swift; sourceTree = "<group>"; };
 		A7C30BE728121F6100CC4251 /* TrainStopPushingWagonsHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainStopPushingWagonsHandler.swift; sourceTree = "<group>"; };
-		A7C5E959280DDD6A00A5DB12 /* NetworkTests.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = NetworkTests.xctestplan; sourceTree = "<group>"; };
+		A7C5E959280DDD6A00A5DB12 /* Networking.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = Networking.xctestplan; sourceTree = "<group>"; };
 		A7C5E95A280E04DE00A5DB12 /* XCTestCase+Simulator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "XCTestCase+Simulator.swift"; sourceTree = "<group>"; };
 		A7C6343727E6AF6700C37B46 /* TrainIconManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainIconManagerTests.swift; sourceTree = "<group>"; };
 		A7C6C3AC2806780F00D43AC2 /* ShortestPathTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShortestPathTests.swift; sourceTree = "<group>"; };
@@ -666,7 +667,8 @@
 		A73AFE792726594600E1ED21 = {
 			isa = PBXGroup;
 			children = (
-				A7C5E959280DDD6A00A5DB12 /* NetworkTests.xctestplan */,
+				A74BDD6E282C725800BA7160 /* Routing.xctestplan */,
+				A7C5E959280DDD6A00A5DB12 /* Networking.xctestplan */,
 				A71D97F727A3C5FE00EBEA06 /* All.xctestplan */,
 				A73D39DA2780C31100EBE409 /* README.md */,
 				A79079A6277FB8E700771A60 /* Credits.rtf */,

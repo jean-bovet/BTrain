@@ -129,7 +129,12 @@ extension Layout {
     
     func setTrainSpeed(_ train: Train, _ speed: TrainSpeed.UnitKph, speedLimit: Bool = true, acceleration: TrainSpeedAcceleration.Acceleration? = nil, completion: @escaping CompletionBlock) {
         if speedLimit {
-            train.speed.requestedKph = min(speed, reservation.maximumSpeedAllowed(train: train))
+            let route = route(for: train.routeId, trainId: train.id)!
+            // TODO: finish throwing
+//            guard let route = route(for: train.routeId, trainId: train.id) else {
+//                throw LayoutError.routeNotFound(routeId: train.routeId)
+//            }
+            train.speed.requestedKph = min(speed, reservation.maximumSpeedAllowed(train: train, route: route))
         } else {
             train.speed.requestedKph = speed
         }
@@ -272,11 +277,21 @@ extension Layout {
         train.scheduling = .managed(finishing: false)
     }
     
-    func trainShouldStop(train: Train, block: Block) -> Bool {
-        guard block.category == .station else {
-            return false
+    func trainShouldStop(route: Route, train: Train, block: Block) -> Bool {
+        switch route.mode {
+        case .automaticOnce(let destination):
+            // TODO: check also the direction
+            if block.id != destination.blockId {
+                return false
+            }
+        case .fixed, .automatic:
+            if block.category != .station {
+                return false
+            }
         }
 
+        // Check that the train is not in the first block of the route in which case
+        // it should not stop at all, otherwise a train will never leave its station
         guard train.routeStepIndex != train.startRouteIndex || train.startRouteIndex == nil else {
             return false
         }

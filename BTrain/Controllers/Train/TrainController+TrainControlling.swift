@@ -35,6 +35,11 @@ extension TrainController: TrainControlling {
             return false
         }
         
+        // TODO: move this logic inside TrainStateHandler
+        if layout.trainShouldStop(route: route, train: train, block: currentBlock) {
+            return true
+        }
+        
         BTLogger.router.debug("\(self.train, privacy: .public): generating a new route at \(currentBlock.name, privacy: .public) because the leading blocks could not be reserved for \(route.steps.debugDescription, privacy: .public)")
 
         // Update the automatic route

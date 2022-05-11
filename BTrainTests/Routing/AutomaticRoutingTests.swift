@@ -30,7 +30,7 @@ class AutomaticRoutingTests: BTTestCase {
 
         // Move s1 -> b1
         // The controller will generate a new automatic route because "b2" is occupied.
-        try p.assert("automatic-0: [r0[b1 💺0 ≡ 🟡🚂0 ]] <r0<t3(0,2),r>> ![r0[b5 ≏ ]] <t7{sr}(2,0),s> <t5{sr}(2,0),s> ![b3 ≏ ≏ ≏ ] <t4{sl}(0,1),s> ![r1[b2 ≏ ]] <r0<t3(1,0),r>> ![r0[b1 🟡🚂0 ≡ 💺0 ]] <t2{sl}(0,1),s> <t1{sl}(0,1),l> !{s2 ≏ }", ["b5"])
+        try p.assert("automatic-0: [r0[b1 💺0 ≡ 🔵🚂0 ]] <r0<t3(0,2),r>> ![r0[b5 ≏ ]] <t7{sr}(2,0),s> <t5{sr}(2,0),s> ![b3 ≏ ≏ ≏ ] <t4{sl}(0,1),s> ![r1[b2 ≏ ]] <r0<t3(1,0),r>> ![r0[b1 🔵🚂0 ≡ 💺0 ]] <t2{sl}(0,1),s> <t1{sl}(0,1),l> !{s2 ≏ }", ["b5"])
         
         // Move b1 -> b5
         try p.assert("automatic-0: [b1 ≏ ] <t3(0,2),r> ![r0[b5 ≡ 🔵🚂0 ]] <r0<t7(2,0),r>> <r0<t5(2,0),r>> ![r0[b3 ≏ ≏ ]] <t4(0,1)> ![r1[b2 ≏ ]] <t3(1,0),r> ![b1 ≏ ] <t2(0,1)> <t1(0,1),l> !{s2 ≏ }", ["b3"])
@@ -191,7 +191,7 @@ class AutomaticRoutingTests: BTTestCase {
         try p.assert("automatic-0: {r0{s1 ≏ 🔵🚂0 }} <r0<t1(2,0),l>> <r0<t2(1,0),s>> [r0[b1 ≏ ]] <t3> [r1[b2 ≏ ]] <t4(1,0)> [b3 ≏ ≏ ] <t5> <t6> {s2 ≏ }")
         
         // Move from s1 to b1, the controller will generate a new automatic route because "b2" is occupied.
-        try p.assert("automatic-0: [r0[b1 💺0 ≡ 🟡🚂0 ]] <r0<t3{sr}(0,2),r>> ![r0[b5 ≏ ]] <t7{sr}(2,0),s> <t5{sr}(2,0),s> ![b3 ≏ ≏ ≏ ] <t4{sl}(0,1),s> ![r1[b2 ≏ ]] <r0<t3{sr}(1,0),r>> ![r0[b1 🟡🚂0 ≡ 💺0 ]] <t2{sl}(0,1),s> <t1{sl}(0,1),l> !{s2 ≏ }")
+        try p.assert("automatic-0: [r0[b1 💺0 ≡ 🔵🚂0 ]] <r0<t3{sr}(0,2),r>> ![r0[b5 ≏ ]] <t7{sr}(2,0),s> <t5{sr}(2,0),s> ![b3 ≏ ≏ ≏ ] <t4{sl}(0,1),s> ![r1[b2 ≏ ]] <r0<t3{sr}(1,0),r>> ![r0[b1 🔵🚂0 ≡ 💺0 ]] <t2{sl}(0,1),s> <t1{sl}(0,1),l> !{s2 ≏ }")
 
         // Move b1 -> b5
         try p.assert("automatic-0: [b1 ≏ ] <t3(0,2),r> ![r0[b5 ≡ 🔵🚂0 ]] <r0<t7(2,0),r>> <r0<t5(2,0),r>> ![r0[b3 ≏ ≏ ]] <t4(0,1)> ![r1[b2 ≏ ]] <t3(1,0),r> ![b1 ≏ ] <t2(0,1)> <t1(0,1),l> !{s2 ≏ }")
@@ -394,7 +394,7 @@ class AutomaticRoutingTests: BTTestCase {
         try p.assert("automatic-0: {r0{s2 ≏ 🔵🚂0 }} <r0<t1(1,0),s>> <r0<t2(1,0),s>> [r0[b1 ≏ ]] <t3> [r1[b2 🔴🚂1 ≏ ]] <t4(1,0)> [b3 ≏ ≏ ≏ ]")
 
         // Move from s2 to b1, the route is also updated because b2 is occupied
-        try p.assert("automatic-0: [r0[b1 ≡ 🟡🚂0 ]] <r0<t3{sr}(0,2),r>> ![r0[b5 ≏ ]] <t7{sr}(2,0),s> <t5{sr}(2,0),s> ![b3 ≏ ≏ ≏ ]")
+        try p.assert("automatic-0: [r0[b1 ≡ 🔵🚂0 ]] <r0<t3{sr}(0,2),r>> ![r0[b5 ≏ ]] <t7{sr}(2,0),s> <t5{sr}(2,0),s> ![b3 ≏ ≏ ≏ ]")
 
         try p.assert("automatic-0: [b1 ≏ ] <t3(0,2),r> ![r0[b5 ≡ 🔵🚂0 ]] <r0<t7(2,0),r>> <r0<t5(2,0),r>> ![r0[b3 ≏ ≏ ≏ ]]")
         try p.assert("automatic-0: [b1 ≏ ] <t3(0,2),r> ![b5 ≏ ] <t7(2,0),r> <t5(2,0),r> ![r0[b3 ≡ 🟡🚂0 ≏ ≏ ]]")

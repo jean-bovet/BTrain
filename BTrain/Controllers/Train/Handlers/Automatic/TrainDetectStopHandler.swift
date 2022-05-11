@@ -75,7 +75,7 @@ final class TrainDetectStopHandler: TrainAutomaticSchedulingHandler {
     // the specified `block`, depending on the block characteristics.
     // For now, only "station" blocks make the train stop.
     private func handleTrainStopByBlock(layout: Layout, train: Train, route: Route, block: Block) -> TrainHandlerResult {
-        guard layout.trainShouldStop(train: train, block: block) else {
+        guard layout.trainShouldStop(route: route, train: train, block: block) else {
             return .none()
         }
                 
