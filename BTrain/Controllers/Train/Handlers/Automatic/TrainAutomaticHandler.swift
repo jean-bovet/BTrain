@@ -50,12 +50,12 @@ final class TrainAutomaticHandler: TrainAutomaticSchedulingHandler {
             //            - Move train to next block (and reserve leading blocks)
             //            - Emergency stop if undetected feedback (at the layout controller level only)
             if try moveInsideBlock(layout: layout, train: train, block: currentBlock, direction: trainInstance.direction) {
-                try reserveLeadBlocks(layout: layout, train: train, route: route, currentBlock: currentBlock)
+                try reserveLeadingBlocks(layout: layout, train: train, route: route, currentBlock: currentBlock)
                 result = result.appending(.movedInsideBlock)
             } else if try moveToNextBlock(layout: layout, train: train, block: currentBlock, direction: trainInstance.direction) {
                 // TODO: handle nil here
                 currentBlock = layout.currentBlock(train: train)!
-                try reserveLeadBlocks(layout: layout, train: train, route: route, currentBlock: currentBlock)
+                try reserveLeadingBlocks(layout: layout, train: train, route: route, currentBlock: currentBlock)
                 result = result.appending(.movedToNextBlock)
             }
 
@@ -63,7 +63,7 @@ final class TrainAutomaticHandler: TrainAutomaticSchedulingHandler {
             if train.managedScheduling && train.state == .stopped {
                 train.startRouteIndex = 0
                 train.routeStepIndex = 0
-                try reserveLeadBlocks(layout: layout, train: train, route: route, currentBlock: currentBlock)
+                try reserveLeadingBlocks(layout: layout, train: train, route: route, currentBlock: currentBlock)
             } else if train.unmanagedScheduling {
                 try layout.reservation.removeLeadingBlocks(train: train)
             }
@@ -92,7 +92,7 @@ final class TrainAutomaticHandler: TrainAutomaticSchedulingHandler {
                 }
                 
             case .automatic:
-                try reserveLeadBlocks(layout: layout, train: train, route: route, currentBlock: currentBlock)
+                try reserveLeadingBlocks(layout: layout, train: train, route: route, currentBlock: currentBlock)
 
             case .automaticOnce(destination: _):
                 if context.trainAtEndOfRoute == false {
@@ -106,7 +106,6 @@ final class TrainAutomaticHandler: TrainAutomaticSchedulingHandler {
             // Setup the start route index of the train
             train.startRouteIndex = train.routeStepIndex
             
-            train.stateChangeRequest = nil
             train.state = .running
             layout.setTrainSpeed(train, LayoutFactory.DefaultMaximumSpeed) { }
             result = result.appending(.stateChanged)
@@ -235,7 +234,7 @@ final class TrainAutomaticHandler: TrainAutomaticSchedulingHandler {
         return .none()
     }
 
-    func reserveLeadBlocks(layout: Layout, train: Train, route: Route, currentBlock: Block) throws {
+    func reserveLeadingBlocks(layout: Layout, train: Train, route: Route, currentBlock: Block) throws {
         if try layout.reservation.updateReservedBlocks(train: train) {
             return
         }

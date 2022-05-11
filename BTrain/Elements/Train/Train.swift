@@ -221,54 +221,7 @@ final class Train: Element, ObservableObject {
     
     // The state of the train
     @Published var state: State = .stopped
-    
-    /// Enumartion that indicates a request to change the state of train, like starting or stopping the train.
-    enum StateChangeRequest: CustomStringConvertible, Equatable {
-
-        /// The train is requested to start
-        case start
-        
-        /// The train will be fully stopped and the scheduling placed back to ``Train/Schedule/manual``.
-        case stopCompletely
-        
-        /// The train will stop and be restarted after the specified delay
-        case stopAndRestart(delay: TimeInterval)
-        
-        /// The train will stop temporarily and restart as soon as the leading blocks can be reserved again
-        case stopTemporarily
-        
-        var description: String {
-            switch self {
-            case .start:
-                return "start"
-            case .stopCompletely:
-                return "stopCompletely"
-            case .stopAndRestart(delay: let delay):
-                return "stopAndRestart(after: \(delay))"
-            case .stopTemporarily:
-                return "stopTemporarily"
-            }
-        }
-
-        static func ==(lhs: StateChangeRequest, rhs: StateChangeRequest) -> Bool {
-            switch (lhs, rhs) {
-            case (.start, .start):
-                return true
-            case (.stopCompletely, .stopCompletely):
-                return true
-            case (.stopAndRestart(delay: let d1), .stopAndRestart(delay: let d2)):
-                return d1 == d2
-            case (.stopTemporarily, .stopTemporarily):
-                return true
-            default:
-                return false
-            }
-        }
-    }
             
-    /// If not nil, this variable indicates a request to change the state of the train
-    @Published var stateChangeRequest: StateChangeRequest? = nil
-        
     // The block where the locomotive is located
     @Published var blockId: Identifier<Block>?
     
@@ -318,9 +271,6 @@ final class Train: Element, ObservableObject {
 
     var description: String {
         var text = "Train '\(name)' (id=\(id), \(state)"
-        if let stateChangeRequest = stateChangeRequest {
-            text += ", \(stateChangeRequest)"
-        }
         text += ", \(speed.actualKph)kph)"
         return text
     }

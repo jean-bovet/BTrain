@@ -19,8 +19,6 @@ extension TrainController: TrainControlling {
     }
     
     func stop(completely: Bool) throws -> TrainHandlerResult {
-        train.stateChangeRequest = nil
-                                        
         try layout.stopTrain(train.id, completely: completely) { }
                 
         return .none()
