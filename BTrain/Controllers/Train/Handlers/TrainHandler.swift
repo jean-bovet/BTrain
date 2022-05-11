@@ -102,15 +102,6 @@ protocol TrainControlling {
     /// - Returns: the result
     func stop(completely: Bool) throws -> TrainHandlerResult
     
-    /// This method tries to reserve the leading blocks for the train. If the blocks cannot be reserved and the route is automatic,
-    /// the route is updated and the leading blocks reserved again.
-    ///
-    /// - Parameters:
-    ///   - route: the route
-    ///   - currentBlock: the current block
-    /// - Returns: true if the leading blocks could be reserved, false otherwise.
-    func reserveLeadBlocks(route: Route, currentBlock: Block) throws -> Bool
-
 }
 
 /// Defines a protocol for a handler that gets invoked during the automatic scheduling of a train (when the train is automatically managed by BTrain).

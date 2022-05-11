@@ -49,12 +49,12 @@ final class TrainAutomaticHandler: TrainAutomaticSchedulingHandler {
             //            - Move train to next block (and reserve leading blocks)
             //            - Emergency stop if undetected feedback (at the layout controller level only)
             if try moveInsideBlock(layout: layout, train: train, block: currentBlock, direction: trainInstance.direction) {
-                _ = try controller.reserveLeadBlocks(route: route, currentBlock: currentBlock)
+                _ = try reserveLeadBlocks(layout: layout, train: train, route: route, currentBlock: currentBlock)
                 result = result.appending(.movedInsideBlock)
             } else if try moveToNextBlock(layout: layout, train: train, block: currentBlock, direction: trainInstance.direction) {
                 // TODO: handle nil here
                 currentBlock = layout.currentBlock(train: train)!
-                _ = try controller.reserveLeadBlocks(route: route, currentBlock: currentBlock)
+                _ = try reserveLeadBlocks(layout: layout, train: train, route: route, currentBlock: currentBlock)
                 result = result.appending(.movedToNextBlock)
             }
 
@@ -62,7 +62,7 @@ final class TrainAutomaticHandler: TrainAutomaticSchedulingHandler {
             if train.managedScheduling && train.state == .stopped {
                 train.startRouteIndex = 0
                 train.routeStepIndex = 0
-                _ = try controller.reserveLeadBlocks(route: route, currentBlock: currentBlock)
+                _ = try reserveLeadBlocks(layout: layout, train: train, route: route, currentBlock: currentBlock)
             } else if train.unmanagedScheduling {
                 try layout.reservation.removeLeadingBlocks(train: train)
             }
@@ -75,7 +75,7 @@ final class TrainAutomaticHandler: TrainAutomaticSchedulingHandler {
                 // TODO: only do that when this event is about this train and not another train!
                 train.startRouteIndex = train.routeStepIndex
                 if route.automatic {
-                    _ = try controller.reserveLeadBlocks(route: route, currentBlock: currentBlock)
+                    _ = try reserveLeadBlocks(layout: layout, train: train, route: route, currentBlock: currentBlock)
                 }
             }
             break
@@ -113,7 +113,7 @@ final class TrainAutomaticHandler: TrainAutomaticSchedulingHandler {
                 }
                 
             case .automatic:
-                _ = try controller.reserveLeadBlocks(route: route, currentBlock: currentBlock)
+                _ = try reserveLeadBlocks(layout: layout, train: train, route: route, currentBlock: currentBlock)
 
             case .automaticOnce(destination: _):
                 if context.trainAtEndOfRoute == false {
@@ -256,6 +256,42 @@ final class TrainAutomaticHandler: TrainAutomaticSchedulingHandler {
         return .none()
     }
 
+    func reserveLeadBlocks(layout: Layout, train: Train, route: Route, currentBlock: Block) throws -> Bool {
+        if try layout.reservation.updateReservedBlocks(train: train) {
+            return true
+        }
+        
+        guard route.automatic else {
+            return false
+        }
+        
+        // TODO: move this logic inside TrainStateHandler
+        if layout.trainShouldStop(route: route, train: train, block: currentBlock) {
+            return true
+        }
+        
+        BTLogger.router.debug("\(train, privacy: .public): generating a new route at \(currentBlock.name, privacy: .public) because the leading blocks could not be reserved for \(route.steps.debugDescription, privacy: .public)")
+
+        // Update the automatic route
+        if try updateAutomaticRoute(for: train, layout: layout) {
+            // And try to reserve the lead blocks again
+            return try layout.reservation.updateReservedBlocks(train: train)
+        } else {
+            return false
+        }
+    }
+
+    private func updateAutomaticRoute(for train: Train, layout: Layout) throws -> Bool {
+        let (success, route) = try layout.automaticRouting.updateAutomaticRoute(for: train.id)
+        if success {
+            BTLogger.router.debug("\(train, privacy: .public): generated route is \(route.steps.debugDescription, privacy: .public)")
+            return true
+        } else {
+            BTLogger.router.warning("\(train, privacy: .public): unable to find a suitable route")
+            return false
+        }
+    }
+    
 //    Running if
 //- all leading blocks reserved
 //- waiting time at a station has expired

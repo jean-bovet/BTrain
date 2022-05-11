@@ -26,40 +26,4 @@ extension TrainController: TrainControlling {
         return .none()
     }
             
-    func reserveLeadBlocks(route: Route, currentBlock: Block) throws -> Bool {
-        if try layout.reservation.updateReservedBlocks(train: train) {
-            return true
-        }
-        
-        guard route.automatic else {
-            return false
-        }
-        
-        // TODO: move this logic inside TrainStateHandler
-        if layout.trainShouldStop(route: route, train: train, block: currentBlock) {
-            return true
-        }
-        
-        BTLogger.router.debug("\(self.train, privacy: .public): generating a new route at \(currentBlock.name, privacy: .public) because the leading blocks could not be reserved for \(route.steps.debugDescription, privacy: .public)")
-
-        // Update the automatic route
-        if try updateAutomaticRoute(for: train.id) {
-            // And try to reserve the lead blocks again
-            return try layout.reservation.updateReservedBlocks(train: train)
-        } else {
-            return false
-        }
-    }
-
-    private func updateAutomaticRoute(for trainId: Identifier<Train>) throws -> Bool {
-        let (success, route) = try layout.automaticRouting.updateAutomaticRoute(for: train.id)
-        if success {
-            BTLogger.router.debug("\(self.train, privacy: .public): generated route is \(route.steps.debugDescription, privacy: .public)")
-            return true
-        } else {
-            BTLogger.router.warning("\(self.train, privacy: .public): unable to find a suitable route")
-            return false
-        }
-    }
-    
 }
