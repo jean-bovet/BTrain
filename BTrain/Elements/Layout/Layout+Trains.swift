@@ -277,14 +277,20 @@ extension Layout {
         train.scheduling = .managed(finishing: false)
     }
     
-    func trainShouldStop(route: Route, train: Train, block: Block) -> Bool {
-        switch route.mode {
-        case .automaticOnce(let destination):
-            // TODO: check also the direction
-            if block.id != destination.blockId {
-                return false
+    func trainShouldStop(route: Route?, train: Train, block: Block) -> Bool {
+        if let route = route {
+            switch route.mode {
+            case .automaticOnce(let destination):
+                // TODO: check also the direction
+                if block.id != destination.blockId {
+                    return false
+                }
+            case .fixed, .automatic:
+                if block.category != .station {
+                    return false
+                }
             }
-        case .fixed, .automatic:
+        } else {
             if block.category != .station {
                 return false
             }

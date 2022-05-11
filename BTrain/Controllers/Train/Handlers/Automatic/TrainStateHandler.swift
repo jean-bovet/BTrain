@@ -70,10 +70,13 @@ final class TrainStateHandler: TrainAutomaticSchedulingHandler {
         case .stopRequested:
             break
         case .restartTimerExpired:
-            // TODO: only do that when this event is about this train and not another train!
-            train.startRouteIndex = train.routeStepIndex
-            if route.automatic {
-                _ = try controller.reserveLeadBlocks(route: route, currentBlock: currentBlock)
+            // Do not restart the train is train.managedFinishingScheduling
+            if train.managedFinishingScheduling == false && train.managedScheduling {
+                // TODO: only do that when this event is about this train and not another train!
+                train.startRouteIndex = train.routeStepIndex
+                if route.automatic {
+                    _ = try controller.reserveLeadBlocks(route: route, currentBlock: currentBlock)
+                }
             }
             break
         case .turnoutChanged:

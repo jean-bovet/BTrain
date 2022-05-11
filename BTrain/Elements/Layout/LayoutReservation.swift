@@ -327,7 +327,7 @@ final class LayoutReservation {
     
     /// This method returns the maximum speed allowed by all the elements occupied by
     /// the specified train, which includes blocks and turnouts.
-    func maximumSpeedAllowed(train: Train, route: Route) -> TrainSpeed.UnitKph {
+    func maximumSpeedAllowed(train: Train, route: Route?) -> TrainSpeed.UnitKph {
         var maximumSpeedAllowed: TrainSpeed.UnitKph = LayoutFactory.DefaultMaximumSpeed
         
         layout.blocks.filter({ $0.reserved?.trainId == train.id }).forEach { block in
