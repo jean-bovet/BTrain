@@ -63,6 +63,7 @@ import Foundation
 //   - If the HWP is past the block it needs to stop in, stop the train.
 //   - If the HWP is past the stopping feedback of the block it needs to stop in, stop the train.
 //   - If the HWP is past the braking feedback of the block it needs to stop in, brake the train.
+// TODO: include this into TrainStateHandler when we have time to think about it
 final class TrainStopPushingWagonsHandler: TrainAutomaticSchedulingHandler {
     var events: Set<TrainEvent> {
         [.movedInsideBlock, .movedToNextBlock]

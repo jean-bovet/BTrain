@@ -68,8 +68,9 @@ final class TrainController {
     }
                         
     private func registerHandlers() {
-        automaticSchedulingHandlers.append(TrainStateHandler())
+        automaticSchedulingHandlers.append(TrainAutomaticHandler())
 
+        // TODO: have a single class to handle the manual scheduling
         manualSchedulingHandlers.append(TrainManualStateHandler())
         manualSchedulingHandlers.append(TrainMoveWithinBlockHandler())
         manualSchedulingHandlers.append(TrainManualMoveToNextBlockHandler())
