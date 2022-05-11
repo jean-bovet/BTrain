@@ -68,14 +68,7 @@ final class TrainController {
     }
                         
     private func registerHandlers() {
-        automaticSchedulingHandlers.append(TrainStartHandler())
-        automaticSchedulingHandlers.append(TrainMoveWithinBlockHandler())
-        automaticSchedulingHandlers.append(TrainMoveToNextBlockHandler())
-        automaticSchedulingHandlers.append(TrainDetectStopHandler())
-        automaticSchedulingHandlers.append(TrainExecuteStopInBlockHandler())
-        automaticSchedulingHandlers.append(TrainSpeedLimitEventHandler())
-        automaticSchedulingHandlers.append(TrainReserveLeadingBlocksHandler())
-        automaticSchedulingHandlers.append(TrainStopPushingWagonsHandler())
+        automaticSchedulingHandlers.append(TrainStateHandler())
 
         manualSchedulingHandlers.append(TrainManualStateHandler())
         manualSchedulingHandlers.append(TrainMoveWithinBlockHandler())

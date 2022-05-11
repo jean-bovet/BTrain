@@ -320,7 +320,7 @@ extension Layout {
         }
         
         train.scheduling = .unmanaged
-        try reservation.updateReservedBlocks(train: train)
+        try reservation.removeLeadingBlocks(train: train)
     }
     
     // Use this method to stop the train when it finishes the route
@@ -376,7 +376,7 @@ extension Layout {
             train.routeStepIndex = routeIndex
         }
 
-        try reservation.updateReservedBlocks(train: train)
+        try reservation.removeLeadingBlocks(train: train)
     }
 
     func free(fromBlock: Identifier<Block>, toBlockNotIncluded: Identifier<Block>, direction: Direction) throws {

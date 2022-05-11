@@ -70,7 +70,7 @@ final class LayoutReservation {
     // in front of the train (leading blocks).
     // Note: it won't reserve blocks that are already reserved to avoid loops.
     @discardableResult
-    func updateReservedBlocks(train: Train, trainStarting: Bool = false) throws -> Bool {
+    func updateReservedBlocks(train: Train) throws -> Bool {
         // Remove the train from all the elements
         try freeElements(train: train)
         
@@ -81,16 +81,20 @@ final class LayoutReservation {
         // Reserve the number of leading blocks necessary
         return try reserveLeadingBlocks(train: train)
     }
-
-    private func reserveLeadingBlocks(train: Train) throws -> Bool {
-        // The leading blocks can only be reserved when one of the following conditions is true:
-        // - The train is running
-        // - The train is starting
-        // - The train is braking to stop temporarily (because the route cannot be reserved in front of the train)
-        guard train.state == .running || (train.state == .stopped && train.stateChangeRequest == .start) || (train.state == .braking && train.stateChangeRequest == .stopTemporarily) else {
-            return false
-        }
+    
+    /// Removes the reservation for the leading blocks of the specified train but keep the occupied blocks intact (that the train actually occupies).
+    ///
+    /// - Parameter train: the train
+    func removeLeadingBlocks(train: Train) throws {
+        // Remove the train from all the elements
+        try freeElements(train: train)
         
+        // Reserve and set the train and its wagon(s) using the necessary number of
+        // elements (turnouts and blocks)
+        try occupyBlockWith(train: train)
+    }
+    
+    private func reserveLeadingBlocks(train: Train) throws -> Bool {
         // The route must be defined and not be empty
         guard let route = layout.route(for: train.routeId, trainId: train.id), !route.steps.isEmpty else {
             debug("Cannot reserve leading blocks because route is empty")
