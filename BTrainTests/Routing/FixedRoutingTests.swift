@@ -14,8 +14,7 @@ import XCTest
 
 @testable import BTrain
 
-//TODO: rename as "FixedRouteTests"
-class ManualRoutingTests: BTTestCase {
+class FixedRoutingTests: BTTestCase {
         
     func testBlockReserved() throws {
         let layout = LayoutLoop1().newLayout().removeTrainGeometry()
