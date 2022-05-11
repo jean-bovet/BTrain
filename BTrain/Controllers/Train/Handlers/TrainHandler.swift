@@ -22,13 +22,7 @@ enum TrainEvent: String {
     /// - When a train stops
     /// - When a train finishes a route
     case schedulingChanged
-    
-    /// A train has been requested to stop. This happens when:
-    /// - The leading blocks cannot be reserved
-    /// - A train reaches the end of the route
-    /// - A train reaches a station
-    case stopRequested
-    
+        
     /// A train restart timer has expired, meaning that the train associated with this timer
     /// should restart again.
     case restartTimerExpired

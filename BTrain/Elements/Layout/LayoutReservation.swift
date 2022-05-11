@@ -425,7 +425,6 @@ final class LayoutReservation {
         if verbose {
             BTLogger.debug(msg)
         }
-        BTLogger.debug(msg)
     }
 
 }

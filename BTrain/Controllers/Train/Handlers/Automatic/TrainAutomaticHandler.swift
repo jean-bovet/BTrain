@@ -42,6 +42,7 @@ final class TrainAutomaticHandler: TrainAutomaticSchedulingHandler {
         }
 
         var result: TrainHandlerResult = .none()
+        
         switch event {
         case .feedbackTriggered:
             //            Upon feedback event:
@@ -49,12 +50,12 @@ final class TrainAutomaticHandler: TrainAutomaticSchedulingHandler {
             //            - Move train to next block (and reserve leading blocks)
             //            - Emergency stop if undetected feedback (at the layout controller level only)
             if try moveInsideBlock(layout: layout, train: train, block: currentBlock, direction: trainInstance.direction) {
-                _ = try reserveLeadBlocks(layout: layout, train: train, route: route, currentBlock: currentBlock)
+                try reserveLeadBlocks(layout: layout, train: train, route: route, currentBlock: currentBlock)
                 result = result.appending(.movedInsideBlock)
             } else if try moveToNextBlock(layout: layout, train: train, block: currentBlock, direction: trainInstance.direction) {
                 // TODO: handle nil here
                 currentBlock = layout.currentBlock(train: train)!
-                _ = try reserveLeadBlocks(layout: layout, train: train, route: route, currentBlock: currentBlock)
+                try reserveLeadBlocks(layout: layout, train: train, route: route, currentBlock: currentBlock)
                 result = result.appending(.movedToNextBlock)
             }
 
@@ -62,46 +63,24 @@ final class TrainAutomaticHandler: TrainAutomaticSchedulingHandler {
             if train.managedScheduling && train.state == .stopped {
                 train.startRouteIndex = 0
                 train.routeStepIndex = 0
-                _ = try reserveLeadBlocks(layout: layout, train: train, route: route, currentBlock: currentBlock)
+                try reserveLeadBlocks(layout: layout, train: train, route: route, currentBlock: currentBlock)
             } else if train.unmanagedScheduling {
                 try layout.reservation.removeLeadingBlocks(train: train)
             }
 
-        case .stopRequested:
-            break
         case .restartTimerExpired:
-            // Do not restart the train is train.managedFinishingScheduling
-            if train.managedFinishingScheduling == false && train.managedScheduling {
+            // Only restart the train if it is not marked as "finishing", meaning that the user
+            // want the train to finish its route after stopping in a station block.
+            if train.managedFinishingScheduling == false {
                 // TODO: only do that when this event is about this train and not another train!
                 train.startRouteIndex = train.routeStepIndex
-                if route.automatic {
-                    _ = try reserveLeadBlocks(layout: layout, train: train, route: route, currentBlock: currentBlock)
-                }
             }
             break
-        case .turnoutChanged:
+        default:
             break
-        case .directionChanged:
-            break
-        case .speedChanged:
-            break
-        case .stateChanged:
-            break
-        case .movedInsideBlock:
-            break
-            
-        case .movedToNextBlock:
-            // If another train moves inside its block, it will update its reserved blocks
-            // which might free up some blocks for this train to reserve.
-            break
-
         }
 
         let context = Context(block: currentBlock, train: train, route: route, layout: layout)
-
-//        if (train.state == .stopped || train.state == .braking || train.state == .stopping) && canPotentiallyStart(context: context) {
-//            try layout.reservation.updateReservedBlocks(train: train)
-//        }
         
         if (train.state == .stopped || train.state == .braking || train.state == .stopping) &&
             context.train.managedScheduling &&
@@ -113,7 +92,7 @@ final class TrainAutomaticHandler: TrainAutomaticSchedulingHandler {
                 }
                 
             case .automatic:
-                _ = try reserveLeadBlocks(layout: layout, train: train, route: route, currentBlock: currentBlock)
+                try reserveLeadBlocks(layout: layout, train: train, route: route, currentBlock: currentBlock)
 
             case .automaticOnce(destination: _):
                 if context.trainAtEndOfRoute == false {
@@ -256,18 +235,18 @@ final class TrainAutomaticHandler: TrainAutomaticSchedulingHandler {
         return .none()
     }
 
-    func reserveLeadBlocks(layout: Layout, train: Train, route: Route, currentBlock: Block) throws -> Bool {
+    func reserveLeadBlocks(layout: Layout, train: Train, route: Route, currentBlock: Block) throws {
         if try layout.reservation.updateReservedBlocks(train: train) {
-            return true
+            return
         }
         
         guard route.automatic else {
-            return false
+            return
         }
         
         // TODO: move this logic inside TrainStateHandler
         if layout.trainShouldStop(route: route, train: train, block: currentBlock) {
-            return true
+            return
         }
         
         BTLogger.router.debug("\(train, privacy: .public): generating a new route at \(currentBlock.name, privacy: .public) because the leading blocks could not be reserved for \(route.steps.debugDescription, privacy: .public)")
@@ -275,9 +254,7 @@ final class TrainAutomaticHandler: TrainAutomaticSchedulingHandler {
         // Update the automatic route
         if try updateAutomaticRoute(for: train, layout: layout) {
             // And try to reserve the lead blocks again
-            return try layout.reservation.updateReservedBlocks(train: train)
-        } else {
-            return false
+            _ = try layout.reservation.updateReservedBlocks(train: train)
         }
     }
 
@@ -306,12 +283,6 @@ final class TrainAutomaticHandler: TrainAutomaticSchedulingHandler {
         context.trainShouldStopInBlock == false
     }
     
-//    func canPotentiallyStart(context: Context) -> Bool {
-//        context.train.managedScheduling &&
-//        context.waitingTimeAtStationExpired &&
-//        context.trainAtEndOfRoute == false
-//    }
-
     // Braking if
     // - not all leading blocks reserved AND distance of reserved leading blocks is greater than the distance to stop the train
     // - OR reaching the "brake" feedback of a station
