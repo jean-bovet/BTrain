@@ -94,12 +94,9 @@ final class TrainController {
             guard let route = layout.route(for: train.routeId, trainId: train.id) else {
                 return try stop(completely: false)
             }
-            
-            let interestedHandlers = automaticSchedulingHandlers.filter({ $0.events.contains(event) })
-            for handler in interestedHandlers {
-                BTLogger.router.debug("\(self.train, privacy: .public): \(String(describing: handler), privacy: .public)")
-                result = result.appending(try handler.process(layout: layout, train: train, route: route, event: event, controller: self))
-            }
+
+            BTLogger.router.debug("\(self.train, privacy: .public): \(String(describing: AutomaticHandler.self), privacy: .public)")
+            result = result.appending(try AutomaticHandler.process(layout: layout, route: route, train: train, event: event, controller: self))
         } else {
             let interestedHandlers = manualSchedulingHandlers.filter({ $0.events.contains(event) })
             for handler in interestedHandlers {

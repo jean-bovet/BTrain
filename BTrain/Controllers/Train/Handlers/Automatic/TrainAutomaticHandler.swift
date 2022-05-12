@@ -15,24 +15,6 @@ import OrderedCollections
 
 final class TrainAutomaticHandler: TrainAutomaticSchedulingHandler {
         
-    var events: Set<TrainEvent> {
-        [
-            // React when the scheduling mode changes, which happens for example
-            // when a train is started for the first time by request from the user.
-            .schedulingChanged,
-            
-            // React when a train has moved to another block, because this means
-            // that the train managed by this handler might be able to start or restart
-            // as the blocks ahead might be free.
-                .feedbackTriggered,
-            
-                .movedInsideBlock,
-            .movedToNextBlock,
-            .stateChanged,
-            .restartTimerExpired
-        ]
-    }
-
     func process(layout: Layout, train: Train, route: Route, event: TrainEvent, controller: TrainControlling) throws -> TrainHandlerResult {
         return try AutomaticHandler.process(layout: layout, route: route, train: train, event: event, controller: controller)
     }
@@ -80,6 +62,7 @@ final class AutomaticHandler {
         try handleTrainStart()
 
         handleTrainBrake()
+        
         try handleTrainStop()
 
         layout.adjustSpeedLimit(train) // TODO: is that actually effective? as it works only when the train is running
@@ -88,13 +71,15 @@ final class AutomaticHandler {
     }
     
     func handleEvent() throws {
-        if event == .feedbackTriggered {
+        switch event {
+        case .feedbackTriggered:
             if try moveInsideBlock() {
                 resultingEvents.append(.movedInsideBlock)
             } else if try moveToNextBlock() {
                 resultingEvents.append(.movedToNextBlock)
             }
-        } else if event == .schedulingChanged {
+
+        case .schedulingChanged:
             if train.managedScheduling && train.state == .stopped {
                 train.startRouteIndex = 0
                 train.routeStepIndex = 0
@@ -102,13 +87,26 @@ final class AutomaticHandler {
             } else if train.unmanagedScheduling {
                 try layout.reservation.removeLeadingBlocks(train: train)
             }
-        } else if event == .restartTimerExpired {
+
+        case .restartTimerExpired(let train):
             // Only restart the train if it is not marked as "finishing", meaning that the user
             // want the train to finish its route after stopping in a station block.
-            if train.managedFinishingScheduling == false {
-                // TODO: only do that when this event is about this train and not another train!
+            if train.managedFinishingScheduling == false && train == self.train {
                 train.startRouteIndex = train.routeStepIndex
             }
+
+        case .turnoutChanged:
+            break
+        case .directionChanged:
+            break
+        case .speedChanged:
+            break
+        case .stateChanged:
+            break
+        case .movedInsideBlock:
+            break
+        case .movedToNextBlock:
+            break
         }
     }
     
@@ -179,9 +177,7 @@ final class AutomaticHandler {
         switch route.mode {
         case .fixed:
             if trainAtEndOfRoute == false {
-                if try layout.reservation.updateReservedBlocks(train: train) {
-                    resultingEvents.append(.stateChanged)
-                }
+                try reserveLeadingBlocks()
             }
 
         case .automatic:
@@ -189,9 +185,7 @@ final class AutomaticHandler {
 
         case .automaticOnce(destination: _):
             if trainAtEndOfRoute == false {
-                if try layout.reservation.updateReservedBlocks(train: train) {
-                    resultingEvents.append(.stateChanged)
-                }
+                try reserveLeadingBlocks()
             }
         }
         
@@ -294,6 +288,7 @@ final class AutomaticHandler {
 
     func reserveLeadingBlocks() throws {
         if try layout.reservation.updateReservedBlocks(train: train) {
+            resultingEvents.append(.stateChanged)
             return
         }
         
@@ -301,7 +296,6 @@ final class AutomaticHandler {
             return
         }
         
-        // TODO: move this logic inside TrainStateHandler
         if layout.trainShouldStop(route: route, train: train, block: currentBlock) {
             return
         }
@@ -311,7 +305,9 @@ final class AutomaticHandler {
         // Update the automatic route
         if try updateAutomaticRoute(for: train, layout: layout) {
             // And try to reserve the lead blocks again
-            _ = try layout.reservation.updateReservedBlocks(train: train)
+            if try layout.reservation.updateReservedBlocks(train: train) {
+                resultingEvents.append(.stateChanged)
+            }
         }
     }
 

@@ -13,7 +13,7 @@
 import Foundation
 
 /// The event available to the handlers
-enum TrainEvent: String {
+enum TrainEvent: Hashable, CustomStringConvertible {
     /// A feedback sensor has been triggered
     case feedbackTriggered
     
@@ -25,7 +25,7 @@ enum TrainEvent: String {
         
     /// A train restart timer has expired, meaning that the train associated with this timer
     /// should restart again.
-    case restartTimerExpired
+    case restartTimerExpired(train: Train)
     
     /// A turnout state changed
     case turnoutChanged
@@ -44,6 +44,29 @@ enum TrainEvent: String {
     
     /// A train has moved to the next block
     case movedToNextBlock
+    
+    var description: String {
+        switch self {
+        case .feedbackTriggered:
+            return "Feedback Triggered"
+        case .schedulingChanged:
+            return "Scheduling Changed"
+        case .restartTimerExpired(let train):
+            return "Restart Timer Expired for \(train)"
+        case .turnoutChanged:
+            return "Turnout Changed"
+        case .directionChanged:
+            return "Direction Changed"
+        case .speedChanged:
+            return "Speed Changed"
+        case .stateChanged:
+            return "State Changed"
+        case .movedInsideBlock:
+            return "Move Inside Block"
+        case .movedToNextBlock:
+            return "Move to Next Block"
+        }
+    }
 }
 
 /// Structure that describes the result of a handler's processing.
@@ -101,9 +124,6 @@ protocol TrainControlling {
 /// Defines a protocol for a handler that gets invoked during the automatic scheduling of a train (when the train is automatically managed by BTrain).
 protocol TrainAutomaticSchedulingHandler {
     
-    /// The set of events this handler is interested in getting notified about
-    var events: Set<TrainEvent> { get }
-        
     /// This method is invoked when an event machings ``TrainAutomaticSchedulingHandler/events`` is triggered.
     ///
     /// - Parameters:
