@@ -277,12 +277,11 @@ extension Layout {
         train.scheduling = .managed(finishing: false)
     }
     
-    func trainShouldStop(route: Route?, train: Train, block: Block) -> Bool {
+    func hasTrainReachedStationOrDestination(_ route: Route?, _ train: Train, _ block: Block) -> Bool {
         if let route = route {
             switch route.mode {
             case .automaticOnce(let destination):
-                // TODO: check also the direction
-                if block.id != destination.blockId {
+                if !destination.hasReached(block: block) {
                     return false
                 }
             case .fixed, .automatic:

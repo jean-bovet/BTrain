@@ -36,24 +36,15 @@ final class TrainHandlerManaged {
     var trainAtEndOfRoute: Bool {
         train.routeStepIndex == route.lastStepIndex
     }
-    
-    var destination: Destination? {
-        if case .automaticOnce(let destination) = route.mode {
-            return destination
-        } else {
-            return nil
-        }
-    }
-    
+        
     var leadingBlocksReserved: Bool {
         train.leadingBlocks.count > 0
     }
     
-    var trainShouldStopInBlock: Bool {
+    var trainShouldStop: Bool {
         leadingBlocksReserved == false ||
         trainAtEndOfRoute ||
-        layout.trainShouldStop(route: route, train: train, block: currentBlock) ||
-        currentBlock.id == destination?.blockId
+        layout.hasTrainReachedStationOrDestination(route, train, currentBlock)
     }
     
     var brakingFeedbackTriggered: Bool {
@@ -72,7 +63,7 @@ final class TrainHandlerManaged {
         return isFeedbackTriggered(layout: layout, train: train, feedbackId: stopFeedback)
     }
     
-    var waitingTimeAtStationExpired: Bool {
+    var trainIsDoneWaitingAtStation: Bool {
         train.timeUntilAutomaticRestart <= 0
     }
     
@@ -179,15 +170,18 @@ final class TrainHandlerManaged {
             }
             
             let position = layout.newPosition(forTrain: train, enabledFeedbackIndex: index, direction: trainInstance.direction)
-            if train.position != position {
-                try layout.setTrainPosition(train, position)
-                
-                BTLogger.router.debug("\(self.train, privacy: .public): moved to position \(self.train.position) in \(self.currentBlock.name, privacy: .public), direction \(self.trainInstance.direction)")
-                
-                try reserveLeadingBlocks()
-                
-                return true
+            
+            guard train.position != position else {
+                continue
             }
+            
+            try layout.setTrainPosition(train, position)
+            
+            BTLogger.router.debug("\(self.train, privacy: .public): moved to position \(self.train.position) in \(self.currentBlock.name, privacy: .public), direction \(self.trainInstance.direction)")
+            
+            try reserveLeadingBlocks()
+            
+            return true
         }
         
         return false
@@ -238,26 +232,15 @@ final class TrainHandlerManaged {
             return
         }
         
-        guard waitingTimeAtStationExpired else {
+        guard trainIsDoneWaitingAtStation else {
             return
         }
         
-        switch route.mode {
-        case .fixed:
-            if trainAtEndOfRoute == false {
-                try reserveLeadingBlocks()
-            }
-            
-        case .automatic:
+        if trainAtEndOfRoute == false || route.mode == .automatic {
             try reserveLeadingBlocks()
-            
-        case .automaticOnce(destination: _):
-            if trainAtEndOfRoute == false {
-                try reserveLeadingBlocks()
-            }
         }
         
-        if leadingBlocksReserved && trainAtEndOfRoute == false && trainShouldStopInBlock == false {
+        if leadingBlocksReserved && trainAtEndOfRoute == false && trainShouldStop == false {
             BTLogger.router.debug("\(self.train, privacy: .public): start train for \(self.route.steps.debugDescription, privacy: .public)")
             // Setup the start route index of the train
             train.startRouteIndex = train.routeStepIndex
@@ -269,7 +252,7 @@ final class TrainHandlerManaged {
     }
     
     func handleTrainBrake() {
-        guard train.state == .running && trainShouldStopInBlock && brakingFeedbackTriggered else {
+        guard train.state == .running && trainShouldStop && brakingFeedbackTriggered else {
             return
         }
         
@@ -280,7 +263,7 @@ final class TrainHandlerManaged {
     }
     
     func handleTrainStop() throws {
-        guard train.state != .stopped && train.state != .stopping && trainShouldStopInBlock && stoppingFeedbackTriggered else {
+        guard train.state != .stopped && train.state != .stopping && trainShouldStop && stoppingFeedbackTriggered else {
             return
         }
         
@@ -289,33 +272,26 @@ final class TrainHandlerManaged {
         
         switch route.mode {
         case .fixed:
-            let trainShouldStop = layout.trainShouldStop(route: route, train: train, block: currentBlock)
-            let stopCompletely = (trainShouldStop && train.managedFinishingScheduling) || trainAtEndOfRoute
+            let reachedStationOrDestination = layout.hasTrainReachedStationOrDestination(route, train, currentBlock)
+            let stopCompletely = (reachedStationOrDestination && train.managedFinishingScheduling) || trainAtEndOfRoute
             
             _ = try controller.stop(completely: stopCompletely)
             
-            if trainShouldStop && stopCompletely == false {
-                // If it is a station, reschedule a restart
+            if reachedStationOrDestination && stopCompletely == false {
                 reschedule(train: train, delay: waitingTime, controller: controller)
             }
             
         case .automatic:
-            let trainShouldStop = layout.trainShouldStop(route: route, train: train, block: currentBlock)
-            let stopCompletely = trainShouldStop && train.managedFinishingScheduling
+            let reachedStationOrDestination = layout.hasTrainReachedStationOrDestination(route, train, currentBlock)
+            let stopCompletely = reachedStationOrDestination && train.managedFinishingScheduling
             
             _ = try controller.stop(completely: stopCompletely)
             
-            if trainShouldStop && stopCompletely == false {
-                // If it is a station, reschedule a restart
+            if reachedStationOrDestination && stopCompletely == false {
                 reschedule(train: train, delay: waitingTime, controller: controller)
             }
             
-        case .automaticOnce(destination: let destination):
-            // Double-check that the train is moving in the direction specified by the destination, if specified.
-            // This should never fail.
-            if let direction = destination.direction, currentBlock.train?.direction != direction {
-                throw LayoutError.destinationDirectionMismatch(currentBlock: currentBlock, destination: destination)
-            }
+        case .automaticOnce(destination: _):
             _ = try controller.stop(completely: true)
         }
         
@@ -325,32 +301,36 @@ final class TrainHandlerManaged {
     func reschedule(train: Train, delay: TimeInterval, controller: TrainControlling) {
         BTLogger.router.debug("\(train, privacy: .public): schedule timer to restart train in \(delay, format: .fixed(precision: 1)) seconds")
         
-        // The layout controller is going to schedule the appropriate timer given the `restartDelayTime` value
         train.timeUntilAutomaticRestart = delay
         controller.scheduleRestartTimer(train: train)
     }
         
     func reserveLeadingBlocks() throws {
-        if try layout.reservation.updateReservedBlocks(train: train) {
-            resultingEvents.append(.stateChanged)
-            return
-        }
-        
-        guard route.automatic else {
-            return
-        }
-        
-        if layout.trainShouldStop(route: route, train: train, block: currentBlock) {
-            return
-        }
-        
-        BTLogger.router.debug("\(self.train, privacy: .public): generating a new route at \(self.currentBlock.name, privacy: .public) because the leading blocks could not be reserved for \(self.route.steps.debugDescription, privacy: .public)")
-        
-        // Update the automatic route
-        if try updateAutomaticRoute(for: train, layout: layout) {
-            // And try to reserve the lead blocks again
+        switch route.mode {
+        case .fixed:
             if try layout.reservation.updateReservedBlocks(train: train) {
                 resultingEvents.append(.stateChanged)
+                return
+            }
+
+        case .automatic, .automaticOnce(destination: _):
+            if try layout.reservation.updateReservedBlocks(train: train) {
+                resultingEvents.append(.stateChanged)
+                return
+            }
+
+            if layout.hasTrainReachedStationOrDestination(route, train, currentBlock) {
+                return
+            }
+            
+            BTLogger.router.debug("\(self.train, privacy: .public): generating a new route at \(self.currentBlock.name, privacy: .public) because the leading blocks could not be reserved for \(self.route.steps.debugDescription, privacy: .public)")
+            
+            // Update the automatic route
+            if try updateAutomaticRoute(for: train, layout: layout) {
+                // And try to reserve the lead blocks again
+                if try layout.reservation.updateReservedBlocks(train: train) {
+                    resultingEvents.append(.stateChanged)
+                }
             }
         }
     }

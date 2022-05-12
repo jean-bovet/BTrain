@@ -203,7 +203,7 @@ final class LayoutReservation {
         // stop the train is detected. That way, the train stops
         // without reserving any block ahead and upon restarting,
         // it will reserve what it needs in front of it.
-        guard !layout.trainShouldStop(route: route, train: train, block: block) else {
+        guard !layout.hasTrainReachedStationOrDestination(route, train, block) else {
             return false
         }
         
@@ -353,7 +353,7 @@ final class LayoutReservation {
         // make sure the speed is limited, otherwise the train will likely overshoot
         // the block in which it must stop.
         for block in train.leadingBlocks {
-            if layout.trainShouldStop(route: route, train: train, block: block) {
+            if layout.hasTrainReachedStationOrDestination(route, train, block) {
                 maximumSpeedAllowed = min(maximumSpeedAllowed, LayoutFactory.DefaultLimitedSpeed)
                 break
             }
