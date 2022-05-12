@@ -61,7 +61,16 @@
         "FixedRoutingTests\/testUpdateAutomaticRouteBrakingAndContinue()",
         "FixedRoutingWithStationsTests\/testMultipleTrains()",
         "FixedRoutingWithStationsTests\/testStationToStation()",
-        "FixedRoutingWithStationsTests\/testStationToStationWithReservation()"
+        "FixedRoutingWithStationsTests\/testStationToStationWithReservation()",
+        "LayoutTests\/testAddAndRemoveBlock()",
+        "LayoutTests\/testAddAndRemoveFeedback()",
+        "LayoutTests\/testAddAndRemoveTurnout()",
+        "LayoutTests\/testBlockSpeedLimit()",
+        "LayoutTests\/testLayout()",
+        "LayoutTests\/testTrainDirection()",
+        "LayoutTests\/testTrainStopCompletely()",
+        "LayoutTests\/testTurnoutSpeedLimit()",
+        "LayoutTests\/testValidation()"
       ],
       "target" : {
         "containerPath" : "container:BTrain.xcodeproj",

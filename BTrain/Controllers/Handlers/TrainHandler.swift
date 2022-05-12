@@ -120,22 +120,3 @@ protocol TrainControlling {
     func stop(completely: Bool) throws -> TrainHandlerResult
     
 }
-
-/// Defines a protocol for a handler that gets invoked during the manual scheduling of a train (when the train
-/// is manually operated by the user).
-protocol TrainManualSchedulingHandler {
-    
-    /// The set of events this handler is interested in getting notified about
-    var events: Set<TrainEvent> { get }
-    
-    /// This method is invoked when an event machings ``TrainManualSchedulingHandler/events`` is triggered.
-    ///
-    /// - Parameters:
-    ///   - layout: the layout
-    ///   - train: the train
-    ///   - event: the event that triggered this method invocation
-    ///   - controller: the train controller
-    /// - Returns: returns the result of the process, which can include one or more follow up events
-    func process(layout: Layout, train: Train, event: TrainEvent, controller: TrainControlling) throws -> TrainHandlerResult
-
-}
