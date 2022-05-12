@@ -121,22 +121,6 @@ protocol TrainControlling {
     
 }
 
-/// Defines a protocol for a handler that gets invoked during the automatic scheduling of a train (when the train is automatically managed by BTrain).
-protocol TrainAutomaticSchedulingHandler {
-    
-    /// This method is invoked when an event machings ``TrainAutomaticSchedulingHandler/events`` is triggered.
-    ///
-    /// - Parameters:
-    ///   - layout: the layout
-    ///   - train: the train
-    ///   - route: the route
-    ///   - event: the event that triggered this method invocation
-    ///   - controller: the train controller
-    /// - Returns: returns the result of the process, which can include one or more follow up events
-    func process(layout: Layout, train: Train, route: Route, event: TrainEvent, controller: TrainControlling) throws -> TrainHandlerResult
-
-}
-
 /// Defines a protocol for a handler that gets invoked during the manual scheduling of a train (when the train
 /// is manually operated by the user).
 protocol TrainManualSchedulingHandler {

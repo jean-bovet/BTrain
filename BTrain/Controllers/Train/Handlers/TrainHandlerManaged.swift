@@ -13,15 +13,15 @@
 import Foundation
 import OrderedCollections
 
-final class TrainAutomaticHandler: TrainAutomaticSchedulingHandler {
-        
-    func process(layout: Layout, train: Train, route: Route, event: TrainEvent, controller: TrainControlling) throws -> TrainHandlerResult {
-        return try AutomaticHandler.process(layout: layout, route: route, train: train, event: event, controller: controller)
-    }
-    
-}
-
-final class AutomaticHandler {
+/// Manages the operation of a single train in the layout.
+///
+/// When BTrain manages a train, it must ensure the train starts, stops
+/// and brakes appropriately to avoid collision with other trains and respect
+/// the constraints of the layout while following the indication of the route
+/// assigned to the train. BTrain does this by responding to events from the layout,
+/// such as ``TrainEvent/feedbackTriggered`` when a feedback is triggered
+/// in the layout indicating a train is passing over the feedback.
+final class TrainHandlerManaged {
     
     let layout: Layout
     let route: Route
@@ -33,16 +33,77 @@ final class AutomaticHandler {
     var trainInstance: TrainInstance
     var resultingEvents = OrderedSet<TrainEvent>()
     
+    var trainAtEndOfRoute: Bool {
+        train.routeStepIndex == route.lastStepIndex
+    }
+    
+    var destination: Destination? {
+        if case .automaticOnce(let destination) = route.mode {
+            return destination
+        } else {
+            return nil
+        }
+    }
+    
+    var leadingBlocksReserved: Bool {
+        train.leadingBlocks.count > 0
+    }
+    
+    var trainShouldStopInBlock: Bool {
+        leadingBlocksReserved == false ||
+        trainAtEndOfRoute ||
+        layout.trainShouldStop(route: route, train: train, block: currentBlock) ||
+        currentBlock.id == destination?.blockId
+    }
+    
+    var brakingFeedbackTriggered: Bool {
+        guard let brakeFeedback = currentBlock.brakeFeedback(for: trainInstance.direction) else {
+            return false
+        }
+        
+        return isFeedbackTriggered(layout: layout, train: train, feedbackId: brakeFeedback)
+    }
+    
+    var stoppingFeedbackTriggered: Bool {
+        guard let stopFeedback = currentBlock.stopFeedback(for: trainInstance.direction) else {
+            return false
+        }
+        
+        return isFeedbackTriggered(layout: layout, train: train, feedbackId: stopFeedback)
+    }
+    
+    var waitingTimeAtStationExpired: Bool {
+        train.timeUntilAutomaticRestart <= 0
+    }
+    
+    var waitingTime: TimeInterval {
+        if let step = route.steps.element(at: train.routeStepIndex), case .block(let stepBlock) = step, let time = stepBlock.waitingTime {
+            return time
+        } else {
+            // Use the block waiting time if the route itself has nothing specified
+            return currentBlock.waitingTime
+        }
+    }
+    
+    /// This method is invoked when an event machings ``TrainAutomaticSchedulingHandler/events`` is triggered.
+    ///
+    /// - Parameters:
+    ///   - layout: the layout
+    ///   - train: the train
+    ///   - route: the route
+    ///   - event: the event that triggered this method invocation
+    ///   - controller: the train controller
+    /// - Returns: returns the result of the process, which can include one or more follow up events
     static func process(layout: Layout, route: Route, train: Train, event: TrainEvent, controller: TrainControlling) throws -> TrainHandlerResult {
         guard let currentBlock = layout.currentBlock(train: train) else {
             return .none()
         }
-
+        
         guard let trainInstance = currentBlock.train else {
             return .none()
         }
-
-        let handler = AutomaticHandler(layout: layout, route: route, train: train, event: event, controller: controller, currentBlock: currentBlock, trainInstance: trainInstance)
+        
+        let handler = TrainHandlerManaged(layout: layout, route: route, train: train, event: event, controller: controller, currentBlock: currentBlock, trainInstance: trainInstance)
         return try handler.process()
     }
     
@@ -58,15 +119,15 @@ final class AutomaticHandler {
     
     func process() throws -> TrainHandlerResult {
         try handleEvent()
-
+        
         try handleTrainStart()
-
+        
         handleTrainBrake()
         
         try handleTrainStop()
-
-        layout.adjustSpeedLimit(train) // TODO: is that actually effective? as it works only when the train is running
-
+        
+        layout.adjustSpeedLimit(train)
+        
         return .init(events: Array(resultingEvents))
     }
     
@@ -78,7 +139,7 @@ final class AutomaticHandler {
             } else if try moveToNextBlock() {
                 resultingEvents.append(.movedToNextBlock)
             }
-
+            
         case .schedulingChanged:
             if train.managedScheduling && train.state == .stopped {
                 train.startRouteIndex = 0
@@ -87,14 +148,14 @@ final class AutomaticHandler {
             } else if train.unmanagedScheduling {
                 try layout.reservation.removeLeadingBlocks(train: train)
             }
-
+            
         case .restartTimerExpired(let train):
             // Only restart the train if it is not marked as "finishing", meaning that the user
             // want the train to finish its route after stopping in a station block.
             if train.managedFinishingScheduling == false && train == self.train {
                 train.startRouteIndex = train.routeStepIndex
             }
-
+            
         case .turnoutChanged:
             break
         case .directionChanged:
@@ -124,7 +185,7 @@ final class AutomaticHandler {
                 BTLogger.router.debug("\(self.train, privacy: .public): moved to position \(self.train.position) in \(self.currentBlock.name, privacy: .public), direction \(self.trainInstance.direction)")
                 
                 try reserveLeadingBlocks()
-
+                
                 return true
             }
         }
@@ -144,9 +205,9 @@ final class AutomaticHandler {
         guard let position = entryFeedback.block.indexOfTrain(forFeedback: entryFeedback.feedback.id, direction: entryFeedback.direction) else {
             throw LayoutError.feedbackNotFound(feedbackId: entryFeedback.feedback.id)
         }
-         
+        
         BTLogger.router.debug("\(self.train, privacy: .public): enters block \(entryFeedback.block, privacy: .public) at position \(position), direction \(entryFeedback.direction)")
-                
+        
         // Set the train to its new block. This method also takes care of updating the reserved blocks for the train itself
         // but also the leading blocks so the train can continue to move automatically.
         try layout.setTrainToBlock(train.id, entryFeedback.block.id, position: .custom(value: position), direction: entryFeedback.direction, routeIndex: train.routeStepIndex + 1)
@@ -154,10 +215,17 @@ final class AutomaticHandler {
         guard let newBlock = layout.block(for: entryFeedback.block.id) else {
             throw LayoutError.blockNotFound(blockId: entryFeedback.block.id)
         }
+        
         currentBlock = newBlock
         
+        guard let newTrainInstance = newBlock.train else {
+            throw LayoutError.trainNotFoundInBlock(blockId: newBlock.id)
+        }
+        
+        trainInstance = newTrainInstance
+        
         try reserveLeadingBlocks()
-
+        
         return true
     }
     
@@ -179,10 +247,10 @@ final class AutomaticHandler {
             if trainAtEndOfRoute == false {
                 try reserveLeadingBlocks()
             }
-
+            
         case .automatic:
             try reserveLeadingBlocks()
-
+            
         case .automaticOnce(destination: _):
             if trainAtEndOfRoute == false {
                 try reserveLeadingBlocks()
@@ -212,10 +280,10 @@ final class AutomaticHandler {
     }
     
     func handleTrainStop() throws {
-        guard (train.state != .stopped && train.state != .stopping) && trainShouldStopInBlock && stoppingFeedbackTriggered else {
+        guard train.state != .stopped && train.state != .stopping && trainShouldStopInBlock && stoppingFeedbackTriggered else {
             return
         }
-
+        
         BTLogger.router.debug("\(self.train, privacy: .public): stopping in \(self.currentBlock.name, privacy: .public) at position \(self.train.position), direction \(self.trainInstance.direction)")
         try layout.reservation.removeLeadingBlocks(train: train)
         
@@ -261,31 +329,7 @@ final class AutomaticHandler {
         train.timeUntilAutomaticRestart = delay
         controller.scheduleRestartTimer(train: train)
     }
-    
-    // TODO: is that the best way to handle this? Can't this be included in the leading blocks computation?
-//    func handleWagonsPushedByLocomotive() throws -> TrainHandlerResult {
-//        guard train.speed.requestedKph > 0 else {
-//            return .none()
-//        }
-//
-//        guard train.wagonsPushedByLocomotive else {
-//            return .none()
-//        }
-//
-//        // Now determine the position of the head wagon given the next locomotive position
-//        guard let hwb = try TrainPositionFinder.headWagonBlockFor(train: train, startAtNextPosition: true, layout: layout) else {
-//            BTLogger.router.debug("\(train, privacy: .public): stop completely because there is no head wagon block found")
-//            return try controller.stop(completely: true)
-//        }
-//
-//        if hwb.reserved != nil && hwb.reserved?.trainId != train.id {
-//            BTLogger.router.debug("\(train, privacy: .public): stop completely because the head wagon block is reserved for another train")
-//            return try controller.stop(completely: true)
-//        }
-//
-//        return .none()
-//    }
-
+        
     func reserveLeadingBlocks() throws {
         if try layout.reservation.updateReservedBlocks(train: train) {
             resultingEvents.append(.stateChanged)
@@ -301,7 +345,7 @@ final class AutomaticHandler {
         }
         
         BTLogger.router.debug("\(self.train, privacy: .public): generating a new route at \(self.currentBlock.name, privacy: .public) because the leading blocks could not be reserved for \(self.route.steps.debugDescription, privacy: .public)")
-
+        
         // Update the automatic route
         if try updateAutomaticRoute(for: train, layout: layout) {
             // And try to reserve the lead blocks again
@@ -310,7 +354,7 @@ final class AutomaticHandler {
             }
         }
     }
-
+    
     private func updateAutomaticRoute(for train: Train, layout: Layout) throws -> Bool {
         let (success, route) = try layout.automaticRouting.updateAutomaticRoute(for: train.id)
         if success {
@@ -321,77 +365,6 @@ final class AutomaticHandler {
             return false
         }
     }
-        
-    var destination: Destination? {
-        if case .automaticOnce(let destination) = route.mode {
-            return destination
-        } else {
-            return nil
-        }
-    }
-    
-    var trainDirectionInBlock: Direction? {
-        guard let trainInstance = currentBlock.train else {
-            return nil
-        }
-        
-        let direction = trainInstance.direction
-        return direction
-    }
-    
-    var leadingBlocksReserved: Bool {
-        train.leadingBlocks.count > 0
-    }
-    
-    var trainShouldStopInBlock: Bool {
-        leadingBlocksReserved == false ||
-        trainAtEndOfRoute ||
-        layout.trainShouldStop(route: route, train: train, block: currentBlock) ||
-        currentBlock.id == destination?.blockId
-    }
-    
-    var brakingFeedbackTriggered: Bool {
-        guard let trainDirectionInBlock = trainDirectionInBlock else {
-            return false
-        }
-        
-        guard let brakeFeedback = currentBlock.brakeFeedback(for: trainDirectionInBlock) else {
-            return false
-        }
-        
-        return isFeedbackTriggered(layout: layout, train: train, feedbackId: brakeFeedback)
-    }
-    
-    var stoppingFeedbackTriggered: Bool {
-        guard let trainDirectionInBlock = trainDirectionInBlock else {
-            return false
-        }
-        
-        guard let stopFeedback = currentBlock.stopFeedback(for: trainDirectionInBlock) else {
-            return false
-        }
-        
-        return isFeedbackTriggered(layout: layout, train: train, feedbackId: stopFeedback)
-    }
-    
-    var trainAtEndOfRoute: Bool {
-        train.routeStepIndex == route.lastStepIndex
-    }
-    
-    var waitingTimeAtStationExpired: Bool {
-        train.timeUntilAutomaticRestart <= 0
-    }
-    
-    var waitingTime: TimeInterval {
-        if let step = route.steps.element(at: train.routeStepIndex), case .block(let stepBlock) = step, let time = stepBlock.waitingTime {
-            return time
-        } else {
-            // Use the block waiting time if the route itself has nothing specified
-            return currentBlock.waitingTime
-        }
-    }
-    
-    // MARK: - Private
     
     private func isFeedbackTriggered(layout: Layout, train: Train, feedbackId: Identifier<Feedback>) -> Bool {
         for bf in currentBlock.feedbacks {
@@ -405,5 +378,5 @@ final class AutomaticHandler {
         }
         return false
     }
-
+    
 }

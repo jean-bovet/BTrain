@@ -51,10 +51,7 @@ final class TrainController {
     let accelerationController: TrainControllerAcceleration
     
     weak var delegate: TrainControllerDelegate?
-            
-    /// The array of handlers when the train runs in automatic scheduling mode
-    private var automaticSchedulingHandlers = [TrainAutomaticSchedulingHandler]()
-    
+                
     /// The array of handlers when the train runs in manual scheduling mode
     private var manualSchedulingHandlers = [TrainManualSchedulingHandler]()
 
@@ -68,8 +65,6 @@ final class TrainController {
     }
                         
     private func registerHandlers() {
-        automaticSchedulingHandlers.append(TrainAutomaticHandler())
-
         // TODO: have a single class to handle the manual scheduling
         manualSchedulingHandlers.append(TrainManualStateHandler())
         manualSchedulingHandlers.append(TrainMoveWithinBlockHandler())
@@ -95,8 +90,8 @@ final class TrainController {
                 return try stop(completely: false)
             }
 
-            BTLogger.router.debug("\(self.train, privacy: .public): \(String(describing: AutomaticHandler.self), privacy: .public)")
-            result = result.appending(try AutomaticHandler.process(layout: layout, route: route, train: train, event: event, controller: self))
+            BTLogger.router.debug("\(self.train, privacy: .public): \(String(describing: TrainHandlerManaged.self), privacy: .public)")
+            result = result.appending(try TrainHandlerManaged.process(layout: layout, route: route, train: train, event: event, controller: self))
         } else {
             let interestedHandlers = manualSchedulingHandlers.filter({ $0.events.contains(event) })
             for handler in interestedHandlers {

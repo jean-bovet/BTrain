@@ -80,7 +80,7 @@
 		A744D13527659330005C2F37 /* TrainControlRouteView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A744D13427659330005C2F37 /* TrainControlRouteView.swift */; };
 		A744D1372765C5A3005C2F37 /* LayoutError.swift in Sources */ = {isa = PBXBuildFile; fileRef = A744D1362765C5A3005C2F37 /* LayoutError.swift */; };
 		A744D13B276714A2005C2F37 /* DiagnosticsSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A744D13A276714A2005C2F37 /* DiagnosticsSheet.swift */; };
-		A74BDD6D2829ED4200BA7160 /* TrainAutomaticHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = A74BDD6C2829ED4200BA7160 /* TrainAutomaticHandler.swift */; };
+		A74BDD6D2829ED4200BA7160 /* TrainHandlerManaged.swift in Sources */ = {isa = PBXBuildFile; fileRef = A74BDD6C2829ED4200BA7160 /* TrainHandlerManaged.swift */; };
 		A74C0E7E275C9E900043FEE5 /* MarklinLocomotiveConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = A74C0E7D275C9E900043FEE5 /* MarklinLocomotiveConfig.swift */; };
 		A74C0E80275C9F490043FEE5 /* Locomotives.cs2 in Resources */ = {isa = PBXBuildFile; fileRef = A74C0E7F275C9F490043FEE5 /* Locomotives.cs2 */; };
 		A74CCC68272A59F0004E58F5 /* Layout.swift in Sources */ = {isa = PBXBuildFile; fileRef = A74CCC67272A59F0004E58F5 /* Layout.swift */; };
@@ -376,7 +376,7 @@
 		A744D13427659330005C2F37 /* TrainControlRouteView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainControlRouteView.swift; sourceTree = "<group>"; };
 		A744D1362765C5A3005C2F37 /* LayoutError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutError.swift; sourceTree = "<group>"; };
 		A744D13A276714A2005C2F37 /* DiagnosticsSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiagnosticsSheet.swift; sourceTree = "<group>"; };
-		A74BDD6C2829ED4200BA7160 /* TrainAutomaticHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainAutomaticHandler.swift; sourceTree = "<group>"; };
+		A74BDD6C2829ED4200BA7160 /* TrainHandlerManaged.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainHandlerManaged.swift; sourceTree = "<group>"; };
 		A74BDD6E282C725800BA7160 /* Routing.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; name = Routing.xctestplan; path = BTrain.xcodeproj/Routing.xctestplan; sourceTree = "<group>"; };
 		A74C0E7D275C9E900043FEE5 /* MarklinLocomotiveConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarklinLocomotiveConfig.swift; sourceTree = "<group>"; };
 		A74C0E7F275C9F490043FEE5 /* Locomotives.cs2 */ = {isa = PBXFileReference; lastKnownFileType = text; path = Locomotives.cs2; sourceTree = "<group>"; };
@@ -1262,8 +1262,8 @@
 			isa = PBXGroup;
 			children = (
 				A7ACCE9E2810E5BA006F4310 /* TrainHandler.swift */,
-				A7ACCE962810E04D006F4310 /* TrainMoveWithinBlockHandler.swift */,
-				A7C30BE42811AD2C00CC4251 /* Automatic */,
+				A74BDD6C2829ED4200BA7160 /* TrainHandlerManaged.swift */,
+				A7C30BE728121F6100CC4251 /* TrainStopPushingWagonsHandler.swift */,
 				A7C30BE32811AD2300CC4251 /* Manual */,
 			);
 			path = Handlers;
@@ -1325,19 +1325,11 @@
 			isa = PBXGroup;
 			children = (
 				A7C30BDF2811ACAF00CC4251 /* TrainManualStateHandler.swift */,
+				A7ACCE962810E04D006F4310 /* TrainMoveWithinBlockHandler.swift */,
 				A7C30BE12811ACED00CC4251 /* TrainManualMoveToNextBlockHandler.swift */,
 				A7C30BE52811AD4D00CC4251 /* TrainManualStopTriggerDetectionHandler.swift */,
 			);
 			path = Manual;
-			sourceTree = "<group>";
-		};
-		A7C30BE42811AD2C00CC4251 /* Automatic */ = {
-			isa = PBXGroup;
-			children = (
-				A74BDD6C2829ED4200BA7160 /* TrainAutomaticHandler.swift */,
-				A7C30BE728121F6100CC4251 /* TrainStopPushingWagonsHandler.swift */,
-			);
-			path = Automatic;
 			sourceTree = "<group>";
 		};
 		A7CA5ECA27965ACF00171398 /* Block */ = {
@@ -1568,7 +1560,7 @@
 				A7841376273DD5A200381341 /* Vector2D.swift in Sources */,
 				A7B06AE12727786500BDD88C /* MainView.swift in Sources */,
 				A7C30BE02811ACAF00CC4251 /* TrainManualStateHandler.swift in Sources */,
-				A74BDD6D2829ED4200BA7160 /* TrainAutomaticHandler.swift in Sources */,
+				A74BDD6D2829ED4200BA7160 /* TrainHandlerManaged.swift in Sources */,
 				A7F779F6273214AF00E73275 /* TrainListView.swift in Sources */,
 				A74F3818281A61230013FD23 /* RouteStepStationView.swift in Sources */,
 				A795A03F27B9CB0200AE90EB /* TrainSpeedMeasurement.swift in Sources */,

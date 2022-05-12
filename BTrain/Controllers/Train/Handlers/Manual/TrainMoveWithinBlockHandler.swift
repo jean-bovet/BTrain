@@ -13,7 +13,7 @@
 import Foundation
 
 /// This class detects when a train moves within a block by relying on the feedbacks of the block. It works on both automatic and manual scheduling.
-final class TrainMoveWithinBlockHandler: TrainAutomaticSchedulingHandler, TrainManualSchedulingHandler {
+final class TrainMoveWithinBlockHandler: TrainManualSchedulingHandler {
     
     var events: Set<TrainEvent> {
         [.feedbackTriggered]
