@@ -69,7 +69,6 @@ final class LayoutReservation {
     // This function will try to reserve as many blocks as specified (maxNumberOfLeadingReservedBlocks)
     // in front of the train (leading blocks).
     // Note: it won't reserve blocks that are already reserved to avoid loops.
-    @discardableResult
     func updateReservedBlocks(train: Train) throws -> Bool {
         // Remove the train from all the elements
         try freeElements(train: train)

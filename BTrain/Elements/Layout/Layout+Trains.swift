@@ -56,7 +56,7 @@ extension Layout {
     func setTrainPosition(_ train: Train, _ position: Int) throws {
         train.position = position
         
-        try reservation.updateReservedBlocks(train: train)
+        _ = try reservation.updateReservedBlocks(train: train)
 
         didChange()
     }
@@ -204,7 +204,7 @@ extension Layout {
         block.train = TrainInstance(train.id, ti.direction.opposite)
         train.wagonsPushedByLocomotive.toggle()
 
-        try reservation.updateReservedBlocks(train: train)
+        _ = try reservation.updateReservedBlocks(train: train)
 
         self.didChange()
     }

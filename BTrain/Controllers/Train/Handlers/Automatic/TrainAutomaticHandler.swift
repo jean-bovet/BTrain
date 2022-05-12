@@ -11,6 +11,7 @@
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 import Foundation
+import OrderedCollections
 
 final class TrainAutomaticHandler: TrainAutomaticSchedulingHandler {
         
@@ -48,7 +49,7 @@ final class AutomaticHandler {
     
     var currentBlock: Block
     var trainInstance: TrainInstance
-    var resultingEvents = [TrainEvent]()
+    var resultingEvents = OrderedSet<TrainEvent>()
     
     static func process(layout: Layout, route: Route, train: Train, event: TrainEvent, controller: TrainControlling) throws -> TrainHandlerResult {
         guard let currentBlock = layout.currentBlock(train: train) else {
@@ -78,12 +79,12 @@ final class AutomaticHandler {
 
         try handleTrainStart()
 
-        trainBrakes()
-        try trainStops()
+        handleTrainBrake()
+        try handleTrainStop()
 
         layout.adjustSpeedLimit(train) // TODO: is that actually effective? as it works only when the train is running
 
-        return .init(events: resultingEvents)
+        return .init(events: Array(resultingEvents))
     }
     
     func handleEvent() throws {
@@ -178,7 +179,9 @@ final class AutomaticHandler {
         switch route.mode {
         case .fixed:
             if trainAtEndOfRoute == false {
-                try layout.reservation.updateReservedBlocks(train: train)
+                if try layout.reservation.updateReservedBlocks(train: train) {
+                    resultingEvents.append(.stateChanged)
+                }
             }
 
         case .automatic:
@@ -186,7 +189,9 @@ final class AutomaticHandler {
 
         case .automaticOnce(destination: _):
             if trainAtEndOfRoute == false {
-                try layout.reservation.updateReservedBlocks(train: train)
+                if try layout.reservation.updateReservedBlocks(train: train) {
+                    resultingEvents.append(.stateChanged)
+                }
             }
         }
         
@@ -201,54 +206,58 @@ final class AutomaticHandler {
         }
     }
     
-    func trainBrakes() {
-        if train.state == .running && isBraking() {
-            BTLogger.router.debug("\(self.train, privacy: .public): braking in \(self.currentBlock.name, privacy: .public) at position \(self.train.position), direction \(self.trainInstance.direction)")
-            train.state = .braking
-            layout.setTrainSpeed(train, currentBlock.brakingSpeed ?? LayoutFactory.DefaultBrakingSpeed) {}
-            resultingEvents.append(.stateChanged)
+    func handleTrainBrake() {
+        guard train.state == .running && trainShouldStopInBlock && brakingFeedbackTriggered else {
+            return
         }
+        
+        BTLogger.router.debug("\(self.train, privacy: .public): braking in \(self.currentBlock.name, privacy: .public) at position \(self.train.position), direction \(self.trainInstance.direction)")
+        train.state = .braking
+        layout.setTrainSpeed(train, currentBlock.brakingSpeed ?? LayoutFactory.DefaultBrakingSpeed) {}
+        resultingEvents.append(.stateChanged)
     }
     
-    func trainStops() throws {
-        if (train.state != .stopped && train.state != .stopping) && isStopping() {
-            BTLogger.router.debug("\(self.train, privacy: .public): stopping in \(self.currentBlock.name, privacy: .public) at position \(self.train.position), direction \(self.trainInstance.direction)")
-            try layout.reservation.removeLeadingBlocks(train: train)
+    func handleTrainStop() throws {
+        guard (train.state != .stopped && train.state != .stopping) && trainShouldStopInBlock && stoppingFeedbackTriggered else {
+            return
+        }
+
+        BTLogger.router.debug("\(self.train, privacy: .public): stopping in \(self.currentBlock.name, privacy: .public) at position \(self.train.position), direction \(self.trainInstance.direction)")
+        try layout.reservation.removeLeadingBlocks(train: train)
+        
+        switch route.mode {
+        case .fixed:
+            let trainShouldStop = layout.trainShouldStop(route: route, train: train, block: currentBlock)
+            let stopCompletely = (trainShouldStop && train.managedFinishingScheduling) || trainAtEndOfRoute
             
-            switch route.mode {
-            case .fixed:
-                let trainShouldStop = layout.trainShouldStop(route: route, train: train, block: currentBlock)
-                let stopCompletely = (trainShouldStop && train.managedFinishingScheduling) || trainAtEndOfRoute
-                
-                _ = try controller.stop(completely: stopCompletely)
-                
-                if trainShouldStop && stopCompletely == false {
-                    // If it is a station, reschedule a restart
-                    reschedule(train: train, delay: waitingTime, controller: controller)
-                }
-
-            case .automatic:
-                let trainShouldStop = layout.trainShouldStop(route: route, train: train, block: currentBlock)
-                let stopCompletely = trainShouldStop && train.managedFinishingScheduling
-                
-                _ = try controller.stop(completely: stopCompletely)
-                
-                if trainShouldStop && stopCompletely == false {
-                    // If it is a station, reschedule a restart
-                    reschedule(train: train, delay: waitingTime, controller: controller)
-                }
-
-            case .automaticOnce(destination: let destination):
-                // Double-check that the train is moving in the direction specified by the destination, if specified.
-                // This should never fail.
-                if let direction = destination.direction, currentBlock.train?.direction != direction {
-                    throw LayoutError.destinationDirectionMismatch(currentBlock: currentBlock, destination: destination)
-                }
-                _ = try controller.stop(completely: true)
+            _ = try controller.stop(completely: stopCompletely)
+            
+            if trainShouldStop && stopCompletely == false {
+                // If it is a station, reschedule a restart
+                reschedule(train: train, delay: waitingTime, controller: controller)
             }
             
-            resultingEvents.append(.stateChanged)
+        case .automatic:
+            let trainShouldStop = layout.trainShouldStop(route: route, train: train, block: currentBlock)
+            let stopCompletely = trainShouldStop && train.managedFinishingScheduling
+            
+            _ = try controller.stop(completely: stopCompletely)
+            
+            if trainShouldStop && stopCompletely == false {
+                // If it is a station, reschedule a restart
+                reschedule(train: train, delay: waitingTime, controller: controller)
+            }
+            
+        case .automaticOnce(destination: let destination):
+            // Double-check that the train is moving in the direction specified by the destination, if specified.
+            // This should never fail.
+            if let direction = destination.direction, currentBlock.train?.direction != direction {
+                throw LayoutError.destinationDirectionMismatch(currentBlock: currentBlock, destination: destination)
+            }
+            _ = try controller.stop(completely: true)
         }
+        
+        resultingEvents.append(.stateChanged)
     }
     
     func reschedule(train: Train, delay: TimeInterval, controller: TrainControlling) {
@@ -316,33 +325,6 @@ final class AutomaticHandler {
             return false
         }
     }
-    
-//    Running if
-//- all leading blocks reserved
-//- waiting time at a station has expired
-//- user started route
-    // - the train has not reached the end of the route
-    // - the block does not require the train to stop (ie station)
-    func isRunning() -> Bool {
-        leadingBlocksReserved &&
-        train.managedScheduling &&
-        waitingTimeAtStationExpired &&
-        trainAtEndOfRoute == false &&
-        trainShouldStopInBlock == false
-    }
-    
-    // Braking if
-    // - not all leading blocks reserved AND distance of reserved leading blocks is greater than the distance to stop the train
-    // - OR reaching the "brake" feedback of a station
-    // - OR the end of the route
-    func isBraking() -> Bool {
-        trainShouldStopInBlock && brakingFeedbackTriggered
-    }
-
-    func isStopping() -> Bool {
-        trainShouldStopInBlock && stoppingFeedbackTriggered
-    }
-
         
     var destination: Destination? {
         if case .automaticOnce(let destination) = route.mode {
