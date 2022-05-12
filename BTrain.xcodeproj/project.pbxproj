@@ -238,7 +238,6 @@
 		A7C30BE02811ACAF00CC4251 /* TrainManualStateHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7C30BDF2811ACAF00CC4251 /* TrainManualStateHandler.swift */; };
 		A7C30BE22811ACED00CC4251 /* TrainManualMoveToNextBlockHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7C30BE12811ACED00CC4251 /* TrainManualMoveToNextBlockHandler.swift */; };
 		A7C30BE62811AD4D00CC4251 /* TrainManualStopTriggerDetectionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7C30BE52811AD4D00CC4251 /* TrainManualStopTriggerDetectionHandler.swift */; };
-		A7C30BE828121F6100CC4251 /* TrainStopPushingWagonsHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7C30BE728121F6100CC4251 /* TrainStopPushingWagonsHandler.swift */; };
 		A7C5E95B280E04DE00A5DB12 /* XCTestCase+Simulator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7C5E95A280E04DE00A5DB12 /* XCTestCase+Simulator.swift */; };
 		A7C6343827E6AF6700C37B46 /* TrainIconManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7C6343727E6AF6700C37B46 /* TrainIconManagerTests.swift */; };
 		A7C6C3AD2806780F00D43AC2 /* ShortestPathTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7C6C3AC2806780F00D43AC2 /* ShortestPathTests.swift */; };
@@ -1632,7 +1631,6 @@
 				A74CCC72272A5A18004E58F5 /* Transition.swift in Sources */,
 				A74F3814281A1BFA0013FD23 /* StationElementView.swift in Sources */,
 				A785C075278A5CE1002FD538 /* TrainIconManager.swift in Sources */,
-				A7C30BE828121F6100CC4251 /* TrainStopPushingWagonsHandler.swift in Sources */,
 				A74F38002817C1330013FD23 /* RouteStep.swift in Sources */,
 				A763F19727BF0FE100B3499A /* TrainSpeedGraphView.swift in Sources */,
 				A78B996727FD57B20021EFE4 /* Graph+Elements.swift in Sources */,
