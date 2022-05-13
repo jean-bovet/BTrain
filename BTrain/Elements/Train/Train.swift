@@ -166,7 +166,8 @@ final class Train: Element, ObservableObject {
     /// blocks are updated. The leading blocks are stored here for quick access instead
     /// of re-computing them on the fly all the time.
     var leadingBlocks = [Block]()
-    
+    var leadingTurnouts = [Turnout]()
+
     /// Array of blocks occpied by the train and its cars.
     ///
     /// This array is updated by the ``LayoutReservation`` class each time the reserved

@@ -37,12 +37,30 @@ final class TrainHandlerManaged {
         train.routeStepIndex == route.lastStepIndex
     }
         
-    var leadingBlocksReserved: Bool {
-        train.leadingBlocks.count > 0
+    var leadingBlocksReservedAndSettled: Bool {
+        if train.leadingBlocks.isEmpty {
+            return false
+        }
+        
+        return leadingTurnoutsSettled
+    }
+    
+    var leadingTurnoutsSettled: Bool {
+        if train.leadingTurnouts.isEmpty {
+            return true
+        }
+        
+        for turnout in train.leadingTurnouts {
+            if turnout.requestedState != turnout.actualState {
+                return false
+            }
+        }
+
+        return true
     }
     
     var trainShouldStop: Bool {
-        leadingBlocksReserved == false ||
+        leadingBlocksReservedAndSettled == false ||
         trainAtEndOfRoute ||
         layout.hasTrainReachedStationOrDestination(route, train, currentBlock)
     }
@@ -241,7 +259,7 @@ final class TrainHandlerManaged {
             try reserveLeadingBlocks()
         }
         
-        if leadingBlocksReserved && trainAtEndOfRoute == false && trainShouldStop == false {
+        if leadingBlocksReservedAndSettled && trainAtEndOfRoute == false && trainShouldStop == false {
             BTLogger.router.debug("\(self.train, privacy: .public): start train for \(self.route.steps.debugDescription, privacy: .public)")
             // Setup the start route index of the train
             train.startRouteIndex = train.routeStepIndex
@@ -307,6 +325,12 @@ final class TrainHandlerManaged {
     }
         
     func reserveLeadingBlocks() throws {
+        // Do not reserve leading blocks if there are still settling,
+        // that is, some turnout are not yet fully settled.
+        guard leadingTurnoutsSettled else {
+            return
+        }
+
         switch route.mode {
         case .fixed:
             if try layout.reservation.updateReservedBlocks(train: train) {

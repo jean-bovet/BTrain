@@ -218,7 +218,8 @@ final class LayoutReservation {
         
         turnout.requestedState = reservation.state
         turnout.reserved = .init(train: train.id, sockets: reservation.sockets)
-        
+        train.leadingTurnouts.append(turnout)
+
         BTLogger.reservation.debug("\(train, privacy: .public): request state \(turnout.requestedState, privacy: .public) for turnout \(turnout.name, privacy: .public)")
         layout.executor.sendTurnoutState(turnout: turnout) {
             BTLogger.reservation.debug("\(train, privacy: .public): request state \(turnout.requestedState, privacy: .public) for turnout \(turnout.name, privacy: .public) [command executed]")
@@ -311,6 +312,7 @@ final class LayoutReservation {
     // This methods frees all the reserved elements except the block in which the locomotive is located
     func freeElements(train: Train) throws {
         train.leadingBlocks.removeAll()
+        train.leadingTurnouts.removeAll()
         train.occupiedBlocks.removeAll()
 
         layout.blockMap.values
