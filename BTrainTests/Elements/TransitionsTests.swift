@@ -91,8 +91,12 @@ class TransitionsTests: XCTestCase {
         let doc = LayoutDocument(layout: v8)
 
         let t1 = v8.trains[0]
+        t1.wagonsPushedByLocomotive = false
+        t1.maxNumberOfLeadingReservedBlocks = 2
         let t2 = v8.trains[1]
-        
+        t2.wagonsPushedByLocomotive = false
+        t2.maxNumberOfLeadingReservedBlocks = 1
+
         let r1 = v8.routes[0]
         let r2 = v8.routes[1]
         
@@ -123,7 +127,7 @@ class TransitionsTests: XCTestCase {
         try v8.stopTrain(t1.id) { }
         
         // So we manually free up the first block and all the transitions to the next one
-        try v8.free(fromBlock: r1.steps[0].blockId!, toBlockNotIncluded: r1.steps[1].blockId!, direction: .next)
+        try v8.free(fromBlock: r1.steps[0].stepBlockId!, toBlockNotIncluded: r1.steps[1].stepBlockId!, direction: .next)
         doc.layoutController.runControllers(.movedToNextBlock)
         
         // Note: train t1 has been stopped so only train t2 can actually start

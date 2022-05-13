@@ -24,12 +24,14 @@ enum LayoutError: Error {
     case invalidHeadWagonConfiguration(train: Train)
     
     case blockNotFound(blockId: Identifier<Block>)
+    case blockNotFoundInStation(stationId: Identifier<Station>)
+    case stationNotFound(stationId: Identifier<Station>)
     case turnoutNotFound(turnoutId: Identifier<Turnout>)
     case feedbackNotFound(feedbackId: Identifier<Feedback>)
     case socketIdNotFound(socket: Socket)
         
-    case entrySocketNotFound(step: Route.Step)
-    case exitSocketNotFound(step: Route.Step)
+    case entrySocketNotFound(step: RouteStep)
+    case exitSocketNotFound(step: RouteStep)
     case invalidSocket(socket: Socket)
 
     case brakeFeedbackNotFound(block: Block)
@@ -54,16 +56,17 @@ enum LayoutError: Error {
     
     case routeNotFound(routeId: Identifier<Route>)
     case noPossibleRoute(train: Train)
+    case routeIsNotAutomatic(route: Route)
     
     case noSteps(routeId: Identifier<Route>)
     
     case destinationBlockMismatch(currentBlock: Block, destination: Destination)
     case destinationDirectionMismatch(currentBlock: Block, destination: Destination)
     
-    case missingDirection(step: Route.Step)
-    case invalidDirectionRequest(step: Route.Step)
-    case invalidDirectionAssignment(step: Route.Step)
-    case invalidState(step: Route.Step)
+    case missingDirection(step: RouteStep)
+    case invalidDirectionRequest(step: RouteStep)
+    case invalidDirectionAssignment(step: RouteStep)
+    case invalidState(step: RouteStep)
     
     case invalidPartIndex(index: Int, block: Block)
     
@@ -77,6 +80,10 @@ extension LayoutError: LocalizedError {
             return "Train \(trainId) not found"
         case .blockNotFound(blockId: let blockId):
             return "Block \(blockId) not found"
+        case .blockNotFoundInStation(stationId: let stationId):
+            return "No block found in station \(stationId)"
+        case .stationNotFound(stationId: let stationId):
+            return "Station \(stationId) not found"
         case .turnoutNotFound(turnoutId: let turnoutId):
             return "Turnout \(turnoutId) not found"
         case .feedbackNotFound(feedbackId: let feedbackId):
@@ -133,6 +140,8 @@ extension LayoutError: LocalizedError {
             return "Route \(routeId) not found"
         case .noPossibleRoute(train: let train):
             return "No automatic route found for \(train.name)"
+        case .routeIsNotAutomatic(route: let route):
+            return "The route \(route.name) is not automatic"
 
         case .noSteps(routeId: let routeId):
             return "No steps defined in route \(routeId)"

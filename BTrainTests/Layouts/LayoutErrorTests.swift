@@ -76,7 +76,7 @@ class LayoutErrorTests: XCTestCase {
             try layout.free(fromBlock: b1.id, toBlockNotIncluded: b2.id, direction: .next)
             XCTFail("Must throw an exception")
         } catch {
-            XCTAssertEqual(error.localizedDescription, "Turnout 1 not found")
+            XCTAssertEqual(error.localizedDescription, "Turnout t1 not found")
         }
     }
 
@@ -86,7 +86,7 @@ class LayoutErrorTests: XCTestCase {
             try layout.setTrainToBlock(train1.id, b1.id, direction: .next)
             XCTFail("Must throw an exception")
         } catch {
-            XCTAssertEqual(error.localizedDescription, "Block 1 is not empty")
+            XCTAssertEqual(error.localizedDescription, "Block b1 is not empty")
         }
     }
 
@@ -96,7 +96,7 @@ class LayoutErrorTests: XCTestCase {
             _ = try layout.entryFeedback(from: b1, to: b2)
             XCTFail("Must throw an exception")
         } catch {
-            XCTAssertEqual(error.localizedDescription, "No transition found from block 1 to block 2")
+            XCTAssertEqual(error.localizedDescription, "No transition found from block b1 to block b2")
         }
     }
 
@@ -106,7 +106,7 @@ class LayoutErrorTests: XCTestCase {
             try layout.setTrainToBlock(train0.id, b1.id, direction: .next)
             XCTFail("Must throw an exception")
         } catch {
-            XCTAssertEqual(error.localizedDescription, "Cannot reserve block 1 for train 1 because the block is already reserved for Reservation(train=2, direction=next)")
+            XCTAssertEqual(error.localizedDescription, "Cannot reserve block 1 for train lw1 because the block is already reserved for Reservation(train=lw2, direction=next)")
         }
     }
     
@@ -128,7 +128,7 @@ class LayoutErrorTests: XCTestCase {
             _ = try layout.directionDirectionInBlock(train0)
             XCTFail("Must throw an exception")
         } catch {
-            XCTAssertEqual(error.localizedDescription, "Train 1 does not have any assigned block (train.blockId is nil)")
+            XCTAssertEqual(error.localizedDescription, "Train lw1 does not have any assigned block (train.blockId is nil)")
         }
     }
     
@@ -138,7 +138,7 @@ class LayoutErrorTests: XCTestCase {
             _ = try layout.directionDirectionInBlock(train0)
             XCTFail("Must throw an exception")
         } catch {
-            XCTAssertEqual(error.localizedDescription, "Block 1 does not have any train assigned to it (TrainInstance is nil)")
+            XCTAssertEqual(error.localizedDescription, "Block b1 does not have any train assigned to it (TrainInstance is nil)")
         }
     }
 
@@ -149,7 +149,7 @@ class LayoutErrorTests: XCTestCase {
             _ = try layout.directionDirectionInBlock(train0)
             XCTFail("Must throw an exception")
         } catch {
-            XCTAssertEqual(error.localizedDescription, "Block 1 has another train (2) than 1 assigned to it")
+            XCTAssertEqual(error.localizedDescription, "Block b1 has another train (lw2) than lw1 assigned to it")
         }
     }
     

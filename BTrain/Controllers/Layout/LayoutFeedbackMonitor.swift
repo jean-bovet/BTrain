@@ -37,33 +37,16 @@ final class LayoutFeedbackMonitor {
         guard let currentBlock = layout.currentBlock(train: train) else {
             return
         }
-
+        
+        // Gather all feedbacks in the current block
         for feedback in currentBlock.feedbacks {
             expectedFeedbacks.insert(feedback.feedbackId)
         }
         
-        if train.manualScheduling {
-            guard let nextBlock = try layout.nextValidBlockForLocomotive(from: currentBlock, train: train) else {
-                return
-            }
-
-            let (entryFeedback, _) = try layout.entryFeedback(from: currentBlock, to: nextBlock)
-            if let entryFeedback = entryFeedback {
-                expectedFeedbacks.insert(entryFeedback.id)
-            }
-        } else {
-            guard let nextBlock = layout.nextBlock(train: train) else {
-                return
-            }
-
-            guard try layout.shouldHandleTrainMoveToNextBlock(train: train) else {
-                return
-            }
-            
-            let (entryFeedback, _) = try layout.entryFeedback(from: currentBlock, to: nextBlock)
-            if let entryFeedback = entryFeedback {
-                expectedFeedbacks.insert(entryFeedback.id)
-            }
+        // Gather the potential feedback that will be triggered when the train
+        // enter the next block in the layout.
+        if let entryFeedback = try layout.entryFeedback(for: train) {
+            expectedFeedbacks.insert(entryFeedback.feedback.id)
         }
     }
     

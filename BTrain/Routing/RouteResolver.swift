@@ -17,6 +17,7 @@ import Foundation
 // with just a few blocks specified and it will be up to this class to find out the missing turnouts (and blocks) to
 // create a contiguous route.
 // At the moment, only missing turnouts will be handled but in a future release, missing blocks will be supported as well.
+// TODO: support missing blocks as well now that we have the shortest path algorithm!
 final class RouteResolver {
     let layout: Layout
     let train: Train
@@ -33,9 +34,12 @@ final class RouteResolver {
     // already reserved for the same train to be accepted as resolved steps.
     // Returns nil if the route cannot be resolved. This can happen, for example, if a turnout or block is already
     // reserved for another train and no other alternative path is found.
-    func resolve(steps: ArraySlice<Route.Step>,
-                 verbose: Bool = SettingsKeys.bool(forKey: SettingsKeys.logRoutingResolutionSteps)) throws -> [Route.Step]? {
-        let unresolvedPath = try GraphPath(steps: Array(steps), layout: layout)
+    func resolve(steps: ArraySlice<RouteItem>,
+                 verbose: Bool = SettingsKeys.bool(forKey: SettingsKeys.logRoutingResolutionSteps)) throws -> [ResolvedRouteItem]? {
+        // TODO: cannot create a path from steps without applying constraints to the steps.
+        // We should try to resolve the steps "as we go" below, resolving each step one at a time
+        // as we apply the constraints.
+        let unresolvedPath: UnresolvedGraphPath = steps.map { $0 }
         
         let baseSettings = GraphPathFinder.Settings(verbose: verbose,
                                                     random: false,
@@ -47,21 +51,23 @@ final class RouteResolver {
 
         let pf = LayoutPathFinder(layout: layout, train: train, settings: settings)
         
+        let context = LayoutPathFinder.LayoutContext(layout: layout, train: train)
+        
         // Try to resolve the route using the standard constraints (which are a super set of the constraints
         // when finding a new route, which provides consistent behavior when resolving a route).
-        if let resolvedPath = pf.resolve(graph: layout, unresolvedPath, constraints: ResolverConstraints(layoutConstraints: pf.constraints)) {
-            return resolvedPath.elements.toSteps
+        if let resolvedPath = pf.resolve(graph: layout, unresolvedPath, constraints: ResolverConstraints(layoutConstraints: pf.constraints), context: context) {
+            return resolvedPath.elements.toResolvedRouteItems
         }
         
         // If we are not able to resolve the route using the standard constraints, it means there are no path available
         // that satisfies the constraints; for example, a fixed route has a disable block that makes it impossible to resolve.
         // Let's try again to resolve the route using the basic constraints at the graph-level - this means, all layout-specific
         // constraints (such as block reserved, disabled, etc) are ignored.
-        if let resolvedPath = pf.resolve(graph: layout, unresolvedPath, constraints: ResolverConstraints(layoutConstraints: GraphPathFinder.DefaultConstraints())) {
-            return resolvedPath.elements.toSteps
+        if let resolvedPath = pf.resolve(graph: layout, unresolvedPath, constraints: ResolverConstraints(layoutConstraints: GraphPathFinder.DefaultConstraints()), context: context) {
+            return resolvedPath.elements.toResolvedRouteItems
         }
 
-        // If we reach that point, it means the graph itself has a problem with its node and edges and not path can be found.
+        // If we reach that point, it means the graph itself has a problem with its node and edges and no path can be found.
         return nil
     }
     
@@ -82,17 +88,23 @@ final class RouteResolver {
                 return delegatedConstraints.shouldInclude(node: node, currentPath: currentPath, to: to)
             }
             
-            if node is Block && node.identifier.uuid != to.node.identifier.uuid {
-                // Backtrack if the first block is not the destination node.
-                // Note: this is currently a limitation of the resolver in which it is expected that a route
-                // defines all the blocks in the route. The resolver just resolves the turnouts between two
-                // blocks but not an arbitrary long route with turnouts and blocks, which can be expensive
-                // to traverse until we have a breadth-first algorithm implementation to search for the shortest
-                // path between one block to another (arbitrary far away) block.
-                return false
-            } else {
-                return delegatedConstraints.shouldInclude(node: node, currentPath: currentPath, to: to)
+            if node is Block {
+                if to.node is Block && node.identifier.uuid != to.node.identifier.uuid {
+                    // Backtrack if the first block is not the destination node.
+                    // TODO: shortest path application
+                    // Note: this is currently a limitation of the resolver in which it is expected that a route
+                    // defines all the blocks in the route. The resolver just resolves the turnouts between two
+                    // blocks but not an arbitrary long route with turnouts and blocks, which can be expensive
+                    // to traverse until we have a breadth-first algorithm implementation to search for the shortest
+                    // path between one block to another (arbitrary far away) block.
+                    return false
+                } else if let station = to.node as? Station {
+                    let bf = node.identifier as! BlockGraphElementIdentifier
+                    //TODO: include the constraints as well in this contains
+                    return station.validBlock(blockId: bf.blockId, train: Train(), layout: Layout())
+                }
             }
+            return delegatedConstraints.shouldInclude(node: node, currentPath: currentPath, to: to)
         }
     }
 }

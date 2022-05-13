@@ -16,7 +16,7 @@ extension Layout {
     
     @discardableResult
     func newTurnout(name: String, category: Turnout.Category) -> Turnout {
-        let turnout = Turnout(id: Identifier<Turnout>(uuid: Layout.newIdentity(turnouts)), name: name)
+        let turnout = Turnout(id: LayoutIdentity.newIdentity(turnouts, prefix: .turnout), name: name)
         turnout.category = category
         turnout.address = CommandTurnoutAddress(0, .MM)
         turnout.center = .init(x: 100, y: 100)

@@ -27,28 +27,42 @@ protocol GraphElementIdentifier {
 // See https://en.wikipedia.org/wiki/Graph_(discrete_mathematics)
 protocol Graph {
     // Returns the edge that starts at `from` node from the specified `socketId`.
-    func edge(from: GraphNode, socketId: SocketId) -> GraphEdge?
+    func edge(from: GraphNode, socketId: SocketId, constraints: GraphPathFinderConstraints) -> GraphEdge?
     
     // Returns the node corresponding to the identifier by `for`
-    func node(for: GraphElementIdentifier) -> GraphNode?
+    func node(for: GraphElementIdentifier, constraints: GraphPathFinderConstraints) -> GraphNode?
 }
 
-// A node in a graph. Conceptually, a node represents either a turnout or a block.
+/// A node in a graph.
+///
+/// Conceptually, a node represents either a turnout or a block.
 protocol GraphNode {
-    // The unique identifier of the node
+    /// The unique identifier of the node
     var identifier: GraphElementIdentifier { get }
     
+    /// The name of the node
     var name: String { get }
     
-    var weight: Double { get }
+    /// Returns the weight of the node given the specified constraints
+    /// - Parameter constraints: the constraints
+    /// - Returns: the weight of the node
+    ///
+    func weight(_ constraints: GraphPathFinderConstraints) -> Double
     
-    // Returns all the sockets available for that node
-    var sockets: [SocketId] { get }
-    
-    // Returns all the sockets reachable from a specific socket
-    // In other words, given a specific edge entering a node,
-    // what are the other edges that can be reached.
-    func reachableSockets(from socket: SocketId) -> [SocketId]
+    /// Returns all the available sockets for the node given the specified constraints
+    /// - Parameter constraints: the constraints
+    /// - Returns: the available sockets
+    func sockets(_ constraints: GraphPathFinderConstraints) -> [SocketId]
+        
+    /// Returns all the sockets reachable from a specific socket, given the specified constraints.
+    ///
+    /// In other words, given a specific edge entering the node and constraints,
+    /// what are the other edges that can be reached when exiting this node.
+    /// - Parameters:
+    ///   - socket: the socket specifying where the path enters the node
+    ///   - constraints: the constraints
+    /// - Returns: an array of sockets
+    func reachableSockets(from socket: SocketId, _ constraints: GraphPathFinderConstraints) -> [SocketId]
 }
 
 // Link between two nodes

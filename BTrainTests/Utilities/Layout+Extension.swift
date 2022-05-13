@@ -17,8 +17,8 @@ import Foundation
 extension Layout {
     
     func newRoute(id: String, _ steps: [(String, Direction)]) -> Route {
-        return newRoute(id, name: id, steps.map({ step in
-            return Route.Step(Identifier<Block>(uuid: step.0), step.1)
+        return newRoute(Identifier<Route>(uuid: id), name: id, steps.map({ step in
+            return .block(RouteStepBlock(Identifier<Block>(uuid: step.0), step.1))
         }))
     }
     
@@ -40,7 +40,7 @@ extension Layout {
             throw LayoutError.noSteps(routeId: routeID)
         }
 
-        if let block = block(for: firstStep.blockId) {
+        if let block = block(for: firstStep.stepBlockId) {
             try setTrainToBlock(train.id, block.id, position: startAtEndOfBlock ? .end : .start, direction: .next)
 
             train.routeId = route.id
@@ -92,22 +92,6 @@ extension Layout {
     func removeTrains() -> Layout {
         removeAllTrains()
         return self
-    }
-
-}
-
-extension Array where Element == Route.Step {
-    
-    func toStrings(_ layout: Layout, useNameInsteadOfId: Bool = true) throws -> [String] {
-        return try self.map { step in
-            if let blockId = step.blockId, let block = layout.block(for: blockId) {
-                return "\(useNameInsteadOfId ? block.name:block.id.uuid):\(step.direction!)"
-            } else if let turnoutId = step.turnoutId, let turnout = layout.turnout(for: turnoutId) {
-                return "\(useNameInsteadOfId ? turnout.name:turnout.id.uuid):(\(step.entrySocket!.socketId!)>\(step.exitSocket!.socketId!))"
-            } else {
-                throw LayoutError.invalidState(step: step)
-            }
-        }
     }
 
 }

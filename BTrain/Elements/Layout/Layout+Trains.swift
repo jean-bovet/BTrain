@@ -22,8 +22,8 @@ extension Layout {
     
     @discardableResult
     func newTrain() -> Train {
-        let id = Layout.newIdentity(trains)
-        return addTrain(Train(uuid: id, name: id))
+        let id = LayoutIdentity.newIdentity(trains, prefix: .train)
+        return addTrain(Train(id: id, name: id.uuid, address: 0))
     }
     
     @discardableResult
@@ -118,7 +118,7 @@ extension Layout {
     /// - Parameter train: the train to adjust the speed
     func adjustSpeedLimit(_ train: Train) {
         // Note: only do that when the train is not under manual control!
-        guard !train.manualScheduling else {
+        guard !train.unmanagedScheduling else {
             return
         }
 
@@ -228,9 +228,9 @@ extension Layout {
             // Ensure the automatic route associated with the train is updated
             // Note: remember the destination block
             if let destination = destination {
-                route.automaticMode = .once(destination: destination)
+                route.mode = .automaticOnce(destination: destination)
             } else {
-                route.automaticMode = .endless
+                route.mode = .automatic
             }
             
             // Reset the route - the route will be automatically updated by
@@ -241,7 +241,11 @@ extension Layout {
             // Check to make sure the train is somewhere along the route
             train.routeStepIndex = -1
             for (index, step) in route.steps.enumerated() {
-                guard train.blockId == step.blockId else {
+                guard let (blockId, direction) = self.block(for: train, step: step) else {
+                    continue
+                }
+                
+                guard train.blockId == blockId else {
                     continue
                 }
                 
@@ -254,7 +258,7 @@ extension Layout {
                 }
                 
                 // Check that the train direction matches as well.
-                if trainInstance.direction == step.direction {
+                if trainInstance.direction == direction {
                     train.routeStepIndex = index
                     break
                 }
@@ -265,7 +269,7 @@ extension Layout {
             }
         }
 
-        train.scheduling = .automatic(finishing: false)
+        train.scheduling = .managed(finishing: false)
     }
     
     func trainShouldStop(train: Train, block: Block) -> Bool {
@@ -315,7 +319,7 @@ extension Layout {
             throw LayoutError.trainNotFound(trainId: trainId)
         }
         
-        train.scheduling = .manual
+        train.scheduling = .unmanaged
         try reservation.updateReservedBlocks(train: train)
     }
     
@@ -325,7 +329,7 @@ extension Layout {
             throw LayoutError.trainNotFound(trainId: trainId)
         }
 
-        train.scheduling = .automatic(finishing: true)
+        train.scheduling = .managed(finishing: true)
     }
 
     // This method sets the train in a specific block and updates the reserved blocks (occupied and leading blocks).
@@ -443,4 +447,27 @@ extension Layout {
         didChange()
     }
 
+    func block(for train: Train, step: RouteItem) -> (Identifier<Block>, Direction)? {
+        switch step {
+        case .block(let stepBlock):
+            return (stepBlock.blockId, stepBlock.direction ?? .next)
+
+        case .station(let stepStation):
+            guard let station = self.station(for: stepStation.stationId) else {
+                return nil
+            }
+            guard let item = station.blockWith(train: train, layout: self) else {
+                return nil
+            }
+            
+            guard let bid = item.blockId, let bd = item.direction else {
+                return nil
+            }
+            
+            return (bid, bd)
+            
+        case .turnout(_):
+            return nil
+        }
+    }
 }

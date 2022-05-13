@@ -178,7 +178,7 @@ final class GraphShortestPathFinder {
 
         // Find out if there is an element reachable from `from`.
         // For example: with from = 0:s1:1, the next element is "t1" with entry socket 0.
-        if let nextElement = try nextElement(of: from) {
+        if let nextElement = try nextElement(of: from, constraints: constraints) {
             // Retrieve the distance of the `from` node.
             guard let fromNodeDistance = distances[from] else {
                 throw PathFinderError.distanceNotFound(for: from)
@@ -189,7 +189,7 @@ final class GraphShortestPathFinder {
             // In effect, the distance is the length of each node (which is actually the length of each
             // block and turnout). The goal is to assign the distance the train will use when following
             // "s1" and "t1" to each of the adjacent nodes of "t1", which are going to be "t2" and "b2".
-            let nextElementDistance = fromNodeDistance + nextElement.node.weight
+            let nextElementDistance = fromNodeDistance + nextElement.node.weight(constraints)
             
             // Assign to all the adjacent nodes of `nextElement` the distance of `nextElement`
             assignDistanceToPathConfigurationsOf(element: nextElement, to: to, distance: nextElementDistance, path: currentPath, constraints: constraints)
@@ -223,16 +223,16 @@ final class GraphShortestPathFinder {
     
     /// Returns the element following the specified `element`. There is always zero or one element following
     /// an element (zero in case of a siding block).
-    private func nextElement(of element: GraphPathElement) throws -> NextElement? {
+    private func nextElement(of element: GraphPathElement, constraints: GraphPathFinderConstraints) throws -> NextElement? {
         guard let fromExitSocket = element.exitSocket else {
             throw PathFinderError.missingExitSocket(from: element)
         }
         
-        guard let edge = graph.edge(from: element.node, socketId: fromExitSocket) else {
+        guard let edge = graph.edge(from: element.node, socketId: fromExitSocket, constraints: constraints) else {
             return nil
         }
         
-        guard let node = graph.node(for: edge.toNode) else {
+        guard let node = graph.node(for: edge.toNode, constraints: constraints) else {
             throw PathFinderError.nodeNotFound(identifier: edge.toNode)
         }
             
@@ -260,7 +260,7 @@ final class GraphShortestPathFinder {
     ///   - path: the current shortest path
     ///   - constraints: the constraints
     private func assignDistanceToPathConfigurationsOf(element: NextElement, to: GraphPathElement, distance: Double, path: GraphPath, constraints: GraphPathFinderConstraints) {
-        for exitSocket in element.node.reachableSockets(from: element.entrySocket) {
+        for exitSocket in element.node.reachableSockets(from: element.entrySocket, constraints) {
             // Build up a particular element configuration using the specified exitSocket.
             // For example, starting with element "0:t1", we will have:
             // 0:t1:1 and 0:t1:2

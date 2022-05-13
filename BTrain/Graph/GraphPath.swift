@@ -46,31 +46,17 @@ struct GraphPath: Equatable {
 
 }
 
-extension GraphPath {
-    
-    // Create a path using steps of a route.
-    init(steps: [Route.Step], layout: Layout) throws {
-        let elements: [GraphPathElement] = try steps.compactMap { step in
-            if let blockId = step.blockId {
-                guard let block = layout.block(for: blockId) else {
-                    throw LayoutError.blockNotFound(blockId: blockId)
-                }
-                return GraphPathElement(node: block, entrySocket: try step.entrySocketId(), exitSocket: try step.exitSocketId())
-            } else if let turnoutId = step.turnoutId {
-                guard let turnout = layout.turnout(for: turnoutId) else {
-                    throw LayoutError.turnoutNotFound(turnoutId: turnoutId)
-                }
-                return GraphPathElement(node: turnout, entrySocket: try step.entrySocketId(), exitSocket: try step.exitSocketId())
-            } else {
-                return nil
-            }
-        }
-        self.init(elements)
-    }
+typealias UnresolvedGraphPath = [UnresolvedGraphPathElement]
 
+protocol UnresolvedGraphPathElement {
+    
+    var description: String { get }
+    
+    func resolve(_ constraints: GraphPathFinderConstraints, _ context: GraphPathFinderContext) -> GraphPathElement?
+    
 }
 
-// Each element is a `node` with specified exit and entry sockets.
+// Each element is a `node` with specific exit and entry sockets.
 // A starting element only has an exit socket while the last
 // element in the path only has an entry socket.
 struct GraphPathElement: Equatable, Hashable, CustomStringConvertible {

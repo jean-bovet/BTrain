@@ -31,7 +31,7 @@ extension Layout {
 
     @discardableResult
     func newBlock(name: String, category: Block.Category) -> Block {
-        let block = Block(id: Layout.newIdentity(blockMap), name: name)
+        let block = Block(id: LayoutIdentity.newIdentity(blockMap, prefix: .block), name: name)
         block.category = category
         block.center = .init(x: 100, y: 100)
         blockMap[block.id] = block
@@ -97,20 +97,7 @@ extension Layout {
             return nil
         }
     }
-
-    func nextBlock(train: Train) -> Block? {
-        if let route = route(for: train.routeId, trainId: train.id) {
-            if train.routeStepIndex + 1 < route.steps.count {
-                let nextBlockId = route.steps[train.routeStepIndex+1].blockId
-                return block(for: nextBlockId)
-            } else {
-                return nil
-            }
-        } else {
-            return nil
-        }
-    }
-
+    
     func atEndOfBlock(train: Train) throws -> Bool {
         if let currentBlock = currentBlock(train: train) {
             guard let ti = currentBlock.train else {

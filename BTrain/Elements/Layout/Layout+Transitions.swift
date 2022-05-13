@@ -19,7 +19,7 @@ extension Layout {
     }
 
     func link(from: Socket, to: Socket) {
-        add(Transition(id: Layout.newIdentity(transitions), a: from, b: to))
+        add(Transition(id: LayoutIdentity.newIdentity(transitions, prefix: .transition), a: from, b: to))
     }
     
     func add(_ transition: Transition) {
@@ -156,34 +156,7 @@ extension Layout {
             throw LayoutError.invalidTransition(transition: transition)
         }
     }
-
-    func entryFeedback(from fromBlock: Block, to nextBlock: Block) throws -> (Feedback?, direction: Direction) {
-        guard let direction = fromBlock.train?.direction else {
-            throw LayoutError.trainNotFoundInBlock(blockId: fromBlock.id)
-        }
-        
-        let transitions = try transitions(from: fromBlock, to: nextBlock, direction: direction)
-        guard let lastTransition = transitions.last else {
-            throw LayoutError.noTransition(fromBlockId: fromBlock.id, toBlockId: nextBlock.id)
-        }
-        
-        // Determine if the train is moving in the "natural" direction
-        // inside the next block, that is, entering from the "previous" side
-        // (and exiting in the "next" side). This will help determine
-        // which feedback to monitor on that next block.
-        guard let blockId = lastTransition.b.block, blockId == nextBlock.id else {
-            throw LayoutError.lastTransitionToBlock(transition: lastTransition.id, blockId: nextBlock.id)
-        }
-        
-        let nextBlockDirectionOfTravel: Direction = lastTransition.b.socketId == Block.previousSocket ? .next : .previous
-
-        // Now return the appropriate feedback depending on the direction
-        // of travel of the train into the next block.
-        let entryFeedbackId = nextBlock.entryFeedback(for: nextBlockDirectionOfTravel)
-        let entryFeedback = self.feedback(for: entryFeedbackId)
-        return (entryFeedback, nextBlockDirectionOfTravel)
-    }
-
+    
     // This function returns the next block for the locomotive, reachable from the `fromBlock`
     // and that is either free or already reserved for the train. This function is used, for example,
     // by the TrainController in manual mode to follow the movement of the

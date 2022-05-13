@@ -149,6 +149,18 @@ final class LayoutLoopWithStation: LayoutCreating {
     }
 }
 
+/// Similar to ``LayoutLoopWithStation`` but with stations defined
+/// - Station N: n1, n2
+/// - Station S: s1, s2
+final class LayoutLoopWithStations: LayoutCreating {
+    
+    static let id = Identifier<Layout>(uuid: "Loop with Stations")
+    
+    func newLayout() -> Layout {
+        LayoutFactory.layoutFromBundle(named: LayoutLoopWithStations.id.uuid)
+    }
+}
+
 //              t3               ┌─────────┐              t4
 //     ┌─────▶––––––––––────────▶│ Block 2 │─────────────▶––––––––––───────┐
 //     │          \              └─────────┘                   /           │
@@ -248,7 +260,8 @@ final class LayoutIncomplete: LayoutCreating {
         l.newTrain()
 
         // Routes
-        l.newRoute("0", name: "Simple Route", [Route.Step(b1, .next), Route.Step(b2, .next)])
+        _ = l.newRoute(Identifier<Route>(uuid: "0"), name: "Simple Route",
+                       [.block(RouteStepBlock(b1, .next)), .block(RouteStepBlock(b2, .next))])
         
         return l
     }

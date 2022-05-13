@@ -46,7 +46,7 @@ final class SwitchboardLinkUpdater {
             
             // If both sockets are found, this means there is a link
             // established between two elements (two shapes).
-            let t = Transition(id: Layout.newIdentity(layout.transitions), a: fromSocket, b: toSocket)
+            let t = Transition(id: LayoutIdentity.newIdentity(layout.transitions, prefix: .transition), a: fromSocket, b: toSocket)
             
             // Assign the new transition to the shape
             linkShape.transition = t

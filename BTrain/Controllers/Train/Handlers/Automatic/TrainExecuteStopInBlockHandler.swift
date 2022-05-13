@@ -49,7 +49,6 @@ final class TrainExecuteStopInBlockHandler: TrainAutomaticSchedulingHandler {
                 continue
             }
             
-            // TODO: handle the case where braking and stopping feedback are the same (stop the train then)
             if train.state == .running {
                 guard let brakeFeedback = currentBlock.brakeFeedback(for: direction) else {
                     throw LayoutError.brakeFeedbackNotFound(block: currentBlock)

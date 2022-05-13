@@ -31,6 +31,8 @@ final class Layout: Element, ObservableObject {
     
     @Published var blockMap = OrderedDictionary<Identifier<Block>, Block>()
 
+    @Published var stationMap = OrderedDictionary<Identifier<Station>, Station>()
+
     @Published var feedbacks = [Feedback]()
     
     @Published var turnouts = [Turnout]()
@@ -104,6 +106,7 @@ final class Layout: Element, ObservableObject {
 
     func apply(other: Layout) {
         self.blockMap = other.blockMap
+        self.stations = other.stations
         self.feedbacks = other.feedbacks
         self.turnouts = other.turnouts
         self.transitions = other.transitions
@@ -113,44 +116,22 @@ final class Layout: Element, ObservableObject {
     
     func trainsThatCanBeStarted() -> [Train] {
         return trains.filter { train in
-            return train.enabled && train.blockId != nil && train.manualScheduling
+            return train.enabled && train.blockId != nil && train.unmanagedScheduling
         }
     }
     
     func trainsThatCanBeStopped() -> [Train] {
         return trains.filter { train in
-            return train.automaticScheduling
+            return train.managedScheduling
         }
     }
     
     func trainsThatCanBeFinished() -> [Train] {
         return trains.filter { train in
-            return train.automaticScheduling && !train.automaticFinishingScheduling
+            return train.managedScheduling && !train.managedFinishingScheduling
         }
     }
-    
-    // Returns true if the specified train can be considered at a valid
-    // location to be monitored to move to the next block.
-    func shouldHandleTrainMoveToNextBlock(train: Train) throws -> Bool {
-        // There must exist a next block
-        guard let nextBlock = nextBlock(train: train) else {
-            return false
-        }
         
-        // The next block should either be reserved for this train or free
-        guard nextBlock.reserved?.trainId == train.id || nextBlock.reserved == nil else {
-            return false
-        }
-        
-        if strictRouteFeedbackStrategy {
-            // Strict route stratey requires the train to be at the end of the block
-            // before moving to the next block.
-            return try atEndOfBlock(train: train)
-        } else {
-            return true
-        }
-    }
-    
     // Programmatically trigger a change event for the layout,
     // which is used by other object, such as the switchboard,
     // to re-draw itself. This is necessary because changes
@@ -161,28 +142,6 @@ final class Layout: Element, ObservableObject {
         objectWillChange.send()
     }
     
-    // MARK: Identity
-    
-    static func newIdentity<T>(_ elements: OrderedDictionary<Identifier<T>, T>) -> Identifier<T> {
-        var index = 1
-        var id = Identifier<T>(uuid: String(index))
-        while elements[id] != nil {
-            index += 1
-            id = Identifier<T>(uuid: String(index))
-        }
-        return id
-    }
-    
-    static func newIdentity<T:ElementUUID>(_ elements: [T]) -> String {
-        var index = 1
-        var id = String(index)
-        while elements.first(where: { $0.uuid == id }) != nil {
-            index += 1
-            id = String(index)
-        }
-        return id
-    }
-
 }
 
 // MARK: Codable
@@ -190,7 +149,7 @@ final class Layout: Element, ObservableObject {
 extension Layout: Codable {
     
     enum CodingKeys: CodingKey {
-      case id, name, newLayoutWizardExecuted, blocks, feedbacks, turnouts, trains, routes, transitions
+      case id, name, newLayoutWizardExecuted, blocks, stations, feedbacks, turnouts, trains, routes, transitions
     }
 
     convenience init(from decoder: Decoder) throws {
@@ -199,6 +158,7 @@ extension Layout: Codable {
         self.name = try container.decode(String.self, forKey: CodingKeys.name)
         self.newLayoutWizardExecuted = try container.decodeIfPresent(Bool.self, forKey: CodingKeys.newLayoutWizardExecuted) ?? true
         self.blocks = try container.decode([Block].self, forKey: CodingKeys.blocks)
+        self.stations = try container.decodeIfPresent([Station].self, forKey: CodingKeys.stations) ?? []
         self.feedbacks = try container.decode([Feedback].self, forKey: CodingKeys.feedbacks)
         self.turnouts = try container.decode([Turnout].self, forKey: CodingKeys.turnouts)
         self.trains = try container.decode([Train].self, forKey: CodingKeys.trains)
@@ -212,10 +172,11 @@ extension Layout: Codable {
         try container.encode(name, forKey: CodingKeys.name)
         try container.encode(newLayoutWizardExecuted, forKey: CodingKeys.newLayoutWizardExecuted)
         try container.encode(blocks, forKey: CodingKeys.blocks)
+        try container.encode(stations, forKey: CodingKeys.stations)
         try container.encode(feedbacks, forKey: CodingKeys.feedbacks)
         try container.encode(turnouts, forKey: CodingKeys.turnouts)
         try container.encode(trains, forKey: CodingKeys.trains)
-        try container.encode(manualRoutes, forKey: CodingKeys.routes)
+        try container.encode(fixedRoutes, forKey: CodingKeys.routes)
         try container.encode(transitions, forKey: CodingKeys.transitions)
     }
     

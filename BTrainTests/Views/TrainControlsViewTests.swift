@@ -60,18 +60,18 @@ class TrainControlsViewTests: RootViewTests {
         
         let sut = TrainControlRouteActionsView(document: doc, train: train, route: route)
 
-        train.scheduling = .manual
+        train.scheduling = .unmanaged
         _ = try sut.inspect().find(button: "Start")
         XCTAssertThrowsError(try sut.inspect().find(button: "Stop"))
         XCTAssertThrowsError(try sut.inspect().find(button: "Finish"))
 
-        train.scheduling = .automatic(finishing: false)
+        train.scheduling = .managed(finishing: false)
         _ = try sut.inspect().find(button: "Stop")
         var fb = try sut.inspect().find(button: "Finish")
         XCTAssertFalse(fb.isDisabled())
         XCTAssertThrowsError(try sut.inspect().find(button: "Start"))
 
-        train.scheduling = .automatic(finishing: true)
+        train.scheduling = .managed(finishing: true)
         _ = try sut.inspect().find(button: "Stop")
         fb = try sut.inspect().find(button: "Finish")
         XCTAssertTrue(fb.isDisabled())

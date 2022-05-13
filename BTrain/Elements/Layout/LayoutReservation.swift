@@ -12,11 +12,42 @@
 
 import Foundation
 
-// This class handles the occupied and leading blocks reservation for a specified train.
-// - A occupied block is a block, either behind or in front of the locomotive, that contains the wagons of the train.
-//   Note that if a locomotive pushes the wagon, the occupied blocks are actually "in front" of the train.
-// - A leading block is a block in front of the train that is reserved in order for the train to be
-//   able to move into it safely without risking a collision with another train.
+/**
+ This class handles the reservation of blocks for the train.
+
+ There are two types of reserved blocks:
+ - **Leading** Blocks: the blocks that are in front of the train (in the direction of travel). These blocks are reserved in order for the train to be able to move into them safely without risking a collision with another train..
+ - **Occupied** Blocks: the blocks that are occupied by the train itself (locomotive and cars included). These blocks are usually behind the train in the opposite direction of travel,
+ unless the locomotive is pushing the wagons, in which case they are in front of the locomotive.
+ 
+ ````
+                   Train (Locomotive + 2 cars)
+
+                         ┌────┐  ┌────┐
+                         │ C2 │  │ C1 │▶
+                         └────┘  └────┘
+
+┌───────┐  ┌───────┐  ╔═══════╗  ╔═══════╗  ┏━━━━━━━┓  ┏━━━━━━━┓
+│  B5   │──│  B4   │──║  B3   ║──║  B2   ║──┃ | B1  ┃──┃  B0   ┃
+└───────┘  └───────┘  ╚═══════╝  ╚═══════╝  ┗━━━━━━━┛  ┗━━━━━━━┛
+
+     Free Blocks        Occupied Blocks        Heading Blocks
+
+
+
+                   Train (Locomotive + 2 cars)
+
+                         ┌────┐  ┌────┐
+                         │ C2 │  │ C1 │◀
+                         └────┘  └────┘
+
+┏━━━━━━━┓  ┏━━━━━━━┓  ╔═══════╗  ╔═══════╗  ┌───────┐  ┌───────┐
+┃  B5   ┃──┃  B4   ┃──║ B3 |  ║──║  B2   ║──│  B1   │──│  B0   │
+┗━━━━━━━┛  ┗━━━━━━━┛  ╚═══════╝  ╚═══════╝  └───────┘  └───────┘
+
+   Heading Blocks       Occupied Blocks       Free Blocks
+ ````
+*/
 final class LayoutReservation {
     
     let layout: Layout
@@ -45,7 +76,7 @@ final class LayoutReservation {
         
         // Reserve and set the train and its wagon(s) using the necessary number of
         // elements (turnouts and blocks)
-        try fillElementWith(train: train)
+        try occupyBlockWith(train: train)
 
         // Reserve the number of leading blocks necessary
         return try reserveLeadingBlocks(train: train)
@@ -80,7 +111,7 @@ final class LayoutReservation {
         return try reserveSteps(train: train, resolvedSteps: resolvedSteps)
     }
     
-    private func reserveSteps(train: Train, resolvedSteps: [Route.Step]) throws -> Bool {
+    private func reserveSteps(train: Train, resolvedSteps: [ResolvedRouteItem]) throws -> Bool {
         // Variable keeping track of the number of leading blocks that have been reserved.
         // At least one block must have been reserved to consider this function successfull.
         // Note: blocks that are reserved for the train and its wagons do not count against that count.
@@ -99,30 +130,20 @@ final class LayoutReservation {
         var transitions = [ITransition]()
         
         // Remember the previous step so we can determine the transitions between two elements.
-        var previousStep: Route.Step?
+        var previousStep: ResolvedRouteItem?
 
         // Iterate over all the resolved steps
         for step in resolvedSteps {
             try rememberTransitions(from: previousStep, to: step, transitions: &transitions)
 
-            if let blockId = step.blockId {
-                guard let block = layout.block(for: blockId) else {
-                    throw LayoutError.blockNotFound(blockId: blockId)
-                }
-                                
-                guard let direction = step.direction else {
-                    throw LayoutError.missingDirection(step: step)
-                }
-
-                if try !reserveBlock(block: block, direction: direction, train: train, numberOfLeadingBlocksReserved: &numberOfLeadingBlocksReserved, turnouts: &turnouts, transitions: &transitions) {
+            switch step {
+            case .block(let stepBlock):
+                if try !reserveBlock(block: stepBlock.block, direction: stepBlock.direction, train: train, numberOfLeadingBlocksReserved: &numberOfLeadingBlocksReserved, turnouts: &turnouts, transitions: &transitions) {
                     return numberOfLeadingBlocksReserved > 0
                 }
-            } else if let turnoutId = step.turnoutId {
-                guard let turnout = layout.turnout(for: turnoutId) else {
-                    throw LayoutError.turnoutNotFound(turnoutId: turnoutId)
-                }
                 
-                if try !rememberTurnoutToReserve(turnout: turnout, train: train, step: step, numberOfLeadingBlocksReserved: &numberOfLeadingBlocksReserved, turnouts: &turnouts) {
+            case .turnout(let stepTurnout):
+                if !rememberTurnoutToReserve(turnout: stepTurnout.turnout, train: train, step: stepTurnout, numberOfLeadingBlocksReserved: &numberOfLeadingBlocksReserved, turnouts: &turnouts) {
                     return numberOfLeadingBlocksReserved > 0
                 }
             }
@@ -199,9 +220,9 @@ final class LayoutReservation {
         debug("Set turnout \(turnout.name) for \(train) and state \(turnout.state)")
     }
     
-    private func rememberTurnoutToReserve(turnout: Turnout, train: Train, step: Route.Step, numberOfLeadingBlocksReserved: inout Int, turnouts: inout [TurnoutReservation]) throws -> Bool {
-        let fromSocketId = try step.entrySocketId()
-        let toSocketId = try step.exitSocketId()
+    private func rememberTurnoutToReserve(turnout: Turnout, train: Train, step: ResolvedRouteItemTurnout, numberOfLeadingBlocksReserved: inout Int, turnouts: inout [TurnoutReservation]) -> Bool {
+        let fromSocketId = step.entrySocketId
+        let toSocketId = step.exitSocketId
         let state = turnout.state(fromSocket: fromSocketId, toSocket: toSocketId)
 
         if turnout.isOccupied(by: train.id) {
@@ -230,19 +251,19 @@ final class LayoutReservation {
         return true
     }
     
-    private func rememberTransitions(from previousStep: Route.Step?, to step: Route.Step, transitions: inout [ITransition]) throws {
+    private func rememberTransitions(from previousStep: ResolvedRouteItem?, to step: ResolvedRouteItem, transitions: inout [ITransition]) throws {
         guard let previousStep = previousStep else {
             return
         }
-        let fromSocket = try previousStep.exitSocketOrThrow()
-        let toSocket = try step.entrySocketOrThrow()
+        let fromSocket = previousStep.exitSocket
+        let toSocket = step.entrySocket
         let trs = try layout.transitions(from: fromSocket, to: toSocket)
         transitions.append(contentsOf: trs)
     }
         
     // This method reserves and occupies all the necessary blocks (and parts of the block) to fit
     // the specified train with all its length, taking into account the length of each block.
-    func fillElementWith(train: Train) throws {
+    func occupyBlockWith(train: Train) throws {
         let trainVisitor = TrainVisitor(layout: layout)
         let result = try trainVisitor.visit(train: train) { transition in
             guard transition.reserved == nil else {
@@ -275,6 +296,7 @@ final class LayoutReservation {
             }
             
             block.reserved = .init(trainId: train.id, direction: attributes.trainDirection)
+            train.occupiedBlocks.append(block)
         }
         if !result {
             throw LayoutError.cannotReserveAllElements(train: train)
@@ -284,6 +306,7 @@ final class LayoutReservation {
     // This methods frees all the reserved elements except the block in which the locomotive is located
     func freeElements(train: Train) throws {
         train.leadingBlocks.removeAll()
+        train.occupiedBlocks.removeAll()
 
         layout.blockMap.values
             .filter { $0.reserved?.trainId == train.id }
@@ -398,6 +421,7 @@ final class LayoutReservation {
         if verbose {
             BTLogger.debug(msg)
         }
+        BTLogger.debug(msg)
     }
 
 }

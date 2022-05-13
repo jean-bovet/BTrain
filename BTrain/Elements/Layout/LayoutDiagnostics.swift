@@ -349,17 +349,20 @@ final class LayoutDiagnostic: ObservableObject {
     }
     
     func checkRoutes(_ errors: inout [DiagnosticError]) {
-        let rr = RouteResolver(layout: layout, train: Train(id: Identifier<Train>(uuid: UUID().uuidString), name: "", address: 0))
-        // Only check manually created routes
         for route in layout.routes.filter({ $0.automatic == false }) {
-            do {
-                let steps = try rr.resolve(steps: ArraySlice(route.steps))
-                if steps == nil {
-                    errors.append(DiagnosticError.invalidRoute(route: route, error: "No path found"))
-                }
-            } catch {
-                errors.append(DiagnosticError.invalidRoute(route: route, error: error.localizedDescription))
+            checkRoute(route: route, &errors)
+        }
+    }
+    
+    func checkRoute(route: Route, _ errors: inout [DiagnosticError]) {
+        let rr = RouteResolver(layout: layout, train: Train(id: Identifier<Train>(uuid: UUID().uuidString), name: "", address: 0))
+        do {
+            let steps = try rr.resolve(steps: ArraySlice(route.steps))
+            if steps == nil {
+                errors.append(DiagnosticError.invalidRoute(route: route, error: "No path found"))
             }
+        } catch {
+            errors.append(DiagnosticError.invalidRoute(route: route, error: error.localizedDescription))
         }
     }
     

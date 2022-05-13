@@ -13,7 +13,7 @@
 import Foundation
 
 // A structure that defines a destination in the layout
-struct Destination: Equatable {
+struct Destination: Equatable, Codable {
     // The block to reach
     let blockId: Identifier<Block>
         

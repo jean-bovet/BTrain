@@ -152,6 +152,7 @@ final class Train: Element, ObservableObject {
     @Published var startRouteIndex: Int?
 
     // Index of the current route step that the train is located in.
+    // TODO: can we use the RouteItem ID instead of the index so it is less confusing?
     @Published var routeStepIndex = 0
         
     // The maximum number of blocks that should be reserved ahead of the train.
@@ -166,40 +167,45 @@ final class Train: Element, ObservableObject {
     /// of re-computing them on the fly all the time.
     var leadingBlocks = [Block]()
     
+    /// Array of blocks occpied by the train and its cars.
+    ///
+    /// This array is updated by the ``LayoutReservation`` class each time the reserved
+    /// blocks are updated. The occupied blocks are stored here for quick access instead
+    /// of re-computing them on the fly all the time.
+    var occupiedBlocks = [Block]()
+    
+    /// Schedule state of the train
     enum Schedule {
-        // The train is stopped and cannot be started again
-        // unless the user takes an explicit action (ie Start button)
-        case manual
+        /// The train is monitored by BTrain but not managed. This mode is used when the user wants to drive the train on its own via
+        /// the digital controller. In this mode, BTrain will monitor the movement of the train to detect its location on the layout and
+        /// stop it in case of collision.
+        case unmanaged
         
-        // The train is running and has not yet finished the route
-        // Note: a train can be "stopped" with a speed of 0 kph while still
-        // be in a running state. This happens when the train stops because
-        // the next block is occupied or it has reached a station.
-        // If `finishing` is set to true, the train will stop when it finishes the route.
-        case automatic(finishing: Bool)
+        /// The train is managed by BTrain. This mode is used when BTrain is driving the train using either a fixed or automatic route.
+        case managed(finishing: Bool)
     }
     
     // The state of the schedule
-    @Published var scheduling: Schedule = .manual
+    @Published var scheduling: Schedule = .unmanaged
     
-    var manualScheduling: Bool {
-        if case .manual = scheduling {
+    var unmanagedScheduling: Bool {
+        if case .unmanaged = scheduling {
             return true
         } else {
             return false
         }
     }
     
-    var automaticFinishingScheduling: Bool {
-        if case .automatic(let finishing) = scheduling {
+    var managedFinishingScheduling: Bool {
+        if case .managed(let finishing) = scheduling {
             return finishing
         } else {
             return false
         }
     }
 
-    var automaticScheduling: Bool {
-        if case .automatic(_) = scheduling {
+    var managedScheduling: Bool {
+        if case .managed(_) = scheduling {
             return true
         } else {
             return false

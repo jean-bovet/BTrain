@@ -14,15 +14,14 @@ import Foundation
 
 extension Layout {
     
-    var manualRoutes: [Route] {
+    var fixedRoutes: [Route] {
         return routes.filter({!$0.automatic})
     }
     
     func route(for routeId: Identifier<Route>, trainId: Identifier<Train>?) -> Route? {
         if let trainId = trainId, routeId == Route.automaticRouteId(for: trainId), route(for: routeId) == nil {
             // Automatic route, ensure it exists for the train
-            let automaticRoute = Route(id: routeId, automatic: true)
-            automaticRoute.automaticMode = .endless
+            let automaticRoute = Route(id: routeId, mode: .automatic)
             automaticRoute.name = "automatic"
             routes.append(automaticRoute)
             return automaticRoute
@@ -35,17 +34,20 @@ extension Layout {
         return routes.first(where: { $0.id == routeId })
     }
     
-    func newRoute(_ id: String, name: String, automatic: Bool = false, _ steps: [(Block, Direction, TimeInterval?)]) {
-        var routeSteps = [Route.Step]()
-        for (index, step) in steps.enumerated() {
-            routeSteps.append(Route.Step(String(index), step.0.id, step.1, step.2))
+    func newRoute(_ id: String, name: String, _ steps: [(Block, Direction, TimeInterval?)]) -> Route {
+        var routeSteps = [RouteItem]()
+        for step in steps {
+            routeSteps.append(.block(RouteStepBlock(step.0.id, step.1, step.2)))
         }
-        newRoute(id, name: name, automatic: automatic, routeSteps)
+        return newRoute(Identifier<Route>(uuid: id), name: name, routeSteps)
     }
     
-    @discardableResult
-    func newRoute(_ id: String, name: String, automatic: Bool = false, _ steps: [Route.Step]) -> Route {
-        let route = Route(uuid: id, automatic: automatic)
+    func newRoute() -> Route {
+        return newRoute(LayoutIdentity.newIdentity(routes, prefix: .route), name: "", [])
+    }
+    
+    func newRoute(_ id: Identifier<Route>, name: String, _ steps: [RouteItem]) -> Route {
+        let route = Route(id: id)
         route.name = name
         route.steps = steps
         routes.append(route)
@@ -68,5 +70,66 @@ extension Layout {
             $0.name < $1.name
         }
     }
+    
+    func routeDescription(for train: Train) -> String {
+        var text = ""
+        if let route = self.route(for: train.routeId, trainId: train.id),
+           let train = self.train(for: train.id) {
+            if let message = route.lastMessage {
+                text = message
+            } else {
+                var index = 0
+                for step in route.steps {
+                    guard let description = self.description(of: step) else {
+                        continue
+                    }
+                    
+                    if !text.isEmpty {
+                        text += "→"
+                    }
+                    
+                    text += description
+                    
+                    if train.routeStepIndex == index {
+                        // Indicate the block in the route where the train
+                        // is currently located
+                        text += "􀼮"
+                    }
+                    
+                    index += 1
+                }
+            }
+        }
+        return text
+    }
+    
+    func description(of item: RouteItem) -> String? {
+        switch item {
+        case .block(let stepBlock):
+            return description(of: stepBlock.blockId)
 
+        case .station(let stepStation):
+            if let station = station(for: stepStation.stationId) {
+                return "\(station.name)"
+            } else {
+                return "\(stepStation.stationId)"
+            }
+            
+        case .turnout(_):
+            return nil
+        }
+    }
+    
+    func description(of blockId: Identifier<Block>) -> String {
+        if let block = block(for: blockId) {
+            return "\(block.name)"
+        } else {
+            return "\(blockId)"
+        }
+    }
+    
+    var defaultRouteDescription: String {
+        return "􀼮→"
+    }
+            
 }

@@ -23,43 +23,48 @@ struct RouteView: View {
     @State private var selection: String? = nil
     @State private var invalidRoute: Bool?
 
+    @State private var showAddRouteElementSheet = false
+    
+    func stepBlockBinding(_ routeItem: Binding<RouteItem>) -> Binding<RouteStepBlock> {
+        Binding<RouteStepBlock>(
+            get: {
+                if case .block(let stepBlock) = routeItem.wrappedValue {
+                    return stepBlock
+                } else {
+                    fatalError()
+                }
+            },
+            set: { newValue in
+                routeItem.wrappedValue = .block(newValue)
+            }
+        )
+    }
+    
+    func stepStationBinding(_ routeItem: Binding<RouteItem>) -> Binding<RouteStepStation> {
+        Binding<RouteStepStation>(
+            get: {
+                if case .station(let stepStation) = routeItem.wrappedValue {
+                    return stepStation
+                } else {
+                    fatalError()
+                }
+            },
+            set: { newValue in
+                routeItem.wrappedValue = .station(newValue)
+            }
+        )
+    }
+
     var body: some View {
         VStack {
-            Table(selection: $selection) {
-                TableColumn("Block") { step in
-                    UndoProvider(step.blockId) { blockId in
-                        Picker("Block:", selection: blockId) {
-                            ForEach(layout.blockMap.values, id:\.self) { block in
-                                Text("\(block.name) — \(block.category.description)").tag(block.id as Identifier<Block>?)
-                            }
-                        }.labelsHidden()
-                    }
+            List($route.steps, selection: $selection) { step in
+                switch step.wrappedValue {
+                case .block(_):
+                    RouteStepBlockView(layout: layout, stepBlock: stepBlockBinding(step))
+                case .turnout, .station:
+                    RouteStepStationView(layout: layout, stepStation: stepStationBinding(step))
                 }
-                
-                TableColumn("Direction in Block") { step in
-                    UndoProvider(step.direction) { direction in
-                        Picker("Direction:", selection: direction) {
-                            ForEach(Direction.allCases, id:\.self) { direction in
-                                Text(direction.description).tag(direction as Direction?)
-                            }
-                        }
-                        .fixedSize()
-                        .labelsHidden()
-                    }
-                }
-                
-                TableColumn("Wait Time") { step in
-                    if let block = layout.block(for: step.blockId.wrappedValue)  {
-                        TextField("", value: step.waitingTime, format: .number)
-                            .disabled(block.category != .station)
-                    }
-                }
-
-            } rows: {
-                ForEach($route.steps) { step in
-                    TableRow(step)
-                }
-            }
+            }.listStyle(.inset(alternatesRowBackgrounds: true))
             
             HStack {
                 Text("\(route.steps.count) steps")
@@ -67,13 +72,7 @@ struct RouteView: View {
                 Spacer()
                 
                 Button("+") {
-                    let step = Route.Step(String(route.steps.count+1), layout.block(at: 0).id, .next)
-                    route.steps.append(step)
-                    undoManager?.registerUndo(withTarget: route, handler: { route in
-                        route.steps.removeAll { s in
-                            return s.id == step.id
-                        }
-                    })
+                    showAddRouteElementSheet.toggle()
                 }
                 Button("-") {
                     if let step = route.steps.first(where: { $0.id == selection }) {
@@ -89,18 +88,9 @@ struct RouteView: View {
                 
                 Spacer().fixedSpace()
                 
-                Button("􀄨") {
-                    if let index = route.steps.firstIndex(where: { $0.id == selection }), index > route.steps.startIndex  {
-                        route.steps.swapAt(index, route.steps.index(before: index))
-                    }
-                }.disabled(selection == nil)
-                
-                Button("􀄩") {
-                    if let index = route.steps.firstIndex(where: { $0.id == selection }), index < route.steps.endIndex  {
-                        route.steps.swapAt(index, route.steps.index(after: index))
-                    }
-                }.disabled(selection == nil)
-                
+                MoveUpButtonView(selection: $selection, elements: $route.steps)
+                MoveDownButtonView(selection: $selection, elements: $route.steps)
+
                 Spacer().fixedSpace()
                 
                 HStack {
@@ -118,13 +108,16 @@ struct RouteView: View {
                 
             }
             .padding()
+        }.sheet(isPresented: $showAddRouteElementSheet) {
+            RouteNewElementSheet(layout: layout, route: route)
+                .padding()
         }
     }
     
     func validateRoute() {
         let diag = LayoutDiagnostic(layout: layout)
         var errors = [DiagnosticError]()
-        diag.checkRoutes(&errors)
+        diag.checkRoute(route: route, &errors)
         invalidRoute = !errors.isEmpty
     }
 }

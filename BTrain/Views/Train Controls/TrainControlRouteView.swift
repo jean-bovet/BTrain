@@ -14,11 +14,6 @@ import SwiftUI
 
 struct TrainControlRouteView: View {
     
-    struct RouteItem: Hashable {
-        let name: String
-        let routeId: Identifier<Route>
-    }
-    
     @ObservedObject var document: LayoutDocument
 
     @ObservedObject var train: Train
@@ -28,42 +23,9 @@ struct TrainControlRouteView: View {
     }
     
     var selectedRouteDescription: String {
-        var text = ""
-        if let route = layout.route(for: train.routeId, trainId: train.id),
-           let train = layout.train(for: train.id) {
-            if let message = route.lastMessage {
-                text = message
-            } else {
-                for (index, step) in route.blockSteps.enumerated() {
-                    if !text.isEmpty {
-                        text += "→"
-                    }
-                    if let block = layout.block(for: step.blockId) {
-                        text += "\(block.name)"
-                    } else if let blockId = step.blockId {
-                        text += "\(blockId)"
-                    } else {
-                        text += "?"
-                    }
-                    if train.routeStepIndex == index {
-                        // Indicate the block in the route where the train
-                        // is currently located
-                        text += "􀼮"
-                    }
-                }
-            }
-        }
-        return text
+        layout.routeDescription(for: train)        
     }
     
-    var defaultRouteDescription: String {
-        return "􀼮→"
-    }
-    
-    var routeItems: [RouteItem] {
-        return layout.manualRoutes.map { RouteItem(name: $0.name, routeId: $0.id) }
-    }
-        
     var automaticRouteId: Identifier<Route> {
         return Route.automaticRouteId(for: train.id)
     }
@@ -73,8 +35,8 @@ struct TrainControlRouteView: View {
             HStack {
                 Picker("Route:", selection: $train.routeId) {
                     Text("Automatic").tag(automaticRouteId as Identifier<Route>)
-                    ForEach(routeItems, id:\.self) { item in
-                        Text(item.name).tag(item.routeId as Identifier<Route>)
+                    ForEach(layout.fixedRoutes, id:\.self) { item in
+                        Text(item.name).tag(item.id as Identifier<Route>)
                     }
                 }
                                     
@@ -86,7 +48,7 @@ struct TrainControlRouteView: View {
                 }
             }
             if selectedRouteDescription.isEmpty {
-                Text(defaultRouteDescription)
+                Text(layout.defaultRouteDescription)
                     .lineLimit(2)
                     .fixedSize(horizontal: false, vertical: true)
                     .hidden()

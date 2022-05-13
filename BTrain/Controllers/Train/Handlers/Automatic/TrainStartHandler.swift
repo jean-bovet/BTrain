@@ -57,7 +57,7 @@ final class TrainStartHandler: TrainAutomaticSchedulingHandler {
         // - The train has reached the last block of the route (it can happen that a train can
         // be stopped in the middle of the route if that route was blocked for some reason).
         // - The train route is empty because it could not be determined
-        if train.automaticFinishingScheduling && (train.routeStepIndex == route.lastStepIndex || route.steps.isEmpty) {
+        if train.managedFinishingScheduling && (train.routeStepIndex == route.lastStepIndex || route.steps.isEmpty) {
             // The train is already stopped but make sure to update the scheduling status
             try layout.stopCompletely(train.id)
             return .none()

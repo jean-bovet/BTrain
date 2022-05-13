@@ -41,9 +41,21 @@ import Foundation
 final class LayoutParser {
             
     let routeStrings: [String]
+
+    final class ParsedLayout {
+        var blocks = Set<Block>()
+        var turnouts = Set<Turnout>()
+        var trains = Set<Train>()
+        var feedbacks = Set<Feedback>()
+        var transitions = Set<Transition>()
+        var routes = [Identifier<Route>:LayoutRouteParser.ParsedRoute]()
+
+        func link(from: Socket, to: Socket) {
+            transitions.insert(Transition(id: Identifier<Transition>(uuid: "\(transitions.count)"), a: from, b: to))
+        }
+    }
     
-    let layout = Layout()
-    let routes = [Route]()
+    var parsedLayout = ParsedLayout()
 
     convenience init(routeString: String) {
         self.init([routeString])
@@ -54,53 +66,25 @@ final class LayoutParser {
     }
     
     func parse() throws {
-        var blocks = Set<Block>()
-        var trains = Set<Train>()
-        var feedbacks = Set<Feedback>()
-        
         for (index, rs) in routeStrings.enumerated() {
-            let parser = LayoutRouteParser(ls: rs, id: String(index), layout: layout)
-            try parser.parse()
-
-            for train in parser.trains {
-                if let existingTrain = trains.first(where: {$0.id == train.id}) {
-                    // Ensure that if the train is already defined, its attributes
-                    // match the one re-defined later. This is to ensure the ASCII
-                    // representation of a route is consistent across routes.
-                    assert(train.speed == existingTrain.speed, "Mismatching speed definition for train \(train) and route \(String(describing: train.routeId))")
-                    assert(train.position == existingTrain.position, "Mismatching position definition for train \(train) and route \(String(describing: train.routeId))")
-                }
-                trains.insert(train)
-            }
-            
-            let route = parser.route!
-            layout.routes.append(route)
-            for block in parser.blocks {
-                blocks.insert(block)
-            }
-            
-            for feedback in parser.feedbacks {
-                feedbacks.insert(feedback)
-            }
+            let parser = LayoutRouteParser(ls: rs, id: String(index), layout: parsedLayout)
+            try parser.parse()            
+            parsedLayout.routes[parser.route.routeId] = parser.route
         }
-
-        layout.trains = trains.map { $0 }.sorted()
-        layout.feedbacks = feedbacks.map { $0 }.sorted()
-        layout.add(blocks.map { $0 }.sorted().reversed())
     }
     
 }
 
 extension LayoutFactory {
     
-    static func layoutFrom(_ routeString: String) throws -> Layout {
+    static func layoutFrom(_ routeString: String) throws -> LayoutParser.ParsedLayout {
         return try layoutFrom([routeString])
     }
     
-    static func layoutFrom(_ routeStrings: [String]) throws -> Layout {
+    static func layoutFrom(_ routeStrings: [String]) throws -> LayoutParser.ParsedLayout {
         let parser = LayoutParser(routeStrings)
         try parser.parse()
-        return parser.layout
+        return parser.parsedLayout
     }
 
 }

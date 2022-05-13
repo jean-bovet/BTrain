@@ -12,6 +12,11 @@
 
 import Foundation
 
+// TODO: documentation
+protocol GraphPathFinderContext {
+    
+}
+
 // Defines the constraints when finding a path in a graph.
 protocol GraphPathFinderConstraints {
     
@@ -73,6 +78,10 @@ struct GraphPathFinder: GraphPathFinding {
 
     }
 
+    struct DefaultContext: GraphPathFinderContext {
+        
+    }
+    
     /// Returns the shortest path between two nodes.
     func shortestPath(graph: Graph, from: GraphPathElement, to: GraphPathElement, constraints: GraphPathFinderConstraints = DefaultConstraints()) throws -> GraphPath? {
         return try GraphShortestPathFinder.shortestPath(graph: graph, from: from, to: to, constraints: constraints, verbose: settings.verbose)
@@ -80,9 +89,9 @@ struct GraphPathFinder: GraphPathFinding {
     
     /// Returns a path between two nodes.
     func path(graph: Graph, from: GraphNode, to: GraphNode?, constraints: GraphPathFinderConstraints = DefaultConstraints()) -> GraphPath? {
-        for socketId in shuffled(from.sockets) {
+        for socketId in shuffled(from.sockets(constraints)) {
             if let to = to {
-                for toSocketId in shuffled(to.sockets) {
+                for toSocketId in shuffled(to.sockets(constraints)) {
                     if let steps = path(graph: graph, from: .starting(from, socketId), to: .ending(to, toSocketId), currentPath: GraphPath([.starting(from, socketId)]), constraints: constraints) {
                         return steps
                     }
@@ -101,14 +110,19 @@ struct GraphPathFinder: GraphPathFinding {
         return path(graph: graph, from: from, to: to, currentPath: GraphPath([from]), constraints: constraints)
     }
     
-    /// Returns a resolved path given a path and the specified constraints.
-    func resolve(graph: Graph, _ path: GraphPath, constraints: GraphPathFinderConstraints = DefaultConstraints()) -> GraphPath? {
+    /// Returns a resolved path given an unresolved path and the specified constraints.
+    func resolve(graph: Graph, _ unresolvedPath: UnresolvedGraphPath, constraints: GraphPathFinderConstraints = DefaultConstraints(), context: GraphPathFinderContext = DefaultContext()) -> GraphPath? {
         var resolvedPath = [GraphPathElement]()
-        guard var previousElement = path.elements.first else {
+        guard var previousElement = unresolvedPath.first?.resolve(constraints, context) else {
             return nil
         }
+                
         resolvedPath.append(previousElement)
-        for element in path.elements.dropFirst() {
+        for unresolvedElement in unresolvedPath.dropFirst() {
+            guard let element = unresolvedElement.resolve(constraints, context) else {
+                BTLogger.router.error("Unable to resolve element \(unresolvedElement.description, privacy: .public)")
+                return nil
+            }
             if let p = self.path(graph: graph, from: previousElement, to: element, constraints: constraints) {
                 for resolvedElement in p.elements.dropFirst() {
                     resolvedPath.append(resolvedElement)
@@ -151,20 +165,20 @@ struct GraphPathFinder: GraphPathFinding {
             return nil
         }
         
-        guard let edge = graph.edge(from: from.node, socketId: exitSocket) else {
+        guard let edge = graph.edge(from: from.node, socketId: exitSocket, constraints: constraints) else {
             if settings.verbose {
                 debug("No edge found from \(from.node) and socket \(exitSocket)")
             }
             return nil
         }
         
-        guard let node = graph.node(for: edge.toNode) else {
+        guard let node = graph.node(for: edge.toNode, constraints: constraints) else {
             if settings.verbose {
                 debug("No destination node found in graph for \(edge.toNode)")
             }
             return nil
         }
-                
+        
         guard let entrySocketId = edge.toNodeSocket else {
             if settings.verbose {
                 debug("No entry socket for destination node \(node) in graph")
@@ -189,7 +203,7 @@ struct GraphPathFinder: GraphPathFinding {
 
         // We haven't reached the destination node, keep going forward
         // by exploring all the possible exit sockets from `node`
-        let exitSockets = node.reachableSockets(from: entrySocketId)
+        let exitSockets = node.reachableSockets(from: entrySocketId, constraints)
         for exitSocket in shuffled(exitSockets) {
             let betweenElement = GraphPathElement.between(node, entrySocketId, exitSocket)
             

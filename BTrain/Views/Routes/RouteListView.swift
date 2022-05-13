@@ -21,7 +21,7 @@ struct RouteListView: View {
     @State private var selection: Identifier<Route>? = nil
 
     var routes: [Route] {
-        return layout.manualRoutes
+        return layout.fixedRoutes
     }
     
     var body: some View {
@@ -39,12 +39,12 @@ struct RouteListView: View {
                 }
 
                 HStack {
-                    Text("\(layout.manualRoutes.count) routes")
+                    Text("\(layout.fixedRoutes.count) routes")
                     
                     Spacer()
                     
                     Button("+") {
-                        let route = layout.newRoute(UUID().uuidString, name: "New Route", [Route.Step]())
+                        let route = layout.newRoute()
                         selection = route.id
                         undoManager?.registerUndo(withTarget: layout, handler: { layout in
                             layout.remove(routeId: route.id)
@@ -77,7 +77,8 @@ struct RouteListView: View {
                 selection = layout.routes.first?.id
             }
         }
-    }}
+    }
+}
 
 struct RouteListView_Previews: PreviewProvider {
     

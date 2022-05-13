@@ -26,27 +26,27 @@ final class LayoutASCIIProducer {
         guard let train = layout.train(for: trainId) else {
             throw LayoutError.trainNotFound(trainId: trainId)
         }
-        guard let resolvedSteps = try RouteResolver(layout: layout, train: train).resolve(steps: ArraySlice(route.steps)) else {
+        
+        guard let resolvedSteps = try route.resolve(layout: layout, train: train) else {
             return text
         }
         
         for step in resolvedSteps {
-            if let turnoutId = step.turnoutId {
+            switch step {
+            case .block(let stepBlock):
                 addSpace(&text)
-                try generateTurnout(turnoutId: turnoutId, step: step, text: &text)
-            } else if let blockId = step.blockId {
+                try generateBlock(step: stepBlock, text: &text)
+            case .turnout(let stepTurnout):
                 addSpace(&text)
-                try generateBlock(blockId: blockId, step: step, text: &text)
+                generateTurnout(step: stepTurnout, text: &text)
             }
         }
         
         return text
     }
 
-    private func generateBlock(blockId: Identifier<Block>, step: Route.Step, text: inout String) throws {
-        guard let block = layout.block(for: blockId) else {
-            throw LayoutError.blockNotFound(blockId: blockId)
-        }
+    private func generateBlock(step: ResolvedRouteItemBlock, text: inout String) throws {
+        let block = step.block
         
         let reverse = step.direction == .previous
         if reverse {
@@ -128,10 +128,8 @@ final class LayoutASCIIProducer {
         }
     }
     
-    func generateTurnout(turnoutId: Identifier<Turnout>, step: Route.Step, text: inout String) throws {
-        guard let turnout = layout.turnout(for: turnoutId) else {
-            throw LayoutError.turnoutNotFound(turnoutId: turnoutId)
-        }
+    func generateTurnout(step: ResolvedRouteItemTurnout, text: inout String) {
+        let turnout = step.turnout
         
         text += "<"
         if let reserved = turnout.reserved?.train {
@@ -142,11 +140,11 @@ final class LayoutASCIIProducer {
         // <t0{sl}(0,1),s>
         text += "\(turnout.id)"
         text += "{\(turnoutType(turnout))}"
-        
-        let entrySocket = try step.entrySocketId()
-        let exitSocket = try step.exitSocketId()
+  
+        let entrySocket = step.entrySocketId
+        let exitSocket = step.exitSocketId
         text += "(\(entrySocket),\(exitSocket))"
-        
+
         if let state = turnoutState(turnout.state(fromSocket: entrySocket, toSocket: exitSocket)) {
             text += ",\(state)"
         }

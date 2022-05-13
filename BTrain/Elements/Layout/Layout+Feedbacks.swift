@@ -16,7 +16,7 @@ extension Layout {
                 
     @discardableResult
     func newFeedback() -> Feedback {
-        let feedback = Feedback(Layout.newIdentity(feedbacks))
+        let feedback = Feedback(id: LayoutIdentity.newIdentity(feedbacks, prefix: .feedback))
         feedbacks.append(feedback)
         return feedback
     }
