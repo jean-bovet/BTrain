@@ -219,8 +219,10 @@ final class LayoutReservation {
         turnout.requestedState = reservation.state
         turnout.reserved = .init(train: train.id, sockets: reservation.sockets)
         
-        layout.executor.sendTurnoutState(turnout: turnout) { }
-        debug("Set turnout \(turnout.name) for \(train) to requested state \(turnout.requestedState)")
+        BTLogger.reservation.debug("\(train, privacy: .public): request state \(turnout.requestedState, privacy: .public) for turnout \(turnout.name, privacy: .public)")
+        layout.executor.sendTurnoutState(turnout: turnout) {
+            BTLogger.reservation.debug("\(train, privacy: .public): request state \(turnout.requestedState, privacy: .public) for turnout \(turnout.name, privacy: .public) [command executed]")
+        }
     }
     
     private func rememberTurnoutToReserve(turnout: Turnout, train: Train, step: ResolvedRouteItemTurnout, numberOfLeadingBlocksReserved: inout Int, turnouts: inout [TurnoutReservation]) -> Bool {
