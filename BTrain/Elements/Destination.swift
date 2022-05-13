@@ -30,4 +30,16 @@ struct Destination: Equatable, Codable {
         self.blockId = blockId
         self.direction = direction
     }
+    
+    func hasReached(block: Block) -> Bool {
+        guard block.id == blockId else {
+            return false
+        }
+        
+        if let direction = direction {
+            return direction == block.train?.direction
+        } else {
+            return true
+        }
+    }
 }

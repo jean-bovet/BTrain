@@ -56,7 +56,7 @@ extension Layout {
     func setTrainPosition(_ train: Train, _ position: Int) throws {
         train.position = position
         
-        try reservation.updateReservedBlocks(train: train)
+        _ = try reservation.updateReservedBlocks(train: train)
 
         didChange()
     }
@@ -127,22 +127,31 @@ extension Layout {
         }
     }
     
-    func setTrainSpeed(_ train: Train, _ speed: TrainSpeed.UnitKph, speedLimit: Bool = true, acceleration: TrainSpeedAcceleration.Acceleration? = nil, completion: @escaping CompletionBlock) {
+    func setTrainSpeed(_ train: Train, _ speed: TrainSpeed.UnitKph, speedLimit: Bool = true, force: Bool = false, acceleration: TrainSpeedAcceleration.Acceleration? = nil, completion: @escaping CompletionBlock) {
+        let previousRequestedSteps = train.speed.requestedSteps
         if speedLimit {
-            train.speed.requestedKph = min(speed, reservation.maximumSpeedAllowed(train: train))
+            let route = route(for: train.routeId, trainId: train.id)
+            train.speed.requestedKph = min(speed, reservation.maximumSpeedAllowed(train: train, route: route))
         } else {
             train.speed.requestedKph = speed
         }
-        setTrainSpeed(train, train.speed.requestedSteps, acceleration: acceleration, completion: completion)
+        if train.speed.requestedSteps != previousRequestedSteps || force {
+            setTrainSpeed(train, train.speed.requestedSteps, acceleration: acceleration, completion: completion)
+        } else {
+            completion()
+        }
     }
 
     func setTrainSpeed(_ train: Train, _ speed: SpeedStep, acceleration: TrainSpeedAcceleration.Acceleration? = nil, completion: @escaping CompletionBlock) {
         train.speed.requestedSteps = speed
-        executor.sendTrainSpeed(train: train, acceleration: acceleration) { [weak self] in
-            self?.didChange()
+        if train.speed.requestedSteps != train.speed.actualSteps {
+            executor.sendTrainSpeed(train: train, acceleration: acceleration) { [weak self] in
+                self?.didChange()
+                completion()
+            }
+        } else {
             completion()
         }
-        didChange()
     }
 
     // Returns the direction of the train within the block (not the train direction itself
@@ -199,7 +208,7 @@ extension Layout {
         block.train = TrainInstance(train.id, ti.direction.opposite)
         train.wagonsPushedByLocomotive.toggle()
 
-        try reservation.updateReservedBlocks(train: train)
+        _ = try reservation.updateReservedBlocks(train: train)
 
         self.didChange()
     }
@@ -272,11 +281,26 @@ extension Layout {
         train.scheduling = .managed(finishing: false)
     }
     
-    func trainShouldStop(train: Train, block: Block) -> Bool {
-        guard block.category == .station else {
-            return false
+    func hasTrainReachedStationOrDestination(_ route: Route?, _ train: Train, _ block: Block) -> Bool {
+        if let route = route {
+            switch route.mode {
+            case .automaticOnce(let destination):
+                if !destination.hasReached(block: block) {
+                    return false
+                }
+            case .fixed, .automatic:
+                if block.category != .station {
+                    return false
+                }
+            }
+        } else {
+            if block.category != .station {
+                return false
+            }
         }
 
+        // Check that the train is not in the first block of the route in which case
+        // it should not stop at all, otherwise a train will never leave its station
         guard train.routeStepIndex != train.startRouteIndex || train.startRouteIndex == nil else {
             return false
         }
@@ -320,7 +344,7 @@ extension Layout {
         }
         
         train.scheduling = .unmanaged
-        try reservation.updateReservedBlocks(train: train)
+        try reservation.removeLeadingBlocks(train: train)
     }
     
     // Use this method to stop the train when it finishes the route
@@ -376,7 +400,7 @@ extension Layout {
             train.routeStepIndex = routeIndex
         }
 
-        try reservation.updateReservedBlocks(train: train)
+        try reservation.removeLeadingBlocks(train: train)
     }
 
     func free(fromBlock: Identifier<Block>, toBlockNotIncluded: Identifier<Block>, direction: Direction) throws {

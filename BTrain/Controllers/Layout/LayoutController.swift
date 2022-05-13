@@ -95,7 +95,7 @@ final class LayoutController: TrainControllerDelegate {
             BTLogger.router.error("⚙ Cannot evaluate the layout because there is a runtime error: \(runtimeError, privacy: .public)")
             return .none()
         }
-        BTLogger.router.debug("⚙ Evaluating the layout for '\(event.rawValue, privacy: .public)'")
+        BTLogger.router.debug("⚙ Evaluating the layout for '\(event, privacy: .public)'")
 
         // Process the latest changes
         updateControllers()
@@ -258,7 +258,7 @@ final class LayoutController: TrainControllerDelegate {
     
     func restartTimerFired(_ train: Train) {
         train.timeUntilAutomaticRestart = 0
-        runControllers(.restartTimerExpired)
+        runControllers(.restartTimerExpired(train: train))
     }
     
     private func redrawSwitchboard() {

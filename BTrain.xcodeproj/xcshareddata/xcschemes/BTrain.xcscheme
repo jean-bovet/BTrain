@@ -43,7 +43,10 @@
             default = "YES">
          </TestPlanReference>
          <TestPlanReference
-            reference = "container:NetworkTests.xctestplan">
+            reference = "container:Networking.xctestplan">
+         </TestPlanReference>
+         <TestPlanReference
+            reference = "container:BTrain.xcodeproj/Routing.xctestplan">
          </TestPlanReference>
       </TestPlans>
       <Testables>

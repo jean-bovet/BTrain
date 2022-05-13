@@ -163,6 +163,7 @@ class LayoutTests: XCTestCase {
     func testBlockSpeedLimit() throws {
         let layout = LayoutLoopWithStation().newLayout()
         let train = layout.trains[0]
+        
         let s1 = layout.block(named: "s1")
         let b1 = layout.block(named: "b1")
 
@@ -171,16 +172,17 @@ class LayoutTests: XCTestCase {
         train.leadingBlocks = [s1, b1]
         train.startRouteIndex = 0
 
-        XCTAssertEqual(layout.reservation.maximumSpeedAllowed(train: train), LayoutFactory.DefaultMaximumSpeed)
+        XCTAssertEqual(layout.reservation.maximumSpeedAllowed(train: train, route: nil), LayoutFactory.DefaultMaximumSpeed)
         
         s1.speedLimit = .limited
-        XCTAssertEqual(layout.reservation.maximumSpeedAllowed(train: train), LayoutFactory.DefaultLimitedSpeed)
+        XCTAssertEqual(layout.reservation.maximumSpeedAllowed(train: train, route: nil), LayoutFactory.DefaultLimitedSpeed)
     }
 
     func testTurnoutSpeedLimit() throws {
         let doc = LayoutDocument(layout: LayoutLoopWithStation().newLayout())
         let layout = doc.layout
         let train = layout.trains[0]
+
         let s1 = layout.block(named: "s1")
         let b1 = layout.block(named: "b1")
 
@@ -189,13 +191,59 @@ class LayoutTests: XCTestCase {
         train.leadingBlocks = [s1, b1]
         train.startRouteIndex = 0
 
-        XCTAssertEqual(layout.reservation.maximumSpeedAllowed(train: train), LayoutFactory.DefaultMaximumSpeed)
+        XCTAssertEqual(layout.reservation.maximumSpeedAllowed(train: train, route: nil), LayoutFactory.DefaultMaximumSpeed)
 
         let b2 = layout.block(named: "b2")
         let route = layout.newRoute(id: "s1-b2", [(s1.id.uuid, .next), (b2.id.uuid, .next)])
         
         try doc.start(train: train.id, withRoute: route.id, destination: .init(b2.id, direction: .next))
         
-        XCTAssertEqual(layout.reservation.maximumSpeedAllowed(train: train), LayoutFactory.DefaultLimitedSpeed)
+        XCTAssertEqual(layout.reservation.maximumSpeedAllowed(train: train, route: route), LayoutFactory.DefaultLimitedSpeed)
     }
+    
+    func testLayout() throws {
+        let layout = LayoutLoop1().newLayout()
+        let train = layout.trains[0]
+        
+        try layout.prepare(routeID: layout.routes[0].id, trainID: layout.trains[0].id)
+        
+        // Assert the expectations before the train circulates
+        guard let route = layout.route(for: train.routeId, trainId: train.id) else {
+            XCTFail("Unable to find route \(train.routeId)")
+            return
+        }
+        XCTAssertEqual(4, route.steps.count)
+        
+        let b1 = route.blockSteps[0]
+        let b2 = route.blockSteps[1]
+        let b3 = route.blockSteps[2]
+        let b4 = route.blockSteps[3]
+
+        XCTAssertNotEqual(b1.blockId, b2.blockId)
+        XCTAssertNotEqual(b2.blockId, b3.blockId)
+        XCTAssertNotEqual(b3.blockId, b1.blockId)
+        XCTAssertEqual(b4.blockId, b1.blockId)
+
+        XCTAssertEqual(b1.blockId, layout.currentBlock(train: train)?.id)
+        
+        let transitions = try layout.transitions(from: b1.blockId, to: b2.blockId, direction: b1.direction!)
+        XCTAssertEqual(transitions.count, 2)
+        
+        XCTAssertEqual(transitions[0].a.block, b1.blockId)
+        XCTAssertNil(transitions[0].a.turnout)
+        XCTAssertEqual(transitions[0].a.socketId, Block.nextSocket)
+        
+        XCTAssertNil(transitions[0].b.block)
+        XCTAssertEqual(transitions[0].b.turnout, layout.turnouts[0].id)
+        XCTAssertEqual(transitions[0].b.socketId, 0)
+        
+        XCTAssertEqual(transitions[1].a.turnout, layout.turnouts[0].id)
+        XCTAssertNil(transitions[1].a.block)
+        XCTAssertEqual(transitions[1].a.socketId, 1)
+        
+        XCTAssertEqual(transitions[1].b.block, b2.blockId)
+        XCTAssertNil(transitions[1].b.turnout)
+        XCTAssertEqual(transitions[1].b.socketId, Block.previousSocket)
+    }
+
 }

@@ -61,7 +61,6 @@ enum LayoutError: Error {
     case noSteps(routeId: Identifier<Route>)
     
     case destinationBlockMismatch(currentBlock: Block, destination: Destination)
-    case destinationDirectionMismatch(currentBlock: Block, destination: Destination)
     
     case missingDirection(step: RouteStep)
     case invalidDirectionRequest(step: RouteStep)
@@ -150,8 +149,6 @@ extension LayoutError: LocalizedError {
             
         case .destinationBlockMismatch(currentBlock: let currentBlock, destination: let destination):
             return "The destination block \(destination.blockId) does not match the current block \(currentBlock.id) (\(currentBlock.name))"
-        case .destinationDirectionMismatch(currentBlock: let currentBlock, destination: let destination):
-            return "The destination direction \(String(describing: destination.direction)) does not match the current direction of the train within the block \(String(describing: currentBlock.train?.direction)), at block \(currentBlock.name) (\(currentBlock.id))"
             
         case .blockAlreadyReserved(block: let block):
             return "Block \(block.name) is already reserved for \(String(describing: block.reserved))"

@@ -51,38 +51,14 @@ final class TrainController {
     let accelerationController: TrainControllerAcceleration
     
     weak var delegate: TrainControllerDelegate?
-            
-    /// The array of handlers when the train runs in automatic scheduling mode
-    private var automaticSchedulingHandlers = [TrainAutomaticSchedulingHandler]()
-    
-    /// The array of handlers when the train runs in manual scheduling mode
-    private var manualSchedulingHandlers = [TrainManualSchedulingHandler]()
-
+                
     init(layout: Layout, train: Train, interface: CommandInterface, delegate: TrainControllerDelegate? = nil) {
         self.layout = layout
         self.train = train
         self.accelerationController = TrainControllerAcceleration(train: train, interface: interface)
         self.delegate = delegate
-        
-        registerHandlers()
     }
-                        
-    private func registerHandlers() {
-        automaticSchedulingHandlers.append(TrainStartHandler())
-        automaticSchedulingHandlers.append(TrainMoveWithinBlockHandler())
-        automaticSchedulingHandlers.append(TrainMoveToNextBlockHandler())
-        automaticSchedulingHandlers.append(TrainDetectStopHandler())
-        automaticSchedulingHandlers.append(TrainExecuteStopInBlockHandler())
-        automaticSchedulingHandlers.append(TrainSpeedLimitEventHandler())
-        automaticSchedulingHandlers.append(TrainReserveLeadingBlocksHandler())
-        automaticSchedulingHandlers.append(TrainStopPushingWagonsHandler())
-
-        manualSchedulingHandlers.append(TrainManualStateHandler())
-        manualSchedulingHandlers.append(TrainMoveWithinBlockHandler())
-        manualSchedulingHandlers.append(TrainManualMoveToNextBlockHandler())
-        manualSchedulingHandlers.append(TrainManualStopTriggerDetectionHandler())
-    }
-        
+                                
     /// This is the main method to call to manage the train associated with this controller.
     ///
     /// This method executs all the handlers interested in the specified event and return the result which might
@@ -100,18 +76,10 @@ final class TrainController {
             guard let route = layout.route(for: train.routeId, trainId: train.id) else {
                 return try stop(completely: false)
             }
-            
-            let interestedHandlers = automaticSchedulingHandlers.filter({ $0.events.contains(event) })
-            for handler in interestedHandlers {
-                BTLogger.router.debug("\(self.train, privacy: .public): \(String(describing: handler), privacy: .public)")
-                result = result.appending(try handler.process(layout: layout, train: train, route: route, event: event, controller: self))
-            }
+
+            result = result.appending(try TrainHandlerManaged.process(layout: layout, route: route, train: train, event: event, controller: self))
         } else {
-            let interestedHandlers = manualSchedulingHandlers.filter({ $0.events.contains(event) })
-            for handler in interestedHandlers {
-                BTLogger.router.debug("\(self.train, privacy: .public): \(String(describing: handler), privacy: .public)")
-                result = result.appending(try handler.process(layout: layout, train: train, event: event, controller: self))
-            }
+            result = result.appending(try TrainHandlerUnmanaged().process(layout: layout, train: train, event: event, controller: self))
         }
 
         BTLogger.router.debug("\(self.train, privacy: .public): resulting events are \(String(describing: result.events), privacy: .public)")
@@ -119,4 +87,18 @@ final class TrainController {
         return result
     }
     
+}
+
+extension TrainController: TrainControlling {
+    
+    func scheduleRestartTimer(train: Train) {
+        delegate?.scheduleRestartTimer(train: train)
+    }
+    
+    func stop(completely: Bool) throws -> TrainHandlerResult {
+        try layout.stopTrain(train.id, completely: completely) { }
+                
+        return .none()
+    }
+            
 }

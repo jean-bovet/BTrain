@@ -211,7 +211,7 @@ class ManualOperationTests: BTTestCase {
         
         func setTrainSpeed(_ speed: TrainSpeed.UnitKph, speedLimit: Bool) {
             layout.setTrainSpeed(train, speed, speedLimit: speedLimit) { }
-            layoutController.runControllers(.stateChanged)
+            layoutController.runControllers(.speedChanged)
         }
                 
         func triggerFeedback(_ named: String, _ detected: Bool = true) throws {

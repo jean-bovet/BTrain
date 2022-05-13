@@ -90,10 +90,18 @@ extension LayoutController {
                 return
             }
 
+            // Report back only the acknowledgement for the power being set,
+            // and not for the power being turned off - a turnout command
+            // is actually two commands: one with power on and another following
+            // about 250ms later with the power off.
+            guard power == 1 else {
+                return
+            }
+            
             DispatchQueue.main.async {
                 if let turnout = layout.turnouts.find(address: address) {
-                    BTLogger.debug("Turnout \(turnout.name) changed state \(state) for address \(address.actualAddress.toHex())")
                     turnout.setState(value: state, for: address.actualAddress)
+                    BTLogger.debug("Turnout \(turnout.name) changed state \(state), power \(power), for address \(address.actualAddress.toHex()), resulting in state \(turnout.state)")
                     self?.runControllers(.turnoutChanged)
                 } else {
                     BTLogger.error("Unknown turnout for address \(address.actualAddress.toHex())")

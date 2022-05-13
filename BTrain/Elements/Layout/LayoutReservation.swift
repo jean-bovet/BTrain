@@ -69,8 +69,7 @@ final class LayoutReservation {
     // This function will try to reserve as many blocks as specified (maxNumberOfLeadingReservedBlocks)
     // in front of the train (leading blocks).
     // Note: it won't reserve blocks that are already reserved to avoid loops.
-    @discardableResult
-    func updateReservedBlocks(train: Train, trainStarting: Bool = false) throws -> Bool {
+    func updateReservedBlocks(train: Train) throws -> Bool {
         // Remove the train from all the elements
         try freeElements(train: train)
         
@@ -81,16 +80,20 @@ final class LayoutReservation {
         // Reserve the number of leading blocks necessary
         return try reserveLeadingBlocks(train: train)
     }
-
-    private func reserveLeadingBlocks(train: Train) throws -> Bool {
-        // The leading blocks can only be reserved when one of the following conditions is true:
-        // - The train is running
-        // - The train is starting
-        // - The train is braking to stop temporarily (because the route cannot be reserved in front of the train)
-        guard train.state == .running || (train.state == .stopped && train.stateChangeRequest == .start) || (train.state == .braking && train.stateChangeRequest == .stopTemporarily) else {
-            return false
-        }
+    
+    /// Removes the reservation for the leading blocks of the specified train but keep the occupied blocks intact (that the train actually occupies).
+    ///
+    /// - Parameter train: the train
+    func removeLeadingBlocks(train: Train) throws {
+        // Remove the train from all the elements
+        try freeElements(train: train)
         
+        // Reserve and set the train and its wagon(s) using the necessary number of
+        // elements (turnouts and blocks)
+        try occupyBlockWith(train: train)
+    }
+    
+    private func reserveLeadingBlocks(train: Train) throws -> Bool {
         // The route must be defined and not be empty
         guard let route = layout.route(for: train.routeId, trainId: train.id), !route.steps.isEmpty else {
             debug("Cannot reserve leading blocks because route is empty")
@@ -108,10 +111,10 @@ final class LayoutReservation {
         }
         assert(resolvedSteps.count >= stepsToReserve.count)
         
-        return try reserveSteps(train: train, resolvedSteps: resolvedSteps)
+        return try reserveSteps(train: train, route: route, resolvedSteps: resolvedSteps)
     }
     
-    private func reserveSteps(train: Train, resolvedSteps: [ResolvedRouteItem]) throws -> Bool {
+    private func reserveSteps(train: Train, route: Route, resolvedSteps: [ResolvedRouteItem]) throws -> Bool {
         // Variable keeping track of the number of leading blocks that have been reserved.
         // At least one block must have been reserved to consider this function successfull.
         // Note: blocks that are reserved for the train and its wagons do not count against that count.
@@ -138,7 +141,7 @@ final class LayoutReservation {
 
             switch step {
             case .block(let stepBlock):
-                if try !reserveBlock(block: stepBlock.block, direction: stepBlock.direction, train: train, numberOfLeadingBlocksReserved: &numberOfLeadingBlocksReserved, turnouts: &turnouts, transitions: &transitions) {
+                if try !reserveBlock(block: stepBlock.block, direction: stepBlock.direction, train: train, route: route, numberOfLeadingBlocksReserved: &numberOfLeadingBlocksReserved, turnouts: &turnouts, transitions: &transitions) {
                     return numberOfLeadingBlocksReserved > 0
                 }
                 
@@ -159,7 +162,7 @@ final class LayoutReservation {
         return numberOfLeadingBlocksReserved > 0
     }
     
-    private func reserveBlock(block: Block, direction: Direction, train: Train, numberOfLeadingBlocksReserved: inout Int, turnouts: inout [TurnoutReservation], transitions: inout [ITransition]) throws -> Bool {
+    private func reserveBlock(block: Block, direction: Direction, train: Train, route: Route, numberOfLeadingBlocksReserved: inout Int, turnouts: inout [TurnoutReservation], transitions: inout [ITransition]) throws -> Bool {
         if block.isOccupied(by: train.id) {
             // The block is already reserved and contains a portion of the train
             // Note: we are not incrementing `numberOfLeadingBlocksReserved` because
@@ -200,7 +203,7 @@ final class LayoutReservation {
         // stop the train is detected. That way, the train stops
         // without reserving any block ahead and upon restarting,
         // it will reserve what it needs in front of it.
-        guard !layout.trainShouldStop(train: train, block: block) else {
+        guard !layout.hasTrainReachedStationOrDestination(route, train, block) else {
             return false
         }
         
@@ -323,7 +326,7 @@ final class LayoutReservation {
     
     /// This method returns the maximum speed allowed by all the elements occupied by
     /// the specified train, which includes blocks and turnouts.
-    func maximumSpeedAllowed(train: Train) -> TrainSpeed.UnitKph {
+    func maximumSpeedAllowed(train: Train, route: Route?) -> TrainSpeed.UnitKph {
         var maximumSpeedAllowed: TrainSpeed.UnitKph = LayoutFactory.DefaultMaximumSpeed
         
         layout.blocks.filter({ $0.reserved?.trainId == train.id }).forEach { block in
@@ -350,7 +353,7 @@ final class LayoutReservation {
         // make sure the speed is limited, otherwise the train will likely overshoot
         // the block in which it must stop.
         for block in train.leadingBlocks {
-            if layout.trainShouldStop(train: train, block: block) {
+            if layout.hasTrainReachedStationOrDestination(route, train, block) {
                 maximumSpeedAllowed = min(maximumSpeedAllowed, LayoutFactory.DefaultLimitedSpeed)
                 break
             }
@@ -421,7 +424,6 @@ final class LayoutReservation {
         if verbose {
             BTLogger.debug(msg)
         }
-        BTLogger.debug(msg)
     }
 
 }

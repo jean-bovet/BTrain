@@ -1,0 +1,83 @@
+{
+  "configurations" : [
+    {
+      "id" : "84EAA005-A914-4A73-9977-BCDB4EDDEB96",
+      "name" : "Configuration 1",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+
+  },
+  "testTargets" : [
+    {
+      "selectedTests" : [
+        "AutomaticRoutingTests\/testAutomaticRouteFinishing()",
+        "AutomaticRoutingTests\/testAutomaticRouteModeOnce()",
+        "AutomaticRoutingTests\/testAutomaticRouteModeOnceWithReservedBlock()",
+        "AutomaticRoutingTests\/testAutomaticRouteModeOnceWithUnreachableDestinationPosition()",
+        "AutomaticRoutingTests\/testAutomaticRouteNoRouteToSiding()",
+        "AutomaticRoutingTests\/testAutomaticRouteStationRestart()",
+        "AutomaticRoutingTests\/testAutomaticRouteStationRestartCannotUpdateAutomaticRouteImmediately()",
+        "AutomaticRoutingTests\/testAutomaticRouteStationRestartFinishing()",
+        "AutomaticRoutingTests\/testAutomaticRouteStationRestartFinishing2()",
+        "AutomaticRoutingTests\/testAutomaticRouteWithAlternateRoute()",
+        "AutomaticRoutingTests\/testAutomaticRouteWithTurnoutToAvoid()",
+        "AutomaticRoutingTests\/testEmergencyStop()",
+        "AutomaticRoutingTests\/testFinishingDoesNotStopUntilEndOfRoute()",
+        "AutomaticRoutingTests\/testUpdateAutomaticRoute()",
+        "AutomaticRoutingTests\/testUpdateAutomaticRouteWithBlockToAvoid()",
+        "AutomaticRoutingTests\/testUpdateAutomaticRouteWithReservedTurnout()",
+        "FixedRoutingTests\/testASCIIProducer()",
+        "FixedRoutingTests\/testBlockBrakingSpeed()",
+        "FixedRoutingTests\/testBlockDisabled()",
+        "FixedRoutingTests\/testBlockReserved()",
+        "FixedRoutingTests\/testEntryBrakeStopFeedbacks()",
+        "FixedRoutingTests\/testMoveInsideBlock()",
+        "FixedRoutingTests\/testMoveRouteLoop()",
+        "FixedRoutingTests\/testMoveWith1OccupiedReservationNoFeedbacks()",
+        "FixedRoutingTests\/testMoveWith1OccupiedReservationWithFeedbacks()",
+        "FixedRoutingTests\/testMoveWith2LeadingReservation()",
+        "FixedRoutingTests\/testMoveWith2LeadingReservationWithLoop()",
+        "FixedRoutingTests\/testMoveWith3LeadingReservation()",
+        "FixedRoutingTests\/testMoveWith3LeadingReservationWithLoop()",
+        "FixedRoutingTests\/testNextBlockFeedbackHandling()",
+        "FixedRoutingTests\/testRelaxModeNextAndPreviousFeedbacks()",
+        "FixedRoutingTests\/testRelaxModeNextBlockFeedbackTooFar()",
+        "FixedRoutingTests\/testRelaxModeNextModeFeedback()",
+        "FixedRoutingTests\/testRouteReverseLoop()",
+        "FixedRoutingTests\/testRouteStationRestart()",
+        "FixedRoutingTests\/testStartInRouteButReversedDirection()",
+        "FixedRoutingTests\/testStartNotInRoute()",
+        "FixedRoutingTests\/testStraightLine1()",
+        "FixedRoutingTests\/testStraightLine1Pushed()",
+        "FixedRoutingTests\/testStraightLine2()",
+        "FixedRoutingTests\/testStraightLine2Pushed()",
+        "FixedRoutingTests\/testStrictModeFeedbackTooFar()",
+        "FixedRoutingTests\/testStrictModeNextBlockFeedback()",
+        "FixedRoutingTests\/testTrainWithWagonsInFront()",
+        "FixedRoutingTests\/testUpdateAutomaticRouteBrakingAndContinue()",
+        "FixedRoutingWithStationsTests\/testMultipleTrains()",
+        "FixedRoutingWithStationsTests\/testStationToStation()",
+        "FixedRoutingWithStationsTests\/testStationToStationWithReservation()",
+        "LayoutTests\/testAddAndRemoveBlock()",
+        "LayoutTests\/testAddAndRemoveFeedback()",
+        "LayoutTests\/testAddAndRemoveTurnout()",
+        "LayoutTests\/testBlockSpeedLimit()",
+        "LayoutTests\/testLayout()",
+        "LayoutTests\/testTrainDirection()",
+        "LayoutTests\/testTrainStopCompletely()",
+        "LayoutTests\/testTurnoutSpeedLimit()",
+        "LayoutTests\/testValidation()"
+      ],
+      "target" : {
+        "containerPath" : "container:BTrain.xcodeproj",
+        "identifier" : "A73AFE922726594800E1ED21",
+        "name" : "BTrainTests"
+      }
+    }
+  ],
+  "version" : 1
+}

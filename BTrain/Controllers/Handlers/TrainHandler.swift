@@ -13,7 +13,7 @@
 import Foundation
 
 /// The event available to the handlers
-enum TrainEvent: String {
+enum TrainEvent: Hashable, CustomStringConvertible {
     /// A feedback sensor has been triggered
     case feedbackTriggered
     
@@ -22,16 +22,10 @@ enum TrainEvent: String {
     /// - When a train stops
     /// - When a train finishes a route
     case schedulingChanged
-    
-    /// A train has been requested to stop. This happens when:
-    /// - The leading blocks cannot be reserved
-    /// - A train reaches the end of the route
-    /// - A train reaches a station
-    case stopRequested
-    
+        
     /// A train restart timer has expired, meaning that the train associated with this timer
     /// should restart again.
-    case restartTimerExpired
+    case restartTimerExpired(train: Train)
     
     /// A turnout state changed
     case turnoutChanged
@@ -50,6 +44,29 @@ enum TrainEvent: String {
     
     /// A train has moved to the next block
     case movedToNextBlock
+    
+    var description: String {
+        switch self {
+        case .feedbackTriggered:
+            return "Feedback Triggered"
+        case .schedulingChanged:
+            return "Scheduling Changed"
+        case .restartTimerExpired(let train):
+            return "Restart Timer Expired for \(train)"
+        case .turnoutChanged:
+            return "Turnout Changed"
+        case .directionChanged:
+            return "Direction Changed"
+        case .speedChanged:
+            return "Speed Changed"
+        case .stateChanged:
+            return "State Changed"
+        case .movedInsideBlock:
+            return "Move Inside Block"
+        case .movedToNextBlock:
+            return "Move to Next Block"
+        }
+    }
 }
 
 /// Structure that describes the result of a handler's processing.
@@ -102,51 +119,4 @@ protocol TrainControlling {
     /// - Returns: the result
     func stop(completely: Bool) throws -> TrainHandlerResult
     
-    /// This method tries to reserve the leading blocks for the train. If the blocks cannot be reserved and the route is automatic,
-    /// the route is updated and the leading blocks reserved again.
-    ///
-    /// - Parameters:
-    ///   - route: the route
-    ///   - currentBlock: the current block
-    /// - Returns: true if the leading blocks could be reserved, false otherwise.
-    func reserveLeadBlocks(route: Route, currentBlock: Block) throws -> Bool
-
-}
-
-/// Defines a protocol for a handler that gets invoked during the automatic scheduling of a train (when the train is automatically managed by BTrain).
-protocol TrainAutomaticSchedulingHandler {
-    
-    /// The set of events this handler is interested in getting notified about
-    var events: Set<TrainEvent> { get }
-        
-    /// This method is invoked when an event machings ``TrainAutomaticSchedulingHandler/events`` is triggered.
-    ///
-    /// - Parameters:
-    ///   - layout: the layout
-    ///   - train: the train
-    ///   - route: the route
-    ///   - event: the event that triggered this method invocation
-    ///   - controller: the train controller
-    /// - Returns: returns the result of the process, which can include one or more follow up events
-    func process(layout: Layout, train: Train, route: Route, event: TrainEvent, controller: TrainControlling) throws -> TrainHandlerResult
-
-}
-
-/// Defines a protocol for a handler that gets invoked during the manual scheduling of a train (when the train
-/// is manually operated by the user).
-protocol TrainManualSchedulingHandler {
-    
-    /// The set of events this handler is interested in getting notified about
-    var events: Set<TrainEvent> { get }
-    
-    /// This method is invoked when an event machings ``TrainManualSchedulingHandler/events`` is triggered.
-    ///
-    /// - Parameters:
-    ///   - layout: the layout
-    ///   - train: the train
-    ///   - event: the event that triggered this method invocation
-    ///   - controller: the train controller
-    /// - Returns: returns the result of the process, which can include one or more follow up events
-    func process(layout: Layout, train: Train, event: TrainEvent, controller: TrainControlling) throws -> TrainHandlerResult
-
 }

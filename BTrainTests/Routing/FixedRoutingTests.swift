@@ -14,53 +14,8 @@ import XCTest
 
 @testable import BTrain
 
-class ManualRoutingTests: BTTestCase {
+class FixedRoutingTests: BTTestCase {
         
-    func testLayout() throws {
-        let layout = LayoutLoop1().newLayout()
-        let train = layout.trains[0]
-        
-        try layout.prepare(routeID: layout.routes[0].id, trainID: layout.trains[0].id)
-        
-        // Assert the expectations before the train circulates
-        guard let route = layout.route(for: train.routeId, trainId: train.id) else {
-            XCTFail("Unable to find route \(train.routeId)")
-            return
-        }
-        XCTAssertEqual(4, route.steps.count)
-        
-        let b1 = route.blockSteps[0]
-        let b2 = route.blockSteps[1]
-        let b3 = route.blockSteps[2]
-        let b4 = route.blockSteps[3]
-
-        XCTAssertNotEqual(b1.blockId, b2.blockId)
-        XCTAssertNotEqual(b2.blockId, b3.blockId)
-        XCTAssertNotEqual(b3.blockId, b1.blockId)
-        XCTAssertEqual(b4.blockId, b1.blockId)
-
-        XCTAssertEqual(b1.blockId, layout.currentBlock(train: train)?.id)
-        
-        let transitions = try layout.transitions(from: b1.blockId, to: b2.blockId, direction: b1.direction!)
-        XCTAssertEqual(transitions.count, 2)
-        
-        XCTAssertEqual(transitions[0].a.block, b1.blockId)
-        XCTAssertNil(transitions[0].a.turnout)
-        XCTAssertEqual(transitions[0].a.socketId, Block.nextSocket)
-        
-        XCTAssertNil(transitions[0].b.block)
-        XCTAssertEqual(transitions[0].b.turnout, layout.turnouts[0].id)
-        XCTAssertEqual(transitions[0].b.socketId, 0)
-        
-        XCTAssertEqual(transitions[1].a.turnout, layout.turnouts[0].id)
-        XCTAssertNil(transitions[1].a.block)
-        XCTAssertEqual(transitions[1].a.socketId, 1)
-        
-        XCTAssertEqual(transitions[1].b.block, b2.blockId)
-        XCTAssertNil(transitions[1].b.turnout)
-        XCTAssertEqual(transitions[1].b.socketId, Block.previousSocket)
-    }
-
     func testBlockReserved() throws {
         let layout = LayoutLoop1().newLayout().removeTrainGeometry()
         let p = Package(layout: layout)
@@ -532,6 +487,22 @@ class ManualRoutingTests: BTTestCase {
         try p.assert("r1: {r1{b1 ≡ ≏ 🔵🚂1 }} <r1<t0>> [r1[b2 ≏ ≏ ]] <t1(0,2)> [b3 ≏ ≏ ] <r1<t0(2,0)>> !{r1{b1 🔵🚂1 ≏ ≡ }}")
     }
 
+    //                            ┌─────────┐
+    //     ┌───▶   t125   ───────▶│ Block 2 │───────────────────────────┐
+    //     │                      └─────────┘                           │
+    //     │         ▲                                                  │
+    //     │         │                                                  │
+    //┌─────────┐    │                                                  ▼
+    //│ Block 1 │    │             ┌─────────┐                     ┌─────────┐
+    //└─────────┘    └─────────────│ Block 5 │◀──────────────┐     │ Block 3 │
+    //     ▲                       └─────────┘               │     └─────────┘
+    //     │                                                 │          │
+    //     │                                                 │          │
+    //     │                                                 │          │
+    //     │                                                 │          │
+    //     │                       ┌─────────┐                          │
+    //     └───────────────────────│ Block 4 │◀─────────   t345   ◀─────┘
+    //                             └─────────┘
     func testNextBlockFeedbackHandling() throws {
         let layout = LayoutLoop2().newLayout().removeTrainGeometry()
         
@@ -886,10 +857,12 @@ class ManualRoutingTests: BTTestCase {
         try p.assert("0: |[r0[A ≏ ≡ 🔵🚂0 ]] <r0<AB>> [r0[B 💺0 ≏ 💺0 ≏ 💺0 ]] [r0[C 💺0 ≏ ≏ ]] [r0[D ≏ ≏ ]] <DE(1,0)> [E ≏ ≏ ]|")
         try p.assert("0: |[A ≏ ≏ ] <AB> [r0[B ≡ 🔵🚂0 ≏ 💺0 ]] [r0[C 💺0 ≏ 💺0 ≏ 💺0 ]] [r0[D ≏ ≏ ]] <DE(1,0)> [E ≏ ≏ ]|")
         try p.assert("0: |[A ≏ ≏ ] <AB> [r0[B ≏ ≡ 🟢🚂0 ]] [r0[C 💺0 ≏ 💺0 ≏ 💺0 ]] [r0[D 💺0 ≏ ≏ ]] <r0<DE(1,0)>> [r0[E ≏ ≏ ]]|")
+        // The train continues to move because there is still a leading block reserved (E).
         try p.assert("0: |[A ≏ ≏ ] <AB> [B ≏ ≏ ] [r0[C ≡ 🟢🚂0 ≏ 💺0]] [r0[D 💺0 ≏ 💺0 ≏ 💺0 ]] <r0<DE(1,0)>> [r0[E ≏ ≏ ]]|")
-        try p.assert("0: |[A ≏ ≏ ] <AB> [B ≏ ≏ ] [r0[C ≏ ≡ 🟡🚂0 ]] [r0[D 💺0 ≏ 💺0 ≏ 💺0 ]] <r0<DE(1,0)>> [r0[E 💺0 ≏ ≏ ]]|")
-        try p.assert("0: |[A ≏ ≏ ] <AB> [B ≏ ≏ ] [C ≏ ≏ ] [r0[D ≡ 🟡🚂0 ≏ 💺0 ]] <r0<DE(1,0)>> [r0[E 💺0 ≏ 💺0 ≏ ]]|")
-        try p.assert("0: |[A ≏ ≏ ] <AB> [B ≏ ≏ ] [C ≏ ≏ ] [r0[D ≏ ≡ 🔴🚂0 ]] <r0<DE(1,0)>> [r0[E 💺0 ≏ 💺0 ≏ ]]|")
+        // Train stops in C because there is no more leading blocks reserved (the head wagon is in E and there is no more blocks to reserve for the leading blocks)
+        try p.assert("0: |[A ≏ ≏ ] <AB> [B ≏ ≏ ] [r0[C ≏ ≡ 🔴🚂0 ]] [r0[D 💺0 ≏ 💺0 ≏ 💺0 ]] <r0<DE(1,0)>> [r0[E 💺0 ≏ ≏ ]]|")
+//        try p.assert("0: |[A ≏ ≏ ] <AB> [B ≏ ≏ ] [C ≏ ≏ ] [r0[D ≡ 🟡🚂0 ≏ 💺0 ]] <r0<DE(1,0)>> [r0[E 💺0 ≏ 💺0 ≏ ]]|")
+//        try p.assert("0: |[A ≏ ≏ ] <AB> [B ≏ ≏ ] [C ≏ ≏ ] [r0[D ≏ ≡ 🔴🚂0 ]] <r0<DE(1,0)>> [r0[E 💺0 ≏ 💺0 ≏ ]]|")
     }
 
     func testStraightLine2Pushed() throws {
@@ -915,11 +888,12 @@ class ManualRoutingTests: BTTestCase {
         // [A 20 ≏ 160 ≏ 20 ] <10> [B 20 ≏ 60 ≏ 20 ] [C 20 ≏ 60 ≏ 20 ] [D 20 ≏ 60 ≏ 20 ] <10> [E 20 ≏ 160 ≏ 20 ]
         try p.assert("0: |[r0[A 🔵🚂0 ≏ 💺0 ≏ 💺0]] <r0<AB>> [r0[B ≏ ≏ ]] [C ≏ ≏ ] [r1[D ≏ ≏ ]] <DE(1,0)> [E ≏ ≏ ]|")
         try p.assert("0: |[r0[A ≡ 🔵🚂0 ≏ 💺0 ]] <r0<AB>> [r0[B 💺0 ≏ 💺0 ≏ ]] [r0[C ≏ ≏ ]] [r1[D ≏ ≏ ]] <DE(1,0)> [E ≏ ≏ ]|")
-        try p.assert("0: |[r0[A ≏ ≡ 🟡🚂0 ]] <r0<AB>> [r0[B 💺0 ≏ 💺0 ≏ 💺0 ]] [r0[C 💺0 ≏ ≏ ]] [r1[D ≏ ≏ ]] <DE(1,0)> [E ≏ ≏ ]|")
+        // The train stops because there is no leading blocks available after the head wagon block C (D is occupied by another train).
+        try p.assert("0: |[r0[A ≏ ≡ 🔴🚂0 ]] <r0<AB>> [r0[B 💺0 ≏ 💺0 ≏ 💺0 ]] [r0[C 💺0 ≏ ≏ ]] [r1[D ≏ ≏ ]] <DE(1,0)> [E ≏ ≏ ]|")
         
-        // The train must stop because the wagon is going to enter block D if the train moves to the next position
-        try p.assert("0: |[A ≏ ≏ ] <AB> [r0[B ≡ 🔴🚂0 ≏ 💺0 ]] [r0[C 💺0 ≏ 💺0 ≏ 💺0 ]] [r1[D ≏ ≏ ]] <DE(1,0)> [E ≏ ≏ ]|")
-        try p.assert("0: |[A ≏ ≏ ] <AB> [r0[B ≡ 🔴🚂0 ≏ 💺0 ]] [r0[C 💺0 ≏ 💺0 ≏ 💺0 ]] [r1[D ≏ ≏ ]] <DE(1,0)> [E ≏ ≏ ]|")
+//        // The train must stop because the wagon is going to enter block D if the train moves to the next position
+//        try p.assert("0: |[A ≏ ≏ ] <AB> [r0[B ≡ 🔴🚂0 ≏ 💺0 ]] [r0[C 💺0 ≏ 💺0 ≏ 💺0 ]] [r1[D ≏ ≏ ]] <DE(1,0)> [E ≏ ≏ ]|")
+//        try p.assert("0: |[A ≏ ≏ ] <AB> [r0[B ≡ 🔴🚂0 ≏ 💺0 ]] [r0[C 💺0 ≏ 💺0 ≏ 💺0 ]] [r1[D ≏ ≏ ]] <DE(1,0)> [E ≏ ≏ ]|")
     }
 
     func testStraightLine2() throws {

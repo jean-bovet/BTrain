@@ -381,6 +381,12 @@ class TurnoutTests: XCTestCase {
         t.setState(value: 0, for: t.address2.actualAddress)
         XCTAssertEqual(t.state, .straight23)
         
+        t.setState(value: 0, for: t.address.actualAddress)
+        XCTAssertEqual(t.state, .straight23)
+        
+        t.setState(value: 0, for: t.address2.actualAddress)
+        XCTAssertEqual(t.state, .straight23)
+
         t.setState(value: 1, for: t.address.actualAddress)
         t.setState(value: 1, for: t.address2.actualAddress)
         XCTAssertEqual(t.state, .straight01)
@@ -389,6 +395,12 @@ class TurnoutTests: XCTestCase {
         t.setState(value: 0, for: t.address2.actualAddress)
         XCTAssertEqual(t.state, .branch03)
         
+        t.setState(value: 1, for: t.address.actualAddress)
+        XCTAssertEqual(t.state, .branch03) // The state should not change is we change only one value
+
+        t.setState(value: 0, for: t.address2.actualAddress)
+        XCTAssertEqual(t.state, .branch03) // The state should not change is we change only one value
+
         t.setState(value: 0, for: t.address.actualAddress)
         t.setState(value: 1, for: t.address2.actualAddress)
         XCTAssertEqual(t.state, .branch21)
