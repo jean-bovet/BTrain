@@ -69,7 +69,8 @@ class ManualOperationTests: BTTestCase {
     func testPullingLongTrain() throws {
         let layout = LayoutLoop1().newLayout()
         
-        layout.turnouts[1].state = .branchLeft
+        layout.turnouts[1].requestedState = .branchLeft
+        layout.applyTurnoutState(turnout: layout.turnouts[1])
         
         layout.turnouts.forEach { $0.length = nil }
         
@@ -130,7 +131,9 @@ class ManualOperationTests: BTTestCase {
     func testPushingLongTrain() throws {
         let layout = LayoutLoop1().newLayout()
         
-        layout.turnouts[1].state = .branchLeft
+        layout.turnouts[1].requestedState = .branchLeft
+        layout.applyTurnoutState(turnout: layout.turnouts[1])
+
         layout.turnouts.forEach { $0.length = nil }
 
         let b1 = layout.blocks[0]

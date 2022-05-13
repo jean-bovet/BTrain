@@ -35,7 +35,7 @@ extension Turnout {
     var nextState: State {
         switch category {
         case .singleLeft:
-            switch(state) {
+            switch(requestedState) {
             case .straight:
                 return .branchLeft
             case .branchLeft:
@@ -45,7 +45,7 @@ extension Turnout {
             }
             
         case .singleRight:
-            switch(state) {
+            switch(requestedState) {
             case .straight:
                 return .branchRight
             case .branchRight:
@@ -55,7 +55,7 @@ extension Turnout {
             }
             
         case .doubleSlip:
-            switch(state) {
+            switch(requestedState) {
             case .straight:
                 return .branch
             case .branch:
@@ -65,7 +65,7 @@ extension Turnout {
             }
 
         case .doubleSlip2:
-            switch(state) {
+            switch(requestedState) {
             case .straight01:
                 return .straight23
             case .straight23:
@@ -79,7 +79,7 @@ extension Turnout {
             }
 
         case .threeWay:
-            switch(state) {
+            switch(requestedState) {
             case .straight:
                 return .branchLeft
             case .branchRight:
@@ -100,26 +100,29 @@ extension Turnout {
         .threeWay:[.straight: 3, .branchLeft: 2, .branchRight: 1],
     ]
     
-    var stateValue: UInt8 {
-        get {
-            if let states = Turnout.statesMap[category] {
-                return states[state] ?? 0
-            } else {
-                BTLogger.error("Unknow turnout category \(category)")
-                return 0
-            }
+    var requestedStateValue: UInt8 {
+        return stateValue(for: requestedState)
+    }
+    
+    private func stateValue(for state: State) -> UInt8 {
+        if let states = Turnout.statesMap[category] {
+            return states[state] ?? 0
+        } else {
+            BTLogger.error("Unknow turnout category \(category)")
+            return 0
         }
-        set {
-            guard let states = Turnout.statesMap[category] else {
-                BTLogger.error("Unknow turnout category \(category)")
-                return
-            }
-            guard let state = states.first(where: { $0.value == newValue }) else {
-                BTLogger.error("Unknow turnout state value \(newValue) for \(category)")
-                return
-            }
-            self.state = state.key
+    }
+    
+    private func setActualState(for value: UInt8) {
+        guard let states = Turnout.statesMap[category] else {
+            BTLogger.error("Unknow turnout category \(category)")
+            return
         }
+        guard let state = states.first(where: { $0.value == value }) else {
+            BTLogger.error("Unknow turnout state value \(value) for \(category)")
+            return
+        }
+        self.actualState = state.key
     }
     
     // Return the socket reachable from the "fromSocket" given the specific "state"
@@ -138,25 +141,27 @@ extension Turnout {
     // This is only useful for double slip or threeway turnout with
     // two addresses, each corresponding to a single turnout in
     // the real layout.
-    func setState(value state: UInt8, for stateAddress: UInt32) {
+    func setActualState(value state: UInt8, for stateAddress: UInt32) {
         if category == .doubleSlip2 || category == .threeWay {
+            let actualValue = stateValue(for: self.actualState)
             if address2.actualAddress == stateAddress {
-                let value1 = (stateValue & 0x01)
+                let value1 = (actualValue & 0x01)
                 let value2 = (state & 0x01) << 1
-                stateValue = value1 | value2
+                setActualState(for: value1 | value2)
             } else if address.actualAddress == stateAddress {
                 let value1 = (state & 0x01)
-                let value2 = (stateValue & 0x02)
-                stateValue = value1 | value2
+                let value2 = (actualValue & 0x02)
+                setActualState(for: value1 | value2)
             }
         } else {
-            stateValue = state
+            setActualState(for: state)
         }
     }
     
     // Returns the command corresponding to
     // the state of the turnout.
-    func stateCommands(power: UInt8) -> [Command] {
+    func requestedStateCommands(power: UInt8) -> [Command] {
+        let stateValue = requestedStateValue
         if category == .doubleSlip2 || category == .threeWay {
             let value1 = (stateValue & 0x01)
             let value2 = (stateValue & 0x02) >> 1
@@ -235,7 +240,7 @@ extension Turnout {
     // Use this method to safely set the state
     func setStateSafe(_ state: State) {
         if reserved == nil {
-            self.state = state
+            self.requestedState = state
         }
     }
     

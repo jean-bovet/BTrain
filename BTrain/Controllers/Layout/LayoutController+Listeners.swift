@@ -100,8 +100,8 @@ extension LayoutController {
             
             DispatchQueue.main.async {
                 if let turnout = layout.turnouts.find(address: address) {
-                    turnout.setState(value: state, for: address.actualAddress)
-                    BTLogger.debug("Turnout \(turnout.name) changed state \(state), power \(power), for address \(address.actualAddress.toHex()), resulting in state \(turnout.state)")
+                    turnout.setActualState(value: state, for: address.actualAddress)
+                    BTLogger.debug("Turnout \(turnout.name) state changed to \(state), power \(power), for address \(address.actualAddress.toHex()). Actual state \(turnout.actualState). Requested state \(turnout.requestedState)")
                     self?.runControllers(.turnoutChanged)
                 } else {
                     BTLogger.error("Unknown turnout for address \(address.actualAddress.toHex())")

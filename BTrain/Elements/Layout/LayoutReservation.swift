@@ -216,11 +216,11 @@ final class LayoutReservation {
             throw LayoutError.turnoutAlreadyReserved(turnout: turnout)
         }
         
-        turnout.state = reservation.state
+        turnout.requestedState = reservation.state
         turnout.reserved = .init(train: train.id, sockets: reservation.sockets)
         
         layout.executor.sendTurnoutState(turnout: turnout) { }
-        debug("Set turnout \(turnout.name) for \(train) and state \(turnout.state)")
+        debug("Set turnout \(turnout.name) for \(train) to requested state \(turnout.requestedState)")
     }
     
     private func rememberTurnoutToReserve(turnout: Turnout, train: Train, step: ResolvedRouteItemTurnout, numberOfLeadingBlocksReserved: inout Int, turnouts: inout [TurnoutReservation]) -> Bool {
@@ -236,7 +236,7 @@ final class LayoutReservation {
             // by the wagons behind the train; we are basically looping back into ourself here so stop reserving.
             // This can happen when there is a small loop and the length of the train is such that the head of
             // the train tries to reserve a block occupied by the tail of the train.
-            if turnout.state != state {
+            if turnout.requestedState != state {
                 return false
             }
         } else {
@@ -339,7 +339,7 @@ final class LayoutReservation {
         }
         
         layout.turnouts.filter { $0.reserved?.train == train.id }.forEach { turnout in
-            if let speedLimit = turnout.stateSpeedLimit[turnout.state] {
+            if let speedLimit = turnout.stateSpeedLimit[turnout.requestedState] {
                 switch speedLimit {
                 case .unlimited:
                     break
@@ -421,7 +421,7 @@ final class LayoutReservation {
     }
     
     private func debug(_ msg: String) {
-        if verbose {
+        if verbose || true {
             BTLogger.debug(msg)
         }
     }

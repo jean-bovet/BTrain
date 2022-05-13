@@ -51,8 +51,9 @@ class TrainLengthTests: XCTestCase {
         b4.feedbacks[0].distance = 5
         b4.feedbacks[1].distance = b4.length! - 5
 
-        layout.turnouts[0].state = .straight23
-
+        layout.turnouts[0].requestedState = .straight23
+        layout.applyTurnoutState(turnout: layout.turnouts[0])
+        
         let t1 = layout.trains[0]
         t1.blockId = b1.id
         t1.wagonsPushedByLocomotive = false
@@ -110,7 +111,8 @@ class TrainLengthTests: XCTestCase {
         b4.feedbacks[0].distance = 5
         b4.feedbacks[1].distance = b4.length! - 5
 
-        layout.turnouts[0].state = .straight01
+        layout.turnouts[0].requestedState = .straight01
+        layout.applyTurnoutState(turnout: layout.turnouts[0])
 
         let t1 = layout.trains[0]
         t1.blockId = b4.id

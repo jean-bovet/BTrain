@@ -168,7 +168,7 @@ final class TurnoutShape: Shape, DraggableShape, ConnectableShape {
         
         switch(turnout.category) {
         case .singleLeft, .singleRight:
-            switch(turnout.state) {
+            switch(turnout.requestedState) {
             case .straight:
                 path.move(to: sp[0])
                 path.addLine(to: sp[1])
@@ -203,7 +203,7 @@ final class TurnoutShape: Shape, DraggableShape, ConnectableShape {
                     break
                 }
             } else {
-                switch turnout.state {
+                switch turnout.requestedState {
                 case .straight:
                     path.move(to: sp[0])
                     path.addLine(to: sp[1])
@@ -224,7 +224,7 @@ final class TurnoutShape: Shape, DraggableShape, ConnectableShape {
             }
 
         case .doubleSlip2:
-            switch(turnout.state) {
+            switch(turnout.requestedState) {
             case .straight01:
                 path.move(to: sp[0])
                 path.addLine(to: sp[1])
@@ -244,7 +244,7 @@ final class TurnoutShape: Shape, DraggableShape, ConnectableShape {
             }
 
         case .threeWay:
-            switch(turnout.state) {
+            switch(turnout.requestedState) {
             case .straight:
                 path.move(to: sp[0])
                 path.addLine(to: sp[1])

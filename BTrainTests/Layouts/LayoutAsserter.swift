@@ -169,7 +169,7 @@ final class LayoutAsserter {
                     fromElementName = resolvedRouteItemTurnout.turnout.name
                     // Check that the actual exitSocket is one that the state of the turnout allows, otherwise
                     // this means that this transition is not going to be used for the reservation and can be skipped.
-                    if resolvedRouteItemTurnout.turnout.socketId(fromSocketId: resolvedRouteItemTurnout.exitSocketId, withState: resolvedRouteItemTurnout.turnout.state) == nil {
+                    if resolvedRouteItemTurnout.turnout.socketId(fromSocketId: resolvedRouteItemTurnout.exitSocketId, withState: resolvedRouteItemTurnout.turnout.actualState) == nil {
                         reserved = nil
                     }
 
@@ -189,7 +189,7 @@ final class LayoutAsserter {
                     } else {
                         // Check that the actual entrySocket is one that the state of the turnout allows, otherwise
                         // this means that this transition is not going to be used for the reservation and can be skipped.
-                        if turnout.socketId(fromSocketId: resolvedRouteItemTurnout.entrySocketId, withState: turnout.state) == nil {
+                        if turnout.socketId(fromSocketId: resolvedRouteItemTurnout.entrySocketId, withState: turnout.actualState) == nil {
                             reserved = nil
                         }
                     }
@@ -245,7 +245,7 @@ final class LayoutAsserter {
         let turnout = step.turnout
         let expectedTurnout = expectedStep.turnout
         XCTAssertEqual(namedId(turnout.id), expectedTurnout.id, "Mismatching turnout ID at index \(index), route \(routeName)")
-        XCTAssertEqual(turnout.state, expectedTurnout.state, "Mismatching turnout state for \(turnout) at index \(index), route \(routeName)")
+        XCTAssertEqual(turnout.actualState, expectedTurnout.actualState, "Mismatching turnout state for \(turnout) at index \(index), route \(routeName)")
         XCTAssertEqual(turnout.reserved?.train, expectedTurnout.reserved?.train, "Mismatching turnout reservation for \(turnout) at index \(index), route \(routeName)")
     }
 }

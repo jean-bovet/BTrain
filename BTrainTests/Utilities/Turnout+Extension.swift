@@ -20,7 +20,7 @@ extension Turnout {
         let t1 = Turnout(name: "1")
         t1.category = .singleLeft
         t1.address = .init(1, .MM)
-        t1.state = .straight
+        t1.requestedState = .straight
         return t1
     }
     
@@ -28,7 +28,7 @@ extension Turnout {
         let t1 = Turnout(name: "1")
         t1.category = .singleRight
         t1.address = .init(1, .MM)
-        t1.state = .straight
+        t1.requestedState = .straight
         return t1
     }
 
@@ -37,7 +37,7 @@ extension Turnout {
         t1.category = .doubleSlip
         t1.address = .init(1, .MM)
         t1.address2 = .init(2, .MM)
-        t1.state = .straight
+        t1.requestedState = .straight
         return t1
     }
 
@@ -46,7 +46,7 @@ extension Turnout {
         t1.category = .doubleSlip2
         t1.address = .init(1, .MM)
         t1.address2 = .init(2, .MM)
-        t1.state = .straight01
+        t1.requestedState = .straight01
         return t1
     }
 
@@ -55,7 +55,7 @@ extension Turnout {
         t1.category = .threeWay
         t1.address = .init(1, .MM)
         t1.address2 = .init(2, .MM)
-        t1.state = .straight
+        t1.requestedState = .straight
         return t1
     }
 

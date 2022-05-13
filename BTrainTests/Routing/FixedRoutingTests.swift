@@ -783,8 +783,11 @@ class FixedRoutingTests: BTTestCase {
 
     func testTrainWithWagonsInFront() throws {
         let layout = LayoutComplexLoop().newLayoutWithLengths(LayoutComplexLoop().newLayout().removeTrainGeometry().removeTurnoutGeometry())
-        layout.turnouts[0].state = .branchLeft
-        layout.turnouts[5].state = .branchRight
+        layout.turnouts[0].requestedState = .branchLeft
+        layout.applyTurnoutState(turnout: layout.turnouts[0])
+        
+        layout.turnouts[5].requestedState = .branchRight
+        layout.applyTurnoutState(turnout: layout.turnouts[5])
 
         let train = layout.trains[0]
         train.wagonsPushedByLocomotive = true

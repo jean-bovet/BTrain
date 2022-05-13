@@ -31,15 +31,15 @@ final class LayoutCommandExecutor {
     }
     
     func sendTurnoutState(turnout: Turnout, completion: @escaping CompletionBlock) {
-        BTLogger.debug("Turnout \(turnout) state changed to \(turnout.state)")
+        BTLogger.debug("Turnout \(turnout) requested state to \(turnout.requestedState)")
                 
         guard let interface = interface else {
             completion()
             return
         }
 
-        let commands = turnout.stateCommands(power: 0x1)
-        let idleCommands = turnout.stateCommands(power: 0x0)
+        let commands = turnout.requestedStateCommands(power: 0x1)
+        let idleCommands = turnout.requestedStateCommands(power: 0x0)
         assert(commands.count == idleCommands.count)
         
         var commandCompletionCount = commands.count
