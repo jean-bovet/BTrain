@@ -77,10 +77,8 @@ final class TrainController {
                 return try stop(completely: false)
             }
 
-            BTLogger.router.debug("\(self.train, privacy: .public): \(String(describing: TrainHandlerManaged.self), privacy: .public)")
             result = result.appending(try TrainHandlerManaged.process(layout: layout, route: route, train: train, event: event, controller: self))
         } else {
-            BTLogger.router.debug("\(self.train, privacy: .public): \(String(describing: TrainHandlerUnmanaged.self), privacy: .public)")
             result = result.appending(try TrainHandlerUnmanaged().process(layout: layout, train: train, event: event, controller: self))
         }
 

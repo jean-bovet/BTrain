@@ -133,8 +133,9 @@ final class TrainHandlerManaged {
             
         case .schedulingChanged:
             if train.managedScheduling && train.state == .stopped {
-                train.startRouteIndex = 0
-                train.routeStepIndex = 0
+                // Note: routeStepIndex is setup by the start() method in the Layout, which
+                // can set its value to something > 0 if the train is somewhere along the route.
+                train.startRouteIndex = train.routeStepIndex
                 try reserveLeadingBlocks()
             } else if train.unmanagedScheduling {
                 try layout.reservation.removeLeadingBlocks(train: train)
