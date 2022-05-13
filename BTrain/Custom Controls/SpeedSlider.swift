@@ -33,7 +33,7 @@ struct SpeedSlider: View {
     
     var body: some View {
         HStack {
-            CustomSlider(value: $speed.kphAsDouble, secondaryValue: $speed.actualKphAsDouble, range: (0, Double(speed.maxSpeed)), knobWidth: knobWidth, onEditingChanged: onEditingChanged) { modifiers in
+            CustomSlider(value: $speed.requestedkphAsDouble, secondaryValue: $speed.actualKphAsDouble, range: (0, Double(speed.maxSpeed)), knobWidth: knobWidth, onEditingChanged: onEditingChanged) { modifiers in
                 ZStack {
                     Rectangle().foregroundColor(Color(NSColor.windowBackgroundColor)).frame(height: 8).cornerRadius(4)
                     
@@ -76,7 +76,7 @@ struct SpeedSlider: View {
 
 private extension TrainSpeed {
     
-    var kphAsDouble: Double {
+    var requestedkphAsDouble: Double {
         get {
             return Double(self.requestedKph)
         }

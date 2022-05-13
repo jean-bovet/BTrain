@@ -127,27 +127,31 @@ extension Layout {
         }
     }
     
-    func setTrainSpeed(_ train: Train, _ speed: TrainSpeed.UnitKph, speedLimit: Bool = true, acceleration: TrainSpeedAcceleration.Acceleration? = nil, completion: @escaping CompletionBlock) {
+    func setTrainSpeed(_ train: Train, _ speed: TrainSpeed.UnitKph, speedLimit: Bool = true, force: Bool = false, acceleration: TrainSpeedAcceleration.Acceleration? = nil, completion: @escaping CompletionBlock) {
+        let previousRequestedSteps = train.speed.requestedSteps
         if speedLimit {
-            let route = route(for: train.routeId, trainId: train.id)!
-            // TODO: finish throwing
-//            guard let route = route(for: train.routeId, trainId: train.id) else {
-//                throw LayoutError.routeNotFound(routeId: train.routeId)
-//            }
+            let route = route(for: train.routeId, trainId: train.id)
             train.speed.requestedKph = min(speed, reservation.maximumSpeedAllowed(train: train, route: route))
         } else {
             train.speed.requestedKph = speed
         }
-        setTrainSpeed(train, train.speed.requestedSteps, acceleration: acceleration, completion: completion)
+        if train.speed.requestedSteps != previousRequestedSteps || force {
+            setTrainSpeed(train, train.speed.requestedSteps, acceleration: acceleration, completion: completion)
+        } else {
+            completion()
+        }
     }
 
     func setTrainSpeed(_ train: Train, _ speed: SpeedStep, acceleration: TrainSpeedAcceleration.Acceleration? = nil, completion: @escaping CompletionBlock) {
         train.speed.requestedSteps = speed
-        executor.sendTrainSpeed(train: train, acceleration: acceleration) { [weak self] in
-            self?.didChange()
+        if train.speed.requestedSteps != train.speed.actualSteps {
+            executor.sendTrainSpeed(train: train, acceleration: acceleration) { [weak self] in
+                self?.didChange()
+                completion()
+            }
+        } else {
             completion()
         }
-        didChange()
     }
 
     // Returns the direction of the train within the block (not the train direction itself
