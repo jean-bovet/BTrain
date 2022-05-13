@@ -146,7 +146,7 @@ extension Turnout {
                 stateValue = value1 | value2
             } else if address.actualAddress == stateAddress {
                 let value1 = (state & 0x01)
-                let value2 = (stateValue & 0x01) << 1
+                let value2 = (stateValue & 0x02)
                 stateValue = value1 | value2
             }
         } else {
