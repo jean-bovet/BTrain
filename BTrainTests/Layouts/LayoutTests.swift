@@ -162,7 +162,7 @@ class LayoutTests: XCTestCase {
 
         try layout.setTrainToBlock(train.id, s1.id, direction: .next)
 
-        train.leadingBlocks = [s1, b1]
+        train.leading.blocks = [s1, b1]
         train.startRouteIndex = 0
 
         XCTAssertEqual(layout.reservation.maximumSpeedAllowed(train: train, route: nil), LayoutFactory.DefaultMaximumSpeed)
@@ -181,7 +181,7 @@ class LayoutTests: XCTestCase {
 
         try layout.setTrainToBlock(train.id, s1.id, direction: .next)
         
-        train.leadingBlocks = [s1, b1]
+        train.leading.blocks = [s1, b1]
         train.startRouteIndex = 0
 
         XCTAssertEqual(layout.reservation.maximumSpeedAllowed(train: train, route: nil), LayoutFactory.DefaultMaximumSpeed)

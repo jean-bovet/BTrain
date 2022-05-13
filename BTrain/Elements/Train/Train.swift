@@ -160,14 +160,10 @@ final class Train: Element, ObservableObject {
     // The default is 2.
     @Published var maxNumberOfLeadingReservedBlocks = 2
     
-    /// Array of leading blocks that have been reserved in front of the train.
-    ///
-    /// This array is updated by the ``LayoutReservation`` class each time the reserved
-    /// blocks are updated. The leading blocks are stored here for quick access instead
-    /// of re-computing them on the fly all the time.
-    var leadingBlocks = [Block]()
-    var leadingTurnouts = [Turnout]()
-
+    /// Available only at runtime (never persisted), this variable keeps track of the leading reservation,
+    /// blocks or turnouts, that are assigned to this train.
+    let leading = TrainLeadingReservation()
+    
     /// Array of blocks occpied by the train and its cars.
     ///
     /// This array is updated by the ``LayoutReservation`` class each time the reserved

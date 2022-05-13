@@ -1042,7 +1042,7 @@ class FixedRoutingTests: BTTestCase {
         }
         
         func assertLeadingBlocks(_ blockNames: [String]) throws {
-            XCTAssertEqual(train.leadingBlocks.toStrings(), blockNames)
+            XCTAssertEqual(train.leading.blocks.toStrings(), blockNames)
         }
     }
     

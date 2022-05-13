@@ -49,7 +49,7 @@ extension Layout {
                 }
                 nextBlock = nb
             } else {
-                guard let nb = train.leadingBlocks.first else {
+                guard let nb = train.leading.blocks.first else {
                     return nil
                 }
                 nextBlock = nb

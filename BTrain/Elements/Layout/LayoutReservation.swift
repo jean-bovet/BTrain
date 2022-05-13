@@ -194,7 +194,7 @@ final class LayoutReservation {
             // Now reserve the block
             let reservation = Reservation(trainId: train.id, direction: direction)
             block.reserved = reservation
-            train.leadingBlocks.append(block)
+            train.leading.blocks.append(block)
             numberOfLeadingBlocksReserved += 1
             debug("Reserving block \(block.name) for \(reservation)")
         }
@@ -218,7 +218,7 @@ final class LayoutReservation {
         
         turnout.requestedState = reservation.state
         turnout.reserved = .init(train: train.id, sockets: reservation.sockets)
-        train.leadingTurnouts.append(turnout)
+        train.leading.turnouts.append(turnout)
 
         BTLogger.reservation.debug("\(train, privacy: .public): request state \(turnout.requestedState, privacy: .public) for turnout \(turnout.name, privacy: .public)")
         layout.executor.sendTurnoutState(turnout: turnout) {
@@ -311,8 +311,7 @@ final class LayoutReservation {
         
     // This methods frees all the reserved elements except the block in which the locomotive is located
     func freeElements(train: Train) throws {
-        train.leadingBlocks.removeAll()
-        train.leadingTurnouts.removeAll()
+        train.leading.clear()
         train.occupiedBlocks.removeAll()
 
         layout.blockMap.values
@@ -356,7 +355,7 @@ final class LayoutReservation {
         // If there is a leading reserved block where the train needs to stop,
         // make sure the speed is limited, otherwise the train will likely overshoot
         // the block in which it must stop.
-        for block in train.leadingBlocks {
+        for block in train.leading.blocks {
             if layout.hasTrainReachedStationOrDestination(route, train, block) {
                 maximumSpeedAllowed = min(maximumSpeedAllowed, LayoutFactory.DefaultLimitedSpeed)
                 break
@@ -394,7 +393,7 @@ final class LayoutReservation {
     ///   - speed: the speed to evaluate
     /// - Returns: true if the train can stop with the available leading distance, false otherwise
     func isBrakingDistanceRespected(train: Train, speed: TrainSpeed.UnitKph) -> Bool {
-        let leadingDistance = train.leadingBlocks.reduce(0.0) { partialResult, block in
+        let leadingDistance = train.leading.blocks.reduce(0.0) { partialResult, block in
             if let blockLength = block.length {
                 return partialResult + blockLength
             } else {
@@ -417,9 +416,9 @@ final class LayoutReservation {
         // to the leading distance available.
         let respected = brakingDistanceH0cm <= leadingDistance
         if respected {
-            BTLogger.router.debug("\(train, privacy: .public): can come to a fullstop in \(brakingDistanceH0cm, format: .fixed(precision: 1))cm (in \(brakingDelaySeconds, format: .fixed(precision: 1))s) at \(speedKph, format: .fixed(precision: 1))kph. The leading distance is \(leadingDistance, format: .fixed(precision: 1))cm with blocks \(train.leadingBlocks, privacy: .public)")
+            BTLogger.router.debug("\(train, privacy: .public): can come to a fullstop in \(brakingDistanceH0cm, format: .fixed(precision: 1))cm (in \(brakingDelaySeconds, format: .fixed(precision: 1))s) at \(speedKph, format: .fixed(precision: 1))kph. The leading distance is \(leadingDistance, format: .fixed(precision: 1))cm with blocks \(train.leading.blocks, privacy: .public)")
         } else {
-            BTLogger.router.debug("\(train, privacy: .public): ⚠️ cannot come to a fullstop in \(brakingDistanceH0cm, format: .fixed(precision: 1))cm (in \(brakingDelaySeconds, format: .fixed(precision: 1))s) at \(speedKph, format: .fixed(precision: 1))kph because the leading distance is \(leadingDistance, format: .fixed(precision: 1))cm with blocks \(train.leadingBlocks, privacy: .public)")
+            BTLogger.router.debug("\(train, privacy: .public): ⚠️ cannot come to a fullstop in \(brakingDistanceH0cm, format: .fixed(precision: 1))cm (in \(brakingDelaySeconds, format: .fixed(precision: 1))s) at \(speedKph, format: .fixed(precision: 1))kph because the leading distance is \(leadingDistance, format: .fixed(precision: 1))cm with blocks \(train.leading.blocks, privacy: .public)")
         }
         return respected
     }
