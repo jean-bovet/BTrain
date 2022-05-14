@@ -17,6 +17,7 @@ extension XCTestCase {
     
     func connectToSimulator(doc: LayoutDocument, _ completion: CompletionBlock) {
         let c = expectation(description: "connect")
+        doc.simulator.turnoutSpeed = 0
         doc.connectToSimulator(enable: false) { error in
             c.fulfill()
         }

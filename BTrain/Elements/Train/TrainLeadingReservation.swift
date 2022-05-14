@@ -18,19 +18,38 @@ import Foundation
 /// the train moves only when there are reserved blocks ahead and when the reserved
 /// turnouts have settled (that is, the turnout state has changed in the physical layout).
 final class TrainLeadingReservation {
-    /// Array of leading blocks that have been reserved in front of the train.
-    ///
+    
+    enum Item {
+        case block(Block)
+        case turnout(Turnout)
+    }
+    
+    /// Array of leading reservation items
     /// This array is updated by the ``LayoutReservation`` class each time the reserved
-    /// blocks are updated. The leading blocks are stored here for quick access instead
-    /// of re-computing them on the fly all the time.
-    var blocks = [Block]()
+    /// blocks or turnouts are updated.
+    private var items = [Item]()
 
+    /// Array of leading blocks that have been reserved in front of the train.
+    var blocks: [Block] {
+        items.compactMap { item in
+            if case .block(let block) = item {
+                return block
+            } else {
+                return nil
+            }
+        }
+    }
+    
     /// Array of leading turnouts that have been reserved in front of the train.
-    ///
-    /// This array is updated by the ``LayoutReservation`` class each time the reserved
-    /// turnouts are updated. The leading turnouts are stored here for quick access instead
-    /// of re-computing them on the fly all the time.
-    var turnouts = [Turnout]()
+    var turnouts: [Turnout] {
+        items.compactMap { item in
+            if case .turnout(let turnout) = item {
+                return turnout
+            } else {
+                return nil
+            }
+        }
+    }
     
     /// Returns true if there are reserved blocks (and turnouts) **and** they are settled.
     ///
@@ -49,7 +68,7 @@ final class TrainLeadingReservation {
     /// Note: *settled* means the turnout actual state is equal to the expected state, in other word,
     /// the turnout has effectively changed on the physical layout to the best of our knowledge.
     var emptyOrSettled: Bool {
-        if turnouts.isEmpty {
+        if blocks.isEmpty {
             return true
         }
         
@@ -63,20 +82,35 @@ final class TrainLeadingReservation {
     }
     
     var distance: Double {
-        // TODO: include turnouts
-        let leadingDistance = blocks.reduce(0.0) { partialResult, block in
-            if let blockLength = block.length {
-                return partialResult + blockLength
-            } else {
-                return partialResult
+        let leadingDistance = items.reduce(0.0) { partialResult, item in
+            switch item {
+            case .block(let block):
+                if let blockLength = block.length {
+                    return partialResult + blockLength
+                } else {
+                    return partialResult
+                }
+            case .turnout(let turnout):
+                if let turnoutLength = turnout.length {
+                    return partialResult + turnoutLength
+                } else {
+                    return partialResult
+                }
             }
         }
 
         return leadingDistance
     }
+
+    func append(_ block: Block) {
+        items.append(.block(block))
+    }
     
+    func append(_ turnout: Turnout) {
+        items.append(.turnout(turnout))
+    }
+
     func clear() {
-        blocks.removeAll()
-        turnouts.removeAll()
+        items.removeAll()
     }
 }

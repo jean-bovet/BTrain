@@ -35,8 +35,7 @@ class FixedRoutingWithTurnoutDelays: XCTestCase {
         // t0 has still the state .branchLeft instead of the requested .straight
         try p.assert("r1: {r1{b1 🔴🚂1 ≏ ≏ }} <t0,l> [b2 ≏ ≏ ] <t1(0,2)> [b3 ≏ ≏ ] <t0(2,0),l> !{r1{b1 ≏ ≏ }}")
 
-        // The train will switch to managed scheduling but does not start yet because the turnout t0
-        // hasn't settled.
+        // The train will switch to managed scheduling but does not start yet because the turnout t0 hasn't settled.
         try p.start(expectedState: .stopped)
 
         // t0 has still the state .branchLeft instead of the requested .straight
