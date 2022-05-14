@@ -81,7 +81,7 @@ final class TrainLeadingReservation {
         return true
     }
     
-    var distance: Double {
+    var totalDistance: Double {
         let leadingDistance = items.reduce(0.0) { partialResult, item in
             switch item {
             case .block(let block):
@@ -100,6 +100,33 @@ final class TrainLeadingReservation {
         }
 
         return leadingDistance
+    }
+    
+    /// Returns the distance that has been settled. In other words, returns the distance
+    /// that contains only consecutives elements (blocks and turnouts) that have settled.
+    ///
+    /// When turnout takes some time to change state, the leading distance might be less
+    /// than the total leading distance which must be accounted for in order for the train
+    /// to not use the un-settled turnout otherwise they will be taking a wrong path!
+    var settledDistance: Double {
+        var distance = 0.0
+        for item in items {
+            switch item {
+            case .block(let block):
+                if let blockLength = block.length {
+                    distance += blockLength
+                }
+            case .turnout(let turnout):
+                if turnout.requestedState != turnout.actualState {
+                    break
+                }
+                
+                if let turnoutLength = turnout.length {
+                    distance += turnoutLength
+                }
+            }
+        }
+        return distance
     }
 
     func append(_ block: Block) {

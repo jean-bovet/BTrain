@@ -393,7 +393,7 @@ final class LayoutReservation {
     ///   - speed: the speed to evaluate
     /// - Returns: true if the train can stop with the available leading distance, false otherwise
     func isBrakingDistanceRespected(train: Train, speed: TrainSpeed.UnitKph) -> Bool {
-        let leadingDistance = train.leading.distance
+        let leadingDistance = train.leading.settledDistance
         
         // Compute the distance necessary to bring the train to a full stop
         let steps = train.speed.steps(for: speed).value
