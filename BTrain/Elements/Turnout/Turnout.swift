@@ -25,7 +25,11 @@ final class Turnout: Element, ObservableObject {
     }
 
     // The various states supported by the turnout
-    enum State: String, Codable {
+    enum State: String, Identifiable, Codable {
+        var id: String {
+            rawValue
+        }
+        
         case straight
         case branch // Used for Double Slip with 2 states (straight and branch)
         case branchLeft
@@ -49,6 +53,8 @@ final class Turnout: Element, ObservableObject {
     
     @Published var category: Category = .singleLeft {
         didSet {
+            requestedState = Turnout.defaultState(for: category)
+            actualState = requestedState
             updateStateSpeedLimits()
         }
     }

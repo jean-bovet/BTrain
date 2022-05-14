@@ -14,8 +14,7 @@ import Foundation
 
 extension Turnout {
     
-    // Returns all the possible states for the turnout
-    var allStates: [State] {
+    static func states(for category: Category) -> [State] {
         switch category {
         case .singleLeft:
             return [.straight, .branchLeft]
@@ -28,6 +27,24 @@ extension Turnout {
         case .doubleSlip2:
             return [.straight01, .straight23, .branch03, .branch21]
         }
+    }
+    
+    static func defaultState(for category: Category) -> State {
+        switch category {
+        case .singleLeft, .singleRight, .threeWay:
+            return .straight
+            
+        case .doubleSlip:
+            return .straight
+
+        case .doubleSlip2:
+            return .straight01
+        }
+    }
+    
+    // Returns all the possible states for the turnout
+    var allStates: [State] {
+        return Turnout.states(for: category)
     }
     
     // Returns the next state the turnout will take when toggling between

@@ -161,14 +161,14 @@ final class TurnoutShape: Shape, DraggableShape, ConnectableShape {
         return path
     }
     
-    func activePath() -> CGPath {
+    func activePath(for state: Turnout.State) -> CGPath {
         let path = CGMutablePath()
         
         let sp = socketPoints
         
         switch(turnout.category) {
         case .singleLeft, .singleRight:
-            switch(turnout.requestedState) {
+            switch state {
             case .straight:
                 path.move(to: sp[0])
                 path.addLine(to: sp[1])
@@ -181,50 +181,27 @@ final class TurnoutShape: Shape, DraggableShape, ConnectableShape {
             }
 
         case .doubleSlip:
-            if let reservedSockets = turnout.reserved?.sockets {
-                switch (reservedSockets.fromSocketId, reservedSockets.toSocketId) {
-                case (0, 1), (1, 0):
-                    path.move(to: sp[0])
-                    path.addLine(to: sp[1])
-                    
-                case (2, 3), (3, 2):
-                    path.move(to: sp[2])
-                    path.addLine(to: sp[3])
-                    
-                case (0, 3), (3, 0):
-                    path.move(to: sp[0])
-                    path.addLine(to: sp[3])
-                    
-                case (2, 1), (1, 2):
-                    path.move(to: sp[2])
-                    path.addLine(to: sp[1])
-                    
-                default:
-                    break
-                }
-            } else {
-                switch turnout.requestedState {
-                case .straight:
-                    path.move(to: sp[0])
-                    path.addLine(to: sp[1])
-                    
-                    path.move(to: sp[2])
-                    path.addLine(to: sp[3])
+            switch state {
+            case .straight:
+                path.move(to: sp[0])
+                path.addLine(to: sp[1])
+                
+                path.move(to: sp[2])
+                path.addLine(to: sp[3])
 
-                case .branch:
-                    path.move(to: sp[0])
-                    path.addLine(to: sp[3])
+            case .branch:
+                path.move(to: sp[0])
+                path.addLine(to: sp[3])
 
-                    path.move(to: sp[2])
-                    path.addLine(to: sp[1])
+                path.move(to: sp[2])
+                path.addLine(to: sp[1])
 
-                default:
-                    break
-                }
+            default:
+                break
             }
 
         case .doubleSlip2:
-            switch(turnout.requestedState) {
+            switch state {
             case .straight01:
                 path.move(to: sp[0])
                 path.addLine(to: sp[1])
@@ -244,7 +221,7 @@ final class TurnoutShape: Shape, DraggableShape, ConnectableShape {
             }
 
         case .threeWay:
-            switch(turnout.requestedState) {
+            switch state {
             case .straight:
                 path.move(to: sp[0])
                 path.addLine(to: sp[1])
@@ -303,8 +280,17 @@ final class TurnoutShape: Shape, DraggableShape, ConnectableShape {
             
             ctx.setStrokeColor(shapeContext.pathColor(reserved != nil, train: turnout.train != nil))
             ctx.setLineWidth(shapeContext.trackWidth)
-            ctx.addPath(activePath())
+            ctx.addPath(activePath(for: turnout.actualState))
             ctx.drawPath(using: .stroke)
+
+            if turnout.requestedState != turnout.actualState {
+                ctx.setLineDash(phase: 0, lengths: [2, 2])
+
+                ctx.setStrokeColor(shapeContext.pathColor(reserved != nil, train: turnout.train != nil))
+                ctx.setLineWidth(shapeContext.trackWidth)
+                ctx.addPath(activePath(for: turnout.requestedState))
+                ctx.drawPath(using: .stroke)
+            }
         }
                 
         if shapeContext.showTurnoutName {

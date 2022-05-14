@@ -31,7 +31,11 @@ struct NewTurnoutSheet: View {
                         HStack {
                             Text(category.description)
                             Spacer()
-                            TurnoutShapeView(layout: layout, category: category)
+                            HStack {
+                                ForEach(Turnout.states(for: category)) { state in
+                                    TurnoutShapeView(layout: layout, category: category, requestedState: state, actualState: state)
+                                }
+                            }
                         }
                     }
                 }.pickerStyle(.inline)
