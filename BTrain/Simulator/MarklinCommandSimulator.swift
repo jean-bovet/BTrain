@@ -33,7 +33,9 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
             scheduleTimer()
         }
     }
-    
+
+    @AppStorage("simulatorTurnoutSpeed") var turnoutSpeed = 0.250
+
     var refreshTimeInterval: TimeInterval {
         return 4.0 - refreshSpeed
     }
@@ -201,7 +203,9 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
     
     func turnoutChanged(address: CommandTurnoutAddress, state: UInt8, power: UInt8) {
         let message = MarklinCANMessageFactory.accessory(addr: address.actualAddress, state: state, power: power)
-        send(message.ack)
+        DispatchQueue.main.asyncAfter(deadline: .now() + turnoutSpeed) {
+            self.send(message.ack)
+        }
     }
     
     func speedChanged(address: UInt32, decoderType: DecoderType?, value: SpeedValue) {

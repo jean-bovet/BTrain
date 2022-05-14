@@ -38,20 +38,53 @@ struct SimulatorView: View {
                     }
                 }.disabled(!simulator.enabled)
             }
-            Divider()
             HStack {
-                Text("Slow")
-                Slider(
-                    value: $simulator.refreshSpeed,
-                    in: 0...Double(3.5)
-                ) {
-                } onEditingChanged: { editing in
+                VStack(spacing: 0) {
+                    Text("Speed").font(.headline)
+                    HStack {
+                        Text("Slow")
+                        Slider(
+                            value: $simulator.refreshSpeed,
+                            in: 0...Double(3.5)
+                        ) {
+                        } onEditingChanged: { editing in
 
+                        }
+                        Text("Fast")
+                    }
                 }
-                Text("Fast")
+                Divider().frame(maxHeight: 30)
+                VStack(spacing: 0) {
+                    Text("Turnouts").font(.headline)
+                    HStack {
+                        Text("Slow")
+                        Slider(
+                            value: $simulator.turnoutSpeedInverted,
+                            in: 0...Double(MarklinCommandSimulator.MaxTurnoutSpeedValue)
+                        ) {
+                        } onEditingChanged: { editing in
+
+                        }
+                        Text("Fast")
+                    }
+                }
             }
         }
         .padding()
+    }
+}
+
+extension MarklinCommandSimulator {
+    
+    static let MaxTurnoutSpeedValue = 2.0
+    
+    var turnoutSpeedInverted: TimeInterval {
+        get {
+            MarklinCommandSimulator.MaxTurnoutSpeedValue - turnoutSpeed
+        }
+        set {
+            turnoutSpeed = MarklinCommandSimulator.MaxTurnoutSpeedValue - newValue
+        }
     }
 }
 
