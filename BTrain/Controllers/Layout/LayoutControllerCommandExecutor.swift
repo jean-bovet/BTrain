@@ -18,9 +18,10 @@ final class LayoutCommandExecutor {
     weak var interface: CommandInterface?
     
     // Queue to ensure that sending of command for each turnout does happen
-    // every 100ms in order to avoid a spike in current on the real layout.
+    // every 250ms in order to avoid a spike in current on the real layout.
     // TODO: expose that as a settings
-    let turnoutQueue = ScheduledMessageQueue(delay: 0.100, name: "Turnout")
+    static let turnoutDelay = 0.250
+    let turnoutQueue = ScheduledMessageQueue(delay: turnoutDelay, name: "Turnout")
     
     // Time until the turnout state power is turned off.
     let activationTime: TimeInterval = 0.2
