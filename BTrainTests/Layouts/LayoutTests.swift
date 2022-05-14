@@ -96,7 +96,7 @@ class LayoutTests: XCTestCase {
         doc.layout.setLocomotiveDirection(train1, forward: false)
         wait(for: {
             train1.directionForward == false
-        }, timeout: 0.1)
+        }, timeout: 1.0)
         XCTAssertEqual(train1.directionForward, false)
         XCTAssertEqual(block1.train!.direction, .previous)
 
@@ -110,7 +110,7 @@ class LayoutTests: XCTestCase {
         doc.layout.setLocomotiveDirection(train1, forward: true)
         wait(for: {
             train1.directionForward == true
-        }, timeout: 0.1)
+        }, timeout: 1.0)
 
         XCTAssertEqual(train1.directionForward, true)
         XCTAssertEqual(block1.train!.direction, .previous)

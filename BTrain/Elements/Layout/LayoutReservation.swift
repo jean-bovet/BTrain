@@ -424,7 +424,7 @@ final class LayoutReservation {
     }
     
     private func debug(_ msg: String) {
-        if verbose || true {
+        if verbose {
             BTLogger.debug(msg)
         }
     }
