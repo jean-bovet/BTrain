@@ -11,7 +11,6 @@
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 import Foundation
-import OrderedCollections
 
 /// Manages the operation of a single train in the layout.
 ///
@@ -31,18 +30,26 @@ final class TrainHandlerManaged {
     
     var currentBlock: Block
     var trainInstance: TrainInstance
-    var resultingEvents = OrderedSet<TrainEvent>()
+    let resultingEvents = TrainHandlerResult()
     
+    /// Returns true if the train is at the end of the route
     var trainAtEndOfRoute: Bool {
         train.routeStepIndex == route.lastStepIndex
     }
-        
+    
+    /// Returns true if the train should stop in the current block
+    ///
+    /// The following reasons will cause a train to stop:
+    /// - There are no leading blocks reserved or there are leading blocks reserved but not yet settled.
+    /// - The train is at the end of the route
+    /// - The train has reached either a station block or a block that is the destination of the route
     var trainShouldStop: Bool {
         train.leading.reservedAndSettled == false ||
         trainAtEndOfRoute ||
         layout.hasTrainReachedStationOrDestination(route, train, currentBlock)
     }
     
+    /// Returns true if the block feedback assigned to brake the train is triggered
     var brakingFeedbackTriggered: Bool {
         guard let brakeFeedback = currentBlock.brakeFeedback(for: trainInstance.direction) else {
             return false
@@ -51,6 +58,7 @@ final class TrainHandlerManaged {
         return isFeedbackTriggered(layout: layout, train: train, feedbackId: brakeFeedback)
     }
     
+    /// Returns true if the block feedback assigned to stop the train is triggered
     var stoppingFeedbackTriggered: Bool {
         guard let stopFeedback = currentBlock.stopFeedback(for: trainInstance.direction) else {
             return false
@@ -59,12 +67,11 @@ final class TrainHandlerManaged {
         return isFeedbackTriggered(layout: layout, train: train, feedbackId: stopFeedback)
     }
     
-    var trainIsDoneWaitingAtStation: Bool {
-        train.timeUntilAutomaticRestart <= 0
-    }
-    
+    /// Returns the time the train needs to wait in the current block
     var waitingTime: TimeInterval {
-        if let step = route.steps.element(at: train.routeStepIndex), case .block(let stepBlock) = step, let time = stepBlock.waitingTime {
+        if let step = route.steps.element(at: train.routeStepIndex),
+           case .block(let stepBlock) = step,
+           let time = stepBlock.waitingTime {
             return time
         } else {
             // Use the block waiting time if the route itself has nothing specified
@@ -72,13 +79,13 @@ final class TrainHandlerManaged {
         }
     }
     
-    /// This method is invoked when an event machings ``TrainAutomaticSchedulingHandler/events`` is triggered.
+    /// This method is invoked when a ``TrainEvent`` is triggered in the layout.
     ///
     /// - Parameters:
     ///   - layout: the layout
     ///   - train: the train
     ///   - route: the route
-    ///   - event: the event that triggered this method invocation
+    ///   - event: the event that triggered this method
     ///   - controller: the train controller
     /// - Returns: returns the result of the process, which can include one or more follow up events
     static func process(layout: Layout, route: Route, train: Train, event: TrainEvent, controller: TrainControlling) throws -> TrainHandlerResult {
@@ -104,7 +111,7 @@ final class TrainHandlerManaged {
         self.trainInstance = trainInstance
     }
     
-    func process() throws -> TrainHandlerResult {
+    private func process() throws -> TrainHandlerResult {
         try handleEvent()
         
         try handleTrainStart()
@@ -115,7 +122,7 @@ final class TrainHandlerManaged {
         
         layout.adjustSpeedLimit(train)
         
-        return .init(events: Array(resultingEvents))
+        return resultingEvents
     }
     
     func handleEvent() throws {
@@ -229,7 +236,7 @@ final class TrainHandlerManaged {
             return
         }
         
-        guard trainIsDoneWaitingAtStation else {
+        guard train.timeUntilAutomaticRestart <= 0 else {
             return
         }
         

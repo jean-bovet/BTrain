@@ -14,42 +14,58 @@ import Foundation
 
 final class TrainHandlerUnmanaged {
         
-    func process(layout: Layout, train: Train, event: TrainEvent, controller: TrainControlling) throws -> TrainHandlerResult {
-        var result = TrainHandlerResult(events: [])
+    let layout: Layout
+    let train: Train
+    let event: TrainEvent
+    let controller: TrainControlling
+    var resultingEvents = TrainHandlerResult()
+
+    static func process(layout: Layout, train: Train, event: TrainEvent, controller: TrainControlling) throws -> TrainHandlerResult {
+        let handler = TrainHandlerUnmanaged(layout: layout, train: train, event: event, controller: controller)
+        return try handler.process()
+    }
+    
+    private init(layout: Layout, train: Train, event: TrainEvent, controller: TrainControlling) {
+        self.layout = layout
+        self.train = train
+        self.event = event
+        self.controller = controller
+    }
+    
+    private func process() throws -> TrainHandlerResult {
         if event == .feedbackTriggered {
-            result = result.appending(try moveTrainInsideBlock(layout: layout, train: train, event: event, controller: controller))
-            result = result.appending(try moveTrainToNextBlock(layout: layout, train: train, event: event, controller: controller))
-            result = result.appending(try stopDetection(layout: layout, train: train, event: event, controller: controller))
+            try moveTrainInsideBlock()
+            try moveTrainToNextBlock()
+            try stopDetection()
         }
         
         if train.state == .stopped && train.speed.actualKph > 0 {
-            BTLogger.router.debug("\(train, privacy: .public): train is now running")
+            BTLogger.router.debug("\(self.train, privacy: .public): train is now running")
             train.state = .running
-            result = result.appending(.stateChanged)
+            resultingEvents.append(.stateChanged)
         } else if train.state != .stopped && train.state != .stopping && train.speed.actualKph == 0 {
-            BTLogger.router.debug("\(train, privacy: .public): train is now stopped")
+            BTLogger.router.debug("\(self.train, privacy: .public): train is now stopped")
             train.state = .stopped
-            result = result.appending(.stateChanged)
+            resultingEvents.append(.stateChanged)
         }
 
-        return result
+        return resultingEvents
     }
     
-    func moveTrainInsideBlock(layout: Layout, train: Train, event: TrainEvent, controller: TrainControlling) throws -> TrainHandlerResult {
+    func moveTrainInsideBlock() throws {
         guard let currentBlock = layout.currentBlock(train: train) else {
-            return .none()
+            return
         }
 
         guard let trainInstance = currentBlock.train else {
-            return .none()
+            return
         }
         
         guard train.state != .stopped else {
-            return .none()
+            return
         }
         
         let direction = trainInstance.direction
-        var result: TrainHandlerResult = .none()
         
         // Iterate over all the feedbacks of the block and react to those who are triggered (aka detected)
         for (index, feedback) in currentBlock.feedbacks.enumerated() {
@@ -61,65 +77,61 @@ final class TrainHandlerUnmanaged {
             if train.position != position {
                 try layout.setTrainPosition(train, position)
                 
-                BTLogger.router.debug("\(train, privacy: .public): moved to position \(train.position) in \(currentBlock.name, privacy: .public), direction \(direction)")
+                BTLogger.router.debug("\(self.train, privacy: .public): moved to position \(self.train.position) in \(currentBlock.name, privacy: .public), direction \(direction)")
                 
-                result = result.appending(.movedInsideBlock)
+                resultingEvents.append(.movedInsideBlock)
             }
         }
-        
-        return result
     }
 
-    func moveTrainToNextBlock(layout: Layout, train: Train, event: TrainEvent, controller: TrainControlling) throws -> TrainHandlerResult {
+    func moveTrainToNextBlock() throws {
         guard train.state != .stopped else {
-            return .none()
+            return
         }
                 
         // Find out what is the entry feedback for the next block
         guard let entryFeedback = try layout.entryFeedback(for: train), entryFeedback.feedback.detected else {
             // The entry feedback is not yet detected, nothing more to do
-            return .none()
+            return
         }
         
         guard let position = entryFeedback.block.indexOfTrain(forFeedback: entryFeedback.feedback.id, direction: entryFeedback.direction) else {
             throw LayoutError.feedbackNotFound(feedbackId: entryFeedback.feedback.id)
         }
                 
-        BTLogger.router.debug("\(train, privacy: .public): enters block \(entryFeedback.block, privacy: .public) at position \(position), direction \(entryFeedback.direction)")
+        BTLogger.router.debug("\(self.train, privacy: .public): enters block \(entryFeedback.block, privacy: .public) at position \(position), direction \(entryFeedback.direction)")
                 
         try layout.setTrainToBlock(train.id, entryFeedback.block.id, position: .custom(value: position), direction: entryFeedback.direction)
                             
-        return .one(.movedToNextBlock)
+        resultingEvents.append(.movedToNextBlock)
     }
 
-    func stopDetection(layout: Layout, train: Train, event: TrainEvent, controller: TrainControlling) throws -> TrainHandlerResult {
+    func stopDetection() throws {
         guard train.state != .stopped && train.state != .stopping else {
-            return .none()
+            return
         }
                 
         guard let currentBlock = layout.currentBlock(train: train) else {
-            return .none()
+            return
         }
 
         guard try layout.nextValidBlockForLocomotive(from: currentBlock, train: train) == nil else {
-            return .none()
+            return
         }
         
         if train.wagonsPushedByLocomotive {
             train.runtimeInfo = "Stopped because no next block detected"
-            BTLogger.router.warning("\(train, privacy: .public): no next block detected, stopping by precaution")
-            return try controller.stop(completely: true)
+            BTLogger.router.warning("\(self.train, privacy: .public): no next block detected, stopping by precaution")
+            try controller.stop(completely: true)
         } else {
             // If there are no possible next block detected, we need to stop the train
             // when it reaches the end of the block to avoid a collision.
             if try layout.atEndOfBlock(train: train) {
                 train.runtimeInfo = "Stopped because no next block detected"
-                BTLogger.router.warning("\(train, privacy: .public): no next block detected, stopping by precaution")
-                return try controller.stop(completely: true)
+                BTLogger.router.warning("\(self.train, privacy: .public): no next block detected, stopping by precaution")
+                try controller.stop(completely: true)
             }
         }
-
-        return .none()
     }
 
 }

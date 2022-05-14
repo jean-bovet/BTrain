@@ -103,7 +103,7 @@ final class LayoutController: TrainControllerDelegate {
         // Run each controller one by one, using
         // the sorted keys to ensure they always
         // run in the same order.
-        var result: TrainHandlerResult = .none()
+        let result = TrainHandlerResult()
         do {
             // Update and detect any unexpected feedbacks
             try updateExpectedFeedbacks()
@@ -115,7 +115,7 @@ final class LayoutController: TrainControllerDelegate {
             // to process the new state of each train (speed, position,
             // reserved blocks, etc).
             for controller in controllers.values {
-                result = result.appending(try controller.run(event))
+                result.append(try controller.run(event))
             }
             
             // Update and detect any unexpected feedbacks
