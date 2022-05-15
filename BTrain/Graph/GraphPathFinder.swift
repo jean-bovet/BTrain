@@ -110,13 +110,20 @@ struct GraphPathFinder: GraphPathFinding {
         return path(graph: graph, from: from, to: to, currentPath: GraphPath([from]), constraints: constraints, context: context)
     }
     
+    /// Error from the path resolver indicating between which path elements an error occurred
+    struct ResolverError {
+        let from: Int
+        let to: Int
+    }
+        
     /// Returns a resolved path given an unresolved path and the specified constraints.
-    func resolve(graph: Graph, _ unresolvedPath: UnresolvedGraphPath, constraints: GraphPathFinderConstraints = DefaultConstraints(), context: GraphPathFinderContext = DefaultContext()) -> GraphPath? {
+    func resolve(graph: Graph, _ unresolvedPath: UnresolvedGraphPath, constraints: GraphPathFinderConstraints = DefaultConstraints(), context: GraphPathFinderContext = DefaultContext(), errors: inout [ResolverError]) -> GraphPath? {
         var resolvedPath = [GraphPathElement]()
         guard var previousElement = unresolvedPath.first?.resolve(constraints, context) else {
             return nil
         }
                 
+        var unresolvedPathIndex = 1
         resolvedPath.append(previousElement)
         for unresolvedElement in unresolvedPath.dropFirst() {
             guard let element = unresolvedElement.resolve(constraints, context) else {
@@ -131,9 +138,12 @@ struct GraphPathFinder: GraphPathFinding {
                 // A path should always be resolvable between two elements. If not, it means
                 // that some constraints imposed by a subclass prevents a path from being found
                 // so we always return here instead of continuing and returning an incomplete route.
+                debug("Unable to resolve path between \(previousElement) and \(element)")
+                errors.append(ResolverError(from: unresolvedPathIndex - 1, to: unresolvedPathIndex))
                 return nil
             }
             previousElement = element
+            unresolvedPathIndex += 1
         }
         return GraphPath(resolvedPath)
     }

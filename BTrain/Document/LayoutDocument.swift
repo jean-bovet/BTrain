@@ -88,6 +88,8 @@ final class LayoutDocument: ObservableObject {
         self.layoutController = layoutController
                 
         self.onConnectTasks = LayoutOnConnectTasks(layout: layout, layoutController: layoutController, interface: interface)
+        
+        layoutDiagnostics.automaticCheck()
     }
     
     func apply(_ other: Layout) {

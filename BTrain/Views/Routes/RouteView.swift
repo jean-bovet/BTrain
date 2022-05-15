@@ -14,17 +14,22 @@ import SwiftUI
 
 struct RouteView: View {
     
+    struct RouteError {
+        let resolverErrors: [GraphPathFinder.ResolverError]
+        let valid: Bool
+    }
+    
     @Environment(\.undoManager) var undoManager
 
     @ObservedObject var layout: Layout
         
     @ObservedObject var route: Route
 
-    @State private var selection: String? = nil
-    @State private var invalidRoute: Bool?
+    @State private var selection: String?
+    @State private var routeError: RouteError?
 
     @State private var showAddRouteElementSheet = false
-    
+        
     func stepBlockBinding(_ routeItem: Binding<RouteItem>) -> Binding<RouteStepBlock> {
         Binding<RouteStepBlock>(
             get: {
@@ -55,14 +60,40 @@ struct RouteView: View {
         )
     }
 
+    func stepError(_ step: RouteItem, _ index: Int?) -> Bool {
+        guard let index = index else {
+            return false
+        }
+
+        guard let routeError = routeError else {
+            return false
+        }
+
+        for error in routeError.resolverErrors {
+            if error.to == index {
+                return true
+            }
+        }
+        
+        return false
+    }
+    
     var body: some View {
         VStack {
             List($route.steps, selection: $selection) { step in
-                switch step.wrappedValue {
-                case .block(_):
-                    RouteStepBlockView(layout: layout, stepBlock: stepBlockBinding(step))
-                case .turnout, .station:
-                    RouteStepStationView(layout: layout, stepStation: stepStationBinding(step))
+                let unwrappedStep = step.wrappedValue
+                let index = route.steps.firstIndex(of: unwrappedStep)
+                let stepError = stepError(unwrappedStep, index)
+                HStack {
+                    if stepError {
+                        Text("􀇾").foregroundColor(.red)
+                    }
+                    switch unwrappedStep {
+                    case .block(_):
+                        RouteStepBlockView(layout: layout, stepBlock: stepBlockBinding(step))
+                    case .turnout, .station:
+                        RouteStepStationView(layout: layout, stepStation: stepStationBinding(step))
+                    }
                 }
             }.listStyle(.inset(alternatesRowBackgrounds: true))
             
@@ -97,11 +128,11 @@ struct RouteView: View {
                     Button("Verify") {
                         validateRoute()
                     }
-                    if let invalidRoute = invalidRoute {
-                        if invalidRoute {
-                            Text("􀇾")
-                        } else {
+                    if let routeError = routeError {
+                        if routeError.valid {
                             Text("􀁢")
+                        } else {
+                            Text("􀇾")
                         }
                     }
                 }
@@ -117,8 +148,13 @@ struct RouteView: View {
     func validateRoute() {
         let diag = LayoutDiagnostic(layout: layout)
         var errors = [DiagnosticError]()
-        diag.checkRoute(route: route, &errors)
-        invalidRoute = !errors.isEmpty
+        var resolverError = [GraphPathFinder.ResolverError]()
+        diag.checkRoute(route: route, &errors, resolverErrors: &resolverError)
+        if errors.isEmpty {
+            routeError = .init(resolverErrors: resolverError, valid: true)
+        } else {
+            routeError = .init(resolverErrors: resolverError, valid: false)
+        }
     }
 }
 

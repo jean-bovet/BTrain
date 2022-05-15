@@ -35,6 +35,7 @@ final class RouteResolver {
     // Returns nil if the route cannot be resolved. This can happen, for example, if a turnout or block is already
     // reserved for another train and no other alternative path is found.
     func resolve(steps: ArraySlice<RouteItem>,
+                 errors: inout [GraphPathFinder.ResolverError],
                  verbose: Bool = SettingsKeys.bool(forKey: SettingsKeys.logRoutingResolutionSteps)) throws -> [ResolvedRouteItem]? {
         let settings = GraphPathFinder.Settings(verbose: verbose,
                                                     random: false,
@@ -48,7 +49,7 @@ final class RouteResolver {
 
         // Try to resolve the route using the standard constraints (which are a super set of the constraints
         // when finding a new route, which provides consistent behavior when resolving a route).
-        if let resolvedPath = pf.resolve(graph: layout, unresolvedPath, constraints: ResolverConstraints(layoutConstraints: pf.constraints), context: pf.context) {
+        if let resolvedPath = pf.resolve(graph: layout, unresolvedPath, constraints: ResolverConstraints(layoutConstraints: pf.constraints), context: pf.context, errors: &errors) {
             return resolvedPath.elements.toResolvedRouteItems
         }
         
@@ -57,7 +58,8 @@ final class RouteResolver {
         // Let's try again to resolve the route using the basic constraints at the graph-level - this means, all layout-specific
         // constraints (such as block reserved, disabled, etc) are ignored.
         let relaxedContext = LayoutPathFinder.LayoutContext(layout: layout, train: train, reservedBlockBehavior: .ignoreReserved)
-        if let resolvedPath = pf.resolve(graph: layout, unresolvedPath, constraints: ResolverConstraints(layoutConstraints: GraphPathFinder.DefaultConstraints()), context: relaxedContext) {
+        errors.removeAll()
+        if let resolvedPath = pf.resolve(graph: layout, unresolvedPath, constraints: ResolverConstraints(layoutConstraints: GraphPathFinder.DefaultConstraints()), context: relaxedContext, errors: &errors) {
             return resolvedPath.elements.toResolvedRouteItems
         }
 

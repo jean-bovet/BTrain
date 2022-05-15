@@ -105,7 +105,8 @@ final class Route: Element, ObservableObject {
     ///   - train: the train to use to resolve the route. A train is important because it can limit which blocks or turnouts can be used if the train has specific constraints.
     /// - Returns: true if the route could be resolved, false otherwise.
     func resolve(layout: Layout, train: Train) throws -> [ResolvedRouteItem]? {
-        guard let resolvedSteps = try RouteResolver(layout: layout, train: train).resolve(steps: ArraySlice(steps), verbose: false) else {
+        var errors = [GraphPathFinder.ResolverError]()
+        guard let resolvedSteps = try RouteResolver(layout: layout, train: train).resolve(steps: ArraySlice(steps), errors: &errors, verbose: false) else {
             return nil
         }
         return resolvedSteps

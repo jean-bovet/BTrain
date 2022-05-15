@@ -122,7 +122,6 @@ final class LayoutDiagnostic: ObservableObject {
     init(layout: Layout) {
         self.layout = layout
         self.observer = LayoutObserver(layout: layout)
-        self.automaticCheck()
         
         observer.registerForAnyChange() { [weak self] in
             DispatchQueue.main.async {
@@ -361,15 +360,16 @@ final class LayoutDiagnostic: ObservableObject {
     }
     
     func checkRoutes(_ errors: inout [DiagnosticError]) {
+        var resolverErrors = [GraphPathFinder.ResolverError]()
         for route in layout.routes.filter({ $0.automatic == false }) {
-            checkRoute(route: route, &errors)
+            checkRoute(route: route, &errors, resolverErrors: &resolverErrors)
         }
     }
     
-    func checkRoute(route: Route, _ errors: inout [DiagnosticError]) {
+    func checkRoute(route: Route, _ errors: inout [DiagnosticError], resolverErrors: inout [GraphPathFinder.ResolverError]) {
         let rr = RouteResolver(layout: layout, train: Train(id: Identifier<Train>(uuid: UUID().uuidString), name: "", address: 0))
         do {
-            let steps = try rr.resolve(steps: ArraySlice(route.steps))
+            let steps = try rr.resolve(steps: ArraySlice(route.steps), errors: &resolverErrors)
             if steps == nil {
                 errors.append(DiagnosticError.invalidRoute(route: route, error: "No path found"))
             }
