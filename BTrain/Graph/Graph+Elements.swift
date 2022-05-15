@@ -322,19 +322,19 @@ extension Array where Element == GraphPathElement {
                 } else if let exitSocket = element.exitSocket {
                     direction = exitSocket == Block.nextSocket ? .next : .previous
                 } else {
-                    // TODO: throw
-                    fatalError()
+                    BTLogger.router.error("Missing entry and next socket for \(element, privacy: .public)")
+                    return nil
                 }
                 
                 return .block(.init(block: block, direction: direction))
             } else if let turnout = element.node as? Turnout {
                 guard let entrySocket = element.entrySocket else {
-                    // TODO: throw
-                    fatalError()
+                    BTLogger.router.error("Missing entry socket for \(element, privacy: .public)")
+                    return nil
                 }
                 guard let exitSocket = element.exitSocket else {
-                    // TODO: throw
-                    fatalError()
+                    BTLogger.router.error("Missing exit socket for \(element, privacy: .public)")
+                    return nil
                 }
                 return .turnout(.init(turnout: turnout, entrySocketId: entrySocket, exitSocketId: exitSocket))
             } else {

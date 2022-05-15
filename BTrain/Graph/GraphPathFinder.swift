@@ -12,7 +12,8 @@
 
 import Foundation
 
-// TODO: documentation
+/// Defines the context when finding a path in a graph. Used by consumer of this class to provide user-defined context
+/// for the appropriate situation (ie resolving a route, etc).
 protocol GraphPathFinderContext {
     
 }

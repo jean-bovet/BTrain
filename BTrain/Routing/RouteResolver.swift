@@ -16,8 +16,7 @@ import Foundation
 // The steps of a route do not necessarily contain contiguous turnout or block. For example, the user can create a route
 // with just a few blocks specified and it will be up to this class to find out the missing turnouts (and blocks) to
 // create a contiguous route.
-// At the moment, only missing turnouts will be handled but in a future release, missing blocks will be supported as well.
-// TODO: support missing blocks as well now that we have the shortest path algorithm!
+// Note: at the moment, only missing turnouts will be handled but in a future release, missing blocks will be supported as well.
 final class RouteResolver {
     let layout: Layout
     let train: Train
@@ -87,7 +86,6 @@ final class RouteResolver {
             if node is Block {
                 if to.node is Block && node.identifier.uuid != to.node.identifier.uuid {
                     // Backtrack if the first block is not the destination node.
-                    // TODO: shortest path application
                     // Note: this is currently a limitation of the resolver in which it is expected that a route
                     // defines all the blocks in the route. The resolver just resolves the turnouts between two
                     // blocks but not an arbitrary long route with turnouts and blocks, which can be expensive
