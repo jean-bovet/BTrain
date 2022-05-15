@@ -83,21 +83,16 @@ final class RouteResolver {
                 return delegatedConstraints.shouldInclude(node: node, currentPath: currentPath, to: to, context: context)
             }
             
-            if node is Block {
-                if to.node is Block && node.identifier.uuid != to.node.identifier.uuid {
-                    // Backtrack if the first block is not the destination node.
-                    // Note: this is currently a limitation of the resolver in which it is expected that a route
-                    // defines all the blocks in the route. The resolver just resolves the turnouts between two
-                    // blocks but not an arbitrary long route with turnouts and blocks, which can be expensive
-                    // to traverse until we have a breadth-first algorithm implementation to search for the shortest
-                    // path between one block to another (arbitrary far away) block.
-                    return false
-                } else if let station = to.node as? Station {
-                    let bf = node.identifier as! BlockGraphElementIdentifier
-                    //TODO: include the constraints as well in this contains
-                    return station.validBlock(blockId: bf.blockId, train: Train(), layout: Layout())
-                }
+            if node is Block && to.node is Block && node.identifier.uuid != to.node.identifier.uuid {
+                // Backtrack if the first block is not the destination node.
+                // Note: this is currently a limitation of the resolver in which it is expected that a route
+                // defines all the blocks in the route. The resolver just resolves the turnouts between two
+                // blocks but not an arbitrary long route with turnouts and blocks, which can be expensive
+                // to traverse until we have a breadth-first algorithm implementation to search for the shortest
+                // path between one block to another (arbitrary far away) block.
+                return false
             }
+            
             return delegatedConstraints.shouldInclude(node: node, currentPath: currentPath, to: to, context: context)
         }
     }

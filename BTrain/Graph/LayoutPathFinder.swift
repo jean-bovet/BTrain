@@ -144,13 +144,9 @@ final class LayoutPathFinder: GraphPathFinding {
         }
         
         func reachedDestination(node: GraphNode, to: GraphPathElement?) -> Bool {
-            if let block = layout.block(node) {
-                if let station = to?.node as? Station {
-                    return station.contains(blockId: block.id)
-                } else if to == nil {
-                    // If no destination element is specified, we stop at the first station block
-                    return block.category == .station
-                }
+            if let block = layout.block(node), to == nil {
+                // If no destination element is specified, we stop at the first station block
+                return block.category == .station
             }
             return false
         }

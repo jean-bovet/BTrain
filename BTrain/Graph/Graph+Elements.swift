@@ -58,44 +58,6 @@ extension Block {
 
 }
 
-struct StationGraphElementIdentifier: GraphElementIdentifier {
-    let uuid: String
-    let stationId: Identifier<Station>
-    
-    init(_ stationId: Identifier<Station>) {
-        self.uuid = "st" + stationId.uuid
-        self.stationId = stationId
-    }
-}
-
-extension Station: GraphNode {
-    
-    var identifier: GraphElementIdentifier {
-        StationGraphElementIdentifier(id)
-    }
-     
-    func weight(_ constraints: GraphPathFinderConstraints) -> Double {
-        block(constraints)?.weight(constraints) ?? 0
-    }
-    
-    func sockets(_ constraints: GraphPathFinderConstraints) -> [SocketId] {
-        block(constraints)?.sockets(constraints) ?? []
-    }
-    
-    func reachableSockets(from socket: SocketId, _ constraints: GraphPathFinderConstraints) -> [SocketId] {
-        block(constraints)?.reachableSockets(from: socket, constraints) ?? []
-    }
-
-    func block(_ constraints: GraphPathFinderConstraints) -> Block? {
-        //TODO: return the appropriate block from the station given the layout and train
-        guard let lc = constraints.layoutConstraints else {
-            return nil
-        }
-        return lc.layout.block(for: self.elements.first?.blockId)
-    }
-            
-}
-
 struct TurnoutGraphElementIdentifier: GraphElementIdentifier {
     let uuid: String
     let turnoutId: Identifier<Turnout>
@@ -189,14 +151,6 @@ extension Layout {
         return block(for: blockIdentifier.blockId)
     }
 
-    func station(_ identifier: GraphElementIdentifier) -> Station? {
-        guard let stationIdentifier = identifier as? StationGraphElementIdentifier else {
-            return nil
-        }
-    
-        return station(for: stationIdentifier.stationId)
-    }
-
     func turnout(_ node: GraphNode) -> Turnout? {
         return turnout(node.identifier)
     }
@@ -217,9 +171,6 @@ extension Layout: Graph {
             socket = Socket.block(block.id, socketId: socketId)
         } else if let turnout = turnout(from) {
             socket = Socket.turnout(turnout.id, socketId: socketId)
-        } else if let station = station(from.identifier), let block = station.block(constraints) {
-            // TODO: what socket id to pick? socketId here is about the station...
-            socket = Socket.block(block.id, socketId: Block.nextSocket)
         } else {
             return nil
         }
@@ -232,8 +183,6 @@ extension Layout: Graph {
             return block
         } else if let turnout = turnout(elementId) {
             return turnout
-        } else if let station = station(elementId) {
-            return station.block(constraints)
         } else {
             return nil
         }
