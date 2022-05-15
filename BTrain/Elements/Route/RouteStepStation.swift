@@ -30,11 +30,12 @@ struct RouteStepStation: RouteStep, Equatable, Codable {
         guard let lc = context as? LayoutPathFinder.LayoutContext else {
             return nil
         }
+
         guard let station = lc.layout.station(for: stationId) else {
             return nil
         }
                 
-        guard let element = bestElement(station: station, train: lc.train, layout: lc.layout) else {
+        guard let element = bestElement(station: station, train: lc.train, layout: lc.layout, context: lc) else {
             return nil
         }
         
@@ -53,24 +54,31 @@ struct RouteStepStation: RouteStep, Equatable, Codable {
         return .init(node: block, entrySocket:  entrySocket, exitSocket: exitSocket)
     }
 
-    func bestElement(station: Station, train: Train, layout: Layout) -> Station.StationElement? {
+    func bestElement(station: Station, train: Train, layout: Layout, context: LayoutPathFinder.LayoutContext) -> Station.StationElement? {
         if let element = elementWithTrain(station: station, train: train, layout: layout) {
             return element
         }
         
-        if let element = firstAvailableElement(station: station, train: train, layout: layout) {
+        if let element = firstAvailableElement(station: station, train: train, layout: layout, context: context) {
             return element
         }
         
         return nil
     }
     
-    func firstAvailableElement(station: Station, train: Train, layout: Layout) -> Station.StationElement? {
+    func firstAvailableElement(station: Station, train: Train, layout: Layout, context: LayoutPathFinder.LayoutContext) -> Station.StationElement? {
         for element in station.elements {
             guard let block = layout.block(for: element.blockId) else {
                 continue
             }
-            if block.enabled && (block.reserved == nil || block.reserved?.trainId == train.id) {
+            
+            guard block.enabled else {
+                continue
+            }
+            
+            if context.reservedBlockBehavior == .ignoreReserved {
+                return element
+            } else if block.reserved == nil || block.reserved?.trainId == train.id {
                 return element
             }
         }
