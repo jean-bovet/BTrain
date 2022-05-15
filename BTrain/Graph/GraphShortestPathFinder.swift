@@ -124,19 +124,19 @@ final class GraphShortestPathFinder {
     ///   - to: the destination element
     ///   - constraints: the constraints to apply to the graph
     /// - Returns: the shortest path or nil if no path found
-    static func shortestPath(graph: Graph, from: GraphPathElement, to: GraphPathElement, constraints: GraphPathFinderConstraints = GraphPathFinder.DefaultConstraints(), verbose: Bool) throws -> GraphPath? {
-        return try GraphShortestPathFinder(graph: graph, verbose: verbose).shortestPath(from: from, to: to, constraints: constraints)
+    static func shortestPath(graph: Graph, from: GraphPathElement, to: GraphPathElement, constraints: GraphPathFinderConstraints = GraphPathFinder.DefaultConstraints(), context: GraphPathFinderContext = GraphPathFinder.DefaultContext(), verbose: Bool) throws -> GraphPath? {
+        return try GraphShortestPathFinder(graph: graph, verbose: verbose).shortestPath(from: from, to: to, constraints: constraints, context: context)
     }
     
     // For example:
     // from = 0:s1:1 (which means, block "s1" with entry socket 0 and exit socket 1, indicating a natural direction of "next" in the block)
     // to = 0:s2:1
-    private func shortestPath(from: GraphPathElement, to: GraphPathElement, constraints: GraphPathFinderConstraints) throws -> GraphPath? {
+    private func shortestPath(from: GraphPathElement, to: GraphPathElement, constraints: GraphPathFinderConstraints, context: GraphPathFinderContext) throws -> GraphPath? {
         // Set the distance of the starting element `from` to 0 as well as an empty path.
         setDistance(0, to: from, path: GraphPath([]))
         
         // Visit the graph and assign distances to all the nodes until the `to` node is reached
-        try visitGraph(from: from, to: to, currentPath: GraphPath([from]), constraints: constraints)
+        try visitGraph(from: from, to: to, currentPath: GraphPath([from]), constraints: constraints, context: context)
         
         if verbose {
             BTLogger.debug("Distances:")
@@ -164,7 +164,7 @@ final class GraphShortestPathFinder {
     /// - Parameters:
     ///   - from: the starting element
     ///   - to: the destination element
-    private func visitGraph(from: GraphPathElement, to: GraphPathElement, currentPath: GraphPath, constraints: GraphPathFinderConstraints) throws {
+    private func visitGraph(from: GraphPathElement, to: GraphPathElement, currentPath: GraphPath, constraints: GraphPathFinderConstraints, context: GraphPathFinderContext) throws {
         // Do not visit an element that has already been visited
         guard !visitedElements.contains(from) else {
             return
@@ -192,7 +192,7 @@ final class GraphShortestPathFinder {
             let nextElementDistance = fromNodeDistance + nextElement.node.weight(constraints)
             
             // Assign to all the adjacent nodes of `nextElement` the distance of `nextElement`
-            assignDistanceToPathConfigurationsOf(element: nextElement, to: to, distance: nextElementDistance, path: currentPath, constraints: constraints)
+            assignDistanceToPathConfigurationsOf(element: nextElement, to: to, distance: nextElementDistance, path: currentPath, constraints: constraints, context: context)
         }
         
         // Now, from all the elements that have been evaluated, that is, assigned a distance, pick the element
@@ -213,7 +213,7 @@ final class GraphShortestPathFinder {
         }
         
         // Continue to evaluate the distances recursively, starting now with the element with the shortest distance
-        try visitGraph(from: shortestDistanceElement, to: to, currentPath: path, constraints: constraints)
+        try visitGraph(from: shortestDistanceElement, to: to, currentPath: path, constraints: constraints, context: context)
     }
     
     struct NextElement {
@@ -259,7 +259,7 @@ final class GraphShortestPathFinder {
     ///   - distance: the shortest distance up to `element`
     ///   - path: the current shortest path
     ///   - constraints: the constraints
-    private func assignDistanceToPathConfigurationsOf(element: NextElement, to: GraphPathElement, distance: Double, path: GraphPath, constraints: GraphPathFinderConstraints) {
+    private func assignDistanceToPathConfigurationsOf(element: NextElement, to: GraphPathElement, distance: Double, path: GraphPath, constraints: GraphPathFinderConstraints, context: GraphPathFinderContext) {
         for exitSocket in element.node.reachableSockets(from: element.entrySocket, constraints) {
             // Build up a particular element configuration using the specified exitSocket.
             // For example, starting with element "0:t1", we will have:
@@ -275,7 +275,7 @@ final class GraphShortestPathFinder {
             }
 
             // Apply any constraints to this element, in order to skip it if necessary
-            if !constraints.shouldInclude(node: elementConfiguration.node, currentPath: path, to: to) {
+            if !constraints.shouldInclude(node: elementConfiguration.node, currentPath: path, to: to, context: context) {
                 if verbose {
                     BTLogger.debug("Element \(elementConfiguration) should not be included, will not include it")
                 }

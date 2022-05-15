@@ -36,24 +36,19 @@ final class RouteResolver {
     // reserved for another train and no other alternative path is found.
     func resolve(steps: ArraySlice<RouteItem>,
                  verbose: Bool = SettingsKeys.bool(forKey: SettingsKeys.logRoutingResolutionSteps)) throws -> [ResolvedRouteItem]? {
-        let baseSettings = GraphPathFinder.Settings(verbose: verbose,
+        let settings = GraphPathFinder.Settings(verbose: verbose,
                                                     random: false,
                                                     overflow: layout.pathFinderOverflowLimit)
         // Note: avoid all reserved block when resolving to ensure maximum constraints.
         // If that fails, the algorithm will retry without constraints.
-        let settings = LayoutPathFinder.Settings(reservedBlockBehavior: .avoidReserved,
-                                                 baseSettings: baseSettings)
-
-        let pf = LayoutPathFinder(layout: layout, train: train, settings: settings)
-        
-        let context = LayoutPathFinder.LayoutContext(layout: layout, train: train)
-        
+        let pf = LayoutPathFinder(layout: layout, train: train, reservedBlockBehavior: .avoidReserved, settings: settings)
+                
         // Create the unresolved path out of the route steps
         let unresolvedPath: UnresolvedGraphPath = steps.map { $0 }
 
         // Try to resolve the route using the standard constraints (which are a super set of the constraints
         // when finding a new route, which provides consistent behavior when resolving a route).
-        if let resolvedPath = pf.resolve(graph: layout, unresolvedPath, constraints: ResolverConstraints(layoutConstraints: pf.constraints), context: context) {
+        if let resolvedPath = pf.resolve(graph: layout, unresolvedPath, constraints: ResolverConstraints(layoutConstraints: pf.constraints), context: pf.context) {
             return resolvedPath.elements.toResolvedRouteItems
         }
         
@@ -61,7 +56,7 @@ final class RouteResolver {
         // that satisfies the constraints; for example, a fixed route has a disable block that makes it impossible to resolve.
         // Let's try again to resolve the route using the basic constraints at the graph-level - this means, all layout-specific
         // constraints (such as block reserved, disabled, etc) are ignored.
-        if let resolvedPath = pf.resolve(graph: layout, unresolvedPath, constraints: ResolverConstraints(layoutConstraints: GraphPathFinder.DefaultConstraints()), context: context) {
+        if let resolvedPath = pf.resolve(graph: layout, unresolvedPath, constraints: ResolverConstraints(layoutConstraints: GraphPathFinder.DefaultConstraints()), context: pf.context) {
             return resolvedPath.elements.toResolvedRouteItems
         }
 
@@ -81,9 +76,9 @@ final class RouteResolver {
             return delegatedConstraints.reachedDestination(node: node, to: to)
         }
         
-        func shouldInclude(node: GraphNode, currentPath: GraphPath, to: GraphPathElement?) -> Bool {
+        func shouldInclude(node: GraphNode, currentPath: GraphPath, to: GraphPathElement?, context: GraphPathFinderContext) -> Bool {
             guard let to = to else {
-                return delegatedConstraints.shouldInclude(node: node, currentPath: currentPath, to: to)
+                return delegatedConstraints.shouldInclude(node: node, currentPath: currentPath, to: to, context: context)
             }
             
             if node is Block {
@@ -102,7 +97,7 @@ final class RouteResolver {
                     return station.validBlock(blockId: bf.blockId, train: Train(), layout: Layout())
                 }
             }
-            return delegatedConstraints.shouldInclude(node: node, currentPath: currentPath, to: to)
+            return delegatedConstraints.shouldInclude(node: node, currentPath: currentPath, to: to, context: context)
         }
     }
 }

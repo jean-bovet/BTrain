@@ -23,7 +23,7 @@ protocol GraphPathFinderConstraints {
     // Returns true if the specified node should be included in the path.
     // If false, the algorithm backtracks to the previous node and finds
     // an alternative edge if possible.
-    func shouldInclude(node: GraphNode, currentPath: GraphPath, to: GraphPathElement?) -> Bool
+    func shouldInclude(node: GraphNode, currentPath: GraphPath, to: GraphPathElement?, context: GraphPathFinderContext) -> Bool
     
     // Returns true if the specified node is the destination node of the path.
     func reachedDestination(node: GraphNode, to: GraphPathElement?) -> Bool
@@ -34,13 +34,13 @@ protocol GraphPathFinderConstraints {
 protocol GraphPathFinding {
     
     // Returns the path between the specified `from` and `to` nodes, given the specified constraints.
-    func path(graph: Graph, from: GraphNode, to: GraphNode?, constraints: GraphPathFinderConstraints) -> GraphPath?
+    func path(graph: Graph, from: GraphNode, to: GraphNode?, constraints: GraphPathFinderConstraints, context: GraphPathFinderContext) -> GraphPath?
     
     // Returns the path between the specified `from` and `to` nodes, given the specified constraints.
-    func path(graph: Graph, from: GraphPathElement, to: GraphPathElement?, constraints: GraphPathFinderConstraints) -> GraphPath?
+    func path(graph: Graph, from: GraphPathElement, to: GraphPathElement?, constraints: GraphPathFinderConstraints, context: GraphPathFinderContext) -> GraphPath?
 
     // Returns the shortest path between the specified `from` and `to` nodes, given the specified constraints.
-    func shortestPath(graph: Graph, from: GraphPathElement, to: GraphPathElement, constraints: GraphPathFinderConstraints) throws -> GraphPath?
+    func shortestPath(graph: Graph, from: GraphPathElement, to: GraphPathElement, constraints: GraphPathFinderConstraints, context: GraphPathFinderContext) throws -> GraphPath?
 
 }
 
@@ -68,7 +68,7 @@ struct GraphPathFinder: GraphPathFinding {
     /// The default constraints for the graph
     final class DefaultConstraints: GraphPathFinderConstraints {
         
-        func shouldInclude(node: GraphNode, currentPath: GraphPath, to: GraphPathElement?) -> Bool {
+        func shouldInclude(node: GraphNode, currentPath: GraphPath, to: GraphPathElement?, context: GraphPathFinderContext) -> Bool {
             return true
         }
         
@@ -83,21 +83,21 @@ struct GraphPathFinder: GraphPathFinding {
     }
     
     /// Returns the shortest path between two nodes.
-    func shortestPath(graph: Graph, from: GraphPathElement, to: GraphPathElement, constraints: GraphPathFinderConstraints = DefaultConstraints()) throws -> GraphPath? {
-        return try GraphShortestPathFinder.shortestPath(graph: graph, from: from, to: to, constraints: constraints, verbose: settings.verbose)
+    func shortestPath(graph: Graph, from: GraphPathElement, to: GraphPathElement, constraints: GraphPathFinderConstraints = DefaultConstraints(), context: GraphPathFinderContext) throws -> GraphPath? {
+        return try GraphShortestPathFinder.shortestPath(graph: graph, from: from, to: to, constraints: constraints, context: context, verbose: settings.verbose)
     }
     
     /// Returns a path between two nodes.
-    func path(graph: Graph, from: GraphNode, to: GraphNode?, constraints: GraphPathFinderConstraints = DefaultConstraints()) -> GraphPath? {
+    func path(graph: Graph, from: GraphNode, to: GraphNode?, constraints: GraphPathFinderConstraints = DefaultConstraints(), context: GraphPathFinderContext = DefaultContext()) -> GraphPath? {
         for socketId in shuffled(from.sockets(constraints)) {
             if let to = to {
                 for toSocketId in shuffled(to.sockets(constraints)) {
-                    if let steps = path(graph: graph, from: .starting(from, socketId), to: .ending(to, toSocketId), currentPath: GraphPath([.starting(from, socketId)]), constraints: constraints) {
+                    if let steps = path(graph: graph, from: .starting(from, socketId), to: .ending(to, toSocketId), currentPath: GraphPath([.starting(from, socketId)]), constraints: constraints, context: context) {
                         return steps
                     }
                 }
             } else {
-                if let steps = path(graph: graph, from: .starting(from, socketId), to: nil, currentPath: GraphPath([.starting(from, socketId)]), constraints: constraints) {
+                if let steps = path(graph: graph, from: .starting(from, socketId), to: nil, currentPath: GraphPath([.starting(from, socketId)]), constraints: constraints, context: context) {
                     return steps
                 }
             }
@@ -106,8 +106,8 @@ struct GraphPathFinder: GraphPathFinding {
     }
 
     /// Returns a path between two nodes.
-    func path(graph: Graph, from: GraphPathElement, to: GraphPathElement?, constraints: GraphPathFinderConstraints = DefaultConstraints()) -> GraphPath? {
-        return path(graph: graph, from: from, to: to, currentPath: GraphPath([from]), constraints: constraints)
+    func path(graph: Graph, from: GraphPathElement, to: GraphPathElement?, constraints: GraphPathFinderConstraints = DefaultConstraints(), context: GraphPathFinderContext = DefaultContext()) -> GraphPath? {
+        return path(graph: graph, from: from, to: to, currentPath: GraphPath([from]), constraints: constraints, context: context)
     }
     
     /// Returns a resolved path given an unresolved path and the specified constraints.
@@ -123,7 +123,7 @@ struct GraphPathFinder: GraphPathFinding {
                 BTLogger.router.error("Unable to resolve element \(unresolvedElement.description, privacy: .public)")
                 return nil
             }
-            if let p = self.path(graph: graph, from: previousElement, to: element, constraints: constraints) {
+            if let p = self.path(graph: graph, from: previousElement, to: element, constraints: constraints, context: context) {
                 for resolvedElement in p.elements.dropFirst() {
                     resolvedPath.append(resolvedElement)
                 }
@@ -138,7 +138,7 @@ struct GraphPathFinder: GraphPathFinding {
         return GraphPath(resolvedPath)
     }
     
-    private func path(graph: Graph, from: GraphPathElement, to: GraphPathElement?, currentPath: GraphPath, constraints: GraphPathFinderConstraints = DefaultConstraints()) -> GraphPath? {
+    private func path(graph: Graph, from: GraphPathElement, to: GraphPathElement?, currentPath: GraphPath, constraints: GraphPathFinderConstraints, context: GraphPathFinderContext) -> GraphPath? {
         if settings.verbose {
             if let to = to {
                 debug("From \(from) to \(to): \(currentPath.toStrings)")
@@ -186,7 +186,7 @@ struct GraphPathFinder: GraphPathFinding {
             return nil
         }
                         
-        if !constraints.shouldInclude(node: node, currentPath: currentPath, to: to) {
+        if !constraints.shouldInclude(node: node, currentPath: currentPath, to: to, context: context) {
             debug("Node \(node) should not be included, backtracking")
             return nil
         }
@@ -218,7 +218,7 @@ struct GraphPathFinder: GraphPathFinding {
             
             if let path = path(graph: graph, from: betweenElement, to: to,
                                currentPath: currentPath.appending(.between(node, entrySocketId, exitSocket)),
-                               constraints: constraints) {
+                               constraints: constraints, context: context) {
                 return path
             }
         }

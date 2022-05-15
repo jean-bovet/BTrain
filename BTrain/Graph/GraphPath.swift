@@ -23,10 +23,6 @@ struct GraphPath: Equatable {
     var toStrings: [String] {
         elements.map { $0.description }
     }
-
-    var reversed: GraphPath {
-        return .init(elements.reversed().map { $0 })
-    }
     
     init(_ elements: [GraphPathElement]) {
         self.elements = elements

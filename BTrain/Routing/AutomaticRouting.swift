@@ -57,12 +57,10 @@ final class AutomaticRouting {
         // just avoid the reserved block in front of the current one but ignore the others
         // (the automatic route will re-evaluate itself if it encounters a reserved block later
         // during execution, to avoid deadlocking).
-        let baseSettings = GraphPathFinder.Settings(verbose: SettingsKeys.bool(forKey: SettingsKeys.logRoutingResolutionSteps),
-                                                    random: layout.automaticRouteRandom,
-                                                    overflow: layout.pathFinderOverflowLimit)
-        let settings = LayoutPathFinder.Settings(reservedBlockBehavior: destination == nil ? .avoidFirstReservedBlock : .avoidReserved,
-                                                 baseSettings: baseSettings)
-        let pf = LayoutPathFinder(layout: layout, train: train, settings: settings)
+        let settings = GraphPathFinder.Settings(verbose: SettingsKeys.bool(forKey: SettingsKeys.logRoutingResolutionSteps),
+                                                random: layout.automaticRouteRandom,
+                                                overflow: layout.pathFinderOverflowLimit)
+        let pf = LayoutPathFinder(layout: layout, train: train, reservedBlockBehavior: destination == nil ? .avoidFirstReservedBlock : .avoidReserved, settings: settings)
         
         let to: (Block, Direction?)?
         if let destination = destination {
@@ -76,9 +74,9 @@ final class AutomaticRouting {
         
         let path: GraphPath?
         if let to = to, let toBlockDirection = to.1, SettingsKeys.bool(forKey: SettingsKeys.shortestRouteEnabled) {
-            path = try layout.shortestPath(for: train, from: (currentBlock, trainInstance.direction), to: (to.0, toBlockDirection), pathFinder: pf, constraints: pf.constraints)
+            path = try layout.shortestPath(for: train, from: (currentBlock, trainInstance.direction), to: (to.0, toBlockDirection), pathFinder: pf, constraints: pf.constraints, context: pf.context)
         } else {
-            path = layout.path(for: train, from: (currentBlock, trainInstance.direction), to: to, pathFinder: pf, constraints: pf.constraints)
+            path = layout.path(for: train, from: (currentBlock, trainInstance.direction), to: to, pathFinder: pf, constraints: pf.constraints, context: pf.context)
         }
         
         if let path = path {

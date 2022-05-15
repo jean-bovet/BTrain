@@ -16,7 +16,6 @@ import Foundation
 // into consideration various constraints, such as disabled block, reserved blocks, etc.
 final class LayoutPathFinder: GraphPathFinding {    
         
-    let settings: Settings
     let context: LayoutContext
     let constraints: LayoutConstraints
     let gpf: GraphPathFinder
@@ -35,29 +34,23 @@ final class LayoutPathFinder: GraphPathFinding {
         // then ignore all the others reserved blocks.
         case avoidFirstReservedBlock
     }
-
-    struct Settings {
-        let reservedBlockBehavior: ReservedBlockBehavior
-        let baseSettings: GraphPathFinder.Settings
-    }
     
-    init(layout: Layout, train: Train, settings: Settings) {
-        self.settings = settings
-        self.context = LayoutContext(layout: layout, train: train)
-        self.constraints = LayoutConstraints(layout: layout, train: train, settings: settings)
-        self.gpf = GraphPathFinder(settings: settings.baseSettings)
+    init(layout: Layout, train: Train, reservedBlockBehavior: ReservedBlockBehavior, settings: GraphPathFinder.Settings) {
+        self.context = LayoutContext(layout: layout, train: train, reservedBlockBehavior: reservedBlockBehavior)
+        self.constraints = LayoutConstraints(layout: layout, train: train)
+        self.gpf = GraphPathFinder(settings: settings)
     }
 
-    func path(graph: Graph, from: GraphNode, to: GraphNode?, constraints: GraphPathFinderConstraints) -> GraphPath? {
-        return gpf.path(graph: graph, from: from, to: to, constraints: constraints)
+    func path(graph: Graph, from: GraphNode, to: GraphNode?, constraints: GraphPathFinderConstraints, context: GraphPathFinderContext) -> GraphPath? {
+        return gpf.path(graph: graph, from: from, to: to, constraints: constraints, context: context)
     }
 
-    func path(graph: Graph, from: GraphPathElement, to: GraphPathElement?, constraints: GraphPathFinderConstraints) -> GraphPath? {
-        return gpf.path(graph: graph, from: from, to: to, constraints: constraints)
+    func path(graph: Graph, from: GraphPathElement, to: GraphPathElement?, constraints: GraphPathFinderConstraints, context: GraphPathFinderContext) -> GraphPath? {
+        return gpf.path(graph: graph, from: from, to: to, constraints: constraints, context: context)
     }
 
-    func shortestPath(graph: Graph, from: GraphPathElement, to: GraphPathElement, constraints: GraphPathFinderConstraints) throws -> GraphPath? {
-        return try gpf.shortestPath(graph: graph, from: from, to: to, constraints: constraints)
+    func shortestPath(graph: Graph, from: GraphPathElement, to: GraphPathElement, constraints: GraphPathFinderConstraints, context: GraphPathFinderContext) throws -> GraphPath? {
+        return try gpf.shortestPath(graph: graph, from: from, to: to, constraints: constraints, context: context)
     }
     
     func resolve(graph: Graph, _ path: UnresolvedGraphPath, constraints: GraphPathFinderConstraints, context: GraphPathFinderContext) -> GraphPath? {
@@ -67,28 +60,31 @@ final class LayoutPathFinder: GraphPathFinding {
     struct LayoutContext: GraphPathFinderContext {
         let layout: Layout
         let train: Train
+        let reservedBlockBehavior: ReservedBlockBehavior
     }
     
     final class LayoutConstraints: GraphPathFinderConstraints {
         
         let layout: Layout
         let train: Train
-        let settings: Settings
 
-        init(layout: Layout, train: Train, settings: Settings) {
+        init(layout: Layout, train: Train) {
             self.layout = layout
             self.train = train
-            self.settings = settings
         }
 
-        func shouldInclude(node: GraphNode, currentPath: GraphPath, to: GraphPathElement?) -> Bool {
+        func shouldInclude(node: GraphNode, currentPath: GraphPath, to: GraphPathElement?, context: GraphPathFinderContext) -> Bool {
+            guard let lc = context as? LayoutContext else {
+                return false
+            }
+
             if let block = layout.block(node) {
                 guard block.enabled else {
                     return false
                 }
-                
+                                
                 if let reserved = block.reserved, reserved.trainId != train.id {
-                    switch settings.reservedBlockBehavior {
+                    switch lc.reservedBlockBehavior {
                     case .avoidReserved:
                         return false
                         
@@ -120,7 +116,7 @@ final class LayoutPathFinder: GraphPathFinding {
                 }
                 
                 if let reserved = turnout.reserved, reserved.train != train.id {
-                    switch settings.reservedBlockBehavior {
+                    switch lc.reservedBlockBehavior {
                     case .avoidReserved:
                         return false
                         
