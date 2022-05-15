@@ -36,11 +36,6 @@ final class RouteResolver {
     // reserved for another train and no other alternative path is found.
     func resolve(steps: ArraySlice<RouteItem>,
                  verbose: Bool = SettingsKeys.bool(forKey: SettingsKeys.logRoutingResolutionSteps)) throws -> [ResolvedRouteItem]? {
-        // TODO: cannot create a path from steps without applying constraints to the steps.
-        // We should try to resolve the steps "as we go" below, resolving each step one at a time
-        // as we apply the constraints.
-        let unresolvedPath: UnresolvedGraphPath = steps.map { $0 }
-        
         let baseSettings = GraphPathFinder.Settings(verbose: verbose,
                                                     random: false,
                                                     overflow: layout.pathFinderOverflowLimit)
@@ -53,6 +48,9 @@ final class RouteResolver {
         
         let context = LayoutPathFinder.LayoutContext(layout: layout, train: train)
         
+        // Create the unresolved path out of the route steps
+        let unresolvedPath: UnresolvedGraphPath = steps.map { $0 }
+
         // Try to resolve the route using the standard constraints (which are a super set of the constraints
         // when finding a new route, which provides consistent behavior when resolving a route).
         if let resolvedPath = pf.resolve(graph: layout, unresolvedPath, constraints: ResolverConstraints(layoutConstraints: pf.constraints), context: context) {

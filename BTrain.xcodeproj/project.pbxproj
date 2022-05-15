@@ -135,6 +135,7 @@
 		A7710E71277A344300C08150 /* NewBlockSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7710E70277A344300C08150 /* NewBlockSheet.swift */; };
 		A7710E73277A3BC200C08150 /* NewTurnoutSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7710E72277A3BC200C08150 /* NewTurnoutSheet.swift */; };
 		A774B8E52801FA6F00E8043C /* PointToLoopLayoutTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A774B8E42801FA6F00E8043C /* PointToLoopLayoutTests.swift */; };
+		A7773A362830BEB3007986B0 /* MainMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7773A352830BEB3007986B0 /* MainMenu.swift */; };
 		A778407E27F96BFC00F87078 /* GeometryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A778407D27F96BFC00F87078 /* GeometryTests.swift */; };
 		A77A96DC27274A17009E7ECB /* MarklinCANMessagePrinter.swift in Sources */ = {isa = PBXBuildFile; fileRef = A77A96DB27274A17009E7ECB /* MarklinCANMessagePrinter.swift */; };
 		A77A96DE2727767C009E7ECB /* ConnectSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A77A96DD2727767C009E7ECB /* ConnectSheet.swift */; };
@@ -429,6 +430,7 @@
 		A7710E70277A344300C08150 /* NewBlockSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewBlockSheet.swift; sourceTree = "<group>"; };
 		A7710E72277A3BC200C08150 /* NewTurnoutSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewTurnoutSheet.swift; sourceTree = "<group>"; };
 		A774B8E42801FA6F00E8043C /* PointToLoopLayoutTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PointToLoopLayoutTests.swift; sourceTree = "<group>"; };
+		A7773A352830BEB3007986B0 /* MainMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainMenu.swift; sourceTree = "<group>"; };
 		A778407D27F96BFC00F87078 /* GeometryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeometryTests.swift; sourceTree = "<group>"; };
 		A77A96DB27274A17009E7ECB /* MarklinCANMessagePrinter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarklinCANMessagePrinter.swift; sourceTree = "<group>"; };
 		A77A96DD2727767C009E7ECB /* ConnectSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectSheet.swift; sourceTree = "<group>"; };
@@ -676,6 +678,7 @@
 			children = (
 				A73B164F274F13890073947D /* Info.plist */,
 				A73AFE852726594600E1ED21 /* BTrainApp.swift */,
+				A7773A352830BEB3007986B0 /* MainMenu.swift */,
 				A7B06B062728DD9500BDD88C /* Views */,
 				A785C07C278A64A4002FD538 /* Document */,
 				A743AF0A27CC88BE00A4AE79 /* Switchboard */,
@@ -1669,6 +1672,7 @@
 				A795A03827B6848000AE90EB /* TrainVisitor.swift in Sources */,
 				A79079A3277F87AB00771A60 /* Spacer+Extension.swift in Sources */,
 				A783EAA52788B52000E69B6D /* BlockShapeView.swift in Sources */,
+				A7773A362830BEB3007986B0 /* MainMenu.swift in Sources */,
 				A784138F274230CF00381341 /* MarklinTestMessageFactory.swift in Sources */,
 				A7DB7D5627CB4953000893BA /* CustomSlider.swift in Sources */,
 				A7841371273CE02000381341 /* LinkShape.swift in Sources */,
