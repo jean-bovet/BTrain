@@ -22,7 +22,8 @@ enum DiagnosticError: Error, Equatable {
     case turnoutNameAlreadyExists(turnout: Turnout)
     case turnoutMissingTransition(turnout: Turnout, socket: String)
     case turnoutDuplicateAddress(turnout: Turnout)
-    
+    case turnoutSameDoubleAddress(turnout: Turnout)
+
     case blockIdAlreadyExists(block: Block)
     case blockNameAlreadyExists(block: Block)
     case blockDuplicateFeedback(block: Block, feedback: Feedback)
@@ -71,6 +72,9 @@ extension DiagnosticError: LocalizedError {
             } else {
                 return "The address of turnout \(turnout.name) (\(turnout.addressValue)) is already used by another turnout"
             }
+        case .turnoutSameDoubleAddress(turnout: let turnout):
+            return "The addresses of turnout \(turnout.name) (\(turnout.address):\(turnout.address2)) are the same"
+
         case .blockMissingTransition(block: let block, socket: let socket):
             return "Block \(block.name) is missing a transition from socket \(socket)"
         case .invalidTransition(transitionId: let transitionId, socket: let socket):
@@ -257,6 +261,14 @@ final class LayoutDiagnostic: ObservableObject {
                     errors.append(DiagnosticError.turnoutDuplicateAddress(turnout: turnout))
                 }
                 addresses.insert(turnout.address2)
+            }
+        }
+        
+        for turnout in layout.turnouts {
+            if turnout.doubleAddress {
+                if turnout.address == turnout.address2 {
+                    errors.append(DiagnosticError.turnoutSameDoubleAddress(turnout: turnout))
+                }
             }
         }
     }

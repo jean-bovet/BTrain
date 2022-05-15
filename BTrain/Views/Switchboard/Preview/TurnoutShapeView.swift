@@ -16,13 +16,17 @@ struct TurnoutShapeView: View {
     
     let layout: Layout
     let category: Turnout.Category
+    let requestedState: Turnout.State
+    let actualState: Turnout.State
     let shapeContext = ShapeContext()
 
-    let viewSize = CGSize(width: 104, height: 34)
+    let viewSize = CGSize(width: 64, height: 34)
     
     var turnout: Turnout {
         let t = Turnout()
         t.category = category
+        t.requestedState = requestedState
+        t.actualState = actualState
         t.center = .init(x: viewSize.width/2, y: viewSize.height/2)
         return t
     }
@@ -48,8 +52,14 @@ struct TurnoutShapeView_Previews: PreviewProvider {
     static let layout = LayoutLoop1().newLayout()
     
     static var previews: some View {
-        ForEach(Turnout.Category.allCases, id:\.self) { category in
-            TurnoutShapeView(layout: layout, category: category)
+        VStack(alignment: .leading) {
+            ForEach(Turnout.Category.allCases, id:\.self) { category in
+                HStack {
+                    ForEach(Turnout.states(for: category)) { state in
+                        TurnoutShapeView(layout: layout, category: category, requestedState: state, actualState: Turnout.defaultState(for: category))
+                    }
+                }
+            }
         }
     }
 }

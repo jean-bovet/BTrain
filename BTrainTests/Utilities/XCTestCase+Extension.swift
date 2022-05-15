@@ -12,6 +12,33 @@
 
 import XCTest
 
+@testable import BTrain
+
+extension XCTestCase {
+
+    func waitForLeadingReservedAndSettled(train: Train) {
+        wait(for: {
+            train.leading.reservedAndSettled
+        }, timeout: estimatedSettlingTime(for: train))
+    }
+    
+    /// Returns the estimated time it will take to settle all the turnouts of the specified train.
+    ///
+    /// The time depends on the number of turnouts and the number of commands for each turnout
+    /// necessary to change the state of the turnout.
+    ///
+    /// - Parameter train: The train
+    /// - Returns: the estimated time to settle the leading turnouts of the train
+    func estimatedSettlingTime(for train: Train) -> TimeInterval {
+        var time: TimeInterval = 0
+        for turnout in train.leading.turnouts {
+            let numberOfCommands = turnout.requestedStateCommands(power: 1).count * 2
+            time += Double(numberOfCommands) * LayoutCommandExecutor.turnoutDelay
+        }
+        return time * 1.5
+    }
+}
+
 extension XCTestCase {
     
     func wait(for block: () -> Bool, timeout: TimeInterval) {

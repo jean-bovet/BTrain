@@ -117,9 +117,13 @@ final class Transition: Element, ITransition, CustomStringConvertible {
 // the same transition but with socket `a` and `b` swapped. That way, the code can
 // be simplified to only use one set of sockets:
 // if transition.a == block1.nextSocket && transition.b = block2.previousSocket
-final class TransitionInverse: ITransition {
+final class TransitionInverse: ITransition, CustomStringConvertible {
     
     let transition: ITransition
+
+    var description: String {
+        "\(a) -> \(b)"
+    }
 
     var id: Identifier<Transition> {
         return transition.id

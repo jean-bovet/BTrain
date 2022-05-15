@@ -25,7 +25,11 @@ final class Turnout: Element, ObservableObject {
     }
 
     // The various states supported by the turnout
-    enum State: String, Codable {
+    enum State: String, Identifiable, Codable {
+        var id: String {
+            rawValue
+        }
+        
         case straight
         case branch // Used for Double Slip with 2 states (straight and branch)
         case branchLeft
@@ -49,6 +53,8 @@ final class Turnout: Element, ObservableObject {
     
     @Published var category: Category = .singleLeft {
         didSet {
+            requestedState = Turnout.defaultState(for: category)
+            actualState = requestedState
             updateStateSpeedLimits()
         }
     }
@@ -61,8 +67,28 @@ final class Turnout: Element, ObservableObject {
         
     // State of the turnout. Note that not all states are supported
     // by some turnout category.
-    @Published var state: State = .straight
-
+    
+    /// The state of the turnout that has been requested.
+    ///
+    /// It takes some time for the turnout to actually change in the physical layout. Once
+    /// the Digital Controller sends the acknowledgment that the turnout has changed,
+    /// the ``actualState`` will be updated to match the ``requestedState``.
+    @Published var requestedState: State = .straight
+    
+    /// The most up-to-date state from the physical layout.
+    ///
+    /// It might differ from ``requestedState`` if the turnout hasn't physically yet changed.
+    @Published var actualState: State = .straight
+    
+    /// Returns true if the turnout has settled.
+    ///
+    /// A turnout is settled when its actual state is the same as the requested state. In reality,
+    /// a turnout takes some time to change the state on the physical layout which is why
+    /// a turnout does not settled immediately.
+    var settled: Bool {
+        requestedState == actualState
+    }
+    
     struct Reservation: Codable, CustomStringConvertible {
         let train: Identifier<Train>
         
@@ -168,7 +194,8 @@ extension Turnout: Codable {
         self.center = try container.decode(CGPoint.self, forKey: CodingKeys.center)
         self.rotationAngle = try container.decode(Double.self, forKey: CodingKeys.angle)
         self.length = try container.decodeIfPresent(Double.self, forKey: CodingKeys.length)
-        self.state = try container.decode(State.self, forKey: CodingKeys.state)
+        self.requestedState = try container.decode(State.self, forKey: CodingKeys.state)
+        self.actualState = self.requestedState
         if let reserved = try? container.decodeIfPresent(Identifier<Train>.self, forKey: CodingKeys.reserved) {
             self.reserved = .init(train: reserved, sockets: nil)
         } else {
@@ -189,7 +216,7 @@ extension Turnout: Codable {
         try container.encode(address, forKey: CodingKeys.address)
         try container.encode(address2, forKey: CodingKeys.address2)
         try container.encode(length, forKey: CodingKeys.length)
-        try container.encode(state, forKey: CodingKeys.state)
+        try container.encode(requestedState, forKey: CodingKeys.state)
         try container.encode(stateSpeedLimit, forKey: CodingKeys.stateSpeedLimit)
         try container.encode(reserved, forKey: CodingKeys.reserved)
         try container.encode(train, forKey: CodingKeys.train)

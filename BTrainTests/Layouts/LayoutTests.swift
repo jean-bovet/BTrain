@@ -96,7 +96,7 @@ class LayoutTests: XCTestCase {
         doc.layout.setLocomotiveDirection(train1, forward: false)
         wait(for: {
             train1.directionForward == false
-        }, timeout: 0.1)
+        }, timeout: 1.0)
         XCTAssertEqual(train1.directionForward, false)
         XCTAssertEqual(block1.train!.direction, .previous)
 
@@ -110,7 +110,7 @@ class LayoutTests: XCTestCase {
         doc.layout.setLocomotiveDirection(train1, forward: true)
         wait(for: {
             train1.directionForward == true
-        }, timeout: 0.1)
+        }, timeout: 1.0)
 
         XCTAssertEqual(train1.directionForward, true)
         XCTAssertEqual(block1.train!.direction, .previous)
@@ -133,21 +133,14 @@ class LayoutTests: XCTestCase {
         XCTAssertEqual(train1.state, .stopped)
         XCTAssertTrue(train1.unmanagedScheduling)
         try doc.start(train: train1.id, withRoute: layout.routes[0].id, destination: nil)
+        XCTAssertTrue(train1.managedScheduling)
+
+        // Note: state will change to running once the turnouts have been settled
+        wait(for: {
+            train1.state == .running
+        }, timeout: 1.0)
         
         XCTAssertEqual(train1.state, .running)
-        XCTAssertTrue(train1.managedScheduling)
-
-        let stopped = expectation(description: "Stopped")
-        try layout.stopTrain(train1.id, completely: false) {
-            stopped.fulfill()
-        }
-
-        XCTAssertEqual(train1.state, .stopping)
-        XCTAssertTrue(train1.managedScheduling)
-
-        wait(for: [stopped], timeout: 2.0)
-        
-        XCTAssertEqual(train1.state, .stopped)
         XCTAssertTrue(train1.managedScheduling)
 
         let stoppedFully = expectation(description: "StoppedFully")
@@ -169,7 +162,8 @@ class LayoutTests: XCTestCase {
 
         try layout.setTrainToBlock(train.id, s1.id, direction: .next)
 
-        train.leadingBlocks = [s1, b1]
+        train.leading.append(s1)
+        train.leading.append(b1)
         train.startRouteIndex = 0
 
         XCTAssertEqual(layout.reservation.maximumSpeedAllowed(train: train, route: nil), LayoutFactory.DefaultMaximumSpeed)
@@ -188,7 +182,8 @@ class LayoutTests: XCTestCase {
 
         try layout.setTrainToBlock(train.id, s1.id, direction: .next)
         
-        train.leadingBlocks = [s1, b1]
+        train.leading.append(s1)
+        train.leading.append(b1)
         train.startRouteIndex = 0
 
         XCTAssertEqual(layout.reservation.maximumSpeedAllowed(train: train, route: nil), LayoutFactory.DefaultMaximumSpeed)
@@ -197,6 +192,10 @@ class LayoutTests: XCTestCase {
         let route = layout.newRoute(id: "s1-b2", [(s1.id.uuid, .next), (b2.id.uuid, .next)])
         
         try doc.start(train: train.id, withRoute: route.id, destination: .init(b2.id, direction: .next))
+        
+        // Settle manually turnout t1 so we can test the speed limit of the turnout in branch-right state.
+        let t = layout.turnout(named: "t1")
+        t.actualState = t.requestedState
         
         XCTAssertEqual(layout.reservation.maximumSpeedAllowed(train: train, route: route), LayoutFactory.DefaultLimitedSpeed)
     }

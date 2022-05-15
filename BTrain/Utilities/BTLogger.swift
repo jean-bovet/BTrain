@@ -28,6 +28,8 @@ final class BTLogger {
         
     static let router = Logger(subsystem: "ch.arizona-software.BTrain", category: "router")
     
+    static let reservation = Logger(subsystem: "ch.arizona-software.BTrain", category: "reservation")
+
     /// Re-created the network logger using the latest settings
     static func updateNetworkLogger() {
         network = newNetworkLogger

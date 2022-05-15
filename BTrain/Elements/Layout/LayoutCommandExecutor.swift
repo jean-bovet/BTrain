@@ -24,6 +24,7 @@ protocol LayoutCommandExecuting: AnyObject {
 
 final class DefaultCommandExecutor: LayoutCommandExecuting {
     func sendTurnoutState(turnout: Turnout, completion: @escaping CompletionBlock) {
+        turnout.actualState = turnout.requestedState
         completion()
     }
     

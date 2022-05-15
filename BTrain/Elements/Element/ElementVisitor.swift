@@ -143,7 +143,7 @@ final class ElementVisitor {
             } else {
                 // Find out the exit socket of the turnout given its state.
                 // Note that it can happen that a turnout is configured for another route and exitSocketId will be nil here.
-                if let exitSocketId = turnout.socketId(fromSocketId: toSocketId, withState: turnout.state) {
+                if let exitSocketId = turnout.socketId(fromSocketId: toSocketId, withState: turnout.requestedState) {
                     sockets = .init(fromSocketId: toSocketId, toSocketId: exitSocketId)
                 }
             }

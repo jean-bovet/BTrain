@@ -67,19 +67,20 @@ final class TrainController {
     /// - Parameter event: the event to process
     /// - Returns: the result of the event processing
     func run(_ event: TrainEvent) throws -> TrainHandlerResult {
-        var result: TrainHandlerResult = .none()
+        let result = TrainHandlerResult()
         
         BTLogger.router.debug("\(self.train, privacy: .public): evaluating event '\(String(describing: event), privacy: .public)' for \(String(describing: self.train.scheduling), privacy: .public)")
 
         if train.managedScheduling {
             // Stop the train if there is no route associated with it
             guard let route = layout.route(for: train.routeId, trainId: train.id) else {
-                return try stop(completely: false)
+                try stop(completely: false)
+                return result
             }
 
-            result = result.appending(try TrainHandlerManaged.process(layout: layout, route: route, train: train, event: event, controller: self))
+            result.append(try TrainHandlerManaged.process(layout: layout, route: route, train: train, event: event, controller: self))
         } else {
-            result = result.appending(try TrainHandlerUnmanaged().process(layout: layout, train: train, event: event, controller: self))
+            result.append(try TrainHandlerUnmanaged.process(layout: layout, train: train, event: event, controller: self))
         }
 
         BTLogger.router.debug("\(self.train, privacy: .public): resulting events are \(String(describing: result.events), privacy: .public)")
@@ -95,10 +96,8 @@ extension TrainController: TrainControlling {
         delegate?.scheduleRestartTimer(train: train)
     }
     
-    func stop(completely: Bool) throws -> TrainHandlerResult {
+    func stop(completely: Bool) throws {
         try layout.stopTrain(train.id, completely: completely) { }
-                
-        return .none()
     }
             
 }

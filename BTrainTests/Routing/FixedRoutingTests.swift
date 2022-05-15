@@ -783,8 +783,11 @@ class FixedRoutingTests: BTTestCase {
 
     func testTrainWithWagonsInFront() throws {
         let layout = LayoutComplexLoop().newLayoutWithLengths(LayoutComplexLoop().newLayout().removeTrainGeometry().removeTurnoutGeometry())
-        layout.turnouts[0].state = .branchLeft
-        layout.turnouts[5].state = .branchRight
+        layout.turnouts[0].requestedState = .branchLeft
+        layout.applyTurnoutState(turnout: layout.turnouts[0])
+        
+        layout.turnouts[5].requestedState = .branchRight
+        layout.applyTurnoutState(turnout: layout.turnouts[5])
 
         let train = layout.trains[0]
         train.wagonsPushedByLocomotive = true
@@ -1006,15 +1009,15 @@ class FixedRoutingTests: BTTestCase {
             routes.append(route)
         }
         
-        func start() throws {
-            try start(routeID: route.id.uuid, trainID: train.id.uuid)
+        func start(expectedState: Train.State = .running) throws {
+            try start(routeID: route.id.uuid, trainID: train.id.uuid, expectedState: expectedState)
         }
 
-        func start(routeID: String, trainID: String) throws {
+        func start(routeID: String, trainID: String, expectedState: Train.State = .running) throws {
             try layoutController.start(routeID: Identifier<Route>(uuid: routeID), trainID: Identifier<Train>(uuid: trainID), destination: nil)
             let train = layout.train(for: Identifier<Train>(uuid: trainID))!
             XCTAssertTrue(train.managedScheduling)
-            XCTAssertEqual(train.state, .running)
+            XCTAssertEqual(train.state, expectedState)
         }
         
         func toggle(_ feedback: String) {
@@ -1039,7 +1042,7 @@ class FixedRoutingTests: BTTestCase {
         }
         
         func assertLeadingBlocks(_ blockNames: [String]) throws {
-            XCTAssertEqual(train.leadingBlocks.toStrings(), blockNames)
+            XCTAssertEqual(train.leading.blocks.toStrings(), blockNames)
         }
     }
     

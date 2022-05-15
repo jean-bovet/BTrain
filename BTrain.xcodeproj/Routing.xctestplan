@@ -62,6 +62,8 @@
         "FixedRoutingWithStationsTests\/testMultipleTrains()",
         "FixedRoutingWithStationsTests\/testStationToStation()",
         "FixedRoutingWithStationsTests\/testStationToStationWithReservation()",
+        "FixedRoutingWithTurnoutDelays\/testLeadingSettledDistance()",
+        "FixedRoutingWithTurnoutDelays\/testMoveInsideBlockWithTurnoutDelay()",
         "LayoutTests\/testAddAndRemoveBlock()",
         "LayoutTests\/testAddAndRemoveFeedback()",
         "LayoutTests\/testAddAndRemoveTurnout()",

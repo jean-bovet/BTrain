@@ -77,7 +77,7 @@ struct TurnoutDetailsView: View {
             SectionTitleView(label: "State")
 
             HStack {
-                UndoProvider($turnout.state) { state in
+                UndoProvider($turnout.requestedState) { state in
                     Picker("State:", selection: state) {
                         ForEach(turnout.allStates, id:\.self) { state in
                             Text(state.description)
@@ -89,12 +89,11 @@ struct TurnoutDetailsView: View {
                 Spacer()
 
                 Button("Set") {
-                    layout.executor.sendTurnoutState(turnout: turnout) { }
+                    layout.applyTurnoutState(turnout: turnout)
                 }
                 
                 Button("Toggle") {
-                    turnout.toggleToNextState()
-                    layout.executor.sendTurnoutState(turnout: turnout) { }
+                    layout.toggleTurnoutToNextState(turnout: turnout)
                 }
             }
         }

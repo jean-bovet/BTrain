@@ -436,7 +436,7 @@ class AutomaticRoutingTests: BTTestCase {
         func assert(_ routeString: String, _ leadingBlockNames: [String]? = nil) throws {
             try asserter.assert([routeString], trains: [train])
             if let leadingBlockNames = leadingBlockNames {
-                XCTAssertEqual(train.leadingBlocks.toStrings(), leadingBlockNames)
+                XCTAssertEqual(train.leading.blocks.toStrings(), leadingBlockNames)
             }
         }
         
