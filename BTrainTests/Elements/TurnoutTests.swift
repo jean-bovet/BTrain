@@ -382,7 +382,7 @@ class TurnoutTests: XCTestCase {
     func testDoubleSlip2States() {
         let t = Turnout.doubleSlip2()
 
-        assertDoubleSlip2(t, .straight01, .straight, [1, 1], .branch03)
+        assertDoubleSlip2(t, .straight01, .straight01, [1, 1], .straight01)
         assertDoubleSlip2(t, .straight23, .straight01, [0, 0], .branch21)
         assertDoubleSlip2(t, .branch03, .straight23, [1, 0], .branch03)
         assertDoubleSlip2(t, .branch21, .branch03, [0, 1], .straight23)

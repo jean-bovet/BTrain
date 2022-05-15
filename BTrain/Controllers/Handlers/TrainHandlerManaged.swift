@@ -40,11 +40,13 @@ final class TrainHandlerManaged {
     /// Returns true if the train should stop in the current block
     ///
     /// The following reasons will cause a train to stop:
-    /// - There are no leading blocks reserved or there are leading blocks reserved but not yet settled.
+    /// - There are no leading blocks reserved
+    /// - There are leading blocks but there is not enough distance to brake safely the train
     /// - The train is at the end of the route
     /// - The train has reached either a station block or a block that is the destination of the route
     var trainShouldStop: Bool {
-        train.leading.reservedAndSettled == false ||
+        train.leading.isEmpty ||
+        layout.reservation.isBrakingDistanceRespected(train: train, speed: train.speed.actualKph) == false ||
         trainAtEndOfRoute ||
         layout.hasTrainReachedStationOrDestination(route, train, currentBlock)
     }

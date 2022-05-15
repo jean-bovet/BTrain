@@ -79,7 +79,16 @@ final class Turnout: Element, ObservableObject {
     ///
     /// It might differ from ``requestedState`` if the turnout hasn't physically yet changed.
     @Published var actualState: State = .straight
-
+    
+    /// Returns true if the turnout has settled.
+    ///
+    /// A turnout is settled when its actual state is the same as the requested state. In reality,
+    /// a turnout takes some time to change the state on the physical layout which is why
+    /// a turnout does not settled immediately.
+    var settled: Bool {
+        requestedState == actualState
+    }
+    
     struct Reservation: Codable, CustomStringConvertible {
         let train: Identifier<Train>
         

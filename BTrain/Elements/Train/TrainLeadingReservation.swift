@@ -28,7 +28,12 @@ final class TrainLeadingReservation {
     /// This array is updated by the ``LayoutReservation`` class each time the reserved
     /// blocks or turnouts are updated.
     private var items = [Item]()
-
+    
+    /// Returns true if there are no leading blocks reserved
+    var isEmpty: Bool {
+        items.isEmpty
+    }
+    
     /// Array of leading blocks that have been reserved in front of the train.
     var blocks: [Block] {
         items.compactMap { item in
@@ -80,28 +85,7 @@ final class TrainLeadingReservation {
 
         return true
     }
-    
-    var totalDistance: Double {
-        let leadingDistance = items.reduce(0.0) { partialResult, item in
-            switch item {
-            case .block(let block):
-                if let blockLength = block.length {
-                    return partialResult + blockLength
-                } else {
-                    return partialResult
-                }
-            case .turnout(let turnout):
-                if let turnoutLength = turnout.length {
-                    return partialResult + turnoutLength
-                } else {
-                    return partialResult
-                }
-            }
-        }
-
-        return leadingDistance
-    }
-    
+        
     /// Returns the distance that has been settled. In other words, returns the distance
     /// that contains only consecutives elements (blocks and turnouts) that have settled.
     ///
@@ -117,8 +101,8 @@ final class TrainLeadingReservation {
                     distance += blockLength
                 }
             case .turnout(let turnout):
-                if turnout.requestedState != turnout.actualState {
-                    break
+                if !turnout.settled {
+                    return distance
                 }
                 
                 if let turnoutLength = turnout.length {

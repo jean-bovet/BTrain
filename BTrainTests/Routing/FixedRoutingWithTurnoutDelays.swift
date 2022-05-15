@@ -72,6 +72,45 @@ class FixedRoutingWithTurnoutDelays: XCTestCase {
         try p.assert("r1: {r1{b1 🔴🚂1 ≡ ≏ }} <t0,l> [b2 ≏ ≏ ] <t1(0,2),l> [b3 ≏ ≏ ] <t0(2,0),l> !{r1{b1 ≏ ≡ 🔴🚂1 }}")
     }
 
+    func testLeadingSettledDistance() throws {
+        let layout = LayoutLoop2().newLayout()
+        layout.block(named: "b3").category = .free
+        
+        let t1 = layout.turnout(named: "t1")
+        t1.requestedState = .branchRight
+        layout.applyTurnoutState(turnout: t1)
+        
+        let delayedExecutor = DelayedCommandExecutor()
+        delayedExecutor.pause()
+        
+        layout.executing = delayedExecutor
+        
+        let p = FixedRoutingTests.Package(layout: layout)
+        try p.prepare(routeID: "r1", trainID: "1", fromBlockId: "b1", position: .end)
+        
+        p.layout.strictRouteFeedbackStrategy = false
+        p.train.maxNumberOfLeadingReservedBlocks = 2
+
+        try p.assert("r1: {r1{b1 ≏ ≏ 🔴🚂1 }} <t0> [b2 ≏ ≏ ] [b3 ≏ ≏ ] <t1,r> [b4 ≏ ≏] {r1{b1 ≏ ≏ }}")
+
+        try p.start()
+
+        // Train is running despite t1 not being settled because there is enough leading settled distance.
+        try p.assert("r1: {r1{b1 ≏ ≏ 🟢🚂1 }} <r1<t0>> [r1[b2 ≏ ≏ ]] [r1[b3 ≏ ≏ ]] <t1,r> [b4 ≏ ≏] {r1{b1 ≏ ≏ }}")
+        XCTAssertEqual(p.train.state, .running)
+
+        // Train is now braking because not enough leading settled distance
+        try p.assert("r1: {b1 ≏ ≏ } <t0> [r1[b2 ≡ 🟡🚂1 ≏ ]] [r1[b3 ≏ ≏ ]] <r1<t1,r>> [r1[b4 ≏ ≏]] {b1 ≏ ≏ }")
+        XCTAssertEqual(p.train.state, .braking)
+
+        delayedExecutor.resume()
+        p.layoutController.runControllers(.turnoutChanged)
+
+        // And the train will restart because the leading turnouts are settled
+        XCTAssertEqual(p.train.state, .running)
+        try p.assert("r1: {b1 ≏ ≏ } <t0> [r1[b2 ≏ 🟢🚂1 ≏ ]] [r1[b3 ≏ ≏ ]] <r1<t1>> [r1[b4 ≏ ≏]] {b1 ≏ ≏ }")
+    }
+
     final class DelayedCommandExecutor: LayoutCommandExecuting {
         
         private var pauseExecution = false {
