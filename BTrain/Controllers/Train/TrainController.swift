@@ -83,7 +83,11 @@ final class TrainController {
             result.append(try TrainHandlerUnmanaged.process(layout: layout, train: train, event: event, controller: self))
         }
 
-        BTLogger.router.debug("\(self.train, privacy: .public): resulting events are \(String(describing: result.events), privacy: .public)")
+        if result.events.isEmpty {
+            BTLogger.router.debug("\(self.train, privacy: .public): no resulting events")
+        } else {
+            BTLogger.router.debug("\(self.train, privacy: .public): resulting events are \(String(describing: result.events), privacy: .public)")
+        }
 
         return result
     }

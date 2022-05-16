@@ -85,7 +85,7 @@ extension LayoutController {
     }
     
     func registerForTurnoutChange() {
-        interface.register(forTurnoutChange: { [weak self] address, state, power in
+        interface.register(forTurnoutChange: { [weak self] address, state, power, acknowledgement in
             guard let layout = self?.layout else {
                 return
             }
@@ -101,7 +101,14 @@ extension LayoutController {
             DispatchQueue.main.async {
                 if let turnout = layout.turnouts.find(address: address) {
                     turnout.setActualState(value: state, for: address.actualAddress)
-                    BTLogger.debug("Turnout \(turnout.name) state changed to \(state), power \(power), for address \(address.actualAddress.toHex()). Actual state \(turnout.actualState). Requested state \(turnout.requestedState)")
+                    if acknowledgement == false {
+                        // If acknowledgement is false, it means it is a command that has been
+                        // triggered by the Digital Controller and we need to reflect this by
+                        // ensuring the turnout is settled with both requested and actual state
+                        // being the same.
+                        turnout.requestedState = turnout.actualState
+                    }
+                    BTLogger.debug("Turnout \(turnout.name) state changed to \(state) (ack=\(acknowledgement)), power \(power), for address \(address.actualAddress.toHex()). Actual state \(turnout.actualState). Requested state \(turnout.requestedState)")
                     self?.runControllers(.turnoutChanged)
                 } else {
                     BTLogger.error("Unknown turnout for address \(address.actualAddress.toHex())")

@@ -130,9 +130,7 @@ final class MarklinInterface: CommandInterface {
             }
         }
         if case .turnout(address: let address, state: let state, power: let power, priority: _, descriptor: _) = cmd {
-            if msg.isAck {
-                turnoutChangeCallbacks.forEach { $0(address, state, power) }
-            }
+            turnoutChangeCallbacks.forEach { $0(address, state, power, msg.isAck) }
         }
         if case .speed(address: let address, decoderType: let decoderType, value: let value, priority: _, descriptor: _) = cmd {
             if msg.isAck {

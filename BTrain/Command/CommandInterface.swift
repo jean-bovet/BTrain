@@ -36,7 +36,7 @@ protocol CommandInterface: AnyObject {
     typealias DirectionChangeCallback = (_ address: UInt32, _ decoderType: DecoderType?, _ direction: Command.Direction) -> Void
     func register(forDirectionChange: @escaping DirectionChangeCallback)
 
-    typealias TurnoutChangeCallback = (_ address: CommandTurnoutAddress, _ state: UInt8, _ power: UInt8) -> Void
+    typealias TurnoutChangeCallback = (_ address: CommandTurnoutAddress, _ state: UInt8, _ power: UInt8, _ acknowledgment: Bool) -> Void
     func register(forTurnoutChange: @escaping TurnoutChangeCallback)
     
     typealias QueryLocomotiveCallback = (_ locomotives: [CommandLocomotive]) -> Void

@@ -69,7 +69,7 @@ class MarklinSimulatorTests: XCTestCase {
         }
 
         let e = expectation(description: "callback")
-        _ = doc.interface.register(forTurnoutChange: { address, state, power in
+        _ = doc.interface.register(forTurnoutChange: { address, state, power, acknowledgement in
             XCTAssertEqual(2, state)
             e.fulfill()
         })

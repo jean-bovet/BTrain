@@ -122,7 +122,7 @@ class CommandInterfaceTests: XCTestCase {
         }
 
         let e = expectation(description: "callback")
-        doc.interface.register(forTurnoutChange: { address, state, power in
+        doc.interface.register(forTurnoutChange: { address, state, power, acknowledgement in
             e.fulfill()
         })
         
