@@ -75,7 +75,23 @@ final class LayoutController: TrainControllerDelegate {
             return layout.train(for: element.key) != nil
         })
     }
-
+    
+    /// Array of pending events that need to be processed by each train controller
+    private var pendingEvents = [TrainEvent]()
+    
+    /// Run each train controller on the next train event
+    /// - Parameter drain: true if all the pending train events should be processed
+    func runControllers(drain: Bool = false) {
+        while !pendingEvents.isEmpty {
+            runControllers(pendingEvents.removeFirst())
+            if !drain {
+                break
+            }
+        }
+    }
+    
+    /// Run each train controller on the specified train event
+    /// - Parameter event: the train event
     func runControllers(_ event: TrainEvent) {
         let result = run(event)
         if result.events.count > 0 {
@@ -83,8 +99,9 @@ final class LayoutController: TrainControllerDelegate {
             // make sure to run the controllers again so the layout can
             // be further updated (ie a feedback change might cause a train
             // to further stop or start).
-            for event in result.events {
-                runControllers(event)
+            pendingEvents.append(contentsOf: result.events)
+            DispatchQueue.main.async {
+                self.runControllers()
             }
         }
         redrawSwitchboard()
