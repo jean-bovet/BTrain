@@ -269,6 +269,13 @@ extension Turnout.State: CustomStringConvertible {
     }
 }
 
+extension Turnout: CustomStringConvertible {
+    
+    var description: String {
+        "\(name) (\(id))"
+    }
+}
+
 extension Array where Element : Turnout {
 
     func find(address: CommandTurnoutAddress) -> Element? {

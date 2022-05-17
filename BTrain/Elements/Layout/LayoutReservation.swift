@@ -60,7 +60,19 @@ final class LayoutReservation {
         let state: Turnout.State
         let sockets: Turnout.Reservation.Sockets
     }
-
+    
+    /// Internal structure used to remember which turnout was
+    /// reserved and for which state so it is not re-activated unnecessarily.
+    internal struct TurnoutActivation: Hashable {
+        let turnout: Turnout
+        let state: Turnout.State
+        
+        init(turnout: Turnout) {
+            self.turnout = turnout
+            self.state = turnout.requestedState
+        }
+    }
+    
     init(layout: Layout, verbose: Bool) {
         self.layout = layout
         self.verbose = verbose
@@ -70,6 +82,12 @@ final class LayoutReservation {
     // in front of the train (leading blocks).
     // Note: it won't reserve blocks that are already reserved to avoid loops.
     func updateReservedBlocks(train: Train) throws -> Bool {
+        // Remember all the turnouts that have been already reserved so we don't re-activate
+        // them again when reserving the blocks in this flow.
+        let reservedTurnouts = Set<TurnoutActivation>(layout.turnouts
+            .filter({ $0.reserved?.train == train.id })
+            .map({ TurnoutActivation(turnout: $0) }))
+        
         // Remove the train from all the elements
         try freeElements(train: train)
         
@@ -78,7 +96,7 @@ final class LayoutReservation {
         try occupyBlockWith(train: train)
 
         // Reserve the number of leading blocks necessary
-        return try reserveLeadingBlocks(train: train)
+        return try reserveLeadingBlocks(train: train, reservedTurnouts: reservedTurnouts)
     }
     
     /// Removes the reservation for the leading blocks of the specified train but keep the occupied blocks intact (that the train actually occupies).
@@ -93,7 +111,7 @@ final class LayoutReservation {
         try occupyBlockWith(train: train)
     }
     
-    private func reserveLeadingBlocks(train: Train) throws -> Bool {
+    private func reserveLeadingBlocks(train: Train, reservedTurnouts: Set<TurnoutActivation>) throws -> Bool {
         // The route must be defined and not be empty
         guard let route = layout.route(for: train.routeId, trainId: train.id), !route.steps.isEmpty else {
             debug("Cannot reserve leading blocks because route is empty")
@@ -112,10 +130,10 @@ final class LayoutReservation {
         }
         assert(resolvedSteps.count >= stepsToReserve.count)
         
-        return try reserveSteps(train: train, route: route, resolvedSteps: resolvedSteps)
+        return try reserveSteps(train: train, route: route, resolvedSteps: resolvedSteps, reservedTurnouts: reservedTurnouts)
     }
     
-    private func reserveSteps(train: Train, route: Route, resolvedSteps: [ResolvedRouteItem]) throws -> Bool {
+    private func reserveSteps(train: Train, route: Route, resolvedSteps: [ResolvedRouteItem], reservedTurnouts: Set<TurnoutActivation>) throws -> Bool {
         // Variable keeping track of the number of leading blocks that have been reserved.
         // At least one block must have been reserved to consider this function successfull.
         // Note: blocks that are reserved for the train and its wagons do not count against that count.
@@ -142,7 +160,7 @@ final class LayoutReservation {
 
             switch step {
             case .block(let stepBlock):
-                if try !reserveBlock(block: stepBlock.block, direction: stepBlock.direction, train: train, route: route, numberOfLeadingBlocksReserved: &numberOfLeadingBlocksReserved, turnouts: &turnouts, transitions: &transitions) {
+                if try !reserveBlock(block: stepBlock.block, direction: stepBlock.direction, train: train, route: route, reservedTurnouts: reservedTurnouts, numberOfLeadingBlocksReserved: &numberOfLeadingBlocksReserved, turnouts: &turnouts, transitions: &transitions) {
                     return numberOfLeadingBlocksReserved > 0
                 }
                 
@@ -163,7 +181,7 @@ final class LayoutReservation {
         return numberOfLeadingBlocksReserved > 0
     }
     
-    private func reserveBlock(block: Block, direction: Direction, train: Train, route: Route, numberOfLeadingBlocksReserved: inout Int, turnouts: inout [TurnoutReservation], transitions: inout [ITransition]) throws -> Bool {
+    private func reserveBlock(block: Block, direction: Direction, train: Train, route: Route, reservedTurnouts: Set<TurnoutActivation>, numberOfLeadingBlocksReserved: inout Int, turnouts: inout [TurnoutReservation], transitions: inout [ITransition]) throws -> Bool {
         if block.isOccupied(by: train.id) {
             // The block is already reserved and contains a portion of the train
             // Note: we are not incrementing `numberOfLeadingBlocksReserved` because
@@ -178,7 +196,7 @@ final class LayoutReservation {
             // Now that the block can be reserved, reserve all the turnouts leading to
             // that block, including setting the appropriate state to each turnout
             for tr in turnouts {
-                try reserveTurnout(reservation: tr, train: train)
+                try reserveTurnout(reservation: tr, train: train, reservedTurnouts: reservedTurnouts)
             }
             turnouts.removeAll()
             
@@ -211,7 +229,7 @@ final class LayoutReservation {
         return true
     }
     
-    private func reserveTurnout(reservation: TurnoutReservation, train: Train) throws {
+    private func reserveTurnout(reservation: TurnoutReservation, train: Train, reservedTurnouts: Set<TurnoutActivation>) throws {
         let turnout = reservation.turnout
         guard turnout.canBeReserved else {
             throw LayoutError.turnoutAlreadyReserved(turnout: turnout)
@@ -221,9 +239,16 @@ final class LayoutReservation {
         turnout.reserved = .init(train: train.id, sockets: reservation.sockets)
         train.leading.append(turnout)
 
-        BTLogger.reservation.debug("\(train, privacy: .public): request state \(turnout.requestedState, privacy: .public) for turnout \(turnout.name, privacy: .public)")
-        layout.executor.sendTurnoutState(turnout: turnout) {
-            BTLogger.reservation.debug("\(train, privacy: .public): request state \(turnout.requestedState, privacy: .public) for turnout \(turnout.name, privacy: .public) [command executed]")
+        if reservedTurnouts.contains(TurnoutActivation(turnout: turnout)) && turnout.settled {
+            // Do not request a turnout state change to the Digital Controller if the turnout is settled (which means it has already the state
+            // requested) AND it has already been reserved. This is to avoid flooding the Digital Controller with unnecessary turnout requests
+            // because this method is called frequently (when a train moves within a block or to a next block).
+            BTLogger.reservation.debug("\(train, privacy: .public): do not activate state \(turnout.requestedState, privacy: .public) for turnout \(turnout.name, privacy: .public) because it was already activated")
+        } else {
+            BTLogger.reservation.debug("\(train, privacy: .public): request state \(turnout.requestedState, privacy: .public) for turnout \(turnout.name, privacy: .public)")
+            layout.executor.sendTurnoutState(turnout: turnout) {
+                BTLogger.reservation.debug("\(train, privacy: .public): request state \(turnout.requestedState, privacy: .public) for turnout \(turnout.name, privacy: .public) [command executed]")
+            }
         }
     }
     

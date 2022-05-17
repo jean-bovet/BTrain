@@ -161,6 +161,17 @@ final class LayoutLoopWithStations: LayoutCreating {
     }
 }
 
+/// A layout that has a yard
+final class LayoutYard: LayoutCreating {
+
+    static let id = Identifier<Layout>(uuid: "Yard")
+        
+    func newLayout() -> Layout {
+        LayoutFactory.layoutFromBundle(named: LayoutYard.id.uuid)
+    }
+        
+}
+
 //              t3               ┌─────────┐              t4
 //     ┌─────▶––––––––––────────▶│ Block 2 │─────────────▶––––––––––───────┐
 //     │          \              └─────────┘                   /           │

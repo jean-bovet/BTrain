@@ -53,10 +53,18 @@ extension Layout {
         }
     }
     
-    func setTrainPosition(_ train: Train, _ position: Int) throws {
+    /// Set the position of a train within the current block
+    ///
+    /// - Parameters:
+    ///   - train: the train
+    ///   - position: the position of the train within its block
+    ///   - removeLeadingBlocks: true to remove the leading blocks (by default), false to keep the leading blocks
+    func setTrainPosition(_ train: Train, _ position: Int, removeLeadingBlocks: Bool = true) throws {
         train.position = position
         
-        try reservation.removeLeadingBlocks(train: train)
+        if removeLeadingBlocks {
+            try reservation.removeLeadingBlocks(train: train)
+        }
 
         didChange()
     }
@@ -355,9 +363,17 @@ extension Layout {
 
         train.scheduling = .managed(finishing: true)
     }
-
-    // This method sets the train in a specific block and updates the reserved blocks (occupied and leading blocks).
-    func setTrainToBlock(_ trainId: Identifier<Train>, _ toBlockId: Identifier<Block>, position: Position = .start, direction: Direction, routeIndex: Int? = nil) throws {
+    
+    /// Sets a train to a specific block.
+    ///
+    /// - Parameters:
+    ///   - trainId: the train
+    ///   - toBlockId: the block in which to put the train
+    ///   - position: the position in the block in which to put the train
+    ///   - direction: the direction in the block in which to put the train
+    ///   - routeIndex: optional index in the route
+    ///   - removeLeadingBlocks: true to remove the leading blocks (by default), false to keep the leading blocks
+    func setTrainToBlock(_ trainId: Identifier<Train>, _ toBlockId: Identifier<Block>, position: Position = .start, direction: Direction, routeIndex: Int? = nil, removeLeadingBlocks: Bool = true) throws {
         guard let train = self.train(for: trainId) else {
             throw LayoutError.trainNotFound(trainId: trainId)
         }
@@ -400,7 +416,9 @@ extension Layout {
             train.routeStepIndex = routeIndex
         }
 
-        try reservation.removeLeadingBlocks(train: train)
+        if removeLeadingBlocks {
+            try reservation.removeLeadingBlocks(train: train)
+        }
     }
 
     func free(fromBlock: Identifier<Block>, toBlockNotIncluded: Identifier<Block>, direction: Direction) throws {

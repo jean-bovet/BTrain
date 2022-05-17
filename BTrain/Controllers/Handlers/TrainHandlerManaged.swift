@@ -181,7 +181,10 @@ final class TrainHandlerManaged {
                 continue
             }
             
-            try layout.setTrainPosition(train, position)
+            // Note: do not remove the leading blocks as this will be taken care below by the `reserveLeadingBlocks` method.
+            // This is important because the reserveLeadingBlocks method needs to remember the previously reserved turnouts
+            // in order to avoid re-activating them each time unnecessarily.
+            try layout.setTrainPosition(train, position, removeLeadingBlocks: false)
             
             BTLogger.router.debug("\(self.train, privacy: .public): moved to position \(self.train.position) in \(self.currentBlock.name, privacy: .public), direction \(self.trainInstance.direction)")
             
@@ -207,10 +210,11 @@ final class TrainHandlerManaged {
         }
         
         BTLogger.router.debug("\(self.train, privacy: .public): enters block \(entryFeedback.block, privacy: .public) at position \(position), direction \(entryFeedback.direction)")
-        
-        // Set the train to its new block. This method also takes care of updating the reserved blocks for the train itself
-        // but also the leading blocks so the train can continue to move automatically.
-        try layout.setTrainToBlock(train.id, entryFeedback.block.id, position: .custom(value: position), direction: entryFeedback.direction, routeIndex: train.routeStepIndex + 1)
+
+        // Note: do not remove the leading blocks as this will be taken care below by the `reserveLeadingBlocks` method.
+        // This is important because the reserveLeadingBlocks method needs to remember the previously reserved turnouts
+        // in order to avoid re-activating them each time unnecessarily.
+        try layout.setTrainToBlock(train.id, entryFeedback.block.id, position: .custom(value: position), direction: entryFeedback.direction, routeIndex: train.routeStepIndex + 1, removeLeadingBlocks: false)
         
         guard let newBlock = layout.block(for: entryFeedback.block.id) else {
             throw LayoutError.blockNotFound(blockId: entryFeedback.block.id)
