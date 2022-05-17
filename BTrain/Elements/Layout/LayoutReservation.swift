@@ -262,7 +262,7 @@ final class LayoutReservation {
         turnout.reserved = .init(train: train.id, sockets: reservation.sockets)
         train.leading.append(turnout)
 
-        if reservedTurnouts.contains(TurnoutActivation(turnout: turnout)) && turnout.settled {
+        if reservedTurnouts.contains(TurnoutActivation(turnout: turnout)) {
             // Do not request a turnout state change to the Digital Controller if the turnout is settled (which means it has already the state
             // requested) AND it has already been reserved. This is to avoid flooding the Digital Controller with unnecessary turnout requests
             // because this method is called frequently (when a train moves within a block or to a next block).

@@ -74,7 +74,8 @@
         "LayoutTests\/testTrainStopCompletely()",
         "LayoutTests\/testTurnoutSpeedLimit()",
         "LayoutTests\/testValidation()",
-        "LayoutYardRoutingTests\/testActivateTurnoutOnlyOnce()"
+        "LayoutYardRoutingTests\/testActivateTurnoutOnlyOnce()",
+        "TransitionsTests\/testReserveBehavior()"
       ],
       "target" : {
         "containerPath" : "container:BTrain.xcodeproj",
