@@ -162,13 +162,10 @@ final class Train: Element, ObservableObject {
     /// Available only at runtime (never persisted), this variable keeps track of the leading reservation,
     /// blocks or turnouts, that are assigned to this train.
     let leading = TrainLeadingReservation()
-    
-    /// Array of blocks occpied by the train and its cars.
-    ///
-    /// This array is updated by the ``LayoutReservation`` class each time the reserved
-    /// blocks are updated. The occupied blocks are stored here for quick access instead
-    /// of re-computing them on the fly all the time.
-    var occupiedBlocks = [Block]()
+
+    /// Available only at runtime (never persisted), this variable keeps track of the blocks and turnouts
+    /// occupied by this train.
+    let occupied = TrainOccupiedReservation()
     
     /// Schedule state of the train
     enum Schedule {

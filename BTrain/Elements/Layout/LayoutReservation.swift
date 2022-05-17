@@ -76,17 +76,31 @@ final class LayoutReservation {
     init(layout: Layout, verbose: Bool) {
         self.layout = layout
         self.verbose = verbose
-   }
+    }
     
-    // This function will try to reserve as many blocks as specified (maxNumberOfLeadingReservedBlocks)
-    // in front of the train (leading blocks).
-    // Note: it won't reserve blocks that are already reserved to avoid loops.
-    func updateReservedBlocks(train: Train) throws -> Bool {
+    /// Result of updating the reserved blocks
+    enum Result {
+        /// Could not reserve the blocks
+        case failure
+        
+        /// Successfully reserved the blocks
+        case success
+        
+        /// Successfully reserved the same blocks
+        /// as previously reserved (no change)
+        case successAndUnchanged
+    }
+    
+    /// Update the leading and occupied blocks for the specified train.
+    /// - Parameter train: the train
+    /// - Returns: the result of the operation
+    func updateReservedBlocks(train: Train) throws -> Result {
+        let previousLeadingItems = train.leading.items
+        let previousOccupiedItems = train.occupied.items
+        
         // Remember all the turnouts that have been already reserved so we don't re-activate
         // them again when reserving the blocks in this flow.
-        let reservedTurnouts = Set<TurnoutActivation>(layout.turnouts
-            .filter({ $0.reserved?.train == train.id })
-            .map({ TurnoutActivation(turnout: $0) }))
+        let reservedTurnouts = Set<TurnoutActivation>(train.leading.turnouts.map({ TurnoutActivation(turnout: $0) }))
         
         // Remove the train from all the elements
         try freeElements(train: train)
@@ -96,7 +110,16 @@ final class LayoutReservation {
         try occupyBlockWith(train: train)
 
         // Reserve the number of leading blocks necessary
-        return try reserveLeadingBlocks(train: train, reservedTurnouts: reservedTurnouts)
+        if try reserveLeadingBlocks(train: train, reservedTurnouts: reservedTurnouts) {
+            // Return the result by determining if the leading or occupied items have changed
+            if previousLeadingItems != train.leading.items || previousOccupiedItems != train.occupied.items {
+                return .success
+            } else {
+                return .successAndUnchanged
+            }
+        } else {
+            return .failure
+        }
     }
     
     /// Removes the reservation for the leading blocks of the specified train but keep the occupied blocks intact (that the train actually occupies).
@@ -311,6 +334,7 @@ final class LayoutReservation {
             }
             turnout.reserved = .init(train: train.id, sockets: turnoutInfo.sockets)
             turnout.train = train.id
+            train.occupied.append(turnout)
         } blockCallback: { block, attributes in
             guard block.reserved == nil || attributes.headBlock else {
                 throw LayoutError.blockAlreadyReserved(block: block)
@@ -328,7 +352,7 @@ final class LayoutReservation {
             }
             
             block.reserved = .init(trainId: train.id, direction: attributes.trainDirection)
-            train.occupiedBlocks.append(block)
+            train.occupied.append(block)
         }
         if !result {
             throw LayoutError.cannotReserveAllElements(train: train)
@@ -338,7 +362,7 @@ final class LayoutReservation {
     // This methods frees all the reserved elements except the block in which the locomotive is located
     func freeElements(train: Train) throws {
         train.leading.clear()
-        train.occupiedBlocks.removeAll()
+        train.occupied.clear()
 
         layout.blockMap.values
             .filter { $0.reserved?.trainId == train.id }

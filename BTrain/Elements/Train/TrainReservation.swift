@@ -12,29 +12,24 @@
 
 import Foundation
 
-/// This class keeps track of the leading reservation items assigned to this train.
-///
-/// A reservation item can be a block or a turnout. This is very useful in order to ensure
-/// the train moves only when there are reserved blocks ahead and when the reserved
-/// turnouts have settled (that is, the turnout state has changed in the physical layout).
-final class TrainLeadingReservation {
-    
-    enum Item {
+/// Keep track of the reserved block and turnout
+class TrainReservation {
+    enum Item: Equatable {
         case block(Block)
         case turnout(Turnout)
     }
     
-    /// Array of leading reservation items
+    /// Array of reservation items
     /// This array is updated by the ``LayoutReservation`` class each time the reserved
     /// blocks or turnouts are updated.
-    private var items = [Item]()
+    internal var items = [Item]()
     
-    /// Returns true if there are no leading blocks reserved
+    /// Returns true if there are no blocks nor turnout reserved
     var isEmpty: Bool {
         items.isEmpty
     }
     
-    /// Array of leading blocks that have been reserved in front of the train.
+    /// Array of reserved blocks.
     var blocks: [Block] {
         items.compactMap { item in
             if case .block(let block) = item {
@@ -45,7 +40,7 @@ final class TrainLeadingReservation {
         }
     }
     
-    /// Array of leading turnouts that have been reserved in front of the train.
+    /// Array of reserved turnouts.
     var turnouts: [Turnout] {
         items.compactMap { item in
             if case .turnout(let turnout) = item {
@@ -55,6 +50,34 @@ final class TrainLeadingReservation {
             }
         }
     }
+    
+    func append(_ block: Block) {
+        items.append(.block(block))
+    }
+    
+    func append(_ turnout: Turnout) {
+        items.append(.turnout(turnout))
+    }
+
+    func clear() {
+        items.removeAll()
+    }
+
+}
+
+/// This class keeps track of the occupied reserved blocks or turnouts for a specific train.
+///
+/// An occupied block or turnout is one that contains a portion of the train, either the locomotive or a wagon.
+final class TrainOccupiedReservation: TrainReservation {
+    
+}
+
+/// This class keeps track of the leading reservation items assigned to this train.
+///
+/// A reservation item can be a block or a turnout. This is very useful in order to ensure
+/// the train moves only when there are reserved blocks ahead and when the reserved
+/// turnouts have settled (that is, the turnout state has changed in the physical layout).
+final class TrainLeadingReservation: TrainReservation {
     
     /// Returns true if there are reserved blocks (and turnouts) **and** they are settled.
     ///
@@ -113,15 +136,4 @@ final class TrainLeadingReservation {
         return distance
     }
 
-    func append(_ block: Block) {
-        items.append(.block(block))
-    }
-    
-    func append(_ turnout: Turnout) {
-        items.append(.turnout(turnout))
-    }
-
-    func clear() {
-        items.removeAll()
-    }
 }

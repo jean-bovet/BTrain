@@ -12,11 +12,13 @@
 
 import Foundation
 
+/// A specific metric with its ``id`` (aka key) and ``value``
 struct Metric: Identifiable {
     let id: String
     let value: String
 }
 
+/// Any object able to return some metrics should adopt this interface
 protocol MetricsProvider {
     var metrics: [Metric] { get }
 }

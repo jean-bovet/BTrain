@@ -165,6 +165,8 @@ final class TrainHandlerManaged {
             break
         case .movedToNextBlock:
             break
+        case .reservedBlocksChanged:
+            break
         }
     }
     
@@ -315,23 +317,20 @@ final class TrainHandlerManaged {
         controller.scheduleRestartTimer(train: train)
     }
         
+    // TODO: unit test to test the resulting event with change and no change
     func reserveLeadingBlocks() throws {
-        // Do not reserve leading blocks if there are still settling,
-        // that is, some turnout are not yet fully settled.
-        guard train.leading.emptyOrSettled else {
-            return
-        }
-
         switch route.mode {
         case .fixed:
-            if try layout.reservation.updateReservedBlocks(train: train) {
-                resultingEvents.append(.stateChanged)
-                return
+            if try layout.reservation.updateReservedBlocks(train: train) == .success {
+                resultingEvents.append(.reservedBlocksChanged)
             }
 
         case .automatic, .automaticOnce(destination: _):
-            if try layout.reservation.updateReservedBlocks(train: train) {
-                resultingEvents.append(.stateChanged)
+            let result = try layout.reservation.updateReservedBlocks(train: train)
+            if result != .failure {
+                if result == .success {
+                    resultingEvents.append(.reservedBlocksChanged)
+                }
                 return
             }
 
@@ -344,8 +343,8 @@ final class TrainHandlerManaged {
             // Update the automatic route
             if try updateAutomaticRoute(for: train, layout: layout) {
                 // And try to reserve the lead blocks again
-                if try layout.reservation.updateReservedBlocks(train: train) {
-                    resultingEvents.append(.stateChanged)
+                if try layout.reservation.updateReservedBlocks(train: train) == .success {
+                    resultingEvents.append(.reservedBlocksChanged)
                 }
             }
         }
