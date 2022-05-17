@@ -12,40 +12,33 @@
 
 import SwiftUI
 
-struct OverviewView: View {
+struct DeveloperView: View {
     
-    @ObservedObject var document: LayoutDocument
-    @AppStorage("showSimulator") var showSimulator: Bool = false
+    let doc: LayoutDocument
+    
+    let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
 
     var body: some View {
-        HStack(spacing: 0) {
-            VStack(spacing: 0) {
-                TrainControlListView(layout: document.layout, document: document)
-                if document.showDebugModeControls {
-                    DeveloperView(doc: document)
-                        .frame(height: 150)
-                }
-                if document.simulator.started && showSimulator {
-                    SimulatorView(simulator: document.simulator)
-                        .frame(height: 300)
-                }
+        Table() {
+            TableColumn("Key") { metric in
+                Text("\(metric.id)")
             }
-            .frame(width: 500)
-
-            SwitchboardContainerView(layout: document.layout,
-                                     layoutController: document.layoutController,
-                                     document: document,
-                                     switchboard: document.switchboard,
-                                     state: document.switchboard.state)
+            TableColumn("Value") { metric in
+                Text("\(metric.value)")
+            }
+        } rows: {
+            ForEach(doc.layoutController.metrics) { metric in
+                TableRow(metric)
+            }
         }
     }
 }
 
-struct OverviewView_Previews: PreviewProvider {
+struct DeveloperView_Previews: PreviewProvider {
     
-    static let doc = LayoutDocument(layout: LayoutLoop2().newLayout())
-
+    static let doc = LayoutDocument(layout: LayoutYard().newLayout())
+    
     static var previews: some View {
-        OverviewView(document: doc)
+        DeveloperView(doc: doc)
     }
 }

@@ -140,6 +140,10 @@ class MockCommandInterface: CommandInterface {
     
     var speedValues = [UInt16]()
     
+    var metrics: [Metric] {
+        []
+    }
+    
     func connect(server: String, port: UInt16, onReady: @escaping () -> Void, onError: @escaping (Error) -> Void, onStop: @escaping () -> Void) {
         
     }

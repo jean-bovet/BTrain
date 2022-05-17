@@ -13,7 +13,7 @@
 import Foundation
 
 /// A protocol describing the API towards a Digital Controller without being specific to a given brand.
-protocol CommandInterface: AnyObject {
+protocol CommandInterface: AnyObject, MetricsProvider {
             
     func connect(server: String, port: UInt16, onReady: @escaping () -> Void, onError: @escaping (Error) -> Void, onStop: @escaping () -> Void)
     

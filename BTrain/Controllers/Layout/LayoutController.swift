@@ -42,7 +42,7 @@ final class LayoutController: TrainControllerDelegate {
     private var executor: LayoutCommandExecutor
     
     let debugger: LayoutControllerDebugger
-
+    
     init(layout: Layout, switchboard: SwitchBoard?, interface: CommandInterface) {
         self.layout = layout
         self.switchboard = switchboard
@@ -303,4 +303,20 @@ extension LayoutController: LayoutCommandExecuting {
         }
     }
     
+}
+
+extension LayoutController: MetricsProvider {
+    
+    var metrics: [Metric] {
+        executor.metrics + interface.metrics
+    }
+
+}
+
+extension LayoutCommandExecutor: MetricsProvider {
+    
+    var metrics: [Metric] {
+        [.init(id: turnoutQueue.name, value: String(turnoutQueue.scheduledCount))]
+    }
+
 }

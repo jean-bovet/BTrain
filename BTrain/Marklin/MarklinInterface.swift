@@ -163,6 +163,16 @@ final class MarklinInterface: CommandInterface {
         
 }
 
+extension MarklinInterface: MetricsProvider {
+    var metrics: [Metric] {
+        if let queue = client?.connection.dataQueue {
+            return [.init(id: queue.name, value: String(queue.scheduledCount))]
+        } else {
+            return []
+        }
+    }        
+}
+
 extension Locomotive {
     
     var commandLocomotive: CommandLocomotive {
