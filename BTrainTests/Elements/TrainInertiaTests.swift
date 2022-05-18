@@ -91,7 +91,7 @@ class TrainInertiaTests: XCTestCase {
         t.speed.requestedSteps = SpeedStep(value: 100)
         
         let expectation = expectation(description: "Completed")
-        ic.changeSpeed(of: t, acceleration: nil) {
+        ic.changeSpeed(of: t, acceleration: nil) { _ in
             expectation.fulfill()
         }
         
@@ -111,6 +111,46 @@ class TrainInertiaTests: XCTestCase {
         XCTAssertEqual(t.speed.requestedSteps, SpeedStep(value: 100))
     }
     
+    /// Ensure that a previous speed change callback that is being cancelled does not change
+    /// the train state. For example, a train stopping can be restarted in the middle of being stopped;
+    /// when that happen, the new state of .running should not be overriden by the previous callback.
+    func testSpeedChangeCancelPreviousCompletionBlock() throws {
+        let layout = LayoutYard().newLayout()
+        let mexec = ManualCommandExecutor()
+        layout.executing = mexec
+        
+        let t = layout.trains[0]
+        try layout.setTrainToBlock(t.id, layout.blocks[0].id, direction: .next)
+        
+        t.state = .running
+        
+        // Ask the layout to stop the train
+        let stopCompletion = expectation(description: "Completed")
+        try layout.stopTrain(t.id, completely: true) {
+            stopCompletion.fulfill()
+        }
+        
+        XCTAssertEqual(.stopping, t.state)
+        
+        // Simulate a cancellation of the speed change request which should not change the state of the train
+        mexec.onSpeedCompletion?(false)
+        wait(for: [stopCompletion], timeout: 1.0)
+        XCTAssertEqual(.stopping, t.state)
+        
+        // Reset the train state and try again, this time by completing the speed change request fully.
+        t.state = .running
+
+        let stopCompletion2 = expectation(description: "Completed")
+        try layout.stopTrain(t.id, completely: true) {
+            stopCompletion2.fulfill()
+        }
+
+        // Simulate a completion of the speed change request which should, this time, change the train state
+        mexec.onSpeedCompletion?(true)
+        wait(for: [stopCompletion2], timeout: 1.0)
+        XCTAssertEqual(.stopped, t.state)
+    }
+    
     private func assertChangeSpeed(train: Train, from fromSteps: UInt16, to steps: UInt16, _ expectedSteps: [UInt16], _ ic: TrainControllerAcceleration) {
         XCTAssertEqual(ic.actual.value, fromSteps)
 
@@ -121,7 +161,7 @@ class TrainInertiaTests: XCTestCase {
         train.speed.requestedSteps = SpeedStep(value: steps)
         
         let expectation = expectation(description: "Completed")
-        ic.changeSpeed(of: train, acceleration: nil) {
+        ic.changeSpeed(of: train, acceleration: nil) { _ in
             expectation.fulfill()
         }
 
@@ -134,6 +174,24 @@ class TrainInertiaTests: XCTestCase {
         cmd.speedValues.removeAll()
     }
     
+}
+
+class ManualCommandExecutor: LayoutCommandExecuting {
+    
+    var onSpeedCompletion: CompletionCancelBlock?
+
+    func sendTurnoutState(turnout: Turnout, completion: @escaping CompletionBlock) {
+        completion()
+    }
+    
+    func sendTrainDirection(train: Train, forward: Bool, completion: @escaping CompletionBlock) {
+        completion()
+    }
+    
+    func sendTrainSpeed(train: Train, acceleration: TrainSpeedAcceleration.Acceleration?, completion: @escaping CompletionCancelBlock) {
+        onSpeedCompletion = completion
+    }
+        
 }
 
 class MockCommandInterface: CommandInterface {

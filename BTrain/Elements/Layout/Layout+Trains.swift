@@ -131,11 +131,11 @@ extension Layout {
         }
 
         if train.state == .running {
-            setTrainSpeed(train, LayoutFactory.DefaultMaximumSpeed, speedLimit: true) { }
+            setTrainSpeed(train, LayoutFactory.DefaultMaximumSpeed, speedLimit: true)
         }
     }
     
-    func setTrainSpeed(_ train: Train, _ speed: TrainSpeed.UnitKph, speedLimit: Bool = true, force: Bool = false, acceleration: TrainSpeedAcceleration.Acceleration? = nil, completion: @escaping CompletionBlock) {
+    func setTrainSpeed(_ train: Train, _ speed: TrainSpeed.UnitKph, speedLimit: Bool = true, force: Bool = false, acceleration: TrainSpeedAcceleration.Acceleration? = nil, completion: CompletionCancelBlock? = nil) {
         let previousRequestedSteps = train.speed.requestedSteps
         if speedLimit {
             let route = route(for: train.routeId, trainId: train.id)
@@ -146,19 +146,19 @@ extension Layout {
         if train.speed.requestedSteps != previousRequestedSteps || force {
             setTrainSpeed(train, train.speed.requestedSteps, acceleration: acceleration, completion: completion)
         } else {
-            completion()
+            completion?(true)
         }
     }
 
-    func setTrainSpeed(_ train: Train, _ speed: SpeedStep, acceleration: TrainSpeedAcceleration.Acceleration? = nil, completion: @escaping CompletionBlock) {
+    func setTrainSpeed(_ train: Train, _ speed: SpeedStep, acceleration: TrainSpeedAcceleration.Acceleration? = nil, completion: CompletionCancelBlock? = nil) {
         train.speed.requestedSteps = speed
         if train.speed.requestedSteps != train.speed.actualSteps {
-            executor.sendTrainSpeed(train: train, acceleration: acceleration) { [weak self] in
+            executor.sendTrainSpeed(train: train, acceleration: acceleration) { [weak self] completed in
                 self?.didChange()
-                completion()
+                completion?(completed)
             }
         } else {
-            completion()
+            completion?(true)
         }
     }
 
@@ -330,8 +330,10 @@ extension Layout {
             train.speed.requestedKph = 0
             train.state = .stopping
 
-            executor.sendTrainSpeed(train: train, acceleration: nil) { [weak self] in
-                train.state = .stopped
+            executor.sendTrainSpeed(train: train, acceleration: nil) { [weak self] completed in
+                if completed {
+                    train.state = .stopped
+                }
                 self?.didChange()
                 completion()
             }

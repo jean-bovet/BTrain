@@ -66,9 +66,9 @@ class LayoutYardRoutingTests: XCTestCase {
             completion()
         }
         
-        func sendTrainSpeed(train: Train, acceleration: TrainSpeedAcceleration.Acceleration?, completion: @escaping CompletionBlock) {
+        func sendTrainSpeed(train: Train, acceleration: TrainSpeedAcceleration.Acceleration?, completion: @escaping CompletionCancelBlock) {
             train.speed.actualSteps = train.speed.requestedSteps
-            completion()
+            completion(true)
         }
         
     }

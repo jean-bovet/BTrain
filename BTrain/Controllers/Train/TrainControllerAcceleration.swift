@@ -19,7 +19,30 @@ import Combine
 // by the Digital Controller.
 final class TrainControllerAcceleration {
     
-    typealias SpeedChangedCallback = (_ steps: SpeedStep, _ completed: Bool) -> Void
+    /// The status of the speed change callback
+    enum Status: CustomStringConvertible {
+        /// The speed change has been cancelled
+        case cancelled
+        
+        /// The speed change has completed
+        case finished
+        
+        /// The speed change is in progress
+        case working
+        
+        var description: String {
+            switch self {
+            case .cancelled:
+                return "cancelled"
+            case .finished:
+                return "finished"
+            case .working:
+                return "working"
+            }
+        }
+    }
+    
+    typealias SpeedChangedCallback = (_ steps: SpeedStep, _ status: Status) -> Void
     
     let train: Train
     let interface: CommandInterface
@@ -55,22 +78,29 @@ final class TrainControllerAcceleration {
             self.stepDelay = Double(Self.DefaultStepDelay) / 1000
         }
     }
-        
-    func changeSpeed(of train: Train, acceleration: TrainSpeedAcceleration.Acceleration?, completion: @escaping CompletionBlock) {
+    
+    /// Request a change in the speed of a specific train, given an optional acceleration/deceleration profile.
+    ///
+    /// - Parameters:
+    ///   - train: the train to change the speed
+    ///   - acceleration: the acceleration/deceleration profile
+    ///   - completion: a block called when the change is either completed or cancelled
+    func changeSpeed(of train: Train, acceleration: TrainSpeedAcceleration.Acceleration?, completion: @escaping CompletionCancelBlock) {
         BTLogger.router.debug("\(train, privacy: .public): requesting speed of \(train.speed.requestedKph)kph (\(train.speed.requestedSteps)) from actual speed of \(train.speed.actualKph) kph (\(train.speed.actualSteps))")
 
-        changeSpeed(from: train.speed.actualSteps, to: train.speed.requestedSteps, acceleration: acceleration ?? train.speed.accelerationProfile) { [weak self] steps, finished in
+        changeSpeed(from: train.speed.actualSteps, to: train.speed.requestedSteps, acceleration: acceleration ?? train.speed.accelerationProfile) { [weak self] steps, status in
             guard let interface = self?.interface else {
                 return
             }
             
             let value = interface.speedValue(for: steps, decoder: train.decoder)
-            BTLogger.router.debug("\(train, privacy: .public): execute speed value \(value) (\(steps)) towards Digital Controller \(finished ? "- completed":"- in progress", privacy: .public)")
+            BTLogger.router.debug("\(train, privacy: .public): execute speed value \(value) (\(steps)) towards Digital Controller - \(status, privacy: .public)")
             interface.execute(command: .speed(address: train.address, decoderType: train.decoder, value: value)) {
                 // Change the actualSteps only after we know the command has been sent to the Digital Controller
                 train.speed.actualSteps = steps
-                BTLogger.router.debug("\(train, privacy: .public): actual speed is \(train.speed.actualKph) kph (\(train.speed.actualSteps)) \(finished ? "- completed":"- in progress", privacy: .public)")
-                if finished {
+                BTLogger.router.debug("\(train, privacy: .public): actual speed is \(train.speed.actualKph) kph (\(train.speed.actualSteps)) - \(status, privacy: .public)")
+                if status == .finished || status == .cancelled {
+                    let finished = status == .finished
                     if steps == .zero {
                         // When stopping a locomotive, we need to wait a bit more to ensure the locomotive
                         // has effectively stopped physically on the layout. This is because we want to callback
@@ -80,10 +110,10 @@ final class TrainControllerAcceleration {
                         // train has stopped so this extra wait time can be configured in the UX, per locomotive, and
                         // adjusted by the user depending on the locomotive speed inertia behavior.
                         DispatchQueue.main.asyncAfter(deadline: .now() + train.speed.stopSettleDelay) {
-                            completion()
+                            completion(finished)
                         }
                     } else {
-                        completion()
+                        completion(finished)
                     }
                 }
             }
@@ -153,21 +183,21 @@ final class TrainControllerAcceleration {
         if done {
             finished()
         } else {
-            stepsDidChange?(actual, false)
+            stepsDidChange?(actual, .working)
         }
     }
     
     private func cancelPrevious() {
         if let stepsDidChange = stepsDidChange {
             BTLogger.router.warning("\(self.train, privacy: .public): interrupting in-progress speed change from \(self.actual.value) steps to \(self.desired.value) steps")
-            stepsDidChange(actual, true)
+            stepsDidChange(actual, .cancelled)
         }
         stepsDidChange = nil
         timer?.invalidate()
     }
     
     private func finished() {
-        stepsDidChange?(actual, true)
+        stepsDidChange?(actual, .finished)
         stepsDidChange = nil
         timer?.invalidate()
     }

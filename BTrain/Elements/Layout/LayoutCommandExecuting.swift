@@ -13,12 +13,34 @@
 import Foundation
 
 typealias CompletionBlock = (() -> Void)
+typealias CompletionCancelBlock = ((_ completed: Bool) -> Void)
 
+/// Protocol defining the commands that a layout can execute.
 protocol LayoutCommandExecuting: AnyObject {
     
+    /// Send a turnout state command
+    ///
+    /// - Parameters:
+    ///   - turnout: the turnout whose state need to be sent to the Digital Controller
+    ///   - completion: completion block called when the command has been sent
     func sendTurnoutState(turnout: Turnout, completion: @escaping CompletionBlock)
+    
+    /// Send a train direction command
+    ///
+    /// - Parameters:
+    ///   - train: the train to change the direction
+    ///   - forward: true for forward direction, false for backward direction
+    ///   - completion: completion block called when the command has been sent
     func sendTrainDirection(train: Train, forward: Bool, completion: @escaping CompletionBlock)
-    func sendTrainSpeed(train: Train, acceleration: TrainSpeedAcceleration.Acceleration?, completion: @escaping CompletionBlock)
+        
+    /// Send a train speed command
+    ///
+    /// - Parameters:
+    ///   - train: the train to change the speed
+    ///   - acceleration: an optional acceleration profile
+    ///   - completion: completion block called when the speed change is either completed or cancelled. The speed change can be cancelled if another speed change is requested
+    ///   when one is already in progress.
+    func sendTrainSpeed(train: Train, acceleration: TrainSpeedAcceleration.Acceleration?, completion: @escaping CompletionCancelBlock)
 
 }
 
@@ -32,9 +54,9 @@ final class DefaultCommandExecutor: LayoutCommandExecuting {
         completion()
     }
     
-    func sendTrainSpeed(train: Train, acceleration: TrainSpeedAcceleration.Acceleration?, completion: @escaping CompletionBlock) {
+    func sendTrainSpeed(train: Train, acceleration: TrainSpeedAcceleration.Acceleration?, completion: @escaping CompletionCancelBlock) {
         train.speed.actualSteps = train.speed.requestedSteps
-        completion()
+        completion(true)
     }
     
 }

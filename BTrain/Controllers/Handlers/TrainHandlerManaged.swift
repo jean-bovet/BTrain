@@ -258,7 +258,7 @@ final class TrainHandlerManaged {
             train.startRouteIndex = train.routeStepIndex
             
             train.state = .running
-            layout.setTrainSpeed(train, LayoutFactory.DefaultMaximumSpeed) { }
+            layout.setTrainSpeed(train, LayoutFactory.DefaultMaximumSpeed)
             resultingEvents.append(.stateChanged)
         }
     }
@@ -270,7 +270,7 @@ final class TrainHandlerManaged {
         
         BTLogger.router.debug("\(self.train, privacy: .public): braking in \(self.currentBlock.name, privacy: .public) at position \(self.train.position), direction \(self.trainInstance.direction)")
         train.state = .braking
-        layout.setTrainSpeed(train, currentBlock.brakingSpeed ?? LayoutFactory.DefaultBrakingSpeed) {}
+        layout.setTrainSpeed(train, currentBlock.brakingSpeed ?? LayoutFactory.DefaultBrakingSpeed)
         resultingEvents.append(.stateChanged)
     }
     

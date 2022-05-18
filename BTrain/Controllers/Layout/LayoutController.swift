@@ -293,13 +293,13 @@ extension LayoutController: LayoutCommandExecuting {
         executor.sendTrainDirection(train: train, forward: forward, completion: completion)
     }
     
-    func sendTrainSpeed(train: Train, acceleration: TrainSpeedAcceleration.Acceleration?, completion: @escaping CompletionBlock) {
+    func sendTrainSpeed(train: Train, acceleration: TrainSpeedAcceleration.Acceleration?, completion: @escaping CompletionCancelBlock) {
         if let controller = controllers[train.id] {
             controller.accelerationController.changeSpeed(of: train, acceleration: acceleration, completion: completion)
         } else {
             assertionFailure("There is no TrainController for \(train.name)")
             BTLogger.router.error("There is no TrainController for \(train.name, privacy: .public)")
-            completion()
+            completion(false)
         }
     }
     
