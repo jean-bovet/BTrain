@@ -18,6 +18,8 @@ struct DeveloperView: View {
     
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
 
+    @State private var refresh = false
+    
     var body: some View {
         Table() {
             TableColumn("Key") { metric in
@@ -30,7 +32,9 @@ struct DeveloperView: View {
             ForEach(doc.layoutController.metrics) { metric in
                 TableRow(metric)
             }
-        }
+        }.onReceive(timer) { _ in
+            refresh.toggle()
+        }.background(refresh ? .clear : .clear)
     }
 }
 
