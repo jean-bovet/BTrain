@@ -331,6 +331,7 @@ extension Layout {
             train.state = .stopping
 
             executor.sendTrainSpeed(train: train, acceleration: nil) { [weak self] completed in
+                BTLogger.router.debug("\(train): train speed completion \(completed)")
                 if completed {
                     train.state = .stopped
                 }

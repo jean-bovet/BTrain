@@ -86,19 +86,20 @@ final class TrainControllerAcceleration {
     ///   - acceleration: the acceleration/deceleration profile
     ///   - completion: a block called when the change is either completed or cancelled
     func changeSpeed(of train: Train, acceleration: TrainSpeedAcceleration.Acceleration?, completion: @escaping CompletionCancelBlock) {
-        BTLogger.router.debug("\(train, privacy: .public): requesting speed of \(train.speed.requestedKph)kph (\(train.speed.requestedSteps)) from actual speed of \(train.speed.actualKph) kph (\(train.speed.actualSteps))")
+        BTLogger.router.debug("\(train, privacy: .public): requesting speed of \(train.speed.requestedKph) kph (\(train.speed.requestedSteps)) from actual speed of \(train.speed.actualKph) kph (\(train.speed.actualSteps))")
 
+        let requestedKph = train.speed.requestedKph
         changeSpeed(from: train.speed.actualSteps, to: train.speed.requestedSteps, acceleration: acceleration ?? train.speed.accelerationProfile) { [weak self] steps, status in
             guard let interface = self?.interface else {
                 return
             }
             
             let value = interface.speedValue(for: steps, decoder: train.decoder)
-            BTLogger.router.debug("\(train, privacy: .public): execute speed value \(value) (\(steps)) towards Digital Controller - \(status, privacy: .public)")
+            BTLogger.router.debug("\(train, privacy: .public): execute speed value \(value) (\(steps)), requested \(requestedKph) kph, towards Digital Controller - \(status, privacy: .public)")
             interface.execute(command: .speed(address: train.address, decoderType: train.decoder, value: value)) {
                 // Change the actualSteps only after we know the command has been sent to the Digital Controller
                 train.speed.actualSteps = steps
-                BTLogger.router.debug("\(train, privacy: .public): actual speed is \(train.speed.actualKph) kph (\(train.speed.actualSteps)) - \(status, privacy: .public)")
+                BTLogger.router.debug("\(train, privacy: .public): actual speed is \(train.speed.actualKph) kph (\(train.speed.actualSteps)), requested \(requestedKph) kph - \(status, privacy: .public)")
                 if status == .finished || status == .cancelled {
                     let finished = status == .finished
                     if steps == .zero {
