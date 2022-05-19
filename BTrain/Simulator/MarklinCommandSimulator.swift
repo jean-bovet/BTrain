@@ -333,7 +333,7 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
     }
     
     func simulate(route: Route, train: Train) throws {
-        guard train.speed.requestedKph > 0 else {
+        guard train.speed.actualKph > 0 else {
             return
         }
                 
@@ -345,7 +345,7 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
             return
         }
                        
-        BTLogger.debug("[Simulator] Simulating route \(route.name) for \(train.name)")
+        BTLogger.debug("[Simulator] Simulating route \(route.name) for \(train.name), requested speed \(train.speed.requestedKph) kph, actual speed \(train.speed.actualKph) kph")
 
         if let entryFeedback = try layout.entryFeedback(for: train) {
             // Ensure all the feedbacks of the current block is turned off, otherwise there will be
