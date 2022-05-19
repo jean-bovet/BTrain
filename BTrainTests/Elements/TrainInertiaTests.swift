@@ -264,20 +264,52 @@ class TrainInertiaTests: XCTestCase {
     
 }
 
+// TODO: refactor with the other similar mock class
 class ManualCommandExecutor: LayoutCommandExecuting {
+    
+    var forwardExecutor: LayoutCommandExecuting?
+    
+    var pauseTurnout = false
+    var pendingTurnouts = [Turnout]()
+    
+    var trainsScheduledToRestart = [Train]()
     
     var onSpeedCompletion: CompletionCancelBlock?
 
+    func scheduleRestartTimer(train: Train) {
+        trainsScheduledToRestart.append(train)
+    }
+
     func sendTurnoutState(turnout: Turnout, completion: @escaping CompletionBlock) {
-        completion()
+        if pauseTurnout {
+            pendingTurnouts.append(turnout)
+        } else {
+            for turnout in pendingTurnouts + [turnout] {
+                if let forwardExecutor = forwardExecutor {
+                    forwardExecutor.sendTurnoutState(turnout: turnout, completion: completion)
+                } else {
+                    completion()
+                }
+            }
+            pendingTurnouts.removeAll()
+        }
     }
     
     func sendTrainDirection(train: Train, forward: Bool, completion: @escaping CompletionBlock) {
-        completion()
+        if let forwardExecutor = forwardExecutor {
+            forwardExecutor.sendTrainDirection(train: train, forward: forward, completion: completion)
+        } else {
+            completion()
+        }
     }
     
     func sendTrainSpeed(train: Train, acceleration: TrainSpeedAcceleration.Acceleration?, completion: @escaping CompletionCancelBlock) {
         onSpeedCompletion = completion
+//        if let forwardExecutor = forwardExecutor {
+//            forwardExecutor.sendTrainSpeed(train: train, acceleration: acceleration, completion: completion)
+//        } else {
+//            completion(true)
+//        }
     }
         
 }

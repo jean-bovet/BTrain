@@ -18,6 +18,10 @@ typealias CompletionCancelBlock = ((_ completed: Bool) -> Void)
 /// Protocol defining the commands that a layout can execute.
 protocol LayoutCommandExecuting: AnyObject {
     
+    /// Request to restart the train after a specific amount of time specified by the route and block.
+    /// - Parameter train: the train to restart after some amount of time
+    func scheduleRestartTimer(train: Train)
+    
     /// Send a turnout state command
     ///
     /// - Parameters:
@@ -45,6 +49,11 @@ protocol LayoutCommandExecuting: AnyObject {
 }
 
 final class DefaultCommandExecutor: LayoutCommandExecuting {
+    
+    func scheduleRestartTimer(train: Train) {
+        // no-op
+    }
+    
     func sendTurnoutState(turnout: Turnout, completion: @escaping CompletionBlock) {
         turnout.actualState = turnout.requestedState
         completion()

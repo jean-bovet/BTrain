@@ -99,17 +99,3 @@ final class TrainHandlerResult {
     }
 
 }
-
-/// Protocol defining some common controlling functions that handlers can use
-protocol TrainControlling {
-    
-    /// Request to restart the train after a specific amount of time specified by the route and block.
-    /// - Parameter train: the train to restart after some amount of time
-    func scheduleRestartTimer(train: Train)
-    
-    /// Stop the train by setting its speed to 0.
-    ///
-    /// - Parameter completely: true if the train stops completely, false otherwise. A train that stops completely will have its ``Train/scheduling`` changed to ``Train/Schedule/unmanaged``.
-    func stop(completely: Bool) throws
-    
-}

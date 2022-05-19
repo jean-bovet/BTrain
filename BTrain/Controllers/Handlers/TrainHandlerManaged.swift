@@ -26,7 +26,6 @@ final class TrainHandlerManaged {
     let route: Route
     let train: Train
     let event: TrainEvent
-    let controller: TrainControlling
     
     var currentBlock: Block
     var trainInstance: TrainInstance
@@ -88,9 +87,8 @@ final class TrainHandlerManaged {
     ///   - train: the train
     ///   - route: the route
     ///   - event: the event that triggered this method
-    ///   - controller: the train controller
     /// - Returns: returns the result of the process, which can include one or more follow up events
-    static func process(layout: Layout, route: Route, train: Train, event: TrainEvent, controller: TrainControlling) throws -> TrainHandlerResult {
+    static func process(layout: Layout, route: Route, train: Train, event: TrainEvent) throws -> TrainHandlerResult {
         guard let currentBlock = layout.currentBlock(train: train) else {
             return .none()
         }
@@ -99,16 +97,15 @@ final class TrainHandlerManaged {
             return .none()
         }
         
-        let handler = TrainHandlerManaged(layout: layout, route: route, train: train, event: event, controller: controller, currentBlock: currentBlock, trainInstance: trainInstance)
+        let handler = TrainHandlerManaged(layout: layout, route: route, train: train, event: event, currentBlock: currentBlock, trainInstance: trainInstance)
         return try handler.process()
     }
     
-    private init(layout: Layout, route: Route, train: Train, event: TrainEvent, controller: TrainControlling, currentBlock: Block, trainInstance: TrainInstance) {
+    private init(layout: Layout, route: Route, train: Train, event: TrainEvent, currentBlock: Block, trainInstance: TrainInstance) {
         self.layout = layout
         self.route = route
         self.train = train
         self.event = event
-        self.controller = controller
         self.currentBlock = currentBlock
         self.trainInstance = trainInstance
     }
@@ -141,7 +138,7 @@ final class TrainHandlerManaged {
                 // Note: routeStepIndex is setup by the start() method in the Layout, which
                 // can set its value to something > 0 if the train is somewhere along the route.
                 train.startRouteIndex = train.routeStepIndex
-                try reserveLeadingBlocks()
+                try reserveLeadingBlocks() // TODO: seems unnecessary as handleTrainStart will do it anyway
             } else if train.unmanagedScheduling {
                 try layout.reservation.removeLeadingBlocks(train: train)
             }
@@ -287,34 +284,34 @@ final class TrainHandlerManaged {
             let reachedStationOrDestination = layout.hasTrainReachedStationOrDestination(route, train, currentBlock)
             let stopCompletely = (reachedStationOrDestination && train.managedFinishingScheduling) || trainAtEndOfRoute
             
-            _ = try controller.stop(completely: stopCompletely)
+            _ = try stop(completely: stopCompletely)
             
             if reachedStationOrDestination && stopCompletely == false {
-                reschedule(train: train, delay: waitingTime, controller: controller)
+                reschedule(train: train, delay: waitingTime)
             }
             
         case .automatic:
             let reachedStationOrDestination = layout.hasTrainReachedStationOrDestination(route, train, currentBlock)
             let stopCompletely = reachedStationOrDestination && train.managedFinishingScheduling
             
-            _ = try controller.stop(completely: stopCompletely)
+            _ = try stop(completely: stopCompletely)
             
             if reachedStationOrDestination && stopCompletely == false {
-                reschedule(train: train, delay: waitingTime, controller: controller)
+                reschedule(train: train, delay: waitingTime)
             }
             
         case .automaticOnce(destination: _):
-            _ = try controller.stop(completely: true)
+            _ = try stop(completely: true)
         }
         
         resultingEvents.append(.stateChanged)
     }
     
-    func reschedule(train: Train, delay: TimeInterval, controller: TrainControlling) {
+    func reschedule(train: Train, delay: TimeInterval) {
         BTLogger.router.debug("\(train, privacy: .public): schedule timer to restart train in \(delay, format: .fixed(precision: 1)) seconds")
         
         train.timeUntilAutomaticRestart = delay
-        controller.scheduleRestartTimer(train: train)
+        layout.executor.scheduleRestartTimer(train: train)
     }
         
     // TODO: unit test to test the resulting event with change and no change
@@ -374,4 +371,8 @@ final class TrainHandlerManaged {
         return false
     }
     
+    private func stop(completely: Bool) throws {
+        try layout.stopTrain(train.id, completely: completely) { }
+    }
+            
 }

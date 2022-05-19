@@ -111,6 +111,7 @@ class FixedRoutingWithTurnoutDelays: XCTestCase {
         try p.assert("r1: {b1 ≏ ≏ } <t0> [r1[b2 ≏ 🟢🚂1 ≏ ]] [r1[b3 ≏ ≏ ]] <r1<t1>> [r1[b4 ≏ ≏]] {b1 ≏ ≏ }")
     }
 
+    // TODO: refactor with ManualCommandExecutor
     final class DelayedCommandExecutor: LayoutCommandExecuting {
         
         private var pauseExecution = false {
@@ -129,6 +130,10 @@ class FixedRoutingWithTurnoutDelays: XCTestCase {
         
         func resume() {
             pauseExecution = false
+        }
+        
+        func scheduleRestartTimer(train: Train) {
+            // no-op
         }
         
         func sendTurnoutState(turnout: Turnout, completion: @escaping CompletionBlock) {

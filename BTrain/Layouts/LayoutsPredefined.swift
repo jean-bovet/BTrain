@@ -224,6 +224,7 @@ final class LayoutComplexLoop: LayoutCreating {
     
 }
 
+// This layout represent an actual physical layout used for real-world testing
 final class LayoutComplex: LayoutCreating {
     
     static let id = Identifier<Layout>(uuid: "Complex Layout")

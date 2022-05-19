@@ -56,6 +56,10 @@ class LayoutYardRoutingTests: XCTestCase {
         
         var turnouts = [Turnout]()
         
+        func scheduleRestartTimer(train: Train) {
+            
+        }
+        
         func sendTurnoutState(turnout: Turnout, completion: @escaping CompletionBlock) {
             turnouts.append(turnout)
             turnout.actualState = turnout.requestedState

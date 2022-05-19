@@ -17,19 +17,17 @@ final class TrainHandlerUnmanaged {
     let layout: Layout
     let train: Train
     let event: TrainEvent
-    let controller: TrainControlling
     var resultingEvents = TrainHandlerResult()
 
-    static func process(layout: Layout, train: Train, event: TrainEvent, controller: TrainControlling) throws -> TrainHandlerResult {
-        let handler = TrainHandlerUnmanaged(layout: layout, train: train, event: event, controller: controller)
+    static func process(layout: Layout, train: Train, event: TrainEvent) throws -> TrainHandlerResult {
+        let handler = TrainHandlerUnmanaged(layout: layout, train: train, event: event)
         return try handler.process()
     }
     
-    private init(layout: Layout, train: Train, event: TrainEvent, controller: TrainControlling) {
+    private init(layout: Layout, train: Train, event: TrainEvent) {
         self.layout = layout
         self.train = train
         self.event = event
-        self.controller = controller
     }
     
     private func process() throws -> TrainHandlerResult {
@@ -122,14 +120,14 @@ final class TrainHandlerUnmanaged {
         if train.wagonsPushedByLocomotive {
             train.runtimeInfo = "Stopped because no next block detected"
             BTLogger.router.warning("\(self.train, privacy: .public): no next block detected, stopping by precaution")
-            try controller.stop(completely: true)
+            try layout.stopTrain(train.id, completely: true) { }
         } else {
             // If there are no possible next block detected, we need to stop the train
             // when it reaches the end of the block to avoid a collision.
             if try layout.atEndOfBlock(train: train) {
                 train.runtimeInfo = "Stopped because no next block detected"
                 BTLogger.router.warning("\(self.train, privacy: .public): no next block detected, stopping by precaution")
-                try controller.stop(completely: true)
+                try layout.stopTrain(train.id, completely: true) { }
             }
         }
     }

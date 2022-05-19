@@ -17,7 +17,7 @@ import OrderedCollections
 // This class is responsible for managing all the trains in the layout,
 // including responding to feedback changes and ensuring the trains
 // are properly following their route.
-final class LayoutController: TrainControllerDelegate {
+final class LayoutController {
     
     // The layout being managed
     let layout: Layout
@@ -66,7 +66,7 @@ final class LayoutController: TrainControllerDelegate {
     func updateControllers() {
         for train in layout.trains {
             if controllers[train.id] == nil {
-                controllers[train.id] = TrainController(layout: layout, train: train, interface: interface, delegate: self)
+                controllers[train.id] = TrainController(layout: layout, train: train, interface: interface)
             }
         }
 
@@ -243,9 +243,8 @@ final class LayoutController: TrainControllerDelegate {
     // has an associated timer that fires when it is time to
     // restart the train
     var pausedTrainTimers = [Identifier<Train>:Timer]()
-    
-    // This method is called by the TrainController (via its delegate)
-    // when a train has stopped in a station and needs to be restarted later on.
+
+    // This method is part of the LayoutCommandExecuting protocol
     func scheduleRestartTimer(train: Train) {
         guard train.timeUntilAutomaticRestart > 0 else {
             return

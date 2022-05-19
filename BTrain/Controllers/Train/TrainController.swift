@@ -12,10 +12,6 @@
 
 import Foundation
 
-protocol TrainControllerDelegate: AnyObject {
-    func scheduleRestartTimer(train: Train)
-}
-
 /**
  This class manages a single train in the layout. It relies on a set of handler classes to manage the starting, stopping and monitoring of the train movement inside blocks.
  
@@ -49,14 +45,11 @@ final class TrainController {
     // The train acceleration controller instance that is monitoring the specified train
     // by sending the actual speed to the Digital Controller.
     let accelerationController: TrainControllerAcceleration
-    
-    weak var delegate: TrainControllerDelegate?
-                
-    init(layout: Layout, train: Train, interface: CommandInterface, delegate: TrainControllerDelegate? = nil) {
+                    
+    init(layout: Layout, train: Train, interface: CommandInterface) {
         self.layout = layout
         self.train = train
         self.accelerationController = TrainControllerAcceleration(train: train, interface: interface)
-        self.delegate = delegate
     }
                                 
     /// This is the main method to call to manage the train associated with this controller.
@@ -74,13 +67,13 @@ final class TrainController {
         if train.managedScheduling {
             // Stop the train if there is no route associated with it
             guard let route = layout.route(for: train.routeId, trainId: train.id) else {
-                try stop(completely: false)
+                try layout.stopTrain(train.id, completely: false) { }
                 return result
             }
 
-            result.append(try TrainHandlerManaged.process(layout: layout, route: route, train: train, event: event, controller: self))
+            result.append(try TrainHandlerManaged.process(layout: layout, route: route, train: train, event: event))
         } else {
-            result.append(try TrainHandlerUnmanaged.process(layout: layout, train: train, event: event, controller: self))
+            result.append(try TrainHandlerUnmanaged.process(layout: layout, train: train, event: event))
         }
 
         if result.events.isEmpty {
@@ -92,16 +85,4 @@ final class TrainController {
         return result
     }
     
-}
-
-extension TrainController: TrainControlling {
-    
-    func scheduleRestartTimer(train: Train) {
-        delegate?.scheduleRestartTimer(train: train)
-    }
-    
-    func stop(completely: Bool) throws {
-        try layout.stopTrain(train.id, completely: completely) { }
-    }
-            
 }
