@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		A7012C8328344A1C003AC687 /* DeveloperView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7012C8228344A1C003AC687 /* DeveloperView.swift */; };
 		A7012C8528344AC0003AC687 /* DeveloperMetrics.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7012C8428344AC0003AC687 /* DeveloperMetrics.swift */; };
+		A7012C882835C9E5003AC687 /* StopSettleDelayTimer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7012C872835C9E5003AC687 /* StopSettleDelayTimer.swift */; };
+		A7012C8A2835D16C003AC687 /* SpeedChangeTimer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7012C892835D16C003AC687 /* SpeedChangeTimer.swift */; };
 		A711B1502739EBD7002FE7DB /* LayoutController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A711B14F2739EBD7002FE7DB /* LayoutController.swift */; };
 		A7145F8A27F90FBA00BF5F61 /* NewLayoutWizardViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7145F8927F90FBA00BF5F61 /* NewLayoutWizardViewTests.swift */; };
 		A7145F8C27F911F000BF5F61 /* TrainSpeedMeasurementViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7145F8B27F911F000BF5F61 /* TrainSpeedMeasurementViewTests.swift */; };
@@ -304,6 +306,8 @@
 /* Begin PBXFileReference section */
 		A7012C8228344A1C003AC687 /* DeveloperView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeveloperView.swift; sourceTree = "<group>"; };
 		A7012C8428344AC0003AC687 /* DeveloperMetrics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeveloperMetrics.swift; sourceTree = "<group>"; };
+		A7012C872835C9E5003AC687 /* StopSettleDelayTimer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StopSettleDelayTimer.swift; sourceTree = "<group>"; };
+		A7012C892835D16C003AC687 /* SpeedChangeTimer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeedChangeTimer.swift; sourceTree = "<group>"; };
 		A711B14F2739EBD7002FE7DB /* LayoutController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutController.swift; sourceTree = "<group>"; };
 		A7145F8927F90FBA00BF5F61 /* NewLayoutWizardViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewLayoutWizardViewTests.swift; sourceTree = "<group>"; };
 		A7145F8B27F911F000BF5F61 /* TrainSpeedMeasurementViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainSpeedMeasurementViewTests.swift; sourceTree = "<group>"; };
@@ -1255,6 +1259,8 @@
 			children = (
 				A7218077275D922300831998 /* TrainController.swift */,
 				A7DB7D4727C21D7C000893BA /* TrainControllerAcceleration.swift */,
+				A7012C872835C9E5003AC687 /* StopSettleDelayTimer.swift */,
+				A7012C892835D16C003AC687 /* SpeedChangeTimer.swift */,
 			);
 			path = Train;
 			sourceTree = "<group>";
@@ -1639,6 +1645,7 @@
 				A74CCC70272A5A10004E58F5 /* Turnout.swift in Sources */,
 				A73AFEB427265A4B00E1ED21 /* Client.swift in Sources */,
 				A73AFEB527265A4B00E1ED21 /* ClientConnection.swift in Sources */,
+				A7012C8A2835D16C003AC687 /* SpeedChangeTimer.swift in Sources */,
 				A798BB4827A8EA06000BB4D1 /* LayoutControllerDebugger.swift in Sources */,
 				A71D97FA27A499A600EBEA06 /* LayoutOnConnectTasks.swift in Sources */,
 				A78B996227FCC4080021EFE4 /* Graph.swift in Sources */,
@@ -1694,6 +1701,7 @@
 				A7DB7D5627CB4953000893BA /* CustomSlider.swift in Sources */,
 				A7841371273CE02000381341 /* LinkShape.swift in Sources */,
 				A784136F273CE00C00381341 /* BlockShape.swift in Sources */,
+				A7012C882835C9E5003AC687 /* StopSettleDelayTimer.swift in Sources */,
 				A798BB4627A7B093000BB4D1 /* LayoutASCIIProducer.swift in Sources */,
 				A78B996B2800BA4D0021EFE4 /* GraphPathFinder.swift in Sources */,
 				A7C8A2EF279DD19A000C7246 /* SectionTitleView.swift in Sources */,

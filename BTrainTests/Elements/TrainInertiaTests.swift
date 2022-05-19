@@ -282,6 +282,22 @@ class ManualCommandExecutor: LayoutCommandExecuting {
         
 }
 
+extension TrainControllerAcceleration {
+    
+    var stepIncrement: Int {
+        return speedChangeTimer.stepIncrement
+    }
+    var stepDelay: TimeInterval {
+        return speedChangeTimer.stepDelay
+    }
+    var actual: SpeedStep {
+        return speedChangeTimer.actual
+    }
+    var desired: SpeedStep {
+        return speedChangeTimer.desired
+    }
+}
+
 class MockCommandInterface: CommandInterface {
     
     var speedValues = [UInt16]()
