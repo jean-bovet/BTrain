@@ -18,21 +18,44 @@ import OSLog
 /// The underlying implementation uses the unified [OS logging system](https://developer.apple.com/documentation/os/logging).
 final class BTLogger {
     
-    /// Return a new network logger instance
-    static private var newNetworkLogger: Logger {
-        SettingsKeys.bool(forKey: SettingsKeys.logCategoryNetwork) ? Logger(subsystem: "ch.arizona-software.BTrain", category: "network") : Logger(OSLog.disabled)
+    enum Category: String {
+        case network
+        case router
+        case reservation
     }
-        
-    /// The public network logger instance
-    static var network = newNetworkLogger
-        
-    static let router = Logger(subsystem: "ch.arizona-software.BTrain", category: "router")
     
-    static let reservation = Logger(subsystem: "ch.arizona-software.BTrain", category: "reservation")
+    /// Returns a new logger instance
+    /// - Parameter category: the category of the logger
+    /// - Returns: the logger instance
+    static private func newLogger(category: Category) -> Logger {
+        return isLoggerEnabled(category: category) ? Logger(subsystem: "ch.arizona-software.BTrain", category: category.rawValue) : Logger(OSLog.disabled)
+    }
+
+    static private func isLoggerEnabled(category: Category) -> Bool {
+        switch category {
+        case .network:
+            return SettingsKeys.bool(forKey: SettingsKeys.logCategoryNetwork)
+        case .router:
+            return SettingsKeys.bool(forKey: SettingsKeys.logCategoryRouter)
+        case .reservation:
+            return SettingsKeys.bool(forKey: SettingsKeys.logCategoryReservation)
+        }
+    }
+    
+    /// The network logger instance
+    static var network = newLogger(category: .network)
+        
+    /// The router logger instance
+    static var router = newLogger(category: .router)
+    
+    /// The reservation logger instance
+    static var reservation = newLogger(category: .reservation)
 
     /// Re-created the network logger using the latest settings
-    static func updateNetworkLogger() {
-        network = newNetworkLogger
+    static func updateLoggerInstances() {
+        network = newLogger(category: .network)
+        router = newLogger(category: .router)
+        reservation = newLogger(category: .reservation)
     }
     
     static func error(_ msg: String) {

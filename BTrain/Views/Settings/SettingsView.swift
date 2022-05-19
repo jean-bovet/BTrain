@@ -38,6 +38,8 @@ struct SettingsView: View {
     @AppStorage(SettingsKeys.logUnknownMessages) private var logUnknownMessages = false
     
     @AppStorage(SettingsKeys.logCategoryNetwork) private var logCategoryNetwork = false
+    @AppStorage(SettingsKeys.logCategoryRouter) private var logCategoryRouter = false
+    @AppStorage(SettingsKeys.logCategoryReservation) private var logCategoryReservation = false
 
     var body: some View {
         TabView {
@@ -90,9 +92,13 @@ struct SettingsView: View {
                 Toggle("Log Unknown Digital Controller Commands", isOn: $logUnknownMessages)
                 Section(header: Text("Log Category")) {
                     Toggle("Network", isOn: $logCategoryNetwork)
+                    Toggle("Router", isOn: $logCategoryRouter)
+                    Toggle("Reservation", isOn: $logCategoryReservation)
                 }
             }
-            .onChange(of: logCategoryNetwork, perform: { _ in BTLogger.updateNetworkLogger() })
+            .onChange(of: logCategoryNetwork, perform: { _ in BTLogger.updateLoggerInstances() })
+            .onChange(of: logCategoryRouter, perform: { _ in BTLogger.updateLoggerInstances() })
+            .onChange(of: logCategoryReservation, perform: { _ in BTLogger.updateLoggerInstances() })
             .tabItem {
                 Label("Logging", systemImage: "doc.text.fill")
             }
@@ -107,7 +113,7 @@ struct SettingsView: View {
             .tag(Tabs.advanced)
         }
         .padding(20)
-        .frame(width: 450, height: 180)
+        .frame(width: 450, height: 240)
     }
 }
 

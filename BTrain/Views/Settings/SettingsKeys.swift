@@ -35,7 +35,9 @@ struct SettingsKeys {
     static let logUnknownMessages = "logUnknownMessages"
     
     static let logCategoryNetwork = "logCategoryNetwork"
-    
+    static let logCategoryRouter = "logCategoryRouter"
+    static let logCategoryReservation = "logCategoryReservation"
+
     static func bool(forKey key: String) -> Bool {
         return UserDefaults.standard.bool(forKey: key)
     }
