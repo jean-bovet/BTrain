@@ -267,7 +267,9 @@ final class Train: Element, ObservableObject {
         if let blockId = blockId {
             text += ", \(blockId)"
         }
-        text += ", \(speed.actualKph)kph)"
+        text += ", \(speed.requestedKph)kph"
+        text += ", \(speed.actualKph)kph"
+        text += ")"
         return text
     }
     

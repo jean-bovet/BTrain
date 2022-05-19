@@ -111,6 +111,94 @@ class TrainInertiaTests: XCTestCase {
         XCTAssertEqual(t.speed.requestedSteps, SpeedStep(value: 100))
     }
     
+    /// Ensure an in-progress speed change that gets cancelled is properly handled.
+    /// We need to ensure that the completed parameter reflects the cancellation.
+    func testSpeedChangeCancelPreviousSpeedChange() throws {
+        let t = Train()
+        t.speed.accelerationStepDelay = 1
+        t.speed.accelerationProfile = .linear
+        let mi = MockCommandInterface()
+        let ic = TrainControllerAcceleration(train: t, interface: mi)
+
+        // Send a request to change the speed
+        t.speed.requestedSteps = SpeedStep(value: 50)
+        
+        let cancelledChange = expectation(description: "Cancelled")
+        ic.changeSpeed(of: t, acceleration: nil) { completed in
+            if !completed {
+                cancelledChange.fulfill()
+            }
+        }
+        
+        wait(for: {
+            t.speed.actualSteps.value >= 20
+        }, timeout: 5.0)
+
+        t.speed.requestedSteps = SpeedStep(value: 10)
+        let completedChange = expectation(description: "Completed")
+        ic.changeSpeed(of: t, acceleration: nil) { completed in
+            if completed {
+                completedChange.fulfill()
+            }
+        }
+
+        wait(for: [cancelledChange, completedChange], timeout: 5.0, enforceOrder: true)
+        
+        XCTAssertEqual(10, t.speed.actualSteps.value)
+    }
+    
+    /// Ensure that the timer used during the settling of the stop of a locomotive is correctly
+    /// cancelled when a new speed change is requested. We want to avoid that timer from
+    /// firing with a "completed" status while is has been cancelled.
+    func testSpeedChangeStopSettleDelay() throws {
+        let t = Train()
+        t.speed.accelerationStepDelay = 1
+        t.speed.stopSettleDelay = 2.0
+        t.speed.accelerationProfile = .linear
+        let mi = MockCommandInterface()
+        let ic = TrainControllerAcceleration(train: t, interface: mi)
+
+        // Let's test a braking situation where the speed goes down to 0
+        t.speed.requestedSteps = SpeedStep(value: 50)
+        t.speed.actualSteps = SpeedStep(value: 50)
+
+        // Send a request to change the speed
+        t.speed.requestedSteps = SpeedStep(value: 0)
+        t.state = .running
+        
+        let cancelledChange = expectation(description: "Cancelled")
+        ic.changeSpeed(of: t, acceleration: nil) { completed in
+            XCTAssertFalse(completed)
+            if !completed {
+                cancelledChange.fulfill()
+            }
+        }
+        
+        wait(for: {
+            t.speed.actualSteps.value == 0
+        }, timeout: 5.0)
+
+        XCTAssertEqual(0, t.speed.actualSteps.value)
+        XCTAssertEqual(.running, t.state)
+        
+        t.speed.requestedSteps = SpeedStep(value: 10)
+        let completedChangeTo10 = expectation(description: "Completed")
+        ic.changeSpeed(of: t, acceleration: nil) { completed in
+            if completed {
+                completedChangeTo10.fulfill()
+            }
+        }
+
+        // Ensure the cancellation of the previous speed change is properly handled
+        wait(for: [cancelledChange], timeout: 5.0)
+
+        // Ensure that the state of the train hasn't changed
+        XCTAssertEqual(.running, t.state)
+        
+        wait(for: [completedChangeTo10], timeout: 5.0)
+        XCTAssertEqual(10, t.speed.actualSteps.value)
+    }
+    
     /// Ensure that a previous speed change callback that is being cancelled does not change
     /// the train state. For example, a train stopping can be restarted in the middle of being stopped;
     /// when that happen, the new state of .running should not be overriden by the previous callback.

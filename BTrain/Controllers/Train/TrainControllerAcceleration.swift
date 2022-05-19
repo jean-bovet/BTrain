@@ -68,6 +68,9 @@ final class TrainControllerAcceleration {
     private var currentTime: TimeInterval = 0
     private var stepsDidChange: SpeedChangedCallback?
     
+    /// The timer that handles the delay to allow the locomotive to fully stop
+    private let stopSettleDelayTimer = StopSettleDelayTimer()
+
     init(train: Train, interface: CommandInterface) {
         self.train = train
         self.interface = interface
@@ -90,37 +93,65 @@ final class TrainControllerAcceleration {
 
         let requestedKph = train.speed.requestedKph
         changeSpeed(from: train.speed.actualSteps, to: train.speed.requestedSteps, acceleration: acceleration ?? train.speed.accelerationProfile) { [weak self] steps, status in
-            guard let interface = self?.interface else {
-                return
-            }
-            
-            let value = interface.speedValue(for: steps, decoder: train.decoder)
-            BTLogger.router.debug("\(train, privacy: .public): execute speed value \(value) (\(steps)), requested \(requestedKph) kph, towards Digital Controller - \(status, privacy: .public)")
-            interface.execute(command: .speed(address: train.address, decoderType: train.decoder, value: value)) {
-                // Change the actualSteps only after we know the command has been sent to the Digital Controller
-                train.speed.actualSteps = steps
-                BTLogger.router.debug("\(train, privacy: .public): actual speed is \(train.speed.actualKph) kph (\(train.speed.actualSteps)), requested \(requestedKph) kph - \(status, privacy: .public)")
-                if status == .finished || status == .cancelled {
-                    let finished = status == .finished
-                    if steps == .zero {
-                        // When stopping a locomotive, we need to wait a bit more to ensure the locomotive
-                        // has effectively stopped physically on the layout. This is because we want to callback
-                        // the `completion` block only when the locomotive has stopped (otherwise, it might continue
-                        // to move and activate an unexpected feedback because the layout think it has stopped already).
-                        // There is unfortunately no way to know without ambiguity from the Digital Controller if the
-                        // train has stopped so this extra wait time can be configured in the UX, per locomotive, and
-                        // adjusted by the user depending on the locomotive speed inertia behavior.
-                        DispatchQueue.main.asyncAfter(deadline: .now() + train.speed.stopSettleDelay) {
-                            completion(finished)
-                        }
-                    } else {
-                        completion(finished)
-                    }
-                }
+            self?.changeSpeedFired(steps: steps, status: status, train: train, requestedKph: requestedKph, completion: completion)
+        }
+    }
+
+    private func changeSpeedFired(steps: SpeedStep, status: Status, train: Train, requestedKph: TrainSpeed.UnitKph, completion: @escaping CompletionCancelBlock) {
+        let value = interface.speedValue(for: steps, decoder: train.decoder)
+        BTLogger.router.debug("\(train, privacy: .public): execute speed value \(value) (\(steps)), requested \(requestedKph) kph, towards Digital Controller - \(status, privacy: .public)")
+        
+        interface.execute(command: .speed(address: train.address, decoderType: train.decoder, value: value)) { [weak self] in
+            self?.speedCommandExecuted(steps: steps, status: status, train: train, requestedKph: requestedKph, completion: completion)
+        }
+    }
+    
+    private func speedCommandExecuted(steps: SpeedStep, status: Status, train: Train, requestedKph: TrainSpeed.UnitKph, completion: @escaping CompletionCancelBlock) {
+        // Change the actualSteps only after we know the command has been sent to the Digital Controller
+        train.speed.actualSteps = steps
+        BTLogger.router.debug("\(train, privacy: .public): actual speed is \(train.speed.actualKph) kph (\(train.speed.actualSteps)), requested \(requestedKph) kph - \(status, privacy: .public)")
+        if status == .finished || status == .cancelled {
+            let finished = status == .finished
+            if steps == .zero {
+                // When stopping a locomotive, we need to wait a bit more to ensure the locomotive
+                // has effectively stopped physically on the layout. This is because we want to callback
+                // the `completion` block only when the locomotive has stopped (otherwise, it might continue
+                // to move and activate an unexpected feedback because the layout think it has stopped already).
+                // There is unfortunately no way to know without ambiguity from the Digital Controller if the
+                // train has stopped so this extra wait time can be configured in the UX, per locomotive, and
+                // adjusted by the user depending on the locomotive speed inertia behavior.
+                stopSettleDelayTimer.schedule(train: train, completed: finished, completion: completion)
+            } else {
+                completion(finished)
             }
         }
     }
     
+    final class StopSettleDelayTimer {
+        var timer: Timer?
+        var block: ((Bool) -> Void)?
+
+        func schedule(train: Train, completed: Bool, completion: @escaping (Bool) -> Void) {
+            block = { completed in
+                completion(completed)
+            }
+            timer = Timer.scheduledTimer(withTimeInterval: train.speed.stopSettleDelay, repeats: false) { timer in
+                self.block?(completed)
+                self.block = nil
+                self.timer = nil
+            }
+        }
+        
+        func cancel() {
+            if let block = block {
+                block(false)
+                self.block = nil
+                timer?.invalidate()
+                timer = nil
+            }
+        }
+    }
+            
     private func changeSpeed(from fromSteps: SpeedStep, to steps: SpeedStep, acceleration: TrainSpeedAcceleration.Acceleration, callback: @escaping SpeedChangedCallback) {
         cancelPrevious()
         
@@ -195,6 +226,8 @@ final class TrainControllerAcceleration {
         }
         stepsDidChange = nil
         timer?.invalidate()
+        
+        stopSettleDelayTimer.cancel()
     }
     
     private func finished() {
