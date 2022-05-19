@@ -38,7 +38,7 @@ extension LayoutController {
             DispatchQueue.main.async {
                 if let train = layout.trains.find(address: address, decoder: decoder) {
                     train.speed.actualSteps = interface.speedSteps(for: value, decoder: train.decoder)
-                    BTLogger.debug("Actual speed changed to \(train.speed.actualKph) for \(train.name)")
+                    BTLogger.router.debug("\(train, privacy: .public): actual speed is \(train.speed.actualKph) kph (\(train.speed.actualSteps))")
                     self?.runControllers(.speedChanged)
                     self?.switchboard?.state.triggerRedraw.toggle()
                 }

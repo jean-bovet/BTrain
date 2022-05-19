@@ -85,7 +85,8 @@ final class TrainControllerAcceleration {
 
     private func changeSpeedFired(steps: SpeedStep, status: Status, train: Train, requestedKph: TrainSpeed.UnitKph, completion: @escaping CompletionCancelBlock) {
         let value = interface.speedValue(for: steps, decoder: train.decoder)
-        BTLogger.router.debug("\(train, privacy: .public): execute speed value \(value) (\(steps)), requested \(requestedKph) kph, towards Digital Controller - \(status, privacy: .public)")
+        let speedKph = train.speed.speedKph(for: steps)
+        BTLogger.router.debug("\(train, privacy: .public): execute speed command for \(speedKph) kph (value=\(value), \(steps)), requested \(requestedKph) kph - \(status, privacy: .public)")
         
         interface.execute(command: .speed(address: train.address, decoderType: train.decoder, value: value)) { [weak self] in
             self?.speedCommandExecuted(steps: steps, status: status, train: train, requestedKph: requestedKph, completion: completion)
@@ -93,9 +94,11 @@ final class TrainControllerAcceleration {
     }
     
     private func speedCommandExecuted(steps: SpeedStep, status: Status, train: Train, requestedKph: TrainSpeed.UnitKph, completion: @escaping CompletionCancelBlock) {
-        // Change the actualSteps only after we know the command has been sent to the Digital Controller
-        train.speed.actualSteps = steps
-        BTLogger.router.debug("\(train, privacy: .public): actual speed is \(train.speed.actualKph) kph (\(train.speed.actualSteps)), requested \(requestedKph) kph - \(status, privacy: .public)")
+        // Note: LayoutController+Listeners is the one listening for speed change acknowledgement from the Digital Controller and update the actual speed.
+        // TODO: is that the best way or should we centralize that here?
+        let value = interface.speedValue(for: steps, decoder: train.decoder)
+        let speedKph = train.speed.speedKph(for: steps)
+        BTLogger.router.debug("\(train, privacy: .public): done executing speed command for \(speedKph) kph (value=\(value), \(steps)), requested \(requestedKph) kph - \(status, privacy: .public)")
         if status == .finished || status == .cancelled {
             let finished = status == .finished
             if steps == .zero && finished {
