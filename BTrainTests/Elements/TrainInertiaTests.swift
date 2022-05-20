@@ -257,7 +257,9 @@ class TrainInertiaTests: XCTestCase {
         
         XCTAssertEqual(ic.desired.value, steps)
         XCTAssertEqual(ic.actual.value, steps)
-        
+
+        XCTAssertEqual(train.speed.actualSteps.value, steps)
+
         XCTAssertEqual(cmd.speedValues, expectedSteps)
         cmd.speedValues.removeAll()
     }
@@ -360,7 +362,7 @@ class MockCommandInterface: CommandInterface {
     }
     
     func speedSteps(for value: SpeedValue, decoder: DecoderType) -> SpeedStep {
-        return .zero
+        return .init(value: value.value)
     }
     
     func register(forFeedbackChange: @escaping FeedbackChangeCallback) -> UUID {

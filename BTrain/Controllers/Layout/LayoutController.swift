@@ -36,7 +36,7 @@ final class LayoutController {
     // The train controller manages a single train in the layout.
     // Note: we need an ordered map in order to have predictable outcome
     // at runtime and during unit testing.
-    private var controllers = OrderedDictionary<Identifier<Train>, TrainController>()
+    private var controllers = OrderedDictionary<Identifier<Train>, TrainControllerAcceleration>()
 
     // The executor that will send commands to the Digital Controller
     private var executor: LayoutCommandExecutor
@@ -58,7 +58,6 @@ final class LayoutController {
         
     func registerForChange() {
         registerForFeedbackChange()
-        registerForSpeedChange()
         registerForDirectionChange()
         registerForTurnoutChange()
     }
@@ -66,7 +65,10 @@ final class LayoutController {
     func updateControllers() {
         for train in layout.trains {
             if controllers[train.id] == nil {
-                controllers[train.id] = TrainController(layout: layout, train: train, interface: interface)
+                let acceleration = TrainControllerAcceleration(train: train, interface: interface, speedChanged: { [weak self] in
+                    self?.runControllers(.speedChanged)
+                })
+                controllers[train.id] = acceleration
             }
         }
 
@@ -131,8 +133,8 @@ final class LayoutController {
             // Run each controller, one for each train, in order
             // to process the new state of each train (speed, position,
             // reserved blocks, etc).
-            for controller in controllers.values {
-                result.append(try controller.run(event))
+            for train in layout.trains {
+                result.append(try run(train: train, event: event))
             }
             
             // Update and detect any unexpected feedbacks
@@ -149,14 +151,47 @@ final class LayoutController {
             haltAll()
         }
 
-        debugger.record(layoutController: self, controllers: controllers.values.elements)
+        debugger.record(layoutController: self)
         
         return result
     }
         
+    /// This is the main method to call to manage the train associated with this controller.
+    ///
+    /// This method executs all the handlers interested in the specified event and return the result which might
+    /// contain more events to further process. The ``LayoutController`` is responsible to call this class
+    /// again until all the events are processed.
+    /// - Parameter event: the event to process
+    /// - Returns: the result of the event processing
+    private func run(train: Train, event: TrainEvent) throws -> TrainHandlerResult {
+        let result = TrainHandlerResult()
+        
+        BTLogger.router.debug("\(train, privacy: .public): evaluating event '\(String(describing: event), privacy: .public)' for \(String(describing: train.scheduling), privacy: .public)")
+
+        if train.managedScheduling {
+            // Stop the train if there is no route associated with it
+            guard let route = layout.route(for: train.routeId, trainId: train.id) else {
+                try layout.stopTrain(train.id, completely: false) { }
+                return result
+            }
+
+            result.append(try TrainHandlerManaged.process(layout: layout, route: route, train: train, event: event))
+        } else {
+            result.append(try TrainHandlerUnmanaged.process(layout: layout, train: train, event: event))
+        }
+
+        if result.events.isEmpty {
+            BTLogger.router.debug("\(train, privacy: .public): no resulting events")
+        } else {
+            BTLogger.router.debug("\(train, privacy: .public): resulting events are \(String(describing: result.events), privacy: .public)")
+        }
+
+        return result
+    }
+
     private func updateExpectedFeedbacks() throws {
         if layout.detectUnexpectedFeedback {
-            try feedbackMonitor.update(with: controllers.values.map { $0.train })
+            try feedbackMonitor.update(with: layout.trains)
             switchboard?.context.expectedFeedbackIds = feedbackMonitor.expectedFeedbacks
             try feedbackMonitor.handleUnexpectedFeedbacks()
         } else {
@@ -294,7 +329,7 @@ extension LayoutController: LayoutCommandExecuting {
     
     func sendTrainSpeed(train: Train, acceleration: TrainSpeedAcceleration.Acceleration?, completion: @escaping CompletionCancelBlock) {
         if let controller = controllers[train.id] {
-            controller.accelerationController.changeSpeed(of: train, acceleration: acceleration, completion: completion)
+            controller.changeSpeed(of: train, acceleration: acceleration, completion: completion)
         } else {
             assertionFailure("There is no TrainController for \(train.name)")
             BTLogger.router.error("There is no TrainController for \(train.name, privacy: .public)")

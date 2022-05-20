@@ -38,7 +38,6 @@
 		A7218071275D398000831998 /* CS2DocumentParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7218070275D398000831998 /* CS2DocumentParser.swift */; };
 		A7218073275D399500831998 /* LocomotivesDocumentParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7218072275D399500831998 /* LocomotivesDocumentParser.swift */; };
 		A7218076275D424200831998 /* OverviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7218075275D424200831998 /* OverviewView.swift */; };
-		A7218078275D922300831998 /* TrainController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7218077275D922300831998 /* TrainController.swift */; };
 		A7218079275DA74500831998 /* Locomotives.cs2 in Resources */ = {isa = PBXBuildFile; fileRef = A74C0E7F275C9F490043FEE5 /* Locomotives.cs2 */; };
 		A721807B275DD95900831998 /* TrainTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A721807A275DD95900831998 /* TrainTests.swift */; };
 		A721807D275DF1B100831998 /* TransitionsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A721807C275DF1B100831998 /* TransitionsTests.swift */; };
@@ -336,7 +335,6 @@
 		A7218070275D398000831998 /* CS2DocumentParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CS2DocumentParser.swift; sourceTree = "<group>"; };
 		A7218072275D399500831998 /* LocomotivesDocumentParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocomotivesDocumentParser.swift; sourceTree = "<group>"; };
 		A7218075275D424200831998 /* OverviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverviewView.swift; sourceTree = "<group>"; };
-		A7218077275D922300831998 /* TrainController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainController.swift; sourceTree = "<group>"; };
 		A721807A275DD95900831998 /* TrainTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainTests.swift; sourceTree = "<group>"; };
 		A721807C275DF1B100831998 /* TransitionsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransitionsTests.swift; sourceTree = "<group>"; };
 		A721807E275F099100831998 /* TurnoutTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TurnoutTests.swift; sourceTree = "<group>"; };
@@ -1257,7 +1255,6 @@
 		A7A568792813B7D300394B75 /* Train */ = {
 			isa = PBXGroup;
 			children = (
-				A7218077275D922300831998 /* TrainController.swift */,
 				A7DB7D4727C21D7C000893BA /* TrainControllerAcceleration.swift */,
 				A7012C872835C9E5003AC687 /* StopSettleDelayTimer.swift */,
 				A7012C892835D16C003AC687 /* SpeedChangeTimer.swift */,
@@ -1560,7 +1557,6 @@
 				A7BE36A82751BDAB00286709 /* ConnectorSocket.swift in Sources */,
 				A7E1F75027DE98E9009FB75F /* WizardSelectLayout.swift in Sources */,
 				A7F31B9D277B921B00FE0C65 /* SwitchboardEditControlsView.swift in Sources */,
-				A7218078275D922300831998 /* TrainController.swift in Sources */,
 				A77A96DE2727767C009E7ECB /* ConnectSheet.swift in Sources */,
 				A7B06AF4272783F600BDD88C /* MarklinCANMessageFactory.swift in Sources */,
 				A7218083275F0BFC00831998 /* Turnout+Socket.swift in Sources */,

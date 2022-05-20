@@ -29,23 +29,6 @@ extension LayoutController {
         })
     }
                 
-    func registerForSpeedChange() {
-        interface.register(forSpeedChange: { [weak self] address, decoder, value in
-            guard let layout = self?.layout, let interface = self?.interface else {
-                return
-            }
-
-            DispatchQueue.main.async {
-                if let train = layout.trains.find(address: address, decoder: decoder) {
-                    train.speed.actualSteps = interface.speedSteps(for: value, decoder: train.decoder)
-                    BTLogger.router.debug("\(train, privacy: .public): actual speed is \(train.speed.actualKph) kph (\(train.speed.actualSteps))")
-                    self?.runControllers(.speedChanged)
-                    self?.switchboard?.state.triggerRedraw.toggle()
-                }
-            }
-        })
-    }
-    
     func registerForDirectionChange() {
         interface.register(forDirectionChange: { [weak self] address, decoder, direction in
             DispatchQueue.main.async {
@@ -64,14 +47,12 @@ extension LayoutController {
                         train.directionForward = true
                         try layout.toggleTrainDirectionInBlock(train)
                         runControllers(.directionChanged)
-                        switchboard?.state.triggerRedraw.toggle()
                     }
                 case .backward:
                     if train.directionForward {
                         train.directionForward = false
                         try layout.toggleTrainDirectionInBlock(train)
                         runControllers(.directionChanged)
-                        switchboard?.state.triggerRedraw.toggle()
                     }
                 case .unknown:
                     BTLogger.error("Unknown direction \(direction) for \(address.toHex())")

@@ -42,16 +42,16 @@ final class LayoutControllerDebugger {
         self.info = Information(layout: layout)
     }
     
-    func record(layoutController: LayoutController, controllers: [TrainController]) {
+    func record(layoutController: LayoutController) {
         guard enabled else {
             return
         }
         
         let layout = layoutController.layout
         let producer = LayoutASCIIProducer(layout: layout)
-        for controller in controllers {
-            if let route = layout.route(for: controller.train.routeId, trainId: controller.train.id), !route.steps.isEmpty {
-                if let s = try? producer.stringFrom(route: route, trainId: controller.train.id) {
+        for train in layout.trains {
+            if let route = layout.route(for: train.routeId, trainId: train.id), !route.steps.isEmpty {
+                if let s = try? producer.stringFrom(route: route, trainId: train.id) {
                     if info.routes.index(forKey: route.id) == nil {
                         info.routes[route.id] = Iterations()
                     }

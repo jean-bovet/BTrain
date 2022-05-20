@@ -12,14 +12,35 @@
 
 import Foundation
 
-/// Manages the operation of a single train in the layout.
-///
-/// When BTrain manages a train, it must ensure the train starts, stops
-/// and brakes appropriately to avoid collision with other trains and respect
-/// the constraints of the layout while following the indication of the route
-/// assigned to the train. BTrain does this by responding to events from the layout,
-/// such as ``TrainEvent/feedbackTriggered`` when a feedback is triggered
-/// in the layout indicating a train is passing over the feedback.
+/**
+ Manages the operation of a single train in the layout.
+ 
+ When BTrain manages a train, it must ensure the train starts, stops
+ and brakes appropriately to avoid collision with other trains and respect
+ the constraints of the layout while following the indication of the route
+ assigned to the train. BTrain does this by responding to events from the layout,
+ such as ``TrainEvent/feedbackTriggered`` when a feedback is triggered
+ in the layout indicating a train is passing over the feedback.
+ 
+ There are two kinds of routes:
+ 
+ *Manual Route*
+ 
+ A manual route is created manually by the user and does not change when the train is running. This controller ensures the train follows the manual route
+ and stops the train if the block(s) ahead cannot be reserved. The train is restarted when the block(s) ahead can be reserved again.
+ 
+ *Automatic Route*
+ 
+ An automatic route is created and managed automatically by BTrain:
+ - An automatic route is created each time a train starts
+ - An automatic route is updated when the train moves into a new block and the block(s) ahead cannot be reserved
+ 
+ An automatic route is created using the following rules:
+ - If there is a destination defined (ie the user as specified to which block the train should move to), the automatic route is created using the shortest path algorithm.
+ - If there are no destination specified, BTrain finds a random route from the train position until a station block is found. During the search, block or turnout that
+ should be avoided will be ignored. However, elements reserved for other trains will be taken into account because the reservations
+ will change as the trains move in the layout.
+ */
 final class TrainHandlerManaged {
     
     let layout: Layout
