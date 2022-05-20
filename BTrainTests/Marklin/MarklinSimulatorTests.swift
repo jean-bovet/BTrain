@@ -91,7 +91,7 @@ class MarklinSimulatorTests: XCTestCase {
         }
 
         let e = expectation(description: "callback")
-        _ = doc.interface.register(forSpeedChange: { address, decoderType, value in
+        _ = doc.interface.register(forSpeedChange: { address, decoderType, value, ack in
             XCTAssertEqual(357, value.value)
             e.fulfill()
         })

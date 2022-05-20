@@ -30,14 +30,19 @@ extension LayoutController {
     }
                 
     func registerForSpeedChange() {
-        interface.register(forSpeedChange: { [weak self] address, decoder, value in
+        interface.register(forSpeedChange: { [weak self] address, decoder, value, acknowledgment in
             guard let layout = self?.layout, let interface = self?.interface else {
                 return
             }
-
+            
             DispatchQueue.main.async {
                 if let train = layout.trains.find(address: address, decoder: decoder) {
-                    train.speed.actualSteps = interface.speedSteps(for: value, decoder: train.decoder)
+                    if !acknowledgment {
+                        // Update the actual speed only when the speed command is a direct command,
+                        // not an acknowledgement. This is important because TrainControllerAcceleration
+                        // handles setting the actual speed when a command is sent from BTrain to the Digital Controller.
+                        train.speed.actualSteps = interface.speedSteps(for: value, decoder: train.decoder)
+                    }
                     BTLogger.router.debug("\(train, privacy: .public): actual speed is \(train.speed.actualKph) kph (\(train.speed.actualSteps))")
                     self?.runControllers(.speedChanged)
                     self?.switchboard?.state.triggerRedraw.toggle()
