@@ -133,7 +133,9 @@ final class MarklinInterface: CommandInterface {
             turnoutChangeCallbacks.forEach { $0(address, state, power, msg.isAck) }
         }
         if case .speed(address: let address, decoderType: let decoderType, value: let value, priority: _, descriptor: _) = cmd {
-            speedChangeCallbacks.forEach { $0(address, decoderType, value, msg.isAck) }
+            if msg.isAck {
+                speedChangeCallbacks.forEach { $0(address, decoderType, value) }
+            }
         }
         if case .emergencyStop(address: let address, decoderType: let decoderType, priority: _, descriptor: _) = cmd {
             // Execute a command to query the direction of the locomotive at this particular address

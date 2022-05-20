@@ -98,7 +98,6 @@ final class TrainControllerAcceleration {
         // TODO: is that the best way or should we centralize that here?
         let value = interface.speedValue(for: steps, decoder: train.decoder)
         let speedKph = train.speed.speedKph(for: steps)
-        train.speed.actualKph = speedKph
         BTLogger.router.debug("\(train, privacy: .public): done executing speed command for \(speedKph) kph (value=\(value), \(steps)), requested \(requestedKph) kph - \(status, privacy: .public)")
         if status == .finished || status == .cancelled {
             let finished = status == .finished
