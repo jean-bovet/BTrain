@@ -32,11 +32,8 @@ final class LayoutController {
     // when certain events happen in the layout controller
     let switchboard: SwitchBoard?
     
-    // An ordered map of train controller for each available train.
-    // The train controller manages a single train in the layout.
-    // Note: we need an ordered map in order to have predictable outcome
-    // at runtime and during unit testing.
-    private var controllers = OrderedDictionary<Identifier<Train>, TrainControllerAcceleration>()
+    // Speed manager for each train.
+    private var speedManagers = [Identifier<Train>:TrainSpeedManager]()
 
     // The executor that will send commands to the Digital Controller
     private var executor: LayoutCommandExecutor
@@ -64,17 +61,17 @@ final class LayoutController {
     
     func updateControllers() {
         for train in layout.trains {
-            if controllers[train.id] == nil {
-                let acceleration = TrainControllerAcceleration(train: train, interface: interface, speedChanged: { [weak self] in
+            if speedManagers[train.id] == nil {
+                let acceleration = TrainSpeedManager(train: train, interface: interface, speedChanged: { [weak self] in
                     self?.runControllers(.speedChanged)
                 })
-                controllers[train.id] = acceleration
+                speedManagers[train.id] = acceleration
             }
         }
 
         // Remove controllers that don't belong to an existing train
-        controllers = controllers.filter({ element in
-            return layout.train(for: element.key) != nil
+        speedManagers = speedManagers.filter({ element in
+            layout.train(for: element.key) != nil
         })
     }
     
@@ -328,11 +325,11 @@ extension LayoutController: LayoutCommandExecuting {
     }
     
     func sendTrainSpeed(train: Train, acceleration: TrainSpeedAcceleration.Acceleration?, completion: @escaping CompletionCancelBlock) {
-        if let controller = controllers[train.id] {
+        if let controller = speedManagers[train.id] {
             controller.changeSpeed(of: train, acceleration: acceleration, completion: completion)
         } else {
-            assertionFailure("There is no TrainController for \(train.name)")
-            BTLogger.router.error("There is no TrainController for \(train.name, privacy: .public)")
+            assertionFailure("There is no TrainSpeedManager for \(train.name)")
+            BTLogger.router.error("There is no TrainSpeedManager for \(train.name, privacy: .public)")
             completion(false)
         }
     }

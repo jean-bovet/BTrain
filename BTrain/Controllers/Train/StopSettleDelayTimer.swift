@@ -12,7 +12,7 @@
 
 import Foundation
 
-extension TrainControllerAcceleration {
+extension TrainSpeedManager {
     
     /// Timer that handles the stop settle delay time.
     ///

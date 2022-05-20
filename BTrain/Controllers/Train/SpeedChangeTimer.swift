@@ -12,12 +12,12 @@
 
 import Foundation
 
-extension TrainControllerAcceleration {
+extension TrainSpeedManager {
     
     /// Timer that manages a change of speed value given a specific acceleration/deceleration profile.
     final class SpeedChangeTimer {
         
-        typealias SpeedChangedCallback = (_ steps: SpeedStep, _ status: TrainControllerAcceleration.Status) -> Void
+        typealias SpeedChangedCallback = (_ steps: SpeedStep, _ status: TrainSpeedManager.Status) -> Void
                         
         let train: Train
         
@@ -41,11 +41,11 @@ extension TrainControllerAcceleration {
 
         init(train: Train) {
             self.train = train
-            self.stepIncrement = train.speed.accelerationStepSize ?? TrainControllerAcceleration.DefaultStepSize
+            self.stepIncrement = train.speed.accelerationStepSize ?? TrainSpeedManager.DefaultStepSize
             if let delay = train.speed.accelerationStepDelay {
                 self.stepDelay = Double(delay) / 1000
             } else {
-                self.stepDelay = Double(TrainControllerAcceleration.DefaultStepDelay) / 1000
+                self.stepDelay = Double(TrainSpeedManager.DefaultStepDelay) / 1000
             }
         }
         

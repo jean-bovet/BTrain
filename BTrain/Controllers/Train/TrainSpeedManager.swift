@@ -17,7 +17,7 @@ import Combine
 ///
 /// When a speed change is requested, this class will progressively change the speed until it reaches the requested speed value.
 /// The speed is incremented by a specified number of steps that is small enough to be executed by the Digital Controller.
-final class TrainControllerAcceleration {
+final class TrainSpeedManager {
     
     /// The status of the speed change callback
     enum Status: CustomStringConvertible {

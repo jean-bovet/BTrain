@@ -447,8 +447,8 @@ final class LayoutReservation {
         
         // Compute the distance necessary to bring the train to a full stop
         let steps = train.speed.steps(for: speed).value
-        let brakingStepSize = train.speed.accelerationStepSize ?? TrainControllerAcceleration.DefaultStepSize
-        let brakingStepDelay = Double(train.speed.accelerationStepDelay ?? TrainControllerAcceleration.DefaultStepDelay) / 1000.0
+        let brakingStepSize = train.speed.accelerationStepSize ?? TrainSpeedManager.DefaultStepSize
+        let brakingStepDelay = Double(train.speed.accelerationStepDelay ?? TrainSpeedManager.DefaultStepDelay) / 1000.0
         
         let brakingDelaySeconds = Double(steps) / Double(brakingStepSize) * Double(brakingStepDelay) + train.speed.stopSettleDelay
         

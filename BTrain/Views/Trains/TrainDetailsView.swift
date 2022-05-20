@@ -199,13 +199,13 @@ struct TrainDetailsSpeedSectionView: View {
 
                 UndoProvider($train.speed.accelerationStepSize) { stepSize in
                     TextField("Step Size:", value: stepSize, format: .number,
-                              prompt: Text("\(TrainControllerAcceleration.DefaultStepSize)"))
+                              prompt: Text("\(TrainSpeedManager.DefaultStepSize)"))
                         .unitStyle("step")
                 }
 
                 UndoProvider($train.speed.accelerationStepDelay) { stepDelay in
                     TextField("Step Delay:", value: stepDelay, format: .number,
-                              prompt: Text("\(TrainControllerAcceleration.DefaultStepDelay)"))
+                              prompt: Text("\(TrainSpeedManager.DefaultStepDelay)"))
                         .unitStyle("ms")
                 }
 

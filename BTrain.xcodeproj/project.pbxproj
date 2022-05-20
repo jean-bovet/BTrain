@@ -260,7 +260,7 @@
 		A7CA5EC7279654EB00171398 /* Block+Feedback.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7CA5EC6279654EB00171398 /* Block+Feedback.swift */; };
 		A7CA5EC92796550C00171398 /* Block+Socket.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7CA5EC82796550C00171398 /* Block+Socket.swift */; };
 		A7CA5ECC2797D1EB00171398 /* Layout+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7CA5ECB2797D1EB00171398 /* Layout+Extension.swift */; };
-		A7DB7D4827C21D7C000893BA /* TrainControllerAcceleration.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7DB7D4727C21D7C000893BA /* TrainControllerAcceleration.swift */; };
+		A7DB7D4827C21D7C000893BA /* TrainSpeedManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7DB7D4727C21D7C000893BA /* TrainSpeedManager.swift */; };
 		A7DB7D4A27C29B32000893BA /* TrainInertiaTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7DB7D4927C29B32000893BA /* TrainInertiaTests.swift */; };
 		A7DB7D4E27C714E3000893BA /* LayoutCommandExecutor.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7DB7D4D27C714E2000893BA /* LayoutCommandExecutor.swift */; };
 		A7DB7D5027C7647C000893BA /* View+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7DB7D4F27C7647C000893BA /* View+Extension.swift */; };
@@ -555,7 +555,7 @@
 		A7CA5EC6279654EB00171398 /* Block+Feedback.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Block+Feedback.swift"; sourceTree = "<group>"; };
 		A7CA5EC82796550C00171398 /* Block+Socket.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Block+Socket.swift"; sourceTree = "<group>"; };
 		A7CA5ECB2797D1EB00171398 /* Layout+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Layout+Extension.swift"; sourceTree = "<group>"; };
-		A7DB7D4727C21D7C000893BA /* TrainControllerAcceleration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainControllerAcceleration.swift; sourceTree = "<group>"; };
+		A7DB7D4727C21D7C000893BA /* TrainSpeedManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainSpeedManager.swift; sourceTree = "<group>"; };
 		A7DB7D4927C29B32000893BA /* TrainInertiaTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainInertiaTests.swift; sourceTree = "<group>"; };
 		A7DB7D4D27C714E2000893BA /* LayoutCommandExecutor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutCommandExecutor.swift; sourceTree = "<group>"; };
 		A7DB7D4F27C7647C000893BA /* View+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+Extension.swift"; sourceTree = "<group>"; };
@@ -1255,7 +1255,7 @@
 		A7A568792813B7D300394B75 /* Train */ = {
 			isa = PBXGroup;
 			children = (
-				A7DB7D4727C21D7C000893BA /* TrainControllerAcceleration.swift */,
+				A7DB7D4727C21D7C000893BA /* TrainSpeedManager.swift */,
 				A7012C872835C9E5003AC687 /* StopSettleDelayTimer.swift */,
 				A7012C892835D16C003AC687 /* SpeedChangeTimer.swift */,
 			);
@@ -1585,7 +1585,7 @@
 				A7CA5EC527964B6700171398 /* Array+Extension.swift in Sources */,
 				A7B06AF92727ACCB00BDD88C /* ServerConnection.swift in Sources */,
 				A795A03B27B6C08B00AE90EB /* TrainPositionFinder.swift in Sources */,
-				A7DB7D4827C21D7C000893BA /* TrainControllerAcceleration.swift in Sources */,
+				A7DB7D4827C21D7C000893BA /* TrainSpeedManager.swift in Sources */,
 				A7710E73277A3BC200C08150 /* NewTurnoutSheet.swift in Sources */,
 				A7F31BA1277C3D7B00FE0C65 /* BlockDetailsView.swift in Sources */,
 				A7E78C4627A1D669004D1821 /* TrainInstance.swift in Sources */,
