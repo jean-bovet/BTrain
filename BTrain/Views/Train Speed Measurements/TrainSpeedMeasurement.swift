@@ -204,14 +204,10 @@ final class TrainSpeedMeasurement {
     private func stopTrain() async throws {
         return try await withCheckedThrowingContinuation { continuation in
             DispatchQueue.main.async { [self] in
-                do {
-                    // Note: in practice, the train inertia must be set to true if the locomotive take some time to slow down,
-                    // in order for BTrain to wait long enough for the locomotive to be stopped.
-                    try layout.stopTrain(train.id) {
-                        continuation.resume(returning: ())
-                    }
-                } catch {
-                    continuation.resume(throwing: error)
+                // Note: the train inertia must be set to true if the locomotive take some time to slow down,
+                // in order for BTrain to wait long enough for the locomotive to be stopped.
+                layout.setTrainSpeed(train, 0) { completed in
+                    continuation.resume(returning: ())
                 }
             }
         }

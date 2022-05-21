@@ -65,7 +65,7 @@ class LayoutDocumentTests: XCTestCase {
         layout.block(for: train.blockId!)?.train = .init(train.id, .next)
         
         try doc.start(train: train.id, withRoute: route.id, destination: nil)
-        try doc.stop(train: train)
+        doc.stop(train: train)
     }
     
     static weak var memoryLeakLayout: Layout?

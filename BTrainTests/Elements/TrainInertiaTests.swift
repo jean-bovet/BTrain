@@ -214,8 +214,10 @@ class TrainInertiaTests: XCTestCase {
         
         // Ask the layout to stop the train
         let stopCompletion = expectation(description: "Completed")
-        try layout.stopTrain(t.id, completely: true) {
-            stopCompletion.fulfill()
+        layout.setTrainSpeed(t, 0) { completed in
+            if completed {
+                stopCompletion.fulfill()
+            }
         }
         
         XCTAssertEqual(.stopping, t.state)
@@ -229,8 +231,10 @@ class TrainInertiaTests: XCTestCase {
         t.state = .running
 
         let stopCompletion2 = expectation(description: "Completed")
-        try layout.stopTrain(t.id, completely: true) {
-            stopCompletion2.fulfill()
+        layout.setTrainSpeed(t, 0) { completed in
+            if completed {
+                stopCompletion2.fulfill()
+            }
         }
 
         // Simulate a completion of the speed change request which should, this time, change the train state
@@ -274,6 +278,13 @@ class ManualCommandExecutor: LayoutCommandExecuting {
     var pauseTurnout = false
     var pendingTurnouts = [Turnout]()
     
+    var pauseSpeedChange = false {
+        didSet {
+            processSpeedChange()
+        }
+    }
+    var pendingSpeedChange = [(Train, TrainSpeedAcceleration.Acceleration?, CompletionCancelBlock)]()
+    
     var trainsScheduledToRestart = [Train]()
     
     var onSpeedCompletion: CompletionCancelBlock?
@@ -306,14 +317,23 @@ class ManualCommandExecutor: LayoutCommandExecuting {
     }
     
     func sendTrainSpeed(train: Train, acceleration: TrainSpeedAcceleration.Acceleration?, completion: @escaping CompletionCancelBlock) {
-        onSpeedCompletion = completion
-//        if let forwardExecutor = forwardExecutor {
-//            forwardExecutor.sendTrainSpeed(train: train, acceleration: acceleration, completion: completion)
-//        } else {
-//            completion(true)
-//        }
+//        onSpeedCompletion = completion
+        pendingSpeedChange.append((train, acceleration, completion))
+        if !pauseSpeedChange {
+            processSpeedChange()
+        }
     }
         
+    func processSpeedChange() {
+        for (train, acceleration, completion) in pendingSpeedChange {
+            if let forwardExecutor = forwardExecutor {
+                forwardExecutor.sendTrainSpeed(train: train, acceleration: acceleration, completion: completion)
+            } else {
+                completion(true)
+            }
+        }
+        pendingSpeedChange.removeAll()
+    }
 }
 
 extension TrainSpeedManager {
@@ -332,9 +352,11 @@ extension TrainSpeedManager {
     }
 }
 
+// TODO: have testing for the behavior of the CommandInterface so MarklinInterface (or any other vendor-implementation) can be tested against
 class MockCommandInterface: CommandInterface {
     
     var speedValues = [UInt16]()
+    var speedChangeCallbacks = [SpeedChangeCallback]()
     
     var metrics: [Metric] {
         []
@@ -349,12 +371,17 @@ class MockCommandInterface: CommandInterface {
     }
     
     func execute(command: Command, onCompletion: @escaping () -> Void) {
-        if case .speed(address: _, decoderType: _, value: let value, priority: _, descriptor: _) = command {
+        onCompletion()
+
+        if case .speed(address: let address, decoderType: let decoderType, value: let value, priority: _, descriptor: _) = command {
             speedValues.append(value.value)
+            for speedChangeCallback in self.speedChangeCallbacks {
+                speedChangeCallback(address, decoderType, value)
+            }
         }
-        DispatchQueue.main.async {
-            onCompletion()
-        }
+//        DispatchQueue.main.async {
+//            onCompletion()
+//        }
     }
     
     func speedValue(for steps: SpeedStep, decoder: DecoderType) -> SpeedValue {
@@ -370,7 +397,7 @@ class MockCommandInterface: CommandInterface {
     }
     
     func register(forSpeedChange: @escaping SpeedChangeCallback) {
-        
+        speedChangeCallbacks.append(forSpeedChange)
     }
     
     func register(forDirectionChange: @escaping DirectionChangeCallback) {

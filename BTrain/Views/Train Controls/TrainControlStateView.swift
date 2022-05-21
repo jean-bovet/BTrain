@@ -34,15 +34,16 @@ struct TrainControlStateView: View {
     }
     
     var statusInformation: String {
-        if train.managedFinishingScheduling {
-            return "\(stateString) - finishing"
-        }
-        
-        if train.managedScheduling {
+        switch train.scheduling {
+        case .unmanaged:
+            return stateString
+        case .managed:
             return "\(stateString) - automatic"
-        }
-        
-        return stateString
+        case .stopManaged:
+            return "\(stateString) - stopping"
+        case .finishManaged:
+            return "\(stateString) - finishing"
+        }                
     }
     
     var stateColor: Color {

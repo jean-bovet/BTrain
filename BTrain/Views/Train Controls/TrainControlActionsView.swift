@@ -16,7 +16,6 @@ struct TrainControlActionsView: View {
     
     @ObservedObject var layout: Layout
     @ObservedObject var document: LayoutDocument
-    @State private var error: String?
     
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -28,26 +27,12 @@ struct TrainControlActionsView: View {
                 Spacer()
                 
                 Button("􀛷 Stop All") {
-                    do {
-                        try document.stopAll()
-                        self.error = nil
-                    } catch {
-                        self.error = error.localizedDescription
-                    }
+                    document.stopAll()
                 }.disabled(layout.trainsThatCanBeStopped().isEmpty)
                 
                 Button("􀊆 Finish All") {
-                    do {
-                        try document.finishAll()
-                        self.error = nil
-                    } catch {
-                        self.error = error.localizedDescription
-                    }
+                    document.finishAll()
                 }.disabled(layout.trainsThatCanBeFinished().isEmpty)
-            }
-            if let error = error {
-                Text(error)
-                    .padding([.top])
             }
         }
     }

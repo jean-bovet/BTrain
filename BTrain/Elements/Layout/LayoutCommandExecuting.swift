@@ -47,25 +47,3 @@ protocol LayoutCommandExecuting: AnyObject {
     func sendTrainSpeed(train: Train, acceleration: TrainSpeedAcceleration.Acceleration?, completion: @escaping CompletionCancelBlock)
 
 }
-
-final class DefaultCommandExecutor: LayoutCommandExecuting {
-    
-    func scheduleRestartTimer(train: Train) {
-        // no-op
-    }
-    
-    func sendTurnoutState(turnout: Turnout, completion: @escaping CompletionBlock) {
-        turnout.actualState = turnout.requestedState
-        completion()
-    }
-    
-    func sendTrainDirection(train: Train, forward: Bool, completion: @escaping CompletionBlock) {
-        completion()
-    }
-    
-    func sendTrainSpeed(train: Train, acceleration: TrainSpeedAcceleration.Acceleration?, completion: @escaping CompletionCancelBlock) {
-        train.speed.actualSteps = train.speed.requestedSteps
-        completion(true)
-    }
-    
-}

@@ -20,6 +20,9 @@ class FixedRoutingTests: BTTestCase {
         let layout = LayoutLoop1().newLayout().removeTrainGeometry()
         let p = Package(layout: layout)
         try p.prepare(routeID: "r1", trainID: "1", fromBlockId: "b1")
+        
+        // TODO: in this necessary, is the speed profile taken into account in this unit test with the mock classes?
+        p.train.speed.accelerationProfile = .none
 
         // Reserve a block with another route to make the train stop
         let b3 = layout.block(for: p.route.steps[2].stepBlockId)!
@@ -44,7 +47,7 @@ class FixedRoutingTests: BTTestCase {
         
         try p.assert("r1:{b1 ≏ ≏ } <t0> [r1[b2 ≏ ≡ 🔵🚂1 ]] <r1<t1(0,2),l>> [r1[b3 ≏ ≏ ]] <t0(2,0)> !{b1 ≏ ≏ }")
         
-        try layout.stopTrain(Identifier<Train>(uuid: "1"), completely: true) { }
+        p.stop()
         
         try p.assert("r1:{b1 ≏ ≏ } <t0> [r1[b2 ≏ ≡ 🔴🚂1 ]] <t1(0,2),l> [b3 ≏ ≏ ] <t0(2,0)> !{b1 ≏ ≏ }")
     }
@@ -97,7 +100,7 @@ class FixedRoutingTests: BTTestCase {
 
         try p.assert("r1:{b1 ≏ ≏ } <t0> [r1[b2 ≏ ≡ 🔵🚂1 ]] <r1<t1(0,2),l>> [r1[b3 ≏ ≏ ]] <t0(2,0)> !{b1 ≏ ≏ }")
         
-        try layout.stopTrain(Identifier<Train>(uuid: "1"), completely: true) { }
+        p.stop()
         
         try p.assert("r1:{b1 ≏ ≏ } <t0> [r1[b2 ≏ ≡ 🔴🚂1 ]] <t1(0,2),l> [b3 ≏ ≏ ] <t0(2,0)> !{b1 ≏ ≏ }")
     }
@@ -679,7 +682,7 @@ class FixedRoutingTests: BTTestCase {
         
         try p.assert("0: {r1{s1 ≏ }} <t1(2,0),l> <t2(1,0),s> [b1 ≏ ] <t3> [b2 ≏ ] <t4(1,0)> [r0[b3 ≏ ≡ 🔴🚂0 ≏ ]] <t5> <t6(0,2)> {r1{s1 ≏ }}")
         
-        XCTAssertTrue(train.managedScheduling)
+        XCTAssertTrue(train.scheduling == .managed)
         XCTAssertEqual(train.state, .stopped)
         
         // Free s1 so the train finishes its route
@@ -690,7 +693,7 @@ class FixedRoutingTests: BTTestCase {
         try p.assert("0: {r0{s1 ≏ }} <t1(2,0),l> <t2(1,0),s> [b1 ≏ ] <t3> [b2 ≏ ] <t4(1,0)> [r0[b3 ≏ ≏ ≡ 🔵🚂0 ]] <r0<t5>> <r0<t6(0,2),r>> {r0{s1 ≏ }}")
         try p.assert("0: {r0{s1 ≡ 🔴🚂0 }} <t1(2,0),l> <t2(1,0),s> [b1 ≏ ] <t3> [b2 ≏ ] <t4(1,0)> [b3 ≏ ≏ ≏ ] <t5> <t6(0,2),r> {r0{s1 ≡ 🔴🚂0 }}")
         
-        XCTAssertTrue(train.unmanagedScheduling)
+        XCTAssertTrue(train.scheduling == .unmanaged)
         XCTAssertEqual(train.state, .stopped)
 
         // Now let's reverse the train direction and pick the reverse route
@@ -723,7 +726,7 @@ class FixedRoutingTests: BTTestCase {
 
         try p.start()
 
-        XCTAssertTrue(p.train.managedScheduling)
+        XCTAssertTrue(p.train.scheduling == .managed)
 
         try p.assert("2: {r0{s1 🔵🚂0 ≏ }} <r0<t1(2,0),l>> <r0<t2(1,0),s>> [r0[b1 ≏ ]] <t3> [b2 ≏ ] <t4(1,0)> [b3 ≏ ≏ ] <t5> <t6> {s2 ≏ } <r0<t1(1,0),l>> <r0<t2(1,0),s>> [r0[b1 ≏ ]] <t3> [b2 ≏ ] <t4(1,0)> [b3 ≏ ≏ ] <t5> <t6(0,2)> {r0{s1 🔵🚂0 ≏ }}")
         try p.assert("2: {s1 ≏ } <t1(2,0),l> <t2(1,0),s> [r0[b1 ≡ 🔵🚂0]] <r0<t3>> [r0[b2 ≏ ]] <t4(1,0)> [b3 ≏ ≏ ] <t5> <t6> {s2 ≏ } <t1(1,0),l> <t2(1,0),s> [r0[b1 ≡ 🔵🚂0]] <r0<t3>> [r0[b2 ≏ ]] <t4(1,0)> [b3 ≏ ≏ ] <t5> <t6(0,2)> {s1 ≏ }")
@@ -731,7 +734,7 @@ class FixedRoutingTests: BTTestCase {
         try p.assert("2: {s1 ≏ } <t1(2,0),l> <t2(1,0),s> [b1 ≏] <t3> [b2 ≏ ] <t4(1,0)> [r0[b3 ≡ 🔵🚂0 ≏ ]] <r0<t5>> <r0<t6>> {r0{s2 ≏ }} <t1(1,0),l> <t2(1,0),s> [b1 ≏] <t3> [b2 ≏ ] <t4(1,0)> [r0[b3 ≡ 🔵🚂0 ≏ ]] <r0<t5>> <r0<t6(0,2)>> {s1 ≏ }")
         try p.assert("2: {s1 ≏ } <t1(2,0),l> <t2(1,0),s> [b1 ≏] <t3> [b2 ≏ ] <t4(1,0)> [b3 ≏ ≏ ] <t5> <t6> {r0{s2 ≡ 🔴🚂0 }} <t1(1,0),l> <t2(1,0),s> [b1 ≏] <t3> [b2 ≏ ] <t4(1,0)> [b3 ≏ ≏ ] <t5> <t6(0,2)> {s1 ≏ }")
         
-        XCTAssertTrue(p.train.managedScheduling)
+        XCTAssertTrue(p.train.scheduling == .managed)
 
         // Artificially set the restart time to 0 which will make the train restart again
         p.layoutController.restartTimerFired(layout.trains[0])
@@ -745,7 +748,7 @@ class FixedRoutingTests: BTTestCase {
         try p.assert("2: {r0{s1 ≏ }} <t1(2,0),s> <t2(1,0),s> [b1 ≏ ] <t3> [b2 ≏ ] <t4(1,0)> [r0[b3 ≡ 🔵🚂0 ≏ ]] <r0<t5>> <r0<t6,r>> {s2 ≏ } <t1(1,0),s> <t2(1,0),s> [b1 ≏ ] <t3> [b2 ≏ ] <t4(1,0)> [r0[b3 ≡ 🔵🚂0 ≏ ]] <r0<t5>> <r0<t6(0,2),r>> {r0{s1 ≏ }}")
         try p.assert("2: {r0{s1 ≡ 🔴🚂0 }} <t1(2,0),s> <t2(1,0),s> [b1 ≏ ] <t3> [b2 ≏ ] <t4(1,0)> [b3 ≏ ≏ ]] <t5> <t6,r> {s2 ≏ } <t1(1,0),s> <t2(1,0),s> [b1 ≏ ] <t3> [b2 ≏ ] <t4(1,0)> [b3 ≏ ≏ ] <t5> <t6(0,2),r> {r0{s1 ≡ 🔴🚂0 }}")
         
-        XCTAssertTrue(p.train.unmanagedScheduling)
+        XCTAssertTrue(p.train.scheduling == .unmanaged)
     }
 
     func testUpdateAutomaticRouteBrakingAndContinue() throws {
@@ -801,8 +804,8 @@ class FixedRoutingTests: BTTestCase {
 
         try p.start()
 
-        XCTAssertTrue(p.train.managedScheduling)
-        
+        XCTAssertTrue(p.train.scheduling == .managed)
+
         // block length = 60
         // train length = 100
         try p.assert("3: {r0{s1 🟡🚂0 ≏ 💺0 }} <r0<t1(2,0),l>> <r0<t2(1,0),s>> [r0[b1 💺0 ≏ 💺0 ]] <r0<t3>> [r0[b2 💺0 ≏ ]] <r0<t4(1,0)>> [r0[b3 ≏ ≏ ]] <t5> <t6,r> {s2 ≏ }")
@@ -819,7 +822,7 @@ class FixedRoutingTests: BTTestCase {
         
         try p.start()
 
-        XCTAssertTrue(p.train.managedScheduling)
+        XCTAssertTrue(p.train.scheduling == .managed)
 
         // A = 200
         // B=C=D=100
@@ -848,7 +851,7 @@ class FixedRoutingTests: BTTestCase {
         
         try p.start()
 
-        XCTAssertTrue(p.train.managedScheduling)
+        XCTAssertTrue(p.train.scheduling == .managed)
 
         // A=E=200
         // B=C=D=100
@@ -881,7 +884,7 @@ class FixedRoutingTests: BTTestCase {
         
         try p.start()
 
-        XCTAssertTrue(p.train.managedScheduling)
+        XCTAssertTrue(p.train.scheduling == .managed)
         XCTAssertEqual(p.train.state, .running)
         
         // A=E=200
@@ -909,7 +912,7 @@ class FixedRoutingTests: BTTestCase {
         
         try p.start()
 
-        XCTAssertTrue(p.train.managedScheduling)
+        XCTAssertTrue(p.train.scheduling == .managed)
 
         // A = 200
         // B=C=D=100
@@ -968,12 +971,44 @@ class FixedRoutingTests: BTTestCase {
 
     // MARK: -- Utility
     
+    final class MockCommandExecutor: LayoutCommandExecuting {
+        
+        var interface: CommandInterface
+        
+        init(interface: CommandInterface) {
+            self.interface = interface
+        }
+        
+        func scheduleRestartTimer(train: Train) {
+            // no-op
+        }
+        
+        func sendTurnoutState(turnout: Turnout, completion: @escaping CompletionBlock) {
+            turnout.actualState = turnout.requestedState
+            completion()
+        }
+        
+        func sendTrainDirection(train: Train, forward: Bool, completion: @escaping CompletionBlock) {
+            completion()
+        }
+        
+        func sendTrainSpeed(train: Train, acceleration: TrainSpeedAcceleration.Acceleration?, completion: @escaping CompletionCancelBlock) {
+            let value = interface.speedValue(for: train.speed.requestedSteps, decoder: train.decoder)
+            interface.execute(command: .speed(address: train.address, decoderType: train.decoder, value: value, priority: .normal, descriptor: nil)) {
+//                train.speed.actualSteps = train.speed.requestedSteps
+                completion(true)
+            }
+        }
+        
+    }
+
     // Convenience structure to test the layout and its route
     public class Package {
         let layout: Layout
         let asserter: LayoutAsserter
         let layoutController: LayoutController
-
+        let executor: LayoutCommandExecuting
+        
         var trains = [Train]()
         var routes = [Route]()
 
@@ -987,7 +1022,9 @@ class FixedRoutingTests: BTTestCase {
         
         init(layout: Layout) {
             self.layout = layout
-            self.layoutController = LayoutController(layout: layout, switchboard: nil, interface: MarklinInterface())
+            self.layoutController = LayoutController(layout: layout, switchboard: nil, interface: MockCommandInterface())
+            self.executor = MockCommandExecutor(interface: layoutController.interface)
+            self.layout.executing = self.executor
             self.asserter = LayoutAsserter(layout: layout, layoutController: layoutController)
             
             layout.detectUnexpectedFeedback = true
@@ -1002,7 +1039,7 @@ class FixedRoutingTests: BTTestCase {
             try layout.setTrainToBlock(train.id, Identifier<Block>(uuid: fromBlockId), position: position, direction: direction)
             
             XCTAssertEqual(train.speed.requestedKph, 0)
-            XCTAssertTrue(train.unmanagedScheduling)
+            XCTAssertEqual(train.scheduling, .unmanaged)
             XCTAssertEqual(train.state, .stopped)
             
             trains.append(train)
@@ -1016,8 +1053,12 @@ class FixedRoutingTests: BTTestCase {
         func start(routeID: String, trainID: String, expectedState: Train.State = .running) throws {
             try layoutController.start(routeID: Identifier<Route>(uuid: routeID), trainID: Identifier<Train>(uuid: trainID), destination: nil)
             let train = layout.train(for: Identifier<Train>(uuid: trainID))!
-            XCTAssertTrue(train.managedScheduling)
+            XCTAssertEqual(train.scheduling, .managed)
             XCTAssertEqual(train.state, expectedState)
+        }
+        
+        func stop() {
+            layoutController.stop(train: train)
         }
         
         func toggle(_ feedback: String) {

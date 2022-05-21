@@ -165,16 +165,16 @@ final class LayoutController {
         
         BTLogger.router.debug("\(train, privacy: .public): evaluating event '\(String(describing: event), privacy: .public)' for \(String(describing: train.scheduling), privacy: .public)")
 
-        if train.managedScheduling {
+        if train.scheduling == .unmanaged {
+            result.append(try TrainHandlerUnmanaged.process(layout: layout, train: train, event: event))
+        } else {
             // Stop the train if there is no route associated with it
             guard let route = layout.route(for: train.routeId, trainId: train.id) else {
-                try layout.stopTrain(train.id, completely: false) { }
+                stop(train: train)
                 return result
             }
 
             result.append(try TrainHandlerManaged.process(layout: layout, route: route, train: train, event: event))
-        } else {
-            result.append(try TrainHandlerUnmanaged.process(layout: layout, train: train, event: event))
         }
 
         if result.events.isEmpty {
@@ -197,11 +197,7 @@ final class LayoutController {
     }
     
     private func haltAll() {
-        do {
-            try stopAll(includingManualTrains: true)
-        } catch {
-            BTLogger.router.error("Unable to stop all the trains because \(error.localizedDescription, privacy: .public)")
-        }
+        stopAll(includingManualTrains: true)
         
         // Stop the Digital Controller to ensure nothing moves further
         stop() { }
@@ -213,11 +209,11 @@ final class LayoutController {
     
     // MARK: Commands
     
-    func go(onCompletion: @escaping () -> Void) {
+    func go(onCompletion: @escaping CompletionBlock) {
         interface.execute(command: .go(), onCompletion: onCompletion)
     }
 
-    func stop(onCompletion: @escaping () -> Void) {
+    func stop(onCompletion: @escaping CompletionBlock) {
         interface.execute(command: .stop(), onCompletion: onCompletion)
     }
     
@@ -236,12 +232,12 @@ final class LayoutController {
         }
     }
     
-    func stop(trainID: Identifier<Train>, completely: Bool) throws {
-        try layout.stopTrain(trainID, completely: completely) { }
+    func stop(train: Train) {
+        train.scheduling = .stopManaged
         runControllers(.schedulingChanged)
     }
 
-    func stopAll(includingManualTrains: Bool) throws {
+    func stopAll(includingManualTrains: Bool) {
         let trains: [Train]
         if includingManualTrains {
             trains = layout.trains
@@ -249,22 +245,18 @@ final class LayoutController {
             trains = layout.trainsThatCanBeStopped()
         }
         for train in trains {
-            do {
-                try stop(trainID: train.id, completely: true)
-            } catch {
-                BTLogger.router.error("\(train, privacy: .public): unable to stop because: \(error.localizedDescription, privacy: .public)")
-            }
+            stop(train: train)
         }
     }
 
-    func finish(trainID: Identifier<Train>) throws {
-        try layout.finishTrain(trainID)
+    func finish(train: Train) {
+        train.scheduling = .finishManaged
         runControllers(.schedulingChanged)
     }
     
-    func finishAll() throws {
+    func finishAll() {
         for train in layout.trainsThatCanBeFinished() {
-            try finish(trainID: train.id)
+            finish(train: train)
         }
     }
 
@@ -325,6 +317,7 @@ extension LayoutController: LayoutCommandExecuting {
     }
     
     func sendTrainSpeed(train: Train, acceleration: TrainSpeedAcceleration.Acceleration?, completion: @escaping CompletionCancelBlock) {
+        // TODO: executor not used? Should we refactor how this is done?
         if let controller = speedManagers[train.id] {
             controller.changeSpeed(of: train, acceleration: acceleration, completion: completion)
         } else {

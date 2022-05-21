@@ -40,7 +40,7 @@ class SwitchboardRenderingTests: XCTestCase {
         let context = ShapeContext()
         let t = Train()
                 
-        t.scheduling = .managed(finishing: false)
+        t.scheduling = .managed
         
         t.state = .running
         XCTAssertEqual(context.trainColor(t), NSColor.systemGreen.cgColor)

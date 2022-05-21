@@ -79,7 +79,7 @@ final class Layout: Element, ObservableObject {
         if let executing = executing {
             return executing
         } else {
-            return DefaultCommandExecutor()
+            fatalError("A layout executor must be specified")
         }
     }
     
@@ -116,19 +116,19 @@ final class Layout: Element, ObservableObject {
     
     func trainsThatCanBeStarted() -> [Train] {
         return trains.filter { train in
-            return train.enabled && train.blockId != nil && train.unmanagedScheduling
+            return train.enabled && train.blockId != nil && train.scheduling == .unmanaged
         }
     }
     
     func trainsThatCanBeStopped() -> [Train] {
         return trains.filter { train in
-            return train.managedScheduling
+            return train.scheduling == .managed || train.scheduling == .finishManaged
         }
     }
     
     func trainsThatCanBeFinished() -> [Train] {
         return trains.filter { train in
-            return train.managedScheduling && !train.managedFinishingScheduling
+            return train.scheduling == .managed
         }
     }
         

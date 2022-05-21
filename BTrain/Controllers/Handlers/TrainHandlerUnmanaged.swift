@@ -41,7 +41,7 @@ final class TrainHandlerUnmanaged {
             BTLogger.router.debug("\(self.train, privacy: .public): train is now running")
             train.state = .running
             resultingEvents.append(.stateChanged)
-        } else if train.state != .stopped && train.state != .stopping && train.speed.actualKph == 0 {
+        } else if train.state == .running && train.speed.actualKph == 0 {
             BTLogger.router.debug("\(self.train, privacy: .public): train is now stopped")
             train.state = .stopped
             resultingEvents.append(.stateChanged)
@@ -105,7 +105,7 @@ final class TrainHandlerUnmanaged {
     }
 
     func stopDetection() throws {
-        guard train.state != .stopped && train.state != .stopping else {
+        guard train.state == .running else {
             return
         }
                 
@@ -120,14 +120,14 @@ final class TrainHandlerUnmanaged {
         if train.wagonsPushedByLocomotive {
             train.runtimeInfo = "Stopped because no next block detected"
             BTLogger.router.warning("\(self.train, privacy: .public): no next block detected, stopping by precaution")
-            try layout.stopTrain(train.id, completely: true) { }
+            layout.setTrainSpeed(train, 0)
         } else {
             // If there are no possible next block detected, we need to stop the train
             // when it reaches the end of the block to avoid a collision.
             if try layout.atEndOfBlock(train: train) {
                 train.runtimeInfo = "Stopped because no next block detected"
                 BTLogger.router.warning("\(self.train, privacy: .public): no next block detected, stopping by precaution")
-                try layout.stopTrain(train.id, completely: true) { }
+                layout.setTrainSpeed(train, 0)
             }
         }
     }

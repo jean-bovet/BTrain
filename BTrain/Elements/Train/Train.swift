@@ -175,36 +175,18 @@ final class Train: Element, ObservableObject {
         case unmanaged
         
         /// The train is managed by BTrain. This mode is used when BTrain is driving the train using either a fixed or automatic route.
-        case managed(finishing: Bool)
+        case managed
+        
+        /// Request to stop the train and go to unmanaged mode
+        case stopManaged
+
+        /// Request to stop the train at the next station and go to unmanaged mode
+        case finishManaged
     }
     
     // The state of the schedule
     @Published var scheduling: Schedule = .unmanaged
     
-    var unmanagedScheduling: Bool {
-        if case .unmanaged = scheduling {
-            return true
-        } else {
-            return false
-        }
-    }
-    
-    var managedFinishingScheduling: Bool {
-        if case .managed(let finishing) = scheduling {
-            return finishing
-        } else {
-            return false
-        }
-    }
-
-    var managedScheduling: Bool {
-        if case .managed(_) = scheduling {
-            return true
-        } else {
-            return false
-        }
-    }
-
     enum State {
         case running
         case braking

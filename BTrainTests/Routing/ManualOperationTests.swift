@@ -236,7 +236,7 @@ class ManualOperationTests: BTTestCase {
         try layout.setTrainToBlock(train.id, Identifier<Block>(uuid: fromBlockId), position: position, direction: direction)
         
         XCTAssertEqual(train.speed.requestedKph, 0)
-        XCTAssertTrue(train.unmanagedScheduling)
+        XCTAssertEqual(train.scheduling, .unmanaged)
         XCTAssertEqual(train.state, .stopped)
 
         let layoutController = LayoutController(layout: layout, switchboard: nil, interface: MarklinInterface())

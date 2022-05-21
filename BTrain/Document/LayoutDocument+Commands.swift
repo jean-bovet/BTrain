@@ -32,20 +32,20 @@ extension LayoutDocument {
         layoutController.startAll()
     }
     
-    func stop(train: Train) throws {
-        try layoutController.stop(trainID: train.id, completely: true)
+    func stop(train: Train) {
+        layoutController.stop(train: train)
     }
 
-    func stopAll() throws {
-        try layoutController.stopAll(includingManualTrains: false)
+    func stopAll() {
+        layoutController.stopAll(includingManualTrains: false)
     }
 
-    func finish(train: Train) throws {
-        try layoutController.finish(trainID: train.id)
+    func finish(train: Train) {
+        layoutController.finish(train: train)
     }
 
-    func finishAll() throws {
-        try layoutController.finishAll()
+    func finishAll() {
+        layoutController.finishAll()
     }
 
     func connectToSimulator(enable: Bool, completed: ((Error?) -> Void)? = nil) {

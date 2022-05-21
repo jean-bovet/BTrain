@@ -64,11 +64,13 @@ final class TrainHandlerManaged {
     /// - There are leading blocks but there is not enough distance to brake safely the train
     /// - The train is at the end of the route
     /// - The train has reached either a station block or a block that is the destination of the route
+    /// - The train has been requested to stop by the user (scheduling == .stopManaged)
     var trainShouldStop: Bool {
         train.leading.isEmpty ||
         layout.reservation.isBrakingDistanceRespected(train: train, speed: train.speed.actualKph) == false ||
         trainAtEndOfRoute ||
-        layout.hasTrainReachedStationOrDestination(route, train, currentBlock)
+        layout.hasTrainReachedStationOrDestination(route, train, currentBlock) ||
+        train.scheduling == .stopManaged
     }
     
     /// Returns true if the block feedback assigned to brake the train is triggered
@@ -155,19 +157,28 @@ final class TrainHandlerManaged {
             }
             
         case .schedulingChanged:
-            if train.managedScheduling && train.state == .stopped {
-                // Note: routeStepIndex is setup by the start() method in the Layout, which
-                // can set its value to something > 0 if the train is somewhere along the route.
-                train.startRouteIndex = train.routeStepIndex
-                try reserveLeadingBlocks() // TODO: seems unnecessary as handleTrainStart will do it anyway
-            } else if train.unmanagedScheduling {
+            switch train.scheduling {
+            case .unmanaged:
                 try layout.reservation.removeLeadingBlocks(train: train)
+
+            case .managed:
+                if train.state == .stopped {
+                    // Note: routeStepIndex is setup by the start() method in the Layout, which
+                    // can set its value to something > 0 if the train is somewhere along the route.
+                    train.startRouteIndex = train.routeStepIndex
+                    try reserveLeadingBlocks() // TODO: seems unnecessary as handleTrainStart will do it anyway
+                }
+
+            case .stopManaged:
+                break
+                
+            case .finishManaged:
+                break
             }
             
         case .restartTimerExpired(let train):
-            // Only restart the train if it is not marked as "finishing", meaning that the user
-            // want the train to finish its route after stopping in a station block.
-            if train.managedFinishingScheduling == false && train == self.train {
+            // Only restart the train if it is still automatically managed
+            if train.scheduling == .managed && train == self.train {
                 train.startRouteIndex = train.routeStepIndex
             }
             
@@ -176,6 +187,11 @@ final class TrainHandlerManaged {
         case .directionChanged:
             break
         case .speedChanged:
+            if train.speed.actualKph == 0 && train.state == .stopping {
+                train.state = .stopped
+                try handleTrainStopped()
+                resultingEvents.append(.stateChanged)
+            }
             break
         case .stateChanged:
             break
@@ -258,7 +274,7 @@ final class TrainHandlerManaged {
             return
         }
         
-        guard train.managedScheduling else {
+        guard train.scheduling == .managed else {
             return
         }
         
@@ -293,39 +309,47 @@ final class TrainHandlerManaged {
     }
     
     func handleTrainStop() throws {
-        guard train.state != .stopped && train.state != .stopping && trainShouldStop && stoppingFeedbackTriggered else {
+        guard train.state == .running || train.state == .braking else {
             return
         }
         
+        guard trainShouldStop && stoppingFeedbackTriggered else {
+            return
+        }
+
         BTLogger.router.debug("\(self.train, privacy: .public): stopping in \(self.currentBlock.name, privacy: .public) at position \(self.train.position), direction \(self.trainInstance.direction)")
+        
+        train.state = .stopping
+        
+        layout.setTrainSpeed(train, 0)
+                        
+        resultingEvents.append(.stateChanged)
+    }
+    
+    func handleTrainStopped() throws {
         try layout.reservation.removeLeadingBlocks(train: train)
+
+        let reachedStationOrDestination = layout.hasTrainReachedStationOrDestination(route, train, currentBlock)
+        let stopCompletely = (reachedStationOrDestination && train.scheduling == .finishManaged) || train.scheduling == .stopManaged
         
         switch route.mode {
         case .fixed:
-            let reachedStationOrDestination = layout.hasTrainReachedStationOrDestination(route, train, currentBlock)
-            let stopCompletely = (reachedStationOrDestination && train.managedFinishingScheduling) || trainAtEndOfRoute
-            
-            _ = try stop(completely: stopCompletely)
-            
-            if reachedStationOrDestination && stopCompletely == false {
+            if stopCompletely || trainAtEndOfRoute {
+                train.scheduling = .unmanaged
+            } else if reachedStationOrDestination {
                 reschedule(train: train, delay: waitingTime)
             }
-            
+
         case .automatic:
-            let reachedStationOrDestination = layout.hasTrainReachedStationOrDestination(route, train, currentBlock)
-            let stopCompletely = reachedStationOrDestination && train.managedFinishingScheduling
-            
-            _ = try stop(completely: stopCompletely)
-            
-            if reachedStationOrDestination && stopCompletely == false {
+            if stopCompletely {
+                train.scheduling = .unmanaged
+            } else if reachedStationOrDestination {
                 reschedule(train: train, delay: waitingTime)
             }
-            
+
         case .automaticOnce(destination: _):
-            _ = try stop(completely: true)
+            break
         }
-        
-        resultingEvents.append(.stateChanged)
     }
     
     func reschedule(train: Train, delay: TimeInterval) {
@@ -391,9 +415,5 @@ final class TrainHandlerManaged {
         }
         return false
     }
-    
-    private func stop(completely: Bool) throws {
-        try layout.stopTrain(train.id, completely: completely) { }
-    }
-            
+                
 }

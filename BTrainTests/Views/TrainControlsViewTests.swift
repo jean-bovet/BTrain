@@ -65,13 +65,13 @@ class TrainControlsViewTests: RootViewTests {
         XCTAssertThrowsError(try sut.inspect().find(button: "Stop"))
         XCTAssertThrowsError(try sut.inspect().find(button: "Finish"))
 
-        train.scheduling = .managed(finishing: false)
+        train.scheduling = .managed
         _ = try sut.inspect().find(button: "Stop")
         var fb = try sut.inspect().find(button: "Finish")
         XCTAssertFalse(fb.isDisabled())
         XCTAssertThrowsError(try sut.inspect().find(button: "Start"))
 
-        train.scheduling = .managed(finishing: true)
+        train.scheduling = .finishManaged
         _ = try sut.inspect().find(button: "Stop")
         fb = try sut.inspect().find(button: "Finish")
         XCTAssertTrue(fb.isDisabled())

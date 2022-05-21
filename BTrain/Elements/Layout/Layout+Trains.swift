@@ -125,8 +125,7 @@ extension Layout {
     /// This method only affects trains running in automatic scheduling. Manual scheduling is not monitored.
     /// - Parameter train: the train to adjust the speed
     func adjustSpeedLimit(_ train: Train) {
-        // Note: only do that when the train is not under manual control!
-        guard !train.unmanagedScheduling else {
+        guard train.scheduling == .managed else {
             return
         }
 
@@ -150,6 +149,7 @@ extension Layout {
         }
     }
 
+    // TODO: move to LayoutController and get rid of the executor
     func setTrainSpeed(_ train: Train, _ speed: SpeedStep, acceleration: TrainSpeedAcceleration.Acceleration? = nil, completion: CompletionCancelBlock? = nil) {
         train.speed.requestedSteps = speed
         if train.speed.requestedSteps != train.speed.actualSteps {
@@ -286,7 +286,7 @@ extension Layout {
             }
         }
 
-        train.scheduling = .managed(finishing: false)
+        train.scheduling = .managed
     }
     
     func hasTrainReachedStationOrDestination(_ route: Route?, _ train: Train, _ block: Block) -> Bool {
@@ -314,57 +314,6 @@ extension Layout {
         }
 
         return true
-    }
-
-    // Stop the specified train. If completely is true,
-    // set the state running to false of the train which means
-    // it won't restart anymore.
-    func stopTrain(_ trainId: Identifier<Train>, completely: Bool = false, completion: @escaping CompletionBlock) throws {
-        guard let train = self.train(for: trainId) else {
-            throw LayoutError.trainNotFound(trainId: trainId)
-        }
-                
-        BTLogger.router.debug("\(train): stopping \(completely ? "completely." : "until it can be restarted.")")
-
-        if train.state != .stopped && train.state != .stopping {
-            train.speed.requestedKph = 0
-            train.state = .stopping
-
-            executor.sendTrainSpeed(train: train, acceleration: nil) { [weak self] completed in
-                BTLogger.router.debug("\(train): train speed completion \(completed)")
-                if completed {
-                    train.state = .stopped
-                }
-                self?.didChange()
-                completion()
-            }
-        } else {
-            completion()
-        }
-
-        if completely {
-            try stopCompletely(trainId)
-        }
-        
-        self.didChange()
-    }
-
-    func stopCompletely(_ trainId: Identifier<Train>) throws {
-        guard let train = self.train(for: trainId) else {
-            throw LayoutError.trainNotFound(trainId: trainId)
-        }
-        
-        train.scheduling = .unmanaged
-        try reservation.removeLeadingBlocks(train: train)
-    }
-    
-    // Use this method to stop the train when it finishes the route
-    func finishTrain(_ trainId: Identifier<Train>) throws {
-        guard let train = self.train(for: trainId) else {
-            throw LayoutError.trainNotFound(trainId: trainId)
-        }
-
-        train.scheduling = .managed(finishing: true)
     }
     
     /// Sets a train to a specific block.

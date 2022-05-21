@@ -20,7 +20,7 @@ extension BlockShape: EphemeralDragProvider {
             return nil
         }
         
-        guard let train = train, train.unmanagedScheduling && block.blockContainsLocomotive else {
+        guard let train = train, train.scheduling == .unmanaged && block.blockContainsLocomotive else {
             return nil
         }
         

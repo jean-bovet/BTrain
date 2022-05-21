@@ -131,9 +131,9 @@ class LayoutTests: XCTestCase {
         }
         
         XCTAssertEqual(train1.state, .stopped)
-        XCTAssertTrue(train1.unmanagedScheduling)
+        XCTAssertEqual(train1.scheduling, .unmanaged)
         try doc.start(train: train1.id, withRoute: layout.routes[0].id, destination: nil)
-        XCTAssertTrue(train1.managedScheduling)
+        XCTAssertEqual(train1.scheduling, .managed)
 
         // Note: state will change to running once the turnouts have been settled
         wait(for: {
@@ -141,16 +141,20 @@ class LayoutTests: XCTestCase {
         }, timeout: 1.0)
         
         XCTAssertEqual(train1.state, .running)
-        XCTAssertTrue(train1.managedScheduling)
+        XCTAssertEqual(train1.scheduling, .managed)
 
         let stoppedFully = expectation(description: "StoppedFully")
-        try layout.stopTrain(train1.id, completely: true) {
-            stoppedFully.fulfill()
-        }
+        doc.stop(train: train1)
+        // TODO
+//        try layout.stopTrain(train1.id) { completed in
+//            if completed {
+//                stoppedFully.fulfill()
+//            }
+//        }
         wait(for: [stoppedFully], timeout: 2.0)
 
         XCTAssertEqual(train1.state, .stopped)
-        XCTAssertTrue(train1.unmanagedScheduling)
+        XCTAssertEqual(train1.scheduling, .unmanaged)
     }
   
     func testBlockSpeedLimit() throws {

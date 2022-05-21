@@ -22,7 +22,7 @@ struct TrainControlRouteActionsView: View {
         
     var body: some View {
         HStack {
-            if train.unmanagedScheduling {
+            if train.scheduling == .unmanaged {
                 Button("Start") {
                     do {
                         train.runtimeInfo = nil
@@ -33,21 +33,14 @@ struct TrainControlRouteActionsView: View {
                 }
             } else {
                 Button("Stop") {
-                    do {
-                        route.lastMessage = nil
-                        try document.stop(train: train)
-                    } catch {
-                        train.runtimeInfo = error.localizedDescription
-                    }
-                }
+                    route.lastMessage = nil
+                    document.stop(train: train)
+                }.disabled(train.scheduling == .stopManaged)
+                
                 Button("Finish") {
-                    do {
-                        route.lastMessage = nil
-                        try document.finish(train: train)
-                    } catch {
-                        train.runtimeInfo = error.localizedDescription
-                    }
-                }.disabled(train.managedFinishingScheduling)
+                    route.lastMessage = nil
+                    document.finish(train: train)
+                }.disabled(train.scheduling == .finishManaged || train.scheduling == .stopManaged)
             }
         }
     }
