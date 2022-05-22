@@ -88,13 +88,14 @@ struct TurnoutDetailsView: View {
 
                 Spacer()
 
-                Button("Set") {
-                    layout.applyTurnoutState(turnout: turnout)
-                }
-                
-                Button("Toggle") {
-                    layout.toggleTurnoutToNextState(turnout: turnout)
-                }
+                // TODO: use layoutController
+//                Button("Set") {
+//                    layout.applyTurnoutState(turnout: turnout)
+//                }
+//
+//                Button("Toggle") {
+//                    layout.toggleTurnoutToNextState(turnout: turnout)
+//                }
             }
         }
     }

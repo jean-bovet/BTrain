@@ -45,13 +45,13 @@ extension LayoutController {
                 case .forward:
                     if train.directionForward == false {
                         train.directionForward = true
-                        try layout.toggleTrainDirectionInBlock(train)
+                        try toggleTrainDirectionInBlock(train)
                         runControllers(.directionChanged)
                     }
                 case .backward:
                     if train.directionForward {
                         train.directionForward = false
-                        try layout.toggleTrainDirectionInBlock(train)
+                        try toggleTrainDirectionInBlock(train)
                         runControllers(.directionChanged)
                     }
                 case .unknown:

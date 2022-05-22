@@ -172,6 +172,8 @@ final class LayoutASCIIProducer {
             return "b03"
         case .branch21:
             return "b21"
+        case .unknown:
+            return "?"
         case .invalid:
             return nil
         }

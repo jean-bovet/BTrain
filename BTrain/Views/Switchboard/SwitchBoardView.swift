@@ -86,11 +86,11 @@ struct SwitchBoardView_Previews: PreviewProvider {
     static func generateLayout() -> Layout {
         let lt = LayoutLoop2().newLayout()
         
-        try! lt.setTrainPosition(lt.trains[0], 1)
-        try! lt.setTrainPosition(lt.trains[1], 2)
+        try! doc.layoutController.setTrainPosition(lt.trains[0], 1)
+        try! doc.layoutController.setTrainPosition(lt.trains[1], 2)
 
-        try! lt.setTrainToBlock(lt.trains[0].id, lt.block(at: 0).id, direction: .next)
-        try! lt.setTrainToBlock(lt.trains[1].id, lt.block(at: 2).id, direction: .next)
+        try! doc.layoutController.setTrainToBlock(lt.trains[0], lt.block(at: 0).id, direction: .next)
+        try! doc.layoutController.setTrainToBlock(lt.trains[1], lt.block(at: 2).id, direction: .next)
 
         return lt
     }

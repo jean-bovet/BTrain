@@ -68,27 +68,9 @@ final class Layout: Element, ObservableObject {
     // - The train moves to the next block when the feedback in the next block is the first one in the direction
     //   of travel of the train. The train does not need to be at the end of the current block for this to happen.
     @AppStorage(SettingsKeys.strictRouteFeedbackStrategy) var strictRouteFeedbackStrategy = false
-
-    // The command executor used to execute command towards the Digital Controller.
-    weak var executing: LayoutCommandExecuting?
-    
-    // Returns an executor that is guaranteed to exist. It usually will be the `executing`
-    // which is set by the LayoutController but if not, like during unit testing,
-    // a default executor will be returned that provides basic functionalities.
-    var executor: LayoutCommandExecuting {
-        if let executing = executing {
-            return executing
-        } else {
-            fatalError("A layout executor must be specified")
-        }
-    }
     
     // Non-nil when a layout runtime error occurred
     @Published var runtimeError: String?
-
-    lazy var reservation: LayoutReservation = {
-        return LayoutReservation(layout: self, verbose: SettingsKeys.bool(forKey: SettingsKeys.logReservation))
-    }()
     
     lazy var automaticRouting: AutomaticRouting = {
         return AutomaticRouting(layout: self)

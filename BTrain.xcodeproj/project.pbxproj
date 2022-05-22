@@ -11,6 +11,8 @@
 		A7012C8528344AC0003AC687 /* DeveloperMetrics.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7012C8428344AC0003AC687 /* DeveloperMetrics.swift */; };
 		A7012C882835C9E5003AC687 /* StopSettleDelayTimer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7012C872835C9E5003AC687 /* StopSettleDelayTimer.swift */; };
 		A7012C8A2835D16C003AC687 /* SpeedChangeTimer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7012C892835D16C003AC687 /* SpeedChangeTimer.swift */; };
+		A7012C8E2839BDC4003AC687 /* MockCommandInterface.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7012C8D2839BDC4003AC687 /* MockCommandInterface.swift */; };
+		A7012C91283AED29003AC687 /* Types.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7012C90283AED29003AC687 /* Types.swift */; };
 		A711B1502739EBD7002FE7DB /* LayoutController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A711B14F2739EBD7002FE7DB /* LayoutController.swift */; };
 		A7145F8A27F90FBA00BF5F61 /* NewLayoutWizardViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7145F8927F90FBA00BF5F61 /* NewLayoutWizardViewTests.swift */; };
 		A7145F8C27F911F000BF5F61 /* TrainSpeedMeasurementViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7145F8B27F911F000BF5F61 /* TrainSpeedMeasurementViewTests.swift */; };
@@ -195,7 +197,6 @@
 		A791EEBE28035645008F58C8 /* LayoutsPredefined.swift in Sources */ = {isa = PBXBuildFile; fileRef = A791EEBD28035645008F58C8 /* LayoutsPredefined.swift */; };
 		A792DEF627839F55004B0439 /* SimulatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A792DEF527839F55004B0439 /* SimulatorView.swift */; };
 		A792DEF82783A09C004B0439 /* SimulatorTrainControlView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A792DEF72783A09C004B0439 /* SimulatorTrainControlView.swift */; };
-		A792DEFB27841B35004B0439 /* LayoutCommandExecuting.swift in Sources */ = {isa = PBXBuildFile; fileRef = A792DEFA27841B35004B0439 /* LayoutCommandExecuting.swift */; };
 		A792DEFD27850834004B0439 /* SimulatorViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A792DEFC27850834004B0439 /* SimulatorViewTests.swift */; };
 		A792DEFF278508B0004B0439 /* LayoutCreatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A792DEFE278508B0004B0439 /* LayoutCreatorTests.swift */; };
 		A792DF012785095B004B0439 /* SettingsViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A792DF002785095B004B0439 /* SettingsViewTests.swift */; };
@@ -307,6 +308,8 @@
 		A7012C8428344AC0003AC687 /* DeveloperMetrics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeveloperMetrics.swift; sourceTree = "<group>"; };
 		A7012C872835C9E5003AC687 /* StopSettleDelayTimer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StopSettleDelayTimer.swift; sourceTree = "<group>"; };
 		A7012C892835D16C003AC687 /* SpeedChangeTimer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeedChangeTimer.swift; sourceTree = "<group>"; };
+		A7012C8D2839BDC4003AC687 /* MockCommandInterface.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockCommandInterface.swift; sourceTree = "<group>"; };
+		A7012C90283AED29003AC687 /* Types.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Types.swift; sourceTree = "<group>"; };
 		A711B14F2739EBD7002FE7DB /* LayoutController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutController.swift; sourceTree = "<group>"; };
 		A7145F8927F90FBA00BF5F61 /* NewLayoutWizardViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewLayoutWizardViewTests.swift; sourceTree = "<group>"; };
 		A7145F8B27F911F000BF5F61 /* TrainSpeedMeasurementViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainSpeedMeasurementViewTests.swift; sourceTree = "<group>"; };
@@ -493,7 +496,6 @@
 		A791EEBD28035645008F58C8 /* LayoutsPredefined.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutsPredefined.swift; sourceTree = "<group>"; };
 		A792DEF527839F55004B0439 /* SimulatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimulatorView.swift; sourceTree = "<group>"; };
 		A792DEF72783A09C004B0439 /* SimulatorTrainControlView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimulatorTrainControlView.swift; sourceTree = "<group>"; };
-		A792DEFA27841B35004B0439 /* LayoutCommandExecuting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutCommandExecuting.swift; sourceTree = "<group>"; };
 		A792DEFC27850834004B0439 /* SimulatorViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimulatorViewTests.swift; sourceTree = "<group>"; };
 		A792DEFE278508B0004B0439 /* LayoutCreatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutCreatorTests.swift; sourceTree = "<group>"; };
 		A792DF002785095B004B0439 /* SettingsViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewTests.swift; sourceTree = "<group>"; };
@@ -622,6 +624,14 @@
 			path = Metrics;
 			sourceTree = "<group>";
 		};
+		A7012C8F2839BDCA003AC687 /* Mocks */ = {
+			isa = PBXGroup;
+			children = (
+				A7012C8D2839BDC4003AC687 /* MockCommandInterface.swift */,
+			);
+			path = Mocks;
+			sourceTree = "<group>";
+		};
 		A711B155273A28C3002FE7DB /* Command */ = {
 			isa = PBXGroup;
 			children = (
@@ -738,6 +748,7 @@
 				A775C62027A37C1300D712CF /* Routing */,
 				A79406562807842300F6A427 /* Shortest Path */,
 				A73E07F3276974E6005F9D64 /* Views */,
+				A7012C8F2839BDCA003AC687 /* Mocks */,
 				A775C61E27A37B8800D712CF /* Utilities */,
 			);
 			path = BTrainTests;
@@ -998,7 +1009,6 @@
 				A744D1362765C5A3005C2F37 /* LayoutError.swift */,
 				A76507F3275BEE5F0079C71A /* LayoutDiagnostics.swift */,
 				A783EA9E2787C6DA00E69B6D /* LayoutObserver.swift */,
-				A792DEFA27841B35004B0439 /* LayoutCommandExecuting.swift */,
 			);
 			path = Layout;
 			sourceTree = "<group>";
@@ -1327,6 +1337,7 @@
 		A7BD6257276D39CA0039B6C2 /* Utilities */ = {
 			isa = PBXGroup;
 			children = (
+				A7012C90283AED29003AC687 /* Types.swift */,
 				A785C074278A5CE1002FD538 /* TrainIconManager.swift */,
 				A785C06E2789F323002FD538 /* UndoProvider.swift */,
 				A73B1638274B60A10073947D /* BTLogger.swift */,
@@ -1679,7 +1690,6 @@
 				A717FB17281DEE5E00310B5D /* Layout+Stations.swift in Sources */,
 				A711B1502739EBD7002FE7DB /* LayoutController.swift in Sources */,
 				A7CA5EC1279649CF00171398 /* BlockFeedbacksView.swift in Sources */,
-				A792DEFB27841B35004B0439 /* LayoutCommandExecuting.swift in Sources */,
 				A7218076275D424200831998 /* OverviewView.swift in Sources */,
 				A73B163C274DC0F50073947D /* TurnoutListView.swift in Sources */,
 				A785C06F2789F324002FD538 /* UndoProvider.swift in Sources */,
@@ -1724,6 +1734,7 @@
 				A77A96DC27274A17009E7ECB /* MarklinCANMessagePrinter.swift in Sources */,
 				A784137A273F4D5400381341 /* ConnectableShape.swift in Sources */,
 				A7E1F74A27D71E51009FB75F /* TrainSpeedTimingFunctionView.swift in Sources */,
+				A7012C91283AED29003AC687 /* Types.swift in Sources */,
 				A7CA5EBF2795D05A00171398 /* TrainControlActionsView.swift in Sources */,
 				A78B996927FE41A90021EFE4 /* LayoutPathFinder.swift in Sources */,
 				A73E0829276BF554005F9D64 /* TrainControlSetLocationSheet.swift in Sources */,
@@ -1758,6 +1769,7 @@
 				A7218087276055AD00831998 /* FeedbackTests.swift in Sources */,
 				A7145F8C27F911F000BF5F61 /* TrainSpeedMeasurementViewTests.swift in Sources */,
 				A73E07F227697285005F9D64 /* TrainViewTests.swift in Sources */,
+				A7012C8E2839BDC4003AC687 /* MockCommandInterface.swift in Sources */,
 				A73E0818276B1059005F9D64 /* SwitchBoardViewTests.swift in Sources */,
 				A794065B28087C2600F6A427 /* LayoutStringParser.swift in Sources */,
 				A78B996427FD56D80021EFE4 /* GraphTests.swift in Sources */,

@@ -32,6 +32,10 @@ final class LayoutController {
     // when certain events happen in the layout controller
     let switchboard: SwitchBoard?
     
+    lazy var reservation: LayoutReservation = {
+        LayoutReservation(layout: layout, executor: self, verbose: SettingsKeys.bool(forKey: SettingsKeys.logReservation))
+    }()
+
     // Speed manager for each train.
     private var speedManagers = [Identifier<Train>:TrainSpeedManager]()
 
@@ -166,7 +170,7 @@ final class LayoutController {
         BTLogger.router.debug("\(train, privacy: .public): evaluating event '\(String(describing: event), privacy: .public)' for \(String(describing: train.scheduling), privacy: .public)")
 
         if train.scheduling == .unmanaged {
-            result.append(try TrainHandlerUnmanaged.process(layout: layout, train: train, event: event))
+            result.append(try TrainHandlerUnmanaged.process(layout: layout, executor: self, train: train, event: event))
         } else {
             // Stop the train if there is no route associated with it
             guard let route = layout.route(for: train.routeId, trainId: train.id) else {
@@ -174,7 +178,7 @@ final class LayoutController {
                 return result
             }
 
-            result.append(try TrainHandlerManaged.process(layout: layout, route: route, train: train, event: event))
+            result.append(try TrainHandlerManaged.process(layout: layout, reservation: reservation, executor: self, route: route, train: train, event: event))
         }
 
         if result.events.isEmpty {
@@ -199,6 +203,14 @@ final class LayoutController {
     private func haltAll() {
         stopAll(includingManualTrains: true)
         
+        // Send the command to zero the speed of each train
+        // because the run() method won't run until the runtimeError
+        // is cleared by the user. We want to make sure the train don't
+        // start again if the user re-enable the layout manually.
+        for train in layout.trains {
+            setTrainSpeed(train, SpeedStep(value: 0))
+        }
+        
         // Stop the Digital Controller to ensure nothing moves further
         stop() { }
 
@@ -216,12 +228,7 @@ final class LayoutController {
     func stop(onCompletion: @escaping CompletionBlock) {
         interface.execute(command: .stop(), onCompletion: onCompletion)
     }
-    
-    func start(routeID: Identifier<Route>, trainID: Identifier<Train>, destination: Destination?) throws {
-        try layout.start(routeID: routeID, trainID: trainID, destination: destination)
-        runControllers(.schedulingChanged)
-    }
-    
+        
     func startAll() {
         for train in layout.trainsThatCanBeStarted() {
             do {
@@ -268,7 +275,8 @@ final class LayoutController {
     // restart the train
     var pausedTrainTimers = [Identifier<Train>:Timer]()
 
-    // This method is part of the LayoutCommandExecuting protocol
+    /// Request to restart the train after a specific amount of time specified by the route and block.
+    /// - Parameter train: the train to restart after some amount of time
     func scheduleRestartTimer(train: Train) {
         guard train.timeUntilAutomaticRestart > 0 else {
             return
@@ -306,16 +314,105 @@ final class LayoutController {
     }
 }
 
-extension LayoutController: LayoutCommandExecuting {
+extension LayoutController {
     
+    // TODO: can we use Route and Train instance directly?
+    func start(routeID: Identifier<Route>, trainID: Identifier<Train>, destination: Destination? = nil) throws {
+        guard let route = layout.route(for: routeID, trainId: trainID) else {
+            throw LayoutError.routeNotFound(routeId: routeID)
+        }
+        
+        guard let train = layout.train(for: trainID) else {
+            throw LayoutError.trainNotFound(trainId: trainID)
+        }
+        
+        guard let blockId = train.blockId else {
+            throw LayoutError.trainNotAssignedToABlock(train: train)
+        }
+        
+        guard let block = layout.block(for: blockId), block.train != nil else {
+            throw LayoutError.trainNotFoundInBlock(blockId: blockId)
+        }
+
+        // Set the route to the train
+        train.routeId = routeID
+
+        if route.automatic {
+            // Ensure the automatic route associated with the train is updated
+            // Note: remember the destination block
+            if let destination = destination {
+                route.mode = .automaticOnce(destination: destination)
+            } else {
+                route.mode = .automatic
+            }
+            
+            // Reset the route - the route will be automatically updated by
+            // the TrainController when the train is started.
+            train.routeStepIndex = 0
+            route.steps.removeAll()
+        } else {
+            // Check to make sure the train is somewhere along the route
+            train.routeStepIndex = -1
+            for (index, step) in route.steps.enumerated() {
+                guard let (blockId, direction) = layout.block(for: train, step: step) else {
+                    continue
+                }
+                
+                guard train.blockId == blockId else {
+                    continue
+                }
+                
+                guard let block = layout.block(for: train.blockId) else {
+                    continue
+                }
+
+                guard let trainInstance = block.train else {
+                    continue
+                }
+                
+                // Check that the train direction matches as well.
+                if trainInstance.direction == direction {
+                    train.routeStepIndex = index
+                    break
+                }
+            }
+                                 
+            guard train.routeStepIndex >= 0 else {
+                throw LayoutError.trainNotFoundInRoute(train: train, route: route)
+            }
+        }
+
+        train.scheduling = .managed
+        runControllers(.schedulingChanged)
+    }
+    
+    /// Send a turnout state command
+    ///
+    /// - Parameters:
+    ///   - turnout: the turnout whose state need to be sent to the Digital Controller
+    ///   - completion: completion block called when the command has been sent
     func sendTurnoutState(turnout: Turnout, completion: @escaping CompletionBlock) {
+        turnout.actualState = .unknown // TODO: this is to ensure the turnout actually settles with a response from the Digital Controller
         executor.sendTurnoutState(turnout: turnout, completion: completion)
     }
     
+    /// Send a train direction command
+    ///
+    /// - Parameters:
+    ///   - train: the train to change the direction
+    ///   - forward: true for forward direction, false for backward direction
+    ///   - completion: completion block called when the command has been sent
     func sendTrainDirection(train: Train, forward: Bool, completion: @escaping CompletionBlock) {
         executor.sendTrainDirection(train: train, forward: forward, completion: completion)
     }
     
+    /// Send a train speed command
+    ///
+    /// - Parameters:
+    ///   - train: the train to change the speed
+    ///   - acceleration: an optional acceleration profile
+    ///   - completion: completion block called when the speed change is either completed or cancelled. The speed change can be cancelled if another speed change is requested
+    ///   when one is already in progress.
     func sendTrainSpeed(train: Train, acceleration: TrainSpeedAcceleration.Acceleration?, completion: @escaping CompletionCancelBlock) {
         // TODO: executor not used? Should we refactor how this is done?
         if let controller = speedManagers[train.id] {
@@ -326,7 +423,97 @@ extension LayoutController: LayoutCommandExecuting {
             completion(false)
         }
     }
+            
+    func setTrainSpeed(_ train: Train, _ speed: TrainSpeed.UnitKph, speedLimit: Bool = true, force: Bool = false, acceleration: TrainSpeedAcceleration.Acceleration? = nil, completion: CompletionCancelBlock? = nil) {
+        let previousRequestedSteps = train.speed.requestedSteps
+        if speedLimit {
+            let route = layout.route(for: train.routeId, trainId: train.id)
+            train.speed.requestedKph = min(speed, reservation.maximumSpeedAllowed(train: train, route: route))
+        } else {
+            train.speed.requestedKph = speed
+        }
+        if train.speed.requestedSteps != previousRequestedSteps || force {
+            setTrainSpeed(train, train.speed.requestedSteps, acceleration: acceleration, completion: completion)
+        } else {
+            completion?(true)
+        }
+    }
+
+    func setTrainSpeed(_ train: Train, _ speed: SpeedStep, acceleration: TrainSpeedAcceleration.Acceleration? = nil, completion: CompletionCancelBlock? = nil) {
+        train.speed.requestedSteps = speed
+        if train.speed.requestedSteps != train.speed.actualSteps {
+            sendTrainSpeed(train: train, acceleration: acceleration) { completed in
+                completion?(completed)
+            }
+        } else {
+            completion?(true)
+        }
+    }
+
+    // Set the direction of travel of the locomotive
+    func setLocomotiveDirection(_ train: Train, forward: Bool, completion: CompletionBlock? = nil) {
+        if train.directionForward != forward {
+            sendTrainDirection(train: train, forward: forward) {
+                completion?()
+            }
+        } else {
+            completion?()
+        }
+    }
     
+    /// Set the position of a train within the current block
+    ///
+    /// - Parameters:
+    ///   - train: the train
+    ///   - position: the position of the train within its block
+    ///   - removeLeadingBlocks: true to remove the leading blocks (by default), false to keep the leading blocks
+    func setTrainPosition(_ train: Train, _ position: Int, removeLeadingBlocks: Bool = true) throws {
+        train.position = position
+        
+        if removeLeadingBlocks {
+            try reservation.removeLeadingBlocks(train: train)
+        }
+    }
+    
+    // Toggle the direction of the train within the block itself
+    func toggleTrainDirectionInBlock(_ train: Train) throws {
+        guard let blockId = train.blockId else {
+            throw LayoutError.trainNotAssignedToABlock(train: train)
+        }
+        
+        guard let block = layout.block(for: blockId) else {
+            throw LayoutError.blockNotFound(blockId: blockId)
+        }
+
+        guard let ti = block.train else {
+            throw LayoutError.trainNotFoundInBlock(blockId: blockId)
+        }
+
+        guard ti.trainId == train.id else {
+            throw LayoutError.trainInBlockDoesNotMatch(trainId: train.id, blockId: blockId, blockTrainId: ti.trainId)
+        }
+
+        block.train = TrainInstance(train.id, ti.direction.opposite)
+        train.wagonsPushedByLocomotive.toggle()
+
+        try reservation.removeLeadingBlocks(train: train)
+    }
+        
+    /// Sets a train to a specific block.
+    ///
+    /// - Parameters:
+    ///   - trainId: the train
+    ///   - toBlockId: the block in which to put the train
+    ///   - position: the position in the block in which to put the train
+    ///   - direction: the direction in the block in which to put the train
+    ///   - routeIndex: optional index in the route
+    ///   - removeLeadingBlocks: true to remove the leading blocks (by default), false to keep the leading blocks
+    func setTrainToBlock(_ train: Train, _ toBlockId: Identifier<Block>, position: Position = .start, direction: Direction, routeIndex: Int? = nil, removeLeadingBlocks: Bool = true) throws {
+        try layout.setTrainToBlock(train.id, toBlockId, position: position, direction: direction, routeIndex: routeIndex)
+        if removeLeadingBlocks {
+            try reservation.removeLeadingBlocks(train: train)
+        }
+    }
 }
 
 extension LayoutController: MetricsProvider {

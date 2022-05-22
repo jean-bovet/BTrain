@@ -34,7 +34,7 @@ class TrainSpeedMeasurementTests: XCTestCase {
 
         let step = 10
 
-        let sm = TrainSpeedMeasurement(layout: layout, interface: doc.interface, train: train,
+        let sm = TrainSpeedMeasurement(layout: layout, executor: doc.layoutController, interface: doc.interface, train: train,
                                        speedEntries: [UInt16(step)],
                                        feedbackA: fa.id, feedbackB: fb.id, feedbackC: fc.id,
                                        distanceAB: 95, distanceBC: 18,
@@ -87,7 +87,7 @@ class TrainSpeedMeasurementTests: XCTestCase {
         train.speed.speedTable[step] = .init(steps: SpeedStep(value: UInt16(step)), speed: nil)
         XCTAssertNil(train.speed.speedTable[step].speed)
 
-        let sm = TrainSpeedMeasurement(layout: layout, interface: doc.interface, train: train,
+        let sm = TrainSpeedMeasurement(layout: layout, executor: doc.layoutController, interface: doc.interface, train: train,
                                        speedEntries: [UInt16(step)],
                                        feedbackA: fa.id, feedbackB: fb.id, feedbackC: fc.id,
                                        distanceAB: 95, distanceBC: 18,
@@ -192,7 +192,7 @@ class TrainSpeedMeasurementTests: XCTestCase {
         XCTAssertNil(train.speed.speedTable[step1].speed)
         XCTAssertNil(train.speed.speedTable[step2].speed)
 
-        let sm = TrainSpeedMeasurement(layout: layout, interface: doc.interface, train: train,
+        let sm = TrainSpeedMeasurement(layout: layout, executor: doc.layoutController, interface: doc.interface, train: train,
                                        speedEntries: [UInt16(step1), UInt16(step2)],
                                        feedbackA: fa.id, feedbackB: fb.id, feedbackC: fc.id,
                                        distanceAB: 95, distanceBC: 18, simulator: true)

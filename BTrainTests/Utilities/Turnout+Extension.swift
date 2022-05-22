@@ -16,6 +16,11 @@ import Foundation
 
 extension Turnout {
     
+    func setState(_ state: State) {
+        requestedState = state
+        actualState = state
+    }
+    
     static func singleLeft() -> Turnout {
         let t1 = Turnout(name: "1")
         t1.category = .singleLeft

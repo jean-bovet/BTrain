@@ -59,7 +59,7 @@ struct TrainSpeedMeasureControlsView: View {
     }
     
     func measure() {
-        document.measurement = TrainSpeedMeasurement(layout: document.layout, interface: document.interface, train: train, speedEntries: speedEntries,
+        document.measurement = TrainSpeedMeasurement(layout: document.layout, executor: document.layoutController, interface: document.interface, train: train, speedEntries: speedEntries,
                                                 feedbackA: Identifier<Feedback>(uuid: feedbackA), feedbackB: Identifier<Feedback>(uuid: feedbackB), feedbackC: Identifier<Feedback>(uuid: feedbackC),
                                                 distanceAB: distanceAB, distanceBC: distanceBC)
         document.measurement?.start() { info in
@@ -88,7 +88,7 @@ struct TrainSpeedMeasureControlsView: View {
 struct TrainSpeedMeasureControlsView_Previews: PreviewProvider {
     
     static let doc = LayoutDocument(layout: LayoutComplex().newLayout())
-    static let measurement = TrainSpeedMeasurement(layout: doc.layout, interface: doc.interface, train: doc.layout.trains[0], speedEntries: [10],
+    static let measurement = TrainSpeedMeasurement(layout: doc.layout, executor: doc.layoutController, interface: doc.interface, train: doc.layout.trains[0], speedEntries: [10],
                                                    feedbackA: Identifier<Feedback>(uuid: "OL1.1"), feedbackB: Identifier<Feedback>(uuid: "OL1.1"), feedbackC: Identifier<Feedback>(uuid: "OL1.1"),
                                                    distanceAB: 10, distanceBC: 20)
     static var previews: some View {

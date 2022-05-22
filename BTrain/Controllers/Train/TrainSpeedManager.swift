@@ -72,6 +72,9 @@ final class TrainSpeedManager {
         })
     }
     
+    /// Global UUID used to uniquely identify each speed change request in order to ease the debugging
+    static var globalRequestUUID = 0
+    
     /// Request a change in the speed of a specific train, given an optional acceleration/deceleration profile.
     ///
     /// - Parameters:
@@ -79,31 +82,34 @@ final class TrainSpeedManager {
     ///   - acceleration: the acceleration/deceleration profile
     ///   - completion: a block called when the change is either completed or cancelled
     func changeSpeed(of train: Train, acceleration: TrainSpeedAcceleration.Acceleration?, completion: @escaping CompletionCancelBlock) {
-        BTLogger.router.debug("\(train, privacy: .public): requesting speed of \(train.speed.requestedKph) kph (\(train.speed.requestedSteps)) from actual speed of \(train.speed.actualKph) kph (\(train.speed.actualSteps))")
+        TrainSpeedManager.globalRequestUUID += 1
+        let requestUUID = TrainSpeedManager.globalRequestUUID
+        
+        BTLogger.router.debug("\(train, privacy: .public): {\(requestUUID)} requesting speed of \(train.speed.requestedKph) kph (\(train.speed.requestedSteps)) from actual speed of \(train.speed.actualKph) kph (\(train.speed.actualSteps))")
 
         speedChangeTimer.cancel()
         stopSettleDelayTimer.cancel()
 
         let requestedKph = train.speed.requestedKph
-
+        
         speedChangeTimer.schedule(from: train.speed.actualSteps, to: train.speed.requestedSteps,
                             acceleration: acceleration ?? train.speed.accelerationProfile) { [weak self] steps, status in
-            self?.changeSpeedFired(steps: steps, status: status, train: train, requestedKph: requestedKph, completion: completion)
+            self?.changeSpeedFired(steps: steps, status: status, train: train, requestedKph: requestedKph, requestUUID: requestUUID, completion: completion)
         }
     }
 
-    private func changeSpeedFired(steps: SpeedStep, status: Status, train: Train, requestedKph: TrainSpeed.UnitKph, completion: @escaping CompletionCancelBlock) {
+    private func changeSpeedFired(steps: SpeedStep, status: Status, train: Train, requestedKph: TrainSpeed.UnitKph, requestUUID: Int, completion: @escaping CompletionCancelBlock) {
         let value = interface.speedValue(for: steps, decoder: train.decoder)
         let speedKph = train.speed.speedKph(for: steps)
-        BTLogger.router.debug("\(train, privacy: .public): execute speed command for \(speedKph) kph (value=\(value), \(steps)), requested \(requestedKph) kph - \(status, privacy: .public)")
+        BTLogger.router.debug("\(train, privacy: .public): {\(requestUUID)} execute speed command for \(speedKph) kph (value=\(value), \(steps)), requested \(requestedKph) kph - \(status, privacy: .public)")
         
         interface.execute(command: .speed(address: train.address, decoderType: train.decoder, value: value)) { [weak self] in
             // TODO: happens in main thread or not?
-            self?.speedCommandExecuted(steps: steps, status: status, train: train, requestedKph: requestedKph, completion: completion)
+            self?.speedCommandExecuted(steps: steps, status: status, train: train, requestedKph: requestedKph, requestUUID: requestUUID, completion: completion)
         }
     }
     
-    private func speedCommandExecuted(steps: SpeedStep, status: Status, train: Train, requestedKph: TrainSpeed.UnitKph, completion: @escaping CompletionCancelBlock) {
+    private func speedCommandExecuted(steps: SpeedStep, status: Status, train: Train, requestedKph: TrainSpeed.UnitKph, requestUUID: Int, completion: @escaping CompletionCancelBlock) {
         // Note: LayoutController+Listeners is the one listening for speed change acknowledgement from the Digital Controller and update the actual speed.
         // TODO: is that the best way or should we centralize that here?
         
@@ -111,7 +117,7 @@ final class TrainSpeedManager {
         train.speed.actualSteps = interface.speedSteps(for: value, decoder: train.decoder)
 
         let speedKph = train.speed.speedKph(for: steps)
-        BTLogger.router.debug("\(train, privacy: .public): done executing speed command for \(speedKph) kph (value=\(value), \(steps)), requested \(requestedKph) kph - \(status, privacy: .public)")
+        BTLogger.router.debug("\(train, privacy: .public): {\(requestUUID)} done executing speed command for \(speedKph) kph (value=\(value), \(steps)), requested \(requestedKph) kph - \(status, privacy: .public)")
         if status == .finished || status == .cancelled {
             let finished = status == .finished
             if steps == .zero && finished {

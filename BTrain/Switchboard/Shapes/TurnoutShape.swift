@@ -353,7 +353,8 @@ extension TurnoutShape: ActionableShape {
     
     func performAction(at location: CGPoint) -> Bool {
         if inside(location) {
-            layout?.toggleTurnoutToNextState(turnout: turnout)
+            // TODO: use layoutController
+//            layout?.toggleTurnoutToNextState(turnout: turnout)
             return true
         } else {
             return false

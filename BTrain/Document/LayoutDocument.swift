@@ -69,16 +69,13 @@ final class LayoutDocument: ObservableObject {
             
     @Published var onConnectTasks: LayoutOnConnectTasks
     
-    init(layout: Layout) {
+    init(layout: Layout, interface: CommandInterface = MarklinInterface()) {
         self.layout = layout
         
-        let interface = MarklinInterface()
         let simulator = MarklinCommandSimulator(layout: layout, interface: interface)
         let trainIconManager = TrainIconManager()
         let switchboard = SwitchBoardFactory.generateSwitchboard(layout: layout, simulator: simulator, trainIconManager: trainIconManager)
         let layoutController = LayoutController(layout: layout, switchboard: switchboard, interface: interface)
-
-        layout.executing = layoutController
 
         self.interface = interface
         self.simulator = simulator

@@ -73,7 +73,7 @@ final class LayoutOnConnectTasks: ObservableObject {
         activateTurnountPercentage = 0.0
         var completionCount = 0
         for t in turnouts {
-            layout.executor.sendTurnoutState(turnout: t) {
+            layoutController.sendTurnoutState(turnout: t) {
                 completionCount += 1
                 self.activateTurnountPercentage = Double(completionCount) / Double(turnouts.count)
                 if completionCount == turnouts.count {

@@ -17,6 +17,7 @@ import Foundation
 final class TrainSpeedMeasurement {
             
     let layout: Layout
+    let executor: LayoutController
     let interface: CommandInterface
     let train: Train
 
@@ -58,11 +59,12 @@ final class TrainSpeedMeasurement {
         let progress: Double
     }
     
-    init(layout: Layout, interface: CommandInterface, train: Train,
+    init(layout: Layout, executor: LayoutController, interface: CommandInterface, train: Train,
          speedEntries: Set<TrainSpeed.SpeedTableEntry.ID>,
          feedbackA: Identifier<Feedback>, feedbackB: Identifier<Feedback>, feedbackC: Identifier<Feedback>,
          distanceAB: Double, distanceBC: Double, simulator: Bool = false) {
         self.layout = layout
+        self.executor = executor
         self.interface = interface
         self.train = train
         self.speedEntries = speedEntries
@@ -194,7 +196,7 @@ final class TrainSpeedMeasurement {
                 let speedEntry = speedEntry(for: entryIndex)
                                 
                 // Set the speed without inertia to ensure the locomotive accelerates as fast as possible
-                layout.setTrainSpeed(train, speedEntry.steps, acceleration: TrainSpeedAcceleration.Acceleration.none) { _ in
+                executor.setTrainSpeed(train, speedEntry.steps, acceleration: TrainSpeedAcceleration.Acceleration.none) { _ in
                     continuation.resume(returning: ())
                 }
             }
@@ -206,7 +208,7 @@ final class TrainSpeedMeasurement {
             DispatchQueue.main.async { [self] in
                 // Note: the train inertia must be set to true if the locomotive take some time to slow down,
                 // in order for BTrain to wait long enough for the locomotive to be stopped.
-                layout.setTrainSpeed(train, 0) { completed in
+                executor.setTrainSpeed(train, 0) { completed in
                     continuation.resume(returning: ())
                 }
             }
@@ -218,9 +220,9 @@ final class TrainSpeedMeasurement {
             DispatchQueue.main.async { [self] in
                 self.forward.toggle()
 
-                layout.setLocomotiveDirection(train, forward: !train.directionForward) {
+                executor.setLocomotiveDirection(train, forward: !train.directionForward) {
                     do {
-                        try self.layout.toggleTrainDirectionInBlock(self.train)
+                        try self.executor.toggleTrainDirectionInBlock(self.train)
                         continuation.resume(returning: ())
                     } catch {
                         continuation.resume(throwing: error)

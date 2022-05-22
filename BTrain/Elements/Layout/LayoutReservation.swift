@@ -51,6 +51,7 @@ import Foundation
 final class LayoutReservation {
     
     let layout: Layout
+    let executor: LayoutController
     let verbose: Bool
     
     // Internal structure used to hold information
@@ -73,8 +74,9 @@ final class LayoutReservation {
         }
     }
     
-    init(layout: Layout, verbose: Bool) {
+    init(layout: Layout, executor: LayoutController, verbose: Bool) {
         self.layout = layout
+        self.executor = executor
         self.verbose = verbose
     }
     
@@ -269,7 +271,7 @@ final class LayoutReservation {
             BTLogger.reservation.debug("\(train, privacy: .public): do not activate state \(turnout.requestedState, privacy: .public) for turnout \(turnout.name, privacy: .public) because it was already activated")
         } else {
             BTLogger.reservation.debug("\(train, privacy: .public): request state \(turnout.requestedState, privacy: .public) for turnout \(turnout.name, privacy: .public)")
-            layout.executor.sendTurnoutState(turnout: turnout) {
+            executor.sendTurnoutState(turnout: turnout) {
                 BTLogger.reservation.debug("\(train, privacy: .public): request state \(turnout.requestedState, privacy: .public) for turnout \(turnout.name, privacy: .public) [command executed]")
             }
         }

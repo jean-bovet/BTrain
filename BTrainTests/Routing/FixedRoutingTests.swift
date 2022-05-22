@@ -21,9 +21,6 @@ class FixedRoutingTests: BTTestCase {
         let p = Package(layout: layout)
         try p.prepare(routeID: "r1", trainID: "1", fromBlockId: "b1")
         
-        // TODO: in this necessary, is the speed profile taken into account in this unit test with the mock classes?
-        p.train.speed.accelerationProfile = .none
-
         // Reserve a block with another route to make the train stop
         let b3 = layout.block(for: p.route.steps[2].stepBlockId)!
         b3.reserved = .init("2", .next)
@@ -60,6 +57,8 @@ class FixedRoutingTests: BTTestCase {
 
         layout.strictRouteFeedbackStrategy = false
         layout.blocks[0].brakingSpeed = 17
+        
+        let train = layout.train("1")
 
         try p.assert("r1:{r1{b1 🔴🚂1 ≏ ≏ }} <t0> [b2 ≏ ≏ ] <t1(0,2)> [b3 ≏ ≏ ] <t0(2,0)> !{r1{b1 ≏ ≏ }}")
 
@@ -70,8 +69,8 @@ class FixedRoutingTests: BTTestCase {
         try p.assert("r1:{r1{b1 ≏ ≏ }} <r1<t0,l>> [b2 ≏ ≏ ] <t1(0,2),l> [r1[b3 ≡ 🔵🚂1 ≏ ]] <r1<t0(2,0),l>> !{r1{b1 ≏ ≏ }}")
         try p.assert("r1:{r1{b1 ≏ 🟡17🚂1 ≡ }} <t0,l> [b2 ≏ ≏ ] <t1(0,2),l> [b3 ≏ ≏ ] <t0(2,0),l> !{r1{b1 ≡ 🟡17🚂1 ≏ }}")
         
-        XCTAssertEqual(17, layout.train("1").speed.actualKph)
-        
+        XCTAssertEqual(train.speed.actualKph, 17)
+
         try p.assert("r1:{r1{b1 🔴🚂1 ≡ ≏ }} <t0,l> [b2 ≏ ≏ ] <t1(0,2),l> [b3 ≏ ≏ ] <t0(2,0),l> !{r1{b1 ≏ ≡ 🔴🚂1 }}")
     }
 
@@ -241,7 +240,7 @@ class FixedRoutingTests: BTTestCase {
         try p.assert("r1: {r1{b1 🟢🚂1 ≏ ≏ }} <r1<t1{ds2},s01>> [r1[b2 ≏ ≏ ]] [r1[b3 ≏ ≏ ]] <r1<t1{ds2}(2,3),s01>> [b4 ≏ ≏ ] {r1{b1 🟢🚂1 ≏ ≏ }}")
         
         // Now that the train is in b2, the turnout t1 is free and the leading blocks can be reserved until b1, including b4.
-        try p.assert("r1: {r1{b1 ≏ ≏ }} <r1<t1{ds2},s23>> [r1[b2 ≡ 🔵🚂1 ≏ ]] [r1[b3 ≏ ≏ ]] <r1<t1{ds2}(2,3),s23>> [r1[b4 ≏ ≏ ]] {r1{b1 ≏ ≏ }}")
+        try p.assert("r1: {r1{b1 ≏ ≏ }} <r1<t1{ds2},s23>> [r1[b2 ≡ 🟢🚂1 ≏ ]] [r1[b3 ≏ ≏ ]] <r1<t1{ds2}(2,3),s23>> [r1[b4 ≏ ≏ ]] {r1{b1 ≏ ≏ }}")
         try p.assert("r1: {r1{b1 ≏ ≏ }} <r1<t1{ds2},s23>> [b2 ≏ ≏ ] [r1[b3 ≡ 🔵🚂1 ≏ ]] <r1<t1{ds2}(2,3),s23>> [r1[b4 ≏ ≏ ]] {r1{b1 ≏ ≏ }}")
         try p.assert("r1: {r1{b1 ≏ ≏ }} <t1{ds2},s23> [b2 ≏ ≏ ] [b3 ≏ ≏ ] <t1{ds2}(2,3),s23> [r1[b4 ≡ 🔵🚂1 ≏ ]] {r1{b1 ≏ ≏ }}")
         try p.assert("r1: {r1{b1 ≡ 🟡🚂1 ≏ }} <t1{ds2},s23> [b2 ≏ ≏ ] [b3 ≏ ≏ ] <t1{ds2}(2,3),s23> [b4 ≏ ≏ ] {r1{b1 ≡ 🟡🚂1 ≏ }}")
@@ -414,7 +413,9 @@ class FixedRoutingTests: BTTestCase {
         try p.assert("r1: {r1{b1 🔵🚂1 ≏ ≏ }} <r1<t0>> [r1[b2 ≏ ≏ ]] <t1(0,2)> [b3 ≏ ≏ ] <r1<t0(2,0)>> !{r1{b1 ≏ ≏ }}")
         
         // Train should stop because the next block b2's feedback is triggered but the train is not at the end of block b1
-        try p.assert("r1: {r1{b1 🔴🚂1 ≏ ≏ }} <t0> [b2 ≡ ≏ ] <t1(0,2)> [b3 ≏ ≏ ] <t0(2,0)> !{r1{b1 ≏ ≏ }}")
+        // Note: the reservation are kept when stopping with an unexpected feedback
+        try p.assert("r1: {r1{b1 🔴🚂1 ≏ ≏ }} <r1<t0>> [r1[b2 ≡ ≏ ]] <t1(0,2)> [b3 ≏ ≏ ] <r1<t0(2,0)>> !{r1{b1 ≏ ≏ }}")
+        XCTAssertNotNil(layout.runtimeError)
     }
 
     func testStrictModeFeedbackTooFar() throws {
@@ -468,7 +469,8 @@ class FixedRoutingTests: BTTestCase {
         try p.assert("r1: {r1{b1 🔵🚂1 ≏ ≏ }} <r1<t0>> [r1[b2 ≏ ≏ ]] <t1(0,2)> [b3 ≏ ≏ ] <r1<t0(2,0)>> !{r1{b1 ≏ ≏ }}")
         // The train should stop because the next block feedback is triggered but it is not the one expected
         // to be triggered given the direction of travel of the train
-        try p.assert("r1: {r1{b1 🔴🚂1 ≏ ≏ }} <t0> [b2 ≏ ≡ ] <t1(0,2)> [b3 ≏ ≏ ] <t0(2,0)> !{r1{b1 ≏ ≏ }}")
+        try p.assert("r1: {r1{b1 🔴🚂1 ≏ ≏ }} <r1<t0>> [r1[b2 ≏ ≡ ]] <t1(0,2)> [b3 ≏ ≏ ] <r1<t0(2,0)>> !{r1{b1 ≏ ≏ }}")
+        XCTAssertNotNil(layout.runtimeError)
     }
 
     func testRelaxModeNextAndPreviousFeedbacks() throws {
@@ -734,10 +736,12 @@ class FixedRoutingTests: BTTestCase {
         try p.assert("2: {s1 ≏ } <t1(2,0),l> <t2(1,0),s> [b1 ≏] <t3> [b2 ≏ ] <t4(1,0)> [r0[b3 ≡ 🔵🚂0 ≏ ]] <r0<t5>> <r0<t6>> {r0{s2 ≏ }} <t1(1,0),l> <t2(1,0),s> [b1 ≏] <t3> [b2 ≏ ] <t4(1,0)> [r0[b3 ≡ 🔵🚂0 ≏ ]] <r0<t5>> <r0<t6(0,2)>> {s1 ≏ }")
         try p.assert("2: {s1 ≏ } <t1(2,0),l> <t2(1,0),s> [b1 ≏] <t3> [b2 ≏ ] <t4(1,0)> [b3 ≏ ≏ ] <t5> <t6> {r0{s2 ≡ 🔴🚂0 }} <t1(1,0),l> <t2(1,0),s> [b1 ≏] <t3> [b2 ≏ ] <t4(1,0)> [b3 ≏ ≏ ] <t5> <t6(0,2)> {s1 ≏ }")
         
-        XCTAssertTrue(p.train.scheduling == .managed)
+        XCTAssertEqual(p.train.state, .stopped)
+        XCTAssertEqual(p.train.scheduling, .managed)
 
         // Artificially set the restart time to 0 which will make the train restart again
         p.layoutController.restartTimerFired(layout.trains[0])
+        p.layoutController.drainAllEvents()
 
         XCTAssertTrue(p.train.speed.requestedKph > 0)
         
@@ -786,16 +790,15 @@ class FixedRoutingTests: BTTestCase {
 
     func testTrainWithWagonsInFront() throws {
         let layout = LayoutComplexLoop().newLayoutWithLengths(LayoutComplexLoop().newLayout().removeTrainGeometry().removeTurnoutGeometry())
-        layout.turnouts[0].requestedState = .branchLeft
-        layout.applyTurnoutState(turnout: layout.turnouts[0])
+
+        let p = Package(layout: layout)
         
-        layout.turnouts[5].requestedState = .branchRight
-        layout.applyTurnoutState(turnout: layout.turnouts[5])
+        layout.turnouts[0].setState(.branchLeft)
+        layout.turnouts[5].setState(.branchRight)
 
         let train = layout.trains[0]
         train.wagonsPushedByLocomotive = true
 
-        let p = Package(layout: layout)
         try p.prepare(routeID: "3", trainID: "0", fromBlockId: "s1")
 
         try p.assert("3: {r0{s1 🔴🚂0 ≏ 💺0 }} <r0<t1(2,0),l>> <r0<t2(1,0),s>> [r0[b1 💺0 ≏ 💺0 ]] <r0<t3>> [r0[b2 💺0 ≏ ]] <t4(1,0)> [b3 ≏ ≏ ] <t5> <t6,r> {s2 ≏ }")
@@ -934,7 +937,7 @@ class FixedRoutingTests: BTTestCase {
         let layout = LayoutLoop1().newLayout().removeTrainGeometry()
         let producer = LayoutASCIIProducer(layout: layout)
         let route = layout.routes[0]
-        let trainId = layout.trains[0].id
+        let trainId = layout.trains[1].id
         
         let p = Package(layout: layout)
         try p.prepare(routeID: "r1", trainID: "1", fromBlockId: "b1", position: .start)
@@ -971,43 +974,12 @@ class FixedRoutingTests: BTTestCase {
 
     // MARK: -- Utility
     
-    final class MockCommandExecutor: LayoutCommandExecuting {
-        
-        var interface: CommandInterface
-        
-        init(interface: CommandInterface) {
-            self.interface = interface
-        }
-        
-        func scheduleRestartTimer(train: Train) {
-            // no-op
-        }
-        
-        func sendTurnoutState(turnout: Turnout, completion: @escaping CompletionBlock) {
-            turnout.actualState = turnout.requestedState
-            completion()
-        }
-        
-        func sendTrainDirection(train: Train, forward: Bool, completion: @escaping CompletionBlock) {
-            completion()
-        }
-        
-        func sendTrainSpeed(train: Train, acceleration: TrainSpeedAcceleration.Acceleration?, completion: @escaping CompletionCancelBlock) {
-            let value = interface.speedValue(for: train.speed.requestedSteps, decoder: train.decoder)
-            interface.execute(command: .speed(address: train.address, decoderType: train.decoder, value: value, priority: .normal, descriptor: nil)) {
-//                train.speed.actualSteps = train.speed.requestedSteps
-                completion(true)
-            }
-        }
-        
-    }
-
     // Convenience structure to test the layout and its route
     public class Package {
+        let interface = MockCommandInterface()
         let layout: Layout
         let asserter: LayoutAsserter
         let layoutController: LayoutController
-        let executor: LayoutCommandExecuting
         
         var trains = [Train]()
         var routes = [Route]()
@@ -1022,9 +994,7 @@ class FixedRoutingTests: BTTestCase {
         
         init(layout: Layout) {
             self.layout = layout
-            self.layoutController = LayoutController(layout: layout, switchboard: nil, interface: MockCommandInterface())
-            self.executor = MockCommandExecutor(interface: layoutController.interface)
-            self.layout.executing = self.executor
+            self.layoutController = LayoutController(layout: layout, switchboard: nil, interface: interface)
             self.asserter = LayoutAsserter(layout: layout, layoutController: layoutController)
             
             layout.detectUnexpectedFeedback = true
@@ -1036,7 +1006,7 @@ class FixedRoutingTests: BTTestCase {
             let route = layout.route(for: .init(uuid: routeID), trainId: .init(uuid: trainID))!
             
             train.routeId = route.id
-            try layout.setTrainToBlock(train.id, Identifier<Block>(uuid: fromBlockId), position: position, direction: direction)
+            try layoutController.setTrainToBlock(train, Identifier<Block>(uuid: fromBlockId), position: position, direction: direction)
             
             XCTAssertEqual(train.speed.requestedKph, 0)
             XCTAssertEqual(train.scheduling, .unmanaged)
@@ -1054,9 +1024,28 @@ class FixedRoutingTests: BTTestCase {
             try layoutController.start(routeID: Identifier<Route>(uuid: routeID), trainID: Identifier<Train>(uuid: trainID), destination: nil)
             let train = layout.train(for: Identifier<Train>(uuid: trainID))!
             XCTAssertEqual(train.scheduling, .managed)
+            
+            // TODO: review this code
+            wait(for: {
+                train.state == expectedState
+            }, timeout: 2.0)
+            
             XCTAssertEqual(train.state, expectedState)
         }
         
+        // TODO: refactor has it exist already in XCTestCase+Extension
+        func wait(for block: () -> Bool, timeout: TimeInterval) {
+            let current = RunLoop.current
+            let startTime = Date()
+            while !block() {
+                current.run(until: Date(timeIntervalSinceNow: 0.01))
+                if Date().timeIntervalSince(startTime) >= timeout {
+                    XCTFail("Time out")
+                    break
+                }
+            }
+        }
+
         func stop() {
             layoutController.stop(train: train)
         }
@@ -1064,6 +1053,7 @@ class FixedRoutingTests: BTTestCase {
         func toggle(_ feedback: String) {
             layout.feedback(for: Identifier<Feedback>(uuid: feedback))?.detected.toggle()
             layoutController.runControllers(.feedbackTriggered)
+            layoutController.drainAllEvents()
         }
 
         func toggle2(_ f1: String, _ f2: String) {
@@ -1085,6 +1075,30 @@ class FixedRoutingTests: BTTestCase {
         func assertLeadingBlocks(_ blockNames: [String]) throws {
             XCTAssertEqual(train.leading.blocks.toStrings(), blockNames)
         }
+        
     }
     
+}
+
+extension LayoutController {
+    
+    func drainAllEvents() {
+        var drain = true
+        while drain {
+            runControllers(drain: drain)
+            drain = false
+            for train in layout.trains {
+                if train.speed.requestedSteps != train.speed.actualSteps {
+                    drain = true
+                }
+                if train.leading.emptyOrSettled || train.leading.reservedAndSettled {
+                    
+                } else {
+                    drain = true
+                }
+            }
+            RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.01))
+        }
+    }
+
 }

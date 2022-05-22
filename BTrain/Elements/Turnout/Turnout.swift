@@ -38,6 +38,7 @@ final class Turnout: Element, ObservableObject {
         case straight23
         case branch03
         case branch21
+        case unknown
         case invalid
     }
 
@@ -78,7 +79,7 @@ final class Turnout: Element, ObservableObject {
     /// The most up-to-date state from the physical layout.
     ///
     /// It might differ from ``requestedState`` if the turnout hasn't physically yet changed.
-    @Published var actualState: State = .straight
+    @Published var actualState: State = .unknown
     
     /// Returns true if the turnout has settled.
     ///
@@ -166,6 +167,8 @@ final class Turnout: Element, ObservableObject {
         case .branch03:
             return .limited
         case .branch21:
+            return .limited
+        case .unknown:
             return .limited
         case .invalid:
             return .limited
@@ -263,6 +266,8 @@ extension Turnout.State: CustomStringConvertible {
             return "Branch 0-3"
         case .branch21:
             return "Branch 2-1"
+        case .unknown:
+            return "Unknown"
         case .invalid:
             return "Invalid"
         }

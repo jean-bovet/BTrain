@@ -69,8 +69,7 @@ class ManualOperationTests: BTTestCase {
     func testPullingLongTrain() throws {
         let layout = LayoutLoop1().newLayout()
         
-        layout.turnouts[1].requestedState = .branchLeft
-        layout.applyTurnoutState(turnout: layout.turnouts[1])
+        layout.turnouts[1].setState(.branchLeft)
         
         layout.turnouts.forEach { $0.length = nil }
         
@@ -131,8 +130,7 @@ class ManualOperationTests: BTTestCase {
     func testPushingLongTrain() throws {
         let layout = LayoutLoop1().newLayout()
         
-        layout.turnouts[1].requestedState = .branchLeft
-        layout.applyTurnoutState(turnout: layout.turnouts[1])
+        layout.turnouts[1].setState(.branchLeft)
 
         layout.turnouts.forEach { $0.length = nil }
 
@@ -156,7 +154,7 @@ class ManualOperationTests: BTTestCase {
         train.locomotiveLength = 20
         train.wagonsLength = 40
 
-        layout.setLocomotiveDirection(train, forward: false)
+        train.directionForward = false
         train.wagonsPushedByLocomotive = true
         
         let p = try setup(layout: layout, fromBlockId: "b1")
@@ -213,8 +211,7 @@ class ManualOperationTests: BTTestCase {
         }
         
         func setTrainSpeed(_ speed: TrainSpeed.UnitKph, speedLimit: Bool) {
-            layout.setTrainSpeed(train, speed, speedLimit: speedLimit)
-            layoutController.runControllers(.speedChanged)
+            layoutController.setTrainSpeed(train, speed, speedLimit: speedLimit, force: false, acceleration: nil, completion: nil)
         }
                 
         func triggerFeedback(_ named: String, _ detected: Bool = true) throws {

@@ -15,17 +15,19 @@ import Foundation
 final class TrainHandlerUnmanaged {
         
     let layout: Layout
+    let executor: LayoutController
     let train: Train
     let event: TrainEvent
     var resultingEvents = TrainHandlerResult()
 
-    static func process(layout: Layout, train: Train, event: TrainEvent) throws -> TrainHandlerResult {
-        let handler = TrainHandlerUnmanaged(layout: layout, train: train, event: event)
+    static func process(layout: Layout, executor: LayoutController, train: Train, event: TrainEvent) throws -> TrainHandlerResult {
+        let handler = TrainHandlerUnmanaged(layout: layout, executor: executor, train: train, event: event)
         return try handler.process()
     }
     
-    private init(layout: Layout, train: Train, event: TrainEvent) {
+    private init(layout: Layout, executor: LayoutController, train: Train, event: TrainEvent) {
         self.layout = layout
+        self.executor = executor
         self.train = train
         self.event = event
     }
@@ -73,7 +75,7 @@ final class TrainHandlerUnmanaged {
             
             let position = layout.newPosition(forTrain: train, enabledFeedbackIndex: index, direction: direction)
             if train.position != position {
-                try layout.setTrainPosition(train, position)
+                try executor.setTrainPosition(train, position, removeLeadingBlocks: true)
                 
                 BTLogger.router.debug("\(self.train, privacy: .public): moved to position \(self.train.position) in \(currentBlock.name, privacy: .public), direction \(direction)")
                 
@@ -99,7 +101,7 @@ final class TrainHandlerUnmanaged {
                 
         BTLogger.router.debug("\(self.train, privacy: .public): enters block \(entryFeedback.block, privacy: .public) at position \(position), direction \(entryFeedback.direction)")
                 
-        try layout.setTrainToBlock(train.id, entryFeedback.block.id, position: .custom(value: position), direction: entryFeedback.direction)
+        try executor.setTrainToBlock(train, entryFeedback.block.id, position: .custom(value: position), direction: entryFeedback.direction, routeIndex: nil, removeLeadingBlocks: true)
                             
         resultingEvents.append(.movedToNextBlock)
     }
@@ -120,14 +122,14 @@ final class TrainHandlerUnmanaged {
         if train.wagonsPushedByLocomotive {
             train.runtimeInfo = "Stopped because no next block detected"
             BTLogger.router.warning("\(self.train, privacy: .public): no next block detected, stopping by precaution")
-            layout.setTrainSpeed(train, 0)
+            executor.setTrainSpeed(train, 0, completion: nil)
         } else {
             // If there are no possible next block detected, we need to stop the train
             // when it reaches the end of the block to avoid a collision.
             if try layout.atEndOfBlock(train: train) {
                 train.runtimeInfo = "Stopped because no next block detected"
                 BTLogger.router.warning("\(self.train, privacy: .public): no next block detected, stopping by precaution")
-                layout.setTrainSpeed(train, 0)
+                executor.setTrainSpeed(train, 0, completion: nil)
             }
         }
     }

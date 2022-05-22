@@ -53,22 +53,6 @@ extension Layout {
         }
     }
     
-    /// Set the position of a train within the current block
-    ///
-    /// - Parameters:
-    ///   - train: the train
-    ///   - position: the position of the train within its block
-    ///   - removeLeadingBlocks: true to remove the leading blocks (by default), false to keep the leading blocks
-    func setTrainPosition(_ train: Train, _ position: Int, removeLeadingBlocks: Bool = true) throws {
-        train.position = position
-        
-        if removeLeadingBlocks {
-            try reservation.removeLeadingBlocks(train: train)
-        }
-
-        didChange()
-    }
-    
     // Returns the new position of the train given the specified feedback. This is used
     // to follow the train within a block when feedbacks are activated when the locomotive moves.
     //      ╲       ██            ██            ██
@@ -116,52 +100,6 @@ extension Layout {
         return train.position
     }
             
-    /// Adjusts the speed of the train to the maximum allowed speed authorized.
-    ///
-    /// The maximum speed takes several factors into condition, including the blocks and turnouts
-    /// speed restrictions that the train is located on, as well as the leading reserved blocks distance
-    /// to make sure the train has enough distance to safely brake to a halt if necessary.
-    ///
-    /// This method only affects trains running in automatic scheduling. Manual scheduling is not monitored.
-    /// - Parameter train: the train to adjust the speed
-    func adjustSpeedLimit(_ train: Train) {
-        guard train.scheduling == .managed else {
-            return
-        }
-
-        if train.state == .running {
-            setTrainSpeed(train, LayoutFactory.DefaultMaximumSpeed, speedLimit: true)
-        }
-    }
-    
-    func setTrainSpeed(_ train: Train, _ speed: TrainSpeed.UnitKph, speedLimit: Bool = true, force: Bool = false, acceleration: TrainSpeedAcceleration.Acceleration? = nil, completion: CompletionCancelBlock? = nil) {
-        let previousRequestedSteps = train.speed.requestedSteps
-        if speedLimit {
-            let route = route(for: train.routeId, trainId: train.id)
-            train.speed.requestedKph = min(speed, reservation.maximumSpeedAllowed(train: train, route: route))
-        } else {
-            train.speed.requestedKph = speed
-        }
-        if train.speed.requestedSteps != previousRequestedSteps || force {
-            setTrainSpeed(train, train.speed.requestedSteps, acceleration: acceleration, completion: completion)
-        } else {
-            completion?(true)
-        }
-    }
-
-    // TODO: move to LayoutController and get rid of the executor
-    func setTrainSpeed(_ train: Train, _ speed: SpeedStep, acceleration: TrainSpeedAcceleration.Acceleration? = nil, completion: CompletionCancelBlock? = nil) {
-        train.speed.requestedSteps = speed
-        if train.speed.requestedSteps != train.speed.actualSteps {
-            executor.sendTrainSpeed(train: train, acceleration: acceleration) { [weak self] completed in
-                self?.didChange()
-                completion?(completed)
-            }
-        } else {
-            completion?(true)
-        }
-    }
-
     // Returns the direction of the train within the block (not the train direction itself
     // but the direction of the train relative the natural direction of the block)
     func directionDirectionInBlock(_ train: Train) throws -> Direction {
@@ -182,111 +120,6 @@ extension Layout {
         }
 
         return ti.direction
-    }
-    
-    // Set the direction of travel of the locomotive
-    func setLocomotiveDirection(_ train: Train, forward: Bool, completion: CompletionBlock? = nil) {
-        if train.directionForward != forward {
-            executor.sendTrainDirection(train: train, forward: forward) {
-                completion?()
-            }
-        } else {
-            completion?()
-        }
-    }
-    
-    // Toggle the direction of the train within the block itself
-    func toggleTrainDirectionInBlock(_ train: Train) throws {
-        guard let blockId = train.blockId else {
-            throw LayoutError.trainNotAssignedToABlock(train: train)
-        }
-        
-        guard let block = self.block(for: blockId) else {
-            throw LayoutError.blockNotFound(blockId: blockId)
-        }
-
-        guard let ti = block.train else {
-            throw LayoutError.trainNotFoundInBlock(blockId: blockId)
-        }
-
-        guard ti.trainId == train.id else {
-            throw LayoutError.trainInBlockDoesNotMatch(trainId: train.id, blockId: blockId, blockTrainId: ti.trainId)
-        }
-
-        block.train = TrainInstance(train.id, ti.direction.opposite)
-        train.wagonsPushedByLocomotive.toggle()
-
-        try reservation.removeLeadingBlocks(train: train)
-
-        self.didChange()
-    }
-        
-    func start(routeID: Identifier<Route>, trainID: Identifier<Train>, destination: Destination? = nil) throws {
-        guard let route = self.route(for: routeID, trainId: trainID) else {
-            throw LayoutError.routeNotFound(routeId: routeID)
-        }
-        
-        guard let train = self.train(for: trainID) else {
-            throw LayoutError.trainNotFound(trainId: trainID)
-        }
-        
-        guard let blockId = train.blockId else {
-            throw LayoutError.trainNotAssignedToABlock(train: train)
-        }
-        
-        guard let block = self.block(for: blockId), block.train != nil else {
-            throw LayoutError.trainNotFoundInBlock(blockId: blockId)
-        }
-
-        // Set the route to the train
-        train.routeId = routeID
-
-        if route.automatic {
-            // Ensure the automatic route associated with the train is updated
-            // Note: remember the destination block
-            if let destination = destination {
-                route.mode = .automaticOnce(destination: destination)
-            } else {
-                route.mode = .automatic
-            }
-            
-            // Reset the route - the route will be automatically updated by
-            // the TrainController when the train is started.
-            train.routeStepIndex = 0
-            route.steps.removeAll()
-        } else {
-            // Check to make sure the train is somewhere along the route
-            train.routeStepIndex = -1
-            for (index, step) in route.steps.enumerated() {
-                guard let (blockId, direction) = self.block(for: train, step: step) else {
-                    continue
-                }
-                
-                guard train.blockId == blockId else {
-                    continue
-                }
-                
-                guard let block = self.block(for: train.blockId) else {
-                    continue
-                }
-
-                guard let trainInstance = block.train else {
-                    continue
-                }
-                
-                // Check that the train direction matches as well.
-                if trainInstance.direction == direction {
-                    train.routeStepIndex = index
-                    break
-                }
-            }
-                                 
-            guard train.routeStepIndex >= 0 else {
-                throw LayoutError.trainNotFoundInRoute(train: train, route: route)
-            }
-        }
-
-        train.scheduling = .managed
     }
     
     func hasTrainReachedStationOrDestination(_ route: Route?, _ train: Train, _ block: Block) -> Bool {
@@ -325,7 +158,7 @@ extension Layout {
     ///   - direction: the direction in the block in which to put the train
     ///   - routeIndex: optional index in the route
     ///   - removeLeadingBlocks: true to remove the leading blocks (by default), false to keep the leading blocks
-    func setTrainToBlock(_ trainId: Identifier<Train>, _ toBlockId: Identifier<Block>, position: Position = .start, direction: Direction, routeIndex: Int? = nil, removeLeadingBlocks: Bool = true) throws {
+    func setTrainToBlock(_ trainId: Identifier<Train>, _ toBlockId: Identifier<Block>, position: Position = .start, direction: Direction, routeIndex: Int? = nil) throws {
         guard let train = self.train(for: trainId) else {
             throw LayoutError.trainNotFound(trainId: trainId)
         }
@@ -366,10 +199,6 @@ extension Layout {
         // Update the route index if specified
         if let routeIndex = routeIndex {
             train.routeStepIndex = routeIndex
-        }
-
-        if removeLeadingBlocks {
-            try reservation.removeLeadingBlocks(train: train)
         }
     }
 

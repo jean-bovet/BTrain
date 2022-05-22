@@ -183,7 +183,7 @@ struct TrainControlSetLocationSheet: View {
                             switch action {
                             case .set:
                                 train.wagonsPushedByLocomotive = wagonsPushedByLocomotive
-                                try layout.setTrainToBlock(train.id, selectedBlock, position: .end, direction: direction)
+                                try controller.setTrainToBlock(train, selectedBlock, position: .end, direction: direction)
 
                             case .move:
                                 let routeId = Route.automaticRouteId(for: train.id)

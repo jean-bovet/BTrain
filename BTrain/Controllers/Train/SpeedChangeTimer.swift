@@ -30,7 +30,10 @@ extension TrainSpeedManager {
         // The actual speed value of the locomotive (ie the last
         // speed value sent to the Digital Controller).
         var actual: SpeedStep = .zero
-        
+
+        // The starting speed value at the moment the speed request was made
+        var original: SpeedStep = .zero
+
         // The desired speed value that has been requested
         var desired: SpeedStep = .zero
         
@@ -55,6 +58,7 @@ extension TrainSpeedManager {
             
             stepsDidChange = callback
             actual = fromSteps
+            original = fromSteps
             desired = steps
             
             guard acceleration != .none else {
@@ -90,7 +94,9 @@ extension TrainSpeedManager {
         
         func cancel() {
             if let stepsDidChange = stepsDidChange {
-                BTLogger.router.warning("\(self.train, privacy: .public): interrupting in-progress speed change from \(self.actual.value) steps to \(self.desired.value) steps")
+                let fromKph = train.speed.speedKph(for: original)
+                let toKph = train.speed.speedKph(for: desired)
+                BTLogger.router.warning("\(self.train, privacy: .public): interrupting in-progress speed change from \(fromKph)kph (\(self.original)) to \(toKph) (\(self.desired.value))")
                 stepsDidChange(actual, .cancelled)
             }
             stepsDidChange = nil
@@ -102,6 +108,7 @@ extension TrainSpeedManager {
             stepsDidChange?(actual, .finished)
             stepsDidChange = nil
             timer?.invalidate()
+            timer = nil
         }
         
         private func setActualValue(value: Int, accelerating: Bool) {

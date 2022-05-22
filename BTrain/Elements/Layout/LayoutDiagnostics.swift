@@ -18,6 +18,10 @@ enum DiagnosticError: Error, Equatable {
     case feedbackDuplicateAddress(feedback: Feedback)
     case unusedFeedback(feedback: Feedback)
     
+    case trainIdAlreadyExists(train: Train)
+    case trainNameAlreadyExists(train: Train)
+    case trainDuplicateAddress(train: Train)
+
     case turnoutIdAlreadyExists(turnout: Turnout)
     case turnoutNameAlreadyExists(turnout: Turnout)
     case turnoutMissingTransition(turnout: Turnout, socket: String)
@@ -95,6 +99,12 @@ extension DiagnosticError: LocalizedError {
             return "Train \(train.name) does not have a distance defined for the magnet"
         case .invalidRoute(route: let route, error: let error):
             return "Route \"\(route.name)\" is invalid and cannot be resolved: \(error)"
+        case .trainIdAlreadyExists(train: let train):
+            return "Train ID \(train.id) (named \(train.name)) is used by more than one train"
+        case .trainNameAlreadyExists(train: let train):
+            return "Train name \(train.name) is used by more than one train"
+        case .trainDuplicateAddress(train: let train):
+            return "The address of train \(train.name) (\(train.address.actualAddress(for: train.decoder))) is already used by another train"
         }
     }
 }
@@ -146,6 +156,7 @@ final class LayoutDiagnostic: ObservableObject {
         if options.contains(.duplicate) {
             checkForDuplicateFeedbacks(&errors)
             checkForDuplicateTurnouts(&errors)
+            checkForDuplicateTrains(&errors)
             try checkForDuplicateBlocks(&errors)
         }
         
@@ -249,18 +260,19 @@ final class LayoutDiagnostic: ObservableObject {
             }
         }
 
+        // TODO: unit to detect turnouts with the same address (double or not)
         var addresses = Set<CommandTurnoutAddress>()
         for turnout in layout.turnouts {
             if addresses.contains(turnout.address) {
                 errors.append(DiagnosticError.turnoutDuplicateAddress(turnout: turnout))
-                addresses.insert(turnout.address)
             }
+            addresses.insert(turnout.address)
             if turnout.doubleAddress {
                 if addresses.contains(turnout.address2) {
                     errors.append(DiagnosticError.turnoutDuplicateAddress(turnout: turnout))
                 }
-                addresses.insert(turnout.address2)
             }
+            addresses.insert(turnout.address2)
         }
         
         for turnout in layout.turnouts {
@@ -272,6 +284,36 @@ final class LayoutDiagnostic: ObservableObject {
         }
     }
     
+    func checkForDuplicateTrains(_ errors: inout [DiagnosticError]) {
+        var ids = Set<Identifier<Train>>()
+        for train in layout.trains {
+            if ids.contains(train.id) {
+                errors.append(DiagnosticError.trainIdAlreadyExists(train: train))
+            } else {
+                ids.insert(train.id)
+            }
+        }
+        
+        var names = Set<String>()
+        for train in layout.trains {
+            if names.contains(train.name) {
+                errors.append(DiagnosticError.trainNameAlreadyExists(train: train))
+            } else {
+                names.insert(train.name)
+            }
+        }
+
+        // TODO: unit to detect train with the same address (double or not)
+        var addresses = Set<UInt32>()
+        for train in layout.trains {
+            let address = train.address.actualAddress(for: train.decoder)
+            if addresses.contains(address) {
+                errors.append(DiagnosticError.trainDuplicateAddress(train: train))
+            }
+            addresses.insert(address)
+        }
+    }
+
     func checkForOrphanedElements(_ errors: inout [DiagnosticError]) throws {
         // Check for elements that are not linked together (orphaned sockets)
         for turnout in layout.turnouts {

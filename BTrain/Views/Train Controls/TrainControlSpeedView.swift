@@ -23,7 +23,7 @@ struct TrainControlSpeedView: View {
         VStack(alignment: .leading) {
             HStack {
                 Button(train.directionForward ? "􀄫" : "􀄪") {
-                    document.layout.setLocomotiveDirection(train, forward: !train.directionForward)
+                    document.layoutController.setLocomotiveDirection(train, forward: !train.directionForward)
                 }
                 .buttonStyle(.borderless)
                 .help("Change Direction of Travel")
@@ -32,7 +32,7 @@ struct TrainControlSpeedView: View {
                     // Note: force the train speed to change because the SpeedSlider already has changed
                     // the requestedKph during the drag of the knob, which prevents the speed from changing
                     // because `setTrainSpeed` checks if the requestedKph is different from its already established value.
-                    document.layout.setTrainSpeed(train, speed.requestedKph, speedLimit: false, force: true)
+                    document.layoutController.setTrainSpeed(train, speed.requestedKph, speedLimit: false, force: true)
                 }
             }.disabled(!document.connected || train.blockId == nil)
         }
