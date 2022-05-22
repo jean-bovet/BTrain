@@ -26,6 +26,16 @@ final class MockCommandInterface: CommandInterface {
         []
     }
     
+    var running = true
+    
+    func pause() {
+        running = false
+    }
+    
+    func resume() {
+        running = true
+    }
+    
     func connect(server: String, port: UInt16, onReady: @escaping () -> Void, onError: @escaping (Error) -> Void, onStop: @escaping () -> Void) {
         
     }
@@ -34,7 +44,21 @@ final class MockCommandInterface: CommandInterface {
         
     }
     
-    func execute(command: Command, onCompletion: @escaping () -> Void) {
+    var pendingCommands = [(Command, CompletionBlock)]()
+    
+    func execute(command: Command, onCompletion: @escaping CompletionBlock) {
+        if !running {
+            pendingCommands.append((command, onCompletion))
+            return
+        }
+        
+        for (command, onCompletion) in pendingCommands {
+            executeImmediate(command: command, onCompletion: onCompletion)
+        }
+        executeImmediate(command: command, onCompletion: onCompletion)
+    }
+    
+    private func executeImmediate(command: Command, onCompletion: @escaping CompletionBlock) {
         // First the completion of sending the command needs to happen
         onCompletion()
 

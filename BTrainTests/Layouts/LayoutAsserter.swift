@@ -27,7 +27,7 @@ final class LayoutAsserter {
         self.layoutController = layoutController
     }
     
-    func assert(_ strings: [String], trains: [Train]) throws {
+    func assert(_ strings: [String], trains: [Train], drainAll: Bool = true) throws {
         let expectedLayout = try LayoutFactory.layoutFrom(strings)
         let expectedTrains = Array(expectedLayout.trains)
         
@@ -40,7 +40,9 @@ final class LayoutAsserter {
         
         // Then run the controller to update the real layout states
         layoutController.runControllers(.feedbackTriggered)
-        layoutController.drainAllEvents()
+        if drainAll {
+            layoutController.drainAllEvents()
+        }
 
         // Now assert the routes to see if they match the real layout
         var assertedAtLeastOneRoute = false

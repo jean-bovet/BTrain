@@ -1061,8 +1061,8 @@ class FixedRoutingTests: BTTestCase {
             toggle(f2)
         }
 
-        func assert(_ r1: String, _ leadingBlocks: [String]? = nil) throws {
-            try asserter.assert([r1], trains: trains)
+        func assert(_ r1: String, _ leadingBlocks: [String]? = nil, drainAll: Bool = true) throws {
+            try asserter.assert([r1], trains: trains, drainAll: drainAll)
             if let leadingBlocks = leadingBlocks {
                 try assertLeadingBlocks(leadingBlocks)
             }

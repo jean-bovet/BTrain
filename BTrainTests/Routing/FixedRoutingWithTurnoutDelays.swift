@@ -21,15 +21,11 @@ class FixedRoutingWithTurnoutDelays: XCTestCase {
     func testMoveInsideBlockWithTurnoutDelay() throws {
         let layout = LayoutLoop1().newLayout().removeTrainGeometry()
         let t0 = layout.turnout(named: "t0")
-        t0.requestedState = .branchLeft
-        layout.applyTurnoutState(turnout: t0)
-        
-        let delayedExecutor = DelayedCommandExecutor()
-        delayedExecutor.pause()
-        
-        layout.executing = delayedExecutor
-        
+        t0.setState(.branchLeft)
+                        
         let p = FixedRoutingTests.Package(layout: layout)
+        p.interface.pause()
+        
         try p.prepare(routeID: "r1", trainID: "1", fromBlockId: "b1")
 
         // t0 has still the state .branchLeft instead of the requested .straight
@@ -39,11 +35,12 @@ class FixedRoutingWithTurnoutDelays: XCTestCase {
         try p.start(expectedState: .stopped)
 
         // t0 has still the state .branchLeft instead of the requested .straight
-        try p.assert("r1: {r1{b1 🔴🚂1 ≏ ≏ }} <r1<t0,l>> [r1[b2 ≏ ≏ ]] <t1(0,2)> [b3 ≏ ≏ ] <r1<t0(2,0),l>> !{r1{b1 ≏ ≏ }}")
+        try p.assert("r1: {r1{b1 🔴🚂1 ≏ ≏ }} <r1<t0,l>> [r1[b2 ≏ ≏ ]] <t1(0,2)> [b3 ≏ ≏ ] <r1<t0(2,0),l>> !{r1{b1 ≏ ≏ }}", drainAll: false)
 
         // This will settle the turnout t0
-        delayedExecutor.resume()
+        p.interface.resume()
         p.layoutController.runControllers(.turnoutChanged)
+        p.layoutController.drainAllEvents()
 
         // And the train will restart because the leading turnouts are settled
         XCTAssertEqual(p.train.state, .running)
@@ -53,14 +50,14 @@ class FixedRoutingWithTurnoutDelays: XCTestCase {
         try p.assert("r1: {r1{b1 ≏ ≡ 🔵🚂1 }} <r1<t0>> [r1[b2 ≏ ≏ ]] <t1(0,2)> [b3 ≏ ≏ ] <r1<t0(2,0)>> !{r1{b1 ≡ ≏ }}")
         
         // Pause again the turnout executor which will prevent the leading turnouts from settling
-        delayedExecutor.pause()
+        p.interface.pause()
 
         // The train will stop because the leading turnouts are not yet fully settled
-        try p.assert("r1: {b1 ≏ ≏ } <t0> [r1[b2 ≡ 🟡🚂1 ≏ ]] <r1<t1(0,2),s>> [r1[b3 ≏ ≏ ]] <t0(2,0)> !{b1 ≏ ≏ }")
-        try p.assert("r1: {b1 ≏ ≏ } <t0> [r1[b2 ≏ ≡ 🔴🚂1 ]] <r1<t1(0,2),s>> [r1[b3 ≏ ≏ ]] <t0(2,0)> !{b1 ≏ ≏ }")
+        try p.assert("r1: {b1 ≏ ≏ } <t0> [r1[b2 ≡ 🟡🚂1 ≏ ]] <r1<t1(0,2),s>> [r1[b3 ≏ ≏ ]] <t0(2,0)> !{b1 ≏ ≏ }", drainAll: false)
+        try p.assert("r1: {b1 ≏ ≏ } <t0> [r1[b2 ≏ ≡ 🔴🚂1 ]] <r1<t1(0,2),s>> [r1[b3 ≏ ≏ ]] <t0(2,0)> !{b1 ≏ ≏ }", drainAll: false)
         
         // Resuming the executor which will settle the leading turnouts
-        delayedExecutor.resume()
+        p.interface.resume()
 
         // The train restarts because all the turnouts have settled
         try p.assert("r1: {b1 ≏ ≏ } <t0> [r1[b2 ≏ ≏ 🔵🚂1 ]] <r1<t1(0,2),l>> [r1[b3 ≏ ≏ ]] <t0(2,0)> !{b1 ≏ ≏ }")
@@ -77,14 +74,11 @@ class FixedRoutingWithTurnoutDelays: XCTestCase {
         layout.block(named: "b3").category = .free
         
         let t1 = layout.turnout(named: "t1")
-        t1.requestedState = .branchRight
-        layout.applyTurnoutState(turnout: t1)
+        t1.setState(.branchRight)
         
-        let delayedExecutor = DelayedCommandExecutor()
-        delayedExecutor.pause()
-        
-        layout.executing = delayedExecutor
-        
+//        let delayedExecutor = DelayedCommandExecutor()
+//        delayedExecutor.pause()
+                
         let p = FixedRoutingTests.Package(layout: layout)
         try p.prepare(routeID: "r1", trainID: "1", fromBlockId: "b1", position: .end)
         
@@ -103,7 +97,7 @@ class FixedRoutingWithTurnoutDelays: XCTestCase {
         try p.assert("r1: {b1 ≏ ≏ } <t0> [r1[b2 ≡ 🟡🚂1 ≏ ]] [r1[b3 ≏ ≏ ]] <r1<t1,r>> [r1[b4 ≏ ≏]] {b1 ≏ ≏ }")
         XCTAssertEqual(p.train.state, .braking)
 
-        delayedExecutor.resume()
+//        delayedExecutor.resume()
         p.layoutController.runControllers(.turnoutChanged)
 
         // And the train will restart because the leading turnouts are settled
@@ -111,57 +105,4 @@ class FixedRoutingWithTurnoutDelays: XCTestCase {
         try p.assert("r1: {b1 ≏ ≏ } <t0> [r1[b2 ≏ 🟢🚂1 ≏ ]] [r1[b3 ≏ ≏ ]] <r1<t1>> [r1[b4 ≏ ≏]] {b1 ≏ ≏ }")
     }
 
-    // TODO: refactor with ManualCommandExecutor
-    final class DelayedCommandExecutor: LayoutCommandExecuting {
-        
-        private var pauseExecution = false {
-            didSet {
-                if pauseExecution == false {
-                    resumePausedTurnouts()
-                }
-            }
-        }
-        
-        private var pausedTurnouts = [Turnout]()
-        
-        func pause() {
-            pauseExecution = true
-        }
-        
-        func resume() {
-            pauseExecution = false
-        }
-        
-        func scheduleRestartTimer(train: Train) {
-            // no-op
-        }
-        
-        func sendTurnoutState(turnout: Turnout, completion: @escaping CompletionBlock) {
-            if pauseExecution {
-                pausedTurnouts.append(turnout)
-            } else {
-                resumePausedTurnouts()
-                turnout.actualState = turnout.requestedState
-            }
-            completion()
-        }
-        
-        private func resumePausedTurnouts() {
-            for pt in pausedTurnouts {
-                pt.actualState = pt.requestedState
-            }
-            pausedTurnouts.removeAll()
-        }
-        
-        func sendTrainDirection(train: Train, forward: Bool, completion: @escaping CompletionBlock) {
-            completion()
-        }
-        
-        func sendTrainSpeed(train: Train, acceleration: TrainSpeedAcceleration.Acceleration?, completion: @escaping CompletionCancelBlock) {
-            train.speed.actualSteps = train.speed.requestedSteps
-            completion(true)
-        }
-
-    }
-    
 }
