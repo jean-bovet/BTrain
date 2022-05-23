@@ -15,7 +15,7 @@ import XCTest
 @testable import BTrain
 
 /// These tests focus on the handling and management of a station, which is a group of blocks.
-class FixedRoutingWithStationsTests: XCTestCase {
+class FixedRoutingWithStationsTests: BTTestCase {
 
     /// This test simulates a train traveling from one station (s) to another (n).
     func testStationToStation() throws {

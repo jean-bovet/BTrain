@@ -85,7 +85,7 @@ final class MockCommandInterface: CommandInterface {
                 turnoutCommands.append(command)
             }
             for turnoutChangeCallback in turnoutChangeCallbacks {
-                turnoutChangeCallback(address, state, power, true)
+                turnoutChangeCallback(address, state, power, true /*ack*/)
             }
             break
 //        case .feedback(let deviceID, let contactID, let oldValue, let newValue, let time, let priority, let descriptor):

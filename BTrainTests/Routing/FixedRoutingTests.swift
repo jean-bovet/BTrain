@@ -15,17 +15,7 @@ import XCTest
 @testable import BTrain
 
 class FixedRoutingTests: BTTestCase {
-        
-    override func setUp() {
-        super.setUp()
-        BaseTimeFactor = 0.0
-    }
-
-    override func tearDown() {
-        super.tearDown()
-        BaseTimeFactor = 1.0
-    }
-    
+            
     func testBlockReserved() throws {
         let layout = LayoutLoop1().newLayout().removeTrainGeometry()
         let p = Package(layout: layout)

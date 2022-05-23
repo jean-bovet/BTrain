@@ -17,10 +17,14 @@ class BTTestCase: XCTestCase {
     var backup = [String:Any]()
     
     override func setUp() {
+        super.setUp()
         backup = UserDefaults.standard.dictionaryRepresentation()
+        BaseTimeFactor = 0.0
     }
     
-    override func tearDown() async throws {
+    override func tearDown() {
+        super.tearDown()
         UserDefaults.standard.setValuesForKeys(backup)
+        BaseTimeFactor = 1.0
     }
 }
