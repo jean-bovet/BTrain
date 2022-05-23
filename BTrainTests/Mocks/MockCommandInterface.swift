@@ -21,6 +21,7 @@ final class MockCommandInterface: CommandInterface {
     
     var speedChangeCallbacks = [SpeedChangeCallback]()
     var turnoutChangeCallbacks = [TurnoutChangeCallback]()
+    var directionChangeCallbacks = [DirectionChangeCallback]()
 
     var metrics: [Metric] {
         []
@@ -55,6 +56,7 @@ final class MockCommandInterface: CommandInterface {
         for (command, onCompletion) in pendingCommands {
             executeImmediate(command: command, onCompletion: onCompletion)
         }
+        pendingCommands.removeAll()
         executeImmediate(command: command, onCompletion: onCompletion)
     }
     
@@ -76,8 +78,11 @@ final class MockCommandInterface: CommandInterface {
                 speedChangeCallback(address, decoderType, value)
             }
             
-//        case .direction(let address, let decoderType, let direction, let priority, let descriptor):
-//            break
+        case .direction(let address, let decoderType, let direction, _, _):
+            for directionChangeCallback in directionChangeCallbacks {
+                directionChangeCallback(address, decoderType, direction)
+            }
+            break
 //        case .queryDirection(let address, let decoderType, let priority, let descriptor):
 //            break
         case .turnout(let address, let state, let power, _, _):
@@ -116,7 +121,7 @@ final class MockCommandInterface: CommandInterface {
     }
     
     func register(forDirectionChange: @escaping DirectionChangeCallback) {
-        
+        directionChangeCallbacks.append(forDirectionChange)
     }
     
     func register(forTurnoutChange: @escaping TurnoutChangeCallback) {

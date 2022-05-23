@@ -38,7 +38,6 @@ final class Turnout: Element, ObservableObject {
         case straight23
         case branch03
         case branch21
-        case unknown
         case invalid
     }
 
@@ -75,11 +74,20 @@ final class Turnout: Element, ObservableObject {
     /// the Digital Controller sends the acknowledgment that the turnout has changed,
     /// the ``actualState`` will be updated to match the ``requestedState``.
     @Published var requestedState: State = .straight
-    
+        
     /// The most up-to-date state from the physical layout.
     ///
     /// It might differ from ``requestedState`` if the turnout hasn't physically yet changed.
-    @Published var actualState: State = .unknown
+    @Published var actualState: State = .straight {
+        didSet {
+            actualStateReceived = true
+        }
+    }
+    
+    /// True if the actual state was received from the Digital Controller.
+    /// This flag is set to true everyone time the actual state from the Digital Controller is received.
+    /// The flag is cleared each time the LayoutController sends the requested state to the Digital Controller.
+    var actualStateReceived = false
     
     /// Returns true if the turnout has settled.
     ///
@@ -87,7 +95,8 @@ final class Turnout: Element, ObservableObject {
     /// a turnout takes some time to change the state on the physical layout which is why
     /// a turnout does not settled immediately.
     var settled: Bool {
-        requestedState == actualState
+        requestedState == actualState &&
+        actualStateReceived
     }
     
     struct Reservation: Codable, CustomStringConvertible {
@@ -167,8 +176,6 @@ final class Turnout: Element, ObservableObject {
         case .branch03:
             return .limited
         case .branch21:
-            return .limited
-        case .unknown:
             return .limited
         case .invalid:
             return .limited
@@ -266,8 +273,6 @@ extension Turnout.State: CustomStringConvertible {
             return "Branch 0-3"
         case .branch21:
             return "Branch 2-1"
-        case .unknown:
-            return "Unknown"
         case .invalid:
             return "Invalid"
         }

@@ -87,6 +87,7 @@ extension LayoutController {
                         // triggered by the Digital Controller and we need to reflect this by
                         // ensuring the turnout is settled with both requested and actual state
                         // being the same.
+                        // TODO: unit test for that
                         turnout.requestedState = turnout.actualState
                     }
                     BTLogger.debug("Turnout \(turnout.name) state changed to \(state) (ack=\(acknowledgement)), power \(power), for address \(address.actualAddress.toHex()). Actual state \(turnout.actualState). Requested state \(turnout.requestedState)")

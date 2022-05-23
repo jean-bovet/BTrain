@@ -209,6 +209,7 @@ final class LayoutController {
         // start again if the user re-enable the layout manually.
         for train in layout.trains {
             setTrainSpeed(train, SpeedStep(value: 0))
+            train.scheduling = .unmanaged
         }
         
         // Stop the Digital Controller to ensure nothing moves further
@@ -392,7 +393,7 @@ extension LayoutController {
     ///   - turnout: the turnout whose state need to be sent to the Digital Controller
     ///   - completion: completion block called when the command has been sent
     func sendTurnoutState(turnout: Turnout, completion: @escaping CompletionBlock) {
-        turnout.actualState = .unknown // TODO: this is to ensure the turnout actually settles with a response from the Digital Controller
+        turnout.actualStateReceived = false
         executor.sendTurnoutState(turnout: turnout, completion: completion)
     }
     
@@ -424,29 +425,29 @@ extension LayoutController {
         }
     }
             
-    func setTrainSpeed(_ train: Train, _ speed: TrainSpeed.UnitKph, speedLimit: Bool = true, force: Bool = false, acceleration: TrainSpeedAcceleration.Acceleration? = nil, completion: CompletionCancelBlock? = nil) {
-        let previousRequestedSteps = train.speed.requestedSteps
+    func setTrainSpeed(_ train: Train, _ speed: TrainSpeed.UnitKph, speedLimit: Bool = true, acceleration: TrainSpeedAcceleration.Acceleration? = nil, completion: CompletionCancelBlock? = nil) {
+        let previouslyRequestedKph = train.speed.requestedKph
         if speedLimit {
             let route = layout.route(for: train.routeId, trainId: train.id)
             train.speed.requestedKph = min(speed, reservation.maximumSpeedAllowed(train: train, route: route))
         } else {
             train.speed.requestedKph = speed
         }
-        if train.speed.requestedSteps != previousRequestedSteps || force {
+        if previouslyRequestedKph != train.speed.requestedKph {
             setTrainSpeed(train, train.speed.requestedSteps, acceleration: acceleration, completion: completion)
-        } else {
-            completion?(true)
         }
     }
 
     func setTrainSpeed(_ train: Train, _ speed: SpeedStep, acceleration: TrainSpeedAcceleration.Acceleration? = nil, completion: CompletionCancelBlock? = nil) {
         train.speed.requestedSteps = speed
-        if train.speed.requestedSteps != train.speed.actualSteps {
-            sendTrainSpeed(train: train, acceleration: acceleration) { completed in
-                completion?(completed)
-            }
-        } else {
-            completion?(true)
+        // Note: always send the train speed request, even if the train already runs at the specified
+        // speed because we need the TrainSpeedManager to ultimately make any optimization decision
+        // (for example, if a speed change is in progress but hasn't had a change to change the speed
+        // yet, we might think we don't need to send another train speed change request. But this is incorrect
+        // because if we don't do that, the previous speed change request will continue to execute while
+        // it is not our intention).
+        sendTrainSpeed(train: train, acceleration: acceleration) { completed in
+            completion?(completed)
         }
     }
 

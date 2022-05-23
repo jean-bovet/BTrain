@@ -14,7 +14,7 @@ import XCTest
 
 @testable import BTrain
 
-class LayoutYardRoutingTests: XCTestCase {
+class LayoutYardRoutingTests: BTTestCase {
     
     /// Ensure turnouts are not activated unnecessarily when the blocks are reserved
     /// and re-reserved again.

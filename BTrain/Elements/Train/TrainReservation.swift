@@ -101,7 +101,7 @@ final class TrainLeadingReservation: TrainReservation {
         }
         
         for turnout in turnouts {
-            if turnout.requestedState != turnout.actualState {
+            if !turnout.settled {
                 return false
             }
         }

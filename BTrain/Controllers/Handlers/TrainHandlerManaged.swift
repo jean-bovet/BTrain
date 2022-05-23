@@ -144,7 +144,7 @@ final class TrainHandlerManaged {
         
         handleTrainBrake()
         
-        try handleTrainStop()
+        handleTrainStop()
         
         adjustSpeedLimit(train)
         
@@ -278,7 +278,7 @@ final class TrainHandlerManaged {
             return
         }
         
-        guard train.scheduling == .managed else {
+        guard train.scheduling == .managed || train.scheduling == .finishManaged else {
             return
         }
         
@@ -301,31 +301,56 @@ final class TrainHandlerManaged {
         }
     }
     
+    func stopReasons() -> String {
+        var reasons = [String]()
+        if train.leading.isEmpty {
+            reasons.append("no leading blocks")
+        }
+        if reservation.isBrakingDistanceRespected(train: train, speed: train.speed.actualKph) == false {
+            reasons.append("braking distance too short")
+        }
+        if trainAtEndOfRoute {
+            reasons.append("train at end of route")
+        }
+        if layout.hasTrainReachedStationOrDestination(route, train, currentBlock) {
+            reasons.append("train reach station or destination")
+        }
+            
+        if train.scheduling == .stopManaged {
+            reasons.append("explicit request to stop the train")
+        }
+
+        return reasons.joined(separator: ",")
+    }
+
     func handleTrainBrake() {
         guard train.state == .running && trainShouldStop && brakingFeedbackTriggered else {
             return
         }
         
-        BTLogger.router.debug("\(self.train, privacy: .public): braking in \(self.currentBlock.name, privacy: .public) at position \(self.train.position), direction \(self.trainInstance.direction)")
+        BTLogger.router.debug("\(self.train, privacy: .public): braking in \(self.currentBlock.name, privacy: .public) at position \(self.train.position), direction \(self.trainInstance.direction), because \(self.stopReasons(), privacy: .public)")
+        
         train.state = .braking
-        executor.setTrainSpeed(train, currentBlock.brakingSpeed ?? LayoutFactory.DefaultBrakingSpeed, completion: nil)
+        
+        executor.setTrainSpeed(train, currentBlock.brakingSpeed ?? LayoutFactory.DefaultBrakingSpeed)
+        
         resultingEvents.append(.stateChanged)
     }
-    
-    func handleTrainStop() throws {
+        
+    func handleTrainStop() {
         guard train.state == .running || train.state == .braking else {
             return
         }
-        
-        guard trainShouldStop && stoppingFeedbackTriggered else {
+                        
+        guard trainShouldStop && stoppingFeedbackTriggered || train.scheduling == .stopManaged else {
             return
         }
 
-        BTLogger.router.debug("\(self.train, privacy: .public): stopping in \(self.currentBlock.name, privacy: .public) at position \(self.train.position), direction \(self.trainInstance.direction)")
+        BTLogger.router.debug("\(self.train, privacy: .public): stopping in \(self.currentBlock.name, privacy: .public) at position \(self.train.position), direction \(self.trainInstance.direction), because \(self.stopReasons(), privacy: .public)")
         
         train.state = .stopping
         
-        executor.setTrainSpeed(train, 0, completion: nil)
+        executor.setTrainSpeed(train, 0)
                         
         resultingEvents.append(.stateChanged)
     }
@@ -334,24 +359,29 @@ final class TrainHandlerManaged {
         try reservation.removeLeadingBlocks(train: train)
 
         let reachedStationOrDestination = layout.hasTrainReachedStationOrDestination(route, train, currentBlock)
-        let stopCompletely = (reachedStationOrDestination && train.scheduling == .finishManaged) || train.scheduling == .stopManaged
         
         switch route.mode {
         case .fixed:
-            if stopCompletely || trainAtEndOfRoute {
+            if (reachedStationOrDestination && train.scheduling == .finishManaged)
+                || train.scheduling == .stopManaged
+                || trainAtEndOfRoute {
                 train.scheduling = .unmanaged
             } else if reachedStationOrDestination {
                 reschedule(train: train, delay: waitingTime)
             }
 
         case .automatic:
-            if stopCompletely {
+            if (reachedStationOrDestination && train.scheduling == .finishManaged)
+                || train.scheduling == .stopManaged {
                 train.scheduling = .unmanaged
             } else if reachedStationOrDestination {
                 reschedule(train: train, delay: waitingTime)
             }
 
         case .automaticOnce(destination: _):
+            if reachedStationOrDestination {
+                train.scheduling = .unmanaged
+            }
             break
         }
     }
@@ -409,7 +439,7 @@ final class TrainHandlerManaged {
             return
         }
 
-        executor.setTrainSpeed(train, LayoutFactory.DefaultMaximumSpeed, speedLimit: true, force: false, acceleration: nil, completion: nil)
+        executor.setTrainSpeed(train, LayoutFactory.DefaultMaximumSpeed)
     }
     
     private func updateAutomaticRoute(for train: Train, layout: Layout) throws -> Bool {

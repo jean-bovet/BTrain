@@ -32,7 +32,7 @@ struct TrainControlSpeedView: View {
                     // Note: force the train speed to change because the SpeedSlider already has changed
                     // the requestedKph during the drag of the knob, which prevents the speed from changing
                     // because `setTrainSpeed` checks if the requestedKph is different from its already established value.
-                    document.layoutController.setTrainSpeed(train, speed.requestedKph, speedLimit: false, force: true)
+                    document.layoutController.setTrainSpeed(train, speed.requestedKph, speedLimit: false)
                 }
             }.disabled(!document.connected || train.blockId == nil)
         }

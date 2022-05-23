@@ -96,7 +96,7 @@ extension TrainSpeedManager {
             if let stepsDidChange = stepsDidChange {
                 let fromKph = train.speed.speedKph(for: original)
                 let toKph = train.speed.speedKph(for: desired)
-                BTLogger.router.warning("\(self.train, privacy: .public): interrupting in-progress speed change from \(fromKph)kph (\(self.original)) to \(toKph) (\(self.desired.value))")
+                BTLogger.router.warning("\(self.train, privacy: .public): interrupting in-progress speed change from \(fromKph) kph (\(self.original)) to \(toKph) kph (\(self.desired))")
                 stepsDidChange(actual, .cancelled)
             }
             stepsDidChange = nil

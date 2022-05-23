@@ -14,7 +14,7 @@ import XCTest
 
 @testable import BTrain
 
-class LayoutTests: XCTestCase {
+class LayoutTests: BTTestCase {
 
     func testValidation() throws {
         let layout = LayoutComplexLoop().newLayout()
@@ -79,16 +79,11 @@ class LayoutTests: XCTestCase {
     }
     
     func testTrainDirection() throws {
-        let doc = LayoutDocument(layout: LayoutFigure8().newLayout())
+        let interface = MockCommandInterface()
+        let doc = LayoutDocument(layout: LayoutFigure8().newLayout(), interface: interface)
         let train1 = doc.layout.trains[0]
         let block1 = doc.layout.blocks[0]
         
-        connectToSimulator(doc: doc) { }
-
-        defer {
-            disconnectFromSimulator(doc: doc)
-        }
-
         try doc.layout.setTrainToBlock(train1.id, block1.id, direction: .next)
         XCTAssertEqual(train1.directionForward, true)
 
@@ -117,18 +112,13 @@ class LayoutTests: XCTestCase {
     }
     
     func testTrainStopCompletely() throws {
-        let doc = LayoutDocument(layout: LayoutFigure8().newLayout())
+        let interface = MockCommandInterface()
+        let doc = LayoutDocument(layout: LayoutFigure8().newLayout(), interface: interface)
         let layout = doc.layout
         let train1 = layout.trains[0]
         let block1 = layout.blocks[0]
 
         try layout.setTrainToBlock(train1.id, block1.id, direction: .next)
-
-        connectToSimulator(doc: doc) { }
-
-        defer {
-            disconnectFromSimulator(doc: doc)
-        }
         
         XCTAssertEqual(train1.state, .stopped)
         XCTAssertEqual(train1.scheduling, .unmanaged)
@@ -136,22 +126,13 @@ class LayoutTests: XCTestCase {
         XCTAssertEqual(train1.scheduling, .managed)
 
         // Note: state will change to running once the turnouts have been settled
-        wait(for: {
-            train1.state == .running
-        }, timeout: 1.0)
+        doc.layoutController.drainAllEvents()
         
         XCTAssertEqual(train1.state, .running)
         XCTAssertEqual(train1.scheduling, .managed)
 
-        let stoppedFully = expectation(description: "StoppedFully")
         doc.stop(train: train1)
-        // TODO
-//        try layout.stopTrain(train1.id) { completed in
-//            if completed {
-//                stoppedFully.fulfill()
-//            }
-//        }
-        wait(for: [stoppedFully], timeout: 2.0)
+        doc.layoutController.drainAllEvents()
 
         XCTAssertEqual(train1.state, .stopped)
         XCTAssertEqual(train1.scheduling, .unmanaged)

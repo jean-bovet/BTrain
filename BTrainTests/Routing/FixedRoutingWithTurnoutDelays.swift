@@ -16,7 +16,7 @@ import XCTest
 
 /// Tests that take into account the fact that a turnout state actually changes with a delay in a physical layout. The train controller
 /// needs to handle that delay appropriately, by braking or stopping the train until the turnouts are fully settled.
-class FixedRoutingWithTurnoutDelays: XCTestCase {
+class FixedRoutingWithTurnoutDelays: BTTestCase {
 
     func testMoveInsideBlockWithTurnoutDelay() throws {
         let layout = LayoutLoop1().newLayout().removeTrainGeometry()
@@ -75,30 +75,29 @@ class FixedRoutingWithTurnoutDelays: XCTestCase {
         
         let t1 = layout.turnout(named: "t1")
         t1.setState(.branchRight)
-        
-//        let delayedExecutor = DelayedCommandExecutor()
-//        delayedExecutor.pause()
-                
+                        
         let p = FixedRoutingTests.Package(layout: layout)
         try p.prepare(routeID: "r1", trainID: "1", fromBlockId: "b1", position: .end)
         
         p.layout.strictRouteFeedbackStrategy = false
         p.train.maxNumberOfLeadingReservedBlocks = 2
-
+        
         try p.assert("r1: {r1{b1 ≏ ≏ 🔴🚂1 }} <t0> [b2 ≏ ≏ ] [b3 ≏ ≏ ] <t1,r> [b4 ≏ ≏] {r1{b1 ≏ ≏ }}")
 
         try p.start()
 
-        // Train is running despite t1 not being settled because there is enough leading settled distance.
         try p.assert("r1: {r1{b1 ≏ ≏ 🟢🚂1 }} <r1<t0>> [r1[b2 ≏ ≏ ]] [r1[b3 ≏ ≏ ]] <t1,r> [b4 ≏ ≏] {r1{b1 ≏ ≏ }}")
         XCTAssertEqual(p.train.state, .running)
 
+        p.interface.pause()
+
         // Train is now braking because not enough leading settled distance
-        try p.assert("r1: {b1 ≏ ≏ } <t0> [r1[b2 ≡ 🟡🚂1 ≏ ]] [r1[b3 ≏ ≏ ]] <r1<t1,r>> [r1[b4 ≏ ≏]] {b1 ≏ ≏ }")
+        // TODO: automatically disable draining when the interface is on pause?
+        try p.assert("r1: {b1 ≏ ≏ } <t0> [r1[b2 ≡ 🟡🚂1 ≏ ]] [r1[b3 ≏ ≏ ]] <r1<t1,r>> [r1[b4 ≏ ≏]] {b1 ≏ ≏ }", drainAll: false)
         XCTAssertEqual(p.train.state, .braking)
 
-//        delayedExecutor.resume()
-        p.layoutController.runControllers(.turnoutChanged)
+        p.interface.resume()
+        p.layoutController.drainAllEvents()
 
         // And the train will restart because the leading turnouts are settled
         XCTAssertEqual(p.train.state, .running)

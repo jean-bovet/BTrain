@@ -283,7 +283,7 @@ final class TurnoutShape: Shape, DraggableShape, ConnectableShape {
             ctx.addPath(activePath(for: turnout.actualState))
             ctx.drawPath(using: .stroke)
 
-            if turnout.requestedState != turnout.actualState {
+            if !turnout.settled {
                 ctx.setLineDash(phase: 0, lengths: [2, 2])
 
                 ctx.setStrokeColor(shapeContext.pathColor(reserved != nil, train: turnout.train != nil))
