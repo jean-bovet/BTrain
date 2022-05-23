@@ -12,19 +12,20 @@
 
 import Foundation
 
+// TODO: refactor with dedicate class for turnout and direction? Or not?
 final class LayoutCommandExecutor {
-    
+        
     weak var layout: Layout?
     weak var interface: CommandInterface?
     
     // Queue to ensure that sending of command for each turnout does happen
     // every 250ms in order to avoid a spike in current on the real layout.
     // TODO: expose that as a settings
-    static let turnoutDelay = 0.250
+    static let turnoutDelay = 0.250 * BaseTimeFactor
     let turnoutQueue = ScheduledMessageQueue(delay: turnoutDelay, name: "Turnout")
     
     // Time until the turnout state power is turned off.
-    let activationTime: TimeInterval = 0.2
+    let activationTime: TimeInterval = 0.2 * BaseTimeFactor
         
     init(layout: Layout, interface: CommandInterface) {
         self.layout = layout

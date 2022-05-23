@@ -62,7 +62,7 @@ final class TrainSpeedManager {
         self.interface = interface
         self.speedChangeTimer = SpeedChangeTimer(train: train)
         
-        interface.register(forSpeedChange: { [weak self] address, decoder, value in
+        interface.register(forSpeedChange: { address, decoder, value in
             if train.address.actualAddress(for: train.decoder) == address.actualAddress(for: decoder) {
                 // TODO: only do that if this is not an acknowledgement
                 train.speed.actualSteps = interface.speedSteps(for: value, decoder: train.decoder)

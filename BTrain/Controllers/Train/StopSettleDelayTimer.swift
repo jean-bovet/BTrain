@@ -34,7 +34,7 @@ extension TrainSpeedManager {
             block = { completed in
                 completion(completed)
             }
-            timer = Timer.scheduledTimer(withTimeInterval: train.speed.stopSettleDelay, repeats: false) { timer in
+            timer = Timer.scheduledTimer(withTimeInterval: train.speed.stopSettleDelay * BaseTimeFactor, repeats: false) { timer in
                 self.block?(completed)
                 self.block = nil
                 self.timer = nil

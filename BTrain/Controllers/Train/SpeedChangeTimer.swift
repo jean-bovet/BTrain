@@ -83,7 +83,7 @@ extension TrainSpeedManager {
         private func scheduleRecurringTimer(stepDelay: TimeInterval, tf: TrainSpeedAcceleration, delta: Int) {
             currentTime = stepDelay
             
-            timer = Timer.scheduledTimer(withTimeInterval: stepDelay, repeats: true, block: { [weak self] timer in
+            timer = Timer.scheduledTimer(withTimeInterval: stepDelay * BaseTimeFactor, repeats: true, block: { [weak self] timer in
                 guard let sSelf = self else {
                     return
                 }

@@ -153,7 +153,7 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
     
     func scheduleTimer() {
         self.timer?.invalidate()
-        self.timer = Timer.scheduledTimer(withTimeInterval: refreshTimeInterval, repeats: true) { [weak self] timer in
+        self.timer = Timer.scheduledTimer(withTimeInterval: refreshTimeInterval * BaseTimeFactor, repeats: true) { [weak self] timer in
             self?.simulateLayout()
         }
     }
@@ -373,7 +373,7 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
 
     func triggerFeedback(feedback: Feedback) {
         setFeedback(feedback: feedback, value: 1)
-        Timer.scheduledTimer(withTimeInterval: 0.25, repeats: false) { timer in
+        Timer.scheduledTimer(withTimeInterval: 0.25 * BaseTimeFactor, repeats: false) { timer in
             self.setFeedback(feedback: feedback, value: 0)
         }
     }

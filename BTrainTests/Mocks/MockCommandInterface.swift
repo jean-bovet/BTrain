@@ -64,23 +64,23 @@ final class MockCommandInterface: CommandInterface {
 
         // Then we can trigger the callbacks for any acknowledgement from the Digital Controller
         switch command {
-        case .go(let priority, let descriptor):
-            break
-        case .stop(let priority, let descriptor):
-            break
-        case .emergencyStop(let address, let decoderType, let priority, let descriptor):
-            break
-        case .speed(let address, let decoderType, let value, let priority, let descriptor):
+//        case .go(let priority, let descriptor):
+//            break
+//        case .stop(let priority, let descriptor):
+//            break
+//        case .emergencyStop(let address, let decoderType, let priority, let descriptor):
+//            break
+        case .speed(let address, let decoderType, let value, _, _):
             speedValues.append(value.value)
             for speedChangeCallback in speedChangeCallbacks {
                 speedChangeCallback(address, decoderType, value)
             }
             
-        case .direction(let address, let decoderType, let direction, let priority, let descriptor):
-            break
-        case .queryDirection(let address, let decoderType, let priority, let descriptor):
-            break
-        case .turnout(let address, let state, let power, let priority, let descriptor):
+//        case .direction(let address, let decoderType, let direction, let priority, let descriptor):
+//            break
+//        case .queryDirection(let address, let decoderType, let priority, let descriptor):
+//            break
+        case .turnout(let address, let state, let power, _, _):
             if power == 1 {
                 turnoutCommands.append(command)
             }
@@ -88,11 +88,13 @@ final class MockCommandInterface: CommandInterface {
                 turnoutChangeCallback(address, state, power, true)
             }
             break
-        case .feedback(let deviceID, let contactID, let oldValue, let newValue, let time, let priority, let descriptor):
-            break
-        case .locomotives(let priority, let descriptor):
-            break
-        case .unknown(let command, let priority, let descriptor):
+//        case .feedback(let deviceID, let contactID, let oldValue, let newValue, let time, let priority, let descriptor):
+//            break
+//        case .locomotives(let priority, let descriptor):
+//            break
+//        case .unknown(let command, let priority, let descriptor):
+//            break
+        default:
             break
         }
     }

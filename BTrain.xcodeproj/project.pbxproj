@@ -228,6 +228,7 @@
 		A798BB4A27ABAB6F000BB4D1 /* RouteResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = A798BB4927ABAB6F000BB4D1 /* RouteResolver.swift */; };
 		A798BB4C27ACD8E8000BB4D1 /* RouteResolverTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A798BB4B27ACD8E8000BB4D1 /* RouteResolverTests.swift */; };
 		A798BB4E27AF4478000BB4D1 /* Turnout+Reservation.swift in Sources */ = {isa = PBXBuildFile; fileRef = A798BB4D27AF4477000BB4D1 /* Turnout+Reservation.swift */; };
+		A79D43DC283B15BF0068C969 /* LayoutController+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A79D43DB283B15BF0068C969 /* LayoutController+Extension.swift */; };
 		A7ACCE9F2810E5BA006F4310 /* TrainHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7ACCE9E2810E5BA006F4310 /* TrainHandler.swift */; };
 		A7B06AE12727786500BDD88C /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7B06AE02727786500BDD88C /* MainView.swift */; };
 		A7B06AF2272782C300BDD88C /* LayoutDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7B06AF1272782C300BDD88C /* LayoutDocument.swift */; };
@@ -522,6 +523,7 @@
 		A798BB4927ABAB6F000BB4D1 /* RouteResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteResolver.swift; sourceTree = "<group>"; };
 		A798BB4B27ACD8E8000BB4D1 /* RouteResolverTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteResolverTests.swift; sourceTree = "<group>"; };
 		A798BB4D27AF4477000BB4D1 /* Turnout+Reservation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Turnout+Reservation.swift"; sourceTree = "<group>"; };
+		A79D43DB283B15BF0068C969 /* LayoutController+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LayoutController+Extension.swift"; sourceTree = "<group>"; };
 		A7ACCE9E2810E5BA006F4310 /* TrainHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainHandler.swift; sourceTree = "<group>"; };
 		A7B06AE02727786500BDD88C /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
 		A7B06AED2727819800BDD88C /* Server.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Server.swift; sourceTree = "<group>"; };
@@ -1035,6 +1037,7 @@
 				A7CA5ECB2797D1EB00171398 /* Layout+Extension.swift */,
 				A714CD7C2802939E0020486D /* Turnout+Extension.swift */,
 				A74F38062818C4410013FD23 /* Route+Extension.swift */,
+				A79D43DB283B15BF0068C969 /* LayoutController+Extension.swift */,
 				A763F18E27BE01C300B3499A /* XCTestCase+Extension.swift */,
 				A7C5E95A280E04DE00A5DB12 /* XCTestCase+Simulator.swift */,
 				A7DB7D5A27CBF378000893BA /* SpeedSlider+Extension.swift */,
@@ -1754,6 +1757,7 @@
 				A783EAA12787D12200E69B6D /* BTTestCase.swift in Sources */,
 				A792DEFF278508B0004B0439 /* LayoutCreatorTests.swift in Sources */,
 				A74F38072818C4410013FD23 /* Route+Extension.swift in Sources */,
+				A79D43DC283B15BF0068C969 /* LayoutController+Extension.swift in Sources */,
 				A7DB7D4A27C29B32000893BA /* TrainInertiaTests.swift in Sources */,
 				A73E0801276A8DA9005F9D64 /* BlockViewTests.swift in Sources */,
 				A7CA5EBD2795339000171398 /* AutomaticRoutingTests.swift in Sources */,

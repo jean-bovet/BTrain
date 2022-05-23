@@ -12,9 +12,27 @@
 
 import Foundation
 
-typealias CompletionBlock = (() -> Void)
-typealias CompletionCancelBlock = ((_ completed: Bool) -> Void)
+@testable import BTrain
 
-/// Global time factor scale used by unit tests to speed up the time it takes for turnouts and speed changes to happen.
-/// Note: any timer or time-scheduling code should use this factor.
-var BaseTimeFactor = 1.0
+extension LayoutController {
+    
+    func drainAllEvents() {
+        var drain = true
+        while drain {
+            runControllers(drain: drain)
+            drain = false
+            for train in layout.trains {
+                if train.speed.requestedSteps != train.speed.actualSteps {
+                    drain = true
+                }
+                if train.leading.emptyOrSettled || train.leading.reservedAndSettled {
+                    
+                } else {
+                    drain = true
+                }
+            }
+            RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.001))
+        }
+    }
+
+}
