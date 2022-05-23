@@ -380,7 +380,6 @@ class FixedRoutingTests: BTTestCase {
         try p.prepare(routeID: "r2", trainID: "2", fromBlockId: "b1")
 
         try layout.remove(trainID: layout.trains.first!.id)
-        try layout.prepare(routeID: "r2", trainID: "2")
 
         try p.assert("r2: {r2{b1 🔴🚂2 ≡ ≏ }} <t0(0,2)> ![b3 ≏ ≏ ] <t1(2,0)> ![b2 ≏ ≏ ] <t0(1,0)> !{r2{b1 ≏ ≡ 🔴🚂2 }}")
         try p.assert("r2: {r2{b1 🔴🚂2 ≏ ≏ }} <t0(0,2)> ![b3 ≏ ≏ ] <t1(2,0)> ![b2 ≏ ≏ ] <t0(1,0)> !{r2{b1 ≏ ≏ 🔴🚂2 }}")

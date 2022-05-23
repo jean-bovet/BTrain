@@ -57,9 +57,7 @@ enum LayoutError: Error {
     case routeNotFound(routeId: Identifier<Route>)
     case noPossibleRoute(train: Train)
     case routeIsNotAutomatic(route: Route)
-    
-    case noSteps(routeId: Identifier<Route>)
-    
+        
     case destinationBlockMismatch(currentBlock: Block, destination: Destination)
     
     case missingDirection(step: RouteStep)
@@ -142,8 +140,6 @@ extension LayoutError: LocalizedError {
         case .routeIsNotAutomatic(route: let route):
             return "The route \(route.name) is not automatic"
 
-        case .noSteps(routeId: let routeId):
-            return "No steps defined in route \(routeId)"
         case .alwaysOneAndOnlyOneTransition:
             return "There must always be only one and only one transition"
             

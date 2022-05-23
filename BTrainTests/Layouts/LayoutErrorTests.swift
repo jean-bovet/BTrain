@@ -155,20 +155,11 @@ class LayoutErrorTests: XCTestCase {
     
     func testRouteNotFound() {
         do {
-            try layout.prepare(routeID: Identifier<Route>(uuid: "foo"), trainID: train0.id)
+            let doc = LayoutDocument(layout: layout)
+            try doc.start(train: train0.id, withRoute: Identifier<Route>(uuid: "foo"), destination: nil)
             XCTFail("Must throw an exception")
         } catch {
             XCTAssertEqual(error.localizedDescription, "Route foo not found")
-        }
-    }
-
-    func testNoStepsInRoute() {
-        do {
-            layout.routes[0].steps.removeAll()
-            try layout.prepare(routeID:layout.routes[0].id, trainID: train0.id)
-            XCTFail("Must throw an exception")
-        } catch {
-            XCTAssertEqual(error.localizedDescription, "No steps defined in route 0")
         }
     }
 

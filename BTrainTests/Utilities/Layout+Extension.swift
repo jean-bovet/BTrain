@@ -22,33 +22,6 @@ extension Layout {
         }))
     }
     
-    func prepare(routeID: String, trainID: String) throws {
-        try prepare(routeID: Identifier<Route>(uuid: routeID),
-                    trainID: Identifier<Train>(uuid: trainID))
-    }
-
-    func prepare(routeID: Identifier<Route>, trainID: Identifier<Train>, toBlockId: Identifier<Block>? = nil, startAtEndOfBlock: Bool = false) throws {
-        guard let route = route(for: routeID, trainId: trainID) else {
-            throw LayoutError.routeNotFound(routeId: routeID)
-        }
-
-        guard let train = train(for: trainID) else {
-            throw LayoutError.trainNotFound(trainId: trainID)
-        }
-
-        guard let firstStep = route.steps.first else {
-            throw LayoutError.noSteps(routeId: routeID)
-        }
-
-        if let block = block(for: firstStep.stepBlockId) {
-            try setTrainToBlock(train.id, block.id, position: startAtEndOfBlock ? .end : .start, direction: .next)
-
-            train.routeId = route.id
-            train.routeStepIndex = 0
-            train.speed.requestedKph = 0
-        }
-    }
-
     func block(_ uuid: String) -> Block {
         return block(for: Identifier<Block>(uuid: uuid))!
     }

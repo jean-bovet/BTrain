@@ -16,12 +16,6 @@ import XCTest
 
 extension XCTestCase {
 
-    func waitForLeadingReservedAndSettled(train: Train) {
-        wait(for: {
-            train.leading.reservedAndSettled
-        }, timeout: estimatedSettlingTime(for: train))
-    }
-    
     /// Returns the estimated time it will take to settle all the turnouts of the specified train.
     ///
     /// The time depends on the number of turnouts and the number of commands for each turnout
