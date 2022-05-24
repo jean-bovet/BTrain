@@ -249,6 +249,7 @@ final class Train: Element, ObservableObject {
         if let blockId = blockId {
             text += ", \(blockId)"
         }
+        text += ", \(directionForward ? "f" : "b")"
         text += ", \(speed.requestedKph)kph"
         text += ", \(speed.actualKph)kph"
         text += ")"

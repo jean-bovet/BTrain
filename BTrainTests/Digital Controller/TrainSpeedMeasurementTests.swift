@@ -75,8 +75,13 @@ class TrainSpeedMeasurementTests: XCTestCase {
         }
 
         let train = layout.trains[0]
-        train.blockId = layout.blocks[0].id
-        layout.blocks[0].train = .init(train.id, .next)
+        let ol1 = layout.block(named: "OL1")
+        train.blockId = ol1.id
+        ol1.train = .init(train.id, .next)
+
+        // Ensure the turnouts are properly set
+        layout.turnout(named: "E.1").setState(.straight)
+        layout.turnout(named: "D.1").setState(.straight)
 
         let fa = layout.feedback(for: Identifier<Feedback>(uuid: "OL1.2"))!
         let fb = layout.feedback(for: Identifier<Feedback>(uuid: "OL2.1"))!
@@ -120,15 +125,16 @@ class TrainSpeedMeasurementTests: XCTestCase {
         
         wait(for: [trainStartedExpectation], timeout: 5.0)
 
-        doc.simulator.triggerFeedback(feedback: fa)
+        doc.simulator.setFeedback(feedback: fa, value: 1)
 
         wait(for: [feedbackAExpectation], timeout: 5.0)
 
-        doc.simulator.triggerFeedback(feedback: fb)
+        doc.simulator.setFeedback(feedback: fa, value: 0)
+        doc.simulator.setFeedback(feedback: fb, value: 1)
 
         wait(for: [feedbackBExpectation], timeout: 5.0)
 
-        wait(for: 0.2)
+        doc.simulator.setFeedback(feedback: fb, value: 0)
 
         doc.simulator.triggerFeedback(feedback: fc)
 
@@ -153,6 +159,7 @@ class TrainSpeedMeasurementTests: XCTestCase {
             }, timeout: 2.0)
         }
         
+        // TODO: use the same method as defined elsewhere
         func wait(for block: () -> Bool, timeout: TimeInterval) {
             let current = RunLoop.current
             let startTime = Date()
@@ -177,8 +184,13 @@ class TrainSpeedMeasurementTests: XCTestCase {
         }
 
         let train = layout.trains[0]
-        train.blockId = layout.blocks[0].id
-        layout.blocks[0].train = .init(train.id, .next)
+        let ol1 = layout.block(named: "OL1")
+        train.blockId = ol1.id
+        ol1.train = .init(train.id, .next)
+
+        // Ensure the turnouts are properly set
+        layout.turnout(named: "E.1").setState(.straight)
+        layout.turnout(named: "D.1").setState(.straight)
 
         let fa = layout.feedback(for: Identifier<Feedback>(uuid: "OL1.2"))!
         let fb = layout.feedback(for: Identifier<Feedback>(uuid: "OL2.1"))!
@@ -215,36 +227,42 @@ class TrainSpeedMeasurementTests: XCTestCase {
         
         infoStepAsserter.assert(step: .trainStarted)
                 
-        doc.simulator.triggerFeedback(feedback: fa)
+        doc.simulator.setFeedback(feedback: fa, value: 1)
 
         infoStepAsserter.assert(step: .feedbackA)
 
-        doc.simulator.triggerFeedback(feedback: fb)
+        doc.simulator.setFeedback(feedback: fa, value: 0)
+        doc.simulator.setFeedback(feedback: fb, value: 1)
 
         infoStepAsserter.assert(step: .feedbackB)
 
-        wait(for: 0.2)
-
-        doc.simulator.triggerFeedback(feedback: fc)
+        doc.simulator.setFeedback(feedback: fb, value: 0)
+        doc.simulator.setFeedback(feedback: fc, value: 1)
 
         infoStepAsserter.assert(step: .feedbackC)
+        
+        doc.simulator.setFeedback(feedback: fc, value: 0)
+
         infoStepAsserter.assert(step: .trainStopped)
         infoStepAsserter.assert(step: .trainDirectionToggle)
         infoStepAsserter.assert(step: .trainStarted)
 
-        doc.simulator.triggerFeedback(feedback: fc)
+        doc.simulator.setFeedback(feedback: fc, value: 1)
 
         infoStepAsserter.assert(step: .feedbackC)
 
-        doc.simulator.triggerFeedback(feedback: fb)
+        doc.simulator.setFeedback(feedback: fc, value: 0)
+        doc.simulator.setFeedback(feedback: fb, value: 1)
 
         infoStepAsserter.assert(step: .feedbackB)
 
-        wait(for: 0.2)
+        doc.simulator.setFeedback(feedback: fb, value: 0)
+        doc.simulator.setFeedback(feedback: fa, value: 1)
 
-        doc.simulator.triggerFeedback(feedback: fa)
-        
         infoStepAsserter.assert(step: .feedbackA)
+        
+        doc.simulator.setFeedback(feedback: fa, value: 0)
+
         infoStepAsserter.assert(step: .trainDirectionToggle)
         infoStepAsserter.assert(step: .done)
 
