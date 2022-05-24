@@ -425,7 +425,7 @@ extension LayoutController {
         }
     }
             
-    func setTrainSpeed(_ train: Train, _ speed: TrainSpeed.UnitKph, speedLimit: Bool = true, acceleration: TrainSpeedAcceleration.Acceleration? = nil, completion: CompletionCancelBlock? = nil) {
+    func setTrainSpeed(_ train: Train, _ speed: TrainSpeed.UnitKph, speedLimit: Bool = true, force: Bool = false, acceleration: TrainSpeedAcceleration.Acceleration? = nil, completion: CompletionCancelBlock? = nil) {
         let previouslyRequestedKph = train.speed.requestedKph
         if speedLimit {
             let route = layout.route(for: train.routeId, trainId: train.id)
@@ -433,7 +433,7 @@ extension LayoutController {
         } else {
             train.speed.requestedKph = speed
         }
-        if previouslyRequestedKph != train.speed.requestedKph {
+        if previouslyRequestedKph != train.speed.requestedKph || force {
             setTrainSpeed(train, train.speed.requestedSteps, acceleration: acceleration, completion: completion)
         }
     }
