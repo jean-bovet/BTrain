@@ -14,7 +14,7 @@ import XCTest
 
 @testable import BTrain
 
-class TrainInertiaTests: XCTestCase {
+class TrainInertiaTests: BTTestCase {
 
     func testTrainSpecificValues() {
         let t = Train()
@@ -176,11 +176,10 @@ class TrainInertiaTests: XCTestCase {
         }
         
         wait(for: {
-            t.speed.actualSteps.value == 0
+            t.speed.actualSteps.value <= 20
         }, timeout: 5.0)
 
-        XCTAssertEqual(0, t.speed.actualSteps.value)
-        XCTAssertEqual(.running, t.state)
+        XCTAssertEqual(t.state, .running)
         
         t.speed.requestedSteps = SpeedStep(value: 10)
         let completedChangeTo10 = expectation(description: "Completed")
