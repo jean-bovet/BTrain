@@ -15,7 +15,7 @@ import XCTest
 
 extension XCTestCase {
     
-    func connectToSimulator(doc: LayoutDocument, enable: Bool = true, _ completion: CompletionBlock) {
+    func connectToSimulator(doc: LayoutDocument, enable: Bool = true) {
         let c = expectation(description: "connect")
         doc.simulator.turnoutSpeed = 0
         doc.connectToSimulator(enable: false) { error in
@@ -32,8 +32,6 @@ extension XCTestCase {
             
             waitForExpectations(timeout: 0.5, handler: nil)
         }
-        
-        completion()
     }
 
     func disconnectFromSimulator(doc: LayoutDocument, disable: Bool = true) {

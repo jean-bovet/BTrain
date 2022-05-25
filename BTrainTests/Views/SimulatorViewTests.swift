@@ -32,7 +32,7 @@ class SimulatorViewTests: RootViewTests {
         XCTAssertTrue(t1.directionForward)
         XCTAssertEqual(t1.speed.requestedKph, 0)
             
-        connectToSimulator(doc: doc) { }
+        connectToSimulator(doc: doc)
         defer {
             disconnectFromSimulator(doc: doc)
         }

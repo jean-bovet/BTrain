@@ -53,7 +53,7 @@ class LayoutDocumentTests: XCTestCase {
         let layout = LayoutLoop1().newLayout()
         let doc = LayoutDocument(layout: layout)
 
-        connectToSimulator(doc: doc) { }
+        connectToSimulator(doc: doc)
         
         defer {
             disconnectFromSimulator(doc: doc)
@@ -82,7 +82,7 @@ class LayoutDocumentTests: XCTestCase {
         let doc = LayoutDocument(layout: LayoutLoop1().newLayout())
         let t = LayoutOnConnectTasks(layout: doc.layout, layoutController: doc.layoutController, interface: doc.interface)
         
-        connectToSimulator(doc: doc) { }
+        connectToSimulator(doc: doc)
         defer {
             disconnectFromSimulator(doc: doc)
         }

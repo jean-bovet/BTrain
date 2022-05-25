@@ -26,7 +26,7 @@ protocol CommandInterface: AnyObject, MetricsProvider {
     ///
     /// - Parameters:
     ///   - command: the command to execute
-    ///   - completion: a completion block called when the Digital Controller has acknowledged the command
+    ///   - completion: a completion block called when the Digital Controller has acknowledged the command. The completion block should always be called in the main thread.
     func execute(command: Command, completion: CompletionBlock?)
     
     // Returns the speed value given the number of steps and the decoder type

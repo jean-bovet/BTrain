@@ -19,7 +19,7 @@ class MarklinSimulatorTests: XCTestCase {
     func testFeedbackCommand() {
         let doc = LayoutDocument(layout: Layout())
         
-        connectToSimulator(doc: doc) { }
+        connectToSimulator(doc: doc)
         defer {
             disconnectFromSimulator(doc: doc)
         }
@@ -42,7 +42,7 @@ class MarklinSimulatorTests: XCTestCase {
         train.blockId = doc.layout.blockIds.first
         XCTAssertTrue(train.directionForward)
         
-        connectToSimulator(doc: doc) { }
+        connectToSimulator(doc: doc)
         defer {
             disconnectFromSimulator(doc: doc)
         }
@@ -63,7 +63,7 @@ class MarklinSimulatorTests: XCTestCase {
     func testTurnoutChange() {
         let doc = LayoutDocument(layout: Layout())
         
-        connectToSimulator(doc: doc) { }
+        connectToSimulator(doc: doc)
         defer {
             disconnectFromSimulator(doc: doc)
         }
@@ -85,7 +85,7 @@ class MarklinSimulatorTests: XCTestCase {
         train.blockId = doc.layout.blockIds.first
         train.speed.actualKph = 70
         
-        connectToSimulator(doc: doc) { }
+        connectToSimulator(doc: doc)
         defer {
             disconnectFromSimulator(doc: doc)
         }

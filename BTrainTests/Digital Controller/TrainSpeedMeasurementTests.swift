@@ -19,7 +19,7 @@ class TrainSpeedMeasurementTests: BTTestCase {
         let layout = LayoutComplex().newLayout()
         let doc = LayoutDocument(layout: layout)
         
-        connectToSimulator(doc: doc) { }
+        connectToSimulator(doc: doc)
         defer {
             disconnectFromSimulator(doc: doc)
         }
@@ -71,7 +71,7 @@ class TrainSpeedMeasurementTests: BTTestCase {
         
         let doc = LayoutDocument(layout: layout)
         
-        connectToSimulator(doc: doc) { }
+        connectToSimulator(doc: doc)
         defer {
             disconnectFromSimulator(doc: doc)
         }
@@ -180,7 +180,7 @@ class TrainSpeedMeasurementTests: BTTestCase {
         let layout = LayoutComplex().newLayout()
         let doc = LayoutDocument(layout: layout)
         
-        connectToSimulator(doc: doc) { }
+        connectToSimulator(doc: doc)
         defer {
             disconnectFromSimulator(doc: doc)
         }

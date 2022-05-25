@@ -20,7 +20,7 @@ class CommandInterfaceTests: XCTestCase {
         let doc = LayoutDocument(layout: Layout())
         XCTAssertFalse(doc.simulator.enabled)
         
-        connectToSimulator(doc: doc, enable: false) { }
+        connectToSimulator(doc: doc, enable: false)
         defer {
             disconnectFromSimulator(doc: doc, disable: false)
         }
@@ -53,7 +53,7 @@ class CommandInterfaceTests: XCTestCase {
     func testSpeedCommand() {
         let doc = LayoutDocument(layout: Layout())
         
-        connectToSimulator(doc: doc) { }
+        connectToSimulator(doc: doc)
         defer {
             disconnectFromSimulator(doc: doc)
         }
@@ -75,7 +75,7 @@ class CommandInterfaceTests: XCTestCase {
     func testDirectionCommand() {
         let doc = LayoutDocument(layout: Layout())
         
-        connectToSimulator(doc: doc) { }
+        connectToSimulator(doc: doc)
         defer {
             disconnectFromSimulator(doc: doc)
         }
@@ -101,7 +101,7 @@ class CommandInterfaceTests: XCTestCase {
         let train = doc.layout.trains[0]
         train.blockId = doc.layout.blockIds.first
 
-        connectToSimulator(doc: doc) { }
+        connectToSimulator(doc: doc)
         defer {
             disconnectFromSimulator(doc: doc)
         }
@@ -117,7 +117,7 @@ class CommandInterfaceTests: XCTestCase {
     func testTurnoutCommand() {
         let doc = LayoutDocument(layout: Layout())
         
-        connectToSimulator(doc: doc) { }
+        connectToSimulator(doc: doc)
         defer {
             disconnectFromSimulator(doc: doc)
         }
@@ -139,12 +139,12 @@ class CommandInterfaceTests: XCTestCase {
         let doc = LayoutDocument(layout: Layout())
         
         let completionExpectation = XCTestExpectation()
-        connectToSimulator(doc: doc) {
-            doc.layoutController.discoverLocomotives(merge: false) {
-                completionExpectation.fulfill()
-            }
+        connectToSimulator(doc: doc)
+
+        doc.layoutController.discoverLocomotives(merge: false) {
+            completionExpectation.fulfill()
         }
-        
+
         wait(for: [completionExpectation], timeout: 1)
 
         defer {
@@ -161,7 +161,7 @@ class CommandInterfaceTests: XCTestCase {
     func testCallbackOrdering() {
         let doc = LayoutDocument(layout: Layout())
         
-        connectToSimulator(doc: doc) { }
+        connectToSimulator(doc: doc)
         defer {
             disconnectFromSimulator(doc: doc)
         }

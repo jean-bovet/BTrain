@@ -293,8 +293,8 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
         // Remember this direction in the simulator train itself
         train.directionForward = directionForward
         
-        // Note: directionForward is actually ignored because the message sent by the Digital Control System is `emergencyStop`
-        // and apparently the client must request the locomotive direction explicitely.
+        // Note: directionForward is actually ignored because the message sent by the Central Station is `emergencyStop`
+        // and the client must request the locomotive direction explicitely.
         let message = MarklinCANMessageFactory.emergencyStop(addr: train.train.actualAddress)
         send(message)
     }

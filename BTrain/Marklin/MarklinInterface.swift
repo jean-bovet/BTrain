@@ -176,7 +176,11 @@ final class MarklinInterface: CommandInterface {
             // Ignore query direction command from the Central Station as we don't have anything to do with it.
             break
             
-        case .queryDirectionResponse(address: let address, decoderType: _, direction: _, priority: _, descriptor: _):
+        case .queryDirectionResponse(address: let address, decoderType: let decoderType, direction: let direction, priority: _, descriptor: _):
+            if msg.isAck {
+                directionChangeCallbacks.forEach { $0(address, decoderType, direction) }
+            }
+
             // This command is sent back from the Central Station after a .queryDirection() command
             // has been sent. We need to remove the byte5 that holds the direction parameter in order
             // to correctly invoke the completion block.
