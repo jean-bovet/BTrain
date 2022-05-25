@@ -43,9 +43,6 @@ struct MarklinCANMessagePrinter {
         case .queryDirection(address: _, decoderType: _, priority: _, descriptor: let descriptor):
             return descriptor?.description
 
-        case .queryDirectionResponse(address: _, decoderType: _, direction: _, priority: _, descriptor: let descriptor):
-            return descriptor?.description
-
         case .turnout(address: _, state: _, power: _, priority: _, descriptor: let descriptor):
             return descriptor?.description
 
@@ -60,6 +57,9 @@ struct MarklinCANMessagePrinter {
             switch(mc) {
             case .configDataStream(length: _, data: _, descriptor: let descriptor):
                 return descriptor?.description
+            case .queryDirectionResponse(address: _, decoderType: _, direction: _, descriptor: let descriptor):
+                return descriptor?.description
+
             case .none:
                 if SettingsKeys.bool(forKey: SettingsKeys.logUnknownMessages) {
                     return descriptor?.description

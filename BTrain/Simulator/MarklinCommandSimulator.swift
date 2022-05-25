@@ -198,9 +198,6 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
                 self?.provideDirection(address: address.actualAddress(for: decoderType))
                 break
 
-            case .queryDirectionResponse(address: _, decoderType: _, direction: _, priority: _, descriptor: _):
-                break
-
             case .unknown(command: _):
                 break
             }

@@ -66,13 +66,11 @@ final class TrainSpeedManager {
         self.speedChangeTimer = SpeedChangeTimer(train: train)
         
         interface.register(forSpeedChange: { address, decoder, value in
-            DispatchQueue.main.async {
-                if train.address.actualAddress(for: train.decoder) == address.actualAddress(for: decoder) {
-                    // TODO: only do that if this is not an acknowledgement
-                    train.speed.actualSteps = interface.speedSteps(for: value, decoder: train.decoder)
-                    BTLogger.router.debug("\(train, privacy: .public): actual speed is \(train.speed.actualKph) kph (\(train.speed.actualSteps))")
-                    speedChanged?()
-                }
+            if train.address.actualAddress(for: train.decoder) == address.actualAddress(for: decoder) {
+                // TODO: only do that if this is not an acknowledgement
+                train.speed.actualSteps = interface.speedSteps(for: value, decoder: train.decoder)
+                BTLogger.router.debug("\(train, privacy: .public): actual speed is \(train.speed.actualKph) kph (\(train.speed.actualSteps))")
+                speedChanged?()
             }
         })
     }

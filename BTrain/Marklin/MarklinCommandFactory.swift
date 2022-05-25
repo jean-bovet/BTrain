@@ -43,6 +43,26 @@ extension MarklinCommand {
                 return .configDataStream(length: nil, data: data, descriptor: descriptor)
             }
         }
+        if cmd == 0x05 && message.dlc == 4 && message.resp == 1 {
+            let address: UInt32 = UInt32(message.byte0) << 24 | UInt32(message.byte1) << 16 | UInt32(message.byte2) << 8 | UInt32(message.byte3) << 0
+            // Response to a query direction
+            switch(message.byte4) {
+            case 0: // no change
+                return .queryDirectionResponse(address: address, decoderType: nil, direction: .unknown,
+                                               descriptor: CommandDescriptor(data: message.data, description: "\(cmd.toHex()) no change for \(address.toHex()) - query direction response"))
+                
+            case 1: // forward
+                return .queryDirectionResponse(address: address, decoderType: nil, direction: .forward,
+                                               descriptor: CommandDescriptor(data: message.data, description: "\(cmd.toHex()) forward for \(address.toHex()) - query direction response"))
+            case 2: // backward
+                return .queryDirectionResponse(address: address, decoderType: nil, direction: .backward,
+                                               descriptor: CommandDescriptor(data: message.data, description: "\(cmd.toHex()) backward for \(address.toHex()) - query direction response"))
+            case 3: // toggle
+                break
+            default: // unknown
+                break
+            }
+        }
         return nil
     }
     
@@ -72,25 +92,7 @@ extension Command {
         if cmd == 0x05 {
             let address: UInt32 = UInt32(message.byte0) << 24 | UInt32(message.byte1) << 16 | UInt32(message.byte2) << 8 | UInt32(message.byte3) << 0
             if message.dlc == 4 {
-                if message.resp == 1 {
-                    // Response to a query direction
-                    switch(message.byte4) {
-                    case 0: // no change
-                        return .queryDirectionResponse(address: address, decoderType: nil, direction: .unknown,
-                                                       descriptor: CommandDescriptor(data: message.data, description: "\(cmd.toHex()) no change for \(address.toHex()) - \(ack)"))
-
-                    case 1: // forward
-                        return .queryDirectionResponse(address: address, decoderType: nil, direction: .forward,
-                                                       descriptor: CommandDescriptor(data: message.data, description: "\(cmd.toHex()) forward for \(address.toHex()) - \(ack)"))
-                    case 2: // backward
-                        return .queryDirectionResponse(address: address, decoderType: nil, direction: .backward,
-                                                       descriptor: CommandDescriptor(data: message.data, description: "\(cmd.toHex()) backward for \(address.toHex()) - \(ack)"))
-                    case 3: // toggle
-                        break
-                    default: // unknown
-                        break
-                    }
-                } else {
+                if message.resp == 0 {
                     // Query of direction.
                     return .queryDirection(address: address, decoderType: nil,
                                            descriptor: CommandDescriptor(data: message.data, description: "\(cmd.toHex()) query direction for \(address.toHex()) - \(ack)"))
@@ -168,9 +170,6 @@ extension MarklinCANMessage {
         case .queryDirection(address: let address, decoderType: let decoderType, priority: let priority, descriptor: _):
             return (MarklinCANMessageFactory.queryDirection(addr: address.actualAddress(for: decoderType)), priority)
             
-        case .queryDirectionResponse(address: let address, decoderType: let decoderType, direction: let direction, priority: let priority, descriptor: _):
-            return (MarklinCANMessageFactory.queryDirectionResponse(addr: address.actualAddress(for: decoderType), direction: direction == .forward ? 1 : 2), priority)
-
         case .turnout(address: let address, state: let state, power: let power, priority: let priority, descriptor: _):
             return (MarklinCANMessageFactory.accessory(addr: address.actualAddress, state: state, power: power), priority)
             

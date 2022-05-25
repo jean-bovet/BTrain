@@ -46,7 +46,9 @@ final class MarklinInterface: CommandInterface {
         client?.start {
             onReady()
         } onData: { [weak self] msg in
-            self?.handleMessage(msg)
+            DispatchQueue.main.async {
+                self?.handleMessage(msg)
+            }
         } onError: { [weak self] error in
             self?.client = nil
             onError(error)
@@ -121,9 +123,7 @@ final class MarklinInterface: CommandInterface {
     
     private func triggerCompletionBlock(for rawMessage: MarklinCANMessageRaw) {
         if let completionBlock = completionBlocks[rawMessage] {
-            DispatchQueue.main.async {
-                completionBlock()
-            }
+            completionBlock()
             completionBlocks[rawMessage] = nil
         }
     }
@@ -135,11 +135,19 @@ final class MarklinInterface: CommandInterface {
             case .configDataStream(length: _, data: _, descriptor: _):
                 let status = locomotiveConfig.process(cmd)
                 if case .completed(let locomotives) = status {
-                    DispatchQueue.main.async {
-                        let locomotives = locomotives.map { $0.commandLocomotive }
-                        self.locomotivesQueryCallbacks.forEach { $0(locomotives) }
-                    }
+                    let locomotives = locomotives.map { $0.commandLocomotive }
+                    self.locomotivesQueryCallbacks.forEach { $0(locomotives) }
                 }
+            case .queryDirectionResponse(address: let address, decoderType: let decoderType, direction: let direction, descriptor: _):
+                if msg.isAck {
+                    directionChangeCallbacks.forEach { $0(address, decoderType, direction) }
+                }
+
+                // This command is sent back from the Central Station after a .queryDirection() command
+                // has been sent. We need to remove the byte5 that holds the direction parameter in order
+                // to correctly invoke the completion block.
+                let command = MarklinCANMessageFactory.queryDirection(addr: address)
+                triggerCompletionBlock(for: command.raw)
             }
             return
         }
@@ -155,10 +163,8 @@ final class MarklinInterface: CommandInterface {
 
         case .emergencyStop(let address, let decoderType, _, _):
             // Execute a command to query the direction of the locomotive at this particular address
-            DispatchQueue.main.async {
-                // The response from this command is going to be processed below in the case .direction
-                self.execute(command: .queryDirection(address: address, decoderType: decoderType))
-            }
+            // The response from this command is going to be processed below in the case .direction
+            execute(command: .queryDirection(address: address, decoderType: decoderType))
 
         case .speed(let address, let decoderType, let value, _, _):
             triggerCompletionBlock(for: msg)
@@ -176,17 +182,6 @@ final class MarklinInterface: CommandInterface {
             // Ignore query direction command from the Central Station as we don't have anything to do with it.
             break
             
-        case .queryDirectionResponse(address: let address, decoderType: let decoderType, direction: let direction, priority: _, descriptor: _):
-            if msg.isAck {
-                directionChangeCallbacks.forEach { $0(address, decoderType, direction) }
-            }
-
-            // This command is sent back from the Central Station after a .queryDirection() command
-            // has been sent. We need to remove the byte5 that holds the direction parameter in order
-            // to correctly invoke the completion block.
-            let command = MarklinCANMessageFactory.queryDirection(addr: address)
-            triggerCompletionBlock(for: command.raw)
-
         case .turnout(let address, let state, let power, _, _):
             triggerCompletionBlock(for: msg)
             turnoutChangeCallbacks.forEach { $0(address, state, power, msg.isAck) }

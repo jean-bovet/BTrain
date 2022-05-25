@@ -53,11 +53,13 @@ final class MockCommandInterface: CommandInterface {
             return
         }
         
-        for (command, completion) in pendingCommands {
-            executeImmediate(command: command, onCompletion: completion)
+        DispatchQueue.main.async {
+            for (command, completion) in self.pendingCommands {
+                self.executeImmediate(command: command, onCompletion: completion)
+            }
+            self.pendingCommands.removeAll()
+            self.executeImmediate(command: command, onCompletion: completion)
         }
-        pendingCommands.removeAll()
-        executeImmediate(command: command, onCompletion: completion)
     }
     
     private func executeImmediate(command: Command, onCompletion: CompletionBlock?) {

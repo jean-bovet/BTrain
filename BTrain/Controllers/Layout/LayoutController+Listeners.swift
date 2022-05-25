@@ -19,21 +19,17 @@ extension LayoutController {
             guard let sSelf = self else {
                 return
             }
-            DispatchQueue.main.async {
-                if let feedback = sSelf.layout.feedbacks.find(deviceID: deviceID, contactID: contactID) {
-                    feedback.detected = value == 1
-                    BTLogger.debug("Feedback \(feedback) changed to \(feedback.detected)")
-                    sSelf.runControllers(.feedbackTriggered)
-                }
+            if let feedback = sSelf.layout.feedbacks.find(deviceID: deviceID, contactID: contactID) {
+                feedback.detected = value == 1
+                BTLogger.debug("Feedback \(feedback) changed to \(feedback.detected)")
+                sSelf.runControllers(.feedbackTriggered)
             }
         })
     }
                 
     func registerForDirectionChange() {
         interface.register(forDirectionChange: { [weak self] address, decoder, direction in
-            DispatchQueue.main.async {
-                self?.directionDidChange(address: address, decoder: decoder, direction: direction)
-            }
+            self?.directionDidChange(address: address, decoder: decoder, direction: direction)
         })
     }
     
@@ -79,22 +75,20 @@ extension LayoutController {
                 return
             }
             
-            DispatchQueue.main.async {
-                if let turnout = layout.turnouts.find(address: address) {
-                    turnout.setActualState(value: state, for: address.actualAddress)
-                    if acknowledgement == false {
-                        // If acknowledgement is false, it means it is a command that has been
-                        // triggered by the Digital Controller and we need to reflect this by
-                        // ensuring the turnout is settled with both requested and actual state
-                        // being the same.
-                        // TODO: unit test for that
-                        turnout.requestedState = turnout.actualState
-                    }
-                    BTLogger.debug("Turnout \(turnout.name) state changed to \(state) (ack=\(acknowledgement)), power \(power), for address \(address.actualAddress.toHex()). Actual state \(turnout.actualState). Requested state \(turnout.requestedState)")
-                    self?.runControllers(.turnoutChanged)
-                } else {
-                    BTLogger.error("Unknown turnout for address \(address.actualAddress.toHex())")
+            if let turnout = layout.turnouts.find(address: address) {
+                turnout.setActualState(value: state, for: address.actualAddress)
+                if acknowledgement == false {
+                    // If acknowledgement is false, it means it is a command that has been
+                    // triggered by the Digital Controller and we need to reflect this by
+                    // ensuring the turnout is settled with both requested and actual state
+                    // being the same.
+                    // TODO: unit test for that
+                    turnout.requestedState = turnout.actualState
                 }
+                BTLogger.debug("Turnout \(turnout.name) state changed to \(state) (ack=\(acknowledgement)), power \(power), for address \(address.actualAddress.toHex()). Actual state \(turnout.actualState). Requested state \(turnout.requestedState)")
+                self?.runControllers(.turnoutChanged)
+            } else {
+                BTLogger.error("Unknown turnout for address \(address.actualAddress.toHex())")
             }
         })
     }

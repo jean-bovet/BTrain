@@ -59,13 +59,12 @@ final class FeedbackMonitor {
             guard let sSelf = self else {
                 return
             }
-            DispatchQueue.main.async {
-                guard let feedback = sSelf.layout.feedbacks.find(deviceID: deviceID, contactID: contactID) else {
-                    return
-                }
-                                
-                sSelf.process(feedback: feedback, detected: value == 1)
+            
+            guard let feedback = sSelf.layout.feedbacks.find(deviceID: deviceID, contactID: contactID) else {
+                return
             }
+                            
+            sSelf.process(feedback: feedback, detected: value == 1)
         })
     }
     
