@@ -61,16 +61,17 @@ final class MarklinInterface: CommandInterface {
 
     func disconnect(_ completion: @escaping CompletionBlock) {
         disconnectCompletionBlocks = completion
+        completionBlocks.removeAll()
         client?.stop()
     }
         
-    func execute(command: Command, onCompletion: @escaping CompletionBlock) {
+    func execute(command: Command, completion: CompletionBlock? = nil) {
         guard let (message, priority) = MarklinCANMessage.from(command: command) else {
-            onCompletion()
+            completion?()
             return
         }
                         
-        send(message: message, priority: priority, onCompletion: onCompletion)
+        send(message: message, priority: priority, completion: completion)
     }
     
     // Maximum value of the speed parameters that can be specified in the CAN message.
@@ -112,12 +113,22 @@ final class MarklinInterface: CommandInterface {
         feedbackChangeCallbacks.removeValue(forKey: uuid)
     }
 
-    private func handleMessage(_ msg: MarklinCANMessage) {
-        if let completionBlock = completionBlocks[msg.raw], msg.isAck {
-            completionBlock()
-            completionBlocks[msg.raw] = nil
+    private func triggerCompletionBlock(for message: MarklinCANMessage) {
+        if message.isAck {
+            triggerCompletionBlock(for: message.raw)
         }
-        
+    }
+    
+    private func triggerCompletionBlock(for rawMessage: MarklinCANMessageRaw) {
+        if let completionBlock = completionBlocks[rawMessage] {
+            DispatchQueue.main.async {
+                completionBlock()
+            }
+            completionBlocks[rawMessage] = nil
+        }
+    }
+    
+    private func handleMessage(_ msg: MarklinCANMessage) {
         if let cmd = MarklinCommand.from(message: msg) {
             // Handle any Marklin-specific command first
             switch(cmd) {
@@ -135,42 +146,72 @@ final class MarklinInterface: CommandInterface {
         
         // Handle generic command
         let cmd = Command.from(message: msg)
-        if case .feedback(deviceID: let deviceID, contactID: let contactID, oldValue: _, newValue: let newValue, time: _, priority: _, descriptor: _) = cmd {
-            if msg.isAck {
-                feedbackChangeCallbacks.forEach { $0.value(deviceID, contactID, newValue) }
-            }
-        }
-        if case .turnout(address: let address, state: let state, power: let power, priority: _, descriptor: _) = cmd {
-            turnoutChangeCallbacks.forEach { $0(address, state, power, msg.isAck) }
-        }
-        if case .speed(address: let address, decoderType: let decoderType, value: let value, priority: _, descriptor: _) = cmd {
-            if msg.isAck {
-                speedChangeCallbacks.forEach { $0(address, decoderType, value) }
-            }
-        }
-        if case .emergencyStop(address: let address, decoderType: let decoderType, priority: _, descriptor: _) = cmd {
+        switch cmd {
+        case .go(_, _):
+            triggerCompletionBlock(for: msg)
+            
+        case .stop(_, _):
+            triggerCompletionBlock(for: msg)
+
+        case .emergencyStop(let address, let decoderType, _, _):
             // Execute a command to query the direction of the locomotive at this particular address
             DispatchQueue.main.async {
                 // The response from this command is going to be processed below in the case .direction
-                self.execute(command: .queryDirection(address: address, decoderType: decoderType)) { }
+                self.execute(command: .queryDirection(address: address, decoderType: decoderType))
             }
-        }
-        if case .direction(address: let address, decoderType: let decoderType, direction: let direction, priority: _, descriptor: _) = cmd {
+
+        case .speed(let address, let decoderType, let value, _, _):
+            triggerCompletionBlock(for: msg)
+            if msg.isAck {
+                speedChangeCallbacks.forEach { $0(address, decoderType, value) }
+            }
+
+        case .direction(let address, let decoderType, let direction, _, _):
+            triggerCompletionBlock(for: msg)
             if msg.isAck {
                 directionChangeCallbacks.forEach { $0(address, decoderType, direction) }
             }
+
+        case .queryDirection(_, _, _, _):
+            // Ignore query direction command from the Central Station as we don't have anything to do with it.
+            break
+            
+        case .queryDirectionResponse(address: let address, decoderType: _, direction: _, priority: _, descriptor: _):
+            // This command is sent back from the Central Station after a .queryDirection() command
+            // has been sent. We need to remove the byte5 that holds the direction parameter in order
+            // to correctly invoke the completion block.
+            let command = MarklinCANMessageFactory.queryDirection(addr: address)
+            triggerCompletionBlock(for: command.raw)
+
+        case .turnout(let address, let state, let power, _, _):
+            triggerCompletionBlock(for: msg)
+            turnoutChangeCallbacks.forEach { $0(address, state, power, msg.isAck) }
+
+        case .feedback(let deviceID, let contactID, _, let newValue, _, _, _):
+            triggerCompletionBlock(for: msg)
+            if msg.isAck {
+                feedbackChangeCallbacks.forEach { $0.value(deviceID, contactID, newValue) }
+            }
+
+        case .locomotives(_, _):
+            triggerCompletionBlock(for: msg)
+
+        case .unknown(_, _, _):
+            break
         }
     }
     
-    private func send(message: MarklinCANMessage, priority: Command.Priority, onCompletion: @escaping () -> Void) {
+    private func send(message: MarklinCANMessage, priority: Command.Priority, completion: CompletionBlock?) {
         guard let client = client else {
             BTLogger.error("Cannot send message to Digital Controller because the client is nil!")
-            onCompletion()
+            completion?()
             return
         }
         
-        assert(completionBlocks[message.raw] == nil, "A completion block is already in progress for \(message)")
-        completionBlocks[message.raw] = onCompletion
+        if let completion = completion {
+            assert(completionBlocks[message.raw] == nil, "A completion block is already in progress for \(message)")
+            completionBlocks[message.raw] = completion
+        }
 
         client.send(data: message.data, priority: priority == .high) {
             // no-op as we don't care about when the message is done being sent down the wire

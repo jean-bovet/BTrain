@@ -223,11 +223,11 @@ final class LayoutController {
     // MARK: Commands
     
     func go(onCompletion: @escaping CompletionBlock) {
-        interface.execute(command: .go(), onCompletion: onCompletion)
+        interface.execute(command: .go(), completion: onCompletion)
     }
 
     func stop(onCompletion: @escaping CompletionBlock) {
-        interface.execute(command: .stop(), onCompletion: onCompletion)
+        interface.execute(command: .stop(), completion: onCompletion)
     }
         
     func startAll() {

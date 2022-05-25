@@ -128,7 +128,7 @@ struct MarklinCANMessageFactory {
     }
 
     // Request the direction of a specific locomotive
-    public static func direction(addr: UInt32) -> MarklinCANMessage {
+    public static func queryDirection(addr: UInt32) -> MarklinCANMessage {
         let message = MarklinCANMessage(prio: 0,
                                         command: 0x05,
                                         resp: 0,
@@ -147,7 +147,7 @@ struct MarklinCANMessageFactory {
     }
 
     // Response to the direction request above
-    public static func direction(addr: UInt32, direction: UInt8) -> MarklinCANMessage {
+    public static func queryDirectionResponse(addr: UInt32, direction: UInt8) -> MarklinCANMessage {
         let message = MarklinCANMessage(prio: 0,
                                         command: 0x05,
                                         resp: 1,

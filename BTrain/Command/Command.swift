@@ -34,7 +34,11 @@ enum Command {
     }
     
     case direction(address: UInt32, decoderType: DecoderType?, direction: Direction, priority: Priority = .normal, descriptor: CommandDescriptor? = nil)
+    
     case queryDirection(address: UInt32, decoderType: DecoderType?, priority: Priority = .normal, descriptor: CommandDescriptor? = nil)
+
+    // TODO: specific to Marklin, how can we move it out of this?
+    case queryDirectionResponse(address: UInt32, decoderType: DecoderType?, direction: Direction, priority: Priority = .normal, descriptor: CommandDescriptor? = nil)
 
     case turnout(address: CommandTurnoutAddress, state: UInt8, power: UInt8, priority: Priority = .normal, descriptor: CommandDescriptor? = nil)
     

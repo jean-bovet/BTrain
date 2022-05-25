@@ -20,7 +20,7 @@ extension LayoutController {
             completion?()
         })
 
-        interface.execute(command: .locomotives()) { }
+        interface.execute(command: .locomotives(), completion: nil)
     }
         
     private func process(locomotives: [CommandLocomotive], merge: Bool) {

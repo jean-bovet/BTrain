@@ -67,6 +67,8 @@ class TrainSpeedMeasurementTests: BTTestCase {
     
     func testMeasureOneStep() throws {
         let layout = LayoutComplex().newLayout()
+        layout.trains = [layout.trains[0]]
+        
         let doc = LayoutDocument(layout: layout)
         
         connectToSimulator(doc: doc) { }
@@ -140,7 +142,7 @@ class TrainSpeedMeasurementTests: BTTestCase {
 
         wait(for: [callbackExpectation], timeout: 5.0)
 
-        XCTAssertEqual(expectedInfoArray.count, 0)
+        XCTAssertEqual(expectedInfoArray.count, 0, "Expected steps are \(expectedInfoArray)")
         XCTAssertEqual(train.speed.speedTable[step].steps.value, UInt16(step))
         XCTAssertNotNil(train.speed.speedTable[step].speed)
         XCTAssertEqual(sm.feedbackMonitor.pendingRequestCount, 0)

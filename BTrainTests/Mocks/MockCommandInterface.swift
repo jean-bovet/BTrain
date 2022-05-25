@@ -45,24 +45,24 @@ final class MockCommandInterface: CommandInterface {
         
     }
     
-    var pendingCommands = [(Command, CompletionBlock)]()
+    var pendingCommands = [(Command, CompletionBlock?)]()
     
-    func execute(command: Command, onCompletion: @escaping CompletionBlock) {
+    func execute(command: Command, completion: CompletionBlock?) {
         if !running {
-            pendingCommands.append((command, onCompletion))
+            pendingCommands.append((command, completion))
             return
         }
         
-        for (command, onCompletion) in pendingCommands {
-            executeImmediate(command: command, onCompletion: onCompletion)
+        for (command, completion) in pendingCommands {
+            executeImmediate(command: command, onCompletion: completion)
         }
         pendingCommands.removeAll()
-        executeImmediate(command: command, onCompletion: onCompletion)
+        executeImmediate(command: command, onCompletion: completion)
     }
     
-    private func executeImmediate(command: Command, onCompletion: @escaping CompletionBlock) {
+    private func executeImmediate(command: Command, onCompletion: CompletionBlock?) {
         // First the completion of sending the command needs to happen
-        onCompletion()
+        onCompletion?()
 
         // Then we can trigger the callbacks for any acknowledgement from the Digital Controller
         switch command {

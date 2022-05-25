@@ -122,7 +122,6 @@ final class TrainSpeedManager {
         BTLogger.router.debug("\(self.train, privacy: .public): {\(requestUUID)} execute speed command for \(speedKph) kph (value=\(value), \(steps)), requested \(requestedKph) kph - \(status, privacy: .public)")
         
         interface.execute(command: .speed(address: train.address, decoderType: train.decoder, value: value)) { [weak self] in
-            // TODO: happens in main thread or not?
             self?.speedCommandExecuted(steps: steps, status: status, requestedKph: requestedKph, requestUUID: requestUUID, completion: completion)
         }
     }

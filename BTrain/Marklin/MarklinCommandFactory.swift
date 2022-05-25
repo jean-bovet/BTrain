@@ -76,13 +76,15 @@ extension Command {
                     // Response to a query direction
                     switch(message.byte4) {
                     case 0: // no change
-                        break
+                        return .queryDirectionResponse(address: address, decoderType: nil, direction: .unknown,
+                                                       descriptor: CommandDescriptor(data: message.data, description: "\(cmd.toHex()) no change for \(address.toHex()) - \(ack)"))
+
                     case 1: // forward
-                        return .direction(address: address, decoderType: nil, direction: .forward,
-                                        descriptor: CommandDescriptor(data: message.data, description: "\(cmd.toHex()) forward for \(address.toHex()) - \(ack)"))
+                        return .queryDirectionResponse(address: address, decoderType: nil, direction: .forward,
+                                                       descriptor: CommandDescriptor(data: message.data, description: "\(cmd.toHex()) forward for \(address.toHex()) - \(ack)"))
                     case 2: // backward
-                        return .direction(address: address, decoderType: nil, direction: .backward,
-                                         descriptor: CommandDescriptor(data: message.data, description: "\(cmd.toHex()) backward for \(address.toHex()) - \(ack)"))
+                        return .queryDirectionResponse(address: address, decoderType: nil, direction: .backward,
+                                                       descriptor: CommandDescriptor(data: message.data, description: "\(cmd.toHex()) backward for \(address.toHex()) - \(ack)"))
                     case 3: // toggle
                         break
                     default: // unknown
@@ -164,8 +166,11 @@ extension MarklinCANMessage {
                 return nil
             }
         case .queryDirection(address: let address, decoderType: let decoderType, priority: let priority, descriptor: _):
-            return (MarklinCANMessageFactory.direction(addr: address.actualAddress(for: decoderType)), priority)
+            return (MarklinCANMessageFactory.queryDirection(addr: address.actualAddress(for: decoderType)), priority)
             
+        case .queryDirectionResponse(address: let address, decoderType: let decoderType, direction: let direction, priority: let priority, descriptor: _):
+            return (MarklinCANMessageFactory.queryDirectionResponse(addr: address.actualAddress(for: decoderType), direction: direction == .forward ? 1 : 2), priority)
+
         case .turnout(address: let address, state: let state, power: let power, priority: let priority, descriptor: _):
             return (MarklinCANMessageFactory.accessory(addr: address.actualAddress, state: state, power: power), priority)
             

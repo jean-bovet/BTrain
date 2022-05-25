@@ -98,19 +98,13 @@ class CommandInterfaceTests: XCTestCase {
         defer {
             disconnectFromSimulator(doc: doc)
         }
-
-        let e = expectation(description: "callback")
-        _ = doc.interface.register(forDirectionChange: { address, decoderType, direction in
-            XCTAssertTrue(direction == .forward)
-            e.fulfill()
-        })
         
         let c = expectation(description: "completion")
         doc.interface.execute(command: .queryDirection(address: train.address, decoderType: train.decoder, priority: .normal, descriptor: nil)) {
             c.fulfill()
         }
         
-        wait(for: [c, e], timeout: 1.0, enforceOrder: true)
+        wait(for: [c], timeout: 1.0)
     }
 
     func testTurnoutCommand() {

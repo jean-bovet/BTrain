@@ -164,12 +164,15 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
             case .go:
                 self?.enabled = true
                 self?.scheduleTimer()
+                self?.send(MarklinCANMessageFactory.go().ack)
 
             case .stop:
                 self?.enabled = false
                 self?.timer?.invalidate()
+                self?.send(MarklinCANMessageFactory.stop().ack)
 
-            case .emergencyStop(address: _, decoderType: _, priority: _, descriptor: _):
+            case .emergencyStop(address: let address, decoderType: _, priority: _, descriptor: _):
+                self?.send(MarklinCANMessageFactory.emergencyStop(addr: address).ack)
                 break
                 
             case .speed(address: let address, decoderType: let decoderType, value: let value, priority: _, descriptor: _):
@@ -193,6 +196,9 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
 
             case .queryDirection(address: let address, decoderType: let decoderType, priority: _, descriptor: _):
                 self?.provideDirection(address: address.actualAddress(for: decoderType))
+                break
+
+            case .queryDirectionResponse(address: _, decoderType: _, direction: _, priority: _, descriptor: _):
                 break
 
             case .unknown(command: _):
@@ -228,8 +234,8 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
         
         // Send back the acknowledgement for this command
         DispatchQueue.global(qos: .background).async {
-            let message = MarklinCANMessageFactory.direction(addr: address, direction: direction == .forward ? 1 : 2)
-            self.send(message)
+            let message = direction == .forward ? MarklinCANMessageFactory.forward(addr: address) : MarklinCANMessageFactory.backward(addr: address)
+            self.send(message.ack)
         }
     }
 
@@ -264,10 +270,16 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
     func provideDirection(address: UInt32) {
         guard let train = trains.first(where: { $0.train.actualAddress == address }) else {
             BTLogger.error("[Simulator] Unable to find a locomotive for address \(address.toHex())")
+            
+            // As per spec 3.5, an answer is always returned, even when a locomotive is not known.
+            DispatchQueue.main.async {
+                let message = MarklinCANMessageFactory.queryDirectionResponse(addr: address, direction: 0)
+                self.send(message)
+            }
             return
         }
         
-        let message = MarklinCANMessageFactory.direction(addr: address, direction: train.directionForward ? 1 : 2)
+        let message = MarklinCANMessageFactory.queryDirectionResponse(addr: address, direction: train.directionForward ? 1 : 2)
         send(message)
     }
     
@@ -373,7 +385,7 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
 
     func triggerFeedback(feedback: Feedback) {
         setFeedback(feedback: feedback, value: 1)
-        Timer.scheduledTimer(withTimeInterval: 0.25 * BaseTimeFactor, repeats: false) { timer in
+        Timer.scheduledTimer(withTimeInterval: 0.25, repeats: false) { timer in
             self.setFeedback(feedback: feedback, value: 0)
         }
     }

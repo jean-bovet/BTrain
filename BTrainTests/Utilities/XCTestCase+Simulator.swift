@@ -22,6 +22,8 @@ extension XCTestCase {
             c.fulfill()
         }
         
+        waitForExpectations(timeout: 0.5, handler: nil)
+
         let e = expectation(description: "enable")
         doc.enable() {
             e.fulfill()
@@ -38,6 +40,8 @@ extension XCTestCase {
             d.fulfill()
         }
         
+        waitForExpectations(timeout: 0.5, handler: nil)
+
         let e = expectation(description: "disconnect")
         doc.disconnect() {
             e.fulfill()

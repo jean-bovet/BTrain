@@ -15,11 +15,19 @@ import Foundation
 /// A protocol describing the API towards a Digital Controller without being specific to a given brand.
 protocol CommandInterface: AnyObject, MetricsProvider {
             
-    func connect(server: String, port: UInt16, onReady: @escaping () -> Void, onError: @escaping (Error) -> Void, onStop: @escaping () -> Void)
+    func connect(server: String, port: UInt16, onReady: @escaping CompletionBlock, onError: @escaping (Error) -> Void, onStop: @escaping CompletionBlock)
     
     func disconnect(_ completion: @escaping CompletionBlock)
     
-    func execute(command: Command, onCompletion: @escaping () -> Void)
+    /// Executes a command by sending the appropriate message to the Digital Controller.
+    ///
+    /// This method is expected to invoke the ``completion`` block when the Digital Controller
+    /// has sent back an acknowledgement for the command.
+    ///
+    /// - Parameters:
+    ///   - command: the command to execute
+    ///   - completion: a completion block called when the Digital Controller has acknowledged the command
+    func execute(command: Command, completion: CompletionBlock?)
     
     // Returns the speed value given the number of steps and the decoder type
     func speedValue(for steps: SpeedStep, decoder: DecoderType) -> SpeedValue
