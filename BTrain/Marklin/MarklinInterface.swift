@@ -35,6 +35,12 @@ final class MarklinInterface: CommandInterface {
     typealias CompletionBlock = () -> Void
     private var disconnectCompletionBlocks: CompletionBlock?
     
+    /// Map of CAN message to pending completion block.
+    ///
+    /// The CAN message is of type ``MarklinCANMessageRaw`` which does not contain the hash nor the response bit. This allows
+    /// for easy comparison between a message sent and a message received (see description of ``MarklinCANMessageRaw``).
+    private var completionBlocks = [MarklinCANMessageRaw:CompletionBlock]()
+
     func connect(server: String, port: UInt16, onReady: @escaping () -> Void, onError: @escaping (Error) -> Void, onStop: @escaping () -> Void) {
         client = Client(host: server, port: port)
         client?.start {
@@ -57,13 +63,13 @@ final class MarklinInterface: CommandInterface {
         disconnectCompletionBlocks = completion
         client?.stop()
     }
-    
-    func execute(command: Command, onCompletion: @escaping () -> Void) {
+        
+    func execute(command: Command, onCompletion: @escaping CompletionBlock) {
         guard let (message, priority) = MarklinCANMessage.from(command: command) else {
             onCompletion()
             return
         }
-                
+                        
         send(message: message, priority: priority, onCompletion: onCompletion)
     }
     
@@ -107,6 +113,11 @@ final class MarklinInterface: CommandInterface {
     }
 
     private func handleMessage(_ msg: MarklinCANMessage) {
+        if let completionBlock = completionBlocks[msg.raw], msg.isAck {
+            completionBlock()
+            completionBlocks[msg.raw] = nil
+        }
+        
         if let cmd = MarklinCommand.from(message: msg) {
             // Handle any Marklin-specific command first
             switch(cmd) {
@@ -158,7 +169,12 @@ final class MarklinInterface: CommandInterface {
             return
         }
         
-        client.send(data: message.data, priority: priority == .high, onCompletion: onCompletion)
+        assert(completionBlocks[message.raw] == nil, "A completion block is already in progress for \(message)")
+        completionBlocks[message.raw] = onCompletion
+
+        client.send(data: message.data, priority: priority == .high) {
+            // no-op as we don't care about when the message is done being sent down the wire
+        }
     }
         
 }

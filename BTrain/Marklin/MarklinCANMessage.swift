@@ -12,6 +12,7 @@
 
 import Foundation
 
+/// Definition of a Marklin CAN-bus message
 struct MarklinCANMessage: Equatable, Hashable {
     
     static let messageLength = 13
@@ -39,6 +40,29 @@ struct MarklinCANMessage: Equatable, Hashable {
     var isAck: Bool {
         return resp == 1
     }
+    
+    var raw: MarklinCANMessageRaw {
+        return .init(command: command, dlc: dlc, byte0: byte0, byte1: byte1, byte2: byte2, byte3: byte3, byte4: byte4, byte5: byte5, byte6: byte6, byte7: byte7)
+    }
+}
+
+/// Subset of a ``MarklinCANMessage`` that does not have the ``MarklinCANMessage/prio``,
+/// ``MarklinCANMessage/resp`` nor ``MarklinCANMessage/hash`` fields. When comparing
+/// a message sent to the Central Station from its corresponding acknowledgement, these fields should be ignored because
+/// they will always be different.
+struct MarklinCANMessageRaw: Equatable, Hashable {
+    
+    let command: UInt8
+    let dlc: UInt8
+    let byte0: UInt8
+    let byte1: UInt8
+    let byte2: UInt8
+    let byte3: UInt8
+    let byte4: UInt8
+    let byte5: UInt8
+    let byte6: UInt8
+    let byte7: UInt8
+
 }
 
 // MARK: Utility

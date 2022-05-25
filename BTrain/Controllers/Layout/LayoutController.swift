@@ -408,24 +408,6 @@ extension LayoutController {
         executor.sendTrainDirection(train: train, forward: forward, completion: completion)
     }
     
-    /// Send a train speed command
-    ///
-    /// - Parameters:
-    ///   - train: the train to change the speed
-    ///   - acceleration: an optional acceleration profile
-    ///   - completion: completion block called when the speed change is either completed or cancelled. The speed change can be cancelled if another speed change is requested
-    ///   when one is already in progress.
-    func sendTrainSpeed(train: Train, acceleration: TrainSpeedAcceleration.Acceleration?, completion: @escaping CompletionCancelBlock) {
-        // TODO: executor not used? Should we refactor how this is done?
-        if let controller = speedManagers[train.id] {
-            controller.changeSpeed(acceleration: acceleration, completion: completion)
-        } else {
-            assertionFailure("There is no TrainSpeedManager for \(train.name)")
-            BTLogger.router.error("There is no TrainSpeedManager for \(train.name, privacy: .public)")
-            completion(false)
-        }
-    }
-            
     func setTrainSpeed(_ train: Train, _ speed: TrainSpeed.UnitKph, speedLimit: Bool = true, force: Bool = false, acceleration: TrainSpeedAcceleration.Acceleration? = nil, completion: CompletionCancelBlock? = nil) {
         if speedLimit {
             let route = layout.route(for: train.routeId, trainId: train.id)
@@ -444,8 +426,15 @@ extension LayoutController {
         // yet, we might think we don't need to send another train speed change request. But this is incorrect
         // because if we don't do that, the previous speed change request will continue to execute while
         // it is not our intention).
-        sendTrainSpeed(train: train, acceleration: acceleration) { completed in
-            completion?(completed)
+        // TODO: executor not used? Should we refactor how this is done?
+        if let controller = speedManagers[train.id] {
+            controller.changeSpeed(acceleration: acceleration) { completed in
+                completion?(completed)
+            }
+        } else {
+            assertionFailure("There is no TrainSpeedManager for \(train.name)")
+            BTLogger.router.error("There is no TrainSpeedManager for \(train.name, privacy: .public)")
+            completion?(false)
         }
     }
 
