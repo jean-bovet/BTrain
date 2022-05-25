@@ -221,12 +221,7 @@ final class TrainSpeedMeasurement {
                 self.forward.toggle()
 
                 executor.setLocomotiveDirection(train, forward: !train.directionForward) {
-                    do {
-                        try self.executor.toggleTrainDirectionInBlock(self.train)
-                        continuation.resume(returning: ())
-                    } catch {
-                        continuation.resume(throwing: error)
-                    }
+                    continuation.resume(returning: ())
                 }
             }
         }

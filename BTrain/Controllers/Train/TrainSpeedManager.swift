@@ -57,6 +57,9 @@ final class TrainSpeedManager {
     /// The timer that handles the delay to allow the locomotive to fully stop
     private let stopSettleDelayTimer = StopSettleDelayTimer()
 
+    internal var lastRequestedKph: TrainSpeed.UnitKph?
+    internal var additionalCompletionBlocks = [Int:[CompletionCancelBlock]]()
+    
     init(train: Train, interface: CommandInterface, speedChanged: CompletionBlock? = nil) {
         self.train = train
         self.interface = interface
@@ -83,35 +86,48 @@ final class TrainSpeedManager {
     ///   - train: the train to change the speed
     ///   - acceleration: the acceleration/deceleration profile
     ///   - completion: a block called when the change is either completed or cancelled
-    func changeSpeed(of train: Train, acceleration: TrainSpeedAcceleration.Acceleration?, completion: @escaping CompletionCancelBlock) {
+    func changeSpeed(acceleration: TrainSpeedAcceleration.Acceleration?, completion: @escaping CompletionCancelBlock) {
+        if lastRequestedKph == train.speed.requestedKph {
+            if train.speed.requestedKph == train.speed.actualKph {
+                completion(true)
+                return
+            } else if speedChangeTimer.timer != nil || stopSettleDelayTimer.timer != nil {
+                // TODO: unit test this behavior with also sending multiple time the same request or different request to ensure there is a cancellation happening
+                let previousBlocks = additionalCompletionBlocks[TrainSpeedManager.globalRequestUUID] ?? []
+                additionalCompletionBlocks[TrainSpeedManager.globalRequestUUID] = previousBlocks + [completion]
+                return
+            }
+        }
+    
         TrainSpeedManager.globalRequestUUID += 1
         let requestUUID = TrainSpeedManager.globalRequestUUID
         
-        BTLogger.router.debug("\(train, privacy: .public): {\(requestUUID)} requesting speed of \(train.speed.requestedKph) kph (\(train.speed.requestedSteps)) from actual speed of \(train.speed.actualKph) kph (\(train.speed.actualSteps))")
+        BTLogger.router.debug("\(self.train, privacy: .public): {\(requestUUID)} requesting speed of \(self.train.speed.requestedKph) kph (\(self.train.speed.requestedSteps)) from actual speed of \(self.train.speed.actualKph) kph (\(self.train.speed.actualSteps))")
 
         speedChangeTimer.cancel()
         stopSettleDelayTimer.cancel()
 
         let requestedKph = train.speed.requestedKph
+        lastRequestedKph = requestedKph
         
         speedChangeTimer.schedule(from: train.speed.actualSteps, to: train.speed.requestedSteps,
                             acceleration: acceleration ?? train.speed.accelerationProfile) { [weak self] steps, status in
-            self?.changeSpeedFired(steps: steps, status: status, train: train, requestedKph: requestedKph, requestUUID: requestUUID, completion: completion)
+            self?.changeSpeedFired(steps: steps, status: status, requestedKph: requestedKph, requestUUID: requestUUID, completion: completion)
         }
     }
 
-    private func changeSpeedFired(steps: SpeedStep, status: Status, train: Train, requestedKph: TrainSpeed.UnitKph, requestUUID: Int, completion: @escaping CompletionCancelBlock) {
+    private func changeSpeedFired(steps: SpeedStep, status: Status, requestedKph: TrainSpeed.UnitKph, requestUUID: Int, completion: @escaping CompletionCancelBlock) {
         let value = interface.speedValue(for: steps, decoder: train.decoder)
         let speedKph = train.speed.speedKph(for: steps)
-        BTLogger.router.debug("\(train, privacy: .public): {\(requestUUID)} execute speed command for \(speedKph) kph (value=\(value), \(steps)), requested \(requestedKph) kph - \(status, privacy: .public)")
+        BTLogger.router.debug("\(self.train, privacy: .public): {\(requestUUID)} execute speed command for \(speedKph) kph (value=\(value), \(steps)), requested \(requestedKph) kph - \(status, privacy: .public)")
         
         interface.execute(command: .speed(address: train.address, decoderType: train.decoder, value: value)) { [weak self] in
             // TODO: happens in main thread or not?
-            self?.speedCommandExecuted(steps: steps, status: status, train: train, requestedKph: requestedKph, requestUUID: requestUUID, completion: completion)
+            self?.speedCommandExecuted(steps: steps, status: status, requestedKph: requestedKph, requestUUID: requestUUID, completion: completion)
         }
     }
     
-    private func speedCommandExecuted(steps: SpeedStep, status: Status, train: Train, requestedKph: TrainSpeed.UnitKph, requestUUID: Int, completion: @escaping CompletionCancelBlock) {
+    private func speedCommandExecuted(steps: SpeedStep, status: Status, requestedKph: TrainSpeed.UnitKph, requestUUID: Int, completion: @escaping CompletionCancelBlock) {
         // Note: LayoutController+Listeners is the one listening for speed change acknowledgement from the Digital Controller and update the actual speed.
         // TODO: is that the best way or should we centralize that here?
         
@@ -119,18 +135,28 @@ final class TrainSpeedManager {
         train.speed.actualSteps = interface.speedSteps(for: value, decoder: train.decoder)
 
         let speedKph = train.speed.speedKph(for: steps)
-        BTLogger.router.debug("\(train, privacy: .public): {\(requestUUID)} done executing speed command for \(speedKph) kph (value=\(value), \(steps)), requested \(requestedKph) kph - \(status, privacy: .public)")
+        BTLogger.router.debug("\(self.train, privacy: .public): {\(requestUUID)} done executing speed command for \(speedKph) kph (value=\(value), \(steps)), requested \(requestedKph) kph - \(status, privacy: .public)")
         if status == .finished || status == .cancelled {
             let finished = status == .finished
             if steps == .zero && finished {
                 /// Settle only if the train stopped and the speed change hasn't been cancelled.
                 /// Note: see comment in ``TrainControllerAcceleration/StopSettleDelayTimer``
-                /// // TODO: wait for the acknowledgement from Digital Controller instead
-                stopSettleDelayTimer.schedule(train: train, completed: finished, completion: completion)
+                // TODO: wait for the acknowledgement from Digital Controller instead
+                stopSettleDelayTimer.schedule(train: train, completed: finished) { [weak self] completed in
+                    completion(completed)
+                    self?.invokeAdditionalCompletionBlocks(for: requestUUID, completed: completed)
+                }
             } else {
                 completion(finished)
+                invokeAdditionalCompletionBlocks(for: requestUUID, completed: finished)
             }
         }
     }
         
+    private func invokeAdditionalCompletionBlocks(for requestUUID: Int, completed: Bool) {
+        additionalCompletionBlocks[requestUUID]?.forEach({ completion in
+            completion(completed)
+        })
+        additionalCompletionBlocks[requestUUID] = nil
+    }
 }

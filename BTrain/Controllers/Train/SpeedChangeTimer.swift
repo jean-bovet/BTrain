@@ -37,7 +37,7 @@ extension TrainSpeedManager {
         // The desired speed value that has been requested
         var desired: SpeedStep = .zero
         
-        private var timer: Timer?
+        var timer: Timer?
         private var stepsDidChange: SpeedChangedCallback?
         
         private var currentTime: TimeInterval = 0

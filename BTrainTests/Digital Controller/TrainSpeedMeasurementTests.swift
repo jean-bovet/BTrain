@@ -13,7 +13,7 @@
 import XCTest
 @testable import BTrain
 
-class TrainSpeedMeasurementTests: XCTestCase {
+class TrainSpeedMeasurementTests: BTTestCase {
 
     func testCancelMeasure() throws {
         let layout = LayoutComplex().newLayout()
@@ -164,7 +164,7 @@ class TrainSpeedMeasurementTests: XCTestCase {
             let current = RunLoop.current
             let startTime = Date()
             while !block() {
-                current.run(until: Date(timeIntervalSinceNow: 0.250))
+                current.run(until: Date(timeIntervalSinceNow: 0.001))
                 if Date().timeIntervalSince(startTime) >= timeout {
                     XCTFail("Time out")
                     break
@@ -191,6 +191,7 @@ class TrainSpeedMeasurementTests: XCTestCase {
         // Ensure the turnouts are properly set
         layout.turnout(named: "E.1").setState(.straight)
         layout.turnout(named: "D.1").setState(.straight)
+        layout.turnout(named: "A.34").setState(.straight01)
 
         let fa = layout.feedback(for: Identifier<Feedback>(uuid: "OL1.2"))!
         let fb = layout.feedback(for: Identifier<Feedback>(uuid: "OL2.1"))!
@@ -263,6 +264,7 @@ class TrainSpeedMeasurementTests: XCTestCase {
         
         doc.simulator.setFeedback(feedback: fa, value: 0)
 
+        infoStepAsserter.assert(step: .trainStopped)
         infoStepAsserter.assert(step: .trainDirectionToggle)
         infoStepAsserter.assert(step: .done)
 

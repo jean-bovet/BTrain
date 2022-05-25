@@ -34,9 +34,11 @@ extension UndoProvider: Inspectable { }
 
 class RootViewTests: BTTestCase {
 
-    let doc = LayoutDocument(layout: LayoutLoop2().newLayout())
-
-    var layout: Layout {
-        return doc.layout
-    }
+    lazy var doc: LayoutDocument = {
+        LayoutDocument(layout: LayoutLoop2().newLayout())
+    }()
+    
+    lazy var layout: Layout = {
+        doc.layout
+    }()
 }

@@ -125,7 +125,7 @@ class TrainInertiaTests: XCTestCase {
         t.speed.requestedSteps = SpeedStep(value: 50)
         
         let cancelledChange = expectation(description: "Cancelled")
-        ic.changeSpeed(of: t, acceleration: nil) { completed in
+        ic.changeSpeed(acceleration: nil) { completed in
             if !completed {
                 cancelledChange.fulfill()
             }
@@ -137,7 +137,7 @@ class TrainInertiaTests: XCTestCase {
 
         t.speed.requestedSteps = SpeedStep(value: 10)
         let completedChange = expectation(description: "Completed")
-        ic.changeSpeed(of: t, acceleration: nil) { completed in
+        ic.changeSpeed(acceleration: nil) { completed in
             if completed {
                 completedChange.fulfill()
             }
@@ -168,7 +168,7 @@ class TrainInertiaTests: XCTestCase {
         t.state = .running
         
         let cancelledChange = expectation(description: "Cancelled")
-        ic.changeSpeed(of: t, acceleration: nil) { completed in
+        ic.changeSpeed(acceleration: nil) { completed in
             XCTAssertFalse(completed)
             if !completed {
                 cancelledChange.fulfill()
@@ -184,7 +184,7 @@ class TrainInertiaTests: XCTestCase {
         
         t.speed.requestedSteps = SpeedStep(value: 10)
         let completedChangeTo10 = expectation(description: "Completed")
-        ic.changeSpeed(of: t, acceleration: nil) { completed in
+        ic.changeSpeed(acceleration: nil) { completed in
             if completed {
                 completedChangeTo10.fulfill()
             }
@@ -250,7 +250,7 @@ class TrainInertiaTests: XCTestCase {
         train.speed.requestedSteps = SpeedStep(value: steps)
         
         let expectation = expectation(description: "Completed")
-        ic.changeSpeed(of: train, acceleration: nil) { _ in
+        ic.changeSpeed(acceleration: nil) { _ in
             expectation.fulfill()
         }
 

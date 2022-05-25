@@ -404,6 +404,7 @@ extension LayoutController {
     ///   - forward: true for forward direction, false for backward direction
     ///   - completion: completion block called when the command has been sent
     func sendTrainDirection(train: Train, forward: Bool, completion: @escaping CompletionBlock) {
+        BTLogger.router.debug("\(train, privacy: .public): change train direction to \(forward)")
         executor.sendTrainDirection(train: train, forward: forward, completion: completion)
     }
     
@@ -417,7 +418,7 @@ extension LayoutController {
     func sendTrainSpeed(train: Train, acceleration: TrainSpeedAcceleration.Acceleration?, completion: @escaping CompletionCancelBlock) {
         // TODO: executor not used? Should we refactor how this is done?
         if let controller = speedManagers[train.id] {
-            controller.changeSpeed(of: train, acceleration: acceleration, completion: completion)
+            controller.changeSpeed(acceleration: acceleration, completion: completion)
         } else {
             assertionFailure("There is no TrainSpeedManager for \(train.name)")
             BTLogger.router.error("There is no TrainSpeedManager for \(train.name, privacy: .public)")
@@ -426,16 +427,13 @@ extension LayoutController {
     }
             
     func setTrainSpeed(_ train: Train, _ speed: TrainSpeed.UnitKph, speedLimit: Bool = true, force: Bool = false, acceleration: TrainSpeedAcceleration.Acceleration? = nil, completion: CompletionCancelBlock? = nil) {
-        let previouslyRequestedKph = train.speed.requestedKph
         if speedLimit {
             let route = layout.route(for: train.routeId, trainId: train.id)
             train.speed.requestedKph = min(speed, reservation.maximumSpeedAllowed(train: train, route: route))
         } else {
             train.speed.requestedKph = speed
         }
-        if previouslyRequestedKph != train.speed.requestedKph || force {
-            setTrainSpeed(train, train.speed.requestedSteps, acceleration: acceleration, completion: completion)
-        }
+        setTrainSpeed(train, train.speed.requestedSteps, acceleration: acceleration, completion: completion)
     }
 
     func setTrainSpeed(_ train: Train, _ speed: SpeedStep, acceleration: TrainSpeedAcceleration.Acceleration? = nil, completion: CompletionCancelBlock? = nil) {

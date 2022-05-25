@@ -27,9 +27,17 @@ final class LayoutCommandExecutor {
     // Time until the turnout state power is turned off.
     let activationTime: TimeInterval = 0.2 * BaseTimeFactor
         
+    // TODO: implement as part of the interface?!?
+    var pendingDirectionChangeCompletion: CompletionBlock?
+    
     init(layout: Layout, interface: CommandInterface) {
         self.layout = layout
         self.interface = interface
+        
+        interface.register(forDirectionChange: { [weak self] address, decoderType, direction in
+            self?.pendingDirectionChangeCompletion?()
+            self?.pendingDirectionChangeCompletion = nil
+        })
     }
     
     func sendTurnoutState(turnout: Turnout, completion: @escaping CompletionBlock) {
@@ -72,13 +80,17 @@ final class LayoutCommandExecutor {
             return
         }
 
+        pendingDirectionChangeCompletion = completion
+        
         let command: Command
         if forward {
             command = .direction(address: train.address, decoderType: train.decoder, direction: .forward)
         } else {
             command = .direction(address: train.address, decoderType: train.decoder, direction: .backward)
         }
-        interface.execute(command: command, onCompletion: completion)
+        interface.execute(command: command) {
+            // ignore
+        }
     }
         
 }
