@@ -20,14 +20,14 @@ class CommandInterfaceTests: XCTestCase {
         let doc = LayoutDocument(layout: Layout())
         XCTAssertFalse(doc.simulator.enabled)
         
-        connectToSimulator(doc: doc) { }
+        connectToSimulator(doc: doc, enable: false) { }
         defer {
-            disconnectFromSimulator(doc: doc)
+            disconnectFromSimulator(doc: doc, disable: false)
         }
         
         let enabledExpectation = XCTestExpectation(description: "enabled")
         let disabledExpectation = XCTestExpectation(description: "disable")
-        let cancellable = doc.simulator.$enabled.sink { value in
+        let cancellable = doc.simulator.$enabled.dropFirst().sink { value in
             if value {
                 enabledExpectation.fulfill()
             } else {
@@ -35,10 +35,17 @@ class CommandInterfaceTests: XCTestCase {
             }
         }
 
-        doc.interface.execute(command: .go()) {}
-        doc.interface.execute(command: .stop()) {}
+        let goExpectation = XCTestExpectation(description: "go")
+        let stopExpectation = XCTestExpectation(description: "stop")
+        
+        doc.interface.execute(command: .go()) {
+            goExpectation.fulfill()
+            doc.interface.execute(command: .stop()) {
+                stopExpectation.fulfill()
+            }
+        }
 
-        wait(for: [enabledExpectation, disabledExpectation], timeout: ScheduledMessageQueue.DefaultDelay, enforceOrder: true)
+        wait(for: [enabledExpectation, goExpectation, disabledExpectation, stopExpectation], timeout: 1.0, enforceOrder: true)
         
         XCTAssertNotNil(cancellable)
     }

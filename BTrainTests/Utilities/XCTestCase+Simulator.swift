@@ -15,7 +15,7 @@ import XCTest
 
 extension XCTestCase {
     
-    func connectToSimulator(doc: LayoutDocument, _ completion: CompletionBlock) {
+    func connectToSimulator(doc: LayoutDocument, enable: Bool = true, _ completion: CompletionBlock) {
         let c = expectation(description: "connect")
         doc.simulator.turnoutSpeed = 0
         doc.connectToSimulator(enable: false) { error in
@@ -24,23 +24,27 @@ extension XCTestCase {
         
         waitForExpectations(timeout: 0.5, handler: nil)
 
-        let e = expectation(description: "enable")
-        doc.enable() {
-            e.fulfill()
+        if enable {
+            let e = expectation(description: "enable")
+            doc.enable() {
+                e.fulfill()
+            }
+            
+            waitForExpectations(timeout: 0.5, handler: nil)
         }
-        
-        waitForExpectations(timeout: 0.5, handler: nil)
         
         completion()
     }
 
-    func disconnectFromSimulator(doc: LayoutDocument) {
-        let d = expectation(description: "disable")
-        doc.disable() {
-            d.fulfill()
+    func disconnectFromSimulator(doc: LayoutDocument, disable: Bool = true) {
+        if disable {
+            let d = expectation(description: "disable")
+            doc.disable() {
+                d.fulfill()
+            }
+            
+            waitForExpectations(timeout: 0.5, handler: nil)
         }
-        
-        waitForExpectations(timeout: 0.5, handler: nil)
 
         let e = expectation(description: "disconnect")
         doc.disconnect() {
