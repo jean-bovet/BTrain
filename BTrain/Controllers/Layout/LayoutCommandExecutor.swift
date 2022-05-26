@@ -52,7 +52,7 @@ final class LayoutCommandExecutor {
                     guard let activationTime = self?.activationTime else {
                         return
                     }
-                    Timer.scheduledTimer(withTimeInterval: activationTime, repeats: false) { timer in
+                    Timer.scheduledTimer(withTimeInterval: activationTime * BaseTimeFactor, repeats: false) { timer in
                         interface.execute(command: idleCommands[index]) {
                             commandCompletionCount -= 1
                             if commandCompletionCount == 0 {

@@ -51,7 +51,11 @@ final class FeedbackMonitor {
     }
     
     func waitForFeedback(_ feedbackId: Identifier<Feedback>, detected: Bool, completion: @escaping CompletionBlock) {
-        requests.append(Request(completion: completion, detected: detected, feedbackId: feedbackId))
+        if let feedback = layout.feedback(for: feedbackId), feedback.detected == detected {
+            completion()
+        } else {
+            requests.append(Request(completion: completion, detected: detected, feedbackId: feedbackId))
+        }
     }
     
     private func registerForFeedbackChanges() {

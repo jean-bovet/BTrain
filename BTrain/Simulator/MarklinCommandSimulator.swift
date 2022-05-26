@@ -382,7 +382,7 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
 
     func triggerFeedback(feedback: Feedback) {
         setFeedback(feedback: feedback, value: 1)
-        Timer.scheduledTimer(withTimeInterval: 0.25, repeats: false) { timer in
+        Timer.scheduledTimer(withTimeInterval: 0.25 * BaseTimeFactor, repeats: false) { timer in
             self.setFeedback(feedback: feedback, value: 0)
         }
     }
