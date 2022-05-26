@@ -159,21 +159,7 @@ class TrainSpeedMeasurementTests: BTTestCase {
                     return actualInfoStepArray.removeFirst() == step
                 }
             }, timeout: 2.0)
-        }
-        
-        // TODO: use the same method as defined elsewhere
-        func wait(for block: () -> Bool, timeout: TimeInterval) {
-            let current = RunLoop.current
-            let startTime = Date()
-            while !block() {
-                current.run(until: Date(timeIntervalSinceNow: 0.001))
-                if Date().timeIntervalSince(startTime) >= timeout {
-                    XCTFail("Time out")
-                    break
-                }
-            }
-        }
-
+        }        
     }
     
     func testMeasureTwoStep() throws {

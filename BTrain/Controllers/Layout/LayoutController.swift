@@ -333,7 +333,6 @@ extension LayoutController {
 
 extension LayoutController {
     
-    // TODO: can we use Route and Train instance directly?
     func start(routeID: Identifier<Route>, trainID: Identifier<Train>, destination: Destination? = nil) throws {
         guard let route = layout.route(for: routeID, trainId: trainID) else {
             throw LayoutError.routeNotFound(routeId: routeID)
