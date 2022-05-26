@@ -83,14 +83,14 @@ class AutomaticRoutingTests: BTTestCase {
         
         // The route will choose "s2" as the arrival block
         var p = try setup(layout: layout, fromBlockId: s1.id, destination: nil, position: .end, routeSteps: ["s1:next", "b1:next", "b2:next", "b3:next", "s2:next"])
-        p.stop()
+        p.stop(drainAll: true)
         
         // Let's mark "s2" as to avoid
         train.blocksToAvoid.append(.init(Identifier<Block>(uuid: "s2")))
 
         // The route will choose "s1" instead
         p = try setup(layout: layout, fromBlockId: s1.id, destination: nil, position: .end, routeSteps: ["s1:next", "b1:next", "b2:next", "b3:next", "s1:next"])
-        p.stop()
+        p.stop(drainAll: true)
 
         // Now let's mark also "s1" as to avoid
         train.blocksToAvoid.append(.init(Identifier<Block>(uuid: "s1")))
@@ -106,8 +106,8 @@ class AutomaticRoutingTests: BTTestCase {
 
         // The route will choose "s2" as the arrival block
         var p = try setup(layout: layout, fromBlockId: s1.id, destination: nil, position: .end, routeSteps: ["s1:next", "b1:next", "b2:next", "b3:next", "s2:next"])
-        p.stop()
-        
+        p.stop(drainAll: true)
+
         // Let's mark "t5" as to avoid
         layout.trains[0].turnoutsToAvoid.append(.init(Identifier<Turnout>(uuid: "t5")))
 
@@ -321,7 +321,7 @@ class AutomaticRoutingTests: BTTestCase {
         try p.assert("automatic-16405: !{NE4 ≏ ≏ } <C.1{tw}(1,0),s> <M.1{sl}(0,1),s> [r16405[M1 ≡ 🔵🚂16405 ≏ ≏ ]] <r16405<Z.1{sr}(0,1),s>> [r16405[M2U ≏ ]] <Z.2{sl}(1,0),s> <Z.4{sl}(0,1),l> {LCF1 ≏ ≏ }")
         
         XCTAssertEqual(train.state, .running)
-        p.interface().pause()
+        p.interface.pause()
                 
         // Stop request should happy in M2U but the actual stopping of the train should
         // only happen in LCF1, where the restart time should be triggered because LCF1 is a station.
@@ -332,7 +332,7 @@ class AutomaticRoutingTests: BTTestCase {
 
         try p.assert("automatic-16405: !{NE4 ≏ ≏ } <C.1{tw}(1,0),s> <M.1{sl}(0,1),s> [M1 ≏ ≏ ≏ ] <Z.1{sr}(0,1),s> [M2U ≏ ] <Z.2{sl}(1,0),s> <Z.4{sl}(0,1),l> {r16405{LCF1 ≡ 🔴🚂16405 ≏ }}", drainAll: false)
 
-        p.interface().resume()
+        p.interface.resume()
         
         p.layoutController.drainAllEvents()
         
@@ -464,67 +464,15 @@ class AutomaticRoutingTests: BTTestCase {
 
     // MARK: -- Utility
     
-    // Convenience structure to test the layout and its route
-    private struct Package {
-        let layout: Layout
-        let train: Train
-        let route: Route
-        let asserter: LayoutAsserter
-        let layoutController: LayoutController
-        
-        func interface() -> MockCommandInterface {
-            layoutController.interface as! MockCommandInterface
-        }
-        
-        func assert(_ routeString: String, _ leadingBlockNames: [String]? = nil, drainAll: Bool = true) throws {
-            try asserter.assert([routeString], trains: [train], drainAll: drainAll)
-            if let leadingBlockNames = leadingBlockNames {
-                XCTAssertEqual(train.leading.blocks.toStrings(), leadingBlockNames)
-            }
-        }
-        
-        func finish() {
-            layoutController.finish(train: train)
-        }
-        
-        func stop() {
-            layoutController.stop(train: train)
-        }
-        
-        func toggle(_ feedback: String) {
-            layout.feedback(for: Identifier<Feedback>(uuid: feedback))?.detected.toggle()
-            layoutController.runControllers(.feedbackTriggered)
-        }
-    }
-
     private func setup(layout: Layout, fromBlockId: Identifier<Block>, destination: Destination?, position: Position = .start, direction: Direction = .next, expectedState: Train.State = .running, routeSteps: [String]) throws -> Package {
         try setup(layout: layout, train: layout.trains[0], fromBlockId: fromBlockId, destination: destination, position: position, direction: direction, expectedState: expectedState, routeSteps: routeSteps)
     }
-    
+
     private func setup(layout: Layout, train: Train, fromBlockId: Identifier<Block>, destination: Destination?, position: Position = .start, direction: Direction = .next, expectedState: Train.State = .running, routeSteps: [String]) throws -> Package {
-        try layout.setTrainToBlock(train.id, fromBlockId, position: position, direction: direction)
-        XCTAssertEqual(train.speed.requestedKph, 0)
-
-        layout.automaticRouteRandom = false
-                
-        // Start the route
-        let routeId = Route.automaticRouteId(for: train.id)
-        let layoutController = LayoutController(layout: layout, switchboard: nil, interface: MockCommandInterface())
-        try layoutController.start(routeID: routeId, trainID: train.id, destination: destination)
-
-        let route = layout.route(for: routeId, trainId: train.id)!
-        XCTAssertEqual(route.steps.toStrings(layout), routeSteps)
-        XCTAssertEqual(train.scheduling, .managed)
-
-        wait(for: {
-            train.state == expectedState
-        }, timeout: 1.0)
-        
-        XCTAssertEqual(train.state, expectedState)
-
-        let asserter = LayoutAsserter(layout: layout, layoutController: layoutController)
-        
-        return Package(layout: layout, train: train, route: route, asserter: asserter, layoutController: layoutController)
+        let p = Package(layout: layout)
+        try p.prepare(trainID: train.uuid, fromBlockId: fromBlockId.uuid, position: position, direction: direction)
+        try p.start(destination: destination, expectedState: expectedState, routeSteps: routeSteps)
+        return p
     }
     
 }

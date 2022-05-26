@@ -14,6 +14,7 @@ import XCTest
 
 @testable import BTrain
 
+/// Helper class that the unit test uses to prepare, start and stop a train in a layout.
 final class Package {
     let interface = MockCommandInterface()
     let layout: Layout
@@ -36,8 +37,14 @@ final class Package {
         self.layoutController = LayoutController(layout: layout, switchboard: nil, interface: interface)
         self.asserter = LayoutAsserter(layout: layout, layoutController: layoutController)
         
+        layout.automaticRouteRandom = false
         layout.detectUnexpectedFeedback = true
         layout.strictRouteFeedbackStrategy = true
+    }
+
+    func prepare(trainID: String, fromBlockId: String, position: Position = .start, direction: Direction = .next) throws {
+        let routeId = Route.automaticRouteId(for: .init(uuid: trainID))
+        try prepare(routeID: routeId.uuid, trainID: trainID, fromBlockId: fromBlockId, position: position, direction: direction)
     }
     
     func prepare(routeID: String, trainID: String, fromBlockId: String, position: Position = .start, direction: Direction = .next) throws {
@@ -55,15 +62,18 @@ final class Package {
         routes.append(route)
     }
     
-    func start(expectedState: Train.State = .running) throws {
-        try start(routeID: route.id.uuid, trainID: train.id.uuid, expectedState: expectedState)
+    func start(destination: Destination? = nil, expectedState: Train.State = .running, routeSteps: [String]? = nil) throws {
+        try start(routeID: route.id.uuid, trainID: train.id.uuid, destination: destination, expectedState: expectedState, routeSteps: routeSteps)
     }
 
-    func start(routeID: String, trainID: String, expectedState: Train.State = .running) throws {
-        try layoutController.start(routeID: Identifier<Route>(uuid: routeID), trainID: Identifier<Train>(uuid: trainID), destination: nil)
+    func start(routeID: String, trainID: String, destination: Destination? = nil, expectedState: Train.State = .running, routeSteps: [String]? = nil) throws {
+        try layoutController.start(routeID: Identifier<Route>(uuid: routeID), trainID: Identifier<Train>(uuid: trainID), destination: destination)
         let train = layout.train(for: Identifier<Train>(uuid: trainID))!
         XCTAssertEqual(train.scheduling, .managed)
-        
+        if let routeSteps = routeSteps {
+            XCTAssertEqual(route.steps.toStrings(layout), routeSteps)
+        }
+
         // TODO: review this code
         wait(for: {
             train.state == expectedState
@@ -85,8 +95,15 @@ final class Package {
         }
     }
 
-    func stop() {
+    func finish() {
+        layoutController.finish(train: train)
+    }
+
+    func stop(drainAll: Bool = false) {
         layoutController.stop(train: train)
+        if drainAll {
+            layoutController.drainAllEvents()
+        }
     }
     
     func toggle(_ feedback: String) {
