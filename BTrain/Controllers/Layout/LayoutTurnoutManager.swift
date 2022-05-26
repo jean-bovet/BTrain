@@ -12,47 +12,30 @@
 
 import Foundation
 
-// TODO: refactor with dedicate class for turnout and direction? Or not?
-final class LayoutCommandExecutor {
-        
-    weak var layout: Layout?
-    weak var interface: CommandInterface?
-    
+final class LayoutTurnoutManager {
+            
     // Queue to ensure that sending of command for each turnout does happen
     // every 250ms in order to avoid a spike in current on the real layout.
     // TODO: expose that as a settings
     static let turnoutDelay = 0.250 * BaseTimeFactor
     let turnoutQueue = ScheduledMessageQueue(delay: turnoutDelay, name: "Turnout")
-    
-    // Time until the turnout state power is turned off.
-    let activationTime: TimeInterval = 0.2 * BaseTimeFactor
-            
-    init(layout: Layout, interface: CommandInterface) {
-        self.layout = layout
-        self.interface = interface
-    }
-    
-    func sendTurnoutState(turnout: Turnout, completion: @escaping CompletionBlock) {
+                    
+    func sendTurnoutState(turnout: Turnout, interface: CommandInterface, completion: @escaping CompletionBlock) {
         BTLogger.debug("Turnout \(turnout) requested state to \(turnout.requestedState)")
                 
-        guard let interface = interface else {
-            completion()
-            return
-        }
-
         let commands = turnout.requestedStateCommands(power: 0x1)
         let idleCommands = turnout.requestedStateCommands(power: 0x0)
         assert(commands.count == idleCommands.count)
         
+        // Time until the turnout state power is turned off.
+        let activationTime: TimeInterval = 0.2 * BaseTimeFactor
+
         var commandCompletionCount = commands.count
         for (index, command) in commands.enumerated() {
-            turnoutQueue.schedule { [weak self] qc in
-                interface.execute(command: command) { [weak self] in
+            turnoutQueue.schedule { qc in
+                interface.execute(command: command) {
                     qc()
-                    guard let activationTime = self?.activationTime else {
-                        return
-                    }
-                    Timer.scheduledTimer(withTimeInterval: activationTime * BaseTimeFactor, repeats: false) { timer in
+                    Timer.scheduledTimer(withTimeInterval: activationTime, repeats: false) { timer in
                         interface.execute(command: idleCommands[index]) {
                             commandCompletionCount -= 1
                             if commandCompletionCount == 0 {

@@ -27,7 +27,7 @@ extension XCTestCase {
         var time: TimeInterval = 0
         for turnout in train.leading.turnouts {
             let numberOfCommands = turnout.requestedStateCommands(power: 1).count * 2
-            time += Double(numberOfCommands) * LayoutCommandExecutor.turnoutDelay
+            time += Double(numberOfCommands) * LayoutTurnoutManager.turnoutDelay
         }
         return time * 1.5
     }
