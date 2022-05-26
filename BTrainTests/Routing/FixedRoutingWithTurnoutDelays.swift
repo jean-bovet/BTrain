@@ -23,7 +23,7 @@ class FixedRoutingWithTurnoutDelays: BTTestCase {
         let t0 = layout.turnout(named: "t0")
         t0.setState(.branchLeft)
                         
-        let p = FixedRoutingTests.Package(layout: layout)
+        let p = Package(layout: layout)
         p.interface.pause()
         
         try p.prepare(routeID: "r1", trainID: "1", fromBlockId: "b1")
@@ -76,7 +76,7 @@ class FixedRoutingWithTurnoutDelays: BTTestCase {
         let t1 = layout.turnout(named: "t1")
         t1.setState(.branchRight)
                         
-        let p = FixedRoutingTests.Package(layout: layout)
+        let p = Package(layout: layout)
         try p.prepare(routeID: "r1", trainID: "1", fromBlockId: "b1", position: .end)
         
         p.layout.strictRouteFeedbackStrategy = false

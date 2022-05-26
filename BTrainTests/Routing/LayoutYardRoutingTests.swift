@@ -21,7 +21,7 @@ class LayoutYardRoutingTests: BTTestCase {
     func testActivateTurnoutOnlyOnce() throws {
         let layout = LayoutYard().newLayout()
         
-        let p = FixedRoutingTests.Package(layout: layout)
+        let p = Package(layout: layout)
         try p.prepare(routeID: "1", trainID: "0", fromBlockId: "A")
         try p.assert("1: {r0{A 🔴🚂0 ≏ ≏ }} [B ≏ ≏ ] <T1(0,2),s> <T2> <T3> [Z ≏ ≏ ] <T4(1,0)> <T5(1,0)> <T6(2,0),s> [D ≏ ≏ ] {E ≏ ≏ }")
         

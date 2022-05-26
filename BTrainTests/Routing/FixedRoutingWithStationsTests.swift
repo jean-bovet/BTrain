@@ -21,7 +21,7 @@ class FixedRoutingWithStationsTests: BTTestCase {
     func testStationToStation() throws {
         let layout = LayoutLoopWithStations().newLayout()
 
-        let p = FixedRoutingTests.Package(layout: layout)
+        let p = Package(layout: layout)
         try p.prepare(routeID: "r1", trainID: "16390", fromBlockId: "1" /*s1*/, position: .end)
         
         try p.assert("r1: {r16390{s1 ≏ 💺16390 ≏ 🔴🚂16390 }} <ts2(1,0),s> <t1(0,1),s> <t2(0,1),s> [b1 ≏ ≏ ] <t4(1,0)> <tn1(0,1)> {n1 ≏ ≏ }")
@@ -49,7 +49,7 @@ class FixedRoutingWithStationsTests: BTTestCase {
         let layout = LayoutLoopWithStations().newLayout()
         layout.trains[0].maxNumberOfLeadingReservedBlocks = 1
         
-        let p = FixedRoutingTests.Package(layout: layout)
+        let p = Package(layout: layout)
         try p.prepare(routeID: "r1", trainID: "16390", fromBlockId: "1" /*s1*/, position: .end)
         
         try p.assert("r1: {r16390{s1 ≏ 💺16390 ≏ 🔴🚂16390 }} <ts2(1,0),s> <t1(0,1),s> <t2(0,1),s> [b1 ≏ ≏ ] <t4(1,0)> <tn1(0,1)> {n1 ≏ ≏ }")
@@ -78,7 +78,7 @@ class FixedRoutingWithStationsTests: BTTestCase {
     func testMultipleTrains() throws {
         let layout = LayoutComplex().newLayout().removeTrains()
         
-        let p = FixedRoutingTests.Package(layout: layout)
+        let p = Package(layout: layout)
         try p.prepare(routeID: "r1", trainID: "16389", fromBlockId: "NE2", position: .end)
         
         try p.assert("r1: {r16389{NE2 ≏ 💺16389 ≏ 🔴🚂16389 }} <B.4{sl}(1,0),s> <A.1{sl}(2,0),s> <A.34{ds2}(3,2),b03> <A.2{sr}(2,0),r> [IL1 ≏ ≏ ] <H.1{sl}(1,0),s> <D.2{ds2}(0,1),s01> [IL2 ≏ ≏ ≏ ] <E.3{sl}(0,2),l> <E.1{sl}(2,0),l> [OL3 ≏ ≏ ] <F.3{sr}(0,1),s> <F.1{sr}(0,2),r> <E.4{sr}(0,1),s> {r16389{NE2 ≏ 💺16389 ≏ 🔴🚂16389 }}")
