@@ -32,7 +32,7 @@ struct TurnoutShapeView: View {
     }
     
     var shape: TurnoutShape {
-        let shape = TurnoutShape(layout: layout, turnout: turnout, shapeContext: shapeContext)
+        let shape = TurnoutShape(layoutController: nil, layout: layout, turnout: turnout, shapeContext: shapeContext)
         return shape
     }
     

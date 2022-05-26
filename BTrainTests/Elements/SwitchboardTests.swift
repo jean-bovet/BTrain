@@ -29,6 +29,7 @@ class SwitchboardTests: XCTestCase {
         
         let context = ShapeContext()
         provider = ShapeProvider(layout: layout, context: context)
+        provider.updateShapes()
         renderer = SwitchBoardRenderer(provider: provider, shapeContext: context)
         state = SwitchBoard.State()
         dragOp = SwitchBoardDragOperation(layout: layout,

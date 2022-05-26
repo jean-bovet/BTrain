@@ -34,7 +34,7 @@ final class SwitchBoardDragOperation {
     
     let layout: Layout
     let renderer: SwitchBoardRenderer
-    let provider: ShapeProviding
+    let provider: ShapeProvider
     var state: SwitchBoard.State
     
     var selectedPlugId: Int?
@@ -54,7 +54,7 @@ final class SwitchBoardDragOperation {
     // case the user undo the last drag operation
     var snapshot: Data?
     
-    init(layout: Layout, state: SwitchBoard.State, provider: ShapeProviding, renderer: SwitchBoardRenderer) {
+    init(layout: Layout, state: SwitchBoard.State, provider: ShapeProvider, renderer: SwitchBoardRenderer) {
         self.layout = layout
         self.state = state
         self.provider = provider

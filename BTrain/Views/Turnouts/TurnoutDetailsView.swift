@@ -14,6 +14,8 @@ import SwiftUI
 
 struct TurnoutDetailsView: View {
     
+    let doc: LayoutDocument
+    
     @ObservedObject var layout: Layout
 
     @ObservedObject var turnout: Turnout
@@ -88,14 +90,14 @@ struct TurnoutDetailsView: View {
 
                 Spacer()
 
-                // TODO: use layoutController
-//                Button("Set") {
-//                    layout.applyTurnoutState(turnout: turnout)
-//                }
-//
-//                Button("Toggle") {
-//                    layout.toggleTurnoutToNextState(turnout: turnout)
-//                }
+                Button("Set") {
+                    doc.layoutController.sendTurnoutState(turnout: turnout) { }
+                }
+
+                Button("Toggle") {
+                    turnout.toggleToNextState()
+                    doc.layoutController.sendTurnoutState(turnout: turnout) { }
+                }
             }
         }
     }
@@ -157,7 +159,10 @@ extension Turnout {
 }
 
 struct TurnoutDetailsView_Previews: PreviewProvider {
+    
+    static let doc = LayoutDocument(layout: Layout())
+    
     static var previews: some View {
-        TurnoutDetailsView(layout: Layout(), turnout: Turnout())
+        TurnoutDetailsView(doc: doc, layout: doc.layout, turnout: Turnout())
     }
 }

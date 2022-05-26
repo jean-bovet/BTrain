@@ -14,6 +14,7 @@ import SwiftUI
 
 struct TurnoutListView: View {
     
+    let doc: LayoutDocument
     @ObservedObject var layout: Layout
     @State private var selection: Identifier<Turnout>? = nil
     @Environment(\.undoManager) var undoManager
@@ -71,7 +72,7 @@ struct TurnoutListView: View {
             
             if let selection = selection, let turnout = layout.turnout(for: selection) {
                 ScrollView {
-                    TurnoutDetailsView(layout: layout, turnout: turnout)
+                    TurnoutDetailsView(doc: doc, layout: layout, turnout: turnout)
                         .padding()
                 }
             } else {
@@ -87,7 +88,9 @@ struct TurnoutListView: View {
 
 struct TurnoutEditListView_Previews: PreviewProvider {
 
+    static let doc = LayoutDocument(layout: LayoutLoop2().newLayout())
+    
     static var previews: some View {
-        TurnoutListView(layout: LayoutLoop2().newLayout())
+        TurnoutListView(doc: doc, layout: doc.layout)
     }
 }

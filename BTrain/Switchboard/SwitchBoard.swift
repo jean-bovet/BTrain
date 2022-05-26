@@ -38,7 +38,7 @@ final class SwitchBoard: ObservableObject {
     }
         
     let layout: Layout
-    let provider: ShapeProviding
+    let provider: ShapeProvider
     let context: ShapeContext
     let drag: SwitchBoardDragOperation
     let renderer: SwitchBoardRenderer
@@ -50,7 +50,7 @@ final class SwitchBoard: ObservableObject {
         return provider.shapes.filter({$0.visible}).isEmpty
     }
             
-    init(layout: Layout, provider: ShapeProviding, context: ShapeContext) {
+    init(layout: Layout, provider: ShapeProvider, context: ShapeContext) {
         self.layout = layout
         self.provider = provider
         self.context = context
@@ -62,6 +62,11 @@ final class SwitchBoard: ObservableObject {
         
         self.state = state
         self.idealSize = fittedRect().size
+    }
+    
+    func update() {
+        provider.updateShapes()
+        idealSize = fittedRect().size
     }
     
     let margin = 40.0

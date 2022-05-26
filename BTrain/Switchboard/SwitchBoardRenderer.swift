@@ -14,7 +14,7 @@ import Foundation
 
 final class SwitchBoardRenderer {
  
-    let provider: ShapeProviding
+    let provider: ShapeProvider
     let shapeContext: ShapeContext
     
     var ephemeralDragInfo: EphemeralDragInfo?
@@ -25,7 +25,7 @@ final class SwitchBoardRenderer {
         return .init(red: 0, green: 0, blue: 1, alpha: 1)
     }
 
-    init(provider: ShapeProviding, shapeContext: ShapeContext) {
+    init(provider: ShapeProvider, shapeContext: ShapeContext) {
         self.provider = provider
         self.shapeContext = shapeContext
     }

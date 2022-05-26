@@ -18,9 +18,9 @@ import Foundation
 final class SwitchboardLinkUpdater {
     
     let layout: Layout
-    let shapeProvider: ShapeProviding
+    let shapeProvider: ShapeProvider
     
-    init(layout: Layout, shapes: ShapeProviding) {
+    init(layout: Layout, shapes: ShapeProvider) {
         self.layout = layout
         self.shapeProvider = shapes
     }

@@ -75,7 +75,7 @@ final class LayoutObserver {
         turnoutCallbacks.append(callback)
     }
 
-    func registerForTransitioChange(_ callback: @escaping TransitionChangeCallback) {
+    func registerForTransitionChange(_ callback: @escaping TransitionChangeCallback) {
         transitionsCallbacks.append(callback)
     }
 

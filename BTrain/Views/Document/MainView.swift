@@ -41,7 +41,7 @@ struct MainView: View {
             case .blocks:
                 BlockListView(layout: document.layout)
             case .turnouts:
-                TurnoutListView(layout: document.layout)
+                TurnoutListView(doc: document, layout: document.layout)
             case .feedback:
                 FeedbackEditListView(layout: document.layout)
             case .speed:

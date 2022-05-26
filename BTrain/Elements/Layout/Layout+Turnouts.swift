@@ -42,13 +42,5 @@ extension Layout {
             $0.name < $1.name
         }
     }
-
-//    func toggleTurnoutToNextState(turnout: Turnout) {
-//        turnout.toggleToNextState()
-//        executor.sendTurnoutState(turnout: turnout) {}
-//    }
     
-//    func applyTurnoutState(turnout: Turnout) {
-//        executor.sendTurnoutState(turnout: turnout) {}
-//    }
 }

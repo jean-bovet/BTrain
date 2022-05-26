@@ -25,7 +25,8 @@ class SwitchboardRenderingTests: XCTestCase {
         let layout = LayoutLoop1().newLayout()
         let context = ShapeContext()
         let provider = ShapeProvider(layout: layout, context: context)
-
+        provider.updateShapes()
+        
         provider.blockShapes[0].selected = true
         
         let renderer = SwitchBoardRenderer(provider: provider, shapeContext: context)

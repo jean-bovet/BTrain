@@ -13,7 +13,9 @@
 import Foundation
 
 final class TurnoutShape: Shape, DraggableShape, ConnectableShape {
+    weak var layoutController: LayoutController?
     weak var layout: Layout?
+    
     let turnout: Turnout
     let shapeContext: ShapeContext
     
@@ -254,13 +256,14 @@ final class TurnoutShape: Shape, DraggableShape, ConnectableShape {
         return CGPath(ellipseIn: rect, transform: nil)
     }
     
-    convenience init(layout: Layout, turnout: Turnout, center: CGPoint, rotationAngle: CGFloat = 0, shapeContext: ShapeContext) {
-        self.init(layout: layout, turnout: turnout, shapeContext: shapeContext)
+    convenience init(layoutController: LayoutController?, layout: Layout, turnout: Turnout, center: CGPoint, rotationAngle: CGFloat = 0, shapeContext: ShapeContext) {
+        self.init(layoutController: layoutController, layout: layout, turnout: turnout, shapeContext: shapeContext)
         self.turnout.center = center
         self.turnout.rotationAngle = rotationAngle
     }
     
-    init(layout: Layout, turnout: Turnout, shapeContext: ShapeContext) {
+    init(layoutController: LayoutController?, layout: Layout, turnout: Turnout, shapeContext: ShapeContext) {
+        self.layoutController = layoutController
         self.layout = layout
         self.turnout = turnout
         self.shapeContext = shapeContext
@@ -353,8 +356,10 @@ extension TurnoutShape: ActionableShape {
     
     func performAction(at location: CGPoint) -> Bool {
         if inside(location) {
-            // TODO: use layoutController
-//            layout?.toggleTurnoutToNextState(turnout: turnout)
+            turnout.toggleToNextState()
+            layoutController?.sendTurnoutState(turnout: turnout, completion: {
+                // no-op
+            })
             return true
         } else {
             return false

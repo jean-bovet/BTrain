@@ -13,35 +13,12 @@
 import Foundation
 import Combine
 
-protocol ShapeProviding: AnyObject {
-    
-    var shapes: [Shape] { get }
-
-    var selectedShape: Shape? { get }
-
-    var connectableShapes: [ConnectableShape] { get }
-
-    var draggableShapes: [DraggableShape] { get }
-
-    var rotableShapes: [RotableShape] { get }
-
-    var actionableShapes: [ActionableShape] { get }
-
-    var dragOnTapProviders: [EphemeralDragProvider] { get }
-
-    var blockShapes: [BlockShape] { get }
-
-    func append(_ shape: Shape)
-
-    func remove(_ shape: Shape)
-    
-    func blockShape(for blockId: Identifier<Block>) -> BlockShape?
-}
-
-final class ShapeProvider: ShapeProviding {
+final class ShapeProvider {
     
     private (set) var shapes = [Shape]()
 
+    weak var layoutController: LayoutController?
+    
     private let layout: Layout
     private let observer: LayoutObserver
     private let context: ShapeContext
@@ -95,11 +72,11 @@ final class ShapeProvider: ShapeProviding {
             self?.updateShapes(turnouts: turnouts)
         }
         
-        observer.registerForTransitioChange { [weak self] transitions in
+        observer.registerForTransitionChange { [weak self] transitions in
             self?.updateShapes(transitions: transitions)
         }
         
-        updateShapes()
+//        updateShapes()
     }
         
     func updateShapes(blocks: [Block]? = nil, turnouts: [Turnout]? = nil, transitions: [Transition]? = nil) {
@@ -136,7 +113,7 @@ final class ShapeProvider: ShapeProviding {
     
     func updateTurnouts(turnouts: [Turnout]) {
         for turnout in turnouts {
-            append(TurnoutShape(layout: layout, turnout: turnout, shapeContext: context))
+            append(TurnoutShape(layoutController: layoutController, layout: layout, turnout: turnout, shapeContext: context))
         }
     }
         
@@ -155,7 +132,7 @@ final class ShapeProvider: ShapeProviding {
             .first
     }
     
-    func socketInstance(for socket: Socket, shapes: ShapeProviding) throws -> ConnectorSocketInstance {
+    func socketInstance(for socket: Socket, shapes: ShapeProvider) throws -> ConnectorSocketInstance {
         guard let socketId = socket.socketId else {
             throw LayoutError.socketIdNotFound(socket: socket)
         }
@@ -167,7 +144,7 @@ final class ShapeProvider: ShapeProviding {
         }
     }
     
-    func shape(for socket: Socket, shapes: ShapeProviding) throws -> ConnectableShape? {
+    func shape(for socket: Socket, shapes: ShapeProvider) throws -> ConnectableShape? {
         return try shapes.connectableShapes.first { shape in
             if let blockId = socket.block {
                 if let blockShape = shape as? BlockShape {

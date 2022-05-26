@@ -76,7 +76,11 @@ struct SwitchboardPreview: View {
     }
     
     var switchboard: SwitchBoard {
-        return SwitchBoardFactory.generateSwitchboard(layout: layout, simulator: nil, trainIconManager: nil)
+        let context = ShapeContext(simulator: nil, trainIconManager: nil)
+        let shapeProvider = ShapeProvider(layout: layout, context: context)
+        let switchBoard = SwitchBoard(layout: layout, provider: shapeProvider, context: context)
+        switchBoard.update()
+        return switchBoard
     }
     
     var coordinator: LayoutController {

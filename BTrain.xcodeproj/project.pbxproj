@@ -164,7 +164,6 @@
 		A7841382273F972B00381341 /* SwitchBoardRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7841381273F972B00381341 /* SwitchBoardRenderer.swift */; };
 		A7841384273F973D00381341 /* SwitchBoardDragOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7841383273F973D00381341 /* SwitchBoardDragOperation.swift */; };
 		A78413862740791C00381341 /* CGContext+DrawText.swift in Sources */ = {isa = PBXBuildFile; fileRef = A78413852740791C00381341 /* CGContext+DrawText.swift */; };
-		A78413882740DD2D00381341 /* SwitchBoardFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = A78413872740DD2D00381341 /* SwitchBoardFactory.swift */; };
 		A784138A274165FB00381341 /* MarklinCommandSimulator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7841389274165FB00381341 /* MarklinCommandSimulator.swift */; };
 		A784138E274196BB00381341 /* MarklinCommandFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = A784138D274196BB00381341 /* MarklinCommandFactory.swift */; };
 		A784138F274230CF00381341 /* MarklinTestMessageFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7B06AFE2727C01100BDD88C /* MarklinTestMessageFactory.swift */; };
@@ -465,7 +464,6 @@
 		A7841381273F972B00381341 /* SwitchBoardRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwitchBoardRenderer.swift; sourceTree = "<group>"; };
 		A7841383273F973D00381341 /* SwitchBoardDragOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwitchBoardDragOperation.swift; sourceTree = "<group>"; };
 		A78413852740791C00381341 /* CGContext+DrawText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CGContext+DrawText.swift"; sourceTree = "<group>"; };
-		A78413872740DD2D00381341 /* SwitchBoardFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwitchBoardFactory.swift; sourceTree = "<group>"; };
 		A7841389274165FB00381341 /* MarklinCommandSimulator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarklinCommandSimulator.swift; sourceTree = "<group>"; };
 		A784138D274196BB00381341 /* MarklinCommandFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarklinCommandFactory.swift; sourceTree = "<group>"; };
 		A784139027423A8D00381341 /* Command.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Command.swift; sourceTree = "<group>"; };
@@ -917,7 +915,6 @@
 		A743AF0A27CC88BE00A4AE79 /* Switchboard */ = {
 			isa = PBXGroup;
 			children = (
-				A78413872740DD2D00381341 /* SwitchBoardFactory.swift */,
 				A7841373273DCBA000381341 /* SwitchBoard.swift */,
 				A7841381273F972B00381341 /* SwitchBoardRenderer.swift */,
 				A7841383273F973D00381341 /* SwitchBoardDragOperation.swift */,
@@ -1718,7 +1715,6 @@
 				A785C071278A4561002FD538 /* TrainDetailsView.swift in Sources */,
 				A7C8A2E9279BB8A6000C7246 /* NewLayoutWizardView.swift in Sources */,
 				A7012C8528344AC0003AC687 /* DeveloperMetrics.swift in Sources */,
-				A78413882740DD2D00381341 /* SwitchBoardFactory.swift in Sources */,
 				A783EAA92788C1F700E69B6D /* LayoutFeedbackMonitor.swift in Sources */,
 				A795A04127BC832200AE90EB /* SettingsKeys.swift in Sources */,
 				A75933E527E9774600ECB7A0 /* SwitchboardSettingsView.swift in Sources */,

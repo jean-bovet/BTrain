@@ -70,13 +70,17 @@ final class LayoutDocument: ObservableObject {
     @Published var onConnectTasks: LayoutOnConnectTasks
     
     init(layout: Layout, interface: CommandInterface = MarklinInterface()) {
-        self.layout = layout
-        
         let simulator = MarklinCommandSimulator(layout: layout, interface: interface)
+        
         let trainIconManager = TrainIconManager()
-        let switchboard = SwitchBoardFactory.generateSwitchboard(layout: layout, simulator: simulator, trainIconManager: trainIconManager)
+        
+        let context = ShapeContext(simulator: simulator, trainIconManager: trainIconManager)
+        let shapeProvider = ShapeProvider(layout: layout, context: context)
+        let switchboard = SwitchBoard(layout: layout, provider: shapeProvider, context: context)
+        
         let layoutController = LayoutController(layout: layout, switchboard: switchboard, interface: interface)
-
+        
+        self.layout = layout
         self.interface = interface
         self.simulator = simulator
         self.layoutDiagnostics = LayoutDiagnostic(layout: layout)
@@ -86,6 +90,9 @@ final class LayoutDocument: ObservableObject {
                 
         self.onConnectTasks = LayoutOnConnectTasks(layout: layout, layoutController: layoutController, interface: interface)
         
+        switchboard.provider.layoutController = layoutController
+        switchboard.update()
+
         layoutDiagnostics.automaticCheck()
     }
     
