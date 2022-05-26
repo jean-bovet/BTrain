@@ -14,13 +14,17 @@ import Foundation
 import Combine
 import OrderedCollections
 
-// This class is responsible for managing all the trains in the layout,
-// including responding to feedback changes and ensuring the trains
-// are properly following their route.
+/// This class is responsible for managing all the trains in the layout.
+///
+/// This class responds to events from the layout or from the Digital Controller by updating the state
+/// of each train (ie reserved blocks, route).
 final class LayoutController {
     
     // The layout being managed
     let layout: Layout
+    
+    /// The observer that keeps us informed of any change in the layout
+    let layoutObserver: LayoutObserver
     
     // A helper class that monitors feedbacks
     let feedbackMonitor: LayoutFeedbackMonitor
@@ -46,37 +50,17 @@ final class LayoutController {
     
     init(layout: Layout, switchboard: SwitchBoard?, interface: CommandInterface) {
         self.layout = layout
+        self.layoutObserver = LayoutObserver(layout: layout)
         self.switchboard = switchboard
         self.feedbackMonitor = LayoutFeedbackMonitor(layout: layout)
         self.interface = interface
         self.executor = LayoutCommandExecutor(layout: layout, interface: interface)
         self.debugger = LayoutControllerDebugger(layout: layout)
         
-        registerForChange()
-        
-        updateControllers()
-    }
-        
-    func registerForChange() {
         registerForFeedbackChange()
         registerForDirectionChange()
         registerForTurnoutChange()
-    }
-    
-    func updateControllers() {
-        for train in layout.trains {
-            if speedManagers[train.id] == nil {
-                let acceleration = TrainSpeedManager(train: train, interface: interface, speedChanged: { [weak self] in
-                    self?.runControllers(.speedChanged)
-                })
-                speedManagers[train.id] = acceleration
-            }
-        }
-
-        // Remove controllers that don't belong to an existing train
-        speedManagers = speedManagers.filter({ element in
-            layout.train(for: element.key) != nil
-        })
+        registerForTrainChange()
     }
     
     /// Array of pending events that need to be processed by each train controller
@@ -116,9 +100,6 @@ final class LayoutController {
             return .none()
         }
         BTLogger.router.debug("⚙ Evaluating the layout for '\(event, privacy: .public)'")
-
-        // Process the latest changes
-        updateControllers()
                 
         // Run each controller one by one, using
         // the sorted keys to ensure they always
@@ -317,6 +298,41 @@ final class LayoutController {
 
 extension LayoutController {
     
+    func registerForTrainChange() {
+        layoutObserver.registerForTrainChange { [weak self] trains in
+            self?.updateSpeedManagers(with: trains)
+        }
+        
+        updateSpeedManagers(with: layout.trains)
+    }
+    
+    func speedManager(for train: Train) -> TrainSpeedManager {
+        if let speedManager = speedManagers[train.id] {
+            return speedManager
+        } else {
+            let speedManager = TrainSpeedManager(train: train, interface: interface, speedChanged: { [weak self] in
+                self?.runControllers(.speedChanged)
+            })
+            speedManagers[train.id] = speedManager
+            return speedManager
+        }
+    }
+    
+    func updateSpeedManagers(with trains: [Train]) {
+        for train in trains {
+            _ = speedManager(for: train)
+        }
+
+        // Remove controllers that don't belong to an existing train
+        speedManagers = speedManagers.filter({ element in
+            layout.train(for: element.key) != nil
+        })
+    }
+    
+}
+
+extension LayoutController {
+    
     // TODO: can we use Route and Train instance directly?
     func start(routeID: Identifier<Route>, trainID: Identifier<Train>, destination: Destination? = nil) throws {
         guard let route = layout.route(for: routeID, trainId: trainID) else {
@@ -426,15 +442,8 @@ extension LayoutController {
         // yet, we might think we don't need to send another train speed change request. But this is incorrect
         // because if we don't do that, the previous speed change request will continue to execute while
         // it is not our intention).
-        // TODO: executor not used? Should we refactor how this is done?
-        if let controller = speedManagers[train.id] {
-            controller.changeSpeed(acceleration: acceleration) { completed in
-                completion?(completed)
-            }
-        } else {
-            assertionFailure("There is no TrainSpeedManager for \(train.name)")
-            BTLogger.router.error("There is no TrainSpeedManager for \(train.name, privacy: .public)")
-            completion?(false)
+        speedManager(for: train).changeSpeed(acceleration: acceleration) { completed in
+            completion?(completed)
         }
     }
 
