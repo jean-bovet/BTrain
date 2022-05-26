@@ -47,7 +47,11 @@ final class MarklinInterface: CommandInterface {
             onReady()
         } onData: { [weak self] msg in
             DispatchQueue.main.async {
-                self?.handleMessage(msg)
+                if msg.isAck {
+                    self?.handleAcknowledgment(msg)
+                } else {
+                    self?.handleCommand(msg)
+                }
             }
         } onError: { [weak self] error in
             self?.client = nil
@@ -128,7 +132,7 @@ final class MarklinInterface: CommandInterface {
         }
     }
     
-    private func handleMessage(_ msg: MarklinCANMessage) {
+    private func handleCommand(_ msg: MarklinCANMessage) {
         if let cmd = MarklinCommand.from(message: msg) {
             // Handle any Marklin-specific command first
             switch(cmd) {
@@ -138,11 +142,34 @@ final class MarklinInterface: CommandInterface {
                     let locomotives = locomotives.map { $0.commandLocomotive }
                     self.locomotivesQueryCallbacks.forEach { $0(locomotives) }
                 }
-            case .queryDirectionResponse(address: let address, decoderType: let decoderType, direction: let direction, descriptor: _):
-                if msg.isAck {
-                    directionChangeCallbacks.forEach { $0(address, decoderType, direction) }
-                }
+            case .queryDirectionResponse(_, _, _, _):
+                break
+            }
+            return
+        }
+        
+        let cmd = Command.from(message: msg)
+        switch cmd {
+        case .emergencyStop(let address, let decoderType, _, _):
+            // Execute a command to query the direction of the locomotive at this particular address
+            // The response from this command is going to be processed below in the case .direction
+            execute(command: .queryDirection(address: address, decoderType: decoderType))
 
+        default:
+            break
+        }
+    }
+    
+    private func handleAcknowledgment(_ msg: MarklinCANMessage) {
+        if let cmd = MarklinCommand.from(message: msg) {
+            // Handle any Marklin-specific command first
+            switch(cmd) {
+            case .configDataStream(_, _, _):
+                break // ignore ack for this command
+
+            case .queryDirectionResponse(address: let address, decoderType: let decoderType, direction: let direction, descriptor: _):
+                directionChangeCallbacks.forEach { $0(address, decoderType, direction) }
+                
                 // This command is sent back from the Central Station after a .queryDirection() command
                 // has been sent. We need to remove the byte5 that holds the direction parameter in order
                 // to correctly invoke the completion block.
@@ -151,7 +178,7 @@ final class MarklinInterface: CommandInterface {
             }
             return
         }
-        
+
         // Handle generic command
         let cmd = Command.from(message: msg)
         switch cmd {
@@ -161,26 +188,13 @@ final class MarklinInterface: CommandInterface {
         case .stop(_, _):
             triggerCompletionBlock(for: msg)
 
-        case .emergencyStop(let address, let decoderType, _, _):
-            // Execute a command to query the direction of the locomotive at this particular address
-            // The response from this command is going to be processed below in the case .direction
-            execute(command: .queryDirection(address: address, decoderType: decoderType))
-
         case .speed(let address, let decoderType, let value, _, _):
-            if msg.isAck {
-                triggerCompletionBlock(for: msg)
-                speedChangeCallbacks.forEach { $0(address, decoderType, value) }
-            }
+            triggerCompletionBlock(for: msg)
+            speedChangeCallbacks.forEach { $0(address, decoderType, value) }
 
         case .direction(let address, let decoderType, let direction, _, _):
             triggerCompletionBlock(for: msg)
-            if msg.isAck {
-                directionChangeCallbacks.forEach { $0(address, decoderType, direction) }
-            }
-
-        case .queryDirection(_, _, _, _):
-            // Ignore query direction command from the Central Station as we don't have anything to do with it.
-            break
+            directionChangeCallbacks.forEach { $0(address, decoderType, direction) }
             
         case .turnout(let address, let state, let power, _, _):
             triggerCompletionBlock(for: msg)
@@ -188,14 +202,12 @@ final class MarklinInterface: CommandInterface {
 
         case .feedback(let deviceID, let contactID, _, let newValue, _, _, _):
             triggerCompletionBlock(for: msg)
-            if msg.isAck {
-                feedbackChangeCallbacks.forEach { $0.value(deviceID, contactID, newValue) }
-            }
+            feedbackChangeCallbacks.forEach { $0.value(deviceID, contactID, newValue) }
 
         case .locomotives(_, _):
             triggerCompletionBlock(for: msg)
 
-        case .unknown(_, _, _):
+        default:
             break
         }
     }
