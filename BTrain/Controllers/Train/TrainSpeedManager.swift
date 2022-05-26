@@ -137,7 +137,6 @@ final class TrainSpeedManager {
             if steps == .zero && finished {
                 /// Settle only if the train stopped and the speed change hasn't been cancelled.
                 /// Note: see comment in ``TrainControllerAcceleration/StopSettleDelayTimer``
-                // TODO: wait for the acknowledgement from Digital Controller instead
                 stopSettleDelayTimer.schedule(train: train, completed: finished) { [weak self] completed in
                     completion(completed)
                     self?.invokeAdditionalCompletionBlocks(for: requestUUID, completed: completed)

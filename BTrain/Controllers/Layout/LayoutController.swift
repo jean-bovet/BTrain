@@ -412,18 +412,7 @@ extension LayoutController {
         turnout.actualStateReceived = false
         executor.sendTurnoutState(turnout: turnout, completion: completion)
     }
-    
-    /// Send a train direction command
-    ///
-    /// - Parameters:
-    ///   - train: the train to change the direction
-    ///   - forward: true for forward direction, false for backward direction
-    ///   - completion: completion block called when the command has been sent
-    func sendTrainDirection(train: Train, forward: Bool, completion: @escaping CompletionBlock) {
-        BTLogger.router.debug("\(train, privacy: .public): change train direction to \(forward)")
-        executor.sendTrainDirection(train: train, forward: forward, completion: completion)
-    }
-    
+        
     func setTrainSpeed(_ train: Train, _ speed: TrainSpeed.UnitKph, speedLimit: Bool = true, force: Bool = false, acceleration: TrainSpeedAcceleration.Acceleration? = nil, completion: CompletionCancelBlock? = nil) {
         if speedLimit {
             let route = layout.route(for: train.routeId, trainId: train.id)
@@ -449,13 +438,19 @@ extension LayoutController {
 
     // Set the direction of travel of the locomotive
     func setLocomotiveDirection(_ train: Train, forward: Bool, completion: CompletionBlock? = nil) {
-        if train.directionForward != forward {
-            sendTrainDirection(train: train, forward: forward) {
-                completion?()
-            }
-        } else {
+        guard train.directionForward != forward else {
             completion?()
+            return
         }
+        
+        BTLogger.router.debug("\(train, privacy: .public): change train direction to \(forward ? "forward" : "backward")")
+        let command: Command
+        if forward {
+            command = .direction(address: train.address, decoderType: train.decoder, direction: .forward)
+        } else {
+            command = .direction(address: train.address, decoderType: train.decoder, direction: .backward)
+        }
+        interface.execute(command: command, completion: completion)
     }
     
     /// Set the position of a train within the current block

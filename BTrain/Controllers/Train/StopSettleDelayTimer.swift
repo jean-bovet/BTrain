@@ -17,7 +17,7 @@ extension TrainSpeedManager {
     /// Timer that handles the stop settle delay time.
     ///
     /// When stopping a locomotive, we need to wait a bit more to ensure the locomotive
-    /// has effectively stopped physically on the layout. This is because we want to callback
+    /// has effectively stopped physically on the layout. This is because we want to call back
     /// the `completion` block only when the locomotive has stopped (otherwise, it might continue
     /// to move and activate an unexpected feedback because the layout think it has stopped already).
     /// There is unfortunately no way to know without ambiguity from the Digital Controller if the
