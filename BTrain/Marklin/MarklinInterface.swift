@@ -167,8 +167,8 @@ final class MarklinInterface: CommandInterface {
             execute(command: .queryDirection(address: address, decoderType: decoderType))
 
         case .speed(let address, let decoderType, let value, _, _):
-            triggerCompletionBlock(for: msg)
             if msg.isAck {
+                triggerCompletionBlock(for: msg)
                 speedChangeCallbacks.forEach { $0(address, decoderType, value) }
             }
 

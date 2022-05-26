@@ -67,7 +67,9 @@ final class TrainSpeedManager {
         
         interface.register(forSpeedChange: { address, decoder, value in
             if train.address.actualAddress(for: train.decoder) == address.actualAddress(for: decoder) {
-                // TODO: only do that if this is not an acknowledgement
+                // Note: the `speedCommandExecuted` function below is also updating the actual steps
+                // when a speed command completion happens. This is fine because for each speed change,
+                // we need to call both the completion block and the change callback here.
                 train.speed.actualSteps = interface.speedSteps(for: value, decoder: train.decoder)
                 BTLogger.router.debug("\(train, privacy: .public): actual speed is \(train.speed.actualKph) kph (\(train.speed.actualSteps))")
                 speedChanged?()
@@ -125,9 +127,6 @@ final class TrainSpeedManager {
     }
     
     private func speedCommandExecuted(steps: SpeedStep, status: Status, requestedKph: TrainSpeed.UnitKph, requestUUID: Int, completion: @escaping CompletionCancelBlock) {
-        // Note: LayoutController+Listeners is the one listening for speed change acknowledgement from the Digital Controller and update the actual speed.
-        // TODO: is that the best way or should we centralize that here?
-        
         let value = interface.speedValue(for: steps, decoder: train.decoder)
         train.speed.actualSteps = interface.speedSteps(for: value, decoder: train.decoder)
 
