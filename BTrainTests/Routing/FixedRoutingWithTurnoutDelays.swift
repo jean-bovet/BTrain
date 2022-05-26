@@ -35,7 +35,7 @@ class FixedRoutingWithTurnoutDelays: BTTestCase {
         try p.start(expectedState: .stopped)
 
         // t0 has still the state .branchLeft instead of the requested .straight
-        try p.assert("r1: {r1{b1 🔴🚂1 ≏ ≏ }} <r1<t0,l>> [r1[b2 ≏ ≏ ]] <t1(0,2)> [b3 ≏ ≏ ] <r1<t0(2,0),l>> !{r1{b1 ≏ ≏ }}", drainAll: false)
+        try p.assert("r1: {r1{b1 🔴🚂1 ≏ ≏ }} <r1<t0,l>> [r1[b2 ≏ ≏ ]] <t1(0,2)> [b3 ≏ ≏ ] <r1<t0(2,0),l>> !{r1{b1 ≏ ≏ }}")
 
         // This will settle the turnout t0
         p.interface.resume()
@@ -53,8 +53,8 @@ class FixedRoutingWithTurnoutDelays: BTTestCase {
         p.interface.pause()
 
         // The train will stop because the leading turnouts are not yet fully settled
-        try p.assert("r1: {b1 ≏ ≏ } <t0> [r1[b2 ≡ 🟡🚂1 ≏ ]] <r1<t1(0,2),s>> [r1[b3 ≏ ≏ ]] <t0(2,0)> !{b1 ≏ ≏ }", drainAll: false)
-        try p.assert("r1: {b1 ≏ ≏ } <t0> [r1[b2 ≏ ≡ 🔴🚂1 ]] <r1<t1(0,2),s>> [r1[b3 ≏ ≏ ]] <t0(2,0)> !{b1 ≏ ≏ }", drainAll: false)
+        try p.assert("r1: {b1 ≏ ≏ } <t0> [r1[b2 ≡ 🟡🚂1 ≏ ]] <r1<t1(0,2),s>> [r1[b3 ≏ ≏ ]] <t0(2,0)> !{b1 ≏ ≏ }")
+        try p.assert("r1: {b1 ≏ ≏ } <t0> [r1[b2 ≏ ≡ 🔴🚂1 ]] <r1<t1(0,2),s>> [r1[b3 ≏ ≏ ]] <t0(2,0)> !{b1 ≏ ≏ }")
         
         // Resuming the executor which will settle the leading turnouts
         p.interface.resume()
@@ -92,8 +92,7 @@ class FixedRoutingWithTurnoutDelays: BTTestCase {
         p.interface.pause()
 
         // Train is now braking because not enough leading settled distance
-        // TODO: automatically disable draining when the interface is on pause?
-        try p.assert("r1: {b1 ≏ ≏ } <t0> [r1[b2 ≡ 🟡🚂1 ≏ ]] [r1[b3 ≏ ≏ ]] <r1<t1,r>> [r1[b4 ≏ ≏]] {b1 ≏ ≏ }", drainAll: false)
+        try p.assert("r1: {b1 ≏ ≏ } <t0> [r1[b2 ≡ 🟡🚂1 ≏ ]] [r1[b3 ≏ ≏ ]] <r1<t1,r>> [r1[b4 ≏ ≏]] {b1 ≏ ≏ }")
         XCTAssertEqual(p.train.state, .braking)
 
         p.interface.resume()

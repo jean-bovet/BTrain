@@ -104,7 +104,10 @@ final class Package {
         toggle(f2)
     }
 
-    func assert(_ r1: String, _ leadingBlocks: [String]? = nil, drainAll: Bool = true) throws {
+    func assert(_ r1: String, _ leadingBlocks: [String]? = nil) throws {
+        // Drain all events when the interface is running. If the interface is on pause,
+        // do not drain because the drain will never exits as the interface never executes.
+        let drainAll = interface.running
         try asserter.assert([r1], trains: trains, drainAll: drainAll)
         if let leadingBlocks = leadingBlocks {
             try assertLeadingBlocks(leadingBlocks)
