@@ -20,34 +20,48 @@ class ManualOperationTests: BTTestCase {
         let layout = LayoutLoop1().newLayout()
         let p = try setup(layout: layout, fromBlockId: "b1")
         
-        p.setTrainSpeed(LayoutFactory.DefaultMaximumSpeed, speedLimit: false)
+        connectToSimulator(doc: p.doc)
+        defer {
+            disconnectFromSimulator(doc: p.doc)
+        }
         
+        let strain = p.doc.simulator.trains.first(where: { $0.train.id == p.train.id })!
+        let steps = p.train.speed.steps(for: LayoutFactory.DefaultMaximumSpeed)
+        strain.speed = steps // p.doc.interface.speedValue(for: steps, decoder: p.train.decoder)
+        p.doc.simulator.setTrainSpeed(train: strain)
+        
+        wait(for: {
+            p.train.speed.actualSteps.value > 0
+        }, timeout: 1.0)
+                
         try p.assertTrain(inBlock: "b1", position: 0, speed: LayoutFactory.DefaultMaximumSpeed)
 
         try p.triggerFeedback("f21")
         
         try p.assertTrain(notInBlock: "b1")
         try p.assertTrain(inBlock: "b2", position: 1, speed: LayoutFactory.DefaultMaximumSpeed)
-        
+                
         try p.triggerFeedback("f21", false)
         try p.triggerFeedback("f22")
-        
+
         try p.assertTrain(notInBlock: "b1")
         try p.assertTrain(inBlock: "b2", position: 2, speed: LayoutFactory.DefaultMaximumSpeed)
-        
+
         try p.triggerFeedback("f22", false)
         try p.triggerFeedback("f11")
-        
+
         try p.assertTrain(notInBlock: "b2")
         try p.assertTrain(inBlock: "b1", position: 1, speed: LayoutFactory.DefaultMaximumSpeed)
 
         // Put another train in b2 and ensure the train is stopped when
         // it reaches the end of b1 as a protection mechanism
         layout.blocks[1].reserved = .init("anotherTrain", .next)
-        
+
         try p.triggerFeedback("f11", false)
         try p.triggerFeedback("f12")
-        
+
+        p.doc.layoutController.drainAllEvents()
+
         try p.assertTrain(notInBlock: "b2")
         try p.assertTrain(inBlock: "b1", position: 2, speed: 0)
     }
@@ -185,6 +199,7 @@ class ManualOperationTests: BTTestCase {
     
     // Convenience structure to test the layout and its route
     private struct Package {
+        let doc: LayoutDocument
         let layout: Layout
         let train: Train
         let asserter: LayoutAsserter
@@ -198,7 +213,7 @@ class ManualOperationTests: BTTestCase {
             
             XCTAssertEqual(block.train?.trainId, train.id)
             XCTAssertEqual(train.position, position)
-            XCTAssertEqual(train.speed.requestedKph, speed)
+            XCTAssertEqual(train.speed.actualKph, speed, accuracy: 1)
         }
         
         func assertTrain(notInBlock named: String) throws {
@@ -230,15 +245,17 @@ class ManualOperationTests: BTTestCase {
         layout.strictRouteFeedbackStrategy = true
 
         let train = layout.trains[0]
-        try layout.setTrainToBlock(train.id, Identifier<Block>(uuid: fromBlockId), position: position, direction: direction)
+        
+        let doc = LayoutDocument(layout: layout)
+
+        try doc.layoutController.setTrainToBlock(train, Identifier<Block>(uuid: fromBlockId), position: position, direction: direction)
         
         XCTAssertEqual(train.speed.requestedKph, 0)
         XCTAssertEqual(train.scheduling, .unmanaged)
         XCTAssertEqual(train.state, .stopped)
 
-        let layoutController = LayoutController(layout: layout, switchboard: nil, interface: MarklinInterface())
-        let asserter = LayoutAsserter(layout: layout, layoutController: layoutController)
-        return Package(layout: layout, train: train, asserter: asserter, layoutController: layoutController)
+        let asserter = LayoutAsserter(layout: layout, layoutController: doc.layoutController)
+        return Package(doc: doc, layout: layout, train: train, asserter: asserter, layoutController: doc.layoutController)
     }
 
 }

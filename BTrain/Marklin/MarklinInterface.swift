@@ -39,7 +39,7 @@ final class MarklinInterface: CommandInterface {
     ///
     /// The CAN message is of type ``MarklinCANMessageRaw`` which does not contain the hash nor the response bit. This allows
     /// for easy comparison between a message sent and a message received (see description of ``MarklinCANMessageRaw``).
-    private var completionBlocks = [MarklinCANMessageRaw:CompletionBlock]()
+    private var completionBlocks = [MarklinCANMessageRaw:[CompletionBlock]]()
 
     func connect(server: String, port: UInt16, onReady: @escaping () -> Void, onError: @escaping (Error) -> Void, onStop: @escaping () -> Void) {
         client = Client(host: server, port: port)
@@ -126,8 +126,10 @@ final class MarklinInterface: CommandInterface {
     }
     
     private func triggerCompletionBlock(for rawMessage: MarklinCANMessageRaw) {
-        if let completionBlock = completionBlocks[rawMessage] {
-            completionBlock()
+        if let blocks = completionBlocks[rawMessage] {
+            for completionBlock in blocks {
+                completionBlock()
+            }
             completionBlocks[rawMessage] = nil
         }
     }
@@ -220,8 +222,7 @@ final class MarklinInterface: CommandInterface {
         }
         
         if let completion = completion {
-            assert(completionBlocks[message.raw] == nil, "A completion block is already in progress for \(message)")
-            completionBlocks[message.raw] = completion
+            completionBlocks[message.raw] = (completionBlocks[message.raw] ?? []) + [completion]
         }
 
         client.send(data: message.data, priority: priority == .high) {

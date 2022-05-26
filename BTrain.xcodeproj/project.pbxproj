@@ -1059,7 +1059,6 @@
 		A775C62027A37C1300D712CF /* Routing */ = {
 			isa = PBXGroup;
 			children = (
-				A7F345B428400133002355B1 /* LayoutPackage.swift */,
 				A73E0815276B0BC0005F9D64 /* FixedRoutingTests.swift */,
 				A717FB20281FAE2400310B5D /* FixedRoutingWithStationsTests.swift */,
 				A76F3562282EF8C3004EBD10 /* FixedRoutingWithTurnoutDelays.swift */,
@@ -1069,6 +1068,7 @@
 				A7E78C4927A22B23004D1821 /* ManualOperationTests.swift */,
 				A798BB4B27ACD8E8000BB4D1 /* RouteResolverTests.swift */,
 				A78B996327FD56D80021EFE4 /* GraphTests.swift */,
+				A7F345B428400133002355B1 /* LayoutPackage.swift */,
 			);
 			path = Routing;
 			sourceTree = "<group>";
