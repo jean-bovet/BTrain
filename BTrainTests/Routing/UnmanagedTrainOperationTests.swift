@@ -13,7 +13,7 @@
 import XCTest
 @testable import BTrain
 
-class ManualOperationTests: BTTestCase {
+class UnmanagedTrainOperationTests: BTTestCase {
 
     // b1 > b2 > b1
     func testFollowManualOperation() throws {
@@ -25,14 +25,7 @@ class ManualOperationTests: BTTestCase {
             disconnectFromSimulator(doc: p.doc)
         }
         
-        let strain = p.doc.simulator.trains.first(where: { $0.train.id == p.train.id })!
-        let steps = p.train.speed.steps(for: LayoutFactory.DefaultMaximumSpeed)
-        strain.speed = steps // p.doc.interface.speedValue(for: steps, decoder: p.train.decoder)
-        p.doc.simulator.setTrainSpeed(train: strain)
-        
-        wait(for: {
-            p.train.speed.actualSteps.value > 0
-        }, timeout: 1.0)
+        p.setTrainSpeed(LayoutFactory.DefaultMaximumSpeed)
                 
         try p.assertTrain(inBlock: "b1", position: 0, speed: LayoutFactory.DefaultMaximumSpeed)
 
@@ -109,7 +102,12 @@ class ManualOperationTests: BTTestCase {
                 
         let p = try setup(layout: layout, fromBlockId: "b1", position: .end)
         
-        p.setTrainSpeed(LayoutFactory.DefaultMaximumSpeed, speedLimit: false)
+        connectToSimulator(doc: p.doc)
+        defer {
+            disconnectFromSimulator(doc: p.doc)
+        }
+
+        p.setTrainSpeed(LayoutFactory.DefaultMaximumSpeed)
 
         try p.assertTrain(inBlock: "b1", position: 2, speed: LayoutFactory.DefaultMaximumSpeed)
 
@@ -135,6 +133,8 @@ class ManualOperationTests: BTTestCase {
         try p.triggerFeedback("f32")
         
         // Train stops because its tail is still in the block b1
+        p.layoutController.drainAllEvents()
+        
         try p.assertTrain(inBlock: "b1", position: 2, speed: 0)
         try p.assertTrain(inBlock: "b2", position: 2, speed: 0)
         try p.assertTrain(inBlock: "b3", position: 2, speed: 0)
@@ -173,7 +173,12 @@ class ManualOperationTests: BTTestCase {
         
         let p = try setup(layout: layout, fromBlockId: "b1")
         
-        p.setTrainSpeed(100, speedLimit: false)
+        connectToSimulator(doc: p.doc)
+        defer {
+            disconnectFromSimulator(doc: p.doc)
+        }
+
+        p.setTrainSpeed(100)
 
         try p.assertTrain(inBlock: "b1", position: 0, speed: 100)
         try p.assertTrain(notInBlock: "b2")
@@ -189,7 +194,9 @@ class ManualOperationTests: BTTestCase {
         XCTAssertEqual(headWagonBlock.id, b3.id)
 
         // The train should stop because it is occupying all the blocks and will hit
-        // itself back in b1 if it continues.
+        // itself back in b1 if it continues.        
+        p.layoutController.drainAllEvents()
+
         try p.assertTrain(inBlock: "b1", position: 1, speed: 0)
         try p.assertTrain(inBlock: "b2", position: 1, speed: 0)
         try p.assertTrain(inBlock: "b3", position: 1, speed: 0)
@@ -225,8 +232,15 @@ class ManualOperationTests: BTTestCase {
             XCTAssertNil(block.train)
         }
         
-        func setTrainSpeed(_ speed: TrainSpeed.UnitKph, speedLimit: Bool) {
-            layoutController.setTrainSpeed(train, speed, speedLimit: speedLimit)
+        func setTrainSpeed(_ speed: TrainSpeed.UnitKph) {
+            let strain = doc.simulator.trains.first(where: { $0.train.id == train.id })!
+            let steps = train.speed.steps(for: speed)
+            strain.speed = steps // p.doc.interface.speedValue(for: steps, decoder: p.train.decoder)
+            doc.simulator.setTrainSpeed(train: strain)
+            
+            BTTestCase.wait(for: {
+                abs(train.speed.actualSteps.value.distance(to: steps.value)) <= 1
+            }, timeout: 2.0)
         }
                 
         func triggerFeedback(_ named: String, _ detected: Bool = true) throws {

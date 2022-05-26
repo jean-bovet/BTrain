@@ -75,26 +75,13 @@ final class Package {
         }
 
         // TODO: review this code
-        wait(for: {
+        BTTestCase.wait(for: {
             train.state == expectedState
         }, timeout: 2.0)
         
         XCTAssertEqual(train.state, expectedState)
     }
     
-    // TODO: refactor has it exist already in XCTestCase+Extension
-    func wait(for block: () -> Bool, timeout: TimeInterval) {
-        let current = RunLoop.current
-        let startTime = Date()
-        while !block() {
-            current.run(until: Date(timeIntervalSinceNow: 0.01))
-            if Date().timeIntervalSince(startTime) >= timeout {
-                XCTFail("Time out")
-                break
-            }
-        }
-    }
-
     func finish() {
         layoutController.finish(train: train)
     }

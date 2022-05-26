@@ -16,8 +16,7 @@ import XCTest
 
 class LayoutYardRoutingTests: BTTestCase {
     
-    /// Ensure turnouts are not activated unnecessarily when the blocks are reserved
-    /// and re-reserved again.
+    /// Ensure turnouts are not activated unnecessarily when the blocks are reserved and re-reserved again.
     func testActivateTurnoutOnlyOnce() throws {
         let layout = LayoutYard().newLayout()
         

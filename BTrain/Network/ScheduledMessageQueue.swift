@@ -44,7 +44,7 @@ final class ScheduledMessageQueue {
     let delay: TimeInterval
     let name: String
     
-    init(delay: TimeInterval = ScheduledMessageQueue.DefaultDelay, name: String) {
+    init(delay: TimeInterval = ScheduledMessageQueue.DefaultDelay * BaseTimeFactor, name: String) {
         self.delay = delay
         self.name = name
         MainThreadQueue.sync {

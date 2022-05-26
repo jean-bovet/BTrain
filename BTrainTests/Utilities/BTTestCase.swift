@@ -27,4 +27,17 @@ class BTTestCase: XCTestCase {
         UserDefaults.standard.setValuesForKeys(backup)
         BaseTimeFactor = 1.0
     }
+    
+    static func wait(for block: () -> Bool, timeout: TimeInterval) {
+        let current = RunLoop.current
+        let startTime = Date()
+        while !block() {
+            current.run(until: Date(timeIntervalSinceNow: 0.001))
+            if Date().timeIntervalSince(startTime) >= timeout {
+                XCTFail("Time out")
+                break
+            }
+        }
+    }
+
 }
