@@ -21,6 +21,7 @@ final class BTLogger {
     enum Category: String {
         case network
         case router
+        case speed
         case reservation
     }
     
@@ -37,6 +38,8 @@ final class BTLogger {
             return SettingsKeys.bool(forKey: SettingsKeys.logCategoryNetwork)
         case .router:
             return SettingsKeys.bool(forKey: SettingsKeys.logCategoryRouter)
+        case .speed:
+            return SettingsKeys.bool(forKey: SettingsKeys.logCategorySpeed)
         case .reservation:
             return SettingsKeys.bool(forKey: SettingsKeys.logCategoryReservation)
         }
@@ -48,6 +51,9 @@ final class BTLogger {
     /// The router logger instance
     static var router = newLogger(category: .router)
     
+    /// The speed logger instance
+    static var speed = newLogger(category: .speed)
+
     /// The reservation logger instance
     static var reservation = newLogger(category: .reservation)
 
@@ -55,6 +61,7 @@ final class BTLogger {
     static func updateLoggerInstances() {
         network = newLogger(category: .network)
         router = newLogger(category: .router)
+        speed = newLogger(category: .speed)
         reservation = newLogger(category: .reservation)
     }
     

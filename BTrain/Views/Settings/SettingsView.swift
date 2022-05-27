@@ -39,6 +39,7 @@ struct SettingsView: View {
     
     @AppStorage(SettingsKeys.logCategoryNetwork) private var logCategoryNetwork = false
     @AppStorage(SettingsKeys.logCategoryRouter) private var logCategoryRouter = false
+    @AppStorage(SettingsKeys.logCategorySpeed) private var logCategorySpeed = false
     @AppStorage(SettingsKeys.logCategoryReservation) private var logCategoryReservation = false
 
     var body: some View {
@@ -93,11 +94,13 @@ struct SettingsView: View {
                 Section(header: Text("Log Category")) {
                     Toggle("Network", isOn: $logCategoryNetwork)
                     Toggle("Router", isOn: $logCategoryRouter)
+                    Toggle("Speed", isOn: $logCategorySpeed)
                     Toggle("Reservation", isOn: $logCategoryReservation)
                 }
             }
             .onChange(of: logCategoryNetwork, perform: { _ in BTLogger.updateLoggerInstances() })
             .onChange(of: logCategoryRouter, perform: { _ in BTLogger.updateLoggerInstances() })
+            .onChange(of: logCategorySpeed, perform: { _ in BTLogger.updateLoggerInstances() })
             .onChange(of: logCategoryReservation, perform: { _ in BTLogger.updateLoggerInstances() })
             .tabItem {
                 Label("Logging", systemImage: "doc.text.fill")

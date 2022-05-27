@@ -36,6 +36,7 @@ struct SettingsKeys {
     
     static let logCategoryNetwork = "logCategoryNetwork"
     static let logCategoryRouter = "logCategoryRouter"
+    static let logCategorySpeed = "logCategorySpeed"
     static let logCategoryReservation = "logCategoryReservation"
 
     static func bool(forKey key: String) -> Bool {

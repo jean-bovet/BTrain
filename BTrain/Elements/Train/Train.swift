@@ -246,6 +246,7 @@ final class Train: Element, ObservableObject {
 
     var description: String {
         var text = "Train '\(name)' (id=\(id), \(state)"
+        text += ", \(scheduling)"
         if let blockId = blockId {
             text += ", \(blockId)"
         }

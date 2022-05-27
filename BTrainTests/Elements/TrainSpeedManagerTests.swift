@@ -14,30 +14,10 @@ import XCTest
 
 @testable import BTrain
 
-class TrainInertiaTests: BTTestCase {
-
-    func testTrainSpecificValues() {
-        let t = Train()
-
-        var ic = TrainSpeedManager(train: t, interface: MockCommandInterface())
-        XCTAssertEqual(TrainSpeedManager.DefaultStepSize, ic.stepIncrement)
-        XCTAssertEqual(Double(TrainSpeedManager.DefaultStepDelay)/1000, ic.stepDelay)
-
-        t.speed.accelerationStepSize = 3
-        t.speed.accelerationStepDelay = 250
-
-        // The values don't change after initialization of the TrainControllerAcceleration
-        XCTAssertEqual(TrainSpeedManager.DefaultStepSize, ic.stepIncrement)
-        XCTAssertEqual(Double(TrainSpeedManager.DefaultStepDelay)/1000, ic.stepDelay)
-
-        ic = TrainSpeedManager(train: t, interface: MockCommandInterface())
-
-        XCTAssertEqual(3, ic.stepIncrement)
-        XCTAssertEqual(0.250, ic.stepDelay)
-    }
+class TrainSpeedManagerTests: BTTestCase {
     
     func testLinearAcceleration() {
-        let t = Train()
+        let t = Train(id: .init(uuid: "1"), name: "CFF", address: 0)
         t.speed.accelerationProfile = .linear
         let ic = TrainSpeedManager(train: t, interface: MockCommandInterface())
         
@@ -50,11 +30,11 @@ class TrainInertiaTests: BTTestCase {
         // Simulate a change in the actual speed by the Digital Controller.
         // This means the TrainInertiaController needs to take that into account.
         t.speed.actualSteps = SpeedStep(value: 10)
-        assertChangeSpeed(train: t, from: 0, to: 20, [12, 14, 16, 18, 20], ic)
+        assertChangeSpeed(train: t, from: 10, to: 20, [12, 14, 16, 18, 20], ic)
     }
 
     func testBezierAcceleration() {
-        let t = Train()
+        let t = Train(id: .init(uuid: "1"), name: "CFF", address: 0)
         t.speed.accelerationProfile = .bezier
         let ic = TrainSpeedManager(train: t, interface: MockCommandInterface())
         
@@ -67,11 +47,11 @@ class TrainInertiaTests: BTTestCase {
         // Simulate a change in the actual speed by the Digital Controller.
         // This means the TrainInertiaController needs to take that into account.
         t.speed.actualSteps = SpeedStep(value: 10)
-        assertChangeSpeed(train: t, from: 0, to: 20, [11, 13, 16, 18, 20], ic)
+        assertChangeSpeed(train: t, from: 10, to: 20, [11, 13, 16, 18, 20], ic)
     }
 
     func testWithNoInertia() {
-        let t = Train()
+        let t = Train(id: .init(uuid: "1"), name: "CFF", address: 0)
         t.speed.accelerationProfile = .none
         let ic = TrainSpeedManager(train: t, interface: MockCommandInterface())
 
@@ -115,7 +95,7 @@ class TrainInertiaTests: BTTestCase {
     /// Ensure an in-progress speed change that gets cancelled is properly handled.
     /// We need to ensure that the completed parameter reflects the cancellation.
     func testSpeedChangeCancelPreviousSpeedChange() throws {
-        let t = Train()
+        let t = Train(id: .init(uuid: "1"), name: "CFF", address: 0)
         t.speed.accelerationStepDelay = 1
         t.speed.accelerationProfile = .linear
         let mi = MockCommandInterface()
@@ -152,7 +132,7 @@ class TrainInertiaTests: BTTestCase {
     /// cancelled when a new speed change is requested. We want to avoid that timer from
     /// firing with a "completed" status while is has been cancelled.
     func testSpeedChangeStopSettleDelay() throws {
-        let t = Train()
+        let t = Train(id: .init(uuid: "1"), name: "CFF", address: 0)
         t.speed.accelerationStepDelay = 1
         t.speed.stopSettleDelay = 2.0
         t.speed.accelerationProfile = .linear
@@ -237,10 +217,13 @@ class TrainInertiaTests: BTTestCase {
 
         doc.layoutController.drainAllEvents()
         XCTAssertEqual(t.state, .running)
+        
+        doc.stop(train: t)
+        doc.layoutController.drainAllEvents()
     }
     
     private func assertChangeSpeed(train: Train, from fromSteps: UInt16, to steps: UInt16, _ expectedSteps: [UInt16], _ ic: TrainSpeedManager) {
-        XCTAssertEqual(ic.actual.value, fromSteps)
+        XCTAssertEqual(train.speed.actualSteps.value, fromSteps, "Actual step value does not match")
 
         let cmd = ic.interface as! MockCommandInterface
 
@@ -255,8 +238,8 @@ class TrainInertiaTests: BTTestCase {
 
         wait(for: [expectation], timeout: 3.0)
         
-        XCTAssertEqual(ic.desired.value, steps)
-        XCTAssertEqual(ic.actual.value, steps)
+        XCTAssertEqual(train.speed.requestedSteps.value, steps)
+        XCTAssertEqual(train.speed.actualSteps.value, steps)
 
         XCTAssertEqual(train.speed.actualSteps.value, steps)
 
@@ -264,20 +247,4 @@ class TrainInertiaTests: BTTestCase {
         cmd.speedValues.removeAll()
     }
     
-}
-
-extension TrainSpeedManager {
-    
-    var stepIncrement: Int {
-        return speedChangeTimer.stepIncrement
-    }
-    var stepDelay: TimeInterval {
-        return speedChangeTimer.stepDelay
-    }
-    var actual: SpeedStep {
-        return speedChangeTimer.actual
-    }
-    var desired: SpeedStep {
-        return speedChangeTimer.desired
-    }
 }
