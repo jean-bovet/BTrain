@@ -228,7 +228,7 @@ final class BlockShape: Shape, DraggableShape, ConnectableShape {
     private func drawTimeRemaining(ctx: CGContext) {
         // Display the time remaining until the train starts again
         if let train = train, train.timeUntilAutomaticRestart > 0 {
-            drawLabel(ctx: ctx, label: "\(Int(train.timeUntilAutomaticRestart)) s.", at: center, verticalOffset: size.height/2, hAlignment: .center, vAlignment: .top,
+            drawLabel(ctx: ctx, label: "􀐫 \(Int(train.timeUntilAutomaticRestart)) s.", at: center, verticalOffset: size.height/2, hAlignment: .center, vAlignment: .top,
                       color: shapeContext.color, fontSize: shapeContext.fontSize, borderColor: shapeContext.borderLabelColor, backgroundColor: shapeContext.backgroundLabelColor)
         }
     }
