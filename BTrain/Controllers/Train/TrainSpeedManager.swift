@@ -30,11 +30,47 @@ final class TrainSpeedManager {
     
     /// This timer is scheduled each time a speed change is requested. It will fire every `stepDelay`
     /// and send a command to the Digital Controller.
-    internal var speedChangeTimer: Timer?
+    private var speedChangeTimer: Timer?
     
+    /// Timer that handles the stop settle delay time.
+    ///
+    /// When stopping a locomotive, we need to wait a bit more to ensure the locomotive
+    /// has effectively stopped physically on the layout. This is because we want to call back
+    /// the `completion` block only when the locomotive has stopped (otherwise, it might continue
+    /// to move and activate an unexpected feedback because the layout think it has stopped already).
+    /// There is unfortunately no way to know without ambiguity from the Digital Controller if the
+    /// train has stopped so this extra wait time can be configured in the UX, per locomotive, and
+    /// adjusted by the user depending on the locomotive speed inertia behavior.
+    final class StopSettleDelayTimer {
+        var timer: Timer?
+        var block: ((Bool) -> Void)?
+        
+        func schedule(train: Train, completed: Bool, completion: @escaping (Bool) -> Void) {
+            assert(block == nil)
+            assert(timer == nil)
+
+            block = { completed in
+                completion(completed)
+            }
+            timer = Timer.scheduledTimer(withTimeInterval: train.speed.stopSettleDelay * BaseTimeFactor, repeats: false) { timer in
+                self.block?(completed)
+                self.block = nil
+                self.timer = nil
+            }
+        }
+        
+        func cancel() {
+            if let block = block {
+                block(false)
+            }
+            block = nil
+            timer?.invalidate()
+            timer = nil
+        }
+    }
+
     /// The timer that handles the delay to allow the locomotive to fully stop
     private let stopSettleDelayTimer = StopSettleDelayTimer()
-
     
     /// Defines a single speed change command
     final class SpeedCommand {
