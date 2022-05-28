@@ -235,14 +235,19 @@ class UnmanagedTrainOperationTests: BTTestCase {
         func setTrainSpeed(_ speed: TrainSpeed.UnitKph) {
             let strain = doc.simulator.trains.first(where: { $0.train.id == train.id })!
             let steps = train.speed.steps(for: speed)
-            strain.speed = steps // p.doc.interface.speedValue(for: steps, decoder: p.train.decoder)
+            strain.speed = steps
             doc.simulator.setTrainSpeed(train: strain)
             
+            waitForSpeed(speed)
+        }
+                
+        func waitForSpeed(_ speed: TrainSpeed.UnitKph) {
+            let steps = train.speed.steps(for: speed)
             BTTestCase.wait(for: {
                 abs(train.speed.actualSteps.value.distance(to: steps.value)) <= 1
             }, timeout: 2.0)
         }
-                
+        
         func triggerFeedback(_ named: String, _ detected: Bool = true) throws {
             let feedbackId = Identifier<Feedback>(uuid: named)
             guard let feedback = layout.feedback(for: feedbackId) else {

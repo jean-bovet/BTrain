@@ -77,7 +77,7 @@ final class MockCommandInterface: CommandInterface {
         case .speed(let address, let decoderType, let value, _, _):
             speedValues.append(value.value)
             for speedChangeCallback in speedChangeCallbacks {
-                speedChangeCallback(address, decoderType, value)
+                speedChangeCallback(address, decoderType, value, true)
             }
             
         case .direction(let address, let decoderType, let direction, _, _):

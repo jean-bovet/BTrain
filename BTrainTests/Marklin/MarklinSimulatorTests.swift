@@ -91,14 +91,21 @@ class MarklinSimulatorTests: XCTestCase {
         }
 
         let e = expectation(description: "callback")
-        _ = doc.interface.register(forSpeedChange: { address, decoderType, value in
-            XCTAssertEqual(357, value.value)
-            e.fulfill()
+        let directCommand = expectation(description: "directCommand")
+        let acknowledgement = expectation(description: "acknowledgement")
+        _ = doc.interface.register(forSpeedChange: { address, decoderType, value, ack in
+            if ack {
+                acknowledgement.fulfill()
+                XCTAssertEqual(357, value.value)
+                e.fulfill()
+            } else {
+                directCommand.fulfill()
+            }
         })
         
         doc.simulator.setTrainSpeed(train: doc.simulator.trains[0])
         
-        waitForExpectations(timeout: 1.0)
+        wait(for: [directCommand, acknowledgement, e], timeout: 1.0, enforceOrder: true)
     }
 
 }

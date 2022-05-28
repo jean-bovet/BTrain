@@ -140,6 +140,8 @@ final class TrainHandlerManaged {
     private func process() throws -> TrainHandlerResult {
         try handleEvent()
         
+        try handleStateStopping()
+        
         try handleTrainStart()
         
         handleTrainBrake()
@@ -191,11 +193,6 @@ final class TrainHandlerManaged {
         case .directionChanged:
             break
         case .speedChanged:
-            if train.speed.actualKph == 0 && train.state == .stopping {
-                train.state = .stopped
-                try handleTrainStopped()
-                resultingEvents.append(.stateChanged)
-            }
             break
         case .stateChanged:
             break
@@ -205,6 +202,19 @@ final class TrainHandlerManaged {
             break
         case .reservedBlocksChanged:
             break
+        }
+    }
+
+    // TODO: handle each state changes according to state machine
+    func handleStateStopping() throws {
+        guard train.state == .stopping else {
+            return
+        }
+        
+        if train.speed.actualKph == 0 {
+            train.state = .stopped
+            try handleTrainStopped()
+            resultingEvents.append(.stateChanged)
         }
     }
     

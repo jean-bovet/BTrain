@@ -65,17 +65,19 @@ final class TrainSpeedManager {
         let requestedSteps: SpeedStep
         
         var steps: [SpeedStep]
-        var completionBlocks: [CompletionCancelBlock]
+        var completionBlocks = [CompletionCancelBlock]()
 
         var status: Status = .working
         var waitingForCompletionFromInterface = false
 
-        init(requestUUID: Int, requestedKph: TrainSpeed.UnitKph, requestedSteps: SpeedStep, steps: [SpeedStep], completion: @escaping CompletionCancelBlock) {
+        init(requestUUID: Int, requestedKph: TrainSpeed.UnitKph, requestedSteps: SpeedStep, steps: [SpeedStep], completion: CompletionCancelBlock?) {
             self.requestUUID = requestUUID
             self.requestedKph = requestedKph
             self.requestedSteps = requestedSteps
             self.steps = steps
-            self.completionBlocks = [completion]
+            if let completion = completion {
+                completionBlocks.append(completion)
+            }
         }
     }
     
@@ -95,13 +97,20 @@ final class TrainSpeedManager {
         self.train = train
         self.interface = interface
         
-        interface.register(forSpeedChange: { address, decoder, value in
+        interface.register(forSpeedChange: { address, decoder, value, acknowledgment in
             if train.address.actualAddress(for: train.decoder) == address.actualAddress(for: decoder) {
-                // Note: the `speedCommandExecuted` function below is also updating the actual steps
-                // when a speed command completion happens. This is fine because for each speed change,
-                // we need to call both the completion block and the change callback here.
-                train.speed.actualSteps = interface.speedSteps(for: value, decoder: train.decoder)
-                BTLogger.speed.debug("\(train, privacy: .public): actual speed is \(train.speed.actualKph) kph (\(train.speed.actualSteps))")
+                let steps = interface.speedSteps(for: value, decoder: train.decoder)
+                if acknowledgment {
+                    // Note: the `speedCommandExecuted` function below is also updating the actual steps
+                    // when a speed command completion happens. This is fine because for each speed change,
+                    // we need to call both the completion block and the change callback here.
+                    train.speed.actualSteps = steps
+                    BTLogger.speed.debug("\(train, privacy: .public): actual speed is \(train.speed.actualKph) kph (\(train.speed.actualSteps))")
+                } else {
+                    // Only a  direct command from the Digital Controller should change the requested speed.
+                    train.speed.requestedSteps = steps
+                    BTLogger.speed.debug("\(train, privacy: .public): requested speed is \(train.speed.actualKph) kph (\(train.speed.actualSteps))")
+                }
                 speedChanged?()
             }
         })
@@ -116,7 +125,7 @@ final class TrainSpeedManager {
     ///   - train: the train to change the speed
     ///   - acceleration: the acceleration/deceleration profile
     ///   - completion: a block called when the change is either completed or cancelled
-    func changeSpeed(acceleration: TrainSpeedAcceleration.Acceleration?, completion: @escaping CompletionCancelBlock) {
+    func changeSpeed(acceleration: TrainSpeedAcceleration.Acceleration?, completion: CompletionCancelBlock?) {
         TrainSpeedManager.globalRequestUUID += 1
         let requestUUID = TrainSpeedManager.globalRequestUUID
                 
@@ -124,8 +133,10 @@ final class TrainSpeedManager {
         
         if let processingCommand = processingCommand {
             if processingCommand.requestedKph == train.speed.requestedKph {
-                BTLogger.speed.debug("\(self.train, privacy: .public): {\(requestUUID)} attaching to previous request {\(processingCommand.requestUUID)} because the requested speed of \(self.train.speed.requestedKph) is the same")
-                processingCommand.completionBlocks.append(completion)
+                if let completion = completion {
+                    BTLogger.speed.debug("\(self.train, privacy: .public): {\(requestUUID)} attaching to previous request {\(processingCommand.requestUUID)} because the requested speed of \(self.train.speed.requestedKph) is the same")
+                    processingCommand.completionBlocks.append(completion)
+                }
             } else {
                 BTLogger.speed.debug("\(self.train, privacy: .public): {\(requestUUID)} cancelling previous speed request {\(processingCommand.requestUUID)}")
                 scheduleSpeedChangeCommand(acceleration: acceleration, completion: completion, requestUUID: requestUUID)
@@ -142,7 +153,7 @@ final class TrainSpeedManager {
         executePendingSpeedChangeCommand()
     }
 
-    private func scheduleSpeedChangeCommand(acceleration: TrainSpeedAcceleration.Acceleration?, completion: @escaping CompletionCancelBlock, requestUUID: Int) {
+    private func scheduleSpeedChangeCommand(acceleration: TrainSpeedAcceleration.Acceleration?, completion: CompletionCancelBlock?, requestUUID: Int) {
         let steps = speedCommands(from: train.speed.actualSteps, to: train.speed.requestedSteps, acceleration: acceleration ?? train.speed.accelerationProfile)
         scheduledCommands.append(SpeedCommand(requestUUID: requestUUID, requestedKph: train.speed.requestedKph, requestedSteps: train.speed.requestedSteps, steps: steps, completion: completion))
     }

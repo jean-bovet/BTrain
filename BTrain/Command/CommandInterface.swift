@@ -38,7 +38,7 @@ protocol CommandInterface: AnyObject, MetricsProvider {
     typealias FeedbackChangeCallback = (_ deviceID: UInt16, _ contactID: UInt16, _ value: UInt8) -> Void
     func register(forFeedbackChange: @escaping FeedbackChangeCallback) -> UUID
 
-    typealias SpeedChangeCallback = (_ address: UInt32, _ decoderType: DecoderType?, _ value: SpeedValue) -> Void
+    typealias SpeedChangeCallback = (_ address: UInt32, _ decoderType: DecoderType?, _ value: SpeedValue, _ acknowledgment: Bool) -> Void
     func register(forSpeedChange: @escaping SpeedChangeCallback)
 
     typealias DirectionChangeCallback = (_ address: UInt32, _ decoderType: DecoderType?, _ direction: Command.Direction) -> Void

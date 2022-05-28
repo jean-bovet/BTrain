@@ -157,6 +157,9 @@ final class MarklinInterface: CommandInterface {
             // The response from this command is going to be processed below in the case .direction
             execute(command: .queryDirection(address: address, decoderType: decoderType))
 
+        case .speed(let address, let decoderType, let value, _, _):
+            speedChangeCallbacks.forEach { $0(address, decoderType, value, msg.isAck) }
+
         default:
             break
         }
@@ -192,7 +195,7 @@ final class MarklinInterface: CommandInterface {
 
         case .speed(let address, let decoderType, let value, _, _):
             triggerCompletionBlock(for: msg)
-            speedChangeCallbacks.forEach { $0(address, decoderType, value) }
+            speedChangeCallbacks.forEach { $0(address, decoderType, value, msg.isAck) }
 
         case .direction(let address, let decoderType, let direction, _, _):
             triggerCompletionBlock(for: msg)

@@ -80,6 +80,7 @@ final class Package {
         }, timeout: 2.0)
         
         XCTAssertEqual(train.state, expectedState)
+        XCTAssertEqual(train.scheduling, .managed)
     }
     
     func finish() {
@@ -90,6 +91,7 @@ final class Package {
         layoutController.stop(train: train)
         if drainAll {
             layoutController.drainAllEvents()
+            XCTAssertEqual(train.scheduling, .unmanaged)
         }
     }
     

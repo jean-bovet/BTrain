@@ -424,15 +424,7 @@ extension LayoutController {
 
     func setTrainSpeed(_ train: Train, _ speed: SpeedStep, acceleration: TrainSpeedAcceleration.Acceleration? = nil, completion: CompletionCancelBlock? = nil) {
         train.speed.requestedSteps = speed
-        // Note: always send the train speed request, even if the train already runs at the specified
-        // speed because we need the TrainSpeedManager to ultimately make any optimization decision
-        // (for example, if a speed change is in progress but hasn't had a chance to change the speed
-        // yet, we might think we don't need to send another train speed change request. But this is incorrect
-        // because if we don't do that, the previous speed change request will continue to execute while
-        // it is not our intention).
-        speedManager(for: train).changeSpeed(acceleration: acceleration) { completed in
-            completion?(completed)
-        }
+        speedManager(for: train).changeSpeed(acceleration: acceleration, completion: completion)
     }
 
     // Set the direction of travel of the locomotive

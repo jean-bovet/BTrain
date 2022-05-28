@@ -59,7 +59,8 @@ class CommandInterfaceTests: XCTestCase {
         }
 
         let e = expectation(description: "callback")
-        doc.interface.register(forSpeedChange: { address, decoderType, value in
+        doc.interface.register(forSpeedChange: { address, decoderType, value, ack in
+            XCTAssertTrue(ack)
             XCTAssertEqual(18, value.value)
             e.fulfill()
         })
