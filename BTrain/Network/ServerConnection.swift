@@ -88,15 +88,15 @@ final class ServerConnection {
     typealias CompletionBlock = (() -> Void)
 
     func send(data: Data, completion: CompletionBlock? = nil) {
-        self.connection.send(content: data, completion: .contentProcessed( { error in
-            let msg = MarklinCANMessage.decode(from: [UInt8](data))
-            if let description = MarklinCANMessagePrinter.debugDescription(msg: msg) {
-                BTLogger.network.debug("[Server] > \(description) - \(self.id)")
-            }
-
+        let msg = MarklinCANMessage.decode(from: [UInt8](data))
+        if let description = MarklinCANMessagePrinter.debugDescription(msg: msg) {
+            BTLogger.network.debug("[Server] > \(description) - \(self.id)")
+        }
+        
+        connection.send(content: data, completion: .contentProcessed( { [weak self] error in
             DispatchQueue.main.async {
                 if let error = error {
-                    self.connectionDidFail(error: error)
+                    self?.connectionDidFail(error: error)
                     return
                 }
                                 
