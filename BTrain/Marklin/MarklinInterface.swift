@@ -84,12 +84,12 @@ final class MarklinInterface: CommandInterface {
     static let maxCANSpeedValue = 1000
 
     func speedValue(for steps: SpeedStep, decoder: DecoderType) -> SpeedValue {
-        let value = Double(steps.value) * Double(MarklinInterface.maxCANSpeedValue) / Double(decoder.steps)
+        let value = round(Double(steps.value) * Double(MarklinInterface.maxCANSpeedValue) / Double(decoder.steps))
         return SpeedValue(value: UInt16(value))
     }
     
     func speedSteps(for value: SpeedValue, decoder: DecoderType) -> SpeedStep {
-        let steps = Double(value.value) / Double(MarklinInterface.maxCANSpeedValue) * Double(decoder.steps)
+        let steps = round(Double(value.value) / Double(MarklinInterface.maxCANSpeedValue) * Double(decoder.steps))
         return SpeedStep(value: UInt16(steps))
     }
 
@@ -120,9 +120,7 @@ final class MarklinInterface: CommandInterface {
     }
 
     private func triggerCompletionBlock(for message: MarklinCANMessage) {
-        if message.isAck {
-            triggerCompletionBlock(for: message.raw)
-        }
+        triggerCompletionBlock(for: message.raw)
     }
     
     private func triggerCompletionBlock(for rawMessage: MarklinCANMessageRaw) {

@@ -194,4 +194,14 @@ class CommandInterfaceTests: XCTestCase {
         XCTAssertEqual(mi.feedbackChangeCallbacks.count, 0)
     }
     
+    func testSpeedValueToStepConversion() {
+        let doc = LayoutDocument(layout: LayoutComplex().newLayout())
+        let train = doc.layout.train("16390") // 460 106-8 SBB
+        
+        let requestedSteps: UInt16 = 1
+        let value = doc.interface.speedValue(for: SpeedStep(value: requestedSteps), decoder: train.decoder)
+        let steps = doc.interface.speedSteps(for: SpeedValue(value: value.value), decoder: train.decoder)
+        XCTAssertEqual(steps.value, requestedSteps)
+    }
+    
 }
