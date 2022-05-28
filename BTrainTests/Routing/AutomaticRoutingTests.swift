@@ -15,6 +15,10 @@ import XCTest
 
 class AutomaticRoutingTests: BTTestCase {
 
+    override var speedChangeRequestCeiling: Int? {
+        return 17
+    }
+    
     func testUpdateAutomaticRoute() throws {
         let layout = LayoutComplexLoop().newLayout()
         let s1 = layout.block(for: Identifier<Block>(uuid: "s1"))!

@@ -14,18 +14,38 @@ import XCTest
 @testable import BTrain
 
 class BTTestCase: XCTestCase {
+    
+    /// Contains the key/value pairs of the UserDefaults before a test starts
     var backup = [String:Any]()
+        
+    /// Keep track of the current number of speed request change count when a test starts
+    private var previousSpeedRequestCount: Int = 0
+    
+    /// Returns the maximum number of speed change requests that is expected to happen
+    /// during the execution of each test. By default, this number is nil which disables that check.
+    /// The goal is to ensure there is not a bug in the code that would cause an explosion of speed
+    /// change requests.
+    var speedChangeRequestCeiling: Int? {
+        nil
+    }
     
     override func setUp() {
         super.setUp()
         backup = UserDefaults.standard.dictionaryRepresentation()
         BaseTimeFactor = 0.0
+        previousSpeedRequestCount = TrainSpeedManager.globalRequestUUID
     }
     
     override func tearDown() {
         super.tearDown()
         UserDefaults.standard.setValuesForKeys(backup)
         BaseTimeFactor = 1.0
+        
+        let speedChangeCount = TrainSpeedManager.globalRequestUUID - previousSpeedRequestCount
+        print("Train Speed Change Count is \(TrainSpeedManager.globalRequestUUID) total, \(speedChangeCount) for this test")
+        if let speedChangeRequestCeiling = speedChangeRequestCeiling {
+            XCTAssertLessThanOrEqual(speedChangeCount, speedChangeRequestCeiling)
+        }
     }
     
     static func wait(for block: () -> Bool, timeout: TimeInterval) {

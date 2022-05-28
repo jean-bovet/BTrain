@@ -16,6 +16,10 @@ import XCTest
 
 class TrainSpeedManagerTests: BTTestCase {
     
+    override var speedChangeRequestCeiling: Int? {
+        return 10
+    }
+
     func testLinearAcceleration() {
         let t = Train(id: .init(uuid: "1"), name: "CFF", address: 0)
         t.speed.accelerationProfile = .linear

@@ -19,29 +19,6 @@ import Combine
 /// The speed is incremented by a specified number of steps that is small enough to be executed by the Digital Controller.
 final class TrainSpeedManager {
     
-    /// The status of the speed change callback
-    enum Status: CustomStringConvertible {
-        /// The speed change has been cancelled
-        case cancelled
-        
-        /// The speed change has completed
-        case finished
-        
-        /// The speed change is in progress
-        case working
-        
-        var description: String {
-            switch self {
-            case .cancelled:
-                return "cancelled"
-            case .finished:
-                return "finished"
-            case .working:
-                return "working"
-            }
-        }
-    }
-        
     let train: Train
     let interface: CommandInterface
         
@@ -51,24 +28,57 @@ final class TrainSpeedManager {
     /// The default step delay (100ms)
     static let DefaultStepDelay = 100
     
-    /// The timer that handles the speed change given a specific acceleration/deceleration profile
+    /// This timer is scheduled each time a speed change is requested. It will fire every `stepDelay`
+    /// and send a command to the Digital Controller.
     internal var speedChangeTimer: Timer?
     
     /// The timer that handles the delay to allow the locomotive to fully stop
     private let stopSettleDelayTimer = StopSettleDelayTimer()
 
-    internal var lastRequestedKph: TrainSpeed.UnitKph?
     
+    /// Defines a single speed change command
     final class SpeedCommand {
+        
         let requestUUID: Int
         let requestedKph: TrainSpeed.UnitKph
         let requestedSteps: SpeedStep
         
+        /// An array of speed step that need to be sent to the Digital Controller
+        /// in order to change the speed of the train according to the acceleration profile.
         var steps: [SpeedStep]
+                
+        /// A list of completion blocks to invoke after this speed command has completed
         var completionBlocks = [CompletionCancelBlock]()
 
+        /// The status of the speed change callback
+        enum Status: CustomStringConvertible {
+            /// The speed change has been cancelled
+            case cancelled
+            
+            /// The speed change has completed
+            case finished
+            
+            /// The speed change is in progress
+            case working
+            
+            var description: String {
+                switch self {
+                case .cancelled:
+                    return "cancelled"
+                case .finished:
+                    return "finished"
+                case .working:
+                    return "working"
+                }
+            }
+        }
+        
+        /// The status of this command
         var status: Status = .working
-        var waitingForCompletionFromInterface = false
+
+        
+        /// True if the command is being processed by the Digital Controller.
+        var isProcessedByDigitalController = false
 
         init(requestUUID: Int, requestedKph: TrainSpeed.UnitKph, requestedSteps: SpeedStep, steps: [SpeedStep], completion: CompletionCancelBlock?) {
             self.requestUUID = requestUUID
@@ -126,35 +136,51 @@ final class TrainSpeedManager {
     ///   - acceleration: the acceleration/deceleration profile
     ///   - completion: a block called when the change is either completed or cancelled
     func changeSpeed(acceleration: TrainSpeedAcceleration.Acceleration?, completion: CompletionCancelBlock?) {
-        TrainSpeedManager.globalRequestUUID += 1
-        let requestUUID = TrainSpeedManager.globalRequestUUID
-                
-        BTLogger.speed.debug("\(self.train, privacy: .public): {\(requestUUID)} scheduling request for speed of \(self.train.speed.requestedKph) kph (\(self.train.speed.requestedSteps)) from actual speed of \(self.train.speed.actualKph) kph (\(self.train.speed.actualSteps))")
-        
         if let processingCommand = processingCommand {
+            // There is already a speed change command being processed.
             if processingCommand.requestedKph == train.speed.requestedKph {
+                // If the speed change is the same and a completion block is provided,
+                // add the completion block to the list of completion block of the command
+                // itself. At the completion of the command, all the completion blocks will be invoked.
                 if let completion = completion {
+                    let requestUUID = newChangeRequest()
                     BTLogger.speed.debug("\(self.train, privacy: .public): {\(requestUUID)} attaching to previous request {\(processingCommand.requestUUID)} because the requested speed of \(self.train.speed.requestedKph) is the same")
                     processingCommand.completionBlocks.append(completion)
                 }
             } else {
-                BTLogger.speed.debug("\(self.train, privacy: .public): {\(requestUUID)} cancelling previous speed request {\(processingCommand.requestUUID)}")
+                // If the speed change is different, cancel the current speed command and schedule a new one
+                let requestUUID = newChangeRequest()
+                BTLogger.speed.debug("\(self.train, privacy: .public): {\(requestUUID)} cancelling previous speed request {\(processingCommand.requestUUID)} of \(processingCommand.requestedKph) kph")
                 scheduleSpeedChangeCommand(acceleration: acceleration, completion: completion, requestUUID: requestUUID)
                 processingCommand.status = .cancelled
                 speedChangeTimer?.invalidate()
-                if !processingCommand.waitingForCompletionFromInterface {
+                if !processingCommand.isProcessedByDigitalController {
                     processSpeedCommand(command: processingCommand)
                 }
             }
-            return
+        } else if train.speed.actualKph == train.speed.requestedKph {
+            // If there is no command in progress and the requested and actual speed are the same,
+            // nothing is needed and we can return immediately after invoked the completion block.
+            completion?(true)
+        } else {
+            // Schedule a new speed change request
+            let requestUUID = newChangeRequest()
+            scheduleSpeedChangeCommand(acceleration: acceleration, completion: completion, requestUUID: requestUUID)
+            executePendingSpeedChangeCommand()
         }
-        
-        scheduleSpeedChangeCommand(acceleration: acceleration, completion: completion, requestUUID: requestUUID)
-        executePendingSpeedChangeCommand()
     }
 
+    private func newChangeRequest() -> Int {
+        TrainSpeedManager.globalRequestUUID += 1
+        let requestUUID = TrainSpeedManager.globalRequestUUID
+
+        BTLogger.speed.debug("\(self.train, privacy: .public): {\(requestUUID)} scheduling request for speed of \(self.train.speed.requestedKph) kph (\(self.train.speed.requestedSteps)) from actual speed of \(self.train.speed.actualKph) kph (\(self.train.speed.actualSteps))")
+        
+        return requestUUID
+    }
+    
     private func scheduleSpeedChangeCommand(acceleration: TrainSpeedAcceleration.Acceleration?, completion: CompletionCancelBlock?, requestUUID: Int) {
-        let steps = speedCommands(from: train.speed.actualSteps, to: train.speed.requestedSteps, acceleration: acceleration ?? train.speed.accelerationProfile)
+        let steps = stepsArray(from: train.speed.actualSteps, to: train.speed.requestedSteps, acceleration: acceleration ?? train.speed.accelerationProfile)
         scheduledCommands.append(SpeedCommand(requestUUID: requestUUID, requestedKph: train.speed.requestedKph, requestedSteps: train.speed.requestedSteps, steps: steps, completion: completion))
     }
     
@@ -177,7 +203,7 @@ final class TrainSpeedManager {
         // Ignore the timer if we are still waiting for a command to be completed
         // by the interface (the interface completion is necessary as it indicates
         // that the Digital Controller has processed the command).
-        guard command.waitingForCompletionFromInterface == false else {
+        guard command.isProcessedByDigitalController == false else {
             return
         }
         
@@ -191,18 +217,18 @@ final class TrainSpeedManager {
         let speedKph = train.speed.speedKph(for: steps)
         BTLogger.speed.debug("\(self.train, privacy: .public): {\(command.requestUUID)} 􀐫 speed command for \(speedKph) kph (value=\(value), \(steps)), requested \(command.requestedKph) kph, status: \(command.status, privacy: .public)")
         
-        assert(command.waitingForCompletionFromInterface == false)
-        command.waitingForCompletionFromInterface = true
+        assert(command.isProcessedByDigitalController == false)
+        command.isProcessedByDigitalController = true
         interface.execute(command: .speed(address: train.address, decoderType: train.decoder, value: value)) { [weak self] in
-            command.waitingForCompletionFromInterface = false
+            command.isProcessedByDigitalController = false
             self?.speedCommandExecuted(command: command, steps: steps)
         }
     }
         
     private func speedCommandExecuted(command: SpeedCommand, steps: SpeedStep) {
         train.speed.actualSteps = steps
-        let speedKph = train.speed.speedKph(for: steps)
         
+        let speedKph = train.speed.speedKph(for: steps)
         BTLogger.speed.debug("\(self.train, privacy: .public): {\(command.requestUUID)} 􀆅 speed command for \(speedKph) kph (\(steps)), requested \(command.requestedKph) kph, status: \(command.status, privacy: .public)")
 
         processSpeedCommand(command: command)
@@ -217,21 +243,21 @@ final class TrainSpeedManager {
                 /// Settle only if the train stopped and the speed change hasn't been cancelled.
                 /// Note: see comment in ``TrainControllerAcceleration/StopSettleDelayTimer``
                 stopSettleDelayTimer.schedule(train: train, completed: finished) { [weak self] completed in
-                    self?.cleanupSpeedCommand(command: command)
+                    self?.speedCommandCompleted(command: command)
                 }
             } else {
-                cleanupSpeedCommand(command: command)
+                speedCommandCompleted(command: command)
             }
         }
     }
     
-    private func cleanupSpeedCommand(command: SpeedCommand) {
+    private func speedCommandCompleted(command: SpeedCommand) {
         command.completionBlocks.forEach { $0(command.status == .finished) }
         processingCommand = nil
         executePendingSpeedChangeCommand()
     }
             
-    private func speedCommands(from fromStep: SpeedStep, to toStep: SpeedStep, acceleration: TrainSpeedAcceleration.Acceleration) -> [SpeedStep] {
+    private func stepsArray(from fromStep: SpeedStep, to toStep: SpeedStep, acceleration: TrainSpeedAcceleration.Acceleration) -> [SpeedStep] {
         guard acceleration != .none else {
             return [toStep]
         }
@@ -244,15 +270,14 @@ final class TrainSpeedManager {
 
         let delta = Int(desired.value) - Int(actual.value)
         if abs(delta) <= stepIncrement {
-            let (value, _) = actualValue(value: Int(actual.value) + delta, accelerating: delta > 0, desired: desired)
+            let (value, _) = stepValue(value: Int(actual.value) + delta, accelerating: delta > 0, desired: desired)
             return [value]
         } else {
             let tf = TrainSpeedAcceleration(fromSteps: Int(actual.value), toSteps: Int(desired.value), timeIncrement: stepDelay, stepIncrement: Int(stepIncrement), type: acceleration)
-            // Trigger a speed change immediately
             var commands = [SpeedStep]()
             var time = stepDelay
             while true {
-                let (value, done) = actualValue(value: tf.stepValue(at: time), accelerating: delta > 0, desired: desired)
+                let (value, done) = stepValue(value: tf.stepValue(at: time), accelerating: delta > 0, desired: desired)
                 if done {
                     commands.append(value)
                     return commands
@@ -264,7 +289,7 @@ final class TrainSpeedManager {
         }
     }
             
-    private func actualValue(value: Int, accelerating: Bool, desired: SpeedStep) -> (SpeedStep, Bool) {
+    private func stepValue(value: Int, accelerating: Bool, desired: SpeedStep) -> (SpeedStep, Bool) {
         var newValue = value
         if newValue < 0 {
             newValue = 0

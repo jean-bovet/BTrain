@@ -16,6 +16,10 @@ import XCTest
 
 class FixedRoutingTests: BTTestCase {
             
+    override var speedChangeRequestCeiling: Int? {
+        return 23
+    }
+
     func testBlockReserved() throws {
         let layout = LayoutLoop1().newLayout().removeTrainGeometry()
         let p = Package(layout: layout)
