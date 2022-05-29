@@ -13,7 +13,7 @@
 import Foundation
 
 // This class ensures that every scheduled execution
-// of a block is performed serialy, every x ms.
+// of a block is performed serially, every x ms.
 // This is used to ensure commands sent to the Central Station
 // are not clobbed together or sent too fast which would cause
 // one event to be missed. This happens for example when
@@ -21,15 +21,13 @@ import Foundation
 // are changed at the same time.
 final class ScheduledMessageQueue {
 
-    typealias ExecutionBlock = ( (@escaping CompletionBlock) -> Void)
+    typealias ExecutionBlock = (@escaping CompletionBlock) -> Void
 
     struct ScheduledBlock {
         let priority: Bool
         let block: ExecutionBlock
     }
-    
-    typealias CompletionBlock = (() -> Void)
-    
+
     private var scheduledQueue = [ScheduledBlock]()
     
     private var executing = false

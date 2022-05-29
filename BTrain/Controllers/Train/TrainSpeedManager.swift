@@ -259,7 +259,7 @@ final class TrainSpeedManager {
         
         BTLogger.speed.debug("\(self.train, privacy: .public): {\(command.requestUUID)} requesting speed of \(command.requestedKph) kph (\(command.requestedSteps)) from actual speed of \(self.train.speed.actualKph) kph (\(self.train.speed.actualSteps))")
 
-        self.processingCommand = command
+        processingCommand = command
         scheduledCommands.removeFirst()
         speedChangeTimer?.invalidate()
         speedChangeTimer = Timer.scheduledTimer(withTimeInterval: stepDelay * BaseTimeFactor, repeats: true, block: { [weak self] timer in

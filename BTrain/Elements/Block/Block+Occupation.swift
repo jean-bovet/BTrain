@@ -37,7 +37,7 @@ extension Block {
     //
     func wagonDirection(for train: Train) throws -> Direction {
         guard let trainInstance = self.train else {
-            throw LayoutError.trainNotFoundInBlock(blockId: self.id)
+            throw LayoutError.trainNotFoundInBlock(blockId: id)
         }
 
         // Direction of travel of the train within the block

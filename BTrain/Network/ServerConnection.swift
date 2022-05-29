@@ -85,8 +85,6 @@ final class ServerConnection {
         }
     }
 
-    typealias CompletionBlock = (() -> Void)
-
     func send(data: Data, completion: CompletionBlock? = nil) {
         let msg = MarklinCANMessage.decode(from: [UInt8](data))
         if let description = MarklinCANMessagePrinter.debugDescription(msg: msg) {

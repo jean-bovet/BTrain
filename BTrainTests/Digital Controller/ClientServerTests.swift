@@ -67,7 +67,7 @@ class ClientServerTests: XCTestCase {
         
         let stopExpectation = XCTestExpectation(description: "Stop")
 
-        server.stop() {
+        server.stop {
             stopExpectation.fulfill()
         }
         client.stop()

@@ -52,7 +52,7 @@ struct ConnectCommandsView: View {
     var body: some View {
         if document.connected {
             Button("Disconnect") {
-                document.disconnect() { }
+                document.disconnect { }
             }
             .foregroundColor(.red)
 
@@ -70,7 +70,7 @@ struct ConnectCommandsView: View {
             .foregroundColor(.green)
 
             Button("Stop") {
-                document.disable() {}
+                document.disable {}
             }
             .disabled(!document.connected)
             .help("Disable Power")
