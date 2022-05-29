@@ -34,7 +34,7 @@ struct DocumentToolbarContent: ToolbarContent {
             DeveloperCommandsView(document: document)
 
             if let switchboard = document.switchboard, document.selectedView == .overview {
-                SwitchboarSettingsButton(document: document)
+                SwitchboardSettingsButton(document: document)
                 SwitchboardEditButton(document: document, state: switchboard.state)
             }            
         }
@@ -174,7 +174,7 @@ struct SwitchboardEditButton: View {
     }
 }
 
-struct SwitchboarSettingsButton: View {
+struct SwitchboardSettingsButton: View {
     
     @ObservedObject var document: LayoutDocument
 

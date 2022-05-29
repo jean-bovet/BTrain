@@ -67,7 +67,7 @@ struct ConnectSheet: View {
                                 
                 VStack(alignment: .leading) {
                     Toggle("Activate Turnouts", isOn: $activateTurnouts)
-                    if let percentage = onConnectTasks.activateTurnountPercentage {
+                    if let percentage = onConnectTasks.activateTurnoutPercentage {
                         ProgressView(value: percentage)
                     } else {
                         ProgressView(value: 0).hidden()

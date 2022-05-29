@@ -157,7 +157,7 @@ final class LayoutAsserter {
             //       ┗━━━━━━━━┛                     ┗━━━━━━━━━┛
             // The transition between Block 3 and Turnout is not reserved because the locomotive is in Block 3
             // and the wagons of the train are occupying all the tracks until Block 1. We can determine this
-            // by ensuring the transition (out of or into) a turnout matches the sockets reacheable by the state of the turnout.
+            // by ensuring the transition (out of or into) a turnout matches the sockets reachable by the state of the turnout.
             if let previousStep = previousStep {
                 var reserved: Identifier<Train>?
                 var fromElementName: String

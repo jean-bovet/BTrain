@@ -26,7 +26,7 @@ struct Line2D {
         let determinant = delta1x * delta2y - delta2x * delta1y
 
         if abs(determinant) < 0.0001 {
-            // if the determinant is effectively zero then the lines are parallel/colinear
+            // if the determinant is effectively zero then the lines are parallel/collinear
             return nil
         }
 

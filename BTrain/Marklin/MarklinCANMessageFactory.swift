@@ -100,7 +100,7 @@ struct MarklinCANMessageFactory {
                                         byte1: UInt8((addr >> 16) & 0xFF),
                                         byte2: UInt8((addr >> 8) & 0xFF),
                                         byte3: UInt8((addr >> 0) & 0xFF),
-                                        byte4: 0x01, // foward
+                                        byte4: 0x01, // forward
                                         byte5: 0x00,
                                         byte6: 0x00,
                                         byte7: 0x00

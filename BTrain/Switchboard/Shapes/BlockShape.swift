@@ -291,7 +291,7 @@ final class BlockShape: Shape, DraggableShape, ConnectableShape {
     @discardableResult
     func drawLabel(ctx: CGContext, label: String, at location: CGPoint, verticalOffset: CGFloat, hAlignment: HTextAlignment = .left, vAlignment: VTextAlignment = .bottom, color: CGColor, fontSize: CGFloat, borderColor: CGColor? = nil, backgroundColor: CGColor? = nil) -> CGSize {
 
-        // Always displays the text facing downwards so it is easer to read
+        // Always displays the text facing downwards so it is easier to read
         let textCenter = location.translatedBy(x: 0, y: verticalOffset).rotate(by: labelRotationAngle, around: rotationCenter)
         return ctx.drawText(at: textCenter, vAlignment: vAlignment, hAlignment: hAlignment, rotation: labelRotationAngle,
                             text: label, color: color, fontSize: fontSize, borderColor: borderColor, backgroundColor: backgroundColor)

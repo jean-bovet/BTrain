@@ -50,7 +50,7 @@ final class MarklinLocomotiveConfig {
                     // (nor with the default tools in the Finder). The data is a valid zlib
                     // compressed but somehow something is preventing it from being decompressed
                     // by the standard API. I had to rely on the Gzip for Swift wrapper (https://github.com/1024jp/GzipSwift)
-                    // to uncompress.
+                    // to de-compress.
                     let uncompressed = try data.gunzipped()
                     if let locomotives = parse(data: uncompressed) {
                         return .completed(loc: locomotives)

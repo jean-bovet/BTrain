@@ -110,7 +110,7 @@ final class TrainLeadingReservation: TrainReservation {
     }
         
     /// Returns the distance that has been settled. In other words, returns the distance
-    /// that contains only consecutives elements (blocks and turnouts) that have settled.
+    /// that contains only consecutive elements (blocks and turnouts) that have settled.
     ///
     /// When turnout takes some time to change state, the leading distance might be less
     /// than the total leading distance which must be accounted for in order for the train

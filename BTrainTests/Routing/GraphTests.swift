@@ -115,7 +115,7 @@ class GraphTests: XCTestCase {
         let s2 = layout.block(named: "s2")
         let b1 = layout.block(named: "b1")
         
-        // Without block reserved, the straighforward path from s1 to s2 is s1-b1-s2
+        // Without block reserved, the straightforward path from s1 to s2 is s1-b1-s2
         var p = layout.path(for: layout.trains[0], from: (s1, .next), to: (s2, .next))!
         XCTAssertEqual(p.toStrings, ["s1:1", "0:t1:1", "0:t2:1", "0:b1:1", "1:t4:0", "0:s2"])
         

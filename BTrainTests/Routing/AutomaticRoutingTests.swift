@@ -72,7 +72,7 @@ class AutomaticRoutingTests: BTTestCase {
 
         try p.assert("automatic-0: {r0{s1 ≏ 💺0 ≏ 🔴🚂0 }} <t1{sr}(0,1),s> <t2{sr}(0,1),s> [b1 ≏ ≏ ] <t4{sl}(1,0),s> {s2 ≏ ≏ }")
 
-        // Let's artifically reserve turnout t2. This should cause the automatic route to be re-evaluated to find an alternate path
+        // Let's artificially reserve turnout t2. This should cause the automatic route to be re-evaluated to find an alternate path
         layout.turnout(named: "t2").reserved = .init(train: .init(uuid: "7"), sockets: .init(fromSocketId: 0, toSocketId: 1))
         
         p = try setup(layout: layout, fromBlockId: s1.id, destination: nil, position: .end, routeSteps: ["s1:next", "b2:next", "b3:next", "s2:next"])

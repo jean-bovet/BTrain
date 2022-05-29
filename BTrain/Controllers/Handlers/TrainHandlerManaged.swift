@@ -45,7 +45,7 @@ final class TrainHandlerManaged {
     
     let layout: Layout
     let reservation: LayoutReservation
-    let executor: LayoutController
+    let layoutController: LayoutController
     let route: Route
     let train: Train
     let event: TrainEvent
@@ -109,11 +109,13 @@ final class TrainHandlerManaged {
     ///
     /// - Parameters:
     ///   - layout: the layout
-    ///   - train: the train
+    ///   - reservation: the layout reservation
+    ///   - layoutController: the layout controller
     ///   - route: the route
+    ///   - train: the train
     ///   - event: the event that triggered this method
     /// - Returns: returns the result of the process, which can include one or more follow up events
-    static func process(layout: Layout, reservation: LayoutReservation, executor: LayoutController, route: Route, train: Train, event: TrainEvent) throws -> TrainHandlerResult {
+    static func process(layout: Layout, reservation: LayoutReservation, layoutController: LayoutController, route: Route, train: Train, event: TrainEvent) throws -> TrainHandlerResult {
         guard let currentBlock = layout.currentBlock(train: train) else {
             return .none()
         }
@@ -122,14 +124,14 @@ final class TrainHandlerManaged {
             return .none()
         }
         
-        let handler = TrainHandlerManaged(layout: layout, reservation: reservation, executor: executor, route: route, train: train, event: event, currentBlock: currentBlock, trainInstance: trainInstance)
+        let handler = TrainHandlerManaged(layout: layout, reservation: reservation, executor: layoutController, route: route, train: train, event: event, currentBlock: currentBlock, trainInstance: trainInstance)
         return try handler.process()
     }
     
     private init(layout: Layout, reservation: LayoutReservation, executor: LayoutController, route: Route, train: Train, event: TrainEvent, currentBlock: Block, trainInstance: TrainInstance) {
         self.layout = layout
         self.reservation = reservation
-        self.executor = executor
+        self.layoutController = executor
         self.route = route
         self.train = train
         self.event = event
@@ -234,7 +236,7 @@ final class TrainHandlerManaged {
             // Note: do not remove the leading blocks as this will be taken care below by the `reserveLeadingBlocks` method.
             // This is important because the reserveLeadingBlocks method needs to remember the previously reserved turnouts
             // in order to avoid re-activating them each time unnecessarily.
-            try executor.setTrainPosition(train, position, removeLeadingBlocks: false)
+            try layoutController.setTrainPosition(train, position, removeLeadingBlocks: false)
             
             BTLogger.router.debug("\(self.train, privacy: .public): moved to position \(self.train.position) in \(self.currentBlock.name, privacy: .public), direction \(self.trainInstance.direction)")
             
@@ -264,7 +266,7 @@ final class TrainHandlerManaged {
         // Note: do not remove the leading blocks as this will be taken care below by the `reserveLeadingBlocks` method.
         // This is important because the reserveLeadingBlocks method needs to remember the previously reserved turnouts
         // in order to avoid re-activating them each time unnecessarily.
-        try executor.setTrainToBlock(train, entryFeedback.block.id, position: .custom(value: position), direction: entryFeedback.direction, routeIndex: train.routeStepIndex + 1, removeLeadingBlocks: false)
+        try layoutController.setTrainToBlock(train, entryFeedback.block.id, position: .custom(value: position), direction: entryFeedback.direction, routeIndex: train.routeStepIndex + 1, removeLeadingBlocks: false)
         
         guard let newBlock = layout.block(for: entryFeedback.block.id) else {
             throw LayoutError.blockNotFound(blockId: entryFeedback.block.id)
@@ -306,7 +308,7 @@ final class TrainHandlerManaged {
             train.startRouteIndex = train.routeStepIndex
             
             train.state = .running
-            executor.setTrainSpeed(train, LayoutFactory.DefaultMaximumSpeed, completion: nil)
+            layoutController.setTrainSpeed(train, LayoutFactory.DefaultMaximumSpeed, completion: nil)
             resultingEvents.append(.stateChanged)
         }
     }
@@ -342,7 +344,7 @@ final class TrainHandlerManaged {
         
         train.state = .braking
         
-        executor.setTrainSpeed(train, currentBlock.brakingSpeed ?? LayoutFactory.DefaultBrakingSpeed)
+        layoutController.setTrainSpeed(train, currentBlock.brakingSpeed ?? LayoutFactory.DefaultBrakingSpeed)
         
         resultingEvents.append(.stateChanged)
     }
@@ -360,7 +362,7 @@ final class TrainHandlerManaged {
         
         train.state = .stopping
         
-        executor.setTrainSpeed(train, 0)
+        layoutController.setTrainSpeed(train, 0)
                         
         resultingEvents.append(.stateChanged)
     }
@@ -400,7 +402,7 @@ final class TrainHandlerManaged {
         BTLogger.router.debug("\(train, privacy: .public): schedule timer to restart train in \(delay, format: .fixed(precision: 1)) seconds")
         
         train.timeUntilAutomaticRestart = delay
-        executor.scheduleRestartTimer(train: train)
+        layoutController.scheduleRestartTimer(train: train)
     }
         
     // TODO: unit test to test the resulting event with change and no change
@@ -449,7 +451,7 @@ final class TrainHandlerManaged {
             return
         }
 
-        executor.setTrainSpeed(train, LayoutFactory.DefaultMaximumSpeed)
+        layoutController.setTrainSpeed(train, LayoutFactory.DefaultMaximumSpeed)
     }
     
     private func updateAutomaticRoute(for train: Train, layout: Layout) throws -> Bool {

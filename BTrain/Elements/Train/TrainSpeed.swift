@@ -92,7 +92,7 @@ final class TrainSpeed: ObservableObject, Equatable, CustomStringConvertible {
         var speed: UnitKph?
     }
 
-    // Array of correspondance between the number of steps
+    // Array of correspondence between the number of steps
     // and the speed in kph. The number of steps is dependent
     // on the type of decoder.
     @Published var speedTable = [SpeedTableEntry]()

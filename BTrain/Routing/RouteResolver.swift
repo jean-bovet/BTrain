@@ -27,7 +27,7 @@ final class RouteResolver {
     }
     
     // This function takes an array of steps and returns a resolved array of steps. The returned array
-    // contains all the blocks and turnouts that were not explicitely indicated in the first array.
+    // contains all the blocks and turnouts that were not explicitly indicated in the first array.
     // Note: a train must be specified in order to resolve the steps because a train can have specific requirements
     // to avoid certain blocks or turnouts, in addition to the algorithm checking allowing block (or turnout)
     // already reserved for the same train to be accepted as resolved steps.

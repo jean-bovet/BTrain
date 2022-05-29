@@ -307,7 +307,7 @@ final class TurnoutShape: Shape, DraggableShape, ConnectableShape {
     func drawLabel(ctx: CGContext, label: String, at location: CGPoint, color: CGColor, fontSize: CGFloat) -> CGSize {
         let textCenter = location.rotate(by: rotationAngle, around: rotationCenter)
 
-        // Always displays the text facing downwards so it is easer to read
+        // Always displays the text facing downwards so it is easier to read
         let angle = rotationAngle.truncatingRemainder(dividingBy: 2 * .pi)
         if abs(angle) <= .pi/2 || abs(angle) >= 2 * .pi*3/4 {
             return ctx.drawText(at: textCenter, vAlignment: .bottom, hAlignment: .center, rotation: angle,

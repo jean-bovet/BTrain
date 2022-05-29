@@ -140,9 +140,10 @@ final class LayoutController {
         
     /// This is the main method to call to manage the train associated with this controller.
     ///
-    /// This method executs all the handlers interested in the specified event and return the result which might
+    /// This method executes all the handlers interested in the specified event and return the result which might
     /// contain more events to further process. The ``LayoutController`` is responsible to call this class
     /// again until all the events are processed.
+    /// - Parameter train: the train to process
     /// - Parameter event: the event to process
     /// - Returns: the result of the event processing
     private func run(train: Train, event: TrainEvent) throws -> TrainHandlerResult {
@@ -159,7 +160,7 @@ final class LayoutController {
                 return result
             }
 
-            result.append(try TrainHandlerManaged.process(layout: layout, reservation: reservation, executor: self, route: route, train: train, event: event))
+            result.append(try TrainHandlerManaged.process(layout: layout, reservation: reservation, layoutController: self, route: route, train: train, event: event))
         }
 
         if result.events.isEmpty {
@@ -490,6 +491,7 @@ extension LayoutController {
     ///
     /// - Parameters:
     ///   - trainId: the train
+    ///   - train:
     ///   - toBlockId: the block in which to put the train
     ///   - position: the position in the block in which to put the train
     ///   - direction: the direction in the block in which to put the train

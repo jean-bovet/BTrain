@@ -187,7 +187,7 @@ class TrainSpeedManagerTests: BTTestCase {
     
     /// Ensure that a previous speed change callback that is being cancelled does not change
     /// the train state. For example, a train stopping can be restarted in the middle of being stopped;
-    /// when that happen, the new state of .running should not be overriden by the previous callback.
+    /// when that happen, the new state of .running should not be overridden by the previous callback.
     func testSpeedChangeCancelPreviousCompletionBlock() throws {
         let layout = LayoutYard().newLayout().removeTrainGeometry()
         let interface = MockCommandInterface()
@@ -312,7 +312,7 @@ class TrainSpeedManagerTests: BTTestCase {
         
         mi.resume()
 
-        // e2 completes first (because it is cancelled while e is still in progress with the Digital Controler),
+        // e2 completes first (because it is cancelled while e is still in progress with the Digital Controller),
         // then e completes (cancelled) and finally e3 completes (completed).
         wait(for: [e2, e, e3], timeout: 1.0, enforceOrder: true)
     }

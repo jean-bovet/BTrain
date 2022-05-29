@@ -91,9 +91,9 @@ final class LayoutStringParser {
         if let expected = expected {
             assert(c == expected, "Unexpected character \(c), expecting \(expected)")
         }
-        let eatenCharater = c
+        let eatenCharacter = c
         index = ls.index(after: index)
-        return eatenCharater
+        return eatenCharacter
     }
     
 }

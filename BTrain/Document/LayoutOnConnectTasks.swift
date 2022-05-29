@@ -20,7 +20,7 @@ final class LayoutOnConnectTasks: ObservableObject {
     
     // Property used to keep track of the progress when activating the turnouts
     // when connecting to the Digital Controller
-    @Published var activateTurnountPercentage: Double? = nil
+    @Published var activateTurnoutPercentage: Double? = nil
 
     init(layout: Layout, layoutController: LayoutController, interface: CommandInterface) {
         self.layout = layout
@@ -70,14 +70,14 @@ final class LayoutOnConnectTasks: ObservableObject {
             return
         }
         
-        activateTurnountPercentage = 0.0
+        activateTurnoutPercentage = 0.0
         var completionCount = 0
         for t in turnouts {
             layoutController.sendTurnoutState(turnout: t) {
                 completionCount += 1
-                self.activateTurnountPercentage = Double(completionCount) / Double(turnouts.count)
+                self.activateTurnoutPercentage = Double(completionCount) / Double(turnouts.count)
                 if completionCount == turnouts.count {
-                    self.activateTurnountPercentage = nil
+                    self.activateTurnoutPercentage = nil
                     completion()
                 }
             }

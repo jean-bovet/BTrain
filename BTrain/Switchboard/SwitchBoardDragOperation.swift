@@ -119,7 +119,7 @@ final class SwitchBoardDragOperation {
                     linkShape.selected = true
                     provider.append(linkShape)
 
-                    // Delesect the previously selected shape
+                    // Deselect the previously selected shape
                     state.selectedShape?.selected = false
 
                     // Make it the selected shape, including its plug id,

@@ -37,7 +37,7 @@ struct SwitchBoardView: View {
     @Environment(\.undoManager) var undoManager
     
     // Note: we pass `redraw` and `coordinator` to this method, even if unused,
-    // in order to force SwitfUI to re-draw the view if one of them change.
+    // in order to force SwiftUI to re-draw the view if one of them change.
     func draw(context: GraphicsContext, darkMode: Bool, coordinator: LayoutController, layout: Layout, state: SwitchBoard.State) {
         switchboard.context.showBlockName = state.showBlockName
         switchboard.context.showStationName = state.showStationName

@@ -407,7 +407,7 @@ final class LayoutRouteParser {
         if sp.matches("{") {
             let typeString = sp.matchString(["}"])
             guard !typeString.isEmpty else {
-                throw ParserError.parserError(message: "Turnout type must be specfied within { }")
+                throw ParserError.parserError(message: "Turnout type must be specified within { }")
             }
             switch(typeString) {
             case "sl":

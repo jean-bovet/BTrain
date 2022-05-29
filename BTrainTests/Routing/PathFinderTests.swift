@@ -40,7 +40,7 @@ class PathFinderTests: BTTestCase {
         let b2 = layout.block("b2")
         b2.reserved = Reservation("other", .next)
         
-        // Ensure that by specificy a look ahead equal to the number of blocks in the layout
+        // Ensure that by specifying a look ahead equal to the number of blocks in the layout
         // there is no valid path found because b2 is occupied.
         let path = layout.path(for: layout.trains[0], from: (s1, .next), to: nil, reservedBlockBehavior: .avoidReserved)
         XCTAssertNil(path)

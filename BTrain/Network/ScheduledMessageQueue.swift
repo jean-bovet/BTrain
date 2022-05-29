@@ -14,11 +14,6 @@ import Foundation
 
 // This class ensures that every scheduled execution
 // of a block is performed serially, every x ms.
-// This is used to ensure commands sent to the Central Station
-// are not clobbed together or sent too fast which would cause
-// one event to be missed. This happens for example when
-// changing the state of a crossing turnout, where two turnouts
-// are changed at the same time.
 final class ScheduledMessageQueue {
 
     typealias ExecutionBlock = (@escaping CompletionBlock) -> Void

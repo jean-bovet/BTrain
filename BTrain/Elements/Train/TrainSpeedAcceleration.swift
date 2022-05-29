@@ -60,12 +60,12 @@ final class TrainSpeedAcceleration {
         case .linear:
             return Int(Double(fromSteps) + time / totalDuration * Double(toSteps - fromSteps))
         case .bezier:
-            return Int(bézier(for: max(0, min(1, time / totalDuration)), p0: Double(fromSteps), p1: Double(fromSteps), p2: Double(toSteps), p3: Double(toSteps)))
+            return Int(bezier(for: max(0, min(1, time / totalDuration)), p0: Double(fromSteps), p1: Double(fromSteps), p2: Double(toSteps), p3: Double(toSteps)))
         }
     }
     
     // https://en.wikipedia.org/wiki/Bézier_curve
-    private func bézier(for t: Double, p0: Double, p1: Double, p2: Double, p3: Double) -> Double {
+    private func bezier(for t: Double, p0: Double, p1: Double, p2: Double, p3: Double) -> Double {
         pow(1-t, 3) * p0 + 3 * pow(1-t, 2) * t * p1 + 3 * (1-t) * pow(t, 2) * p2 + pow(t, 3) * p3
     }
     

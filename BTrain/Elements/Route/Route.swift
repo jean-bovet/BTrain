@@ -29,16 +29,16 @@ final class Route: Element, ObservableObject {
     
     /// Mode of the route. There are 3 possible modes:
     /// - fixed: the route is created ahead of time by the user and does not change
-    /// - automatic: the route is automatically created by BTrain and is updated as the train moves. The train stops only when the user explicitely requests it.
+    /// - automatic: the route is automatically created by BTrain and is updated as the train moves. The train stops only when the user explicitly requests it.
     /// - automaticOnce: like automatic but the train stops at the next station using the shortest path.
     enum Mode: Equatable, Codable {
         // Fixed route specified by the user
         case fixed
                 
-        // Run the automatic route as long as the user does not explicitely stop the train
+        // Run the automatic route as long as the user does not explicitly stop the train
         case automatic
         
-        // Run onces the automatic route until it reaches the specified block.
+        // Run once the automatic route until it reaches the specified block.
         // The automatic route will try to pick the shortest route.
         case automaticOnce(destination: Destination)
     }

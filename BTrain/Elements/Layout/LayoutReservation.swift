@@ -160,7 +160,7 @@ final class LayoutReservation {
     
     private func reserveSteps(train: Train, route: Route, resolvedSteps: [ResolvedRouteItem], reservedTurnouts: Set<TurnoutActivation>) throws -> Bool {
         // Variable keeping track of the number of leading blocks that have been reserved.
-        // At least one block must have been reserved to consider this function successfull.
+        // At least one block must have been reserved to consider this function successful.
         // Note: blocks that are reserved for the train and its wagons do not count against that count.
         var numberOfLeadingBlocksReserved = 0
 
@@ -462,9 +462,9 @@ final class LayoutReservation {
         // to the leading distance available.
         let respected = brakingDistanceH0cm <= leadingDistance
         if respected {
-            BTLogger.router.debug("\(train, privacy: .public): can come to a fullstop in \(brakingDistanceH0cm, format: .fixed(precision: 1))cm (in \(brakingDelaySeconds, format: .fixed(precision: 1))s) at \(speedKph, format: .fixed(precision: 1))kph. The leading distance is \(leadingDistance, format: .fixed(precision: 1))cm with blocks \(train.leading.blocks, privacy: .public)")
+            BTLogger.router.debug("\(train, privacy: .public): can come to a full stop in \(brakingDistanceH0cm, format: .fixed(precision: 1))cm (in \(brakingDelaySeconds, format: .fixed(precision: 1))s) at \(speedKph, format: .fixed(precision: 1))kph. The leading distance is \(leadingDistance, format: .fixed(precision: 1))cm with blocks \(train.leading.blocks, privacy: .public)")
         } else {
-            BTLogger.router.debug("\(train, privacy: .public): ⚠️ cannot come to a fullstop in \(brakingDistanceH0cm, format: .fixed(precision: 1))cm (in \(brakingDelaySeconds, format: .fixed(precision: 1))s) at \(speedKph, format: .fixed(precision: 1))kph because the leading distance is \(leadingDistance, format: .fixed(precision: 1))cm with blocks \(train.leading.blocks, privacy: .public)")
+            BTLogger.router.debug("\(train, privacy: .public): ⚠️ cannot come to a full stop in \(brakingDistanceH0cm, format: .fixed(precision: 1))cm (in \(brakingDelaySeconds, format: .fixed(precision: 1))s) at \(speedKph, format: .fixed(precision: 1))kph because the leading distance is \(leadingDistance, format: .fixed(precision: 1))cm with blocks \(train.leading.blocks, privacy: .public)")
         }
         return respected
     }

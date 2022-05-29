@@ -123,6 +123,8 @@ final class GraphShortestPathFinder {
     ///   - from: the starting element
     ///   - to: the destination element
     ///   - constraints: the constraints to apply to the graph
+    ///   - context: the context
+    ///   - verbose: true to emit logs, false otherwise
     /// - Returns: the shortest path or nil if no path found
     static func shortestPath(graph: Graph, from: GraphPathElement, to: GraphPathElement, constraints: GraphPathFinderConstraints = GraphPathFinder.DefaultConstraints(), context: GraphPathFinderContext = GraphPathFinder.DefaultContext(), verbose: Bool) throws -> GraphPath? {
         try GraphShortestPathFinder(graph: graph, verbose: verbose).shortestPath(from: from, to: to, constraints: constraints, context: context)
@@ -164,6 +166,8 @@ final class GraphShortestPathFinder {
     /// - Parameters:
     ///   - from: the starting element
     ///   - to: the destination element
+    ///   - constraints: the constraints of the graph
+    ///   - context: the context of the analysis
     private func visitGraph(from: GraphPathElement, to: GraphPathElement, currentPath: GraphPath, constraints: GraphPathFinderConstraints, context: GraphPathFinderContext) throws {
         // Do not visit an element that has already been visited
         guard !visitedElements.contains(from) else {
@@ -259,6 +263,7 @@ final class GraphShortestPathFinder {
     ///   - distance: the shortest distance up to `element`
     ///   - path: the current shortest path
     ///   - constraints: the constraints
+    ///   - context:
     private func assignDistanceToPathConfigurationsOf(element: NextElement, to: GraphPathElement, distance: Double, path: GraphPath, constraints: GraphPathFinderConstraints, context: GraphPathFinderContext) {
         for exitSocket in element.node.reachableSockets(from: element.entrySocket, constraints) {
             // Build up a particular element configuration using the specified exitSocket.
@@ -316,7 +321,7 @@ extension GraphShortestPathFinder.PathFinderError: LocalizedError {
         case .nodeNotFound(identifier: let identifier):
             return "Node not found for \(identifier)"
         case .destinationSocketNotFound(for: let element):
-            return "Destination socketnot found for \(element)"
+            return "Destination socket not found for \(element)"
         case .edgeNotFound(for: let node, socketId: let socketId):
             return "Edge not found for \(node) and socket \(socketId)"
         case .invalidElement(element: let element):

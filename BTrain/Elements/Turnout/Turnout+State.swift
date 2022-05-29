@@ -125,18 +125,18 @@ extension Turnout {
         if let states = Turnout.statesMap[category] {
             return states[state] ?? 0
         } else {
-            BTLogger.error("Unknow turnout category \(category)")
+            BTLogger.error("Unknown turnout category \(category)")
             return 0
         }
     }
     
     private func setActualState(for value: UInt8) {
         guard let states = Turnout.statesMap[category] else {
-            BTLogger.error("Unknow turnout category \(category)")
+            BTLogger.error("Unknown turnout category \(category)")
             return
         }
         guard let state = states.first(where: { $0.value == value }) else {
-            BTLogger.error("Unknow turnout state value \(value) for \(category)")
+            BTLogger.error("Unknown turnout state value \(value) for \(category)")
             return
         }
         self.actualState = state.key
