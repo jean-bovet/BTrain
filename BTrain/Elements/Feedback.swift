@@ -67,8 +67,8 @@ extension Feedback: Codable {
 extension Array where Element : Feedback {
 
     func find(deviceID: UInt16, contactID: UInt16) -> Element? {
-        return self.first { feedback in
-            return feedback.deviceID == deviceID && feedback.contactID == contactID
+        self.first { feedback in
+            feedback.deviceID == deviceID && feedback.contactID == contactID
         }
     }
     

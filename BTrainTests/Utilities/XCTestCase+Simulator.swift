@@ -26,7 +26,7 @@ extension XCTestCase {
 
         if enable {
             let e = expectation(description: "enable")
-            doc.enable() {
+            doc.enable {
                 e.fulfill()
             }
             
@@ -37,7 +37,7 @@ extension XCTestCase {
     func disconnectFromSimulator(doc: LayoutDocument, disable: Bool = true) {
         if disable {
             let d = expectation(description: "disable")
-            doc.disable() {
+            doc.disable {
                 d.fulfill()
             }
             
@@ -45,7 +45,7 @@ extension XCTestCase {
         }
 
         let e = expectation(description: "disconnect")
-        doc.disconnect() {
+        doc.disconnect {
             e.fulfill()
         }
         

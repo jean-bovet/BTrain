@@ -43,11 +43,16 @@ final class LayoutFactory {
     ]
 
     static let GlobalLayoutIDs: [Identifier<Layout>] = {
-        return GlobalLayouts.map { type(of: $0).id }
+        GlobalLayouts.map {
+            type(of: $0).id
+        }
     }()
         
     static func createLayout(_ id: Identifier<Layout>) -> Layout {
-        return GlobalLayouts.filter { type(of: $0).id == id }.first!.newLayout()
+        GlobalLayouts.filter {
+                    type(of: $0).id == id
+                }
+                .first!.newLayout()
     }
     
     static func layoutFromBundle(named: String) -> Layout {

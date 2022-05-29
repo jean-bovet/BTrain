@@ -17,7 +17,7 @@ struct GraphPath: Equatable {
     let elements: [GraphPathElement]
         
     var count: Int {
-        return elements.count
+        elements.count
     }
         
     var toStrings: [String] {
@@ -29,15 +29,15 @@ struct GraphPath: Equatable {
     }
     
     func contains(_ element: GraphPathElement) -> Bool {
-        return elements.contains(element)
+        elements.contains(element)
     }
     
     func appending(_ element: GraphPathElement) -> GraphPath {
-        return GraphPath(elements + [element])
+        GraphPath(elements + [element])
     }
     
     static func == (lhs: GraphPath, rhs: GraphPath) -> Bool {
-        return lhs.elements == rhs.elements
+        lhs.elements == rhs.elements
     }
 
 }
@@ -113,11 +113,11 @@ struct GraphPathElement: Equatable, Hashable, CustomStringConvertible {
     }
     
     static func any(_ node: GraphNode) -> GraphPathElement {
-        return .init(node: node, entrySocket: nil, exitSocket: nil)
+        .init(node: node, entrySocket: nil, exitSocket: nil)
     }
     
     static func == (lhs: GraphPathElement, rhs: GraphPathElement) -> Bool {
-        return lhs.node.identifier.uuid == rhs.node.identifier.uuid && lhs.entrySocket == rhs.entrySocket && lhs.exitSocket == rhs.exitSocket
+        lhs.node.identifier.uuid == rhs.node.identifier.uuid && lhs.entrySocket == rhs.entrySocket && lhs.exitSocket == rhs.exitSocket
     }
     
 }

@@ -33,7 +33,7 @@ final class TrainInstance: Codable, Equatable, CustomStringConvertible {
     var parts = TrainPartMap()
     
     var description: String {
-        return "TrainInstance(\(trainId), \(direction.rawValue))"
+        "TrainInstance(\(trainId), \(direction.rawValue))"
     }
 
     static func == (lhs: TrainInstance, rhs: TrainInstance) -> Bool {

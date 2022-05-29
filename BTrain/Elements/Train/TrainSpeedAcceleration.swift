@@ -42,7 +42,7 @@ final class TrainSpeedAcceleration {
     let acceleration: Acceleration
     
     var totalDuration: TimeInterval {
-        return ceil(abs(Double(toSteps) - Double(fromSteps)) / Double(stepIncrement)) * timeIncrement
+        ceil(abs(Double(toSteps) - Double(fromSteps)) / Double(stepIncrement)) * timeIncrement
     }
     
     init(fromSteps: Int, toSteps: Int, timeIncrement: TimeInterval, stepIncrement: Int, type: Acceleration) {

@@ -56,7 +56,7 @@ struct RouteNewElementSheet: View {
                     
                     undoManager?.registerUndo(withTarget: route, handler: { route in
                         route.steps.removeAll { s in
-                            return s.id == step.id
+                            s.id == step.id
                         }
                     })
 

@@ -109,7 +109,7 @@ class TrainSpeedMeasurementTests: BTTestCase {
         let feedbackAExpectation = expectation(description: "Feedback A")
         let feedbackBExpectation = expectation(description: "Feedback B")
 
-        sm.start() { info in
+        sm.start { info in
             XCTAssertEqual(info.progress, 1)
             let expectedInfo = expectedInfoArray.removeFirst()
             XCTAssertEqual(expectedInfo, info.step)
@@ -206,7 +206,7 @@ class TrainSpeedMeasurementTests: BTTestCase {
         
         let infoStepAsserter = InfoStepAsserter()
         
-        sm.start() { info in
+        sm.start { info in
             callbackExpectation.fulfill()
 
             let expectedInfo = expectedInfoArray.removeFirst()

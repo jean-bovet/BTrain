@@ -31,8 +31,8 @@ final class LayoutOnConnectTasks: ObservableObject {
     func performOnConnectTasks(activateTurnouts: Bool, completion: @escaping CompletionBlock) {
         queryLocomotivesDirection {
             if activateTurnouts {
-                self.layoutController.go() {
-                    self.applyTurnoutStateToDigitalController() {
+                self.layoutController.go {
+                    self.applyTurnoutStateToDigitalController {
                         completion()
                     }
                 }

@@ -14,6 +14,6 @@ import SwiftUI
 
 extension Spacer {
     func fixedSpace() -> some View {
-        return self.frame(width: 20)
+        self.frame(width: 20)
     }
 }

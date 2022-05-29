@@ -44,7 +44,7 @@ extension Turnout {
     
     // Returns all the possible states for the turnout
     var allStates: [State] {
-        return Turnout.states(for: category)
+        Turnout.states(for: category)
     }
     
     // Returns the next state the turnout will take when toggling between
@@ -118,7 +118,7 @@ extension Turnout {
     ]
     
     var requestedStateValue: UInt8 {
-        return stateValue(for: requestedState)
+        stateValue(for: requestedState)
     }
     
     private func stateValue(for state: State) -> UInt8 {

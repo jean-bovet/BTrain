@@ -20,8 +20,8 @@ protocol ConnectableShape: Shape {
 extension Array where Element == ConnectorSocket {
 
     func first(at location: CGPoint) -> Element? {
-        return self.first { socket in
-            return socket.shape.contains(location)
+        self.first { socket in
+            socket.shape.contains(location)
         }
     }
 }

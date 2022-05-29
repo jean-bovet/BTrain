@@ -60,7 +60,7 @@ struct FeedbackEditListView: View {
                     let feedback = layout.newFeedback()
                     undoManager?.registerUndo(withTarget: layout, handler: { layout in
                         layout.feedbacks.removeAll { t in
-                            return t.id == feedback.id
+                            t.id == feedback.id
                         }
                     })
                 }

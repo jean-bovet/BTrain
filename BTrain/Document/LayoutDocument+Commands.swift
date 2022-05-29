@@ -52,7 +52,7 @@ extension LayoutDocument {
         simulator.start()
         connect(address: "localhost", port: 15731) { [weak self] error in
             if enable {
-                self?.enable() {
+                self?.enable {
                     completed?(nil)
                 }
             } else {
@@ -80,8 +80,8 @@ extension LayoutDocument {
     }
     
     func disconnect(_ completion: @escaping CompletionBlock) {
-        simulator.stop() {
-            self.interface.disconnect() {
+        simulator.stop {
+            self.interface.disconnect {
                 completion()
             }
         }

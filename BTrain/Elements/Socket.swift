@@ -47,15 +47,15 @@ struct Socket: Codable, Equatable, CustomStringConvertible {
     }
 
     static func block(_ id: Identifier<Block>) -> Socket {
-        return Socket(block: id, turnout: nil, socketId: nil)
+        Socket(block: id, turnout: nil, socketId: nil)
     }
 
     static func block(_ id: Identifier<Block>, socketId: Int?) -> Socket {
-        return Socket(block: id, turnout: nil, socketId: socketId)
+        Socket(block: id, turnout: nil, socketId: socketId)
     }
 
     static func turnout(_ id: Identifier<Turnout>, socketId: Int?) -> Socket {
-        return Socket(block: nil, turnout: id, socketId: socketId)
+        Socket(block: nil, turnout: id, socketId: socketId)
     }
 
     // Returns true if this socket contains the specified socket "s".

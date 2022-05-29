@@ -108,7 +108,7 @@ struct RouteView: View {
                 Button("-") {
                     if let step = route.steps.first(where: { $0.id == selection }) {
                         route.steps.removeAll { s in
-                            return s.id == step.id
+                            s.id == step.id
                         }
 
                         undoManager?.registerUndo(withTarget: route, handler: { route in

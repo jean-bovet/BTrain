@@ -17,7 +17,7 @@ import XCTest
 class FixedRoutingTests: BTTestCase {
             
     override var speedChangeRequestCeiling: Int? {
-        return 23
+        23
     }
 
     func testBlockReserved() throws {

@@ -133,7 +133,7 @@ final class LayoutDiagnostic: ObservableObject {
         self.layout = layout
         self.observer = LayoutObserver(layout: layout)
         
-        observer.registerForAnyChange() { [weak self] in
+        observer.registerForAnyChange { [weak self] in
             DispatchQueue.main.async {
                 self?.automaticCheck()
             }
@@ -423,7 +423,7 @@ final class LayoutDiagnostic: ObservableObject {
     func repair() {
         // Remove any transitions that are looping back to the same socket
         layout.transitions.removeAll { transition in
-            return transition.a == transition.b
+            transition.a == transition.b
         }
         
         // Remove any train that do not exist anymore

@@ -104,7 +104,7 @@ extension LayoutDocument: ReferenceFileDocument {
     }
     
     func snapshot(contentType: UTType) throws -> Data {
-        return try layout.encode()
+        try layout.encode()
     }
 
 }

@@ -49,11 +49,11 @@ extension Block: GraphNode {
 extension Block {
     
     var elementDirectionNext: GraphPathElement {
-        return .between(self, Block.previousSocket, Block.nextSocket)
+        .between(self, Block.previousSocket, Block.nextSocket)
     }
     
     var elementDirectionPrevious: GraphPathElement {
-        return .between(self, Block.nextSocket, Block.previousSocket)
+        .between(self, Block.nextSocket, Block.previousSocket)
     }
 
 }
@@ -117,7 +117,7 @@ extension ITransition {
     }
     
     var fromNodeSocket: SocketId? {
-        return a.socketId
+        a.socketId
     }
     
     var toNode: GraphElementIdentifier {
@@ -132,7 +132,7 @@ extension ITransition {
     }
     
     var toNodeSocket: SocketId? {
-        return b.socketId
+        b.socketId
     }
     
 }
@@ -140,7 +140,7 @@ extension ITransition {
 extension Layout {
     
     func block(_ node: GraphNode) -> Block? {
-        return block(node.identifier)
+        block(node.identifier)
     }
 
     func block(_ identifier: GraphElementIdentifier) -> Block? {
@@ -152,7 +152,7 @@ extension Layout {
     }
 
     func turnout(_ node: GraphNode) -> Turnout? {
-        return turnout(node.identifier)
+        turnout(node.identifier)
     }
     
     func turnout(_ identifier: GraphElementIdentifier) -> Turnout? {
@@ -193,7 +193,7 @@ extension Layout: Graph {
 extension Layout {
         
     var pathFinderOverflowLimit: Int {
-        return (turnouts.count + blocks.count) * 4
+        (turnouts.count + blocks.count) * 4
     }
         
     func path(for train: Train, from: (Block, Direction), to: (Block, Direction?)?, pathFinder: GraphPathFinding, constraints: GraphPathFinderConstraints, context: GraphPathFinderContext) -> GraphPath? {
@@ -227,7 +227,7 @@ extension Layout {
 extension Array where Element == GraphPathElement {
     
     var toBlockSteps: [RouteItem] {
-        return self.toSteps.compactMap { step in
+        self.toSteps.compactMap { step in
             if case .block(_) = step {
                 return step
             } else {
@@ -237,7 +237,7 @@ extension Array where Element == GraphPathElement {
     }
     
     var toSteps: [RouteItem] {
-        return self.compactMap { element in
+        self.compactMap { element in
             if let block = element.node as? Block {
                 let direction: Direction
                 if let entrySocket = element.entrySocket {
@@ -263,7 +263,7 @@ extension Array where Element == GraphPathElement {
     }
     
     var toResolvedRouteItems: [ResolvedRouteItem] {
-        return self.compactMap { element in
+        self.compactMap { element in
             if let block = element.node as? Block {
                 let direction: Direction
                 if let entrySocket = element.entrySocket {
@@ -274,7 +274,7 @@ extension Array where Element == GraphPathElement {
                     BTLogger.router.error("Missing entry and next socket for \(element, privacy: .public)")
                     return nil
                 }
-                
+
                 return .block(.init(block: block, direction: direction))
             } else if let turnout = element.node as? Turnout {
                 guard let entrySocket = element.entrySocket else {

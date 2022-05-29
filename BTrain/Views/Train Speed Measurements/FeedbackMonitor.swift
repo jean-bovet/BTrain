@@ -29,7 +29,7 @@ final class FeedbackMonitor {
     private var requests = [Request]()
         
     var pendingRequestCount: Int {
-        return requests.count
+        requests.count
     }
     
     init(layout: Layout, interface: CommandInterface) {

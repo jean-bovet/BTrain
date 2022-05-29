@@ -63,7 +63,7 @@ final class Transition: Element, ITransition, CustomStringConvertible {
 
     // Returns the inverse of this transition
     var reverse: ITransition {
-        return TransitionInverse(transition: self)
+        TransitionInverse(transition: self)
     }
     
     var description: String {
@@ -126,7 +126,7 @@ final class TransitionInverse: ITransition, CustomStringConvertible {
     }
 
     var id: Identifier<Transition> {
-        return transition.id
+        transition.id
     }
 
     init(transition: ITransition) {
@@ -170,7 +170,7 @@ final class TransitionInverse: ITransition, CustomStringConvertible {
     }
 
     var reverse: ITransition {
-        return TransitionInverse(transition: self)
+        TransitionInverse(transition: self)
     }
 }
 

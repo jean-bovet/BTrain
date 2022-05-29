@@ -78,7 +78,7 @@ final class LayoutParser {
 extension LayoutFactory {
     
     static func layoutFrom(_ routeString: String) throws -> LayoutParser.ParsedLayout {
-        return try layoutFrom([routeString])
+        try layoutFrom([routeString])
     }
     
     static func layoutFrom(_ routeStrings: [String]) throws -> LayoutParser.ParsedLayout {

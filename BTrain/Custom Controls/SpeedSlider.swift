@@ -78,7 +78,7 @@ private extension TrainSpeed {
     
     var requestedkphAsDouble: Double {
         get {
-            return Double(self.requestedKph)
+            Double(self.requestedKph)
         }
         set {
             self.requestedKph = UInt16(round(newValue))
@@ -87,7 +87,7 @@ private extension TrainSpeed {
     
     var actualKphAsDouble: Double {
         get {
-            return Double(self.actualKph)
+            Double(self.actualKph)
         }
         set {
             self.actualKph = UInt16(round(newValue))

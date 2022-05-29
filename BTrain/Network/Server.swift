@@ -27,7 +27,9 @@ class Server {
     private var connectionsByID: [Int: ServerConnection] = [:]
     
     var connections: [ServerConnection] {
-        return connectionsByID.map { $0.value }
+        connectionsByID.map {
+            $0.value
+        }
     }
     
     init(port: UInt16) {
@@ -36,7 +38,7 @@ class Server {
     }
     
     deinit {
-        stop() { }
+        stop { }
     }
     
     func start() throws {

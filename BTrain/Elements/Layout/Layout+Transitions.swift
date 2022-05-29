@@ -34,7 +34,7 @@ extension Layout {
     }
 
     func transition(for transitionID: Identifier<Transition>) -> ITransition? {
-        return transitions.first(where: { $0.id == transitionID })
+        transitions.first(where: { $0.id == transitionID })
     }
     
     func transitions(from fromBlock: Identifier<Block>, to nextBlock: Identifier<Block>, direction: Direction) throws -> [ITransition] {

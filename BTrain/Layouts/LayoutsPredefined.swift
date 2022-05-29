@@ -13,11 +13,11 @@ import Foundation
 
 final class LayoutBlankCreator: LayoutCreating {
     static var id: Identifier<Layout> {
-        return Identifier<Layout>(uuid: "Empty Layout")
+        Identifier<Layout>(uuid: "Empty Layout")
     }
     
     func newLayout() -> Layout {
-        return Layout(id: LayoutBlankCreator.id)
+        Layout(id: LayoutBlankCreator.id)
     }
     
 }

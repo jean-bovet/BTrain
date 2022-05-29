@@ -37,7 +37,7 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
     @AppStorage("simulatorTurnoutSpeed") var turnoutSpeed = 0.250
 
     var refreshTimeInterval: TimeInterval {
-        return 4.0 - refreshSpeed
+        4.0 - refreshSpeed
     }
     
     private var trainArrayChangesCancellable: AnyCancellable?
@@ -48,7 +48,7 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
     private var timer: Timer?
     
     private var connection: ServerConnection? {
-        return server?.connections.first
+        server?.connections.first
     }
     
     init(layout: Layout, interface: CommandInterface) {
@@ -110,7 +110,7 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
 
         // Remove train that are not present anymore
         trains.removeAll(where: { simTrain in
-            return layout.train(for: simTrain.train.id) == nil
+            layout.train(for: simTrain.train.id) == nil
         })
         
         // Update existing trains, add new ones
@@ -143,7 +143,7 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
         }
         
         if let server = server {
-            server.stop() {
+            server.stop {
                 onCompletionBlock()
             }
         } else {
@@ -391,7 +391,7 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
 private extension Train {
     
     var actualAddress: UInt32 {
-        return address.actualAddress(for: decoder)
+        address.actualAddress(for: decoder)
     }
 
 }

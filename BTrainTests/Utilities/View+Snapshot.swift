@@ -15,7 +15,7 @@ import SwiftUI
 // From: https://stackoverflow.com/questions/69314578/convert-swiftui-view-to-nsimage
 class NoInsetHostingView<V>: NSHostingView<V> where V: View {
     override var safeAreaInsets: NSEdgeInsets {
-        return .init()
+        .init()
     }
 }
 

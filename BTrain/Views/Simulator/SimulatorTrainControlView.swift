@@ -54,7 +54,7 @@ private extension SimulatorTrain {
     // while speed is UInt16.
     var speedAsDouble: Double {
         get {
-            return Double(self.speed.value)
+            Double(self.speed.value)
         }
         set {
             self.speed.value = UInt16(newValue)

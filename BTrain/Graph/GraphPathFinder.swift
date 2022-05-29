@@ -70,11 +70,11 @@ struct GraphPathFinder: GraphPathFinding {
     final class DefaultConstraints: GraphPathFinderConstraints {
         
         func shouldInclude(node: GraphNode, currentPath: GraphPath, to: GraphPathElement?, context: GraphPathFinderContext) -> Bool {
-            return true
+            true
         }
         
         func reachedDestination(node: GraphNode, to: GraphPathElement?) -> Bool {
-            return false
+            false
         }
 
     }
@@ -85,7 +85,7 @@ struct GraphPathFinder: GraphPathFinding {
     
     /// Returns the shortest path between two nodes.
     func shortestPath(graph: Graph, from: GraphPathElement, to: GraphPathElement, constraints: GraphPathFinderConstraints = DefaultConstraints(), context: GraphPathFinderContext) throws -> GraphPath? {
-        return try GraphShortestPathFinder.shortestPath(graph: graph, from: from, to: to, constraints: constraints, context: context, verbose: settings.verbose)
+        try GraphShortestPathFinder.shortestPath(graph: graph, from: from, to: to, constraints: constraints, context: context, verbose: settings.verbose)
     }
     
     /// Returns a path between two nodes.
@@ -108,7 +108,7 @@ struct GraphPathFinder: GraphPathFinding {
 
     /// Returns a path between two nodes.
     func path(graph: Graph, from: GraphPathElement, to: GraphPathElement?, constraints: GraphPathFinderConstraints = DefaultConstraints(), context: GraphPathFinderContext = DefaultContext()) -> GraphPath? {
-        return path(graph: graph, from: from, to: to, currentPath: GraphPath([from]), constraints: constraints, context: context)
+        path(graph: graph, from: from, to: to, currentPath: GraphPath([from]), constraints: constraints, context: context)
     }
     
     /// Error from the path resolver indicating between which path elements an error occurred

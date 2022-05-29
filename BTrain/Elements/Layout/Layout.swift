@@ -73,7 +73,7 @@ final class Layout: Element, ObservableObject {
     @Published var runtimeError: String?
     
     lazy var automaticRouting: AutomaticRouting = {
-        return AutomaticRouting(layout: self)
+        AutomaticRouting(layout: self)
     }()
     
     // MARK: Init
@@ -97,20 +97,20 @@ final class Layout: Element, ObservableObject {
     }
     
     func trainsThatCanBeStarted() -> [Train] {
-        return trains.filter { train in
-            return train.enabled && train.blockId != nil && train.scheduling == .unmanaged
+        trains.filter { train in
+            train.enabled && train.blockId != nil && train.scheduling == .unmanaged
         }
     }
     
     func trainsThatCanBeStopped() -> [Train] {
-        return trains.filter { train in
-            return train.scheduling == .managed || train.scheduling == .finishManaged
+        trains.filter { train in
+            train.scheduling == .managed || train.scheduling == .finishManaged
         }
     }
     
     func trainsThatCanBeFinished() -> [Train] {
-        return trains.filter { train in
-            return train.scheduling == .managed
+        trains.filter { train in
+            train.scheduling == .managed
         }
     }
         

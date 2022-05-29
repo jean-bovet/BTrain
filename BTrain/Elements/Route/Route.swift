@@ -73,7 +73,7 @@ final class Route: Element, ObservableObject {
     @Published var lastMessage: String?
     
     var blockSteps: [RouteStepBlock] {
-        return steps.compactMap {
+        steps.compactMap {
             if case .block(let stepBlock) = $0 {
                 return stepBlock
             } else {
@@ -83,7 +83,7 @@ final class Route: Element, ObservableObject {
     }
 
     var lastStepIndex: Int {
-        return steps.count - 1
+        steps.count - 1
     }
     
     convenience init(uuid: String = UUID().uuidString, mode: Route.Mode = .fixed) {
@@ -113,7 +113,7 @@ final class Route: Element, ObservableObject {
     }
 
     static func automaticRouteId(for trainId: Identifier<Train>) -> Identifier<Route> {
-        return Identifier<Route>(uuid: "automatic-\(trainId)")
+        Identifier<Route>(uuid: "automatic-\(trainId)")
     }
 }
 

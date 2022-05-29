@@ -16,7 +16,7 @@ import XCTest
 class GraphTests: XCTestCase {
 
     private func settings(layout: Layout) -> GraphPathFinder.Settings {
-        return .init(verbose: false, random: false, overflow: layout.pathFinderOverflowLimit)
+        .init(verbose: false, random: false, overflow: layout.pathFinderOverflowLimit)
     }
     
     func testSimplePath() throws {

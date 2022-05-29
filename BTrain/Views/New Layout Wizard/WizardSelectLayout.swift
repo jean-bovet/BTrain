@@ -72,7 +72,7 @@ struct SwitchboardPreview: View {
     let layoutId: Identifier<Layout>
 
     var layout: Layout {
-        return LayoutFactory.createLayout(layoutId)
+        LayoutFactory.createLayout(layoutId)
     }
     
     var switchboard: SwitchBoard {
@@ -84,7 +84,7 @@ struct SwitchboardPreview: View {
     }
     
     var coordinator: LayoutController {
-        return LayoutController(layout: layout, switchboard: switchboard, interface: MarklinInterface())
+        LayoutController(layout: layout, switchboard: switchboard, interface: MarklinInterface())
     }
     
     var scale: Double {

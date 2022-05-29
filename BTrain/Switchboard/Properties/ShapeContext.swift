@@ -31,11 +31,11 @@ final class ShapeContext {
     var expectedFeedbackIds: Set<Identifier<Feedback>>?
 
     var trackWidth: CGFloat {
-        return 4
+        4
     }
 
     var selectedTrackWidth: CGFloat {
-        return 8
+        8
     }
 
     var color: CGColor {

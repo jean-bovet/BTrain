@@ -19,8 +19,8 @@ protocol PluggableShape: Shape {
 extension Array where Element == ConnectorPlug {
 
     func first(at location: CGPoint) -> Element? {
-        return self.first { plug in
-            return plug.shape.contains(location)
+        self.first { plug in
+            plug.shape.contains(location)
         }
     }
 }

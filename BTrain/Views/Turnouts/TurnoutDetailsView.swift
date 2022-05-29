@@ -129,7 +129,7 @@ extension Turnout {
     
     var addressProtocol: CommandTurnoutProtocol? {
         get {
-            return address.protocol
+            address.protocol
         }
         set {
             address = .init(address.address, newValue)
@@ -140,7 +140,7 @@ extension Turnout {
     
     var addressValue: Int {
         get {
-            return Int(address.address)
+            Int(address.address)
         }
         set {
             address = .init(UInt32(newValue), addressProtocol)
@@ -149,7 +149,7 @@ extension Turnout {
     
     var address2Value: Int {
         get {
-            return Int(address2.address)
+            Int(address2.address)
         }
         set {
             address2 = .init(UInt32(newValue), addressProtocol)

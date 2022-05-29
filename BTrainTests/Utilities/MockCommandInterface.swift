@@ -113,15 +113,15 @@ final class MockCommandInterface: CommandInterface {
     }
     
     func speedValue(for steps: SpeedStep, decoder: DecoderType) -> SpeedValue {
-        return .init(value: steps.value)
+        .init(value: steps.value)
     }
     
     func speedSteps(for value: SpeedValue, decoder: DecoderType) -> SpeedStep {
-        return .init(value: value.value)
+        .init(value: value.value)
     }
     
     func register(forFeedbackChange: @escaping FeedbackChangeCallback) -> UUID {
-        return UUID()
+        UUID()
     }
     
     func register(forSpeedChange: @escaping SpeedChangeCallback) {

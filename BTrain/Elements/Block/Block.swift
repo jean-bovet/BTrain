@@ -66,7 +66,7 @@ final class Block: Element, ObservableObject {
         case sidingNext
         
         static func < (lhs: Block.Category, rhs: Block.Category) -> Bool {
-            return lhs.rawValue < rhs.rawValue
+            lhs.rawValue < rhs.rawValue
         }
     }
     

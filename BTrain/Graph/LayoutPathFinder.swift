@@ -42,19 +42,19 @@ final class LayoutPathFinder: GraphPathFinding {
     }
 
     func path(graph: Graph, from: GraphNode, to: GraphNode?, constraints: GraphPathFinderConstraints, context: GraphPathFinderContext) -> GraphPath? {
-        return gpf.path(graph: graph, from: from, to: to, constraints: constraints, context: context)
+        gpf.path(graph: graph, from: from, to: to, constraints: constraints, context: context)
     }
 
     func path(graph: Graph, from: GraphPathElement, to: GraphPathElement?, constraints: GraphPathFinderConstraints, context: GraphPathFinderContext) -> GraphPath? {
-        return gpf.path(graph: graph, from: from, to: to, constraints: constraints, context: context)
+        gpf.path(graph: graph, from: from, to: to, constraints: constraints, context: context)
     }
 
     func shortestPath(graph: Graph, from: GraphPathElement, to: GraphPathElement, constraints: GraphPathFinderConstraints, context: GraphPathFinderContext) throws -> GraphPath? {
-        return try gpf.shortestPath(graph: graph, from: from, to: to, constraints: constraints, context: context)
+        try gpf.shortestPath(graph: graph, from: from, to: to, constraints: constraints, context: context)
     }
     
     func resolve(graph: Graph, _ path: UnresolvedGraphPath, constraints: GraphPathFinderConstraints, context: GraphPathFinderContext, errors: inout [GraphPathFinder.ResolverError]) -> GraphPath? {
-        return gpf.resolve(graph: graph, path, constraints: constraints, context: context, errors: &errors)
+        gpf.resolve(graph: graph, path, constraints: constraints, context: context, errors: &errors)
     }
     
     struct LayoutContext: GraphPathFinderContext {

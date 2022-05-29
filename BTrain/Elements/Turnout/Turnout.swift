@@ -138,8 +138,8 @@ final class Turnout: Element, ObservableObject {
     var center: CGPoint = .zero
 
     var doubleAddress: Bool {
-        return category == .doubleSlip2 ||
-        category == .threeWay
+        category == .doubleSlip2 ||
+                category == .threeWay
     }
     
     init(id: Identifier<Turnout>, name: String = "") {
@@ -289,9 +289,9 @@ extension Turnout: CustomStringConvertible {
 extension Array where Element : Turnout {
 
     func find(address: CommandTurnoutAddress) -> Element? {
-        return self.first { turnout in
-            return turnout.address.actualAddress == address.actualAddress ||
-            turnout.address2.actualAddress == address.actualAddress
+        self.first { turnout in
+            turnout.address.actualAddress == address.actualAddress ||
+                    turnout.address2.actualAddress == address.actualAddress
         }
     }
     

@@ -16,7 +16,7 @@ import XCTest
 class AutomaticRoutingTests: BTTestCase {
 
     override var speedChangeRequestCeiling: Int? {
-        return 17
+        17
     }
     
     func testUpdateAutomaticRoute() throws {

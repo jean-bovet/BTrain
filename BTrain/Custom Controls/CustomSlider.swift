@@ -70,8 +70,8 @@ struct CustomSlider<Component: View>: View {
     }
 
     var body: some View {
-        return GeometryReader { geometry in
-          self.view(geometry: geometry)
+        GeometryReader { geometry in
+            self.view(geometry: geometry)
         }
     }
     

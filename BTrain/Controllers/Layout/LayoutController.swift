@@ -194,7 +194,7 @@ final class LayoutController {
         }
         
         // Stop the Digital Controller to ensure nothing moves further
-        stop() { }
+        stop { }
 
         // Invalidate every restart timer
         pausedTrainTimers.forEach { $0.value.invalidate() }

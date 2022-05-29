@@ -17,7 +17,9 @@ extension Layout {
     /// Returns an array of stations
     var stations: [Station] {
         get {
-            return stationMap.values.map { $0 }
+            stationMap.values.map {
+                $0
+            }
         }
         set {
             stationMap.removeAll()

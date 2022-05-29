@@ -44,15 +44,15 @@ final class ElementVisitor {
         let index: Int
         
         static func block(_ block: Block, direction: Direction, index: Int) -> ElementInfo {
-            return .init(transition: nil, turnout: nil, block: .init(block: block, direction: direction), index: index)
+            .init(transition: nil, turnout: nil, block: .init(block: block, direction: direction), index: index)
         }
         
         static func transition(_ transition: ITransition, index: Int) -> ElementInfo {
-            return .init(transition: transition, turnout: nil, block: nil, index: index)
+            .init(transition: transition, turnout: nil, block: nil, index: index)
         }
         
         static func turnout(_ turnout: Turnout, sockets: Turnout.Reservation.Sockets?, index: Int) -> ElementInfo {
-            return .init(transition: nil, turnout: .init(turnout: turnout, sockets: sockets), block: nil, index: index)
+            .init(transition: nil, turnout: .init(turnout: turnout, sockets: sockets), block: nil, index: index)
         }
     }
     

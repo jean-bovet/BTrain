@@ -17,29 +17,33 @@ import Foundation
 extension Layout {
     
     func newRoute(id: String, _ steps: [(String, Direction)]) -> Route {
-        return newRoute(Identifier<Route>(uuid: id), name: id, steps.map({ step in
-            return .block(RouteStepBlock(Identifier<Block>(uuid: step.0), step.1))
+        newRoute(Identifier<Route>(uuid: id), name: id, steps.map({ step in
+            .block(RouteStepBlock(Identifier<Block>(uuid: step.0), step.1))
         }))
     }
     
     func block(_ uuid: String) -> Block {
-        return block(for: Identifier<Block>(uuid: uuid))!
+        block(for: Identifier<Block>(uuid: uuid))!
     }
     
     func block(named name: String) -> Block {
-        return blocks.first { $0.name == name }!
+        blocks.first {
+            $0.name == name
+        }!
     }
 
     func turnout(_ uuid: String) -> Turnout {
-        return turnout(for: Identifier<Turnout>(uuid: uuid))!
+        turnout(for: Identifier<Turnout>(uuid: uuid))!
     }
 
     func turnout(named name: String) -> Turnout {
-        return turnouts.first { $0.name == name }!
+        turnouts.first {
+            $0.name == name
+        }!
     }
 
     func train(_ uuid: String) -> Train {
-        return train(for: Identifier<Train>(uuid: uuid))!
+        train(for: Identifier<Train>(uuid: uuid))!
     }
     
     func removeTrainGeometry() -> Layout {
@@ -72,8 +76,8 @@ extension Layout {
 extension Array where Element == Block {
     
     func toStrings(useNameInsteadOfId: Bool = true) -> [String] {
-        return self.map { block in
-            return "\(useNameInsteadOfId ? block.name:block.id.uuid)"
+        self.map { block in
+            "\(useNameInsteadOfId ? block.name : block.id.uuid)"
         }
     }
 

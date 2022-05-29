@@ -21,7 +21,7 @@ struct RouteListView: View {
     @State private var selection: Identifier<Route>? = nil
 
     var routes: [Route] {
-        return layout.fixedRoutes
+        layout.fixedRoutes
     }
     
     var body: some View {
@@ -72,7 +72,7 @@ struct RouteListView: View {
             } else {
                 CenteredLabelView(label: "No Selected Route")
             }
-        }.onAppear() {
+        }.onAppear {
             if selection == nil {
                 selection = layout.routes.first?.id
             }

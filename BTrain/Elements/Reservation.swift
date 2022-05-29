@@ -23,13 +23,13 @@ struct Reservation: Codable, Equatable, CustomStringConvertible {
     let direction: Direction
 
     var description: String {
-        return "Reservation(train=\(trainId), direction=\(direction.rawValue))"
+        "Reservation(train=\(trainId), direction=\(direction.rawValue))"
     }
 
     // Because `direction` is only an optional information,
     // it is not considered in the equality of the reservation
     static func ==(lhs: Reservation, rhs: Reservation) -> Bool {
-        return lhs.trainId == rhs.trainId
+        lhs.trainId == rhs.trainId
     }
     
 }

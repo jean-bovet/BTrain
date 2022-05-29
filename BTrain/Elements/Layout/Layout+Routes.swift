@@ -15,7 +15,7 @@ import Foundation
 extension Layout {
     
     var fixedRoutes: [Route] {
-        return routes.filter({!$0.automatic})
+        routes.filter({ !$0.automatic })
     }
     
     func route(for routeId: Identifier<Route>, trainId: Identifier<Train>?) -> Route? {
@@ -31,7 +31,7 @@ extension Layout {
     }
     
     private func route(for routeId: Identifier<Route>?) -> Route? {
-        return routes.first(where: { $0.id == routeId })
+        routes.first(where: { $0.id == routeId })
     }
     
     func newRoute(_ id: String, name: String, _ steps: [(Block, Direction, TimeInterval?)]) -> Route {
@@ -43,7 +43,7 @@ extension Layout {
     }
     
     func newRoute() -> Route {
-        return newRoute(LayoutIdentity.newIdentity(routes, prefix: .route), name: "", [])
+        newRoute(LayoutIdentity.newIdentity(routes, prefix: .route), name: "", [])
     }
     
     func newRoute(_ id: Identifier<Route>, name: String, _ steps: [RouteItem]) -> Route {
@@ -56,7 +56,7 @@ extension Layout {
 
     func remove(routeId: Identifier<Route>) {
         routes.removeAll { t in
-            return t.id == routeId
+            t.id == routeId
         }
         trains.forEach { train in
             if train.routeId == routeId {
@@ -129,7 +129,7 @@ extension Layout {
     }
     
     var defaultRouteDescription: String {
-        return "􀼮→"
+        "􀼮→"
     }
             
 }

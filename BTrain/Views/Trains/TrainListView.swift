@@ -53,7 +53,7 @@ struct TrainListView: View {
                         let train = layout.newTrain()
                         undoManager?.registerUndo(withTarget: layout, handler: { layout in
                             layout.trains.removeAll { t in
-                                return t.id == train.id
+                                t.id == train.id
                             }
                         })
                     }

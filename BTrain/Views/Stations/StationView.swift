@@ -53,14 +53,14 @@ struct StationView: View {
                     station.elements.append(element)
                     undoManager?.registerUndo(withTarget: station, handler: { station in
                         station.elements.removeAll { s in
-                            return s.id == element.id
+                            s.id == element.id
                         }
                     })
                 }
                 Button("-") {
                     if let element = station.elements.first(where: { $0.id == selection }) {
                         station.elements.removeAll { s in
-                            return s.id == element.id
+                            s.id == element.id
                         }
 
                         undoManager?.registerUndo(withTarget: station, handler: { station in

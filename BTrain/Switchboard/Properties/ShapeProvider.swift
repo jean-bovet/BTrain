@@ -24,35 +24,35 @@ final class ShapeProvider {
     private let context: ShapeContext
     
     var selectedShape: Shape? {
-        return shapes.first(where: { $0.selected })
+        shapes.first(where: { $0.selected })
     }
 
     var connectableShapes: [ConnectableShape] {
-        return shapes.compactMap({$0 as? ConnectableShape})
+        shapes.compactMap({ $0 as? ConnectableShape })
     }
 
     var draggableShapes: [DraggableShape] {
-        return shapes.compactMap({$0 as? DraggableShape})
+        shapes.compactMap({ $0 as? DraggableShape })
     }
 
     var rotableShapes: [RotableShape] {
-        return shapes.compactMap({$0 as? RotableShape})
+        shapes.compactMap({ $0 as? RotableShape })
     }
 
     var actionableShapes: [ActionableShape] {
-        return shapes.compactMap({$0 as? ActionableShape})
+        shapes.compactMap({ $0 as? ActionableShape })
     }
 
     var dragOnTapProviders: [EphemeralDragProvider] {
-        return shapes.compactMap({$0 as? EphemeralDragProvider})
+        shapes.compactMap({ $0 as? EphemeralDragProvider })
     }
 
     var blockShapes: [BlockShape] {
-        return shapes.compactMap({$0 as? BlockShape})
+        shapes.compactMap({ $0 as? BlockShape })
     }
     
     var turnoutShapes: [TurnoutShape] {
-        return shapes.compactMap({$0 as? TurnoutShape})
+        shapes.compactMap({ $0 as? TurnoutShape })
     }
     
     init(layout: Layout, context: ShapeContext) {
@@ -126,10 +126,10 @@ final class ShapeProvider {
     }
     
     func blockShape(for blockId: Identifier<Block>) -> BlockShape? {
-        return shapes
-            .compactMap({ $0 as? BlockShape })
-            .filter({ $0.block.id == blockId })
-            .first
+        shapes
+                .compactMap({ $0 as? BlockShape })
+                .filter({ $0.block.id == blockId })
+                .first
     }
     
     func socketInstance(for socket: Socket, shapes: ShapeProvider) throws -> ConnectorSocketInstance {
@@ -145,7 +145,7 @@ final class ShapeProvider {
     }
     
     func shape(for socket: Socket, shapes: ShapeProvider) throws -> ConnectableShape? {
-        return try shapes.connectableShapes.first { shape in
+        try shapes.connectableShapes.first { shape in
             if let blockId = socket.block {
                 if let blockShape = shape as? BlockShape {
                     return blockShape.block.id == blockId

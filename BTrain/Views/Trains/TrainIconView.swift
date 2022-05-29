@@ -36,7 +36,7 @@ struct TrainIconView: View, DropDelegate {
     }
     
     var iconHeight: Double {
-        return iconWidth / 2
+        iconWidth / 2
     }
 
     var body: some View {

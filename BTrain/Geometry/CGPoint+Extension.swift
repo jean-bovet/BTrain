@@ -15,14 +15,14 @@ import Foundation
 extension CGPoint {
     
     func rotate(by angle: CGFloat, around center: CGPoint) -> CGPoint {
-        return applying(CGAffineTransform.identity.rotation(by: angle, around: center))
+        applying(CGAffineTransform.identity.rotation(by: angle, around: center))
     }
     
     func translatedBy(x: CGFloat, y: CGFloat) -> CGPoint {
-        return CGPoint(x: self.x + x, y: self.y + y)
+        CGPoint(x: self.x + x, y: self.y + y)
     }
     
     func distance(to: CGPoint) -> CGSize {
-        return .init(width: to.x - self.x, height: to.y - self.y)
+        .init(width: to.x - self.x, height: to.y - self.y)
     }
 }

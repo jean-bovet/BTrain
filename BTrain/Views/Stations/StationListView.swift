@@ -69,7 +69,7 @@ struct StationListView: View {
             } else {
                 CenteredLabelView(label: "No Selected Station")
             }
-        }.onAppear() {
+        }.onAppear {
             if selection == nil {
                 selection = layout.stations.first?.id
             }

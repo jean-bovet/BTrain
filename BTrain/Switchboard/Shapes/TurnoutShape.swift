@@ -20,16 +20,16 @@ final class TurnoutShape: Shape, DraggableShape, ConnectableShape {
     let shapeContext: ShapeContext
     
     var identifier: String {
-        return "turnout-\(turnout.id)"
+        "turnout-\(turnout.id)"
     }
         
     var bounds: CGRect {
-        return path.boundingBox
+        path.boundingBox
     }
             
     var center: CGPoint {
         get {
-            return turnout.center
+            turnout.center
         }
         set {
             turnout.center = newValue
@@ -43,10 +43,10 @@ final class TurnoutShape: Shape, DraggableShape, ConnectableShape {
     var selected = false
     
     var sockets: [ConnectorSocket] {
-        return socketPoints.enumerated().map { (index, point) in
+        socketPoints.enumerated().map { (index, point) in
             // The control point is computed by extending the vector from
             // the center of the turnout to the socket point.
-            let v = Vector2D(x: point.x-center.x, y: point.y-center.y)
+            let v = Vector2D(x: point.x - center.x, y: point.y - center.y)
             let vn = v.normalized
             let l = v.magnitude * 4
             let ctrlPoint = CGPoint(x: center.x + vn.x * l, y: center.y + vn.y * l)
@@ -57,18 +57,18 @@ final class TurnoutShape: Shape, DraggableShape, ConnectableShape {
     
     var freeSockets: [ConnectorSocket] {
         // Returns all the sockets that don't have any transitions coming out of them
-        return sockets.filter { connectorSocket in
+        sockets.filter { connectorSocket in
             let s = Socket.turnout(turnout.id, socketId: connectorSocket.id)
             return (try? layout?.transition(from: s)) == nil
         }
     }
     
     var reserved: Identifier<Train>? {
-        return turnout.reserved?.train
+        turnout.reserved?.train
     }
     
     func socketInstance(_ id: Int) -> ConnectorSocketInstance {
-        return ConnectorSocketInstance(shape: self, socketId: id)
+        ConnectorSocketInstance(shape: self, socketId: id)
     }
     
     var socketPoints: [CGPoint] {
@@ -319,7 +319,7 @@ final class TurnoutShape: Shape, DraggableShape, ConnectableShape {
     }
 
     func inside(_ point: CGPoint) -> Bool {
-        return outlinePath.contains(point)
+        outlinePath.contains(point)
     }
                 
 }
@@ -327,7 +327,7 @@ final class TurnoutShape: Shape, DraggableShape, ConnectableShape {
 extension TurnoutShape: RotableShape {
     var rotationAngle: CGFloat {
         get {
-            return turnout.rotationAngle
+            turnout.rotationAngle
         }
         set {
             turnout.rotationAngle = newValue
@@ -335,7 +335,7 @@ extension TurnoutShape: RotableShape {
     }
         
     var rotationCenter: CGPoint {
-        return center
+        center
     }
     
     var rotationPoint: CGPoint {

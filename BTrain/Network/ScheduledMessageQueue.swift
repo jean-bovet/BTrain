@@ -66,7 +66,7 @@ final class ScheduledMessageQueue {
         }
         executing = true
 
-        scheduledBlock.block() {
+        scheduledBlock.block {
             MainThreadQueue.sync {
                 self.executing = false
                 self.printStats()

@@ -15,7 +15,7 @@ import Foundation
 struct RouteStepBlock: RouteStep, Equatable, Codable, CustomStringConvertible {
 
     static func ==(lhs: RouteStepBlock, rhs: RouteStepBlock) -> Bool {
-        return lhs.id == rhs.id
+        lhs.id == rhs.id
     }
 
     var id = UUID().uuidString

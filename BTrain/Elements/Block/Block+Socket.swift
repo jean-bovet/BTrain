@@ -16,29 +16,29 @@ extension Block {
     
     // Returns the integer that indicates the "previous" socket
     static var previousSocket: Int {
-        return 0
+        0
     }
     
     // Returns the integer that indicates the "next" socket
     static var nextSocket: Int {
-        return 1
+        1
     }
     
     // Returns the socket from the "previous" side
     var previous: Socket {
-        return Socket.block(id, socketId: Block.previousSocket)
+        Socket.block(id, socketId: Block.previousSocket)
     }
 
     // Returns the socket from the "next" side
     var next: Socket {
-        return Socket.block(id, socketId: Block.nextSocket)
+        Socket.block(id, socketId: Block.nextSocket)
     }
     
     // Returns a socket that does not have any side indication,
     // which can be useful when we want to refer to "any socket
     // from block" in transitions calculation.
     var any: Socket {
-        return Socket.block(id)
+        Socket.block(id)
     }
     
     // Returns all the sockets

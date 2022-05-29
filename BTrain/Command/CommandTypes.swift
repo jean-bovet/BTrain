@@ -18,7 +18,7 @@ import Foundation
 struct SpeedValue: Equatable, CustomStringConvertible {
     var value: UInt16
     var description: String {
-        return "\(value)"
+        "\(value)"
     }
     static let zero = SpeedValue(value: 0)
 }
@@ -27,7 +27,7 @@ struct SpeedValue: Equatable, CustomStringConvertible {
 struct SpeedStep: Equatable, Codable, CustomStringConvertible {
     var value: UInt16
     var description: String {
-        return "\(value) steps"
+        "\(value) steps"
     }
     static let zero = SpeedStep(value: 0)
 }

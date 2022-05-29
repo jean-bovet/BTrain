@@ -22,7 +22,7 @@ final class SwitchBoardRenderer {
     var showAvailableSockets = false
     
     var color: CGColor {
-        return .init(red: 0, green: 0, blue: 1, alpha: 1)
+        .init(red: 0, green: 0, blue: 1, alpha: 1)
     }
 
     init(provider: ShapeProvider, shapeContext: ShapeContext) {

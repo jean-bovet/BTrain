@@ -33,7 +33,7 @@ extension Layout {
     }
     
     func train(for trainId: Identifier<Train>?) -> Train? {
-        return trains.first(where: { $0.id == trainId })
+        trains.first(where: { $0.id == trainId })
     }
 
     func remove(trainId: Identifier<Train>) {

@@ -270,6 +270,6 @@ final class TrainSpeedMeasurement {
     }
     
     private func isFinished(for entryIndex: Int) -> Bool {
-        return entryIndex >= speedEntries.count
+        entryIndex >= speedEntries.count
     }
 }

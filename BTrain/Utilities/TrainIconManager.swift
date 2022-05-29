@@ -22,7 +22,7 @@ final class TrainIconManager: ObservableObject {
     private let imageCache = NSCache<NSString, NSImage>()
     
     func fileWrapper(for trainId: Identifier<Train>) -> FileWrapper? {
-        return fileWrappers[trainId]
+        fileWrappers[trainId]
     }
     
     func setFileWrapper(_ fw: FileWrapper, for trainId: Identifier<Train>) {

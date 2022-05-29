@@ -16,12 +16,14 @@ import OrderedCollections
 extension Layout {
     
     var blockIds: OrderedSet<Identifier<Block>> {
-        return blockMap.keys
+        blockMap.keys
     }
     
     var blocks: [Block] {
         get {
-            return blockMap.values.map { $0 }
+            blockMap.values.map {
+                $0
+            }
         }
         set {
             blockMap.removeAll()
@@ -40,8 +42,8 @@ extension Layout {
     
     func remove(blockID: Identifier<Block>) {
         transitions.removeAll { transition in
-            return transition.a.block == blockID ||
-            transition.b.block == blockID
+            transition.a.block == blockID ||
+                    transition.b.block == blockID
         }
 
         blockMap.removeValue(forKey: blockID)
@@ -54,7 +56,7 @@ extension Layout {
     }
     
     func block(at index: Int) -> Block {
-        return blockMap.values[index]
+        blockMap.values[index]
     }
     
     func block(for blockId: Identifier<Block>?) -> Block? {
@@ -66,7 +68,7 @@ extension Layout {
     }
     
     func block(for trainId: Identifier<Train>) -> Block? {
-        return blockMap.first(where: { $0.value.train?.trainId == trainId })?.value
+        blockMap.first(where: { $0.value.train?.trainId == trainId })?.value
     }
     
     func sortBlocks() {

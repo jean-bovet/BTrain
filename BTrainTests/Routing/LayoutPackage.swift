@@ -25,11 +25,11 @@ final class Package {
     var routes = [Route]()
 
     var train: Train {
-        return trains[0]
+        trains[0]
     }
 
     var route: Route {
-        return routes[0]
+        routes[0]
     }
     
     init(layout: Layout) {

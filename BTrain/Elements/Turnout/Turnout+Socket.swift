@@ -43,15 +43,15 @@ import Foundation
 extension Turnout {
     
     var socket0: Socket {
-        return Socket.turnout(id, socketId: 0)
+        Socket.turnout(id, socketId: 0)
     }
 
     var socket1: Socket {
-        return Socket.turnout(id, socketId: 1)
+        Socket.turnout(id, socketId: 1)
     }
 
     var socket2: Socket {
-        return Socket.turnout(id, socketId: 2)
+        Socket.turnout(id, socketId: 2)
     }
 
     var socket3: Socket {

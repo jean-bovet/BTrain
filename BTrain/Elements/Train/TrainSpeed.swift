@@ -42,7 +42,7 @@ final class TrainSpeed: ObservableObject, Equatable, CustomStringConvertible {
     // The desired speed in kilometer per hour (kph).
     var requestedKph: UnitKph {
         get {
-            return speedKph(for: requestedSteps)
+            speedKph(for: requestedSteps)
         }
         set {
             if newValue > maxSpeed {
@@ -56,7 +56,7 @@ final class TrainSpeed: ObservableObject, Equatable, CustomStringConvertible {
     // The actual speed in kph
     var actualKph: UnitKph {
         get {
-            return speedKph(for: actualSteps)
+            speedKph(for: actualSteps)
         }
         set {
             actualSteps = steps(for: newValue)
@@ -82,7 +82,7 @@ final class TrainSpeed: ObservableObject, Equatable, CustomStringConvertible {
     // to a particular speed in kph.
     struct SpeedTableEntry: Identifiable, Codable {
         var id: UInt16 {
-            return steps.value
+            steps.value
         }
         
         var steps: SpeedStep
@@ -105,7 +105,7 @@ final class TrainSpeed: ObservableObject, Equatable, CustomStringConvertible {
     }
             
     var description: String {
-        return "\(requestedKph) kph"
+        "\(requestedKph) kph"
     }
 
     init(decoderType: DecoderType) {
@@ -126,7 +126,7 @@ final class TrainSpeed: ObservableObject, Equatable, CustomStringConvertible {
 
     // A speed equality is using only the steps value
     static func == (lhs: TrainSpeed, rhs: TrainSpeed) -> Bool {
-        return lhs.requestedSteps == rhs.requestedSteps
+        lhs.requestedSteps == rhs.requestedSteps
     }
         
     func updateSpeedStepsTable() {
@@ -139,7 +139,7 @@ final class TrainSpeed: ObservableObject, Equatable, CustomStringConvertible {
         
         // Always sort the table by ascending order of the number of steps
         speedTable.sort { ss1, ss2 in
-            return ss1.steps.value < ss2.steps.value
+            ss1.steps.value < ss2.steps.value
         }
         
         let stepsCount = UInt16(decoderType.steps)

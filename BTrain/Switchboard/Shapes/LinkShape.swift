@@ -28,7 +28,7 @@ final class LinkShape: Shape, PluggableShape {
     let to = ConnectorPlug(id: 1)
         
     var bounds: CGRect {
-        return path.boundingBox
+        path.boundingBox
     }
     
     var path: CGPath {
@@ -48,7 +48,7 @@ final class LinkShape: Shape, PluggableShape {
     }
     
     var plugs: [ConnectorPlug] {
-        return [ from, to ]
+        [from, to]
     }
 
     var reserved: Bool {

@@ -15,7 +15,7 @@ import Foundation
 struct RouteStepStation: RouteStep, Equatable, Codable {
     
     static func ==(lhs: RouteStepStation, rhs: RouteStepStation) -> Bool {
-        return lhs.id == rhs.id
+        lhs.id == rhs.id
     }
 
     var id = UUID().uuidString
@@ -23,7 +23,7 @@ struct RouteStepStation: RouteStep, Equatable, Codable {
     var stationId: Identifier<Station>
     
     var description: String {
-        return "\(stationId)"
+        "\(stationId)"
     }
         
     func resolve(_ constraints: GraphPathFinderConstraints, _ context: GraphPathFinderContext) -> GraphPathElement? {

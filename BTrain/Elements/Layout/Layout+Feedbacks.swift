@@ -30,7 +30,7 @@ extension Layout {
     }
 
     func feedback(for feedbackId: Identifier<Feedback>?) -> Feedback? {
-        return feedbacks.first(where: { $0.id == feedbackId })
+        feedbacks.first(where: { $0.id == feedbackId })
     }
     
     func sortFeedbacks() {

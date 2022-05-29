@@ -105,7 +105,7 @@ class SimulatorViewTests: RootViewTests {
         
     func wait(for train: Train, directionForward: Bool) {
         wait(for: {
-            return train.directionForward == directionForward
+            train.directionForward == directionForward
         }, timeout: 2.0)
 
         XCTAssertEqual(train.directionForward, directionForward)
@@ -113,7 +113,7 @@ class SimulatorViewTests: RootViewTests {
 
     func wait(for train: SimulatorTrain, directionForward: Bool) {
         wait(for: {
-            return train.directionForward == directionForward
+            train.directionForward == directionForward
         }, timeout: 2.0)
 
         XCTAssertEqual(train.directionForward, directionForward)
@@ -121,7 +121,7 @@ class SimulatorViewTests: RootViewTests {
 
     func wait(for train: Train, kph: TrainSpeed.UnitKph) {
         wait(for: {
-            return train.speed.actualKph == kph
+            train.speed.actualKph == kph
         }, timeout: 2.0)
 
         XCTAssertEqual(train.speed.actualKph, kph)
@@ -129,7 +129,7 @@ class SimulatorViewTests: RootViewTests {
 
     func wait(for train: SimulatorTrain, steps: SpeedStep) {
         wait(for: {
-            return train.speed == steps
+            train.speed == steps
         }, timeout: 2.0)
 
         XCTAssertEqual(train.speed, steps)

@@ -335,8 +335,8 @@ extension Train: Codable {
 extension Array where Element : Train {
 
     func find(address: UInt32, decoder: DecoderType?) -> Element? {
-        return self.first { train in
-            return train.address.actualAddress(for: train.decoder) == address.actualAddress(for: decoder)
+        self.first { train in
+            train.address.actualAddress(for: train.decoder) == address.actualAddress(for: decoder)
         }
     }
     

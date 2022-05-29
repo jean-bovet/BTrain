@@ -41,7 +41,7 @@ final class BlockShape: Shape, DraggableShape, ConnectableShape {
     
     var center: CGPoint {
         get {
-            return block.center
+            block.center
         }
         set {
             block.center = newValue
@@ -49,7 +49,7 @@ final class BlockShape: Shape, DraggableShape, ConnectableShape {
     }
         
     var bounds: CGRect {
-        return path.boundingBox
+        path.boundingBox
     }
 
     weak var layout: Layout?
@@ -60,7 +60,7 @@ final class BlockShape: Shape, DraggableShape, ConnectableShape {
     var selected = false
 
     var identifier: String {
-        return "block-\(block.id)"
+        "block-\(block.id)"
     }
 
     var sockets: [ConnectorSocket] {
@@ -76,18 +76,18 @@ final class BlockShape: Shape, DraggableShape, ConnectableShape {
     
     var freeSockets: [ConnectorSocket] {
         // Returns all the sockets that don't have any transitions coming out of them
-        return sockets.filter { connectorSocket in
+        sockets.filter { connectorSocket in
             let s = Socket.block(block.id, socketId: connectorSocket.id)
             return (try? layout?.transition(from: s)) == nil
         }
     }
     
     var reserved: Reservation? {
-        return block.reserved
+        block.reserved
     }
     
     var train: Train? {
-        return layout?.train(for: block.train?.trainId)
+        layout?.train(for: block.train?.trainId)
     }
         
     var path: CGPath {
@@ -140,11 +140,11 @@ final class BlockShape: Shape, DraggableShape, ConnectableShape {
     }
         
     var nextSocketInstance: ConnectorSocketInstance {
-        return ConnectorSocketInstance(shape: self, socketId: nextSocket.id)
+        ConnectorSocketInstance(shape: self, socketId: nextSocket.id)
     }
 
     var previousSocketInstance: ConnectorSocketInstance {
-        return ConnectorSocketInstance(shape: self, socketId: previousSocket.id)
+        ConnectorSocketInstance(shape: self, socketId: previousSocket.id)
     }
     
     init(layout: Layout, block: Block, shapeContext: ShapeContext) {
@@ -328,7 +328,7 @@ final class BlockShape: Shape, DraggableShape, ConnectableShape {
     }
     
     func inside(_ point: CGPoint) -> Bool {
-        return path.contains(point)
+        path.contains(point)
     }
 
 }
@@ -463,7 +463,7 @@ extension BlockShape {
 extension BlockShape {
 
     var edge: CGFloat {
-        return 5
+        5
     }
     
     var arrowHeight: CGFloat {
@@ -475,11 +475,11 @@ extension BlockShape {
     }
     
     var feedbackCellCount: Int {
-        return block.feedbacks.count
+        block.feedbacks.count
     }
     
     var trainCellCount: Int {
-        return feedbackCellCount + 1
+        feedbackCellCount + 1
     }
         
     var size: CGSize {
@@ -488,19 +488,19 @@ extension BlockShape {
     }
     
     var leftSide: CGPoint {
-        return CGPoint(x: center.x-size.width/2, y: center.y)
+        CGPoint(x: center.x - size.width / 2, y: center.y)
     }
     
     var rightSide: CGPoint {
-        return CGPoint(x: center.x+size.width/2, y: center.y)
+        CGPoint(x: center.x + size.width / 2, y: center.y)
     }
 
     var feedbackWidth: CGFloat {
-        return 10.0
+        10.0
     }
     
     var trainSpaceWidth: CGFloat {
-        return 20.0
+        20.0
     }
     
     func trainCellFrame(at index: Int) -> CGRect {
@@ -561,12 +561,12 @@ extension BlockShape: ActionableShape {
 extension BlockShape: RotableShape {
     
     var rotationCenter: CGPoint {
-        return center
+        center
     }
     
     var rotationAngle: CGFloat {
         get {
-            return block.rotationAngle
+            block.rotationAngle
         }
         set {
             block.rotationAngle = newValue

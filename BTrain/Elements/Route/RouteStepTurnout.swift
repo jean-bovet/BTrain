@@ -15,7 +15,7 @@ import Foundation
 struct RouteStepTurnout: RouteStep, Equatable, Codable {
     
     static func ==(lhs: RouteStepTurnout, rhs: RouteStepTurnout) -> Bool {
-        return lhs.id == rhs.id
+        lhs.id == rhs.id
     }
 
     var id = UUID().uuidString
@@ -27,7 +27,7 @@ struct RouteStepTurnout: RouteStep, Equatable, Codable {
     var entrySocket: Socket
 
     var description: String {
-        return "\(turnoutId):(\(entrySocket.socketId!)>\(exitSocket.socketId!))"
+        "\(turnoutId):(\(entrySocket.socketId!)>\(exitSocket.socketId!))"
     }
     
     init(_ turnoutId: Identifier<Turnout>, _ fromSocket: Socket, _ toSocket: Socket) {

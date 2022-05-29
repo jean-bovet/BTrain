@@ -17,7 +17,7 @@ import XCTest
 class TrainSpeedManagerTests: BTTestCase {
     
     override var speedChangeRequestCeiling: Int? {
-        return 10
+        10
     }
 
     func testLinearAcceleration() {
@@ -75,7 +75,7 @@ class TrainSpeedManagerTests: BTTestCase {
         t.speed.requestedSteps = SpeedStep(value: 100)
 
         let expectation = expectation(description: "Completed")
-        ic.changeSpeed() { _ in
+        ic.changeSpeed { _ in
             expectation.fulfill()
         }
 
@@ -111,7 +111,7 @@ class TrainSpeedManagerTests: BTTestCase {
         t.speed.requestedSteps = SpeedStep(value: 50)
         
         let cancelledChange = expectation(description: "Cancelled")
-        ic.changeSpeed() { completed in
+        ic.changeSpeed { completed in
             if !completed {
                 cancelledChange.fulfill()
             }
@@ -123,7 +123,7 @@ class TrainSpeedManagerTests: BTTestCase {
 
         t.speed.requestedSteps = SpeedStep(value: 10)
         let completedChange = expectation(description: "Completed")
-        ic.changeSpeed() { completed in
+        ic.changeSpeed { completed in
             if completed {
                 completedChange.fulfill()
             }
@@ -154,7 +154,7 @@ class TrainSpeedManagerTests: BTTestCase {
         t.state = .running
         
         let cancelledChange = expectation(description: "Cancelled")
-        ic.changeSpeed() { completed in
+        ic.changeSpeed { completed in
             XCTAssertFalse(completed)
             if !completed {
                 cancelledChange.fulfill()
@@ -169,7 +169,7 @@ class TrainSpeedManagerTests: BTTestCase {
         
         t.speed.requestedSteps = SpeedStep(value: 10)
         let completedChangeTo10 = expectation(description: "Completed")
-        ic.changeSpeed() { completed in
+        ic.changeSpeed { completed in
             if completed {
                 completedChangeTo10.fulfill()
             }
@@ -240,7 +240,7 @@ class TrainSpeedManagerTests: BTTestCase {
         t.speed.requestedKph = 80
         mi.pause()
         let e = expectation(description: "Completion")
-        ic.changeSpeed() { completed in
+        ic.changeSpeed { completed in
             XCTAssertFalse(completed)
             e.fulfill()
         }
@@ -253,7 +253,7 @@ class TrainSpeedManagerTests: BTTestCase {
         t.speed.requestedKph = 40
 
         let e2 = expectation(description: "Completion")
-        ic.changeSpeed() { completed in
+        ic.changeSpeed { completed in
             XCTAssertTrue(completed)
             e2.fulfill()
         }
@@ -284,7 +284,7 @@ class TrainSpeedManagerTests: BTTestCase {
         t.speed.requestedKph = 80
         mi.pause()
         let e = expectation(description: "Completion e")
-        ic.changeSpeed() { completed in
+        ic.changeSpeed { completed in
             XCTAssertFalse(completed)
             e.fulfill()
         }
@@ -296,14 +296,14 @@ class TrainSpeedManagerTests: BTTestCase {
         
         t.speed.requestedKph = 0
         let e2 = expectation(description: "Completion e2")
-        ic.changeSpeed() { completed in
+        ic.changeSpeed { completed in
             XCTAssertFalse(completed)
             e2.fulfill()
         }
         
         t.speed.requestedKph = 80
         let e3 = expectation(description: "Completion e3")
-        ic.changeSpeed() { completed in
+        ic.changeSpeed { completed in
             XCTAssertTrue(completed)
             e3.fulfill()
         }
@@ -327,7 +327,7 @@ class TrainSpeedManagerTests: BTTestCase {
         train.speed.requestedSteps = SpeedStep(value: steps)
         
         let expectation = expectation(description: "Completed")
-        ic.changeSpeed() { _ in
+        ic.changeSpeed { _ in
             expectation.fulfill()
         }
 

@@ -20,7 +20,7 @@ struct TrainPathFactory {
     var rotationAngle: CGFloat = 0
 
     var size: CGSize {
-        return CGSize(width: 16, height: shapeContext.trackWidth*4)
+        CGSize(width: 16, height: shapeContext.trackWidth * 4)
     }
 
     func path(for part: TrainInstance.TrainPart, center: CGPoint, rotationCenter: CGPoint, rotationAngle: Double) -> CGPath {

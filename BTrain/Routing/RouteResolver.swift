@@ -75,7 +75,7 @@ final class RouteResolver {
         }
         
         func reachedDestination(node: GraphNode, to: GraphPathElement?) -> Bool {
-            return delegatedConstraints.reachedDestination(node: node, to: to)
+            delegatedConstraints.reachedDestination(node: node, to: to)
         }
         
         func shouldInclude(node: GraphNode, currentPath: GraphPath, to: GraphPathElement?, context: GraphPathFinderContext) -> Bool {

@@ -28,13 +28,13 @@ extension Layout {
         turnouts.removeAll(where: { $0.id == turnoutID })
         
         transitions.removeAll { transition in
-            return transition.a.turnout == turnoutID ||
-            transition.b.turnout == turnoutID
+            transition.a.turnout == turnoutID ||
+                    transition.b.turnout == turnoutID
         }
     }
 
     func turnout(for id: Identifier<Turnout>?) -> Turnout? {
-        return turnouts.first(where: { $0.id == id })
+        turnouts.first(where: { $0.id == id })
     }
 
     func sortTurnouts() {

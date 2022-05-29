@@ -18,11 +18,11 @@ final class LayoutStringParser {
     var index: String.Index
 
     var more: Bool {
-        return index < ls.endIndex
+        index < ls.endIndex
     }
     
     var c: Character {
-        return ls[index]
+        ls[index]
     }
     
     init(ls: String) {
@@ -75,7 +75,7 @@ final class LayoutStringParser {
     }
 
     func matchString(_ endCharacter: Character = " ") -> String {
-        return matchString([endCharacter])
+        matchString([endCharacter])
     }
     
     func matchString(_ endCharacters: [Character]) -> String {

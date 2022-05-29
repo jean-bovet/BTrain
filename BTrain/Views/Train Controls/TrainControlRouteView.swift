@@ -27,7 +27,7 @@ struct TrainControlRouteView: View {
     }
     
     var automaticRouteId: Identifier<Route> {
-        return Route.automaticRouteId(for: train.id)
+        Route.automaticRouteId(for: train.id)
     }
     
     var body: some View {

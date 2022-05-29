@@ -16,6 +16,6 @@ import Foundation
 
 extension GraphPathElement: UnresolvedGraphPathElement {
     public func resolve(_ constraints: GraphPathFinderConstraints, _ context: GraphPathFinderContext) -> GraphPathElement? {
-        return self
+        self
     }
 }

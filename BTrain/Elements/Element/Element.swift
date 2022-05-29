@@ -18,11 +18,11 @@ struct Identifier<T>: Codable, Comparable, Hashable, CustomStringConvertible, El
     let uuid: String
     
     var description: String {
-        return uuid
+        uuid
     }
     
     static func < (lhs: Identifier<T>, rhs: Identifier<T>) -> Bool {
-        return lhs.uuid < rhs.uuid
+        lhs.uuid < rhs.uuid
     }
     
 }
@@ -39,11 +39,11 @@ protocol Element: ElementUUID, Hashable, Identifiable, Comparable, CustomStringC
 
 extension Element {
     static func == (lhs: Self, rhs: Self) -> Bool {
-        return lhs.id == rhs.id
+        lhs.id == rhs.id
     }
     
     static func < (lhs: Self, rhs: Self) -> Bool {
-        return lhs.id < rhs.id
+        lhs.id < rhs.id
     }
 
     func hash(into hasher: inout Hasher) {
@@ -51,11 +51,11 @@ extension Element {
     }
 
     var uuid: String {
-        return id.uuid
+        id.uuid
     }
     
     var description: String {
-        return id.description
+        id.description
     }
 
 }

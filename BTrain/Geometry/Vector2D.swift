@@ -24,23 +24,23 @@ infix operator • : MultiplicationPrecedence
 extension Vector2D {
     
     static func • (left: Vector2D, right: Vector2D) -> Double {
-        return left.x * right.x + left.y * right.y
+        left.x * right.x + left.y * right.y
     }
     
     var magnitude: Double {
-        return sqrt(x*x + y*y)
+        sqrt(x * x + y * y)
     }
 
     var normalized: Vector2D {
-        return Vector2D(x: x / magnitude, y: y / magnitude)
+        Vector2D(x: x / magnitude, y: y / magnitude)
     }
 
     func angle(to vector: Vector2D) -> Double {
-        return acos(normalized • vector.normalized)
+        acos(normalized • vector.normalized)
     }
     
     static func cross(left: Vector2D, right: Vector2D) -> Double {
-        return left.x * right.y  - left.y * right.x
+        left.x * right.y - left.y * right.x
     }
 
 }

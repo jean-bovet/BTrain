@@ -29,7 +29,7 @@ final class EphemeralDraggedTrainShape: EphemeralDraggableShape {
     var selected: Bool = false
     
     var bounds: CGRect {
-        return .init(origin: CGPoint(x: center.x - image.size.width/2, y: center.y - image.size.height/2), size: image.size)
+        .init(origin: CGPoint(x: center.x - image.size.width / 2, y: center.y - image.size.height / 2), size: image.size)
     }
     
     var dragInfo: EphemeralDragInfo? {
@@ -51,7 +51,7 @@ final class EphemeralDraggedTrainShape: EphemeralDraggableShape {
     }
     
     func inside(_ point: CGPoint) -> Bool {
-        return bounds.contains(point)
+        bounds.contains(point)
     }
     
     func droppableShape(_ shapes: [Shape], at location: CGPoint) -> Shape? {

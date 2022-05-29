@@ -62,7 +62,7 @@ struct TrainSpeedMeasureControlsView: View {
         document.measurement = TrainSpeedMeasurement(layout: document.layout, executor: document.layoutController, interface: document.interface, train: train, speedEntries: speedEntries,
                                                 feedbackA: Identifier<Feedback>(uuid: feedbackA), feedbackB: Identifier<Feedback>(uuid: feedbackB), feedbackC: Identifier<Feedback>(uuid: feedbackC),
                                                 distanceAB: distanceAB, distanceBC: distanceBC)
-        document.measurement?.start() { info in
+        document.measurement?.start { info in
             if info.step == .done {
                 self.done()
             } else {

@@ -29,7 +29,7 @@ final class BTLogger {
     /// - Parameter category: the category of the logger
     /// - Returns: the logger instance
     static private func newLogger(category: Category) -> Logger {
-        return isLoggerEnabled(category: category) ? Logger(subsystem: "ch.arizona-software.BTrain", category: category.rawValue) : Logger(OSLog.disabled)
+        isLoggerEnabled(category: category) ? Logger(subsystem: "ch.arizona-software.BTrain", category: category.rawValue) : Logger(OSLog.disabled)
     }
 
     static private func isLoggerEnabled(category: Category) -> Bool {

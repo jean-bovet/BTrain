@@ -22,23 +22,23 @@ class LayoutErrorTests: XCTestCase {
     }()
     
     var train0: Train {
-        return layout.trains[0]
+        layout.trains[0]
     }
     
     var train1: Train {
-        return layout.trains[1]
+        layout.trains[1]
     }
     
     var b1: Block {
-        return layout.block(at: 0)
+        layout.block(at: 0)
     }
     
     var b2: Block {
-        return layout.block(at: 1)
+        layout.block(at: 1)
     }
 
     var turnout: Turnout {
-        return layout.turnouts[0]
+        layout.turnouts[0]
     }
     
     func testDiagnostic() throws {

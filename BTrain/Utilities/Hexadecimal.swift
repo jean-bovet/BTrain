@@ -14,25 +14,25 @@ import Foundation
 
 extension UInt8 {
     func toHex() -> String {
-        return "0x\(String(format:"%02X", self))"
+        "0x\(String(format: "%02X", self))"
     }
 }
 
 extension UInt16 {
     func toHex() -> String {
-        return "0x\(String(format:"%02X", self))"
+        "0x\(String(format: "%02X", self))"
     }
 }
 
 extension UInt32 {
     func toHex() -> String {
-        return "0x\(String(format:"%04X", self))"
+        "0x\(String(format: "%04X", self))"
     }
 }
 
 extension Int {
     func toHex() -> String {
-        return "0x\(String(format:"%04X", self))"
+        "0x\(String(format: "%04X", self))"
     }
 }
 

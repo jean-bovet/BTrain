@@ -63,7 +63,7 @@ struct ConnectCommandsView: View {
             Spacer()
 
             Button("Go") {
-                document.enable() {}
+                document.enable {}
             }
             .disabled(!document.connected)
             .help("Enable Power")
