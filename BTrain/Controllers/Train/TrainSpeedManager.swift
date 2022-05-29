@@ -134,12 +134,16 @@ final class TrainSpeedManager {
             }
         }
     }
-    
-    /// Array of commands waiting to be executed
-    var scheduledCommands = [SpeedCommand]()
-    
+        
     /// The currently processed command. Nil if no command is in progress.
     var processingCommand: SpeedCommand?
+    
+    /// The next command to be executed.
+    ///
+    /// There is a maximum of one and only one scheduled command waiting to be executed.
+    /// Any new speed change request requested is going to cancel and remove the previous
+    /// scheduled command because it only makes sense to honor the latest speed change request.
+    var scheduledCommand: SpeedCommand?
     
     /// The delay between step increments, recommended to be about 100ms.
     var stepDelay: TimeInterval {
@@ -193,8 +197,8 @@ final class TrainSpeedManager {
     }
     
     func changeSpeed(acceleration: TrainSpeedAcceleration.Acceleration, completion: CompletionCancelBlock? = nil) {
-        if let processingCommand = processingCommand {
-            // There is already a speed change command being processed.
+        if let processingCommand = processingCommand, processingCommand.status != .cancelled {
+            // There is already a speed change command being processed (which has not been cancelled!)
             if processingCommand.requestedKph == train.speed.requestedKph {
                 // If the speed change is the same and a completion block is provided,
                 // add the completion block to the list of completion block of the command
@@ -229,16 +233,24 @@ final class TrainSpeedManager {
     }
     
     private func scheduleSpeedChangeCommand(acceleration: TrainSpeedAcceleration.Acceleration, completion: CompletionCancelBlock?) -> Int? {
-        if let nextCommand = scheduledCommands.first, nextCommand.requestedKph == train.speed.requestedKph && nextCommand.acceleration == acceleration {
-            // The next command to be executed is exactly the same as this potential command.
-            if let completion = completion {
-                // Attach the completion block to the next command
-                BTLogger.speed.debug("\(self.train, privacy: .public): attaching request to next request {\(nextCommand.requestUUID)} because the requested speed of \(self.train.speed.requestedKph) is the same")
-                nextCommand.completionBlocks.append(completion)
+        if let nextCommand = scheduledCommand {
+            if nextCommand.requestedKph == train.speed.requestedKph && nextCommand.acceleration == acceleration {
+                // The next command to be executed is exactly the same as this potential command.
+                if let completion = completion {
+                    // Attach the completion block to the next command
+                    BTLogger.speed.debug("\(self.train, privacy: .public): attaching request to next request {\(nextCommand.requestUUID)} because the requested speed of \(self.train.speed.requestedKph) is the same")
+                    nextCommand.completionBlocks.append(completion)
+                } else {
+                    // Without completion block, we can simply ignore that speed change request
+                }
+                return nil
             } else {
-                // Without completion block, we can simply ignore that speed change request
+                // The next command is different than the new command. Cancel the next command because it does not make sense to execute it
+                // when there is a new speed change command requested.
+                nextCommand.status = .cancelled
+                nextCommand.completionBlocks.forEach { $0(false) }
+                scheduledCommand = nil
             }
-            return nil
         }
         
         TrainSpeedManager.globalRequestUUID += 1
@@ -247,20 +259,20 @@ final class TrainSpeedManager {
         BTLogger.speed.debug("\(self.train, privacy: .public): {\(requestUUID)} scheduling request for speed of \(self.train.speed.requestedKph) kph (\(self.train.speed.requestedSteps)) from actual speed of \(self.train.speed.actualKph) kph (\(self.train.speed.actualSteps))")
 
         let steps = stepsArray(from: train.speed.actualSteps, to: train.speed.requestedSteps, acceleration: acceleration)
-        scheduledCommands.append(SpeedCommand(requestUUID: requestUUID, requestedKph: train.speed.requestedKph, requestedSteps: train.speed.requestedSteps, acceleration: acceleration, steps: steps, completion: completion))
+        scheduledCommand = SpeedCommand(requestUUID: requestUUID, requestedKph: train.speed.requestedKph, requestedSteps: train.speed.requestedSteps, acceleration: acceleration, steps: steps, completion: completion)
         
         return requestUUID
     }
         
     private func executePendingSpeedChangeCommand() {
-        guard let command = scheduledCommands.first else {
+        guard let command = scheduledCommand else {
             return
         }
         
         BTLogger.speed.debug("\(self.train, privacy: .public): {\(command.requestUUID)} requesting speed of \(command.requestedKph) kph (\(command.requestedSteps)) from actual speed of \(self.train.speed.actualKph) kph (\(self.train.speed.actualSteps))")
 
         processingCommand = command
-        scheduledCommands.removeFirst()
+        scheduledCommand = nil
         speedChangeTimer?.invalidate()
         speedChangeTimer = Timer.scheduledTimer(withTimeInterval: stepDelay * BaseTimeFactor, repeats: true, block: { [weak self] timer in
             self?.speedChangeTimerFired(command: command, timer: timer)

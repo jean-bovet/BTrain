@@ -241,6 +241,7 @@ class TrainSpeedManagerTests: BTTestCase {
         mi.pause()
         let e = expectation(description: "Completion")
         ic.changeSpeed() { completed in
+            XCTAssertFalse(completed)
             e.fulfill()
         }
 
@@ -253,6 +254,7 @@ class TrainSpeedManagerTests: BTTestCase {
 
         let e2 = expectation(description: "Completion")
         ic.changeSpeed() { completed in
+            XCTAssertTrue(completed)
             e2.fulfill()
         }
 
@@ -269,7 +271,52 @@ class TrainSpeedManagerTests: BTTestCase {
 
         wait(for: [e, e2], timeout: 1.0, enforceOrder: true)
     }
-    
+
+    func testIdenticalRequestToCancelledProcessingCommand() {
+        let t = Train(id: .init(uuid: "1"), name: "CFF", address: 0)
+        t.speed.accelerationProfile = .bezier
+        
+        let mi = MockCommandInterface()
+        let ic = TrainSpeedManager(train: t, interface: mi)
+        
+        let previousRequestUUID = TrainSpeedManager.globalRequestUUID
+        
+        t.speed.requestedKph = 80
+        mi.pause()
+        let e = expectation(description: "Completion e")
+        ic.changeSpeed() { completed in
+            XCTAssertFalse(completed)
+            e.fulfill()
+        }
+
+        // Wait for the command interface to receive the speed command
+        wait(for: {
+            mi.pendingCommands.count > 0
+        }, timeout: 1.0)
+        
+        t.speed.requestedKph = 0
+        let e2 = expectation(description: "Completion e2")
+        ic.changeSpeed() { completed in
+            XCTAssertFalse(completed)
+            e2.fulfill()
+        }
+        
+        t.speed.requestedKph = 80
+        let e3 = expectation(description: "Completion e3")
+        ic.changeSpeed() { completed in
+            XCTAssertTrue(completed)
+            e3.fulfill()
+        }
+
+        XCTAssertEqual(TrainSpeedManager.globalRequestUUID - previousRequestUUID, 3)
+        
+        mi.resume()
+
+        // e2 completes first (because it is cancelled while e is still in progress with the Digital Controler),
+        // then e completes (cancelled) and finally e3 completes (completed).
+        wait(for: [e2, e, e3], timeout: 1.0, enforceOrder: true)
+    }
+
     private func assertChangeSpeed(train: Train, from fromSteps: UInt16, to steps: UInt16, _ expectedSteps: [UInt16], _ ic: TrainSpeedManager) {
         XCTAssertEqual(train.speed.actualSteps.value, fromSteps, "Actual step value does not match")
 
