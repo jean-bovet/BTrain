@@ -43,8 +43,8 @@ final class LayoutController {
     // Speed manager for each train.
     private var speedManagers = [Identifier<Train>:TrainSpeedManager]()
 
-    // The executor that will send commands to the Digital Controller
-    private var executor: LayoutTurnoutManager
+    /// The turnout manager class that handles the turnout change towards the Digital Controller
+    private var turnoutManager: LayoutTurnoutManager
     
     let debugger: LayoutControllerDebugger
     
@@ -54,7 +54,7 @@ final class LayoutController {
         self.switchboard = switchboard
         self.feedbackMonitor = LayoutFeedbackMonitor(layout: layout)
         self.interface = interface
-        self.executor = LayoutTurnoutManager()
+        self.turnoutManager = LayoutTurnoutManager()
         self.debugger = LayoutControllerDebugger(layout: layout)
         
         registerForFeedbackChange()
@@ -409,7 +409,7 @@ extension LayoutController {
     ///   - completion: completion block called when the command has been sent
     func sendTurnoutState(turnout: Turnout, completion: @escaping CompletionBlock) {
         turnout.actualStateReceived = false
-        executor.sendTurnoutState(turnout: turnout, interface: interface, completion: completion)
+        turnoutManager.sendTurnoutState(turnout: turnout, interface: interface, completion: completion)
     }
         
     func setTrainSpeed(_ train: Train, _ speed: TrainSpeed.UnitKph, speedLimit: Bool = true, force: Bool = false, acceleration: TrainSpeedAcceleration.Acceleration? = nil, completion: CompletionCancelBlock? = nil) {
@@ -506,7 +506,7 @@ extension LayoutController {
 extension LayoutController: MetricsProvider {
     
     var metrics: [Metric] {
-        executor.metrics + interface.metrics
+        turnoutManager.metrics + interface.metrics + [.init(id: "Speed Changes", value: String(TrainSpeedManager.globalRequestUUID))]
     }
 
 }

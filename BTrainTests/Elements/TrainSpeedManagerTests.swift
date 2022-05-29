@@ -66,35 +66,37 @@ class TrainSpeedManagerTests: BTTestCase {
         assertChangeSpeed(train: t, from: 13, to: 0, [0], ic)
     }
     
-    // TODO: re-enable
-//    func testActualSpeedChangeHappensAfterDigitalControllerResponse() {
-//        let t = Train()
-//        t.speed.accelerationProfile = .none
-//        let mi = MockCommandInterface()
-//        let ic = TrainSpeedManager(train: t, interface: mi)
-//
-//        t.speed.requestedSteps = SpeedStep(value: 100)
-//
-//        let expectation = expectation(description: "Completed")
-//        ic.changeSpeed(of: t, acceleration: nil) { _ in
-//            expectation.fulfill()
-//        }
-//
-//        wait(for: {
-//            mi.onCompletion != nil
-//        }, timeout: 1.0)
-//
-//        // The actual speed shouldn't change yet, because the completion
-//        // block for the command request hasn't been invoked yet
-//        XCTAssertEqual(t.speed.actualSteps, .zero)
-//
-////        mi.onCompletion!()
-//        // Now the actual speed should be set
-//        XCTAssertEqual(t.speed.requestedSteps, SpeedStep(value: 100))
-//
-//        wait(for: [expectation], timeout: 2.0)
-//        XCTAssertEqual(t.speed.requestedSteps, SpeedStep(value: 100))
-//    }
+    func testActualSpeedChangeHappensAfterDigitalControllerResponse() {
+        let t = Train()
+        t.speed.accelerationProfile = .none
+        let mi = MockCommandInterface()
+        let ic = TrainSpeedManager(train: t, interface: mi)
+
+        t.speed.requestedSteps = SpeedStep(value: 100)
+
+        let expectation = expectation(description: "Completed")
+        ic.changeSpeed() { _ in
+            expectation.fulfill()
+        }
+
+        mi.pause()
+        
+        wait(for: {
+            mi.pendingCommands.count > 0
+        }, timeout: 1.0)
+
+        // The actual speed shouldn't change yet, because the completion
+        // block for the command request hasn't been invoked yet
+        XCTAssertEqual(t.speed.actualSteps, .zero)
+
+        mi.resume()
+
+        // Now the actual speed should be set
+        XCTAssertEqual(t.speed.requestedSteps, SpeedStep(value: 100))
+
+        wait(for: [expectation], timeout: 2.0)
+        XCTAssertEqual(t.speed.requestedSteps, SpeedStep(value: 100))
+    }
     
     /// Ensure an in-progress speed change that gets cancelled is properly handled.
     /// We need to ensure that the completed parameter reflects the cancellation.

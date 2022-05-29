@@ -74,7 +74,6 @@ final class Package {
             XCTAssertEqual(route.steps.toStrings(layout), routeSteps)
         }
 
-        // TODO: review this code
         BTTestCase.wait(for: {
             train.state == expectedState
         }, timeout: 2.0)
