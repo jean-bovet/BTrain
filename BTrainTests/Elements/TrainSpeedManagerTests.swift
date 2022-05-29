@@ -109,7 +109,7 @@ class TrainSpeedManagerTests: BTTestCase {
         t.speed.requestedSteps = SpeedStep(value: 50)
         
         let cancelledChange = expectation(description: "Cancelled")
-        ic.changeSpeed(acceleration: nil) { completed in
+        ic.changeSpeed() { completed in
             if !completed {
                 cancelledChange.fulfill()
             }
@@ -121,7 +121,7 @@ class TrainSpeedManagerTests: BTTestCase {
 
         t.speed.requestedSteps = SpeedStep(value: 10)
         let completedChange = expectation(description: "Completed")
-        ic.changeSpeed(acceleration: nil) { completed in
+        ic.changeSpeed() { completed in
             if completed {
                 completedChange.fulfill()
             }
@@ -152,7 +152,7 @@ class TrainSpeedManagerTests: BTTestCase {
         t.state = .running
         
         let cancelledChange = expectation(description: "Cancelled")
-        ic.changeSpeed(acceleration: nil) { completed in
+        ic.changeSpeed() { completed in
             XCTAssertFalse(completed)
             if !completed {
                 cancelledChange.fulfill()
@@ -167,7 +167,7 @@ class TrainSpeedManagerTests: BTTestCase {
         
         t.speed.requestedSteps = SpeedStep(value: 10)
         let completedChangeTo10 = expectation(description: "Completed")
-        ic.changeSpeed(acceleration: nil) { completed in
+        ic.changeSpeed() { completed in
             if completed {
                 completedChangeTo10.fulfill()
             }
@@ -226,6 +226,48 @@ class TrainSpeedManagerTests: BTTestCase {
         doc.layoutController.drainAllEvents()
     }
     
+    func testMultipleIdenticalSpeedRequests() {
+        let t = Train(id: .init(uuid: "1"), name: "CFF", address: 0)
+        t.speed.accelerationProfile = .bezier
+        
+        let mi = MockCommandInterface()
+        let ic = TrainSpeedManager(train: t, interface: mi)
+        
+        let previousRequestUUID = TrainSpeedManager.globalRequestUUID
+        
+        t.speed.requestedKph = 80
+        mi.pause()
+        let e = expectation(description: "Completion")
+        ic.changeSpeed() { completed in
+            e.fulfill()
+        }
+
+        // Wait for the command interface to receive the speed command
+        wait(for: {
+            mi.pendingCommands.count > 0
+        }, timeout: 1.0)
+        
+        t.speed.requestedKph = 40
+
+        let e2 = expectation(description: "Completion")
+        ic.changeSpeed() { completed in
+            e2.fulfill()
+        }
+
+        // All these subsequent speed change request should be ignored as they are all the same
+        ic.changeSpeed()
+        ic.changeSpeed()
+        ic.changeSpeed()
+        ic.changeSpeed()
+
+        // Only two speed change requests should be scheduled (for 80kph and 40kph)
+        XCTAssertEqual(TrainSpeedManager.globalRequestUUID - previousRequestUUID, 2)
+        
+        mi.resume()
+
+        wait(for: [e, e2], timeout: 1.0, enforceOrder: true)
+    }
+    
     private func assertChangeSpeed(train: Train, from fromSteps: UInt16, to steps: UInt16, _ expectedSteps: [UInt16], _ ic: TrainSpeedManager) {
         XCTAssertEqual(train.speed.actualSteps.value, fromSteps, "Actual step value does not match")
 
@@ -236,7 +278,7 @@ class TrainSpeedManagerTests: BTTestCase {
         train.speed.requestedSteps = SpeedStep(value: steps)
         
         let expectation = expectation(description: "Completed")
-        ic.changeSpeed(acceleration: nil) { _ in
+        ic.changeSpeed() { _ in
             expectation.fulfill()
         }
 

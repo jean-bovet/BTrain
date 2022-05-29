@@ -35,6 +35,7 @@ final class MockCommandInterface: CommandInterface {
     
     func resume() {
         running = true
+        executePendingCommands()
     }
     
     func connect(server: String, port: UInt16, onReady: @escaping () -> Void, onError: @escaping (Error) -> Void, onStop: @escaping () -> Void) {
@@ -53,13 +54,18 @@ final class MockCommandInterface: CommandInterface {
             return
         }
         
+        pendingCommands.append((command, completion))
+
         DispatchQueue.main.async {
-            for (command, completion) in self.pendingCommands {
-                self.executeImmediate(command: command, onCompletion: completion)
-            }
-            self.pendingCommands.removeAll()
+            self.executePendingCommands()
+        }
+    }
+    
+    private func executePendingCommands() {
+        for (command, completion) in self.pendingCommands {
             self.executeImmediate(command: command, onCompletion: completion)
         }
+        self.pendingCommands.removeAll()
     }
     
     private func executeImmediate(command: Command, onCompletion: CompletionBlock?) {

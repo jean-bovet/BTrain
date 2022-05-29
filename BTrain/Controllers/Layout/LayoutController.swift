@@ -424,7 +424,11 @@ extension LayoutController {
 
     func setTrainSpeed(_ train: Train, _ speed: SpeedStep, acceleration: TrainSpeedAcceleration.Acceleration? = nil, completion: CompletionCancelBlock? = nil) {
         train.speed.requestedSteps = speed
-        speedManager(for: train).changeSpeed(acceleration: acceleration, completion: completion)
+        if let acceleration = acceleration {
+            speedManager(for: train).changeSpeed(acceleration: acceleration, completion: completion)
+        } else {
+            speedManager(for: train).changeSpeed(completion: completion)
+        }
     }
 
     // Set the direction of travel of the locomotive
