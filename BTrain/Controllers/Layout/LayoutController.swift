@@ -413,7 +413,7 @@ extension LayoutController {
     }
         
     func setTrainSpeed(_ train: Train, _ speed: TrainSpeed.UnitKph, speedLimit: Bool = true, force: Bool = false, acceleration: TrainSpeedAcceleration.Acceleration? = nil, completion: CompletionCancelBlock? = nil) {
-        if speedLimit {
+        if speedLimit && speed > 0 {
             let route = layout.route(for: train.routeId, trainId: train.id)
             train.speed.requestedKph = min(speed, reservation.maximumSpeedAllowed(train: train, route: route))
         } else {
