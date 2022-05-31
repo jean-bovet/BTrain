@@ -57,6 +57,9 @@ struct TurnoutShapeView_Previews: PreviewProvider {
                 HStack {
                     ForEach(Turnout.states(for: category)) { state in
                         TurnoutShapeView(layout: layout, category: category, requestedState: state, actualState: Turnout.defaultState(for: category))
+                        if state != Turnout.defaultState(for: category) {
+                            TurnoutShapeView(layout: layout, category: category, requestedState: state, actualState: state)
+                        }
                     }
                 }
             }
