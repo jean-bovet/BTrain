@@ -40,7 +40,7 @@ enum TrainEvent: Hashable, CustomStringConvertible {
     /// A train state has changed.
     case stateChanged
 
-    // A train reserved blocks (occupied or leading) have changed
+    /// A train reserved blocks (occupied or leading) have changed
     case reservedBlocksChanged
     
     /// A train has moved inside a block.

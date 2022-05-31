@@ -98,12 +98,12 @@ class ClientConnection {
                 return
             }
             
-            self.nwConnection.send(content: data, completion: .contentProcessed( { error in
-                let msg = MarklinCANMessage.decode(from: [UInt8](data))
-                if let description = MarklinCANMessagePrinter.debugDescription(msg: msg) {
-                    BTLogger.network.debug("[Client] > \(description)")
-                }
+            let msg = MarklinCANMessage.decode(from: [UInt8](data))
+            if let description = MarklinCANMessagePrinter.debugDescription(msg: msg) {
+                BTLogger.network.debug("[Client] > \(description)")
+            }
 
+            self.nwConnection.send(content: data, completion: .contentProcessed( { error in
                 DispatchQueue.main.async {
                     if let error = error {
                         if case let NWError.posix(code) = error, code == .ECANCELED {

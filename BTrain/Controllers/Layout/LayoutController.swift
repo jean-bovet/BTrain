@@ -73,6 +73,8 @@ final class LayoutController {
             runControllers(pendingEvents.removeFirst())
             if !drain {
                 break
+            } else {
+                RunLoop.current.run(until: Date(timeIntervalSinceNow: 0.001))
             }
         }
     }
