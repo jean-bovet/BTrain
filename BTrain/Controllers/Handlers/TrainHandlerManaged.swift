@@ -308,7 +308,7 @@ final class TrainHandlerManaged {
             train.startRouteIndex = train.routeStepIndex
             
             train.state = .running
-            layoutController.setTrainSpeed(train, LayoutFactory.DefaultMaximumSpeed, completion: nil)
+            setSpeed(LayoutFactory.DefaultMaximumSpeed)
             resultingEvents.append(.stateChanged)
         }
     }
@@ -344,7 +344,7 @@ final class TrainHandlerManaged {
         
         train.state = .braking
         
-        layoutController.setTrainSpeed(train, currentBlock.brakingSpeed ?? LayoutFactory.DefaultBrakingSpeed)
+        setSpeed(currentBlock.brakingSpeed ?? LayoutFactory.DefaultBrakingSpeed)
         
         resultingEvents.append(.stateChanged)
     }
@@ -362,7 +362,7 @@ final class TrainHandlerManaged {
         
         train.state = .stopping
         
-        layoutController.setTrainSpeed(train, 0)
+        setSpeed(0)
                         
         resultingEvents.append(.stateChanged)
     }
@@ -451,7 +451,15 @@ final class TrainHandlerManaged {
             return
         }
 
-        layoutController.setTrainSpeed(train, LayoutFactory.DefaultMaximumSpeed)
+        setSpeed(LayoutFactory.DefaultMaximumSpeed)
+    }
+    
+    private func setSpeed(_ speed: TrainSpeed.UnitKph) {
+        let route = layout.route(for: train.routeId, trainId: train.id)
+        let requestedKph = min(speed, reservation.maximumSpeedAllowed(train: train, route: route))
+        if requestedKph != train.speed.requestedKph {
+            layoutController.setTrainSpeed(train, requestedKph)
+        }
     }
     
     private func updateAutomaticRoute(for train: Train, layout: Layout) throws -> Bool {

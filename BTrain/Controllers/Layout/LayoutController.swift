@@ -192,7 +192,7 @@ final class LayoutController {
         // is cleared by the user. We want to make sure the train don't
         // start again if the user re-enable the layout manually.
         for train in layout.trains {
-            setTrainSpeed(train, SpeedStep(value: 0))
+            setTrainSpeed(train, 0)
             train.scheduling = .unmanaged
         }
         
@@ -415,13 +415,8 @@ extension LayoutController {
         turnoutManager.sendTurnoutState(turnout: turnout, interface: interface, completion: completion)
     }
         
-    func setTrainSpeed(_ train: Train, _ speed: TrainSpeed.UnitKph, speedLimit: Bool = true, force: Bool = false, acceleration: TrainSpeedAcceleration.Acceleration? = nil, completion: CompletionCancelBlock? = nil) {
-        if speedLimit && speed > 0 {
-            let route = layout.route(for: train.routeId, trainId: train.id)
-            train.speed.requestedKph = min(speed, reservation.maximumSpeedAllowed(train: train, route: route))
-        } else {
-            train.speed.requestedKph = speed
-        }
+    func setTrainSpeed(_ train: Train, _ speed: TrainSpeed.UnitKph, acceleration: TrainSpeedAcceleration.Acceleration? = nil, completion: CompletionCancelBlock? = nil) {
+        train.speed.requestedKph = speed
         setTrainSpeed(train, train.speed.requestedSteps, acceleration: acceleration, completion: completion)
     }
 
