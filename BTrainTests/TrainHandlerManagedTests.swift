@@ -33,8 +33,7 @@ class TrainHandlerManagedTests: BTTestCase {
         XCTAssertEqual(train.scheduling, .unmanaged)
     }
     
-    // TODO
-    func disabled_testStateStoppedToRunning() throws {
+    func testStateStoppedToRunning() throws {
         let doc = LayoutDocument(layout: LayoutComplex().newLayout(), interface: MockCommandInterface())
         doc.layout.removeAllTrains()
         
@@ -43,14 +42,13 @@ class TrainHandlerManagedTests: BTTestCase {
         
         try doc.layoutController.setTrainToBlock(train, ne1.id, position: .end, direction: .next)
 
-//        try doc.layoutController.start(routeID: train.routeId, trainID: train.id)
-        
-        train.routeStepIndex = 0
-        train.startRouteIndex = 0
-        train.state = .stopped
-        train.scheduling = .managed
-        
+        try doc.layoutController.start(routeID: train.routeId, trainID: train.id)
+                
         doc.layoutController.runControllers(.schedulingChanged)
+        
+        doc.layout.turnouts.forEach { turnout in
+            turnout.actualState = turnout.requestedState
+        }
         doc.layoutController.runControllers(drain: true)
         
         XCTAssertEqual(train.state, .running)
