@@ -163,46 +163,14 @@ final class TrainHandlerManaged {
             } else if try moveToNextBlock() {
                 resultingEvents.append(.movedToNextBlock)
             }
-            
-        case .schedulingChanged:
-            switch train.scheduling {
-            case .unmanaged:
-                try reservation.removeLeadingBlocks(train: train)
-
-            case .managed:
-                if train.state == .stopped {
-                    // Note: routeStepIndex is setup by the start() method in the Layout, which
-                    // can set its value to something > 0 if the train is somewhere along the route.
-                    train.startRouteIndex = train.routeStepIndex
-                    try reserveLeadingBlocks() // TODO: seems unnecessary as handleTrainStart will do it anyway
-                }
-
-            case .stopManaged:
-                break
-                
-            case .finishManaged:
-                break
-            }
-            
+                            
         case .restartTimerExpired(let train):
             // Only restart the train if it is still automatically managed
             if train.scheduling == .managed && train == self.train {
                 train.startRouteIndex = train.routeStepIndex
             }
-            
-        case .turnoutChanged:
-            break
-        case .directionChanged:
-            break
-        case .speedChanged:
-            break
-        case .stateChanged:
-            break
-        case .movedInsideBlock:
-            break
-        case .movedToNextBlock:
-            break
-        case .reservedBlocksChanged:
+
+        default:
             break
         }
     }

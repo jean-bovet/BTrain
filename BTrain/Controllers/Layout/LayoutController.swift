@@ -368,6 +368,7 @@ extension LayoutController {
             // Reset the route - the route will be automatically updated by
             // the TrainController when the train is started.
             train.routeStepIndex = 0
+            train.startRouteIndex = 0
             route.steps.removeAll()
         } else {
             // Check to make sure the train is somewhere along the route
@@ -392,6 +393,7 @@ extension LayoutController {
                 // Check that the train direction matches as well.
                 if trainInstance.direction == direction {
                     train.routeStepIndex = index
+                    train.startRouteIndex = index
                     break
                 }
             }
