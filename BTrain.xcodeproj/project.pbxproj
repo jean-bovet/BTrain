@@ -48,6 +48,9 @@
 		A7218087276055AD00831998 /* FeedbackTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7218086276055AD00831998 /* FeedbackTests.swift */; };
 		A72180892760578000831998 /* RouteTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A72180882760578000831998 /* RouteTests.swift */; };
 		A7281840278E9EDC007BE810 /* Direction.swift in Sources */ = {isa = PBXBuildFile; fileRef = A728183F278E9EDC007BE810 /* Direction.swift */; };
+		A73A7DD0284AD41D00ABEADE /* TrainStateMachine.swift in Sources */ = {isa = PBXBuildFile; fileRef = A73A7DCF284AD41D00ABEADE /* TrainStateMachine.swift */; };
+		A73A7DD2284B247E00ABEADE /* TrainStateMachineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A73A7DD1284B247E00ABEADE /* TrainStateMachineTests.swift */; };
+		A73A7DD5284BD7C000ABEADE /* TrainModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A73A7DD4284BD7C000ABEADE /* TrainModel.swift */; };
 		A73AFE862726594600E1ED21 /* BTrainApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A73AFE852726594600E1ED21 /* BTrainApp.swift */; };
 		A73AFE8A2726594800E1ED21 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A73AFE892726594800E1ED21 /* Assets.xcassets */; };
 		A73AFE8D2726594800E1ED21 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A73AFE8C2726594800E1ED21 /* Preview Assets.xcassets */; };
@@ -345,6 +348,9 @@
 		A7218086276055AD00831998 /* FeedbackTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedbackTests.swift; sourceTree = "<group>"; };
 		A72180882760578000831998 /* RouteTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteTests.swift; sourceTree = "<group>"; };
 		A728183F278E9EDC007BE810 /* Direction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Direction.swift; sourceTree = "<group>"; };
+		A73A7DCF284AD41D00ABEADE /* TrainStateMachine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainStateMachine.swift; sourceTree = "<group>"; };
+		A73A7DD1284B247E00ABEADE /* TrainStateMachineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainStateMachineTests.swift; sourceTree = "<group>"; };
+		A73A7DD4284BD7C000ABEADE /* TrainModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainModel.swift; sourceTree = "<group>"; };
 		A73AFE822726594600E1ED21 /* BTrain.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BTrain.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A73AFE852726594600E1ED21 /* BTrainApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BTrainApp.swift; sourceTree = "<group>"; };
 		A73AFE892726594800E1ED21 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -668,6 +674,15 @@
 			path = "CS2 Document Parsers";
 			sourceTree = "<group>";
 		};
+		A73A7DD3284BD7B400ABEADE /* State Machine */ = {
+			isa = PBXGroup;
+			children = (
+				A73A7DCF284AD41D00ABEADE /* TrainStateMachine.swift */,
+				A73A7DD4284BD7C000ABEADE /* TrainModel.swift */,
+			);
+			path = "State Machine";
+			sourceTree = "<group>";
+		};
 		A73AFE792726594600E1ED21 = {
 			isa = PBXGroup;
 			children = (
@@ -733,6 +748,7 @@
 			isa = PBXGroup;
 			children = (
 				A767037028440E2E0046B84B /* TrainHandlerManagedTests.swift */,
+				A73A7DD1284B247E00ABEADE /* TrainStateMachineTests.swift */,
 				A71D97F827A45B3B00EBEA06 /* Marklin */,
 				A775C61F27A37BD400D712CF /* Digital Controller */,
 				A796FA2C2772BB8600FA41BA /* LayoutDocument */,
@@ -1285,6 +1301,7 @@
 				A74BDD6C2829ED4200BA7160 /* TrainHandlerManaged.swift */,
 				A7C30BDF2811ACAF00CC4251 /* TrainHandlerUnmanaged.swift */,
 				A7C30BE728121F6100CC4251 /* TrainStopPushingWagonsHandler.swift */,
+				A73A7DD3284BD7B400ABEADE /* State Machine */,
 			);
 			path = Handlers;
 			sourceTree = "<group>";
@@ -1540,6 +1557,7 @@
 				A798BB4A27ABAB6F000BB4D1 /* RouteResolver.swift in Sources */,
 				A7710E6327799C9F00C08150 /* Layout+Blocks.swift in Sources */,
 				A783EA9F2787C6DA00E69B6D /* LayoutObserver.swift in Sources */,
+				A73A7DD0284AD41D00ABEADE /* TrainStateMachine.swift in Sources */,
 				A7C8A2E7279BB89E000C7246 /* DocumentView.swift in Sources */,
 				A7214916279A56FA0095E5EE /* LayoutController+Debug.swift in Sources */,
 				A7710E6527799CF800C08150 /* Layout+Routes.swift in Sources */,
@@ -1607,6 +1625,7 @@
 				A785C089278E59A4002FD538 /* CommandTypes.swift in Sources */,
 				A74F3811281A14DD0013FD23 /* StationView.swift in Sources */,
 				A717158B275844AE00200F92 /* SwitchBoardTrainDragInfo.swift in Sources */,
+				A73A7DD5284BD7C000ABEADE /* TrainModel.swift in Sources */,
 				A7710E6F2779A50A00C08150 /* SwitchboardContainerView.swift in Sources */,
 				A74CCC6E272A5A08004E58F5 /* Route.swift in Sources */,
 				A798BB4E27AF4478000BB4D1 /* Turnout+Reservation.swift in Sources */,
@@ -1762,6 +1781,7 @@
 				A7012C8E2839BDC4003AC687 /* MockCommandInterface.swift in Sources */,
 				A73E0818276B1059005F9D64 /* SwitchBoardViewTests.swift in Sources */,
 				A794065B28087C2600F6A427 /* LayoutStringParser.swift in Sources */,
+				A73A7DD2284B247E00ABEADE /* TrainStateMachineTests.swift in Sources */,
 				A78B996427FD56D80021EFE4 /* GraphTests.swift in Sources */,
 				A794065928087C1800F6A427 /* LayoutParser.swift in Sources */,
 				A7145F8E27F91D0A00BF5F61 /* View+Snapshot.swift in Sources */,
