@@ -15,45 +15,83 @@ import XCTest
 
 class TrainStateMachineTests: XCTestCase {
 
-    func testLayoutEventFeedback() {
-        let train = MockTrain()
-        let sm = TrainStateMachine()
+    var train: MockTrain!
+    let sm = TrainStateMachine()
 
+    override func setUp() {
+        super.setUp()
+        train = MockTrain()
+    }
+    
+    func testLayoutEventFeedback() {
+        train.onUpdatePosition = { return true }
+        train.onUpdateOccupiedAndReservedBlocks = { return true }
         XCTAssertEqual(sm.handle(layoutEvent: .feedback, train: train), .reservedBlocksChanged(train))
         
-        XCTAssertEqual(sm.handle(layoutEvent: .speed, train: train), nil)
+        train.onUpdatePosition = { return false }
+        train.onUpdateOccupiedAndReservedBlocks = { return true }
+        XCTAssertEqual(sm.handle(layoutEvent: .feedback, train: train), nil)
         
+        train.onUpdatePosition = { return true }
+        train.onUpdateOccupiedAndReservedBlocks = { return false }
+        XCTAssertEqual(sm.handle(layoutEvent: .feedback, train: train), nil)
+        
+        train.onUpdatePosition = { return false }
+        train.onUpdateOccupiedAndReservedBlocks = { return false }
+        XCTAssertEqual(sm.handle(layoutEvent: .feedback, train: train), nil)
+    }
+    
+    func testLayoutEventSpeed() {
+        var speedUpdated = false
+        train.onUpdateSpeed = {
+            speedUpdated = true
+            return true
+        }
+        XCTAssertEqual(sm.handle(layoutEvent: .speed, train: train), nil)
+        XCTAssertTrue(speedUpdated)
+    }
+
+    func testLayoutEventTurnout() {
+        XCTAssertEqual(train.adjustSpeedCount, 0)
+
+        train.onUpdateReservedBlocksLength = {
+            return false
+        }
+        XCTAssertEqual(sm.handle(layoutEvent: .turnout, train: train), nil)
+        XCTAssertEqual(train.adjustSpeedCount, 0)
+        
+        train.onUpdateReservedBlocksLength = {
+            return true
+        }
         XCTAssertEqual(train.adjustSpeedCount, 0)
         XCTAssertEqual(sm.handle(layoutEvent: .turnout, train: train), nil)
         XCTAssertEqual(train.adjustSpeedCount, 1)
     }
-    
-    func testTrainEvent() {
-        let train = MockTrain()
-        let sm = TrainStateMachine()
 
+    func testTrainEvent() {
         let anotherTrain = MockTrain()
         
+        train.onUpdatePosition = { return true }
+        train.onUpdateOccupiedAndReservedBlocks = { return true }
         XCTAssertEqual(sm.handle(trainEvent: .position(train), train: train), .reservedBlocksChanged(train))
+        
         XCTAssertEqual(sm.handle(trainEvent: .position(anotherTrain), train: train), nil)
         
         XCTAssertEqual(train.adjustSpeedCount, 0)
         XCTAssertEqual(sm.handle(trainEvent: .reservedBlocksChanged(train), train: train), nil)
         XCTAssertEqual(train.adjustSpeedCount, 1)
 
+        train.onUpdateReservedBlocks = { return true }
         XCTAssertEqual(sm.handle(trainEvent: .reservedBlocksChanged(anotherTrain), train: train), .reservedBlocksChanged(train))
         XCTAssertEqual(train.adjustSpeedCount, 1)
     }
     
     func testTrainStart() {
-        let train = MockTrain()
-        let sm = TrainStateMachine()
-                
         XCTAssertEqual(train.state, .stopped)
         train.isManagedSchedule = true
         
-        train.onUpdateREservedBlocks = {
-            train.reservedBlocksLengthEnoughToRun = true
+        train.onUpdateReservedBlocks = {
+            self.train.reservedBlocksLengthEnoughToRun = true
             return true
         }
         XCTAssertEqual(sm.handle(trainEvent: .scheduling(train), train: train), .reservedBlocksChanged(train))
@@ -71,7 +109,7 @@ class TrainStateMachineTests: XCTestCase {
         
         t1.isManagedSchedule = true
         
-        t1.onUpdateREservedBlocks = {
+        t1.onUpdateReservedBlocks = {
             if !t1.reservedBlocksLengthEnoughToRun {
                 t1.reservedBlocksLengthEnoughToRun = true
                 return true
@@ -126,28 +164,36 @@ final class MockTrain: TrainModel {
     
     var locatedInStationBlock: Bool = false
     
+    typealias CallbackBlock = () -> Bool
+
+    var onUpdatePosition: CallbackBlock?
+
     func updatePosition() -> Bool {
-        return true
+        onUpdatePosition?() ?? false
     }
     
+    var onUpdateSpeed: CallbackBlock?
+
     func updateSpeed() -> Bool {
-        return true
+        onUpdateSpeed?() ?? false
     }
     
+    var onUpdateReservedBlocksLength: CallbackBlock?
+
     func updateReservedBlocksLength() -> Bool {
-        return true
-    }        
+        onUpdateReservedBlocksLength?() ?? false
+    }
+
+    var onUpdateOccupiedAndReservedBlocks: CallbackBlock?
 
     func updateOccupiedAndReservedBlocks() -> Bool {
-        return true
+        onUpdateOccupiedAndReservedBlocks?() ?? false
     }
-    
-    typealias OnUpdateREservedBlocks = () -> Bool
-    
-    var onUpdateREservedBlocks: OnUpdateREservedBlocks?
+        
+    var onUpdateReservedBlocks: CallbackBlock?
     
     func updateReservedBlocks() -> Bool {
-        return onUpdateREservedBlocks?() ?? true
+        onUpdateReservedBlocks?() ?? false
     }
     
     var adjustSpeedCount = 0
