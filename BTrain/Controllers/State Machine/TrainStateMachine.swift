@@ -15,18 +15,18 @@ import Foundation
 struct TrainStateMachine {
 
     enum LayoutEvent {
-        case feedback
+        case feedback(Feedback)
         case speed
-        case turnout
+        case turnout(Turnout)
     }
 
     enum TrainEvent {
-        case position(TrainModel)
-        case speed(TrainModel)
-        case scheduling(TrainModel)
-        case restartTimerFired(TrainModel)
-        case reservedBlocksChanged(TrainModel)
-        case reservedBlocksSettledLengthChanged(TrainModel)
+        case position(TrainControlling)
+        case speed(TrainControlling)
+        case scheduling(TrainControlling)
+        case restartTimerFired(TrainControlling)
+        case reservedBlocksChanged(TrainControlling)
+        case reservedBlocksSettledLengthChanged(TrainControlling)
     }
         
     enum TrainState {
@@ -36,7 +36,12 @@ struct TrainStateMachine {
         case stopping
     }
 
-    func handle(layoutEvent: LayoutEvent?, trainEvent: TrainEvent?, trains: [TrainModel]) {
+    func handle(layoutEvent: LayoutEvent?, trainEvent: TrainEvent?, trains: [TrainControlling]) {
+        var events: [TrainEvent]? = nil
+        handle(layoutEvent: layoutEvent, trainEvent: trainEvent, trains: trains, handledTrainEvents: &events)
+    }
+    
+    func handle(layoutEvent: LayoutEvent?, trainEvent: TrainEvent?, trains: [TrainControlling], handledTrainEvents: inout [TrainEvent]?) {
         var trainEvents = [TrainEvent]()
         if let layoutEvent = layoutEvent {
             for train in trains {
@@ -50,11 +55,14 @@ struct TrainStateMachine {
             trainEvents.append(trainEvent)
         }
         
+        handledTrainEvents?.append(contentsOf: trainEvents)
+        
         while trainEvents.count > 0 {
             let nextTrainEvent = trainEvents.removeFirst()
             for train in trains {
                 if let resultingTrainEvent = handle(trainEvent: nextTrainEvent, train: train) {
                     trainEvents.append(resultingTrainEvent)
+                    handledTrainEvents?.append(resultingTrainEvent)
                 }
             }
         }
@@ -65,18 +73,18 @@ struct TrainStateMachine {
      Speed Changed > Update Train.Speed
      Turnout Changed > Update Settling of Train.Reserved.Blocks -> Emit Reserved.Blocks.Settled event
      */
-    func handle(layoutEvent: LayoutEvent, train: TrainModel) -> TrainEvent? {
+    func handle(layoutEvent: LayoutEvent, train: TrainControlling) -> TrainEvent? {
         switch layoutEvent {
-        case .feedback:
-            if train.updatePosition() {
+        case .feedback(let feedback):
+            if train.updatePosition(with: feedback) {
                 return handle(trainEvent: .position(train), train: train)
             }
         case .speed:
             if train.updateSpeed() {
                 return handle(trainEvent: .speed(train), train: train)
             }
-        case .turnout:
-            if train.updateReservedBlocksLength() {
+        case .turnout(let turnout):
+            if train.updateReservedBlocksSettledLength(with: turnout) {
                 return handle(trainEvent: .reservedBlocksSettledLengthChanged(train), train: train)
             }
         }
@@ -95,7 +103,7 @@ struct TrainStateMachine {
 
      Train.Reserved.Blocks Updated or Settled > Adjust Train.Speed
      */
-    func handle(trainEvent: TrainEvent, train: TrainModel) -> TrainEvent? {
+    func handle(trainEvent: TrainEvent, train: TrainControlling) -> TrainEvent? {
         switch trainEvent {
         case .position(let eventTrain):
             if eventTrain.id == train.id {
@@ -123,7 +131,9 @@ struct TrainStateMachine {
             
         case .reservedBlocksChanged(let eventTrain):
             if eventTrain.id == train.id {
-                train.adjustSpeed()
+                if train.state != .stopped {
+                    train.adjustSpeed()
+                }
             } else {
                 if train.updateReservedBlocks() {
                     return .reservedBlocksChanged(train)
@@ -132,7 +142,9 @@ struct TrainStateMachine {
             
         case .reservedBlocksSettledLengthChanged(let eventTrain):
             if eventTrain.id == train.id {
-                train.adjustSpeed()
+                if train.state != .stopped {
+                    train.adjustSpeed()
+                }
             }
 
         case .speed(_): // nothing to do
@@ -142,7 +154,7 @@ struct TrainStateMachine {
         return nil
     }
 
-    private func handleTrainState(train: TrainModel) {
+    private func handleTrainState(train: TrainControlling) {
         switch train.state {
         case .running:
             handleRunningState(train: train)
@@ -161,7 +173,7 @@ struct TrainStateMachine {
      Running + Feedback.Brake + Route.End > Braking
      Running + Feedback.Brake + Train.Block.Station > Braking
      */
-    private func handleRunningState(train: TrainModel) {
+    private func handleRunningState(train: TrainControlling) {
         guard train.brakeFeedbackActivated else {
             return
         }
@@ -184,7 +196,7 @@ struct TrainStateMachine {
      Braking + Feedback.Stop + Train.Block.Station > Stopping
      Braking + Train.Reserved.Blocks.Length + !Stop.Managed + !Train.Block.Station + !Route.End > Running
      */
-    private func handleBrakingState(train: TrainModel) {
+    private func handleBrakingState(train: TrainControlling) {
         if train.stopFeedbackActivated {
             if !train.reservedBlocksLengthEnoughToRun {
                 train.state = .stopping
@@ -206,7 +218,7 @@ struct TrainStateMachine {
     /**
      Stopping + Speed Changed (=0) > Stopped
      */
-    private func handleStoppingState(train: TrainModel) {
+    private func handleStoppingState(train: TrainControlling) {
         if train.speed == 0 {
             train.state = .stopped
         }
@@ -215,7 +227,7 @@ struct TrainStateMachine {
     /**
      Stopped + Train.Reserved.Blocks.Length + !Stop.Managed > Running
      */
-    private func handleStoppedState(train: TrainModel) {
+    private func handleStoppedState(train: TrainControlling) {
         if train.reservedBlocksLengthEnoughToRun && !train.stopManagedSchedule {
             train.state = .running
         }

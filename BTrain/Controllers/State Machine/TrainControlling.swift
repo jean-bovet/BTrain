@@ -12,13 +12,13 @@
 
 import Foundation
 
-protocol TrainModel: AnyObject {
-        
+protocol TrainControlling: AnyObject {
+    
     var id: String { get }
     
     var state: TrainStateMachine.TrainState { get set }
     
-    var speed: Double { get }
+    var speed: TrainSpeed.UnitKph { get }
     
     var isManagedSchedule: Bool { get }
     var stopManagedSchedule: Bool { get }
@@ -31,11 +31,11 @@ protocol TrainModel: AnyObject {
     var atEndOfRoute: Bool { get }
     var locatedInStationBlock: Bool { get }
     
-    func updatePosition() -> Bool
+    func updatePosition(with feedback: Feedback) -> Bool
     
     func updateSpeed() -> Bool
     
-    func updateReservedBlocksLength() -> Bool
+    func updateReservedBlocksSettledLength(with turnout: Turnout) -> Bool
     
     func updateOccupiedAndReservedBlocks() -> Bool
     
