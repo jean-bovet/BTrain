@@ -46,6 +46,8 @@ struct MainView: View {
                 FeedbackEditListView(layout: document.layout)
             case .speed:
                 TrainSpeedMeasurementsView(document: document, layout: document.layout)
+            case .cs3:
+                CS3DebuggerView(doc: document)
             }
         }
         .onChange(of: document.triggerLayoutDiagnostic, perform: { v in

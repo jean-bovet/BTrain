@@ -52,6 +52,9 @@
 		A73A7DD2284B247E00ABEADE /* TrainStateMachineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A73A7DD1284B247E00ABEADE /* TrainStateMachineTests.swift */; };
 		A73A7DD5284BD7C000ABEADE /* TrainControlling.swift in Sources */ = {isa = PBXBuildFile; fileRef = A73A7DD4284BD7C000ABEADE /* TrainControlling.swift */; };
 		A73A7DD7284D00A000ABEADE /* MockTrainController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A73A7DD6284D00A000ABEADE /* MockTrainController.swift */; };
+		A73A7DDA284EBC8800ABEADE /* CS3SendMessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A73A7DD9284EBC8800ABEADE /* CS3SendMessageView.swift */; };
+		A73A7DDD284F07FA00ABEADE /* CS3ReceivedMessageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A73A7DDC284F07FA00ABEADE /* CS3ReceivedMessageView.swift */; };
+		A73A7DDF284F0F0D00ABEADE /* CS3DebuggerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A73A7DDE284F0F0D00ABEADE /* CS3DebuggerView.swift */; };
 		A73AFE862726594600E1ED21 /* BTrainApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A73AFE852726594600E1ED21 /* BTrainApp.swift */; };
 		A73AFE8A2726594800E1ED21 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A73AFE892726594800E1ED21 /* Assets.xcassets */; };
 		A73AFE8D2726594800E1ED21 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A73AFE8C2726594800E1ED21 /* Preview Assets.xcassets */; };
@@ -353,6 +356,9 @@
 		A73A7DD1284B247E00ABEADE /* TrainStateMachineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainStateMachineTests.swift; sourceTree = "<group>"; };
 		A73A7DD4284BD7C000ABEADE /* TrainControlling.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainControlling.swift; sourceTree = "<group>"; };
 		A73A7DD6284D00A000ABEADE /* MockTrainController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockTrainController.swift; sourceTree = "<group>"; };
+		A73A7DD9284EBC8800ABEADE /* CS3SendMessageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CS3SendMessageView.swift; sourceTree = "<group>"; };
+		A73A7DDC284F07FA00ABEADE /* CS3ReceivedMessageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CS3ReceivedMessageView.swift; sourceTree = "<group>"; };
+		A73A7DDE284F0F0D00ABEADE /* CS3DebuggerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CS3DebuggerView.swift; sourceTree = "<group>"; };
 		A73AFE822726594600E1ED21 /* BTrain.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BTrain.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A73AFE852726594600E1ED21 /* BTrainApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BTrainApp.swift; sourceTree = "<group>"; };
 		A73AFE892726594800E1ED21 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -692,6 +698,16 @@
 				A73A7DD6284D00A000ABEADE /* MockTrainController.swift */,
 			);
 			path = "State Machine";
+			sourceTree = "<group>";
+		};
+		A73A7DDB284F07BE00ABEADE /* CS3 */ = {
+			isa = PBXGroup;
+			children = (
+				A73A7DDE284F0F0D00ABEADE /* CS3DebuggerView.swift */,
+				A73A7DD9284EBC8800ABEADE /* CS3SendMessageView.swift */,
+				A73A7DDC284F07FA00ABEADE /* CS3ReceivedMessageView.swift */,
+			);
+			path = CS3;
 			sourceTree = "<group>";
 		};
 		A73AFE792726594600E1ED21 = {
@@ -1336,6 +1352,7 @@
 				A763F19A27BF1A6B00B3499A /* Train Speed Measurements */,
 				A79466CF279B8B22006E2A4C /* Simulator */,
 				A795A03427B0896800AE90EB /* Common */,
+				A73A7DDB284F07BE00ABEADE /* CS3 */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -1614,9 +1631,11 @@
 				A79406632809D74100F6A427 /* EphemeralDraggedTrainShape.swift in Sources */,
 				A7DB7D5227C9C0C6000893BA /* TrainControlStateView.swift in Sources */,
 				A794065E2809D51600F6A427 /* View+Snapshot.swift in Sources */,
+				A73A7DDF284F0F0D00ABEADE /* CS3DebuggerView.swift in Sources */,
 				A7CA5EC527964B6700171398 /* Array+Extension.swift in Sources */,
 				A7B06AF92727ACCB00BDD88C /* ServerConnection.swift in Sources */,
 				A795A03B27B6C08B00AE90EB /* TrainPositionFinder.swift in Sources */,
+				A73A7DDA284EBC8800ABEADE /* CS3SendMessageView.swift in Sources */,
 				A7DB7D4827C21D7C000893BA /* TrainSpeedManager.swift in Sources */,
 				A7710E73277A3BC200C08150 /* NewTurnoutSheet.swift in Sources */,
 				A7F31BA1277C3D7B00FE0C65 /* BlockDetailsView.swift in Sources */,
@@ -1638,6 +1657,7 @@
 				A717158B275844AE00200F92 /* SwitchBoardTrainDragInfo.swift in Sources */,
 				A73A7DD5284BD7C000ABEADE /* TrainControlling.swift in Sources */,
 				A7710E6F2779A50A00C08150 /* SwitchboardContainerView.swift in Sources */,
+				A73A7DDD284F07FA00ABEADE /* CS3ReceivedMessageView.swift in Sources */,
 				A74CCC6E272A5A08004E58F5 /* Route.swift in Sources */,
 				A798BB4E27AF4478000BB4D1 /* Turnout+Reservation.swift in Sources */,
 				A76507E8275AD1FE0079C71A /* TrainControlLocationView.swift in Sources */,

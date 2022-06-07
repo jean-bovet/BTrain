@@ -10,18 +10,26 @@
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-import Foundation
+import SwiftUI
 
-// The various "views" that the document can present to the user
-enum ViewType: Int {
-    case overview
-    case routes
-    case trains
-    case stations
-    case blocks
-    case turnouts
-    case feedback
-    case speed
-    case cs3
-}
+struct CS3DebuggerView: View {
     
+    @ObservedObject var doc: LayoutDocument
+    
+    var body: some View {
+        VStack {
+            CS3SendMessageView(doc: doc)
+                .padding()
+            CS3ReceivedMessageView(doc: doc)
+        }
+    }
+}
+
+struct CS3DebuggerView_Previews: PreviewProvider {
+    
+    static let doc = LayoutDocument(layout: LayoutComplex().newLayout())
+
+    static var previews: some View {
+        CS3DebuggerView(doc: doc)
+    }
+}
