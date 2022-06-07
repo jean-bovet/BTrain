@@ -232,7 +232,7 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
         
         // Send back the acknowledgement for this command
         DispatchQueue.global(qos: .background).async {
-            let message = direction == .forward ? MarklinCANMessageFactory.forward(addr: address) : MarklinCANMessageFactory.backward(addr: address)
+            let message = MarklinCANMessageFactory.direction(addr: address, direction: direction == .forward ? .forward : .backward)
             self.send(message.ack)
         }
     }
@@ -271,14 +271,13 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
             
             // As per spec 3.5, an answer is always returned, even when a locomotive is not known.
             DispatchQueue.main.async {
-                let message = MarklinCANMessageFactory.queryDirectionResponse(addr: address, direction: 0)
-                self.send(message)
+                let message = MarklinCANMessageFactory.direction(addr: address, direction: .nochange)
+                self.send(message.ack)
             }
             return
         }
-        
-        let message = MarklinCANMessageFactory.queryDirectionResponse(addr: address, direction: train.directionForward ? 1 : 2)
-        send(message)
+        let message = MarklinCANMessageFactory.direction(addr: address, direction: train.directionForward ? .forward : .backward)
+        send(message.ack)
     }
     
     func setFeedback(feedback: Feedback, value: UInt8) {

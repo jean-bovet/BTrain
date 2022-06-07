@@ -41,28 +41,17 @@ struct MarklinCANMessage: Equatable, Hashable {
         resp == 1
     }
     
-    var raw: MarklinCANMessageRaw {
-        .init(command: command, dlc: dlc, byte0: byte0, byte1: byte1, byte2: byte2, byte3: byte3, byte4: byte4, byte5: byte5, byte6: byte6, byte7: byte7)
+    var raw: MarklinCANMessage {
+        if command == 0x05 {
+            // Special treatment for the queryDirection or direction command, which differ only by their DLC field. The acknowldgement we get from the Central Station for either command
+            // is always with a DLC field value of 5. Also, the direction (byte4) is not specified in the queryDirection command but it is in the direction command.
+            // In order for the completion block for either command to be properly invoked, we need to remove any values that are different between the command itself and the acknowldgement.
+            // In this case, we will ignore the following fields: DLC and byte4 to byte7 (which contain the direction response).
+            return MarklinCANMessage(prio: 0, command: command, resp: 0, hash: 0, dlc: 0, byte0: byte0, byte1: byte1, byte2: byte2, byte3: byte3, byte4: 0, byte5: 0, byte6: 0, byte7: 0)
+        } else {
+            return MarklinCANMessage(prio: 0, command: command, resp: 0, hash: 0, dlc: dlc, byte0: byte0, byte1: byte1, byte2: byte2, byte3: byte3, byte4: byte4, byte5: byte5, byte6: byte6, byte7: byte7)
+        }
     }
-}
-
-/// Subset of a ``MarklinCANMessage`` that does not have the ``MarklinCANMessage/prio``,
-/// ``MarklinCANMessage/resp`` nor ``MarklinCANMessage/hash`` fields. When comparing
-/// a message sent to the Central Station from its corresponding acknowledgement, these fields should be ignored because
-/// they will always be different.
-struct MarklinCANMessageRaw: Equatable, Hashable {
-    
-    let command: UInt8
-    let dlc: UInt8
-    let byte0: UInt8
-    let byte1: UInt8
-    let byte2: UInt8
-    let byte3: UInt8
-    let byte4: UInt8
-    let byte5: UInt8
-    let byte6: UInt8
-    let byte7: UInt8
-
 }
 
 // MARK: Utility

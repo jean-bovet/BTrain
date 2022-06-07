@@ -34,13 +34,13 @@ class CANMessageTests: BTTestCase {
     }
 
     func testForward() {
-        assert(msg: MarklinCANMessageFactory.forward(addr: 0x4009),
+        assert(msg: MarklinCANMessageFactory.direction(addr: 0x4009, direction: .forward),
                byteArray: [ 0x00, 0x0A, 0xbf, 0x46, 0x05, 0x00, 0x00, 0x40, 0x09, 0x01, 0x00, 0x00, 0x00 ],
                description: "0x05 forward for 0x4009 - cmd")
     }
 
     func testBackward() {
-        assert(msg: MarklinCANMessageFactory.backward(addr: 0x4009),
+        assert(msg: MarklinCANMessageFactory.direction(addr: 0x4009, direction: .backward),
                byteArray: [ 0x00, 0x0A, 0xbf, 0x46, 0x05, 0x00, 0x00, 0x40, 0x09, 0x02, 0x00, 0x00, 0x00 ],
                description: "0x05 backward for 0x4009 - cmd")
     }

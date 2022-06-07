@@ -15,9 +15,5 @@ import Foundation
 /// These are the commands specific to the Marklin CS2/3
 enum MarklinCommand {
     /// This command is received from the CS3 when requesting configuration data, like the list of locomotives.
-    case configDataStream(length: UInt32?, data: [UInt8], descriptor: CommandDescriptor? = nil)
-    
-    /// Acknowledgement of the query direction command. This response contains the direction of the train, which makes
-    /// it special because it is not a simple acknowledgement of the query direction as it contains the direction.
-    case queryDirectionResponse(address: UInt32, decoderType: DecoderType?, direction: Command.Direction, descriptor: CommandDescriptor? = nil)
+    case configDataStream(length: UInt32?, data: [UInt8], descriptor: CommandDescriptor? = nil)    
 }

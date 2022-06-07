@@ -37,9 +37,10 @@ final class MarklinInterface: CommandInterface {
     
     /// Map of CAN message to pending completion block.
     ///
-    /// The CAN message is of type ``MarklinCANMessageRaw`` which does not contain the hash nor the response bit. This allows
-    /// for easy comparison between a message sent and a message received (see description of ``MarklinCANMessageRaw``).
-    private var completionBlocks = [MarklinCANMessageRaw:[CompletionBlock]]()
+    /// This map is used to invoke the completion block for each command based on the acknowledgement from the Central Station.
+    /// Note that the CAN message should be a in a raw format, meaning it should hold values that are constant between the command and its acknowledgement.
+    /// For example, the hash field should be left out because it will change between the command and the corresponding acknowledgement.
+    private var completionBlocks = [MarklinCANMessage:[CompletionBlock]]()
 
     func connect(server: String, port: UInt16, onReady: @escaping () -> Void, onError: @escaping (Error) -> Void, onStop: @escaping () -> Void) {
         client = Client(host: server, port: port)
@@ -47,6 +48,7 @@ final class MarklinInterface: CommandInterface {
             onReady()
         } onData: { [weak self] msg in
             DispatchQueue.main.async {
+                self?.messageCallbacks.forEach { $0(msg) }
                 if msg.isAck {
                     self?.handleAcknowledgment(msg)
                 } else {
@@ -93,6 +95,13 @@ final class MarklinInterface: CommandInterface {
         return SpeedStep(value: UInt16(steps))
     }
 
+    typealias MessageCallback = (MarklinCANMessage) -> Void
+    private var messageCallbacks = [MessageCallback]()
+    
+    func register(for callback: @escaping MessageCallback) {
+        messageCallbacks.append(callback)
+    }
+
     func register(forFeedbackChange callback: @escaping FeedbackChangeCallback) -> UUID {
         let uuid = UUID()
         feedbackChangeCallbacks[uuid] = callback
@@ -120,15 +129,11 @@ final class MarklinInterface: CommandInterface {
     }
 
     private func triggerCompletionBlock(for message: MarklinCANMessage) {
-        triggerCompletionBlock(for: message.raw)
-    }
-    
-    private func triggerCompletionBlock(for rawMessage: MarklinCANMessageRaw) {
-        if let blocks = completionBlocks[rawMessage] {
+        if let blocks = completionBlocks[message.raw] {
             for completionBlock in blocks {
                 completionBlock()
             }
-            completionBlocks[rawMessage] = nil
+            completionBlocks[message.raw] = nil
         }
     }
     
@@ -142,8 +147,6 @@ final class MarklinInterface: CommandInterface {
                     let locomotives = locomotives.map { $0.commandLocomotive }
                     self.locomotivesQueryCallbacks.forEach { $0(locomotives) }
                 }
-            case .queryDirectionResponse(_, _, _, _):
-                break
             }
             return
         }
@@ -169,15 +172,6 @@ final class MarklinInterface: CommandInterface {
             switch(cmd) {
             case .configDataStream(_, _, _):
                 break // ignore ack for this command
-
-            case .queryDirectionResponse(address: let address, decoderType: let decoderType, direction: let direction, descriptor: _):
-                directionChangeCallbacks.forEach { $0(address, decoderType, direction) }
-                
-                // This command is sent back from the Central Station after a .queryDirection() command
-                // has been sent. We need to remove the byte5 that holds the direction parameter in order
-                // to correctly invoke the completion block.
-                let command = MarklinCANMessageFactory.queryDirection(addr: address)
-                triggerCompletionBlock(for: command.raw)
             }
             return
         }

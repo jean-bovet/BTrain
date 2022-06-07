@@ -30,6 +30,7 @@ enum Command {
     enum Direction {
         case forward
         case backward
+        case unchanged
         case unknown
     }
     

@@ -38,6 +38,9 @@ extension LayoutController {
             if let train = layout.trains.find(address: address, decoder: decoder) {
                 BTLogger.debug("Direction changed to \(direction) for \(train.name)")
                 switch(direction) {
+                case .unchanged:
+                    BTLogger.debug("Direction \(direction) for \(address.toHex())")
+
                 case .forward:
                     if train.directionForward == false {
                         train.directionForward = true

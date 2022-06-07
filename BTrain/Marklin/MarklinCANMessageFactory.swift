@@ -89,27 +89,27 @@ struct MarklinCANMessageFactory {
         return message
     }
     
-    // 00 0a bf 46 05 00 00 40 09 01 00 00 00 // forward
-    public static func forward(addr: UInt32) -> MarklinCANMessage {
-        let message = MarklinCANMessage(prio: 0,
-                                        command: 0x05,
-                                        resp: 0,
-                                        hash: hash,
-                                        dlc: 0x05,
-                                        byte0: UInt8((addr >> 24) & 0xFF),
-                                        byte1: UInt8((addr >> 16) & 0xFF),
-                                        byte2: UInt8((addr >> 8) & 0xFF),
-                                        byte3: UInt8((addr >> 0) & 0xFF),
-                                        byte4: 0x01, // forward
-                                        byte5: 0x00,
-                                        byte6: 0x00,
-                                        byte7: 0x00
-        )
-        return message
+    enum Direction {
+        case nochange
+        case forward
+        case backward
+        case invert
     }
-
+    
+    // 00 0a bf 46 05 00 00 40 09 01 00 00 00 // forward
     // 00 0a bf 46 05 00 00 40 09 02 00 00 00 // backward
-    public static func backward(addr: UInt32) -> MarklinCANMessage {
+    public static func direction(addr: UInt32, direction: Direction) -> MarklinCANMessage {
+        let byte4: UInt8
+        switch direction {
+        case .nochange:
+            byte4 = 0
+        case .forward:
+            byte4 = 1
+        case .backward:
+            byte4 = 2
+        case .invert:
+            byte4 = 3
+        }
         let message = MarklinCANMessage(prio: 0,
                                         command: 0x05,
                                         resp: 0,
@@ -119,7 +119,7 @@ struct MarklinCANMessageFactory {
                                         byte1: UInt8((addr >> 16) & 0xFF),
                                         byte2: UInt8((addr >> 8) & 0xFF),
                                         byte3: UInt8((addr >> 0) & 0xFF),
-                                        byte4: 0x02, // backward
+                                        byte4: byte4,
                                         byte5: 0x00,
                                         byte6: 0x00,
                                         byte7: 0x00
@@ -139,25 +139,6 @@ struct MarklinCANMessageFactory {
                                         byte2: UInt8((addr >> 8) & 0xFF),
                                         byte3: UInt8((addr >> 0) & 0xFF),
                                         byte4: 0x00,
-                                        byte5: 0x00,
-                                        byte6: 0x00,
-                                        byte7: 0x00
-        )
-        return message
-    }
-
-    // Response to the direction request above
-    public static func queryDirectionResponse(addr: UInt32, direction: UInt8) -> MarklinCANMessage {
-        let message = MarklinCANMessage(prio: 0,
-                                        command: 0x05,
-                                        resp: 1,
-                                        hash: hash,
-                                        dlc: 0x04,
-                                        byte0: UInt8((addr >> 24) & 0xFF),
-                                        byte1: UInt8((addr >> 16) & 0xFF),
-                                        byte2: UInt8((addr >> 8) & 0xFF),
-                                        byte3: UInt8((addr >> 0) & 0xFF),
-                                        byte4: direction,
                                         byte5: 0x00,
                                         byte6: 0x00,
                                         byte7: 0x00
