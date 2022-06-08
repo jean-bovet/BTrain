@@ -168,23 +168,19 @@ struct TrainStateMachine {
     }
     
     /**
-     Running + Feedback.Brake + !(Train.Reserved.Blocks.Length) > Braking
+     Running + !(Train.Reserved.Blocks.Length) > Braking
      Running + Feedback.Brake + Stop.Managed > Braking
      Running + Feedback.Brake + Route.End > Braking
      Running + Feedback.Brake + Train.Block.Station > Braking
      */
     private func handleRunningState(train: TrainControlling) {
-        guard train.brakeFeedbackActivated else {
-            return
-        }
-        
         if !train.reservedBlocksLengthEnoughToRun {
             train.state = .braking
-        } else if train.stopManagedSchedule {
+        } else if train.stopManagedSchedule && train.brakeFeedbackActivated {
             train.state = .braking
-        } else if train.atEndOfRoute {
+        } else if train.atEndOfRoute && train.brakeFeedbackActivated {
             train.state = .braking
-        } else if train.locatedInStationBlock {
+        } else if train.locatedInStationBlock && train.brakeFeedbackActivated{
             train.state = .braking
         }
     }

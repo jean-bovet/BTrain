@@ -190,7 +190,7 @@ class TrainStateMachineTests: XCTestCase {
         
         XCTAssertEqual(train.state, .braking)
         XCTAssertEqual(train.updatePositionInvocationCount, 1)
-        XCTAssertEqual(train.speed, LayoutFactory.DefaultMaximumSpeed)
+        XCTAssertEqual(train.speed, LayoutFactory.DefaultBrakingSpeed)
     }
 
 }
