@@ -25,8 +25,6 @@ final class MockTrainController: TrainControlling {
     
     var stopManagedSchedule: Bool = false
 
-    var reservedBlocksLengthEnoughToRun: Bool = false
-    
     var brakeFeedbackActivated: Bool = false
     
     var stopFeedbackActivated: Bool = false
@@ -35,6 +33,13 @@ final class MockTrainController: TrainControlling {
     
     var locatedInStationBlock: Bool = false
     
+    typealias OnReservedBlocksLengthEnough = (TrainSpeed.UnitKph) -> Bool
+    var onReservedBlocksLengthEnough: OnReservedBlocksLengthEnough?
+
+    func reservedBlocksLengthEnough(forSpeed speed: TrainSpeed.UnitKph) -> Bool {
+        onReservedBlocksLengthEnough?(speed) ?? false
+    }
+
     typealias CallbackBlock = () -> Bool
 
     var onUpdatePosition: ((Feedback) -> Bool)?

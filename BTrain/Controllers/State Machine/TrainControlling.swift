@@ -22,8 +22,6 @@ protocol TrainControlling: AnyObject {
     
     var isManagedSchedule: Bool { get }
     var stopManagedSchedule: Bool { get }
-
-    var reservedBlocksLengthEnoughToRun: Bool { get }
     
     var brakeFeedbackActivated: Bool { get }
     var stopFeedbackActivated: Bool { get }
@@ -31,6 +29,8 @@ protocol TrainControlling: AnyObject {
     var atEndOfRoute: Bool { get }
     var locatedInStationBlock: Bool { get }
     
+    func reservedBlocksLengthEnough(forSpeed speed: TrainSpeed.UnitKph) -> Bool
+
     func updatePosition(with feedback: Feedback) -> Bool
     
     func updateSpeed() -> Bool

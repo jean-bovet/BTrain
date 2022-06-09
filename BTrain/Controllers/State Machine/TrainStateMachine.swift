@@ -174,7 +174,7 @@ struct TrainStateMachine {
      Running + Feedback.Brake + Train.Block.Station > Braking
      */
     private func handleRunningState(train: TrainControlling) {
-        if !train.reservedBlocksLengthEnoughToRun {
+        if !train.reservedBlocksLengthEnough(forSpeed: LayoutFactory.DefaultMaximumSpeed) {
             train.state = .braking
         } else if train.stopManagedSchedule && train.brakeFeedbackActivated {
             train.state = .braking
@@ -193,21 +193,18 @@ struct TrainStateMachine {
      Braking + Train.Reserved.Blocks.Length + !Stop.Managed + !Train.Block.Station + !Route.End > Running
      */
     private func handleBrakingState(train: TrainControlling) {
-        if train.stopFeedbackActivated {
-            if !train.reservedBlocksLengthEnoughToRun {
-                train.state = .stopping
-            } else if train.stopManagedSchedule {
+        if !train.reservedBlocksLengthEnough(forSpeed: LayoutFactory.DefaultBrakingSpeed) {
+            train.state = .stopping
+        } else if train.stopFeedbackActivated {
+            if train.stopManagedSchedule {
                 train.state = .stopping
             } else if train.atEndOfRoute {
                 train.state = .stopping
             } else if train.locatedInStationBlock {
                 train.state = .stopping
+            } else if train.reservedBlocksLengthEnough(forSpeed: LayoutFactory.DefaultMaximumSpeed) {
+                train.state = .running
             }
-        } else if train.reservedBlocksLengthEnoughToRun &&
-                    !train.stopManagedSchedule &&
-                    !train.locatedInStationBlock &&
-                    !train.atEndOfRoute {
-            train.state = .running
         }
     }
 
@@ -224,7 +221,7 @@ struct TrainStateMachine {
      Stopped + Train.Reserved.Blocks.Length + !Stop.Managed > Running
      */
     private func handleStoppedState(train: TrainControlling) {
-        if train.reservedBlocksLengthEnoughToRun && !train.stopManagedSchedule {
+        if train.reservedBlocksLengthEnough(forSpeed: LayoutFactory.DefaultMaximumSpeed) && !train.stopManagedSchedule {
             train.state = .running
         }
     }

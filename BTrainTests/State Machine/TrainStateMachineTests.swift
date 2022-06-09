@@ -104,8 +104,10 @@ class TrainStateMachineTests: XCTestCase {
         XCTAssertEqual(train.state, .stopped)
         train.isManagedSchedule = true
         
+        train.onReservedBlocksLengthEnough = { speed in
+            return false
+        }
         train.onUpdateReservedBlocks = {
-            self.train.reservedBlocksLengthEnoughToRun = false
             return true
         }
         handle(trainEvent: .scheduling(train), train: train, handledEvents: [.scheduling(train), .reservedBlocksChanged(train)])
@@ -114,8 +116,10 @@ class TrainStateMachineTests: XCTestCase {
         XCTAssertEqual(train.adjustSpeedCount, 0)
         XCTAssertEqual(train.speed, 0)
 
+        train.onReservedBlocksLengthEnough = { speed in
+            return true
+        }
         train.onUpdateReservedBlocks = {
-            self.train.reservedBlocksLengthEnoughToRun = true
             return true
         }
         handle(trainEvent: .scheduling(train), train: train, handledEvents: [.scheduling(train), .reservedBlocksChanged(train)])
@@ -134,13 +138,12 @@ class TrainStateMachineTests: XCTestCase {
         
         t1.isManagedSchedule = true
         
+        t1.onReservedBlocksLengthEnough = { speed in
+            return true
+        }
+
         t1.onUpdateReservedBlocks = {
-            if !t1.reservedBlocksLengthEnoughToRun {
-                t1.reservedBlocksLengthEnoughToRun = true
-                return true
-            } else {
-                return false
-            }
+            return true
         }
         
         handle(trainEvent: .scheduling(t1), trains: [t1, t2], handledEvents: [.scheduling(t1), .reservedBlocksChanged(t1)])
@@ -159,6 +162,7 @@ class TrainStateMachineTests: XCTestCase {
         
         let f1 = Feedback("f1")
 
+        train.onReservedBlocksLengthEnough = { speed in return true }
         train.onUpdatePosition = { f in return f == f1 }
         train.onUpdateOccupiedAndReservedBlocks = { return true }
         handle(layoutEvent: .feedback(f1), train: train, handledEvents: [.reservedBlocksChanged(train)])
@@ -182,8 +186,35 @@ class TrainStateMachineTests: XCTestCase {
         let f1 = Feedback("f1")
 
         train.onUpdatePosition = { f in return f == f1 }
+        train.onReservedBlocksLengthEnough = { speed in
+            if speed == LayoutFactory.DefaultMaximumSpeed {
+                return false
+            } else {
+                return true
+            }
+        }
         train.onUpdateOccupiedAndReservedBlocks = {
-            self.train.reservedBlocksLengthEnoughToRun = false
+            return true
+        }
+        handle(layoutEvent: .feedback(f1), train: train, handledEvents: [.reservedBlocksChanged(train)])
+        
+        XCTAssertEqual(train.state, .braking)
+        XCTAssertEqual(train.updatePositionInvocationCount, 1)
+        XCTAssertEqual(train.speed, LayoutFactory.DefaultBrakingSpeed)
+    }
+    
+    func testTrainMoveAndStopBecauseSettledDistance() {
+        train.isManagedSchedule = true
+        train.state = .running
+        train.speed = LayoutFactory.DefaultMaximumSpeed
+        
+        let f1 = Feedback("f1")
+
+        train.onUpdatePosition = { f in return f == f1 }
+        train.onReservedBlocksLengthEnough = { speed in
+            return false
+        }
+        train.onUpdateOccupiedAndReservedBlocks = {
             return true
         }
         handle(layoutEvent: .feedback(f1), train: train, handledEvents: [.reservedBlocksChanged(train)])
