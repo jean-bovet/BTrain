@@ -17,17 +17,27 @@ final class MockTrainController: TrainControlling {
 
     var id: String = UUID().uuidString
     
+    var scheduling: TrainStateMachine.TrainScheduling = .unmanaged
+    
     var state: TrainStateMachine.TrainState = .stopped
     
     var speed: TrainSpeed.UnitKph = 0
-        
-    var isManagedSchedule: Bool = true
-    
+            
     var brakeFeedbackActivated: Bool = false
     
     var stopFeedbackActivated: Bool = false
-        
-    var stopSignal: TrainStateMachine.TrainStopSignal = .none
+            
+    var hasReservedBlocks = false
+    
+    var startedRouteIndex: Int = 0
+    var currentRouteIndex: Int = 0
+    var endRouteIndex: Int = 10
+
+    var atStation: Bool = false
+    
+    func resetStartRouteIndex() {
+        startedRouteIndex = currentRouteIndex
+    }
     
     typealias OnReservedBlocksLengthEnough = (TrainSpeed.UnitKph) -> Bool
     var onReservedBlocksLengthEnough: OnReservedBlocksLengthEnough?

@@ -16,21 +16,24 @@ protocol TrainControlling: AnyObject {
     
     /// Unique ID of the train
     var id: String { get }
-    
+
+    var scheduling: TrainStateMachine.TrainScheduling { get }
+
     /// The state of the train (see ``TrainStateMachine/TrainState``)
     var state: TrainStateMachine.TrainState { get set }
     
     var speed: TrainSpeed.UnitKph { get }
-    
-    var isManagedSchedule: Bool { get }
-    
+        
     var brakeFeedbackActivated: Bool { get }
     var stopFeedbackActivated: Bool { get }
     
-    /// A stop signal is a signal that indicates that the train should stop
-    /// as soon as possible. For example, when reaching a station
-    /// or when arriving at the end of a route.
-    var stopSignal: TrainStateMachine.TrainStopSignal { get }
+    var startedRouteIndex: Int { get }
+    var currentRouteIndex: Int { get }
+    var endRouteIndex: Int { get }
+    
+    var atStation: Bool { get }
+    
+    func resetStartRouteIndex()
     
     func reservedBlocksLengthEnough(forSpeed speed: TrainSpeed.UnitKph) -> Bool
 

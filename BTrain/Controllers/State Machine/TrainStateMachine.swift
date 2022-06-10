@@ -37,11 +37,11 @@ struct TrainStateMachine {
         case stopping
     }
 
-    enum TrainStopSignal {
-        case none
-        case atEndOfRoute
-        case inStation
+    enum TrainScheduling {
+        case managed
         case stopManaged
+        case finishManaged // TODO: unit test
+        case unmanaged
     }
     
     func handle(layoutEvent: LayoutEvent?, trainEvent: TrainEvent?, trains: [TrainControlling]) {
@@ -123,7 +123,7 @@ struct TrainStateMachine {
             }
             
         case .scheduling(let eventTrain):
-            if eventTrain.id == train.id && train.isManagedSchedule {
+            if eventTrain.id == train.id && train.scheduling == .managed {
                 if train.updateReservedBlocks() {
                     if handleTrainState(train: train) {
                         resultingEvents.append(.stateChanged(train))
@@ -141,7 +141,8 @@ struct TrainStateMachine {
 
         case .restartTimerFired(let eventTrain):
             if eventTrain.id == train.id {
-                if train.updateReservedBlocks() {
+                train.resetStartRouteIndex()
+                if !shouldStop(train: train) && train.updateReservedBlocks() {
                     if handleTrainState(train: train) {
                         resultingEvents.append(.stateChanged(train))
                     }
@@ -151,9 +152,7 @@ struct TrainStateMachine {
             
         case .reservedBlocksChanged(let eventTrain):
             if eventTrain.id == train.id {
-                if train.state != .stopped {
-                    train.adjustSpeed()
-                }
+                train.adjustSpeed()
             } else {
                 if train.updateReservedBlocks() {
                     resultingEvents.append(.reservedBlocksChanged(train))
@@ -203,28 +202,10 @@ struct TrainStateMachine {
     private func handleRunningState(train: TrainControlling) {
         if !train.reservedBlocksLengthEnough(forSpeed: LayoutFactory.DefaultMaximumSpeed) {
             train.state = .braking
-        } else if train.brakeFeedbackActivated {
-            switch train.stopSignal {
-            case .stopManaged:
-                train.state = .braking
-            case .atEndOfRoute:
-                train.state = .braking
-            case .inStation:
-                train.state = .braking
-            case .none:
-                break
-            }
-        } else if train.stopFeedbackActivated {
-            switch train.stopSignal {
-            case .stopManaged:
-                train.state = .stopping
-            case .atEndOfRoute:
-                train.state = .stopping
-            case .inStation:
-                train.state = .stopping
-            case .none:
-                break
-            }
+        } else if train.brakeFeedbackActivated && shouldStop(train: train) {
+            train.state = .braking
+        } else if train.stopFeedbackActivated && shouldStop(train: train) {
+            train.state = .stopping
         }
     }
     
@@ -239,20 +220,11 @@ struct TrainStateMachine {
         if !train.reservedBlocksLengthEnough(forSpeed: LayoutFactory.DefaultBrakingSpeed) {
             train.state = .stopping
         } else {
-            switch train.stopSignal {
-            case .stopManaged:
+            if shouldStop(train: train) {
                 if train.stopFeedbackActivated {
                     train.state = .stopping
                 }
-            case .atEndOfRoute:
-                if train.stopFeedbackActivated {
-                    train.state = .stopping
-                }
-            case .inStation:
-                if train.stopFeedbackActivated {
-                    train.state = .stopping
-                }
-            case .none:
+            } else {
                 if train.reservedBlocksLengthEnough(forSpeed: LayoutFactory.DefaultMaximumSpeed) {
                     train.state = .running
                 }
@@ -273,8 +245,28 @@ struct TrainStateMachine {
      Stopped + Train.Reserved.Blocks.Length + !Stop.Managed > Running
      */
     private func handleStoppedState(train: TrainControlling) {
-        if train.reservedBlocksLengthEnough(forSpeed: LayoutFactory.DefaultMaximumSpeed) && train.stopSignal == .none {
+        if train.reservedBlocksLengthEnough(forSpeed: LayoutFactory.DefaultMaximumSpeed) && !shouldStop(train: train) {
             train.state = .running
         }
     }
+    
+    private func shouldStop(train: TrainControlling) -> Bool {
+        // User requested to stop managing the train?
+        if train.scheduling == .stopManaged {
+            return true
+        }
+        
+        // In a station but not in the first step of the route?
+        if train.atStation && train.currentRouteIndex > train.startedRouteIndex {
+            return true
+        }
+        
+        // At the end of the route?
+        if train.currentRouteIndex >= train.endRouteIndex {
+            return true
+        }
+        
+        return false
+    }
+    
 }
