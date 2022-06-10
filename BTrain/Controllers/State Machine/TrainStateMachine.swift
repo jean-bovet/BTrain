@@ -27,7 +27,7 @@ struct TrainStateMachine {
         case stateChanged(TrainControlling)
         case restartTimerFired(TrainControlling)
         case reservedBlocksChanged(TrainControlling)
-        case reservedBlocksSettledLengthChanged(TrainControlling)
+        case reservedBlocksSettledLengthChanged(TrainControlling)        
     }
         
     enum TrainState {
@@ -215,18 +215,22 @@ struct TrainStateMachine {
     private func handleBrakingState(train: TrainControlling) {
         if !train.reservedBlocksLengthEnough(forSpeed: LayoutFactory.DefaultBrakingSpeed) {
             train.state = .stopping
-        } else if train.stopFeedbackActivated {
+        } else {
             if train.stopManagedSchedule {
-                train.state = .stopping
+                if train.stopFeedbackActivated {
+                    train.state = .stopping
+                }
             } else if train.atEndOfRoute {
-                train.state = .stopping
+                if train.stopFeedbackActivated {
+                    train.state = .stopping
+                }
             } else if train.locatedInStationBlock {
-                train.state = .stopping
+                if train.stopFeedbackActivated {
+                    train.state = .stopping
+                }
             } else if train.reservedBlocksLengthEnough(forSpeed: LayoutFactory.DefaultMaximumSpeed) {
                 train.state = .running
             }
-        } else if train.reservedBlocksLengthEnough(forSpeed: LayoutFactory.DefaultMaximumSpeed) {
-            train.state = .running
         }
     }
 
