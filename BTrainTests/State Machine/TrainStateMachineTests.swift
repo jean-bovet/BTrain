@@ -251,86 +251,18 @@ class TrainStateMachineTests: XCTestCase {
     }
 
     func testTrainStopManaged() {
-        train.isManagedSchedule = true
-        train.state = .running
-        train.speed = LayoutFactory.DefaultMaximumSpeed
-        
-        let f1 = Feedback("f1")
-
-        train.onUpdatePosition = { f in return f == f1 }
-        train.onReservedBlocksLengthEnough = { speed in
-            return true
-        }
-        train.onUpdateOccupiedAndReservedBlocks = {
-            return true
-        }
-        handle(layoutEvent: .feedback(f1), train: train, handledEvents: [.reservedBlocksChanged(train)])
-        assert(train, .running, LayoutFactory.DefaultMaximumSpeed, updatePositionCount: 1)
-        
-        train.stopManagedSchedule = true
-        handle(layoutEvent: .feedback(f1), train: train, handledEvents: [.reservedBlocksChanged(train)])
-        assert(train, .running, LayoutFactory.DefaultMaximumSpeed, updatePositionCount: 2)
-        
-        train.brakeFeedbackActivated = true
-        handle(layoutEvent: .feedback(f1), train: train, handledEvents: [.stateChanged(train), .reservedBlocksChanged(train)])
-        assert(train, .braking, LayoutFactory.DefaultBrakingSpeed, updatePositionCount: 3)
-        
-        train.brakeFeedbackActivated = false
-        train.stopFeedbackActivated = true
-        handle(layoutEvent: .feedback(f1), train: train, handledEvents: [.stateChanged(train), .reservedBlocksChanged(train)])
-        assert(train, .stopping, LayoutFactory.DefaultBrakingSpeed, updatePositionCount: 4)
-        
-        // And now test when the feedback is used for both the braking and stopping feedback
-        train.state = .running
-        train.speed = LayoutFactory.DefaultMaximumSpeed
-        
-        train.brakeFeedbackActivated = true
-        train.stopFeedbackActivated = true
-        handle(layoutEvent: .feedback(f1), train: train, handledEvents: [.stateChanged(train), .reservedBlocksChanged(train), .stateChanged(train)])
-        assert(train, .stopping, LayoutFactory.DefaultBrakingSpeed, updatePositionCount: 5)
+        assertTrainStop(forSignal: .stopManaged)
     }
-
+    
     func testTrainStopAtEndOfRoute() {
-        train.isManagedSchedule = true
-        train.state = .running
-        train.speed = LayoutFactory.DefaultMaximumSpeed
-        
-        let f1 = Feedback("f1")
-
-        train.onUpdatePosition = { f in return f == f1 }
-        train.onReservedBlocksLengthEnough = { speed in
-            return true
-        }
-        train.onUpdateOccupiedAndReservedBlocks = {
-            return true
-        }
-        handle(layoutEvent: .feedback(f1), train: train, handledEvents: [.reservedBlocksChanged(train)])
-        assert(train, .running, LayoutFactory.DefaultMaximumSpeed, updatePositionCount: 1)
-        
-        train.atEndOfRoute = true
-        handle(layoutEvent: .feedback(f1), train: train, handledEvents: [.reservedBlocksChanged(train)])
-        assert(train, .running, LayoutFactory.DefaultMaximumSpeed, updatePositionCount: 2)
-        
-        train.brakeFeedbackActivated = true
-        handle(layoutEvent: .feedback(f1), train: train, handledEvents: [.stateChanged(train), .reservedBlocksChanged(train)])
-        assert(train, .braking, LayoutFactory.DefaultBrakingSpeed, updatePositionCount: 3)
-        
-        train.brakeFeedbackActivated = false
-        train.stopFeedbackActivated = true
-        handle(layoutEvent: .feedback(f1), train: train, handledEvents: [.stateChanged(train), .reservedBlocksChanged(train)])
-        assert(train, .stopping, LayoutFactory.DefaultBrakingSpeed, updatePositionCount: 4)
-        
-        // And now test when the feedback is used for both the braking and stopping feedback
-        train.state = .running
-        train.speed = LayoutFactory.DefaultMaximumSpeed
-        
-        train.brakeFeedbackActivated = true
-        train.stopFeedbackActivated = true
-        handle(layoutEvent: .feedback(f1), train: train, handledEvents: [.stateChanged(train), .reservedBlocksChanged(train), .stateChanged(train)])
-        assert(train, .stopping, LayoutFactory.DefaultBrakingSpeed, updatePositionCount: 5)
+        assertTrainStop(forSignal: .atEndOfRoute)
     }
 
     func testTrainStopAtStation() {
+        assertTrainStop(forSignal: .inStation)
+    }
+
+    private func assertTrainStop(forSignal stopSignal:TrainStateMachine.TrainStopSignal) {
         train.isManagedSchedule = true
         train.state = .running
         train.speed = LayoutFactory.DefaultMaximumSpeed
@@ -347,7 +279,7 @@ class TrainStateMachineTests: XCTestCase {
         handle(layoutEvent: .feedback(f1), train: train, handledEvents: [.reservedBlocksChanged(train)])
         assert(train, .running, LayoutFactory.DefaultMaximumSpeed, updatePositionCount: 1)
         
-        train.locatedInStationBlock = true
+        train.stopSignal = stopSignal
         handle(layoutEvent: .feedback(f1), train: train, handledEvents: [.reservedBlocksChanged(train)])
         assert(train, .running, LayoutFactory.DefaultMaximumSpeed, updatePositionCount: 2)
         
@@ -360,6 +292,17 @@ class TrainStateMachineTests: XCTestCase {
         handle(layoutEvent: .feedback(f1), train: train, handledEvents: [.stateChanged(train), .reservedBlocksChanged(train)])
         assert(train, .stopping, LayoutFactory.DefaultBrakingSpeed, updatePositionCount: 4)
         
+        train.speed = 0
+        train.onUpdateSpeed = {
+            return true
+        }
+        handle(layoutEvent: .speed, train: train, handledEvents: [.stateChanged(train)])
+        assert(train, .stopped, 0, updatePositionCount: 4)
+
+        // Ensure stability by making sure the train does not restart if there is a layout event happening
+        handle(layoutEvent: .speed, train: train, handledEvents: [])
+        assert(train, .stopped, 0, updatePositionCount: 4)
+
         // And now test when the feedback is used for both the braking and stopping feedback
         train.state = .running
         train.speed = LayoutFactory.DefaultMaximumSpeed
@@ -370,7 +313,50 @@ class TrainStateMachineTests: XCTestCase {
         assert(train, .stopping, LayoutFactory.DefaultBrakingSpeed, updatePositionCount: 5)
     }
 
+    func testTrainStopAtStationAndRestart() {
+        train.isManagedSchedule = true
+        train.state = .running
+        train.speed = LayoutFactory.DefaultMaximumSpeed
+        
+        let f1 = Feedback("f1")
+
+        train.onUpdatePosition = { f in return f == f1 }
+        train.onReservedBlocksLengthEnough = { speed in
+            return true
+        }
+        train.onUpdateOccupiedAndReservedBlocks = {
+            return true
+        }
+        handle(layoutEvent: .feedback(f1), train: train, handledEvents: [.reservedBlocksChanged(train)])
+        assert(train, .running, LayoutFactory.DefaultMaximumSpeed, updatePositionCount: 1)
+        
+        train.stopSignal = .inStation
+        handle(layoutEvent: .feedback(f1), train: train, handledEvents: [.reservedBlocksChanged(train)])
+        assert(train, .running, LayoutFactory.DefaultMaximumSpeed, updatePositionCount: 2)
+        
+        train.stopFeedbackActivated = true
+        handle(layoutEvent: .feedback(f1), train: train, handledEvents: [.stateChanged(train), .reservedBlocksChanged(train)])
+        assert(train, .stopping, LayoutFactory.DefaultBrakingSpeed, updatePositionCount: 3)
+        
+        train.speed = 0
+        train.onUpdateSpeed = {
+            return true
+        }
+        handle(layoutEvent: .speed, train: train, handledEvents: [.stateChanged(train)])
+        assert(train, .stopped, 0, updatePositionCount: 3)
+        
+        handle(layoutEvent: .speed, train: train, handledEvents: [])
+        assert(train, .stopped, 0, updatePositionCount: 3)
+        // TODO: check that reserved blocks are freed when stopped
+        // TODO: check that reserved blocks are reserved again when starting
+        train.stopSignal = .none
+        handle(layoutEvent: .speed, train: train, handledEvents: [.stateChanged(train)])
+        assert(train, .running, LayoutFactory.DefaultMaximumSpeed, updatePositionCount: 3)
+    }
+
 }
+
+// MARK: - Extensions
 
 extension TrainStateMachineTests {
     

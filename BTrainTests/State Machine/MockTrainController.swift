@@ -23,15 +23,11 @@ final class MockTrainController: TrainControlling {
         
     var isManagedSchedule: Bool = true
     
-    var stopManagedSchedule: Bool = false
-
     var brakeFeedbackActivated: Bool = false
     
     var stopFeedbackActivated: Bool = false
-    
-    var atEndOfRoute: Bool = false
-    
-    var locatedInStationBlock: Bool = false
+        
+    var stopSignal: TrainStateMachine.TrainStopSignal = .none
     
     typealias OnReservedBlocksLengthEnough = (TrainSpeed.UnitKph) -> Bool
     var onReservedBlocksLengthEnough: OnReservedBlocksLengthEnough?
