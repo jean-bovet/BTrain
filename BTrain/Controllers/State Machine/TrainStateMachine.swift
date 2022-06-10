@@ -205,6 +205,8 @@ struct TrainStateMachine {
             } else if train.reservedBlocksLengthEnough(forSpeed: LayoutFactory.DefaultMaximumSpeed) {
                 train.state = .running
             }
+        } else if train.reservedBlocksLengthEnough(forSpeed: LayoutFactory.DefaultMaximumSpeed) {
+            train.state = .running
         }
     }
 

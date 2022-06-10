@@ -166,16 +166,12 @@ class TrainStateMachineTests: XCTestCase {
         train.onUpdatePosition = { f in return f == f1 }
         train.onUpdateOccupiedAndReservedBlocks = { return true }
         handle(layoutEvent: .feedback(f1), train: train, handledEvents: [.reservedBlocksChanged(train)])
-        
-        XCTAssertEqual(train.updatePositionInvocationCount, 1)
-        XCTAssertEqual(train.state, .running)
+        assert(train, .running, LayoutFactory.DefaultMaximumSpeed, updatePositionCount: 1)
 
         // f2 does not trigger a change in position for the train, which translates into no handled events for the train.
         let f2 = Feedback("f2")
         handle(layoutEvent: .feedback(f2), train: train, handledEvents: [])
-        
-        XCTAssertEqual(train.updatePositionInvocationCount, 2)
-        XCTAssertEqual(train.state, .running)
+        assert(train, .running, LayoutFactory.DefaultMaximumSpeed, updatePositionCount: 2)
     }
     
     func testTrainMoveAndBrakeBecauseSettledDistance() {
@@ -197,10 +193,7 @@ class TrainStateMachineTests: XCTestCase {
             return true
         }
         handle(layoutEvent: .feedback(f1), train: train, handledEvents: [.reservedBlocksChanged(train)])
-        
-        XCTAssertEqual(train.state, .braking)
-        XCTAssertEqual(train.updatePositionInvocationCount, 1)
-        XCTAssertEqual(train.speed, LayoutFactory.DefaultBrakingSpeed)
+        assert(train, .braking, LayoutFactory.DefaultBrakingSpeed, updatePositionCount: 1)
     }
     
     func testTrainMoveAndStopBecauseSettledDistance() {
@@ -218,10 +211,36 @@ class TrainStateMachineTests: XCTestCase {
             return true
         }
         handle(layoutEvent: .feedback(f1), train: train, handledEvents: [.reservedBlocksChanged(train)])
+        assert(train, .stopping, LayoutFactory.DefaultBrakingSpeed, updatePositionCount: 1)
+    }
+    
+    func testTrainMoveBrakeAndRunBecauseSettledDistance() {
+        train.isManagedSchedule = true
+        train.state = .running
+        train.speed = LayoutFactory.DefaultMaximumSpeed
         
-        XCTAssertEqual(train.state, .braking)
-        XCTAssertEqual(train.updatePositionInvocationCount, 1)
-        XCTAssertEqual(train.speed, LayoutFactory.DefaultBrakingSpeed)
+        let f1 = Feedback("f1")
+
+        train.onUpdatePosition = { f in return f == f1 }
+        train.onReservedBlocksLengthEnough = { speed in
+            if speed == LayoutFactory.DefaultMaximumSpeed {
+                return false
+            } else {
+                return true
+            }
+        }
+        train.onUpdateOccupiedAndReservedBlocks = {
+            return true
+        }
+        handle(layoutEvent: .feedback(f1), train: train, handledEvents: [.reservedBlocksChanged(train)])        
+        assert(train, .braking, LayoutFactory.DefaultBrakingSpeed, updatePositionCount: 1)
+
+        train.onReservedBlocksLengthEnough = { speed in
+            return true
+        }
+
+        handle(layoutEvent: .feedback(f1), train: train, handledEvents: [.reservedBlocksChanged(train)])
+        assert(train, .running, LayoutFactory.DefaultMaximumSpeed, updatePositionCount: 2)
     }
 
 }
@@ -238,6 +257,11 @@ extension TrainStateMachineTests {
         XCTAssertEqual(actualHandledEvents, handledEvents)
     }
 
+    func assert(_ train: MockTrainController, _ state: TrainStateMachine.TrainState, _ speed: TrainSpeed.UnitKph, updatePositionCount: Int) {
+        XCTAssertEqual(train.state, state)
+        XCTAssertEqual(train.updatePositionInvocationCount, updatePositionCount)
+        XCTAssertEqual(train.speed, speed)
+    }
 }
 
 extension TrainStateMachine.TrainEvent: Equatable {
