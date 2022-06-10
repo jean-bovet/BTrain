@@ -30,19 +30,19 @@ class TrainStateMachineTests: XCTestCase {
         
         train.onUpdatePosition = { f in return f == f1 }
         train.onUpdateOccupiedAndReservedBlocks = { return true }
-        XCTAssertEqual(sm.handle(layoutEvent: .feedback(f1), train: train), .reservedBlocksChanged(train))
+        XCTAssertEqual(sm.handle(layoutEvent: .feedback(f1), train: train), [.reservedBlocksChanged(train)])
         
         train.onUpdatePosition = { f in return false }
         train.onUpdateOccupiedAndReservedBlocks = { return true }
-        XCTAssertEqual(sm.handle(layoutEvent: .feedback(f1), train: train), nil)
+        XCTAssertEqual(sm.handle(layoutEvent: .feedback(f1), train: train), [])
         
         train.onUpdatePosition = { f in return f == f1 }
         train.onUpdateOccupiedAndReservedBlocks = { return false }
-        XCTAssertEqual(sm.handle(layoutEvent: .feedback(f1), train: train), nil)
+        XCTAssertEqual(sm.handle(layoutEvent: .feedback(f1), train: train), [])
         
         train.onUpdatePosition = { f in return false }
         train.onUpdateOccupiedAndReservedBlocks = { return false }
-        XCTAssertEqual(sm.handle(layoutEvent: .feedback(f1), train: train), nil)
+        XCTAssertEqual(sm.handle(layoutEvent: .feedback(f1), train: train), [])
     }
     
     func testLayoutEventSpeed() {
@@ -51,7 +51,7 @@ class TrainStateMachineTests: XCTestCase {
             speedUpdated = true
             return true
         }
-        XCTAssertEqual(sm.handle(layoutEvent: .speed, train: train), nil)
+        XCTAssertEqual(sm.handle(layoutEvent: .speed, train: train), [])
         XCTAssertTrue(speedUpdated)
     }
 
@@ -64,14 +64,14 @@ class TrainStateMachineTests: XCTestCase {
         train.onUpdateReservedBlocksSettledLength = { t in
             return false
         }
-        XCTAssertEqual(sm.handle(layoutEvent: .turnout(t1), train: train), nil)
+        XCTAssertEqual(sm.handle(layoutEvent: .turnout(t1), train: train), [])
         XCTAssertEqual(train.adjustSpeedCount, 0)
         
         train.onUpdateReservedBlocksSettledLength = { t in
             return t == t1
         }
         XCTAssertEqual(train.adjustSpeedCount, 0)
-        XCTAssertEqual(sm.handle(layoutEvent: .turnout(t1), train: train), nil)
+        XCTAssertEqual(sm.handle(layoutEvent: .turnout(t1), train: train), [])
         XCTAssertEqual(train.adjustSpeedCount, 1)
     }
 
@@ -82,9 +82,9 @@ class TrainStateMachineTests: XCTestCase {
         
         train.onUpdatePosition = { f in return true }
         train.onUpdateOccupiedAndReservedBlocks = { return true }
-        XCTAssertEqual(sm.handle(trainEvent: .position(train), train: train), .reservedBlocksChanged(train))
+        XCTAssertEqual(sm.handle(trainEvent: .position(train), train: train), [.reservedBlocksChanged(train)])
         
-        XCTAssertEqual(sm.handle(trainEvent: .position(anotherTrain), train: train), nil)
+        XCTAssertEqual(sm.handle(trainEvent: .position(anotherTrain), train: train), [])
     }
     
     func testEventReservedBlocksChanged() {
@@ -92,11 +92,11 @@ class TrainStateMachineTests: XCTestCase {
         train.state = .running // because adjustSpeed() is only called when the train is not stopped
                 
         XCTAssertEqual(train.adjustSpeedCount, 0)
-        XCTAssertEqual(sm.handle(trainEvent: .reservedBlocksChanged(train), train: train), nil)
+        XCTAssertEqual(sm.handle(trainEvent: .reservedBlocksChanged(train), train: train), [])
         XCTAssertEqual(train.adjustSpeedCount, 1)
 
         train.onUpdateReservedBlocks = { return true }
-        XCTAssertEqual(sm.handle(trainEvent: .reservedBlocksChanged(anotherTrain), train: train), .reservedBlocksChanged(train))
+        XCTAssertEqual(sm.handle(trainEvent: .reservedBlocksChanged(anotherTrain), train: train), [.reservedBlocksChanged(train)])
         XCTAssertEqual(train.adjustSpeedCount, 1)
     }
 
@@ -122,7 +122,7 @@ class TrainStateMachineTests: XCTestCase {
         train.onUpdateReservedBlocks = {
             return true
         }
-        handle(trainEvent: .scheduling(train), train: train, handledEvents: [.scheduling(train), .reservedBlocksChanged(train)])
+        handle(trainEvent: .scheduling(train), train: train, handledEvents: [.scheduling(train), .stateChanged(train), .reservedBlocksChanged(train)])
 
         XCTAssertEqual(train.state, .running)
         XCTAssertEqual(train.adjustSpeedCount, 1)
@@ -146,7 +146,7 @@ class TrainStateMachineTests: XCTestCase {
             return true
         }
         
-        handle(trainEvent: .scheduling(t1), trains: [t1, t2], handledEvents: [.scheduling(t1), .reservedBlocksChanged(t1)])
+        handle(trainEvent: .scheduling(t1), trains: [t1, t2], handledEvents: [.scheduling(t1), .stateChanged(t1), .reservedBlocksChanged(t1)])
         
         XCTAssertEqual(t1.state, .running)
         XCTAssertEqual(t1.updateReservedBlocksInvocationCount, 1)
@@ -192,7 +192,7 @@ class TrainStateMachineTests: XCTestCase {
         train.onUpdateOccupiedAndReservedBlocks = {
             return true
         }
-        handle(layoutEvent: .feedback(f1), train: train, handledEvents: [.reservedBlocksChanged(train)])
+        handle(layoutEvent: .feedback(f1), train: train, handledEvents: [.stateChanged(train), .reservedBlocksChanged(train)])
         assert(train, .braking, LayoutFactory.DefaultBrakingSpeed, updatePositionCount: 1)
     }
     
@@ -210,8 +210,15 @@ class TrainStateMachineTests: XCTestCase {
         train.onUpdateOccupiedAndReservedBlocks = {
             return true
         }
-        handle(layoutEvent: .feedback(f1), train: train, handledEvents: [.reservedBlocksChanged(train)])
+        handle(layoutEvent: .feedback(f1), train: train, handledEvents: [.stateChanged(train), .reservedBlocksChanged(train), .stateChanged(train)])
         assert(train, .stopping, LayoutFactory.DefaultBrakingSpeed, updatePositionCount: 1)
+        
+        train.speed = 0
+        train.onUpdateSpeed = {
+            return true
+        }
+        handle(layoutEvent: .speed, train: train, handledEvents: [.stateChanged(train)])
+        assert(train, .stopped, 0, updatePositionCount: 1)
     }
     
     func testTrainMoveBrakeAndRunBecauseSettledDistance() {
@@ -232,14 +239,14 @@ class TrainStateMachineTests: XCTestCase {
         train.onUpdateOccupiedAndReservedBlocks = {
             return true
         }
-        handle(layoutEvent: .feedback(f1), train: train, handledEvents: [.reservedBlocksChanged(train)])        
+        handle(layoutEvent: .feedback(f1), train: train, handledEvents: [.stateChanged(train), .reservedBlocksChanged(train)])
         assert(train, .braking, LayoutFactory.DefaultBrakingSpeed, updatePositionCount: 1)
 
         train.onReservedBlocksLengthEnough = { speed in
             return true
         }
 
-        handle(layoutEvent: .feedback(f1), train: train, handledEvents: [.reservedBlocksChanged(train)])
+        handle(layoutEvent: .feedback(f1), train: train, handledEvents: [.stateChanged(train), .reservedBlocksChanged(train)])
         assert(train, .running, LayoutFactory.DefaultMaximumSpeed, updatePositionCount: 2)
     }
 
@@ -271,6 +278,7 @@ extension TrainStateMachine.TrainEvent: Equatable {
         case (.position(let t1), .position(let t2)): return t1.id == t2.id
         case (.speed(let t1), .speed(let t2)): return t1.id == t2.id
         case (.scheduling(let t1), .scheduling(let t2)): return t1.id == t2.id
+        case (.stateChanged(let t1), .stateChanged(let t2)): return t1.id == t2.id
         case (.restartTimerFired(let t1), .restartTimerFired(let t2)): return t1.id == t2.id
         case (.reservedBlocksChanged(let t1), .reservedBlocksChanged(let t2)): return t1.id == t2.id
         case (.reservedBlocksSettledLengthChanged(let t1), .reservedBlocksSettledLengthChanged(let t2)): return t1.id == t2.id
