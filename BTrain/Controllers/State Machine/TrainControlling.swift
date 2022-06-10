@@ -47,5 +47,7 @@ protocol TrainControlling: AnyObject {
     
     func updateReservedBlocks() -> Bool
     
+    func removeReservedBlocks()
+    
     func adjustSpeed()
 }

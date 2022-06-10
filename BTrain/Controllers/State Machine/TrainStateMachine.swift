@@ -238,6 +238,7 @@ struct TrainStateMachine {
     private func handleStoppingState(train: TrainControlling) {
         if train.speed == 0 {
             train.state = .stopped
+            train.removeReservedBlocks()
         }
     }
     
@@ -245,7 +246,7 @@ struct TrainStateMachine {
      Stopped + Train.Reserved.Blocks.Length + !Stop.Managed > Running
      */
     private func handleStoppedState(train: TrainControlling) {
-        if train.reservedBlocksLengthEnough(forSpeed: LayoutFactory.DefaultMaximumSpeed) && !shouldStop(train: train) {
+        if !shouldStop(train: train) && train.reservedBlocksLengthEnough(forSpeed: LayoutFactory.DefaultMaximumSpeed) {
             train.state = .running
         }
     }

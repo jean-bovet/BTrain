@@ -71,7 +71,11 @@ final class MockTrainController: TrainControlling {
     var onUpdateOccupiedAndReservedBlocks: CallbackBlock?
 
     func updateOccupiedAndReservedBlocks() -> Bool {
-        onUpdateOccupiedAndReservedBlocks?() ?? false
+        let result = onUpdateOccupiedAndReservedBlocks?() ?? false
+        if result {
+            hasReservedBlocks = true
+        }
+        return result
     }
         
     var onUpdateReservedBlocks: CallbackBlock?
@@ -79,7 +83,15 @@ final class MockTrainController: TrainControlling {
     
     func updateReservedBlocks() -> Bool {
         updateReservedBlocksInvocationCount += 1
-        return onUpdateReservedBlocks?() ?? false
+        let result = onUpdateReservedBlocks?() ?? false
+        if result {
+            hasReservedBlocks = true
+        }
+        return result
+    }
+    
+    func removeReservedBlocks() {
+        hasReservedBlocks = false
     }
     
     var adjustSpeedCount = 0

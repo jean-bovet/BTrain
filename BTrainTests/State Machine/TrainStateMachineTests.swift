@@ -218,7 +218,7 @@ class TrainStateMachineTests: XCTestCase {
             return true
         }
         handle(layoutEvent: .speed, train: train, handledEvents: [.stateChanged(train)])
-        assert(train, .stopped, 0, updatePositionCount: 1)
+        assert(train, .stopped, 0, reservedBlock: false, updatePositionCount: 1)
     }
     
     func testTrainMoveBrakeAndRunBecauseSettledDistance() {
@@ -307,11 +307,11 @@ class TrainStateMachineTests: XCTestCase {
             return true
         }
         handle(layoutEvent: .speed, train: train, handledEvents: [.stateChanged(train)])
-        assert(train, .stopped, 0, updatePositionCount: 4)
+        assert(train, .stopped, 0, reservedBlock: false, updatePositionCount: 4)
 
         // Ensure stability by making sure the train does not restart if there is a layout event happening
         handle(layoutEvent: .speed, train: train, handledEvents: [])
-        assert(train, .stopped, 0, updatePositionCount: 4)
+        assert(train, .stopped, 0, reservedBlock: false, updatePositionCount: 4)
 
         // And now test when the feedback is used for both the braking and stopping feedback
         train.state = .running
@@ -338,7 +338,6 @@ class TrainStateMachineTests: XCTestCase {
             return true
         }
         train.onReservedBlocksLengthEnough = { speed in
-            self.train.hasReservedBlocks = true
             return true
         }
         train.onUpdateOccupiedAndReservedBlocks = {
@@ -360,15 +359,12 @@ class TrainStateMachineTests: XCTestCase {
             return true
         }
         handle(layoutEvent: .speed, train: train, handledEvents: [.stateChanged(train)])
-        assert(train, .stopped, 0, updatePositionCount: 3)
+        assert(train, .stopped, 0, reservedBlock: false, updatePositionCount: 3)
         
         // Ensure the train stays stopped
         handle(layoutEvent: .speed, train: train, handledEvents: [])
-        assert(train, .stopped, 0, updatePositionCount: 3)
-        
-        // TODO: check that reserved blocks are freed when stopped
-        // TODO: check that reserved blocks are reserved again when starting
-        
+        assert(train, .stopped, 0, reservedBlock: false, updatePositionCount: 3)
+                
         // Simulate the restart timer firing
         handle(trainEvent: .restartTimerFired(train), train: train, handledEvents: [.restartTimerFired(train), .stateChanged(train), .reservedBlocksChanged(train)])
         assert(train, .running, LayoutFactory.DefaultMaximumSpeed, updatePositionCount: 3)
@@ -390,10 +386,11 @@ extension TrainStateMachineTests {
         XCTAssertEqual(actualHandledEvents, handledEvents)
     }
 
-    func assert(_ train: MockTrainController, _ state: TrainStateMachine.TrainState, _ speed: TrainSpeed.UnitKph, updatePositionCount: Int) {
+    func assert(_ train: MockTrainController, _ state: TrainStateMachine.TrainState, _ speed: TrainSpeed.UnitKph, reservedBlock: Bool = true, updatePositionCount: Int) {
         XCTAssertEqual(train.state, state)
-        XCTAssertEqual(train.updatePositionInvocationCount, updatePositionCount)
         XCTAssertEqual(train.speed, speed)
+        XCTAssertEqual(train.hasReservedBlocks, reservedBlock)
+        XCTAssertEqual(train.updatePositionInvocationCount, updatePositionCount)
     }
 }
 
