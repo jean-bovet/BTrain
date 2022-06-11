@@ -118,9 +118,6 @@ struct TrainStateMachine {
         case .position(let eventTrain):
             if eventTrain.id == train.id {
                 if train.updateOccupiedAndReservedBlocks() {
-                    if internalStateMachine.handleTrainState(train: train) {
-                        resultingEvents.append(.stateChanged(train))
-                    }
                     resultingEvents.append(.reservedBlocksChanged(train))
                 }
             }
@@ -128,15 +125,15 @@ struct TrainStateMachine {
         case .scheduling(let eventTrain):
             if eventTrain.id == train.id && train.scheduling == .managed {
                 if train.updateReservedBlocks() {
-                    if internalStateMachine.handleTrainState(train: train) {
-                        resultingEvents.append(.stateChanged(train))
-                    }
                     resultingEvents.append(.reservedBlocksChanged(train))
                 }
             }
             
         case .stateChanged(let eventTrain):
             if eventTrain.id == train.id {
+                if train.state == .stopped {
+                    train.removeReservedBlocks()
+                }
                 if internalStateMachine.handleTrainState(train: train) {
                     resultingEvents.append(.stateChanged(train))
                 }
@@ -146,15 +143,15 @@ struct TrainStateMachine {
             if eventTrain.id == train.id {
                 train.resetStartRouteIndex()
                 if !train.shouldStop && train.updateReservedBlocks() {
-                    if internalStateMachine.handleTrainState(train: train) {
-                        resultingEvents.append(.stateChanged(train))
-                    }
                     resultingEvents.append(.reservedBlocksChanged(train))
                 }
             }
             
         case .reservedBlocksChanged(let eventTrain):
             if eventTrain.id == train.id {
+                if internalStateMachine.handleTrainState(train: train) {
+                    resultingEvents.append(.stateChanged(train))
+                }
                 train.adjustSpeed()
             } else {
                 if train.updateReservedBlocks() {

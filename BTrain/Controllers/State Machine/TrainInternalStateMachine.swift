@@ -69,7 +69,6 @@ struct TrainInternalStateMachine {
     private func handleStoppingState(train: TrainControlling) {
         if train.speed == 0 {
             train.state = .stopped
-            train.removeReservedBlocks()
         }
     }
     
