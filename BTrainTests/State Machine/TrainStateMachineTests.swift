@@ -256,10 +256,23 @@ class TrainStateMachineTests: XCTestCase {
         }
     }
     
+    func testTrainStopManagedAtEndOfRoute() {
+        assertTrainStop() {
+            train.moveToEndOfRoute()
+            train.scheduling = .stopManaged
+        }
+    }
+    
+    func testTrainFinishManaged() {
+        assertTrainStop() {
+            train.moveToEndOfRoute()
+            train.scheduling = .finishManaged
+        }
+    }
+
     func testTrainStopAtEndOfRoute() {
         assertTrainStop() {
-            train.currentRouteIndex = 10
-            train.endRouteIndex = 10
+            train.moveToEndOfRoute()
         }
     }
 

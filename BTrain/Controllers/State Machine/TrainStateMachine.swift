@@ -257,6 +257,11 @@ struct TrainStateMachine {
             return true
         }
         
+        // User requested to finish managing the train when it reaches the end of the route?
+        if train.scheduling == .finishManaged && train.currentRouteIndex >= train.endRouteIndex {
+            return true
+        }
+
         // In a station but not in the first step of the route?
         if train.atStation && train.currentRouteIndex > train.startedRouteIndex {
             return true

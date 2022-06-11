@@ -39,6 +39,11 @@ final class MockTrainController: TrainControlling {
         startedRouteIndex = currentRouteIndex
     }
     
+    func moveToEndOfRoute() {
+        currentRouteIndex = 10
+        endRouteIndex = 10
+    }
+    
     typealias OnReservedBlocksLengthEnough = (TrainSpeed.UnitKph) -> Bool
     var onReservedBlocksLengthEnough: OnReservedBlocksLengthEnough?
 
