@@ -13,7 +13,7 @@
 import XCTest
 @testable import BTrain
 
-final class MockTrainController: TrainControlling {
+final class MockTrainController: TrainControlling {    
 
     var id: String = UUID().uuidString
     
@@ -60,13 +60,7 @@ final class MockTrainController: TrainControlling {
         updatePositionInvocationCount += 1
         return onUpdatePosition?(feedback) ?? false
     }
-    
-    var onUpdateSpeed: CallbackBlock?
-
-    func updateSpeed() -> Bool {
-        onUpdateSpeed?() ?? false
-    }
-    
+        
     var onUpdateReservedBlocksSettledLength: ((Turnout) -> Bool)?
 
     func updateReservedBlocksSettledLength(with turnout: Turnout) -> Bool {

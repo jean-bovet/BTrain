@@ -12,6 +12,10 @@
 
 import Foundation
 
+/// Protocol defining the states and operations that the state machine is expecting from a train.
+///
+/// It is a convenient way to abstract out the logic of the train from its implementation and makes it easier
+/// to read the state machine flow and interaction with the train.
 protocol TrainControlling: AnyObject {
     
     /// Unique ID of the train
@@ -22,7 +26,8 @@ protocol TrainControlling: AnyObject {
     /// The state of the train (see ``TrainStateMachine/TrainState``)
     var state: TrainStateMachine.TrainState { get set }
     
-    var speed: TrainSpeed.UnitKph { get }
+    /// The speed of the train
+    var speed: TrainSpeed.UnitKph { get set }
         
     var brakeFeedbackActivated: Bool { get }
     var stopFeedbackActivated: Bool { get }
@@ -38,9 +43,7 @@ protocol TrainControlling: AnyObject {
     func reservedBlocksLengthEnough(forSpeed speed: TrainSpeed.UnitKph) -> Bool
 
     func updatePosition(with feedback: Feedback) -> Bool
-    
-    func updateSpeed() -> Bool
-    
+        
     func updateReservedBlocksSettledLength(with turnout: Turnout) -> Bool
     
     func updateOccupiedAndReservedBlocks() -> Bool
@@ -49,5 +52,7 @@ protocol TrainControlling: AnyObject {
     
     func removeReservedBlocks()
     
+    /// Adjusts the speed of the train given the current context. This method is called when the reserved blocks
+    /// changed or the settling length of the reserved block changed.
     func adjustSpeed()
 }

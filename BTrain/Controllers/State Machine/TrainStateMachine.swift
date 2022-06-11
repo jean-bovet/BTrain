@@ -16,7 +16,7 @@ struct TrainStateMachine {
 
     enum LayoutEvent {
         case feedback(Feedback)
-        case speed(TrainControlling)
+        case speed(TrainControlling, TrainSpeed.UnitKph)
         case turnout(Turnout)
     }
 
@@ -85,8 +85,9 @@ struct TrainStateMachine {
             if train.updatePosition(with: feedback) {
                 return handle(trainEvent: .position(train), train: train)
             }
-        case .speed(let eventTrain):
-            if eventTrain.id == train.id && train.updateSpeed() {
+        case .speed(let eventTrain, let speed):
+            if eventTrain.id == train.id {
+                train.speed = speed
                 return handle(trainEvent: .speed(train), train: train)
             }
         case .turnout(let turnout):
