@@ -40,7 +40,7 @@ struct TrainStateMachine {
     enum TrainScheduling {
         case managed
         case stopManaged
-        case finishManaged // TODO: unit test
+        case finishManaged
         case unmanaged
     }
     
@@ -161,9 +161,7 @@ struct TrainStateMachine {
             
         case .reservedBlocksSettledLengthChanged(let eventTrain):
             if eventTrain.id == train.id {
-                if train.state != .stopped {
-                    train.adjustSpeed()
-                }
+                train.adjustSpeed()
             }
 
         case .speed(let eventTrain):
