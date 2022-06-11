@@ -21,10 +21,10 @@ protocol TrainControlling: AnyObject {
     /// Unique ID of the train
     var id: String { get }
 
-    var scheduling: TrainStateMachine.TrainScheduling { get }
+    var scheduling: StateMachine.TrainScheduling { get }
 
     /// The state of the train (see ``TrainStateMachine/TrainState``)
-    var state: TrainStateMachine.TrainState { get set }
+    var state: StateMachine.TrainState { get set }
     
     /// The speed of the train
     var speed: TrainSpeed.UnitKph { get set }

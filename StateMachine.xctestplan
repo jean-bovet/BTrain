@@ -1,0 +1,79 @@
+{
+  "configurations" : [
+    {
+      "id" : "A803AE07-C2E9-4E34-86BB-3B94A9EB54CE",
+      "name" : "Configuration 1",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "testTimeoutsEnabled" : true
+  },
+  "testTargets" : [
+    {
+      "skippedTests" : [
+        "AutomaticRoutingTests",
+        "BTTestCase",
+        "BlockTests",
+        "BlockViewTests",
+        "CANMessageTests",
+        "CS2DocumentParsingTests",
+        "ClientServerTests",
+        "CommandInterfaceTests",
+        "DocumentViewTests",
+        "FeedbackTests",
+        "FeedbackViewTests",
+        "FixedRoutingTests",
+        "FixedRoutingWithStationsTests",
+        "FixedRoutingWithTurnoutDelays",
+        "GeometryTests",
+        "GraphElementTests",
+        "GraphTests",
+        "LayoutCreatorTests",
+        "LayoutDocumentTests",
+        "LayoutErrorTests",
+        "LayoutTests",
+        "LayoutYardRoutingTests",
+        "MarklinSimulatorTests",
+        "NewLayoutWizardViewTests",
+        "OverviewViewTests",
+        "PathFinderTests",
+        "PluggableShapeTests",
+        "PointToLoopLayoutTests",
+        "RootViewTests",
+        "RouteResolverTests",
+        "RouteTests",
+        "RouteViewTests",
+        "ScheduledMessageQueueTests",
+        "SettingsViewTests",
+        "ShortestPathComplexTests",
+        "ShortestPathTests",
+        "SimulatorViewTests",
+        "SwitchBoardViewTests",
+        "SwitchboardRenderingTests",
+        "SwitchboardTests",
+        "TrainControlsViewTests",
+        "TrainHandlerManagedTests",
+        "TrainIconManagerTests",
+        "TrainLengthTests",
+        "TrainSpeedManagerTests",
+        "TrainSpeedMeasurementTests",
+        "TrainSpeedMeasurementViewTests",
+        "TrainTests",
+        "TrainViewTests",
+        "TransitionsTests",
+        "TurnoutTests",
+        "TurnoutViewTests",
+        "UnmanagedTrainOperationTests"
+      ],
+      "target" : {
+        "containerPath" : "container:BTrain.xcodeproj",
+        "identifier" : "A73AFE922726594800E1ED21",
+        "name" : "BTrainTests"
+      }
+    }
+  ],
+  "version" : 1
+}

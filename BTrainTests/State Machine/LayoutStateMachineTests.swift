@@ -13,10 +13,10 @@
 import XCTest
 @testable import BTrain
 
-class TrainStateMachineTests: XCTestCase {
+class LayoutStateMachineTests: XCTestCase {
 
     var train: MockTrainController!
-    let sm = TrainStateMachine()
+    let lsm = LayoutStateMachine()
 
     override func setUp() {
         super.setUp()
@@ -30,29 +30,29 @@ class TrainStateMachineTests: XCTestCase {
         
         train.onUpdatePosition = { f in return f == f1 }
         train.onUpdateOccupiedAndReservedBlocks = { return true }
-        XCTAssertEqual(sm.handle(layoutEvent: .feedback(f1), train: train), [.reservedBlocksChanged(train)])
+        XCTAssertEqual(lsm.handle(layoutEvent: .feedback(f1), train: train), [.reservedBlocksChanged(train)])
         
         train.onUpdatePosition = { f in return false }
-        train.onUpdateOccupiedAndReservedBlocks = { return true }
-        XCTAssertEqual(sm.handle(layoutEvent: .feedback(f1), train: train), [])
+        train.onUpdateOccupiedAndReservedBlocks = { XCTFail(); return true }
+        XCTAssertEqual(lsm.handle(layoutEvent: .feedback(f1), train: train), [])
         
         train.onUpdatePosition = { f in return f == f1 }
         train.onUpdateOccupiedAndReservedBlocks = { return false }
-        XCTAssertEqual(sm.handle(layoutEvent: .feedback(f1), train: train), [])
+        XCTAssertEqual(lsm.handle(layoutEvent: .feedback(f1), train: train), [])
         
         train.onUpdatePosition = { f in return false }
-        train.onUpdateOccupiedAndReservedBlocks = { return false }
-        XCTAssertEqual(sm.handle(layoutEvent: .feedback(f1), train: train), [])
+        train.onUpdateOccupiedAndReservedBlocks = { XCTFail(); return true }
+        XCTAssertEqual(lsm.handle(layoutEvent: .feedback(f1), train: train), [])
     }
     
     func testLayoutEventSpeed() {
         XCTAssertEqual(train.speed, 0)
         
         let anotherTrain = MockTrainController()
-        XCTAssertEqual(sm.handle(layoutEvent: .speed(anotherTrain, 10), train: train), [])
+        XCTAssertEqual(lsm.handle(layoutEvent: .speed(anotherTrain, 10), train: train), [])
         XCTAssertEqual(train.speed, 0)
 
-        XCTAssertEqual(sm.handle(layoutEvent: .speed(train, 7), train: train), [])
+        XCTAssertEqual(lsm.handle(layoutEvent: .speed(train, 7), train: train), [])
         XCTAssertEqual(train.speed, 7)
     }
 
@@ -65,41 +65,18 @@ class TrainStateMachineTests: XCTestCase {
         train.onUpdateReservedBlocksSettledLength = { t in
             return false
         }
-        XCTAssertEqual(sm.handle(layoutEvent: .turnout(t1), train: train), [])
+        XCTAssertEqual(lsm.handle(layoutEvent: .turnout(t1), train: train), [])
         XCTAssertEqual(train.adjustSpeedCount, 0)
         
         train.onUpdateReservedBlocksSettledLength = { t in
             return t == t1
         }
         XCTAssertEqual(train.adjustSpeedCount, 0)
-        XCTAssertEqual(sm.handle(layoutEvent: .turnout(t1), train: train), [])
+        XCTAssertEqual(lsm.handle(layoutEvent: .turnout(t1), train: train), [])
         XCTAssertEqual(train.adjustSpeedCount, 1)
     }
 
     // MARK: - Train Events
-    
-    func testEventPosition() {
-        let anotherTrain = MockTrainController()
-        
-        train.onUpdatePosition = { f in return true }
-        train.onUpdateOccupiedAndReservedBlocks = { return true }
-        XCTAssertEqual(sm.handle(trainEvent: .position(train), train: train), [.reservedBlocksChanged(train)])
-        
-        XCTAssertEqual(sm.handle(trainEvent: .position(anotherTrain), train: train), [])
-    }
-    
-    func testEventReservedBlocksChanged() {
-        let anotherTrain = MockTrainController()
-        train.state = .running // because adjustSpeed() is only called when the train is not stopped
-                
-        XCTAssertEqual(train.adjustSpeedCount, 0)
-        XCTAssertEqual(sm.handle(trainEvent: .reservedBlocksChanged(train), train: train), [.stateChanged(train)])
-        XCTAssertEqual(train.adjustSpeedCount, 1)
-
-        train.onUpdateReservedBlocks = { return true }
-        XCTAssertEqual(sm.handle(trainEvent: .reservedBlocksChanged(anotherTrain), train: train), [.reservedBlocksChanged(train)])
-        XCTAssertEqual(train.adjustSpeedCount, 1)
-    }
 
     func testTrainStart() {
         XCTAssertEqual(train.state, .stopped)
@@ -377,63 +354,22 @@ class TrainStateMachineTests: XCTestCase {
 
 // MARK: - Extensions
 
-extension TrainStateMachineTests {
+extension LayoutStateMachineTests {
     
-    func handle(layoutEvent: TrainStateMachine.LayoutEvent? = nil, trainEvent: TrainStateMachine.TrainEvent? = nil, train: TrainControlling, handledEvents: [TrainStateMachine.TrainEvent]) {
+    func handle(layoutEvent: StateMachine.LayoutEvent? = nil, trainEvent: StateMachine.TrainEvent? = nil, train: TrainControlling, handledEvents: [StateMachine.TrainEvent]) {
         handle(layoutEvent: layoutEvent, trainEvent: trainEvent, trains: [train], handledEvents: handledEvents)
     }
     
-    func handle(layoutEvent: TrainStateMachine.LayoutEvent? = nil, trainEvent: TrainStateMachine.TrainEvent? = nil, trains: [TrainControlling], handledEvents: [TrainStateMachine.TrainEvent]) {
-        var actualHandledEvents: [TrainStateMachine.TrainEvent]? = [TrainStateMachine.TrainEvent]()
-        sm.handle(layoutEvent: layoutEvent, trainEvent: trainEvent, trains: trains, handledTrainEvents: &actualHandledEvents)
+    func handle(layoutEvent: StateMachine.LayoutEvent? = nil, trainEvent: StateMachine.TrainEvent? = nil, trains: [TrainControlling], handledEvents: [StateMachine.TrainEvent]) {
+        var actualHandledEvents: [StateMachine.TrainEvent]? = [StateMachine.TrainEvent]()
+        lsm.handle(layoutEvent: layoutEvent, trainEvent: trainEvent, trains: trains, handledTrainEvents: &actualHandledEvents)
         XCTAssertEqual(actualHandledEvents, handledEvents)
     }
 
-    func assert(_ train: MockTrainController, _ state: TrainStateMachine.TrainState, _ speed: TrainSpeed.UnitKph, reservedBlock: Bool = true, updatePositionCount: Int) {
+    func assert(_ train: MockTrainController, _ state: StateMachine.TrainState, _ speed: TrainSpeed.UnitKph, reservedBlock: Bool = true, updatePositionCount: Int) {
         XCTAssertEqual(train.state, state)
         XCTAssertEqual(train.speed, speed)
         XCTAssertEqual(train.hasReservedBlocks, reservedBlock)
         XCTAssertEqual(train.updatePositionInvocationCount, updatePositionCount)
     }
-}
-
-extension TrainStateMachine.TrainEvent: Equatable {
-    
-    static public func == (lhs: TrainStateMachine.TrainEvent, rhs: TrainStateMachine.TrainEvent) -> Bool {
-        switch(lhs, rhs) {
-        case (.position(let t1), .position(let t2)): return t1.id == t2.id
-        case (.speed(let t1), .speed(let t2)): return t1.id == t2.id
-        case (.scheduling(let t1), .scheduling(let t2)): return t1.id == t2.id
-        case (.stateChanged(let t1), .stateChanged(let t2)): return t1.id == t2.id
-        case (.restartTimerFired(let t1), .restartTimerFired(let t2)): return t1.id == t2.id
-        case (.reservedBlocksChanged(let t1), .reservedBlocksChanged(let t2)): return t1.id == t2.id
-        case (.reservedBlocksSettledLengthChanged(let t1), .reservedBlocksSettledLengthChanged(let t2)): return t1.id == t2.id
-        default:
-            return false
-        }
-    }
-
-}
-
-extension TrainStateMachine.TrainEvent: CustomStringConvertible {
-    
-    public var description: String {
-        switch self {
-        case .position(_):
-            return "position"
-        case .speed(_):
-            return "speed"
-        case .scheduling(_):
-            return "scheduling"
-        case .stateChanged(_):
-            return "stateChanged"
-        case .restartTimerFired(_):
-            return "restartTimerFired"
-        case .reservedBlocksChanged(_):
-            return "reservedBlocksChanged"
-        case .reservedBlocksSettledLengthChanged(_):
-            return "reservedBlocksSettledLengthChanged"
-        }
-    }
-
 }

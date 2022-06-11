@@ -17,9 +17,9 @@ final class MockTrainController: TrainControlling {
 
     var id: String = UUID().uuidString
     
-    var scheduling: TrainStateMachine.TrainScheduling = .unmanaged
+    var scheduling: StateMachine.TrainScheduling = .unmanaged
     
-    var state: TrainStateMachine.TrainState = .stopped
+    var state: StateMachine.TrainState = .stopped
     
     var speed: TrainSpeed.UnitKph = 0
             
