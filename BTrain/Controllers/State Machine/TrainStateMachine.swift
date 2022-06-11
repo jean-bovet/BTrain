@@ -44,6 +44,8 @@ struct TrainStateMachine {
         case unmanaged
     }
     
+    var internalStateMachine = TrainInternalStateMachine()
+    
     func handle(layoutEvent: LayoutEvent?, trainEvent: TrainEvent?, trains: [TrainControlling]) {
         var events: [TrainEvent]? = nil
         handle(layoutEvent: layoutEvent, trainEvent: trainEvent, trains: trains, handledTrainEvents: &events)
@@ -116,7 +118,7 @@ struct TrainStateMachine {
         case .position(let eventTrain):
             if eventTrain.id == train.id {
                 if train.updateOccupiedAndReservedBlocks() {
-                    if handleTrainState(train: train) {
+                    if internalStateMachine.handleTrainState(train: train) {
                         resultingEvents.append(.stateChanged(train))
                     }
                     resultingEvents.append(.reservedBlocksChanged(train))
@@ -126,7 +128,7 @@ struct TrainStateMachine {
         case .scheduling(let eventTrain):
             if eventTrain.id == train.id && train.scheduling == .managed {
                 if train.updateReservedBlocks() {
-                    if handleTrainState(train: train) {
+                    if internalStateMachine.handleTrainState(train: train) {
                         resultingEvents.append(.stateChanged(train))
                     }
                     resultingEvents.append(.reservedBlocksChanged(train))
@@ -135,7 +137,7 @@ struct TrainStateMachine {
             
         case .stateChanged(let eventTrain):
             if eventTrain.id == train.id {
-                if handleTrainState(train: train) {
+                if internalStateMachine.handleTrainState(train: train) {
                     resultingEvents.append(.stateChanged(train))
                 }
             }
@@ -143,8 +145,8 @@ struct TrainStateMachine {
         case .restartTimerFired(let eventTrain):
             if eventTrain.id == train.id {
                 train.resetStartRouteIndex()
-                if !shouldStop(train: train) && train.updateReservedBlocks() {
-                    if handleTrainState(train: train) {
+                if !train.shouldStop && train.updateReservedBlocks() {
+                    if internalStateMachine.handleTrainState(train: train) {
                         resultingEvents.append(.stateChanged(train))
                     }
                     resultingEvents.append(.reservedBlocksChanged(train))
@@ -168,7 +170,7 @@ struct TrainStateMachine {
         case .speed(let eventTrain):
             // Speed change can result in state change, for example when the speed reaches 0.
             if eventTrain.id == train.id {
-                if handleTrainState(train: train) {
+                if internalStateMachine.handleTrainState(train: train) {
                     resultingEvents.append(.stateChanged(train))
                 }
             }
@@ -177,101 +179,4 @@ struct TrainStateMachine {
         return resultingEvents
     }
 
-    private func handleTrainState(train: TrainControlling) -> Bool {
-        let originalState = train.state
-        switch train.state {
-        case .running:
-            handleRunningState(train: train)
-        case .braking:
-            handleBrakingState(train: train)
-        case .stopping:
-            handleStoppingState(train: train)
-        case .stopped:
-            handleStoppedState(train: train)
-        }
-        return originalState != train.state
-    }
-    
-    /**
-     Running + !(Train.Reserved.Blocks.Length) > Braking
-     Running + Feedback.Brake + Stop.Managed > Braking
-     Running + Feedback.Brake + Route.End > Braking
-     Running + Feedback.Brake + Train.Block.Station > Braking
-     */
-    private func handleRunningState(train: TrainControlling) {
-        if !train.reservedBlocksLengthEnough(forSpeed: LayoutFactory.DefaultMaximumSpeed) {
-            train.state = .braking
-        } else if train.brakeFeedbackActivated && shouldStop(train: train) {
-            train.state = .braking
-        } else if train.stopFeedbackActivated && shouldStop(train: train) {
-            train.state = .stopping
-        }
-    }
-    
-    /**
-     Braking + Feedback.Stop + !(Train.Reserved.Blocks.Length) > Stopping
-     Braking + Feedback.Stop + Stop.Managed > Stopping
-     Braking + Feedback.Stop + Route.End > Stopping
-     Braking + Feedback.Stop + Train.Block.Station > Stopping
-     Braking + Train.Reserved.Blocks.Length + !Stop.Managed + !Train.Block.Station + !Route.End > Running
-     */
-    private func handleBrakingState(train: TrainControlling) {
-        if !train.reservedBlocksLengthEnough(forSpeed: LayoutFactory.DefaultBrakingSpeed) {
-            train.state = .stopping
-        } else {
-            if shouldStop(train: train) {
-                if train.stopFeedbackActivated {
-                    train.state = .stopping
-                }
-            } else {
-                if train.reservedBlocksLengthEnough(forSpeed: LayoutFactory.DefaultMaximumSpeed) {
-                    train.state = .running
-                }
-            }
-        }
-    }
-
-    /**
-     Stopping + Speed Changed (=0) > Stopped
-     */
-    private func handleStoppingState(train: TrainControlling) {
-        if train.speed == 0 {
-            train.state = .stopped
-            train.removeReservedBlocks()
-        }
-    }
-    
-    /**
-     Stopped + Train.Reserved.Blocks.Length + !Stop.Managed > Running
-     */
-    private func handleStoppedState(train: TrainControlling) {
-        if !shouldStop(train: train) && train.reservedBlocksLengthEnough(forSpeed: LayoutFactory.DefaultMaximumSpeed) {
-            train.state = .running
-        }
-    }
-    
-    private func shouldStop(train: TrainControlling) -> Bool {
-        // User requested to stop managing the train?
-        if train.scheduling == .stopManaged {
-            return true
-        }
-        
-        // User requested to finish managing the train when it reaches the end of the route?
-        if train.scheduling == .finishManaged && train.currentRouteIndex >= train.endRouteIndex {
-            return true
-        }
-
-        // In a station but not in the first step of the route?
-        if train.atStation && train.currentRouteIndex > train.startedRouteIndex {
-            return true
-        }
-        
-        // At the end of the route?
-        if train.currentRouteIndex >= train.endRouteIndex {
-            return true
-        }
-        
-        return false
-    }
-    
 }
