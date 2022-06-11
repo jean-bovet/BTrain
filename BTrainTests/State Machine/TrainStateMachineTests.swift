@@ -51,7 +51,11 @@ class TrainStateMachineTests: XCTestCase {
             speedUpdated = true
             return true
         }
-        XCTAssertEqual(sm.handle(layoutEvent: .speed, train: train), [])
+        let anotherTrain = MockTrainController()
+        XCTAssertEqual(sm.handle(layoutEvent: .speed(anotherTrain), train: train), [])
+        XCTAssertFalse(speedUpdated)
+
+        XCTAssertEqual(sm.handle(layoutEvent: .speed(train), train: train), [])
         XCTAssertTrue(speedUpdated)
     }
 
@@ -217,7 +221,7 @@ class TrainStateMachineTests: XCTestCase {
         train.onUpdateSpeed = {
             return true
         }
-        handle(layoutEvent: .speed, train: train, handledEvents: [.stateChanged(train)])
+        handle(layoutEvent: .speed(train), train: train, handledEvents: [.stateChanged(train)])
         assert(train, .stopped, 0, reservedBlock: false, updatePositionCount: 1)
     }
     
@@ -319,11 +323,11 @@ class TrainStateMachineTests: XCTestCase {
         train.onUpdateSpeed = {
             return true
         }
-        handle(layoutEvent: .speed, train: train, handledEvents: [.stateChanged(train)])
+        handle(layoutEvent: .speed(train), train: train, handledEvents: [.stateChanged(train)])
         assert(train, .stopped, 0, reservedBlock: false, updatePositionCount: 4)
 
         // Ensure stability by making sure the train does not restart if there is a layout event happening
-        handle(layoutEvent: .speed, train: train, handledEvents: [])
+        handle(layoutEvent: .speed(train), train: train, handledEvents: [])
         assert(train, .stopped, 0, reservedBlock: false, updatePositionCount: 4)
 
         // And now test when the feedback is used for both the braking and stopping feedback
@@ -371,11 +375,11 @@ class TrainStateMachineTests: XCTestCase {
         train.onUpdateSpeed = {
             return true
         }
-        handle(layoutEvent: .speed, train: train, handledEvents: [.stateChanged(train)])
+        handle(layoutEvent: .speed(train), train: train, handledEvents: [.stateChanged(train)])
         assert(train, .stopped, 0, reservedBlock: false, updatePositionCount: 3)
         
         // Ensure the train stays stopped
-        handle(layoutEvent: .speed, train: train, handledEvents: [])
+        handle(layoutEvent: .speed(train), train: train, handledEvents: [])
         assert(train, .stopped, 0, reservedBlock: false, updatePositionCount: 3)
                 
         // Simulate the restart timer firing
