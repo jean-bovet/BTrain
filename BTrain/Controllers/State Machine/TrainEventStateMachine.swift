@@ -12,37 +12,34 @@
 
 import Foundation
 
+/// This state machine processes a ``StateMachine/TrainEvent``.
+///
+/// The following rules are used for an event belonging to the same train:
+/// - A position event triggers an update for the occupied and reserved blocks
+/// - A scheduling event triggers an update in the reserved blocks
+/// - A state event triggers an update of the state again
+/// - A restart timer event triggers a route reset and an update in the reserved blocks
+/// - A reserved blocks event triggers a state update
+/// - A reserved blocks settled event update triggers a speed update
+/// - A speed event triggers a state update
+///
+/// The following rules are used for an event belonging to another train:
+/// - A reserved blocks event from another train triggers a reserved block update for this train
 struct TrainEventStateMachine {
         
     let tsm = TrainStateMachine()
 
-    /**
-     Train.Position > Update Train.Occupied.Blocks + Train.Reserved.Blocks
-     Train.Speed == 0 (rather State == .stopped) > Remove Train.Reserved.Blocks
-
-     Train.Scheduling Changed to .managed > Update Train.Reserved.Blocks
-     Train.RestartTimer Fired > Update Train.Reserved.Blocks
-
-     Any.Other Train.Occupied.Blocks Updated > Update Train.Reserved.Blocks
-     Any.Other Train.Reserved.Blocks Updated > Update Train.Reserved.Blocks
-
-     Train.Reserved.Blocks Updated or Settled > Adjust Train.Speed
-     */
     func handle(trainEvent: StateMachine.TrainEvent, train: TrainControlling) -> [StateMachine.TrainEvent] {
         var resultingEvents = [StateMachine.TrainEvent]()
         switch trainEvent {
         case .position(let eventTrain):
-            if eventTrain.id == train.id {
-                if train.updateOccupiedAndReservedBlocks() {
-                    resultingEvents.append(.reservedBlocksChanged(train))
-                }
+            if eventTrain.id == train.id && train.updateOccupiedAndReservedBlocks() {
+                resultingEvents.append(.reservedBlocksChanged(train))
             }
             
         case .scheduling(let eventTrain):
-            if eventTrain.id == train.id && train.scheduling == .managed {
-                if train.updateReservedBlocks() {
-                    resultingEvents.append(.reservedBlocksChanged(train))
-                }
+            if eventTrain.id == train.id && train.scheduling == .managed && train.updateReservedBlocks() {
+                resultingEvents.append(.reservedBlocksChanged(train))
             }
             
         case .stateChanged(let eventTrain):
@@ -82,10 +79,8 @@ struct TrainEventStateMachine {
 
         case .speed(let eventTrain):
             // Speed change can result in state change, for example when the speed reaches 0.
-            if eventTrain.id == train.id {
-                if tsm.handleTrainState(train: train) {
-                    resultingEvents.append(.stateChanged(train))
-                }
+            if eventTrain.id == train.id && tsm.handleTrainState(train: train) {
+                resultingEvents.append(.stateChanged(train))
             }
         }
         

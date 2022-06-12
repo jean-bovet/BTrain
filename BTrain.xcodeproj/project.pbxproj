@@ -695,10 +695,10 @@
 			isa = PBXGroup;
 			children = (
 				A768B19028551B0800B6497F /* StateMachine.swift */,
+				A73A7DD4284BD7C000ABEADE /* TrainControlling.swift */,
 				A768B18E285519D400B6497F /* LayoutStateMachine.swift */,
 				A73A7DCF284AD41D00ABEADE /* TrainEventStateMachine.swift */,
 				A768B1892855093900B6497F /* TrainStateMachine.swift */,
-				A73A7DD4284BD7C000ABEADE /* TrainControlling.swift */,
 			);
 			path = "State Machine";
 			sourceTree = "<group>";
