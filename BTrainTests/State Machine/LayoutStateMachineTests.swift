@@ -29,30 +29,20 @@ class LayoutStateMachineTests: XCTestCase {
         let f1 = Feedback("f1")
         
         train.onUpdatePosition = { f in return f == f1 }
-        train.onUpdateOccupiedAndReservedBlocks = { return true }
-        XCTAssertEqual(lsm.handle(layoutEvent: .feedback(f1), train: train), [.reservedBlocksChanged(train)])
+        XCTAssertEqual(lsm.handle(layoutEvent: .feedback(f1), train: train), .position(train))
         
         train.onUpdatePosition = { f in return false }
-        train.onUpdateOccupiedAndReservedBlocks = { XCTFail(); return true }
-        XCTAssertEqual(lsm.handle(layoutEvent: .feedback(f1), train: train), [])
-        
-        train.onUpdatePosition = { f in return f == f1 }
-        train.onUpdateOccupiedAndReservedBlocks = { return false }
-        XCTAssertEqual(lsm.handle(layoutEvent: .feedback(f1), train: train), [])
-        
-        train.onUpdatePosition = { f in return false }
-        train.onUpdateOccupiedAndReservedBlocks = { XCTFail(); return true }
-        XCTAssertEqual(lsm.handle(layoutEvent: .feedback(f1), train: train), [])
+        XCTAssertEqual(lsm.handle(layoutEvent: .feedback(f1), train: train), nil)
     }
     
     func testLayoutEventSpeed() {
         XCTAssertEqual(train.speed, 0)
         
         let anotherTrain = MockTrainController()
-        XCTAssertEqual(lsm.handle(layoutEvent: .speed(anotherTrain, 10), train: train), [])
+        XCTAssertEqual(lsm.handle(layoutEvent: .speed(anotherTrain, 10), train: train), nil)
         XCTAssertEqual(train.speed, 0)
 
-        XCTAssertEqual(lsm.handle(layoutEvent: .speed(train, 7), train: train), [])
+        XCTAssertEqual(lsm.handle(layoutEvent: .speed(train, 7), train: train), .speed(train))
         XCTAssertEqual(train.speed, 7)
     }
 
@@ -65,15 +55,15 @@ class LayoutStateMachineTests: XCTestCase {
         train.onUpdateReservedBlocksSettledLength = { t in
             return false
         }
-        XCTAssertEqual(lsm.handle(layoutEvent: .turnout(t1), train: train), [])
+        XCTAssertEqual(lsm.handle(layoutEvent: .turnout(t1), train: train), nil)
         XCTAssertEqual(train.adjustSpeedCount, 0)
         
         train.onUpdateReservedBlocksSettledLength = { t in
             return t == t1
         }
         XCTAssertEqual(train.adjustSpeedCount, 0)
-        XCTAssertEqual(lsm.handle(layoutEvent: .turnout(t1), train: train), [])
-        XCTAssertEqual(train.adjustSpeedCount, 1)
+        XCTAssertEqual(lsm.handle(layoutEvent: .turnout(t1), train: train), .reservedBlocksSettledLengthChanged(train))
+        XCTAssertEqual(train.adjustSpeedCount, 0)
     }
 
     // MARK: - Train Events
@@ -143,7 +133,7 @@ class LayoutStateMachineTests: XCTestCase {
         train.onReservedBlocksLengthEnough = { speed in return true }
         train.onUpdatePosition = { f in return f == f1 }
         train.onUpdateOccupiedAndReservedBlocks = { return true }
-        handle(layoutEvent: .feedback(f1), train: train, handledEvents: [.reservedBlocksChanged(train)])
+        handle(layoutEvent: .feedback(f1), train: train, handledEvents: [.position(train), .reservedBlocksChanged(train)])
         assert(train, .running, LayoutFactory.DefaultMaximumSpeed, updatePositionCount: 1)
 
         // f2 does not trigger a change in position for the train, which translates into no handled events for the train.
@@ -170,7 +160,7 @@ class LayoutStateMachineTests: XCTestCase {
         train.onUpdateOccupiedAndReservedBlocks = {
             return true
         }
-        handle(layoutEvent: .feedback(f1), train: train, handledEvents: [.reservedBlocksChanged(train), .stateChanged(train)])
+        handle(layoutEvent: .feedback(f1), train: train, handledEvents: [.position(train), .reservedBlocksChanged(train), .stateChanged(train)])
         assert(train, .braking, LayoutFactory.DefaultBrakingSpeed, updatePositionCount: 1)
     }
     
@@ -189,10 +179,10 @@ class LayoutStateMachineTests: XCTestCase {
             return true
         }
         // Note: 2 state changes, running>braking>stopping because the length of the reserved block does not allow the train to run at all.
-        handle(layoutEvent: .feedback(f1), train: train, handledEvents: [.reservedBlocksChanged(train), .stateChanged(train), .stateChanged(train)])
+        handle(layoutEvent: .feedback(f1), train: train, handledEvents: [.position(train), .reservedBlocksChanged(train), .stateChanged(train), .stateChanged(train)])
         assert(train, .stopping, LayoutFactory.DefaultBrakingSpeed, updatePositionCount: 1)
         
-        handle(layoutEvent: .speed(train, 0), train: train, handledEvents: [.stateChanged(train)])
+        handle(layoutEvent: .speed(train, 0), train: train, handledEvents: [.speed(train), .stateChanged(train), .reservedBlocksChanged(train)])
         assert(train, .stopped, 0, reservedBlock: false, updatePositionCount: 1)
     }
     
@@ -214,14 +204,14 @@ class LayoutStateMachineTests: XCTestCase {
         train.onUpdateOccupiedAndReservedBlocks = {
             return true
         }
-        handle(layoutEvent: .feedback(f1), train: train, handledEvents: [.reservedBlocksChanged(train), .stateChanged(train)])
+        handle(layoutEvent: .feedback(f1), train: train, handledEvents: [.position(train), .reservedBlocksChanged(train), .stateChanged(train)])
         assert(train, .braking, LayoutFactory.DefaultBrakingSpeed, updatePositionCount: 1)
 
         train.onReservedBlocksLengthEnough = { speed in
             return true
         }
 
-        handle(layoutEvent: .feedback(f1), train: train, handledEvents: [.reservedBlocksChanged(train), .stateChanged(train)])
+        handle(layoutEvent: .feedback(f1), train: train, handledEvents: [.position(train), .reservedBlocksChanged(train), .stateChanged(train)])
         assert(train, .running, LayoutFactory.DefaultMaximumSpeed, updatePositionCount: 2)
     }
 
@@ -274,27 +264,27 @@ class LayoutStateMachineTests: XCTestCase {
         train.onUpdateOccupiedAndReservedBlocks = {
             return true
         }
-        handle(layoutEvent: .feedback(f1), train: train, handledEvents: [.reservedBlocksChanged(train)])
+        handle(layoutEvent: .feedback(f1), train: train, handledEvents: [.position(train), .reservedBlocksChanged(train)])
         assert(train, .running, LayoutFactory.DefaultMaximumSpeed, updatePositionCount: 1)
         
         stopTrigger()
-        handle(layoutEvent: .feedback(f1), train: train, handledEvents: [.reservedBlocksChanged(train)])
+        handle(layoutEvent: .feedback(f1), train: train, handledEvents: [.position(train), .reservedBlocksChanged(train)])
         assert(train, .running, LayoutFactory.DefaultMaximumSpeed, updatePositionCount: 2)
         
         train.brakeFeedbackActivated = true
-        handle(layoutEvent: .feedback(f1), train: train, handledEvents: [.reservedBlocksChanged(train), .stateChanged(train)])
+        handle(layoutEvent: .feedback(f1), train: train, handledEvents: [.position(train), .reservedBlocksChanged(train), .stateChanged(train)])
         assert(train, .braking, LayoutFactory.DefaultBrakingSpeed, updatePositionCount: 3)
         
         train.brakeFeedbackActivated = false
         train.stopFeedbackActivated = true
-        handle(layoutEvent: .feedback(f1), train: train, handledEvents: [.reservedBlocksChanged(train), .stateChanged(train)])
+        handle(layoutEvent: .feedback(f1), train: train, handledEvents: [.position(train), .reservedBlocksChanged(train), .stateChanged(train)])
         assert(train, .stopping, LayoutFactory.DefaultBrakingSpeed, updatePositionCount: 4)
         
-        handle(layoutEvent: .speed(train, 0), train: train, handledEvents: [.stateChanged(train)])
+        handle(layoutEvent: .speed(train, 0), train: train, handledEvents: [.speed(train), .stateChanged(train), .reservedBlocksChanged(train)])
         assert(train, .stopped, 0, reservedBlock: false, updatePositionCount: 4)
 
         // Ensure stability by making sure the train does not restart if there is a layout event happening
-        handle(layoutEvent: .speed(train, 0), train: train, handledEvents: [])
+        handle(layoutEvent: .speed(train, 0), train: train, handledEvents: [.speed(train)])
         assert(train, .stopped, 0, reservedBlock: false, updatePositionCount: 4)
 
         // And now test when the feedback is used for both the braking and stopping feedback
@@ -303,7 +293,7 @@ class LayoutStateMachineTests: XCTestCase {
         
         train.brakeFeedbackActivated = true
         train.stopFeedbackActivated = true
-        handle(layoutEvent: .feedback(f1), train: train, handledEvents: [.reservedBlocksChanged(train), .stateChanged(train), .stateChanged(train)])
+        handle(layoutEvent: .feedback(f1), train: train, handledEvents: [.position(train), .reservedBlocksChanged(train), .stateChanged(train), .stateChanged(train)])
         assert(train, .stopping, LayoutFactory.DefaultBrakingSpeed, updatePositionCount: 5)
     }
 
@@ -327,22 +317,22 @@ class LayoutStateMachineTests: XCTestCase {
         train.onUpdateOccupiedAndReservedBlocks = {
             return true
         }
-        handle(layoutEvent: .feedback(f1), train: train, handledEvents: [.reservedBlocksChanged(train)])
+        handle(layoutEvent: .feedback(f1), train: train, handledEvents: [.position(train), .reservedBlocksChanged(train)])
         assert(train, .running, LayoutFactory.DefaultMaximumSpeed, updatePositionCount: 1)
         
         train.atStation = true
-        handle(layoutEvent: .feedback(f1), train: train, handledEvents: [.reservedBlocksChanged(train)])
+        handle(layoutEvent: .feedback(f1), train: train, handledEvents: [.position(train), .reservedBlocksChanged(train)])
         assert(train, .running, LayoutFactory.DefaultMaximumSpeed, updatePositionCount: 2)
         
         train.stopFeedbackActivated = true
-        handle(layoutEvent: .feedback(f1), train: train, handledEvents: [.reservedBlocksChanged(train), .stateChanged(train)])
+        handle(layoutEvent: .feedback(f1), train: train, handledEvents: [.position(train), .reservedBlocksChanged(train), .stateChanged(train)])
         assert(train, .stopping, LayoutFactory.DefaultBrakingSpeed, updatePositionCount: 3)
         
-        handle(layoutEvent: .speed(train, 0), train: train, handledEvents: [.stateChanged(train)])
+        handle(layoutEvent: .speed(train, 0), train: train, handledEvents: [.speed(train), .stateChanged(train), .reservedBlocksChanged(train)])
         assert(train, .stopped, 0, reservedBlock: false, updatePositionCount: 3)
         
         // Ensure the train stays stopped
-        handle(layoutEvent: .speed(train, 0), train: train, handledEvents: [])
+        handle(layoutEvent: .speed(train, 0), train: train, handledEvents: [.speed(train)])
         assert(train, .stopped, 0, reservedBlock: false, updatePositionCount: 3)
                 
         // Simulate the restart timer firing

@@ -39,9 +39,9 @@ struct TrainStateMachine {
     private func handleRunningState(train: TrainControlling) {
         if !train.reservedBlocksLengthEnough(forSpeed: LayoutFactory.DefaultMaximumSpeed) {
             train.state = .braking
-        } else if train.brakeFeedbackActivated && train.shouldStop {
+        } else if train.brakeFeedbackActivated && train.shouldStopInBlock {
             train.state = .braking
-        } else if train.stopFeedbackActivated && train.shouldStop {
+        } else if train.stopFeedbackActivated && train.shouldStopInBlock {
             train.state = .stopping
         }
     }
@@ -57,7 +57,7 @@ struct TrainStateMachine {
         if !train.reservedBlocksLengthEnough(forSpeed: LayoutFactory.DefaultBrakingSpeed) {
             train.state = .stopping
         } else {
-            if train.shouldStop {
+            if train.shouldStopInBlock {
                 if train.stopFeedbackActivated {
                     train.state = .stopping
                 }
@@ -82,7 +82,7 @@ struct TrainStateMachine {
      Stopped + Train.Reserved.Blocks.Length + !Stop.Managed > Running
      */
     private func handleStoppedState(train: TrainControlling) {
-        if !train.shouldStop && train.reservedBlocksLengthEnough(forSpeed: LayoutFactory.DefaultMaximumSpeed) {
+        if !train.shouldStopInBlock && train.reservedBlocksLengthEnough(forSpeed: LayoutFactory.DefaultMaximumSpeed) {
             train.state = .running
         }
     }
@@ -91,7 +91,7 @@ struct TrainStateMachine {
 
 extension TrainControlling {
     
-    var shouldStop: Bool {
+    var shouldStopInBlock: Bool {
         // User requested to stop managing the train?
         if scheduling == .stopManaged {
             return true

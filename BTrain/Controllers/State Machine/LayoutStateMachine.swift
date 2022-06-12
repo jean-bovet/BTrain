@@ -25,8 +25,9 @@ struct LayoutStateMachine {
         var trainEvents = [StateMachine.TrainEvent]()
         if let layoutEvent = layoutEvent {
             for train in trains {
-                let resultingTrainEvents = handle(layoutEvent: layoutEvent, train: train)
-                trainEvents.append(contentsOf: resultingTrainEvents)
+                if let resultingTrainEvent = handle(layoutEvent: layoutEvent, train: train) {
+                    trainEvents.append(resultingTrainEvent)
+                }
             }
         }
         
@@ -39,9 +40,10 @@ struct LayoutStateMachine {
         while trainEvents.count > 0 {
             let nextTrainEvent = trainEvents.removeFirst()
             for train in trains {
-                let resultingTrainEvents = tesm.handle(trainEvent: nextTrainEvent, train: train)
-                trainEvents.append(contentsOf: resultingTrainEvents)
-                handledTrainEvents?.append(contentsOf: resultingTrainEvents)
+                if let resultingTrainEvent = tesm.handle(trainEvent: nextTrainEvent, train: train) {
+                    trainEvents.append(resultingTrainEvent)
+                    handledTrainEvents?.append(resultingTrainEvent)
+                }
             }
         }
     }
@@ -51,23 +53,23 @@ struct LayoutStateMachine {
      Speed Changed > Update Train.Speed
      Turnout Changed > Update Settling of Train.Reserved.Blocks -> Emit Reserved.Blocks.Settled event
      */
-    func handle(layoutEvent: StateMachine.LayoutEvent, train: TrainControlling) -> [StateMachine.TrainEvent] {
+    func handle(layoutEvent: StateMachine.LayoutEvent, train: TrainControlling) -> StateMachine.TrainEvent? {
         switch layoutEvent {
         case .feedback(let feedback):
             if train.updatePosition(with: feedback) {
-                return tesm.handle(trainEvent: .position(train), train: train)
+                return .position(train)
             }
         case .speed(let eventTrain, let speed):
             if eventTrain.id == train.id {
                 train.speed = speed
-                return tesm.handle(trainEvent: .speed(train), train: train)
+                return .speed(train)
             }
         case .turnout(let turnout):
             if train.updateReservedBlocksSettledLength(with: turnout) {
-                return tesm.handle(trainEvent: .reservedBlocksSettledLengthChanged(train), train: train)
+                return .reservedBlocksSettledLengthChanged(train)
             }
         }
-        return []
+        return nil
     }
     
 }

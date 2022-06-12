@@ -89,8 +89,13 @@ final class MockTrainController: TrainControlling {
         return result
     }
     
-    func removeReservedBlocks() {
-        hasReservedBlocks = false
+    func removeReservedBlocks() -> Bool {
+        if hasReservedBlocks {
+            hasReservedBlocks = false
+            return true
+        } else {
+            return false
+        }
     }
     
     var adjustSpeedCount = 0

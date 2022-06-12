@@ -29,62 +29,67 @@ struct TrainEventStateMachine {
         
     let tsm = TrainStateMachine()
 
-    func handle(trainEvent: StateMachine.TrainEvent, train: TrainControlling) -> [StateMachine.TrainEvent] {
-        var resultingEvents = [StateMachine.TrainEvent]()
+    func handle(trainEvent: StateMachine.TrainEvent, train: TrainControlling) -> StateMachine.TrainEvent? {
+        if trainEvent.same(asTrain: train) {
+            return handleSameTrainEvent(trainEvent: trainEvent, train: train)
+        } else {
+            return handleOtherTrainEvent(trainEvent: trainEvent, train: train)
+        }
+    }
+    
+    private func handleSameTrainEvent(trainEvent: StateMachine.TrainEvent, train: TrainControlling) -> StateMachine.TrainEvent? {
         switch trainEvent {
-        case .position(let eventTrain):
-            if eventTrain.id == train.id && train.updateOccupiedAndReservedBlocks() {
-                resultingEvents.append(.reservedBlocksChanged(train))
+        case .position(_):
+            if train.updateOccupiedAndReservedBlocks() {
+                return .reservedBlocksChanged(train)
             }
             
-        case .scheduling(let eventTrain):
-            if eventTrain.id == train.id && train.scheduling == .managed && train.updateReservedBlocks() {
-                resultingEvents.append(.reservedBlocksChanged(train))
+        case .scheduling(_):
+            if train.scheduling == .managed && train.updateReservedBlocks() {
+                return .reservedBlocksChanged(train)
             }
             
-        case .stateChanged(let eventTrain):
-            if eventTrain.id == train.id {
-                if train.state == .stopped {
-                    train.removeReservedBlocks()
-                }
-                if tsm.handleTrainState(train: train) {
-                    resultingEvents.append(.stateChanged(train))
-                }
+        case .stateChanged(_):
+            if train.state == .stopped && train.removeReservedBlocks() {
+                return .reservedBlocksChanged(train)
+            }
+            
+            if tsm.handleTrainState(train: train) {
+                return .stateChanged(train)
             }
 
-        case .restartTimerFired(let eventTrain):
-            if eventTrain.id == train.id {
-                train.resetStartRouteIndex()
-                if !train.shouldStop && train.updateReservedBlocks() {
-                    resultingEvents.append(.reservedBlocksChanged(train))
-                }
+        case .restartTimerFired(_):
+            train.resetStartRouteIndex()
+            if !train.shouldStopInBlock && train.updateReservedBlocks() {
+                return .reservedBlocksChanged(train)
             }
-            
-        case .reservedBlocksChanged(let eventTrain):
-            if eventTrain.id == train.id {
-                if tsm.handleTrainState(train: train) {
-                    resultingEvents.append(.stateChanged(train))
-                }
+
+        case .reservedBlocksChanged(_):
+            if tsm.handleTrainState(train: train) {
                 train.adjustSpeed()
+                return .stateChanged(train)
             } else {
-                if train.updateReservedBlocks() {
-                    resultingEvents.append(.reservedBlocksChanged(train))
-                }
-            }
-            
-        case .reservedBlocksSettledLengthChanged(let eventTrain):
-            if eventTrain.id == train.id {
                 train.adjustSpeed()
             }
+            
+        case .reservedBlocksSettledLengthChanged(_):
+            train.adjustSpeed()
 
-        case .speed(let eventTrain):
+        case .speed(_):
             // Speed change can result in state change, for example when the speed reaches 0.
-            if eventTrain.id == train.id && tsm.handleTrainState(train: train) {
-                resultingEvents.append(.stateChanged(train))
+            if tsm.handleTrainState(train: train) {
+                return .stateChanged(train)
             }
         }
-        
-        return resultingEvents
+        return nil
     }
-
+    
+    private func handleOtherTrainEvent(trainEvent: StateMachine.TrainEvent, train: TrainControlling) -> StateMachine.TrainEvent? {
+        if case .reservedBlocksChanged = trainEvent {
+            if train.updateReservedBlocks() {
+                return .reservedBlocksChanged(train)
+            }
+        }
+        return nil
+    }
 }
