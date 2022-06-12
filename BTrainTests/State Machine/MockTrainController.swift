@@ -17,7 +17,7 @@ final class MockTrainController: TrainControlling {
 
     var id: String = UUID().uuidString
     
-    var scheduling: StateMachine.TrainScheduling = .unmanaged
+    var mode: StateMachine.TrainMode = .unmanaged
     
     var state: StateMachine.TrainState = .stopped
     
@@ -34,11 +34,7 @@ final class MockTrainController: TrainControlling {
     var endRouteIndex: Int = 10
 
     var atStation: Bool = false
-    
-    func resetStartRouteIndex() {
-        startedRouteIndex = currentRouteIndex
-    }
-    
+        
     func moveToEndOfRoute() {
         currentRouteIndex = 10
         endRouteIndex = 10

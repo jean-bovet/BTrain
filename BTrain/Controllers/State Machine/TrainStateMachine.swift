@@ -97,12 +97,12 @@ extension TrainControlling {
     
     var shouldStopInBlock: Bool {
         // User requested to stop managing the train?
-        if scheduling == .stopManaged {
+        if mode == .stopManaged {
             return true
         }
         
         // User requested to finish managing the train when it reaches the end of the route?
-        if scheduling == .finishManaged && currentRouteIndex >= endRouteIndex {
+        if mode == .finishManaged && currentRouteIndex >= endRouteIndex {
             return true
         }
 

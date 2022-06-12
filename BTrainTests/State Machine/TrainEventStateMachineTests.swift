@@ -53,7 +53,7 @@ extension StateMachine.TrainEvent: Equatable {
         switch(lhs, rhs) {
         case (.position(let t1), .position(let t2)): return t1.id == t2.id
         case (.speed(let t1), .speed(let t2)): return t1.id == t2.id
-        case (.scheduling(let t1), .scheduling(let t2)): return t1.id == t2.id
+        case (.modeChanged(let t1), .modeChanged(let t2)): return t1.id == t2.id
         case (.stateChanged(let t1), .stateChanged(let t2)): return t1.id == t2.id
         case (.restartTimerFired(let t1), .restartTimerFired(let t2)): return t1.id == t2.id
         case (.reservedBlocksChanged(let t1), .reservedBlocksChanged(let t2)): return t1.id == t2.id
@@ -73,7 +73,7 @@ extension StateMachine.TrainEvent: CustomStringConvertible {
             return "position"
         case .speed(_):
             return "speed"
-        case .scheduling(_):
+        case .modeChanged(_):
             return "scheduling"
         case .stateChanged(_):
             return "stateChanged"

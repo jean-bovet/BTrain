@@ -23,7 +23,7 @@ struct StateMachine {
     enum TrainEvent {
         case position(TrainControlling)
         case speed(TrainControlling)
-        case scheduling(TrainControlling)
+        case modeChanged(TrainControlling)
         case stateChanged(TrainControlling)
         case restartTimerFired(TrainControlling)
         case reservedBlocksChanged(TrainControlling)
@@ -35,7 +35,7 @@ struct StateMachine {
                 return te.id == train.id
             case .speed(let te):
                 return te.id == train.id
-            case .scheduling(let te):
+            case .modeChanged(let te):
                 return te.id == train.id
             case .stateChanged(let te):
                 return te.id == train.id
@@ -56,7 +56,7 @@ struct StateMachine {
         case stopping
     }
 
-    enum TrainScheduling {
+    enum TrainMode {
         case managed
         case stopManaged
         case finishManaged

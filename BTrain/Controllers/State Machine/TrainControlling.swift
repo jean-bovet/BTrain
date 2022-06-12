@@ -20,26 +20,37 @@ protocol TrainControlling: AnyObject {
     
     /// Unique ID of the train
     var id: String { get }
+    
+    /// The scheduling of the train (see ``StateMachine/TrainScheduling``
+    var mode: StateMachine.TrainMode { get }
 
-    var scheduling: StateMachine.TrainScheduling { get }
-
-    /// The state of the train (see ``TrainStateMachine/TrainState``)
+    /// The state of the train (see ``StateMachine/TrainState``)
     var state: StateMachine.TrainState { get set }
     
     /// The speed of the train
     var speed: TrainSpeed.UnitKph { get set }
-        
+    
+    /// Returns true if the brake feedback is detected
     var brakeFeedbackActivated: Bool { get }
+        
+    /// Returns true if the stop feedback is detected
     var stopFeedbackActivated: Bool { get }
     
-    var startedRouteIndex: Int { get }
+    /// The start index of the route where the train started.
+    ///
+    /// It is not necessarily the beginning of the route (index 0); for example a train that stopped in a station
+    /// in the middle of route will have this value be > 0 when it starts again from the station.
+    var startedRouteIndex: Int { get set }
+        
+    /// The current index of the route where the train is located
     var currentRouteIndex: Int { get }
+        
+    /// The end index of the route
     var endRouteIndex: Int { get }
     
+    /// Returns true if the train is located in a station
     var atStation: Bool { get }
-    
-    func resetStartRouteIndex()
-    
+        
     func reservedBlocksLengthEnough(forSpeed speed: TrainSpeed.UnitKph) -> Bool
 
     func updatePosition(with feedback: Feedback) -> Bool

@@ -25,7 +25,7 @@ class LayoutStateMachineTests: XCTestCase {
     
     func testTrainStart() {
         XCTAssertEqual(train.state, .stopped)
-        train.scheduling = .managed
+        train.mode = .managed
 
         train.onReservedBlocksLengthEnough = { speed in
             return false
@@ -33,7 +33,7 @@ class LayoutStateMachineTests: XCTestCase {
         train.onUpdateReservedBlocks = {
             return true
         }
-        handle(trainEvent: .scheduling(train), train: train, handledEvents: [.scheduling(train), .reservedBlocksChanged(train)])
+        handle(trainEvent: .modeChanged(train), train: train, handledEvents: [.modeChanged(train), .reservedBlocksChanged(train)])
 
         XCTAssertEqual(train.state, .stopped)
         XCTAssertEqual(train.adjustSpeedCount, 1)
@@ -45,7 +45,7 @@ class LayoutStateMachineTests: XCTestCase {
         train.onUpdateReservedBlocks = {
             return true
         }
-        handle(trainEvent: .scheduling(train), train: train, handledEvents: [.scheduling(train), .reservedBlocksChanged(train), .stateChanged(train)])
+        handle(trainEvent: .modeChanged(train), train: train, handledEvents: [.modeChanged(train), .reservedBlocksChanged(train), .stateChanged(train)])
 
         XCTAssertEqual(train.state, .running)
         XCTAssertEqual(train.adjustSpeedCount, 2)
@@ -59,7 +59,7 @@ class LayoutStateMachineTests: XCTestCase {
         XCTAssertEqual(t1.state, .stopped)
         XCTAssertEqual(t2.state, .stopped)
         
-        t1.scheduling = .managed
+        t1.mode = .managed
 
         t1.onReservedBlocksLengthEnough = { speed in
             return true
@@ -69,7 +69,7 @@ class LayoutStateMachineTests: XCTestCase {
             return true
         }
         
-        handle(trainEvent: .scheduling(t1), trains: [t1, t2], handledEvents: [.scheduling(t1), .reservedBlocksChanged(t1), .stateChanged(t1)])
+        handle(trainEvent: .modeChanged(t1), trains: [t1, t2], handledEvents: [.modeChanged(t1), .reservedBlocksChanged(t1), .stateChanged(t1)])
         
         XCTAssertEqual(t1.state, .running)
         XCTAssertEqual(t1.updateReservedBlocksInvocationCount, 1)
@@ -79,7 +79,7 @@ class LayoutStateMachineTests: XCTestCase {
     }
     
     func testTrainMove() {
-        train.scheduling = .managed
+        train.mode = .managed
         train.state = .running
         train.speed = LayoutFactory.DefaultMaximumSpeed
         
@@ -98,7 +98,7 @@ class LayoutStateMachineTests: XCTestCase {
     }
     
     func testTrainMoveAndBrakeBecauseSettledDistance() {
-        train.scheduling = .managed
+        train.mode = .managed
         train.state = .running
         train.speed = LayoutFactory.DefaultMaximumSpeed
         
@@ -120,7 +120,7 @@ class LayoutStateMachineTests: XCTestCase {
     }
     
     func testTrainBrakingAndRunAfterSettledDistanceIsUpdated() {
-        train.scheduling = .managed
+        train.mode = .managed
         train.state = .running
         train.speed = LayoutFactory.DefaultMaximumSpeed
         train.hasReservedBlocks = true
@@ -147,7 +147,7 @@ class LayoutStateMachineTests: XCTestCase {
     }
 
     func testTrainBrakingAndStoppingAndRunAfterSettledDistanceIsUpdated() {
-        train.scheduling = .managed
+        train.mode = .managed
         train.state = .running
         train.speed = LayoutFactory.DefaultMaximumSpeed
         train.hasReservedBlocks = true
@@ -178,7 +178,7 @@ class LayoutStateMachineTests: XCTestCase {
     }
 
     func testTrainMoveAndStopBecauseSettledDistance() {
-        train.scheduling = .managed
+        train.mode = .managed
         train.state = .running
         train.speed = LayoutFactory.DefaultMaximumSpeed
         
@@ -200,7 +200,7 @@ class LayoutStateMachineTests: XCTestCase {
     }
     
     func testTrainMoveBrakeAndRunBecauseSettledDistance() {
-        train.scheduling = .managed
+        train.mode = .managed
         train.state = .running
         train.speed = LayoutFactory.DefaultMaximumSpeed
         
@@ -230,21 +230,21 @@ class LayoutStateMachineTests: XCTestCase {
 
     func testTrainStopManaged() {
         assertTrainStop() {
-            train.scheduling = .stopManaged
+            train.mode = .stopManaged
         }
     }
     
     func testTrainStopManagedAtEndOfRoute() {
         assertTrainStop() {
             train.moveToEndOfRoute()
-            train.scheduling = .stopManaged
+            train.mode = .stopManaged
         }
     }
     
     func testTrainFinishManaged() {
         assertTrainStop() {
             train.moveToEndOfRoute()
-            train.scheduling = .finishManaged
+            train.mode = .finishManaged
         }
     }
 
@@ -261,7 +261,7 @@ class LayoutStateMachineTests: XCTestCase {
     }
 
     private func assertTrainStop(stopTrigger: CompletionBlock) {
-        train.scheduling = .managed
+        train.mode = .managed
         train.state = .running
         train.speed = LayoutFactory.DefaultMaximumSpeed
         
@@ -311,7 +311,7 @@ class LayoutStateMachineTests: XCTestCase {
     }
 
     func testTrainStopAtStationAndRestart() {
-        train.scheduling = .managed
+        train.mode = .managed
         train.state = .running
         train.speed = LayoutFactory.DefaultMaximumSpeed
         

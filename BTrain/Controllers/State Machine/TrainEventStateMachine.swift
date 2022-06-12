@@ -44,8 +44,8 @@ struct TrainEventStateMachine {
                 return .reservedBlocksChanged(train)
             }
             
-        case .scheduling(_):
-            if train.scheduling == .managed && train.updateReservedBlocks() {
+        case .modeChanged(_):
+            if train.mode == .managed && train.updateReservedBlocks() {
                 return .reservedBlocksChanged(train)
             }
             
@@ -59,7 +59,7 @@ struct TrainEventStateMachine {
             }
 
         case .restartTimerFired(_):
-            train.resetStartRouteIndex()
+            train.startedRouteIndex = train.currentRouteIndex
             if !train.shouldStopInBlock && train.updateReservedBlocks() {
                 return .reservedBlocksChanged(train)
             }
