@@ -23,51 +23,6 @@ class LayoutStateMachineTests: XCTestCase {
         train = MockTrainController()
     }
     
-    // MARK: - Layout Events
-
-    func testLayoutEventFeedback() {
-        let f1 = Feedback("f1")
-        
-        train.onUpdatePosition = { f in return f == f1 }
-        XCTAssertEqual(lsm.handle(layoutEvent: .feedback(f1), train: train), .position(train))
-        
-        train.onUpdatePosition = { f in return false }
-        XCTAssertEqual(lsm.handle(layoutEvent: .feedback(f1), train: train), nil)
-    }
-    
-    func testLayoutEventSpeed() {
-        XCTAssertEqual(train.speed, 0)
-        
-        let anotherTrain = MockTrainController()
-        XCTAssertEqual(lsm.handle(layoutEvent: .speed(anotherTrain, 10), train: train), nil)
-        XCTAssertEqual(train.speed, 0)
-
-        XCTAssertEqual(lsm.handle(layoutEvent: .speed(train, 7), train: train), .speed(train))
-        XCTAssertEqual(train.speed, 7)
-    }
-
-    func testLayoutEventTurnout() {
-        let t1 = Turnout(name: "t1")
-        train.state = .running
-        
-        XCTAssertEqual(train.adjustSpeedCount, 0)
-
-        train.onUpdateReservedBlocksSettledLength = { t in
-            return false
-        }
-        XCTAssertEqual(lsm.handle(layoutEvent: .turnout(t1), train: train), nil)
-        XCTAssertEqual(train.adjustSpeedCount, 0)
-        
-        train.onUpdateReservedBlocksSettledLength = { t in
-            return t == t1
-        }
-        XCTAssertEqual(train.adjustSpeedCount, 0)
-        XCTAssertEqual(lsm.handle(layoutEvent: .turnout(t1), train: train), .reservedBlocksSettledLengthChanged(train))
-        XCTAssertEqual(train.adjustSpeedCount, 0)
-    }
-
-    // MARK: - Train Events
-
     func testTrainStart() {
         XCTAssertEqual(train.state, .stopped)
         train.scheduling = .managed

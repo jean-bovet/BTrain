@@ -14,6 +14,7 @@ import Foundation
 
 struct LayoutStateMachine {
     
+    let lesm = LayoutEventStateMachine()
     let tesm = TrainEventStateMachine()
 
     func handle(layoutEvent: StateMachine.LayoutEvent?, trainEvent: StateMachine.TrainEvent?, trains: [TrainControlling]) {
@@ -25,7 +26,7 @@ struct LayoutStateMachine {
         var trainEvents = [StateMachine.TrainEvent]()
         if let layoutEvent = layoutEvent {
             for train in trains {
-                if let resultingTrainEvent = handle(layoutEvent: layoutEvent, train: train) {
+                if let resultingTrainEvent = lesm.handle(layoutEvent: layoutEvent, train: train) {
                     trainEvents.append(resultingTrainEvent)
                 }
             }
@@ -46,30 +47,6 @@ struct LayoutStateMachine {
                 }
             }
         }
-    }
-    
-    /**
-     Feedback Triggered > Update Train.Position
-     Speed Changed > Update Train.Speed
-     Turnout Changed > Update Settling of Train.Reserved.Blocks -> Emit Reserved.Blocks.Settled event
-     */
-    func handle(layoutEvent: StateMachine.LayoutEvent, train: TrainControlling) -> StateMachine.TrainEvent? {
-        switch layoutEvent {
-        case .feedback(let feedback):
-            if train.updatePosition(with: feedback) {
-                return .position(train)
-            }
-        case .speed(let eventTrain, let speed):
-            if eventTrain.id == train.id {
-                train.speed = speed
-                return .speed(train)
-            }
-        case .turnout(let turnout):
-            if train.updateReservedBlocksSettledLength(with: turnout) {
-                return .reservedBlocksSettledLengthChanged(train)
-            }
-        }
-        return nil
     }
     
 }
