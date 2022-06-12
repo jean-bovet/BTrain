@@ -75,6 +75,10 @@ struct TrainStateMachine {
     private func handleStoppingState(train: TrainControlling) {
         if train.speed == 0 {
             train.state = .stopped
+        } else if !train.shouldStopInBlock {
+            if train.reservedBlocksLengthEnough(forSpeed: LayoutFactory.DefaultMaximumSpeed) {
+                train.state = .running
+            }
         }
     }
     

@@ -73,7 +73,12 @@ struct TrainEventStateMachine {
             }
             
         case .reservedBlocksSettledLengthChanged(_):
-            train.adjustSpeed()
+            if tsm.handleTrainState(train: train) {
+                train.adjustSpeed()
+                return .stateChanged(train)
+            } else {
+                train.adjustSpeed()
+            }
 
         case .speed(_):
             // Speed change can result in state change, for example when the speed reaches 0.

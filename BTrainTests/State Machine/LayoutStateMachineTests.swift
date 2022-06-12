@@ -119,6 +119,64 @@ class LayoutStateMachineTests: XCTestCase {
         assert(train, .braking, LayoutFactory.DefaultBrakingSpeed, updatePositionCount: 1)
     }
     
+    func testTrainBrakingAndRunAfterSettledDistanceIsUpdated() {
+        train.scheduling = .managed
+        train.state = .running
+        train.speed = LayoutFactory.DefaultMaximumSpeed
+        train.hasReservedBlocks = true
+        
+        let t1 = Turnout(name: "t1")
+        
+        train.onUpdateReservedBlocksSettledLength = { t in t == t1 }
+        train.onReservedBlocksLengthEnough = { speed in
+            if speed == LayoutFactory.DefaultMaximumSpeed {
+                return false
+            } else {
+                return true
+            }
+        }
+        train.onUpdateOccupiedAndReservedBlocks = {
+            return true
+        }
+        handle(layoutEvent: .turnout(t1), train: train, handledEvents: [.reservedBlocksSettledLengthChanged(train), .stateChanged(train)])
+        assert(train, .braking, LayoutFactory.DefaultBrakingSpeed, updatePositionCount: 0)
+        
+        train.onReservedBlocksLengthEnough = { speed in return true }
+        handle(layoutEvent: .turnout(t1), train: train, handledEvents: [.reservedBlocksSettledLengthChanged(train), .stateChanged(train)])
+        assert(train, .running, LayoutFactory.DefaultMaximumSpeed, updatePositionCount: 0)
+    }
+
+    func testTrainBrakingAndStoppingAndRunAfterSettledDistanceIsUpdated() {
+        train.scheduling = .managed
+        train.state = .running
+        train.speed = LayoutFactory.DefaultMaximumSpeed
+        train.hasReservedBlocks = true
+        
+        let t1 = Turnout(name: "t1")
+        
+        train.onUpdateReservedBlocksSettledLength = { t in t == t1 }
+        train.onReservedBlocksLengthEnough = { speed in
+            if speed == LayoutFactory.DefaultMaximumSpeed {
+                return false
+            } else {
+                return true
+            }
+        }
+        train.onUpdateOccupiedAndReservedBlocks = {
+            return true
+        }
+        handle(layoutEvent: .turnout(t1), train: train, handledEvents: [.reservedBlocksSettledLengthChanged(train), .stateChanged(train)])
+        assert(train, .braking, LayoutFactory.DefaultBrakingSpeed, updatePositionCount: 0)
+
+        train.onReservedBlocksLengthEnough = { speed in return false }
+        handle(layoutEvent: .turnout(t1), train: train, handledEvents: [.reservedBlocksSettledLengthChanged(train), .stateChanged(train)])
+        assert(train, .stopping, LayoutFactory.DefaultBrakingSpeed, updatePositionCount: 0)
+
+        train.onReservedBlocksLengthEnough = { speed in return true }
+        handle(layoutEvent: .turnout(t1), train: train, handledEvents: [.reservedBlocksSettledLengthChanged(train), .stateChanged(train)])
+        assert(train, .running, LayoutFactory.DefaultMaximumSpeed, updatePositionCount: 0)
+    }
+
     func testTrainMoveAndStopBecauseSettledDistance() {
         train.scheduling = .managed
         train.state = .running
@@ -314,7 +372,7 @@ extension LayoutStateMachineTests {
     func assert(_ train: MockTrainController, _ state: StateMachine.TrainState, _ speed: TrainSpeed.UnitKph, reservedBlock: Bool = true, updatePositionCount: Int) {
         XCTAssertEqual(train.state, state)
         XCTAssertEqual(train.speed, speed)
-        XCTAssertEqual(train.hasReservedBlocks, reservedBlock)
+        XCTAssertEqual(train.hasReservedBlocks, reservedBlock, "Reserved blocks do not match")
         XCTAssertEqual(train.updatePositionInvocationCount, updatePositionCount)
     }
 }
