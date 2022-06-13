@@ -69,6 +69,10 @@ class LayoutStateMachineTests: XCTestCase {
             return true
         }
         
+        t2.onUpdateReservedBlocks = {
+            return false
+        }
+
         handle(trainEvent: .modeChanged(t1), trains: [t1, t2], handledEvents: [.modeChanged(t1), .reservedBlocksChanged(t1), .stateChanged(t1)])
         
         XCTAssertEqual(t1.state, .running)
@@ -135,9 +139,6 @@ class LayoutStateMachineTests: XCTestCase {
                 return true
             }
         }
-        train.onUpdateOccupiedAndReservedBlocks = {
-            return true
-        }
         handle(layoutEvent: .turnout(t1), train: train, handledEvents: [.reservedBlocksSettledLengthChanged(train), .stateChanged(train)])
         assert(train, .braking, LayoutFactory.DefaultBrakingSpeed, updatePositionCount: 0)
         
@@ -163,7 +164,7 @@ class LayoutStateMachineTests: XCTestCase {
             }
         }
         train.onUpdateOccupiedAndReservedBlocks = {
-            return true
+            return true // TODO: not called, normal?
         }
         handle(layoutEvent: .turnout(t1), train: train, handledEvents: [.reservedBlocksSettledLengthChanged(train), .stateChanged(train)])
         assert(train, .braking, LayoutFactory.DefaultBrakingSpeed, updatePositionCount: 0)

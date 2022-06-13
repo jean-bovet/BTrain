@@ -44,7 +44,12 @@ final class MockTrainController: TrainControlling {
     var onReservedBlocksLengthEnough: OnReservedBlocksLengthEnough?
 
     func reservedBlocksLengthEnough(forSpeed speed: TrainSpeed.UnitKph) -> Bool {
-        onReservedBlocksLengthEnough?(speed) ?? false
+        guard let block = onReservedBlocksLengthEnough else {
+            XCTFail("No callback setup to assert this method call")
+            return false
+        }
+
+        return block(speed)
     }
 
     typealias CallbackBlock = () -> Bool
@@ -54,19 +59,33 @@ final class MockTrainController: TrainControlling {
 
     func updatePosition(with feedback: Feedback) -> Bool {
         updatePositionInvocationCount += 1
-        return onUpdatePosition?(feedback) ?? false
+        guard let block = onUpdatePosition else {
+            XCTFail("No callback setup to assert this method call")
+            return false
+        }
+
+        return block(feedback)
     }
         
     var onUpdateReservedBlocksSettledLength: ((Turnout) -> Bool)?
 
     func updateReservedBlocksSettledLength(with turnout: Turnout) -> Bool {
-        onUpdateReservedBlocksSettledLength?(turnout) ?? false
+        guard let block = onUpdateReservedBlocksSettledLength else {
+            XCTFail("No callback setup to assert this method call")
+            return false
+        }
+
+        return block(turnout)
     }
 
     var onUpdateOccupiedAndReservedBlocks: CallbackBlock?
 
     func updateOccupiedAndReservedBlocks() -> Bool {
-        let result = onUpdateOccupiedAndReservedBlocks?() ?? false
+        guard let block = onUpdateOccupiedAndReservedBlocks else {
+            XCTFail("No callback setup to assert this method call")
+            return false
+        }
+        let result = block()
         if result {
             hasReservedBlocks = true
         }
@@ -78,7 +97,12 @@ final class MockTrainController: TrainControlling {
     
     func updateReservedBlocks() -> Bool {
         updateReservedBlocksInvocationCount += 1
-        let result = onUpdateReservedBlocks?() ?? false
+        guard let block = onUpdateReservedBlocks else {
+            XCTFail("No callback setup to assert this method call")
+            return false
+        }
+
+        let result = block()
         if result {
             hasReservedBlocks = true
         }

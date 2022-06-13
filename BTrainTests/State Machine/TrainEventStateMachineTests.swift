@@ -36,6 +36,8 @@ class TrainEventStateMachineTests: XCTestCase {
         let anotherTrain = MockTrainController()
         train.state = .running // because adjustSpeed() is only called when the train is not stopped
                 
+        train.onReservedBlocksLengthEnough = { speed in return false }
+
         XCTAssertEqual(train.adjustSpeedCount, 0)
         XCTAssertEqual(tsm.handle(trainEvent: .reservedBlocksChanged(train), train: train), .stateChanged(train))
         XCTAssertEqual(train.adjustSpeedCount, 1)
