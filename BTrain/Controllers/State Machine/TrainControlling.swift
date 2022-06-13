@@ -50,20 +50,41 @@ protocol TrainControlling: AnyObject {
     
     /// Returns true if the train is located in a station
     var atStation: Bool { get }
-        
+    
+    /// Returns true if the length of reserved blocks is long enough to allow the train
+    /// to move at the specified speed. The lenght must only includes settled turnouts,
+    /// because un-settled turnouts are not yet ready to be used by the train.
+    /// - Parameter speed: the speed to evaluate
+    /// - Returns: true if the length of reserved blocks is long enoug, false otherwise
     func reservedBlocksLengthEnough(forSpeed speed: TrainSpeed.UnitKph) -> Bool
-
+    
+    /// Updates the position of the train given the specified feedback activation
+    /// - Parameter feedback: The feedback that is activated
+    /// - Returns: true if the position of the train was updated, false otherwse
     func updatePosition(with feedback: Feedback) -> Bool
-        
+    
+    /// Updates the settled length of the reserved blocks
+    /// - Parameter turnout: the turnout that has settled
+    /// - Returns: true if the settled length has changed
     func updateReservedBlocksSettledLength(with turnout: Turnout) -> Bool
     
+    /// Updates the occupied and reserved blocks of the train.
+    ///
+    /// An occupied block is one that contains a portion (or all) of the train.
+    /// A reserved block is one that has been reserved for a particular train but that does not contain it yet.
+    /// - Returns: true if the occupied and reserved blocks have changed
     func updateOccupiedAndReservedBlocks() -> Bool
     
+    /// Updates the reserved blocks of the train
+    /// - Returns: true if the reserved blocks have changed
     func updateReservedBlocks() -> Bool
     
+    /// Removes the reserved blocks of the train
+    /// - Returns: true if the reserved blocks have changed
     func removeReservedBlocks() -> Bool
     
-    /// Adjusts the speed of the train given the current context. This method is called when the reserved blocks
-    /// changed or the settling length of the reserved block changed.
+    /// Adjusts the speed of the train given the current context.
+    ///
+    /// This method is called when the reserved blocks changed or the settling length of the reserved block changed.
     func adjustSpeed()
 }
