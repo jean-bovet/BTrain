@@ -28,25 +28,6 @@ struct StateMachine {
         case restartTimerFired(TrainControlling)
         case reservedBlocksChanged(TrainControlling)
         case reservedBlocksSettledLengthChanged(TrainControlling)
-        
-        func same(asTrain train: TrainControlling) -> Bool {
-            switch self {
-            case .position(let te):
-                return te.id == train.id
-            case .speed(let te):
-                return te.id == train.id
-            case .modeChanged(let te):
-                return te.id == train.id
-            case .stateChanged(let te):
-                return te.id == train.id
-            case .restartTimerFired(let te):
-                return te.id == train.id
-            case .reservedBlocksChanged(let te):
-                return te.id == train.id
-            case .reservedBlocksSettledLengthChanged(let te):
-                return te.id == train.id
-            }
-        }
     }
         
     enum TrainState {

@@ -30,7 +30,7 @@ struct TrainEventStateMachine {
     let tsm = TrainStateMachine()
 
     func handle(trainEvent: StateMachine.TrainEvent, train: TrainControlling) -> StateMachine.TrainEvent? {
-        if trainEvent.same(asTrain: train) {
+        if trainEvent.belongs(toTrain: train) {
             return handleSameTrainEvent(trainEvent: trainEvent, train: train)
         } else {
             return handleOtherTrainEvent(trainEvent: trainEvent, train: train)
@@ -96,5 +96,30 @@ struct TrainEventStateMachine {
             }
         }
         return nil
+    }
+}
+
+extension StateMachine.TrainEvent {
+    
+    /// Returns true if this event belongs to the specified train.
+    /// - Parameter train: the train
+    /// - Returns: true if the event belongs to the train
+    func belongs(toTrain train: TrainControlling) -> Bool {
+        switch self {
+        case .position(let te):
+            return te.id == train.id
+        case .speed(let te):
+            return te.id == train.id
+        case .modeChanged(let te):
+            return te.id == train.id
+        case .stateChanged(let te):
+            return te.id == train.id
+        case .restartTimerFired(let te):
+            return te.id == train.id
+        case .reservedBlocksChanged(let te):
+            return te.id == train.id
+        case .reservedBlocksSettledLengthChanged(let te):
+            return te.id == train.id
+        }
     }
 }
