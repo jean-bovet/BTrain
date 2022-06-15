@@ -95,8 +95,9 @@ final class Package {
     }
     
     func toggle(_ feedback: String) {
-        layout.feedback(for: Identifier<Feedback>(uuid: feedback))?.detected.toggle()
-        layoutController.runControllers(.feedbackTriggered)
+        let f = layout.feedback(for: Identifier<Feedback>(uuid: feedback))!
+        f.detected.toggle()
+        layoutController.runControllers(.feedbackTriggered(f))
         layoutController.drainAllEvents()
     }
 

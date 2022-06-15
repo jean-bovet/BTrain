@@ -113,6 +113,7 @@ final class LayoutReservation {
 
         // Reserve the number of leading blocks necessary
         if try reserveLeadingBlocks(train: train, reservedTurnouts: reservedTurnouts) {
+            train.leading.settledDistance = train.leading.computeSettledDistance()
             // Return the result by determining if the leading or occupied items have changed
             if previousLeadingItems != train.leading.items || previousOccupiedItems != train.occupied.items {
                 return .success
@@ -120,6 +121,7 @@ final class LayoutReservation {
                 return .successAndUnchanged
             }
         } else {
+            train.leading.settledDistance = 0
             return .failure
         }
     }
@@ -127,13 +129,18 @@ final class LayoutReservation {
     /// Removes the reservation for the leading blocks of the specified train but keep the occupied blocks intact (that the train actually occupies).
     ///
     /// - Parameter train: the train
-    func removeLeadingBlocks(train: Train) throws {
+    @discardableResult
+    func removeLeadingBlocks(train: Train) throws -> Bool {
+        let previousLeadingItems = train.leading.items
+
         // Remove the train from all the elements
         try freeElements(train: train)
         
         // Reserve and set the train and its wagon(s) using the necessary number of
         // elements (turnouts and blocks)
         try occupyBlockWith(train: train)
+        
+        return previousLeadingItems != train.leading.items
     }
     
     private func reserveLeadingBlocks(train: Train, reservedTurnouts: Set<TurnoutActivation>) throws -> Bool {

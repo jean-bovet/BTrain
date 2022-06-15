@@ -29,19 +29,41 @@ struct StateMachine {
         case reservedBlocksChanged(TrainControlling)
         case reservedBlocksSettledLengthChanged(TrainControlling)
     }
-        
-    enum TrainState {
-        case stopped
-        case running
-        case braking
-        case stopping
-    }
+     
+    typealias TrainState = Train.State
 
-    enum TrainMode {
-        case managed
-        case stopManaged
-        case finishManaged
-        case unmanaged
-    }
+    typealias TrainMode = Train.Schedule
 
+}
+
+extension TrainEvent {
+    
+    func layoutEvent(layoutController: LayoutController) -> StateMachine.LayoutEvent? {
+        switch self {
+        case .feedbackTriggered(let feedback):
+            return .feedback(feedback)
+        case .turnoutChanged(let turnout):
+            return .turnout(turnout)
+        case .directionChanged:
+            return nil // TODO
+        case .speedChanged(let train, let actualKph):
+            // TODO: TC can be nil
+            let tc = layoutController.trainController(forTrain: train)
+            return .speed(tc!, actualKph)
+        default:
+            return nil
+        }
+    }
+    
+    func trainEvent(layoutController: LayoutController) -> StateMachine.TrainEvent? {
+        switch self {
+        case .schedulingChanged(let train):
+            let tc = layoutController.trainController(forTrain: train)
+            return .modeChanged(tc!)
+        case .restartTimerExpired(train: let train):
+            let tc = layoutController.trainController(forTrain: train)
+            return .restartTimerFired(tc!)
+        default: return nil
+        }
+    }
 }

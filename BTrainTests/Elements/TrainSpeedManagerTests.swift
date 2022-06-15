@@ -207,8 +207,9 @@ class TrainSpeedManagerTests: BTTestCase {
         // Ask the layout to stop the train
         doc.layoutController.stop(train: t)
 
-        layout.feedback(for: block.stopFeedbackNext!)!.detected.toggle()
-        doc.layoutController.runControllers(.feedbackTriggered)
+        let f = layout.feedback(for: block.stopFeedbackNext!)!
+        f.detected.toggle()
+        doc.layoutController.runControllers(.feedbackTriggered(f))
 
         wait(for: {
             t.state == .stopping

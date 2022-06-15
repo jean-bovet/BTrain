@@ -117,10 +117,15 @@ final class LayoutController {
             // Run each controller, one for each train, in order
             // to process the new state of each train (speed, position,
             // reserved blocks, etc).
-            for train in layout.trains {
-                result.append(try run(train: train, event: event))
-            }
+//            for train in layout.trains {
+//                result.append(try run(train: train, event: event))
+//            }
             
+            let lsm = LayoutStateMachine()
+            lsm.handle(layoutEvent: event.layoutEvent(layoutController: self),
+                       trainEvent: event.trainEvent(layoutController: self),
+                       trains: layout.trains.compactMap({ train in trainController(forTrain: train) }))
+
             // Update and detect any unexpected feedbacks
             // Note: it is necessary to repeat this step after
             // running all the train controllers because a train
@@ -140,6 +145,18 @@ final class LayoutController {
         return result
     }
         
+    func trainController(forTrain train: Train) -> TrainController? {
+        guard let currentBlock = layout.currentBlock(train: train) else {
+            return nil
+        }
+        
+        guard let trainInstance = currentBlock.train else {
+            return nil
+        }
+
+        return TrainController(train: train, layout: layout, currentBlock: currentBlock, trainInstance: trainInstance, layoutController: self, reservation: reservation)
+    }
+    
     /// This is the main method to call to manage the train associated with this controller.
     ///
     /// This method executes all the handlers interested in the specified event and return the result which might
@@ -226,7 +243,7 @@ final class LayoutController {
     
     func stop(train: Train) {
         train.scheduling = .stopManaged
-        runControllers(.schedulingChanged)
+        runControllers(.schedulingChanged(train: train))
     }
 
     func stopAll(includingManualTrains: Bool) {
@@ -243,7 +260,7 @@ final class LayoutController {
 
     func finish(train: Train) {
         train.scheduling = .finishManaged
-        runControllers(.schedulingChanged)
+        runControllers(.schedulingChanged(train: train))
     }
     
     func finishAll() {
@@ -314,7 +331,7 @@ extension LayoutController {
             return speedManager
         } else {
             let speedManager = TrainSpeedManager(train: train, interface: interface, speedChanged: { [weak self] in
-                self?.runControllers(.speedChanged)
+                self?.runControllers(.speedChanged(train, train.speed.actualKph))
             })
             speedManagers[train.id] = speedManager
             return speedManager
@@ -404,7 +421,7 @@ extension LayoutController {
         }
 
         train.scheduling = .managed
-        runControllers(.schedulingChanged)
+        runControllers(.schedulingChanged(train: train))
     }
     
     /// Send a turnout state command

@@ -27,7 +27,7 @@ class TrainHandlerManagedTests: BTTestCase {
         train.state = .stopped
         train.scheduling = .managed
         
-        doc.layoutController.runControllers(.schedulingChanged)
+        doc.layoutController.runControllers(.schedulingChanged(train: train))
         
         XCTAssertEqual(train.state, .stopped)
         XCTAssertEqual(train.scheduling, .unmanaged)
@@ -44,7 +44,7 @@ class TrainHandlerManagedTests: BTTestCase {
 
         try doc.layoutController.start(routeID: train.routeId, trainID: train.id)
                 
-        doc.layoutController.runControllers(.schedulingChanged)
+        doc.layoutController.runControllers(.schedulingChanged(train: train))
         
         doc.layout.turnouts.forEach { turnout in
             turnout.actualState = turnout.requestedState

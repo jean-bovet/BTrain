@@ -22,7 +22,7 @@ extension LayoutController {
             if let feedback = sSelf.layout.feedbacks.find(deviceID: deviceID, contactID: contactID) {
                 feedback.detected = value == 1
                 BTLogger.debug("Feedback \(feedback) changed to \(feedback.detected)")
-                sSelf.runControllers(.feedbackTriggered)
+                sSelf.runControllers(.feedbackTriggered(feedback))
             }
         })
     }
@@ -89,7 +89,7 @@ extension LayoutController {
                     turnout.requestedState = turnout.actualState
                 }
                 BTLogger.debug("Turnout \(turnout.name) state changed to \(state) (ack=\(acknowledgement)), power \(power), for address \(address.actualAddress.toHex()). Actual state \(turnout.actualState). Requested state \(turnout.requestedState)")
-                self?.runControllers(.turnoutChanged)
+                self?.runControllers(.turnoutChanged(turnout))
             } else {
                 BTLogger.error("Unknown turnout for address \(address.actualAddress.toHex())")
             }

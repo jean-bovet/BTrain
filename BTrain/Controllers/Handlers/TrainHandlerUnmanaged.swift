@@ -33,7 +33,7 @@ final class TrainHandlerUnmanaged {
     }
     
     private func process() throws -> TrainHandlerResult {
-        if event == .feedbackTriggered {
+        if case .feedbackTriggered(_) = event {
             try moveTrainInsideBlock()
             try moveTrainToNextBlock()
             try stopDetection()

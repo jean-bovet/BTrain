@@ -39,7 +39,6 @@ final class LayoutAsserter {
         }
         
         // Then run the controller to update the real layout states
-        layoutController.runControllers(.feedbackTriggered)
         if drainAll {
             layoutController.drainAllEvents()
         }
@@ -92,6 +91,8 @@ final class LayoutAsserter {
                     let blockFeedback = block.feedbacks[index]
                     let feedback = layout.feedback(for: blockFeedback.feedbackId)!
                     feedback.detected = expectedFeedback.detected
+                    
+                    layoutController.runControllers(.feedbackTriggered(feedback))
                 }
 
             case .turnout(_):

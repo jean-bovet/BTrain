@@ -110,7 +110,7 @@ class TransitionsTests: BTTestCase {
         try doc.start(train: t1.id, withRoute: r1.id, destination: nil)
         try doc.start(train: t2.id, withRoute: r2.id, destination: nil)
 
-        doc.layoutController.runControllers(.feedbackTriggered)
+//        doc.layoutController.runControllers(.feedbackTriggered)
 
         doc.layoutController.drainAllEvents()
 

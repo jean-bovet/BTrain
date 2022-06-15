@@ -255,7 +255,7 @@ class UnmanagedTrainOperationTests: BTTestCase {
             }
 
             feedback.detected = detected
-            layoutController.runControllers(.feedbackTriggered)
+            layoutController.runControllers(.feedbackTriggered(feedback))
         }
     }
     

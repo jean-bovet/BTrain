@@ -16,26 +16,26 @@ import OrderedCollections
 /// The event available to the handlers
 enum TrainEvent: Hashable, CustomStringConvertible {
     /// A feedback sensor has been triggered
-    case feedbackTriggered
+    case feedbackTriggered(Feedback)
     
     /// The scheduling state of the train has changed. This happens in the following scenarios:
     /// - When a train starts for the first time
     /// - When a train stops
     /// - When a train finishes a route
-    case schedulingChanged
+    case schedulingChanged(train: Train)
         
     /// A train restart timer has expired, meaning that the train associated with this timer
     /// should restart again.
     case restartTimerExpired(train: Train)
     
     /// A turnout state changed
-    case turnoutChanged
+    case turnoutChanged(Turnout)
     
     /// A train direction has changed
     case directionChanged
     
     /// A train speed has changed
-    case speedChanged
+    case speedChanged(Train, TrainSpeed.UnitKph)
     
     /// A train state has changed.
     case stateChanged

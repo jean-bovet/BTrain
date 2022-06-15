@@ -39,7 +39,7 @@ class FixedRoutingWithTurnoutDelays: BTTestCase {
 
         // This will settle the turnout t0
         p.interface.resume()
-        p.layoutController.runControllers(.turnoutChanged)
+        p.layoutController.runControllers(.turnoutChanged(t0))
         p.layoutController.drainAllEvents()
 
         // And the train will restart because the leading turnouts are settled
