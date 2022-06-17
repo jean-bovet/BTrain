@@ -44,10 +44,10 @@ enum TrainEvent: Hashable, CustomStringConvertible {
     case reservedBlocksChanged
     
     /// A train has moved inside a block.
-    case movedInsideBlock
+    case movedInsideBlock(Train)
     
     /// A train has moved to the next block
-    case movedToNextBlock
+    case movedToNextBlock(Train)
     
     var description: String {
         switch self {

@@ -21,7 +21,7 @@ struct LayoutEventStateMachine {
     func handle(layoutEvent: StateMachine.LayoutEvent, train: TrainControlling) -> StateMachine.TrainEvent? {
         switch layoutEvent {
         case .feedback(let feedback):
-            if train.updatePosition(with: feedback) {
+            if train.state != .stopped && train.updatePosition(with: feedback) {
                 return .position(train)
             }
         case .speed(let eventTrain, let speed):

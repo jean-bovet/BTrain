@@ -128,7 +128,7 @@ class TransitionsTests: BTTestCase {
         
         // So we manually free up the first block and all the transitions to the next one
         try v8.free(fromBlock: r1.steps[0].stepBlockId!, toBlockNotIncluded: r1.steps[1].stepBlockId!, direction: .next)
-        doc.layoutController.runControllers(.movedToNextBlock)
+        doc.layoutController.runControllers(.movedToNextBlock(t1))
         
         doc.layoutController.drainAllEvents()
 

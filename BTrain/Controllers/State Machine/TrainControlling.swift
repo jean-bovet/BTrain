@@ -86,5 +86,8 @@ protocol TrainControlling: AnyObject {
     /// Adjusts the speed of the train given the current context.
     ///
     /// This method is called when the reserved blocks changed or the settling length of the reserved block changed.
-    func adjustSpeed()
+    func adjustSpeed(stateChanged: Bool)
+    
+    // TODO: can't we extract this feature into the state machine?
+    func processStoppedState()
 }

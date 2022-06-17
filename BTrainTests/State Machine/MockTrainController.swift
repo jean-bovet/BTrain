@@ -13,7 +13,7 @@
 import XCTest
 @testable import BTrain
 
-final class MockTrainController: TrainControlling {    
+final class MockTrainController: TrainControlling {
 
     var id: String = UUID().uuidString
     
@@ -120,19 +120,27 @@ final class MockTrainController: TrainControlling {
     
     var adjustSpeedCount = 0
     
-    func adjustSpeed() {
+    func adjustSpeed(stateChanged: Bool) {
         adjustSpeedCount += 1
         
-        switch state {
-        case .running:
+        if stateChanged {
+            switch state {
+            case .running:
+                speed = LayoutFactory.DefaultMaximumSpeed
+            case .braking:
+                speed = LayoutFactory.DefaultBrakingSpeed
+            case .stopping:
+                speed = LayoutFactory.DefaultBrakingSpeed
+            case .stopped:
+                speed = 0
+            }
+        } else if state == .running {
             speed = LayoutFactory.DefaultMaximumSpeed
-        case .braking:
-            speed = LayoutFactory.DefaultBrakingSpeed
-        case .stopping:
-            speed = LayoutFactory.DefaultBrakingSpeed
-        case .stopped:
-            speed = 0
         }
     }
     
+    func processStoppedState() {
+        // TODO: remove when the protocol's method moves out
+    }
+
 }

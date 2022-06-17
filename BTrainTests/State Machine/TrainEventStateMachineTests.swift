@@ -37,7 +37,8 @@ class TrainEventStateMachineTests: XCTestCase {
         train.state = .running // because adjustSpeed() is only called when the train is not stopped
                 
         train.onReservedBlocksLengthEnough = { speed in return false }
-
+        train.brakeFeedbackActivated = true
+        
         XCTAssertEqual(train.adjustSpeedCount, 0)
         XCTAssertEqual(tsm.handle(trainEvent: .reservedBlocksChanged(train), train: train), .stateChanged(train))
         XCTAssertEqual(train.adjustSpeedCount, 1)
@@ -62,29 +63,6 @@ extension StateMachine.TrainEvent: Equatable {
         case (.reservedBlocksSettledLengthChanged(let t1), .reservedBlocksSettledLengthChanged(let t2)): return t1.id == t2.id
         default:
             return false
-        }
-    }
-
-}
-
-extension StateMachine.TrainEvent: CustomStringConvertible {
-    
-    public var description: String {
-        switch self {
-        case .position(_):
-            return "position"
-        case .speed(_):
-            return "speed"
-        case .modeChanged(_):
-            return "scheduling"
-        case .stateChanged(_):
-            return "stateChanged"
-        case .restartTimerFired(_):
-            return "restartTimerFired"
-        case .reservedBlocksChanged(_):
-            return "reservedBlocksChanged"
-        case .reservedBlocksSettledLengthChanged(_):
-            return "reservedBlocksSettledLengthChanged"
         }
     }
 

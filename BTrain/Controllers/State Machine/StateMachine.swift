@@ -58,12 +58,38 @@ extension TrainEvent {
     func trainEvent(layoutController: LayoutController) -> StateMachine.TrainEvent? {
         switch self {
         case .schedulingChanged(let train):
-            let tc = layoutController.trainController(forTrain: train)
-            return .modeChanged(tc!)
+            let tc = layoutController.trainController(forTrain: train)!
+            return .modeChanged(tc)
         case .restartTimerExpired(train: let train):
-            let tc = layoutController.trainController(forTrain: train)
-            return .restartTimerFired(tc!)
+            let tc = layoutController.trainController(forTrain: train)!
+            return .restartTimerFired(tc)
+        case .movedInsideBlock(let train), .movedToNextBlock(let train):
+            let tc = layoutController.trainController(forTrain: train)!
+            return .position(tc)
         default: return nil
         }
     }
+}
+
+extension StateMachine.TrainEvent: CustomStringConvertible {
+    
+    public var description: String {
+        switch self {
+        case .position(_):
+            return "position"
+        case .speed(_):
+            return "speed"
+        case .modeChanged(_):
+            return "scheduling"
+        case .stateChanged(_):
+            return "stateChanged"
+        case .restartTimerFired(_):
+            return "restartTimerFired"
+        case .reservedBlocksChanged(_):
+            return "reservedBlocksChanged"
+        case .reservedBlocksSettledLengthChanged(_):
+            return "reservedBlocksSettledLengthChanged"
+        }
+    }
+
 }

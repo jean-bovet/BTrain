@@ -79,7 +79,7 @@ final class TrainHandlerUnmanaged {
                 
                 BTLogger.router.debug("\(self.train, privacy: .public): moved to position \(self.train.position) in \(currentBlock.name, privacy: .public), direction \(direction)")
                 
-                resultingEvents.append(.movedInsideBlock)
+                resultingEvents.append(.movedInsideBlock(train))
             }
         }
     }
@@ -103,7 +103,7 @@ final class TrainHandlerUnmanaged {
                 
         try executor.setTrainToBlock(train, entryFeedback.block.id, position: .custom(value: position), direction: entryFeedback.direction, routeIndex: nil, removeLeadingBlocks: true)
                             
-        resultingEvents.append(.movedToNextBlock)
+        resultingEvents.append(.movedToNextBlock(train))
     }
 
     func stopDetection() throws {

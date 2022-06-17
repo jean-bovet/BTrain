@@ -32,12 +32,18 @@ final class LayoutAsserter {
         let expectedTrains = Array(expectedLayout.trains)
         
         // First apply all the feedbacks
+        var detectedFeedbacks = [Feedback]()
         for route in layout.routes {
             if let expectedRoute = expectedLayout.routes[route.id] {
-                applyFeedbacks(expectedSteps: expectedRoute.resolvedSteps, expectedLayout: expectedLayout)
+                let feedbacks = applyFeedbacks(expectedSteps: expectedRoute.resolvedSteps, expectedLayout: expectedLayout)
+                detectedFeedbacks.append(contentsOf: feedbacks)
             }
         }
         
+        for feedback in detectedFeedbacks {
+            layoutController.runControllers(.feedbackTriggered(feedback))
+        }
+
         // Then run the controller to update the real layout states
         if drainAll {
             layoutController.drainAllEvents()
@@ -76,7 +82,8 @@ final class LayoutAsserter {
         XCTAssertTrue(assertedAtLeastOneRoute, "At least one route should have been asserted!")
     }
     
-    private func applyFeedbacks(expectedSteps: [ResolvedRouteItem], expectedLayout: LayoutParser.ParsedLayout) {
+    private func applyFeedbacks(expectedSteps: [ResolvedRouteItem], expectedLayout: LayoutParser.ParsedLayout) -> [Feedback] {
+        var detectedFeedbacks = [Feedback]()
         for expectedStep in expectedSteps {
             switch expectedStep {
             case .block(let resolvedRouteItemBlock):
@@ -91,14 +98,16 @@ final class LayoutAsserter {
                     let blockFeedback = block.feedbacks[index]
                     let feedback = layout.feedback(for: blockFeedback.feedbackId)!
                     feedback.detected = expectedFeedback.detected
-                    
-                    layoutController.runControllers(.feedbackTriggered(feedback))
+                    if feedback.detected {
+                        detectedFeedbacks.append(feedback)
+                    }
                 }
 
             case .turnout(_):
                 break
             }
         }
+        return detectedFeedbacks
     }
     
     private func assert(routeName: String, actualSteps: [ResolvedRouteItem], expectedSteps: [ResolvedRouteItem], trains: [Train], expectedTrains: [Train], expectedLayout: LayoutParser.ParsedLayout) throws {

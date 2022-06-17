@@ -15,6 +15,7 @@ import Foundation
 final class TrainController: TrainControlling {
 
     let train: Train
+    let route: Route
     let layout: Layout
     let layoutController: LayoutController
     let reservation: LayoutReservation
@@ -78,9 +79,6 @@ final class TrainController: TrainControlling {
     }
     
     var endRouteIndex: Int {
-        guard let route = layout.route(for: train.routeId, trainId: train.id) else {
-            fatalError()
-        }
         return route.lastStepIndex
     }
     
@@ -91,8 +89,9 @@ final class TrainController: TrainControlling {
         return block.category == .station
     }
     
-    init(train: Train, layout: Layout, currentBlock: Block, trainInstance: TrainInstance, layoutController: LayoutController, reservation: LayoutReservation) {
+    init(train: Train, route: Route, layout: Layout, currentBlock: Block, trainInstance: TrainInstance, layoutController: LayoutController, reservation: LayoutReservation) {
         self.train = train
+        self.route = route
         self.layout = layout
         self.currentBlock = currentBlock
         self.trainInstance = trainInstance
@@ -129,19 +128,43 @@ final class TrainController: TrainControlling {
     }
     
     func updateReservedBlocks() -> Bool {
-        if try! reservation.updateReservedBlocks(train: train) == .success {
-            return true
-        } else {
-            return false
-        }
+        let previousLeadingItems = train.leading.items
+        let previousOccupiedItems = train.occupied.items
+
+        _ = try! reservation.updateReservedBlocks(train: train)
+        
+        return previousLeadingItems != train.leading.items || previousOccupiedItems != train.occupied.items
     }
     
     func removeReservedBlocks() -> Bool {
         return try! reservation.removeLeadingBlocks(train: train)
     }
     
-    func adjustSpeed() {
-        layoutController.setTrainSpeed(train, 0)
+    func adjustSpeed(stateChanged: Bool) {
+        let desiredKph: TrainSpeed.UnitKph?
+        if stateChanged {
+            switch train.state {
+            case .running:
+                desiredKph = LayoutFactory.DefaultMaximumSpeed
+            case .braking:
+                desiredKph = currentBlock.brakingSpeed ?? LayoutFactory.DefaultBrakingSpeed
+            case .stopping:
+                desiredKph = 0
+            case .stopped:
+                desiredKph = nil
+            }
+        } else if train.state == .running {
+            desiredKph = LayoutFactory.DefaultMaximumSpeed
+        } else {
+            desiredKph = nil
+        }
+        
+        if let desiredKph = desiredKph {
+            let requestedKph = min(desiredKph, reservation.maximumSpeedAllowed(train: train, route: route))
+            if requestedKph != train.speed.requestedKph {
+                layoutController.setTrainSpeed(train, requestedKph)
+            }
+        }
     }
  
     // MARK: --
@@ -219,4 +242,58 @@ final class TrainController: TrainControlling {
                 
         return true
     }
+    
+    func processStoppedState() {
+        let reachedStationOrDestination = layout.hasTrainReachedStationOrDestination(route, train, currentBlock)
+        
+        switch route.mode {
+        case .fixed:
+            if (reachedStationOrDestination && train.scheduling == .finishManaged)
+                || train.scheduling == .stopManaged
+                || trainAtEndOfRoute {
+                train.scheduling = .unmanaged
+            } else if reachedStationOrDestination {
+                reschedule(train: train, delay: waitingTime)
+            }
+
+        case .automatic:
+            if (reachedStationOrDestination && train.scheduling == .finishManaged)
+                || train.scheduling == .stopManaged {
+                train.scheduling = .unmanaged
+            } else if reachedStationOrDestination {
+                reschedule(train: train, delay: waitingTime)
+            }
+
+        case .automaticOnce(destination: _):
+            if reachedStationOrDestination {
+                train.scheduling = .unmanaged
+            }
+            break
+        }
+    }
+    
+    func reschedule(train: Train, delay: TimeInterval) {
+        BTLogger.router.debug("\(train, privacy: .public): schedule timer to restart train in \(delay, format: .fixed(precision: 1)) seconds")
+        
+        train.timeUntilAutomaticRestart = delay
+        layoutController.scheduleRestartTimer(train: train)
+    }
+
+    /// Returns true if the train is at the end of the route
+    var trainAtEndOfRoute: Bool {
+        train.routeStepIndex == route.lastStepIndex
+    }
+
+    /// Returns the time the train needs to wait in the current block
+    var waitingTime: TimeInterval {
+        if let step = route.steps.element(at: train.routeStepIndex),
+           case .block(let stepBlock) = step,
+           let time = stepBlock.waitingTime {
+            return time
+        } else {
+            // Use the block waiting time if the route itself has nothing specified
+            return currentBlock.waitingTime
+        }
+    }
+
 }

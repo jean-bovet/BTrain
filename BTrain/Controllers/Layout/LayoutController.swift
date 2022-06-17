@@ -96,6 +96,8 @@ final class LayoutController {
         redrawSwitchboard()
     }
         
+    let useStateMachine = false
+    
     private func run(_ event: TrainEvent) -> TrainHandlerResult {
         if let runtimeError = layout.runtimeError {
             BTLogger.router.error("⚙ Cannot evaluate the layout because there is a runtime error: \(runtimeError, privacy: .public)")
@@ -117,15 +119,19 @@ final class LayoutController {
             // Run each controller, one for each train, in order
             // to process the new state of each train (speed, position,
             // reserved blocks, etc).
-//            for train in layout.trains {
-//                result.append(try run(train: train, event: event))
-//            }
+            if useStateMachine {
+                let lsm = LayoutStateMachine()
+                var events: [StateMachine.TrainEvent]? = []
+                lsm.handle(layoutEvent: event.layoutEvent(layoutController: self),
+                           trainEvent: event.trainEvent(layoutController: self),
+                           trains: layout.trains.compactMap({ train in trainController(forTrain: train) }), handledTrainEvents: &events)
+                print(events)
+            } else {
+                for train in layout.trains {
+                    result.append(try run(train: train, event: event))
+                }
+            }
             
-            let lsm = LayoutStateMachine()
-            lsm.handle(layoutEvent: event.layoutEvent(layoutController: self),
-                       trainEvent: event.trainEvent(layoutController: self),
-                       trains: layout.trains.compactMap({ train in trainController(forTrain: train) }))
-
             // Update and detect any unexpected feedbacks
             // Note: it is necessary to repeat this step after
             // running all the train controllers because a train
@@ -154,7 +160,11 @@ final class LayoutController {
             return nil
         }
 
-        return TrainController(train: train, layout: layout, currentBlock: currentBlock, trainInstance: trainInstance, layoutController: self, reservation: reservation)
+        guard let route = layout.route(for: train.routeId, trainId: train.id) else {
+            return nil
+        }
+        
+        return TrainController(train: train, route: route, layout: layout, currentBlock: currentBlock, trainInstance: trainInstance, layoutController: self, reservation: reservation)
     }
     
     /// This is the main method to call to manage the train associated with this controller.

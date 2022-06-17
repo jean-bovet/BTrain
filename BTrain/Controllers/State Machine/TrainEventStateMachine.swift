@@ -42,11 +42,26 @@ struct TrainEventStateMachine {
         case .position(_):
             if train.updateOccupiedAndReservedBlocks() {
                 return .reservedBlocksChanged(train)
+            } else {
+                // Note: when moving within a block, there might not always been an update
+                // to the reserved block. In this case, let's make sure the train state is handled
+                // in order to brake or stop the train within a block.
+                if tsm.handleTrainState(train: train) {
+                    train.adjustSpeed(stateChanged: true)
+                    return .stateChanged(train)
+                }
             }
             
         case .modeChanged(_):
-            if train.mode == .managed && train.updateReservedBlocks() {
-                return .reservedBlocksChanged(train)
+            if train.mode == .managed {
+                if train.updateReservedBlocks() {
+                    return .reservedBlocksChanged(train)
+                }
+            } else {
+                if tsm.handleTrainState(train: train) {
+                    train.adjustSpeed(stateChanged: true)
+                    return .stateChanged(train)
+                }
             }
             
         case .stateChanged(_):
@@ -55,34 +70,36 @@ struct TrainEventStateMachine {
             }
             
             if tsm.handleTrainState(train: train) {
+                train.adjustSpeed(stateChanged: true)
                 return .stateChanged(train)
             }
 
         case .restartTimerFired(_):
             train.startedRouteIndex = train.currentRouteIndex
-            if !train.shouldStopInBlock && train.updateReservedBlocks() {
+            if !train.shouldStopInBlock(ignoreReservedBlocks: true) && train.updateReservedBlocks() {
                 return .reservedBlocksChanged(train)
             }
 
         case .reservedBlocksChanged(_):
             if tsm.handleTrainState(train: train) {
-                train.adjustSpeed()
+                train.adjustSpeed(stateChanged: true)
                 return .stateChanged(train)
             } else {
-                train.adjustSpeed()
+                train.adjustSpeed(stateChanged: false)
             }
             
         case .reservedBlocksSettledLengthChanged(_):
             if tsm.handleTrainState(train: train) {
-                train.adjustSpeed()
+                train.adjustSpeed(stateChanged: true)
                 return .stateChanged(train)
             } else {
-                train.adjustSpeed()
+                train.adjustSpeed(stateChanged: false)
             }
 
         case .speed(_):
             // Speed change can result in state change, for example when the speed reaches 0.
             if tsm.handleTrainState(train: train) {
+                train.adjustSpeed(stateChanged: true)
                 return .stateChanged(train)
             }
         }

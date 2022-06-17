@@ -37,9 +37,7 @@ struct TrainStateMachine {
      Running + Feedback.Brake + Train.Block.Station > Braking
      */
     private func handleRunningState(train: TrainControlling) {
-        if !train.reservedBlocksLengthEnough(forSpeed: LayoutFactory.DefaultMaximumSpeed) {
-            train.state = .braking
-        } else if train.brakeFeedbackActivated && train.shouldStopInBlock {
+        if train.brakeFeedbackActivated && train.shouldStopInBlock {
             train.state = .braking
         } else if train.stopFeedbackActivated && train.shouldStopInBlock {
             train.state = .stopping
@@ -54,18 +52,12 @@ struct TrainStateMachine {
      Braking + Train.Reserved.Blocks.Length + !Stop.Managed + !Train.Block.Station + !Route.End > Running
      */
     private func handleBrakingState(train: TrainControlling) {
-        if !train.reservedBlocksLengthEnough(forSpeed: LayoutFactory.DefaultBrakingSpeed) {
-            train.state = .stopping
-        } else {
-            if train.shouldStopInBlock {
-                if train.stopFeedbackActivated {
-                    train.state = .stopping
-                }
-            } else {
-                if train.reservedBlocksLengthEnough(forSpeed: LayoutFactory.DefaultMaximumSpeed) {
-                    train.state = .running
-                }
+        if train.shouldStopInBlock {
+            if train.stopFeedbackActivated {
+                train.state = .stopping
             }
+        } else {
+            train.state = .running
         }
     }
 
@@ -75,10 +67,9 @@ struct TrainStateMachine {
     private func handleStoppingState(train: TrainControlling) {
         if train.speed == 0 {
             train.state = .stopped
+            train.processStoppedState()
         } else if !train.shouldStopInBlock {
-            if train.reservedBlocksLengthEnough(forSpeed: LayoutFactory.DefaultMaximumSpeed) {
-                train.state = .running
-            }
+            train.state = .running
         }
     }
     
@@ -86,7 +77,7 @@ struct TrainStateMachine {
      Stopped + Train.Reserved.Blocks.Length + !Stop.Managed > Running
      */
     private func handleStoppedState(train: TrainControlling) {
-        if !train.shouldStopInBlock && train.reservedBlocksLengthEnough(forSpeed: LayoutFactory.DefaultMaximumSpeed) {
+        if !train.shouldStopInBlock && train.mode == .managed {
             train.state = .running
         }
     }
@@ -95,7 +86,7 @@ struct TrainStateMachine {
 
 extension TrainControlling {
     
-    var shouldStopInBlock: Bool {
+    func shouldStopInBlock(ignoreReservedBlocks: Bool) -> Bool {
         // User requested to stop managing the train?
         if mode == .stopManaged {
             return true
@@ -116,7 +107,18 @@ extension TrainControlling {
             return true
         }
         
+        if !ignoreReservedBlocks {
+            // Not enough room to run at least at limited speed?
+            if !reservedBlocksLengthEnough(forSpeed: LayoutFactory.DefaultBrakingSpeed) {
+                return true
+            }
+        }
+
         return false
+    }
+    
+    var shouldStopInBlock: Bool {
+        shouldStopInBlock(ignoreReservedBlocks: false)
     }
 
 }

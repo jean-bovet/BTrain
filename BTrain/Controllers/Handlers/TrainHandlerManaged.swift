@@ -159,9 +159,9 @@ final class TrainHandlerManaged {
         switch event {
         case .feedbackTriggered:
             if try moveInsideBlock() {
-                resultingEvents.append(.movedInsideBlock)
+                resultingEvents.append(.movedInsideBlock(train))
             } else if try moveToNextBlock() {
-                resultingEvents.append(.movedToNextBlock)
+                resultingEvents.append(.movedToNextBlock(train))
             }
                             
         case .restartTimerExpired(let train):

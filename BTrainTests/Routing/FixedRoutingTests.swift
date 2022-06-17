@@ -45,13 +45,17 @@ class FixedRoutingTests: BTTestCase {
         
         // Which is a simulation of a train moving out of b3, so trigger that event
         // so train 1 will restart
-        p.layoutController.runControllers(.movedToNextBlock)
+        p.layoutController.runControllers(.movedToNextBlock(p.train))
         
         try p.assert("r1:{b1 ≏ ≏ } <t0> [r1[b2 ≏ ≡ 🔵🚂1 ]] <r1<t1(0,2),l>> [r1[b3 ≏ ≏ ]] <t0(2,0)> !{b1 ≏ ≏ }")
         
         p.stop()
         
+        XCTAssertEqual(p.train.state, .stopping)
+        
         try p.assert("r1:{b1 ≏ ≏ } <t0> [r1[b2 ≏ ≡ 🔴🚂1 ]] <t1(0,2),l> [b3 ≏ ≏ ] <t0(2,0)> !{b1 ≏ ≏ }")
+
+        XCTAssertEqual(p.train.state, .stopped)
     }
     
     func testBlockBrakingSpeed() throws {
@@ -100,7 +104,7 @@ class FixedRoutingTests: BTTestCase {
         
         // Re-enable b3
         b3.enabled = true
-        p.layoutController.runControllers(.movedToNextBlock)
+        p.layoutController.runControllers(.movedToNextBlock(p.train))
 
         try p.assert("r1:{b1 ≏ ≏ } <t0> [r1[b2 ≏ ≡ 🔵🚂1 ]] <r1<t1(0,2),l>> [r1[b3 ≏ ≏ ]] <t0(2,0)> !{b1 ≏ ≏ }")
         
@@ -245,7 +249,7 @@ class FixedRoutingTests: BTTestCase {
         try p.assert("r1: {r1{b1 🟢🚂1 ≏ ≏ }} <r1<t1{ds2},s01>> [r1[b2 ≏ ≏ ]] [r1[b3 ≏ ≏ ]] <r1<t1{ds2}(2,3),s01>> [b4 ≏ ≏ ] {r1{b1 🟢🚂1 ≏ ≏ }}")
         
         // Now that the train is in b2, the turnout t1 is free and the leading blocks can be reserved until b1, including b4.
-        try p.assert("r1: {r1{b1 ≏ ≏ }} <r1<t1{ds2},s23>> [r1[b2 ≡ 🟢🚂1 ≏ ]] [r1[b3 ≏ ≏ ]] <r1<t1{ds2}(2,3),s23>> [r1[b4 ≏ ≏ ]] {r1{b1 ≏ ≏ }}")
+        try p.assert("r1: {r1{b1 ≏ ≏ }} <r1<t1{ds2},s23>> [r1[b2 ≡ 🔵🚂1 ≏ ]] [r1[b3 ≏ ≏ ]] <r1<t1{ds2}(2,3),s23>> [r1[b4 ≏ ≏ ]] {r1{b1 ≏ ≏ }}")
         try p.assert("r1: {r1{b1 ≏ ≏ }} <r1<t1{ds2},s23>> [b2 ≏ ≏ ] [r1[b3 ≡ 🔵🚂1 ≏ ]] <r1<t1{ds2}(2,3),s23>> [r1[b4 ≏ ≏ ]] {r1{b1 ≏ ≏ }}")
         try p.assert("r1: {r1{b1 ≏ ≏ }} <t1{ds2},s23> [b2 ≏ ≏ ] [b3 ≏ ≏ ] <t1{ds2}(2,3),s23> [r1[b4 ≡ 🔵🚂1 ≏ ]] {r1{b1 ≏ ≏ }}")
         try p.assert("r1: {r1{b1 ≡ 🟡🚂1 ≏ }} <t1{ds2},s23> [b2 ≏ ≏ ] [b3 ≏ ≏ ] <t1{ds2}(2,3),s23> [b4 ≏ ≏ ] {r1{b1 ≡ 🟡🚂1 ≏ }}")
@@ -385,7 +389,8 @@ class FixedRoutingTests: BTTestCase {
 
         try layout.remove(trainID: layout.trains.first!.id)
 
-        try p.assert("r2: {r2{b1 🔴🚂2 ≡ ≏ }} <t0(0,2)> ![b3 ≏ ≏ ] <t1(2,0)> ![b2 ≏ ≏ ] <t0(1,0)> !{r2{b1 ≏ ≡ 🔴🚂2 }}")
+        // TODO: activating a feedback while the train is stopped should cause an runtime error
+//        try p.assert("r2: {r2{b1 🔴🚂2 ≡ ≏ }} <t0(0,2)> ![b3 ≏ ≏ ] <t1(2,0)> ![b2 ≏ ≏ ] <t0(1,0)> !{r2{b1 ≏ ≡ 🔴🚂2 }}")
         try p.assert("r2: {r2{b1 🔴🚂2 ≏ ≏ }} <t0(0,2)> ![b3 ≏ ≏ ] <t1(2,0)> ![b2 ≏ ≏ ] <t0(1,0)> !{r2{b1 ≏ ≏ 🔴🚂2 }}")
 
         try p.start()
@@ -642,7 +647,7 @@ class FixedRoutingTests: BTTestCase {
 
         // Let's remove train 2 artificially to allow train 1 to stop at the station b1
         try layout.remove(trainID: Identifier<Train>(uuid: "2"))
-        p.layoutController.runControllers(.movedToNextBlock)
+        p.layoutController.runControllers(.movedToNextBlock(p.train))
 
         try p.assert2("r1: {r1{b1 ≏ ≏ }} <t0,r> [b2 ≏ ≏ ] {b3 ≏ ≏ } <t1> [r1[b4 ≡ ≡ 🔵🚂1 ]] {r1{b1 ≏ ≏ }}",
                       "r3: {b3 ≏ ≏ } <t1(0,2)> [b5 ≏ ≏ ] <t0(2,0),r> !{r1{b1 ≏ ≏ }}")
@@ -693,13 +698,13 @@ class FixedRoutingTests: BTTestCase {
         
         // Free s1 so the train finishes its route
         layout.free("s1")
-        p.layoutController.runControllers(.movedToNextBlock)
+        p.layoutController.runControllers(.movedToNextBlock(p.train))
         
         try p.assert("0: {r0{s1 ≏ }} <t1(2,0),l> <t2(1,0),s> [b1 ≏ ] <t3> [b2 ≏ ] <t4(1,0)> [r0[b3 ≏ ≏ 🔵🚂0 ≏ ]] <r0<t5>> <r0<t6(0,2),r>> {r0{s1 ≏ }}")
         try p.assert("0: {r0{s1 ≏ }} <t1(2,0),l> <t2(1,0),s> [b1 ≏ ] <t3> [b2 ≏ ] <t4(1,0)> [r0[b3 ≏ ≏ ≡ 🔵🚂0 ]] <r0<t5>> <r0<t6(0,2),r>> {r0{s1 ≏ }}")
         try p.assert("0: {r0{s1 ≡ 🔴🚂0 }} <t1(2,0),l> <t2(1,0),s> [b1 ≏ ] <t3> [b2 ≏ ] <t4(1,0)> [b3 ≏ ≏ ≏ ] <t5> <t6(0,2),r> {r0{s1 ≡ 🔴🚂0 }}")
         
-        XCTAssertTrue(train.scheduling == .unmanaged)
+        XCTAssertEqual(train.scheduling, .unmanaged)
         XCTAssertEqual(train.state, .stopped)
 
         // Now let's reverse the train direction and pick the reverse route
@@ -756,7 +761,7 @@ class FixedRoutingTests: BTTestCase {
         try p.assert("2: {r0{s1 ≏ }} <t1(2,0),s> <t2(1,0),s> [b1 ≏ ] <t3> [b2 ≏ ] <t4(1,0)> [r0[b3 ≡ 🔵🚂0 ≏ ]] <r0<t5>> <r0<t6,r>> {s2 ≏ } <t1(1,0),s> <t2(1,0),s> [b1 ≏ ] <t3> [b2 ≏ ] <t4(1,0)> [r0[b3 ≡ 🔵🚂0 ≏ ]] <r0<t5>> <r0<t6(0,2),r>> {r0{s1 ≏ }}")
         try p.assert("2: {r0{s1 ≡ 🔴🚂0 }} <t1(2,0),s> <t2(1,0),s> [b1 ≏ ] <t3> [b2 ≏ ] <t4(1,0)> [b3 ≏ ≏ ]] <t5> <t6,r> {s2 ≏ } <t1(1,0),s> <t2(1,0),s> [b1 ≏ ] <t3> [b2 ≏ ] <t4(1,0)> [b3 ≏ ≏ ] <t5> <t6(0,2),r> {r0{s1 ≡ 🔴🚂0 }}")
         
-        XCTAssertTrue(p.train.scheduling == .unmanaged)
+        XCTAssertEqual(p.train.scheduling, .unmanaged)
     }
 
     func testUpdateAutomaticRouteBrakingAndContinue() throws {
@@ -779,7 +784,7 @@ class FixedRoutingTests: BTTestCase {
         
         // And now we free D...
         layout.free("D")
-        p.layoutController.runControllers(.movedToNextBlock)
+        p.layoutController.runControllers(.movedToNextBlock(p.train))
 
         // Which means the train should start accelerating again
         try p.assert("0: |[A ≏ ≏ ] <AB> [r0[B 💺0 ≏ 💺0 ≏ 💺0 ]] [r0[C 💺0 ≏ 💺0 ≡ 🔵🚂0 ]] [r0[D ≏ ≏ ]] <DE(1,0)> [E ≏ ≏ ]|")
