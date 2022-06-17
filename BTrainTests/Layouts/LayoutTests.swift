@@ -151,6 +151,7 @@ class LayoutTests: BTTestCase {
         train.leading.append(s1)
         train.leading.append(b1)
         train.startRouteIndex = 0
+        train.leading.settledDistance = train.leading.computeSettledDistance()
 
         XCTAssertEqual(doc.layoutController.reservation.maximumSpeedAllowed(train: train, route: nil), LayoutFactory.DefaultMaximumSpeed)
         
@@ -171,6 +172,7 @@ class LayoutTests: BTTestCase {
         train.leading.append(s1)
         train.leading.append(b1)
         train.startRouteIndex = 0
+        train.leading.settledDistance = train.leading.computeSettledDistance()
 
         XCTAssertEqual(doc.layoutController.reservation.maximumSpeedAllowed(train: train, route: nil), LayoutFactory.DefaultMaximumSpeed)
 
