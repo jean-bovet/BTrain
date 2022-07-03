@@ -21,6 +21,8 @@ final class MockTrainController: TrainControlling {
     
     var state: StateMachine.TrainState = .stopped
     
+    var route: Route
+    
     var speed: TrainSpeed.UnitKph = 0
             
     var brakeFeedbackActivated: Bool = false
@@ -35,6 +37,10 @@ final class MockTrainController: TrainControlling {
 
     var atStation: Bool = false
         
+    init(route: Route) {
+        self.route = route
+    }
+    
     func moveToEndOfRoute() {
         currentRouteIndex = 10
         endRouteIndex = 10

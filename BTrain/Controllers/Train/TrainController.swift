@@ -131,11 +131,49 @@ final class TrainController: TrainControlling {
         let previousLeadingItems = train.leading.items
         let previousOccupiedItems = train.occupied.items
 
-        _ = try! reservation.updateReservedBlocks(train: train)
+        reserveLeadingBlocks()
         
         return previousLeadingItems != train.leading.items || previousOccupiedItems != train.occupied.items
     }
     
+    func reserveLeadingBlocks() {
+        switch route.mode {
+        case .fixed:
+            // TODO: throw
+            _ = try! reservation.updateReservedBlocks(train: train)
+
+        case .automatic, .automaticOnce(destination: _):
+            // TODO: throw
+            let result = try! reservation.updateReservedBlocks(train: train)
+            if result != .failure {
+                return
+            }
+
+            if layout.hasTrainReachedStationOrDestination(route, train, currentBlock) {
+                return
+            }
+            
+            BTLogger.router.debug("\(self.train, privacy: .public): generating a new route at \(self.currentBlock.name, privacy: .public) because the leading blocks could not be reserved for \(self.route.steps.debugDescription, privacy: .public)")
+            
+            // Update the automatic route
+            if try! updateAutomaticRoute(for: train, layout: layout) {
+                // And try to reserve the lead blocks again
+                _ = try! reservation.updateReservedBlocks(train: train)
+            }
+        }
+    }
+
+    private func updateAutomaticRoute(for train: Train, layout: Layout) throws -> Bool {
+        let (success, route) = try layout.automaticRouting.updateAutomaticRoute(for: train.id)
+        if success {
+            BTLogger.router.debug("\(train, privacy: .public): generated route is \(route.steps.debugDescription, privacy: .public)")
+            return true
+        } else {
+            BTLogger.router.warning("\(train, privacy: .public): unable to find a suitable route")
+            return false
+        }
+    }
+
     func removeReservedBlocks() -> Bool {
         return try! reservation.removeLeadingBlocks(train: train)
     }
@@ -278,7 +316,7 @@ final class TrainController: TrainControlling {
         train.timeUntilAutomaticRestart = delay
         layoutController.scheduleRestartTimer(train: train)
     }
-
+    
     /// Returns true if the train is at the end of the route
     var trainAtEndOfRoute: Bool {
         train.routeStepIndex == route.lastStepIndex

@@ -86,6 +86,10 @@ struct TrainStateMachine {
 
 extension TrainControlling {
     
+    var shouldStopInBlock: Bool {
+        shouldStopInBlock(ignoreReservedBlocks: false)
+    }
+
     func shouldStopInBlock(ignoreReservedBlocks: Bool) -> Bool {
         // User requested to stop managing the train?
         if mode == .stopManaged {
@@ -103,7 +107,7 @@ extension TrainControlling {
         }
         
         // At the end of the route?
-        if currentRouteIndex >= endRouteIndex {
+        if currentRouteIndex >= endRouteIndex && route.mode != .automatic {
             return true
         }
         
@@ -115,10 +119,6 @@ extension TrainControlling {
         }
 
         return false
-    }
-    
-    var shouldStopInBlock: Bool {
-        shouldStopInBlock(ignoreReservedBlocks: false)
     }
 
 }

@@ -27,6 +27,7 @@ class LayoutYardRoutingTests: BTTestCase {
         XCTAssertEqual(p.interface.turnoutCommands.count, 0)
         
         try p.start()
+        p.layoutController.drainAllEvents()
         
         XCTAssertEqual(p.interface.turnoutCommands.count, 3)
 

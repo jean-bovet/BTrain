@@ -110,29 +110,26 @@ class LayoutTests: BTTestCase {
         XCTAssertEqual(train1.directionForward, true)
         XCTAssertEqual(block1.train!.direction, .previous)
     }
-    
+
     func testTrainStopCompletely() throws {
-        let interface = MockCommandInterface()
-        let doc = LayoutDocument(layout: LayoutFigure8().newLayout(), interface: interface)
-        let layout = doc.layout
-        let train1 = layout.trains[0]
-        let block1 = layout.blocks[0]
+        let p = Package(layout: LayoutFigure8().newLayout())
+        let train1 = p.layout.trains[0]
+        let block1 = p.layout.blocks[0]
 
-        try layout.setTrainToBlock(train1.id, block1.id, direction: .next)
+        try p.prepare(trainID: train1.id.uuid, fromBlockId: block1.id.uuid)
         
-        XCTAssertEqual(train1.state, .stopped)
-        XCTAssertEqual(train1.scheduling, .unmanaged)
-        try doc.start(train: train1.id, withRoute: layout.routes[0].id, destination: nil)
-        XCTAssertEqual(train1.scheduling, .managed)
+        try p.start(routeID: p.layout.routes[0].id.uuid, trainID: train1.id.uuid)
 
-        // Note: state will change to running once the turnouts have been settled
-        doc.layoutController.drainAllEvents()
+        p.stop()
+        p.layoutController.drainAllEvents()
+
+        XCTAssertEqual(train1.scheduling, .stopManaged)
         
-        XCTAssertEqual(train1.state, .running)
-        XCTAssertEqual(train1.scheduling, .managed)
-
-        doc.stop(train: train1)
-        doc.layoutController.drainAllEvents()
+        // Need to trigger braking feedback to start braking
+        p.toggle("f11")
+        
+        // Need to trigger stop feedback to start braking
+        p.toggle("f12")
 
         XCTAssertEqual(train1.state, .stopped)
         XCTAssertEqual(train1.scheduling, .unmanaged)

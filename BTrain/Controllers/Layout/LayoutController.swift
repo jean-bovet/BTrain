@@ -96,7 +96,7 @@ final class LayoutController {
         redrawSwitchboard()
     }
         
-    let useStateMachine = false
+    let useStateMachine = true
     
     private func run(_ event: TrainEvent) -> TrainHandlerResult {
         if let runtimeError = layout.runtimeError {

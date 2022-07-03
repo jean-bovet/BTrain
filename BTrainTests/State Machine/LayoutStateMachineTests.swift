@@ -20,7 +20,7 @@ class LayoutStateMachineTests: XCTestCase {
 
     override func setUp() {
         super.setUp()
-        train = MockTrainController()
+        train = MockTrainController(route: Route(uuid: "fixed-test", mode: .fixed))
     }
     
     func testTrainStart() {
@@ -53,8 +53,8 @@ class LayoutStateMachineTests: XCTestCase {
     }
     
     func testTrainStart2() {
-        let t1 = MockTrainController()
-        let t2 = MockTrainController()
+        let t1 = MockTrainController(route: train.route)
+        let t2 = MockTrainController(route: train.route)
                 
         XCTAssertEqual(t1.state, .stopped)
         XCTAssertEqual(t2.state, .stopped)
@@ -79,7 +79,7 @@ class LayoutStateMachineTests: XCTestCase {
         XCTAssertEqual(t1.updateReservedBlocksInvocationCount, 1)
 
         XCTAssertEqual(t2.state, .stopped)
-        XCTAssertEqual(t2.updateReservedBlocksInvocationCount, 1)
+        XCTAssertEqual(t2.updateReservedBlocksInvocationCount, 0) // unmanaged train should not reserve any blocks
     }
     
     func testTrainMove() {
@@ -110,7 +110,7 @@ class LayoutStateMachineTests: XCTestCase {
 
         train.onUpdatePosition = { f in return f == f1 }
         train.onReservedBlocksLengthEnough = { speed in
-            if speed >= LayoutFactory.DefaultLimitedSpeed {
+            if speed >= LayoutFactory.DefaultBrakingSpeed {
                 return false
             } else {
                 return true
@@ -134,7 +134,7 @@ class LayoutStateMachineTests: XCTestCase {
         
         train.onUpdateReservedBlocksSettledLength = { t in t == t1 }
         train.onReservedBlocksLengthEnough = { speed in
-            if speed >= LayoutFactory.DefaultLimitedSpeed {
+            if speed >= LayoutFactory.DefaultBrakingSpeed {
                 return false
             } else {
                 return true
@@ -159,7 +159,7 @@ class LayoutStateMachineTests: XCTestCase {
         
         train.onUpdateReservedBlocksSettledLength = { t in t == t1 }
         train.onReservedBlocksLengthEnough = { speed in
-            if speed >= LayoutFactory.DefaultLimitedSpeed {
+            if speed >= LayoutFactory.DefaultBrakingSpeed {
                 return false
             } else {
                 return true
@@ -219,7 +219,8 @@ class LayoutStateMachineTests: XCTestCase {
 
         train.onUpdatePosition = { f in return f == f1 }
         train.onReservedBlocksLengthEnough = { speed in
-            if speed >= LayoutFactory.DefaultLimitedSpeed {
+            // TODO: use speed constant from the state machine
+            if speed >= LayoutFactory.DefaultBrakingSpeed {
                 return false
             } else {
                 return true

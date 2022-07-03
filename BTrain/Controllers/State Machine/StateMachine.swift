@@ -19,7 +19,7 @@ struct StateMachine {
         case speed(TrainControlling, TrainSpeed.UnitKph)
         case turnout(Turnout)
     }
-
+    
     enum TrainEvent {
         case position(TrainControlling)
         case speed(TrainControlling)
@@ -47,9 +47,11 @@ extension TrainEvent {
         case .directionChanged:
             return nil // TODO
         case .speedChanged(let train, let actualKph):
-            // TODO: TC can be nil
-            let tc = layoutController.trainController(forTrain: train)
-            return .speed(tc!, actualKph)
+            if let tc = layoutController.trainController(forTrain: train) {
+                return .speed(tc, actualKph)
+            } else {
+                return nil
+            }
         default:
             return nil
         }
@@ -58,16 +60,20 @@ extension TrainEvent {
     func trainEvent(layoutController: LayoutController) -> StateMachine.TrainEvent? {
         switch self {
         case .schedulingChanged(let train):
-            let tc = layoutController.trainController(forTrain: train)!
-            return .modeChanged(tc)
+            if let tc = layoutController.trainController(forTrain: train) {
+                return .modeChanged(tc)
+            }
         case .restartTimerExpired(train: let train):
-            let tc = layoutController.trainController(forTrain: train)!
-            return .restartTimerFired(tc)
+            if let tc = layoutController.trainController(forTrain: train) {
+                return .restartTimerFired(tc)
+            }
         case .movedInsideBlock(let train), .movedToNextBlock(let train):
-            let tc = layoutController.trainController(forTrain: train)!
-            return .position(tc)
+            if let tc = layoutController.trainController(forTrain: train) {
+                return .position(tc)
+            }
         default: return nil
         }
+        return nil
     }
 }
 

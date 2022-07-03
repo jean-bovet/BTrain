@@ -27,6 +27,9 @@ protocol TrainControlling: AnyObject {
     /// The state of the train (see ``StateMachine/TrainState``)
     var state: StateMachine.TrainState { get set }
     
+    /// The route associated with the train
+    var route: Route { get }
+    
     /// The speed of the train
     var speed: TrainSpeed.UnitKph { get set }
     

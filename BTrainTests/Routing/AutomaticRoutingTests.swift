@@ -66,11 +66,14 @@ class AutomaticRoutingTests: BTTestCase {
         let s1 = layout.block(named: "s1")
         
         // The route will choose "s2" as the arrival block
-        var p = try setup(layout: layout, fromBlockId: s1.id, destination: nil, position: .end, routeSteps: ["s1:next", "b1:next", "s2:next"])
-        
+        var p = try setup(layout: layout, fromBlockId: s1.id, destination: nil, position: .custom(value: 1), routeSteps: ["s1:next", "b1:next", "s2:next"])
+
+        try p.assert("automatic-0: {r0{s1 💺0 ≏ 🔵🚂0 ≏ }} <r0<t1{sr}(0,1),s>> <r0<t2{sr}(0,1),s>> [r0[b1 ≏ ≏ ]] <t4{sl}(1,0),s> {s2 ≏ ≏ }")
+
         p.stop()
 
-        try p.assert("automatic-0: {r0{s1 ≏ 💺0 ≏ 🔴🚂0 }} <t1{sr}(0,1),s> <t2{sr}(0,1),s> [b1 ≏ ≏ ] <t4{sl}(1,0),s> {s2 ≏ ≏ }")
+        // Note: the train the stops only after triggering the stop feedback of the block.
+        try p.assert("automatic-0: {r0{s1 ≏ 💺0 ≡ 🔴🚂0 }} <t1{sr}(0,1),s> <t2{sr}(0,1),s> [b1 ≏ ≏ ] <t4{sl}(1,0),s> {s2 ≏ ≏ }")
 
         // Let's artificially reserve turnout t2. This should cause the automatic route to be re-evaluated to find an alternate path
         layout.turnout(named: "t2").reserved = .init(train: .init(uuid: "7"), sockets: .init(fromSocketId: 0, toSocketId: 1))
@@ -87,6 +90,7 @@ class AutomaticRoutingTests: BTTestCase {
         
         // The route will choose "s2" as the arrival block
         var p = try setup(layout: layout, fromBlockId: s1.id, destination: nil, position: .end, routeSteps: ["s1:next", "b1:next", "b2:next", "b3:next", "s2:next"])
+        p.toggle("fs1") // allows the train to stops by indicating that the stop feedback has been triggered
         p.stop(drainAll: true)
         
         // Let's mark "s2" as to avoid
@@ -110,6 +114,7 @@ class AutomaticRoutingTests: BTTestCase {
 
         // The route will choose "s2" as the arrival block
         var p = try setup(layout: layout, fromBlockId: s1.id, destination: nil, position: .end, routeSteps: ["s1:next", "b1:next", "b2:next", "b3:next", "s2:next"])
+        p.toggle("fs1") // allows the train to stops by indicating that the stop feedback has been triggered
         p.stop(drainAll: true)
 
         // Let's mark "t5" as to avoid
@@ -237,7 +242,7 @@ class AutomaticRoutingTests: BTTestCase {
         p.layoutController.restartTimerFired(layout.trains[0])
         p.layoutController.drainAllEvents()
 
-        XCTAssertTrue(p.train.speed.requestedKph > 0)
+        XCTAssertGreaterThan(p.train.speed.requestedKph, 0)
         
         // When restarting, the train automatic route will be updated
         XCTAssertEqual(p.route.steps.toStrings(layout), ["s2:next", "b1:next", "b2:next", "b3:next", "s2:next"])
@@ -371,7 +376,7 @@ class AutomaticRoutingTests: BTTestCase {
         
         // Now remove the train from the block b1 in order for the train in s2 to start again properly this time
         try layout.remove(trainID: layout.trains[1].id)
-        p.layoutController.runControllers(.movedToNextBlock(layout.trains[1]))
+        p.layoutController.runControllers(.movedToNextBlock(layout.trains[0]))
 
         // When restarting, the train automatic route will be updated
         XCTAssertEqual(p.route.steps.toStrings(layout), ["s2:next", "b1:next", "b2:next", "b3:next", "s2:next"])

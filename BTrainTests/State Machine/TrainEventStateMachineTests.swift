@@ -20,11 +20,11 @@ class TrainEventStateMachineTests: XCTestCase {
     
     override func setUp() {
         super.setUp()
-        train = MockTrainController()
+        train = MockTrainController(route: Route(uuid: "fixed-test", mode: .fixed))
     }
     
     func testEventPosition() {
-        let anotherTrain = MockTrainController()
+        let anotherTrain = MockTrainController(route: train.route)
         
         train.onUpdateOccupiedAndReservedBlocks = { return true }
         XCTAssertEqual(tsm.handle(trainEvent: .position(train), train: train), .reservedBlocksChanged(train))
@@ -33,7 +33,7 @@ class TrainEventStateMachineTests: XCTestCase {
     }
     
     func testEventReservedBlocksChanged() {
-        let anotherTrain = MockTrainController()
+        let anotherTrain = MockTrainController(route: train.route)
         train.state = .running // because adjustSpeed() is only called when the train is not stopped
                 
         train.onReservedBlocksLengthEnough = { speed in return false }

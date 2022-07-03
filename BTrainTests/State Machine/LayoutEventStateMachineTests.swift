@@ -20,11 +20,21 @@ class LayoutEventStateMachineTests: XCTestCase {
 
     override func setUp() {
         super.setUp()
-        train = MockTrainController()
+        train = MockTrainController(route: Route(uuid: "fixed-test", mode: .fixed))
     }
     
     func testLayoutEventFeedback() {
         let f1 = Feedback("f1")
+        
+        train.onUpdatePosition = { f in return f == f1 }
+        XCTAssertEqual(lsm.handle(layoutEvent: .feedback(f1), train: train), nil)
+
+        train.mode = .managed
+
+        train.onUpdatePosition = { f in return f == f1 }
+        XCTAssertEqual(lsm.handle(layoutEvent: .feedback(f1), train: train), nil)
+
+        train.state = .running
         
         train.onUpdatePosition = { f in return f == f1 }
         XCTAssertEqual(lsm.handle(layoutEvent: .feedback(f1), train: train), .position(train))
@@ -36,7 +46,7 @@ class LayoutEventStateMachineTests: XCTestCase {
     func testLayoutEventSpeed() {
         XCTAssertEqual(train.speed, 0)
         
-        let anotherTrain = MockTrainController()
+        let anotherTrain = MockTrainController(route: train.route)
         XCTAssertEqual(lsm.handle(layoutEvent: .speed(anotherTrain, 10), train: train), nil)
         XCTAssertEqual(train.speed, 0)
 
