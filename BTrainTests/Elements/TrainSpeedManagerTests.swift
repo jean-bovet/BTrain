@@ -190,43 +190,34 @@ class TrainSpeedManagerTests: BTTestCase {
     /// when that happen, the new state of .running should not be overridden by the previous callback.
     func testSpeedChangeCancelPreviousCompletionBlock() throws {
         let layout = LayoutYard().newLayout().removeTrainGeometry()
-        let interface = MockCommandInterface()
-        let doc = LayoutDocument(layout: layout, interface: interface)
+        let p = Package(layout: layout)
         
         let t = layout.trains[0]
         let block = layout.blocks[0]
-        try layout.setTrainToBlock(t.id, block.id, direction: .next)
         
-        try doc.layoutController.start(routeID: t.routeId, trainID: t.id)
-        wait(for: {
-            t.state == .running
-        }, timeout: 1.0)
-
-        doc.layoutController.drainAllEvents()
+        try p.prepare(trainID: t.id.uuid, fromBlockId: block.id.uuid)
+        try p.start(routeID: t.routeId.uuid, trainID: t.id.uuid)
         
         // Ask the layout to stop the train
-        doc.layoutController.stop(train: t)
+        p.layoutController.stop(train: t)
 
-        let f = layout.feedback(for: block.stopFeedbackNext!)!
-        f.detected.toggle()
-        doc.layoutController.runControllers(.feedbackTriggered(f))
+        p.toggle("A.1")
+
+        wait(for: {
+            t.state == .braking
+        }, timeout: 1.0)
+
+        p.toggle("A.2", drainAll: false)
 
         wait(for: {
             t.state == .stopping
         }, timeout: 1.0)
         
         // Ask to restart the train before it has a change to fully stop
-        try doc.layoutController.start(routeID: t.routeId, trainID: t.id)
-        
-        wait(for: {
-            t.state == .running
-        }, timeout: 1.0)
-
-        doc.layoutController.drainAllEvents()
-        XCTAssertEqual(t.state, .running)
-        
-        doc.stop(train: t)
-        doc.layoutController.drainAllEvents()
+        try p.start(routeID: t.routeId.uuid, trainID: t.id.uuid, expectedState: .running)
+                
+        p.layoutController.stop(train: t)
+        p.layoutController.drainAllEvents()
     }
     
     func testMultipleIdenticalSpeedRequests() {

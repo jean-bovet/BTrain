@@ -181,7 +181,8 @@ class LayoutTests: BTTestCase {
         // Settle manually turnout t1 so we can test the speed limit of the turnout in branch-right state.
         let t = layout.turnout(named: "t1")
         t.actualState = t.requestedState
-        
+        train.leading.settledDistance = train.leading.computeSettledDistance()
+
         XCTAssertEqual(doc.layoutController.reservation.maximumSpeedAllowed(train: train, route: route), LayoutFactory.DefaultLimitedSpeed)
     }
 

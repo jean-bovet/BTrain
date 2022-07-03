@@ -94,11 +94,13 @@ final class Package {
         }
     }
     
-    func toggle(_ feedback: String) {
+    func toggle(_ feedback: String, drainAll: Bool = true) {
         let f = layout.feedback(for: Identifier<Feedback>(uuid: feedback))!
         f.detected.toggle()
         layoutController.runControllers(.feedbackTriggered(f))
-        layoutController.drainAllEvents()
+        if drainAll {
+            layoutController.drainAllEvents()
+        }
     }
 
     func toggle2(_ f1: String, _ f2: String) {
