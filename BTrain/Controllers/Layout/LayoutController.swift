@@ -48,6 +48,10 @@ final class LayoutController {
     
     let debugger: LayoutControllerDebugger
     
+    #if DEBUG
+    static var memoryLeakCounter = 0
+    #endif
+    
     init(layout: Layout, switchboard: SwitchBoard?, interface: CommandInterface) {
         self.layout = layout
         self.layoutObserver = LayoutObserver(layout: layout)
@@ -61,7 +65,17 @@ final class LayoutController {
         registerForDirectionChange()
         registerForTurnoutChange()
         registerForTrainChange()
+        
+        #if DEBUG
+        LayoutController.memoryLeakCounter += 1
+        #endif
     }
+    
+    #if DEBUG
+    deinit {
+        LayoutController.memoryLeakCounter -= 1
+    }
+    #endif
     
     /// Array of pending events that need to be processed by each train controller
     private var pendingEvents = [TrainEvent]()

@@ -12,7 +12,7 @@
 
 import Foundation
 
-final class TrainController: TrainControlling {
+final class TrainController: TrainControlling, CustomStringConvertible {
 
     let train: Train
     let route: Route
@@ -23,6 +23,10 @@ final class TrainController: TrainControlling {
     var currentBlock: Block
     var trainInstance: TrainInstance
 
+    var description: String {
+        "TrainController(layout=\(layout.name), train=\(train))"
+    }
+    
     var id: String {
         train.id.uuid
     }

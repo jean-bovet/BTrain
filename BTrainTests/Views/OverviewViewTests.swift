@@ -20,6 +20,7 @@ extension SwitchboardRuntimeErrorView: Inspectable { }
 class OverviewViewTests: RootViewTests {
 
     func testMainView() throws {
+        let doc = newDocument()
         let sut = OverviewView(document: doc)
         XCTAssertNoThrow(try sut.inspect().hStack().vStack(0).view(TrainControlListView.self, 0))
         XCTAssertThrowsError(try sut.inspect().hStack().vStack(0).view(SimulatorView.self, 1))
@@ -27,6 +28,7 @@ class OverviewViewTests: RootViewTests {
     }
     
     func testOverviewSwitchboardView() throws {
+        let doc = newDocument()
         let sut = SwitchboardContainerView(layout: doc.layout, layoutController: doc.layoutController, document: doc, switchboard: doc.switchboard, state: doc.switchboard.state)
         XCTAssertNoThrow(try sut.inspect().vStack().vStack(0).view(SwitchboardEditControlsView.self, 0))
         XCTAssertNoThrow(try sut.inspect().vStack().vStack(0).scrollView(1).view(SwitchBoardView.self))

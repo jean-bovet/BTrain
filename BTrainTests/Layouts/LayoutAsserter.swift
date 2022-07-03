@@ -17,8 +17,8 @@ import XCTest
 
 final class LayoutAsserter {
     
-    let layout: Layout
-    let layoutController: LayoutController
+    weak var layout: Layout!
+    weak var layoutController: LayoutController!
     
     var assertBlockParts = false
     

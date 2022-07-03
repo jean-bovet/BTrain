@@ -22,17 +22,20 @@ extension WizardCreateLayout: Inspectable { }
 class NewLayoutWizardViewTests: RootViewTests {
 
     func testNewLayoutWizardView() throws {
+        let doc = newDocument()
         let sut = NewLayoutWizardView(document: doc)
         _ = try sut.inspect().find(button: "Previous")
         _ = try sut.inspect().find(button: "Next")
     }
 
     func testWizardSelectLayout() throws {
+        let doc = newDocument()
         let sut = WizardSelectLayout(selectedLayout: .constant(doc.layout.id))
         _ = try sut.inspect().find(text: "Select a Layout:")
     }
     
     func testWizardSelectLocomotive() throws {
+        let doc = newDocument()
         let sut = WizardSelectLocomotive(document: doc, selectedTrains: .constant([doc.layout.trains[0].id]))
         _ = try sut.inspect().find(text: "Select one ore more Locomotive:")
     }
@@ -43,6 +46,7 @@ class NewLayoutWizardViewTests: RootViewTests {
     }
     
     func testHelper() throws {
+        let doc = newDocument()
         let helper = PredefinedLayoutHelper()
         try helper.load()
         helper.create(layoutId: doc.layout.id, trains: [doc.layout.trains[0].id], in: doc)

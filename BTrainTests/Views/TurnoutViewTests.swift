@@ -21,23 +21,27 @@ extension TurnoutDetailsView: Inspectable { }
 class TurnoutViewTests: RootViewTests {
     
     func testListView() throws {
+        let doc = newDocument()
         let sut = TurnoutListView(doc: doc, layout: LayoutLoop2().newLayout())
         let value = try sut.inspect().hStack().vStack(0).hStack(1).text(0).string()
         XCTAssertEqual(value, "2 turnouts")
     }
 
     func testShapeView() throws {
+        let doc = newDocument()
         let sut = TurnoutShapeView(layout: doc.layout, category: .singleLeft, requestedState: .straight, actualState: .straight)
         _ = sut.renderAsImage()!
         _ = try sut.inspect().canvas(0)
     }
     
     func testTurnoutDetailsView() throws {
+        let doc = newDocument()
         let sut = TurnoutDetailsView(doc: doc, layout: doc.layout, turnout: Turnout.singleLeft())
         _ = try sut.inspect().find(text: "Protocol:")
     }
 
     func testTurnoutDetails2View() throws {
+        let doc = newDocument()
         let sut = TurnoutDetailsView(doc: doc, layout: doc.layout, turnout: Turnout.doubleSlip())
         _ = try sut.inspect().find(text: "Protocol:")
     }

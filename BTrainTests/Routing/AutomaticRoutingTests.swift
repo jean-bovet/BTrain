@@ -332,7 +332,7 @@ class AutomaticRoutingTests: BTTestCase {
         XCTAssertEqual(train.state, .running)
         p.interface.pause()
                 
-        // Stop request should happy in M2U but the actual stopping of the train should
+        // Stop request should happen in M2U but the actual stopping of the train should
         // only happen in LCF1, where the restart time should be triggered because LCF1 is a station.
         try p.assert("automatic-16405: !{NE4 ≏ ≏ } <C.1{tw}(1,0),s> <M.1{sl}(0,1),s> [M1 ≏ ≏ ≏ ] <Z.1{sr}(0,1),s> [r16405[M2U ≡ 🔴🚂16405 ]] <r16405<Z.2{sl}(1,0),s>> <r16405<Z.4{sl}(0,1),l>> {r16405{LCF1 ≏ ≏ }}")
         

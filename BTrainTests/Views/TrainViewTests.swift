@@ -31,13 +31,15 @@ extension UnitViewModifier: Inspectable { }
 class TrainViewTests: RootViewTests {
     
     func testStringValue() throws {
+        let doc = newDocument()
         let sut = TrainListView(document: doc, layout: doc.layout)
         let value = try sut.inspect().hStack().vStack(0).hStack(1).text(0).string()
         XCTAssertEqual(value, "3 trains")
     }
 
     func testSpeedView() throws {
-        let sut = TrainSpeedView(document: doc, train: layout.trains[0], trainSpeed: TrainSpeed(kph: 50, decoderType: .MFX))
+        let doc = newDocument()
+        let sut = TrainSpeedView(document: doc, train: doc.layout.trains[0], trainSpeed: TrainSpeed(kph: 50, decoderType: .MFX))
         _ = try sut.inspect().vStack().hStack(0).view(TrainSpeedGraphView.self, 1).canvas(0)
     }
 
@@ -61,6 +63,7 @@ class TrainViewTests: RootViewTests {
     }
 
     func testDetailsView() throws {
+        let doc = newDocument()
         let layout = LayoutLoop1().newLayout()
         let t1 = layout.trains[0]
         
@@ -76,6 +79,7 @@ class TrainViewTests: RootViewTests {
     }
     
     func testIconSectionView() throws {
+        let doc = newDocument()
         let sut = TrainDetailsIconSectionView(train: doc.layout.trains[0], trainIconManager: doc.trainIconManager)
         _ = try sut.inspect().find(text: "Icon")
     }

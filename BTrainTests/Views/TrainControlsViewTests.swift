@@ -27,6 +27,7 @@ extension CustomSlider: Inspectable { }
 class TrainControlsViewTests: RootViewTests {
 
     func testControlList() throws {
+        let doc = newDocument()
         doc.layout.trains[0].blockId = doc.layout.blockIds[0]
         
         let sut = TrainControlListView(layout: doc.layout, document: doc)
@@ -43,7 +44,7 @@ class TrainControlsViewTests: RootViewTests {
         let trainControlSpeedView = try trainView.find(TrainControlSpeedView.self)
                         
         _ = try trainControlSpeedView.find(text: "0")
-        layout.trains[0].speed.requestedKph = 79
+        doc.layout.trains[0].speed.requestedKph = 79
         _ = try trainControlSpeedView.find(text: "79")
 
         // TrainRouteView
@@ -78,16 +79,19 @@ class TrainControlsViewTests: RootViewTests {
     }
 
     func testActions() throws {
+        let doc = newDocument()
         let sut = TrainControlActionsView(layout: doc.layout, document: doc)
         _ = try sut.inspect().find(button: "􀊋 Start All")
     }
     
     func testSetLocationSheet() throws {
-        let sut = TrainControlSetLocationSheet(layout: layout, controller: doc.layoutController, actionSet: .setOnly, train: layout.trains[0])
+        let doc = newDocument()
+        let sut = TrainControlSetLocationSheet(layout: doc.layout, controller: doc.layoutController, actionSet: .setOnly, train: doc.layout.trains[0])
         XCTAssertNoThrow(try sut.inspect().find(button: "Set"))
     }
 
     func testTrainControlStateView() throws {
+        let doc = newDocument()
         let train = doc.layout.trains[0]
         train.runtimeInfo = "Error!"
         let sut = TrainControlStateView(train: train)

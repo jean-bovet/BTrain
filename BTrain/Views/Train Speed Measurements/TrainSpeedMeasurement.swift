@@ -110,10 +110,6 @@ final class TrainSpeedMeasurement {
         
         feedbackMonitor.cancel()
         feedbackMonitor.stop()
-
-        Task {
-            try await stopTrain()
-        }
     }
     
     func done() {
@@ -137,6 +133,10 @@ final class TrainSpeedMeasurement {
             } else {
                 entryIndex += 1
             }
+        }
+        
+        if Task.isCancelled {
+            try await stopTrain()
         }
     }
     

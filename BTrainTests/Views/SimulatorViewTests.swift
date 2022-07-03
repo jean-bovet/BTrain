@@ -21,6 +21,7 @@ extension SimulatorTrainControlView: Inspectable { }
 class SimulatorViewTests: RootViewTests {
 
     func testSimulatorView() throws {
+        let doc = newDocument()
         let trains = doc.layout.trains
         XCTAssertFalse(trains.isEmpty)
         
