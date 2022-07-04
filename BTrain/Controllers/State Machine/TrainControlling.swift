@@ -22,7 +22,7 @@ protocol TrainControlling: AnyObject {
     var id: String { get }
     
     /// The scheduling of the train (see ``StateMachine/TrainScheduling``
-    var mode: StateMachine.TrainMode { get }
+    var mode: StateMachine.TrainMode { get set }
 
     /// The state of the train (see ``StateMachine/TrainState``)
     var state: StateMachine.TrainState { get set }
@@ -50,10 +50,13 @@ protocol TrainControlling: AnyObject {
         
     /// The end index of the route
     var endRouteIndex: Int { get }
+        
+    /// Returns true if the train is located at the end of the route
+    var atEndOfRoute: Bool { get }
     
-    /// Returns true if the train is located in a station
-    var atStation: Bool { get }
-    
+    /// Returns true if the train is located in a station or at the destination block as specified by the route
+    var atStationOrDestination: Bool { get }
+
     /// Returns true if the length of reserved blocks is long enough to allow the train
     /// to move at the specified speed. The lenght must only includes settled turnouts,
     /// because un-settled turnouts are not yet ready to be used by the train.
@@ -91,6 +94,6 @@ protocol TrainControlling: AnyObject {
     /// This method is called when the reserved blocks changed or the settling length of the reserved block changed.
     func adjustSpeed(stateChanged: Bool)
     
-    // TODO: can't we extract this feature into the state machine?
-    func processStoppedState()
+    /// Schedule a timer that will restart the train after a specific waiting period
+    func reschedule()
 }

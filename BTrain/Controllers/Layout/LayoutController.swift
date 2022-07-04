@@ -138,8 +138,13 @@ final class LayoutController {
                 var events: [StateMachine.TrainEvent]? = []
                 lsm.handle(layoutEvent: event.layoutEvent(layoutController: self),
                            trainEvent: event.trainEvent(layoutController: self),
-                           trains: layout.trains.compactMap({ train in trainController(forTrain: train) }), handledTrainEvents: &events)
-                print(events)
+                           trains: layout.trains.compactMap({ train in trainController(forTrain: train) }),
+                           handledTrainEvents: &events)
+                #if DEBUG
+                if let events = events {
+                    BTLogger.debug("Handled events: \(events)")
+                }
+                #endif
             } else {
                 for train in layout.trains {
                     result.append(try run(train: train, event: event))

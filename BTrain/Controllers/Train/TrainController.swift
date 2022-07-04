@@ -13,7 +13,6 @@
 import Foundation
 
 final class TrainController: TrainControlling, CustomStringConvertible {
-
     let train: Train
     let route: Route
     let layout: Layout
@@ -32,7 +31,12 @@ final class TrainController: TrainControlling, CustomStringConvertible {
     }
     
     var mode: StateMachine.TrainMode {
-        train.scheduling
+        get {
+            train .scheduling
+        }
+        set {
+            train.scheduling = newValue
+        }
     }
     
     var state: StateMachine.TrainState {
@@ -86,11 +90,12 @@ final class TrainController: TrainControlling, CustomStringConvertible {
         return route.lastStepIndex
     }
     
-    var atStation: Bool {
-        guard let block = layout.block(for: train.blockId) else {
-            return false
-        }
-        return block.category == .station
+    var atEndOfRoute: Bool {
+        train.routeStepIndex == route.lastStepIndex
+    }
+    
+    var atStationOrDestination: Bool {
+        layout.hasTrainReachedStationOrDestination(route, train, currentBlock)
     }
     
     init(train: Train, route: Route, layout: Layout, currentBlock: Block, trainInstance: TrainInstance, layoutController: LayoutController, reservation: LayoutReservation) {
@@ -286,33 +291,8 @@ final class TrainController: TrainControlling, CustomStringConvertible {
         return true
     }
     
-    func processStoppedState() {
-        let reachedStationOrDestination = layout.hasTrainReachedStationOrDestination(route, train, currentBlock)
-        
-        switch route.mode {
-        case .fixed:
-            if (reachedStationOrDestination && train.scheduling == .finishManaged)
-                || train.scheduling == .stopManaged
-                || trainAtEndOfRoute {
-                train.scheduling = .unmanaged
-            } else if reachedStationOrDestination {
-                reschedule(train: train, delay: waitingTime)
-            }
-
-        case .automatic:
-            if (reachedStationOrDestination && train.scheduling == .finishManaged)
-                || train.scheduling == .stopManaged {
-                train.scheduling = .unmanaged
-            } else if reachedStationOrDestination {
-                reschedule(train: train, delay: waitingTime)
-            }
-
-        case .automaticOnce(destination: _):
-            if reachedStationOrDestination {
-                train.scheduling = .unmanaged
-            }
-            break
-        }
+    func reschedule() {
+        reschedule(train: train, delay: waitingTime)
     }
     
     func reschedule(train: Train, delay: TimeInterval) {
@@ -322,11 +302,6 @@ final class TrainController: TrainControlling, CustomStringConvertible {
         layoutController.scheduleRestartTimer(train: train)
     }
     
-    /// Returns true if the train is at the end of the route
-    var trainAtEndOfRoute: Bool {
-        train.routeStepIndex == route.lastStepIndex
-    }
-
     /// Returns the time the train needs to wait in the current block
     var waitingTime: TimeInterval {
         if let step = route.steps.element(at: train.routeStepIndex),

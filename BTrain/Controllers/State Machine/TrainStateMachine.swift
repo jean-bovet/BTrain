@@ -27,7 +27,11 @@ struct TrainStateMachine {
         case .stopped:
             handleStoppedState(train: train)
         }
-        return originalState != train.state
+        let stateChanged = originalState != train.state
+        if stateChanged && train.state == .stopped {
+            trainDidStop(train: train)
+        }
+        return stateChanged
     }
     
     /**
@@ -67,7 +71,6 @@ struct TrainStateMachine {
     private func handleStoppingState(train: TrainControlling) {
         if train.speed == 0 {
             train.state = .stopped
-            train.processStoppedState()
         } else if !train.shouldStopInBlock {
             train.state = .running
         }
@@ -79,6 +82,42 @@ struct TrainStateMachine {
     private func handleStoppedState(train: TrainControlling) {
         if !train.shouldStopInBlock && train.mode == .managed {
             train.state = .running
+        }
+    }
+    
+}
+
+extension TrainStateMachine {
+    
+    /// When the train stops, we need to take care of the status of the train
+    /// because depending on the route mode (fixed, automatic or automaticOnce),
+    /// we need to re-schedule the train, stop it or simple do nothing.
+    /// - Parameter train: the train to handle
+    func trainDidStop(train: TrainControlling) {
+        let reachedStationOrDestination = train.atStationOrDestination
+
+        switch train.route.mode {
+        case .fixed:
+            if (reachedStationOrDestination && train.mode == .finishManaged)
+                || train.mode == .stopManaged
+                || train.atEndOfRoute {
+                train.mode = .unmanaged
+            } else if reachedStationOrDestination {
+                train.reschedule()
+            }
+
+        case .automatic:
+            if (reachedStationOrDestination && train.mode == .finishManaged)
+                || train.mode == .stopManaged {
+                train.mode = .unmanaged
+            } else if reachedStationOrDestination {
+                train.reschedule()
+            }
+
+        case .automaticOnce(destination: _):
+            if reachedStationOrDestination {
+                train.mode = .unmanaged
+            }
         }
     }
     
@@ -102,7 +141,7 @@ extension TrainControlling {
         }
 
         // In a station but not in the first step of the route?
-        if atStation && currentRouteIndex > startedRouteIndex {
+        if atStationOrDestination && currentRouteIndex > startedRouteIndex {
             return true
         }
         

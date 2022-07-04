@@ -34,9 +34,13 @@ final class MockTrainController: TrainControlling {
     var startedRouteIndex: Int = 0
     var currentRouteIndex: Int = 0
     var endRouteIndex: Int = 10
-
-    var atStation: Bool = false
         
+    var atEndOfRoute: Bool {
+        currentRouteIndex >= endRouteIndex
+    }
+    
+    var atStationOrDestination: Bool = false
+    
     init(route: Route) {
         self.route = route
     }
@@ -145,8 +149,7 @@ final class MockTrainController: TrainControlling {
         }
     }
     
-    func processStoppedState() {
-        // TODO: remove when the protocol's method moves out
+    func reschedule() {
+        // no-op
     }
-
 }
