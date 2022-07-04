@@ -14,10 +14,35 @@ import Foundation
 import Combine
 import OrderedCollections
 
-/// This class is responsible for managing all the trains in the layout.
-///
-/// This class responds to events from the layout or from the Digital Controller by updating the state
-/// of each train (ie reserved blocks, route).
+/**
+ Manages the operation of all the trains in the layout.
+ 
+ When BTrain manages a train, it must ensure the train starts, stops
+ and brakes appropriately to avoid collision with other trains and respect
+ the constraints of the layout while following the indication of the route
+ assigned to the train. BTrain does this by responding to events from the layout,
+ such as ``TrainEvent/feedbackTriggered`` when a feedback is triggered
+ in the layout indicating a train is passing over the feedback.
+ 
+ There are two kinds of routes:
+ 
+ *Manual Route*
+ 
+ A manual route is created manually by the user and does not change when the train is running. This controller ensures the train follows the manual route
+ and stops the train if the block(s) ahead cannot be reserved. The train is restarted when the block(s) ahead can be reserved again.
+ 
+ *Automatic Route*
+ 
+ An automatic route is created and managed automatically by BTrain:
+ - An automatic route is created each time a train starts
+ - An automatic route is updated when the train moves into a new block and the block(s) ahead cannot be reserved
+ 
+ An automatic route is created using the following rules:
+ - If there is a destination defined (ie the user as specified to which block the train should move to), the automatic route is created using the shortest path algorithm.
+ - If there are no destination specified, BTrain finds a random route from the train position until a station block is found. During the search, block or turnout that
+ should be avoided will be ignored. However, elements reserved for other trains will be taken into account because the reservations
+ will change as the trains move in the layout.
+ */
 final class LayoutController {
     
     // The layout being managed
@@ -96,33 +121,20 @@ final class LayoutController {
     /// Run each train controller on the specified train event
     /// - Parameter event: the train event
     func runControllers(_ event: TrainEvent) {
-        let result = run(event)
-        if result.events.count > 0 {
-            // As long as something has changed in the layout processing,
-            // make sure to run the controllers again so the layout can
-            // be further updated (ie a feedback change might cause a train
-            // to further stop or start).
-            pendingEvents.append(contentsOf: result.events)
-            DispatchQueue.main.async {
-                self.runControllers()
-            }
-        }
+        run(event)
         redrawSwitchboard()
     }
-        
-    let useStateMachine = true
-    
-    private func run(_ event: TrainEvent) -> TrainHandlerResult {
+            
+    private func run(_ event: TrainEvent) {
         if let runtimeError = layout.runtimeError {
             BTLogger.router.error("⚙ Cannot evaluate the layout because there is a runtime error: \(runtimeError, privacy: .public)")
-            return .none()
+            return
         }
         BTLogger.router.debug("⚙ Evaluating the layout for '\(event, privacy: .public)'")
                 
         // Run each controller one by one, using
         // the sorted keys to ensure they always
         // run in the same order.
-        let result = TrainHandlerResult()
         do {
             // Update and detect any unexpected feedbacks
             try updateExpectedFeedbacks()
@@ -130,27 +142,19 @@ final class LayoutController {
             // Purge any invalid restart timers
             purgeRestartTimers()
             
-            // Run each controller, one for each train, in order
-            // to process the new state of each train (speed, position,
-            // reserved blocks, etc).
-            if useStateMachine {
-                let lsm = LayoutStateMachine()
-                var events: [StateMachine.TrainEvent]? = []
-                try lsm.handle(layoutEvent: event.layoutEvent(layoutController: self),
-                               trainEvent: event.trainEvent(layoutController: self),
-                               trains: layout.trains.compactMap({ train in trainController(forTrain: train) }),
-                               handledTrainEvents: &events)
-                #if DEBUG
-                if let events = events {
-                    BTLogger.debug("Handled events: \(events)")
-                }
-                #endif
-            } else {
-                for train in layout.trains {
-                    result.append(try run(train: train, event: event))
-                }
+            // Invoke the layout state machine which will process the train event
+            let lsm = LayoutStateMachine()
+            var events: [StateMachine.TrainEvent]? = []
+            try lsm.handle(layoutEvent: event.layoutEvent(layoutController: self),
+                           trainEvent: event.trainEvent(layoutController: self),
+                           trains: layout.trains.compactMap({ train in trainController(forTrain: train) }),
+                           handledTrainEvents: &events)
+            #if DEBUG
+            if let events = events {
+                BTLogger.debug("Handled events: \(events)")
             }
-            
+            #endif
+
             // Update and detect any unexpected feedbacks
             // Note: it is necessary to repeat this step after
             // running all the train controllers because a train
@@ -166,8 +170,6 @@ final class LayoutController {
         }
 
         debugger.record(layoutController: self)
-        
-        return result
     }
         
     func trainController(forTrain train: Train) -> TrainController? {
@@ -184,40 +186,6 @@ final class LayoutController {
         }
         
         return TrainController(train: train, route: route, layout: layout, currentBlock: currentBlock, trainInstance: trainInstance, layoutController: self, reservation: reservation)
-    }
-    
-    /// This is the main method to call to manage the train associated with this controller.
-    ///
-    /// This method executes all the handlers interested in the specified event and return the result which might
-    /// contain more events to further process. The ``LayoutController`` is responsible to call this class
-    /// again until all the events are processed.
-    /// - Parameter train: the train to process
-    /// - Parameter event: the event to process
-    /// - Returns: the result of the event processing
-    private func run(train: Train, event: TrainEvent) throws -> TrainHandlerResult {
-        let result = TrainHandlerResult()
-        
-        BTLogger.router.debug("\(train, privacy: .public): evaluating event '\(String(describing: event), privacy: .public)' for \(String(describing: train.scheduling), privacy: .public)")
-
-        if train.scheduling == .unmanaged {
-            result.append(try TrainHandlerUnmanaged.process(layout: layout, executor: self, train: train, event: event))
-        } else {
-            // Stop the train if there is no route associated with it
-            guard let route = layout.route(for: train.routeId, trainId: train.id) else {
-                stop(train: train)
-                return result
-            }
-
-            result.append(try TrainHandlerManaged.process(layout: layout, reservation: reservation, layoutController: self, route: route, train: train, event: event))
-        }
-
-        if result.events.isEmpty {
-            BTLogger.router.debug("\(train, privacy: .public): no resulting events")
-        } else {
-            BTLogger.router.debug("\(train, privacy: .public): resulting events are \(String(describing: result.events), privacy: .public)")
-        }
-
-        return result
     }
 
     private func updateExpectedFeedbacks() throws {

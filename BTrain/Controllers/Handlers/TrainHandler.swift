@@ -74,28 +74,3 @@ enum TrainEvent: Hashable, CustomStringConvertible {
         }
     }
 }
-
-/// Structure that describes the result of a handler's processing.
-final class TrainHandlerResult {
-    
-    /// The array of events that needs follow-up processing.
-    ///
-    /// For example, a feedback triggers several handlers that, in turn,
-    /// trigger other events, such as ``TrainEvent/movedInsideBlock``.
-    var events = OrderedSet<TrainEvent>()
-
-    func append(_ event: TrainEvent) {
-        events.append(event)
-    }
-
-    func append(_ result: TrainHandlerResult) {
-        events.append(contentsOf: result.events)
-    }
-
-    /// Returns a result that does not require any follow up events
-    /// - Returns: the result
-    static func none() -> TrainHandlerResult {
-        .init()
-    }
-
-}
