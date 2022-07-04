@@ -197,7 +197,44 @@ final class TrainSpeedManager {
     }
     
     func changeSpeed(acceleration: TrainSpeedAcceleration.Acceleration, completion: CompletionCancelBlock? = nil) {
-        if let processingCommand = processingCommand, processingCommand.status != .cancelled {
+        if let processingCommand = processingCommand {
+            scheduleSpeedChangeWithProcessingCommand(processingCommand: processingCommand,
+                                                     acceleration: acceleration,
+                                                     completion: completion)
+        } else if train.speed.actualKph == train.speed.requestedKph {
+            // If there is no command in progress and the requested and actual speeds are the same,
+            // nothing is needed and we can return immediately after invoked the completion block.
+            completion?(true)
+        } else {
+            // Schedule a new speed change request
+            if let _ = scheduleSpeedChangeCommand(acceleration: acceleration, completion: completion) {
+                executePendingSpeedChangeCommand()
+            }
+        }
+    }
+    
+    private func scheduleSpeedChangeWithProcessingCommand(processingCommand: SpeedCommand, acceleration: TrainSpeedAcceleration.Acceleration, completion: CompletionCancelBlock?) {
+        if processingCommand.status == .cancelled {
+            // The processing command has already been cancelled
+            if train.speed.actualKph == train.speed.requestedKph {
+                // If the requested and actual speeds are the same, nothing special is needed
+                // and we can invoke the completion block immediately
+                completion?(true)
+            } else {
+                // Schedule a new speed change request
+                if let _ = scheduleSpeedChangeCommand(acceleration: acceleration, completion: completion) {
+                    if !processingCommand.isProcessedByDigitalController {
+                        // And schedule the speed change request only if there is *no* processing command
+                        // still processed by the Digital Controller.
+                        // Even when a command is cancelled, there is still a possibility that this command
+                        // has a pending speed change being processed by the Digital Controller. This means
+                        // that at some point in the future, that pending change will complete and the
+                        // appropriate code will be executed.
+                        executePendingSpeedChangeCommand()
+                    }
+                }
+            }
+        } else {
             // There is already a speed change command being processed (which has not been cancelled!)
             if processingCommand.requestedKph == train.speed.requestedKph {
                 // If the speed change is the same and a completion block is provided,
@@ -219,15 +256,6 @@ final class TrainSpeedManager {
                         speedCommandCompleted(command: processingCommand)
                     }
                 }
-            }
-        } else if train.speed.actualKph == train.speed.requestedKph {
-            // If there is no command in progress and the requested and actual speed are the same,
-            // nothing is needed and we can return immediately after invoked the completion block.
-            completion?(true)
-        } else {
-            // Schedule a new speed change request
-            if let _ = scheduleSpeedChangeCommand(acceleration: acceleration, completion: completion) {
-                executePendingSpeedChangeCommand()
             }
         }
     }
@@ -327,6 +355,7 @@ final class TrainSpeedManager {
     
     private func speedCommandCompleted(command: SpeedCommand) {
         command.completionBlocks.forEach { $0(command.status == .finished) }
+        assert(processingCommand?.requestUUID == command.requestUUID, "processingCommand must be the same as the command")
         processingCommand = nil
         executePendingSpeedChangeCommand()
     }

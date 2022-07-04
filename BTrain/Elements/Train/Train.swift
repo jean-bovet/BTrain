@@ -251,8 +251,8 @@ final class Train: Element, ObservableObject {
             text += ", \(blockId)"
         }
         text += ", \(directionForward ? "f" : "b")"
-        text += ", \(speed.requestedKph)kph"
-        text += ", \(speed.actualKph)kph"
+        text += ", r=\(speed.requestedKph)kph"
+        text += ", a=\(speed.actualKph)kph"
         text += ")"
         return text
     }

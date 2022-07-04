@@ -110,28 +110,64 @@ class TrainSpeedManagerTests: BTTestCase {
         // Send a request to change the speed
         t.speed.requestedSteps = SpeedStep(value: 50)
         
-        let cancelledChange = expectation(description: "Cancelled")
+        let cancelledSpeed50 = expectation(description: "Cancelled 50")
         ic.changeSpeed { completed in
             if !completed {
-                cancelledChange.fulfill()
+                cancelledSpeed50.fulfill()
             }
         }
+                
+        XCTAssertEqual(ic.processingCommand?.requestedSteps.value, 50)
+        XCTAssertNil(ic.scheduledCommand)
         
+        // Wait until we have some speed set for the train (20 or above)
         wait(for: {
             t.speed.actualSteps.value >= 20
         }, timeout: 5.0)
 
+        mi.pause()
+
+        // Wait until at least one command is pending
+        wait(for: {
+            mi.pendingCommands.count > 0
+        }, timeout: 5.0)
+                        
         t.speed.requestedSteps = SpeedStep(value: 10)
-        let completedChange = expectation(description: "Completed")
+        let cancelledSpeed10 = expectation(description: "Cancelled 10")
         ic.changeSpeed { completed in
-            if completed {
-                completedChange.fulfill()
+            if !completed {
+                cancelledSpeed10.fulfill()
             }
         }
 
-        wait(for: [cancelledChange, completedChange], timeout: 5.0, enforceOrder: true)
+        XCTAssertEqual(ic.processingCommand?.requestedSteps.value, 50)
+        XCTAssertEqual(ic.scheduledCommand?.requestedSteps.value, 10)
         
-        XCTAssertEqual(10, t.speed.actualSteps.value)
+        t.speed.requestedSteps = SpeedStep(value: 0)
+        let completedSpeed0 = expectation(description: "Completed 0")
+        ic.changeSpeed { completed in
+            if completed {
+                completedSpeed0.fulfill()
+            }
+        }
+
+        XCTAssertEqual(ic.processingCommand?.requestedSteps.value, 50)
+        XCTAssertEqual(ic.scheduledCommand?.requestedSteps.value, 0)
+
+        mi.resume()
+        
+        XCTAssertEqual(ic.processingCommand?.requestedSteps.value, 0)
+        XCTAssertNil(ic.scheduledCommand)
+        
+        // Notes:
+        // 1) Speed 10 is cancelled first because it hasn't had a change to be executed (because it got
+        // cancelled by speed 0).
+        // 2) Speed 50 is cancelled next after the interface is resumed (it had a pending
+        // processing command by the interface).
+        // 3) Finally speed 0 is completed normally.
+        wait(for: [cancelledSpeed10, cancelledSpeed50, completedSpeed0], timeout: 5.0, enforceOrder: true)
+        
+        XCTAssertEqual(0, t.speed.actualSteps.value)
     }
     
     /// Ensure that the timer used during the settling of the stop of a locomotive is correctly
