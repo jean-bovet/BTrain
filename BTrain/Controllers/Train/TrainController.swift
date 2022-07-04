@@ -112,11 +112,10 @@ final class TrainController: TrainControlling, CustomStringConvertible {
         return reservation.isBrakingDistanceRespected(train: train, speed: speed)
     }
     
-    func updatePosition(with feedback: Feedback) -> Bool {
-        // TODO: throw all the try!
-        if try! moveInsideBlock() {
+    func updatePosition(with feedback: Feedback) throws -> Bool {
+        if try moveInsideBlock() {
             return true
-        } else if try! moveToNextBlock() {
+        } else if try moveToNextBlock() {
             return true
         }
         return false
@@ -132,28 +131,26 @@ final class TrainController: TrainControlling, CustomStringConvertible {
         }
     }
     
-    func updateOccupiedAndReservedBlocks() -> Bool {
-        return updateReservedBlocks()
+    func updateOccupiedAndReservedBlocks() throws -> Bool {
+        try updateReservedBlocks()
     }
     
-    func updateReservedBlocks() -> Bool {
+    func updateReservedBlocks() throws -> Bool {
         let previousLeadingItems = train.leading.items
         let previousOccupiedItems = train.occupied.items
 
-        reserveLeadingBlocks()
+        try reserveLeadingBlocks()
         
         return previousLeadingItems != train.leading.items || previousOccupiedItems != train.occupied.items
     }
     
-    func reserveLeadingBlocks() {
+    func reserveLeadingBlocks() throws {
         switch route.mode {
         case .fixed:
-            // TODO: throw
-            _ = try! reservation.updateReservedBlocks(train: train)
+            _ = try reservation.updateReservedBlocks(train: train)
 
         case .automatic, .automaticOnce(destination: _):
-            // TODO: throw
-            let result = try! reservation.updateReservedBlocks(train: train)
+            let result = try reservation.updateReservedBlocks(train: train)
             if result != .failure {
                 return
             }
@@ -165,9 +162,9 @@ final class TrainController: TrainControlling, CustomStringConvertible {
             BTLogger.router.debug("\(self.train, privacy: .public): generating a new route at \(self.currentBlock.name, privacy: .public) because the leading blocks could not be reserved for \(self.route.steps.debugDescription, privacy: .public)")
             
             // Update the automatic route
-            if try! updateAutomaticRoute(for: train, layout: layout) {
+            if try updateAutomaticRoute(for: train, layout: layout) {
                 // And try to reserve the lead blocks again
-                _ = try! reservation.updateReservedBlocks(train: train)
+                _ = try reservation.updateReservedBlocks(train: train)
             }
         }
     }
@@ -183,8 +180,8 @@ final class TrainController: TrainControlling, CustomStringConvertible {
         }
     }
 
-    func removeReservedBlocks() -> Bool {
-        return try! reservation.removeLeadingBlocks(train: train)
+    func removeReservedBlocks() throws -> Bool {
+        try reservation.removeLeadingBlocks(train: train)
     }
     
     func adjustSpeed(stateChanged: Bool) {

@@ -17,17 +17,17 @@ struct LayoutStateMachine {
     let lesm = LayoutEventStateMachine()
     let tesm = TrainEventStateMachine()
 
-    func handle(layoutEvent: StateMachine.LayoutEvent?, trainEvent: StateMachine.TrainEvent?, trains: [TrainControlling]) {
+    func handle(layoutEvent: StateMachine.LayoutEvent?, trainEvent: StateMachine.TrainEvent?, trains: [TrainControlling]) throws {
         var events: [StateMachine.TrainEvent]? = nil
-        handle(layoutEvent: layoutEvent, trainEvent: trainEvent, trains: trains, handledTrainEvents: &events)
+        try handle(layoutEvent: layoutEvent, trainEvent: trainEvent, trains: trains, handledTrainEvents: &events)
     }
     
-    func handle(layoutEvent: StateMachine.LayoutEvent?, trainEvent: StateMachine.TrainEvent?, trains: [TrainControlling], handledTrainEvents: inout [StateMachine.TrainEvent]?) {
+    func handle(layoutEvent: StateMachine.LayoutEvent?, trainEvent: StateMachine.TrainEvent?, trains: [TrainControlling], handledTrainEvents: inout [StateMachine.TrainEvent]?) throws {
         var trainEvents = [StateMachine.TrainEvent]()
         let managedTrains = trains.filter { $0.mode != .unmanaged }
         if let layoutEvent = layoutEvent {
             for train in managedTrains {
-                if let resultingTrainEvent = lesm.handle(layoutEvent: layoutEvent, train: train) {
+                if let resultingTrainEvent = try lesm.handle(layoutEvent: layoutEvent, train: train) {
                     trainEvents.append(resultingTrainEvent)
                 }
             }
@@ -42,7 +42,7 @@ struct LayoutStateMachine {
         while trainEvents.count > 0 {
             let nextTrainEvent = trainEvents.removeFirst()
             for train in managedTrains {
-                if let resultingTrainEvent = tesm.handle(trainEvent: nextTrainEvent, train: train) {
+                if let resultingTrainEvent = try tesm.handle(trainEvent: nextTrainEvent, train: train) {
                     trainEvents.append(resultingTrainEvent)
                     handledTrainEvents?.append(resultingTrainEvent)
                 }

@@ -23,16 +23,16 @@ class TrainEventStateMachineTests: XCTestCase {
         train = MockTrainController(route: Route(uuid: "fixed-test", mode: .fixed))
     }
     
-    func testEventPosition() {
+    func testEventPosition() throws {
         let anotherTrain = MockTrainController(route: train.route)
         
         train.onUpdateOccupiedAndReservedBlocks = { return true }
-        XCTAssertEqual(tsm.handle(trainEvent: .position(train), train: train), .reservedBlocksChanged(train))
+        XCTAssertEqual(try tsm.handle(trainEvent: .position(train), train: train), .reservedBlocksChanged(train))
         
-        XCTAssertEqual(tsm.handle(trainEvent: .position(anotherTrain), train: train), nil)
+        XCTAssertEqual(try tsm.handle(trainEvent: .position(anotherTrain), train: train), nil)
     }
     
-    func testEventReservedBlocksChanged() {
+    func testEventReservedBlocksChanged() throws {
         let anotherTrain = MockTrainController(route: train.route)
         train.state = .running // because adjustSpeed() is only called when the train is not stopped
                 
@@ -40,11 +40,11 @@ class TrainEventStateMachineTests: XCTestCase {
         train.brakeFeedbackActivated = true
         
         XCTAssertEqual(train.adjustSpeedCount, 0)
-        XCTAssertEqual(tsm.handle(trainEvent: .reservedBlocksChanged(train), train: train), .stateChanged(train))
+        XCTAssertEqual(try tsm.handle(trainEvent: .reservedBlocksChanged(train), train: train), .stateChanged(train))
         XCTAssertEqual(train.adjustSpeedCount, 1)
 
         train.onUpdateReservedBlocks = { return true }
-        XCTAssertEqual(tsm.handle(trainEvent: .reservedBlocksChanged(anotherTrain), train: train), .reservedBlocksChanged(train))
+        XCTAssertEqual(try tsm.handle(trainEvent: .reservedBlocksChanged(anotherTrain), train: train), .reservedBlocksChanged(train))
         XCTAssertEqual(train.adjustSpeedCount, 1)
     }
 

@@ -23,38 +23,38 @@ class LayoutEventStateMachineTests: XCTestCase {
         train = MockTrainController(route: Route(uuid: "fixed-test", mode: .fixed))
     }
     
-    func testLayoutEventFeedback() {
+    func testLayoutEventFeedback() throws {
         let f1 = Feedback("f1")
         
         train.onUpdatePosition = { f in return f == f1 }
-        XCTAssertEqual(lsm.handle(layoutEvent: .feedback(f1), train: train), nil)
+        XCTAssertEqual(try lsm.handle(layoutEvent: .feedback(f1), train: train), nil)
 
         train.mode = .managed
 
         train.onUpdatePosition = { f in return f == f1 }
-        XCTAssertEqual(lsm.handle(layoutEvent: .feedback(f1), train: train), nil)
+        XCTAssertEqual(try lsm.handle(layoutEvent: .feedback(f1), train: train), nil)
 
         train.state = .running
         
         train.onUpdatePosition = { f in return f == f1 }
-        XCTAssertEqual(lsm.handle(layoutEvent: .feedback(f1), train: train), .position(train))
+        XCTAssertEqual(try lsm.handle(layoutEvent: .feedback(f1), train: train), .position(train))
         
         train.onUpdatePosition = { f in return false }
-        XCTAssertEqual(lsm.handle(layoutEvent: .feedback(f1), train: train), nil)
+        XCTAssertEqual(try lsm.handle(layoutEvent: .feedback(f1), train: train), nil)
     }
     
-    func testLayoutEventSpeed() {
+    func testLayoutEventSpeed() throws {
         XCTAssertEqual(train.speed, 0)
         
         let anotherTrain = MockTrainController(route: train.route)
-        XCTAssertEqual(lsm.handle(layoutEvent: .speed(anotherTrain, 10), train: train), nil)
+        XCTAssertEqual(try lsm.handle(layoutEvent: .speed(anotherTrain, 10), train: train), nil)
         XCTAssertEqual(train.speed, 0)
 
-        XCTAssertEqual(lsm.handle(layoutEvent: .speed(train, 7), train: train), .speed(train))
+        XCTAssertEqual(try lsm.handle(layoutEvent: .speed(train, 7), train: train), .speed(train))
         XCTAssertEqual(train.speed, 7)
     }
 
-    func testLayoutEventTurnout() {
+    func testLayoutEventTurnout() throws {
         let t1 = Turnout(name: "t1")
         train.state = .running
         
@@ -63,14 +63,14 @@ class LayoutEventStateMachineTests: XCTestCase {
         train.onUpdateReservedBlocksSettledLength = { t in
             return false
         }
-        XCTAssertEqual(lsm.handle(layoutEvent: .turnout(t1), train: train), nil)
+        XCTAssertEqual(try lsm.handle(layoutEvent: .turnout(t1), train: train), nil)
         XCTAssertEqual(train.adjustSpeedCount, 0)
         
         train.onUpdateReservedBlocksSettledLength = { t in
             return t == t1
         }
         XCTAssertEqual(train.adjustSpeedCount, 0)
-        XCTAssertEqual(lsm.handle(layoutEvent: .turnout(t1), train: train), .reservedBlocksSettledLengthChanged(train))
+        XCTAssertEqual(try lsm.handle(layoutEvent: .turnout(t1), train: train), .reservedBlocksSettledLengthChanged(train))
         XCTAssertEqual(train.adjustSpeedCount, 0)
     }
 }

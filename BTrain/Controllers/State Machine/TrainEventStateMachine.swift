@@ -29,18 +29,18 @@ struct TrainEventStateMachine {
         
     let tsm = TrainStateMachine()
 
-    func handle(trainEvent: StateMachine.TrainEvent, train: TrainControlling) -> StateMachine.TrainEvent? {
+    func handle(trainEvent: StateMachine.TrainEvent, train: TrainControlling) throws -> StateMachine.TrainEvent? {
         if trainEvent.belongs(toTrain: train) {
-            return handleSameTrainEvent(trainEvent: trainEvent, train: train)
+            return try handleSameTrainEvent(trainEvent: trainEvent, train: train)
         } else {
-            return handleOtherTrainEvent(trainEvent: trainEvent, train: train)
+            return try handleOtherTrainEvent(trainEvent: trainEvent, train: train)
         }
     }
     
-    private func handleSameTrainEvent(trainEvent: StateMachine.TrainEvent, train: TrainControlling) -> StateMachine.TrainEvent? {
+    private func handleSameTrainEvent(trainEvent: StateMachine.TrainEvent, train: TrainControlling) throws -> StateMachine.TrainEvent? {
         switch trainEvent {
         case .position(_):
-            if train.updateOccupiedAndReservedBlocks() {
+            if try train.updateOccupiedAndReservedBlocks() {
                 return .reservedBlocksChanged(train)
             } else {
                 // Note: when moving within a block, there might not always been an update
@@ -54,7 +54,7 @@ struct TrainEventStateMachine {
             
         case .modeChanged(_):
             if train.mode == .managed {
-                if train.updateReservedBlocks() {
+                if try train.updateReservedBlocks() {
                     return .reservedBlocksChanged(train)
                 }
             } else {
@@ -65,8 +65,10 @@ struct TrainEventStateMachine {
             }
             
         case .stateChanged(_):
-            if train.state == .stopped && train.removeReservedBlocks() {
-                return .reservedBlocksChanged(train)
+            if train.state == .stopped {
+                if try train.removeReservedBlocks() {
+                    return .reservedBlocksChanged(train)
+                }
             }
             
             if tsm.handleTrainState(train: train) {
@@ -76,7 +78,7 @@ struct TrainEventStateMachine {
 
         case .restartTimerFired(_):
             train.startedRouteIndex = train.currentRouteIndex
-            if !train.shouldStopInBlock(ignoreReservedBlocks: true) && train.updateReservedBlocks() {
+            if try !train.shouldStopInBlock(ignoreReservedBlocks: true) && train.updateReservedBlocks() {
                 return .reservedBlocksChanged(train)
             }
 
@@ -106,9 +108,9 @@ struct TrainEventStateMachine {
         return nil
     }
     
-    private func handleOtherTrainEvent(trainEvent: StateMachine.TrainEvent, train: TrainControlling) -> StateMachine.TrainEvent? {
+    private func handleOtherTrainEvent(trainEvent: StateMachine.TrainEvent, train: TrainControlling) throws -> StateMachine.TrainEvent? {
         if case .reservedBlocksChanged = trainEvent {
-            if train.updateReservedBlocks() {
+            if try train.updateReservedBlocks() {
                 return .reservedBlocksChanged(train)
             }
         }

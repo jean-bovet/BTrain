@@ -18,11 +18,13 @@ struct LayoutEventStateMachine {
      Speed Changed > Update Train.Speed
      Turnout Changed > Update Settling of Train.Reserved.Blocks -> Emit Reserved.Blocks.Settled event
      */
-    func handle(layoutEvent: StateMachine.LayoutEvent, train: TrainControlling) -> StateMachine.TrainEvent? {
+    func handle(layoutEvent: StateMachine.LayoutEvent, train: TrainControlling) throws -> StateMachine.TrainEvent? {
         switch layoutEvent {
         case .feedback(let feedback):
-            if train.state != .stopped && train.updatePosition(with: feedback) {
-                return .position(train)
+            if train.state != .stopped {
+                if try train.updatePosition(with: feedback) {
+                    return .position(train)
+                }
             }
         case .speed(let eventTrain, let speed):
             if eventTrain.id == train.id {

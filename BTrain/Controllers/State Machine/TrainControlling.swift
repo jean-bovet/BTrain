@@ -67,7 +67,7 @@ protocol TrainControlling: AnyObject {
     /// Updates the position of the train given the specified feedback activation
     /// - Parameter feedback: The feedback that is activated
     /// - Returns: true if the position of the train was updated, false otherwse
-    func updatePosition(with feedback: Feedback) -> Bool
+    func updatePosition(with feedback: Feedback) throws -> Bool
     
     /// Updates the settled length of the reserved blocks
     /// - Parameter turnout: the turnout that has settled
@@ -79,15 +79,15 @@ protocol TrainControlling: AnyObject {
     /// An occupied block is one that contains a portion (or all) of the train.
     /// A reserved block is one that has been reserved for a particular train but that does not contain it yet.
     /// - Returns: true if the occupied and reserved blocks have changed
-    func updateOccupiedAndReservedBlocks() -> Bool
+    func updateOccupiedAndReservedBlocks() throws -> Bool
     
     /// Updates the reserved blocks of the train
     /// - Returns: true if the reserved blocks have changed
-    func updateReservedBlocks() -> Bool
+    func updateReservedBlocks() throws -> Bool
     
     /// Removes the reserved blocks of the train
     /// - Returns: true if the reserved blocks have changed
-    func removeReservedBlocks() -> Bool
+    func removeReservedBlocks() throws -> Bool
     
     /// Adjusts the speed of the train given the current context.
     ///
