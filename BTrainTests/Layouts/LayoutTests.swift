@@ -121,7 +121,7 @@ class LayoutTests: BTTestCase {
         try p.start(routeID: p.layout.routes[0].id.uuid, trainID: train1.id.uuid)
 
         p.stop()
-        p.layoutController.drainAllEvents()
+        p.layoutController.waitUntilSettled()
 
         XCTAssertEqual(train1.scheduling, .stopManaged)
         

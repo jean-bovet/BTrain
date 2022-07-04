@@ -109,7 +109,7 @@ class TransitionsTests: BTTestCase {
         try p.start(routeID: r1.id.uuid, trainID: t1.id.uuid)
         try p.start(routeID: r2.id.uuid, trainID: t2.id.uuid, expectedState: .stopped)
 
-        p.layoutController.drainAllEvents()
+        p.layoutController.waitUntilSettled()
 
         // t1 starts but t2 cannot because t1 has reserved all the transitions
         // out of the first block - transitions that are shared with t2's route.

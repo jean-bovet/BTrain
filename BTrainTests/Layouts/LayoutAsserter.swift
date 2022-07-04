@@ -46,7 +46,7 @@ final class LayoutAsserter {
 
         // Then run the controller to update the real layout states
         if drainAll {
-            layoutController.drainAllEvents()
+            layoutController.waitUntilSettled()
         }
 
         // Now assert the routes to see if they match the real layout

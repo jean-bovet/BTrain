@@ -11,10 +11,9 @@
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 import Foundation
-import OrderedCollections
 
 /// The event available to the handlers
-enum TrainEvent: Hashable, CustomStringConvertible {
+enum LayoutControllerEvent: CustomStringConvertible {
     /// A feedback sensor has been triggered
     case feedbackTriggered(Feedback)
     
@@ -36,19 +35,10 @@ enum TrainEvent: Hashable, CustomStringConvertible {
     
     /// A train speed has changed
     case speedChanged(Train, TrainSpeed.UnitKph)
-    
-    /// A train state has changed.
-    case stateChanged
 
-    /// A train reserved blocks (occupied or leading) have changed
-    case reservedBlocksChanged
-    
-    /// A train has moved inside a block.
-    case movedInsideBlock(Train)
-    
-    /// A train has moved to the next block
-    case movedToNextBlock(Train)
-    
+    /// The position of a train changed because the user either removed or added manually a train to the layout
+    case trainPositionChanged(Train)
+
     var description: String {
         switch self {
         case .feedbackTriggered:
@@ -63,14 +53,8 @@ enum TrainEvent: Hashable, CustomStringConvertible {
             return "Direction Changed"
         case .speedChanged:
             return "Speed Changed"
-        case .stateChanged:
-            return "State Changed"
-        case .movedInsideBlock:
-            return "Move Inside Block"
-        case .movedToNextBlock:
-            return "Move to Next Block"
-        case .reservedBlocksChanged:
-            return "Reserved Blocks Changed"
+        case .trainPositionChanged(let train):
+            return "Train removed: \(train)"
         }
     }
 }

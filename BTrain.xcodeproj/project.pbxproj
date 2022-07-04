@@ -238,7 +238,7 @@
 		A798BB4C27ACD8E8000BB4D1 /* RouteResolverTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A798BB4B27ACD8E8000BB4D1 /* RouteResolverTests.swift */; };
 		A798BB4E27AF4478000BB4D1 /* Turnout+Reservation.swift in Sources */ = {isa = PBXBuildFile; fileRef = A798BB4D27AF4477000BB4D1 /* Turnout+Reservation.swift */; };
 		A79D43DC283B15BF0068C969 /* LayoutController+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A79D43DB283B15BF0068C969 /* LayoutController+Extension.swift */; };
-		A7ACCE9F2810E5BA006F4310 /* TrainHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7ACCE9E2810E5BA006F4310 /* TrainHandler.swift */; };
+		A7ACCE9F2810E5BA006F4310 /* LayoutControllerEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7ACCE9E2810E5BA006F4310 /* LayoutControllerEvent.swift */; };
 		A7B06AE12727786500BDD88C /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7B06AE02727786500BDD88C /* MainView.swift */; };
 		A7B06AF2272782C300BDD88C /* LayoutDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7B06AF1272782C300BDD88C /* LayoutDocument.swift */; };
 		A7B06AF4272783F600BDD88C /* MarklinCANMessageFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7B06AF3272783F600BDD88C /* MarklinCANMessageFactory.swift */; };
@@ -544,7 +544,7 @@
 		A798BB4B27ACD8E8000BB4D1 /* RouteResolverTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteResolverTests.swift; sourceTree = "<group>"; };
 		A798BB4D27AF4477000BB4D1 /* Turnout+Reservation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Turnout+Reservation.swift"; sourceTree = "<group>"; };
 		A79D43DB283B15BF0068C969 /* LayoutController+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LayoutController+Extension.swift"; sourceTree = "<group>"; };
-		A7ACCE9E2810E5BA006F4310 /* TrainHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainHandler.swift; sourceTree = "<group>"; };
+		A7ACCE9E2810E5BA006F4310 /* LayoutControllerEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutControllerEvent.swift; sourceTree = "<group>"; };
 		A7B06AE02727786500BDD88C /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
 		A7B06AED2727819800BDD88C /* Server.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Server.swift; sourceTree = "<group>"; };
 		A7B06AEE2727819800BDD88C /* ServerConnection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ServerConnection.swift; sourceTree = "<group>"; };
@@ -1331,6 +1331,7 @@
 				A758295E27925DE300AA0649 /* LayoutController+Listeners.swift */,
 				A795A03C27B87CCE00AE90EB /* LayoutController+Locomotives.swift */,
 				A7214915279A56FA0095E5EE /* LayoutController+Debug.swift */,
+				A7ACCE9E2810E5BA006F4310 /* LayoutControllerEvent.swift */,
 				A798BB4727A8EA06000BB4D1 /* LayoutControllerDebugger.swift */,
 				A7DB7D4D27C714E2000893BA /* LayoutTurnoutManager.swift */,
 				A783EAA82788C1F700E69B6D /* LayoutFeedbackMonitor.swift */,
@@ -1341,7 +1342,6 @@
 		A7ACCEA22811A9C5006F4310 /* Handlers */ = {
 			isa = PBXGroup;
 			children = (
-				A7ACCE9E2810E5BA006F4310 /* TrainHandler.swift */,
 				A7C30BDF2811ACAF00CC4251 /* TrainHandlerUnmanaged.swift */,
 				A7C30BE728121F6100CC4251 /* TrainStopPushingWagonsHandler.swift */,
 			);
@@ -1755,7 +1755,7 @@
 				A72180852760428E00831998 /* Socket.swift in Sources */,
 				A7E78C4427A09931004D1821 /* TrainPathFactory.swift in Sources */,
 				A71D97FC27A6210300EBEA06 /* Block+Occupation.swift in Sources */,
-				A7ACCE9F2810E5BA006F4310 /* TrainHandler.swift in Sources */,
+				A7ACCE9F2810E5BA006F4310 /* LayoutControllerEvent.swift in Sources */,
 				A7710E572777D69400C08150 /* RouteListView.swift in Sources */,
 				A79466D1279B948F006E2A4C /* Simulator.swift in Sources */,
 				A795A03827B6848000AE90EB /* TrainVisitor.swift in Sources */,

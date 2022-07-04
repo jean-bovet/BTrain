@@ -191,7 +191,7 @@ struct TrainControlSetLocationSheet: View {
                                 try controller.start(routeID: routeId, trainID: train.id, destination: destination)
 
                             case .remove:
-                                try layout.remove(trainID: train.id)
+                                controller.remove(train: train)
                             }
                         }
                         errorStatus = nil

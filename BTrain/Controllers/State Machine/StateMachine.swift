@@ -36,7 +36,7 @@ struct StateMachine {
 
 }
 
-extension TrainEvent {
+extension LayoutControllerEvent {
     
     func layoutEvent(layoutController: LayoutController) -> StateMachine.LayoutEvent? {
         switch self {
@@ -67,7 +67,7 @@ extension TrainEvent {
             if let tc = layoutController.trainController(forTrain: train) {
                 return .restartTimerFired(tc)
             }
-        case .movedInsideBlock(let train), .movedToNextBlock(let train):
+        case .trainPositionChanged(let train):
             if let tc = layoutController.trainController(forTrain: train) {
                 return .position(tc)
             }

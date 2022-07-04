@@ -40,7 +40,7 @@ class FixedRoutingWithTurnoutDelays: BTTestCase {
         // This will settle the turnout t0
         p.interface.resume()
         p.layoutController.runControllers(.turnoutChanged(t0))
-        p.layoutController.drainAllEvents()
+        p.layoutController.waitUntilSettled()
 
         // And the train will restart because the leading turnouts are settled
         XCTAssertEqual(p.train.state, .running)
@@ -101,7 +101,7 @@ class FixedRoutingWithTurnoutDelays: BTTestCase {
         XCTAssertEqual(p.train.state, .braking)
 
         p.interface.resume()
-        p.layoutController.drainAllEvents()
+        p.layoutController.waitUntilSettled()
 
         // And the train will restart because the leading turnouts are settled
         XCTAssertEqual(p.train.state, .running)

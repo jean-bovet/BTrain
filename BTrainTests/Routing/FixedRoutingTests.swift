@@ -45,7 +45,7 @@ class FixedRoutingTests: BTTestCase {
         
         // Which is a simulation of a train moving out of b3, so trigger that event
         // so train 1 will restart
-        p.layoutController.runControllers(.movedToNextBlock(p.train))
+        p.layoutController.runControllers(.trainPositionChanged(p.train))
         
         try p.assert("r1:{b1 ≏ ≏ } <t0> [r1[b2 ≏ ≡ 🔵🚂1 ]] <r1<t1(0,2),l>> [r1[b3 ≏ ≏ ]] <t0(2,0)> !{b1 ≏ ≏ }")
         
@@ -104,7 +104,7 @@ class FixedRoutingTests: BTTestCase {
         
         // Re-enable b3
         b3.enabled = true
-        p.layoutController.runControllers(.movedToNextBlock(p.train))
+        p.layoutController.runControllers(.trainPositionChanged(p.train))
 
         try p.assert("r1:{b1 ≏ ≏ } <t0> [r1[b2 ≏ ≡ 🔵🚂1 ]] <r1<t1(0,2),l>> [r1[b3 ≏ ≏ ]] <t0(2,0)> !{b1 ≏ ≏ }")
         
@@ -647,7 +647,7 @@ class FixedRoutingTests: BTTestCase {
 
         // Let's remove train 2 artificially to allow train 1 to stop at the station b1
         try layout.remove(trainID: Identifier<Train>(uuid: "2"))
-        p.layoutController.runControllers(.movedToNextBlock(p.train))
+        p.layoutController.runControllers(.trainPositionChanged(p.train))
 
         try p.assert2("r1: {r1{b1 ≏ ≏ }} <t0,r> [b2 ≏ ≏ ] {b3 ≏ ≏ } <t1> [r1[b4 ≡ ≡ 🔵🚂1 ]] {r1{b1 ≏ ≏ }}",
                       "r3: {b3 ≏ ≏ } <t1(0,2)> [b5 ≏ ≏ ] <t0(2,0),r> !{r1{b1 ≏ ≏ }}")
@@ -698,7 +698,7 @@ class FixedRoutingTests: BTTestCase {
         
         // Free s1 so the train finishes its route
         layout.free("s1")
-        p.layoutController.runControllers(.movedToNextBlock(p.train))
+        p.layoutController.runControllers(.trainPositionChanged(p.train))
         
         try p.assert("0: {r0{s1 ≏ }} <t1(2,0),l> <t2(1,0),s> [b1 ≏ ] <t3> [b2 ≏ ] <t4(1,0)> [r0[b3 ≏ ≏ 🔵🚂0 ≏ ]] <r0<t5>> <r0<t6(0,2),r>> {r0{s1 ≏ }}")
         try p.assert("0: {r0{s1 ≏ }} <t1(2,0),l> <t2(1,0),s> [b1 ≏ ] <t3> [b2 ≏ ] <t4(1,0)> [r0[b3 ≏ ≏ ≡ 🔵🚂0 ]] <r0<t5>> <r0<t6(0,2),r>> {r0{s1 ≏ }}")
@@ -750,7 +750,7 @@ class FixedRoutingTests: BTTestCase {
 
         // Artificially set the restart time to 0 which will make the train restart again
         p.layoutController.restartTimerFired(layout.trains[0])
-        p.layoutController.drainAllEvents()
+        p.layoutController.waitUntilSettled()
 
         XCTAssertTrue(p.train.speed.requestedKph > 0)
         
@@ -784,7 +784,7 @@ class FixedRoutingTests: BTTestCase {
         
         // And now we free D...
         layout.free("D")
-        p.layoutController.runControllers(.movedToNextBlock(p.train))
+        p.layoutController.runControllers(.trainPositionChanged(p.train))
 
         // Which means the train should start accelerating again
         try p.assert("0: |[A ≏ ≏ ] <AB> [r0[B 💺0 ≏ 💺0 ≏ 💺0 ]] [r0[C 💺0 ≏ 💺0 ≡ 🔵🚂0 ]] [r0[D ≏ ≏ ]] <DE(1,0)> [E ≏ ≏ ]|")

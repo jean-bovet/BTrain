@@ -89,7 +89,7 @@ final class Package {
     func stop(drainAll: Bool = false) {
         layoutController.stop(train: train)
         if drainAll {
-            layoutController.drainAllEvents()
+            layoutController.waitUntilSettled()
             XCTAssertEqual(train.scheduling, .unmanaged)
         }
     }
@@ -99,7 +99,7 @@ final class Package {
         f.detected.toggle()
         layoutController.runControllers(.feedbackTriggered(f))
         if drainAll {
-            layoutController.drainAllEvents()
+            layoutController.waitUntilSettled()
         }
     }
 

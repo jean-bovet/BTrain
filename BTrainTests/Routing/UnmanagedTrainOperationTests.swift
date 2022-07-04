@@ -53,7 +53,7 @@ class UnmanagedTrainOperationTests: BTTestCase {
         try p.triggerFeedback("f11", false)
         try p.triggerFeedback("f12")
 
-        p.doc.layoutController.drainAllEvents()
+        p.doc.layoutController.waitUntilSettled()
 
         try p.assertTrain(notInBlock: "b2")
         try p.assertTrain(inBlock: "b1", position: 2, speed: 0)
@@ -133,7 +133,7 @@ class UnmanagedTrainOperationTests: BTTestCase {
         try p.triggerFeedback("f32")
         
         // Train stops because its tail is still in the block b1
-        p.layoutController.drainAllEvents()
+        p.layoutController.waitUntilSettled()
         
         try p.assertTrain(inBlock: "b1", position: 2, speed: 0)
         try p.assertTrain(inBlock: "b2", position: 2, speed: 0)
@@ -195,7 +195,7 @@ class UnmanagedTrainOperationTests: BTTestCase {
 
         // The train should stop because it is occupying all the blocks and will hit
         // itself back in b1 if it continues.        
-        p.layoutController.drainAllEvents()
+        p.layoutController.waitUntilSettled()
 
         try p.assertTrain(inBlock: "b1", position: 1, speed: 0)
         try p.assertTrain(inBlock: "b2", position: 1, speed: 0)

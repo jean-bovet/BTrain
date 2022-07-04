@@ -21,7 +21,7 @@ import OrderedCollections
  and brakes appropriately to avoid collision with other trains and respect
  the constraints of the layout while following the indication of the route
  assigned to the train. BTrain does this by responding to events from the layout,
- such as ``TrainEvent/feedbackTriggered`` when a feedback is triggered
+ such as ``LayoutControllerEvent/feedbackTriggered`` when a feedback is triggered
  in the layout indicating a train is passing over the feedback.
  
  There are two kinds of routes:
@@ -101,31 +101,15 @@ final class LayoutController {
         LayoutController.memoryLeakCounter -= 1
     }
     #endif
-    
-    /// Array of pending events that need to be processed by each train controller
-    private var pendingEvents = [TrainEvent]()
-    
-    /// Run each train controller on the next train event
-    /// - Parameter drain: true if all the pending train events should be processed
-    func runControllers(drain: Bool = false) {
-        while !pendingEvents.isEmpty {
-            runControllers(pendingEvents.removeFirst())
-            if !drain {
-                break
-            } else {
-                RunLoop.current.run(until: Date(timeIntervalSinceNow: 0.001))
-            }
-        }
-    }
-    
+        
     /// Run each train controller on the specified train event
     /// - Parameter event: the train event
-    func runControllers(_ event: TrainEvent) {
+    func runControllers(_ event: LayoutControllerEvent) {
         run(event)
         redrawSwitchboard()
     }
             
-    private func run(_ event: TrainEvent) {
+    private func run(_ event: LayoutControllerEvent) {
         if let runtimeError = layout.runtimeError {
             BTLogger.router.error("⚙ Cannot evaluate the layout because there is a runtime error: \(runtimeError, privacy: .public)")
             return
@@ -266,6 +250,11 @@ final class LayoutController {
         }
     }
 
+    func remove(train: Train) {
+        layout.remove(trainId: train.id)
+        runControllers(.trainPositionChanged(train))
+    }
+    
     // MARK: Paused Train Management
     
     // A map that contains all trains that are currently paused

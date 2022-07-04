@@ -240,7 +240,7 @@ class AutomaticRoutingTests: BTTestCase {
         // Artificially set the restart time to 0 which will make the train restart again
         // TODO: refactor with all other occurrences in the tests
         p.layoutController.restartTimerFired(layout.trains[0])
-        p.layoutController.drainAllEvents()
+        p.layoutController.waitUntilSettled()
 
         XCTAssertGreaterThan(p.train.speed.requestedKph, 0)
         
@@ -282,7 +282,7 @@ class AutomaticRoutingTests: BTTestCase {
     }
         
     /// Same as ``testAutomaticRouteStationRestartFinishing`` but with a station block with 2 feedbacks (s2) that simulates
-    /// a stop that includes a ``TrainEvent/movedInsideBlock`` event which exhibit different code path.
+    /// a stop that includes a ``LayoutControllerEvent/movedInsideBlock`` event which exhibit different code path.
     func testAutomaticRouteStationRestartFinishing2() throws {
         let layout = LayoutLoopWithStation().newLayout()
         let s1 = layout.block(named: "s1")
@@ -343,7 +343,7 @@ class AutomaticRoutingTests: BTTestCase {
 
         p.interface.resume()
         
-        p.layoutController.drainAllEvents()
+        p.layoutController.waitUntilSettled()
         
         XCTAssertEqual(train.state, .stopped)
         XCTAssertFalse(p.layoutController.pausedTrainTimers.isEmpty)
@@ -366,7 +366,7 @@ class AutomaticRoutingTests: BTTestCase {
         
         // Let's add a train in the next block b1 that will prevent the train in s2 from immediately restarting
         try layout.setTrainToBlock(layout.trains[1].id, Identifier<Block>(uuid: "b1"), direction: .next)
-        p.layoutController.runControllers(.movedToNextBlock(layout.trains[1]))
+        p.layoutController.runControllers(.trainPositionChanged(layout.trains[1]))
         
         // Wait until the train route has been updated (which happens when it restarts)
         p.layoutController.restartTimerFired(layout.trains[0])
@@ -376,7 +376,7 @@ class AutomaticRoutingTests: BTTestCase {
         
         // Now remove the train from the block b1 in order for the train in s2 to start again properly this time
         try layout.remove(trainID: layout.trains[1].id)
-        p.layoutController.runControllers(.movedToNextBlock(layout.trains[0]))
+        p.layoutController.runControllers(.trainPositionChanged(layout.trains[0]))
 
         // When restarting, the train automatic route will be updated
         XCTAssertEqual(p.route.steps.toStrings(layout), ["s2:next", "b1:next", "b2:next", "b3:next", "s2:next"])

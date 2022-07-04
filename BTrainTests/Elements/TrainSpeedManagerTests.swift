@@ -253,7 +253,7 @@ class TrainSpeedManagerTests: BTTestCase {
         try p.start(routeID: t.routeId.uuid, trainID: t.id.uuid, expectedState: .running)
                 
         p.layoutController.stop(train: t)
-        p.layoutController.drainAllEvents()
+        p.layoutController.waitUntilSettled()
     }
     
     func testMultipleIdenticalSpeedRequests() {

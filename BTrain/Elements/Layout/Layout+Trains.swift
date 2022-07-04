@@ -36,6 +36,7 @@ extension Layout {
         trains.first(where: { $0.id == trainId })
     }
 
+    // TODO: similar method below, why is that?
     func remove(trainId: Identifier<Train>) {
         try? remove(trainID: trainId)
         trains.removeAll(where: { $0.id == trainId})
