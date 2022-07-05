@@ -12,17 +12,14 @@
 
 import Foundation
 
+/// State machine for the entire layout. It uses internally two sub-state machine
+/// to handle events specific to the layout and events specific to a train.
 struct LayoutStateMachine {
     
     let lesm = LayoutEventStateMachine()
     let tesm = TrainEventStateMachine()
-
-    func handle(layoutEvent: StateMachine.LayoutEvent?, trainEvent: StateMachine.TrainEvent?, trains: [TrainControlling]) throws {
-        var events: [StateMachine.TrainEvent]? = nil
-        try handle(layoutEvent: layoutEvent, trainEvent: trainEvent, trains: trains, handledTrainEvents: &events)
-    }
     
-    func handle(layoutEvent: StateMachine.LayoutEvent?, trainEvent: StateMachine.TrainEvent?, trains: [TrainControlling], handledTrainEvents: inout [StateMachine.TrainEvent]?) throws {
+    func handle(layoutEvent: StateMachine.LayoutEvent? = nil, trainEvent: StateMachine.TrainEvent? = nil, trains: [TrainControlling], handledTrainEvents: inout [StateMachine.TrainEvent]?) throws {
         var trainEvents = [StateMachine.TrainEvent]()
         let managedTrains = trains.filter { $0.mode != .unmanaged }
         if let layoutEvent = layoutEvent {

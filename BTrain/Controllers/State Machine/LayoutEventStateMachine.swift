@@ -13,11 +13,18 @@
 import Foundation
 
 struct LayoutEventStateMachine {
-    /**
-     Feedback Triggered > Update Train.Position
-     Speed Changed > Update Train.Speed
-     Turnout Changed > Update Settling of Train.Reserved.Blocks -> Emit Reserved.Blocks.Settled event
-     */
+    
+    /// Handles a layout event and returning an optional train event.
+    ///
+    /// The rules applied are:
+    /// 1. Feedback triggered leads to an update of the train's position
+    /// 2. Speed change leads to an update of the train's speed
+    /// 3. Turnout changed leads to an update of the reserved blocks settled length
+    ///
+    /// - Parameters:
+    ///   - layoutEvent: The layout event
+    ///   - train: the train to process
+    /// - Returns: an optional train event
     func handle(layoutEvent: StateMachine.LayoutEvent, train: TrainControlling) throws -> StateMachine.TrainEvent? {
         switch layoutEvent {
         case .feedback(let feedback):
@@ -26,11 +33,13 @@ struct LayoutEventStateMachine {
                     return .position(train)
                 }
             }
+            
         case .speed(let eventTrain, let speed):
             if eventTrain.id == train.id {
                 train.speed = speed
                 return .speed(train)
             }
+            
         case .turnout(let turnout):
             if train.updateReservedBlocksSettledLength(with: turnout) {
                 return .reservedBlocksSettledLengthChanged(train)

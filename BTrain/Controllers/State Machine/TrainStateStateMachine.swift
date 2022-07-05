@@ -13,7 +13,7 @@
 import Foundation
 
 // TODO: unit tests
-struct TrainStateMachine {
+struct TrainStateStateMachine {
     
     func handleTrainState(train: TrainControlling) -> Bool {
         let originalState = train.state
@@ -87,7 +87,7 @@ struct TrainStateMachine {
     
 }
 
-extension TrainStateMachine {
+extension TrainStateStateMachine {
     
     /// When the train stops, we need to take care of the status of the train
     /// because depending on the route mode (fixed, automatic or automaticOnce),

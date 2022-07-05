@@ -92,6 +92,7 @@ protocol TrainControlling: AnyObject {
     /// Adjusts the speed of the train given the current context.
     ///
     /// This method is called when the reserved blocks changed or the settling length of the reserved block changed.
+    /// - Parameter stateChanged: true if this method is called when the state of the train changed
     func adjustSpeed(stateChanged: Bool)
     
     /// Schedule a timer that will restart the train after a specific waiting period

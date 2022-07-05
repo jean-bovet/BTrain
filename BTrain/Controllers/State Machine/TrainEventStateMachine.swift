@@ -27,7 +27,7 @@ import Foundation
 /// - A reserved blocks event from another train triggers a reserved block update for this train
 struct TrainEventStateMachine {
         
-    let tsm = TrainStateMachine()
+    let tsm = TrainStateStateMachine()
 
     func handle(trainEvent: StateMachine.TrainEvent, train: TrainControlling) throws -> StateMachine.TrainEvent? {
         if trainEvent.belongs(toTrain: train) {
