@@ -31,47 +31,10 @@ final class TrainSpeedManager {
     /// This timer is scheduled each time a speed change is requested. It will fire every `stepDelay`
     /// and send a command to the Digital Controller.
     private var speedChangeTimer: Timer?
-    
-    /// Timer that handles the stop settle delay time.
-    ///
-    /// When stopping a locomotive, we need to wait a bit more to ensure the locomotive
-    /// has effectively stopped physically on the layout. This is because we want to call back
-    /// the `completion` block only when the locomotive has stopped (otherwise, it might continue
-    /// to move and activate an unexpected feedback because the layout think it has stopped already).
-    /// There is unfortunately no way to know without ambiguity from the Digital Controller if the
-    /// train has stopped so this extra wait time can be configured in the UX, per locomotive, and
-    /// adjusted by the user depending on the locomotive speed inertia behavior.
-    final class StopSettleDelayTimer {
-        var timer: Timer?
-        var block: ((Bool) -> Void)?
-        
-        func schedule(train: Train, completed: Bool, completion: @escaping (Bool) -> Void) {
-            assert(block == nil)
-            assert(timer == nil)
-
-            block = { completed in
-                completion(completed)
-            }
-            timer = Timer.scheduledTimer(withTimeInterval: train.speed.stopSettleDelay * BaseTimeFactor, repeats: false) { timer in
-                self.block?(completed)
-                self.block = nil
-                self.timer = nil
-            }
-        }
-        
-        func cancel() {
-            if let block = block {
-                block(false)
-            }
-            block = nil
-            timer?.invalidate()
-            timer = nil
-        }
-    }
 
     /// The timer that handles the delay to allow the locomotive to fully stop
-    private let stopSettleDelayTimer = StopSettleDelayTimer()
-    
+    var stopSettlingDelayTimer: StopSettledDelayTimer = DefaultStopSettledDelayTimer()
+        
     /// Defines a single speed change command
     final class SpeedCommand {
         
@@ -344,7 +307,7 @@ final class TrainSpeedManager {
             if train.speed.actualSteps == .zero && finished {
                 /// Settle only if the train stopped and the speed change hasn't been cancelled.
                 /// Note: see comment in ``TrainControllerAcceleration/StopSettleDelayTimer``
-                stopSettleDelayTimer.schedule(train: train, completed: finished) { [weak self] completed in
+                stopSettlingDelayTimer.schedule(train: train, completed: finished) { [weak self] completed in
                     self?.speedCommandCompleted(command: command)
                 }
             } else {
@@ -354,10 +317,11 @@ final class TrainSpeedManager {
     }
     
     private func speedCommandCompleted(command: SpeedCommand) {
-        command.completionBlocks.forEach { $0(command.status == .finished) }
-        assert(processingCommand?.requestUUID == command.requestUUID, "processingCommand must be the same as the command")
-        processingCommand = nil
-        executePendingSpeedChangeCommand()
+        if processingCommand?.requestUUID == command.requestUUID {
+            command.completionBlocks.forEach { $0(command.status == .finished) }
+            processingCommand = nil
+            executePendingSpeedChangeCommand()
+        }
     }
             
     private func stepsArray(from fromStep: SpeedStep, to toStep: SpeedStep, acceleration: TrainSpeedAcceleration.Acceleration) -> [SpeedStep] {

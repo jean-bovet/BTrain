@@ -215,12 +215,62 @@ class TrainSpeedManagerTests: BTTestCase {
         wait(for: [cancelledChange], timeout: 5.0)
 
         // Ensure that the state of the train hasn't changed
-        XCTAssertEqual(.running, t.state)
-        
+        XCTAssertEqual(t.state, .running)
+
         wait(for: [completedChangeTo10], timeout: 5.0)
-        XCTAssertEqual(10, t.speed.actualSteps.value)
+        XCTAssertEqual(t.speed.actualSteps.value, 10)
     }
-    
+        
+    /// Ensure that scheduling a speed change while the stop settle timer is running works
+    func testSpeedChangeStopSettleDelayWhileSchedulingNewSpeedChange() throws {
+        let t = Train(id: .init(uuid: "1"), name: "CFF", address: 0)
+        t.speed.accelerationStepDelay = 1
+        t.speed.stopSettleDelay = 2.0
+        t.speed.accelerationProfile = .linear
+        let mi = MockCommandInterface()
+        let settledDelayTimer = MockStopSettledDelayTimer()
+        let ic = TrainSpeedManager(train: t, interface: mi)
+        ic.stopSettlingDelayTimer = settledDelayTimer
+
+        // Start with a speed of 50
+        t.speed.requestedSteps = SpeedStep(value: 50)
+        t.speed.actualSteps = SpeedStep(value: 50)
+
+        // Send a request to change the speed to 0
+        t.speed.requestedSteps = SpeedStep(value: 0)
+        t.state = .running
+        
+        let changeSpeedTo0 = expectation(description: "speed0")
+        ic.changeSpeed { completed in
+            if !completed {
+                changeSpeedTo0.fulfill()
+            }
+        }
+                
+        // Pause the settled delay timer
+        settledDelayTimer.pause()
+        
+        wait(for: {
+            t.speed.actualSteps.value == 0
+        }, timeout: 5.0)
+
+        XCTAssertEqual(t.state, .running)
+        
+        // Schedule a speed change request (while the settled delay timer is still
+        // running - in our case here, we simulate that by having it paused).
+        t.speed.requestedSteps = SpeedStep(value: 10)
+        let changeSpeedTo10 = expectation(description: "speed10")
+        ic.changeSpeed { completed in
+            if completed {
+                changeSpeedTo10.fulfill()
+            }
+        }
+
+        settledDelayTimer.resume()
+
+        wait(for: [changeSpeedTo0, changeSpeedTo10], timeout: 5.0, enforceOrder: true)
+    }
+
     /// Ensure that a previous speed change callback that is being cancelled does not change
     /// the train state. For example, a train stopping can be restarted in the middle of being stopped;
     /// when that happen, the new state of .running should not be overridden by the previous callback.
@@ -371,3 +421,34 @@ class TrainSpeedManagerTests: BTTestCase {
     }
     
 }
+
+/// A settled timer implementation that can be paused and resumed, to simulate the timer taking some time
+final class MockStopSettledDelayTimer: StopSettledDelayTimer {
+    
+    typealias SettledBlock = (Bool) -> Void
+    
+    var paused = false
+    var blocks = [(Bool, SettledBlock)]()
+    
+    func schedule(train: Train, completed: Bool, completion: @escaping SettledBlock) {
+        if paused {
+            blocks.append((completed, completion))
+        } else {
+            completion(completed)
+        }
+    }
+    
+    func cancel() {
+        blocks.removeAll()
+    }
+    
+    func pause() {
+        paused = true
+    }
+    
+    func resume() {
+        paused = false
+        blocks.forEach { $1($0) }
+    }
+}
+
