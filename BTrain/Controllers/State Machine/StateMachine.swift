@@ -45,7 +45,7 @@ extension LayoutControllerEvent {
         case .turnoutChanged(let turnout):
             return .turnout(turnout)
         case .directionChanged:
-            return nil // TODO
+            return nil // TODO: implement .directionChanged event
         case .speedChanged(let train, let actualKph):
             if let tc = layoutController.trainController(forTrain: train) {
                 return .speed(tc, actualKph)

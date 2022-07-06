@@ -16,7 +16,7 @@ import XCTest
 
 /// Helper class that the unit test uses to prepare, start and stop a train in a layout.
 final class Package {
-    let interface = MockCommandInterface()
+    let digitalController = MockCommandInterface()
     let layout: Layout
     let asserter: LayoutAsserter
     let layoutController: LayoutController
@@ -34,7 +34,7 @@ final class Package {
     
     init(layout: Layout) {
         self.layout = layout
-        self.layoutController = LayoutController(layout: layout, switchboard: nil, interface: interface)
+        self.layoutController = LayoutController(layout: layout, switchboard: nil, interface: digitalController)
         self.asserter = LayoutAsserter(layout: layout, layoutController: layoutController)
         
         layout.automaticRouteRandom = false
@@ -111,7 +111,7 @@ final class Package {
     func assert(_ r1: String, _ leadingBlocks: [String]? = nil) throws {
         // Drain all events when the interface is running. If the interface is on pause,
         // do not drain because the drain will never exits as the interface never executes.
-        let drainAll = interface.running
+        let drainAll = digitalController.running
         try asserter.assert([r1], trains: trains, drainAll: drainAll)
         if let leadingBlocks = leadingBlocks {
             try assertLeadingBlocks(leadingBlocks)

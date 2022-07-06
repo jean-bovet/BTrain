@@ -238,7 +238,6 @@ class AutomaticRoutingTests: BTTestCase {
         try p.assert("automatic-0: {r0{s2 ≡ 🔴🚂0 }} <t1(1,0),s> <t2(1,0),s> [b1 ≏ ] <t3> [b2 ≏ ] <t4(1,0)> [b3 ≏ ≏ ≏ ] <t5> <t6> {r0{s2 ≡ 🔴🚂0 }}")
                 
         // Artificially set the restart time to 0 which will make the train restart again
-        // TODO: refactor with all other occurrences in the tests
         p.layoutController.restartTimerFired(layout.trains[0])
         p.layoutController.waitUntilSettled()
 
@@ -330,7 +329,7 @@ class AutomaticRoutingTests: BTTestCase {
         try p.assert("automatic-16405: !{NE4 ≏ ≏ } <C.1{tw}(1,0),s> <M.1{sl}(0,1),s> [r16405[M1 ≡ 🔵🚂16405 ≏ ≏ ]] <r16405<Z.1{sr}(0,1),s>> [r16405[M2U ≏ ]] <Z.2{sl}(1,0),s> <Z.4{sl}(0,1),l> {LCF1 ≏ ≏ }")
         
         XCTAssertEqual(train.state, .running)
-        p.interface.pause()
+        p.digitalController.pause()
                 
         // Stop request should happen in M2U but the actual stopping of the train should
         // only happen in LCF1, where the restart time should be triggered because LCF1 is a station.
@@ -341,7 +340,7 @@ class AutomaticRoutingTests: BTTestCase {
 
         try p.assert("automatic-16405: !{NE4 ≏ ≏ } <C.1{tw}(1,0),s> <M.1{sl}(0,1),s> [M1 ≏ ≏ ≏ ] <Z.1{sr}(0,1),s> [M2U ≏ ] <Z.2{sl}(1,0),s> <Z.4{sl}(0,1),l> {r16405{LCF1 ≡ 🔴🚂16405 ≏ }}")
 
-        p.interface.resume()
+        p.digitalController.resume()
         
         p.layoutController.waitUntilSettled()
         

@@ -45,10 +45,10 @@ struct RouteStepStation: RouteStep, Equatable, Codable {
         
         let direction = element.direction ?? .next
         
-//        guard let direction = element.direction else {
-//            // TODO: support direction being nil, which means two elements can be returned, one for each direction
-//            return nil
-//        }
+        // TODO: support direction being nil, which means two elements can be returned, one for each direction
+        //        guard let direction = element.direction else {
+        //            return nil
+        //        }
         let entrySocket = direction == .next ? Block.previousSocket : Block.nextSocket
         let exitSocket = direction == .next ? Block.nextSocket : Block.previousSocket
         return .init(node: block, entrySocket:  entrySocket, exitSocket: exitSocket)
