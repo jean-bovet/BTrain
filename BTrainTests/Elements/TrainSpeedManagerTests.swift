@@ -66,6 +66,83 @@ class TrainSpeedManagerTests: BTTestCase {
         assertChangeSpeed(train: t, from: 13, to: 0, [0], ic)
     }
     
+    func testSpeedChangeWhenActualAndRequestSpeedsAreIdentical() {
+        let t = Train()
+        let mi = MockCommandInterface()
+        let ic = TrainSpeedManager(train: t, interface: mi)
+
+        t.speed.requestedSteps = SpeedStep(value: 100)
+        t.speed.actualSteps = t.speed.requestedSteps
+
+        let expectation = expectation(description: "Completed")
+        ic.changeSpeed { completed in
+            if completed {
+                expectation.fulfill()
+            }
+        }
+        
+        wait(for: [expectation], timeout: 2.0)
+    }
+
+    func testSpeedChangeDuringProcessingOfCommandWhenActualAndRequestSpeedsAreIdentical() {
+        let t = Train()
+        let mi = MockCommandInterface()
+        let ic = TrainSpeedManager(train: t, interface: mi)
+
+        t.speed.requestedSteps = SpeedStep(value: 100)
+
+        let e1 = expectation(description: "e1")
+        ic.changeSpeed { completed in
+            if !completed {
+                e1.fulfill()
+            }
+        }
+        
+        wait(for: {
+            t.speed.actualSteps.value >= 50
+        }, timeout: 5.0)
+
+        t.speed.requestedSteps = SpeedStep(value: 20)
+        t.speed.actualSteps = t.speed.requestedSteps
+
+        mi.pause()
+        waitForPendingCommand(mi)
+
+        let e2 = expectation(description: "e2")
+        ic.changeSpeed { completed in
+            if completed {
+                e2.fulfill()
+            }
+        }
+
+        let e3 = expectation(description: "e3")
+        ic.changeSpeed { completed in
+            if completed {
+                e3.fulfill()
+            }
+        }
+
+        mi.resume()
+
+        wait(for: [e3, e1, e2], timeout: 2.0, enforceOrder: true)
+    }
+
+    func testSpeedChangeFromDigitalController() {
+        let t = Train()
+        let mi = MockCommandInterface()
+        _ = TrainSpeedManager(train: t, interface: mi)
+        
+        t.speed.requestedSteps = SpeedStep(value: 0)
+        t.speed.actualSteps = t.speed.requestedSteps
+
+        mi.speedChangeCallbacks[0](t.address, t.decoder, SpeedValue(value: 100), false)
+        XCTAssertEqual(t.speed.requestedKph, 158)
+        
+        mi.speedChangeCallbacks[0](t.address, t.decoder, SpeedValue(value: 100), true)
+        XCTAssertEqual(t.speed.requestedKph, 158)
+        XCTAssertEqual(t.speed.actualKph, 158)
+    }
+
     func testActualSpeedChangeHappensAfterDigitalControllerResponse() {
         let t = Train()
         t.speed.accelerationProfile = .none
@@ -80,10 +157,7 @@ class TrainSpeedManagerTests: BTTestCase {
         }
 
         mi.pause()
-        
-        wait(for: {
-            mi.pendingCommands.count > 0
-        }, timeout: 1.0)
+        waitForPendingCommand(mi)
 
         // The actual speed shouldn't change yet, because the completion
         // block for the command request hasn't been invoked yet
@@ -126,11 +200,7 @@ class TrainSpeedManagerTests: BTTestCase {
         }, timeout: 5.0)
 
         mi.pause()
-
-        // Wait until at least one command is pending
-        wait(for: {
-            mi.pendingCommands.count > 0
-        }, timeout: 5.0)
+        waitForPendingCommand(mi)
                         
         t.speed.requestedSteps = SpeedStep(value: 10)
         let cancelledSpeed10 = expectation(description: "Cancelled 10")
@@ -324,10 +394,8 @@ class TrainSpeedManagerTests: BTTestCase {
         }
 
         // Wait for the command interface to receive the speed command
-        wait(for: {
-            mi.pendingCommands.count > 0
-        }, timeout: 1.0)
-        
+        waitForPendingCommand(mi)
+
         t.speed.requestedKph = 40
 
         let e2 = expectation(description: "Completion")
@@ -368,10 +436,8 @@ class TrainSpeedManagerTests: BTTestCase {
         }
 
         // Wait for the command interface to receive the speed command
-        wait(for: {
-            mi.pendingCommands.count > 0
-        }, timeout: 1.0)
-        
+        waitForPendingCommand(mi)
+
         t.speed.requestedKph = 0
         let e2 = expectation(description: "Completion e2")
         ic.changeSpeed { completed in
@@ -420,6 +486,11 @@ class TrainSpeedManagerTests: BTTestCase {
         cmd.speedValues.removeAll()
     }
     
+    private func waitForPendingCommand(_ mi: MockCommandInterface) {
+        wait(for: {
+            mi.pendingCommands.count > 0
+        }, timeout: 1.0)
+    }
 }
 
 /// A settled timer implementation that can be paused and resumed, to simulate the timer taking some time
