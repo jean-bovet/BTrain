@@ -135,6 +135,7 @@
 		A768B1932856A3D900B6497F /* LayoutEventStateMachine.swift in Sources */ = {isa = PBXBuildFile; fileRef = A768B1922856A3D900B6497F /* LayoutEventStateMachine.swift */; };
 		A768B1952856A42500B6497F /* LayoutEventStateMachineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A768B1942856A42500B6497F /* LayoutEventStateMachineTests.swift */; };
 		A76B903E28330CB4006596A3 /* LayoutYardRoutingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A76B903D28330CB4006596A3 /* LayoutYardRoutingTests.swift */; };
+		A76C1C5B2876D91300A22509 /* TrainSpeedCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = A76C1C5A2876D91300A22509 /* TrainSpeedCommand.swift */; };
 		A76F3563282EF8C3004EBD10 /* FixedRoutingWithTurnoutDelays.swift in Sources */ = {isa = PBXBuildFile; fileRef = A76F3562282EF8C3004EBD10 /* FixedRoutingWithTurnoutDelays.swift */; };
 		A7710E572777D69400C08150 /* RouteListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7710E562777D69400C08150 /* RouteListView.swift */; };
 		A7710E592777D7FE00C08150 /* RouteView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7710E582777D7FE00C08150 /* RouteView.swift */; };
@@ -450,6 +451,7 @@
 		A768B1922856A3D900B6497F /* LayoutEventStateMachine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutEventStateMachine.swift; sourceTree = "<group>"; };
 		A768B1942856A42500B6497F /* LayoutEventStateMachineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutEventStateMachineTests.swift; sourceTree = "<group>"; };
 		A76B903D28330CB4006596A3 /* LayoutYardRoutingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutYardRoutingTests.swift; sourceTree = "<group>"; };
+		A76C1C5A2876D91300A22509 /* TrainSpeedCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainSpeedCommand.swift; sourceTree = "<group>"; };
 		A76F3562282EF8C3004EBD10 /* FixedRoutingWithTurnoutDelays.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FixedRoutingWithTurnoutDelays.swift; sourceTree = "<group>"; };
 		A7710E562777D69400C08150 /* RouteListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteListView.swift; sourceTree = "<group>"; };
 		A7710E582777D7FE00C08150 /* RouteView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteView.swift; sourceTree = "<group>"; };
@@ -1324,6 +1326,7 @@
 			isa = PBXGroup;
 			children = (
 				A7DB7D4727C21D7C000893BA /* TrainSpeedManager.swift */,
+				A76C1C5A2876D91300A22509 /* TrainSpeedCommand.swift */,
 				A7EBD86D285825A300A35046 /* TrainController.swift */,
 				A7EBD8732875D03300A35046 /* StopSettledDelayTimer.swift */,
 			);
@@ -1700,6 +1703,7 @@
 				A74F38052818C0E50013FD23 /* RouteStepTurnout.swift in Sources */,
 				A7BE36AA2751BDC300286709 /* ConnectorPlug.swift in Sources */,
 				A785C07E278A64C1002FD538 /* CommandInterface.swift in Sources */,
+				A76C1C5B2876D91300A22509 /* TrainSpeedCommand.swift in Sources */,
 				A7E1F74827D71C03009FB75F /* TrainSpeedAcceleration.swift in Sources */,
 				A795A03327B0894800AE90EB /* CenteredLabelView.swift in Sources */,
 				A74CCC72272A5A18004E58F5 /* Transition.swift in Sources */,
