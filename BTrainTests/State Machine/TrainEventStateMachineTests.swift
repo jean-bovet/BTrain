@@ -29,6 +29,15 @@ class TrainEventStateMachineTests: XCTestCase {
         train.onUpdateOccupiedAndReservedBlocks = { return true }
         XCTAssertEqual(try tsm.handle(trainEvent: .position(train), train: train), .reservedBlocksChanged(train))
         
+        train.onUpdateOccupiedAndReservedBlocks = { return false }
+        train.onReservedBlocksLengthEnough = { _ in return true }
+        XCTAssertEqual(try tsm.handle(trainEvent: .position(train), train: train), nil)
+
+        train.state = .running
+        train.mode = .stopManaged
+        train.stopFeedbackActivated = true
+        XCTAssertEqual(try tsm.handle(trainEvent: .position(train), train: train), .stateChanged(train))
+
         XCTAssertEqual(try tsm.handle(trainEvent: .position(anotherTrain), train: train), nil)
     }
     
@@ -46,6 +55,47 @@ class TrainEventStateMachineTests: XCTestCase {
         train.onUpdateReservedBlocks = { return true }
         XCTAssertEqual(try tsm.handle(trainEvent: .reservedBlocksChanged(anotherTrain), train: train), .reservedBlocksChanged(train))
         XCTAssertEqual(train.adjustSpeedCount, 1)
+        
+        train.onUpdateReservedBlocks = { return false }
+        XCTAssertEqual(try tsm.handle(trainEvent: .reservedBlocksChanged(anotherTrain), train: train), nil)
+        XCTAssertEqual(train.adjustSpeedCount, 1)
+    }
+
+    func testChangeMode() throws {
+        train.state = .running
+        train.mode = .managed
+        train.onUpdateReservedBlocks = { return true }
+        XCTAssertEqual(try tsm.handle(trainEvent: .modeChanged(train), train: train), .reservedBlocksChanged(train))
+
+        train.onUpdateReservedBlocks = { return false }
+        XCTAssertEqual(try tsm.handle(trainEvent: .modeChanged(train), train: train), nil)
+
+        train.mode = .stopManaged
+        XCTAssertEqual(try tsm.handle(trainEvent: .modeChanged(train), train: train), nil)
+
+        train.mode = .stopManaged
+        train.stopFeedbackActivated = true
+        XCTAssertEqual(try tsm.handle(trainEvent: .modeChanged(train), train: train), .stateChanged(train))
+    }
+    
+    func testStateChange() throws {
+        train.state = .running
+        train.hasReservedBlocks = false
+        XCTAssertEqual(try tsm.handle(trainEvent: .stateChanged(train), train: train), nil)
+        
+        train.state = .stopped
+        train.hasReservedBlocks = false
+        train.onReservedBlocksLengthEnough = { _ in return true }
+        XCTAssertEqual(try tsm.handle(trainEvent: .stateChanged(train), train: train), nil)
+        
+        train.state = .stopped
+        train.hasReservedBlocks = true
+        XCTAssertEqual(try tsm.handle(trainEvent: .stateChanged(train), train: train), .reservedBlocksChanged(train))
+    }
+    
+    func testReservedBlockSettledChanged() throws {
+        train.onReservedBlocksLengthEnough = { _ in return true }
+        XCTAssertEqual(try tsm.handle(trainEvent: .reservedBlocksSettledLengthChanged(train), train: train), nil)
     }
 
 }
