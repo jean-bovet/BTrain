@@ -139,7 +139,12 @@ final class TrainController: TrainControlling, CustomStringConvertible {
         let previousLeadingItems = train.leading.items
         let previousOccupiedItems = train.occupied.items
 
-        try reserveLeadingBlocks()
+        if mode == .unmanaged {
+            try reservation.freeElements(train: train)
+            try reservation.occupyBlocksWith(train: train)
+        } else {
+            try reserveLeadingBlocks()
+        }
         
         return previousLeadingItems != train.leading.items || previousOccupiedItems != train.occupied.items
     }

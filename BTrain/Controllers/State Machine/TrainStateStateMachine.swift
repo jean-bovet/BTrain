@@ -41,10 +41,16 @@ struct TrainStateStateMachine {
      Running + Feedback.Brake + Train.Block.Station > Braking
      */
     private func handleRunningState(train: TrainControlling) {
-        if train.brakeFeedbackActivated && train.shouldStopInBlock {
-            train.state = .braking
-        } else if train.stopFeedbackActivated && train.shouldStopInBlock {
-            train.state = .stopping
+        if train.mode == .unmanaged {
+            if train.speed == 0 {
+                train.state = .stopped
+            }
+        } else {
+            if train.brakeFeedbackActivated && train.shouldStopInBlock {
+                train.state = .braking
+            } else if train.stopFeedbackActivated && train.shouldStopInBlock {
+                train.state = .stopping
+            }
         }
     }
     
@@ -80,8 +86,14 @@ struct TrainStateStateMachine {
      Stopped + Train.Reserved.Blocks.Length + !Stop.Managed > Running
      */
     private func handleStoppedState(train: TrainControlling) {
-        if !train.shouldStopInBlock && train.mode == .managed {
-            train.state = .running
+        if train.mode == .managed {
+            if !train.shouldStopInBlock {
+                train.state = .running
+            }
+        } else if train.mode == .unmanaged {
+            if train.speed > 0 {
+                train.state = .running
+            }
         }
     }
     
@@ -94,6 +106,10 @@ extension TrainStateStateMachine {
     /// we need to re-schedule the train, stop it or simple do nothing.
     /// - Parameter train: the train to handle
     func trainDidStop(train: TrainControlling) {
+        guard train.mode != .unmanaged else {
+            return
+        }
+        
         let reachedStationOrDestination = train.atStationOrDestination
 
         switch train.route.mode {

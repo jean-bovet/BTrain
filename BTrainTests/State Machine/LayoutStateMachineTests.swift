@@ -309,13 +309,7 @@ class LayoutStateMachineTests: XCTestCase {
         assert(train, .stopped, 0, reservedBlock: false, updatePositionCount: 4)
 
         // Ensure stability by making sure the train does not restart if there is a layout event happening
-        let handledEvents: [StateMachine.TrainEvent]
-        if train.mode == .managed {
-            handledEvents = [.speed(train)]
-        } else {
-            handledEvents = []
-        }
-        try handle(layoutEvent: .speed(train, 0), train: train, handledEvents: handledEvents)
+        try handle(layoutEvent: .speed(train, 0), train: train, handledEvents: [.speed(train)])
         assert(train, .stopped, 0, reservedBlock: false, updatePositionCount: 4)
 
         // And now test when the feedback is used for both the braking and stopping feedback

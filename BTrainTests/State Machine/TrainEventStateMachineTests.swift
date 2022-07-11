@@ -43,6 +43,7 @@ class TrainEventStateMachineTests: XCTestCase {
     
     func testEventReservedBlocksChanged() throws {
         let anotherTrain = MockTrainController(route: train.route)
+        train.mode = .managed
         train.state = .running // because adjustSpeed() is only called when the train is not stopped
                 
         train.onReservedBlocksLengthEnough = { speed in return false }
@@ -80,17 +81,27 @@ class TrainEventStateMachineTests: XCTestCase {
     
     func testStateChange() throws {
         train.state = .running
+        train.mode = .managed
         train.hasReservedBlocks = false
         XCTAssertEqual(try tsm.handle(trainEvent: .stateChanged(train), train: train), nil)
+        XCTAssertEqual(train.state, .running)
+
+        train.state = .stopped
+        train.hasReservedBlocks = false
+        train.onReservedBlocksLengthEnough = { _ in return false }
+        XCTAssertEqual(try tsm.handle(trainEvent: .stateChanged(train), train: train), nil)
+        XCTAssertEqual(train.state, .stopped)
         
         train.state = .stopped
         train.hasReservedBlocks = false
         train.onReservedBlocksLengthEnough = { _ in return true }
-        XCTAssertEqual(try tsm.handle(trainEvent: .stateChanged(train), train: train), nil)
-        
+        XCTAssertEqual(try tsm.handle(trainEvent: .stateChanged(train), train: train), .stateChanged(train))
+        XCTAssertEqual(train.state, .running)
+
         train.state = .stopped
         train.hasReservedBlocks = true
         XCTAssertEqual(try tsm.handle(trainEvent: .stateChanged(train), train: train), .reservedBlocksChanged(train))
+        XCTAssertEqual(train.state, .stopped)
     }
     
     func testReservedBlockSettledChanged() throws {

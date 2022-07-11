@@ -19,6 +19,10 @@ extension TrainControlling {
     }
 
     func shouldStopInBlock(ignoreReservedBlocks: Bool) -> Bool {
+        guard mode != .unmanaged else {
+            return false
+        }
+        
         // User requested to stop managing the train?
         if mode == .stopManaged {
             return true

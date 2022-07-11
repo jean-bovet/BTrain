@@ -21,9 +21,8 @@ struct LayoutStateMachine {
     
     func handle(layoutEvent: StateMachine.LayoutEvent? = nil, trainEvent: StateMachine.TrainEvent? = nil, trains: [TrainControlling], handledTrainEvents: inout [StateMachine.TrainEvent]?) throws {
         var trainEvents = [StateMachine.TrainEvent]()
-        let managedTrains = trains.filter { $0.mode != .unmanaged }
         if let layoutEvent = layoutEvent {
-            for train in managedTrains {
+            for train in trains {
                 if let resultingTrainEvent = try lesm.handle(layoutEvent: layoutEvent, train: train) {
                     trainEvents.append(resultingTrainEvent)
                 }
@@ -38,7 +37,7 @@ struct LayoutStateMachine {
         
         while trainEvents.count > 0 {
             let nextTrainEvent = trainEvents.removeFirst()
-            for train in managedTrains {
+            for train in trains {
                 if let resultingTrainEvent = try tesm.handle(trainEvent: nextTrainEvent, train: train) {
                     trainEvents.append(resultingTrainEvent)
                     handledTrainEvents?.append(resultingTrainEvent)

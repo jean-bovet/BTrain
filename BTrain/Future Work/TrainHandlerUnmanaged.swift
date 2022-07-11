@@ -12,6 +12,7 @@
 
 import Foundation
 
+// TODO: re-use some logic in this class when we introduce the semi-automatic mode
 final class TrainHandlerUnmanaged {
         
     let layout: Layout
