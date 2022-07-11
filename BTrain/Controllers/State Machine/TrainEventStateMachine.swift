@@ -82,7 +82,7 @@ struct TrainEventStateMachine {
                 return .reservedBlocksChanged(train)
             }
 
-        case .reservedBlocksChanged(_):
+        case .reservedBlocksChanged(_), .reservedBlocksSettledLengthChanged(_):
             if tsm.handleTrainState(train: train) {
                 train.adjustSpeed(stateChanged: true)
                 return .stateChanged(train)
@@ -90,14 +90,6 @@ struct TrainEventStateMachine {
                 train.adjustSpeed(stateChanged: false)
             }
             
-        case .reservedBlocksSettledLengthChanged(_):
-            if tsm.handleTrainState(train: train) {
-                train.adjustSpeed(stateChanged: true)
-                return .stateChanged(train)
-            } else {
-                train.adjustSpeed(stateChanged: false)
-            }
-
         case .speed(_):
             // Speed change can result in state change, for example when the speed reaches 0.
             if tsm.handleTrainState(train: train) {
