@@ -12,7 +12,7 @@
 
 import Foundation
 
-// TODO: unit tests
+/// State machine that handles only the state transition of the train
 struct TrainStateStateMachine {
     
     func handleTrainState(train: TrainControlling) -> Bool {
@@ -34,12 +34,6 @@ struct TrainStateStateMachine {
         return stateChanged
     }
     
-    /**
-     Running + !(Train.Reserved.Blocks.Length) > Braking
-     Running + Feedback.Brake + Stop.Managed > Braking
-     Running + Feedback.Brake + Route.End > Braking
-     Running + Feedback.Brake + Train.Block.Station > Braking
-     */
     private func handleRunningState(train: TrainControlling) {
         if train.mode == .unmanaged {
             if train.speed == 0 {
@@ -54,13 +48,6 @@ struct TrainStateStateMachine {
         }
     }
     
-    /**
-     Braking + Feedback.Stop + !(Train.Reserved.Blocks.Length) > Stopping
-     Braking + Feedback.Stop + Stop.Managed > Stopping
-     Braking + Feedback.Stop + Route.End > Stopping
-     Braking + Feedback.Stop + Train.Block.Station > Stopping
-     Braking + Train.Reserved.Blocks.Length + !Stop.Managed + !Train.Block.Station + !Route.End > Running
-     */
     private func handleBrakingState(train: TrainControlling) {
         if train.shouldStopInBlock {
             if train.stopFeedbackActivated {
@@ -71,20 +58,16 @@ struct TrainStateStateMachine {
         }
     }
 
-    /**
-     Stopping + Speed Changed (=0) > Stopped
-     */
     private func handleStoppingState(train: TrainControlling) {
-        if train.speed == 0 {
-            train.state = .stopped
-        } else if !train.shouldStopInBlock {
+        if train.shouldStopInBlock {
+            if train.speed == 0 {
+                train.state = .stopped
+            }
+        } else {
             train.state = .running
         }
     }
     
-    /**
-     Stopped + Train.Reserved.Blocks.Length + !Stop.Managed > Running
-     */
     private func handleStoppedState(train: TrainControlling) {
         if train.mode == .managed {
             if !train.shouldStopInBlock {

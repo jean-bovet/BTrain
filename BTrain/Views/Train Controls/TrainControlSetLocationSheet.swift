@@ -158,7 +158,7 @@ struct TrainControlSetLocationSheet: View {
             }
             
             HStack {
-                Toggle("Wagons Pushed by the Locomotive", isOn: $wagonsPushedByLocomotive)
+                Toggle("Wagons Pushed by the Locomotive (beta)", isOn: $wagonsPushedByLocomotive)
                     .hidden(action != .set)
                     .onAppear {
                         wagonsPushedByLocomotive = train.wagonsPushedByLocomotive

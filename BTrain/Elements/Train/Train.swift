@@ -140,6 +140,7 @@ final class Train: Element, ObservableObject {
     // Indicates if the wagons are pushed or pulled by the locomotive.
     // It is used to correctly reserve the blocks occupied by the length of the train
     // when the train length is larger than the block it occupies.
+    // TODO: not fully implemented, will be in the future
     @Published var wagonsPushedByLocomotive = false
     
     // The route this train is associated with

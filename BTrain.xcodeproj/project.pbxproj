@@ -562,7 +562,6 @@
 		A7BE36A72751BDAB00286709 /* ConnectorSocket.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectorSocket.swift; sourceTree = "<group>"; };
 		A7BE36A92751BDC300286709 /* ConnectorPlug.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectorPlug.swift; sourceTree = "<group>"; };
 		A7C30BDF2811ACAF00CC4251 /* TrainHandlerUnmanaged.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainHandlerUnmanaged.swift; sourceTree = "<group>"; };
-		A7C30BE728121F6100CC4251 /* TrainStopPushingWagonsHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainStopPushingWagonsHandler.swift; sourceTree = "<group>"; };
 		A7C5E959280DDD6A00A5DB12 /* Networking.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = Networking.xctestplan; sourceTree = "<group>"; };
 		A7C5E95A280E04DE00A5DB12 /* XCTestCase+Simulator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "XCTestCase+Simulator.swift"; sourceTree = "<group>"; };
 		A7C6343727E6AF6700C37B46 /* TrainIconManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainIconManagerTests.swift; sourceTree = "<group>"; };
@@ -1353,7 +1352,6 @@
 			isa = PBXGroup;
 			children = (
 				A7C30BDF2811ACAF00CC4251 /* TrainHandlerUnmanaged.swift */,
-				A7C30BE728121F6100CC4251 /* TrainStopPushingWagonsHandler.swift */,
 			);
 			path = "Future Work";
 			sourceTree = "<group>";

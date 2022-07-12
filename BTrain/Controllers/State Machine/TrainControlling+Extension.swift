@@ -14,10 +14,15 @@ import Foundation
 
 extension TrainControlling {
     
+    /// Returns true if the train should stop in the current block
     var shouldStopInBlock: Bool {
         shouldStopInBlock(ignoreReservedBlocks: false)
     }
-
+    
+    /// Returns true if the train should stop in the current block
+    /// - Parameter ignoreReservedBlocks: true to ignore the reserved blocks. For example, to allow a train to start,
+    /// we need to ignore the reserved block because the train, which is stopped, doesn't have any reserved blocks yet.
+    /// - Returns: true if the train should stop in the current block
     func shouldStopInBlock(ignoreReservedBlocks: Bool) -> Bool {
         guard mode != .unmanaged else {
             return false
