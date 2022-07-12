@@ -113,17 +113,6 @@ final class Layout: Element, ObservableObject {
             train.scheduling == .managed
         }
     }
-        
-    // Programmatically trigger a change event for the layout,
-    // which is used by other object, such as the switchboard,
-    // to re-draw itself. This is necessary because changes
-    // in children parameters of the layout (ie the speed of a train),
-    // is not propagated to the layout object itself.
-    // TODO: still necessary?
-    func didChange() {
-        objectWillChange.send()
-    }
-    
 }
 
 // MARK: Codable

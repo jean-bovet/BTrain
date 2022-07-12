@@ -112,9 +112,9 @@ struct TrainControlSetLocationSheet: View {
                 if action == .remove {
                     Text("from block")
                     if let block = layout.block(for: blockId) {
-                        Text(block.nameForLocation)
+                        Text("\(block.nameForLocation)?")
                     } else if let blockId = blockId {
-                        Text(blockId.uuid)
+                        Text("\(blockId.uuid)?")
                     }
                 } else {
                     Picker("to block", selection: $blockId) {
@@ -184,6 +184,7 @@ struct TrainControlSetLocationSheet: View {
                             case .set:
                                 train.wagonsPushedByLocomotive = wagonsPushedByLocomotive
                                 try controller.setTrainToBlock(train, selectedBlock, position: .end, direction: direction)
+                                controller.redrawSwitchboard()
 
                             case .move:
                                 let routeId = Route.automaticRouteId(for: train.id)
@@ -191,7 +192,7 @@ struct TrainControlSetLocationSheet: View {
                                 try controller.start(routeID: routeId, trainID: train.id, destination: destination)
 
                             case .remove:
-                                controller.remove(train: train)
+                                try controller.remove(train: train)
                             }
                         }
                         errorStatus = nil

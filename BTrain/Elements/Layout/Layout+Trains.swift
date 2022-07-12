@@ -36,9 +36,8 @@ extension Layout {
         trains.first(where: { $0.id == trainId })
     }
 
-    // TODO: similar method below, why is that?
-    func remove(trainId: Identifier<Train>) {
-        try? remove(trainID: trainId)
+    func delete(trainId: Identifier<Train>) {
+        try? remove(trainId: trainId)
         trains.removeAll(where: { $0.id == trainId})
     }
     
@@ -50,7 +49,7 @@ extension Layout {
 
     func removeAllTrains() {
         trains.forEach {
-            try? remove(trainID: $0.id)
+            try? remove(trainId: $0.id)
         }
     }
     
@@ -175,10 +174,6 @@ extension Layout {
         guard toBlock.reserved == nil || toBlock.reserved?.trainId == train.id else {
             throw LayoutError.cannotReserveBlock(block: toBlock, train: train, reserved: toBlock.reserved!)
         }
-
-        defer {
-            didChange()
-        }
         
         // Determine the position of the train
         switch(position) {
@@ -251,9 +246,9 @@ extension Layout {
     }
     
     // Remove the train from the layout (but not from the list of train)
-    func remove(trainID: Identifier<Train>) throws {
-        guard let train = self.train(for: trainID) else {
-            throw LayoutError.trainNotFound(trainId: trainID)
+    func remove(trainId: Identifier<Train>) throws {
+        guard let train = self.train(for: trainId) else {
+            throw LayoutError.trainNotFound(trainId: trainId)
         }
         
         // Remove the train from the blocks
@@ -267,8 +262,6 @@ extension Layout {
         transitions.filter { $0.reserved == train.id }.forEach { $0.reserved = nil; $0.train = nil }
         
         train.blockId = nil
-        
-        didChange()
     }
 
     func block(for train: Train, step: RouteItem) -> (Identifier<Block>, Direction)? {

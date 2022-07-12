@@ -59,7 +59,7 @@ struct TrainListView: View {
                     }
                     Button("-") {
                         let train = layout.train(for: selection!)!
-                        document.layoutController.remove(train: train)
+                        document.layoutController.delete(train: train)
                         
                         undoManager?.registerUndo(withTarget: layout, handler: { layout in
                             layout.addTrain(train)

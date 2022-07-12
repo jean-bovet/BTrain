@@ -387,7 +387,7 @@ class FixedRoutingTests: BTTestCase {
         let p = Package(layout: layout)
         try p.prepare(routeID: "r2", trainID: "2", fromBlockId: "b1")
 
-        try layout.remove(trainID: layout.trains.first!.id)
+        try layout.remove(trainId: layout.trains.first!.id)
 
         try p.assert("r2: {r2{b1 🔴🚂2 ≏ ≏ }} <t0(0,2)> ![b3 ≏ ≏ ] <t1(2,0)> ![b2 ≏ ≏ ] <t0(1,0)> !{r2{b1 ≏ ≏ 🔴🚂2 }}")
 
@@ -644,7 +644,7 @@ class FixedRoutingTests: BTTestCase {
                       "r3: {b3 ≏ ≏ } <t1(0,2)> [b5 ≏ ≏ ] <t0(2,0),r> !{r2{b1 ≏ ≏ 🔴🚂2 }}")
 
         // Let's remove train 2 artificially to allow train 1 to stop at the station b1
-        try layout.remove(trainID: Identifier<Train>(uuid: "2"))
+        try layout.remove(trainId: Identifier<Train>(uuid: "2"))
         p.layoutController.runControllers(.trainPositionChanged(p.train))
 
         try p.assert2("r1: {r1{b1 ≏ ≏ }} <t0,r> [b2 ≏ ≏ ] {b3 ≏ ≏ } <t1> [r1[b4 ≡ ≡ 🔵🚂1 ]] {r1{b1 ≏ ≏ }}",

@@ -374,7 +374,7 @@ class AutomaticRoutingTests: BTTestCase {
         XCTAssertEqual(p.route.steps.count, 0)
         
         // Now remove the train from the block b1 in order for the train in s2 to start again properly this time
-        try layout.remove(trainID: layout.trains[1].id)
+        try layout.remove(trainId: layout.trains[1].id)
         p.layoutController.runControllers(.trainPositionChanged(layout.trains[0]))
 
         // When restarting, the train automatic route will be updated

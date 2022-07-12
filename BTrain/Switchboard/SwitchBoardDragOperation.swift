@@ -254,8 +254,6 @@ final class SwitchBoardDragOperation {
         renderer.ephemeralDragInfo = nil
         renderer.showAvailableSockets = false
         dragState = .none
-        
-        layout.didChange()
     }
         
     private func startDragPlug(_ plugId: Int) {

@@ -250,8 +250,12 @@ final class LayoutController {
         }
     }
 
-    func remove(train: Train) {
-        layout.remove(trainId: train.id)
+    func delete(train: Train) {
+        layout.delete(trainId: train.id)
+    }
+    
+    func remove(train: Train) throws {
+        try layout.remove(trainId: train.id)
         runControllers(.trainPositionChanged(train))
     }
     
@@ -297,7 +301,7 @@ final class LayoutController {
         runControllers(.restartTimerExpired(train: train))
     }
     
-    private func redrawSwitchboard() {
+    func redrawSwitchboard() {
         switchboard?.state.triggerRedraw.toggle()
     }
 }
