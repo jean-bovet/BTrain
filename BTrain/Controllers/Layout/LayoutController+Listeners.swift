@@ -78,16 +78,14 @@ extension LayoutController {
                 return
             }
             
+            // We are only interested in acknowledgment messages which confirm
+            // the actual state of a turnout.
+            guard acknowledgement == true else {
+                return
+            }
+            
             if let turnout = layout.turnouts.find(address: address) {
                 turnout.setActualState(value: state, for: address.actualAddress)
-                if acknowledgement == false {
-                    // If acknowledgement is false, it means it is a command that has been
-                    // triggered by the Digital Controller and we need to reflect this by
-                    // ensuring the turnout is settled with both requested and actual state
-                    // being the same.
-                    // TODO: unit test for that
-                    turnout.requestedState = turnout.actualState
-                }
                 BTLogger.debug("Turnout \(turnout.name) state changed to \(state) (ack=\(acknowledgement)), power \(power), for address \(address.actualAddress.toHex()). Actual state \(turnout.actualState). Requested state \(turnout.requestedState)")
                 self?.runControllers(.turnoutChanged(turnout))
             } else {

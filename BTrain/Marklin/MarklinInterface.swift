@@ -48,12 +48,7 @@ final class MarklinInterface: CommandInterface {
             onReady()
         } onData: { [weak self] msg in
             DispatchQueue.main.async {
-                self?.messageCallbacks.forEach { $0(msg) }
-                if msg.isAck {
-                    self?.handleAcknowledgment(msg)
-                } else {
-                    self?.handleCommand(msg)
-                }
+                self?.onMessage(msg: msg)
             }
         } onError: { [weak self] error in
             self?.client = nil
@@ -134,6 +129,15 @@ final class MarklinInterface: CommandInterface {
                 completionBlock()
             }
             completionBlocks[message.raw] = nil
+        }
+    }
+    
+    func onMessage(msg: MarklinCANMessage) {
+        messageCallbacks.forEach { $0(msg) }
+        if msg.isAck {
+            handleAcknowledgment(msg)
+        } else {
+            handleCommand(msg)
         }
     }
     
