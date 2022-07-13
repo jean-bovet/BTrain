@@ -18,6 +18,7 @@ struct StateMachine {
         case feedback(Feedback)
         case speed(TrainControlling, TrainSpeed.UnitKph)
         case turnout(Turnout)
+        case direction(TrainControlling)
     }
     
     enum TrainEvent {
@@ -42,10 +43,17 @@ extension LayoutControllerEvent {
         switch self {
         case .feedbackTriggered(let feedback):
             return .feedback(feedback)
+            
         case .turnoutChanged(let turnout):
             return .turnout(turnout)
-        case .directionChanged:
-            return nil // TODO: implement .directionChanged event
+            
+        case .directionChanged(let train):
+            if let tc = layoutController.trainController(forTrain: train) {
+                return .direction(tc)
+            } else {
+                return nil
+            }
+
         case .speedChanged(let train, let actualKph):
             if let tc = layoutController.trainController(forTrain: train) {
                 return .speed(tc, actualKph)

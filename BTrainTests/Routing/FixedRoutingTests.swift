@@ -795,34 +795,6 @@ class FixedRoutingTests: BTTestCase {
         XCTAssertEqual(p.train.state, .stopped)
     }
 
-    /* TODO: re-introduce when backward direction is supported
-    func testTrainWithWagonsInFront() throws {
-        let layout = LayoutComplexLoop().newLayoutWithLengths(LayoutComplexLoop().newLayout().removeTrainGeometry().removeTurnoutGeometry())
-
-        let p = Package(layout: layout)
-        
-        layout.turnouts[0].setState(.branchLeft)
-        layout.turnouts[5].setState(.branchRight)
-
-        let train = layout.trains[0]
-        train.wagonsPushedByLocomotive = true
-
-        try p.prepare(routeID: "3", trainID: "0", fromBlockId: "s1")
-
-        try p.assert("3: {r0{s1 🔴🚂0 ≏ 💺0 }} <r0<t1(2,0),l>> <r0<t2(1,0),s>> [r0[b1 💺0 ≏ 💺0 ]] <r0<t3>> [r0[b2 💺0 ≏ ]] <t4(1,0)> [b3 ≏ ≏ ] <t5> <t6,r> {s2 ≏ }")
-        
-        layout.strictRouteFeedbackStrategy = false
-
-        try p.start()
-
-        XCTAssertTrue(p.train.scheduling == .managed)
-
-        // block length = 60
-        // train length = 100
-        try p.assert("3: {r0{s1 🟡🚂0 ≏ 💺0 }} <r0<t1(2,0),l>> <r0<t2(1,0),s>> [r0[b1 💺0 ≏ 💺0 ]] <r0<t3>> [r0[b2 💺0 ≏ ]] <r0<t4(1,0)>> [r0[b3 ≏ ≏ ]] <t5> <t6,r> {s2 ≏ }")
-        try p.assert("3: {r0{s1 ≡ 🟡🚂0 }} <r0<t1(2,0),l>> <r0<t2(1,0),s>> [r0[b1 💺0 ≏ 💺0 ]] <r0<t3>> [r0[b2 💺0 ≏ 💺0 ]] <r0<t4(1,0)>> [r0[b3 ≏ ≏ ]] <t5> <t6,r> {s2 ≏ }")
-    }*/
-    
     func testStraightLine1() throws {
         let layout = LayoutPointToPoint().newLayout()
 
@@ -850,70 +822,6 @@ class FixedRoutingTests: BTTestCase {
         try p.assert("0: |[A ≏ ≏ ] <AB> [B ≏ ≏ ] [C ≏ ≏ ] [r0[D 💺0 ≏ 💺0 ≏ 💺0 ]] <r0<DE(1,0)>> [r0[E 💺0 ≡ 🟡🚂0 ≏ ]]|")
         try p.assert("0: |[A ≏ ≏ ] <AB> [B ≏ ≏ ] [C ≏ ≏ ] [D ≏ ≏ ] <DE(1,0)> [r0[E ≏ 💺0 ≡ 🔴🚂0 ]]|")
     }
-
-    /* TODO: re-introduce when backward direction is supported
-    func testStraightLine1Pushed() throws {
-        let layout = LayoutPointToPoint().newLayout()
-        layout.trains[0].wagonsPushedByLocomotive = true
-        
-        let p = Package(layout: layout)
-        try p.prepare(routeID: "0", trainID: "0", fromBlockId: "A")
-
-        try p.assert("0: |[r0[A 🔴🚂0 ≏ 💺0 ≏ 💺0 ]] <AB> [B ≏ ≏ ] [C ≏ ≏ ] [D ≏ ≏ ] <DE(1,0)> [E ≏ ≏ ]|")
-        
-        try p.start()
-
-        XCTAssertTrue(p.train.scheduling == .managed)
-
-        // A=E=200
-        // B=C=D=100
-        // AB=DE=10
-        // Train = 120
-        // [A 20 ≏ 160 ≏ 20 ] <10> [B 20 ≏ 60 ≏ 20 ] [C 20 ≏ 60 ≏ 20 ] [D 20 ≏ 60 ≏ 20 ] <10> [E 20 ≏ 160 ≏ 20 ]
-        try p.assert("0: |[r0[A 🔵🚂0 ≏ 💺0 ≏ 💺0]] <r0<AB>> [r0[B ≏ ≏ ]] [C ≏ ≏ ] [D ≏ ≏ ] <DE(1,0)> [E ≏ ≏ ]|")
-        try p.assert("0: |[r0[A ≡ 🔵🚂0 ≏ 💺0 ]] <r0<AB>> [r0[B 💺0 ≏ 💺0 ≏ ]] [r0[C ≏ ≏ ]] [D ≏ ≏ ] <DE(1,0)> [E ≏ ≏ ]|")
-        try p.assert("0: |[r0[A ≏ ≡ 🔵🚂0 ]] <r0<AB>> [r0[B 💺0 ≏ 💺0 ≏ 💺0 ]] [r0[C 💺0 ≏ ≏ ]] [r0[D ≏ ≏ ]] <DE(1,0)> [E ≏ ≏ ]|")
-        try p.assert("0: |[A ≏ ≏ ] <AB> [r0[B ≡ 🔵🚂0 ≏ 💺0 ]] [r0[C 💺0 ≏ 💺0 ≏ 💺0 ]] [r0[D ≏ ≏ ]] <DE(1,0)> [E ≏ ≏ ]|")
-        try p.assert("0: |[A ≏ ≏ ] <AB> [r0[B ≏ ≡ 🟢🚂0 ]] [r0[C 💺0 ≏ 💺0 ≏ 💺0 ]] [r0[D 💺0 ≏ ≏ ]] <r0<DE(1,0)>> [r0[E ≏ ≏ ]]|")
-        // The train continues to move because there is still a leading block reserved (E).
-        try p.assert("0: |[A ≏ ≏ ] <AB> [B ≏ ≏ ] [r0[C ≡ 🟢🚂0 ≏ 💺0]] [r0[D 💺0 ≏ 💺0 ≏ 💺0 ]] <r0<DE(1,0)>> [r0[E ≏ ≏ ]]|")
-        // Train stops in C because there is no more leading blocks reserved (the head wagon is in E and there is no more blocks to reserve for the leading blocks)
-        try p.assert("0: |[A ≏ ≏ ] <AB> [B ≏ ≏ ] [r0[C ≏ ≡ 🔴🚂0 ]] [r0[D 💺0 ≏ 💺0 ≏ 💺0 ]] <r0<DE(1,0)>> [r0[E 💺0 ≏ ≏ ]]|")
-//        try p.assert("0: |[A ≏ ≏ ] <AB> [B ≏ ≏ ] [C ≏ ≏ ] [r0[D ≡ 🟡🚂0 ≏ 💺0 ]] <r0<DE(1,0)>> [r0[E 💺0 ≏ 💺0 ≏ ]]|")
-//        try p.assert("0: |[A ≏ ≏ ] <AB> [B ≏ ≏ ] [C ≏ ≏ ] [r0[D ≏ ≡ 🔴🚂0 ]] <r0<DE(1,0)>> [r0[E 💺0 ≏ 💺0 ≏ ]]|")
-    }*/
-
-    /* TODO: re-introduce when backward direction is supported
-    func testStraightLine2Pushed() throws {
-        let layout = LayoutPointToPoint().newLayout()
-        layout.trains[0].wagonsPushedByLocomotive = true
-        
-        let p = Package(layout: layout)
-        try p.prepare(routeID: "0", trainID: "0", fromBlockId: "A")
-
-        layout.blocks[3].reserved = .init(trainId: Identifier<Train>(uuid: "1"), direction: .next)
-        
-        try p.assert("0: |[r0[A 🔴🚂0 ≏ 💺0 ≏ 💺0 ]] <AB> [B ≏ ≏ ] [C ≏ ≏ ] [r1[D ≏ ≏ ]] <DE(1,0)> [E ≏ ≏ ]|")
-        
-        try p.start()
-
-        XCTAssertTrue(p.train.scheduling == .managed)
-        XCTAssertEqual(p.train.state, .running)
-        
-        // A=E=200
-        // B=C=D=100
-        // AB=DE=10
-        // Train = 120
-        // [A 20 ≏ 160 ≏ 20 ] <10> [B 20 ≏ 60 ≏ 20 ] [C 20 ≏ 60 ≏ 20 ] [D 20 ≏ 60 ≏ 20 ] <10> [E 20 ≏ 160 ≏ 20 ]
-        try p.assert("0: |[r0[A 🔵🚂0 ≏ 💺0 ≏ 💺0]] <r0<AB>> [r0[B ≏ ≏ ]] [C ≏ ≏ ] [r1[D ≏ ≏ ]] <DE(1,0)> [E ≏ ≏ ]|")
-        try p.assert("0: |[r0[A ≡ 🔵🚂0 ≏ 💺0 ]] <r0<AB>> [r0[B 💺0 ≏ 💺0 ≏ ]] [r0[C ≏ ≏ ]] [r1[D ≏ ≏ ]] <DE(1,0)> [E ≏ ≏ ]|")
-        // The train stops because there is no leading blocks available after the head wagon block C (D is occupied by another train).
-        try p.assert("0: |[r0[A ≏ ≡ 🔴🚂0 ]] <r0<AB>> [r0[B 💺0 ≏ 💺0 ≏ 💺0 ]] [r0[C 💺0 ≏ ≏ ]] [r1[D ≏ ≏ ]] <DE(1,0)> [E ≏ ≏ ]|")
-        
-//        // The train must stop because the wagon is going to enter block D if the train moves to the next position
-//        try p.assert("0: |[A ≏ ≏ ] <AB> [r0[B ≡ 🔴🚂0 ≏ 💺0 ]] [r0[C 💺0 ≏ 💺0 ≏ 💺0 ]] [r1[D ≏ ≏ ]] <DE(1,0)> [E ≏ ≏ ]|")
-//        try p.assert("0: |[A ≏ ≏ ] <AB> [r0[B ≡ 🔴🚂0 ≏ 💺0 ]] [r0[C 💺0 ≏ 💺0 ≏ 💺0 ]] [r1[D ≏ ≏ ]] <DE(1,0)> [E ≏ ≏ ]|")
-    }*/
 
     func testStraightLine2() throws {
         let layout = LayoutPointToPoint().newLayout()

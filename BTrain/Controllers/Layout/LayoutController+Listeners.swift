@@ -45,13 +45,13 @@ extension LayoutController {
                     if train.directionForward == false {
                         train.directionForward = true
                         try toggleTrainDirectionInBlock(train)
-                        runControllers(.directionChanged)
+                        runControllers(.directionChanged(train))
                     }
                 case .backward:
                     if train.directionForward {
                         train.directionForward = false
                         try toggleTrainDirectionInBlock(train)
-                        runControllers(.directionChanged)
+                        runControllers(.directionChanged(train))
                     }
                 case .unknown:
                     BTLogger.error("Unknown direction \(direction) for \(address.toHex())")

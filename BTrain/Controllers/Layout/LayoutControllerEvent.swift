@@ -21,17 +21,17 @@ enum LayoutControllerEvent: CustomStringConvertible {
     /// - When a train starts for the first time
     /// - When a train stops
     /// - When a train finishes a route
-    case schedulingChanged(train: Train)
+    case schedulingChanged(Train)
         
     /// A train restart timer has expired, meaning that the train associated with this timer
     /// should restart again.
-    case restartTimerExpired(train: Train)
+    case restartTimerExpired(Train)
     
     /// A turnout state changed
     case turnoutChanged(Turnout)
     
     /// A train direction has changed
-    case directionChanged
+    case directionChanged(Train)
     
     /// A train speed has changed
     case speedChanged(Train, TrainSpeed.UnitKph)

@@ -73,4 +73,17 @@ class LayoutEventStateMachineTests: XCTestCase {
         XCTAssertEqual(try lsm.handle(layoutEvent: .turnout(t1), train: train), .reservedBlocksSettledLengthChanged(train))
         XCTAssertEqual(train.adjustSpeedCount, 0)
     }
+    
+    func testLayoutEventDirection() throws {
+        let anotherTrain = MockTrainController(route: train.route)
+        anotherTrain.onUpdateReservedBlocks = { return true }
+        XCTAssertEqual(try lsm.handle(layoutEvent: .direction(anotherTrain), train: train), nil)
+
+        train.onUpdateReservedBlocks = { return true }
+        XCTAssertEqual(try lsm.handle(layoutEvent: .direction(train), train: train), .reservedBlocksChanged(train))
+        
+        train.onUpdateReservedBlocks = { return false }
+        XCTAssertEqual(try lsm.handle(layoutEvent: .direction(train), train: train), nil)
+    }
+
 }

@@ -224,7 +224,7 @@ final class LayoutController {
     
     func stop(train: Train) {
         train.scheduling = .stopManaged
-        runControllers(.schedulingChanged(train: train))
+        runControllers(.schedulingChanged(train))
     }
 
     func stopAll(includingManualTrains: Bool) {
@@ -241,7 +241,7 @@ final class LayoutController {
 
     func finish(train: Train) {
         train.scheduling = .finishManaged
-        runControllers(.schedulingChanged(train: train))
+        runControllers(.schedulingChanged(train))
     }
     
     func finishAll() {
@@ -298,7 +298,7 @@ final class LayoutController {
     
     func restartTimerFired(_ train: Train) {
         train.timeUntilAutomaticRestart = 0
-        runControllers(.restartTimerExpired(train: train))
+        runControllers(.restartTimerExpired(train))
     }
     
     func redrawSwitchboard() {
@@ -411,7 +411,7 @@ extension LayoutController {
         }
 
         train.scheduling = .managed
-        runControllers(.schedulingChanged(train: train))
+        runControllers(.schedulingChanged(train))
     }
     
     /// Send a turnout state command

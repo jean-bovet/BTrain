@@ -44,7 +44,15 @@ struct LayoutEventStateMachine {
             if train.updateReservedBlocksSettledLength(with: turnout) {
                 return .reservedBlocksSettledLengthChanged(train)
             }
+            
+        case .direction(let eventTrain):
+            if eventTrain.id == train.id {
+                if try train.updateReservedBlocks() {
+                    return .reservedBlocksChanged(train)
+                }
+            }
         }
+        
         return nil
     }
     
