@@ -15,7 +15,7 @@ import Foundation
 extension LayoutController {
     
     func registerForFeedbackChange() {
-        _ = interface.register(forFeedbackChange: { [weak self] deviceID, contactID, value in
+        interface.register(forFeedbackChange: { [weak self] deviceID, contactID, value in
             guard let sSelf = self else {
                 return
             }

@@ -13,7 +13,6 @@
 import Foundation
 @testable import BTrain
 
-// TODO: have testing for the behavior of the CommandInterface so MarklinInterface (or any other vendor-implementation) can be tested against
 final class MockCommandInterface: CommandInterface {
     
     var speedValues = [UInt16]()
@@ -124,20 +123,23 @@ final class MockCommandInterface: CommandInterface {
         UUID()
     }
     
-    func register(forSpeedChange: @escaping SpeedChangeCallback) {
+    func register(forSpeedChange: @escaping SpeedChangeCallback) -> UUID {
         speedChangeCallbacks.append(forSpeedChange)
+        return UUID()
     }
     
-    func register(forDirectionChange: @escaping DirectionChangeCallback) {
+    func register(forDirectionChange: @escaping DirectionChangeCallback) -> UUID {
         directionChangeCallbacks.append(forDirectionChange)
+        return UUID()
     }
     
-    func register(forTurnoutChange: @escaping TurnoutChangeCallback) {
+    func register(forTurnoutChange: @escaping TurnoutChangeCallback) -> UUID {
         turnoutChangeCallbacks.append(forTurnoutChange)
+        return UUID()
     }
     
-    func register(forLocomotivesQuery callback: @escaping QueryLocomotiveCallback) {
-        
+    func register(forLocomotivesQuery callback: @escaping QueryLocomotiveCallback) -> UUID {
+        return UUID()
     }
     
     func unregister(uuid: UUID) {

@@ -142,11 +142,17 @@ class CommandInterfaceTests: XCTestCase {
         let completionExpectation = XCTestExpectation()
         connectToSimulator(doc: doc)
 
+        let e = expectation(description: "callback")
+        doc.interface.register { locomotives in
+            XCTAssertFalse(locomotives.isEmpty)
+            e.fulfill()
+        }
+        
         doc.layoutController.discoverLocomotives(merge: false) {
             completionExpectation.fulfill()
         }
 
-        wait(for: [completionExpectation], timeout: 1)
+        wait(for: [e, completionExpectation], timeout: 1)
 
         defer {
             disconnectFromSimulator(doc: doc)
@@ -159,7 +165,7 @@ class CommandInterfaceTests: XCTestCase {
         XCTAssertEqual(loc1.address, 0x6)
     }
     
-    func testCallbackOrdering() {
+    func testFeedbackCallbackOrdering() {
         let doc = LayoutDocument(layout: Layout())
         
         connectToSimulator(doc: doc)
@@ -169,9 +175,6 @@ class CommandInterfaceTests: XCTestCase {
         
         let firstCallbackExpectation = XCTestExpectation(description: "first")
         let secondCallbackExpectation = XCTestExpectation(description: "second")
-
-        let mi = doc.interface as! MarklinInterface
-        mi.feedbackChangeCallbacks.removeAll()
         
         let uuid1 = doc.interface.register(forFeedbackChange: { deviceID,contactID,value in
             firstCallbackExpectation.fulfill()
@@ -179,8 +182,6 @@ class CommandInterfaceTests: XCTestCase {
         let uuid2 = doc.interface.register(forFeedbackChange: { deviceID,contactID,value in
             secondCallbackExpectation.fulfill()
         })
-
-        XCTAssertEqual(mi.feedbackChangeCallbacks.count, 2)
 
         let layout = LayoutComplex().newLayout()
         let f = layout.feedbacks[0]
@@ -190,8 +191,6 @@ class CommandInterfaceTests: XCTestCase {
         
         doc.interface.unregister(uuid: uuid1)
         doc.interface.unregister(uuid: uuid2)
-
-        XCTAssertEqual(mi.feedbackChangeCallbacks.count, 0)
     }
     
     func testSpeedValueToStepConversion() {
