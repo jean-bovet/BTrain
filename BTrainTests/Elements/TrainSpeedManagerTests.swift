@@ -179,10 +179,10 @@ class TrainSpeedManagerTests: BTTestCase {
         t.speed.requestedSteps = SpeedStep(value: 0)
         t.speed.actualSteps = t.speed.requestedSteps
 
-        mi.speedChangeCallbacks[0](t.address, t.decoder, SpeedValue(value: 100), false)
+        mi.callbacks.speedChanges.all[0](t.address, t.decoder, SpeedValue(value: 100), false)
         XCTAssertEqual(t.speed.requestedKph, 158)
         
-        mi.speedChangeCallbacks[0](t.address, t.decoder, SpeedValue(value: 100), true)
+        mi.callbacks.speedChanges.all[0](t.address, t.decoder, SpeedValue(value: 100), true)
         XCTAssertEqual(t.speed.requestedKph, 158)
         XCTAssertEqual(t.speed.actualKph, 158)
     }

@@ -14,7 +14,10 @@ import Foundation
 
 /// A protocol describing the behaviors of a Digital Controller without being specific to a given brand.
 protocol CommandInterface: AnyObject, MetricsProvider {
-            
+    
+    /// Returns the callbacks available for the command interface
+    var callbacks: CommandInterfaceCallbacks { get }
+    
     func connect(server: String, port: UInt16, onReady: @escaping CompletionBlock, onError: @escaping (Error) -> Void, onStop: @escaping CompletionBlock)
     
     func disconnect(_ completion: @escaping CompletionBlock)
@@ -34,49 +37,4 @@ protocol CommandInterface: AnyObject, MetricsProvider {
     
     // Returns the number of decoder steps given the speed value and decoder type
     func speedSteps(for value: SpeedValue, decoder: DecoderType) -> SpeedStep
-    
-    /// Register a callback that will be invoked for each feedback event
-    /// - Parameter forFeedbackChange: the callback block
-    /// - Returns: the unique ID that can be used to unregister the callback
-    @discardableResult
-    func register(forFeedbackChange: @escaping FeedbackChangeCallback) -> UUID
-
-    /// Register a callback that will be invoked for each speed event
-    /// - Parameter forSpeedChange: the callback block
-    /// - Returns: the unique ID that can be used to unregister the callback
-    @discardableResult
-    func register(forSpeedChange: @escaping SpeedChangeCallback) -> UUID
-
-    /// Register a callback that will be invoked for each direction event
-    /// - Parameter forDirectionChange: the callback block
-    /// - Returns: the unique ID that can be used to unregister the callback
-    @discardableResult
-    func register(forDirectionChange: @escaping DirectionChangeCallback) -> UUID
-
-    /// Register a callback that will be invoked for each turnout event
-    /// - Parameter forTurnoutChange: the callback block
-    /// - Returns: the unique ID that can be used to unregister the callback
-    @discardableResult
-    func register(forTurnoutChange: @escaping TurnoutChangeCallback) -> UUID
-    
-    /// Register a callback that will be invoked for each query locomotive event
-    /// - Parameter forLocomotivesQuery: the callback block
-    /// - Returns: the unique ID that can be used to unregister the callback
-    @discardableResult
-    func register(forLocomotivesQuery callback: @escaping QueryLocomotiveCallback) -> UUID
-    
-    /// Unregisters a specified callback
-    /// - Parameter uuid: the unique ID of the callback to unregister
-    func unregister(uuid: UUID)
-}
-
-// The various types used in the CommandInterface
-extension CommandInterface {
-    
-    typealias FeedbackChangeCallback = (_ deviceID: UInt16, _ contactID: UInt16, _ value: UInt8) -> Void
-    typealias SpeedChangeCallback = (_ address: UInt32, _ decoderType: DecoderType?, _ value: SpeedValue, _ acknowledgment: Bool) -> Void
-    typealias DirectionChangeCallback = (_ address: UInt32, _ decoderType: DecoderType?, _ direction: Command.Direction) -> Void
-    typealias TurnoutChangeCallback = (_ address: CommandTurnoutAddress, _ state: UInt8, _ power: UInt8, _ acknowledgment: Bool) -> Void
-    typealias QueryLocomotiveCallback = (_ locomotives: [CommandLocomotive]) -> Void
-
 }

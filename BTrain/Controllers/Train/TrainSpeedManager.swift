@@ -59,7 +59,7 @@ final class TrainSpeedManager {
         self.train = train
         self.interface = interface
         
-        interface.register(forSpeedChange: { address, decoder, value, acknowledgment in
+        interface.callbacks.register(forSpeedChange: { address, decoder, value, acknowledgment in
             if train.address.actualAddress(for: train.decoder) == address.actualAddress(for: decoder) {
                 let steps = interface.speedSteps(for: value, decoder: train.decoder)
                 if acknowledgment {

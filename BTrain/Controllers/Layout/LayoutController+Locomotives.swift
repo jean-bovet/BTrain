@@ -15,7 +15,7 @@ import Foundation
 extension LayoutController {
         
     func discoverLocomotives(merge: Bool, completion: CompletionBlock? = nil) {
-        interface.register(forLocomotivesQuery: { locomotives in
+        interface.callbacks.register(forLocomotivesQuery: { locomotives in
             self.process(locomotives: locomotives, merge: merge)
             completion?()
         })

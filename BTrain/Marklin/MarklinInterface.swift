@@ -14,34 +14,13 @@ import Foundation
 import OrderedCollections
 
 final class MarklinInterface: CommandInterface {
-        
+    
+    var callbacks = CommandInterfaceCallbacks()
+            
     var client: Client?
     
     let locomotiveConfig = MarklinLocomotiveConfig()
 
-    final class CallbackRegistrar<T> {
-        // Note: very important to keep the order in which the callback are registered because
-        // this has many implications: for example, the layout controller is expecting to be
-        // the first one to process changes from the layout before other components.
-        var callbacks = OrderedDictionary<UUID, T>()
-        
-        func register(_ callback: T) -> UUID {
-            let uuid = UUID()
-            callbacks[uuid] = callback
-            return uuid
-        }
-        
-        func unregister(_ id: UUID) {
-            callbacks.removeValue(forKey: id)
-        }
-    }
-
-    var feedbackChangeCallbacks = CallbackRegistrar<FeedbackChangeCallback>()
-    var speedChangeCallbacks = CallbackRegistrar<SpeedChangeCallback>()
-    var directionChangeCallbacks = CallbackRegistrar<DirectionChangeCallback>()
-    var turnoutChangeCallbacks = CallbackRegistrar<TurnoutChangeCallback>()
-    var locomotivesQueryCallbacks = CallbackRegistrar<QueryLocomotiveCallback>()
-    
     typealias CompletionBlock = () -> Void
     private var disconnectCompletionBlocks: CompletionBlock?
     
@@ -107,34 +86,6 @@ final class MarklinInterface: CommandInterface {
         messageCallbacks.append(callback)
     }
 
-    func register(forFeedbackChange callback: @escaping FeedbackChangeCallback) -> UUID {
-        return feedbackChangeCallbacks.register(callback)
-    }
-    
-    func register(forSpeedChange callback: @escaping SpeedChangeCallback) -> UUID {
-        return speedChangeCallbacks.register(callback)
-    }
-    
-    func register(forDirectionChange callback: @escaping DirectionChangeCallback) -> UUID {
-        return directionChangeCallbacks.register(callback)
-    }
-    
-    func register(forTurnoutChange callback: @escaping TurnoutChangeCallback) -> UUID {
-        return turnoutChangeCallbacks.register(callback)
-    }
-
-    func register(forLocomotivesQuery callback: @escaping QueryLocomotiveCallback) -> UUID {
-        return locomotivesQueryCallbacks.register(callback)
-    }
-
-    func unregister(uuid: UUID) {
-        feedbackChangeCallbacks.unregister(uuid)
-        speedChangeCallbacks.unregister(uuid)
-        directionChangeCallbacks.unregister(uuid)
-        turnoutChangeCallbacks.unregister(uuid)
-        locomotivesQueryCallbacks.unregister(uuid)
-    }
-
     private func triggerCompletionBlock(for message: MarklinCANMessage) {
         if let blocks = completionBlocks[message.raw] {
             for completionBlock in blocks {
@@ -161,7 +112,7 @@ final class MarklinInterface: CommandInterface {
                 let status = locomotiveConfig.process(cmd)
                 if case .completed(let locomotives) = status {
                     let locomotives = locomotives.map { $0.commandLocomotive }
-                    self.locomotivesQueryCallbacks.callbacks.values.forEach { $0(locomotives) }
+                    self.callbacks.locomotivesQueries.all.forEach { $0(locomotives) }
                 }
             }
             return
@@ -175,7 +126,7 @@ final class MarklinInterface: CommandInterface {
             execute(command: .queryDirection(address: address, decoderType: decoderType))
 
         case .speed(let address, let decoderType, let value, _, _):
-            speedChangeCallbacks.callbacks.values.forEach { $0(address, decoderType, value, msg.isAck) }
+            callbacks.speedChanges.all.forEach { $0(address, decoderType, value, msg.isAck) }
 
         default:
             break
@@ -203,19 +154,19 @@ final class MarklinInterface: CommandInterface {
 
         case .speed(let address, let decoderType, let value, _, _):
             triggerCompletionBlock(for: msg)
-            speedChangeCallbacks.callbacks.values.forEach { $0(address, decoderType, value, msg.isAck) }
+            callbacks.speedChanges.all.forEach { $0(address, decoderType, value, msg.isAck) }
 
         case .direction(let address, let decoderType, let direction, _, _):
             triggerCompletionBlock(for: msg)
-            directionChangeCallbacks.callbacks.values.forEach { $0(address, decoderType, direction) }
+            callbacks.directionChanges.all.forEach { $0(address, decoderType, direction) }
             
         case .turnout(let address, let state, let power, _, _):
             triggerCompletionBlock(for: msg)
-            turnoutChangeCallbacks.callbacks.values.forEach { $0(address, state, power, msg.isAck) }
+            callbacks.turnoutChanges.all.forEach { $0(address, state, power, msg.isAck) }
 
         case .feedback(let deviceID, let contactID, _, let newValue, _, _, _):
             triggerCompletionBlock(for: msg)
-            feedbackChangeCallbacks.callbacks.values.forEach { $0(deviceID, contactID, newValue) }
+            callbacks.feedbackChanges.all.forEach { $0(deviceID, contactID, newValue) }
 
         case .locomotives(_, _):
             triggerCompletionBlock(for: msg)

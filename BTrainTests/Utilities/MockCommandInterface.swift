@@ -15,13 +15,11 @@ import Foundation
 
 final class MockCommandInterface: CommandInterface {
     
+    var callbacks = CommandInterfaceCallbacks()
+    
     var speedValues = [UInt16]()
     var turnoutCommands = [Command]()
     
-    var speedChangeCallbacks = [SpeedChangeCallback]()
-    var turnoutChangeCallbacks = [TurnoutChangeCallback]()
-    var directionChangeCallbacks = [DirectionChangeCallback]()
-
     var metrics: [Metric] {
         []
     }
@@ -81,25 +79,25 @@ final class MockCommandInterface: CommandInterface {
 //            break
         case .speed(let address, let decoderType, let value, _, _):
             speedValues.append(value.value)
-            for speedChangeCallback in speedChangeCallbacks {
+            for speedChangeCallback in callbacks.speedChanges.all {
                 speedChangeCallback(address, decoderType, value, true)
             }
             
         case .direction(let address, let decoderType, let direction, _, _):
-            for directionChangeCallback in directionChangeCallbacks {
+            for directionChangeCallback in callbacks.directionChanges.all {
                 directionChangeCallback(address, decoderType, direction)
             }
-            break
-//        case .queryDirection(let address, let decoderType, let priority, let descriptor):
+
+            //        case .queryDirection(let address, let decoderType, let priority, let descriptor):
 //            break
         case .turnout(let address, let state, let power, _, _):
             if power == 1 {
                 turnoutCommands.append(command)
             }
-            for turnoutChangeCallback in turnoutChangeCallbacks {
+            for turnoutChangeCallback in callbacks.turnoutChanges.all {
                 turnoutChangeCallback(address, state, power, true /*ack*/)
             }
-            break
+            
 //        case .feedback(let deviceID, let contactID, let oldValue, let newValue, let time, let priority, let descriptor):
 //            break
 //        case .locomotives(let priority, let descriptor):
@@ -117,33 +115,6 @@ final class MockCommandInterface: CommandInterface {
     
     func speedSteps(for value: SpeedValue, decoder: DecoderType) -> SpeedStep {
         .init(value: value.value)
-    }
-    
-    func register(forFeedbackChange: @escaping FeedbackChangeCallback) -> UUID {
-        UUID()
-    }
-    
-    func register(forSpeedChange: @escaping SpeedChangeCallback) -> UUID {
-        speedChangeCallbacks.append(forSpeedChange)
-        return UUID()
-    }
-    
-    func register(forDirectionChange: @escaping DirectionChangeCallback) -> UUID {
-        directionChangeCallbacks.append(forDirectionChange)
-        return UUID()
-    }
-    
-    func register(forTurnoutChange: @escaping TurnoutChangeCallback) -> UUID {
-        turnoutChangeCallbacks.append(forTurnoutChange)
-        return UUID()
-    }
-    
-    func register(forLocomotivesQuery callback: @escaping QueryLocomotiveCallback) -> UUID {
-        return UUID()
-    }
-    
-    func unregister(uuid: UUID) {
-        
     }
             
 }

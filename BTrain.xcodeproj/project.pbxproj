@@ -137,6 +137,7 @@
 		A76B903E28330CB4006596A3 /* LayoutYardRoutingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A76B903D28330CB4006596A3 /* LayoutYardRoutingTests.swift */; };
 		A76C1C5B2876D91300A22509 /* TrainSpeedCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = A76C1C5A2876D91300A22509 /* TrainSpeedCommand.swift */; };
 		A76C1C5D287EA3AD00A22509 /* LayoutControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A76C1C5C287EA3AD00A22509 /* LayoutControllerTests.swift */; };
+		A76C1C5F287ECBEC00A22509 /* CommandInterfaceCallbacks.swift in Sources */ = {isa = PBXBuildFile; fileRef = A76C1C5E287ECBEC00A22509 /* CommandInterfaceCallbacks.swift */; };
 		A76F3563282EF8C3004EBD10 /* FixedRoutingWithTurnoutDelays.swift in Sources */ = {isa = PBXBuildFile; fileRef = A76F3562282EF8C3004EBD10 /* FixedRoutingWithTurnoutDelays.swift */; };
 		A7710E572777D69400C08150 /* RouteListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7710E562777D69400C08150 /* RouteListView.swift */; };
 		A7710E592777D7FE00C08150 /* RouteView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7710E582777D7FE00C08150 /* RouteView.swift */; };
@@ -453,6 +454,7 @@
 		A76B903D28330CB4006596A3 /* LayoutYardRoutingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutYardRoutingTests.swift; sourceTree = "<group>"; };
 		A76C1C5A2876D91300A22509 /* TrainSpeedCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainSpeedCommand.swift; sourceTree = "<group>"; };
 		A76C1C5C287EA3AD00A22509 /* LayoutControllerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutControllerTests.swift; sourceTree = "<group>"; };
+		A76C1C5E287ECBEC00A22509 /* CommandInterfaceCallbacks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommandInterfaceCallbacks.swift; sourceTree = "<group>"; };
 		A76F3562282EF8C3004EBD10 /* FixedRoutingWithTurnoutDelays.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FixedRoutingWithTurnoutDelays.swift; sourceTree = "<group>"; };
 		A7710E562777D69400C08150 /* RouteListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteListView.swift; sourceTree = "<group>"; };
 		A7710E582777D7FE00C08150 /* RouteView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteView.swift; sourceTree = "<group>"; };
@@ -657,6 +659,7 @@
 			children = (
 				A784139027423A8D00381341 /* Command.swift */,
 				A785C07D278A64C1002FD538 /* CommandInterface.swift */,
+				A76C1C5E287ECBEC00A22509 /* CommandInterfaceCallbacks.swift */,
 				A785C088278E59A4002FD538 /* CommandTypes.swift */,
 			);
 			path = Command;
@@ -1737,6 +1740,7 @@
 				A717FB15281CA84C00310B5D /* ResolvedRouteItem.swift in Sources */,
 				A7B0B5172762FB6500F11A3E /* BlockListView.swift in Sources */,
 				A758295F27925DE300AA0649 /* LayoutController+Listeners.swift in Sources */,
+				A76C1C5F287ECBEC00A22509 /* CommandInterfaceCallbacks.swift in Sources */,
 				A7710E6727799D5C00C08150 /* Layout+Trains.swift in Sources */,
 				A76507E6275AC7DA0079C71A /* ScheduledMessageQueue.swift in Sources */,
 				A7940665280A179700F6A427 /* BlockShape+EphemeralDragProvider.swift in Sources */,

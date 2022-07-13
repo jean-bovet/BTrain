@@ -59,7 +59,7 @@ class CommandInterfaceTests: XCTestCase {
         }
 
         let e = expectation(description: "callback")
-        doc.interface.register(forSpeedChange: { address, decoderType, value, ack in
+        doc.interface.callbacks.register(forSpeedChange: { address, decoderType, value, ack in
             XCTAssertTrue(ack)
             XCTAssertEqual(18, value.value)
             e.fulfill()
@@ -82,7 +82,7 @@ class CommandInterfaceTests: XCTestCase {
         }
 
         let e = expectation(description: "callback")
-        _ = doc.interface.register(forDirectionChange: { address, decoderType, direction in
+        _ = doc.interface.callbacks.register(forDirectionChange: { address, decoderType, direction in
             XCTAssertTrue(direction == .forward)
             e.fulfill()
         })
@@ -124,7 +124,7 @@ class CommandInterfaceTests: XCTestCase {
         }
 
         let e = expectation(description: "callback")
-        doc.interface.register(forTurnoutChange: { address, state, power, acknowledgement in
+        doc.interface.callbacks.register(forTurnoutChange: { address, state, power, acknowledgement in
             e.fulfill()
         })
         
@@ -143,7 +143,7 @@ class CommandInterfaceTests: XCTestCase {
         connectToSimulator(doc: doc)
 
         let e = expectation(description: "callback")
-        doc.interface.register { locomotives in
+        doc.interface.callbacks.register { locomotives in
             XCTAssertFalse(locomotives.isEmpty)
             e.fulfill()
         }
@@ -176,10 +176,10 @@ class CommandInterfaceTests: XCTestCase {
         let firstCallbackExpectation = XCTestExpectation(description: "first")
         let secondCallbackExpectation = XCTestExpectation(description: "second")
         
-        let uuid1 = doc.interface.register(forFeedbackChange: { deviceID,contactID,value in
+        let uuid1 = doc.interface.callbacks.register(forFeedbackChange: { deviceID,contactID,value in
             firstCallbackExpectation.fulfill()
         })
-        let uuid2 = doc.interface.register(forFeedbackChange: { deviceID,contactID,value in
+        let uuid2 = doc.interface.callbacks.register(forFeedbackChange: { deviceID,contactID,value in
             secondCallbackExpectation.fulfill()
         })
 
@@ -189,8 +189,8 @@ class CommandInterfaceTests: XCTestCase {
         
         wait(for: [firstCallbackExpectation, secondCallbackExpectation], timeout: 1.0, enforceOrder: true)
         
-        doc.interface.unregister(uuid: uuid1)
-        doc.interface.unregister(uuid: uuid2)
+        doc.interface.callbacks.unregister(uuid: uuid1)
+        doc.interface.callbacks.unregister(uuid: uuid2)
     }
     
     func testSpeedValueToStepConversion() {
