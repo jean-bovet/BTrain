@@ -32,9 +32,7 @@ struct TrainControlSetLocationSheet: View {
     @State private var blockId: Identifier<Block>? = nil
     
     @State private var direction: Direction = .next
-    
-    @State private var wagonsPushedByLocomotive = false
-    
+        
     @State private var errorStatus: String?
     
     @Environment(\.presentationMode) var presentationMode
@@ -156,16 +154,7 @@ struct TrainControlSetLocationSheet: View {
                 
                 Spacer()
             }
-            
-            HStack {
-                Toggle("Wagons Pushed by the Locomotive (beta)", isOn: $wagonsPushedByLocomotive)
-                    .hidden(action != .set)
-                    .onAppear {
-                        wagonsPushedByLocomotive = train.wagonsPushedByLocomotive
-                    }
-                Spacer()
-            }
-            
+                        
             if let errorStatus = errorStatus {
                 Text(errorStatus)
                     .foregroundColor(.red)
@@ -182,7 +171,6 @@ struct TrainControlSetLocationSheet: View {
                         if let selectedBlock = blockId {
                             switch action {
                             case .set:
-                                train.wagonsPushedByLocomotive = wagonsPushedByLocomotive
                                 try controller.setTrainToBlock(train, selectedBlock, position: .end, direction: direction)
                                 controller.redrawSwitchboard()
 

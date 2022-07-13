@@ -91,10 +91,8 @@ class TransitionsTests: BTTestCase {
 
         let v8 = p.layout
         let t1 = p.layout.trains[0]
-        t1.wagonsPushedByLocomotive = false
         t1.maxNumberOfLeadingReservedBlocks = 2
         let t2 = p.layout.trains[1]
-        t2.wagonsPushedByLocomotive = false
         t2.maxNumberOfLeadingReservedBlocks = 1
 
         let r1 = p.layout.routes[0]

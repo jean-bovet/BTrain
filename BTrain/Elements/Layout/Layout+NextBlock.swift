@@ -43,13 +43,13 @@ extension Layout {
             }
             nextBlock = nb
         } else {
-            if train.wagonsPushedByLocomotive {
-                guard let nb = train.occupied.blocks.dropFirst().first else {
+            if train.directionForward {
+                guard let nb = train.leading.blocks.first else {
                     return nil
                 }
                 nextBlock = nb
             } else {
-                guard let nb = train.leading.blocks.first else {
+                guard let nb = train.occupied.blocks.dropFirst().first else {
                     return nil
                 }
                 nextBlock = nb

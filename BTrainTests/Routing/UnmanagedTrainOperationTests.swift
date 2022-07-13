@@ -143,8 +143,8 @@ class UnmanagedTrainOperationTests: BTTestCase {
     }
     
     // b1 > b2 > b3 > !b1
-    // TODO: semi-automatic mode
-    func disabled_testPushingLongTrain() throws {
+    // TODO: re-introduce when supporting backward direction
+/*    func disabled_testPushingLongTrain() throws {
         let layout = LayoutLoop1().newLayout()
         
         layout.turnouts[1].setState(.branchLeft)
@@ -204,7 +204,7 @@ class UnmanagedTrainOperationTests: BTTestCase {
         try p.assertTrain(inBlock: "b2", position: 1, speed: 0)
         try p.assertTrain(inBlock: "b3", position: 1, speed: 0)
     }
-    
+    */
     // MARK: -- Utility
     
     // Convenience structure to test the layout and its route

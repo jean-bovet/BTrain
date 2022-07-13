@@ -59,7 +59,6 @@ class TrainLengthTests: XCTestCase {
         
         let t1 = layout.trains[0]
         t1.blockId = b1.id
-        t1.wagonsPushedByLocomotive = false
         t1.position = 2
         b1.train = .init(t1.id, .next)
         
@@ -90,6 +89,7 @@ class TrainLengthTests: XCTestCase {
         XCTAssertThrowsError(try reservation.occupyBlocksWith(train: t1))
     }
 
+    /* TODO: re-introduce when backward direction is supported
     func testReserveWagonsPushedByLocomotive() throws {
         let layout = LayoutFigure8().newLayout().removeTurnoutGeometry()
         let doc = LayoutDocument(layout: layout, interface: MockCommandInterface())
@@ -150,7 +150,7 @@ class TrainLengthTests: XCTestCase {
         t1.locomotiveLength = 2000
         XCTAssertThrowsError(try reservation.occupyBlocksWith(train: t1))
     }
-
+*/
     func assert(_ block: Block, _ train: Train?, _ parts: [Int:TrainInstance.TrainPart]?) {
         XCTAssertEqual(block.reserved?.trainId, train?.id)
         XCTAssertEqual(block.train?.parts, parts)

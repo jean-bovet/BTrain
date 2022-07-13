@@ -317,8 +317,8 @@ class AutomaticRoutingTests: BTTestCase {
         let train = layout.trains[1]
         train.locomotiveLength = nil
         train.wagonsLength = nil
-        train.wagonsPushedByLocomotive = false
         train.maxNumberOfLeadingReservedBlocks = 1
+        train.directionForward = true
         
         let p = try setup(layout: layout, train: train, fromBlockId: ne4.id, destination: nil, position: .end, direction: .previous, routeSteps: ["NE4:previous", "M1:next", "M2U:next", "LCF1:next"])
         

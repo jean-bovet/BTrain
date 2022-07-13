@@ -795,6 +795,7 @@ class FixedRoutingTests: BTTestCase {
         XCTAssertEqual(p.train.state, .stopped)
     }
 
+    /* TODO: re-introduce when backward direction is supported
     func testTrainWithWagonsInFront() throws {
         let layout = LayoutComplexLoop().newLayoutWithLengths(LayoutComplexLoop().newLayout().removeTrainGeometry().removeTurnoutGeometry())
 
@@ -820,7 +821,7 @@ class FixedRoutingTests: BTTestCase {
         // train length = 100
         try p.assert("3: {r0{s1 🟡🚂0 ≏ 💺0 }} <r0<t1(2,0),l>> <r0<t2(1,0),s>> [r0[b1 💺0 ≏ 💺0 ]] <r0<t3>> [r0[b2 💺0 ≏ ]] <r0<t4(1,0)>> [r0[b3 ≏ ≏ ]] <t5> <t6,r> {s2 ≏ }")
         try p.assert("3: {r0{s1 ≡ 🟡🚂0 }} <r0<t1(2,0),l>> <r0<t2(1,0),s>> [r0[b1 💺0 ≏ 💺0 ]] <r0<t3>> [r0[b2 💺0 ≏ 💺0 ]] <r0<t4(1,0)>> [r0[b3 ≏ ≏ ]] <t5> <t6,r> {s2 ≏ }")
-    }
+    }*/
     
     func testStraightLine1() throws {
         let layout = LayoutPointToPoint().newLayout()
@@ -850,6 +851,7 @@ class FixedRoutingTests: BTTestCase {
         try p.assert("0: |[A ≏ ≏ ] <AB> [B ≏ ≏ ] [C ≏ ≏ ] [D ≏ ≏ ] <DE(1,0)> [r0[E ≏ 💺0 ≡ 🔴🚂0 ]]|")
     }
 
+    /* TODO: re-introduce when backward direction is supported
     func testStraightLine1Pushed() throws {
         let layout = LayoutPointToPoint().newLayout()
         layout.trains[0].wagonsPushedByLocomotive = true
@@ -879,8 +881,9 @@ class FixedRoutingTests: BTTestCase {
         try p.assert("0: |[A ≏ ≏ ] <AB> [B ≏ ≏ ] [r0[C ≏ ≡ 🔴🚂0 ]] [r0[D 💺0 ≏ 💺0 ≏ 💺0 ]] <r0<DE(1,0)>> [r0[E 💺0 ≏ ≏ ]]|")
 //        try p.assert("0: |[A ≏ ≏ ] <AB> [B ≏ ≏ ] [C ≏ ≏ ] [r0[D ≡ 🟡🚂0 ≏ 💺0 ]] <r0<DE(1,0)>> [r0[E 💺0 ≏ 💺0 ≏ ]]|")
 //        try p.assert("0: |[A ≏ ≏ ] <AB> [B ≏ ≏ ] [C ≏ ≏ ] [r0[D ≏ ≡ 🔴🚂0 ]] <r0<DE(1,0)>> [r0[E 💺0 ≏ 💺0 ≏ ]]|")
-    }
+    }*/
 
+    /* TODO: re-introduce when backward direction is supported
     func testStraightLine2Pushed() throws {
         let layout = LayoutPointToPoint().newLayout()
         layout.trains[0].wagonsPushedByLocomotive = true
@@ -910,7 +913,7 @@ class FixedRoutingTests: BTTestCase {
 //        // The train must stop because the wagon is going to enter block D if the train moves to the next position
 //        try p.assert("0: |[A ≏ ≏ ] <AB> [r0[B ≡ 🔴🚂0 ≏ 💺0 ]] [r0[C 💺0 ≏ 💺0 ≏ 💺0 ]] [r1[D ≏ ≏ ]] <DE(1,0)> [E ≏ ≏ ]|")
 //        try p.assert("0: |[A ≏ ≏ ] <AB> [r0[B ≡ 🔴🚂0 ≏ 💺0 ]] [r0[C 💺0 ≏ 💺0 ≏ 💺0 ]] [r1[D ≏ ≏ ]] <DE(1,0)> [E ≏ ≏ ]|")
-    }
+    }*/
 
     func testStraightLine2() throws {
         let layout = LayoutPointToPoint().newLayout()

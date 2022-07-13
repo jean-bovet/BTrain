@@ -488,7 +488,6 @@ extension LayoutController {
         }
 
         block.train = TrainInstance(train.id, ti.direction.opposite)
-        train.wagonsPushedByLocomotive.toggle()
 
         try reservation.removeLeadingBlocks(train: train)
     }
