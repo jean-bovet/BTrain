@@ -47,7 +47,7 @@ extension Layout {
     }
     
     func removeTrainGeometry() -> Layout {
-        trains.forEach { $0.locomotiveLength = nil; $0.wagonsLength = nil; $0.magnetDistance = nil }
+        trains.forEach { $0.locomotiveLength = nil; $0.wagonsLength = nil }
         return self
     }
     

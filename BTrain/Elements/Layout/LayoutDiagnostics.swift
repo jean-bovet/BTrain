@@ -38,7 +38,6 @@ enum DiagnosticError: Error, Equatable {
     case blockMissingLength(block: Block)
     case turnoutMissingLength(turnout: Turnout)
     case trainMissingLength(train: Train)
-    case trainMissingMagnetDistance(train: Train)
     case blockFeedbackInvalidDistance(block: Block, feedback: Block.BlockFeedback)
     case blockFeedbackMissingDistance(block: Block, feedbackId: Identifier<Feedback>)
     
@@ -95,8 +94,6 @@ extension DiagnosticError: LocalizedError {
 
         case .trainMissingLength(train: let train):
             return "Train \(train.name) does not have a length defined"
-        case .trainMissingMagnetDistance(train: let train):
-            return "Train \(train.name) does not have a distance defined for the magnet"
         case .invalidRoute(route: let route, error: let error):
             return "Route \"\(route.name)\" is invalid and cannot be resolved: \(error)"
         case .trainIdAlreadyExists(train: let train):
@@ -394,9 +391,6 @@ final class LayoutDiagnostic: ObservableObject {
         for train in layout.trains {
             if train.locomotiveLength == nil {
                 errors.append(DiagnosticError.trainMissingLength(train: train))
-            }
-            if train.magnetDistance == nil {
-                errors.append(DiagnosticError.trainMissingMagnetDistance(train: train))
             }
         }
     }

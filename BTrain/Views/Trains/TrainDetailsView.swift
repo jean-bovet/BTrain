@@ -55,11 +55,6 @@ struct TrainDetailsGeometrySectionView: View {
                     TextField("Wagons:", value: value, format: .number)
                         .unitStyle("cm")
                 }
-
-                UndoProvider($train.magnetDistance) { value in
-                    TextField("Magnet Distance from Front:", value: value, format: .number)
-                        .unitStyle("cm")
-                }
             }.padding([.leading])
         }
     }
