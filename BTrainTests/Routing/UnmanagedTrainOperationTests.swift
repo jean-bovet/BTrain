@@ -142,69 +142,6 @@ class UnmanagedTrainOperationTests: BTTestCase {
         try p.assertTrain(inBlock: "b3", position: 2, speed: 0)
     }
     
-    // b1 > b2 > b3 > !b1
-    // TODO: re-introduce when supporting backward direction
-/*    func disabled_testPushingLongTrain() throws {
-        let layout = LayoutLoop1().newLayout()
-        
-        layout.turnouts[1].setState(.branchLeft)
-
-        layout.turnouts.forEach { $0.length = nil }
-
-        let b1 = layout.blocks[0]
-        let b2 = layout.blocks[1]
-        let b3 = layout.blocks[2]
-
-        b1.length = 100
-        b1.feedbacks[0].distance = 20
-        b1.feedbacks[1].distance = 80
-        
-        b2.length = 20
-        b2.feedbacks[0].distance = 5
-        b2.feedbacks[1].distance = 15
-        
-        b3.length = 20
-        b3.feedbacks[0].distance = 5
-        b3.feedbacks[1].distance = 15
-
-        let train = layout.trains[0]
-        train.locomotiveLength = 20
-        train.wagonsLength = 40
-
-        train.directionForward = false
-        train.wagonsPushedByLocomotive = true
-        
-        let p = try setup(layout: layout, fromBlockId: "b1")
-        
-        connectToSimulator(doc: p.doc)
-        defer {
-            disconnectFromSimulator(doc: p.doc)
-        }
-
-        p.setTrainSpeed(100)
-
-        try p.assertTrain(inBlock: "b1", position: 0, speed: 100)
-        try p.assertTrain(notInBlock: "b2")
-        try p.assertTrain(notInBlock: "b3")
-
-        var headWagonBlock = try TrainPositionFinder.headWagonBlockFor(train: train, layout: layout)!
-        XCTAssertEqual(headWagonBlock.id, b1.id)
-
-        // The train advances within b1
-        try p.triggerFeedback("f11")
-        
-        headWagonBlock = try TrainPositionFinder.headWagonBlockFor(train: train, layout: layout)!
-        XCTAssertEqual(headWagonBlock.id, b3.id)
-
-        // The train should stop because it is occupying all the blocks and will hit
-        // itself back in b1 if it continues.        
-        p.layoutController.waitUntilSettled()
-
-        try p.assertTrain(inBlock: "b1", position: 1, speed: 0)
-        try p.assertTrain(inBlock: "b2", position: 1, speed: 0)
-        try p.assertTrain(inBlock: "b3", position: 1, speed: 0)
-    }
-    */
     // MARK: -- Utility
     
     // Convenience structure to test the layout and its route

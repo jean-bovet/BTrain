@@ -130,7 +130,7 @@ final class Train: Element, ObservableObject {
     @Published var speed = TrainSpeed(kph: 0, decoderType: .MFX)
 
     // Direction of travel of the locomotive
-    // TODO: backward direction is not yet supported
+    // Note: backward direction is not yet supported
     @Published var directionForward = true
     
     // The route this train is associated with

@@ -86,7 +86,6 @@ class ClientConnection {
         }
     }
         
-    // TODO: expose the delay of the data queue in a settings
     let dataQueue = ScheduledMessageQueue(name: "Client")
     
     func send(data: Data, priority: Bool, onCompletion: @escaping () -> Void) {

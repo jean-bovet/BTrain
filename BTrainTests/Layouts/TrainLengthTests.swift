@@ -89,68 +89,6 @@ class TrainLengthTests: XCTestCase {
         XCTAssertThrowsError(try reservation.occupyBlocksWith(train: t1))
     }
 
-    /* TODO: re-introduce when backward direction is supported
-    func testReserveWagonsPushedByLocomotive() throws {
-        let layout = LayoutFigure8().newLayout().removeTurnoutGeometry()
-        let doc = LayoutDocument(layout: layout, interface: MockCommandInterface())
-        let reservation = doc.layoutController.reservation
-
-        let b1 = layout.blocks[0]
-        let b2 = layout.blocks[1]
-        let b3 = layout.blocks[2]
-        let b4 = layout.blocks[3]
-        
-        b1.length = 100
-        b1.feedbacks[0].distance = 25
-        b1.feedbacks[1].distance = b1.length! - 25
-
-        b2.length = 100
-        b2.feedbacks[0].distance = 25
-        b2.feedbacks[1].distance = b2.length! - 25
-        
-        b3.length = 80
-        b3.feedbacks[0].distance = 25
-        b3.feedbacks[1].distance = b3.length! - 25
-
-        b4.length = 40
-        b4.feedbacks[0].distance = 5
-        b4.feedbacks[1].distance = b4.length! - 5
-
-        layout.turnouts[0].setState(.straight01)
-
-        let t1 = layout.trains[0]
-        t1.blockId = b4.id
-        t1.wagonsPushedByLocomotive = true
-        t1.position = 0
-        b4.train = .init(t1.id, .next)
-        
-        t1.locomotiveLength = 40+100+100+20
-        try reservation.occupyBlocksWith(train: t1)
-        assert(b4, t1, [0:.locomotive, 1:.wagon, 2:.wagon])
-        assert(b1, t1, [0:.wagon, 1:.wagon, 2:.wagon])
-        assert(b2, t1, [0:.wagon, 1:.wagon, 2:.wagon])
-        assert(b3, t1, [0:.wagon])
-
-        t1.locomotiveLength = 40+100+100
-        try reservation.freeElements(train: t1)
-        try reservation.occupyBlocksWith(train: t1)
-        assert(b4, t1, [0:.locomotive, 1:.wagon, 2:.wagon])
-        assert(b1, t1, [0:.wagon, 1:.wagon, 2:.wagon])
-        assert(b2, t1, [0:.wagon, 1:.wagon, 2:.wagon])
-        assert(b3, t1, [0:.wagon])
-
-        t1.locomotiveLength = 40
-        try reservation.freeElements(train: t1)
-        try reservation.occupyBlocksWith(train: t1)
-        assert(b4, t1, [0:.locomotive, 1:.wagon, 2:.wagon])
-        assert(b1, t1, [0:.wagon])
-        assert(b2, nil, nil)
-        assert(b3, nil, nil)
-
-        t1.locomotiveLength = 2000
-        XCTAssertThrowsError(try reservation.occupyBlocksWith(train: t1))
-    }
-*/
     func assert(_ block: Block, _ train: Train?, _ parts: [Int:TrainInstance.TrainPart]?) {
         XCTAssertEqual(block.reserved?.trainId, train?.id)
         XCTAssertEqual(block.train?.parts, parts)
