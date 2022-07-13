@@ -11,8 +11,8 @@
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 import Foundation
-import OrderedCollections
 
+/// Implementation of the CommandInterface for the Marklin Central Station 3
 final class MarklinInterface: CommandInterface {
     
     var callbacks = CommandInterfaceCallbacks()
