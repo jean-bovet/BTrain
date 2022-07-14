@@ -267,7 +267,7 @@ extension Layout {
     func block(for train: Train, step: RouteItem) -> (Identifier<Block>, Direction)? {
         switch step {
         case .block(let stepBlock):
-            return (stepBlock.blockId, stepBlock.direction ?? .next)
+            return (stepBlock.blockId, stepBlock.direction)
 
         case .station(let stepStation):
             guard let station = self.station(for: stepStation.stationId) else {

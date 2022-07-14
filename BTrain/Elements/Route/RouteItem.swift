@@ -56,7 +56,7 @@ enum RouteItem: Identifiable, Equatable, CustomStringConvertible {
 }
 
 extension RouteItem: UnresolvedGraphPathElement {
-    func resolve(_ constraints: GraphPathFinderConstraints, _ context: GraphPathFinderContext) -> GraphPathElement? {
+    func resolve(_ constraints: GraphPathFinderConstraints, _ context: GraphPathFinderContext) -> [GraphPathElement]? {
         switch self {
         case .block(let block): return block.resolve(constraints, context)
         case .turnout(let turnout): return turnout.resolve(constraints, context)

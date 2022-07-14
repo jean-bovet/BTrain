@@ -48,7 +48,12 @@ protocol UnresolvedGraphPathElement {
     
     var description: String { get }
     
-    func resolve(_ constraints: GraphPathFinderConstraints, _ context: GraphPathFinderContext) -> GraphPathElement?
+    /// Resolves this element by using the specified constraints and context.
+    /// - Parameters:
+    ///   - constraints: the constraints
+    ///   - context: the context
+    /// - Returns: zero, one or more resolved path elements
+    func resolve(_ constraints: GraphPathFinderConstraints, _ context: GraphPathFinderContext) -> [GraphPathElement]?
     
 }
 
@@ -115,7 +120,13 @@ struct GraphPathElement: Equatable, Hashable, CustomStringConvertible {
     static func any(_ node: GraphNode) -> GraphPathElement {
         .init(node: node, entrySocket: nil, exitSocket: nil)
     }
-    
+
+    static func direction(_ node: GraphNode, _ direction: Direction) -> GraphPathElement {
+        let entrySocketId = direction == .next ? Block.previousSocket : Block.nextSocket
+        let exitSocketId = direction == .next ? Block.nextSocket : Block.previousSocket
+        return .init(node: node, entrySocket: entrySocketId, exitSocket: exitSocketId)
+    }
+
     static func == (lhs: GraphPathElement, rhs: GraphPathElement) -> Bool {
         lhs.node.identifier.uuid == rhs.node.identifier.uuid && lhs.entrySocket == rhs.entrySocket && lhs.exitSocket == rhs.exitSocket
     }

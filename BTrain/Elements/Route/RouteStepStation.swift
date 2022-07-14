@@ -26,7 +26,7 @@ struct RouteStepStation: RouteStep, Equatable, Codable {
         "\(stationId)"
     }
         
-    func resolve(_ constraints: GraphPathFinderConstraints, _ context: GraphPathFinderContext) -> GraphPathElement? {
+    func resolve(_ constraints: GraphPathFinderConstraints, _ context: GraphPathFinderContext) -> [GraphPathElement]? {
         guard let lc = context as? LayoutPathFinder.LayoutContext else {
             return nil
         }
@@ -43,17 +43,19 @@ struct RouteStepStation: RouteStep, Equatable, Codable {
             return nil
         }
         
-        let direction = element.direction ?? .next
-        
-        // TODO: support direction being nil, which means two elements can be returned, one for each direction
-        //        guard let direction = element.direction else {
-        //            return nil
-        //        }
-        let entrySocket = direction == .next ? Block.previousSocket : Block.nextSocket
-        let exitSocket = direction == .next ? Block.nextSocket : Block.previousSocket
-        return .init(node: block, entrySocket:  entrySocket, exitSocket: exitSocket)
+        if let direction = element.direction {
+            return [GraphPathElement.direction(block, direction)]
+        } else {
+            return [GraphPathElement.direction(block, .next), GraphPathElement.direction(block, .previous)]
+        }
     }
 
+    func elementFor(direction: Direction, block: Block) -> GraphPathElement {
+        let entrySocket = direction == .next ? Block.previousSocket : Block.nextSocket
+        let exitSocket = direction == .next ? Block.nextSocket : Block.previousSocket
+        return GraphPathElement(node: block, entrySocket:  entrySocket, exitSocket: exitSocket)
+    }
+    
     func bestElement(station: Station, train: Train, layout: Layout, context: LayoutPathFinder.LayoutContext) -> Station.StationElement? {
         if let element = elementWithTrain(station: station, train: train, layout: layout) {
             return element

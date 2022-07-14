@@ -117,38 +117,114 @@ struct GraphPathFinder: GraphPathFinding {
         let to: Int
     }
         
+    final class ResolvedPath {
+        var path = [GraphPathElement]()
+    }
+    
+    final class ResolvedPaths {
+        var paths = [ResolvedPath]()
+
+        func append(_ elements: [GraphPathElement]) {
+            for element in elements {
+                append(element)
+            }
+        }
+        
+        func append(_ element: GraphPathElement) {
+            if paths.isEmpty {
+                paths = [ResolvedPath()]
+            }
+            for path in paths {
+                path.path.append(element)
+            }
+        }
+        
+    }
+    
     /// Returns a resolved path given an unresolved path and the specified constraints.
+    ///
+    /// For example:
+    /// "Station A" > "Block D" > "Station B"
+    /// can return one or more possible resolved paths, depending on the individual elements that get resolved.
+    /// For example, Station A has two blocks, A1 and A2. A1 can be used in both direction, so both (A1,next) and (A1,previous)
+    /// is returned. This leads to the following possibilities (only 2 are shown):
+    /// - (A1,next) (D,next) (B1,next): this path is valid
+    /// - (A1,previous) (D,next) (B1,next): this path is invalid because the train cannot go from (A1,previous) to (D,next)
+    /// In summary, the algorithm is to resolve the unresolved path by producing all the possible resolved paths and then
+    /// select from the resolved paths the ones that are valid.
+    ///
+    /// - Parameters:
+    ///   - graph: the graph in which the path is located
+    ///   - unresolvedPath: the unresolved path
+    ///   - constraints: the constraints to apply
+    ///   - context: the context to use
+    ///   - errors: any resolving errors
+    /// - Returns: a resolved path
     func resolve(graph: Graph, _ unresolvedPath: UnresolvedGraphPath, constraints: GraphPathFinderConstraints = DefaultConstraints(), context: GraphPathFinderContext = DefaultContext(), errors: inout [ResolverError]) -> GraphPath? {
-        var resolvedPath = [GraphPathElement]()
-        guard var previousElement = unresolvedPath.first?.resolve(constraints, context) else {
+        let resolvedPaths = ResolvedPaths()
+        guard var previousElements = unresolvedPath.first?.resolve(constraints, context) else {
             return nil
         }
                 
         var unresolvedPathIndex = 1
-        resolvedPath.append(previousElement)
+        resolvedPaths.append(previousElements)
         for unresolvedElement in unresolvedPath.dropFirst() {
-            guard let element = unresolvedElement.resolve(constraints, context) else {
+            guard let resolvedElements = unresolvedElement.resolve(constraints, context) else {
                 BTLogger.router.error("Unable to resolve element \(unresolvedElement.description, privacy: .public)")
                 return nil
             }
-            if let p = self.path(graph: graph, from: previousElement, to: element, constraints: constraints, context: context) {
-                for resolvedElement in p.elements.dropFirst() {
-                    resolvedPath.append(resolvedElement)
-                }
-            } else {
-                // A path should always be resolvable between two elements. If not, it means
+            
+            resolve(graph: graph, resolvedPaths: resolvedPaths, to: resolvedElements,
+                    constraints: constraints, context: context)
+            
+            if resolvedPaths.paths.isEmpty {
+                // There should always be at least one resolved path between two elements. If not, it means
                 // that some constraints imposed by a subclass prevents a path from being found
                 // so we always return here instead of continuing and returning an incomplete route.
-                debug("Unable to resolve path between \(previousElement) and \(element)")
+                debug("Unable to resolve path between \(previousElements) and \(resolvedElements)")
                 errors.append(ResolverError(from: unresolvedPathIndex - 1, to: unresolvedPathIndex))
                 return nil
             }
-            previousElement = element
+
+            previousElements = resolvedElements
             unresolvedPathIndex += 1
         }
-        return GraphPath(resolvedPath)
+        
+        if let resolvedPath = resolvedPaths.paths.first?.path {
+            return GraphPath(resolvedPath)
+        } else {
+            return nil
+        }
     }
     
+    private func resolve(graph: Graph, resolvedPaths: ResolvedPaths, to resolvedElements: [GraphPathElement],
+                         constraints: GraphPathFinderConstraints, context: GraphPathFinderContext) {
+        for (index, resolvedPath) in resolvedPaths.paths.enumerated() {
+            for resolvedElement in resolvedElements {
+                if resolve(graph: graph, resolvedPath: resolvedPath, to: resolvedElement,
+                           constraints: constraints, context: context) == false {
+                    // Unable to resolve this path, so remove this path from the list of resolved paths
+                    resolvedPaths.paths.remove(at: index)
+                }
+            }
+        }
+    }
+    
+    private func resolve(graph: Graph, resolvedPath: ResolvedPath, to: GraphPathElement,
+                         constraints: GraphPathFinderConstraints, context: GraphPathFinderContext) -> Bool {
+        guard let previousElement = resolvedPath.path.last else {
+            return true
+        }
+        if let p = self.path(graph: graph, from: previousElement, to: to, constraints: constraints, context: context) {
+            for resolvedElement in p.elements.dropFirst() {
+                resolvedPath.path.append(resolvedElement)
+            }
+            return true
+        } else {
+            return false
+        }
+    }
+
     private func path(graph: Graph, from: GraphPathElement, to: GraphPathElement?, currentPath: GraphPath, constraints: GraphPathFinderConstraints, context: GraphPathFinderContext) -> GraphPath? {
         if settings.verbose {
             if let to = to {
