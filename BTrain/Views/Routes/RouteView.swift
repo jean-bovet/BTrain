@@ -147,7 +147,7 @@ struct RouteView: View {
     
     func validateRoute() {
         let diag = LayoutDiagnostic(layout: layout)
-        var errors = [DiagnosticError]()
+        var errors = [LayoutDiagnostic.DiagnosticError]()
         var resolverError = [GraphPathFinder.ResolverError]()
         diag.checkRoute(route: route, &errors, resolverErrors: &resolverError)
         if errors.isEmpty {

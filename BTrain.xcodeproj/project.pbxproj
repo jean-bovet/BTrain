@@ -138,6 +138,8 @@
 		A76C1C5B2876D91300A22509 /* TrainSpeedCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = A76C1C5A2876D91300A22509 /* TrainSpeedCommand.swift */; };
 		A76C1C5D287EA3AD00A22509 /* LayoutControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A76C1C5C287EA3AD00A22509 /* LayoutControllerTests.swift */; };
 		A76C1C5F287ECBEC00A22509 /* CommandInterfaceCallbacks.swift in Sources */ = {isa = PBXBuildFile; fileRef = A76C1C5E287ECBEC00A22509 /* CommandInterfaceCallbacks.swift */; };
+		A76C1C612880515500A22509 /* LayoutDiagnostics+Error.swift in Sources */ = {isa = PBXBuildFile; fileRef = A76C1C602880515500A22509 /* LayoutDiagnostics+Error.swift */; };
+		A76C1C63288051D400A22509 /* LayoutDiagnosticsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A76C1C62288051D400A22509 /* LayoutDiagnosticsTests.swift */; };
 		A76F3563282EF8C3004EBD10 /* FixedRoutingWithTurnoutDelays.swift in Sources */ = {isa = PBXBuildFile; fileRef = A76F3562282EF8C3004EBD10 /* FixedRoutingWithTurnoutDelays.swift */; };
 		A7710E572777D69400C08150 /* RouteListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7710E562777D69400C08150 /* RouteListView.swift */; };
 		A7710E592777D7FE00C08150 /* RouteView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7710E582777D7FE00C08150 /* RouteView.swift */; };
@@ -455,6 +457,8 @@
 		A76C1C5A2876D91300A22509 /* TrainSpeedCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainSpeedCommand.swift; sourceTree = "<group>"; };
 		A76C1C5C287EA3AD00A22509 /* LayoutControllerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutControllerTests.swift; sourceTree = "<group>"; };
 		A76C1C5E287ECBEC00A22509 /* CommandInterfaceCallbacks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommandInterfaceCallbacks.swift; sourceTree = "<group>"; };
+		A76C1C602880515500A22509 /* LayoutDiagnostics+Error.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LayoutDiagnostics+Error.swift"; sourceTree = "<group>"; };
+		A76C1C62288051D400A22509 /* LayoutDiagnosticsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutDiagnosticsTests.swift; sourceTree = "<group>"; };
 		A76F3562282EF8C3004EBD10 /* FixedRoutingWithTurnoutDelays.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FixedRoutingWithTurnoutDelays.swift; sourceTree = "<group>"; };
 		A7710E562777D69400C08150 /* RouteListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteListView.swift; sourceTree = "<group>"; };
 		A7710E582777D7FE00C08150 /* RouteView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteView.swift; sourceTree = "<group>"; };
@@ -926,6 +930,7 @@
 				A73E080C276ABB5C005F9D64 /* LayoutErrorTests.swift */,
 				A792DEFE278508B0004B0439 /* LayoutCreatorTests.swift */,
 				A7C8A2F2279FA56C000C7246 /* TrainLengthTests.swift */,
+				A76C1C62288051D400A22509 /* LayoutDiagnosticsTests.swift */,
 				A794065C28087C5000F6A427 /* Parser */,
 			);
 			path = Layouts;
@@ -1065,8 +1070,9 @@
 				A717FB222820A1C300310B5D /* Layout+NextBlock.swift */,
 				A7E78C4127A08F9E004D1821 /* LayoutReservation.swift */,
 				A744D1362765C5A3005C2F37 /* LayoutError.swift */,
-				A76507F3275BEE5F0079C71A /* LayoutDiagnostics.swift */,
 				A783EA9E2787C6DA00E69B6D /* LayoutObserver.swift */,
+				A76507F3275BEE5F0079C71A /* LayoutDiagnostics.swift */,
+				A76C1C602880515500A22509 /* LayoutDiagnostics+Error.swift */,
 			);
 			path = Layout;
 			sourceTree = "<group>";
@@ -1732,6 +1738,7 @@
 				A744D13B276714A2005C2F37 /* DiagnosticsSheet.swift in Sources */,
 				A717158D275845F000200F92 /* ShapeContext.swift in Sources */,
 				A784136D273CDFF100381341 /* Shape.swift in Sources */,
+				A76C1C612880515500A22509 /* LayoutDiagnostics+Error.swift in Sources */,
 				A7DB7D4E27C714E3000893BA /* LayoutTurnoutManager.swift in Sources */,
 				A74F380F281A13CC0013FD23 /* StationListView.swift in Sources */,
 				A783EAAD2789290F00E69B6D /* SwitchboardRuntimeErrorView.swift in Sources */,
@@ -1878,6 +1885,7 @@
 				A73E07F72769B5A1005F9D64 /* DocumentViewTests.swift in Sources */,
 				A79406552807463E00F6A427 /* ShortestPathComplexTests.swift in Sources */,
 				A73E0803276AB757005F9D64 /* TurnoutViewTests.swift in Sources */,
+				A76C1C63288051D400A22509 /* LayoutDiagnosticsTests.swift in Sources */,
 				A73AFE982726594800E1ED21 /* CANMessageTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

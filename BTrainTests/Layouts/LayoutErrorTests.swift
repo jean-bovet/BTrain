@@ -41,15 +41,6 @@ class LayoutErrorTests: XCTestCase {
         layout.turnouts[0]
     }
     
-    func testDiagnostic() throws {
-        let diag = LayoutDiagnostic(layout: layout)
-        let errors = try diag.check(.skipLengths)
-        XCTAssertEqual(errors.count, 8)
-        
-        let turnout = layout.turnouts[0]
-        XCTAssertEqual(errors[1], DiagnosticError.turnoutMissingTransition(turnout: turnout, socket: turnout.socketName(turnout.socket0.socketId!)))
-    }
-    
     func testMissingBlock() {
         let unknownBlock = Identifier<Block>(uuid: "foo")
         do {

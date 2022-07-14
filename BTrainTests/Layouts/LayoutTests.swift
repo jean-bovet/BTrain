@@ -16,13 +16,6 @@ import XCTest
 
 class LayoutTests: BTTestCase {
 
-    func testValidation() throws {
-        let layout = LayoutComplexLoop().newLayout()
-        let diag = LayoutDiagnostic(layout: layout)
-        let errors = try diag.check(.skipLengths)
-        XCTAssertEqual(errors.count, 0)
-    }
-
     func testAddAndRemoveBlock() throws {
         let layout = Layout()
         
