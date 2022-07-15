@@ -34,7 +34,7 @@ final class RouteResolver {
     // Returns nil if the route cannot be resolved. This can happen, for example, if a turnout or block is already
     // reserved for another train and no other alternative path is found.
     func resolve(steps: ArraySlice<RouteItem>,
-                 errors: inout [GraphPathFinder.ResolverError],
+                 errors: inout [GraphPathFinderResolver.ResolverError],
                  verbose: Bool = SettingsKeys.bool(forKey: SettingsKeys.logRoutingResolutionSteps)) throws -> [ResolvedRouteItem]? {
         let settings = GraphPathFinder.Settings(verbose: verbose,
                                                     random: false,

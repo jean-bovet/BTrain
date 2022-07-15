@@ -140,6 +140,8 @@
 		A76C1C5F287ECBEC00A22509 /* CommandInterfaceCallbacks.swift in Sources */ = {isa = PBXBuildFile; fileRef = A76C1C5E287ECBEC00A22509 /* CommandInterfaceCallbacks.swift */; };
 		A76C1C612880515500A22509 /* LayoutDiagnostics+Error.swift in Sources */ = {isa = PBXBuildFile; fileRef = A76C1C602880515500A22509 /* LayoutDiagnostics+Error.swift */; };
 		A76C1C63288051D400A22509 /* LayoutDiagnosticsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A76C1C62288051D400A22509 /* LayoutDiagnosticsTests.swift */; };
+		A76C1C652880798800A22509 /* GraphPathFinding.swift in Sources */ = {isa = PBXBuildFile; fileRef = A76C1C642880798800A22509 /* GraphPathFinding.swift */; };
+		A76C1C6728813ED400A22509 /* GraphPathFinderResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = A76C1C6628813ED400A22509 /* GraphPathFinderResolver.swift */; };
 		A76F3563282EF8C3004EBD10 /* FixedRoutingWithTurnoutDelays.swift in Sources */ = {isa = PBXBuildFile; fileRef = A76F3562282EF8C3004EBD10 /* FixedRoutingWithTurnoutDelays.swift */; };
 		A7710E572777D69400C08150 /* RouteListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7710E562777D69400C08150 /* RouteListView.swift */; };
 		A7710E592777D7FE00C08150 /* RouteView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7710E582777D7FE00C08150 /* RouteView.swift */; };
@@ -459,6 +461,8 @@
 		A76C1C5E287ECBEC00A22509 /* CommandInterfaceCallbacks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommandInterfaceCallbacks.swift; sourceTree = "<group>"; };
 		A76C1C602880515500A22509 /* LayoutDiagnostics+Error.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LayoutDiagnostics+Error.swift"; sourceTree = "<group>"; };
 		A76C1C62288051D400A22509 /* LayoutDiagnosticsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutDiagnosticsTests.swift; sourceTree = "<group>"; };
+		A76C1C642880798800A22509 /* GraphPathFinding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GraphPathFinding.swift; sourceTree = "<group>"; };
+		A76C1C6628813ED400A22509 /* GraphPathFinderResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GraphPathFinderResolver.swift; sourceTree = "<group>"; };
 		A76F3562282EF8C3004EBD10 /* FixedRoutingWithTurnoutDelays.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FixedRoutingWithTurnoutDelays.swift; sourceTree = "<group>"; };
 		A7710E562777D69400C08150 /* RouteListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteListView.swift; sourceTree = "<group>"; };
 		A7710E582777D7FE00C08150 /* RouteView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteView.swift; sourceTree = "<group>"; };
@@ -1216,7 +1220,9 @@
 			children = (
 				A78B996127FCC4080021EFE4 /* Graph.swift */,
 				A78B996C2800BABB0021EFE4 /* GraphPath.swift */,
+				A76C1C642880798800A22509 /* GraphPathFinding.swift */,
 				A78B996A2800BA4D0021EFE4 /* GraphPathFinder.swift */,
+				A76C1C6628813ED400A22509 /* GraphPathFinderResolver.swift */,
 				A7940657280789B300F6A427 /* GraphShortestPathFinder.swift */,
 				A78B996627FD57B20021EFE4 /* Graph+Elements.swift */,
 				A78B996827FE41A90021EFE4 /* LayoutPathFinder.swift */,
@@ -1614,6 +1620,7 @@
 				A7710E6527799CF800C08150 /* Layout+Routes.swift in Sources */,
 				A7FFE05B27E63C40002B4A4A /* BlockSpeedView.swift in Sources */,
 				A7710E6927799DA000C08150 /* Layout+Transitions.swift in Sources */,
+				A76C1C6728813ED400A22509 /* GraphPathFinderResolver.swift in Sources */,
 				A7E1F75227DE9E51009FB75F /* PredefinedLayoutHelper.swift in Sources */,
 				A783EA5B278530BF00E69B6D /* SimulatorTrain.swift in Sources */,
 				A7841374273DCBA000381341 /* SwitchBoard.swift in Sources */,
@@ -1737,6 +1744,7 @@
 				A763F19527BF0FC800B3499A /* TrainSpeedColumnView.swift in Sources */,
 				A744D13B276714A2005C2F37 /* DiagnosticsSheet.swift in Sources */,
 				A717158D275845F000200F92 /* ShapeContext.swift in Sources */,
+				A76C1C652880798800A22509 /* GraphPathFinding.swift in Sources */,
 				A784136D273CDFF100381341 /* Shape.swift in Sources */,
 				A76C1C612880515500A22509 /* LayoutDiagnostics+Error.swift in Sources */,
 				A7DB7D4E27C714E3000893BA /* LayoutTurnoutManager.swift in Sources */,

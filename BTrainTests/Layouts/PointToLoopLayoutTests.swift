@@ -32,7 +32,7 @@ class PointToLoopLayoutTests: XCTestCase {
         XCTAssertEqual(path.toStrings, ["A:1", "0:T1:1", "0:B:1", "0:C:1", "0:D:1", "2:T1:0", "1:A"])
         
         let unresolvedPath: [UnresolvedGraphPathElement] = path.elements.map { $0 }
-        var errors = [GraphPathFinder.ResolverError]()
+        var errors = [GraphPathFinderResolver.ResolverError]()
         let resolved = pf.resolve(graph: layout, unresolvedPath, constraints: pf.constraints, context: pf.context, errors: &errors)!
         XCTAssertEqual(resolved.toStrings, ["A:1", "0:T1:1", "0:B:1", "0:C:1", "0:D:1", "2:T1:0", "1:A"])
     }

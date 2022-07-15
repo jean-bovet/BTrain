@@ -53,8 +53,9 @@ final class LayoutPathFinder: GraphPathFinding {
         try gpf.shortestPath(graph: graph, from: from, to: to, constraints: constraints, context: context)
     }
     
-    func resolve(graph: Graph, _ path: UnresolvedGraphPath, constraints: GraphPathFinderConstraints, context: GraphPathFinderContext, errors: inout [GraphPathFinder.ResolverError]) -> GraphPath? {
-        gpf.resolve(graph: graph, path, constraints: constraints, context: context, errors: &errors)
+    func resolve(graph: Graph, _ path: UnresolvedGraphPath, constraints: GraphPathFinderConstraints, context: GraphPathFinderContext, errors: inout [GraphPathFinderResolver.ResolverError]) -> GraphPath? {
+        let resolver = GraphPathFinderResolver(gpf: gpf)
+        return resolver.resolve(graph: graph, path, constraints: constraints, context: context, errors: &errors)
     }
     
     struct LayoutContext: GraphPathFinderContext {
