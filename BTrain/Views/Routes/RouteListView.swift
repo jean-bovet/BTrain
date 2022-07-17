@@ -59,6 +59,12 @@ struct RouteListView: View {
                     }.disabled(selection == nil)
                     
                     Spacer().fixedSpace()
+
+                    Button("􀉁") {
+                        layout.duplicate(routeId: selection!)
+                    }
+
+                    Spacer().fixedSpace()
                     
                     Button("􀄬") {
                         layout.sortRoutes()
