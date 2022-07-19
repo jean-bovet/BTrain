@@ -24,6 +24,20 @@ extension Layout {
         return turnout
     }
 
+    func duplicate(turnoutID: Identifier<Turnout>) {
+        guard let turnout = turnout(for: turnoutID) else {
+            return
+        }
+        
+        let nt = newTurnout(name: "\(turnout.name) copy", category: turnout.category)
+        nt.address = turnout.address
+        nt.address2 = turnout.address2
+        nt.length = turnout.length
+        nt.center = turnout.center.translatedBy(x: 50, y: 50)
+        nt.rotationAngle = turnout.rotationAngle
+        nt.stateSpeedLimit = turnout.stateSpeedLimit
+    }
+    
     func remove(turnoutID: Identifier<Turnout>) {
         turnouts.removeAll(where: { $0.id == turnoutID })
         

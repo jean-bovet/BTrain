@@ -64,10 +64,7 @@ final class Turnout: Element, ObservableObject {
 
     // Length of the turnout (in cm)
     @Published var length: Double?
-        
-    // State of the turnout. Note that not all states are supported
-    // by some turnout category.
-    
+            
     /// The state of the turnout that has been requested.
     ///
     /// It takes some time for the turnout to actually change in the physical layout. Once

@@ -61,7 +61,13 @@ struct TurnoutListView: View {
                             })
                         }
                     }.disabled(selection == nil)
-                    
+
+                    Spacer().fixedSpace()
+
+                    Button("􀉁") {
+                        layout.duplicate(turnoutID: selection!)
+                    }
+
                     Spacer().fixedSpace()
                     
                     Button("􀄬") {
