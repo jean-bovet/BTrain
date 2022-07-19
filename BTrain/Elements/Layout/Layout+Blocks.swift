@@ -39,6 +39,26 @@ extension Layout {
         blockMap[block.id] = block
         return block
     }
+
+    func duplicate(blockId: Identifier<Block>) {
+        guard let block = block(for: blockId) else {
+            return
+        }
+        let nb = newBlock(name: "\(block.name) copy", category: block.category)
+        nb.length = block.length
+        nb.waitingTime = block.waitingTime
+        nb.center = block.center.translatedBy(x: 50, y: 50)
+        nb.rotationAngle = block.rotationAngle
+        nb.feedbacks = block.feedbacks
+        
+        nb.entryFeedbackNext = block.entryFeedbackNext
+        nb.brakeFeedbackNext = block.brakeFeedbackNext
+        nb.stopFeedbackNext = block.stopFeedbackNext
+        
+        nb.entryFeedbackPrevious = block.entryFeedbackPrevious
+        nb.brakeFeedbackPrevious = block.brakeFeedbackPrevious
+        nb.stopFeedbackPrevious = block.stopFeedbackPrevious
+    }
     
     func remove(blockID: Identifier<Block>) {
         transitions.removeAll { transition in
