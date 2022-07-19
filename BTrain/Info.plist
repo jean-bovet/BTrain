@@ -16,18 +16,6 @@
 				<string>ch.arizona-software.BTrain</string>
 			</array>
 		</dict>
-		<dict>
-			<key>CFBundleTypeName</key>
-			<string>Train Layout JSON</string>
-			<key>CFBundleTypeRole</key>
-			<string>Editor</string>
-			<key>LSHandlerRank</key>
-			<string>Default</string>
-			<key>LSItemContentTypes</key>
-			<array>
-				<string>ch.arizona-software.BTrain.json</string>
-			</array>
-		</dict>
 	</array>
 	<key>UTExportedTypeDeclarations</key>
 	<array>
@@ -47,25 +35,6 @@
 				<key>public.filename-extension</key>
 				<array>
 					<string>btrain</string>
-				</array>
-			</dict>
-		</dict>
-		<dict>
-			<key>UTTypeDescription</key>
-			<string>Train Layout JSON</string>
-			<key>UTTypeIcons</key>
-			<dict/>
-			<key>UTTypeIdentifier</key>
-			<string>ch.arizona-software.BTrain.json</string>
-			<key>UTTypeTagSpecification</key>
-			<dict>
-				<key>public.filename-extension</key>
-				<array>
-					<string>json</string>
-				</array>
-				<key>public.mime-type</key>
-				<array>
-					<string>json</string>
 				</array>
 			</dict>
 		</dict>

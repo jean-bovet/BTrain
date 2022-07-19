@@ -19,6 +19,7 @@ extension LayoutDocument: ReferenceFileDocument {
     static let packageType = UTType("ch.arizona-software.BTrain")!
     
     static var readableContentTypes: [UTType] { [.json, packageType] }
+    static var writableContentTypes: [UTType] { [ packageType] }
     
     static let layoutFileName = "layout.json"
     
