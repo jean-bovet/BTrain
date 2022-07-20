@@ -12,103 +12,105 @@
 
 import Foundation
 
-// A block is a section of track between two turnouts or another block.
-// A block consists of the following elements:
-// - Socket: each block has two sockets, one at the beginning (0) and one at the end (1)
-// - Block Direction: each block has a natural direction that flows from socket 0 to socket 1.
-// - Train: each block has a reference to the train located in that block, including its direction
-// of travel which can be either in the block direction (next) or in the opposite direction (previous).
-// - Feedback: each block has at least one feedback to help determine if a train is located in that block.
-// Ideally two feedbacks are used to determine when the train enters or exists the block with more precision.
-// The feedbacks indexes go from 0 to n following the block natural direction.
-//
-//                  Feedback                       Block Direction
-//  p                  │                                  │
-//  r     Socket       │                  Train           │
-//  e       │          │                    │             │           n
-//  v       │          │                    │             │           e
-//  i       │          │                    │             │           x
-//  o       │          ▼                    │             ▼           t
-//  u       │  ╲       ██            ██     │      ██    ╲
-//  s       ▼   ╲      ██            ██     ▼      ██     ╲           s
-//        ──○────■─────██────────────██─────■■▶────██──────■────○──   i
-//  s       0   ╱      ██            ██            ██     ╱     1     d
-//  i          ╱       ██            ██            ██    ╱            e
-//  d
-//  e                  f0            f1            f2
-//
-//       ─────────────────────────────────────────────────────────▶
-//                              block natural direction
-//
-// In terms of geometry, the block needs the following measurements:
-// - Block length
-// - Distance of each feedback from the start of the block
-//
-//      │◀──────────────────Block Length───────────────▶│
-//      │                                               │
-//      │     ██            ██            ██            │  F
-//  B   │     ██            ██            ██            │  r
-//  a   ──────██────────────██────────────██────────────■  o
-//  c   │     ██            ██            ██               n
-//  k   │     ██            ██            ██               t
-//      │                    │
-//      │                    │
-//      │       Feedback     │
-//      │ ──────Distance────▶│
-//
+/// A block is a section of track between two turnouts or another block.
+///
+/// A block consists of the following elements:
+/// - Socket: each block has two sockets, one at the beginning (0) and one at the end (1)
+/// - Block Direction: each block has a natural direction that flows from socket 0 to socket 1.
+/// - Train: each block has a reference to the train located in that block, including its direction
+/// of travel which can be either in the block direction (next) or in the opposite direction (previous).
+/// - Feedback: each block has at least one feedback to help determine if a train is located in that block.
+/// Ideally two feedbacks are used to determine when the train enters or exists the block with more precision.
+/// The feedbacks indexes go from 0 to n following the block natural direction./
+///```
+///                  Feedback                       Block Direction
+///  p                  │                                  │
+///  r     Socket       │                  Train           │
+///  e       │          │                    │             │           n
+///  v       │          │                    │             │           e
+///  i       │          │                    │             │           x
+///  o       │          ▼                    │             ▼           t
+///  u       │  ╲       ██            ██     │      ██    ╲
+///  s       ▼   ╲      ██            ██     ▼      ██     ╲           s
+///        ──○────■─────██────────────██─────■■▶────██──────■────○──   i
+///  s       0   ╱      ██            ██            ██     ╱     1     d
+///  i          ╱       ██            ██            ██    ╱            e
+///  d
+///  e                  f0            f1            f2
+///
+///       ─────────────────────────────────────────────────────────▶
+///                              block natural direction
+///```
+/// In terms of geometry, the block needs the following measurements:
+/// - Block length
+/// - Distance of each feedback from the start of the block
+///```
+///      │◀──────────────────Block Length───────────────▶│
+///      │                                               │
+///      │     ██            ██            ██            │  F
+///  B   │     ██            ██            ██            │  r
+///  a   ──────██────────────██────────────██────────────■  o
+///  c   │     ██            ██            ██               n
+///  k   │     ██            ██            ██               t
+///      │                    │
+///      │                    │
+///      │       Feedback     │
+///      │ ──────Distance────▶│
+/// ```
 final class Block: Element, ObservableObject {
     
-    // The category of the block
-    enum Category: String, Codable, CaseIterable, Comparable {
+    /// The category of the block
+    enum Category: String, Codable, CaseIterable {
+        /// A station block where the train stops
         case station
-        case free
-        case sidingPrevious
-        case sidingNext
         
-        static func < (lhs: Block.Category, rhs: Block.Category) -> Bool {
-            lhs.rawValue < rhs.rawValue
-        }
-    }
-    
-    // The side of the block
-    enum Side: String, Codable {
-        case previous
-        case next
+        /// A free section of track
+        case free
+        
+        /// A siding (a block that ends at one end) in the previous direction
+        case sidingPrevious
+        
+        /// A siding (a block that ends at one end) in the next direction
+        case sidingNext
     }
 
-    // The unique identifier of the block
+    /// The unique identifier of the block
     let id: Identifier<Block>
 
-    // True if the block is enabled and ready to participate
-    // in the routing. False to have the block ignored
-    // by any routing, which is useful when a block is occupied
-    // or in need of repair and we don't want to have a train
-    // stopping or running through it.
+    /// True if the block is enabled and ready to participate
+    /// in the routing. False to have the block ignored
+    /// by any routing, which is useful when a block is occupied
+    /// or in need of repair and we don't want to have a train
+    /// stopping or running through it.
     @Published var enabled = true
     
-    // The name of the block
+    /// The name of the block
     @Published var name: String
     
-    // The category of the block
+    /// The category of the block
     @Published var category: Category = .free
     
-    // Length of the block (in cm)
+    /// Length of the block (in cm)
     @Published var length: Double?
 
-    // The number of seconds a train will wait in that block
+    /// The number of seconds a train will wait in that block before starting again.
+    ///
+    /// This value is used only in automatic routes.
     @Published var waitingTime: TimeInterval = 10.0
 
-    // Center of the block
+    /// The center of the block in the switchboard
     var center: CGPoint = .zero
     
-    // Rotation angle of the block, in radian.
+    /// Rotation angle of the block, in radian of the block in the switchboard
     var rotationAngle: CGFloat = 0
 
-    // Indicates if that block is reserved for a particular train.
-    // A reserved block does not necessarily have a train in it.
+    /// Holds a reservation for a particular train.
+    ///
+    /// Note that a reserved block does not necessarily have
+    /// a train in it: this is indicated by the ``train`` property.
     @Published var reserved: Reservation?
     
-    // Returns the current train (and its direction of travel) inside this block
+    /// Returns the current train (and its direction of travel) inside this block
     @Published var train: TrainInstance?
     
     // Returns true if this block contains the locomotive
