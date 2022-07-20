@@ -37,7 +37,7 @@ struct Destination: Equatable, Codable {
         }
         
         if let direction = direction {
-            return direction == block.train?.direction
+            return direction == block.trainInstance?.direction
         } else {
             return true
         }

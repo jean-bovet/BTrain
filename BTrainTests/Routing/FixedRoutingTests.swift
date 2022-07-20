@@ -28,7 +28,7 @@ class FixedRoutingTests: BTTestCase {
         
         // Reserve a block with another route to make the train stop
         let b3 = layout.block(for: p.route.steps[2].stepBlockId)!
-        b3.reserved = .init("2", .next)
+        b3.reservation = .init("2", .next)
         
         try p.assert("r1:{r1{b1 🔴🚂1 ≏ ≏ }} <t0> [b2 ≏ ≏ ] <t1(0,2)> [r2[b3 ≏ ≏ ]] <t0(2,0)> !{r1{b1 ≏ ≏ }}")
 

@@ -64,7 +64,7 @@ final class TrainVisitor {
             throw LayoutError.blockNotFound(blockId: locomotiveBlockId)
         }
                 
-        guard let trainInstance = locomotiveBlock.train else {
+        guard let trainInstance = locomotiveBlock.trainInstance else {
             throw LayoutError.trainNotFoundInBlock(blockId: locomotiveBlockId)
         }
         

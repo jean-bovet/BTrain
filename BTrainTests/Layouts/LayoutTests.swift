@@ -86,12 +86,12 @@ class LayoutTests: BTTestCase {
             train1.directionForward == false
         }, timeout: 1.0)
         XCTAssertEqual(train1.directionForward, false)
-        XCTAssertEqual(block1.train!.direction, .previous)
+        XCTAssertEqual(block1.trainInstance!.direction, .previous)
 
         // Set the train inside a block with a specific direction which
         // is opposite of the train direction itself
         try doc.layout.setTrainToBlock(train1.id, block1.id, direction: .next)
-        XCTAssertEqual(block1.train!.direction, .next)
+        XCTAssertEqual(block1.trainInstance!.direction, .next)
         XCTAssertEqual(train1.directionForward, false)
 
         // Change the train direction
@@ -101,7 +101,7 @@ class LayoutTests: BTTestCase {
         }, timeout: 1.0)
 
         XCTAssertEqual(train1.directionForward, true)
-        XCTAssertEqual(block1.train!.direction, .previous)
+        XCTAssertEqual(block1.trainInstance!.direction, .previous)
     }
 
     func testTrainStopCompletely() throws {

@@ -55,14 +55,14 @@ final class LayoutASCIIProducer {
         switch(block.category) {
         case .station:
             text += "{"
-            if let reserved = block.reserved {
+            if let reserved = block.reservation {
                 text += "r\(reserved.trainId)"
                 text += "{"
             }
             text += "\(block.id)"
         case .free, .sidingNext, .sidingPrevious:
             text += "["
-            if let reserved = block.reserved {
+            if let reserved = block.reservation {
                 text += "r\(reserved.trainId)"
                 text += "["
             }
@@ -114,13 +114,13 @@ final class LayoutASCIIProducer {
         }
         switch(block.category) {
         case .station:
-            if block.reserved != nil {
+            if block.reservation != nil {
                 text += " }}"
             } else {
                 text += " }"
             }
         case .free, .sidingNext, .sidingPrevious:
-            if block.reserved != nil {
+            if block.reservation != nil {
                 text += " ]]"
             } else {
                 text += " ]"
@@ -193,7 +193,7 @@ final class LayoutASCIIProducer {
     }
         
     func train(_ block: Block, _ position: Int) -> String? {
-        guard let trainInstance = block.train else {
+        guard let trainInstance = block.trainInstance else {
             return nil
         }
               

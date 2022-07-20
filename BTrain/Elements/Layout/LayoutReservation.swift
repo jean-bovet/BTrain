@@ -244,7 +244,7 @@ final class LayoutReservation {
             
             // Now reserve the block
             let reservation = Reservation(trainId: train.id, direction: direction)
-            block.reserved = reservation
+            block.reservation = reservation
             train.leading.append(block)
             numberOfLeadingBlocksReserved += 1
             debug("Reserving block \(block.name) for \(reservation)")
@@ -345,12 +345,12 @@ final class LayoutReservation {
             turnout.train = train.id
             train.occupied.append(turnout)
         } blockCallback: { block, attributes in
-            guard block.reserved == nil || attributes.headBlock else {
+            guard block.reservation == nil || attributes.headBlock else {
                 throw LayoutError.blockAlreadyReserved(block: block)
             }
             
             let trainInstance = TrainInstance(train.id, attributes.trainDirection)
-            block.train = trainInstance
+            block.trainInstance = trainInstance
             
             for (index, position) in attributes.positions.enumerated() {
                 if index == 0 {
@@ -360,7 +360,7 @@ final class LayoutReservation {
                 }
             }
             
-            block.reserved = .init(trainId: train.id, direction: attributes.trainDirection)
+            block.reservation = .init(trainId: train.id, direction: attributes.trainDirection)
             train.occupied.append(block)
         }
         if !result {
@@ -374,12 +374,12 @@ final class LayoutReservation {
         train.occupied.clear()
 
         layout.blockMap.values
-            .filter { $0.reserved?.trainId == train.id }
+            .filter { $0.reservation?.trainId == train.id }
             .forEach { block in
                 // Only free a block if the block is not the one the train is located on or
                 if block.id != train.blockId {
-                    block.reserved = nil
-                    block.train = nil
+                    block.reservation = nil
+                    block.trainInstance = nil
                 }
             }
         layout.turnouts.filter { $0.reserved?.train == train.id }.forEach { $0.reserved = nil; $0.train = nil }
@@ -391,7 +391,7 @@ final class LayoutReservation {
     func maximumSpeedAllowed(train: Train, route: Route?) -> TrainSpeed.UnitKph {
         var maximumSpeedAllowed: TrainSpeed.UnitKph = LayoutFactory.DefaultMaximumSpeed
         
-        layout.blocks.filter({ $0.reserved?.trainId == train.id }).forEach { block in
+        layout.blocks.filter({ $0.reservation?.trainId == train.id }).forEach { block in
             switch block.speedLimit {
             case .unlimited:
                 break

@@ -76,7 +76,7 @@ extension Layout {
     ///   - nextBlock: the next block that the train is about to enter
     /// - Returns: the feedback and the direction of travel of the train inside the ``nextBlock``
     func entryFeedback(from fromBlock: Block, to nextBlock: Block) throws -> Layout.EntryFeedback? {
-        guard let direction = fromBlock.train?.direction else {
+        guard let direction = fromBlock.trainInstance?.direction else {
             throw LayoutError.trainNotFoundInBlock(blockId: fromBlock.id)
         }
         

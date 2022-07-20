@@ -162,7 +162,7 @@ extension Layout {
     // by the TrainController in manual mode to follow the movement of the
     // train on the layout when it is manually driven by someone.
     func nextValidBlockForLocomotive(from blockWithLoco: Block, train: Train) throws -> Block? {
-        guard let trainInstance = blockWithLoco.train else {
+        guard let trainInstance = blockWithLoco.trainInstance else {
             return nil
         }
         
@@ -171,7 +171,7 @@ extension Layout {
             return nil
         }
         
-        if nextBlock.reserved == nil {
+        if nextBlock.reservation == nil {
             return nextBlock
         } else {
             return nil

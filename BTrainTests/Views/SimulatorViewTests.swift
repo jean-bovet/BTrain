@@ -28,7 +28,7 @@ class SimulatorViewTests: RootViewTests {
         let t1 = trains[0]
         t1.speed.accelerationProfile = .none
         t1.blockId = doc.layout.blockIds[0]
-        doc.layout.blocks[0].train = .init(t1.id, .next)
+        doc.layout.blocks[0].trainInstance = .init(t1.id, .next)
         
         XCTAssertTrue(t1.directionForward)
         XCTAssertEqual(t1.speed.requestedKph, 0)

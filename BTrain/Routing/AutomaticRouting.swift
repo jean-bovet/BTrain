@@ -49,7 +49,7 @@ final class AutomaticRouting {
             throw LayoutError.routeIsNotAutomatic(route: route)
         }
         
-        guard let trainInstance = currentBlock.train else {
+        guard let trainInstance = currentBlock.trainInstance else {
             throw LayoutError.trainNotFoundInBlock(blockId: currentBlock.id)
         }
 

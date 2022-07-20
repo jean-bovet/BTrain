@@ -83,11 +83,11 @@ final class BlockShape: Shape, DraggableShape, ConnectableShape {
     }
     
     var reserved: Reservation? {
-        block.reserved
+        block.reservation
     }
     
     var train: Train? {
-        layout?.train(for: block.train?.trainId)
+        layout?.train(for: block.trainInstance?.trainId)
     }
         
     var path: CGPath {
@@ -193,7 +193,7 @@ final class BlockShape: Shape, DraggableShape, ConnectableShape {
     
     private func drawTracks(ctx: CGContext) {
         ctx.addPath(trackPath)
-        ctx.setStrokeColor(shapeContext.pathColor(reserved != nil, train: block.train != nil))
+        ctx.setStrokeColor(shapeContext.pathColor(reserved != nil, train: block.trainInstance != nil))
         ctx.setLineWidth(shapeContext.trackWidth)
         if !block.enabled {
             ctx.setLineDash(phase: 0, lengths: [6, 6])
@@ -214,7 +214,7 @@ final class BlockShape: Shape, DraggableShape, ConnectableShape {
             ctx.fillPath()
             
             ctx.addPath(path)
-            ctx.setStrokeColor(shapeContext.pathColor(reserved != nil, train: block.train != nil))
+            ctx.setStrokeColor(shapeContext.pathColor(reserved != nil, train: block.trainInstance != nil))
             ctx.strokePath()
             
             if let feedbackIds = shapeContext.expectedFeedbackIds, feedbackIds.contains(feedback.feedbackId) {
@@ -298,7 +298,7 @@ final class BlockShape: Shape, DraggableShape, ConnectableShape {
     }
 
     func drawTrainParts(ctx: CGContext, lineBetweenParts: Bool = false) {
-        guard let parts = block.train?.parts, let train = train else {
+        guard let parts = block.trainInstance?.parts, let train = train else {
             return
         }
         
@@ -321,7 +321,7 @@ final class BlockShape: Shape, DraggableShape, ConnectableShape {
         
         if !partsCenter.isEmpty && lineBetweenParts {
             ctx.addLines(between: partsCenter)
-            ctx.setStrokeColor(shapeContext.pathColor(reserved != nil, train: block.train != nil))
+            ctx.setStrokeColor(shapeContext.pathColor(reserved != nil, train: block.trainInstance != nil))
             ctx.setLineWidth(shapeContext.trackWidth)
             ctx.strokePath()
         }
@@ -426,7 +426,7 @@ extension BlockShape {
     }
 
     func directionOfTravel() -> Direction {
-        if let train = block.train {
+        if let train = block.trainInstance {
             return train.direction
         } else if let reserved = reserved {
             return reserved.direction
@@ -440,7 +440,7 @@ extension BlockShape {
         let direction = directionOfTravel()
         if direction == .next {
             ctx.addPath(previousArrowPath(side: .previous, direction: .next))
-            ctx.setStrokeColor(shapeContext.pathColor(reserved != nil, train: block.train != nil))
+            ctx.setStrokeColor(shapeContext.pathColor(reserved != nil, train: block.trainInstance != nil))
             ctx.setLineWidth(shapeContext.trackWidth)
             ctx.strokePath()
         } else {
@@ -450,7 +450,7 @@ extension BlockShape {
             ctx.strokePath()
             
             ctx.addPath(previousArrowPath(side: .next, direction: .previous))
-            ctx.setStrokeColor(shapeContext.pathColor(reserved != nil, train: block.train != nil))
+            ctx.setStrokeColor(shapeContext.pathColor(reserved != nil, train: block.trainInstance != nil))
             ctx.setLineWidth(shapeContext.trackWidth)
             ctx.strokePath()
         }

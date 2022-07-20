@@ -60,7 +60,7 @@ class TrainLengthTests: XCTestCase {
         let t1 = layout.trains[0]
         t1.blockId = b1.id
         t1.position = 2
-        b1.train = .init(t1.id, .next)
+        b1.trainInstance = .init(t1.id, .next)
         
         t1.locomotiveLength = 100+40+100
         try reservation.occupyBlocksWith(train: t1)
@@ -90,8 +90,8 @@ class TrainLengthTests: XCTestCase {
     }
 
     func assert(_ block: Block, _ train: Train?, _ parts: [Int:TrainInstance.TrainPart]?) {
-        XCTAssertEqual(block.reserved?.trainId, train?.id)
-        XCTAssertEqual(block.train?.parts, parts)
+        XCTAssertEqual(block.reservation?.trainId, train?.id)
+        XCTAssertEqual(block.trainInstance?.parts, parts)
 
     }
 }

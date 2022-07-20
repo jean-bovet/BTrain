@@ -84,7 +84,7 @@ class ShortestPathTests: XCTestCase {
     func testPathWithReservedBlock() throws {
         let layout = LayoutLoopWithStation().newLayout()
         let b1 = layout.block(named: "b1")
-        b1.reserved = .init(UUID().uuidString, .next)
+        b1.reservation = .init(UUID().uuidString, .next)
         
         try layout.assertShortPath(("s1", .next), ("s2", .next), ["0:s1:1", "0:t1:1", "0:t2:2", "2:t3:0", "0:b3:1", "2:t4:0", "0:s2:1"])
     }

@@ -369,7 +369,7 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
             BTLogger.debug("[Simulator] Trigger feedback \(entryFeedback.feedback.name) to move train \(train.name) to next block \(entryFeedback.block.name)")
             triggerFeedback(feedback: entryFeedback.feedback)
         } else if try layout.atEndOfBlock(train: train) == false {
-            let naturalDirection = block.train?.direction == .next
+            let naturalDirection = block.trainInstance?.direction == .next
             let feedback = block.feedbacks[naturalDirection ? train.position : train.position - 1]
             if let feedback = layout.feedback(for: feedback.feedbackId) {
                 BTLogger.debug("[Simulator] Trigger feedback \(feedback.name) to move train \(train.name) within \(block.name)")

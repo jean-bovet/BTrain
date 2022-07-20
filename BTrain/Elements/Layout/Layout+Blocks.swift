@@ -88,7 +88,7 @@ extension Layout {
     }
     
     func block(for trainId: Identifier<Train>) -> Block? {
-        blockMap.first(where: { $0.value.train?.trainId == trainId })?.value
+        blockMap.first(where: { $0.value.trainInstance?.trainId == trainId })?.value
     }
     
     func sortBlocks() {
@@ -122,7 +122,7 @@ extension Layout {
     
     func atEndOfBlock(train: Train) throws -> Bool {
         if let currentBlock = currentBlock(train: train) {
-            guard let ti = currentBlock.train else {
+            guard let ti = currentBlock.trainInstance else {
                 throw LayoutError.trainNotFoundInBlock(blockId: currentBlock.id)
             }
             if ti.direction == .next {

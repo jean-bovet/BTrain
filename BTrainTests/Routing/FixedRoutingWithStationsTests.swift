@@ -62,7 +62,7 @@ class FixedRoutingWithStationsTests: BTTestCase {
         
         // Simulate a train reserving block "n1", which means that the train 16390 route will need to be updated to pick up the other free block in the station, "n2"
         let n1 = layout.block(named: "n1")
-        n1.reserved = .init("foo", .next)
+        n1.reservation = .init("foo", .next)
 
         try p.assert("r1: {s1 ≏ ≏ } <ts2{sl}(1,0),s> <t1{sr}(0,1),s> <t2{sr}(0,1),s> [r16390[b1 💺16390 ≡ 🔵🚂16390 ≏ ]] <r16390<t4{sl}(1,0),s>> <r16390<tn1{sr}(0,2),r>> {r16390{n2 ≏ ≏ }}")
 

@@ -80,7 +80,7 @@ struct RouteStepStation: RouteStep, Equatable, Codable {
             
             if context.reservedBlockBehavior == .ignoreReserved {
                 return element
-            } else if block.reserved == nil || block.reserved?.trainId == train.id {
+            } else if block.reservation == nil || block.reservation?.trainId == train.id {
                 return element
             }
         }

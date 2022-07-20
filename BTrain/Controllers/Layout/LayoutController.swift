@@ -161,7 +161,7 @@ final class LayoutController {
             return nil
         }
         
-        guard let trainInstance = currentBlock.train else {
+        guard let trainInstance = currentBlock.trainInstance else {
             return nil
         }
 
@@ -356,7 +356,7 @@ extension LayoutController {
             throw LayoutError.trainNotAssignedToABlock(train: train)
         }
         
-        guard let block = layout.block(for: blockId), block.train != nil else {
+        guard let block = layout.block(for: blockId), block.trainInstance != nil else {
             throw LayoutError.trainNotFoundInBlock(blockId: blockId)
         }
 
@@ -393,7 +393,7 @@ extension LayoutController {
                     continue
                 }
 
-                guard let trainInstance = block.train else {
+                guard let trainInstance = block.trainInstance else {
                     continue
                 }
                 
@@ -479,7 +479,7 @@ extension LayoutController {
             throw LayoutError.blockNotFound(blockId: blockId)
         }
 
-        guard let ti = block.train else {
+        guard let ti = block.trainInstance else {
             throw LayoutError.trainNotFoundInBlock(blockId: blockId)
         }
 
@@ -487,7 +487,7 @@ extension LayoutController {
             throw LayoutError.trainInBlockDoesNotMatch(trainId: train.id, blockId: blockId, blockTrainId: ti.trainId)
         }
 
-        block.train = TrainInstance(train.id, ti.direction.opposite)
+        block.trainInstance = TrainInstance(train.id, ti.direction.opposite)
 
         try reservation.removeLeadingBlocks(train: train)
     }

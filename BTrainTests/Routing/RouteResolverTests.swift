@@ -54,7 +54,7 @@ class RouteResolverTests: XCTestCase {
         let train = layout.trains[0]
         
         let b3 = layout.block("b3")
-        b3.reserved = .init("foo", .next)
+        b3.reservation = .init("foo", .next)
         
         let route = layout.newRoute(id: "route-1", [("b1", .next), ("b2", .next), ("b3", .next), ("b4", .next), ("b1", .next)])
 

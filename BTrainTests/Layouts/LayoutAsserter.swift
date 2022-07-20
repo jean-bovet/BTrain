@@ -174,7 +174,7 @@ final class LayoutAsserter {
                 var toElementName: String
                 switch previousStep {
                 case .block(let resolvedRouteItemBlock):
-                    reserved = resolvedRouteItemBlock.block.reserved?.trainId
+                    reserved = resolvedRouteItemBlock.block.reservation?.trainId
                     fromElementName = resolvedRouteItemBlock.block.name
 
                 case .turnout(let resolvedRouteItemTurnout):
@@ -191,7 +191,7 @@ final class LayoutAsserter {
                 switch step {
                 case .block(let resolvedRouteItemBlock):
                     toElementName = resolvedRouteItemBlock.block.name
-                    if reserved != resolvedRouteItemBlock.block.reserved?.trainId {
+                    if reserved != resolvedRouteItemBlock.block.reservation?.trainId {
                         reserved = nil
                     }
                 case .turnout(let resolvedRouteItemTurnout):
@@ -232,24 +232,24 @@ final class LayoutAsserter {
         let expectedBlock = expectedLayout.blocks.first(where: { $0.id == expectedStep.blockId})!
         XCTAssertEqual(block.category, expectedBlock.category, "Block category mismatch for block \(block)")
 
-        if expectedBlock.reserved == nil {
-            XCTAssertNil(block.reserved, "Expected no reservation in block \(block), route \(routeName)")
+        if expectedBlock.reservation == nil {
+            XCTAssertNil(block.reservation, "Expected no reservation in block \(block), route \(routeName)")
         } else {
             // Note: we only care about the trainId, not the direction of travel
             // because the same block in the ASCII representation can indicate
             // a different travel direction (because it represents the block
             // in a later phase of the route).
-            XCTAssertEqual(block.reserved?.trainId, expectedBlock.reserved?.trainId, "Mismatching reserved block \(block) at index \(index), route \(routeName)")
+            XCTAssertEqual(block.reservation?.trainId, expectedBlock.reservation?.trainId, "Mismatching reserved block \(block) at index \(index), route \(routeName)")
         }
         
-        if let expectedTrain = expectedBlock.train {
-            XCTAssertEqual(block.train?.trainId, expectedTrain.trainId, "Unexpected train mismatch in block \(block.name) at index \(index)")
+        if let expectedTrain = expectedBlock.trainInstance {
+            XCTAssertEqual(block.trainInstance?.trainId, expectedTrain.trainId, "Unexpected train mismatch in block \(block.name) at index \(index)")
         } else {
-            XCTAssertNil(block.train, "Block \(block) should not contain train \(block.train!)")
+            XCTAssertNil(block.trainInstance, "Block \(block) should not contain train \(block.trainInstance!)")
         }
         
         // Assert the parts of the block reserved for the train and its wagon
-        if let train = block.train, let expectedTrain = expectedBlock.train, assertBlockParts {
+        if let train = block.trainInstance, let expectedTrain = expectedBlock.trainInstance, assertBlockParts {
             XCTAssertEqual(train.parts, expectedTrain.parts, "Unexpected train parts mismatch in block \(block) at index \(index), route \(routeName)")
         }
     }

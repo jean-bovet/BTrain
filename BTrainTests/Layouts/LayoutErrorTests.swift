@@ -83,7 +83,7 @@ class LayoutErrorTests: XCTestCase {
 
     func testNoTransitions() {
         do {
-            b1.train = .init(train1.id, .next)
+            b1.trainInstance = .init(train1.id, .next)
             _ = try layout.entryFeedback(from: b1, to: b2)
             XCTFail("Must throw an exception")
         } catch {
@@ -93,7 +93,7 @@ class LayoutErrorTests: XCTestCase {
 
     func testCannotReserveBlock() {
         do {
-            b1.reserved = Reservation(trainId: train1.id, direction: .next)
+            b1.reservation = Reservation(trainId: train1.id, direction: .next)
             try layout.setTrainToBlock(train0.id, b1.id, direction: .next)
             XCTFail("Must throw an exception")
         } catch {
@@ -136,7 +136,7 @@ class LayoutErrorTests: XCTestCase {
     func testTrainInBlockDoesNotMatch() {
         do {
             train0.blockId = b1.id
-            b1.train = .init(train1.id, .next)
+            b1.trainInstance = .init(train1.id, .next)
             _ = try layout.directionDirectionInBlock(train0)
             XCTFail("Must throw an exception")
         } catch {

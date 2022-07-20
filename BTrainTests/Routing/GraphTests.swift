@@ -124,7 +124,7 @@ class GraphTests: XCTestCase {
         XCTAssertEqual(p.toStrings, ["s1:1", "0:t1:1", "0:t2:1", "0:b1:1", "1:t4:0", "0:s2"])
         
         // Reserve b1 so the algorithm needs to find the alternate route s1-b3-s2
-        b1.reserved = .init("foo", .next)
+        b1.reservation = .init("foo", .next)
                 
         p = layout.path(for: layout.trains[0], from: (s1, .next), to: (s2, .next))!
         XCTAssertEqual(p.toStrings, ["s1:1", "0:t1:1", "0:t2:2", "2:t3:0", "0:b3:1", "2:t4:0", "0:s2"])

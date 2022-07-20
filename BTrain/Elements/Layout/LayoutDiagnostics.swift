@@ -326,14 +326,14 @@ final class LayoutDiagnostic: ObservableObject {
         
         // Remove any train that do not exist anymore
         for block in layout.blocks {
-            if let trainId = block.train?.trainId {
+            if let trainId = block.trainInstance?.trainId {
                 if layout.train(for: trainId) == nil {
-                    block.train = nil
+                    block.trainInstance = nil
                 }
             }
-            if let trainId = block.reserved?.trainId {
+            if let trainId = block.reservation?.trainId {
                 if layout.train(for: trainId) == nil {
-                    block.reserved = nil
+                    block.reservation = nil
                 }
             }
         }

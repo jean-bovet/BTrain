@@ -284,7 +284,7 @@ final class TrainController: TrainControlling, CustomStringConvertible {
         
         currentBlock = newBlock
         
-        guard let newTrainInstance = newBlock.train else {
+        guard let newTrainInstance = newBlock.trainInstance else {
             throw LayoutError.trainNotFoundInBlock(blockId: newBlock.id)
         }
         

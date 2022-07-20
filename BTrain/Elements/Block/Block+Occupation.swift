@@ -16,7 +16,7 @@ extension Block {
     
     // Returns true if the block is reserved and occupied by the train or a portion of the train.
     func isOccupied(by trainId: Identifier<Train>) -> Bool {
-        reserved?.trainId == trainId && train?.trainId == trainId
+        reservation?.trainId == trainId && trainInstance?.trainId == trainId
     }
     
     func canBeReserved(withTrain: Train, direction: Direction) -> Bool {
@@ -24,12 +24,12 @@ extension Block {
             return false
         }
         
-        guard train == nil else {
+        guard trainInstance == nil else {
             return false
         }
         
         let reservation = Reservation(trainId: withTrain.id, direction: direction)
-        guard reserved == nil || reserved == reservation else {
+        guard self.reservation == nil || self.reservation == reservation else {
             return false
         }
         

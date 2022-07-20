@@ -84,7 +84,7 @@ final class LayoutPathFinder: GraphPathFinding {
                     return false
                 }
                                 
-                if let reserved = block.reserved, reserved.trainId != train.id {
+                if let reserved = block.reservation, reserved.trainId != train.id {
                     switch lc.reservedBlockBehavior {
                     case .avoidReserved:
                         return false

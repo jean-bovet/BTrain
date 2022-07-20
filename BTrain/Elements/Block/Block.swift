@@ -108,50 +108,70 @@ final class Block: Element, ObservableObject {
     ///
     /// Note that a reserved block does not necessarily have
     /// a train in it: this is indicated by the ``train`` property.
-    @Published var reserved: Reservation?
+    @Published var reservation: Reservation?
     
     /// Returns the current train (and its direction of travel) inside this block
-    @Published var train: TrainInstance?
+    @Published var trainInstance: TrainInstance?
     
-    // Returns true if this block contains the locomotive
+    /// Returns true if this block contains the locomotive
     var blockContainsLocomotive: Bool {
-        if let train = train {
-            if train.parts.isEmpty {
-                // If there are no parts defined, it means the train has not length defined,
-                // so we can consider the entire block as containing the locomotive
-                return true
-            } else {
-                return train.parts.values.contains(.locomotive)
-            }
-        } else {
+        guard let trainInstance = trainInstance else {
             return false
+        }
+
+        if trainInstance.parts.isEmpty {
+            // If there are no parts defined, it means the train has not length defined,
+            // so we can consider the entire block as containing the locomotive
+            return true
+        } else {
+            return trainInstance.parts.values.contains(.locomotive)
         }
     }
     
-    // A structure identifying each feedback inside this block
+    /// A structure identifying each feedback inside this block
     struct BlockFeedback: Identifiable, Hashable, Codable {
+        /// Unique identifier for this block feedback
         let id: String
+        
+        /// The feedback identifier this block feedback refers to
         var feedbackId: Identifier<Feedback>
-        // Distance of the feedback from the start of the block
+        
+        /// Distance, in cm, of the feedback from the start of the block
         var distance: Double?
     }
     
-    // Returns the list of feedbacks in this block
+    /// Array of feedbacks in this block
     @Published var feedbacks = [BlockFeedback]()
-                
+
+    /// The optional feedback designated as the entry feedback in the direction next
     @Published var entryFeedbackNext: Identifier<Feedback>?
+    
+    /// The optional feedback designated as the braking feedback in the direction next
     @Published var brakeFeedbackNext: Identifier<Feedback>?
+    
+    /// The optional feedback designated as the stop feedback in the direction next
     @Published var stopFeedbackNext: Identifier<Feedback>?
 
+    /// The optional feedback designated as the entry feedback in the direction previous
     @Published var entryFeedbackPrevious: Identifier<Feedback>?
+    
+    /// The optional feedback designated as the braking feedback in the direction previous
     @Published var brakeFeedbackPrevious: Identifier<Feedback>?
+    
+    /// The optional feedback designated as the stop feedback in the direction previous
     @Published var stopFeedbackPrevious: Identifier<Feedback>?
     
-    // Optional block-specific braking speed. If nil, the default braking speed is used
+    /// Optional block-specific braking speed.
+    ///
+    /// If nil, the default braking speed is used
     @Published var brakingSpeed: TrainSpeed.UnitKph?
-
+    
+    /// The possible speed limits
     enum SpeedLimit: String, Codable, CaseIterable {
+        /// Unlimited speed - the block does not put any speed constraints
         case unlimited
+        
+        /// Limited speed - the block has a limit on the possible speed value
         case limited
     }
     
@@ -195,8 +215,8 @@ extension Block: Codable {
         self.length = try container.decodeIfPresent(Double.self, forKey: CodingKeys.length)
 
         self.enabled = try container.decodeIfPresent(Bool.self, forKey: CodingKeys.enabled) ?? true
-        self.reserved = try container.decodeIfPresent(Reservation.self, forKey: CodingKeys.reserved)
-        self.train = try container.decodeIfPresent(TrainInstance.self, forKey: CodingKeys.train)
+        self.reservation = try container.decodeIfPresent(Reservation.self, forKey: CodingKeys.reserved)
+        self.trainInstance = try container.decodeIfPresent(TrainInstance.self, forKey: CodingKeys.train)
         self.feedbacks = try container.decode([BlockFeedback].self, forKey: CodingKeys.feedbacks)
         
         self.entryFeedbackNext = try container.decodeIfPresent(Identifier<Feedback>.self, forKey: CodingKeys.entryFeedbackNext)
@@ -219,8 +239,8 @@ extension Block: Codable {
         try container.encode(category, forKey: CodingKeys.type)
         try container.encode(length, forKey: CodingKeys.length)
         try container.encode(waitingTime, forKey: CodingKeys.waitingTime)
-        try container.encode(reserved, forKey: CodingKeys.reserved)
-        try container.encode(train, forKey: CodingKeys.train)
+        try container.encode(reservation, forKey: CodingKeys.reserved)
+        try container.encode(trainInstance, forKey: CodingKeys.train)
         try container.encode(feedbacks, forKey: CodingKeys.feedbacks)
 
         try container.encode(entryFeedbackNext, forKey: CodingKeys.entryFeedbackNext)

@@ -158,7 +158,7 @@ class UnmanagedTrainOperationTests: BTTestCase {
                 throw LayoutError.blockNotFound(blockId: blockId)
             }
             
-            XCTAssertEqual(block.train?.trainId, train.id)
+            XCTAssertEqual(block.trainInstance?.trainId, train.id)
             XCTAssertEqual(train.position, position)
             XCTAssertEqual(train.speed.actualKph, speed, accuracy: 1)
         }
@@ -169,7 +169,7 @@ class UnmanagedTrainOperationTests: BTTestCase {
                 throw LayoutError.blockNotFound(blockId: blockId)
             }
 
-            XCTAssertNil(block.train)
+            XCTAssertNil(block.trainInstance)
         }
         
         func setTrainSpeed(_ speed: TrainSpeed.UnitKph) {

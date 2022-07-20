@@ -21,7 +21,7 @@ extension LayoutController {
             text += "\n "+LayoutController.attributesFor(train: train, layout: layout)
         }
         text += "\nInteresting Blocks:"
-        for block in layout.blocks.filter({$0.enabled && ($0.reserved != nil || $0.train != nil)}) {
+        for block in layout.blocks.filter({$0.enabled && ($0.reservation != nil || $0.trainInstance != nil)}) {
             text += "\n "+LayoutController.attributesFor(block: block, layout: layout)
         }
         text += "\nRoutes:"
@@ -67,10 +67,10 @@ extension LayoutController {
 
     static func attributesFor(block: Block, layout: Layout) -> String {
         var info = "\(block.name)-[\(block.id)]"
-        if let reserved = block.reserved, let train = layout.train(for: reserved.trainId) {
+        if let reserved = block.reservation, let train = layout.train(for: reserved.trainId) {
             info += ", reserved for \(train.name)-\(reserved.direction)"
         }
-        if let trainInstance = block.train {
+        if let trainInstance = block.trainInstance {
             if let train = layout.train(for: trainInstance.trainId) {
                 info += ", train \(train.name)"
             }
