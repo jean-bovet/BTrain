@@ -106,8 +106,8 @@ final class LayoutPathFinder {
         try GraphShortestPathFinder.shortestPath(graph: graph, from: from, to: to, constraints: constraints, verbose: settings.verbose)
     }
     
-    func resolve(graph: Graph, _ path: UnresolvedGraphPath, errors: inout [GraphPathFinderResolver.ResolverError]) -> GraphPath? {
-        let resolver = GraphPathFinderResolver(gpf: self)
+    func resolve(graph: Graph, _ path: UnresolvedGraphPath, errors: inout [LayoutPathFinderResolver.ResolverError]) -> GraphPath? {
+        let resolver = LayoutPathFinderResolver(lpf: self)
         return resolver.resolve(graph: graph, path, constraints: constraints, errors: &errors)
     }
     
@@ -160,7 +160,7 @@ final class LayoutPathFinder {
         }
                         
         if !constraints.shouldInclude(node: node, currentPath: currentPath, to: to) {
-            debug("Node \(node) should not be included, backtracking")
+            debug("Node \(node.name) (with ID \(node)) should not be included, backtracking from current path \(currentPath.toStrings)")
             return nil
         }
                 

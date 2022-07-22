@@ -19,10 +19,10 @@ import Foundation
 ///
 /// For example, a user can build a route with a starting and ending station and only one block,
 /// leaving all the other blocks unspecified. The role of this algorithm is to find these unspecified blocks
-struct GraphPathFinderResolver {
+struct LayoutPathFinderResolver {
     
     /// A reference to the path finding algoritm
-    let gpf: LayoutPathFinder
+    let lpf: LayoutPathFinder
     
     /// Error from the path resolver indicating between which path elements an error occurred
     struct ResolverError {
@@ -131,7 +131,7 @@ struct GraphPathFinderResolver {
         guard let previousElement = resolvedPath.path.last else {
             return true
         }
-        if let p = gpf.path(graph: graph, from: previousElement, to: to) {
+        if let p = lpf.path(graph: graph, from: previousElement, to: to) {
             for resolvedElement in p.elements.dropFirst() {
                 resolvedPath.path.append(resolvedElement)
             }

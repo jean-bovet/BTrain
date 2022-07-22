@@ -46,7 +46,6 @@ protocol GraphNode {
     /// Returns the weight of the node given the specified constraints
     /// - Parameter constraints: the constraints
     /// - Returns: the weight of the node
-    ///
     func weight(_ constraints: LayoutPathFinder.LayoutConstraints) -> Double
     
     /// Returns all the available sockets for the node given the specified constraints

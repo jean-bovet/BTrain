@@ -300,13 +300,13 @@ final class LayoutDiagnostic: ObservableObject {
     }
     
     func checkRoutes(_ errors: inout [DiagnosticError]) {
-        var resolverErrors = [GraphPathFinderResolver.ResolverError]()
+        var resolverErrors = [LayoutPathFinderResolver.ResolverError]()
         for route in layout.routes.filter({ $0.automatic == false }) {
             checkRoute(route: route, &errors, resolverErrors: &resolverErrors)
         }
     }
     
-    func checkRoute(route: Route, _ errors: inout [DiagnosticError], resolverErrors: inout [GraphPathFinderResolver.ResolverError]) {
+    func checkRoute(route: Route, _ errors: inout [DiagnosticError], resolverErrors: inout [LayoutPathFinderResolver.ResolverError]) {
         let rr = RouteResolver(layout: layout, train: Train(id: Identifier<Train>(uuid: UUID().uuidString), name: "", address: 0))
         do {
             let steps = try rr.resolve(steps: ArraySlice(route.steps), errors: &resolverErrors)
