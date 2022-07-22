@@ -53,7 +53,7 @@ final class LayoutPathFinder {
     }
     
     convenience init(layout: Layout, train: Train, reservedBlockBehavior: ReservedBlockBehavior, settings: Settings) {
-        self.init(constraints: LayoutConstraints(layout: layout, train: train, reservedBlockBehavior: reservedBlockBehavior, relaxed: false),
+        self.init(constraints: LayoutConstraints(layout: layout, train: train, reservedBlockBehavior: reservedBlockBehavior, relaxed: false, routingMode: false),
                   settings: settings)
     }
     
@@ -212,19 +212,21 @@ final class LayoutPathFinder {
         }
     }
     
-    // TODO: make it final
-    class LayoutConstraints {
+    final class LayoutConstraints {
         
         let layout: Layout?
         let train: Train?
         let reservedBlockBehavior: ReservedBlockBehavior?
         let relaxed: Bool
+        // TODO: investigate when this is used and when not, it is not fully clear IMO
+        let routingMode: Bool
 
-        init(layout: Layout?, train: Train?, reservedBlockBehavior: ReservedBlockBehavior?, relaxed: Bool) {
+        init(layout: Layout?, train: Train?, reservedBlockBehavior: ReservedBlockBehavior?, relaxed: Bool, routingMode: Bool) {
             self.layout = layout
             self.train = train
             self.reservedBlockBehavior = reservedBlockBehavior
             self.relaxed = relaxed
+            self.routingMode = routingMode
         }
 
         /// Returns true if the `node` should be included in the path.
@@ -236,9 +238,18 @@ final class LayoutPathFinder {
         ///   - node: the node to evaluate
         ///   - currentPath: the current path that has been found so far
         ///   - to: the optional destination element
-        ///   - context: the context
         /// - Returns: true if `node` should be included in the path, false otherwise.
         func shouldInclude(node: GraphNode, currentPath: GraphPath, to: GraphPathElement?) -> Bool {
+            if let to = to, node is Block && to.node is Block && node.identifier.uuid != to.node.identifier.uuid, routingMode {
+                // Backtrack if the first block is not the destination node.
+                // Note: this is currently a limitation of the resolver in which it is expected that a route
+                // defines all the blocks in the route. The resolver just resolves the turnouts between two
+                // blocks but not an arbitrary long route with turnouts and blocks, which can be expensive
+                // to traverse until we have a breadth-first algorithm implementation to search for the shortest
+                // path between one block to another (arbitrary far away) block.
+                return false
+            }
+
             if relaxed {
                 return true
             }

@@ -27,10 +27,6 @@ struct RouteStepStation: RouteStep, Equatable, Codable {
     }
         
     func resolve(_ constraints: LayoutPathFinder.LayoutConstraints) -> [GraphPathElement]? {
-        guard let constraints = constraints.layoutConstraints else {
-            return nil
-        }
-        
         guard let layout = constraints.layout else {
             return nil
         }

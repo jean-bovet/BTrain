@@ -52,7 +52,7 @@ class ShortestPathComplexTests: XCTestCase {
         measure {
             _ = try? GraphShortestPathFinder.shortestPath(graph: layout,
                                                           from: ne1.elementDirectionNext,
-                                                          to: hsl_p1.elementDirectionNext, constraints: .init(layout: layout, train: nil, reservedBlockBehavior: nil, relaxed: true),
+                                                          to: hsl_p1.elementDirectionNext, constraints: .init(layout: layout, train: nil, reservedBlockBehavior: nil, relaxed: true, routingMode: false),
                                                           verbose: false)
         }
     }

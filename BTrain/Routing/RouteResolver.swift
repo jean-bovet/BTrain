@@ -41,7 +41,7 @@ final class RouteResolver {
                                                  overflow: layout.pathFinderOverflowLimit)
         // Note: avoid all reserved block when resolving to ensure maximum constraints.
         // If that fails, the algorithm will retry without constraints.
-        let pf = LayoutPathFinder(constraints: ResolverConstraints(layoutConstraints: .init(layout: layout, train: train, reservedBlockBehavior: .avoidReserved, relaxed: false)), settings: settings)
+        let pf = LayoutPathFinder(constraints: .init(layout: layout, train: train, reservedBlockBehavior: .avoidReserved, relaxed: false, routingMode: true), settings: settings)
         // Create the unresolved path out of the route steps
         let unresolvedPath: UnresolvedGraphPath = steps.map { $0 }
 
@@ -57,8 +57,8 @@ final class RouteResolver {
         // that satisfies the constraints; for example, a fixed route has a disabled block that makes it impossible to resolve.
         // Let's try again to resolve the route using the basic constraints at the graph-level - this means, all layout-specific
         // constraints (such as block reserved, disabled, etc) are ignored.
-        let relaxedConstraints = LayoutPathFinder.LayoutConstraints(layout: layout, train: train, reservedBlockBehavior: .ignoreReserved, relaxed: true)
-        let pf2 = LayoutPathFinder(constraints: ResolverConstraints(layoutConstraints: relaxedConstraints), settings: settings)
+        let relaxedConstraints = LayoutPathFinder.LayoutConstraints(layout: layout, train: train, reservedBlockBehavior: .ignoreReserved, relaxed: true, routingMode: true)
+        let pf2 = LayoutPathFinder(constraints: relaxedConstraints, settings: settings)
         if let resolvedPath = pf2.resolve(graph: layout, unresolvedPath, errors: &errors) {
             return resolvedPath.elements.toResolvedRouteItems
         }
@@ -67,35 +67,4 @@ final class RouteResolver {
         return nil
     }
     
-    final class ResolverConstraints: LayoutPathFinder.LayoutConstraints {
-        
-        let delegatedConstraints: LayoutPathFinder.LayoutConstraints
-        
-        init(layoutConstraints: LayoutPathFinder.LayoutConstraints) {
-            self.delegatedConstraints = layoutConstraints
-            super.init(layout: nil, train: nil, reservedBlockBehavior: nil, relaxed: false)
-        }
-        
-        override func reachedDestination(node: GraphNode, to: GraphPathElement?) -> Bool {
-            delegatedConstraints.reachedDestination(node: node, to: to)
-        }
-        
-        override func shouldInclude(node: GraphNode, currentPath: GraphPath, to: GraphPathElement?) -> Bool {
-            guard let to = to else {
-                return delegatedConstraints.shouldInclude(node: node, currentPath: currentPath, to: to)
-            }
-            
-            if node is Block && to.node is Block && node.identifier.uuid != to.node.identifier.uuid {
-                // Backtrack if the first block is not the destination node.
-                // Note: this is currently a limitation of the resolver in which it is expected that a route
-                // defines all the blocks in the route. The resolver just resolves the turnouts between two
-                // blocks but not an arbitrary long route with turnouts and blocks, which can be expensive
-                // to traverse until we have a breadth-first algorithm implementation to search for the shortest
-                // path between one block to another (arbitrary far away) block.
-                return false
-            }
-            
-            return delegatedConstraints.shouldInclude(node: node, currentPath: currentPath, to: to)
-        }
-    }
 }

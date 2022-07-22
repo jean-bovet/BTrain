@@ -45,7 +45,7 @@ struct RouteStepBlock: RouteStep, Equatable, Codable, CustomStringConvertible {
     }
     
     func resolve(_ constraints: LayoutPathFinder.LayoutConstraints) -> [GraphPathElement]? {
-        guard let block = constraints.layoutConstraints?.layout?.block(for: blockId) else {
+        guard let block = constraints.layout?.block(for: blockId) else {
             return nil
         }
         

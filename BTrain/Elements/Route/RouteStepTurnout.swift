@@ -37,7 +37,7 @@ struct RouteStepTurnout: RouteStep, Equatable, Codable {
     }
     
     func resolve(_ constraints: LayoutPathFinder.LayoutConstraints) -> [GraphPathElement]? {
-        guard let turnout = constraints.layoutConstraints?.layout?.turnout(for: turnoutId) else {
+        guard let turnout = constraints.layout?.turnout(for: turnoutId) else {
             return nil
         }
         return [GraphPathElement(node: turnout, entrySocket: entrySocket.socketId, exitSocket: exitSocket.socketId)]

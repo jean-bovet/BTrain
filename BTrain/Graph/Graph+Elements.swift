@@ -294,15 +294,3 @@ extension Array where Element == GraphPathElement {
 
 
 }
-
-extension LayoutPathFinder.LayoutConstraints {
-    
-    var layoutConstraints: LayoutPathFinder.LayoutConstraints? {
-        if let rc = self as? RouteResolver.ResolverConstraints {
-            return rc.delegatedConstraints
-        } else {
-            return self
-        }
-    }
-
-}

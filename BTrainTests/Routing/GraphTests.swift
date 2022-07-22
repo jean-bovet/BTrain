@@ -16,7 +16,7 @@ import XCTest
 class GraphTests: XCTestCase {
 
     func constraints(layout: Layout) -> LayoutPathFinder.LayoutConstraints {
-        .init(layout: layout, train: nil, reservedBlockBehavior: nil, relaxed: true)
+        .init(layout: layout, train: nil, reservedBlockBehavior: nil, relaxed: true, routingMode: false)
     }
 
     private func pathFinder(layout: Layout) -> LayoutPathFinder {
