@@ -14,7 +14,7 @@ import Foundation
 
 // This class finds path from one block to another in the layout, taking
 // into consideration various constraints, such as disabled block, reserved blocks, etc.
-final class LayoutPathFinder: GraphPathFinding {    
+final class LayoutPathFinder {    
         
     let context: LayoutContext
     let constraints: LayoutConstraints
@@ -78,6 +78,15 @@ final class LayoutPathFinder: GraphPathFinding {
                   settings: settings)
     }
     
+    /// Returns the path between two nodes in a graph, given the specified constraints and context.
+    ///
+    /// - Parameters:
+    ///   - graph: the graph
+    ///   - from: the starting node
+    ///   - to: the destination node or nil to find the next destination block (as defined by ``GraphPathFinderConstraints/reachedDestination(node:to:)``
+    ///   - constraints: the constraints to apply
+    ///   - context: the context to consider
+    /// - Returns: a path or nil if no path is found
     func path(graph: Graph, from: GraphNode, to: GraphNode?, constraints: GraphPathFinderConstraints, context: GraphPathFinderContext) -> GraphPath? {
         for socketId in shuffled(from.sockets(constraints)) {
             if let to = to {
@@ -95,10 +104,31 @@ final class LayoutPathFinder: GraphPathFinding {
         return nil
     }
 
+    /// Returns the path between two path elements in a graph, given the specified constraints and context.
+    ///
+    /// A path element is a node with a specific entry and exit socket defined.
+    ///
+    /// - Parameters:
+    ///   - graph: the graph
+    ///   - from: the starting element
+    ///   - to: the destination element or nil to find the next destination block (as defined by ``GraphPathFinderConstraints/reachedDestination(node:to:)``
+    ///   - constraints: the constraints to apply
+    ///   - context: the context to consider
+    /// - Returns: a path or nil if no path is found
     func path(graph: Graph, from: GraphPathElement, to: GraphPathElement?, constraints: GraphPathFinderConstraints, context: GraphPathFinderContext) -> GraphPath? {
         path(graph: graph, from: from, to: to, currentPath: GraphPath([from]), constraints: constraints, context: context)
     }
 
+    /// Returns the shortest path between two path elements in a graph, given the specified constraints and context.
+    ///
+    /// A path element is a node with a specific entry and exit socket defined.
+    /// - Parameters:
+    ///   - graph: the graph
+    ///   - from: the starting element
+    ///   - to: the destination element
+    ///   - constraints: the constraints to apply
+    ///   - context: the context to consider
+    /// - Returns: the shortest path or nil if no path is found
     func shortestPath(graph: Graph, from: GraphPathElement, to: GraphPathElement, constraints: GraphPathFinderConstraints, context: GraphPathFinderContext) throws -> GraphPath? {
         try GraphShortestPathFinder.shortestPath(graph: graph, from: from, to: to, constraints: constraints, context: context, verbose: settings.verbose)
     }

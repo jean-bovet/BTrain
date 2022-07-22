@@ -196,7 +196,7 @@ extension Layout {
         (turnouts.count + blocks.count) * 4
     }
         
-    func path(for train: Train, from: (Block, Direction), to: (Block, Direction?)?, pathFinder: GraphPathFinding, constraints: GraphPathFinderConstraints, context: GraphPathFinderContext) -> GraphPath? {
+    func path(for train: Train, from: (Block, Direction), to: (Block, Direction?)?, pathFinder: LayoutPathFinder, constraints: GraphPathFinderConstraints, context: GraphPathFinderContext) -> GraphPath? {
         // Note: when direction is `next`, it means we are leaving the starting element from its `nextSocket`
         let fromElement = GraphPathElement.starting(from.0, from.1 == .next ? Block.nextSocket : Block.previousSocket)
         let toElement: GraphPathElement?
@@ -215,7 +215,7 @@ extension Layout {
         return pathFinder.path(graph: self, from: fromElement, to: toElement, constraints: constraints, context: context)
     }
  
-    func shortestPath(for train: Train, from: (Block, Direction), to: (Block, Direction), pathFinder: GraphPathFinding, constraints: GraphPathFinderConstraints, context: GraphPathFinderContext) throws -> GraphPath? {
+    func shortestPath(for train: Train, from: (Block, Direction), to: (Block, Direction), pathFinder: LayoutPathFinder, constraints: GraphPathFinderConstraints, context: GraphPathFinderContext) throws -> GraphPath? {
         let fromElement = from.1 == .next ? from.0.elementDirectionNext:from.0.elementDirectionPrevious
         let toElement = to.1 == .next ? to.0.elementDirectionNext:to.0.elementDirectionPrevious
 

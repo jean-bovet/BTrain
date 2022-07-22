@@ -12,47 +12,6 @@
 
 import Foundation
 
-/// Defines the methods of a generic path finder in a graph.
-protocol GraphPathFinding {
-    
-    /// Returns the path between two nodes in a graph, given the specified constraints and context.
-    ///
-    /// - Parameters:
-    ///   - graph: the graph
-    ///   - from: the starting node
-    ///   - to: the destination node or nil to find the next destination block (as defined by ``GraphPathFinderConstraints/reachedDestination(node:to:)``
-    ///   - constraints: the constraints to apply
-    ///   - context: the context to consider
-    /// - Returns: a path or nil if no path is found
-    func path(graph: Graph, from: GraphNode, to: GraphNode?, constraints: GraphPathFinderConstraints, context: GraphPathFinderContext) -> GraphPath?
-    
-    /// Returns the path between two path elements in a graph, given the specified constraints and context.
-    ///
-    /// A path element is a node with a specific entry and exit socket defined.
-    ///
-    /// - Parameters:
-    ///   - graph: the graph
-    ///   - from: the starting element
-    ///   - to: the destination element or nil to find the next destination block (as defined by ``GraphPathFinderConstraints/reachedDestination(node:to:)``
-    ///   - constraints: the constraints to apply
-    ///   - context: the context to consider
-    /// - Returns: a path or nil if no path is found
-    func path(graph: Graph, from: GraphPathElement, to: GraphPathElement?, constraints: GraphPathFinderConstraints, context: GraphPathFinderContext) -> GraphPath?
-
-    /// Returns the shortest path between two path elements in a graph, given the specified constraints and context.
-    ///
-    /// A path element is a node with a specific entry and exit socket defined.
-    /// - Parameters:
-    ///   - graph: the graph
-    ///   - from: the starting element
-    ///   - to: the destination element
-    ///   - constraints: the constraints to apply
-    ///   - context: the context to consider
-    /// - Returns: the shortest path or nil if no path is found
-    func shortestPath(graph: Graph, from: GraphPathElement, to: GraphPathElement, constraints: GraphPathFinderConstraints, context: GraphPathFinderContext) throws -> GraphPath?
-
-}
-
 /// Defines the context when finding a path in a graph.
 ///
 /// The caller of the path find algorithm provides a subclass or a struct for the context

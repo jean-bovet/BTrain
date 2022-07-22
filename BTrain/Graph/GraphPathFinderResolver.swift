@@ -22,7 +22,7 @@ import Foundation
 struct GraphPathFinderResolver {
     
     /// A reference to the path finding algoritm
-    let gpf: GraphPathFinding
+    let gpf: LayoutPathFinder
     
     /// Error from the path resolver indicating between which path elements an error occurred
     struct ResolverError {
