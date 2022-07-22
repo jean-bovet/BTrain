@@ -76,8 +76,8 @@ struct GraphPathFinderResolver {
     ///   - errors: any resolving errors
     /// - Returns: a resolved path
     func resolve(graph: Graph, _ unresolvedPath: UnresolvedGraphPath,
-                 constraints: GraphPathFinderConstraints = GraphPathFinder.DefaultConstraints(),
-                 context: GraphPathFinderContext = GraphPathFinder.DefaultContext(),
+                 constraints: GraphPathFinderConstraints = LayoutPathFinder.DefaultConstraints(),
+                 context: GraphPathFinderContext = LayoutPathFinder.DefaultContext(),
                  errors: inout [ResolverError]) -> GraphPath? {
         let resolvedPaths = ResolvedPaths()
         guard var previousElements = unresolvedPath.first?.resolve(constraints, context) else {

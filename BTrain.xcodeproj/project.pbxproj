@@ -200,7 +200,6 @@
 		A78B996427FD56D80021EFE4 /* GraphTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A78B996327FD56D80021EFE4 /* GraphTests.swift */; };
 		A78B996727FD57B20021EFE4 /* Graph+Elements.swift in Sources */ = {isa = PBXBuildFile; fileRef = A78B996627FD57B20021EFE4 /* Graph+Elements.swift */; };
 		A78B996927FE41A90021EFE4 /* LayoutPathFinder.swift in Sources */ = {isa = PBXBuildFile; fileRef = A78B996827FE41A90021EFE4 /* LayoutPathFinder.swift */; };
-		A78B996B2800BA4D0021EFE4 /* GraphPathFinder.swift in Sources */ = {isa = PBXBuildFile; fileRef = A78B996A2800BA4D0021EFE4 /* GraphPathFinder.swift */; };
 		A78B996D2800BABB0021EFE4 /* GraphPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = A78B996C2800BABB0021EFE4 /* GraphPath.swift */; };
 		A7907955277D071000771A60 /* CGContext+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7907954277D071000771A60 /* CGContext+Extension.swift */; };
 		A7907957277D136500771A60 /* CGAffineTransform+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7907956277D136500771A60 /* CGAffineTransform+Extension.swift */; };
@@ -519,7 +518,6 @@
 		A78B996327FD56D80021EFE4 /* GraphTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GraphTests.swift; sourceTree = "<group>"; };
 		A78B996627FD57B20021EFE4 /* Graph+Elements.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Graph+Elements.swift"; sourceTree = "<group>"; };
 		A78B996827FE41A90021EFE4 /* LayoutPathFinder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutPathFinder.swift; sourceTree = "<group>"; };
-		A78B996A2800BA4D0021EFE4 /* GraphPathFinder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GraphPathFinder.swift; sourceTree = "<group>"; };
 		A78B996C2800BABB0021EFE4 /* GraphPath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GraphPath.swift; sourceTree = "<group>"; };
 		A7907954277D071000771A60 /* CGContext+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CGContext+Extension.swift"; sourceTree = "<group>"; };
 		A7907956277D136500771A60 /* CGAffineTransform+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CGAffineTransform+Extension.swift"; sourceTree = "<group>"; };
@@ -1221,7 +1219,6 @@
 				A78B996127FCC4080021EFE4 /* Graph.swift */,
 				A78B996C2800BABB0021EFE4 /* GraphPath.swift */,
 				A76C1C642880798800A22509 /* GraphPathFinding.swift */,
-				A78B996A2800BA4D0021EFE4 /* GraphPathFinder.swift */,
 				A76C1C6628813ED400A22509 /* GraphPathFinderResolver.swift */,
 				A7940657280789B300F6A427 /* GraphShortestPathFinder.swift */,
 				A78B996627FD57B20021EFE4 /* Graph+Elements.swift */,
@@ -1785,7 +1782,6 @@
 				A7841371273CE02000381341 /* LinkShape.swift in Sources */,
 				A784136F273CE00C00381341 /* BlockShape.swift in Sources */,
 				A798BB4627A7B093000BB4D1 /* LayoutASCIIProducer.swift in Sources */,
-				A78B996B2800BA4D0021EFE4 /* GraphPathFinder.swift in Sources */,
 				A768B19128551B0800B6497F /* StateMachine.swift in Sources */,
 				A7C8A2EF279DD19A000C7246 /* SectionTitleView.swift in Sources */,
 				A74F38092818C7B10013FD23 /* RouteStepBlockView.swift in Sources */,

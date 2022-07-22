@@ -36,7 +36,7 @@ final class RouteResolver {
     func resolve(steps: ArraySlice<RouteItem>,
                  errors: inout [GraphPathFinderResolver.ResolverError],
                  verbose: Bool = SettingsKeys.bool(forKey: SettingsKeys.logRoutingResolutionSteps)) throws -> [ResolvedRouteItem]? {
-        let settings = GraphPathFinder.Settings(verbose: verbose,
+        let settings = LayoutPathFinder.Settings(verbose: verbose,
                                                     random: false,
                                                     overflow: layout.pathFinderOverflowLimit)
         // Note: avoid all reserved block when resolving to ensure maximum constraints.
@@ -58,7 +58,7 @@ final class RouteResolver {
         // constraints (such as block reserved, disabled, etc) are ignored.
         let relaxedContext = LayoutPathFinder.LayoutContext(layout: layout, train: train, reservedBlockBehavior: .ignoreReserved)
         errors.removeAll()
-        if let resolvedPath = pf.resolve(graph: layout, unresolvedPath, constraints: ResolverConstraints(layoutConstraints: GraphPathFinder.DefaultConstraints()), context: relaxedContext, errors: &errors) {
+        if let resolvedPath = pf.resolve(graph: layout, unresolvedPath, constraints: ResolverConstraints(layoutConstraints: LayoutPathFinder.DefaultConstraints()), context: relaxedContext, errors: &errors) {
             return resolvedPath.elements.toResolvedRouteItems
         }
 

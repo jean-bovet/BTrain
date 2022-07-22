@@ -31,15 +31,23 @@ struct RouteStepStation: RouteStep, Equatable, Codable {
             return nil
         }
 
-        guard let station = lc.layout.station(for: stationId) else {
-            return nil
-        }
-                
-        guard let element = bestElement(station: station, train: lc.train, layout: lc.layout, context: lc) else {
+        guard let layout = lc.layout else {
             return nil
         }
         
-        guard let block = lc.layout.block(for: element.blockId) else {
+        guard let train = lc.train else {
+            return nil
+        }
+        
+        guard let station = layout.station(for: stationId) else {
+            return nil
+        }
+                
+        guard let element = bestElement(station: station, train: train, layout: layout, context: lc) else {
+            return nil
+        }
+        
+        guard let block = layout.block(for: element.blockId) else {
             return nil
         }
         

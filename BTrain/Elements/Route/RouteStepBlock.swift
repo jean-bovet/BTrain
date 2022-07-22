@@ -49,7 +49,7 @@ struct RouteStepBlock: RouteStep, Equatable, Codable, CustomStringConvertible {
             return nil
         }
         
-        guard let block = lc.layout.block(for: blockId) else {
+        guard let block = lc.layout?.block(for: blockId) else {
             return nil
         }
         

@@ -40,7 +40,7 @@ struct RouteStepTurnout: RouteStep, Equatable, Codable {
         guard let lc = context as? LayoutPathFinder.LayoutContext else {
             return nil
         }
-        guard let turnout = lc.layout.turnout(for: turnoutId) else {
+        guard let turnout = lc.layout?.turnout(for: turnoutId) else {
             return nil
         }
         return [GraphPathElement(node: turnout, entrySocket: entrySocket.socketId, exitSocket: exitSocket.socketId)]
