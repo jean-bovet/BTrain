@@ -53,7 +53,7 @@ final class LayoutPathFinder {
     }
     
     convenience init(layout: Layout, train: Train, reservedBlockBehavior: ReservedBlockBehavior, settings: Settings) {
-        self.init(constraints: LayoutConstraints(layout: layout, train: train, reservedBlockBehavior: reservedBlockBehavior, relaxed: false, routingMode: false),
+        self.init(constraints: LayoutConstraints(layout: layout, train: train, reservedBlockBehavior: reservedBlockBehavior, relaxed: false, resolving: false),
                   settings: settings)
     }
     
@@ -159,7 +159,7 @@ final class LayoutPathFinder {
             return nil
         }
                         
-        if !constraints.shouldInclude(node: node, currentPath: currentPath, to: to) {
+        guard constraints.shouldInclude(node: node, currentPath: currentPath, to: to) else {
             debug("Node \(node.name) (with ID \(node)) should not be included, backtracking from current path \(currentPath.toStrings)")
             return nil
         }
@@ -218,15 +218,16 @@ final class LayoutPathFinder {
         let train: Train?
         let reservedBlockBehavior: ReservedBlockBehavior?
         let relaxed: Bool
-        // TODO: investigate when this is used and when not, it is not fully clear IMO
-        let routingMode: Bool
+        
+        /// True if the algorithm is resolving a path, false otherwise.
+        let resolving: Bool
 
-        init(layout: Layout?, train: Train?, reservedBlockBehavior: ReservedBlockBehavior?, relaxed: Bool, routingMode: Bool) {
+        init(layout: Layout?, train: Train?, reservedBlockBehavior: ReservedBlockBehavior?, relaxed: Bool, resolving: Bool) {
             self.layout = layout
             self.train = train
             self.reservedBlockBehavior = reservedBlockBehavior
             self.relaxed = relaxed
-            self.routingMode = routingMode
+            self.resolving = resolving
         }
 
         /// Returns true if the `node` should be included in the path.
@@ -240,7 +241,7 @@ final class LayoutPathFinder {
         ///   - to: the optional destination element
         /// - Returns: true if `node` should be included in the path, false otherwise.
         func shouldInclude(node: GraphNode, currentPath: GraphPath, to: GraphPathElement?) -> Bool {
-            if let to = to, node is Block && to.node is Block && node.identifier.uuid != to.node.identifier.uuid, routingMode {
+            if let to = to, node is Block && to.node is Block && node.identifier.uuid != to.node.identifier.uuid, resolving {
                 // Backtrack if the first block is not the destination node.
                 // Note: this is currently a limitation of the resolver in which it is expected that a route
                 // defines all the blocks in the route. The resolver just resolves the turnouts between two
