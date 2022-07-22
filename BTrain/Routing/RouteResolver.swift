@@ -37,8 +37,8 @@ final class RouteResolver {
                  errors: inout [GraphPathFinderResolver.ResolverError],
                  verbose: Bool = SettingsKeys.bool(forKey: SettingsKeys.logRoutingResolutionSteps)) throws -> [ResolvedRouteItem]? {
         let settings = LayoutPathFinder.Settings(verbose: verbose,
-                                                    random: false,
-                                                    overflow: layout.pathFinderOverflowLimit)
+                                                 random: false,
+                                                 overflow: layout.pathFinderOverflowLimit)
         // Note: avoid all reserved block when resolving to ensure maximum constraints.
         // If that fails, the algorithm will retry without constraints.
         let pf = LayoutPathFinder(layout: layout, train: train, reservedBlockBehavior: .avoidReserved, settings: settings)
@@ -48,7 +48,7 @@ final class RouteResolver {
 
         // Try to resolve the route using the standard constraints (which are a super set of the constraints
         // when finding a new route, which provides consistent behavior when resolving a route).
-        if let resolvedPath = pf.resolve(graph: layout, unresolvedPath, constraints: ResolverConstraints(layoutConstraints: pf.constraints), context: pf.context, errors: &errors) {
+        if let resolvedPath = pf.resolve(graph: layout, unresolvedPath, constraints: ResolverConstraints(layoutConstraints: pf.constraints), errors: &errors) {
             return resolvedPath.elements.toResolvedRouteItems
         }
         
@@ -56,9 +56,10 @@ final class RouteResolver {
         // that satisfies the constraints; for example, a fixed route has a disable block that makes it impossible to resolve.
         // Let's try again to resolve the route using the basic constraints at the graph-level - this means, all layout-specific
         // constraints (such as block reserved, disabled, etc) are ignored.
-        let relaxedContext = LayoutPathFinder.LayoutContext(layout: layout, train: train, reservedBlockBehavior: .ignoreReserved)
+        let relaxedConstraints = LayoutPathFinder.LayoutConstraints(layout: layout, train: train, reservedBlockBehavior: .ignoreReserved, relaxed: true)
         errors.removeAll()
-        if let resolvedPath = pf.resolve(graph: layout, unresolvedPath, constraints: ResolverConstraints(layoutConstraints: LayoutPathFinder.DefaultConstraints()), context: relaxedContext, errors: &errors) {
+        let pf2 = LayoutPathFinder(constraints: relaxedConstraints, settings: settings)
+        if let resolvedPath = pf2.resolve(graph: layout, unresolvedPath, constraints: ResolverConstraints(layoutConstraints: relaxedConstraints), errors: &errors) {
             return resolvedPath.elements.toResolvedRouteItems
         }
 
@@ -66,21 +67,22 @@ final class RouteResolver {
         return nil
     }
     
-    final class ResolverConstraints: GraphPathFinderConstraints {
+    final class ResolverConstraints: LayoutPathFinder.LayoutConstraints {
         
-        let delegatedConstraints: GraphPathFinderConstraints
+        let delegatedConstraints: LayoutPathFinder.LayoutConstraints
         
-        init(layoutConstraints: GraphPathFinderConstraints) {
+        init(layoutConstraints: LayoutPathFinder.LayoutConstraints) {
             self.delegatedConstraints = layoutConstraints
+            super.init(layout: nil, train: nil, reservedBlockBehavior: nil, relaxed: false)
         }
         
-        func reachedDestination(node: GraphNode, to: GraphPathElement?) -> Bool {
+        override func reachedDestination(node: GraphNode, to: GraphPathElement?) -> Bool {
             delegatedConstraints.reachedDestination(node: node, to: to)
         }
         
-        func shouldInclude(node: GraphNode, currentPath: GraphPath, to: GraphPathElement?, context: GraphPathFinderContext) -> Bool {
+        override func shouldInclude(node: GraphNode, currentPath: GraphPath, to: GraphPathElement?) -> Bool {
             guard let to = to else {
-                return delegatedConstraints.shouldInclude(node: node, currentPath: currentPath, to: to, context: context)
+                return delegatedConstraints.shouldInclude(node: node, currentPath: currentPath, to: to)
             }
             
             if node is Block && to.node is Block && node.identifier.uuid != to.node.identifier.uuid {
@@ -93,7 +95,7 @@ final class RouteResolver {
                 return false
             }
             
-            return delegatedConstraints.shouldInclude(node: node, currentPath: currentPath, to: to, context: context)
+            return delegatedConstraints.shouldInclude(node: node, currentPath: currentPath, to: to)
         }
     }
 }

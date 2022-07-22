@@ -74,9 +74,9 @@ final class AutomaticRouting {
         
         let path: GraphPath?
         if let to = to, let toBlockDirection = to.1, SettingsKeys.bool(forKey: SettingsKeys.shortestRouteEnabled) {
-            path = try layout.shortestPath(for: train, from: (currentBlock, trainInstance.direction), to: (to.0, toBlockDirection), pathFinder: pf, constraints: pf.constraints, context: pf.context)
+            path = try layout.shortestPath(for: train, from: (currentBlock, trainInstance.direction), to: (to.0, toBlockDirection), pathFinder: pf, constraints: pf.constraints)
         } else {
-            path = layout.path(for: train, from: (currentBlock, trainInstance.direction), to: to, pathFinder: pf, constraints: pf.constraints, context: pf.context)
+            path = layout.path(for: train, from: (currentBlock, trainInstance.direction), to: to, pathFinder: pf, constraints: pf.constraints)
         }
         
         if let path = path {

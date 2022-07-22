@@ -153,13 +153,13 @@ extension Layout {
     func path(for train: Train, from: (Block, Direction), to: (Block, Direction)?, reservedBlockBehavior: LayoutPathFinder.ReservedBlockBehavior = .avoidReserved, random: Bool = false) -> GraphPath? {
         let settings = LayoutPathFinder.Settings(verbose: false, random: random, overflow: pathFinderOverflowLimit)
         let gl = LayoutPathFinder(layout: self, train: train, reservedBlockBehavior: reservedBlockBehavior, settings: settings)
-        return path(for: train, from: from, to: to, pathFinder: gl, constraints: gl.constraints, context: gl.context)
+        return path(for: train, from: from, to: to, pathFinder: gl, constraints: gl.constraints)
     }
 
     func shortestPath(for train: Train, from: (Block, Direction), to: (Block, Direction), reservedBlockBehavior: LayoutPathFinder.ReservedBlockBehavior = .avoidReserved) throws -> GraphPath? {
         let settings = LayoutPathFinder.Settings(verbose: false, random: false, overflow: pathFinderOverflowLimit)
         let gl = LayoutPathFinder(layout: self, train: train, reservedBlockBehavior: reservedBlockBehavior, settings: settings)
-        return try shortestPath(for: train, from: from, to: to, pathFinder: gl, constraints: gl.constraints, context: gl.context)
+        return try shortestPath(for: train, from: from, to: to, pathFinder: gl, constraints: gl.constraints)
     }
 
     func assertShortPath(_ from: (String, Direction), _ to: (String, Direction), _ expectedPath: [String]) throws {

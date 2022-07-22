@@ -72,28 +72,26 @@ struct GraphPathFinderResolver {
     ///   - graph: the graph in which the path is located
     ///   - unresolvedPath: the unresolved path
     ///   - constraints: the constraints to apply
-    ///   - context: the context to use
     ///   - errors: any resolving errors
     /// - Returns: a resolved path
     func resolve(graph: Graph, _ unresolvedPath: UnresolvedGraphPath,
-                 constraints: GraphPathFinderConstraints = LayoutPathFinder.DefaultConstraints(),
-                 context: GraphPathFinderContext = LayoutPathFinder.DefaultContext(),
+                 constraints: LayoutPathFinder.LayoutConstraints,
                  errors: inout [ResolverError]) -> GraphPath? {
         let resolvedPaths = ResolvedPaths()
-        guard var previousElements = unresolvedPath.first?.resolve(constraints, context) else {
+        guard var previousElements = unresolvedPath.first?.resolve(constraints) else {
             return nil
         }
                 
         var unresolvedPathIndex = 1
         resolvedPaths.append(previousElements)
         for unresolvedElement in unresolvedPath.dropFirst() {
-            guard let resolvedElements = unresolvedElement.resolve(constraints, context) else {
+            guard let resolvedElements = unresolvedElement.resolve(constraints) else {
                 BTLogger.router.error("Unable to resolve element \(unresolvedElement.description, privacy: .public)")
                 return nil
             }
             
             resolve(graph: graph, resolvedPaths: resolvedPaths, to: resolvedElements,
-                    constraints: constraints, context: context)
+                    constraints: constraints)
             
             if resolvedPaths.paths.isEmpty {
                 // There should always be at least one resolved path between two elements. If not, it means
@@ -116,11 +114,11 @@ struct GraphPathFinderResolver {
     }
     
     private func resolve(graph: Graph, resolvedPaths: ResolvedPaths, to resolvedElements: [GraphPathElement],
-                         constraints: GraphPathFinderConstraints, context: GraphPathFinderContext) {
+                         constraints: LayoutPathFinder.LayoutConstraints) {
         for (index, resolvedPath) in resolvedPaths.paths.enumerated() {
             for resolvedElement in resolvedElements {
                 if resolve(graph: graph, resolvedPath: resolvedPath, to: resolvedElement,
-                           constraints: constraints, context: context) == false {
+                           constraints: constraints) == false {
                     // Unable to resolve this path, so remove this path from the list of resolved paths
                     resolvedPaths.paths.remove(at: index)
                 }
@@ -129,11 +127,11 @@ struct GraphPathFinderResolver {
     }
     
     private func resolve(graph: Graph, resolvedPath: ResolvedPath, to: GraphPathElement,
-                         constraints: GraphPathFinderConstraints, context: GraphPathFinderContext) -> Bool {
+                         constraints: LayoutPathFinder.LayoutConstraints) -> Bool {
         guard let previousElement = resolvedPath.path.last else {
             return true
         }
-        if let p = gpf.path(graph: graph, from: previousElement, to: to, constraints: constraints, context: context) {
+        if let p = gpf.path(graph: graph, from: previousElement, to: to, constraints: constraints) {
             for resolvedElement in p.elements.dropFirst() {
                 resolvedPath.path.append(resolvedElement)
             }

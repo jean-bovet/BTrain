@@ -51,9 +51,8 @@ protocol UnresolvedGraphPathElement {
     /// Resolves this element by using the specified constraints and context.
     /// - Parameters:
     ///   - constraints: the constraints
-    ///   - context: the context
     /// - Returns: zero, one or more resolved path elements
-    func resolve(_ constraints: GraphPathFinderConstraints, _ context: GraphPathFinderContext) -> [GraphPathElement]?
+    func resolve(_ constraints: LayoutPathFinder.LayoutConstraints) -> [GraphPathElement]?
     
 }
 

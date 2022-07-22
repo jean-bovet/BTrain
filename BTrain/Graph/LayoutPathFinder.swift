@@ -16,7 +16,6 @@ import Foundation
 // into consideration various constraints, such as disabled block, reserved blocks, etc.
 final class LayoutPathFinder {    
         
-    let context: LayoutContext
     let constraints: LayoutConstraints
     
     struct Settings {
@@ -32,25 +31,7 @@ final class LayoutPathFinder {
     }
     
     let settings: Settings
-    
-    /// The default constraints for the graph
-    final class DefaultConstraints: GraphPathFinderConstraints {
-        
-        func shouldInclude(node: GraphNode, currentPath: GraphPath, to: GraphPathElement?, context: GraphPathFinderContext) -> Bool {
-            true
-        }
-        
-        func reachedDestination(node: GraphNode, to: GraphPathElement?) -> Bool {
-            false
-        }
-
-    }
-    
-    /// The default context which is simply empty
-    struct DefaultContext: GraphPathFinderContext {
-        
-    }
-    
+            
     enum ReservedBlockBehavior {
         // Avoid all reserved blocks (that is, avoid any block
         // that is reserved for another train).
@@ -66,15 +47,13 @@ final class LayoutPathFinder {
         case avoidFirstReservedBlock
     }
     
-    init(context: LayoutContext, constraints: LayoutConstraints, settings: Settings) {
-        self.context = context
+    init(constraints: LayoutConstraints, settings: Settings) {
         self.constraints = constraints
         self.settings = settings
     }
     
     convenience init(layout: Layout, train: Train, reservedBlockBehavior: ReservedBlockBehavior, settings: Settings) {
-        self.init(context: LayoutContext(layout: layout, train: train, reservedBlockBehavior: reservedBlockBehavior),
-                  constraints: LayoutConstraints(layout: layout, train: train),
+        self.init(constraints: LayoutConstraints(layout: layout, train: train, reservedBlockBehavior: reservedBlockBehavior, relaxed: false),
                   settings: settings)
     }
     
@@ -83,20 +62,19 @@ final class LayoutPathFinder {
     /// - Parameters:
     ///   - graph: the graph
     ///   - from: the starting node
-    ///   - to: the destination node or nil to find the next destination block (as defined by ``GraphPathFinderConstraints/reachedDestination(node:to:)``
+    ///   - to: the destination node or nil to find the next destination block (as defined by ``LayoutPathFinder.LayoutConstraints/reachedDestination(node:to:)``
     ///   - constraints: the constraints to apply
-    ///   - context: the context to consider
     /// - Returns: a path or nil if no path is found
-    func path(graph: Graph, from: GraphNode, to: GraphNode?, constraints: GraphPathFinderConstraints, context: GraphPathFinderContext) -> GraphPath? {
+    func path(graph: Graph, from: GraphNode, to: GraphNode?, constraints: LayoutPathFinder.LayoutConstraints) -> GraphPath? {
         for socketId in shuffled(from.sockets(constraints)) {
             if let to = to {
                 for toSocketId in shuffled(to.sockets(constraints)) {
-                    if let steps = path(graph: graph, from: .starting(from, socketId), to: .ending(to, toSocketId), currentPath: GraphPath([.starting(from, socketId)]), constraints: constraints, context: context) {
+                    if let steps = path(graph: graph, from: .starting(from, socketId), to: .ending(to, toSocketId), currentPath: GraphPath([.starting(from, socketId)]), constraints: constraints) {
                         return steps
                     }
                 }
             } else {
-                if let steps = path(graph: graph, from: .starting(from, socketId), to: nil, currentPath: GraphPath([.starting(from, socketId)]), constraints: constraints, context: context) {
+                if let steps = path(graph: graph, from: .starting(from, socketId), to: nil, currentPath: GraphPath([.starting(from, socketId)]), constraints: constraints) {
                     return steps
                 }
             }
@@ -111,12 +89,11 @@ final class LayoutPathFinder {
     /// - Parameters:
     ///   - graph: the graph
     ///   - from: the starting element
-    ///   - to: the destination element or nil to find the next destination block (as defined by ``GraphPathFinderConstraints/reachedDestination(node:to:)``
+    ///   - to: the destination element or nil to find the next destination block (as defined by ``LayoutPathFinder.LayoutConstraints/reachedDestination(node:to:)``
     ///   - constraints: the constraints to apply
-    ///   - context: the context to consider
     /// - Returns: a path or nil if no path is found
-    func path(graph: Graph, from: GraphPathElement, to: GraphPathElement?, constraints: GraphPathFinderConstraints, context: GraphPathFinderContext) -> GraphPath? {
-        path(graph: graph, from: from, to: to, currentPath: GraphPath([from]), constraints: constraints, context: context)
+    func path(graph: Graph, from: GraphPathElement, to: GraphPathElement?, constraints: LayoutPathFinder.LayoutConstraints) -> GraphPath? {
+        path(graph: graph, from: from, to: to, currentPath: GraphPath([from]), constraints: constraints)
     }
 
     /// Returns the shortest path between two path elements in a graph, given the specified constraints and context.
@@ -127,18 +104,17 @@ final class LayoutPathFinder {
     ///   - from: the starting element
     ///   - to: the destination element
     ///   - constraints: the constraints to apply
-    ///   - context: the context to consider
     /// - Returns: the shortest path or nil if no path is found
-    func shortestPath(graph: Graph, from: GraphPathElement, to: GraphPathElement, constraints: GraphPathFinderConstraints, context: GraphPathFinderContext) throws -> GraphPath? {
-        try GraphShortestPathFinder.shortestPath(graph: graph, from: from, to: to, constraints: constraints, context: context, verbose: settings.verbose)
+    func shortestPath(graph: Graph, from: GraphPathElement, to: GraphPathElement, constraints: LayoutPathFinder.LayoutConstraints) throws -> GraphPath? {
+        try GraphShortestPathFinder.shortestPath(graph: graph, from: from, to: to, constraints: constraints, verbose: settings.verbose)
     }
     
-    func resolve(graph: Graph, _ path: UnresolvedGraphPath, constraints: GraphPathFinderConstraints, context: GraphPathFinderContext, errors: inout [GraphPathFinderResolver.ResolverError]) -> GraphPath? {
+    func resolve(graph: Graph, _ path: UnresolvedGraphPath, constraints: LayoutPathFinder.LayoutConstraints, errors: inout [GraphPathFinderResolver.ResolverError]) -> GraphPath? {
         let resolver = GraphPathFinderResolver(gpf: self)
-        return resolver.resolve(graph: graph, path, constraints: constraints, context: context, errors: &errors)
+        return resolver.resolve(graph: graph, path, constraints: constraints, errors: &errors)
     }
     
-    private func path(graph: Graph, from: GraphPathElement, to: GraphPathElement?, currentPath: GraphPath, constraints: GraphPathFinderConstraints, context: GraphPathFinderContext) -> GraphPath? {
+    private func path(graph: Graph, from: GraphPathElement, to: GraphPathElement?, currentPath: GraphPath, constraints: LayoutPathFinder.LayoutConstraints) -> GraphPath? {
         if settings.verbose {
             if let to = to {
                 debug("From \(from) to \(to): \(currentPath.toStrings)")
@@ -186,7 +162,7 @@ final class LayoutPathFinder {
             return nil
         }
                         
-        if !constraints.shouldInclude(node: node, currentPath: currentPath, to: to, context: context) {
+        if !constraints.shouldInclude(node: node, currentPath: currentPath, to: to) {
             debug("Node \(node) should not be included, backtracking")
             return nil
         }
@@ -218,7 +194,7 @@ final class LayoutPathFinder {
             
             if let path = path(graph: graph, from: betweenElement, to: to,
                                currentPath: currentPath.appending(.between(node, entrySocketId, exitSocket)),
-                               constraints: constraints, context: context) {
+                               constraints: constraints) {
                 return path
             }
         }
@@ -240,37 +216,47 @@ final class LayoutPathFinder {
         }
     }
     
-    struct LayoutContext: GraphPathFinderContext {
-        let layout: Layout?
-        let train: Train?
-        let reservedBlockBehavior: ReservedBlockBehavior?
-    }
-    
-    final class LayoutConstraints: GraphPathFinderConstraints {
+    // TODO: make it final
+    class LayoutConstraints {
         
         let layout: Layout?
         let train: Train?
+        let reservedBlockBehavior: ReservedBlockBehavior?
+        let relaxed: Bool
 
-        init(layout: Layout?, train: Train?) {
+        init(layout: Layout?, train: Train?, reservedBlockBehavior: ReservedBlockBehavior?, relaxed: Bool) {
             self.layout = layout
             self.train = train
+            self.reservedBlockBehavior = reservedBlockBehavior
+            self.relaxed = relaxed
         }
 
-        func shouldInclude(node: GraphNode, currentPath: GraphPath, to: GraphPathElement?, context: GraphPathFinderContext) -> Bool {
-            guard let lc = context as? LayoutContext else {
+        /// Returns true if the `node` should be included in the path.
+        ///
+        /// If false, the algorithm backtracks to the previous node and finds
+        /// an alternative edge if possible.
+        ///
+        /// - Parameters:
+        ///   - node: the node to evaluate
+        ///   - currentPath: the current path that has been found so far
+        ///   - to: the optional destination element
+        ///   - context: the context
+        /// - Returns: true if `node` should be included in the path, false otherwise.
+        func shouldInclude(node: GraphNode, currentPath: GraphPath, to: GraphPathElement?) -> Bool {
+            if relaxed {
+                return true
+            }
+            
+            guard let layout = layout else {
                 return false
             }
 
-            guard let layout = layout else {
-                return true
-            }
-
             guard let train = train else {
-                return true
+                return false
             }
 
-            guard let reservedBlockBehavior = lc.reservedBlockBehavior else {
-                return true
+            guard let reservedBlockBehavior = reservedBlockBehavior else {
+                return false
             }
             
             if let block = layout.block(node) {
@@ -338,7 +324,16 @@ final class LayoutPathFinder {
             return true
         }
         
+        /// Returns true if the specified node is the destination node of the path.
+        /// - Parameters:
+        ///   - node: the node to evaluate
+        ///   - to: the optional destination block. If nil, the constraints should evalute if node is a destination or not (ie is it a station?)
+        /// - Returns: true if `node` is a destination, false otherwise
         func reachedDestination(node: GraphNode, to: GraphPathElement?) -> Bool {
+            if relaxed {
+                return false
+            }
+            
             guard let layout = layout else {
                 return false
             }
