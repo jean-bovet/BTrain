@@ -63,18 +63,17 @@ final class LayoutPathFinder {
     ///   - graph: the graph
     ///   - from: the starting node
     ///   - to: the destination node or nil to find the next destination block (as defined by ``LayoutPathFinder.LayoutConstraints/reachedDestination(node:to:)``
-    ///   - constraints: the constraints to apply
     /// - Returns: a path or nil if no path is found
-    func path(graph: Graph, from: GraphNode, to: GraphNode?, constraints: LayoutPathFinder.LayoutConstraints) -> GraphPath? {
+    func path(graph: Graph, from: GraphNode, to: GraphNode?) -> GraphPath? {
         for socketId in shuffled(from.sockets(constraints)) {
             if let to = to {
                 for toSocketId in shuffled(to.sockets(constraints)) {
-                    if let steps = path(graph: graph, from: .starting(from, socketId), to: .ending(to, toSocketId), currentPath: GraphPath([.starting(from, socketId)]), constraints: constraints) {
+                    if let steps = path(graph: graph, from: .starting(from, socketId), to: .ending(to, toSocketId), currentPath: GraphPath([.starting(from, socketId)])) {
                         return steps
                     }
                 }
             } else {
-                if let steps = path(graph: graph, from: .starting(from, socketId), to: nil, currentPath: GraphPath([.starting(from, socketId)]), constraints: constraints) {
+                if let steps = path(graph: graph, from: .starting(from, socketId), to: nil, currentPath: GraphPath([.starting(from, socketId)])) {
                     return steps
                 }
             }
@@ -90,10 +89,9 @@ final class LayoutPathFinder {
     ///   - graph: the graph
     ///   - from: the starting element
     ///   - to: the destination element or nil to find the next destination block (as defined by ``LayoutPathFinder.LayoutConstraints/reachedDestination(node:to:)``
-    ///   - constraints: the constraints to apply
     /// - Returns: a path or nil if no path is found
-    func path(graph: Graph, from: GraphPathElement, to: GraphPathElement?, constraints: LayoutPathFinder.LayoutConstraints) -> GraphPath? {
-        path(graph: graph, from: from, to: to, currentPath: GraphPath([from]), constraints: constraints)
+    func path(graph: Graph, from: GraphPathElement, to: GraphPathElement?) -> GraphPath? {
+        path(graph: graph, from: from, to: to, currentPath: GraphPath([from]))
     }
 
     /// Returns the shortest path between two path elements in a graph, given the specified constraints and context.
@@ -103,18 +101,17 @@ final class LayoutPathFinder {
     ///   - graph: the graph
     ///   - from: the starting element
     ///   - to: the destination element
-    ///   - constraints: the constraints to apply
     /// - Returns: the shortest path or nil if no path is found
-    func shortestPath(graph: Graph, from: GraphPathElement, to: GraphPathElement, constraints: LayoutPathFinder.LayoutConstraints) throws -> GraphPath? {
+    func shortestPath(graph: Graph, from: GraphPathElement, to: GraphPathElement) throws -> GraphPath? {
         try GraphShortestPathFinder.shortestPath(graph: graph, from: from, to: to, constraints: constraints, verbose: settings.verbose)
     }
     
-    func resolve(graph: Graph, _ path: UnresolvedGraphPath, constraints: LayoutPathFinder.LayoutConstraints, errors: inout [GraphPathFinderResolver.ResolverError]) -> GraphPath? {
+    func resolve(graph: Graph, _ path: UnresolvedGraphPath, errors: inout [GraphPathFinderResolver.ResolverError]) -> GraphPath? {
         let resolver = GraphPathFinderResolver(gpf: self)
         return resolver.resolve(graph: graph, path, constraints: constraints, errors: &errors)
     }
     
-    private func path(graph: Graph, from: GraphPathElement, to: GraphPathElement?, currentPath: GraphPath, constraints: LayoutPathFinder.LayoutConstraints) -> GraphPath? {
+    private func path(graph: Graph, from: GraphPathElement, to: GraphPathElement?, currentPath: GraphPath) -> GraphPath? {
         if settings.verbose {
             if let to = to {
                 debug("From \(from) to \(to): \(currentPath.toStrings)")
@@ -193,8 +190,7 @@ final class LayoutPathFinder {
             }
             
             if let path = path(graph: graph, from: betweenElement, to: to,
-                               currentPath: currentPath.appending(.between(node, entrySocketId, exitSocket)),
-                               constraints: constraints) {
+                               currentPath: currentPath.appending(.between(node, entrySocketId, exitSocket))) {
                 return path
             }
         }

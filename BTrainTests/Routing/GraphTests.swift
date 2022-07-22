@@ -30,7 +30,7 @@ class GraphTests: XCTestCase {
         let b3 = layout.block("b3")
 
         let gf = pathFinder(layout: layout)
-        let p = gf.path(graph: layout, from: b1, to: b3, constraints: constraints(layout: layout))!
+        let p = gf.path(graph: layout, from: b1, to: b3)!
         XCTAssertEqual(p.toStrings, ["b1:1", "0:t0:1", "0:b2:1", "0:t1:2", "0:b3"])
     }
 
@@ -40,7 +40,7 @@ class GraphTests: XCTestCase {
         let b2 = layout.block("b2")
 
         let gf = pathFinder(layout: layout)
-        let p = gf.path(graph: layout, from: GraphPathElement.starting(b1, 1), to: GraphPathElement.ending(b2, 0), constraints: constraints(layout: layout))!
+        let p = gf.path(graph: layout, from: GraphPathElement.starting(b1, 1), to: GraphPathElement.ending(b2, 0))!
         XCTAssertEqual(p.toStrings, ["b1:1", "0:t0:1", "0:b2"])
     }
 
@@ -50,7 +50,7 @@ class GraphTests: XCTestCase {
         let t0 = layout.turnout("t0")
 
         let gf = pathFinder(layout: layout)
-        let p = gf.path(graph: layout, from: GraphPathElement.starting(b1, 1), to: GraphPathElement.ending(t0, 0), constraints: constraints(layout: layout))!
+        let p = gf.path(graph: layout, from: GraphPathElement.starting(b1, 1), to: GraphPathElement.ending(t0, 0))!
         XCTAssertEqual(p.toStrings, ["b1:1", "0:t0"])
     }
 
@@ -107,7 +107,7 @@ class GraphTests: XCTestCase {
         let b3 = layout.block("b3")
 
         let gf = pathFinder(layout: layout)
-        let p = gf.path(graph: layout, from: b1, to: b3, constraints: constraints(layout: layout))!
+        let p = gf.path(graph: layout, from: b1, to: b3)!
         XCTAssertEqual(p.toStrings, ["b1:1", "0:t0:1", "0:b2:1", "0:t1:2", "0:b3"])
         
         let gr = pathFinder(layout: layout)

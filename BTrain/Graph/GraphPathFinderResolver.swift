@@ -131,7 +131,7 @@ struct GraphPathFinderResolver {
         guard let previousElement = resolvedPath.path.last else {
             return true
         }
-        if let p = gpf.path(graph: graph, from: previousElement, to: to, constraints: constraints) {
+        if let p = gpf.path(graph: graph, from: previousElement, to: to) {
             for resolvedElement in p.elements.dropFirst() {
                 resolvedPath.path.append(resolvedElement)
             }

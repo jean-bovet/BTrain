@@ -212,14 +212,14 @@ extension Layout {
         } else {
             toElement = nil
         }
-        return pathFinder.path(graph: self, from: fromElement, to: toElement, constraints: constraints)
+        return pathFinder.path(graph: self, from: fromElement, to: toElement)
     }
  
     func shortestPath(for train: Train, from: (Block, Direction), to: (Block, Direction), pathFinder: LayoutPathFinder, constraints: LayoutPathFinder.LayoutConstraints) throws -> GraphPath? {
         let fromElement = from.1 == .next ? from.0.elementDirectionNext:from.0.elementDirectionPrevious
         let toElement = to.1 == .next ? to.0.elementDirectionNext:to.0.elementDirectionPrevious
 
-        return try pathFinder.shortestPath(graph: self, from: fromElement, to: toElement, constraints: constraints)
+        return try pathFinder.shortestPath(graph: self, from: fromElement, to: toElement)
     }
     
 }

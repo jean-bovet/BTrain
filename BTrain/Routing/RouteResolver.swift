@@ -41,25 +41,25 @@ final class RouteResolver {
                                                  overflow: layout.pathFinderOverflowLimit)
         // Note: avoid all reserved block when resolving to ensure maximum constraints.
         // If that fails, the algorithm will retry without constraints.
-        let pf = LayoutPathFinder(layout: layout, train: train, reservedBlockBehavior: .avoidReserved, settings: settings)
-                
+        let pf = LayoutPathFinder(constraints: ResolverConstraints(layoutConstraints: .init(layout: layout, train: train, reservedBlockBehavior: .avoidReserved, relaxed: false)), settings: settings)
         // Create the unresolved path out of the route steps
         let unresolvedPath: UnresolvedGraphPath = steps.map { $0 }
 
         // Try to resolve the route using the standard constraints (which are a super set of the constraints
         // when finding a new route, which provides consistent behavior when resolving a route).
-        if let resolvedPath = pf.resolve(graph: layout, unresolvedPath, constraints: ResolverConstraints(layoutConstraints: pf.constraints), errors: &errors) {
+        if let resolvedPath = pf.resolve(graph: layout, unresolvedPath, errors: &errors) {
             return resolvedPath.elements.toResolvedRouteItems
         }
-        
+
+        errors.removeAll()
+
         // If we are not able to resolve the route using the standard constraints, it means there are no path available
-        // that satisfies the constraints; for example, a fixed route has a disable block that makes it impossible to resolve.
+        // that satisfies the constraints; for example, a fixed route has a disabled block that makes it impossible to resolve.
         // Let's try again to resolve the route using the basic constraints at the graph-level - this means, all layout-specific
         // constraints (such as block reserved, disabled, etc) are ignored.
         let relaxedConstraints = LayoutPathFinder.LayoutConstraints(layout: layout, train: train, reservedBlockBehavior: .ignoreReserved, relaxed: true)
-        errors.removeAll()
-        let pf2 = LayoutPathFinder(constraints: relaxedConstraints, settings: settings)
-        if let resolvedPath = pf2.resolve(graph: layout, unresolvedPath, constraints: ResolverConstraints(layoutConstraints: relaxedConstraints), errors: &errors) {
+        let pf2 = LayoutPathFinder(constraints: ResolverConstraints(layoutConstraints: relaxedConstraints), settings: settings)
+        if let resolvedPath = pf2.resolve(graph: layout, unresolvedPath, errors: &errors) {
             return resolvedPath.elements.toResolvedRouteItems
         }
 
