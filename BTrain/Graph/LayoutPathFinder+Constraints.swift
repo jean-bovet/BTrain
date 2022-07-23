@@ -15,23 +15,31 @@ import Foundation
 extension LayoutPathFinder {
     
     /// The constraints to apply to the path finder algorithm
-    final class Constraints {
+    struct Constraints {
         
-        let layout: Layout?
-        let train: Train?
-        let reservedBlockBehavior: ReservedBlockBehavior?
+        enum ReservedBlockBehavior {
+            // Avoid all reserved blocks (that is, avoid any block
+            // that is reserved for another train).
+            case avoidReserved
+            
+            // Ignore all reserved blocks (that is,
+            // take them into account even if they are
+            // reserved for another train).
+            case ignoreReserved
+            
+            // Avoid the first reserved block encountered,
+            // then ignore all the others reserved blocks.
+            case avoidFirstReservedBlock
+        }
+        
+        let layout: Layout
+        let train: Train
+        let reservedBlockBehavior: ReservedBlockBehavior
+
         let relaxed: Bool
         
         /// True if the algorithm is resolving a path, false otherwise.
         let resolving: Bool
-
-        init(layout: Layout?, train: Train?, reservedBlockBehavior: ReservedBlockBehavior?, relaxed: Bool, resolving: Bool) {
-            self.layout = layout
-            self.train = train
-            self.reservedBlockBehavior = reservedBlockBehavior
-            self.relaxed = relaxed
-            self.resolving = resolving
-        }
 
         /// Returns true if the `node` should be included in the path.
         ///
@@ -57,19 +65,7 @@ extension LayoutPathFinder {
             if relaxed {
                 return true
             }
-            
-            guard let layout = layout else {
-                return false
-            }
 
-            guard let train = train else {
-                return false
-            }
-
-            guard let reservedBlockBehavior = reservedBlockBehavior else {
-                return false
-            }
-            
             if let block = layout.block(node) {
                 guard block.enabled else {
                     return false
@@ -142,10 +138,6 @@ extension LayoutPathFinder {
         /// - Returns: true if `node` is a destination, false otherwise
         func reachedDestination(node: GraphNode, to: GraphPathElement?) -> Bool {
             if relaxed {
-                return false
-            }
-            
-            guard let layout = layout else {
                 return false
             }
 

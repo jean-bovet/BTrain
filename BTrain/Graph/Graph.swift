@@ -27,10 +27,10 @@ protocol GraphElementIdentifier {
 // See https://en.wikipedia.org/wiki/Graph_(discrete_mathematics)
 protocol Graph {
     // Returns the edge that starts at `from` node from the specified `socketId`.
-    func edge(from: GraphNode, socketId: SocketId, constraints: LayoutPathFinder.Constraints) -> GraphEdge?
+    func edge(from: GraphNode, socketId: SocketId) -> GraphEdge?
     
     // Returns the node corresponding to the identifier by `for`
-    func node(for: GraphElementIdentifier, constraints: LayoutPathFinder.Constraints) -> GraphNode?
+    func node(for: GraphElementIdentifier) -> GraphNode?
 }
 
 /// A node in a graph.
@@ -44,14 +44,12 @@ protocol GraphNode {
     var name: String { get }
     
     /// Returns the weight of the node given the specified constraints
-    /// - Parameter constraints: the constraints
     /// - Returns: the weight of the node
-    func weight(_ constraints: LayoutPathFinder.Constraints) -> Double
+    func weight() -> Double
     
     /// Returns all the available sockets for the node given the specified constraints
-    /// - Parameter constraints: the constraints
     /// - Returns: the available sockets
-    func sockets(_ constraints: LayoutPathFinder.Constraints) -> [SocketId]
+    func sockets() -> [SocketId]
         
     /// Returns all the sockets reachable from a specific socket, given the specified constraints.
     ///
@@ -59,9 +57,8 @@ protocol GraphNode {
     /// what are the other edges that can be reached when exiting this node.
     /// - Parameters:
     ///   - socket: the socket specifying where the path enters the node
-    ///   - constraints: the constraints
     /// - Returns: an array of sockets
-    func reachableSockets(from socket: SocketId, _ constraints: LayoutPathFinder.Constraints) -> [SocketId]
+    func reachableSockets(from socket: SocketId) -> [SocketId]
 }
 
 // Link between two nodes

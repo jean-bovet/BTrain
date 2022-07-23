@@ -12,6 +12,16 @@
 
 import Foundation
 
+/// Protocol describing an item that can be resolved to a single path element
+protocol Resolvable: CustomStringConvertible {
+    
+    /// Resolves this object using the specified constraints
+    /// - Parameter constraints: the constraints
+    /// - Returns: a resolved path element or nil if it cannot be resolved
+    func resolve(_ constraints: LayoutPathFinder.Constraints) -> [GraphPathElement]?
+
+}
+
 /// This class implements the path resolving algorithm for a given graph.
 ///
 /// It works by taking in an unresolved path, that is, a path with missing or unspecified
@@ -76,7 +86,7 @@ struct LayoutPathFinderResolver {
     ///   - unresolvedPath: the unresolved path
     ///   - errors: any resolving errors
     /// - Returns: a resolved path
-    func resolve(graph: Graph, _ unresolvedPath: UnresolvedGraphPath,
+    func resolve(graph: Graph, _ unresolvedPath: [Resolvable],
                  errors: inout [ResolverError]) -> GraphPath? {
         let resolvedPaths = ResolvedPaths()
         guard var previousElements = unresolvedPath.first?.resolve(constraints) else {

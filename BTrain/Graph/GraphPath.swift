@@ -42,20 +42,6 @@ struct GraphPath: Equatable {
 
 }
 
-typealias UnresolvedGraphPath = [UnresolvedGraphPathElement]
-
-protocol UnresolvedGraphPathElement {
-    
-    var description: String { get }
-    
-    /// Resolves this element by using the specified constraints and context.
-    /// - Parameters:
-    ///   - constraints: the constraints
-    /// - Returns: zero, one or more resolved path elements
-    func resolve(_ constraints: LayoutPathFinder.Constraints) -> [GraphPathElement]?
-    
-}
-
 // Each element is a `node` with specific exit and entry sockets.
 // A starting element only has an exit socket while the last
 // element in the path only has an entry socket.

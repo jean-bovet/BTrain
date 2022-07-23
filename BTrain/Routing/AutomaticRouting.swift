@@ -60,7 +60,8 @@ final class AutomaticRouting {
         let settings = LayoutPathFinder.Settings(verbose: SettingsKeys.bool(forKey: SettingsKeys.logRoutingResolutionSteps),
                                                 random: layout.automaticRouteRandom,
                                                 overflow: layout.pathFinderOverflowLimit)
-        let pf = LayoutPathFinder(layout: layout, train: train, reservedBlockBehavior: destination == nil ? .avoidFirstReservedBlock : .avoidReserved, settings: settings)
+        let constraints = LayoutPathFinder.Constraints(layout: layout, train: train, reservedBlockBehavior: destination == nil ? .avoidFirstReservedBlock : .avoidReserved, relaxed: false, resolving: false)
+        let pf = LayoutPathFinder(constraints: constraints, settings: settings)
         
         let to: (Block, Direction?)?
         if let destination = destination {
@@ -74,9 +75,9 @@ final class AutomaticRouting {
         
         let path: GraphPath?
         if let to = to, let toBlockDirection = to.1, SettingsKeys.bool(forKey: SettingsKeys.shortestRouteEnabled) {
-            path = try layout.shortestPath(for: train, from: (currentBlock, trainInstance.direction), to: (to.0, toBlockDirection), pathFinder: pf, constraints: pf.constraints)
+            path = try layout.shortestPath(for: train, from: (currentBlock, trainInstance.direction), to: (to.0, toBlockDirection), pathFinder: pf)
         } else {
-            path = layout.path(for: train, from: (currentBlock, trainInstance.direction), to: to, pathFinder: pf, constraints: pf.constraints)
+            path = layout.path(for: train, from: (currentBlock, trainInstance.direction), to: to, pathFinder: pf)
         }
         
         if let path = path {

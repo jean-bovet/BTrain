@@ -27,23 +27,15 @@ struct RouteStepStation: RouteStep, Equatable, Codable {
     }
         
     func resolve(_ constraints: LayoutPathFinder.Constraints) -> [GraphPathElement]? {
-        guard let layout = constraints.layout else {
-            return nil
-        }
-        
-        guard let train = constraints.train else {
-            return nil
-        }
-        
-        guard let station = layout.station(for: stationId) else {
+        guard let station = constraints.layout.station(for: stationId) else {
             return nil
         }
                 
-        guard let element = bestElement(station: station, train: train, layout: layout, context: constraints) else {
+        guard let element = bestElement(station: station, constraints: constraints) else {
             return nil
         }
         
-        guard let block = layout.block(for: element.blockId) else {
+        guard let block = constraints.layout.block(for: element.blockId) else {
             return nil
         }
         
@@ -60,21 +52,21 @@ struct RouteStepStation: RouteStep, Equatable, Codable {
         return GraphPathElement(node: block, entrySocket:  entrySocket, exitSocket: exitSocket)
     }
     
-    func bestElement(station: Station, train: Train, layout: Layout, context: LayoutPathFinder.Constraints) -> Station.StationElement? {
-        if let element = elementWithTrain(station: station, train: train, layout: layout) {
+    func bestElement(station: Station, constraints: LayoutPathFinder.Constraints) -> Station.StationElement? {
+        if let element = elementWithTrain(station: station, train: constraints.train, layout: constraints.layout) {
             return element
         }
         
-        if let element = firstAvailableElement(station: station, train: train, layout: layout, context: context) {
+        if let element = firstAvailableElement(station: station, constraints: constraints) {
             return element
         }
         
         return nil
     }
     
-    func firstAvailableElement(station: Station, train: Train, layout: Layout, context: LayoutPathFinder.Constraints) -> Station.StationElement? {
+    func firstAvailableElement(station: Station, constraints: LayoutPathFinder.Constraints) -> Station.StationElement? {
         for element in station.elements {
-            guard let block = layout.block(for: element.blockId) else {
+            guard let block = constraints.layout.block(for: element.blockId) else {
                 continue
             }
             
@@ -82,9 +74,9 @@ struct RouteStepStation: RouteStep, Equatable, Codable {
                 continue
             }
             
-            if context.reservedBlockBehavior == .ignoreReserved {
+            if constraints.reservedBlockBehavior == .ignoreReserved {
                 return element
-            } else if block.reservation == nil || block.reservation?.trainId == train.id {
+            } else if block.reservation == nil || block.reservation?.trainId == constraints.train.id {
                 return element
             }
         }

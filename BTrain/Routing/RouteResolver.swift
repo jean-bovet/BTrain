@@ -41,9 +41,10 @@ final class RouteResolver {
                                                  overflow: layout.pathFinderOverflowLimit)
         // Note: avoid all reserved block when resolving to ensure maximum constraints.
         // If that fails, the algorithm will retry without constraints.
-        let pf = LayoutPathFinder(constraints: .init(layout: layout, train: train, reservedBlockBehavior: .avoidReserved, relaxed: false, resolving: true), settings: settings)
+        let constraints = LayoutPathFinder.Constraints(layout: layout, train: train, reservedBlockBehavior: .avoidReserved, relaxed: false, resolving: true)
+        let pf = LayoutPathFinder(constraints: constraints, settings: settings)
         // Create the unresolved path out of the route steps
-        let unresolvedPath: UnresolvedGraphPath = steps.map { $0 }
+        let unresolvedPath = steps.map { $0 }
 
         // Try to resolve the route using the standard constraints (which are a super set of the constraints
         // when finding a new route, which provides consistent behavior when resolving a route).

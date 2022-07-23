@@ -32,31 +32,11 @@ final class LayoutPathFinder {
     
     let settings: Settings
             
-    enum ReservedBlockBehavior {
-        // Avoid all reserved blocks (that is, avoid any block
-        // that is reserved for another train).
-        case avoidReserved
-        
-        // Ignore all reserved blocks (that is,
-        // take them into account even if they are
-        // reserved for another train).
-        case ignoreReserved
-        
-        // Avoid the first reserved block encountered,
-        // then ignore all the others reserved blocks.
-        case avoidFirstReservedBlock
-    }
-    
     init(constraints: Constraints, settings: Settings) {
         self.constraints = constraints
         self.settings = settings
     }
-    
-    convenience init(layout: Layout, train: Train, reservedBlockBehavior: ReservedBlockBehavior, settings: Settings) {
-        self.init(constraints: Constraints(layout: layout, train: train, reservedBlockBehavior: reservedBlockBehavior, relaxed: false, resolving: false),
-                  settings: settings)
-    }
-    
+        
     /// Returns the path between two nodes in a graph, given the specified constraints and context.
     ///
     /// - Parameters:
@@ -65,9 +45,9 @@ final class LayoutPathFinder {
     ///   - to: the destination node or nil to find the next destination block (as defined by ``LayoutPathFinder.LayoutConstraints/reachedDestination(node:to:)``
     /// - Returns: a path or nil if no path is found
     func path(graph: Graph, from: GraphNode, to: GraphNode?) -> GraphPath? {
-        for socketId in shuffled(from.sockets(constraints)) {
+        for socketId in shuffled(from.sockets()) {
             if let to = to {
-                for toSocketId in shuffled(to.sockets(constraints)) {
+                for toSocketId in shuffled(to.sockets()) {
                     if let steps = path(graph: graph, from: .starting(from, socketId), to: .ending(to, toSocketId), currentPath: GraphPath([.starting(from, socketId)])) {
                         return steps
                     }
@@ -114,7 +94,7 @@ final class LayoutPathFinder {
     ///   - path: the unresolved path
     ///   - errors: any error during resolving
     /// - Returns: a resolved path or nil if no resolved path was found
-    func resolve(graph: Graph, _ path: UnresolvedGraphPath, errors: inout [LayoutPathFinderResolver.ResolverError]) -> GraphPath? {
+    func resolve(graph: Graph, _ path: [Resolvable], errors: inout [LayoutPathFinderResolver.ResolverError]) -> GraphPath? {
         let resolver = LayoutPathFinderResolver(lpf: self, constraints: constraints)
         return resolver.resolve(graph: graph, path, errors: &errors)
     }
@@ -146,14 +126,14 @@ final class LayoutPathFinder {
             return nil
         }
         
-        guard let edge = graph.edge(from: from.node, socketId: exitSocket, constraints: constraints) else {
+        guard let edge = graph.edge(from: from.node, socketId: exitSocket) else {
             if settings.verbose {
                 debug("No edge found from \(from.node) and socket \(exitSocket)")
             }
             return nil
         }
         
-        guard let node = graph.node(for: edge.toNode, constraints: constraints) else {
+        guard let node = graph.node(for: edge.toNode) else {
             if settings.verbose {
                 debug("No destination node found in graph for \(edge.toNode)")
             }
@@ -184,7 +164,7 @@ final class LayoutPathFinder {
 
         // We haven't reached the destination node, keep going forward
         // by exploring all the possible exit sockets from `node`
-        let exitSockets = node.reachableSockets(from: entrySocketId, constraints)
+        let exitSockets = node.reachableSockets(from: entrySocketId)
         for exitSocket in shuffled(exitSockets) {
             let betweenElement = GraphPathElement.between(node, entrySocketId, exitSocket)
             

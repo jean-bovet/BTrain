@@ -16,7 +16,7 @@ import XCTest
 class GraphTests: XCTestCase {
 
     func constraints(layout: Layout) -> LayoutPathFinder.Constraints {
-        .init(layout: layout, train: nil, reservedBlockBehavior: nil, relaxed: true, resolving: false)
+        .init(layout: layout, train: layout.trains[0], reservedBlockBehavior: .ignoreReserved, relaxed: true, resolving: false)
     }
 
     private func pathFinder(layout: Layout) -> LayoutPathFinder {
@@ -59,7 +59,7 @@ class GraphTests: XCTestCase {
         let b1 = layout.block("b1")
         let b3 = layout.block("b3")
 
-        let partialPath: UnresolvedGraphPath = [ GraphPathElement.starting(b1, 1), GraphPathElement.ending(b3, 0) ]
+        let partialPath = [ GraphPathElement.starting(b1, 1), GraphPathElement.ending(b3, 0) ]
 
         let gr = pathFinder(layout: layout)
         var errors = [LayoutPathFinderResolver.ResolverError]()
@@ -74,7 +74,7 @@ class GraphTests: XCTestCase {
 
         let t0 = layout.turnout(for: Identifier<Turnout>(uuid: "t0"))!
 
-        let partialPath: UnresolvedGraphPath = [ GraphPathElement.starting(b1, 1), GraphPathElement.between(t0, 0, 1), GraphPathElement.ending(b3, 0) ]
+        let partialPath = [ GraphPathElement.starting(b1, 1), GraphPathElement.between(t0, 0, 1), GraphPathElement.ending(b3, 0) ]
 
         let gr = pathFinder(layout: layout)
         var errors = [LayoutPathFinderResolver.ResolverError]()
@@ -90,7 +90,7 @@ class GraphTests: XCTestCase {
         let t0 = layout.turnout(for: Identifier<Turnout>(uuid: "t0"))!
         let t1 = layout.turnout(for: Identifier<Turnout>(uuid: "t1"))!
 
-        let partialPath: UnresolvedGraphPath = [ GraphPathElement.starting(b1, 1), GraphPathElement.between(t0, 0, 1), GraphPathElement.between(t1, 0, 2), GraphPathElement.ending(b3, 0) ]
+        let partialPath = [ GraphPathElement.starting(b1, 1), GraphPathElement.between(t0, 0, 1), GraphPathElement.between(t1, 0, 2), GraphPathElement.ending(b3, 0) ]
 
         let gr = pathFinder(layout: layout)
         var errors = [LayoutPathFinderResolver.ResolverError]()
@@ -108,7 +108,7 @@ class GraphTests: XCTestCase {
         XCTAssertEqual(p.toStrings, ["b1:1", "0:t0:1", "0:b2:1", "0:t1:2", "0:b3"])
         
         let gr = pathFinder(layout: layout)
-        let up: UnresolvedGraphPath = p.elements.map { $0 }
+        let up = p.elements.map { $0 }
         var errors = [LayoutPathFinderResolver.ResolverError]()
         let p2 = gr.resolve(graph: layout, up, errors: &errors)!
         XCTAssertEqual(p, p2)

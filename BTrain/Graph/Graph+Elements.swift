@@ -28,15 +28,15 @@ extension Block: GraphNode {
         BlockGraphElementIdentifier(id)
     }
      
-    func weight(_ constraints: LayoutPathFinder.Constraints) -> Double {
+    func weight() -> Double {
         length ?? 0
     }
     
-    func sockets(_ constraints: LayoutPathFinder.Constraints) -> [SocketId] {
+    func sockets() -> [SocketId] {
         allSockets.compactMap { $0.socketId }
     }
     
-    func reachableSockets(from socket: SocketId, _ constraints: LayoutPathFinder.Constraints) -> [SocketId] {
+    func reachableSockets(from socket: SocketId) -> [SocketId] {
         if socket == Block.previousSocket {
             return [Block.nextSocket]
         } else {
@@ -73,15 +73,15 @@ extension Turnout: GraphNode {
         TurnoutGraphElementIdentifier(id)
     }
         
-    func weight(_ constraints: LayoutPathFinder.Constraints) -> Double {
+    func weight() -> Double {
         length ?? 0
     }
     
-    func sockets(_ constraints: LayoutPathFinder.Constraints) -> [SocketId] {
+    func sockets() -> [SocketId] {
         allSockets.compactMap { $0.socketId }
     }
     
-    func reachableSockets(from socket: SocketId, _ constraints: LayoutPathFinder.Constraints) -> [SocketId] {
+    func reachableSockets(from socket: SocketId) -> [SocketId] {
         sockets(from: socket)
     }
 
@@ -165,7 +165,7 @@ extension Layout {
 
 extension Layout: Graph {
     
-    func edge(from: GraphNode, socketId: SocketId, constraints: LayoutPathFinder.Constraints) -> GraphEdge? {
+    func edge(from: GraphNode, socketId: SocketId) -> GraphEdge? {
         let socket: Socket
         if let block = block(from) {
             socket = Socket.block(block.id, socketId: socketId)
@@ -178,7 +178,7 @@ extension Layout: Graph {
         return try? transition(from: socket)
     }
     
-    func node(for elementId: GraphElementIdentifier, constraints: LayoutPathFinder.Constraints) -> GraphNode? {
+    func node(for elementId: GraphElementIdentifier) -> GraphNode? {
         if let block = block(elementId) {
             return block
         } else if let turnout = turnout(elementId) {
@@ -196,7 +196,7 @@ extension Layout {
         (turnouts.count + blocks.count) * 4
     }
         
-    func path(for train: Train, from: (Block, Direction), to: (Block, Direction?)?, pathFinder: LayoutPathFinder, constraints: LayoutPathFinder.Constraints) -> GraphPath? {
+    func path(for train: Train, from: (Block, Direction), to: (Block, Direction?)?, pathFinder: LayoutPathFinder) -> GraphPath? {
         // Note: when direction is `next`, it means we are leaving the starting element from its `nextSocket`
         let fromElement = GraphPathElement.starting(from.0, from.1 == .next ? Block.nextSocket : Block.previousSocket)
         let toElement: GraphPathElement?
@@ -215,7 +215,7 @@ extension Layout {
         return pathFinder.path(graph: self, from: fromElement, to: toElement)
     }
  
-    func shortestPath(for train: Train, from: (Block, Direction), to: (Block, Direction), pathFinder: LayoutPathFinder, constraints: LayoutPathFinder.Constraints) throws -> GraphPath? {
+    func shortestPath(for train: Train, from: (Block, Direction), to: (Block, Direction), pathFinder: LayoutPathFinder) throws -> GraphPath? {
         let fromElement = from.1 == .next ? from.0.elementDirectionNext:from.0.elementDirectionPrevious
         let toElement = to.1 == .next ? to.0.elementDirectionNext:to.0.elementDirectionPrevious
 
