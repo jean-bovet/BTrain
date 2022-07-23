@@ -78,7 +78,7 @@ struct PathFinder {
     ///   - to: the destination element
     /// - Returns: the shortest path or nil if no path is found
     func shortestPath(graph: Graph, from: GraphPathElement, to: GraphPathElement) throws -> GraphPath? {
-        try GraphShortestPathFinder.shortestPath(graph: graph, from: from, to: to, constraints: constraints, verbose: settings.verbose)
+        try ShortestPathFinder.shortestPath(graph: graph, from: from, to: to, constraints: constraints, verbose: settings.verbose)
     }
     
     /// Resolves an unresolved path by making sure each element is resolved. For example, a station is unresolved

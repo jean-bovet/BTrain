@@ -21,7 +21,7 @@ import OrderedCollections
 /// that is used to keep track of the distances.
 ///
 /// See [Dijkstra on Wikipedia](https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm)
-final class GraphShortestPathFinder {
+final class ShortestPathFinder {
     
     /// The error this class can throw
     enum PathFinderError: Error {
@@ -126,7 +126,7 @@ final class GraphShortestPathFinder {
     ///   - verbose: true to emit logs, false otherwise
     /// - Returns: the shortest path or nil if no path found
     static func shortestPath(graph: Graph, from: GraphPathElement, to: GraphPathElement, constraints: PathFinder.Constraints, verbose: Bool) throws -> GraphPath? {
-        try GraphShortestPathFinder(graph: graph, verbose: verbose).shortestPath(from: from, to: to, constraints: constraints)
+        try ShortestPathFinder(graph: graph, verbose: verbose).shortestPath(from: from, to: to, constraints: constraints)
     }
     
     // For example:
@@ -277,7 +277,7 @@ final class GraphShortestPathFinder {
             }
 
             // Apply any constraints to this element, in order to skip it if necessary
-            if !constraints.shouldInclude(node: elementConfiguration.node, currentPath: path, to: to) {
+            guard constraints.shouldInclude(node: elementConfiguration.node, currentPath: path, to: to) else {
                 if verbose {
                     BTLogger.debug("Element \(elementConfiguration) should not be included, will not include it")
                 }
@@ -305,7 +305,7 @@ final class GraphShortestPathFinder {
     
 }
 
-extension GraphShortestPathFinder.PathFinderError: LocalizedError {
+extension ShortestPathFinder.PathFinderError: LocalizedError {
     
     var errorDescription: String? {
         switch self {
@@ -337,7 +337,7 @@ extension GraphPathElement {
         } else if let exitSocket = exitSocket {
             return .ending(node, exitSocket)
         } else {
-            throw GraphShortestPathFinder.PathFinderError.invalidElement(self)
+            throw ShortestPathFinder.PathFinderError.invalidElement(self)
         }
     }
 }

@@ -35,10 +35,12 @@ extension PathFinder {
         let layout: Layout
         let train: Train
         let reservedBlockBehavior: ReservedBlockBehavior
-
+        
+        /// True if the constraints should be relaxed (that is, not applied), false otherwise.
         let relaxed: Bool
         
-        /// True if the algorithm is resolving a path, false otherwise.
+        /// True if the algorithm is resolving a path, false otherwise. This flag acts on a specific
+        /// condition when including a node (see below)
         let resolving: Bool
 
         /// Returns true if the `node` should be included in the path.
