@@ -21,7 +21,7 @@ class RouteResolverTests: XCTestCase {
         let train = layout.trains[0]
         
         let resolver = RouteResolver(layout: layout, train: train)
-        var errors = [LayoutPathFinderResolver.ResolverError]()
+        var errors = [PathFinderResolver.ResolverError]()
         let resolvedSteps = try resolver.resolve(steps: ArraySlice(route.steps), errors: &errors)!
         
         XCTAssertEqual(route.steps.toStrings(layout), ["A:next", "B:next", "C:next", "D:next", "E:next"])
@@ -37,7 +37,7 @@ class RouteResolverTests: XCTestCase {
         
         train.turnoutsToAvoid = []
 
-        var errors = [LayoutPathFinderResolver.ResolverError]()
+        var errors = [PathFinderResolver.ResolverError]()
         var resolvedSteps = try resolver.resolve(steps: ArraySlice(route.steps), errors: &errors)!
         
         XCTAssertEqual(route.steps.toStrings(layout), ["OL3:next", "NE3:next"])
@@ -59,7 +59,7 @@ class RouteResolverTests: XCTestCase {
         let route = layout.newRoute(id: "route-1", [("b1", .next), ("b2", .next), ("b3", .next), ("b4", .next), ("b1", .next)])
 
         let resolver = RouteResolver(layout: layout, train: train)
-        var errors = [LayoutPathFinderResolver.ResolverError]()
+        var errors = [PathFinderResolver.ResolverError]()
         let resolvedSteps = try resolver.resolve(steps: ArraySlice(route.steps), errors: &errors)!
 
         XCTAssertEqual(resolvedSteps.toStrings(layout), ["b1:next", "t0:(0>1)", "b2:next", "b3:next", "t1:(0>1)", "b4:next", "b1:next"])

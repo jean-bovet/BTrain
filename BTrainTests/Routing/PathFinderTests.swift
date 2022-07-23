@@ -150,17 +150,17 @@ extension Layout {
         self.block(for: Identifier<Block>(uuid: block))?.reservation = nil
     }
     
-    func path(for train: Train, from: (Block, Direction), to: (Block, Direction)?, reservedBlockBehavior: LayoutPathFinder.Constraints.ReservedBlockBehavior = .avoidReserved, random: Bool = false) -> GraphPath? {
-        let settings = LayoutPathFinder.Settings(verbose: false, random: random, overflow: pathFinderOverflowLimit)
-        let constraints = LayoutPathFinder.Constraints(layout: self, train: train, reservedBlockBehavior: reservedBlockBehavior, relaxed: false, resolving: false)
-        let gl = LayoutPathFinder(constraints: constraints, settings: settings)
+    func path(for train: Train, from: (Block, Direction), to: (Block, Direction)?, reservedBlockBehavior: PathFinder.Constraints.ReservedBlockBehavior = .avoidReserved, random: Bool = false) -> GraphPath? {
+        let settings = PathFinder.Settings(verbose: false, random: random, overflow: pathFinderOverflowLimit)
+        let constraints = PathFinder.Constraints(layout: self, train: train, reservedBlockBehavior: reservedBlockBehavior, relaxed: false, resolving: false)
+        let gl = PathFinder(constraints: constraints, settings: settings)
         return path(for: train, from: from, to: to, pathFinder: gl)
     }
 
-    func shortestPath(for train: Train, from: (Block, Direction), to: (Block, Direction), reservedBlockBehavior: LayoutPathFinder.Constraints.ReservedBlockBehavior = .avoidReserved) throws -> GraphPath? {
-        let settings = LayoutPathFinder.Settings(verbose: false, random: false, overflow: pathFinderOverflowLimit)
-        let constraints = LayoutPathFinder.Constraints(layout: self, train: train, reservedBlockBehavior: reservedBlockBehavior, relaxed: false, resolving: false)
-        let gl = LayoutPathFinder(constraints: constraints, settings: settings)
+    func shortestPath(for train: Train, from: (Block, Direction), to: (Block, Direction), reservedBlockBehavior: PathFinder.Constraints.ReservedBlockBehavior = .avoidReserved) throws -> GraphPath? {
+        let settings = PathFinder.Settings(verbose: false, random: false, overflow: pathFinderOverflowLimit)
+        let constraints = PathFinder.Constraints(layout: self, train: train, reservedBlockBehavior: reservedBlockBehavior, relaxed: false, resolving: false)
+        let gl = PathFinder(constraints: constraints, settings: settings)
         return try shortestPath(for: train, from: from, to: to, pathFinder: gl)
     }
 

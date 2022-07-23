@@ -12,7 +12,7 @@
 
 import Foundation
 
-extension LayoutPathFinder {
+extension PathFinder {
     
     /// The constraints to apply to the path finder algorithm
     struct Constraints {

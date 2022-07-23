@@ -27,13 +27,13 @@ class PointToLoopLayoutTests: XCTestCase {
         layout.automaticRouteRandom = false
                 
         // Verify the a path can be found starting in block "A"
-        let constraints = LayoutPathFinder.Constraints(layout: layout, train: train, reservedBlockBehavior: .avoidReserved, relaxed: false, resolving: false)
-        let pf = LayoutPathFinder(constraints: constraints, settings: .init(verbose: true, random: false, overflow: 30))
+        let constraints = PathFinder.Constraints(layout: layout, train: train, reservedBlockBehavior: .avoidReserved, relaxed: false, resolving: false)
+        let pf = PathFinder(constraints: constraints, settings: .init(verbose: true, random: false, overflow: 30))
         let path = pf.path(graph: layout, from: .starting(blockA, Block.nextSocket), to: nil)!
         XCTAssertEqual(path.toStrings, ["A:1", "0:T1:1", "0:B:1", "0:C:1", "0:D:1", "2:T1:0", "1:A"])
         
         let unresolvedPath = path.elements.map { $0 }
-        var errors = [LayoutPathFinderResolver.ResolverError]()
+        var errors = [PathFinderResolver.ResolverError]()
         let resolved = pf.resolve(graph: layout, unresolvedPath, errors: &errors)!
         XCTAssertEqual(resolved.toStrings, ["A:1", "0:T1:1", "0:B:1", "0:C:1", "0:D:1", "2:T1:0", "1:A"])
     }

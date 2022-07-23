@@ -57,11 +57,11 @@ final class AutomaticRouting {
         // just avoid the reserved block in front of the current one but ignore the others
         // (the automatic route will re-evaluate itself if it encounters a reserved block later
         // during execution, to avoid deadlocking).
-        let settings = LayoutPathFinder.Settings(verbose: SettingsKeys.bool(forKey: SettingsKeys.logRoutingResolutionSteps),
+        let settings = PathFinder.Settings(verbose: SettingsKeys.bool(forKey: SettingsKeys.logRoutingResolutionSteps),
                                                 random: layout.automaticRouteRandom,
                                                 overflow: layout.pathFinderOverflowLimit)
-        let constraints = LayoutPathFinder.Constraints(layout: layout, train: train, reservedBlockBehavior: destination == nil ? .avoidFirstReservedBlock : .avoidReserved, relaxed: false, resolving: false)
-        let pf = LayoutPathFinder(constraints: constraints, settings: settings)
+        let constraints = PathFinder.Constraints(layout: layout, train: train, reservedBlockBehavior: destination == nil ? .avoidFirstReservedBlock : .avoidReserved, relaxed: false, resolving: false)
+        let pf = PathFinder(constraints: constraints, settings: settings)
         
         let to: (Block, Direction?)?
         if let destination = destination {

@@ -14,7 +14,7 @@ import Foundation
 
 // This class finds path from one block to another in the layout, taking
 // into consideration various constraints, such as disabled block, reserved blocks, etc.
-final class LayoutPathFinder {    
+struct PathFinder {
         
     let constraints: Constraints
     
@@ -31,12 +31,7 @@ final class LayoutPathFinder {
     }
     
     let settings: Settings
-            
-    init(constraints: Constraints, settings: Settings) {
-        self.constraints = constraints
-        self.settings = settings
-    }
-        
+                    
     /// Returns the path between two nodes in a graph, given the specified constraints and context.
     ///
     /// - Parameters:
@@ -94,8 +89,8 @@ final class LayoutPathFinder {
     ///   - path: the unresolved path
     ///   - errors: any error during resolving
     /// - Returns: a resolved path or nil if no resolved path was found
-    func resolve(graph: Graph, _ path: [Resolvable], errors: inout [LayoutPathFinderResolver.ResolverError]) -> GraphPath? {
-        let resolver = LayoutPathFinderResolver(lpf: self, constraints: constraints)
+    func resolve(graph: Graph, _ path: [Resolvable], errors: inout [PathFinderResolver.ResolverError]) -> GraphPath? {
+        let resolver = PathFinderResolver(lpf: self, constraints: constraints)
         return resolver.resolve(graph: graph, path, errors: &errors)
     }
     

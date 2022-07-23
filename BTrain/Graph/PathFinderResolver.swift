@@ -18,7 +18,7 @@ protocol Resolvable: CustomStringConvertible {
     /// Resolves this object using the specified constraints
     /// - Parameter constraints: the constraints
     /// - Returns: a resolved path element or nil if it cannot be resolved
-    func resolve(_ constraints: LayoutPathFinder.Constraints) -> [GraphPathElement]?
+    func resolve(_ constraints: PathFinder.Constraints) -> [GraphPathElement]?
 
 }
 
@@ -29,13 +29,13 @@ protocol Resolvable: CustomStringConvertible {
 ///
 /// For example, a user can build a route with a starting and ending station and only one block,
 /// leaving all the other blocks unspecified. The role of this algorithm is to find these unspecified blocks
-struct LayoutPathFinderResolver {
+struct PathFinderResolver {
     
     /// A reference to the path finding algoritm
-    let lpf: LayoutPathFinder
+    let lpf: PathFinder
     
     /// The constraints
-    let constraints: LayoutPathFinder.Constraints
+    let constraints: PathFinder.Constraints
     
     /// Error from the path resolver indicating between which path elements an error occurred
     struct ResolverError {

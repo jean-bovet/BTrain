@@ -53,7 +53,7 @@ enum RouteItem: Identifiable, Equatable, Resolvable {
         }
     }
     
-    func resolve(_ constraints: LayoutPathFinder.Constraints) -> [GraphPathElement]? {
+    func resolve(_ constraints: PathFinder.Constraints) -> [GraphPathElement]? {
         switch self {
         case .block(let block): return block.resolve(constraints)
         case .turnout(let turnout): return turnout.resolve(constraints)
