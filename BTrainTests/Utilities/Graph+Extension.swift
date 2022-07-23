@@ -15,7 +15,7 @@ import Foundation
 @testable import BTrain
 
 extension GraphPathElement: UnresolvedGraphPathElement {
-    public func resolve(_ constraints: LayoutPathFinder.LayoutConstraints) -> [GraphPathElement]? {
+    public func resolve(_ constraints: LayoutPathFinder.Constraints) -> [GraphPathElement]? {
         [self]
     }
 }

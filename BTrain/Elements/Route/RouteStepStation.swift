@@ -26,7 +26,7 @@ struct RouteStepStation: RouteStep, Equatable, Codable {
         "\(stationId)"
     }
         
-    func resolve(_ constraints: LayoutPathFinder.LayoutConstraints) -> [GraphPathElement]? {
+    func resolve(_ constraints: LayoutPathFinder.Constraints) -> [GraphPathElement]? {
         guard let layout = constraints.layout else {
             return nil
         }
@@ -60,7 +60,7 @@ struct RouteStepStation: RouteStep, Equatable, Codable {
         return GraphPathElement(node: block, entrySocket:  entrySocket, exitSocket: exitSocket)
     }
     
-    func bestElement(station: Station, train: Train, layout: Layout, context: LayoutPathFinder.LayoutConstraints) -> Station.StationElement? {
+    func bestElement(station: Station, train: Train, layout: Layout, context: LayoutPathFinder.Constraints) -> Station.StationElement? {
         if let element = elementWithTrain(station: station, train: train, layout: layout) {
             return element
         }
@@ -72,7 +72,7 @@ struct RouteStepStation: RouteStep, Equatable, Codable {
         return nil
     }
     
-    func firstAvailableElement(station: Station, train: Train, layout: Layout, context: LayoutPathFinder.LayoutConstraints) -> Station.StationElement? {
+    func firstAvailableElement(station: Station, train: Train, layout: Layout, context: LayoutPathFinder.Constraints) -> Station.StationElement? {
         for element in station.elements {
             guard let block = layout.block(for: element.blockId) else {
                 continue

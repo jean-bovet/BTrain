@@ -57,7 +57,7 @@ final class RouteResolver {
         // that satisfies the constraints; for example, a fixed route has a disabled block that makes it impossible to resolve.
         // Let's try again to resolve the route using the basic constraints at the graph-level - this means, all layout-specific
         // constraints (such as block reserved, disabled, etc) are ignored.
-        let relaxedConstraints = LayoutPathFinder.LayoutConstraints(layout: layout, train: train, reservedBlockBehavior: .ignoreReserved, relaxed: true, resolving: true)
+        let relaxedConstraints = LayoutPathFinder.Constraints(layout: layout, train: train, reservedBlockBehavior: .ignoreReserved, relaxed: true, resolving: true)
         let pf2 = LayoutPathFinder(constraints: relaxedConstraints, settings: settings)
         if let resolvedPath = pf2.resolve(graph: layout, unresolvedPath, errors: &errors) {
             return resolvedPath.elements.toResolvedRouteItems

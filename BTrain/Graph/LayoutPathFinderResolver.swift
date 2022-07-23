@@ -24,6 +24,9 @@ struct LayoutPathFinderResolver {
     /// A reference to the path finding algoritm
     let lpf: LayoutPathFinder
     
+    /// The constraints
+    let constraints: LayoutPathFinder.Constraints
+    
     /// Error from the path resolver indicating between which path elements an error occurred
     struct ResolverError {
         let from: Int
@@ -65,17 +68,15 @@ struct LayoutPathFinderResolver {
     /// is returned. This leads to the following possibilities (only 2 are shown):
     /// - (A1,next) (D,next) (B1,next): this path is valid
     /// - (A1,previous) (D,next) (B1,next): this path is invalid because the train cannot go from (A1,previous) to (D,next)
-    /// In summary, the algorithm is to resolve the unresolved path by producing all the possible resolved paths and then
-    /// select from the resolved paths the ones that are valid.
+    /// In summary, the algorithm resolves the unresolved path by producing all the possible resolved paths and then
+    /// selecting from the resolved paths the ones that are valid.
     ///
     /// - Parameters:
     ///   - graph: the graph in which the path is located
     ///   - unresolvedPath: the unresolved path
-    ///   - constraints: the constraints to apply
     ///   - errors: any resolving errors
     /// - Returns: a resolved path
     func resolve(graph: Graph, _ unresolvedPath: UnresolvedGraphPath,
-                 constraints: LayoutPathFinder.LayoutConstraints,
                  errors: inout [ResolverError]) -> GraphPath? {
         let resolvedPaths = ResolvedPaths()
         guard var previousElements = unresolvedPath.first?.resolve(constraints) else {
@@ -90,8 +91,7 @@ struct LayoutPathFinderResolver {
                 return nil
             }
             
-            resolve(graph: graph, resolvedPaths: resolvedPaths, to: resolvedElements,
-                    constraints: constraints)
+            resolve(graph: graph, resolvedPaths: resolvedPaths, to: resolvedElements)
             
             if resolvedPaths.paths.isEmpty {
                 // There should always be at least one resolved path between two elements. If not, it means
@@ -113,12 +113,10 @@ struct LayoutPathFinderResolver {
         }
     }
     
-    private func resolve(graph: Graph, resolvedPaths: ResolvedPaths, to resolvedElements: [GraphPathElement],
-                         constraints: LayoutPathFinder.LayoutConstraints) {
+    private func resolve(graph: Graph, resolvedPaths: ResolvedPaths, to resolvedElements: [GraphPathElement]) {
         for (index, resolvedPath) in resolvedPaths.paths.enumerated() {
             for resolvedElement in resolvedElements {
-                if resolve(graph: graph, resolvedPath: resolvedPath, to: resolvedElement,
-                           constraints: constraints) == false {
+                if resolve(graph: graph, resolvedPath: resolvedPath, to: resolvedElement) == false {
                     // Unable to resolve this path, so remove this path from the list of resolved paths
                     resolvedPaths.paths.remove(at: index)
                 }
@@ -126,8 +124,7 @@ struct LayoutPathFinderResolver {
         }
     }
     
-    private func resolve(graph: Graph, resolvedPath: ResolvedPath, to: GraphPathElement,
-                         constraints: LayoutPathFinder.LayoutConstraints) -> Bool {
+    private func resolve(graph: Graph, resolvedPath: ResolvedPath, to: GraphPathElement) -> Bool {
         guard let previousElement = resolvedPath.path.last else {
             return true
         }

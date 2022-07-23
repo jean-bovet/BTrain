@@ -125,14 +125,14 @@ final class GraphShortestPathFinder {
     ///   - constraints: the constraints to apply to the graph
     ///   - verbose: true to emit logs, false otherwise
     /// - Returns: the shortest path or nil if no path found
-    static func shortestPath(graph: Graph, from: GraphPathElement, to: GraphPathElement, constraints: LayoutPathFinder.LayoutConstraints, verbose: Bool) throws -> GraphPath? {
+    static func shortestPath(graph: Graph, from: GraphPathElement, to: GraphPathElement, constraints: LayoutPathFinder.Constraints, verbose: Bool) throws -> GraphPath? {
         try GraphShortestPathFinder(graph: graph, verbose: verbose).shortestPath(from: from, to: to, constraints: constraints)
     }
     
     // For example:
     // from = 0:s1:1 (which means, block "s1" with entry socket 0 and exit socket 1, indicating a natural direction of "next" in the block)
     // to = 0:s2:1
-    private func shortestPath(from: GraphPathElement, to: GraphPathElement, constraints: LayoutPathFinder.LayoutConstraints) throws -> GraphPath? {
+    private func shortestPath(from: GraphPathElement, to: GraphPathElement, constraints: LayoutPathFinder.Constraints) throws -> GraphPath? {
         // Set the distance of the starting element `from` to 0 as well as an empty path.
         setDistance(0, to: from, path: GraphPath([]))
         
@@ -166,7 +166,7 @@ final class GraphShortestPathFinder {
     ///   - from: the starting element
     ///   - to: the destination element
     ///   - constraints: the constraints of the graph
-    private func visitGraph(from: GraphPathElement, to: GraphPathElement, currentPath: GraphPath, constraints: LayoutPathFinder.LayoutConstraints) throws {
+    private func visitGraph(from: GraphPathElement, to: GraphPathElement, currentPath: GraphPath, constraints: LayoutPathFinder.Constraints) throws {
         // Do not visit an element that has already been visited
         guard !visitedElements.contains(from) else {
             return
@@ -225,7 +225,7 @@ final class GraphShortestPathFinder {
     
     /// Returns the element following the specified `element`. There is always zero or one element following
     /// an element (zero in case of a siding block).
-    private func nextElement(of element: GraphPathElement, constraints: LayoutPathFinder.LayoutConstraints) throws -> NextElement? {
+    private func nextElement(of element: GraphPathElement, constraints: LayoutPathFinder.Constraints) throws -> NextElement? {
         guard let fromExitSocket = element.exitSocket else {
             throw PathFinderError.missingExitSocket(from: element)
         }
@@ -261,7 +261,7 @@ final class GraphShortestPathFinder {
     ///   - distance: the shortest distance up to `element`
     ///   - path: the current shortest path
     ///   - constraints: the constraints
-    private func assignDistanceToPathConfigurationsOf(element: NextElement, to: GraphPathElement, distance: Double, path: GraphPath, constraints: LayoutPathFinder.LayoutConstraints) {
+    private func assignDistanceToPathConfigurationsOf(element: NextElement, to: GraphPathElement, distance: Double, path: GraphPath, constraints: LayoutPathFinder.Constraints) {
         for exitSocket in element.node.reachableSockets(from: element.entrySocket, constraints) {
             // Build up a particular element configuration using the specified exitSocket.
             // For example, starting with element "0:t1", we will have:

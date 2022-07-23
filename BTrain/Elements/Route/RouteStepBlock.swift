@@ -44,7 +44,7 @@ struct RouteStepBlock: RouteStep, Equatable, Codable, CustomStringConvertible {
         self.waitingTime = waitingTime
     }
     
-    func resolve(_ constraints: LayoutPathFinder.LayoutConstraints) -> [GraphPathElement]? {
+    func resolve(_ constraints: LayoutPathFinder.Constraints) -> [GraphPathElement]? {
         guard let block = constraints.layout?.block(for: blockId) else {
             return nil
         }
