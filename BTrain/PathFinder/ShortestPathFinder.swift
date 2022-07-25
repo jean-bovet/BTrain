@@ -270,8 +270,8 @@ final class ShortestPathFinder {
             
             // Skip any element that has been visited before
             guard !visitedElements.contains(elementConfiguration) else {
-                if elementConfiguration == to && shortestPath == nil {
-                    shortestPath = path.appending(elementConfiguration)
+                if to.isSame(as: elementConfiguration) && shortestPath == nil {
+                    shortestPath = path.appending(to)
                 }
                 continue
             }
@@ -294,8 +294,8 @@ final class ShortestPathFinder {
             setDistance(distance, to: elementConfiguration, path: path.appending(elementConfiguration))
             
             // If the element is also the destination element, remember the shortest path
-            if elementConfiguration == to {
-                shortestPath = path.appending(elementConfiguration)
+            if to.isSame(as: elementConfiguration) {
+                shortestPath = path.appending(to)
                 if verbose {
                     BTLogger.debug("Shortest path is \(shortestPath!.elements.description)")
                 }

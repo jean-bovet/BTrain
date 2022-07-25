@@ -16,7 +16,7 @@ import XCTest
 class GraphTests: XCTestCase {
 
     func constraints(layout: Layout) -> PathFinder.Constraints {
-        .init(layout: layout, train: layout.trains[0], reservedBlockBehavior: .ignoreReserved, relaxed: true, resolving: false)
+        .init(layout: layout, train: layout.trains[0], reservedBlockBehavior: .ignoreReserved, relaxed: true)
     }
 
     private func pathFinder(layout: Layout) -> PathFinder {
@@ -63,7 +63,7 @@ class GraphTests: XCTestCase {
 
         let gr = pathFinder(layout: layout)
         var errors = [PathFinderResolver.ResolverError]()
-        let p = gr.resolve(graph: layout, partialPath, errors: &errors)!
+        let p = try gr.resolve(graph: layout, partialPath, errors: &errors)!
         XCTAssertEqual(p.toStrings, ["b1:1", "0:t0:1", "0:b2:1", "0:t1:2", "0:b3"])
     }
 
@@ -78,7 +78,7 @@ class GraphTests: XCTestCase {
 
         let gr = pathFinder(layout: layout)
         var errors = [PathFinderResolver.ResolverError]()
-        let p = gr.resolve(graph: layout, partialPath, errors: &errors)!
+        let p = try gr.resolve(graph: layout, partialPath, errors: &errors)!
         XCTAssertEqual(p.toStrings, ["b1:1", "0:t0:1", "0:b2:1", "0:t1:2", "0:b3"])
     }
 
@@ -94,7 +94,7 @@ class GraphTests: XCTestCase {
 
         let gr = pathFinder(layout: layout)
         var errors = [PathFinderResolver.ResolverError]()
-        let p = gr.resolve(graph: layout, partialPath, errors: &errors)!
+        let p = try gr.resolve(graph: layout, partialPath, errors: &errors)!
         XCTAssertEqual(p.toStrings, ["b1:1", "0:t0:1", "0:b2:1", "0:t1:2", "0:b3"])
     }
 
@@ -110,7 +110,7 @@ class GraphTests: XCTestCase {
         let gr = pathFinder(layout: layout)
         let up = p.elements.map { $0 }
         var errors = [PathFinderResolver.ResolverError]()
-        let p2 = gr.resolve(graph: layout, up, errors: &errors)!
+        let p2 = try gr.resolve(graph: layout, up, errors: &errors)!
         XCTAssertEqual(p, p2)
     }
 

@@ -39,10 +39,6 @@ extension PathFinder {
         /// True if the constraints should be relaxed (that is, not applied), false otherwise.
         let relaxed: Bool
         
-        /// True if the algorithm is resolving a path, false otherwise. This flag acts on a specific
-        /// condition when including a node (see below)
-        let resolving: Bool
-
         /// Returns true if the `node` should be included in the path.
         ///
         /// If false, the algorithm backtracks to the previous node and finds
@@ -54,16 +50,6 @@ extension PathFinder {
         ///   - to: the optional destination element
         /// - Returns: true if `node` should be included in the path, false otherwise.
         func shouldInclude(node: GraphNode, currentPath: GraphPath, to: GraphPathElement?) -> Bool {
-            if let to = to, node is Block && to.node is Block && node.identifier.uuid != to.node.identifier.uuid, resolving {
-                // Backtrack if the first block is not the destination node.
-                // Note: this is currently a limitation of the resolver in which it is expected that a route
-                // defines all the blocks in the route. The resolver just resolves the turnouts between two
-                // blocks but not an arbitrary long route with turnouts and blocks, which can be expensive
-                // to traverse until we have a breadth-first algorithm implementation to search for the shortest
-                // path between one block to another (arbitrary far away) block.
-                return false
-            }
-
             if relaxed {
                 return true
             }

@@ -28,6 +28,44 @@ class RouteResolverTests: XCTestCase {
         XCTAssertEqual(resolvedSteps.toStrings(layout), ["A:next", "AB:(0>1)", "B:next", "C:next", "D:next", "DE:(1>0)", "E:next"])
     }
     
+    func testResolveRouteWithMissingTurnouts() throws {
+        let layout = LayoutLoopWithStations().newLayout().removeTrains()
+        
+        let train = layout.trains[0]
+        train.turnoutsToAvoid = []
+
+        let s1 = layout.block(named: "s1")
+        let b1 = layout.block(named: "b1")
+        let route = layout.newRoute(id: "s1-n1", [(s1.uuid, .next), (b1.uuid, .next)])
+        
+        let resolver = RouteResolver(layout: layout, train: train)
+        
+        var errors = [PathFinderResolver.ResolverError]()
+        let resolvedSteps = try resolver.resolve(steps: ArraySlice(route.steps), errors: &errors)!
+        
+        XCTAssertEqual(route.steps.toStrings(layout), ["s1:next", "b1:next"])
+        XCTAssertEqual(resolvedSteps.toStrings(layout), ["s1:next", "ts2:(1>0)", "t1:(0>1)", "t2:(0>1)", "b1:next"])
+    }
+
+    func testResolveRouteWithMissingBlocks() throws {
+        let layout = LayoutLoopWithStations().newLayout().removeTrains()
+        
+        let train = layout.trains[0]
+        train.turnoutsToAvoid = []
+
+        let s1 = layout.block(named: "s1")
+        let n1 = layout.block(named: "n1")
+        let route = layout.newRoute(id: "s1-n1", [(s1.uuid, .next), (n1.uuid, .next)])
+        
+        let resolver = RouteResolver(layout: layout, train: train)
+        
+        var errors = [PathFinderResolver.ResolverError]()
+        let resolvedSteps = try resolver.resolve(steps: ArraySlice(route.steps), errors: &errors)!
+        
+        XCTAssertEqual(route.steps.toStrings(layout), ["s1:next", "n1:next"])
+        XCTAssertEqual(resolvedSteps.toStrings(layout), ["s1:next", "ts2:(1>0)", "t1:(0>1)", "t2:(0>1)", "b1:next", "t4:(1>0)", "tn1:(0>1)", "n1:next"])
+    }
+
     func testResolveMultipleTurnoutsChoice() throws {
         let layout = LayoutComplex().newLayout().removeTrains()
         let train = layout.trains[0]

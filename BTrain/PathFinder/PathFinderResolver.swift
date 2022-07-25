@@ -87,7 +87,7 @@ struct PathFinderResolver {
     ///   - errors: any resolving errors
     /// - Returns: a resolved path
     func resolve(graph: Graph, _ unresolvedPath: [Resolvable],
-                 errors: inout [ResolverError]) -> GraphPath? {
+                 errors: inout [ResolverError]) throws -> GraphPath? {
         let resolvedPaths = ResolvedPaths()
         guard var previousElements = unresolvedPath.first?.resolve(constraints) else {
             return nil
@@ -101,7 +101,7 @@ struct PathFinderResolver {
                 return nil
             }
             
-            resolve(graph: graph, resolvedPaths: resolvedPaths, to: resolvedElements)
+            try resolve(graph: graph, resolvedPaths: resolvedPaths, to: resolvedElements)
             
             if resolvedPaths.paths.isEmpty {
                 // There should always be at least one resolved path between two elements. If not, it means
@@ -123,10 +123,10 @@ struct PathFinderResolver {
         }
     }
     
-    private func resolve(graph: Graph, resolvedPaths: ResolvedPaths, to resolvedElements: [GraphPathElement]) {
+    private func resolve(graph: Graph, resolvedPaths: ResolvedPaths, to resolvedElements: [GraphPathElement]) throws {
         for (index, resolvedPath) in resolvedPaths.paths.enumerated() {
             for resolvedElement in resolvedElements {
-                if resolve(graph: graph, resolvedPath: resolvedPath, to: resolvedElement) == false {
+                if try resolve(graph: graph, resolvedPath: resolvedPath, to: resolvedElement) == false {
                     // Unable to resolve this path, so remove this path from the list of resolved paths
                     resolvedPaths.paths.remove(at: index)
                 }
@@ -134,11 +134,11 @@ struct PathFinderResolver {
         }
     }
     
-    private func resolve(graph: Graph, resolvedPath: ResolvedPath, to: GraphPathElement) -> Bool {
+    private func resolve(graph: Graph, resolvedPath: ResolvedPath, to: GraphPathElement) throws -> Bool {
         guard let previousElement = resolvedPath.path.last else {
             return true
         }
-        if let p = lpf.path(graph: graph, from: previousElement, to: to) {
+        if let p = try lpf.shortestPath(graph: graph, from: previousElement, to: to) {
             for resolvedElement in p.elements.dropFirst() {
                 resolvedPath.path.append(resolvedElement)
             }

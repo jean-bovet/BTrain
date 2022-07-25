@@ -89,9 +89,9 @@ struct PathFinder {
     ///   - path: the unresolved path
     ///   - errors: any error during resolving
     /// - Returns: a resolved path or nil if no resolved path was found
-    func resolve(graph: Graph, _ path: [Resolvable], errors: inout [PathFinderResolver.ResolverError]) -> GraphPath? {
+    func resolve(graph: Graph, _ path: [Resolvable], errors: inout [PathFinderResolver.ResolverError]) throws -> GraphPath? {
         let resolver = PathFinderResolver(lpf: self, constraints: constraints)
-        return resolver.resolve(graph: graph, path, errors: &errors)
+        return try resolver.resolve(graph: graph, path, errors: &errors)
     }
     
     private func path(graph: Graph, from: GraphPathElement, to: GraphPathElement?, currentPath: GraphPath) -> GraphPath? {
