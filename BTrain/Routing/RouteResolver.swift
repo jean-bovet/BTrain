@@ -34,8 +34,7 @@ final class RouteResolver {
     // Returns nil if the route cannot be resolved. This can happen, for example, if a turnout or block is already
     // reserved for another train and no other alternative path is found.
     func resolve(steps: ArraySlice<RouteItem>,
-                 errors: inout [PathFinderResolver.ResolverError],
-                 verbose: Bool = SettingsKeys.bool(forKey: SettingsKeys.logRoutingResolutionSteps)) throws -> [ResolvedRouteItem]? {
+                 verbose: Bool = SettingsKeys.bool(forKey: SettingsKeys.logRoutingResolutionSteps)) throws -> Result<[ResolvedRouteItem],PathFinderResolver.ResolverError> {
         let settings = PathFinder.Settings(verbose: verbose,
                                                  random: false,
                                                  overflow: layout.pathFinderOverflowLimit)
@@ -48,11 +47,13 @@ final class RouteResolver {
 
         // Try to resolve the route using the standard constraints (which are a super set of the constraints
         // when finding a new route, which provides consistent behavior when resolving a route).
-        if let resolvedPath = try pf.resolve(graph: layout, unresolvedPath, errors: &errors) {
-            return resolvedPath.elements.toResolvedRouteItems
+        let result = try pf.resolve(graph: layout, unresolvedPath)
+        switch result {
+        case .success(let resolvedPath):
+            return .success(resolvedPath.elements.toResolvedRouteItems)
+        case .failure(_):
+            break
         }
-
-        errors.removeAll()
 
         // If we are not able to resolve the route using the standard constraints, it means there are no path available
         // that satisfies the constraints; for example, a fixed route has a disabled block that makes it impossible to resolve.
@@ -60,12 +61,15 @@ final class RouteResolver {
         // constraints (such as block reserved, disabled, etc) are ignored.
         let relaxedConstraints = PathFinder.Constraints(layout: layout, train: train, reservedBlockBehavior: .ignoreReserved, relaxed: true)
         let pf2 = PathFinder(constraints: relaxedConstraints, settings: settings)
-        if let resolvedPath = try pf2.resolve(graph: layout, unresolvedPath, errors: &errors) {
-            return resolvedPath.elements.toResolvedRouteItems
+        let result2 = try pf2.resolve(graph: layout, unresolvedPath)
+        switch result2 {
+        case .success(let resolvedPath):
+            return .success(resolvedPath.elements.toResolvedRouteItems)
+            
+        case .failure(let error):
+            // If we reach that point, it means the graph itself has a problem with its node and edges and no path can be found.
+            return .failure(error)
         }
-
-        // If we reach that point, it means the graph itself has a problem with its node and edges and no path can be found.
-        return nil
     }
     
 }

@@ -27,22 +27,24 @@ final class LayoutASCIIProducer {
             throw LayoutError.trainNotFound(trainId: trainId)
         }
         
-        guard let resolvedSteps = try route.resolve(layout: layout, train: train) else {
-            return text
-        }
-        
-        for step in resolvedSteps {
-            switch step {
-            case .block(let stepBlock):
-                addSpace(&text)
-                try generateBlock(step: stepBlock, text: &text)
-            case .turnout(let stepTurnout):
-                addSpace(&text)
-                generateTurnout(step: stepTurnout, text: &text)
+        let result = try route.resolve(layout: layout, train: train)
+        switch result {
+        case .success(let resolvedSteps):
+            for step in resolvedSteps {
+                switch step {
+                case .block(let stepBlock):
+                    addSpace(&text)
+                    try generateBlock(step: stepBlock, text: &text)
+                case .turnout(let stepTurnout):
+                    addSpace(&text)
+                    generateTurnout(step: stepTurnout, text: &text)
+                }
             }
-        }
-        
-        return text
+            return text
+            
+        case .failure(_):
+            return text
+        }        
     }
 
     private func generateBlock(step: ResolvedRouteItemBlock, text: inout String) throws {

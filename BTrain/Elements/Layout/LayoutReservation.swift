@@ -156,13 +156,16 @@ final class LayoutReservation {
         let stepsToReserve = route.steps[startReservationIndex...route.lastStepIndex]
         
         // First of all, resolve the route to discover all non-specified turnouts and blocks
-        var errors = [PathFinderResolver.ResolverError]()
-        guard let resolvedSteps = try RouteResolver(layout: layout, train: train).resolve(steps: stepsToReserve, errors: &errors) else {
+        let result = try RouteResolver(layout: layout, train: train).resolve(steps: stepsToReserve)
+        switch result {
+        case .success(let resolvedSteps):
+            assert(resolvedSteps.count >= stepsToReserve.count)
+            
+            return try reserveSteps(train: train, route: route, resolvedSteps: resolvedSteps, reservedTurnouts: reservedTurnouts)
+            
+        case .failure(_):
             return false
         }
-        assert(resolvedSteps.count >= stepsToReserve.count)
-        
-        return try reserveSteps(train: train, route: route, resolvedSteps: resolvedSteps, reservedTurnouts: reservedTurnouts)
     }
     
     private func reserveSteps(train: Train, route: Route, resolvedSteps: [ResolvedRouteItem], reservedTurnouts: Set<TurnoutActivation>) throws -> Bool {

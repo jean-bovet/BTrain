@@ -70,8 +70,19 @@ struct RouteView: View {
         }
 
         for error in routeError.resolverErrors {
-            if error.to == index {
-                return true
+            switch error {
+            case .cannotResolvePath(_, let to):
+                if to == index {
+                    return true
+                }
+                
+            case .cannotResolveElement(let at):
+                if at == index {
+                    return true
+                }
+                
+            default:
+                break
             }
         }
         

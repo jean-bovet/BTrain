@@ -62,8 +62,7 @@ class GraphTests: XCTestCase {
         let partialPath = [ GraphPathElement.starting(b1, 1), GraphPathElement.ending(b3, 0) ]
 
         let gr = pathFinder(layout: layout)
-        var errors = [PathFinderResolver.ResolverError]()
-        let p = try gr.resolve(graph: layout, partialPath, errors: &errors)!
+        let p = try gr.resolve(graph: layout, partialPath).get()
         XCTAssertEqual(p.toStrings, ["b1:1", "0:t0:1", "0:b2:1", "0:t1:2", "0:b3"])
     }
 
@@ -77,8 +76,7 @@ class GraphTests: XCTestCase {
         let partialPath = [ GraphPathElement.starting(b1, 1), GraphPathElement.between(t0, 0, 1), GraphPathElement.ending(b3, 0) ]
 
         let gr = pathFinder(layout: layout)
-        var errors = [PathFinderResolver.ResolverError]()
-        let p = try gr.resolve(graph: layout, partialPath, errors: &errors)!
+        let p = try gr.resolve(graph: layout, partialPath).get()
         XCTAssertEqual(p.toStrings, ["b1:1", "0:t0:1", "0:b2:1", "0:t1:2", "0:b3"])
     }
 
@@ -93,8 +91,7 @@ class GraphTests: XCTestCase {
         let partialPath = [ GraphPathElement.starting(b1, 1), GraphPathElement.between(t0, 0, 1), GraphPathElement.between(t1, 0, 2), GraphPathElement.ending(b3, 0) ]
 
         let gr = pathFinder(layout: layout)
-        var errors = [PathFinderResolver.ResolverError]()
-        let p = try gr.resolve(graph: layout, partialPath, errors: &errors)!
+        let p = try gr.resolve(graph: layout, partialPath).get()
         XCTAssertEqual(p.toStrings, ["b1:1", "0:t0:1", "0:b2:1", "0:t1:2", "0:b3"])
     }
 
@@ -109,8 +106,7 @@ class GraphTests: XCTestCase {
         
         let gr = pathFinder(layout: layout)
         let up = p.elements.map { $0 }
-        var errors = [PathFinderResolver.ResolverError]()
-        let p2 = try gr.resolve(graph: layout, up, errors: &errors)!
+        let p2 = try gr.resolve(graph: layout, up).get()
         XCTAssertEqual(p, p2)
     }
 

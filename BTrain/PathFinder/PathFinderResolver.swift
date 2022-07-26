@@ -38,9 +38,11 @@ struct PathFinderResolver {
     let constraints: PathFinder.Constraints
     
     /// Error from the path resolver indicating between which path elements an error occurred
-    struct ResolverError {
-        let from: Int
-        let to: Int
+    enum ResolverError: Error {
+        case emptyUnresolvedPath
+        case emptyResolvedPaths
+        case cannotResolveElement(at: Int)
+        case cannotResolvePath(from: Int, to: Int)
     }
     
     /// Internal class that keeps track of all the elements of a path
@@ -84,13 +86,15 @@ struct PathFinderResolver {
     /// - Parameters:
     ///   - graph: the graph in which the path is located
     ///   - unresolvedPath: the unresolved path
-    ///   - errors: any resolving errors
-    /// - Returns: a resolved path
-    func resolve(graph: Graph, _ unresolvedPath: [Resolvable],
-                 errors: inout [ResolverError]) throws -> GraphPath? {
+    /// - Returns: the result of the resolving operation
+    func resolve(graph: Graph, _ unresolvedPath: [Resolvable]) throws -> Result<GraphPath, ResolverError> {
         let resolvedPaths = ResolvedPaths()
-        guard var previousElements = unresolvedPath.first?.resolve(constraints) else {
-            return nil
+        guard let firstUnresolvedElement = unresolvedPath.first else {
+            return .failure(.emptyUnresolvedPath)
+        }
+        
+        guard var previousElements = firstUnresolvedElement.resolve(constraints) else {
+            return .failure(.cannotResolveElement(at: 0))
         }
                 
         var unresolvedPathIndex = 1
@@ -98,7 +102,7 @@ struct PathFinderResolver {
         for unresolvedElement in unresolvedPath.dropFirst() {
             guard let resolvedElements = unresolvedElement.resolve(constraints) else {
                 BTLogger.router.error("Unable to resolve element \(unresolvedElement.description, privacy: .public)")
-                return nil
+                return .failure(.cannotResolveElement(at: unresolvedPathIndex))
             }
             
             try resolve(graph: graph, resolvedPaths: resolvedPaths, to: resolvedElements)
@@ -108,8 +112,7 @@ struct PathFinderResolver {
                 // that some constraints imposed by a subclass prevents a path from being found
                 // so we always return here instead of continuing and returning an incomplete route.
                 BTLogger.router.debug("Unable to resolve path between \(previousElements, privacy: .public) and \(resolvedElements, privacy: .public)")
-                errors.append(ResolverError(from: unresolvedPathIndex - 1, to: unresolvedPathIndex))
-                return nil
+                return .failure(.cannotResolvePath(from: unresolvedPathIndex - 1, to: unresolvedPathIndex))
             }
 
             previousElements = resolvedElements
@@ -117,9 +120,9 @@ struct PathFinderResolver {
         }
         
         if let resolvedPath = resolvedPaths.paths.first?.path {
-            return GraphPath(resolvedPath)
+            return .success(GraphPath(resolvedPath))
         } else {
-            return nil
+            return .failure(.emptyResolvedPaths)
         }
     }
     
