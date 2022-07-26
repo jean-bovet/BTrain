@@ -17,8 +17,8 @@ import XCTest
 
 final class LayoutAsserter {
     
-    let layout: Layout
-    let layoutController: LayoutController
+    weak var layout: Layout!
+    weak var layoutController: LayoutController!
     
     var assertBlockParts = false
     
@@ -32,16 +32,21 @@ final class LayoutAsserter {
         let expectedTrains = Array(expectedLayout.trains)
         
         // First apply all the feedbacks
+        var detectedFeedbacks = [Feedback]()
         for route in layout.routes {
             if let expectedRoute = expectedLayout.routes[route.id] {
-                applyFeedbacks(expectedSteps: expectedRoute.resolvedSteps, expectedLayout: expectedLayout)
+                let feedbacks = applyFeedbacks(expectedSteps: expectedRoute.resolvedSteps, expectedLayout: expectedLayout)
+                detectedFeedbacks.append(contentsOf: feedbacks)
             }
         }
         
+        for feedback in detectedFeedbacks {
+            layoutController.runControllers(.feedbackTriggered(feedback))
+        }
+
         // Then run the controller to update the real layout states
-        layoutController.runControllers(.feedbackTriggered)
         if drainAll {
-            layoutController.drainAllEvents()
+            layoutController.waitUntilSettled()
         }
 
         // Now assert the routes to see if they match the real layout
@@ -59,9 +64,7 @@ final class LayoutAsserter {
             }
             
             // Resolve the route
-            guard let actualSteps = try route.resolve(layout: layout, train: train) else {
-                continue
-            }
+            let actualSteps = try route.resolve(layout: layout, train: train).get()
             
             let producer = LayoutASCIIProducer(layout: layout)
             let routeString = try! producer.stringFrom(route: route, trainId: train.id)
@@ -77,7 +80,8 @@ final class LayoutAsserter {
         XCTAssertTrue(assertedAtLeastOneRoute, "At least one route should have been asserted!")
     }
     
-    private func applyFeedbacks(expectedSteps: [ResolvedRouteItem], expectedLayout: LayoutParser.ParsedLayout) {
+    private func applyFeedbacks(expectedSteps: [ResolvedRouteItem], expectedLayout: LayoutParser.ParsedLayout) -> [Feedback] {
+        var detectedFeedbacks = [Feedback]()
         for expectedStep in expectedSteps {
             switch expectedStep {
             case .block(let resolvedRouteItemBlock):
@@ -92,12 +96,16 @@ final class LayoutAsserter {
                     let blockFeedback = block.feedbacks[index]
                     let feedback = layout.feedback(for: blockFeedback.feedbackId)!
                     feedback.detected = expectedFeedback.detected
+                    if feedback.detected {
+                        detectedFeedbacks.append(feedback)
+                    }
                 }
 
             case .turnout(_):
                 break
             }
         }
+        return detectedFeedbacks
     }
     
     private func assert(routeName: String, actualSteps: [ResolvedRouteItem], expectedSteps: [ResolvedRouteItem], trains: [Train], expectedTrains: [Train], expectedLayout: LayoutParser.ParsedLayout) throws {
@@ -164,7 +172,7 @@ final class LayoutAsserter {
                 var toElementName: String
                 switch previousStep {
                 case .block(let resolvedRouteItemBlock):
-                    reserved = resolvedRouteItemBlock.block.reserved?.trainId
+                    reserved = resolvedRouteItemBlock.block.reservation?.trainId
                     fromElementName = resolvedRouteItemBlock.block.name
 
                 case .turnout(let resolvedRouteItemTurnout):
@@ -181,7 +189,7 @@ final class LayoutAsserter {
                 switch step {
                 case .block(let resolvedRouteItemBlock):
                     toElementName = resolvedRouteItemBlock.block.name
-                    if reserved != resolvedRouteItemBlock.block.reserved?.trainId {
+                    if reserved != resolvedRouteItemBlock.block.reservation?.trainId {
                         reserved = nil
                     }
                 case .turnout(let resolvedRouteItemTurnout):
@@ -222,24 +230,24 @@ final class LayoutAsserter {
         let expectedBlock = expectedLayout.blocks.first(where: { $0.id == expectedStep.blockId})!
         XCTAssertEqual(block.category, expectedBlock.category, "Block category mismatch for block \(block)")
 
-        if expectedBlock.reserved == nil {
-            XCTAssertNil(block.reserved, "Expected no reservation in block \(block), route \(routeName)")
+        if expectedBlock.reservation == nil {
+            XCTAssertNil(block.reservation, "Expected no reservation in block \(block), route \(routeName)")
         } else {
             // Note: we only care about the trainId, not the direction of travel
             // because the same block in the ASCII representation can indicate
             // a different travel direction (because it represents the block
             // in a later phase of the route).
-            XCTAssertEqual(block.reserved?.trainId, expectedBlock.reserved?.trainId, "Mismatching reserved block \(block) at index \(index), route \(routeName)")
+            XCTAssertEqual(block.reservation?.trainId, expectedBlock.reservation?.trainId, "Mismatching reserved block \(block) at index \(index), route \(routeName)")
         }
         
-        if let expectedTrain = expectedBlock.train {
-            XCTAssertEqual(block.train?.trainId, expectedTrain.trainId, "Unexpected train mismatch in block \(block.name) at index \(index)")
+        if let expectedTrain = expectedBlock.trainInstance {
+            XCTAssertEqual(block.trainInstance?.trainId, expectedTrain.trainId, "Unexpected train mismatch in block \(block.name) at index \(index)")
         } else {
-            XCTAssertNil(block.train, "Block \(block) should not contain train \(block.train!)")
+            XCTAssertNil(block.trainInstance, "Block \(block) should not contain train \(block.trainInstance!)")
         }
         
         // Assert the parts of the block reserved for the train and its wagon
-        if let train = block.train, let expectedTrain = expectedBlock.train, assertBlockParts {
+        if let train = block.trainInstance, let expectedTrain = expectedBlock.trainInstance, assertBlockParts {
             XCTAssertEqual(train.parts, expectedTrain.parts, "Unexpected train parts mismatch in block \(block) at index \(index), route \(routeName)")
         }
     }

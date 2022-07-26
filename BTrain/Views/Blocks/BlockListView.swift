@@ -67,6 +67,12 @@ struct BlockListView: View {
                         
                         Spacer().fixedSpace()
                         
+                        Button("􀉁") {
+                            layout.duplicate(blockId: selection!)
+                        }
+
+                        Spacer().fixedSpace()
+
                         Button("􀄬") {
                             layout.sortBlocks()
                         }

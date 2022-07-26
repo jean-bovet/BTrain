@@ -66,11 +66,14 @@ class AutomaticRoutingTests: BTTestCase {
         let s1 = layout.block(named: "s1")
         
         // The route will choose "s2" as the arrival block
-        var p = try setup(layout: layout, fromBlockId: s1.id, destination: nil, position: .end, routeSteps: ["s1:next", "b1:next", "s2:next"])
-        
+        var p = try setup(layout: layout, fromBlockId: s1.id, destination: nil, position: .custom(value: 1), routeSteps: ["s1:next", "b1:next", "s2:next"])
+
+        try p.assert("automatic-0: {r0{s1 💺0 ≏ 🔵🚂0 ≏ }} <r0<t1{sr}(0,1),s>> <r0<t2{sr}(0,1),s>> [r0[b1 ≏ ≏ ]] <t4{sl}(1,0),s> {s2 ≏ ≏ }")
+
         p.stop()
 
-        try p.assert("automatic-0: {r0{s1 ≏ 💺0 ≏ 🔴🚂0 }} <t1{sr}(0,1),s> <t2{sr}(0,1),s> [b1 ≏ ≏ ] <t4{sl}(1,0),s> {s2 ≏ ≏ }")
+        // Note: the train the stops only after triggering the stop feedback of the block.
+        try p.assert("automatic-0: {r0{s1 ≏ 💺0 ≡ 🔴🚂0 }} <t1{sr}(0,1),s> <t2{sr}(0,1),s> [b1 ≏ ≏ ] <t4{sl}(1,0),s> {s2 ≏ ≏ }")
 
         // Let's artificially reserve turnout t2. This should cause the automatic route to be re-evaluated to find an alternate path
         layout.turnout(named: "t2").reserved = .init(train: .init(uuid: "7"), sockets: .init(fromSocketId: 0, toSocketId: 1))
@@ -87,6 +90,7 @@ class AutomaticRoutingTests: BTTestCase {
         
         // The route will choose "s2" as the arrival block
         var p = try setup(layout: layout, fromBlockId: s1.id, destination: nil, position: .end, routeSteps: ["s1:next", "b1:next", "b2:next", "b3:next", "s2:next"])
+        p.toggle("fs1") // allows the train to stops by indicating that the stop feedback has been triggered
         p.stop(drainAll: true)
         
         // Let's mark "s2" as to avoid
@@ -110,6 +114,7 @@ class AutomaticRoutingTests: BTTestCase {
 
         // The route will choose "s2" as the arrival block
         var p = try setup(layout: layout, fromBlockId: s1.id, destination: nil, position: .end, routeSteps: ["s1:next", "b1:next", "b2:next", "b3:next", "s2:next"])
+        p.toggle("fs1") // allows the train to stops by indicating that the stop feedback has been triggered
         p.stop(drainAll: true)
 
         // Let's mark "t5" as to avoid
@@ -233,11 +238,10 @@ class AutomaticRoutingTests: BTTestCase {
         try p.assert("automatic-0: {r0{s2 ≡ 🔴🚂0 }} <t1(1,0),s> <t2(1,0),s> [b1 ≏ ] <t3> [b2 ≏ ] <t4(1,0)> [b3 ≏ ≏ ≏ ] <t5> <t6> {r0{s2 ≡ 🔴🚂0 }}")
                 
         // Artificially set the restart time to 0 which will make the train restart again
-        // TODO: refactor with all other occurrences in the tests
         p.layoutController.restartTimerFired(layout.trains[0])
-        p.layoutController.drainAllEvents()
+        p.layoutController.waitUntilSettled()
 
-        XCTAssertTrue(p.train.speed.requestedKph > 0)
+        XCTAssertGreaterThan(p.train.speed.requestedKph, 0)
         
         // When restarting, the train automatic route will be updated
         XCTAssertEqual(p.route.steps.toStrings(layout), ["s2:next", "b1:next", "b2:next", "b3:next", "s2:next"])
@@ -277,7 +281,7 @@ class AutomaticRoutingTests: BTTestCase {
     }
         
     /// Same as ``testAutomaticRouteStationRestartFinishing`` but with a station block with 2 feedbacks (s2) that simulates
-    /// a stop that includes a ``TrainEvent/movedInsideBlock`` event which exhibit different code path.
+    /// a stop that includes a ``LayoutControllerEvent/movedInsideBlock`` event which exhibit different code path.
     func testAutomaticRouteStationRestartFinishing2() throws {
         let layout = LayoutLoopWithStation().newLayout()
         let s1 = layout.block(named: "s1")
@@ -313,8 +317,8 @@ class AutomaticRoutingTests: BTTestCase {
         let train = layout.trains[1]
         train.locomotiveLength = nil
         train.wagonsLength = nil
-        train.wagonsPushedByLocomotive = false
         train.maxNumberOfLeadingReservedBlocks = 1
+        train.directionForward = true
         
         let p = try setup(layout: layout, train: train, fromBlockId: ne4.id, destination: nil, position: .end, direction: .previous, routeSteps: ["NE4:previous", "M1:next", "M2U:next", "LCF1:next"])
         
@@ -325,9 +329,9 @@ class AutomaticRoutingTests: BTTestCase {
         try p.assert("automatic-16405: !{NE4 ≏ ≏ } <C.1{tw}(1,0),s> <M.1{sl}(0,1),s> [r16405[M1 ≡ 🔵🚂16405 ≏ ≏ ]] <r16405<Z.1{sr}(0,1),s>> [r16405[M2U ≏ ]] <Z.2{sl}(1,0),s> <Z.4{sl}(0,1),l> {LCF1 ≏ ≏ }")
         
         XCTAssertEqual(train.state, .running)
-        p.interface.pause()
+        p.digitalController.pause()
                 
-        // Stop request should happy in M2U but the actual stopping of the train should
+        // Stop request should happen in M2U but the actual stopping of the train should
         // only happen in LCF1, where the restart time should be triggered because LCF1 is a station.
         try p.assert("automatic-16405: !{NE4 ≏ ≏ } <C.1{tw}(1,0),s> <M.1{sl}(0,1),s> [M1 ≏ ≏ ≏ ] <Z.1{sr}(0,1),s> [r16405[M2U ≡ 🔴🚂16405 ]] <r16405<Z.2{sl}(1,0),s>> <r16405<Z.4{sl}(0,1),l>> {r16405{LCF1 ≏ ≏ }}")
         
@@ -336,9 +340,9 @@ class AutomaticRoutingTests: BTTestCase {
 
         try p.assert("automatic-16405: !{NE4 ≏ ≏ } <C.1{tw}(1,0),s> <M.1{sl}(0,1),s> [M1 ≏ ≏ ≏ ] <Z.1{sr}(0,1),s> [M2U ≏ ] <Z.2{sl}(1,0),s> <Z.4{sl}(0,1),l> {r16405{LCF1 ≡ 🔴🚂16405 ≏ }}")
 
-        p.interface.resume()
+        p.digitalController.resume()
         
-        p.layoutController.drainAllEvents()
+        p.layoutController.waitUntilSettled()
         
         XCTAssertEqual(train.state, .stopped)
         XCTAssertFalse(p.layoutController.pausedTrainTimers.isEmpty)
@@ -361,7 +365,7 @@ class AutomaticRoutingTests: BTTestCase {
         
         // Let's add a train in the next block b1 that will prevent the train in s2 from immediately restarting
         try layout.setTrainToBlock(layout.trains[1].id, Identifier<Block>(uuid: "b1"), direction: .next)
-        p.layoutController.runControllers(.movedToNextBlock)
+        p.layoutController.runControllers(.trainPositionChanged(layout.trains[1]))
         
         // Wait until the train route has been updated (which happens when it restarts)
         p.layoutController.restartTimerFired(layout.trains[0])
@@ -370,8 +374,8 @@ class AutomaticRoutingTests: BTTestCase {
         XCTAssertEqual(p.route.steps.count, 0)
         
         // Now remove the train from the block b1 in order for the train in s2 to start again properly this time
-        try layout.remove(trainID: layout.trains[1].id)
-        p.layoutController.runControllers(.movedToNextBlock)
+        try layout.remove(trainId: layout.trains[1].id)
+        p.layoutController.runControllers(.trainPositionChanged(layout.trains[0]))
 
         // When restarting, the train automatic route will be updated
         XCTAssertEqual(p.route.steps.toStrings(layout), ["s2:next", "b1:next", "b2:next", "b3:next", "s2:next"])

@@ -33,12 +33,12 @@ extension TrainControlRouteView: Inspectable { }
 extension UndoProvider: Inspectable { }
 
 class RootViewTests: BTTestCase {
-
-    lazy var doc: LayoutDocument = {
-        LayoutDocument(layout: LayoutLoop2().newLayout())
-    }()
     
-    lazy var layout: Layout = {
-        doc.layout
-    }()
+    func newLayout() -> Layout {
+        newDocument().layout
+    }
+    
+    func newDocument() -> LayoutDocument {
+        LayoutDocument(layout: LayoutLoop2().newLayout())
+    }
 }

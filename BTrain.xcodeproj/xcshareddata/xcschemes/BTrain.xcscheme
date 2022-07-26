@@ -48,6 +48,9 @@
          <TestPlanReference
             reference = "container:BTrain.xcodeproj/Routing.xctestplan">
          </TestPlanReference>
+         <TestPlanReference
+            reference = "container:StateMachine.xctestplan">
+         </TestPlanReference>
       </TestPlans>
       <Testables>
          <TestableReference

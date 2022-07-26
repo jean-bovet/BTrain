@@ -21,13 +21,14 @@ extension SimulatorTrainControlView: Inspectable { }
 class SimulatorViewTests: RootViewTests {
 
     func testSimulatorView() throws {
+        let doc = newDocument()
         let trains = doc.layout.trains
         XCTAssertFalse(trains.isEmpty)
         
         let t1 = trains[0]
         t1.speed.accelerationProfile = .none
         t1.blockId = doc.layout.blockIds[0]
-        doc.layout.blocks[0].train = .init(t1.id, .next)
+        doc.layout.blocks[0].trainInstance = .init(t1.id, .next)
         
         XCTAssertTrue(t1.directionForward)
         XCTAssertEqual(t1.speed.requestedKph, 0)

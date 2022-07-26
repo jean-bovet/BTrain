@@ -59,7 +59,7 @@ final class FeedbackMonitor {
     }
     
     private func registerForFeedbackChanges() {
-        feedbackChangeUUID = interface.register(forFeedbackChange: { [weak self] deviceID, contactID, value in
+        feedbackChangeUUID = interface.callbacks.register(forFeedbackChange: { [weak self] deviceID, contactID, value in
             guard let sSelf = self else {
                 return
             }
@@ -79,7 +79,7 @@ final class FeedbackMonitor {
     
     private func unregisterForFeedbackChanges() {
         if let feedbackChangeUUID = feedbackChangeUUID {
-            interface.unregister(uuid: feedbackChangeUUID)
+            interface.callbacks.unregister(uuid: feedbackChangeUUID)
         }
     }
 

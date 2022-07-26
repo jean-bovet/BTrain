@@ -42,16 +42,6 @@ struct GraphPath: Equatable {
 
 }
 
-typealias UnresolvedGraphPath = [UnresolvedGraphPathElement]
-
-protocol UnresolvedGraphPathElement {
-    
-    var description: String { get }
-    
-    func resolve(_ constraints: GraphPathFinderConstraints, _ context: GraphPathFinderContext) -> GraphPathElement?
-    
-}
-
 // Each element is a `node` with specific exit and entry sockets.
 // A starting element only has an exit socket while the last
 // element in the path only has an entry socket.
@@ -115,7 +105,13 @@ struct GraphPathElement: Equatable, Hashable, CustomStringConvertible {
     static func any(_ node: GraphNode) -> GraphPathElement {
         .init(node: node, entrySocket: nil, exitSocket: nil)
     }
-    
+
+    static func direction(_ node: GraphNode, _ direction: Direction) -> GraphPathElement {
+        let entrySocketId = direction == .next ? Block.previousSocket : Block.nextSocket
+        let exitSocketId = direction == .next ? Block.nextSocket : Block.previousSocket
+        return .init(node: node, entrySocket: entrySocketId, exitSocket: exitSocketId)
+    }
+
     static func == (lhs: GraphPathElement, rhs: GraphPathElement) -> Bool {
         lhs.node.identifier.uuid == rhs.node.identifier.uuid && lhs.entrySocket == rhs.entrySocket && lhs.exitSocket == rhs.exitSocket
     }

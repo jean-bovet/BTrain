@@ -11,44 +11,34 @@
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 import Foundation
-import OrderedCollections
 
 /// The event available to the handlers
-enum TrainEvent: Hashable, CustomStringConvertible {
+enum LayoutControllerEvent: CustomStringConvertible {
     /// A feedback sensor has been triggered
-    case feedbackTriggered
+    case feedbackTriggered(Feedback)
     
     /// The scheduling state of the train has changed. This happens in the following scenarios:
     /// - When a train starts for the first time
     /// - When a train stops
     /// - When a train finishes a route
-    case schedulingChanged
+    case schedulingChanged(Train)
         
     /// A train restart timer has expired, meaning that the train associated with this timer
     /// should restart again.
-    case restartTimerExpired(train: Train)
+    case restartTimerExpired(Train)
     
     /// A turnout state changed
-    case turnoutChanged
+    case turnoutChanged(Turnout)
     
     /// A train direction has changed
-    case directionChanged
+    case directionChanged(Train)
     
     /// A train speed has changed
-    case speedChanged
-    
-    /// A train state has changed.
-    case stateChanged
+    case speedChanged(Train, TrainSpeed.UnitKph)
 
-    /// A train reserved blocks (occupied or leading) have changed
-    case reservedBlocksChanged
-    
-    /// A train has moved inside a block.
-    case movedInsideBlock
-    
-    /// A train has moved to the next block
-    case movedToNextBlock
-    
+    /// The position of a train changed because the user either removed or added manually a train to the layout
+    case trainPositionChanged(Train)
+
     var description: String {
         switch self {
         case .feedbackTriggered:
@@ -63,39 +53,8 @@ enum TrainEvent: Hashable, CustomStringConvertible {
             return "Direction Changed"
         case .speedChanged:
             return "Speed Changed"
-        case .stateChanged:
-            return "State Changed"
-        case .movedInsideBlock:
-            return "Move Inside Block"
-        case .movedToNextBlock:
-            return "Move to Next Block"
-        case .reservedBlocksChanged:
-            return "Reserved Blocks Changed"
+        case .trainPositionChanged(let train):
+            return "Train removed: \(train)"
         }
     }
-}
-
-/// Structure that describes the result of a handler's processing.
-final class TrainHandlerResult {
-    
-    /// The array of events that needs follow-up processing.
-    ///
-    /// For example, a feedback triggers several handlers that, in turn,
-    /// trigger other events, such as ``TrainEvent/movedInsideBlock``.
-    var events = OrderedSet<TrainEvent>()
-
-    func append(_ event: TrainEvent) {
-        events.append(event)
-    }
-
-    func append(_ result: TrainHandlerResult) {
-        events.append(contentsOf: result.events)
-    }
-
-    /// Returns a result that does not require any follow up events
-    /// - Returns: the result
-    static func none() -> TrainHandlerResult {
-        .init()
-    }
-
 }

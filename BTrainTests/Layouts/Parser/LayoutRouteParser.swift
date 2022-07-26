@@ -98,12 +98,12 @@ final class LayoutRouteParser {
             if let existingBlock = layout.blocks.first(where: { $0.id == blockID }) {
                 block = existingBlock
                 assert(block.category == category, "The existing block \(blockID) does not match the type defined in the ASCII representation")
-                assert(block.reserved == blockHeader.reserved, "The existing block \(blockID) does not match the reserved type defined in the ASCII representation")
+                assert(block.reservation == blockHeader.reserved, "The existing block \(blockID) does not match the reserved type defined in the ASCII representation")
                 newBlock = false
             } else {
                 block = Block(name: blockID.uuid)
                 block.category = category
-                block.reserved = blockHeader.reserved
+                block.reservation = blockHeader.reserved
                 newBlock = true
             }
         } else {
@@ -111,7 +111,7 @@ final class LayoutRouteParser {
             // so the UUID is easy to unit test
             block = Block(name: String(route.resolvedSteps.count))
             block.category = category
-            block.reserved = blockHeader.reserved
+            block.reservation = blockHeader.reserved
             newBlock = true
         }
                     
@@ -328,20 +328,20 @@ final class LayoutRouteParser {
         if let train = layout.trains.first(where: { $0.id.uuid == uuid }) {
             assert(train.speed.requestedKph == speed, "Mismatching speed definition for train \(uuid)")
             assert(train.position == position, "Mismatching position definition for train \(uuid)")
-            if block.train == nil {
-                block.train = TrainInstance(train.id, .next)
+            if block.trainInstance == nil {
+                block.trainInstance = TrainInstance(train.id, .next)
             }
-            block.train?.parts[position] = .locomotive
+            block.trainInstance?.parts[position] = .locomotive
         } else {
             let train = Train(uuid: uuid)
             train.position = position
             train.routeStepIndex = route.resolvedSteps.count
             train.speed = .init(kph: speed, decoderType: .MFX)
             train.routeId = route.routeId
-            if block.train == nil {
-                block.train = TrainInstance(train.id, .next)
+            if block.trainInstance == nil {
+                block.trainInstance = TrainInstance(train.id, .next)
             }
-            block.train?.parts[position] = .locomotive
+            block.trainInstance?.parts[position] = .locomotive
             layout.trains.insert(train)
         }
     }
@@ -349,11 +349,11 @@ final class LayoutRouteParser {
     func parseWagon(position: Int, block: Block) {
         let uuid = parseUUID()
 
-        if block.train == nil {
-            block.train = TrainInstance(Identifier<Train>(uuid: uuid), .next)
+        if block.trainInstance == nil {
+            block.trainInstance = TrainInstance(Identifier<Train>(uuid: uuid), .next)
         }
                         
-        block.train?.parts[position] = .wagon
+        block.trainInstance?.parts[position] = .wagon
     }
         
     func parseFeedback(detected: Bool, newBlock: Bool, block: Block, feedbackIndex: Int, reverseOrder: Bool) {

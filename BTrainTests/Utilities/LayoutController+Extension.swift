@@ -16,18 +16,22 @@ import Foundation
 
 extension LayoutController {
     
-    func drainAllEvents() {
+    /// This method returns when all the trains have settled.
+    ///
+    /// Specifically, a train is considered settled when:
+    /// - It's requested speed is equal to its actual speed
+    /// - It's leading blocks and turnouts are settled
+    func waitUntilSettled() {
         var drain = true
         while drain {
-            runControllers(drain: drain)
             drain = false
             for train in layout.trains {
                 if train.speed.requestedSteps != train.speed.actualSteps {
+                    // Speed is not yet settled
                     drain = true
                 }
-                if train.leading.emptyOrSettled || train.leading.reservedAndSettled {
-                    
-                } else {
+                if !train.leading.emptyOrSettled && !train.leading.reservedAndSettled {
+                    // Leading blocks and turnouts are not yet settled
                     drain = true
                 }
             }

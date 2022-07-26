@@ -38,7 +38,7 @@ class PathFinderTests: BTTestCase {
         let layout = LayoutComplexLoop().newLayout()
         let s1 = layout.block("s1")
         let b2 = layout.block("b2")
-        b2.reserved = Reservation("other", .next)
+        b2.reservation = Reservation("other", .next)
         
         // Ensure that by specifying a look ahead equal to the number of blocks in the layout
         // there is no valid path found because b2 is occupied.
@@ -56,7 +56,7 @@ class PathFinderTests: BTTestCase {
         let layout = LayoutLoopWithStation().newLayout()
         let s1 = layout.block(named: "s1")
         let b1 = layout.block(named: "b1")
-        b1.reserved = Reservation("other", .next)
+        b1.reservation = Reservation("other", .next)
 
         var path = layout.path(for: layout.trains[0], from: (s1, .next), to: nil, reservedBlockBehavior: .avoidReserved)!
         XCTAssertEqual(path.elements.toBlockSteps.toStrings(layout), ["s1:next", "b3:next", "s2:next"])
@@ -143,23 +143,25 @@ class PathFinderTests: BTTestCase {
 extension Layout {
     
     func reserve(_ block: String, with train: String, direction: Direction) {
-        self.block(for: Identifier<Block>(uuid: block))?.reserved = Reservation(trainId: Identifier<Train>(uuid: train), direction: direction)
+        self.block(for: Identifier<Block>(uuid: block))?.reservation = Reservation(trainId: Identifier<Train>(uuid: train), direction: direction)
     }
 
     func free(_ block: String) {
-        self.block(for: Identifier<Block>(uuid: block))?.reserved = nil
+        self.block(for: Identifier<Block>(uuid: block))?.reservation = nil
     }
     
-    func path(for train: Train, from: (Block, Direction), to: (Block, Direction)?, reservedBlockBehavior: LayoutPathFinder.ReservedBlockBehavior = .avoidReserved, random: Bool = false) -> GraphPath? {
-        let settings = GraphPathFinder.Settings(verbose: false, random: random, overflow: pathFinderOverflowLimit)
-        let gl = LayoutPathFinder(layout: self, train: train, reservedBlockBehavior: reservedBlockBehavior, settings: settings)
-        return path(for: train, from: from, to: to, pathFinder: gl, constraints: gl.constraints, context: gl.context)
+    func path(for train: Train, from: (Block, Direction), to: (Block, Direction)?, reservedBlockBehavior: PathFinder.Constraints.ReservedBlockBehavior = .avoidReserved, random: Bool = false) -> GraphPath? {
+        let settings = PathFinder.Settings(verbose: false, random: random, overflow: pathFinderOverflowLimit)
+        let constraints = PathFinder.Constraints(layout: self, train: train, reservedBlockBehavior: reservedBlockBehavior, stopAtFirstBlock: false, relaxed: false)
+        let gl = PathFinder(constraints: constraints, settings: settings)
+        return path(for: train, from: from, to: to, pathFinder: gl)
     }
 
-    func shortestPath(for train: Train, from: (Block, Direction), to: (Block, Direction), reservedBlockBehavior: LayoutPathFinder.ReservedBlockBehavior = .avoidReserved) throws -> GraphPath? {
-        let settings = GraphPathFinder.Settings(verbose: false, random: false, overflow: pathFinderOverflowLimit)
-        let gl = LayoutPathFinder(layout: self, train: train, reservedBlockBehavior: reservedBlockBehavior, settings: settings)
-        return try shortestPath(for: train, from: from, to: to, pathFinder: gl, constraints: gl.constraints, context: gl.context)
+    func shortestPath(for train: Train, from: (Block, Direction), to: (Block, Direction), reservedBlockBehavior: PathFinder.Constraints.ReservedBlockBehavior = .avoidReserved) throws -> GraphPath? {
+        let settings = PathFinder.Settings(verbose: false, random: false, overflow: pathFinderOverflowLimit)
+        let constraints = PathFinder.Constraints(layout: self, train: train, reservedBlockBehavior: reservedBlockBehavior, stopAtFirstBlock: false, relaxed: false)
+        let gl = PathFinder(constraints: constraints, settings: settings)
+        return try shortestPath(for: train, from: from, to: to, pathFinder: gl)
     }
 
     func assertShortPath(_ from: (String, Direction), _ to: (String, Direction), _ expectedPath: [String]) throws {

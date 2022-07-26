@@ -68,6 +68,7 @@ final class LayoutDocument: ObservableObject {
     @AppStorage(SettingsKeys.debugMode) var showDebugModeControls = false
             
     @Published var onConnectTasks: LayoutOnConnectTasks
+    @Published var messages = [MarklinCANMessage]()
     
     init(layout: Layout, interface: CommandInterface = MarklinInterface()) {
         let simulator = MarklinCommandSimulator(layout: layout, interface: interface)
@@ -94,6 +95,12 @@ final class LayoutDocument: ObservableObject {
         switchboard.update()
 
         layoutDiagnostics.automaticCheck()
+        
+        if let marklin = interface as? MarklinInterface {
+            marklin.register { [weak self] canMessage in
+                self?.messages.append(canMessage)
+            }
+        }
     }
     
     func apply(_ other: Layout) {

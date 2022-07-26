@@ -162,7 +162,7 @@ extension Layout {
     // by the TrainController in manual mode to follow the movement of the
     // train on the layout when it is manually driven by someone.
     func nextValidBlockForLocomotive(from blockWithLoco: Block, train: Train) throws -> Block? {
-        guard let trainInstance = blockWithLoco.train else {
+        guard let trainInstance = blockWithLoco.trainInstance else {
             return nil
         }
         
@@ -171,30 +171,10 @@ extension Layout {
             return nil
         }
         
-        if train.wagonsPushedByLocomotive {
-            // If the locomotive is pushing the wagons, the next block must either be free
-            // or if occupied, it must be occupied by itself (which indicates that the
-            // wagons of the train occupies the next block which is expected in this scenario).
-            guard nextBlock.reserved == nil || nextBlock.reserved?.trainId == train.id else {
-                return nil
-            }
-            
-            // However, we need to make one extra check to ensure that the head of the train (which
-            // is the last wagon in this scenario) has a free block ahead of it to land on.
-            if try TrainPositionFinder.isFreeBlockInFrontOfHeadWagon(train: train, layout: self) {
-                return nextBlock
-            } else {
-                return nil
-            }
+        if nextBlock.reservation == nil {
+            return nextBlock
         } else {
-            // If the wagons are pulled by the locomotive, the next block must be free,
-            // otherwise it means another train is in the block or the tail of the train
-            // itself is still in that block in situation where the train loops on itself.
-            if nextBlock.reserved == nil {
-                return nextBlock
-            } else {
-                return nil
-            }
+            return nil
         }
     }
     

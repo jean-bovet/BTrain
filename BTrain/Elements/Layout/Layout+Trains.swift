@@ -36,8 +36,8 @@ extension Layout {
         trains.first(where: { $0.id == trainId })
     }
 
-    func remove(trainId: Identifier<Train>) {
-        try? remove(trainID: trainId)
+    func delete(trainId: Identifier<Train>) {
+        try? remove(trainId: trainId)
         trains.removeAll(where: { $0.id == trainId})
     }
     
@@ -49,7 +49,7 @@ extension Layout {
 
     func removeAllTrains() {
         trains.forEach {
-            try? remove(trainID: $0.id)
+            try? remove(trainId: $0.id)
         }
     }
     
@@ -111,7 +111,7 @@ extension Layout {
             throw LayoutError.blockNotFound(blockId: blockId)
         }
         
-        guard let ti = block.train else {
+        guard let ti = block.trainInstance else {
             throw LayoutError.trainNotFoundInBlock(blockId: blockId)
         }
         
@@ -167,16 +167,12 @@ extension Layout {
             throw LayoutError.blockNotFound(blockId: toBlockId)
         }
 
-        guard toBlock.train == nil || toBlock.train?.trainId == trainId else {
+        guard toBlock.trainInstance == nil || toBlock.trainInstance?.trainId == trainId else {
             throw LayoutError.blockNotEmpty(blockId: toBlockId)
         }
                 
-        guard toBlock.reserved == nil || toBlock.reserved?.trainId == train.id else {
-            throw LayoutError.cannotReserveBlock(block: toBlock, train: train, reserved: toBlock.reserved!)
-        }
-
-        defer {
-            didChange()
+        guard toBlock.reservation == nil || toBlock.reservation?.trainId == train.id else {
+            throw LayoutError.cannotReserveBlock(block: toBlock, train: train, reserved: toBlock.reservation!)
         }
         
         // Determine the position of the train
@@ -190,8 +186,8 @@ extension Layout {
         }
 
         // Reserve the block
-        toBlock.reserved = .init(trainId: train.id, direction: direction)
-        toBlock.train = TrainInstance(trainId, direction)
+        toBlock.reservation = .init(trainId: train.id, direction: direction)
+        toBlock.trainInstance = TrainInstance(trainId, direction)
 
         // Assign the block to the train
         train.blockId = toBlock.id
@@ -236,8 +232,8 @@ extension Layout {
 
         BTLogger.debug("Freeing block \(b1.name)")
         
-        b1.reserved = nil
-        if let blockTrain = b1.train {
+        b1.reservation = nil
+        if let blockTrain = b1.trainInstance {
             guard let train = self.train(for: blockTrain.trainId) else {
                 throw LayoutError.trainNotFound(trainId: blockTrain.trainId)
             }
@@ -245,35 +241,33 @@ extension Layout {
             if train.blockId == b1.id {
                 train.blockId = nil
             }
-            b1.train = nil
+            b1.trainInstance = nil
         }
     }
     
     // Remove the train from the layout (but not from the list of train)
-    func remove(trainID: Identifier<Train>) throws {
-        guard let train = self.train(for: trainID) else {
-            throw LayoutError.trainNotFound(trainId: trainID)
+    func remove(trainId: Identifier<Train>) throws {
+        guard let train = self.train(for: trainId) else {
+            throw LayoutError.trainNotFound(trainId: trainId)
         }
         
         // Remove the train from the blocks
         blockMap.values
-            .filter { $0.reserved?.trainId == train.id }
+            .filter { $0.reservation?.trainId == train.id }
             .forEach { block in
-                block.reserved = nil
-                block.train = nil
+                block.reservation = nil
+                block.trainInstance = nil
             }
         turnouts.filter { $0.reserved?.train == train.id }.forEach { $0.reserved = nil; $0.train = nil }
         transitions.filter { $0.reserved == train.id }.forEach { $0.reserved = nil; $0.train = nil }
         
         train.blockId = nil
-        
-        didChange()
     }
 
     func block(for train: Train, step: RouteItem) -> (Identifier<Block>, Direction)? {
         switch step {
         case .block(let stepBlock):
-            return (stepBlock.blockId, stepBlock.direction ?? .next)
+            return (stepBlock.blockId, stepBlock.direction)
 
         case .station(let stepStation):
             guard let station = self.station(for: stepStation.stationId) else {

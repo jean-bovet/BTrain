@@ -34,6 +34,7 @@ class BTTestCase: XCTestCase {
         backup = UserDefaults.standard.dictionaryRepresentation()
         BaseTimeFactor = 0.0
         previousSpeedRequestCount = TrainSpeedManager.globalRequestUUID
+        LayoutController.memoryLeakCounter = 0
     }
     
     override func tearDown() {
@@ -46,6 +47,8 @@ class BTTestCase: XCTestCase {
         if let speedChangeRequestCeiling = speedChangeRequestCeiling {
             XCTAssertLessThanOrEqual(speedChangeCount, speedChangeRequestCeiling)
         }
+        
+        XCTAssertEqual(LayoutController.memoryLeakCounter, 0, "LayoutController is leaking")
     }
     
     static func wait(for block: () -> Bool, timeout: TimeInterval) {

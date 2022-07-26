@@ -16,13 +16,6 @@ import XCTest
 
 class LayoutTests: BTTestCase {
 
-    func testValidation() throws {
-        let layout = LayoutComplexLoop().newLayout()
-        let diag = LayoutDiagnostic(layout: layout)
-        let errors = try diag.check(.skipLengths)
-        XCTAssertEqual(errors.count, 0)
-    }
-
     func testAddAndRemoveBlock() throws {
         let layout = Layout()
         
@@ -93,12 +86,12 @@ class LayoutTests: BTTestCase {
             train1.directionForward == false
         }, timeout: 1.0)
         XCTAssertEqual(train1.directionForward, false)
-        XCTAssertEqual(block1.train!.direction, .previous)
+        XCTAssertEqual(block1.trainInstance!.direction, .previous)
 
         // Set the train inside a block with a specific direction which
         // is opposite of the train direction itself
         try doc.layout.setTrainToBlock(train1.id, block1.id, direction: .next)
-        XCTAssertEqual(block1.train!.direction, .next)
+        XCTAssertEqual(block1.trainInstance!.direction, .next)
         XCTAssertEqual(train1.directionForward, false)
 
         // Change the train direction
@@ -108,31 +101,28 @@ class LayoutTests: BTTestCase {
         }, timeout: 1.0)
 
         XCTAssertEqual(train1.directionForward, true)
-        XCTAssertEqual(block1.train!.direction, .previous)
+        XCTAssertEqual(block1.trainInstance!.direction, .previous)
     }
-    
+
     func testTrainStopCompletely() throws {
-        let interface = MockCommandInterface()
-        let doc = LayoutDocument(layout: LayoutFigure8().newLayout(), interface: interface)
-        let layout = doc.layout
-        let train1 = layout.trains[0]
-        let block1 = layout.blocks[0]
+        let p = Package(layout: LayoutFigure8().newLayout())
+        let train1 = p.layout.trains[0]
+        let block1 = p.layout.blocks[0]
 
-        try layout.setTrainToBlock(train1.id, block1.id, direction: .next)
+        try p.prepare(trainID: train1.id.uuid, fromBlockId: block1.id.uuid)
         
-        XCTAssertEqual(train1.state, .stopped)
-        XCTAssertEqual(train1.scheduling, .unmanaged)
-        try doc.start(train: train1.id, withRoute: layout.routes[0].id, destination: nil)
-        XCTAssertEqual(train1.scheduling, .managed)
+        try p.start(routeID: p.layout.routes[0].id.uuid, trainID: train1.id.uuid)
 
-        // Note: state will change to running once the turnouts have been settled
-        doc.layoutController.drainAllEvents()
+        p.stop()
+        p.layoutController.waitUntilSettled()
+
+        XCTAssertEqual(train1.scheduling, .stopManaged)
         
-        XCTAssertEqual(train1.state, .running)
-        XCTAssertEqual(train1.scheduling, .managed)
-
-        doc.stop(train: train1)
-        doc.layoutController.drainAllEvents()
+        // Need to trigger braking feedback to start braking
+        p.toggle("f11")
+        
+        // Need to trigger stop feedback to start braking
+        p.toggle("f12")
 
         XCTAssertEqual(train1.state, .stopped)
         XCTAssertEqual(train1.scheduling, .unmanaged)
@@ -151,6 +141,7 @@ class LayoutTests: BTTestCase {
         train.leading.append(s1)
         train.leading.append(b1)
         train.startRouteIndex = 0
+        train.leading.settledDistance = train.leading.computeSettledDistance()
 
         XCTAssertEqual(doc.layoutController.reservation.maximumSpeedAllowed(train: train, route: nil), LayoutFactory.DefaultMaximumSpeed)
         
@@ -171,6 +162,7 @@ class LayoutTests: BTTestCase {
         train.leading.append(s1)
         train.leading.append(b1)
         train.startRouteIndex = 0
+        train.leading.settledDistance = train.leading.computeSettledDistance()
 
         XCTAssertEqual(doc.layoutController.reservation.maximumSpeedAllowed(train: train, route: nil), LayoutFactory.DefaultMaximumSpeed)
 
@@ -182,7 +174,8 @@ class LayoutTests: BTTestCase {
         // Settle manually turnout t1 so we can test the speed limit of the turnout in branch-right state.
         let t = layout.turnout(named: "t1")
         t.actualState = t.requestedState
-        
+        train.leading.settledDistance = train.leading.computeSettledDistance()
+
         XCTAssertEqual(doc.layoutController.reservation.maximumSpeedAllowed(train: train, route: route), LayoutFactory.DefaultLimitedSpeed)
     }
 

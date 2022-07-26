@@ -115,7 +115,9 @@ final class TrainLeadingReservation: TrainReservation {
     /// When turnout takes some time to change state, the leading distance might be less
     /// than the total leading distance which must be accounted for in order for the train
     /// to not use the un-settled turnout otherwise they will be taking a wrong path!
-    var settledDistance: Double {
+    var settledDistance: Double = 0.0
+
+    func computeSettledDistance() -> Double {
         var distance = 0.0
         for item in items {
             switch item {
@@ -135,5 +137,4 @@ final class TrainLeadingReservation: TrainReservation {
         }
         return distance
     }
-
 }

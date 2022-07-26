@@ -28,15 +28,15 @@ extension Block: GraphNode {
         BlockGraphElementIdentifier(id)
     }
      
-    func weight(_ constraints: GraphPathFinderConstraints) -> Double {
+    func weight() -> Double {
         length ?? 0
     }
     
-    func sockets(_ constraints: GraphPathFinderConstraints) -> [SocketId] {
+    func sockets() -> [SocketId] {
         allSockets.compactMap { $0.socketId }
     }
     
-    func reachableSockets(from socket: SocketId, _ constraints: GraphPathFinderConstraints) -> [SocketId] {
+    func reachableSockets(from socket: SocketId) -> [SocketId] {
         if socket == Block.previousSocket {
             return [Block.nextSocket]
         } else {
@@ -73,15 +73,15 @@ extension Turnout: GraphNode {
         TurnoutGraphElementIdentifier(id)
     }
         
-    func weight(_ constraints: GraphPathFinderConstraints) -> Double {
+    func weight() -> Double {
         length ?? 0
     }
     
-    func sockets(_ constraints: GraphPathFinderConstraints) -> [SocketId] {
+    func sockets() -> [SocketId] {
         allSockets.compactMap { $0.socketId }
     }
     
-    func reachableSockets(from socket: SocketId, _ constraints: GraphPathFinderConstraints) -> [SocketId] {
+    func reachableSockets(from socket: SocketId) -> [SocketId] {
         sockets(from: socket)
     }
 
@@ -165,7 +165,7 @@ extension Layout {
 
 extension Layout: Graph {
     
-    func edge(from: GraphNode, socketId: SocketId, constraints: GraphPathFinderConstraints) -> GraphEdge? {
+    func edge(from: GraphNode, socketId: SocketId) -> GraphEdge? {
         let socket: Socket
         if let block = block(from) {
             socket = Socket.block(block.id, socketId: socketId)
@@ -178,7 +178,7 @@ extension Layout: Graph {
         return try? transition(from: socket)
     }
     
-    func node(for elementId: GraphElementIdentifier, constraints: GraphPathFinderConstraints) -> GraphNode? {
+    func node(for elementId: GraphElementIdentifier) -> GraphNode? {
         if let block = block(elementId) {
             return block
         } else if let turnout = turnout(elementId) {
@@ -196,7 +196,7 @@ extension Layout {
         (turnouts.count + blocks.count) * 4
     }
         
-    func path(for train: Train, from: (Block, Direction), to: (Block, Direction?)?, pathFinder: GraphPathFinding, constraints: GraphPathFinderConstraints, context: GraphPathFinderContext) -> GraphPath? {
+    func path(for train: Train, from: (Block, Direction), to: (Block, Direction?)?, pathFinder: PathFinder) -> GraphPath? {
         // Note: when direction is `next`, it means we are leaving the starting element from its `nextSocket`
         let fromElement = GraphPathElement.starting(from.0, from.1 == .next ? Block.nextSocket : Block.previousSocket)
         let toElement: GraphPathElement?
@@ -212,14 +212,14 @@ extension Layout {
         } else {
             toElement = nil
         }
-        return pathFinder.path(graph: self, from: fromElement, to: toElement, constraints: constraints, context: context)
+        return pathFinder.path(graph: self, from: fromElement, to: toElement)
     }
  
-    func shortestPath(for train: Train, from: (Block, Direction), to: (Block, Direction), pathFinder: GraphPathFinding, constraints: GraphPathFinderConstraints, context: GraphPathFinderContext) throws -> GraphPath? {
+    func shortestPath(for train: Train, from: (Block, Direction), to: (Block, Direction), pathFinder: PathFinder) throws -> GraphPath? {
         let fromElement = from.1 == .next ? from.0.elementDirectionNext:from.0.elementDirectionPrevious
         let toElement = to.1 == .next ? to.0.elementDirectionNext:to.0.elementDirectionPrevious
 
-        return try pathFinder.shortestPath(graph: self, from: fromElement, to: toElement, constraints: constraints, context: context)
+        return try pathFinder.shortestPath(graph: self, from: fromElement, to: toElement)
     }
     
 }
@@ -292,20 +292,5 @@ extension Array where Element == GraphPathElement {
         }
     }
 
-
-}
-
-extension GraphPathFinderConstraints {
-    
-    var layoutConstraints: LayoutPathFinder.LayoutConstraints? {
-        if let lc = self as? LayoutPathFinder.LayoutConstraints {
-            return lc
-        } else if let rc = self as? RouteResolver.ResolverConstraints {
-            if let lc = rc.delegatedConstraints as? LayoutPathFinder.LayoutConstraints {
-                return lc
-            }
-        }
-        return nil
-    }
 
 }

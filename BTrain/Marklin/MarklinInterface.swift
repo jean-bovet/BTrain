@@ -11,35 +11,25 @@
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 import Foundation
-import OrderedCollections
 
+/// Implementation of the CommandInterface for the Marklin Central Station 3
 final class MarklinInterface: CommandInterface {
-        
+    
+    var callbacks = CommandInterfaceCallbacks()
+            
     var client: Client?
     
     let locomotiveConfig = MarklinLocomotiveConfig()
-    
-    // Note: very important to keep the order in which the callback are registered because
-    // this has many implications: for example, the layout controller is expecting to be
-    // the first one to process changes from the layout before other components.
-    var feedbackChangeCallbacks = OrderedDictionary<UUID, FeedbackChangeCallback>()
-        
-    /// These callbacks are invoked when the speed is changed either by the Digital Controller (a message is received from the Digital Controller)
-    /// or from an action from BTrain (a message is sent to the Digital Controller).
-    var speedChangeCallbacks = [SpeedChangeCallback]()
-    
-    var directionChangeCallbacks = [DirectionChangeCallback]()
-    var turnoutChangeCallbacks = [TurnoutChangeCallback]()
-    var locomotivesQueryCallbacks = [QueryLocomotiveCallback]()
-    
+
     typealias CompletionBlock = () -> Void
     private var disconnectCompletionBlocks: CompletionBlock?
     
     /// Map of CAN message to pending completion block.
     ///
-    /// The CAN message is of type ``MarklinCANMessageRaw`` which does not contain the hash nor the response bit. This allows
-    /// for easy comparison between a message sent and a message received (see description of ``MarklinCANMessageRaw``).
-    private var completionBlocks = [MarklinCANMessageRaw:[CompletionBlock]]()
+    /// This map is used to invoke the completion block for each command based on the acknowledgement from the Central Station.
+    /// Note that the CAN message should be a in a raw format, meaning it should hold values that are constant between the command and its acknowledgement.
+    /// For example, the hash field should be left out because it will change between the command and the corresponding acknowledgement.
+    private var completionBlocks = [MarklinCANMessage:[CompletionBlock]]()
 
     func connect(server: String, port: UInt16, onReady: @escaping () -> Void, onError: @escaping (Error) -> Void, onStop: @escaping () -> Void) {
         client = Client(host: server, port: port)
@@ -47,11 +37,7 @@ final class MarklinInterface: CommandInterface {
             onReady()
         } onData: { [weak self] msg in
             DispatchQueue.main.async {
-                if msg.isAck {
-                    self?.handleAcknowledgment(msg)
-                } else {
-                    self?.handleCommand(msg)
-                }
+                self?.onMessage(msg: msg)
             }
         } onError: { [weak self] error in
             self?.client = nil
@@ -93,42 +79,28 @@ final class MarklinInterface: CommandInterface {
         return SpeedStep(value: UInt16(steps))
     }
 
-    func register(forFeedbackChange callback: @escaping FeedbackChangeCallback) -> UUID {
-        let uuid = UUID()
-        feedbackChangeCallbacks[uuid] = callback
-        return uuid
-    }
+    typealias MessageCallback = (MarklinCANMessage) -> Void
+    private var messageCallbacks = [MessageCallback]()
     
-    func register(forSpeedChange callback: @escaping SpeedChangeCallback) {
-        speedChangeCallbacks.append(callback)
-    }
-    
-    func register(forDirectionChange callback: @escaping DirectionChangeCallback) {
-        directionChangeCallbacks.append(callback)
-    }
-    
-    func register(forTurnoutChange callback: @escaping TurnoutChangeCallback) {
-        turnoutChangeCallbacks.append(callback)
-    }
-
-    func register(forLocomotivesQuery callback: @escaping QueryLocomotiveCallback) {
-        locomotivesQueryCallbacks.append(callback)
-    }
-
-    func unregister(uuid: UUID) {
-        feedbackChangeCallbacks.removeValue(forKey: uuid)
+    func register(for callback: @escaping MessageCallback) {
+        messageCallbacks.append(callback)
     }
 
     private func triggerCompletionBlock(for message: MarklinCANMessage) {
-        triggerCompletionBlock(for: message.raw)
-    }
-    
-    private func triggerCompletionBlock(for rawMessage: MarklinCANMessageRaw) {
-        if let blocks = completionBlocks[rawMessage] {
+        if let blocks = completionBlocks[message.raw] {
             for completionBlock in blocks {
                 completionBlock()
             }
-            completionBlocks[rawMessage] = nil
+            completionBlocks[message.raw] = nil
+        }
+    }
+    
+    func onMessage(msg: MarklinCANMessage) {
+        messageCallbacks.forEach { $0(msg) }
+        if msg.isAck {
+            handleAcknowledgment(msg)
+        } else {
+            handleCommand(msg)
         }
     }
     
@@ -140,10 +112,8 @@ final class MarklinInterface: CommandInterface {
                 let status = locomotiveConfig.process(cmd)
                 if case .completed(let locomotives) = status {
                     let locomotives = locomotives.map { $0.commandLocomotive }
-                    self.locomotivesQueryCallbacks.forEach { $0(locomotives) }
+                    self.callbacks.locomotivesQueries.all.forEach { $0(locomotives) }
                 }
-            case .queryDirectionResponse(_, _, _, _):
-                break
             }
             return
         }
@@ -156,7 +126,7 @@ final class MarklinInterface: CommandInterface {
             execute(command: .queryDirection(address: address, decoderType: decoderType))
 
         case .speed(let address, let decoderType, let value, _, _):
-            speedChangeCallbacks.forEach { $0(address, decoderType, value, msg.isAck) }
+            callbacks.speedChanges.all.forEach { $0(address, decoderType, value, msg.isAck) }
 
         default:
             break
@@ -169,15 +139,6 @@ final class MarklinInterface: CommandInterface {
             switch(cmd) {
             case .configDataStream(_, _, _):
                 break // ignore ack for this command
-
-            case .queryDirectionResponse(address: let address, decoderType: let decoderType, direction: let direction, descriptor: _):
-                directionChangeCallbacks.forEach { $0(address, decoderType, direction) }
-                
-                // This command is sent back from the Central Station after a .queryDirection() command
-                // has been sent. We need to remove the byte5 that holds the direction parameter in order
-                // to correctly invoke the completion block.
-                let command = MarklinCANMessageFactory.queryDirection(addr: address)
-                triggerCompletionBlock(for: command.raw)
             }
             return
         }
@@ -193,19 +154,19 @@ final class MarklinInterface: CommandInterface {
 
         case .speed(let address, let decoderType, let value, _, _):
             triggerCompletionBlock(for: msg)
-            speedChangeCallbacks.forEach { $0(address, decoderType, value, msg.isAck) }
+            callbacks.speedChanges.all.forEach { $0(address, decoderType, value, msg.isAck) }
 
         case .direction(let address, let decoderType, let direction, _, _):
             triggerCompletionBlock(for: msg)
-            directionChangeCallbacks.forEach { $0(address, decoderType, direction) }
+            callbacks.directionChanges.all.forEach { $0(address, decoderType, direction) }
             
         case .turnout(let address, let state, let power, _, _):
             triggerCompletionBlock(for: msg)
-            turnoutChangeCallbacks.forEach { $0(address, state, power, msg.isAck) }
+            callbacks.turnoutChanges.all.forEach { $0(address, state, power, msg.isAck) }
 
         case .feedback(let deviceID, let contactID, _, let newValue, _, _, _):
             triggerCompletionBlock(for: msg)
-            feedbackChangeCallbacks.forEach { $0.value(deviceID, contactID, newValue) }
+            callbacks.feedbackChanges.all.forEach { $0(deviceID, contactID, newValue) }
 
         case .locomotives(_, _):
             triggerCompletionBlock(for: msg)

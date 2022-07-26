@@ -66,6 +66,127 @@ class TrainSpeedManagerTests: BTTestCase {
         assertChangeSpeed(train: t, from: 13, to: 0, [0], ic)
     }
     
+    func testSpeedChangeWhenActualAndRequestSpeedsAreIdentical() {
+        let t = Train()
+        let mi = MockCommandInterface()
+        let ic = TrainSpeedManager(train: t, interface: mi)
+
+        t.speed.requestedSteps = SpeedStep(value: 100)
+        t.speed.actualSteps = t.speed.requestedSteps
+
+        let expectation = expectation(description: "Completed")
+        ic.changeSpeed { completed in
+            if completed {
+                expectation.fulfill()
+            }
+        }
+        
+        wait(for: [expectation], timeout: 2.0)
+    }
+
+    func testSpeedChangeDuringProcessingOfCommandWhenActualAndRequestSpeedsAreIdentical() {
+        let t = Train()
+        let mi = MockCommandInterface()
+        let ic = TrainSpeedManager(train: t, interface: mi)
+
+        t.speed.requestedSteps = SpeedStep(value: 100)
+
+        let e1 = expectation(description: "e1")
+        ic.changeSpeed { completed in
+            if !completed {
+                e1.fulfill()
+            }
+        }
+        
+        wait(for: {
+            t.speed.actualSteps.value >= 50
+        }, timeout: 5.0)
+
+        t.speed.requestedSteps = SpeedStep(value: 20)
+        t.speed.actualSteps = t.speed.requestedSteps
+
+        mi.pause()
+        waitForPendingCommand(mi)
+
+        let e2 = expectation(description: "e2")
+        ic.changeSpeed { completed in
+            if !completed {
+                e2.fulfill()
+            }
+        }
+
+        let e3 = expectation(description: "e3")
+        ic.changeSpeed { completed in
+            if completed {
+                e3.fulfill()
+            }
+        }
+
+        mi.resume()
+
+        wait(for: [e1, e2, e3], timeout: 2.0, enforceOrder: true)
+    }
+
+    func testSpeedChangeDuringProcessingOfCommand() {
+        let t = Train()
+        let mi = MockCommandInterface()
+        let ic = TrainSpeedManager(train: t, interface: mi)
+
+        t.speed.requestedSteps = SpeedStep(value: 100)
+
+        let e1 = expectation(description: "e1")
+        ic.changeSpeed { completed in
+            if !completed {
+                e1.fulfill()
+            }
+        }
+
+        wait(for: {
+            t.speed.actualSteps.value >= 50
+        }, timeout: 5.0)
+
+        t.speed.requestedSteps = SpeedStep(value: 20)
+
+        mi.pause()
+        waitForPendingCommand(mi)
+
+        let e2 = expectation(description: "e2")
+        ic.changeSpeed { completed in
+            if !completed {
+                e2.fulfill()
+            }
+        }
+
+        t.speed.requestedSteps = SpeedStep(value: 40)
+
+        let e3 = expectation(description: "e3")
+        ic.changeSpeed { completed in
+            if completed {
+                e3.fulfill()
+            }
+        }
+
+        mi.resume()
+
+        wait(for: [e1, e2, e3], timeout: 2.0, enforceOrder: true)
+    }
+
+    func testSpeedChangeFromDigitalController() {
+        let t = Train()
+        let mi = MockCommandInterface()
+        _ = TrainSpeedManager(train: t, interface: mi)
+        
+        t.speed.requestedSteps = SpeedStep(value: 0)
+        t.speed.actualSteps = t.speed.requestedSteps
+
+        mi.callbacks.speedChanges.all[0](t.address, t.decoder, SpeedValue(value: 100), false)
+        XCTAssertEqual(t.speed.requestedKph, 158)
+        
+        mi.callbacks.speedChanges.all[0](t.address, t.decoder, SpeedValue(value: 100), true)
+        XCTAssertEqual(t.speed.requestedKph, 158)
+        XCTAssertEqual(t.speed.actualKph, 158)
+    }
+
     func testActualSpeedChangeHappensAfterDigitalControllerResponse() {
         let t = Train()
         t.speed.accelerationProfile = .none
@@ -80,10 +201,7 @@ class TrainSpeedManagerTests: BTTestCase {
         }
 
         mi.pause()
-        
-        wait(for: {
-            mi.pendingCommands.count > 0
-        }, timeout: 1.0)
+        waitForPendingCommand(mi)
 
         // The actual speed shouldn't change yet, because the completion
         // block for the command request hasn't been invoked yet
@@ -110,28 +228,50 @@ class TrainSpeedManagerTests: BTTestCase {
         // Send a request to change the speed
         t.speed.requestedSteps = SpeedStep(value: 50)
         
-        let cancelledChange = expectation(description: "Cancelled")
+        let cancelledSpeed50 = expectation(description: "Cancelled 50")
         ic.changeSpeed { completed in
             if !completed {
-                cancelledChange.fulfill()
+                cancelledSpeed50.fulfill()
             }
         }
+                
+        XCTAssertEqual(ic.commandQueue[0].requestedSteps.value, 50)
         
+        // Wait until we have some speed set for the train (20 or above)
         wait(for: {
             t.speed.actualSteps.value >= 20
         }, timeout: 5.0)
 
+        mi.pause()
+        waitForPendingCommand(mi)
+                        
         t.speed.requestedSteps = SpeedStep(value: 10)
-        let completedChange = expectation(description: "Completed")
+        let cancelledSpeed10 = expectation(description: "Cancelled 10")
         ic.changeSpeed { completed in
-            if completed {
-                completedChange.fulfill()
+            if !completed {
+                cancelledSpeed10.fulfill()
             }
         }
 
-        wait(for: [cancelledChange, completedChange], timeout: 5.0, enforceOrder: true)
+        XCTAssertEqual(ic.commandQueue[0].requestedSteps.value, 50)
         
-        XCTAssertEqual(10, t.speed.actualSteps.value)
+        t.speed.requestedSteps = SpeedStep(value: 0)
+        let completedSpeed0 = expectation(description: "Completed 0")
+        ic.changeSpeed { completed in
+            if completed {
+                completedSpeed0.fulfill()
+            }
+        }
+
+        XCTAssertEqual(ic.commandQueue[0].requestedSteps.value, 50)
+
+        mi.resume()
+        
+        XCTAssertEqual(ic.commandQueue[0].requestedSteps.value, 0)
+
+        wait(for: [cancelledSpeed50, cancelledSpeed10, completedSpeed0], timeout: 5.0, enforceOrder: true)
+        
+        XCTAssertEqual(0, t.speed.actualSteps.value)
     }
     
     /// Ensure that the timer used during the settling of the stop of a locomotive is correctly
@@ -179,53 +319,96 @@ class TrainSpeedManagerTests: BTTestCase {
         wait(for: [cancelledChange], timeout: 5.0)
 
         // Ensure that the state of the train hasn't changed
-        XCTAssertEqual(.running, t.state)
-        
+        XCTAssertEqual(t.state, .running)
+
         wait(for: [completedChangeTo10], timeout: 5.0)
-        XCTAssertEqual(10, t.speed.actualSteps.value)
+        XCTAssertEqual(t.speed.actualSteps.value, 10)
     }
-    
+        
+    /// Ensure that scheduling a speed change while the stop settle timer is running works
+    func testSpeedChangeStopSettleDelayWhileSchedulingNewSpeedChange() throws {
+        let t = Train(id: .init(uuid: "1"), name: "CFF", address: 0)
+        t.speed.accelerationStepDelay = 1
+        t.speed.stopSettleDelay = 2.0
+        t.speed.accelerationProfile = .linear
+        let mi = MockCommandInterface()
+        let settledDelayTimer = MockStopSettledDelayTimer()
+        let ic = TrainSpeedManager(train: t, interface: mi)
+        ic.stopSettlingDelayTimer = settledDelayTimer
+
+        // Start with a speed of 50
+        t.speed.requestedSteps = SpeedStep(value: 50)
+        t.speed.actualSteps = SpeedStep(value: 50)
+
+        // Send a request to change the speed to 0
+        t.speed.requestedSteps = SpeedStep(value: 0)
+        t.state = .running
+        
+        let changeSpeedTo0 = expectation(description: "speed0")
+        ic.changeSpeed { completed in
+            // Note: the command as completed even though the settled delay timer hasn't finished for it.
+            if completed {
+                changeSpeedTo0.fulfill()
+            }
+        }
+                
+        // Pause the settled delay timer
+        settledDelayTimer.pause()
+        
+        wait(for: {
+            t.speed.actualSteps.value == 0
+        }, timeout: 5.0)
+
+        XCTAssertEqual(t.state, .running)
+        
+        // Schedule a speed change request (while the settled delay timer is still
+        // running - in our case here, we simulate that by having it paused).
+        t.speed.requestedSteps = SpeedStep(value: 10)
+        let changeSpeedTo10 = expectation(description: "speed10")
+        ic.changeSpeed { completed in
+            if completed {
+                changeSpeedTo10.fulfill()
+            }
+        }
+
+        settledDelayTimer.resume()
+
+        wait(for: [changeSpeedTo0, changeSpeedTo10], timeout: 5.0, enforceOrder: true)
+    }
+
     /// Ensure that a previous speed change callback that is being cancelled does not change
     /// the train state. For example, a train stopping can be restarted in the middle of being stopped;
     /// when that happen, the new state of .running should not be overridden by the previous callback.
     func testSpeedChangeCancelPreviousCompletionBlock() throws {
         let layout = LayoutYard().newLayout().removeTrainGeometry()
-        let interface = MockCommandInterface()
-        let doc = LayoutDocument(layout: layout, interface: interface)
+        let p = Package(layout: layout)
         
         let t = layout.trains[0]
         let block = layout.blocks[0]
-        try layout.setTrainToBlock(t.id, block.id, direction: .next)
         
-        try doc.layoutController.start(routeID: t.routeId, trainID: t.id)
-        wait(for: {
-            t.state == .running
-        }, timeout: 1.0)
-
-        doc.layoutController.drainAllEvents()
+        try p.prepare(trainID: t.id.uuid, fromBlockId: block.id.uuid)
+        try p.start(routeID: t.routeId.uuid, trainID: t.id.uuid)
         
         // Ask the layout to stop the train
-        doc.layoutController.stop(train: t)
+        p.layoutController.stop(train: t)
 
-        layout.feedback(for: block.stopFeedbackNext!)!.detected.toggle()
-        doc.layoutController.runControllers(.feedbackTriggered)
+        p.toggle("A.1")
+
+        wait(for: {
+            t.state == .braking
+        }, timeout: 1.0)
+
+        p.toggle("A.2", drainAll: false)
 
         wait(for: {
             t.state == .stopping
         }, timeout: 1.0)
         
         // Ask to restart the train before it has a change to fully stop
-        try doc.layoutController.start(routeID: t.routeId, trainID: t.id)
-        
-        wait(for: {
-            t.state == .running
-        }, timeout: 1.0)
-
-        doc.layoutController.drainAllEvents()
-        XCTAssertEqual(t.state, .running)
-        
-        doc.stop(train: t)
-        doc.layoutController.drainAllEvents()
+        try p.start(routeID: t.routeId.uuid, trainID: t.id.uuid, expectedState: .running)
+                
+        p.layoutController.stop(train: t)
+        p.layoutController.waitUntilSettled()
     }
     
     func testMultipleIdenticalSpeedRequests() {
@@ -234,42 +417,35 @@ class TrainSpeedManagerTests: BTTestCase {
         
         let mi = MockCommandInterface()
         let ic = TrainSpeedManager(train: t, interface: mi)
-        
-        let previousRequestUUID = TrainSpeedManager.globalRequestUUID
-        
+                
         t.speed.requestedKph = 80
         mi.pause()
-        let e = expectation(description: "Completion")
+        let e1 = expectation(description: "e1")
         ic.changeSpeed { completed in
             XCTAssertFalse(completed)
-            e.fulfill()
+            e1.fulfill()
         }
 
         // Wait for the command interface to receive the speed command
-        wait(for: {
-            mi.pendingCommands.count > 0
-        }, timeout: 1.0)
-        
+        waitForPendingCommand(mi)
+
         t.speed.requestedKph = 40
 
-        let e2 = expectation(description: "Completion")
+        let e2 = expectation(description: "e2")
         ic.changeSpeed { completed in
-            XCTAssertTrue(completed)
+            XCTAssertFalse(completed)
             e2.fulfill()
         }
 
-        // All these subsequent speed change request should be ignored as they are all the same
-        ic.changeSpeed()
-        ic.changeSpeed()
-        ic.changeSpeed()
-        ic.changeSpeed()
-
-        // Only two speed change requests should be scheduled (for 80kph and 40kph)
-        XCTAssertEqual(TrainSpeedManager.globalRequestUUID - previousRequestUUID, 2)
+        let e3 = expectation(description: "e3")
+        ic.changeSpeed { completed in
+            XCTAssertTrue(completed)
+            e3.fulfill()
+        }
         
         mi.resume()
 
-        wait(for: [e, e2], timeout: 1.0, enforceOrder: true)
+        wait(for: [e1, e2, e3], timeout: 1.0, enforceOrder: true)
     }
 
     func testIdenticalRequestToCancelledProcessingCommand() {
@@ -283,21 +459,20 @@ class TrainSpeedManagerTests: BTTestCase {
         
         t.speed.requestedKph = 80
         mi.pause()
-        let e = expectation(description: "Completion e")
+        let e1 = expectation(description: "Completion e1")
         ic.changeSpeed { completed in
             XCTAssertFalse(completed)
-            e.fulfill()
+            e1.fulfill()
         }
 
         // Wait for the command interface to receive the speed command
-        wait(for: {
-            mi.pendingCommands.count > 0
-        }, timeout: 1.0)
-        
+        waitForPendingCommand(mi)
+
         t.speed.requestedKph = 0
         let e2 = expectation(description: "Completion e2")
         ic.changeSpeed { completed in
-            XCTAssertFalse(completed)
+            // Note: completed is true because the actual speed of the train is 0 (the first changeSpeed of 80 has been cancelled)
+            XCTAssertTrue(completed)
             e2.fulfill()
         }
         
@@ -312,9 +487,7 @@ class TrainSpeedManagerTests: BTTestCase {
         
         mi.resume()
 
-        // e2 completes first (because it is cancelled while e is still in progress with the Digital Controller),
-        // then e completes (cancelled) and finally e3 completes (completed).
-        wait(for: [e2, e, e3], timeout: 1.0, enforceOrder: true)
+        wait(for: [e1, e2, e3], timeout: 1.0, enforceOrder: true)
     }
 
     private func assertChangeSpeed(train: Train, from fromSteps: UInt16, to steps: UInt16, _ expectedSteps: [UInt16], _ ic: TrainSpeedManager) {
@@ -342,4 +515,40 @@ class TrainSpeedManagerTests: BTTestCase {
         cmd.speedValues.removeAll()
     }
     
+    private func waitForPendingCommand(_ mi: MockCommandInterface) {
+        wait(for: {
+            mi.pendingCommands.count > 0
+        }, timeout: 1.0)
+    }
 }
+
+/// A settled timer implementation that can be paused and resumed, to simulate the timer taking some time
+final class MockStopSettledDelayTimer: StopSettledDelayTimer {
+    
+    typealias SettledBlock = (Bool) -> Void
+    
+    var paused = false
+    var blocks = [(Bool, SettledBlock)]()
+    
+    func schedule(train: Train, completed: Bool, completion: @escaping SettledBlock) {
+        if paused {
+            blocks.append((completed, completion))
+        } else {
+            completion(completed)
+        }
+    }
+    
+    func cancel() {
+        blocks.removeAll()
+    }
+    
+    func pause() {
+        paused = true
+    }
+    
+    func resume() {
+        paused = false
+        blocks.forEach { $1($0) }
+    }
+}
+

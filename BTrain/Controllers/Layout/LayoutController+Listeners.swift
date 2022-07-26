@@ -15,20 +15,20 @@ import Foundation
 extension LayoutController {
     
     func registerForFeedbackChange() {
-        _ = interface.register(forFeedbackChange: { [weak self] deviceID, contactID, value in
+        interface.callbacks.register(forFeedbackChange: { [weak self] deviceID, contactID, value in
             guard let sSelf = self else {
                 return
             }
             if let feedback = sSelf.layout.feedbacks.find(deviceID: deviceID, contactID: contactID) {
                 feedback.detected = value == 1
                 BTLogger.debug("Feedback \(feedback) changed to \(feedback.detected)")
-                sSelf.runControllers(.feedbackTriggered)
+                sSelf.runControllers(.feedbackTriggered(feedback))
             }
         })
     }
                 
     func registerForDirectionChange() {
-        interface.register(forDirectionChange: { [weak self] address, decoder, direction in
+        interface.callbacks.register(forDirectionChange: { [weak self] address, decoder, direction in
             self?.directionDidChange(address: address, decoder: decoder, direction: direction)
         })
     }
@@ -38,17 +38,20 @@ extension LayoutController {
             if let train = layout.trains.find(address: address, decoder: decoder) {
                 BTLogger.debug("Direction changed to \(direction) for \(train.name)")
                 switch(direction) {
+                case .unchanged:
+                    BTLogger.debug("Direction \(direction) for \(address.toHex())")
+
                 case .forward:
                     if train.directionForward == false {
                         train.directionForward = true
                         try toggleTrainDirectionInBlock(train)
-                        runControllers(.directionChanged)
+                        runControllers(.directionChanged(train))
                     }
                 case .backward:
                     if train.directionForward {
                         train.directionForward = false
                         try toggleTrainDirectionInBlock(train)
-                        runControllers(.directionChanged)
+                        runControllers(.directionChanged(train))
                     }
                 case .unknown:
                     BTLogger.error("Unknown direction \(direction) for \(address.toHex())")
@@ -62,7 +65,7 @@ extension LayoutController {
     }
     
     func registerForTurnoutChange() {
-        interface.register(forTurnoutChange: { [weak self] address, state, power, acknowledgement in
+        interface.callbacks.register(forTurnoutChange: { [weak self] address, state, power, acknowledgement in
             guard let layout = self?.layout else {
                 return
             }
@@ -75,18 +78,16 @@ extension LayoutController {
                 return
             }
             
+            // We are only interested in acknowledgment messages which confirm
+            // the actual state of a turnout.
+            guard acknowledgement == true else {
+                return
+            }
+            
             if let turnout = layout.turnouts.find(address: address) {
                 turnout.setActualState(value: state, for: address.actualAddress)
-                if acknowledgement == false {
-                    // If acknowledgement is false, it means it is a command that has been
-                    // triggered by the Digital Controller and we need to reflect this by
-                    // ensuring the turnout is settled with both requested and actual state
-                    // being the same.
-                    // TODO: unit test for that
-                    turnout.requestedState = turnout.actualState
-                }
                 BTLogger.debug("Turnout \(turnout.name) state changed to \(state) (ack=\(acknowledgement)), power \(power), for address \(address.actualAddress.toHex()). Actual state \(turnout.actualState). Requested state \(turnout.requestedState)")
-                self?.runControllers(.turnoutChanged)
+                self?.runControllers(.turnoutChanged(turnout))
             } else {
                 BTLogger.error("Unknown turnout for address \(address.actualAddress.toHex())")
             }

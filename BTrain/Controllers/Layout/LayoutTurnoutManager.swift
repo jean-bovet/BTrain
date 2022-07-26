@@ -16,7 +16,6 @@ final class LayoutTurnoutManager {
             
     // Queue to ensure that sending of command for each turnout does happen
     // every 250ms in order to avoid a spike in current on the real layout.
-    // TODO: expose that as a settings
     static let turnoutDelay = 0.250 * BaseTimeFactor
     let turnoutQueue = ScheduledMessageQueue(delay: turnoutDelay, name: "Turnout")
                     

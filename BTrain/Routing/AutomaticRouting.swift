@@ -49,7 +49,7 @@ final class AutomaticRouting {
             throw LayoutError.routeIsNotAutomatic(route: route)
         }
         
-        guard let trainInstance = currentBlock.train else {
+        guard let trainInstance = currentBlock.trainInstance else {
             throw LayoutError.trainNotFoundInBlock(blockId: currentBlock.id)
         }
 
@@ -57,10 +57,11 @@ final class AutomaticRouting {
         // just avoid the reserved block in front of the current one but ignore the others
         // (the automatic route will re-evaluate itself if it encounters a reserved block later
         // during execution, to avoid deadlocking).
-        let settings = GraphPathFinder.Settings(verbose: SettingsKeys.bool(forKey: SettingsKeys.logRoutingResolutionSteps),
+        let settings = PathFinder.Settings(verbose: SettingsKeys.bool(forKey: SettingsKeys.logRoutingResolutionSteps),
                                                 random: layout.automaticRouteRandom,
                                                 overflow: layout.pathFinderOverflowLimit)
-        let pf = LayoutPathFinder(layout: layout, train: train, reservedBlockBehavior: destination == nil ? .avoidFirstReservedBlock : .avoidReserved, settings: settings)
+        let constraints = PathFinder.Constraints(layout: layout, train: train, reservedBlockBehavior: destination == nil ? .avoidFirstReservedBlock : .avoidReserved, stopAtFirstBlock: false, relaxed: false)
+        let pf = PathFinder(constraints: constraints, settings: settings)
         
         let to: (Block, Direction?)?
         if let destination = destination {
@@ -74,9 +75,9 @@ final class AutomaticRouting {
         
         let path: GraphPath?
         if let to = to, let toBlockDirection = to.1, SettingsKeys.bool(forKey: SettingsKeys.shortestRouteEnabled) {
-            path = try layout.shortestPath(for: train, from: (currentBlock, trainInstance.direction), to: (to.0, toBlockDirection), pathFinder: pf, constraints: pf.constraints, context: pf.context)
+            path = try layout.shortestPath(for: train, from: (currentBlock, trainInstance.direction), to: (to.0, toBlockDirection), pathFinder: pf)
         } else {
-            path = layout.path(for: train, from: (currentBlock, trainInstance.direction), to: to, pathFinder: pf, constraints: pf.constraints, context: pf.context)
+            path = layout.path(for: train, from: (currentBlock, trainInstance.direction), to: to, pathFinder: pf)
         }
         
         if let path = path {

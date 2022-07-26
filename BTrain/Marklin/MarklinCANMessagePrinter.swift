@@ -57,8 +57,6 @@ struct MarklinCANMessagePrinter {
             switch(mc) {
             case .configDataStream(length: _, data: _, descriptor: let descriptor):
                 return descriptor?.description
-            case .queryDirectionResponse(address: _, decoderType: _, direction: _, descriptor: let descriptor):
-                return descriptor?.description
 
             case .none:
                 if SettingsKeys.bool(forKey: SettingsKeys.logUnknownMessages) {

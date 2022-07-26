@@ -48,11 +48,12 @@ class ShortestPathComplexTests: XCTestCase {
     func testPerformancePath1() throws {
         let layout = LayoutComplex().newLayout()
         let ne1 = layout.block(named: "NE1")
-        let hsl_p1 = layout.block(named: "HLS_P1")        
+        let hsl_p1 = layout.block(named: "HLS_P1")
+        let constraints = PathFinder.Constraints(layout: layout, train: layout.trains[0], reservedBlockBehavior: .avoidReserved, stopAtFirstBlock: false, relaxed: false)
         measure {
-            _ = try? GraphShortestPathFinder.shortestPath(graph: layout,
+            _ = try? ShortestPathFinder.shortestPath(graph: layout,
                                                           from: ne1.elementDirectionNext,
-                                                          to: hsl_p1.elementDirectionNext,
+                                                          to: hsl_p1.elementDirectionNext, constraints: constraints,
                                                           verbose: false)
         }
     }

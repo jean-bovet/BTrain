@@ -26,7 +26,7 @@ class TrainSpeedMeasurementTests: BTTestCase {
         
         let train = layout.trains[0]
         train.blockId = layout.blocks[0].id
-        layout.blocks[0].train = .init(train.id, .next)
+        layout.blocks[0].trainInstance = .init(train.id, .next)
 
         let fa = layout.feedback(for: Identifier<Feedback>(uuid: "OL1.2"))!
         let fb = layout.feedback(for: Identifier<Feedback>(uuid: "OL2.1"))!
@@ -79,7 +79,7 @@ class TrainSpeedMeasurementTests: BTTestCase {
         let train = layout.trains[0]
         let ol1 = layout.block(named: "OL1")
         train.blockId = ol1.id
-        ol1.train = .init(train.id, .next)
+        ol1.trainInstance = .init(train.id, .next)
 
         // Ensure the turnouts are properly set
         layout.turnout(named: "E.1").setState(.straight)
@@ -174,7 +174,7 @@ class TrainSpeedMeasurementTests: BTTestCase {
         let train = layout.trains[0]
         let ol1 = layout.block(named: "OL1")
         train.blockId = ol1.id
-        ol1.train = .init(train.id, .next)
+        ol1.trainInstance = .init(train.id, .next)
 
         // Ensure the turnouts are properly set
         layout.turnout(named: "E.1").setState(.straight)

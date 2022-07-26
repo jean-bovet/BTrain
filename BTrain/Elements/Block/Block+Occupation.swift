@@ -13,44 +13,10 @@
 import Foundation
 
 extension Block {
-
-    // Returns the direction in which the wagons are layout for the given
-    // train and block. If the wagons are pushed by the locomotive, they
-    // will have a direction opposite to the one of the locomotive (train).
-    // Gather the train direction of travel within the current block
-    // and the wagon direction - which can be the same or the opposite.
-    // For example:
-    //              ▷             ◁             ◁
-    //         ┌─────────┐   ┌─────────┐   ┌─────────┐
-    //         │ ■■■■■■▶ │──▶│ ■■■■■■▶ │──▶│ ■■■■■■▶ │
-    //         └─────────┘   └─────────┘   └─────────┘
-    //  Train:   next          previous      previous
-    //  Wagon:   previous      next          next
-    //  trainAndWagonDirectionIdentical = false
-    //              ▷             ◁             ◁
-    //         ┌─────────┐   ┌─────────┐   ┌─────────┐
-    //         │ ▶■■■■■■ │──▶│ ▶■■■■■■ │──▶│ ▶■■■■■■ │
-    //         └─────────┘   └─────────┘   └─────────┘
-    //  Train:   next          previous      previous
-    //  Wagon:   next          previous      previous
-    //  trainAndWagonDirectionIdentical = true
-    //
-    func wagonDirection(for train: Train) throws -> Direction {
-        guard let trainInstance = self.train else {
-            throw LayoutError.trainNotFoundInBlock(blockId: id)
-        }
-
-        // Direction of travel of the train within the block
-        let trainDirection = trainInstance.direction
-        // Direction in which the wagon are layout from the locomotive
-        let wagonDirection = train.wagonsPushedByLocomotive ? trainDirection : trainDirection.opposite
-        
-        return wagonDirection
-    }
     
     // Returns true if the block is reserved and occupied by the train or a portion of the train.
     func isOccupied(by trainId: Identifier<Train>) -> Bool {
-        reserved?.trainId == trainId && train?.trainId == trainId
+        reservation?.trainId == trainId && trainInstance?.trainId == trainId
     }
     
     func canBeReserved(withTrain: Train, direction: Direction) -> Bool {
@@ -58,12 +24,12 @@ extension Block {
             return false
         }
         
-        guard train == nil else {
+        guard trainInstance == nil else {
             return false
         }
         
         let reservation = Reservation(trainId: withTrain.id, direction: direction)
-        guard reserved == nil || reserved == reservation else {
+        guard self.reservation == nil || self.reservation == reservation else {
             return false
         }
         

@@ -43,13 +43,13 @@ extension Layout {
             }
             nextBlock = nb
         } else {
-            if train.wagonsPushedByLocomotive {
-                guard let nb = train.occupied.blocks.dropFirst().first else {
+            if train.directionForward {
+                guard let nb = train.leading.blocks.first else {
                     return nil
                 }
                 nextBlock = nb
             } else {
-                guard let nb = train.leading.blocks.first else {
+                guard let nb = train.occupied.blocks.dropFirst().first else {
                     return nil
                 }
                 nextBlock = nb
@@ -76,7 +76,7 @@ extension Layout {
     ///   - nextBlock: the next block that the train is about to enter
     /// - Returns: the feedback and the direction of travel of the train inside the ``nextBlock``
     func entryFeedback(from fromBlock: Block, to nextBlock: Block) throws -> Layout.EntryFeedback? {
-        guard let direction = fromBlock.train?.direction else {
+        guard let direction = fromBlock.trainInstance?.direction else {
             throw LayoutError.trainNotFoundInBlock(blockId: fromBlock.id)
         }
         

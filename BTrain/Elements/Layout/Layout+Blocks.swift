@@ -39,6 +39,26 @@ extension Layout {
         blockMap[block.id] = block
         return block
     }
+
+    func duplicate(blockId: Identifier<Block>) {
+        guard let block = block(for: blockId) else {
+            return
+        }
+        let nb = newBlock(name: "\(block.name) copy", category: block.category)
+        nb.length = block.length
+        nb.waitingTime = block.waitingTime
+        nb.center = block.center.translatedBy(x: 50, y: 50)
+        nb.rotationAngle = block.rotationAngle
+        nb.feedbacks = block.feedbacks
+        
+        nb.entryFeedbackNext = block.entryFeedbackNext
+        nb.brakeFeedbackNext = block.brakeFeedbackNext
+        nb.stopFeedbackNext = block.stopFeedbackNext
+        
+        nb.entryFeedbackPrevious = block.entryFeedbackPrevious
+        nb.brakeFeedbackPrevious = block.brakeFeedbackPrevious
+        nb.stopFeedbackPrevious = block.stopFeedbackPrevious
+    }
     
     func remove(blockID: Identifier<Block>) {
         transitions.removeAll { transition in
@@ -68,7 +88,7 @@ extension Layout {
     }
     
     func block(for trainId: Identifier<Train>) -> Block? {
-        blockMap.first(where: { $0.value.train?.trainId == trainId })?.value
+        blockMap.first(where: { $0.value.trainInstance?.trainId == trainId })?.value
     }
     
     func sortBlocks() {
@@ -102,7 +122,7 @@ extension Layout {
     
     func atEndOfBlock(train: Train) throws -> Bool {
         if let currentBlock = currentBlock(train: train) {
-            guard let ti = currentBlock.train else {
+            guard let ti = currentBlock.trainInstance else {
                 throw LayoutError.trainNotFoundInBlock(blockId: currentBlock.id)
             }
             if ti.direction == .next {

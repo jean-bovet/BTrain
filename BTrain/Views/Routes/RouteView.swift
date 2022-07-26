@@ -15,7 +15,7 @@ import SwiftUI
 struct RouteView: View {
     
     struct RouteError {
-        let resolverErrors: [GraphPathFinder.ResolverError]
+        let resolverErrors: [PathFinderResolver.ResolverError]
         let valid: Bool
     }
     
@@ -70,8 +70,19 @@ struct RouteView: View {
         }
 
         for error in routeError.resolverErrors {
-            if error.to == index {
-                return true
+            switch error {
+            case .cannotResolvePath(_, let to):
+                if to == index {
+                    return true
+                }
+                
+            case .cannotResolveElement(let at):
+                if at == index {
+                    return true
+                }
+                
+            default:
+                break
             }
         }
         
@@ -147,8 +158,8 @@ struct RouteView: View {
     
     func validateRoute() {
         let diag = LayoutDiagnostic(layout: layout)
-        var errors = [DiagnosticError]()
-        var resolverError = [GraphPathFinder.ResolverError]()
+        var errors = [LayoutDiagnostic.DiagnosticError]()
+        var resolverError = [PathFinderResolver.ResolverError]()
         diag.checkRoute(route: route, &errors, resolverErrors: &resolverError)
         if errors.isEmpty {
             routeError = .init(resolverErrors: resolverError, valid: true)

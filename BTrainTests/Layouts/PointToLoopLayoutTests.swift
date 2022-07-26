@@ -27,13 +27,13 @@ class PointToLoopLayoutTests: XCTestCase {
         layout.automaticRouteRandom = false
                 
         // Verify the a path can be found starting in block "A"
-        let pf = LayoutPathFinder(layout: layout, train: train, reservedBlockBehavior: .avoidReserved, settings: .init(verbose: true, random: false, overflow: 30))
-        let path = pf.path(graph: layout, from: .starting(blockA, Block.nextSocket), to: nil, constraints: pf.constraints, context: pf.context)!
+        let constraints = PathFinder.Constraints(layout: layout, train: train, reservedBlockBehavior: .avoidReserved, stopAtFirstBlock: false, relaxed: false)
+        let pf = PathFinder(constraints: constraints, settings: .init(verbose: true, random: false, overflow: 30))
+        let path = pf.path(graph: layout, from: .starting(blockA, Block.nextSocket), to: nil)!
         XCTAssertEqual(path.toStrings, ["A:1", "0:T1:1", "0:B:1", "0:C:1", "0:D:1", "2:T1:0", "1:A"])
         
-        let unresolvedPath: [UnresolvedGraphPathElement] = path.elements.map { $0 }
-        var errors = [GraphPathFinder.ResolverError]()
-        let resolved = pf.resolve(graph: layout, unresolvedPath, constraints: pf.constraints, context: pf.context, errors: &errors)!
+        let unresolvedPath = path.elements.map { $0 }
+        let resolved = try pf.resolve(graph: layout, unresolvedPath).get()
         XCTAssertEqual(resolved.toStrings, ["A:1", "0:T1:1", "0:B:1", "0:C:1", "0:D:1", "2:T1:0", "1:A"])
     }
 

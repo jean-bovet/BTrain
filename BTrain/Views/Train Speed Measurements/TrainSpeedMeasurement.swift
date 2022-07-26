@@ -110,10 +110,6 @@ final class TrainSpeedMeasurement {
         
         feedbackMonitor.cancel()
         feedbackMonitor.stop()
-
-        Task {
-            try await stopTrain()
-        }
     }
     
     func done() {
@@ -137,6 +133,10 @@ final class TrainSpeedMeasurement {
             } else {
                 entryIndex += 1
             }
+        }
+        
+        if Task.isCancelled {
+            try await stopTrain()
         }
     }
     
@@ -248,7 +248,8 @@ final class TrainSpeedMeasurement {
         let speedInKph = realDistanceKm / durationInHour
                         
         let entry = speedEntry(for: entryIndex)
-        setSpeedEntry(.init(steps: entry.steps, speed: TrainSpeed.UnitKph(speedInKph)), for: entryIndex)
+        let speed = TrainSpeed.UnitKph(min(Double(UInt16.max), speedInKph))
+        setSpeedEntry(.init(steps: entry.steps, speed: speed), for: entryIndex)
     }
         
     private func speedEntry(for entryIndex: Int) -> TrainSpeed.SpeedTableEntry {

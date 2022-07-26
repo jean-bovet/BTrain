@@ -24,6 +24,7 @@ extension DiagnosticsSheet: Inspectable { }
 class DocumentViewTests: RootViewTests {
 
     func testMainView() throws {
+        let doc = newDocument()
         let sut = MainView(document: doc)
         
         doc.selectedView = .overview
@@ -47,6 +48,7 @@ class DocumentViewTests: RootViewTests {
     }
     
     func testDocumentView() throws {
+        let doc = newDocument()
         let sut = DocumentView(document: doc, layout: doc.layout)
         doc.layout.newLayoutWizardExecuted = true
         _ = try sut.inspect().find(MainView.self)
@@ -65,13 +67,15 @@ class DocumentViewTests: RootViewTests {
     }
 
     func testConnectSheet() throws {
+        let doc = newDocument()
         let sut = ConnectSheet(document: doc, onConnectTasks: doc.onConnectTasks)
         XCTAssertNoThrow(try sut.inspect().find(button: "Connect"))
         XCTAssertNoThrow(try sut.inspect().find(button: "Cancel"))
     }
 
     func testDiagnosticsSheet() throws {
-        let sut = DiagnosticsSheet(layout: layout, options: .skipLengths)
+        let doc = newDocument()
+        let sut = DiagnosticsSheet(layout: doc.layout, options: .skipLengths)
         XCTAssertNoThrow(try sut.inspect().find(button: "OK"))
         XCTAssertNoThrow(try sut.inspect().find(text: "The layout is correct!"))
     }

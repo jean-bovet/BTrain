@@ -147,7 +147,7 @@ extension LayoutError: LocalizedError {
             return "The destination block \(destination.blockId) does not match the current block \(currentBlock.id) (\(currentBlock.name))"
             
         case .blockAlreadyReserved(block: let block):
-            return "Block \(block.name) is already reserved for \(String(describing: block.reserved))"
+            return "Block \(block.name) is already reserved for \(String(describing: block.reservation))"
         case .turnoutAlreadyReserved(turnout: let turnout):
             return "Turnout \(turnout.name) is already reserved for \(String(describing: turnout.reserved))"
         case .transitionAlreadyReserved(transition: let transition):

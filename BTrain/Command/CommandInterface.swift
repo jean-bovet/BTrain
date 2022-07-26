@@ -12,11 +12,24 @@
 
 import Foundation
 
-/// A protocol describing the API towards a Digital Controller without being specific to a given brand.
+/// A protocol describing the behaviors of a Digital Controller without being specific to a given brand.
 protocol CommandInterface: AnyObject, MetricsProvider {
-            
+    
+    /// Returns the callbacks available for the command interface
+    var callbacks: CommandInterfaceCallbacks { get }
+    
+    /// Connects to the Digital Controller
+    ///
+    /// - Parameters:
+    ///   - server: the Digital Controller address
+    ///   - port: the Digital Controller port
+    ///   - onReady: a callback invoked when the connection has been established
+    ///   - onError: a callback invoked when the connection cannot be established
+    ///   - onStop: a callback invoked when the connection is closed
     func connect(server: String, port: UInt16, onReady: @escaping CompletionBlock, onError: @escaping (Error) -> Void, onStop: @escaping CompletionBlock)
     
+    /// Disconnects from the Digital Controller
+    /// - Parameter completion: a callback invoked when the connection is effectively disconnected
     func disconnect(_ completion: @escaping CompletionBlock)
     
     /// Executes a command by sending the appropriate message to the Digital Controller.
@@ -29,26 +42,19 @@ protocol CommandInterface: AnyObject, MetricsProvider {
     ///   - completion: a completion block called when the Digital Controller has acknowledged the command. The completion block should always be called in the main thread.
     func execute(command: Command, completion: CompletionBlock?)
     
-    // Returns the speed value given the number of steps and the decoder type
+    /// Returns the speed value given the number of steps and the decoder type
+    ///
+    /// - Parameters:
+    ///   - steps: the number of steps
+    ///   - decoder: the decoder
+    /// - Returns: the corresponding speed value
     func speedValue(for steps: SpeedStep, decoder: DecoderType) -> SpeedValue
     
-    // Returns the number of decoder steps given the speed value and decoder type
+    /// Returns the number of decoder steps given the speed value and decoder type
+    ///
+    /// - Parameters:
+    ///   - value: the speed value
+    ///   - decoder: the decoder
+    /// - Returns: the corresponding number of steps
     func speedSteps(for value: SpeedValue, decoder: DecoderType) -> SpeedStep
-    
-    typealias FeedbackChangeCallback = (_ deviceID: UInt16, _ contactID: UInt16, _ value: UInt8) -> Void
-    func register(forFeedbackChange: @escaping FeedbackChangeCallback) -> UUID
-
-    typealias SpeedChangeCallback = (_ address: UInt32, _ decoderType: DecoderType?, _ value: SpeedValue, _ acknowledgment: Bool) -> Void
-    func register(forSpeedChange: @escaping SpeedChangeCallback)
-
-    typealias DirectionChangeCallback = (_ address: UInt32, _ decoderType: DecoderType?, _ direction: Command.Direction) -> Void
-    func register(forDirectionChange: @escaping DirectionChangeCallback)
-
-    typealias TurnoutChangeCallback = (_ address: CommandTurnoutAddress, _ state: UInt8, _ power: UInt8, _ acknowledgment: Bool) -> Void
-    func register(forTurnoutChange: @escaping TurnoutChangeCallback)
-    
-    typealias QueryLocomotiveCallback = (_ locomotives: [CommandLocomotive]) -> Void
-    func register(forLocomotivesQuery callback: @escaping QueryLocomotiveCallback)
-    
-    func unregister(uuid: UUID)
 }

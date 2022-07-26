@@ -125,23 +125,13 @@ final class Train: Element, ObservableObject {
             return nil
         }
     }
-    
-    // Distance of the magnet from the front of the locomotive (in cm)
-    // BTrain expects all the locomotives to have a magnet
-    // to allow detection via a reed feedback.
-    // TODO: use this in distance calculation?
-    @Published var magnetDistance: Double?
 
     // Speed of the locomotive
     @Published var speed = TrainSpeed(kph: 0, decoderType: .MFX)
 
     // Direction of travel of the locomotive
+    // Note: backward direction is not yet supported
     @Published var directionForward = true
-
-    // Indicates if the wagons are pushed or pulled by the locomotive.
-    // It is used to correctly reserve the blocks occupied by the length of the train
-    // when the train length is larger than the block it occupies.
-    @Published var wagonsPushedByLocomotive = false
     
     // The route this train is associated with
     @Published var routeId: Identifier<Route>
@@ -251,27 +241,26 @@ final class Train: Element, ObservableObject {
             text += ", \(blockId)"
         }
         text += ", \(directionForward ? "f" : "b")"
-        text += ", \(speed.requestedKph)kph"
-        text += ", \(speed.actualKph)kph"
+        text += ", r=\(speed.requestedKph)kph"
+        text += ", a=\(speed.actualKph)kph"
         text += ")"
         return text
     }
     
     convenience init(uuid: String = UUID().uuidString, name: String = "", address: UInt32 = 0, decoder: DecoderType = .MFX,
-                     locomotiveLength: Double? = nil, wagonsLength: Double? = nil, magnetDistance: Double? = nil, maxSpeed: TrainSpeed.UnitKph? = nil, maxNumberOfLeadingReservedBlocks: Int? = nil) {
+                     locomotiveLength: Double? = nil, wagonsLength: Double? = nil, maxSpeed: TrainSpeed.UnitKph? = nil, maxNumberOfLeadingReservedBlocks: Int? = nil) {
         self.init(id: Identifier(uuid: uuid), name: name, address: address, decoder: decoder,
-                  locomotiveLength: locomotiveLength, wagonsLength: wagonsLength, magnetDistance: magnetDistance, maxSpeed: maxSpeed, maxNumberOfLeadingReservedBlocks: maxNumberOfLeadingReservedBlocks)
+                  locomotiveLength: locomotiveLength, wagonsLength: wagonsLength, maxSpeed: maxSpeed, maxNumberOfLeadingReservedBlocks: maxNumberOfLeadingReservedBlocks)
     }
     
     init(id: Identifier<Train>, name: String, address: UInt32, decoder: DecoderType = .MFX,
-         locomotiveLength: Double? = nil, wagonsLength: Double? = nil, magnetDistance: Double? = nil, maxSpeed: TrainSpeed.UnitKph? = nil, maxNumberOfLeadingReservedBlocks: Int? = nil) {
+         locomotiveLength: Double? = nil, wagonsLength: Double? = nil, maxSpeed: TrainSpeed.UnitKph? = nil, maxNumberOfLeadingReservedBlocks: Int? = nil) {
         self.id = id
         self.routeId = Route.automaticRouteId(for: id)
         self.name = name
         self.address = address
         self.locomotiveLength = locomotiveLength
         self.wagonsLength = wagonsLength
-        self.magnetDistance = magnetDistance
         self.speed.maxSpeed = maxSpeed ?? self.speed.maxSpeed
         self.maxNumberOfLeadingReservedBlocks = maxNumberOfLeadingReservedBlocks ?? self.maxNumberOfLeadingReservedBlocks
     }
@@ -280,7 +269,7 @@ final class Train: Element, ObservableObject {
 extension Train: Codable {
     
     enum CodingKeys: CodingKey {
-      case id, enabled, name, address, locomotiveLength, wagonsLength, magnetDistance, speed, acceleration, stopSettleDelay, decoder, direction, wagonsPushedByLocomotive, route, routeIndex, block, position, maxLeadingBlocks, blocksToAvoid, turnoutsToAvoid
+      case id, enabled, name, address, locomotiveLength, wagonsLength, speed, acceleration, stopSettleDelay, decoder, direction, route, routeIndex, block, position, maxLeadingBlocks, blocksToAvoid, turnoutsToAvoid
     }
 
     convenience init(from decoder: Decoder) throws {
@@ -295,10 +284,8 @@ extension Train: Codable {
         self.decoder = try container.decode(DecoderType.self, forKey: CodingKeys.decoder)
         self.locomotiveLength = try container.decodeIfPresent(Double.self, forKey: CodingKeys.locomotiveLength)
         self.wagonsLength = try container.decodeIfPresent(Double.self, forKey: CodingKeys.wagonsLength)
-        self.magnetDistance = try container.decodeIfPresent(Double.self, forKey: CodingKeys.magnetDistance)
         self.speed = try container.decode(TrainSpeed.self, forKey: CodingKeys.speed)
         self.directionForward = try container.decodeIfPresent(Bool.self, forKey: CodingKeys.direction) ?? true
-        self.wagonsPushedByLocomotive = try container.decodeIfPresent(Bool.self, forKey: CodingKeys.wagonsPushedByLocomotive) ?? false
         self.routeId = try container.decodeIfPresent(Identifier<Route>.self, forKey: CodingKeys.route) ?? Route.automaticRouteId(for: id)
         self.routeStepIndex = try container.decode(Int.self, forKey: CodingKeys.routeIndex)
         self.blockId = try container.decodeIfPresent(Identifier<Block>.self, forKey: CodingKeys.block)
@@ -317,10 +304,8 @@ extension Train: Codable {
         try container.encode(decoder, forKey: CodingKeys.decoder)
         try container.encode(wagonsLength, forKey: CodingKeys.wagonsLength)
         try container.encode(locomotiveLength, forKey: CodingKeys.locomotiveLength)
-        try container.encode(magnetDistance, forKey: CodingKeys.magnetDistance)
         try container.encode(speed, forKey: CodingKeys.speed)
         try container.encode(directionForward, forKey: CodingKeys.direction)
-        try container.encode(wagonsPushedByLocomotive, forKey: CodingKeys.wagonsPushedByLocomotive)
         try container.encode(routeId, forKey: CodingKeys.route)
         try container.encode(routeStepIndex, forKey: CodingKeys.routeIndex)
         try container.encode(blockId, forKey: CodingKeys.block)

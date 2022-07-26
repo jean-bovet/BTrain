@@ -48,6 +48,7 @@ class BlockViewTests: RootViewTests {
     }
     
     func testAllFeedbackView() throws {
+        let layout = newLayout()
         let block = layout.block(at: 0)
         let sut = BlockAllFeedbacksView(layout: layout, block: block)
         
@@ -57,6 +58,7 @@ class BlockViewTests: RootViewTests {
     }
     
     func testDirectionFeedbacksView() throws {
+        let layout = newLayout()
         let block = layout.block(at: 0)
         let sut = BlockDirectionFeedbacksView(layout: layout, direction: .next, block: block)
         _ = try sut.inspect().find(text: "Entry:")
@@ -64,6 +66,7 @@ class BlockViewTests: RootViewTests {
     }
 
     func testBlockSpeedView() throws {
+        let layout = newLayout()
         let sut = BlockSpeedView(block: layout.block(at: 0))
         _ = try sut.inspect().find(text: "Braking:")
     }

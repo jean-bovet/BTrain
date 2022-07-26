@@ -54,6 +54,16 @@ extension Layout {
         return route
     }
 
+    func duplicate(routeId: Identifier<Route>) {
+        guard let route = route(for: routeId) else {
+            return
+        }
+        
+        let newRoute = newRoute()
+        newRoute.name = "\(route.name) copy"
+        newRoute.steps = route.steps
+    }
+    
     func remove(routeId: Identifier<Route>) {
         routes.removeAll { t in
             t.id == routeId

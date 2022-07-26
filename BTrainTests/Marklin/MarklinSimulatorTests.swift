@@ -25,7 +25,7 @@ class MarklinSimulatorTests: XCTestCase {
         }
 
         let e = expectation(description: "callback")
-        _ = doc.interface.register(forFeedbackChange: { deviceId, contactId, value in
+        _ = doc.interface.callbacks.register(forFeedbackChange: { deviceId, contactId, value in
             e.fulfill()
         })
         
@@ -48,7 +48,7 @@ class MarklinSimulatorTests: XCTestCase {
         }
 
         let e = expectation(description: "callback")
-        _ = doc.interface.register(forDirectionChange: { address, decoderType, direction in
+        _ = doc.interface.callbacks.register(forDirectionChange: { address, decoderType, direction in
             XCTAssertFalse(direction == .forward)
             e.fulfill()
         })
@@ -69,7 +69,7 @@ class MarklinSimulatorTests: XCTestCase {
         }
 
         let e = expectation(description: "callback")
-        _ = doc.interface.register(forTurnoutChange: { address, state, power, acknowledgement in
+        _ = doc.interface.callbacks.register(forTurnoutChange: { address, state, power, acknowledgement in
             XCTAssertEqual(2, state)
             e.fulfill()
         })
@@ -93,7 +93,7 @@ class MarklinSimulatorTests: XCTestCase {
         let e = expectation(description: "callback")
         let directCommand = expectation(description: "directCommand")
         let acknowledgement = expectation(description: "acknowledgement")
-        _ = doc.interface.register(forSpeedChange: { address, decoderType, value, ack in
+        _ = doc.interface.callbacks.register(forSpeedChange: { address, decoderType, value, ack in
             if ack {
                 acknowledgement.fulfill()
                 XCTAssertEqual(357, value.value)

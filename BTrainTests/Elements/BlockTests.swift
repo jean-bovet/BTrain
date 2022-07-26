@@ -27,12 +27,12 @@ class BlockTests: XCTestCase {
         b1.category = .station
         b1.center = .init(x: 10, y: 20)
         b1.rotationAngle = .pi
-        b1.reserved = Reservation("t1", .previous)
-        b1.train = .init(b1.reserved!.trainId, .previous)
-        XCTAssertEqual(b1.train?.direction, .previous)
+        b1.reservation = Reservation("t1", .previous)
+        b1.trainInstance = .init(b1.reservation!.trainId, .previous)
+        XCTAssertEqual(b1.trainInstance?.direction, .previous)
         
-        b1.train = .init(b1.reserved!.trainId, .next)
-        XCTAssertEqual(b1.train?.direction, .next)
+        b1.trainInstance = .init(b1.reservation!.trainId, .next)
+        XCTAssertEqual(b1.trainInstance?.direction, .next)
     }
     
     func testBlockSockets() {
@@ -59,13 +59,13 @@ class BlockTests: XCTestCase {
         b1.category = .station
         b1.center = .init(x: 10, y: 20)
         b1.rotationAngle = .pi
-        b1.reserved = Reservation("t1", .previous)
-        b1.train = .init(b1.reserved!.trainId, .previous)
+        b1.reservation = Reservation("t1", .previous)
+        b1.trainInstance = .init(b1.reservation!.trainId, .previous)
         
         let feedbacks = [Identifier<Feedback>(uuid: "1"), Identifier<Feedback>(uuid: "2")]
         b1.assign(feedbacks)
         
-        XCTAssertFalse(b1.train?.direction == .next)
+        XCTAssertFalse(b1.trainInstance?.direction == .next)
 
         let encoder = JSONEncoder()
         let data = try encoder.encode(b1)
@@ -77,10 +77,10 @@ class BlockTests: XCTestCase {
         XCTAssertEqual(b1.category, b2.category)
         XCTAssertEqual(b1.center, b2.center)
         XCTAssertEqual(b1.rotationAngle, b2.rotationAngle)
-        XCTAssertEqual(b1.reserved?.trainId, b2.reserved?.trainId)
-        XCTAssertEqual(b1.reserved?.direction, b2.reserved?.direction)
-        XCTAssertEqual(b1.train, b2.train)
-        XCTAssertEqual(b1.train?.direction, b2.train?.direction)
+        XCTAssertEqual(b1.reservation?.trainId, b2.reservation?.trainId)
+        XCTAssertEqual(b1.reservation?.direction, b2.reservation?.direction)
+        XCTAssertEqual(b1.trainInstance, b2.trainInstance)
+        XCTAssertEqual(b1.trainInstance?.direction, b2.trainInstance?.direction)
         XCTAssertEqual(b1.feedbacks, b2.feedbacks)
     }
 

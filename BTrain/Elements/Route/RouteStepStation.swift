@@ -26,49 +26,47 @@ struct RouteStepStation: RouteStep, Equatable, Codable {
         "\(stationId)"
     }
         
-    func resolve(_ constraints: GraphPathFinderConstraints, _ context: GraphPathFinderContext) -> GraphPathElement? {
-        guard let lc = context as? LayoutPathFinder.LayoutContext else {
-            return nil
-        }
-
-        guard let station = lc.layout.station(for: stationId) else {
+    func resolve(_ constraints: PathFinder.Constraints) -> [GraphPathElement]? {
+        guard let station = constraints.layout.station(for: stationId) else {
             return nil
         }
                 
-        guard let element = bestElement(station: station, train: lc.train, layout: lc.layout, context: lc) else {
+        guard let element = bestElement(station: station, constraints: constraints) else {
             return nil
         }
         
-        guard let block = lc.layout.block(for: element.blockId) else {
+        guard let block = constraints.layout.block(for: element.blockId) else {
             return nil
         }
         
-        let direction = element.direction ?? .next
-        
-//        guard let direction = element.direction else {
-//            // TODO: support direction being nil, which means two elements can be returned, one for each direction
-//            return nil
-//        }
-        let entrySocket = direction == .next ? Block.previousSocket : Block.nextSocket
-        let exitSocket = direction == .next ? Block.nextSocket : Block.previousSocket
-        return .init(node: block, entrySocket:  entrySocket, exitSocket: exitSocket)
+        if let direction = element.direction {
+            return [GraphPathElement.direction(block, direction)]
+        } else {
+            return [GraphPathElement.direction(block, .next), GraphPathElement.direction(block, .previous)]
+        }
     }
 
-    func bestElement(station: Station, train: Train, layout: Layout, context: LayoutPathFinder.LayoutContext) -> Station.StationElement? {
-        if let element = elementWithTrain(station: station, train: train, layout: layout) {
+    func elementFor(direction: Direction, block: Block) -> GraphPathElement {
+        let entrySocket = direction == .next ? Block.previousSocket : Block.nextSocket
+        let exitSocket = direction == .next ? Block.nextSocket : Block.previousSocket
+        return GraphPathElement(node: block, entrySocket:  entrySocket, exitSocket: exitSocket)
+    }
+    
+    func bestElement(station: Station, constraints: PathFinder.Constraints) -> Station.StationElement? {
+        if let element = elementWithTrain(station: station, train: constraints.train, layout: constraints.layout) {
             return element
         }
         
-        if let element = firstAvailableElement(station: station, train: train, layout: layout, context: context) {
+        if let element = firstAvailableElement(station: station, constraints: constraints) {
             return element
         }
         
         return nil
     }
     
-    func firstAvailableElement(station: Station, train: Train, layout: Layout, context: LayoutPathFinder.LayoutContext) -> Station.StationElement? {
+    func firstAvailableElement(station: Station, constraints: PathFinder.Constraints) -> Station.StationElement? {
         for element in station.elements {
-            guard let block = layout.block(for: element.blockId) else {
+            guard let block = constraints.layout.block(for: element.blockId) else {
                 continue
             }
             
@@ -76,9 +74,9 @@ struct RouteStepStation: RouteStep, Equatable, Codable {
                 continue
             }
             
-            if context.reservedBlockBehavior == .ignoreReserved {
+            if constraints.reservedBlockBehavior == .ignoreReserved {
                 return element
-            } else if block.reserved == nil || block.reserved?.trainId == train.id {
+            } else if block.reservation == nil || block.reservation?.trainId == constraints.train.id {
                 return element
             }
         }

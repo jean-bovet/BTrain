@@ -28,15 +28,11 @@ struct RouteStepBlock: RouteStep, Equatable, Codable, CustomStringConvertible {
     var waitingTime: TimeInterval?
     
     var description: String {
-        if let direction = direction {
-            return "\(blockId):\(direction)"
-        } else {
-            return "\(blockId)"
-        }
+        return "\(blockId):\(direction)"
     }
 
     // The direction of travel of the train within that block
-    var direction: Direction?
+    var direction: Direction
 
     init(_ block: Block, _ direction: Direction, _ waitingTime: TimeInterval? = nil) {
         self.init(block.id, direction, waitingTime)
@@ -48,19 +44,11 @@ struct RouteStepBlock: RouteStep, Equatable, Codable, CustomStringConvertible {
         self.waitingTime = waitingTime
     }
     
-    func resolve(_ constraints: GraphPathFinderConstraints, _ context: GraphPathFinderContext) -> GraphPathElement? {
-        guard let lc = context as? LayoutPathFinder.LayoutContext else {
+    func resolve(_ constraints: PathFinder.Constraints) -> [GraphPathElement]? {
+        guard let block = constraints.layout.block(for: blockId) else {
             return nil
         }
         
-        guard let block = lc.layout.block(for: blockId) else {
-            return nil
-        }
-        
-        let entrySocketId = (direction ?? .next) == .next ? Block.previousSocket : Block.nextSocket
-        let exitSocketId = (direction ?? .next) == .next ? Block.nextSocket : Block.previousSocket
-
-        return GraphPathElement(node: block, entrySocket: entrySocketId, exitSocket: exitSocketId)
+        return [GraphPathElement.direction(block, direction)]
     }
 }
-

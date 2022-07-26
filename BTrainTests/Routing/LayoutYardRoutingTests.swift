@@ -24,28 +24,29 @@ class LayoutYardRoutingTests: BTTestCase {
         try p.prepare(routeID: "1", trainID: "0", fromBlockId: "A")
         try p.assert("1: {r0{A 🔴🚂0 ≏ ≏ }} [B ≏ ≏ ] <T1(0,2),s> <T2> <T3> [Z ≏ ≏ ] <T4(1,0)> <T5(1,0)> <T6(2,0),s> [D ≏ ≏ ] {E ≏ ≏ }")
         
-        XCTAssertEqual(p.interface.turnoutCommands.count, 0)
+        XCTAssertEqual(p.digitalController.turnoutCommands.count, 0)
         
         try p.start()
+        p.layoutController.waitUntilSettled()
         
-        XCTAssertEqual(p.interface.turnoutCommands.count, 3)
+        XCTAssertEqual(p.digitalController.turnoutCommands.count, 3)
 
-        p.interface.turnoutCommands.removeAll()
+        p.digitalController.turnoutCommands.removeAll()
 
         try p.assert("1: {r0{A 🔵🚂0 ≏ ≏ }} [r0[B ≏ ≏ ]] <r0<T1(0,2),r>> <r0<T2>> <r0<T3>> [r0[Z ≏ ≏ ]] <T4(1,0)> <T5(1,0)> <T6(2,0),s> [D ≏ ≏ ] {E ≏ ≏ }")
 
-        XCTAssertEqual(p.interface.turnoutCommands.count, 0)
+        XCTAssertEqual(p.digitalController.turnoutCommands.count, 0)
 
         try p.assert("1: {r0{A ≡ 🔵🚂0 ≏ }} [r0[B ≏ ≏ ]] <r0<T1(0,2),r>> <r0<T2>> <r0<T3>> [r0[Z ≏ ≏ ]] <T4(1,0)> <T5(1,0)> <T6(2,0),s> [D ≏ ≏ ] {E ≏ ≏ }")
 
-        XCTAssertEqual(p.interface.turnoutCommands.count, 0)
+        XCTAssertEqual(p.digitalController.turnoutCommands.count, 0)
 
         try p.assert("1: {r0{A ≏ ≡ 🔵🚂0 }} [r0[B ≏ ≏ ]] <r0<T1(0,2),r>> <r0<T2>> <r0<T3>> [r0[Z ≏ ≏ ]] <T4(1,0)> <T5(1,0)> <T6(2,0),s> [D ≏ ≏ ] {E ≏ ≏ }")
 
-        XCTAssertEqual(p.interface.turnoutCommands.count, 0)
+        XCTAssertEqual(p.digitalController.turnoutCommands.count, 0)
 
         try p.assert("1: {A ≏ ≏ } [r0[B ≡ 🔵🚂0 ≏ ]] <r0<T1(0,2),r>> <r0<T2>> <r0<T3>> [r0[Z ≏ ≏ ]] <r0<T4(1,0)>> <r0<T5(1,0)>> <r0<T6(2,0),l>> [r0[D ≏ ≏ ]] {E ≏ ≏ }")
-        XCTAssertEqual(p.interface.turnoutCommands.count, 3)
+        XCTAssertEqual(p.digitalController.turnoutCommands.count, 3)
     }
     
 }

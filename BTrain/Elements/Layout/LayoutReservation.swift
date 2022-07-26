@@ -51,7 +51,7 @@ import Foundation
 final class LayoutReservation {
     
     let layout: Layout
-    let executor: LayoutController
+    weak var executor: LayoutController?
     let verbose: Bool
     
     // Internal structure used to hold information
@@ -109,10 +109,11 @@ final class LayoutReservation {
         
         // Reserve and set the train and its wagon(s) using the necessary number of
         // elements (turnouts and blocks)
-        try occupyBlockWith(train: train)
+        try occupyBlocksWith(train: train)
 
         // Reserve the number of leading blocks necessary
         if try reserveLeadingBlocks(train: train, reservedTurnouts: reservedTurnouts) {
+            train.leading.settledDistance = train.leading.computeSettledDistance()
             // Return the result by determining if the leading or occupied items have changed
             if previousLeadingItems != train.leading.items || previousOccupiedItems != train.occupied.items {
                 return .success
@@ -120,6 +121,7 @@ final class LayoutReservation {
                 return .successAndUnchanged
             }
         } else {
+            train.leading.settledDistance = 0
             return .failure
         }
     }
@@ -127,13 +129,18 @@ final class LayoutReservation {
     /// Removes the reservation for the leading blocks of the specified train but keep the occupied blocks intact (that the train actually occupies).
     ///
     /// - Parameter train: the train
-    func removeLeadingBlocks(train: Train) throws {
+    @discardableResult
+    func removeLeadingBlocks(train: Train) throws -> Bool {
+        let previousLeadingItems = train.leading.items
+
         // Remove the train from all the elements
         try freeElements(train: train)
         
         // Reserve and set the train and its wagon(s) using the necessary number of
         // elements (turnouts and blocks)
-        try occupyBlockWith(train: train)
+        try occupyBlocksWith(train: train)
+        
+        return previousLeadingItems != train.leading.items
     }
     
     private func reserveLeadingBlocks(train: Train, reservedTurnouts: Set<TurnoutActivation>) throws -> Bool {
@@ -149,13 +156,16 @@ final class LayoutReservation {
         let stepsToReserve = route.steps[startReservationIndex...route.lastStepIndex]
         
         // First of all, resolve the route to discover all non-specified turnouts and blocks
-        var errors = [GraphPathFinder.ResolverError]()
-        guard let resolvedSteps = try RouteResolver(layout: layout, train: train).resolve(steps: stepsToReserve, errors: &errors) else {
+        let result = try RouteResolver(layout: layout, train: train).resolve(unresolvedPath: stepsToReserve.map { $0 })
+        switch result {
+        case .success(let resolvedSteps):
+            assert(resolvedSteps.count >= stepsToReserve.count)
+            
+            return try reserveSteps(train: train, route: route, resolvedSteps: resolvedSteps, reservedTurnouts: reservedTurnouts)
+            
+        case .failure(_):
             return false
         }
-        assert(resolvedSteps.count >= stepsToReserve.count)
-        
-        return try reserveSteps(train: train, route: route, resolvedSteps: resolvedSteps, reservedTurnouts: reservedTurnouts)
     }
     
     private func reserveSteps(train: Train, route: Route, resolvedSteps: [ResolvedRouteItem], reservedTurnouts: Set<TurnoutActivation>) throws -> Bool {
@@ -237,7 +247,7 @@ final class LayoutReservation {
             
             // Now reserve the block
             let reservation = Reservation(trainId: train.id, direction: direction)
-            block.reserved = reservation
+            block.reservation = reservation
             train.leading.append(block)
             numberOfLeadingBlocksReserved += 1
             debug("Reserving block \(block.name) for \(reservation)")
@@ -271,7 +281,7 @@ final class LayoutReservation {
             BTLogger.reservation.debug("\(train, privacy: .public): do not activate state \(turnout.requestedState, privacy: .public) for turnout \(turnout.name, privacy: .public) because it was already activated")
         } else {
             BTLogger.reservation.debug("\(train, privacy: .public): request state \(turnout.requestedState, privacy: .public) for turnout \(turnout.name, privacy: .public)")
-            executor.sendTurnoutState(turnout: turnout) {
+            executor?.sendTurnoutState(turnout: turnout) {
                 BTLogger.reservation.debug("\(train, privacy: .public): request state \(turnout.requestedState, privacy: .public) for turnout \(turnout.name, privacy: .public) [command executed]")
             }
         }
@@ -320,7 +330,7 @@ final class LayoutReservation {
         
     // This method reserves and occupies all the necessary blocks (and parts of the block) to fit
     // the specified train with all its length, taking into account the length of each block.
-    func occupyBlockWith(train: Train) throws {
+    func occupyBlocksWith(train: Train) throws {
         let trainVisitor = TrainVisitor(layout: layout)
         let result = try trainVisitor.visit(train: train) { transition in
             guard transition.reserved == nil else {
@@ -338,12 +348,12 @@ final class LayoutReservation {
             turnout.train = train.id
             train.occupied.append(turnout)
         } blockCallback: { block, attributes in
-            guard block.reserved == nil || attributes.headBlock else {
+            guard block.reservation == nil || attributes.headBlock else {
                 throw LayoutError.blockAlreadyReserved(block: block)
             }
             
             let trainInstance = TrainInstance(train.id, attributes.trainDirection)
-            block.train = trainInstance
+            block.trainInstance = trainInstance
             
             for (index, position) in attributes.positions.enumerated() {
                 if index == 0 {
@@ -353,7 +363,7 @@ final class LayoutReservation {
                 }
             }
             
-            block.reserved = .init(trainId: train.id, direction: attributes.trainDirection)
+            block.reservation = .init(trainId: train.id, direction: attributes.trainDirection)
             train.occupied.append(block)
         }
         if !result {
@@ -367,12 +377,12 @@ final class LayoutReservation {
         train.occupied.clear()
 
         layout.blockMap.values
-            .filter { $0.reserved?.trainId == train.id }
+            .filter { $0.reservation?.trainId == train.id }
             .forEach { block in
                 // Only free a block if the block is not the one the train is located on or
                 if block.id != train.blockId {
-                    block.reserved = nil
-                    block.train = nil
+                    block.reservation = nil
+                    block.trainInstance = nil
                 }
             }
         layout.turnouts.filter { $0.reserved?.train == train.id }.forEach { $0.reserved = nil; $0.train = nil }
@@ -384,7 +394,7 @@ final class LayoutReservation {
     func maximumSpeedAllowed(train: Train, route: Route?) -> TrainSpeed.UnitKph {
         var maximumSpeedAllowed: TrainSpeed.UnitKph = LayoutFactory.DefaultMaximumSpeed
         
-        layout.blocks.filter({ $0.reserved?.trainId == train.id }).forEach { block in
+        layout.blocks.filter({ $0.reservation?.trainId == train.id }).forEach { block in
             switch block.speedLimit {
             case .unlimited:
                 break

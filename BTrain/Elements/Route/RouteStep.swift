@@ -13,7 +13,7 @@
 import Foundation
 
 /// Protocol defining the common interface of the step of a route.
-protocol RouteStep: UnresolvedGraphPathElement {
+protocol RouteStep {
         
     var id: String { get }
     
