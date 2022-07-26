@@ -60,7 +60,7 @@ final class AutomaticRouting {
         let settings = PathFinder.Settings(verbose: SettingsKeys.bool(forKey: SettingsKeys.logRoutingResolutionSteps),
                                                 random: layout.automaticRouteRandom,
                                                 overflow: layout.pathFinderOverflowLimit)
-        let constraints = PathFinder.Constraints(layout: layout, train: train, reservedBlockBehavior: destination == nil ? .avoidFirstReservedBlock : .avoidReserved, relaxed: false)
+        let constraints = PathFinder.Constraints(layout: layout, train: train, reservedBlockBehavior: destination == nil ? .avoidFirstReservedBlock : .avoidReserved, stopAtFirstBlock: false, relaxed: false)
         let pf = PathFinder(constraints: constraints, settings: settings)
         
         let to: (Block, Direction?)?

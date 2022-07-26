@@ -129,11 +129,45 @@ struct PathFinderResolver {
     private func resolve(graph: Graph, resolvedPaths: ResolvedPaths, to resolvedElements: [GraphPathElement]) throws {
         for (index, resolvedPath) in resolvedPaths.paths.enumerated() {
             for resolvedElement in resolvedElements {
+                // Performance Optimization:
+                // If both previousElement and to are separated only by turnouts,
+                // we can more quickly find the missing turnouts by using the standard path finder
+                // algorithm (instead of the shorted path algorithm which is going to analyze the entire
+                // graph which takes time).
+                if fastResolve(graph: graph, resolvedPath: resolvedPath, to: resolvedElement) {
+                    continue
+                }
+                
+                // If the optimization above did not work, use the shortest path finder algorithm
+                // to find the shortest path between the two elements without any restrictions (that is,
+                // any number of turnouts and blocks can be situated in the path between the two elements).
                 if try resolve(graph: graph, resolvedPath: resolvedPath, to: resolvedElement) == false {
                     // Unable to resolve this path, so remove this path from the list of resolved paths
                     resolvedPaths.paths.remove(at: index)
                 }
             }
+        }
+    }
+        
+    private func fastResolve(graph: Graph, resolvedPath: ResolvedPath, to: GraphPathElement) -> Bool {
+        guard let previousElement = resolvedPath.path.last else {
+            return true
+        }
+        
+        let oc = lpf.constraints
+        let pfc = PathFinder.Constraints(layout: oc.layout,
+                                         train: oc.train,
+                                         reservedBlockBehavior: oc.reservedBlockBehavior,
+                                         stopAtFirstBlock: true,
+                                         relaxed: oc.relaxed)
+        let pf = PathFinder(constraints: pfc, settings: lpf.settings)
+        if let p = pf.path(graph: graph, from: previousElement, to: to) {
+            for resolvedElement in p.elements.dropFirst() {
+                resolvedPath.path.append(resolvedElement)
+            }
+            return true
+        } else {
+            return false
         }
     }
     

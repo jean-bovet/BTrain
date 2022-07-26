@@ -49,7 +49,7 @@ class ShortestPathComplexTests: XCTestCase {
         let layout = LayoutComplex().newLayout()
         let ne1 = layout.block(named: "NE1")
         let hsl_p1 = layout.block(named: "HLS_P1")
-        let constraints = PathFinder.Constraints(layout: layout, train: layout.trains[0], reservedBlockBehavior: .avoidReserved, relaxed: false)
+        let constraints = PathFinder.Constraints(layout: layout, train: layout.trains[0], reservedBlockBehavior: .avoidReserved, stopAtFirstBlock: false, relaxed: false)
         measure {
             _ = try? ShortestPathFinder.shortestPath(graph: layout,
                                                           from: ne1.elementDirectionNext,

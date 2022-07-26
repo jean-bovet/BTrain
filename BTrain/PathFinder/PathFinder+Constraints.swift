@@ -36,6 +36,11 @@ extension PathFinder {
         let train: Train
         let reservedBlockBehavior: ReservedBlockBehavior
         
+        /// True if the path find algorithm should stop if the first block encountered during the search
+        /// is not the destination block as specified by the ``to`` parameter. This is used for performance
+        /// optimization when searching a path between two blocks.
+        let stopAtFirstBlock: Bool
+        
         /// True if the constraints should be relaxed (that is, not applied), false otherwise.
         let relaxed: Bool
         
@@ -50,6 +55,10 @@ extension PathFinder {
         ///   - to: the optional destination element
         /// - Returns: true if `node` should be included in the path, false otherwise.
         func shouldInclude(node: GraphNode, currentPath: GraphPath, to: GraphPathElement?) -> Bool {
+            if let to = to, node is Block && to.node is Block && node.identifier.uuid != to.node.identifier.uuid, stopAtFirstBlock {
+                return false
+            }
+            
             if relaxed {
                 return true
             }

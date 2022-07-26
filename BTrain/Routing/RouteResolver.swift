@@ -40,7 +40,7 @@ final class RouteResolver {
                                                  overflow: layout.pathFinderOverflowLimit)
         // Note: avoid all reserved block when resolving to ensure maximum constraints.
         // If that fails, the algorithm will retry without constraints.
-        let constraints = PathFinder.Constraints(layout: layout, train: train, reservedBlockBehavior: .avoidReserved, relaxed: false)
+        let constraints = PathFinder.Constraints(layout: layout, train: train, reservedBlockBehavior: .avoidReserved, stopAtFirstBlock: false, relaxed: false)
         let pf = PathFinder(constraints: constraints, settings: settings)
         // Create the unresolved path out of the route steps
         let unresolvedPath = steps.map { $0 }
@@ -59,7 +59,7 @@ final class RouteResolver {
         // that satisfies the constraints; for example, a fixed route has a disabled block that makes it impossible to resolve.
         // Let's try again to resolve the route using the basic constraints at the graph-level - this means, all layout-specific
         // constraints (such as block reserved, disabled, etc) are ignored.
-        let relaxedConstraints = PathFinder.Constraints(layout: layout, train: train, reservedBlockBehavior: .ignoreReserved, relaxed: true)
+        let relaxedConstraints = PathFinder.Constraints(layout: layout, train: train, reservedBlockBehavior: .ignoreReserved, stopAtFirstBlock: false, relaxed: true)
         let pf2 = PathFinder(constraints: relaxedConstraints, settings: settings)
         let result2 = try pf2.resolve(graph: layout, unresolvedPath)
         switch result2 {
