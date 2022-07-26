@@ -65,26 +65,47 @@ class RouteResolverTests: XCTestCase {
         XCTAssertEqual(route.steps.toStrings(layout), ["s1:next", "n1:next"])
         XCTAssertEqual(resolvedSteps.toStrings(layout), ["s1:next", "ts2:(1>0)", "t1:(0>1)", "t2:(0>1)", "b1:next", "t4:(1>0)", "tn1:(0>1)", "n1:next"])
     }
-
-    func testResolveMultipleTurnoutsChoice() throws {
-        let layout = LayoutComplex().newLayout().removeTrains()
+    
+    func testResolveAvoidBlocks() throws {
+        let layout = LayoutLoopWithStations().newLayout().removeTrains()
+        
         let train = layout.trains[0]
-        let route = layout.newRoute(id: "OL3-NE3", [("OL3", .next), ("NE3", .next)])
+        train.turnoutsToAvoid = []
+        
+        let s1 = layout.block(named: "s1")
+        let n1 = layout.block(named: "n1")
+        let route = layout.newRoute(id: "s1-n1", [(s1.uuid, .next), (n1.uuid, .next)])
         
         let resolver = RouteResolver(layout: layout, train: train)
         
-        train.turnoutsToAvoid = []
-
+        let b1 = layout.block(named: "b1")
+        train.blocksToAvoid = [.init(b1.id)]
+        
         var errors = [PathFinderResolver.ResolverError]()
-        var resolvedSteps = try resolver.resolve(steps: ArraySlice(route.steps), errors: &errors)!
+        let resolvedSteps = try resolver.resolve(steps: ArraySlice(route.steps), errors: &errors)!
+        XCTAssertEqual(route.steps.toStrings(layout), ["s1:next", "n1:next"])
+        XCTAssertEqual(resolvedSteps.toStrings(layout), ["s1:next", "ts2:(1>0)", "t1:(0>1)", "t2:(0>2)", "t3:(2>0)", "b3:next", "t4:(2>0)", "tn1:(0>1)", "n1:next"])
+    }
+
+    func testResolveAvoidTurnouts() throws {
+        let layout = LayoutLoopWithStations().newLayout().removeTrains()
         
-        XCTAssertEqual(route.steps.toStrings(layout), ["OL3:next", "NE3:next"])
-        XCTAssertEqual(resolvedSteps.toStrings(layout), ["OL3:next", "F.3:(0>1)", "F.1:(0>1)", "F.2:(0>1)", "M.1:(2>0)", "C.1:(0>2)", "C.3:(2>0)", "NE3:next"])
+        let train = layout.trains[0]
+        train.turnoutsToAvoid = []
         
-        train.turnoutsToAvoid = [.init(Identifier<Turnout>(uuid: "C.1"))]
+        let s1 = layout.block(named: "s1")
+        let n1 = layout.block(named: "n1")
+        let route = layout.newRoute(id: "s1-n1", [(s1.uuid, .next), (n1.uuid, .next)])
         
-        resolvedSteps = try resolver.resolve(steps: ArraySlice(route.steps), errors: &errors)!
-        XCTAssertEqual(resolvedSteps.toStrings(layout), ["OL3:next", "F.3:(0>1)", "F.1:(0>1)", "F.2:(0>2)", "C.3:(1>0)", "NE3:next"])
+        let resolver = RouteResolver(layout: layout, train: train)
+        
+        let t2 = layout.turnout(named: "t2")
+        train.turnoutsToAvoid = [.init(t2.id)]
+        
+        var errors = [PathFinderResolver.ResolverError]()
+        let resolvedSteps = try resolver.resolve(steps: ArraySlice(route.steps), errors: &errors)!
+        XCTAssertEqual(route.steps.toStrings(layout), ["s1:next", "n1:next"])
+        XCTAssertEqual(resolvedSteps.toStrings(layout), ["s1:next", "ts2:(1>0)", "t1:(0>2)", "b2:next", "t3:(1>0)", "b3:next", "t4:(2>0)", "tn1:(0>1)", "n1:next"])
     }
 
     func testResolveRoute() throws {
