@@ -309,7 +309,7 @@ final class LayoutDiagnostic: ObservableObject {
     func checkRoute(route: Route, _ errors: inout [DiagnosticError], resolverErrors: inout [PathFinderResolver.ResolverError]) {
         let rr = RouteResolver(layout: layout, train: Train(id: Identifier<Train>(uuid: UUID().uuidString), name: "", address: 0))
         do {
-            let result = try rr.resolve(steps: ArraySlice(route.steps))
+            let result = try rr.resolve(unresolvedPath: route.steps)
             switch result {
             case .success(_):
                 break

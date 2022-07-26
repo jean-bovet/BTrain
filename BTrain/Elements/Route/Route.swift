@@ -104,8 +104,8 @@ final class Route: Element, ObservableObject {
     ///   - layout: the layout
     ///   - train: the train to use to resolve the route. A train is important because it can limit which blocks or turnouts can be used if the train has specific constraints.
     /// - Returns: the result of the resolver.
-    func resolve(layout: Layout, train: Train) throws -> Result<[ResolvedRouteItem],PathFinderResolver.ResolverError> {
-        try RouteResolver(layout: layout, train: train).resolve(steps: ArraySlice(steps), verbose: false)
+    func resolve(layout: Layout, train: Train) throws -> RouteResolver.ResolverResult {
+        try RouteResolver(layout: layout, train: train).resolve(unresolvedPath: steps, verbose: false)
     }
 
     static func automaticRouteId(for trainId: Identifier<Train>) -> Identifier<Route> {
