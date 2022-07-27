@@ -12,9 +12,9 @@
 
 import Foundation
 
-struct RouteStepTurnout: RouteStep, Equatable, Codable {
+struct RouteItemTurnout: Equatable, Codable {
     
-    static func ==(lhs: RouteStepTurnout, rhs: RouteStepTurnout) -> Bool {
+    static func ==(lhs: RouteItemTurnout, rhs: RouteItemTurnout) -> Bool {
         lhs.id == rhs.id
     }
 

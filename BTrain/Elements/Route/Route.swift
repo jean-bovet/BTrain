@@ -72,7 +72,7 @@ final class Route: Element, ObservableObject {
     /// The last message about the status of the route, or nil if there is no problem with the route.
     @Published var lastMessage: String?
     
-    var blockSteps: [RouteStepBlock] {
+    var blockSteps: [RouteItemBlock] {
         steps.compactMap {
             if case .block(let stepBlock) = $0 {
                 return stepBlock

@@ -22,8 +22,8 @@ struct StationView: View {
 
     @State private var selection: String? = nil
 
-    func stepBlockBinding(_ routeItem: Binding<RouteItem>) -> Binding<RouteStepBlock> {
-        Binding<RouteStepBlock>(
+    func stepBlockBinding(_ routeItem: Binding<RouteItem>) -> Binding<RouteItemBlock> {
+        Binding<RouteItemBlock>(
             get: {
                 if case .block(let stepBlock) = routeItem.wrappedValue {
                     return stepBlock

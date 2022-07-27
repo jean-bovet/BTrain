@@ -15,7 +15,7 @@ import SwiftUI
 struct RouteStepBlockView: View {
     
     let layout: Layout
-    @Binding var stepBlock: RouteStepBlock
+    @Binding var stepBlock: RouteItemBlock
     
     var body: some View {
         HStack {

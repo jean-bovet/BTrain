@@ -247,7 +247,7 @@ extension Array where Element == GraphPathElement {
                 } else {
                     return nil
                 }
-                return .block(RouteStepBlock(block, direction))
+                return .block(RouteItemBlock(block, direction))
             } else if let turnout = element.node as? Turnout {
                 guard let entrySocket = element.entrySocket else {
                     return nil
@@ -255,7 +255,7 @@ extension Array where Element == GraphPathElement {
                 guard let exitSocket = element.exitSocket else {
                     return nil
                 }
-                return .turnout(RouteStepTurnout(turnout.id, turnout.socket(entrySocket), turnout.socket(exitSocket)))
+                return .turnout(RouteItemTurnout(turnout.id, turnout.socket(entrySocket), turnout.socket(exitSocket)))
             } else {
                 return nil
             }

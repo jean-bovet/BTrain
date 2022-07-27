@@ -273,7 +273,7 @@ final class LayoutIncomplete: LayoutCreating {
 
         // Routes
         _ = l.newRoute(Identifier<Route>(uuid: "0"), name: "Simple Route",
-                       [.block(RouteStepBlock(b1, .next)), .block(RouteStepBlock(b2, .next))])
+                       [.block(RouteItemBlock(b1, .next)), .block(RouteItemBlock(b2, .next))])
         
         return l
     }

@@ -18,9 +18,9 @@ class RouteTests: XCTestCase {
     func testCodable() throws {
         let r1 = Route(uuid: "1")
         r1.name = "r1"
-        r1.steps = [.block(RouteStepBlock(Identifier<Block>(uuid: "1"), .next)),
-                    .block(RouteStepBlock(Identifier<Block>(uuid: "2"), .previous)),
-                    .block(RouteStepBlock(Identifier<Block>(uuid: "3"), .next))]
+        r1.steps = [.block(RouteItemBlock(Identifier<Block>(uuid: "1"), .next)),
+                    .block(RouteItemBlock(Identifier<Block>(uuid: "2"), .previous)),
+                    .block(RouteItemBlock(Identifier<Block>(uuid: "3"), .next))]
         
         let encoder = JSONEncoder()
         let data = try encoder.encode(r1)
@@ -34,10 +34,10 @@ class RouteTests: XCTestCase {
     }
     
     func testStep() {
-        let s1 = RouteStepBlock(Identifier<Block>(uuid: "1"), .next)
-        let s2 = RouteStepBlock(Identifier<Block>(uuid: "1"), .previous)
-        let s3 = RouteStepBlock(Identifier<Block>(uuid: "2"), .next)
-        var s4 = RouteStepBlock(Identifier<Block>(uuid: "2"), .next)
+        let s1 = RouteItemBlock(Identifier<Block>(uuid: "1"), .next)
+        let s2 = RouteItemBlock(Identifier<Block>(uuid: "1"), .previous)
+        let s3 = RouteItemBlock(Identifier<Block>(uuid: "2"), .next)
+        var s4 = RouteItemBlock(Identifier<Block>(uuid: "2"), .next)
         s4.id = s3.id
         XCTAssertEqual(s1, s1)
         XCTAssertNotEqual(s1, s2)

@@ -30,8 +30,8 @@ struct RouteView: View {
 
     @State private var showAddRouteElementSheet = false
         
-    func stepBlockBinding(_ routeItem: Binding<RouteItem>) -> Binding<RouteStepBlock> {
-        Binding<RouteStepBlock>(
+    func stepBlockBinding(_ routeItem: Binding<RouteItem>) -> Binding<RouteItemBlock> {
+        Binding<RouteItemBlock>(
             get: {
                 if case .block(let stepBlock) = routeItem.wrappedValue {
                     return stepBlock
@@ -45,8 +45,8 @@ struct RouteView: View {
         )
     }
     
-    func stepStationBinding(_ routeItem: Binding<RouteItem>) -> Binding<RouteStepStation> {
-        Binding<RouteStepStation>(
+    func stepStationBinding(_ routeItem: Binding<RouteItem>) -> Binding<RouteItemStation> {
+        Binding<RouteItemStation>(
             get: {
                 if case .station(let stepStation) = routeItem.wrappedValue {
                     return stepStation

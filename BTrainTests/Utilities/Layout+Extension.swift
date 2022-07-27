@@ -18,7 +18,7 @@ extension Layout {
     
     func newRoute(id: String, _ steps: [(String, Direction)]) -> Route {
         newRoute(Identifier<Route>(uuid: id), name: id, steps.map({ step in
-            .block(RouteStepBlock(Identifier<Block>(uuid: step.0), step.1))
+            .block(RouteItemBlock(Identifier<Block>(uuid: step.0), step.1))
         }))
     }
     

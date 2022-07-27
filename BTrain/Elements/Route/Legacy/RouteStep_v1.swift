@@ -12,13 +12,6 @@
 
 import Foundation
 
-/// Protocol defining the common interface of the step of a route.
-protocol RouteStep {
-        
-    var id: String { get }
-    
-}
-
 struct RouteStep_v1: Codable {
     let id: String
     
@@ -58,16 +51,16 @@ extension RouteStep_v1 {
     var toRouteStep: RouteItem {
         if let blockId = blockId {
             if let direction = direction {
-                return .block(RouteStepBlock(blockId, direction, waitingTime))
+                return .block(RouteItemBlock(blockId, direction, waitingTime))
             } else {
                 if entrySocket?.socketId == Block.previousSocket {
-                    return .block(RouteStepBlock(blockId, .next, waitingTime))
+                    return .block(RouteItemBlock(blockId, .next, waitingTime))
                 } else {
-                    return .block(RouteStepBlock(blockId, .previous, waitingTime))
+                    return .block(RouteItemBlock(blockId, .previous, waitingTime))
                 }
             }
         } else if let turnoutId = turnoutId {
-            return .turnout(RouteStepTurnout(turnoutId, entrySocket!, exitSocket!))
+            return .turnout(RouteItemTurnout(turnoutId, entrySocket!, exitSocket!))
         } else {
             fatalError("Unknown step configuration: \(self)")
         }

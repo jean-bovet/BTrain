@@ -142,7 +142,7 @@ class AutomaticRoutingTests: BTTestCase {
 
         let routeId = Route.automaticRouteId(for: train.id)
         let route = layout.route(for: routeId, trainId: train.id)!
-        route.steps = [.block(RouteStepBlock(ol3, .next)), .block(RouteStepBlock(ne3, .next))]
+        route.steps = [.block(RouteItemBlock(ol3, .next)), .block(RouteItemBlock(ne3, .next))]
 
         let m1 = layout.turnout("M.1")
         m1.reserved = .init(train: Identifier<Train>(uuid: "foo"), sockets: nil)

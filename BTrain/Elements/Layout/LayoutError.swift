@@ -30,8 +30,6 @@ enum LayoutError: Error {
     case feedbackNotFound(feedbackId: Identifier<Feedback>)
     case socketIdNotFound(socket: Socket)
         
-    case entrySocketNotFound(step: RouteStep)
-    case exitSocketNotFound(step: RouteStep)
     case invalidSocket(socket: Socket)
 
     case brakeFeedbackNotFound(block: Block)
@@ -59,12 +57,7 @@ enum LayoutError: Error {
     case routeIsNotAutomatic(route: Route)
         
     case destinationBlockMismatch(currentBlock: Block, destination: Destination)
-    
-    case missingDirection(step: RouteStep)
-    case invalidDirectionRequest(step: RouteStep)
-    case invalidDirectionAssignment(step: RouteStep)
-    case invalidState(step: RouteStep)
-    
+        
     case invalidPartIndex(index: Int, block: Block)
     
     case shapeNotFoundForSocket(socket: Socket)
@@ -110,10 +103,6 @@ extension LayoutError: LocalizedError {
 
         case .socketIdNotFound(socket: let socket):
             return "There is no socket defined for \(socket)"
-        case .entrySocketNotFound(step: let step):
-            return "There is no entry socket defined for \(step)"
-        case .exitSocketNotFound(step: let step):
-            return "There is no exit socket defined for \(step)"
         case .invalidSocket(socket: let socket):
             return "Socket \(socket) must have either its block or turnout defined"
 
@@ -153,17 +142,8 @@ extension LayoutError: LocalizedError {
         case .transitionAlreadyReserved(transition: let transition):
             return "Transition \(transition.id) is already reserved for \(String(describing: transition.reserved))"
             
-        case .missingDirection(step: let step):
-            return "Direction is missing from \(step)"
-        case .invalidState(step: let step):
-            return "Invalid step \(step)"
-
         case .invalidPartIndex(index: let index, block: let block):
             return "Invalid part index \(index) in \(block.name)"
-        case .invalidDirectionRequest(step: let step):
-            return "It is an error to request the direction for a step that does not refer to a block: \(step)"
-        case .invalidDirectionAssignment(step: let step):
-            return "It is an error to set the direction of a step that does not refer to a block: \(step)"
         case .invalidTransition(transition: let transition):
             return "Invalid transition \(transition)"
         case .shapeNotFoundForSocket(socket: let socket):

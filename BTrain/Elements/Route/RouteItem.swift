@@ -12,10 +12,10 @@
 
 import Foundation
 
-/// This enumeration holds a single step type and is used by the ``Route`` to create an array of steps.
+/// This enumeration holds a single route item type and is used by the ``Route`` to create an array of route items.
 ///
-/// A route is composed of several steps. Each step is identified by this ``RouteItem`` that provides an enum
-/// of the various types of steps available.
+/// A route is composed of one or more items. Each item is identified by this ``RouteItem`` that provides an enum
+/// of the various types of items available.
 ///
 /// See [this blog](https://paul-samuels.com/blog/2019/01/02/swift-heterogeneous-codable-array/)
 enum RouteItem: Identifiable, Equatable, Resolvable {
@@ -33,9 +33,9 @@ enum RouteItem: Identifiable, Equatable, Resolvable {
         }
     }
     
-    case block(RouteStepBlock)
-    case turnout(RouteStepTurnout)
-    case station(RouteStepStation)
+    case block(RouteItemBlock)
+    case turnout(RouteItemTurnout)
+    case station(RouteItemStation)
 
     var id: String {
         switch self {
@@ -76,9 +76,9 @@ extension RouteItem: Codable {
         let container = try decoder.container(keyedBy: CodingKeys.self)
 
         switch try container.decode(String.self, forKey: .type) {
-        case Unassociated.block.rawValue: self = .block(try container.decode(RouteStepBlock.self, forKey: .attributes))
-        case Unassociated.turnout.rawValue: self = .turnout(try container.decode(RouteStepTurnout.self, forKey: .attributes))
-        case Unassociated.station.rawValue: self = .station(try container.decode(RouteStepStation.self, forKey: .attributes))
+        case Unassociated.block.rawValue: self = .block(try container.decode(RouteItemBlock.self, forKey: .attributes))
+        case Unassociated.turnout.rawValue: self = .turnout(try container.decode(RouteItemTurnout.self, forKey: .attributes))
+        case Unassociated.station.rawValue: self = .station(try container.decode(RouteItemStation.self, forKey: .attributes))
         default: fatalError("Unknown type")
         }
     }

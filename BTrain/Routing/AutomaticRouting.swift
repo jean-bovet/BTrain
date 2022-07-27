@@ -53,14 +53,20 @@ final class AutomaticRouting {
             throw LayoutError.trainNotFoundInBlock(blockId: currentBlock.id)
         }
 
+        let settings = PathFinder.Settings(verbose: SettingsKeys.bool(forKey: SettingsKeys.logRoutingResolutionSteps),
+                                           random: layout.automaticRouteRandom,
+                                           overflow: layout.pathFinderOverflowLimit)
+        
         // Note: if `destination` is specified, always avoid reserved block. Otherwise,
         // just avoid the reserved block in front of the current one but ignore the others
         // (the automatic route will re-evaluate itself if it encounters a reserved block later
         // during execution, to avoid deadlocking).
-        let settings = PathFinder.Settings(verbose: SettingsKeys.bool(forKey: SettingsKeys.logRoutingResolutionSteps),
-                                                random: layout.automaticRouteRandom,
-                                                overflow: layout.pathFinderOverflowLimit)
-        let constraints = PathFinder.Constraints(layout: layout, train: train, reservedBlockBehavior: destination == nil ? .avoidFirstReservedBlock : .avoidReserved, stopAtFirstBlock: false, relaxed: false)
+        let rbb: PathFinder.Constraints.ReservedBlockBehavior = destination == nil ? .avoidFirstReservedBlock : .avoidReserved
+        let constraints = PathFinder.Constraints(layout: layout,
+                                                 train: train,
+                                                 reservedBlockBehavior: rbb,
+                                                 stopAtFirstBlock: false,
+                                                 relaxed: false)
         let pf = PathFinder(constraints: constraints, settings: settings)
         
         let to: (Block, Direction?)?

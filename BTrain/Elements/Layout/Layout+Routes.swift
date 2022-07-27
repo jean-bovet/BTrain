@@ -37,7 +37,7 @@ extension Layout {
     func newRoute(_ id: String, name: String, _ steps: [(Block, Direction, TimeInterval?)]) -> Route {
         var routeSteps = [RouteItem]()
         for step in steps {
-            routeSteps.append(.block(RouteStepBlock(step.0.id, step.1, step.2)))
+            routeSteps.append(.block(RouteItemBlock(step.0.id, step.1, step.2)))
         }
         return newRoute(Identifier<Route>(uuid: id), name: name, routeSteps)
     }

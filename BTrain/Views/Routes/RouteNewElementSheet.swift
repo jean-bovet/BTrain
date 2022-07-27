@@ -42,24 +42,29 @@ struct RouteNewElementSheet: View {
                 Spacer()
                 
                 Button("Add") {
-                    let step: RouteStep
                     switch elementType {
                     case .block:
-                        step = RouteStepBlock(layout.block(at: 0).id, .next)
-                        route.steps.append(.block(step as! RouteStepBlock))
+                        let step = RouteItemBlock(layout.block(at: 0).id, .next)
+                        route.steps.append(.block(step))
+                        
+                        undoManager?.registerUndo(withTarget: route, handler: { route in
+                            route.steps.removeAll { s in
+                                s.id == step.id
+                            }
+                        })
                         
                     case .station:
                         let station = layout.stations[0]
-                        step = RouteStepStation(stationId: station.id)
-                        route.steps.append(.station(step as! RouteStepStation))
+                        let step = RouteItemStation(stationId: station.id)
+                        route.steps.append(.station(step))
+                        
+                        undoManager?.registerUndo(withTarget: route, handler: { route in
+                            route.steps.removeAll { s in
+                                s.id == step.id
+                            }
+                        })                        
                     }
                     
-                    undoManager?.registerUndo(withTarget: route, handler: { route in
-                        route.steps.removeAll { s in
-                            s.id == step.id
-                        }
-                    })
-
                     presentationMode.wrappedValue.dismiss()
                 }
                 .keyboardShortcut(.defaultAction)
