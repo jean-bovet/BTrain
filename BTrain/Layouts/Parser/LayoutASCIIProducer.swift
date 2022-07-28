@@ -27,7 +27,8 @@ final class LayoutASCIIProducer {
             throw LayoutError.trainNotFound(trainId: trainId)
         }
         
-        let result = try route.resolve(layout: layout, train: train)
+        let resolver = RouteResolver(layout: layout, train: train)
+        let result = try resolver.resolve(unresolvedPath: route.steps, verbose: false)
         switch result {
         case .success(let resolvedSteps):
             for step in resolvedSteps {

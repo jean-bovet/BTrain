@@ -91,9 +91,9 @@ struct RouteView: View {
     
     var body: some View {
         VStack {
-            List($route.steps, selection: $selection) { step in
+            List($route.partialSteps, selection: $selection) { step in
                 let unwrappedStep = step.wrappedValue
-                let index = route.steps.firstIndex(of: unwrappedStep)
+                let index = route.partialSteps.firstIndex(of: unwrappedStep)
                 let stepError = stepError(unwrappedStep, index)
                 HStack {
                     if stepError {
@@ -109,7 +109,7 @@ struct RouteView: View {
             }.listStyle(.inset(alternatesRowBackgrounds: true))
             
             HStack {
-                Text("\(route.steps.count) steps")
+                Text("\(route.partialSteps.count) steps")
                 
                 Spacer()
                 
@@ -117,21 +117,21 @@ struct RouteView: View {
                     showAddRouteElementSheet.toggle()
                 }
                 Button("-") {
-                    if let step = route.steps.first(where: { $0.id == selection }) {
-                        route.steps.removeAll { s in
+                    if let step = route.partialSteps.first(where: { $0.id == selection }) {
+                        route.partialSteps.removeAll { s in
                             s.id == step.id
                         }
 
                         undoManager?.registerUndo(withTarget: route, handler: { route in
-                            route.steps.append(step)
+                            route.partialSteps.append(step)
                         })
                     }
                 }.disabled(selection == nil)
                 
                 Spacer().fixedSpace()
                 
-                MoveUpButtonView(selection: $selection, elements: $route.steps)
-                MoveDownButtonView(selection: $selection, elements: $route.steps)
+                MoveUpButtonView(selection: $selection, elements: $route.partialSteps)
+                MoveDownButtonView(selection: $selection, elements: $route.partialSteps)
 
                 Spacer().fixedSpace()
                 

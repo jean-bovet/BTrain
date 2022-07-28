@@ -30,7 +30,7 @@ class RouteTests: XCTestCase {
         
         XCTAssertEqual(r1.id, r2.id)
         XCTAssertEqual(r1.name, r2.name)
-        XCTAssertEqual(r1.steps, r2.steps)
+        XCTAssertEqual(r1.partialSteps, r2.partialSteps)
     }
     
     func testStep() {

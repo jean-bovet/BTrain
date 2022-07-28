@@ -49,7 +49,7 @@ extension Layout {
     func newRoute(_ id: Identifier<Route>, name: String, _ steps: [RouteItem]) -> Route {
         let route = Route(id: id)
         route.name = name
-        route.steps = steps
+        route.partialSteps = steps
         routes.append(route)
         return route
     }

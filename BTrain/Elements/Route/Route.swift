@@ -62,13 +62,25 @@ final class Route: Element, ObservableObject {
 
     // User-facing name of the route
     @Published var name = ""
-        
-    /// The list of unresolved steps. An unresolved step is a step that specify partially an item of
+            
+    /// The list of partial and unresolved route item as entered by the user.
+    ///
+    /// That list does not necessary contains all the blocks of a route, which is why
+    /// is is called "partial". Before the route can be used, it needs to be completed
+    /// in order to find all the missing blocks. See ``steps`` below.
+    @Published var partialSteps = [RouteItem]()
+
+    /// The complete list of unresolved route item.
+    ///
+    /// This list is derived from ``partialSteps`` for fixed routes or automatically filled for automatic route.
+    /// Although all the blocks are specified in this array, each item is unresolved.
+    ///
+    /// - An unresolved step is a step that specify partially an item of
     /// the route; for example, a station is an unresolved step because a station contains one or more
     /// blocks that need to be picked up when the train moves along the route. This is done when
     /// the route is resolved, where each station returns a single block satisfying the constraints of the layout.
     @Published var steps = [RouteItem]()
-    
+
     /// The last message about the status of the route, or nil if there is no problem with the route.
     @Published var lastMessage: String?
     
@@ -95,19 +107,6 @@ final class Route: Element, ObservableObject {
         self.mode = mode
     }
     
-    /// Resolve this route by filling the ``resolvedSteps`` with all the steps of the route.
-    ///
-    /// Resolving a route means that all the steps of a route are resolved:
-    /// - Station is resolved by picking the best block according to the specified constraints
-    /// - Missing block and turnout between two steps are resolved by respecting the current constraints of the layout
-    /// - Parameters:
-    ///   - layout: the layout
-    ///   - train: the train to use to resolve the route. A train is important because it can limit which blocks or turnouts can be used if the train has specific constraints.
-    /// - Returns: the result of the resolver.
-    func resolve(layout: Layout, train: Train) throws -> RouteResolver.ResolverResult {
-        try RouteResolver(layout: layout, train: train).resolve(unresolvedPath: steps, verbose: false)
-    }
-
     static func automaticRouteId(for trainId: Identifier<Train>) -> Identifier<Route> {
         Identifier<Route>(uuid: "automatic-\(trainId)")
     }
@@ -116,7 +115,7 @@ final class Route: Element, ObservableObject {
 extension Route: Codable {
     
     enum CodingKeys: CodingKey {
-        case id, name, steps, stepsv2, automatic, mode
+        case id, name, steps, stepsv2, items, automatic, mode
     }
 
     convenience init(from decoder: Decoder) throws {
@@ -133,9 +132,11 @@ extension Route: Codable {
         self.init(id: id, mode: mode)
         self.name = try container.decode(String.self, forKey: CodingKeys.name)
         if container.contains(CodingKeys.steps) {
-            self.steps = try container.decode([RouteStep_v1].self, forKey: CodingKeys.steps).toRouteSteps
-        } else {
-            self.steps = try container.decode([RouteItem].self, forKey: CodingKeys.stepsv2)
+            self.partialSteps = try container.decode([RouteStep_v1].self, forKey: CodingKeys.steps).toRouteSteps
+        } else if container.contains(CodingKeys.stepsv2) {
+            self.partialSteps = try container.decode([RouteItem].self, forKey: CodingKeys.stepsv2)
+        } else if container.contains(CodingKeys.items) {
+            self.partialSteps = try container.decode([RouteItem].self, forKey: CodingKeys.items)
         }
     }
     
@@ -143,7 +144,7 @@ extension Route: Codable {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(id, forKey: CodingKeys.id)
         try container.encode(name, forKey: CodingKeys.name)
-        try container.encode(steps, forKey: CodingKeys.stepsv2)
+        try container.encode(partialSteps, forKey: CodingKeys.items)
         try container.encode(mode, forKey: CodingKeys.mode)
     }
 

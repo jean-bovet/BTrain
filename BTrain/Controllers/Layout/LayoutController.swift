@@ -380,6 +380,7 @@ extension LayoutController {
         } else {
             // Check to make sure the train is somewhere along the route
             train.routeStepIndex = -1
+            try route.completePartialSteps(layout: layout, train: train)
             for (index, step) in route.steps.enumerated() {
                 guard let (blockId, direction) = layout.block(for: train, step: step) else {
                     continue

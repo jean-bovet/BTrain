@@ -20,10 +20,11 @@ class RouteResolverTests: XCTestCase {
         let route = layout.routes[0]
         let train = layout.trains[0]
         
-        let resolver = RouteResolver(layout: layout, train: train)
-        let resolvedSteps = try resolver.resolve(unresolvedPath: route.steps).get()
-        
+        try route.completePartialSteps(layout: layout, train: train)
         XCTAssertEqual(route.steps.toStrings(layout), ["A:next", "B:next", "C:next", "D:next", "E:next"])
+
+        let resolver = RouteResolver(layout: layout, train: train)
+        let resolvedSteps = try resolver.resolve(unresolvedPath: route.steps).get()        
         XCTAssertEqual(resolvedSteps.toStrings(layout), ["A:next", "AB:(0>1)", "B:next", "C:next", "D:next", "DE:(1>0)", "E:next"])
     }
     
@@ -36,12 +37,13 @@ class RouteResolverTests: XCTestCase {
         let s1 = layout.block(named: "s1")
         let b1 = layout.block(named: "b1")
         let route = layout.newRoute(id: "s1-n1", [(s1.uuid, .next), (b1.uuid, .next)])
+        XCTAssertEqual(route.partialSteps.toStrings(layout), ["s1:next", "b1:next"])
         
-        let resolver = RouteResolver(layout: layout, train: train)
-        
-        let resolvedSteps = try resolver.resolve(unresolvedPath: route.steps).get()
-
+        try route.completePartialSteps(layout: layout, train: train)
         XCTAssertEqual(route.steps.toStrings(layout), ["s1:next", "b1:next"])
+
+        let resolver = RouteResolver(layout: layout, train: train)
+        let resolvedSteps = try resolver.resolve(unresolvedPath: route.steps).get()
         XCTAssertEqual(resolvedSteps.toStrings(layout), ["s1:next", "ts2:(1>0)", "t1:(0>1)", "t2:(0>1)", "b1:next"])
     }
 
@@ -54,12 +56,13 @@ class RouteResolverTests: XCTestCase {
         let s1 = layout.block(named: "s1")
         let n1 = layout.block(named: "n1")
         let route = layout.newRoute(id: "s1-n1", [(s1.uuid, .next), (n1.uuid, .next)])
-        
-        let resolver = RouteResolver(layout: layout, train: train)
-        
-        let resolvedSteps = try resolver.resolve(unresolvedPath: route.steps).get()
+        XCTAssertEqual(route.partialSteps.toStrings(layout), ["s1:next", "n1:next"])
 
-        XCTAssertEqual(route.steps.toStrings(layout), ["s1:next", "n1:next"])
+        try route.completePartialSteps(layout: layout, train: train)
+        XCTAssertEqual(route.steps.toStrings(layout), ["s1:next", "b1:next", "n1:next"])
+
+        let resolver = RouteResolver(layout: layout, train: train)
+        let resolvedSteps = try resolver.resolve(unresolvedPath: route.steps).get()
         XCTAssertEqual(resolvedSteps.toStrings(layout), ["s1:next", "ts2:(1>0)", "t1:(0>1)", "t2:(0>1)", "b1:next", "t4:(1>0)", "tn1:(0>1)", "n1:next"])
     }
     
@@ -72,14 +75,16 @@ class RouteResolverTests: XCTestCase {
         let s1 = layout.block(named: "s1")
         let n1 = layout.block(named: "n1")
         let route = layout.newRoute(id: "s1-n1", [(s1.uuid, .next), (n1.uuid, .next)])
-        
-        let resolver = RouteResolver(layout: layout, train: train)
+        XCTAssertEqual(route.partialSteps.toStrings(layout), ["s1:next", "n1:next"])
         
         let b1 = layout.block(named: "b1")
         train.blocksToAvoid = [.init(b1.id)]
-        
+
+        try route.completePartialSteps(layout: layout, train: train)
+        XCTAssertEqual(route.steps.toStrings(layout), ["s1:next", "b3:next", "n1:next"])
+
+        let resolver = RouteResolver(layout: layout, train: train)
         let resolvedSteps = try resolver.resolve(unresolvedPath: route.steps).get()
-        XCTAssertEqual(route.steps.toStrings(layout), ["s1:next", "n1:next"])
         XCTAssertEqual(resolvedSteps.toStrings(layout), ["s1:next", "ts2:(1>0)", "t1:(0>1)", "t2:(0>2)", "t3:(2>0)", "b3:next", "t4:(2>0)", "tn1:(0>1)", "n1:next"])
     }
 
@@ -92,14 +97,17 @@ class RouteResolverTests: XCTestCase {
         let s1 = layout.block(named: "s1")
         let n1 = layout.block(named: "n1")
         let route = layout.newRoute(id: "s1-n1", [(s1.uuid, .next), (n1.uuid, .next)])
-        
+        XCTAssertEqual(route.partialSteps.toStrings(layout), ["s1:next", "n1:next"])
+
         let resolver = RouteResolver(layout: layout, train: train)
         
         let t2 = layout.turnout(named: "t2")
         train.turnoutsToAvoid = [.init(t2.id)]
         
+        try route.completePartialSteps(layout: layout, train: train)
+        XCTAssertEqual(route.steps.toStrings(layout), ["s1:next", "b2:next", "b3:next", "n1:next"])
+
         let resolvedSteps = try resolver.resolve(unresolvedPath: route.steps).get()
-        XCTAssertEqual(route.steps.toStrings(layout), ["s1:next", "n1:next"])
         XCTAssertEqual(resolvedSteps.toStrings(layout), ["s1:next", "ts2:(1>0)", "t1:(0>2)", "b2:next", "t3:(1>0)", "b3:next", "t4:(2>0)", "tn1:(0>1)", "n1:next"])
     }
 
@@ -111,6 +119,9 @@ class RouteResolverTests: XCTestCase {
         b3.reservation = .init("foo", .next)
         
         let route = layout.newRoute(id: "route-1", [("b1", .next), ("b2", .next), ("b3", .next), ("b4", .next), ("b1", .next)])
+        
+        try route.completePartialSteps(layout: layout, train: train)
+        XCTAssertEqual(route.steps.toStrings(layout), ["b1:next", "b2:next", "b3:next", "b4:next", "b1:next"])
 
         let resolver = RouteResolver(layout: layout, train: train)
         let resolvedSteps = try resolver.resolve(unresolvedPath: route.steps).get()

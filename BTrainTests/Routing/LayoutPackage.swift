@@ -58,6 +58,8 @@ final class Package {
         XCTAssertEqual(train.scheduling, .unmanaged)
         XCTAssertEqual(train.state, .stopped)
         
+        try route.completePartialSteps(layout: layout, train: train)
+        
         trains.append(train)
         routes.append(route)
     }

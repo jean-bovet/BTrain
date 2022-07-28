@@ -16,7 +16,7 @@ import Foundation
 ///
 /// Note that a resolved route item does not include a station, because a station needs to be resolved to a single
 /// block in order to be included in the route.
-enum ResolvedRouteItem {
+enum ResolvedRouteItem: CustomStringConvertible {
     /// A resolved item describing a block
     case block(ResolvedRouteItemBlock)
     
@@ -40,9 +40,18 @@ enum ResolvedRouteItem {
             return Socket.turnout(resolvedRouteItemTurnout.turnout.id, socketId: resolvedRouteItemTurnout.exitSocketId)
         }
     }
+    
+    var description: String {
+        switch self {
+        case .block(let block):
+            return block.description
+        case .turnout(let turnout):
+            return turnout.description
+        }
+    }
 }
 
-struct ResolvedRouteItemBlock {
+struct ResolvedRouteItemBlock: CustomStringConvertible {
     
     let block: Block
     let entrySocketId: SocketId
@@ -56,6 +65,10 @@ struct ResolvedRouteItemBlock {
         exitSocketId == Block.nextSocket ? .next : .previous
     }
     
+    var description: String {
+        return "\(blockId):\(direction)"
+    }
+
     init(block: Block, direction: Direction) {
         self.block = block
         switch direction {
@@ -70,10 +83,14 @@ struct ResolvedRouteItemBlock {
 
 }
 
-struct ResolvedRouteItemTurnout {
+struct ResolvedRouteItemTurnout: CustomStringConvertible {
     
     let turnout: Turnout
     let entrySocketId: SocketId
     let exitSocketId: SocketId
     
+    var description: String {
+        "\(turnout.id):(\(entrySocketId)>\(exitSocketId))"
+    }
+
 }

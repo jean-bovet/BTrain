@@ -64,7 +64,8 @@ final class LayoutAsserter {
             }
             
             // Resolve the route
-            let actualSteps = try route.resolve(layout: layout, train: train).get()
+            let resolver = RouteResolver(layout: layout, train: train)
+            let actualSteps = try resolver.resolve(unresolvedPath: route.steps, verbose: false).get()
             
             let producer = LayoutASCIIProducer(layout: layout)
             let routeString = try! producer.stringFrom(route: route, trainId: train.id)

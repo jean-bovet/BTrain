@@ -88,7 +88,7 @@ class TransitionsTests: BTTestCase {
     
     func testReserveBehavior() throws {
         let p = Package(layout: LayoutComplex().newLayout().removeTrains())
-
+        
         let v8 = p.layout
         let t1 = p.layout.trains[0]
         t1.maxNumberOfLeadingReservedBlocks = 2
@@ -98,6 +98,9 @@ class TransitionsTests: BTTestCase {
         let r1 = p.layout.routes[0]
         let r2 = p.layout.routes[1]
         
+        try r1.completePartialSteps(layout: p.layout, train: t1)
+        try r2.completePartialSteps(layout: p.layout, train: t2)
+
         try assert(v8, r1, t1, "{NE1 ≏ ≏ } <B.4{sl}(2,0),l> <A.1{sl}(2,0),l> <A.34{ds2}(3,0),b03> [OL1 ≏ ≏ ] <D.1{sr}(0,1),s> [OL2 ≏ ≏ ] <E.1{sl}(1,0),s> [OL3 ≏ ≏ ] <F.3{sr}(0,1),s> <F.1{sr}(0,2),r> <E.4{sr}(0,2),r> {NE1 ≏ ≏ }")
         try assert(v8, r2, t2, "{NE2 ≏ ≏ } <B.4{sl}(1,0),s> <A.1{sl}(2,0),l> <A.34{ds2}(3,2),s23> <A.2{sr}(2,0),r> [IL1 ≏ ≏ ] <H.1{sl}(1,0),s> <D.2{ds2}(0,1),s01> [IL2 ≏ ≏ ≏ ] <E.3{sl}(0,1),s> <E.2{sl}(1,0),s> [IL3 ≏ ≏ ] <F.4{sr}(0,1),s> [IL4 ≏ ≏ ] <D.4{sl}(1,0),s> <A.2{sr}(1,0),s> [IL1 ≏ ≏ ] <H.1{sl}(1,0),s> <D.2{ds2}(0,1),s01> [IL2 ≏ ≏ ≏ ] <E.3{sl}(0,2),l> <E.1{sl}(2,0),l> [OL3 ≏ ≏ ] <F.3{sr}(0,1),s> <F.1{sr}(0,2),r> <E.4{sr}(0,1),s> {NE2 ≏ ≏ }")
                 
