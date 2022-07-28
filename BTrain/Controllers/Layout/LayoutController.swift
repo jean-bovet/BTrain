@@ -343,21 +343,13 @@ extension LayoutController {
 
 extension LayoutController {
     
-    func start(routeID: Identifier<Route>, trainID: Identifier<Train>, destination: Destination? = nil) throws {
+    func prepare(routeID: Identifier<Route>, trainID: Identifier<Train>, destination: Destination? = nil) throws {
         guard let route = layout.route(for: routeID, trainId: trainID) else {
             throw LayoutError.routeNotFound(routeId: routeID)
         }
         
         guard let train = layout.train(for: trainID) else {
             throw LayoutError.trainNotFound(trainId: trainID)
-        }
-        
-        guard let blockId = train.blockId else {
-            throw LayoutError.trainNotAssignedToABlock(train: train)
-        }
-        
-        guard let block = layout.block(for: blockId), block.trainInstance != nil else {
-            throw LayoutError.trainNotFoundInBlock(blockId: blockId)
         }
 
         // Set the route to the train
@@ -405,12 +397,20 @@ extension LayoutController {
                     break
                 }
             }
-                                 
+            
             guard train.routeStepIndex >= 0 else {
                 throw LayoutError.trainNotFoundInRoute(train: train, route: route)
             }
         }
+    }
+    
+    func start(routeID: Identifier<Route>, trainID: Identifier<Train>, destination: Destination? = nil) throws {
+        guard let train = layout.train(for: trainID) else {
+            throw LayoutError.trainNotFound(trainId: trainID)
+        }
 
+        try prepare(routeID: routeID, trainID: trainID, destination: destination)
+        
         train.scheduling = .managed
         runControllers(.schedulingChanged(train))
     }

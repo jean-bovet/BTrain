@@ -38,6 +38,8 @@ struct TrainControlRouteView: View {
                     ForEach(layout.fixedRoutes, id:\.self) { item in
                         Text(item.name).tag(item.id as Identifier<Route>)
                     }
+                }.onChange(of: train.routeId) { newValue in
+                    updateRoute()
                 }
                                     
                 Spacer()
@@ -57,7 +59,13 @@ struct TrainControlRouteView: View {
                     .lineLimit(2)
                     .fixedSize(horizontal: false, vertical: true)
             }
+        }.onAppear() {
+            updateRoute()
         }
+    }
+    
+    func updateRoute() {
+        try? document.layoutController.prepare(routeID: train.routeId, trainID: train.id)
     }
 }
 
