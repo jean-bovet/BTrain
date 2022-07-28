@@ -23,32 +23,34 @@ extension Route {
     ///   - layout: the layout to use
     ///   - train: the train to use
     func completePartialSteps(layout: Layout, train: Train) throws {
-        steps = try complete(items: partialSteps, layout: layout, train: train)
+        steps = try complete(partialItems: partialSteps, layout: layout, train: train)
     }
     
-    private func complete(items: [RouteItem], layout: Layout, train: Train) throws -> [RouteItem] {
+    private func complete(partialItems: [RouteItem], layout: Layout, train: Train) throws -> [RouteItem] {
         let resolver = RouteResolver(layout: layout, train: train)
-        guard var previousItem = items.first else {
-            return items
+        guard var previousItem = partialItems.first else {
+            return partialItems
         }
         
         var completeItems = [previousItem]
-        
-        for nextItem in items.dropFirst() {
+
+        // This loop will take each partial item and will resolve the missing items
+        // in between each partial items.
+        for nextItem in partialItems.dropFirst() {
             let result = try resolver.resolve(unresolvedPath: [previousItem, nextItem])
             switch result {
             case .success(let resolvedSteps):
+                // The first and last of the resolved steps are the same as previousItem
+                // and nextItem, so we skip them because we need to keep the original
+                // previousItem and nextItem to preserve their original settings.
                 for rs in resolvedSteps.dropFirst().dropLast() {
-                    switch rs {
-                    case .block(let rrib):
+                    if case .block(let rrib) = rs {
                         completeItems.append(.block(.init(rrib.block, rrib.direction)))
-                    case .turnout(_):
-                        break
                     }
                 }
                 
             case .failure(_):
-                return items
+                return partialItems
             }
             completeItems.append(nextItem)
             previousItem = nextItem
