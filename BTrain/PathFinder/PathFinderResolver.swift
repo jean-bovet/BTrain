@@ -39,38 +39,10 @@ struct PathFinderResolver {
     
     /// Error from the path resolver indicating between which path elements an error occurred
     enum ResolverError: Error {
-        case emptyUnresolvedPath
-        case emptyResolvedPaths
         case cannotResolveElement(at: Int)
         case cannotResolvePath(from: Int, to: Int)
     }
-    
-    /// Internal class that keeps track of all the elements of a path
-    final class ResolvedPath {
-        var path = [GraphPathElement]()
-    }
-    
-    /// Internal class that keeps track of all the various possible paths.
-    final class ResolvedPaths {
-        var paths = [ResolvedPath]()
-
-        func append(_ elements: [GraphPathElement]) {
-            for element in elements {
-                append(element)
-            }
-        }
         
-        func append(_ element: GraphPathElement) {
-            if paths.isEmpty {
-                paths = [ResolvedPath()]
-            }
-            for path in paths {
-                path.path.append(element)
-            }
-        }
-        
-    }
-    
     /// Returns a resolved path given an unresolved path and the specified constraints.
     ///
     /// For example:
@@ -88,54 +60,58 @@ struct PathFinderResolver {
     ///   - unresolvedPath: the unresolved path
     /// - Returns: the result of the resolving operation
     func resolve(graph: Graph, _ unresolvedPath: [Resolvable]) throws -> Result<[GraphPath], ResolverError> {
-        let result = try resolve(graph: graph,
-                                 unresolvedPathIndex: 0,
-                                 unresolvedPath: unresolvedPath,
-                                 resolvedPath: GraphPath([]))
+        let result = try resolveRecursively(graph: graph,
+                                            unresolvedPathIndex: 0,
+                                            unresolvedPath: unresolvedPath,
+                                            resolvedPathSoFar: GraphPath([]))
         return result
     }
     
-    private func resolve(graph: Graph, unresolvedPathIndex: Int, unresolvedPath: [Resolvable], resolvedPath: GraphPath) throws -> Result<[GraphPath], ResolverError> {
+    private func resolveRecursively(graph: Graph, unresolvedPathIndex: Int, unresolvedPath: [Resolvable], resolvedPathSoFar: GraphPath) throws -> Result<[GraphPath], ResolverError> {
         guard let unresolvedElement = unresolvedPath.first else {
-            return .success([resolvedPath])
+            return .success([resolvedPathSoFar])
         }
         
+        // Resolve the first unresolved element of the unresolved path. Note that
+        // there can be more than one resolved elements. For example, if a block step
+        // does not have its direction specified, 2 resolved elements are returned,
+        // one for each direction of the block.
         guard let resolvedElements = unresolvedElement.resolve(constraints) else {
             return .failure(.cannotResolveElement(at: unresolvedPathIndex))
         }
 
+        // Contains the last error that occurred during the resolving process. Because more than
+        // one error can happen in the tree of search, the last one is returned to the user.
         var resolverError: ResolverError?
+        
+        // An array of all possible resolved paths. Note that because each time an element is resolved
+        // it can result in more than one resolved element, this means that there can be more than one
+        // resolved path at the end of the search.
         var resolvedPaths = [GraphPath]()
+        
+        // For each resolved elements, resolve the segment between the previous element and this one,
+        // then recursively continue the search for each resolved element.
         for resolvedElement in resolvedElements {
-            let rp = ResolvedPath()
-            rp.path = resolvedPath.elements
-            if rp.path.isEmpty {
-                rp.path.append(resolvedElement)
-            }
-            
-            // Performance Optimization:
-            // If both previousElement and to are separated only by turnouts,
-            // we can more quickly find the missing turnouts by using the standard path finder
-            // algorithm (instead of the shorted path algorithm which is going to analyze the entire
-            // graph which takes time).
-            else if fastResolve(graph: graph, resolvedPath: rp, to: resolvedElement) == false {
-                // If the optimization above did not work, use the shortest path finder algorithm
-                // to find the shortest path between the two elements without any restrictions (that is,
-                // any number of turnouts and blocks can be situated in the path between the two elements).
-                if try resolve(graph: graph, resolvedPath: rp, to: resolvedElement) == false {
-                    resolverError = .cannotResolveElement(at: unresolvedPathIndex)
-                    continue
-                }
-            }
-            
-            let result = try resolve(graph: graph,
-                                     unresolvedPathIndex: unresolvedPathIndex + 1,
-                                     unresolvedPath: Array(unresolvedPath.dropFirst()),
-                                     resolvedPath: GraphPath(rp.path))
+            // Resolve the segment between the last resolved path elements and the new resolved element.
+            let result = try resolveSegment(graph: graph,
+                                            unresolvedPathIndex: unresolvedPathIndex,
+                                            from: resolvedPathSoFar.elements.last,
+                                            to: resolvedElement)
             switch result {
-            case .success(let paths):
-                for rp in paths {
-                    resolvedPaths.append(rp)
+            case .success(let resolvedSegment):
+                // If the segment was resolved, recursively continue the resolving process
+                // using the next unresolved path element and the resolved path found so far.
+                let result = try resolveRecursively(graph: graph,
+                                                    unresolvedPathIndex: unresolvedPathIndex + 1,
+                                                    unresolvedPath: Array(unresolvedPath.dropFirst()),
+                                                    resolvedPathSoFar: resolvedPathSoFar+resolvedSegment)
+                switch result {
+                case .success(let paths):
+                    for rp in paths {
+                        resolvedPaths.append(rp)
+                    }
+                case .failure(let error):
+                    resolverError = error
                 }
             case .failure(let error):
                 resolverError = error
@@ -153,11 +129,36 @@ struct PathFinderResolver {
         }
     }
             
-    private func fastResolve(graph: Graph, resolvedPath: ResolvedPath, to: GraphPathElement) -> Bool {
-        guard let previousElement = resolvedPath.path.last else {
-            return true
+    private func resolveSegment(graph: Graph, unresolvedPathIndex: Int, from: GraphPathElement?, to: GraphPathElement) throws -> Result<GraphPath,ResolverError> {
+        guard let from = from else {
+            return .success(GraphPath(to))
         }
-        
+
+        let p = try resolveSegment(graph: graph, from: from, to: to)
+        if p.isEmpty {
+            return .failure(.cannotResolveElement(at: unresolvedPathIndex))
+        } else {
+            return .success(p)
+        }
+    }
+    
+    private func resolveSegment(graph: Graph, from: GraphPathElement, to: GraphPathElement) throws -> GraphPath {
+        // Performance Optimization:
+        // If both previousElement and to are separated only by turnouts,
+        // we can more quickly find the missing turnouts by using the standard path finder
+        // algorithm (instead of the shorted path algorithm which is going to analyze the entire
+        // graph which takes time).
+        var path = fastResolve(graph: graph, from: from, to: to)
+        if path.isEmpty {
+            // If the optimization above did not work, use the shortest path finder algorithm
+            // to find the shortest path between the two elements without any restrictions (that is,
+            // any number of turnouts and blocks can be situated in the path between the two elements).
+            path = try resolve(graph: graph, from: from, to: to)
+        }
+        return path
+    }
+    
+    private func fastResolve(graph: Graph, from: GraphPathElement, to: GraphPathElement) -> GraphPath {
         let oc = lpf.constraints
         let pfc = PathFinder.Constraints(layout: oc.layout,
                                          train: oc.train,
@@ -165,27 +166,18 @@ struct PathFinderResolver {
                                          stopAtFirstBlock: true,
                                          relaxed: oc.relaxed)
         let pf = PathFinder(constraints: pfc, settings: lpf.settings)
-        if let p = pf.path(graph: graph, from: previousElement, to: to) {
-            for resolvedElement in p.elements.dropFirst() {
-                resolvedPath.path.append(resolvedElement)
-            }
-            return true
+        if let p = pf.path(graph: graph, from: from, to: to) {
+            return GraphPath(p.elements.dropFirst())
         } else {
-            return false
+            return GraphPath.empty()
         }
     }
     
-    private func resolve(graph: Graph, resolvedPath: ResolvedPath, to: GraphPathElement) throws -> Bool {
-        guard let previousElement = resolvedPath.path.last else {
-            return true
-        }
-        if let p = try lpf.shortestPath(graph: graph, from: previousElement, to: to) {
-            for resolvedElement in p.elements.dropFirst() {
-                resolvedPath.path.append(resolvedElement)
-            }
-            return true
+    private func resolve(graph: Graph, from: GraphPathElement, to: GraphPathElement) throws -> GraphPath {
+        if let p = try lpf.shortestPath(graph: graph, from: from, to: to) {
+            return GraphPath(p.elements.dropFirst())
         } else {
-            return false
+            return GraphPath.empty()
         }
     }
 }

@@ -253,6 +253,7 @@
 		A7B06AFB2727B73300BDD88C /* FeedbackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7B06AFA2727B73300BDD88C /* FeedbackView.swift */; };
 		A7B0B5132761CF8400F11A3E /* SwitchboardLinkUpdater.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7B0B5122761CF8400F11A3E /* SwitchboardLinkUpdater.swift */; };
 		A7B0B5172762FB6500F11A3E /* BlockListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7B0B5162762FB6500F11A3E /* BlockListView.swift */; };
+		A7B49570289522D1001707DA /* GraphPathElement.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7B4956F289522D1001707DA /* GraphPathElement.swift */; };
 		A7BD6259276D50380039B6C2 /* LayoutDocumentTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7BD6258276D50380039B6C2 /* LayoutDocumentTests.swift */; };
 		A7BE366B2751AAA300286709 /* BlockTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7F779E8272F06C400E73275 /* BlockTests.swift */; };
 		A7BE36A82751BDAB00286709 /* ConnectorSocket.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7BE36A72751BDAB00286709 /* ConnectorSocket.swift */; };
@@ -568,6 +569,7 @@
 		A7B06AFE2727C01100BDD88C /* MarklinTestMessageFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarklinTestMessageFactory.swift; sourceTree = "<group>"; };
 		A7B0B5122761CF8400F11A3E /* SwitchboardLinkUpdater.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwitchboardLinkUpdater.swift; sourceTree = "<group>"; };
 		A7B0B5162762FB6500F11A3E /* BlockListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockListView.swift; sourceTree = "<group>"; };
+		A7B4956F289522D1001707DA /* GraphPathElement.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GraphPathElement.swift; sourceTree = "<group>"; };
 		A7BD6258276D50380039B6C2 /* LayoutDocumentTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutDocumentTests.swift; sourceTree = "<group>"; };
 		A7BE36A72751BDAB00286709 /* ConnectorSocket.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectorSocket.swift; sourceTree = "<group>"; };
 		A7BE36A92751BDC300286709 /* ConnectorPlug.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectorPlug.swift; sourceTree = "<group>"; };
@@ -1241,6 +1243,7 @@
 			children = (
 				A78B996127FCC4080021EFE4 /* Graph.swift */,
 				A78B996C2800BABB0021EFE4 /* GraphPath.swift */,
+				A7B4956F289522D1001707DA /* GraphPathElement.swift */,
 				A78B996627FD57B20021EFE4 /* Graph+Elements.swift */,
 			);
 			path = Graph;
@@ -1675,6 +1678,7 @@
 				A7B06AFB2727B73300BDD88C /* FeedbackView.swift in Sources */,
 				A79406632809D74100F6A427 /* EphemeralDraggedTrainShape.swift in Sources */,
 				A7DB7D5227C9C0C6000893BA /* TrainControlStateView.swift in Sources */,
+				A7B49570289522D1001707DA /* GraphPathElement.swift in Sources */,
 				A794065E2809D51600F6A427 /* View+Snapshot.swift in Sources */,
 				A73A7DDF284F0F0D00ABEADE /* CS3DebuggerView.swift in Sources */,
 				A7CA5EC527964B6700171398 /* Array+Extension.swift in Sources */,

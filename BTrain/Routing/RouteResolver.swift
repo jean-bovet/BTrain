@@ -31,10 +31,10 @@ final class RouteResolver {
     }
      
     /// An array of resolved paths
-    typealias ResolvedPaths = [[ResolvedRouteItem]]
+    typealias ResolvedRoutes = [[ResolvedRouteItem]]
     
     /// Contains one or more resolved path or an error indicating why the path could not be resolved
-    typealias ResolverResult = Result<ResolvedPaths,PathFinderResolver.ResolverError>
+    typealias ResolverResult = Result<ResolvedRoutes,PathFinderResolver.ResolverError>
     
     /// This function takes an array of steps and returns a resolved array of steps.
     ///

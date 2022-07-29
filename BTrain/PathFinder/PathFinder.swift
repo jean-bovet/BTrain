@@ -151,9 +151,9 @@ struct PathFinder {
         if let to = to, to.isSame(as: endingElement) {
             // If the destination node is specified and is the same as the current element,
             // we have reached the destination node
-            return currentPath.appending(endingElement)
+            return currentPath + endingElement
         } else if constraints.reachedDestination(node: node, to: to) {
-            return currentPath.appending(endingElement)
+            return currentPath + endingElement
         }
 
         // We haven't reached the destination node, keep going forward
@@ -171,8 +171,10 @@ struct PathFinder {
                 continue
             }
             
-            if let path = path(graph: graph, from: betweenElement, to: to,
-                               currentPath: currentPath.appending(.between(node, entrySocketId, exitSocket))) {
+            if let path = path(graph: graph,
+                               from: betweenElement,
+                               to: to,
+                               currentPath: currentPath + .between(node, entrySocketId, exitSocket)) {
                 return path
             }
         }

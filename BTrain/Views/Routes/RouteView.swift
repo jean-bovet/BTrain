@@ -79,10 +79,7 @@ struct RouteView: View {
             case .cannotResolveElement(let at):
                 if at == index {
                     return true
-                }
-                
-            default:
-                break
+                }                
             }
         }
         
