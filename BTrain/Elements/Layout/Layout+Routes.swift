@@ -61,7 +61,7 @@ extension Layout {
         
         let newRoute = newRoute()
         newRoute.name = "\(route.name) copy"
-        newRoute.steps = route.steps
+        newRoute.partialSteps = route.partialSteps
     }
     
     func remove(routeId: Identifier<Route>) {

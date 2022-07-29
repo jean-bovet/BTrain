@@ -67,4 +67,12 @@ class LayoutDiagnosticsTests: XCTestCase {
         XCTAssertEqual(errors.count, 1)
     }
 
+    func testValidateRoute() throws {
+        let layout = LayoutLoopWithStations().newLayout()
+        let diag = LayoutDiagnostic(layout: layout)
+        var errors = [LayoutDiagnostic.DiagnosticError]()
+        diag.checkRoutes(&errors)
+        XCTAssertEqual(errors.count, 0)
+    }
+
 }

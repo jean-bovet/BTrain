@@ -851,7 +851,7 @@ class FixedRoutingTests: BTTestCase {
         try p.assert("1: |[A ≏ ≏ ] <AB(0,2),r> [B2 ≏ ≏ ] ![C2 ≏ ≏ ] [D2 ≏ ≏ ] <DE(2,0),l> [r0[E ≏ 💺0 ≡ 🔴🚂0 ]]|")
     }
 
-    func testRouteResolve1() throws {
+    func testRouteResolveSb1N() throws {
         let layout = LayoutLoopWithStations().newLayout()
         let train = layout.trains[0]
         let route = layout.routes[0]
@@ -863,6 +863,18 @@ class FixedRoutingTests: BTTestCase {
         XCTAssertEqual(route.steps.description, "[st1, 3:next, st2]")
     }
     
+    func testRouteResolveWithOnlyStartAndEndStationSpecified() throws {
+        let layout = LayoutLoopWithStations().newLayout()
+        let train = layout.trains[0]
+        let route = layout.routes[1]
+        XCTAssertEqual(route.partialSteps.description, "[st1, st2]")
+        XCTAssertEqual(route.steps.description, "[]")
+
+        try route.completePartialSteps(layout: layout, train: train)
+        
+        XCTAssertEqual(route.steps.description, "[st1, 3:next, st2]")
+    }
+
     func testStraightLine1WithIncompleteRoute() throws {
         let layout = LayoutPointToPoint().newLayout()
 
