@@ -30,15 +30,17 @@ final class LayoutASCIIProducer {
         let resolver = RouteResolver(layout: layout, train: train)
         let result = try resolver.resolve(unresolvedPath: route.steps, verbose: false)
         switch result {
-        case .success(let resolvedSteps):
-            for step in resolvedSteps {
-                switch step {
-                case .block(let stepBlock):
-                    addSpace(&text)
-                    try generateBlock(step: stepBlock, text: &text)
-                case .turnout(let stepTurnout):
-                    addSpace(&text)
-                    generateTurnout(step: stepTurnout, text: &text)
+        case .success(let resolvedPaths):
+            if let resolvedPath = resolvedPaths.randomElement() {
+                for step in resolvedPath {
+                    switch step {
+                    case .block(let stepBlock):
+                        addSpace(&text)
+                        try generateBlock(step: stepBlock, text: &text)
+                    case .turnout(let stepTurnout):
+                        addSpace(&text)
+                        generateTurnout(step: stepTurnout, text: &text)
+                    }
                 }
             }
             return text

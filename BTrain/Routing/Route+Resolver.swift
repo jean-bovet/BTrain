@@ -39,13 +39,15 @@ extension Route {
         for nextItem in partialItems.dropFirst() {
             let result = try resolver.resolve(unresolvedPath: [previousItem, nextItem])
             switch result {
-            case .success(let resolvedSteps):
-                // The first and last of the resolved steps are the same as previousItem
-                // and nextItem, so we skip them because we need to keep the original
-                // previousItem and nextItem to preserve their original settings.
-                for rs in resolvedSteps.dropFirst().dropLast() {
-                    if case .block(let rrib) = rs {
-                        completeItems.append(.block(.init(rrib.block, rrib.direction)))
+            case .success(let resolvedPaths):
+                if let resolvedPath = resolvedPaths.randomElement() {
+                    // The first and last of the resolved steps are the same as previousItem
+                    // and nextItem, so we skip them because we need to keep the original
+                    // previousItem and nextItem to preserve their original settings.
+                    for rs in resolvedPath.dropFirst().dropLast() {
+                        if case .block(let rrib) = rs {
+                            completeItems.append(.block(.init(rrib.block, rrib.direction)))
+                        }
                     }
                 }
                 

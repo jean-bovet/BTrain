@@ -33,7 +33,7 @@ class PointToLoopLayoutTests: XCTestCase {
         XCTAssertEqual(path.toStrings, ["A:1", "0:T1:1", "0:B:1", "0:C:1", "0:D:1", "2:T1:0", "1:A"])
         
         let unresolvedPath = path.elements.map { $0 }
-        let resolved = try pf.resolve(graph: layout, unresolvedPath).get()
+        let resolved = try pf.resolve(graph: layout, unresolvedPath).get().randomElement()!
         XCTAssertEqual(resolved.toStrings, ["A:1", "0:T1:1", "0:B:1", "0:C:1", "0:D:1", "2:T1:0", "1:A"])
     }
 

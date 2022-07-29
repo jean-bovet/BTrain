@@ -158,10 +158,13 @@ final class LayoutReservation {
         // First of all, resolve the route to discover all non-specified turnouts and blocks
         let result = try RouteResolver(layout: layout, train: train).resolve(unresolvedPath: stepsToReserve.map { $0 })
         switch result {
-        case .success(let resolvedSteps):
-            assert(resolvedSteps.count >= stepsToReserve.count)
-            
-            return try reserveSteps(train: train, route: route, resolvedSteps: resolvedSteps, reservedTurnouts: reservedTurnouts)
+        case .success(let resolvedPaths):
+            if let resolvedPath = resolvedPaths.randomElement() {
+                assert(resolvedPath.count >= stepsToReserve.count)                
+                return try reserveSteps(train: train, route: route, resolvedSteps: resolvedPath, reservedTurnouts: reservedTurnouts)
+            } else {
+                return false
+            }
             
         case .failure(_):
             return false

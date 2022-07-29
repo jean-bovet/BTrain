@@ -867,12 +867,29 @@ class FixedRoutingTests: BTTestCase {
         let layout = LayoutLoopWithStations().newLayout()
         let train = layout.trains[0]
         let route = layout.routes[1]
+        
+        for routeItem in route.partialSteps {
+            if case .station(let station) = routeItem {
+                let station = layout.station(for: station.stationId)!
+                for (index, _) in station.elements.enumerated() {
+                    station.elements[index].direction = nil
+                }
+            }
+        }
+        
         XCTAssertEqual(route.partialSteps.description, "[st1, st2]")
         XCTAssertEqual(route.steps.description, "[]")
 
-        try route.completePartialSteps(layout: layout, train: train)
-        
-        XCTAssertEqual(route.steps.description, "[st1, 3:next, st2]")
+        let resolver = RouteResolver(layout: layout, train: train)
+        let results = try resolver.resolve(unresolvedPath: route.partialSteps)
+        switch results {
+        case .success(let resolvedPaths):
+            XCTAssertEqual(resolvedPaths[0].description, "[1:next, 6:(1>0), 1:(0>1), 2:(0>1), 3:next, 4:(1>0), 7:(0>1), 8:next]")
+            XCTAssertEqual(resolvedPaths[1].description, "[1:previous, 5:(1>0), 7:previous, 6:previous, 8:(0>1), 8:previous]")
+
+        case .failure(let error):
+            XCTFail("Unexpected error: \(error.localizedDescription)")
+        }
     }
 
     func testStraightLine1WithIncompleteRoute() throws {

@@ -29,8 +29,12 @@ final class RouteResolver {
         self.layout = layout
         self.train = train
     }
-            
-    typealias ResolverResult = Result<[ResolvedRouteItem],PathFinderResolver.ResolverError>
+     
+    /// An array of resolved paths
+    typealias ResolvedPaths = [[ResolvedRouteItem]]
+    
+    /// Contains one or more resolved path or an error indicating why the path could not be resolved
+    typealias ResolverResult = Result<ResolvedPaths,PathFinderResolver.ResolverError>
     
     /// This function takes an array of steps and returns a resolved array of steps.
     ///
@@ -46,8 +50,8 @@ final class RouteResolver {
         
         let result = try resolve(unresolvedPath: unresolvedPath, settings: settings, relaxed: false)
         switch result {
-        case .success(let resolvedSteps):
-            return .success(resolvedSteps)
+        case .success(let resolvedPaths):
+            return .success(resolvedPaths)
             
         case .failure(_):
             // If we are not able to resolve the route using the standard constraints, it means there are no path available
@@ -67,8 +71,8 @@ final class RouteResolver {
         let pf = PathFinder(constraints: constraints, settings: settings)
         let result = try pf.resolve(graph: layout, unresolvedPath)
         switch result {
-        case .success(let resolvedPath):
-            return .success(resolvedPath.elements.toResolvedRouteItems)
+        case .success(let resolvedPaths):
+            return .success(resolvedPaths.map { $0.elements.toResolvedRouteItems })
             
         case .failure(let error):
             return .failure(error)
