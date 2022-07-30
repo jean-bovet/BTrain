@@ -25,7 +25,7 @@ class RouteResolverTests: XCTestCase {
 
         let resolver = RouteResolver(layout: layout, train: train)
         let resolvedSteps = try resolver.resolve(unresolvedPath: route.steps).get().randomElement()!
-        XCTAssertEqual(resolvedSteps.toStrings(layout), ["A:next", "AB:(0>1)", "B:next", "C:next", "D:next", "DE:(1>0)", "E:next"])
+        XCTAssertEqual(resolvedSteps.toStrings(), ["A:next", "AB:(0>1)", "B:next", "C:next", "D:next", "DE:(1>0)", "E:next"])
     }
     
     func testResolveRouteWithMissingTurnouts() throws {
@@ -44,7 +44,7 @@ class RouteResolverTests: XCTestCase {
 
         let resolver = RouteResolver(layout: layout, train: train)
         let resolvedSteps = try resolver.resolve(unresolvedPath: route.steps).get().randomElement()!
-        XCTAssertEqual(resolvedSteps.toStrings(layout), ["s1:next", "ts2:(1>0)", "t1:(0>1)", "t2:(0>1)", "b1:next"])
+        XCTAssertEqual(resolvedSteps.toStrings(), ["s1:next", "ts2:(1>0)", "t1:(0>1)", "t2:(0>1)", "b1:next"])
     }
 
     func testResolveRouteWithMissingBlocks() throws {
@@ -63,7 +63,7 @@ class RouteResolverTests: XCTestCase {
 
         let resolver = RouteResolver(layout: layout, train: train)
         let resolvedSteps = try resolver.resolve(unresolvedPath: route.steps).get().randomElement()!
-        XCTAssertEqual(resolvedSteps.toStrings(layout), ["s1:next", "ts2:(1>0)", "t1:(0>1)", "t2:(0>1)", "b1:next", "t4:(1>0)", "tn1:(0>1)", "n1:next"])
+        XCTAssertEqual(resolvedSteps.toStrings(), ["s1:next", "ts2:(1>0)", "t1:(0>1)", "t2:(0>1)", "b1:next", "t4:(1>0)", "tn1:(0>1)", "n1:next"])
     }
     
     func testResolveAvoidBlocks() throws {
@@ -85,7 +85,7 @@ class RouteResolverTests: XCTestCase {
 
         let resolver = RouteResolver(layout: layout, train: train)
         let resolvedSteps = try resolver.resolve(unresolvedPath: route.steps).get().randomElement()!
-        XCTAssertEqual(resolvedSteps.toStrings(layout), ["s1:next", "ts2:(1>0)", "t1:(0>1)", "t2:(0>2)", "t3:(2>0)", "b3:next", "t4:(2>0)", "tn1:(0>1)", "n1:next"])
+        XCTAssertEqual(resolvedSteps.toStrings(), ["s1:next", "ts2:(1>0)", "t1:(0>1)", "t2:(0>2)", "t3:(2>0)", "b3:next", "t4:(2>0)", "tn1:(0>1)", "n1:next"])
     }
 
     func testResolveAvoidTurnouts() throws {
@@ -108,7 +108,7 @@ class RouteResolverTests: XCTestCase {
         XCTAssertEqual(route.steps.toStrings(layout), ["s1:next", "b2:next", "b3:next", "n1:next"])
 
         let resolvedSteps = try resolver.resolve(unresolvedPath: route.steps).get().randomElement()!
-        XCTAssertEqual(resolvedSteps.toStrings(layout), ["s1:next", "ts2:(1>0)", "t1:(0>2)", "b2:next", "t3:(1>0)", "b3:next", "t4:(2>0)", "tn1:(0>1)", "n1:next"])
+        XCTAssertEqual(resolvedSteps.toStrings(), ["s1:next", "ts2:(1>0)", "t1:(0>2)", "b2:next", "t3:(1>0)", "b3:next", "t4:(2>0)", "tn1:(0>1)", "n1:next"])
     }
 
     func testResolveRoute() throws {
@@ -126,6 +126,6 @@ class RouteResolverTests: XCTestCase {
         let resolver = RouteResolver(layout: layout, train: train)
         let resolvedSteps = try resolver.resolve(unresolvedPath: route.steps).get().randomElement()!
 
-        XCTAssertEqual(resolvedSteps.toStrings(layout), ["b1:next", "t0:(0>1)", "b2:next", "b3:next", "t1:(0>1)", "b4:next", "b1:next"])
+        XCTAssertEqual(resolvedSteps.toStrings(), ["b1:next", "t0:(0>1)", "b2:next", "b3:next", "t1:(0>1)", "b4:next", "b1:next"])
     }
 }

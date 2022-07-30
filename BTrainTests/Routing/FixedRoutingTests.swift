@@ -855,12 +855,12 @@ class FixedRoutingTests: BTTestCase {
         let layout = LayoutLoopWithStations().newLayout()
         let train = layout.trains[0]
         let route = layout.routes[0]
-        XCTAssertEqual(route.partialSteps.description, "[st1, 3:next, st2]")
+        XCTAssertEqual(route.partialSteps.toStrings(layout), ["Station S", "b1:next", "Station N"])
         XCTAssertEqual(route.steps.description, "[]")
 
         try route.completePartialSteps(layout: layout, train: train)
         
-        XCTAssertEqual(route.steps.description, "[st1, 3:next, st2]")
+        XCTAssertEqual(route.steps.toStrings(layout), ["Station S", "b1:next", "Station N"])
     }
     
     func testRouteResolveWithOnlyStartAndEndStationSpecified() throws {
@@ -884,8 +884,8 @@ class FixedRoutingTests: BTTestCase {
         let results = try resolver.resolve(unresolvedPath: route.partialSteps)
         switch results {
         case .success(let resolvedPaths):
-            XCTAssertEqual(resolvedPaths[0].description, "[1:next, 6:(1>0), 1:(0>1), 2:(0>1), 3:next, 4:(1>0), 7:(0>1), 8:next]")
-            XCTAssertEqual(resolvedPaths[1].description, "[1:previous, 5:(1>0), 7:previous, 6:previous, 8:(0>1), 8:previous]")
+            XCTAssertEqual(resolvedPaths[0].toStrings(), ["s1:next", "ts2:(1>0)", "t1:(0>1)", "t2:(0>1)", "b1:next", "t4:(1>0)", "tn1:(0>1)", "n1:next"])
+            XCTAssertEqual(resolvedPaths[1].toStrings(), ["s1:previous", "ts1:(1>0)", "b5:previous", "b4:previous", "tn2:(0>1)", "n1:previous"])
 
         case .failure(let error):
             XCTFail("Unexpected error: \(error.localizedDescription)")

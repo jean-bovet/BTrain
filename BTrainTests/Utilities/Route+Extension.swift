@@ -65,7 +65,7 @@ extension Array where Element == RouteItem {
 
 extension Array where Element == ResolvedRouteItem {
     
-    func toStrings(_ layout: Layout, useNameInsteadOfId: Bool = true) -> [String] {
+    func toStrings(useNameInsteadOfId: Bool = true) -> [String] {
         self.map { step in
             switch step {
             case .block(let stepBlock):
