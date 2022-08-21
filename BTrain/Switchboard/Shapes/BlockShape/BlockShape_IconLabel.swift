@@ -13,12 +13,13 @@
 import Foundation
 import AppKit
 
+/// Displays the train icon as a label
 struct BlockShape_IconLabel: BlockShapeLabel {
             
     let ctx: CGContext
     let icon: NSImage
     let shapeContext: ShapeContext
-    let rect: CGRect
+    let size: CGSize
 
     var hidden: Bool = false
 
@@ -30,7 +31,7 @@ struct BlockShape_IconLabel: BlockShapeLabel {
         let ratio = icon.size.width / icon.size.height
         let height = shapeContext.fontSize * 2
         let width = height * ratio
-        self.rect = CGRect(x:0, y:0, width: width, height: height)
+        self.size = .init(width: width, height: height)
     }
 
     func draw(at anchor: CGPoint, rotation: CGFloat, rotationCenter: CGPoint) {
@@ -54,18 +55,18 @@ struct BlockShape_IconLabel: BlockShapeLabel {
             // Apply translation
             switch hAlignment {
             case .center:
-                transform = transform.translatedBy(x: -rect.width/2, y: 0)
+                transform = transform.translatedBy(x: -size.width/2, y: 0)
             case .left:
                 break
             case .right:
-                transform = transform.translatedBy(x: rect.width/2, y: 0)
+                transform = transform.translatedBy(x: size.width/2, y: 0)
             }
 
-            transform = transform.translatedBy(x: 0, y: -rect.height/2)
+            transform = transform.translatedBy(x: 0, y: -size.height/2)
 
             ctx.concatenate(transform)
             
-            ctx.draw(cgImage, in: CGRect(x: anchor.x, y: anchor.y, width: rect.width, height: rect.height))
+            ctx.draw(cgImage, in: CGRect(x: anchor.x, y: anchor.y, width: size.width, height: size.height))
         }
     }
 

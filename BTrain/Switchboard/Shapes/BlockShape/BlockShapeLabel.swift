@@ -19,8 +19,8 @@ protocol BlockShapeLabel {
     /// True if the label is hidden
     var hidden: Bool { get }
     
-    /// The bounds of the label
-    var rect: CGRect { get }
+    /// The size of the label
+    var size: CGSize { get }
         
     /// Draw the labels at the specified coordinates
     /// - Parameters:

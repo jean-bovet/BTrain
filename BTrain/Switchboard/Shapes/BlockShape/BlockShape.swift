@@ -248,13 +248,13 @@ final class BlockShape: Shape, DraggableShape, ConnectableShape {
     private func drawLabels(labels: [BlockShapeLabel]) {
         let space = CGFloat(12.0)
         let visibleLabels = labels.filter({ !$0.hidden })
-        let totalWidth = visibleLabels.reduce(0, { partialResult, label in partialResult + label.rect.width }) + space * CGFloat(visibleLabels.count - 1)
+        let totalWidth = visibleLabels.reduce(0, { partialResult, label in partialResult + label.size.width }) + space * CGFloat(visibleLabels.count - 1)
         
         var cursor = center.translatedBy(x: -totalWidth/2, y: -size.height/1.5)
         for label in visibleLabels {
             let anchor = cursor.rotate(by: labelRotationAngle, around: rotationCenter)
             label.draw(at: anchor, rotation: labelRotationAngle, rotationCenter: rotationCenter)
-            cursor = cursor.translatedBy(x: label.rect.width + space, y: 0)
+            cursor = cursor.translatedBy(x: label.size.width + space, y: 0)
         }
     }
     

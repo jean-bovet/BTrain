@@ -12,12 +12,13 @@
 
 import Foundation
 
+/// Displays a text label
 struct BlockShape_TextLabel: BlockShapeLabel {
             
     let ctx: CGContext
     let text: String
     let shapeContext: ShapeContext
-    let rect: CGRect
+    let size: CGSize
     let borderColor: CGColor
 
     var hidden: Bool = false
@@ -29,8 +30,8 @@ struct BlockShape_TextLabel: BlockShapeLabel {
         self.shapeContext = shapeContext
         self.hidden = hidden
         
-        let (_, blockNameRect) = ctx.prepareText(text: text, color: shapeContext.color, fontSize: shapeContext.fontSize)
-        self.rect = blockNameRect
+        let (_, textRect) = ctx.prepareText(text: text, color: shapeContext.color, fontSize: shapeContext.fontSize)
+        self.size = textRect.size
     }
     
     func draw(at anchor: CGPoint, rotation: CGFloat, rotationCenter: CGPoint) {
