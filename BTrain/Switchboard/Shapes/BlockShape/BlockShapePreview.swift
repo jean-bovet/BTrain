@@ -19,7 +19,8 @@ struct BlockShapePreview: View {
 
     let doc: LayoutDocument
     let category: Block.Category
-    let hasTrain: Bool
+    let angle: CGFloat
+    let settings: BlockShapePreviewSettings
     
     var layout: Layout {
         doc.layout
@@ -33,18 +34,30 @@ struct BlockShapePreview: View {
     }
 
     var viewSize: CGSize {
-        return CGSize(width: 104*2, height: 34*2)
+        switch angle {
+        case 0, .pi:
+            return CGSize(width: 200, height: 68)
+        case .pi/4, .pi/4*3, .pi/4*5, .pi/4*7:
+            return CGSize(width: 200, height: 200)
+        case .pi/2, .pi/4*6:
+            return CGSize(width: 68, height: 200)
+        default:
+            return .zero
+        }
     }
     
     var block: Block {
         let b = Block(name: "Block")
-        if hasTrain {
+        if settings.hasTrain {
             b.trainInstance = .init(layout.trains[0].id, .next)
         }
+        doc.layout.trains[0].timeUntilAutomaticRestart = settings.timeUntilRestart ? 10 : 0
+        doc.switchboard.context.showBlockName = settings.blockName
+        doc.switchboard.context.showTrainIcon = settings.trainIcon
+
         b.category = category
         b.center = .init(x: viewSize.width/2, y: viewSize.height/2)
-        // TODO
-//        b.rotationAngle = .pi/2
+        b.rotationAngle = angle
         return b
     }
     
@@ -63,40 +76,54 @@ struct BlockShapePreview: View {
     
 }
 
+struct BlockShapePreviewSettings: Hashable {
+    let hasTrain: Bool
+    let blockName: Bool
+    let trainIcon: Bool
+    let timeUntilRestart: Bool
+}
+
+struct BlockShapesPreview: View {
+
+    let angles: [CGFloat] = [0, .pi/4, .pi/4*2, .pi/4*3, .pi/4*4, .pi/4*5, .pi/4*6, .pi/4*7]
+    
+    let settings: [BlockShapePreviewSettings]
+    let doc: LayoutDocument
+    
+    var body: some View {
+        VStack {
+            ForEach(settings, id:\.self) { settings in
+                HStack {
+                    ForEach(angles, id:\.self) { angle in
+                        BlockShapePreview(doc: doc, category: .free, angle: angle, settings: settings)
+                    }
+                }
+            }
+        }
+    }
+}
 
 struct BlockShapePreview_Previews: PreviewProvider {
     
-    static func document(blockName: Bool, trainIcon: Bool, timeUntilRestart: Bool = false) -> LayoutDocument {
+    static func settings(trainIcon: Bool) -> [BlockShapePreviewSettings] {
+        [
+            .init(hasTrain: false, blockName: true, trainIcon: trainIcon, timeUntilRestart: false),
+            .init(hasTrain: true, blockName: true, trainIcon: trainIcon, timeUntilRestart: false),
+            .init(hasTrain: true, blockName: true, trainIcon: trainIcon, timeUntilRestart: true),
+            .init(hasTrain: true, blockName: false, trainIcon: trainIcon, timeUntilRestart: false),
+            .init(hasTrain: true, blockName: false, trainIcon: trainIcon, timeUntilRestart: true),
+        ]
+    }
+    
+    static func document() -> LayoutDocument {
         let helper = PredefinedLayoutHelper()
         try! helper.load()
-        if timeUntilRestart {
-            helper.predefinedDocument?.layout.trains[0].timeUntilAutomaticRestart = 10
-        }
-        helper.predefinedDocument?.switchboard.context.showBlockName = blockName
-        helper.predefinedDocument?.switchboard.context.showTrainIcon = trainIcon
         return helper.predefinedDocument!
     }
 
+
     static var previews: some View {
-        HStack {
-            VStack {
-                BlockShapePreview(doc: document(blockName: true, trainIcon: true), category: .free, hasTrain: false)
-                
-                BlockShapePreview(doc: document(blockName: true, trainIcon: false), category: .free, hasTrain: true)
-                BlockShapePreview(doc: document(blockName: true, trainIcon: false, timeUntilRestart: true), category: .free, hasTrain: true)
-
-                BlockShapePreview(doc: document(blockName: false, trainIcon: false), category: .free, hasTrain: true)
-                BlockShapePreview(doc: document(blockName: false, trainIcon: false, timeUntilRestart: true), category: .free, hasTrain: true)
-
-                BlockShapePreview(doc: document(blockName: true, trainIcon: true), category: .free, hasTrain: true)
-                BlockShapePreview(doc: document(blockName: true, trainIcon: true, timeUntilRestart: true), category: .free, hasTrain: true)
-
-                BlockShapePreview(doc: document(blockName: false, trainIcon: true), category: .free, hasTrain: true)
-                BlockShapePreview(doc: document(blockName: false, trainIcon: true, timeUntilRestart: true), category: .free, hasTrain: true)
-            }
-            VStack {
-            }
-        }
-                
+        BlockShapesPreview(settings: settings(trainIcon: false), doc: document())
+        BlockShapesPreview(settings: settings(trainIcon: true), doc: document())
     }
 }
