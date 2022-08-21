@@ -13,7 +13,7 @@
 import Foundation
 import AppKit
 
-struct IconLabel: BlockLabel {
+struct BlockShape_IconLabel: BlockShapeLabel {
             
     let ctx: CGContext
     let icon: NSImage
@@ -37,10 +37,9 @@ struct IconLabel: BlockLabel {
         guard let cgImage = icon.cgImage(forProposedRect: nil, context: nil, hints: nil) else {
             return
         }
-                    
-        // TODO:
+
         let hAlignment = HTextAlignment.left
-        
+
         ctx.with {
             // Maintain rotation such that the icon is always on top or to the left
             var transform = CGAffineTransform.identity

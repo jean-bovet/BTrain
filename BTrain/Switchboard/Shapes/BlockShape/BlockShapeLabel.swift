@@ -12,9 +12,21 @@
 
 import Foundation
 
-protocol BlockLabel {
+/// Defines a label displayed by the block shape. It is used to display
+/// for example the name of the block, the name of the train or the train icons.
+protocol BlockShapeLabel {
+    
+    /// True if the label is hidden
     var hidden: Bool { get }
+    
+    /// The bounds of the label
     var rect: CGRect { get }
+        
+    /// Draw the labels at the specified coordinates
+    /// - Parameters:
+    ///   - anchor: the anchor where to start drawing the label
+    ///   - rotation: the rotation angle of the label
+    ///   - rotationCenter: the rotation center of the label
     func draw(at anchor: CGPoint, rotation: CGFloat, rotationCenter: CGPoint)
 }
 

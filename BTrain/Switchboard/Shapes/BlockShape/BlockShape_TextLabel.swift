@@ -12,7 +12,7 @@
 
 import Foundation
 
-struct TextLabel: BlockLabel {
+struct BlockShape_TextLabel: BlockShapeLabel {
             
     let ctx: CGContext
     let text: String
@@ -35,9 +35,7 @@ struct TextLabel: BlockLabel {
     
     func draw(at anchor: CGPoint, rotation: CGFloat, rotationCenter: CGPoint) {
         ctx.with {
-            // Always displays the text facing downwards so it is easier to read
-            let textCenter = anchor.translatedBy(x: 0, y: 0).rotate(by: rotation, around: rotationCenter)
-            ctx.drawText(at: textCenter, vAlignment: .center, hAlignment: .left, rotation: rotation,
+            ctx.drawText(at: anchor, vAlignment: .center, hAlignment: .left, rotation: rotation,
                          text: text, color: shapeContext.color, fontSize: shapeContext.fontSize, borderColor: borderColor, backgroundColor: shapeContext.backgroundLabelColor)
         }
     }

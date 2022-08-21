@@ -123,7 +123,7 @@ struct BlockShapePreview_Previews: PreviewProvider {
 
 
     static var previews: some View {
-        BlockShapesPreview(settings: settings(trainIcon: false), doc: document())
         BlockShapesPreview(settings: settings(trainIcon: true), doc: document())
+        BlockShapesPreview(settings: settings(trainIcon: false), doc: document())
     }
 }
