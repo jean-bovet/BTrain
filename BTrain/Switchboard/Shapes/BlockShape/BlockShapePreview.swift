@@ -80,22 +80,21 @@ struct BlockShapePreview_Previews: PreviewProvider {
     static var previews: some View {
         HStack {
             VStack {
-                ForEach(Block.Category.allCases, id:\.self) { category in
-                    BlockShapePreview(doc: document(blockName: false, trainIcon: false), category: category, hasTrain: false)
-                }
-            }
-
-            VStack {
                 BlockShapePreview(doc: document(blockName: true, trainIcon: true), category: .free, hasTrain: false)
+                
                 BlockShapePreview(doc: document(blockName: true, trainIcon: false), category: .free, hasTrain: true)
+                BlockShapePreview(doc: document(blockName: true, trainIcon: false, timeUntilRestart: true), category: .free, hasTrain: true)
+
+                BlockShapePreview(doc: document(blockName: false, trainIcon: false), category: .free, hasTrain: true)
+                BlockShapePreview(doc: document(blockName: false, trainIcon: false, timeUntilRestart: true), category: .free, hasTrain: true)
+
                 BlockShapePreview(doc: document(blockName: true, trainIcon: true), category: .free, hasTrain: true)
+                BlockShapePreview(doc: document(blockName: true, trainIcon: true, timeUntilRestart: true), category: .free, hasTrain: true)
+
                 BlockShapePreview(doc: document(blockName: false, trainIcon: true), category: .free, hasTrain: true)
+                BlockShapePreview(doc: document(blockName: false, trainIcon: true, timeUntilRestart: true), category: .free, hasTrain: true)
             }
             VStack {
-                BlockShapePreview(doc: document(blockName: true, trainIcon: true, timeUntilRestart: true), category: .free, hasTrain: false)
-                BlockShapePreview(doc: document(blockName: true, trainIcon: false, timeUntilRestart: true), category: .free, hasTrain: true)
-                BlockShapePreview(doc: document(blockName: true, trainIcon: true, timeUntilRestart: true), category: .free, hasTrain: true)
-                BlockShapePreview(doc: document(blockName: false, trainIcon: true, timeUntilRestart: true), category: .free, hasTrain: true)
             }
         }
                 
