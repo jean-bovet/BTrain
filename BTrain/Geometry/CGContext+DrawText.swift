@@ -94,9 +94,9 @@ extension CGContext {
         
         switch(vAlignment) {
         case .center:
-            p.y = p.y - stringRect.height/2
+            p.y = p.y + stringRect.height/2
         case .top:
-            p.y = p.y + stringRect.height
+            p.y = p.y - stringRect.height
         case .bottom:
             p.y = p.y + 0
         }
