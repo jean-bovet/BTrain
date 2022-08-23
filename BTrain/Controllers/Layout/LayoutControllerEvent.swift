@@ -17,7 +17,9 @@ enum LayoutControllerEvent: CustomStringConvertible {
     /// A feedback sensor has been triggered
     case feedbackTriggered(Feedback)
     
-    /// The scheduling state of the train has changed. This happens in the following scenarios:
+    /// The scheduling state of the train has changed.
+    ///
+    /// This happens in the following scenarios:
     /// - When a train starts for the first time
     /// - When a train stops
     /// - When a train finishes a route

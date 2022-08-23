@@ -451,6 +451,52 @@ class AutomaticRoutingTests: BTTestCase {
         XCTAssertEqual(p.train.scheduling, .unmanaged)
     }
 
+    func testAutomaticRouteModeOnceAndStopBeforeReachingDestination() throws {
+        let layout = LayoutComplexLoop().newLayout()
+
+        let s2 = layout.block(for: Identifier<Block>(uuid: "s2"))!
+        let b3 = layout.block(for: Identifier<Block>(uuid: "b3"))!
+
+        let p = try setup(layout: layout, fromBlockId: s2.id, destination: Destination(b3.id), routeSteps: ["s2:next", "b1:next", "b2:next", "b3:next"])
+        
+        try p.assert("automatic-0: {r0{s2 🔵🚂0 ≏ }} <r0<t1(1,0),s>> <r0<t2(1,0),s>> [r0[b1 ≏ ]] <t3> [b2 ≏ ] <t4(1,0)> [b3 ≏ ≏ ≏ ]")
+        try p.assert("automatic-0: {r0{s2 ≡ 🔵🚂0 }} <r0<t1(1,0),s>> <r0<t2(1,0),s>> [r0[b1 ≏ ]] <t3> [b2 ≏ ] <t4(1,0)> [b3 ≏ ≏ ≏ ]")
+        try p.assert("automatic-0: {s2 ≏ } <t1(1,0),s> <t2(1,0),s> [r0[b1 ≡ 🔵🚂0 ]] <r0<t3>> [r0[b2 ≏ ]] <t4(1,0)> [b3 ≏ ≏ ≏ ]")
+        try p.assert("automatic-0: {s2 ≏ } <t1(1,0),s> <t2(1,0),s> [b1 ≏ ] <t3> [r0[b2 ≡ 🔵🚂0 ]] <r0<t4(1,0)>> [r0[b3 ≏ ≏ ≏ ]]")
+        
+        p.stop()
+        
+        XCTAssertEqual(p.train.scheduling, .stopManaged)
+        
+        p.layoutController.waitUntilSettled()
+        
+        XCTAssertEqual(p.train.scheduling, .unmanaged)
+    }
+
+    func testAutomaticRouteModeOnceAndFinishBeforeReachingDestination() throws {
+        let layout = LayoutComplexLoop().newLayout()
+
+        let s2 = layout.block(for: Identifier<Block>(uuid: "s2"))!
+        let b3 = layout.block(for: Identifier<Block>(uuid: "b3"))!
+
+        let p = try setup(layout: layout, fromBlockId: s2.id, destination: Destination(b3.id), routeSteps: ["s2:next", "b1:next", "b2:next", "b3:next"])
+        
+        try p.assert("automatic-0: {r0{s2 🔵🚂0 ≏ }} <r0<t1(1,0),s>> <r0<t2(1,0),s>> [r0[b1 ≏ ]] <t3> [b2 ≏ ] <t4(1,0)> [b3 ≏ ≏ ≏ ]")
+        try p.assert("automatic-0: {r0{s2 ≡ 🔵🚂0 }} <r0<t1(1,0),s>> <r0<t2(1,0),s>> [r0[b1 ≏ ]] <t3> [b2 ≏ ] <t4(1,0)> [b3 ≏ ≏ ≏ ]")
+        try p.assert("automatic-0: {s2 ≏ } <t1(1,0),s> <t2(1,0),s> [r0[b1 ≡ 🔵🚂0 ]] <r0<t3>> [r0[b2 ≏ ]] <t4(1,0)> [b3 ≏ ≏ ≏ ]")
+        try p.assert("automatic-0: {s2 ≏ } <t1(1,0),s> <t2(1,0),s> [b1 ≏ ] <t3> [r0[b2 ≡ 🔵🚂0 ]] <r0<t4(1,0)>> [r0[b3 ≏ ≏ ≏ ]]")
+        
+        p.finish()
+        
+        XCTAssertEqual(p.train.scheduling, .finishManaged)
+        
+        try p.assert("automatic-0: {s2 ≏ } <t1(1,0),s> <t2(1,0),s> [b1 ≏ ] <t3> [b2 ≏ ] <t4(1,0)> [r0[b3 ≡ 🟡🚂0 ≏ ≏ ]]")
+        try p.assert("automatic-0: {s2 ≏ } <t1(1,0),s> <t2(1,0),s> [b1 ≏ ] <t3> [b2 ≏ ] <t4(1,0)> [r0[b3 ≏ ≡ 🟡🚂0 ≏ ]]")
+        try p.assert("automatic-0: {s2 ≏ } <t1(1,0),s> <t2(1,0),s> [b1 ≏ ] <t3> [b2 ≏ ] <t4(1,0)> [r0[b3 ≏ ≏ ≡ 🔴🚂0 ]]")
+
+        XCTAssertEqual(p.train.scheduling, .unmanaged)
+    }
+
     func testEmergencyStop() throws {
         let layout = LayoutComplexLoop().newLayout()
         let s1 = layout.block(for: Identifier<Block>(uuid: "s1"))!

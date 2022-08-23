@@ -222,6 +222,9 @@ final class LayoutController {
         }
     }
     
+    /// Stops the specified train as soon as possible. BTrain will wait until the train
+    /// as entered a block and triggered the stop feedback of the train to stop it.
+    /// - Parameter train: the train to stop
     func stop(train: Train) {
         train.scheduling = .stopManaged
         runControllers(.schedulingChanged(train))

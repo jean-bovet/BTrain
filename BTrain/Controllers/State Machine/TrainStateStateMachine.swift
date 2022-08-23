@@ -86,7 +86,7 @@ extension TrainStateStateMachine {
     
     /// When the train stops, we need to take care of the status of the train
     /// because depending on the route mode (fixed, automatic or automaticOnce),
-    /// we need to re-schedule the train, stop it or simple do nothing.
+    /// we need to re-schedule the train, stop it or simply do nothing.
     /// - Parameter train: the train to handle
     func trainDidStop(train: TrainControlling) {
         guard train.mode != .unmanaged else {
@@ -114,7 +114,7 @@ extension TrainStateStateMachine {
             }
 
         case .automaticOnce(destination: _):
-            if reachedStationOrDestination {
+            if reachedStationOrDestination || train.mode == .stopManaged {
                 train.mode = .unmanaged
             }
         }
