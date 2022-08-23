@@ -14,12 +14,12 @@ import SwiftUI
 
 struct CS3ReceivedMessageView: View {
     
-    @ObservedObject var doc: LayoutDocument
+    @ObservedObject var mi: MarklinInterface
     
     @State private var selectedMessage: MarklinCANMessage.ID? = nil
     
     var body: some View {
-        Table(doc.messages, selection: $selectedMessage) {
+        Table(mi.messages, selection: $selectedMessage) {
             TableColumn("Prio") { message in
                 Text("\(message.prio.toHex())")
             }.width(60)
@@ -66,13 +66,13 @@ struct CS3ReceivedMessageView_Previews: PreviewProvider {
         let doc = LayoutDocument(layout: LayoutComplex().newLayout())
         let train = doc.layout.trains[0]
         let command = Command.queryDirection(address: train.address, decoderType: train.decoder, descriptor: nil)
-        if let (canMessage, _) = MarklinCANMessage.from(command: command) {
-            doc.messages.append(canMessage)
+        if let (canMessage, _) = MarklinCANMessage.from(command: command), let mi = doc.interface as? MarklinInterface {
+            mi.messages.append(canMessage)
         }
         return doc
     }()
     
     static var previews: some View {
-        CS3ReceivedMessageView(doc: doc)
+        CS3ReceivedMessageView(mi: doc.interface as! MarklinInterface)
     }
 }

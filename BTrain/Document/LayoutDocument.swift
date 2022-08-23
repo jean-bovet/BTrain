@@ -13,63 +13,55 @@
 import Foundation
 import SwiftUI
 
-// This class defines a layout document which is persisted to disk.
-//                                          ┌──────────────────┐
-//          ┌────────────────────────────┬──│  LayoutDocument  │───┬────────────────────────────┐
-//          │                            │  └──────────────────┘   │                            │
-//          │                            │                         │                            │
-//          ▼                            ▼                         ▼                            ▼
-//┌──────────────────┐         ┌──────────────────┐           ┌─────────┐             ┌──────────────────┐
-//│ CommandInterface │◀────────│LayoutCoordinator │──────────▶│ Layout  │◀────────────│   Switchboard    │
-//└──────────────────┘         └──────────────────┘           └─────────┘             └──────────────────┘
-//
+/// This is the root model class that holds everything needed to manage a  layout.
+/// It also handles loading and saving of the layout model to disk.
 final class LayoutDocument: ObservableObject {
-    
-    // This property is used to keep track of the connection status.
-    // True if connected to the Digital Controller interface,
-    // false otherwise.
-    @Published var connected = false
-
-    // Interface to communicate with the Digital Controller
-    let interface: CommandInterface
-    
-    // The layout model
+        
+    /// The layout model
     @Published var layout: Layout
 
-    // A class that is used to diagnostic the layout and report any error
-    let layoutDiagnostics: LayoutDiagnostic
-
-    // The layout coordinator which updates the layout in real-time during train operations
+    /// The layout coordinator which manages the layout in real-time during train operations
     @Published var layoutController: LayoutController
 
-    // The visual representation of the layout
+    /// The visual representation of the layout
     @Published var switchboard: SwitchBoard
+
+    /// Interface to communicate with the Digital Controller
+    let interface: CommandInterface
+
+    /// Class that is used to diagnostic the layout and report any error
+    let layoutDiagnostics: LayoutDiagnostic
         
-    // The simulator that can be used in place of a real Digital Controller
+    /// The Digital Controller simulator when working offline
     let simulator: MarklinCommandSimulator
 
-    // The centralized class that manages all train icon-related functions
+    /// The centralized class that manages all train icon-related functions
     let trainIconManager: TrainIconManager
     
-    // If non-nil, the instance of the class that is measuring the speed of a train
+    /// If non-nil, the instance of the class that is measuring the speed of a train
     var measurement: TrainSpeedMeasurement?
 
-    // Property used to perform the layout diagnostic command
+    /// True if the layout is connected to the Digital Controller, false otherwise
+    @Published var connected = false
+
+    /// Used to trigger the layout diagnostic from the UX
     @Published var triggerLayoutDiagnostic = false
+    
+    /// Used to trigger the switchboard setting dialog from the UX
     @Published var triggerSwitchboardSettings = false
 
-    // Property used to confirm the download of the locomotives command
+    /// Property used to confirm the download of the locomotives command
     @Published var discoverLocomotiveConfirmation = false
 
-    // Property used to switch to a specific view type
+    /// Property used to switch to a specific view type
     @AppStorage("selectedView") var selectedView: ViewType = .overview
 
-    // Property used to toggle showing debug-only controls
-    @AppStorage(SettingsKeys.debugMode) var showDebugModeControls = false
-            
+    /// Property used to toggle showing debug-only controls
+    @Published var showDebugModeControls = false
+        
+    /// Class handling tasks that must run when the connection to the Digital Controller is established
     @Published var onConnectTasks: LayoutOnConnectTasks
-    @Published var messages = [MarklinCANMessage]()
-    
+
     init(layout: Layout, interface: CommandInterface = MarklinInterface()) {
         let simulator = MarklinCommandSimulator(layout: layout, interface: interface)
         
@@ -95,12 +87,6 @@ final class LayoutDocument: ObservableObject {
         switchboard.update()
 
         layoutDiagnostics.automaticCheck()
-        
-        if let marklin = interface as? MarklinInterface {
-            marklin.register { [weak self] canMessage in
-                self?.messages.append(canMessage)
-            }
-        }
     }
     
     func apply(_ other: Layout) {

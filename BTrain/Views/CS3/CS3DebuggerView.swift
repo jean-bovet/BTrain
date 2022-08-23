@@ -20,7 +20,9 @@ struct CS3DebuggerView: View {
         VStack {
             CS3SendMessageView(doc: doc)
                 .padding()
-            CS3ReceivedMessageView(doc: doc)
+            if let mi = doc.interface as? MarklinInterface {
+                CS3ReceivedMessageView(mi: mi)
+            }
         }
     }
 }

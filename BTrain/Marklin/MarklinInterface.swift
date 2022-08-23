@@ -13,8 +13,10 @@
 import Foundation
 
 /// Implementation of the CommandInterface for the Marklin Central Station 3
-final class MarklinInterface: CommandInterface {
+final class MarklinInterface: CommandInterface, ObservableObject {
     
+    @Published var messages = [MarklinCANMessage]()
+
     var callbacks = CommandInterfaceCallbacks()
             
     var client: Client?
