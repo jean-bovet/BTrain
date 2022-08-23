@@ -57,7 +57,7 @@ final class LayoutDocument: ObservableObject {
     @AppStorage("selectedView") var selectedView: ViewType = .overview
 
     /// Property used to toggle showing debug-only controls
-    @Published var showDebugModeControls = false
+    @AppStorage(SettingsKeys.debugMode) var showDebugModeControls = false
         
     /// Class handling tasks that must run when the connection to the Digital Controller is established
     @Published var onConnectTasks: LayoutOnConnectTasks

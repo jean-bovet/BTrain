@@ -32,7 +32,7 @@ final class TrainController: TrainControlling, CustomStringConvertible {
     
     var mode: StateMachine.TrainMode {
         get {
-            train .scheduling
+            train.scheduling
         }
         set {
             train.scheduling = newValue
