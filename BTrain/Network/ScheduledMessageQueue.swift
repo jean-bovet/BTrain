@@ -25,6 +25,7 @@ final class ScheduledMessageQueue {
 
     private var scheduledQueue = [ScheduledBlock]()
     
+    private var enabled = true
     private var executing = false
     
     // Default delay of 50ms between commands
@@ -45,7 +46,23 @@ final class ScheduledMessageQueue {
         }
     }
     
+    func enable() {
+        BTLogger.debug("􀐫 [\(name)] enable")
+        executing = false
+        enabled = true
+    }
+    
+    func disable() {
+        BTLogger.debug("􀐫 [\(name)] disable")
+        enabled = false
+        scheduledQueue.removeAll()
+    }
+    
     func schedule(priority: Bool = false, block: @escaping ExecutionBlock) {
+        guard enabled else {
+            return
+        }
+        
         let scheduledBlock = ScheduledBlock(priority: priority, block: block)
         if scheduledBlock.priority {
             scheduledQueue.insert(scheduledBlock, at: 0)
@@ -56,6 +73,9 @@ final class ScheduledMessageQueue {
     }
         
     private func execute(scheduledBlock: ScheduledBlock) -> Bool {
+        guard enabled else {
+            return false
+        }
         guard !executing else {
             return false
         }
@@ -79,7 +99,7 @@ final class ScheduledMessageQueue {
             if !sSelf.scheduledQueue.isEmpty {
                 let scheduledBlock = sSelf.scheduledQueue.removeFirst()
                 if sSelf.execute(scheduledBlock: scheduledBlock) == false {
-                    // Schedule again the block it is could not be executed
+                    // Schedule again the block if it could not be executed
                     sSelf.scheduledQueue.insert(scheduledBlock, at: 0)
                 }
             }

@@ -83,7 +83,7 @@ final class LayoutController {
         self.switchboard = switchboard
         self.feedbackMonitor = LayoutFeedbackMonitor(layout: layout)
         self.interface = interface
-        self.turnoutManager = LayoutTurnoutManager()
+        self.turnoutManager = LayoutTurnoutManager(interface: interface)
         self.debugger = LayoutControllerDebugger(layout: layout)
         
         registerForFeedbackChange()
@@ -425,7 +425,7 @@ extension LayoutController {
     ///   - completion: completion block called when the command has been sent
     func sendTurnoutState(turnout: Turnout, completion: @escaping CompletionBlock) {
         turnout.actualStateReceived = false
-        turnoutManager.sendTurnoutState(turnout: turnout, interface: interface, completion: completion)
+        turnoutManager.sendTurnoutState(turnout: turnout, completion: completion)
     }
         
     func setTrainSpeed(_ train: Train, _ speed: TrainSpeed.UnitKph, acceleration: TrainSpeedAcceleration.Acceleration? = nil, completion: CompletionCancelBlock? = nil) {

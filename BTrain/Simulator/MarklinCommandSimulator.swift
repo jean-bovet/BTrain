@@ -160,47 +160,53 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
     
     func register(with connection: ServerConnection) {
         connection.receiveMessageCallback = { [weak self] message in
-            switch(message) {
-            case .go:
-                self?.enabled = true
-                self?.scheduleTimer()
-                self?.send(MarklinCANMessageFactory.go().ack)
-
-            case .stop:
-                self?.enabled = false
-                self?.timer?.invalidate()
-                self?.send(MarklinCANMessageFactory.stop().ack)
-
-            case .emergencyStop(address: let address, decoderType: _, priority: _, descriptor: _):
-                self?.send(MarklinCANMessageFactory.emergencyStop(addr: address).ack)
-                break
-                
-            case .speed(address: let address, decoderType: let decoderType, value: let value, priority: _, descriptor: _):
-                self?.speedChanged(address: address, decoderType: decoderType, value: value)
-                break
-                
-            case .direction(address: let address, decoderType: let decoderType, direction: let direction, priority: _, descriptor: _):
-                self?.directionChanged(address: address, decoderType: decoderType, direction: direction)
-                break
-                
-            case .turnout(address: let address, state: let state, power: let power, priority: _, descriptor: _):
-                self?.turnoutChanged(address: address, state: state, power: power)
-                break
-                
-            case .feedback(deviceID: _, contactID: _, oldValue: _, newValue: _, time: _, priority: _, descriptor: _):
-                break
-                
-            case .locomotives(priority: _, descriptor: _):
-                self?.provideLocomotives()
-                break
-
-            case .queryDirection(address: let address, decoderType: let decoderType, priority: _, descriptor: _):
-                self?.provideDirection(address: address.actualAddress(for: decoderType))
-                break
-
-            case .unknown(command: _):
-                break
+            if let self = self {
+                self.handleMessage(message: message)
             }
+        }
+    }
+
+    private func handleMessage(message: Command) {
+        switch(message) {
+        case .go:
+            enabled = true
+            scheduleTimer()
+            send(MarklinCANMessageFactory.go().ack)
+
+        case .stop:
+            enabled = false
+            timer?.invalidate()
+            send(MarklinCANMessageFactory.stop().ack)
+
+        case .emergencyStop(address: let address, decoderType: _, priority: _, descriptor: _):
+            send(MarklinCANMessageFactory.emergencyStop(addr: address).ack)
+            
+        case .speed(address: let address, decoderType: let decoderType, value: let value, priority: _, descriptor: _):
+            if enabled {
+                speedChanged(address: address, decoderType: decoderType, value: value)
+            }
+            
+        case .direction(address: let address, decoderType: let decoderType, direction: let direction, priority: _, descriptor: _):
+            if enabled {
+                directionChanged(address: address, decoderType: decoderType, direction: direction)
+            }
+            
+        case .turnout(address: let address, state: let state, power: let power, priority: _, descriptor: _):
+            if enabled {
+                turnoutChanged(address: address, state: state, power: power)
+            }
+            
+        case .feedback(deviceID: _, contactID: _, oldValue: _, newValue: _, time: _, priority: _, descriptor: _):
+            break
+            
+        case .locomotives(priority: _, descriptor: _):
+            provideLocomotives()
+
+        case .queryDirection(address: let address, decoderType: let decoderType, priority: _, descriptor: _):
+            provideDirection(address: address.actualAddress(for: decoderType))
+
+        case .unknown(command: _):
+            break
         }
     }
     

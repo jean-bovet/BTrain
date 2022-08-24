@@ -27,6 +27,7 @@ final class CommandInterfaceCallbacks {
             Array(callbacks.values)
         }
         
+        @discardableResult
         func register(_ callback: T) -> UUID {
             let uuid = UUID()
             callbacks[uuid] = callback
@@ -38,12 +39,14 @@ final class CommandInterfaceCallbacks {
         }
     }
 
+    typealias StateChangeCallback = (_ enabled: Bool) -> Void
     typealias FeedbackChangeCallback = (_ deviceID: UInt16, _ contactID: UInt16, _ value: UInt8) -> Void
     typealias SpeedChangeCallback = (_ address: UInt32, _ decoderType: DecoderType?, _ value: SpeedValue, _ acknowledgment: Bool) -> Void
     typealias DirectionChangeCallback = (_ address: UInt32, _ decoderType: DecoderType?, _ direction: Command.Direction) -> Void
     typealias TurnoutChangeCallback = (_ address: CommandTurnoutAddress, _ state: UInt8, _ power: UInt8, _ acknowledgment: Bool) -> Void
     typealias QueryLocomotiveCallback = (_ locomotives: [CommandLocomotive]) -> Void
 
+    var stateChanges = CallbackRegistrar<StateChangeCallback>()
     var feedbackChanges = CallbackRegistrar<FeedbackChangeCallback>()
     var speedChanges = CallbackRegistrar<SpeedChangeCallback>()
     var directionChanges = CallbackRegistrar<DirectionChangeCallback>()

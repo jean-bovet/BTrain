@@ -52,4 +52,21 @@ extension XCTestCase {
         waitForExpectations(timeout: 0.5, handler: nil)
     }
 
+    func go(doc: LayoutDocument) {
+        let goCommand = expectation(description: "go")
+
+        doc.layoutController.go {
+            goCommand.fulfill()
+        }
+        
+        wait(for: [goCommand], timeout: 0.5)
+    }
+    
+    func stop(doc: LayoutDocument) {
+        let stopCommand = expectation(description: "stop")
+        doc.layoutController.stop {
+            stopCommand.fulfill()
+        }
+        wait(for: [stopCommand], timeout: 0.5)
+    }
 }

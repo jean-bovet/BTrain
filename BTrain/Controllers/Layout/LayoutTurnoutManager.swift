@@ -12,14 +12,40 @@
 
 import Foundation
 
+/// Each time a turnout state is changed, this class is used to apply that change to the Digital Controller
+/// by sending the appropriate commands to the turnout. This class also ensures that turnout commands
+/// are not sent too fast in order to avoid overwhelming the Digital Controller power command.
 final class LayoutTurnoutManager {
-            
-    // Queue to ensure that sending of command for each turnout does happen
-    // every 250ms in order to avoid a spike in current on the real layout.
+    
+    /// The command interface to send the command to
+    let interface: CommandInterface
+    
+    /// Queue to ensure that sending of command for each turnout does happen
+    /// every 250ms in order to avoid a spike in current on the real layout.
     static let turnoutDelay = 0.250 * BaseTimeFactor
+        
+    /// Internal turnout queue
     let turnoutQueue = ScheduledMessageQueue(delay: turnoutDelay, name: "Turnout")
-                    
-    func sendTurnoutState(turnout: Turnout, interface: CommandInterface, completion: @escaping CompletionBlock) {
+    
+    internal init(interface: CommandInterface) {
+        self.interface = interface
+        
+        // Note: when the Digital Controller is disabled or enabled, ensure
+        // the turnout queue is also properly setup
+        interface.callbacks.stateChanges.register { [weak self] enabled in
+            if enabled {
+                self?.turnoutQueue.enable()
+            } else {
+                self?.turnoutQueue.disable()
+            }
+        }
+    }
+    
+    /// Send the turnout requested state to the Digital Controller
+    /// - Parameters:
+    ///   - turnout: the turnout whose requested state should be sent to the Digital Controller
+    ///   - completion: a completion block when the Digital Controller has acknowledged the turnout change
+    func sendTurnoutState(turnout: Turnout, completion: @escaping CompletionBlock) {
         BTLogger.debug("Turnout \(turnout) requested state to \(turnout.requestedState)")
                 
         let commands = turnout.requestedStateCommands(power: 0x1)
@@ -31,11 +57,11 @@ final class LayoutTurnoutManager {
 
         var commandCompletionCount = commands.count
         for (index, command) in commands.enumerated() {
-            turnoutQueue.schedule { qc in
-                interface.execute(command: command) {
+            turnoutQueue.schedule { [weak self] qc in
+                self?.interface.execute(command: command) {
                     qc()
-                    Timer.scheduledTimer(withTimeInterval: activationTime, repeats: false) { timer in
-                        interface.execute(command: idleCommands[index]) {
+                    Timer.scheduledTimer(withTimeInterval: activationTime, repeats: false) { [weak self] timer in
+                        self?.interface.execute(command: idleCommands[index]) {
                             commandCompletionCount -= 1
                             if commandCompletionCount == 0 {
                                 completion()

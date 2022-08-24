@@ -150,9 +150,11 @@ final class MarklinInterface: CommandInterface, ObservableObject {
         switch cmd {
         case .go(_, _):
             triggerCompletionBlock(for: msg)
+            callbacks.stateChanges.all.forEach { $0(true) }
             
         case .stop(_, _):
             triggerCompletionBlock(for: msg)
+            callbacks.stateChanges.all.forEach { $0(false) }
 
         case .speed(let address, let decoderType, let value, _, _):
             triggerCompletionBlock(for: msg)
