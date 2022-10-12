@@ -18,16 +18,20 @@ struct TurnoutShapeView: View {
     let category: Turnout.Category
     let requestedState: Turnout.State
     let actualState: Turnout.State
-    let shapeContext = ShapeContext()
-
-    let viewSize = CGSize(width: 64, height: 34)
+    let shapeContext: ShapeContext
+    var name: String = ""
+    var rotation: Double = 0
+    
+    let viewSize = CGSize(width: 64, height: 34*2)
     
     var turnout: Turnout {
         let t = Turnout()
+        t.name = name
         t.category = category
         t.requestedState = requestedState
         t.actualState = actualState
         t.center = .init(x: viewSize.width/2, y: viewSize.height/2)
+        t.rotationAngle = rotation
         return t
     }
     
@@ -50,15 +54,16 @@ struct TurnoutShapeView: View {
 struct TurnoutShapeView_Previews: PreviewProvider {
     
     static let layout = LayoutLoop1().newLayout()
+    static let context = ShapeContext()
     
     static var previews: some View {
         VStack(alignment: .leading) {
             ForEach(Turnout.Category.allCases, id:\.self) { category in
                 HStack {
                     ForEach(Turnout.states(for: category)) { state in
-                        TurnoutShapeView(layout: layout, category: category, requestedState: state, actualState: Turnout.defaultState(for: category))
+                        TurnoutShapeView(layout: layout, category: category, requestedState: state, actualState: Turnout.defaultState(for: category), shapeContext: context)
                         if state != Turnout.defaultState(for: category) {
-                            TurnoutShapeView(layout: layout, category: category, requestedState: state, actualState: state)
+                            TurnoutShapeView(layout: layout, category: category, requestedState: state, actualState: state, shapeContext: context)
                         }
                     }
                 }

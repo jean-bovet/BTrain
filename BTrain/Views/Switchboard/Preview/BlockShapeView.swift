@@ -48,8 +48,10 @@ struct BlockShapeView_Previews: PreviewProvider {
     static let layout = LayoutLoop1().newLayout()
     
     static var previews: some View {
-        ForEach(Block.Category.allCases, id:\.self) { category in
-            BlockShapeView(layout: layout, category: category)
+        VStack {
+            ForEach(Block.Category.allCases, id:\.self) { category in
+                BlockShapeView(layout: layout, category: category)
+            }
         }
     }
 }

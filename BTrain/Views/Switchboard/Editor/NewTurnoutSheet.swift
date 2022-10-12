@@ -15,6 +15,7 @@ import SwiftUI
 struct NewTurnoutSheet: View {
     
     let layout: Layout
+    let context = ShapeContext()
     
     @Environment(\.presentationMode) var presentationMode
 
@@ -33,7 +34,7 @@ struct NewTurnoutSheet: View {
                             Spacer()
                             HStack {
                                 ForEach(Turnout.states(for: category)) { state in
-                                    TurnoutShapeView(layout: layout, category: category, requestedState: state, actualState: state)
+                                    TurnoutShapeView(layout: layout, category: category, requestedState: state, actualState: state, shapeContext: context)
                                 }
                             }
                         }

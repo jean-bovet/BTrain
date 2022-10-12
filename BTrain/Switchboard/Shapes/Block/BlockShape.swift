@@ -119,12 +119,16 @@ final class BlockShape: Shape, DraggableShape, ConnectableShape {
         return path
     }
     
+    /// The length of the line point which is used to determine when two lines representing
+    /// each element are joining, in order to determine the control point of the bezier curve.
+    let linePointLength = 160.0
+
     var nextSocket: ConnectorSocket {
         let socketCenter = CGPoint(x: center.x + size.width/2, y: center.y)
             .rotate(by: rotationAngle, around: center)
         let ctrlPoint = CGPoint(x: center.x + size.width, y: center.y)
             .rotate(by: rotationAngle, around: center)
-        let linePoint = CGPoint(x: center.x + size.width * 4 * 4, y: center.y)
+        let linePoint = CGPoint(x: center.x + size.width * linePointLength, y: center.y)
             .rotate(by: rotationAngle, around: center)
         return ConnectorSocket.create(id: Block.nextSocket, center: socketCenter, controlPoint: ctrlPoint, linePoint: linePoint)
     }
@@ -134,7 +138,7 @@ final class BlockShape: Shape, DraggableShape, ConnectableShape {
             .rotate(by: rotationAngle, around: center)
         let ctrlPoint = CGPoint(x: center.x - size.width, y: center.y)
             .rotate(by: rotationAngle, around: center)
-        let linePoint = CGPoint(x: center.x - size.width * 4, y: center.y)
+        let linePoint = CGPoint(x: center.x - size.width * linePointLength, y: center.y)
             .rotate(by: rotationAngle, around: center)
         return ConnectorSocket.create(id: Block.previousSocket, center: socketCenter, controlPoint: ctrlPoint, linePoint: linePoint)
     }

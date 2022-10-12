@@ -12,27 +12,26 @@
 
 import SwiftUI
 
-struct FeedbackView: View {
+struct TurnoutShapePreview: View {
     
-    let label: String
-    @Binding var state: Bool
+    let layout = Layout()
+    let context: ShapeContext = {
+        let c = ShapeContext()
+        c.showTurnoutName = true
+        return c
+    }()
     
     var body: some View {
-        Text(label)
-            .bold()
-            .lineLimit(1)
-            .frame(maxWidth: .infinity)
-            .padding(3)
-            .background(state ? Color.red : Color.gray)
-            .cornerRadius(4)
+        VStack {
+            ForEach(0..<8) { index in
+                TurnoutShapeView(layout: layout, category: .singleLeft, requestedState: .straight, actualState: .straight, shapeContext: context, name: "foo", rotation: .pi/4 * Double(index))
+            }
+        }
     }
 }
 
-struct FeedbackView_Previews: PreviewProvider {
+struct TurnoutShapePreview_Previews: PreviewProvider {
     static var previews: some View {
-        HStack {
-            FeedbackView(label: "1:2015", state: .constant(true))
-            FeedbackView(label: "0xF76B", state: .constant(false))
-        }
+        TurnoutShapePreview()
     }
 }

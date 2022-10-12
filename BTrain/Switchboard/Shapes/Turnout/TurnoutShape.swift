@@ -42,6 +42,10 @@ final class TurnoutShape: Shape, DraggableShape, ConnectableShape {
 
     var selected = false
     
+    /// The length of the line point which is used to determine when two lines representing
+    /// each element are joining, in order to determine the control point of the bezier curve.
+    let linePointLength = 160.0
+
     var sockets: [ConnectorSocket] {
         socketPoints.enumerated().map { (index, point) in
             // The control point is computed by extending the vector from
@@ -50,7 +54,7 @@ final class TurnoutShape: Shape, DraggableShape, ConnectableShape {
             let vn = v.normalized
             let l = v.magnitude * 4
             let ctrlPoint = CGPoint(x: center.x + vn.x * l, y: center.y + vn.y * l)
-            let linePoint = CGPoint(x: center.x + vn.x * l * 4 * 4, y: center.y + vn.y * l * 4 * 4)
+            let linePoint = CGPoint(x: center.x + vn.x * l * linePointLength, y: center.y + vn.y * l * linePointLength)
             return ConnectorSocket.create(id: index, center: point, controlPoint: ctrlPoint, linePoint: linePoint)
         }
     }
@@ -298,23 +302,23 @@ final class TurnoutShape: Shape, DraggableShape, ConnectableShape {
                 
         if shapeContext.showTurnoutName {
             ctx.with {
-                drawLabel(ctx: ctx, label: turnout.name, at: center.translatedBy(x: 0, y: -radius), color: shapeContext.color, fontSize: shapeContext.fontSize)
+                drawLabel(ctx: ctx, label: turnout.name, at: center, color: shapeContext.color, fontSize: shapeContext.fontSize)
             }
         }
     }
             
     @discardableResult
-    func drawLabel(ctx: CGContext, label: String, at location: CGPoint, color: CGColor, fontSize: CGFloat) -> CGSize {
-        let textCenter = location.rotate(by: rotationAngle, around: rotationCenter)
-
-        // Always displays the text facing downwards so it is easier to read
+    private func drawLabel(ctx: CGContext, label: String, at location: CGPoint, color: CGColor, fontSize: CGFloat) -> CGSize {
         let angle = rotationAngle.truncatingRemainder(dividingBy: 2 * .pi)
         if abs(angle) <= .pi/2 || abs(angle) >= 2 * .pi*3/4 {
+            let textCenter = location.translatedBy(x: 0, y: -radius).rotate(by: rotationAngle, around: rotationCenter)
             return ctx.drawText(at: textCenter, vAlignment: .bottom, hAlignment: .center, rotation: angle,
                             text: label, color: color, fontSize: fontSize)
         } else {
-            return ctx.drawText(at: textCenter, vAlignment: .top, hAlignment: .center, rotation: angle + .pi,
-                            text: label, color: color, fontSize: fontSize)
+            // Always displays the text facing downwards so it is easier to read
+            let textCenter = location.translatedBy(x: 0, y: radius/2).rotate(by: rotationAngle, around: rotationCenter)
+            return ctx.drawText(at: textCenter, vAlignment: .bottom, hAlignment: .center, rotation: angle + .pi,
+                                text: label, color: color, fontSize: fontSize)
         }
     }
 

@@ -44,7 +44,7 @@ struct FeedbackEditListView: View {
                 }
                 
                 TableColumn("State") { feedback in
-                    FeedbackView(label: "", state: feedback.detected.wrappedValue)
+                    FeedbackView(label: "", state: feedback.detected)
                 }
             } rows: {
                 ForEach($layout.feedbacks) { feedback in
