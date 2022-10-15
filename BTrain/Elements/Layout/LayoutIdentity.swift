@@ -21,6 +21,7 @@ struct LayoutIdentity {
         case turnout
         case feedback
         case transition
+        case controlPoint
         case train
         case route
         
@@ -36,6 +37,8 @@ struct LayoutIdentity {
                 return "f"
             case .transition:
                 return "l"
+            case .controlPoint:
+                return "c"
             case .train:
                 return "lw"
             case .route:

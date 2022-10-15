@@ -23,30 +23,52 @@ final class LinkShape: Shape, PluggableShape {
     var selected = false
             
     var transition: Transition?
-    
+    var controlPoint1: ControlPoint?
+    var controlPoint2: ControlPoint?
+
     let from = ConnectorPlug(id: 0)
     let to = ConnectorPlug(id: 1)
         
     var bounds: CGRect {
-        path.boundingBox
+        path.boundingBoxOfPath
     }
     
     var path: CGPath {
         let path = CGMutablePath()
-        if let p = Line2D.linesCross(start1: from.position, end1: from.linePoint, start2: to.position, end2: to.linePoint) {
-            path.move(to: from.position)
-            path.addCurve(to: to.position,
-                          control1: p,
-                          control2: p)
-        } else {
-            path.move(to: from.position)
-            path.addCurve(to: to.position,
-                          control1: from.control,
-                          control2: to.control)
-        }
+        path.move(to: from.position)
+        path.addCurve(to: to.position,
+                      control1: ctrlPoint1,
+                      control2: ctrlPoint2)
         return path
     }
     
+    /// Returns the point where the two lines, originating from the ``from`` and ``to`` connector cross. Nil if they don't cross each other.
+    var intersection: CGPoint? {
+        Line2D.linesCross(start1: from.position, end1: from.linePoint, start2: to.position, end2: to.linePoint)
+    }
+    
+    /// Returns the first control point
+    var ctrlPoint1: CGPoint {
+        if let controlPoint1 = controlPoint1 {
+            return controlPoint1.position
+        } else if let p = intersection {
+            return p
+        } else {
+            return from.control
+        }
+    }
+    
+    /// Returns the second control point
+    var ctrlPoint2: CGPoint {
+        if let controlPoint2 = controlPoint2 {
+            return controlPoint2.position
+        } else if let p = intersection {
+            return p
+        } else {
+            return to.control
+        }
+    }
+
     var plugs: [ConnectorPlug] {
         [from, to]
     }

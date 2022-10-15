@@ -34,6 +34,12 @@ struct SwitchboardEditControlsView: View {
                     Button("􀅼 Turnout") {
                         newTurnoutSheet.toggle()
                     }
+                    
+                    if let linkShape = state.selectedShape as? LinkShape {
+                        Button("􁀘") {
+                            switchboard.toggleControlPoints(linkShape)
+                        }
+                    }
                 }
                 
                 Spacer().fixedSpace()

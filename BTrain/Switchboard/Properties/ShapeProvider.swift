@@ -19,9 +19,9 @@ final class ShapeProvider {
 
     weak var layoutController: LayoutController?
     
-    private let layout: Layout
+    internal let layout: Layout
     private let observer: LayoutObserver
-    private let context: ShapeContext
+    internal let context: ShapeContext
     
     var selectedShape: Shape? {
         shapes.first(where: { $0.selected })
@@ -55,6 +55,10 @@ final class ShapeProvider {
         shapes.compactMap({ $0 as? TurnoutShape })
     }
     
+    var linkShapes: [LinkShape] {
+        shapes.compactMap({ $0 as? LinkShape })
+    }
+
     init(layout: Layout, context: ShapeContext) {
         self.layout = layout
         self.observer = LayoutObserver(layout: layout)
@@ -75,8 +79,6 @@ final class ShapeProvider {
         observer.registerForTransitionChange { [weak self] transitions in
             self?.updateShapes(transitions: transitions)
         }
-        
-//        updateShapes()
     }
         
     func updateShapes(blocks: [Block]? = nil, turnouts: [Turnout]? = nil, transitions: [Transition]? = nil) {
@@ -103,6 +105,12 @@ final class ShapeProvider {
                 BTLogger.error("Error updating the link shapes: \(error)")
             }
         }
+        
+        updateControlPointShapes(visible: false)
+    }
+    
+    func removeControlPointShapes() {
+        shapes.removeAll { $0 is ControlPointShape }
     }
     
     func updateBlocks(blocks: [Block]) {

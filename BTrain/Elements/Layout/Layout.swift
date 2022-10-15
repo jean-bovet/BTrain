@@ -40,6 +40,12 @@ final class Layout: Element, ObservableObject {
     @Published var trains = [Train]()
     
     @Published var transitions = [Transition]()
+    
+    /// Array of optional control points that the user has defined for a particular transition. By default, this array is empty
+    /// because the transition automatically create their control point given the positions of the origin and target element.
+    /// However, the user is free to move these control points for greater flexibility and when this happens, these custom
+    /// control points are stored in this array.
+    @Published var controlPoints = [ControlPoint]()
 
     // Note: automatic route have a special ID that follows this pattern:
     // "automatic-<trainId>"
@@ -92,6 +98,7 @@ final class Layout: Element, ObservableObject {
         self.feedbacks = other.feedbacks
         self.turnouts = other.turnouts
         self.transitions = other.transitions
+        self.controlPoints = other.controlPoints
         self.routes = other.routes
         self.trains = other.trains
     }
@@ -120,7 +127,7 @@ final class Layout: Element, ObservableObject {
 extension Layout: Codable {
     
     enum CodingKeys: CodingKey {
-      case id, name, newLayoutWizardExecuted, blocks, stations, feedbacks, turnouts, trains, routes, transitions
+      case id, name, newLayoutWizardExecuted, blocks, stations, feedbacks, turnouts, trains, routes, transitions, controlPoints
     }
 
     convenience init(from decoder: Decoder) throws {
@@ -135,6 +142,7 @@ extension Layout: Codable {
         self.trains = try container.decode([Train].self, forKey: CodingKeys.trains)
         self.routes = try container.decode([Route].self, forKey: CodingKeys.routes)
         self.transitions = try container.decode([Transition].self, forKey: CodingKeys.transitions)
+        self.controlPoints = try container.decodeIfPresent([ControlPoint].self, forKey: CodingKeys.controlPoints) ?? []
     }
     
     func encode(to encoder: Encoder) throws {
@@ -149,6 +157,7 @@ extension Layout: Codable {
         try container.encode(trains, forKey: CodingKeys.trains)
         try container.encode(fixedRoutes, forKey: CodingKeys.routes)
         try container.encode(transitions, forKey: CodingKeys.transitions)
+        try container.encode(controlPoints, forKey: CodingKeys.controlPoints)
     }
     
     func restore(from data: Data) throws {

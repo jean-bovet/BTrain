@@ -169,6 +169,11 @@ struct SwitchboardEditButton: View {
         if !document.connected {
             Button("􀈊") {
                 state.editable.toggle()
+                if state.editable {
+                    document.switchboard.startEditing()
+                } else {
+                    document.switchboard.doneEditing()
+                }
             }.help("Edit Switchboard")
         }
     }

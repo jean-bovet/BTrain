@@ -74,7 +74,7 @@ final class SwitchBoard: ObservableObject {
     func fittedRect() -> CGRect {
         if let firstShape = provider.shapes.first {
             var rect = firstShape.bounds
-            for shape in provider.shapes.filter({$0.visible}) {
+            for shape in provider.shapes {
                 rect = rect.union(shape.bounds)
             }
             return rect.insetBy(dx: -margin, dy: -margin).standardized.integral
@@ -125,8 +125,18 @@ final class SwitchBoard: ObservableObject {
         }
     }
     
+    func toggleControlPoints(_ shape: LinkShape) {
+        provider.toggleControlPoints(shape)
+        fitSize()
+    }
+    
+    func startEditing() {
+        provider.showControlPointShapes()
+    }
+    
     func doneEditing() {
         provider.shapes.forEach { $0.selected = false }
+        provider.hideControlPointShapes()
         state.selectedShape = nil
         state.editable = false
     }
