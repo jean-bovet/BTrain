@@ -15,7 +15,7 @@
       "location" : "https://github.com/1024jp/GzipSwift",
       "state" : {
         "branch" : "develop",
-        "revision" : "e8c00b4bdc621b3c714ab72e3958778f5751e146"
+        "revision" : "e99ced22d05d7933377cd24cc147651f58948a65"
       }
     },
     {
@@ -23,8 +23,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-collections.git",
       "state" : {
-        "revision" : "48254824bb4248676bf7ce56014ff57b142b77eb",
-        "version" : "1.0.2"
+        "revision" : "f504716c27d2e5d4144fa4794b12129301d17729",
+        "version" : "1.0.3"
       }
     },
     {
@@ -32,8 +32,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/nalexn/ViewInspector",
       "state" : {
-        "revision" : "6b88c4ec1fa20cf38f2138052e63c8e79df5d76e",
-        "version" : "0.9.1"
+        "revision" : "ac7df67c4e0593470eda90a550f8493a81609745",
+        "version" : "0.9.2"
       }
     }
   ],
