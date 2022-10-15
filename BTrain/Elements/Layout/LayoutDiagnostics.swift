@@ -82,8 +82,9 @@ final class LayoutDiagnostic: ObservableObject {
     }
     
     func checkForDuplicateBlocks(_ errors: inout [DiagnosticError]) throws {
+        let enabledBlocks = layout.blocks.filter({$0.enabled})
         var ids = Set<Identifier<Block>>()
-        for block in layout.blocks {
+        for block in enabledBlocks {
             if ids.contains(block.id) {
                 errors.append(DiagnosticError.blockIdAlreadyExists(block: block))
             } else {
@@ -92,7 +93,7 @@ final class LayoutDiagnostic: ObservableObject {
         }
 
         var names = Set<String>()
-        for block in layout.blocks {
+        for block in enabledBlocks {
             if names.contains(block.name) {
                 errors.append(DiagnosticError.blockNameAlreadyExists(block: block))
             } else {
@@ -101,7 +102,7 @@ final class LayoutDiagnostic: ObservableObject {
         }
 
         var feedbacks = Set<Identifier<Feedback>>()
-        for block in layout.blocks {
+        for block in enabledBlocks {
             for blockFeedback in block.feedbacks {
                 if feedbacks.contains(blockFeedback.feedbackId) {
                     guard let feedback = layout.feedback(for: blockFeedback.feedbackId) else {
@@ -145,8 +146,10 @@ final class LayoutDiagnostic: ObservableObject {
     }
 
     func checkForDuplicateTurnouts(_ errors: inout [DiagnosticError]) {
+        let enabledTurnouts = layout.turnouts.filter({ $0.enabled })
+        
         var ids = Set<Identifier<Turnout>>()
-        for turnout in layout.turnouts {
+        for turnout in enabledTurnouts {
             if ids.contains(turnout.id) {
                 errors.append(DiagnosticError.turnoutIdAlreadyExists(turnout: turnout))
             } else {
@@ -155,7 +158,7 @@ final class LayoutDiagnostic: ObservableObject {
         }
         
         var names = Set<String>()
-        for turnout in layout.turnouts {
+        for turnout in enabledTurnouts {
             if names.contains(turnout.name) {
                 errors.append(DiagnosticError.turnoutNameAlreadyExists(turnout: turnout))
             } else {
@@ -164,7 +167,7 @@ final class LayoutDiagnostic: ObservableObject {
         }
 
         var addresses = Set<CommandTurnoutAddress>()
-        for turnout in layout.turnouts {
+        for turnout in enabledTurnouts {
             if addresses.contains(turnout.address) {
                 errors.append(DiagnosticError.turnoutDuplicateAddress(turnout: turnout))
             }
@@ -177,7 +180,7 @@ final class LayoutDiagnostic: ObservableObject {
             addresses.insert(turnout.address2)
         }
         
-        for turnout in layout.turnouts {
+        for turnout in enabledTurnouts {
             if turnout.doubleAddress {
                 if turnout.address == turnout.address2 {
                     errors.append(DiagnosticError.turnoutSameDoubleAddress(turnout: turnout))
@@ -187,8 +190,9 @@ final class LayoutDiagnostic: ObservableObject {
     }
     
     func checkForDuplicateTrains(_ errors: inout [DiagnosticError]) {
+        let enabledTrains = layout.trains.filter({$0.enabled})
         var ids = Set<Identifier<Train>>()
-        for train in layout.trains {
+        for train in enabledTrains {
             if ids.contains(train.id) {
                 errors.append(DiagnosticError.trainIdAlreadyExists(train: train))
             } else {
@@ -197,7 +201,7 @@ final class LayoutDiagnostic: ObservableObject {
         }
         
         var names = Set<String>()
-        for train in layout.trains {
+        for train in enabledTrains {
             if names.contains(train.name) {
                 errors.append(DiagnosticError.trainNameAlreadyExists(train: train))
             } else {
@@ -206,7 +210,7 @@ final class LayoutDiagnostic: ObservableObject {
         }
 
         var addresses = Set<UInt32>()
-        for train in layout.trains {
+        for train in enabledTrains {
             let address = train.address.actualAddress(for: train.decoder)
             if addresses.contains(address) {
                 errors.append(DiagnosticError.trainDuplicateAddress(train: train))
@@ -270,7 +274,7 @@ final class LayoutDiagnostic: ObservableObject {
     }
     
     func checkForLengthAndDistance(_ errors: inout [DiagnosticError]) {
-        for block in layout.blocks {
+        for block in layout.blocks.filter({$0.enabled}) {
             guard let bl = block.length else {
                 errors.append(DiagnosticError.blockMissingLength(block: block))
                 continue
@@ -287,12 +291,12 @@ final class LayoutDiagnostic: ObservableObject {
             }
         }
         
-        for turnout in layout.turnouts {
+        for turnout in layout.turnouts.filter({$0.enabled}) {
             if turnout.length == nil {
                 errors.append(DiagnosticError.turnoutMissingLength(turnout: turnout))
             }
         }
-        for train in layout.trains {
+        for train in layout.trains.filter({$0.enabled}) {
             if train.locomotiveLength == nil {
                 errors.append(DiagnosticError.trainMissingLength(train: train))
             }
