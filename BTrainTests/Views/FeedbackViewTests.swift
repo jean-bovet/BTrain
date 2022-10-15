@@ -17,7 +17,7 @@ import XCTest
 class FeedbackViewTests: RootViewTests {
 
     func testFeedbackView() throws {
-        let sut = FeedbackView(label: "1:2015", state: true)
+        let sut = FeedbackView(label: "1:2015", state: .constant(true))
         let value = try sut.inspect().text().string()
         XCTAssertEqual(value, "1:2015")
     }

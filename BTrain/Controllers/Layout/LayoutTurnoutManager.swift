@@ -45,7 +45,13 @@ final class LayoutTurnoutManager {
     /// - Parameters:
     ///   - turnout: the turnout whose requested state should be sent to the Digital Controller
     ///   - completion: a completion block when the Digital Controller has acknowledged the turnout change
-    func sendTurnoutState(turnout: Turnout, completion: @escaping CompletionBlock) {
+    func sendTurnoutState(turnout: Turnout, completion: @escaping CompletionCancelBlock) {
+        guard turnout.enabled else {
+            BTLogger.debug("Turnout \(turnout) requested state to \(turnout.requestedState) will be ignored because it is disabled")
+            completion(false)
+            return
+        }
+        
         BTLogger.debug("Turnout \(turnout) requested state to \(turnout.requestedState)")
                 
         let commands = turnout.requestedStateCommands(power: 0x1)
@@ -64,7 +70,7 @@ final class LayoutTurnoutManager {
                         self?.interface.execute(command: idleCommands[index]) {
                             commandCompletionCount -= 1
                             if commandCompletionCount == 0 {
-                                completion()
+                                completion(true)
                             }
                         }
                     }

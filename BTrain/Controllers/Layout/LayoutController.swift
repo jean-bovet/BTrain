@@ -423,7 +423,11 @@ extension LayoutController {
     /// - Parameters:
     ///   - turnout: the turnout whose state need to be sent to the Digital Controller
     ///   - completion: completion block called when the command has been sent
-    func sendTurnoutState(turnout: Turnout, completion: @escaping CompletionBlock) {
+    func sendTurnoutState(turnout: Turnout, completion: @escaping CompletionCancelBlock) {
+        guard turnout.enabled else {
+            completion(false)
+            return
+        }
         turnout.actualStateReceived = false
         turnoutManager.sendTurnoutState(turnout: turnout, completion: completion)
     }

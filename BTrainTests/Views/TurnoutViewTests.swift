@@ -29,7 +29,7 @@ class TurnoutViewTests: RootViewTests {
 
     func testShapeView() throws {
         let doc = newDocument()
-        let sut = TurnoutShapeView(layout: doc.layout, category: .singleLeft, requestedState: .straight, actualState: .straight)
+        let sut = TurnoutShapeView(layout: doc.layout, category: .singleLeft, requestedState: .straight, actualState: .straight, shapeContext: doc.switchboard.context)
         _ = sut.renderAsImage()!
         _ = try sut.inspect().canvas(0)
     }

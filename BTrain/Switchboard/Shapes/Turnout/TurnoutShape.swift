@@ -276,27 +276,32 @@ final class TurnoutShape: Shape, DraggableShape, ConnectableShape {
     func draw(ctx: CGContext) {
         ctx.with {
             let lineWidth = selected ? shapeContext.selectedTrackWidth : shapeContext.trackWidth
-            if !turnout.enabled {
-                ctx.setLineDash(phase: 0, lengths: [3, 3])
-            }
 
-            ctx.setStrokeColor(shapeContext.color.copy(alpha: 0.5)!)
-            ctx.setLineWidth(lineWidth)
-            ctx.addPath(path)
-            ctx.drawPath(using: .stroke)
-            
-            ctx.setStrokeColor(shapeContext.pathColor(reserved != nil, train: turnout.train != nil))
-            ctx.setLineWidth(shapeContext.trackWidth)
-            ctx.addPath(activePath(for: turnout.actualState))
-            ctx.drawPath(using: .stroke)
-
-            if !turnout.settled {
-                ctx.setLineDash(phase: 0, lengths: [2, 2])
-
+            if turnout.enabled {
+                ctx.setStrokeColor(shapeContext.color.copy(alpha: 0.5)!)
+                ctx.setLineWidth(lineWidth)
+                ctx.addPath(path)
+                ctx.drawPath(using: .stroke)
+                
                 ctx.setStrokeColor(shapeContext.pathColor(reserved != nil, train: turnout.train != nil))
                 ctx.setLineWidth(shapeContext.trackWidth)
-                ctx.addPath(activePath(for: turnout.requestedState))
+                ctx.addPath(activePath(for: turnout.actualState))
                 ctx.drawPath(using: .stroke)
+
+                if !turnout.settled {
+                    ctx.setLineDash(phase: 0, lengths: [2, 2])
+
+                    ctx.setStrokeColor(shapeContext.pathColor(reserved != nil, train: turnout.train != nil))
+                    ctx.setLineWidth(shapeContext.trackWidth)
+                    ctx.addPath(activePath(for: turnout.requestedState))
+                    ctx.drawPath(using: .stroke)
+                }
+            } else {
+                ctx.setStrokeColor(shapeContext.color.copy(alpha: 0.5)!)
+                ctx.setLineWidth(lineWidth)
+                ctx.addPath(path)
+                ctx.drawPath(using: .stroke)
+
             }
         }
                 
@@ -360,9 +365,10 @@ extension TurnoutShape: ActionableShape {
     
     func performAction(at location: CGPoint) -> Bool {
         if inside(location) {
-            turnout.toggleToNextState()
-            layoutController?.sendTurnoutState(turnout: turnout, completion: {
-                // no-op
+            layoutController?.sendTurnoutState(turnout: turnout, completion: { [weak self] completed in
+                if completed {
+                    self?.turnout.toggleToNextState()
+                }
             })
             return true
         } else {

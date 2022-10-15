@@ -91,12 +91,12 @@ struct TurnoutDetailsView: View {
                 Spacer()
 
                 Button("Set") {
-                    doc.layoutController.sendTurnoutState(turnout: turnout) { }
+                    doc.layoutController.sendTurnoutState(turnout: turnout) { _ in }
                 }
 
                 Button("Toggle") {
                     turnout.toggleToNextState()
-                    doc.layoutController.sendTurnoutState(turnout: turnout) { }
+                    doc.layoutController.sendTurnoutState(turnout: turnout) { _ in }
                 }
             }
         }

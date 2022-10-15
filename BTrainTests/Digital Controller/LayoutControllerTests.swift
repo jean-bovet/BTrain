@@ -56,7 +56,7 @@ class LayoutControllerTests: BTTestCase {
         stop(doc: doc)
 
         t1.requestedState = .straight
-        doc.layoutController.sendTurnoutState(turnout: t1) {
+        doc.layoutController.sendTurnoutState(turnout: t1) { _ in
             // This completion block is going to be called after the go command is processed below,
             // because the network completion block is going to be invoked only when the command
             // is "turned on" again with the go command.
@@ -82,7 +82,8 @@ class LayoutControllerTests: BTTestCase {
 
         turnout.requestedState = state
         
-        doc.layoutController.sendTurnoutState(turnout: turnout) {
+        doc.layoutController.sendTurnoutState(turnout: turnout) { completed in
+            XCTAssertTrue(completed)
             change2.fulfill()
         }
 
