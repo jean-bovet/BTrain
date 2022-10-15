@@ -85,8 +85,6 @@ final class LayoutDocument: ObservableObject {
         
         switchboard.provider.layoutController = layoutController
         switchboard.update()
-
-        layoutDiagnostics.automaticCheck()
     }
     
     func apply(_ other: Layout) {
