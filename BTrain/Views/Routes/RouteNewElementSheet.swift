@@ -30,8 +30,12 @@ struct RouteNewElementSheet: View {
     var body: some View {
         VStack(alignment: .leading) {
             Picker("Element:", selection: $elementType) {
-                Text("Block").tag(ElementType.block)
-                Text("Station").tag(ElementType.station)
+                if layout.blocks.count > 0 {
+                    Text("Block").tag(ElementType.block)
+                }
+                if layout.stations.count > 0 {
+                    Text("Station").tag(ElementType.station)
+                }
             }
             
             HStack {
@@ -45,24 +49,25 @@ struct RouteNewElementSheet: View {
                     switch elementType {
                     case .block:
                         let step = RouteItemBlock(layout.block(at: 0).id, .next)
-                        route.steps.append(.block(step))
+                        route.partialSteps.append(.block(step))
                         
                         undoManager?.registerUndo(withTarget: route, handler: { route in
-                            route.steps.removeAll { s in
+                            route.partialSteps.removeAll { s in
                                 s.id == step.id
                             }
                         })
                         
                     case .station:
-                        let station = layout.stations[0]
-                        let step = RouteItemStation(stationId: station.id)
-                        route.steps.append(.station(step))
-                        
-                        undoManager?.registerUndo(withTarget: route, handler: { route in
-                            route.steps.removeAll { s in
-                                s.id == step.id
-                            }
-                        })                        
+                        if let station = layout.stations.first {
+                            let step = RouteItemStation(stationId: station.id)
+                            route.partialSteps.append(.station(step))
+                            
+                            undoManager?.registerUndo(withTarget: route, handler: { route in
+                                route.partialSteps.removeAll { s in
+                                    s.id == step.id
+                                }
+                            })
+                        }
                     }
                     
                     presentationMode.wrappedValue.dismiss()
