@@ -58,6 +58,14 @@ struct TrainEventStateMachine {
                     return .reservedBlocksChanged(train)
                 }
             } else {
+                if train.mode == .stopManaged && train.state == .stopped {
+                    // Note: explicitly remove the reserved blocks when a stop is requested
+                    // while the train is already stopped.
+                    if try train.removeReservedBlocks() {
+                        return .reservedBlocksChanged(train)
+                    }
+                }
+                
                 if tsm.handleTrainState(train: train) {
                     adjustSpeed(ofTrain: train, stateChanged: true)
                     return .stateChanged(train)

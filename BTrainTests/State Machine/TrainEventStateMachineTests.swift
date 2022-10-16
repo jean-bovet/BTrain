@@ -79,6 +79,14 @@ class TrainEventStateMachineTests: XCTestCase {
         XCTAssertEqual(try tsm.handle(trainEvent: .modeChanged(train), train: train), .stateChanged(train))
     }
     
+    /// Ensure that even if a train is already stopped, changing the mode to ``Train.Schedule.stopManaged`` is still going to remove any reserved blocks.
+    func testStopModeWhileStoppedState() throws {
+        train.state = .stopped
+        train.mode = .stopManaged
+        train.hasReservedBlocks = true
+        XCTAssertEqual(try tsm.handle(trainEvent: .modeChanged(train), train: train), .reservedBlocksChanged(train))
+    }
+    
     func testStateChange() throws {
         train.state = .running
         train.mode = .managed
