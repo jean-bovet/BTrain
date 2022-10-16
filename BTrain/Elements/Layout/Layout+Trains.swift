@@ -101,8 +101,8 @@ extension Layout {
     }
             
     // Returns the direction of the train within the block (not the train direction itself
-    // but the direction of the train relative the natural direction of the block)
-    func directionDirectionInBlock(_ train: Train) throws -> Direction {
+    // but the direction of the train relative to the natural direction of the block)
+    func directionOfTrainInBlock(_ train: Train) throws -> Direction {
         guard let blockId = train.blockId else {
             throw LayoutError.trainNotAssignedToABlock(train: train)
         }
@@ -120,6 +120,50 @@ extension Layout {
         }
 
         return ti.direction
+    }
+    
+    /// Returns the best route to reach ``toBlock`` given the specified ``train``.
+    /// - Parameters:
+    ///   - train: The train from which to start the route
+    ///   - toBlock: The destination block of the route
+    ///   - toDirection: The optional direction when reaching the ``toBlock``
+    /// - Returns: a route, represented as a ``GraphPath`` or nil if no suitable route found.
+    func bestRoute(ofTrain train: Train, toReachBlock toBlock: Block, withDirection toDirection: Direction?) throws -> GraphPath? {
+        let constraints = PathFinder.Constraints(layout: self,
+                                                 train: train,
+                                                 reservedBlockBehavior: .ignoreReserved,
+                                                 stopAtFirstBlock: false,
+                                                 relaxed: false)
+        
+        let settings = PathFinder.Settings(verbose: false, random: false, overflow: pathFinderOverflowLimit)
+        let pf = PathFinder(constraints: constraints, settings: settings)
+        
+        guard let fromBlock = self.block(for: train.blockId) else {
+            return nil
+        }
+        guard let fromDirection = fromBlock.trainInstance?.direction else {
+            return nil
+        }
+        
+        let gp1 = (toDirection == nil || toDirection == .next) ? try shortestPath(for: train, from: (fromBlock, fromDirection), to: (toBlock, .next), pathFinder: pf) : nil
+        let gp2 = (toDirection == nil || toDirection == .previous) ? try shortestPath(for: train, from: (fromBlock, fromDirection), to: (toBlock, .previous), pathFinder: pf) : nil
+
+        let gp: GraphPath
+        if let gp1 = gp1, let gp2 = gp2 {
+            if gp1.count < gp2.count {
+                gp = gp1
+            } else {
+                gp = gp2
+            }
+        } else if let gp1 = gp1 {
+            gp = gp1
+        } else if let gp2 = gp2 {
+            gp = gp2
+        } else {
+            return nil
+        }
+        
+        return gp
     }
     
     func hasTrainReachedStationOrDestination(_ route: Route?, _ train: Train, _ block: Block) -> Bool {

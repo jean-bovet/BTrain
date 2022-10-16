@@ -33,8 +33,10 @@ struct TrainControlSetLocationSheet: View {
     
     @State private var direction: Direction = .next
         
-    @State private var errorStatus: String?
+    @State private var routeDescription: String?
     
+    @State private var errorStatus: String?
+
     @Environment(\.presentationMode) var presentationMode
 
     enum Action {
@@ -125,7 +127,6 @@ struct TrainControlSetLocationSheet: View {
                         }
                     }
                     .disabled(action == .remove)
-    //                .fixedSize()
                     .onAppear {
                         if let trainDragInfo = trainDragInfo {
                             blockId = trainDragInfo.blockId
@@ -144,21 +145,22 @@ struct TrainControlSetLocationSheet: View {
                     .help("This is the direction of travel of the train relative to \(selectedBlockName)")
                     .fixedSize()
                     .onAppear {
-                        do {
-                            direction = try layout.directionDirectionInBlock(train)
-                        } catch {
-                            BTLogger.error("Unable to retrieve the direction of the train: \(error.localizedDescription)")
-                        }
+                        evaluateBestRoute(fromBlockId: trainDragInfo?.blockId ?? train.blockId, forDirection: nil)
                     }
                 }
                 
                 Spacer()
             }
                         
+            if let routeDescription = routeDescription {
+                Text(routeDescription)
+            }
+
             if let errorStatus = errorStatus {
                 Text(errorStatus)
                     .foregroundColor(.red)
             }
+            
             HStack {
                 Spacer()
                 
@@ -193,8 +195,53 @@ struct TrainControlSetLocationSheet: View {
                 .keyboardShortcut(.defaultAction)
             }.padding([.top])
         }
+        .onChange(of: blockId) { newValue in
+            evaluateBestRoute(fromBlockId: blockId, forDirection: direction)
+        }
+        .onChange(of: direction) { newValue in
+            evaluateBestRoute(fromBlockId: blockId, forDirection: direction)
+        }
     }
     
+    func evaluateBestRoute(fromBlockId: Identifier<Block>?, forDirection: Direction?) {
+        if let block = layout.block(for: fromBlockId) {
+            do {
+                let result = try layout.bestRoute(ofTrain: train, toReachBlock: block, withDirection: forDirection)
+                applySuggestedRoute(result)
+                if forDirection == nil {
+                    applySuggestedDirection(result)
+                }
+            } catch {
+                BTLogger.error("Unable to retrieve the direction of the train: \(error.localizedDescription)")
+            }
+        }
+    }
+    
+    func applySuggestedRoute(_ gp: GraphPath?) {
+        if let gp = gp {
+            let description = layout.routeDescription(for: train, steps: gp.elements.toBlockSteps)
+            routeDescription = description
+        } else {
+            routeDescription = nil
+        }
+    }
+    
+    func applySuggestedDirection(_ gp: GraphPath?) {
+        guard let gp = gp else {
+            return
+        }
+        
+        guard let lastElement = gp.elements.last else {
+            return
+        }
+        
+        if lastElement.entrySocket == Block.previousSocket {
+            direction = .next
+        } else {
+            direction = .previous
+        }
+    }
+
 }
 
 private extension Block {
