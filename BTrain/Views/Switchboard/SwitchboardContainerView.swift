@@ -41,13 +41,13 @@ struct SwitchboardContainerView: View {
             VStack(spacing: 0) {
                 SwitchboardEditControlsView(layout: layout, state: state, document: document, switchboard: switchboard)
                 ScrollView([.horizontal, .vertical]) {
-                    if switchboard.isEmpty && !state.editable {
+                    if switchboard.isEmpty && !state.editing {
                         VStack {
                             Text("No Elements")
                             
                             HStack {
                                 Button("􀈊 Edit Layout") {
-                                    state.editable.toggle()
+                                    state.editing.toggle()
                                 }                                
                             }
                         }

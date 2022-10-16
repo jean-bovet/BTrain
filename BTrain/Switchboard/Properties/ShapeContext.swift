@@ -21,6 +21,7 @@ final class ShapeContext {
     var trainIconManager: TrainIconManager?
     
     var darkMode = false
+    var editing = false
     var showBlockName = false
     var showStationName = false
     var showTurnoutName = false

@@ -46,11 +46,11 @@ class SwitchBoardViewTests: XCTestCase {
         
         let sut = SwitchboardEditControlsView(layout: layout, state: state, document: doc, switchboard: doc.switchboard)
         
-        state.editable = false
+        state.editing = false
         
         XCTAssertThrowsError(_ = try sut.inspect().find(button: "􀅼 Block"))
 
-        state.editable = true
+        state.editing = true
         
         _ = try sut.inspect().find(button: "􀅼 Block")
     }

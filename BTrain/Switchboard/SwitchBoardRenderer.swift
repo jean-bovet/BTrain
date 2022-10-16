@@ -37,6 +37,24 @@ final class SwitchBoardRenderer {
             }
         }
         
+        // Draw dotted line between the custom control points
+        if shapeContext.editing {
+            for shape in provider.linkShapes {
+                context.with {
+                    context.setStrokeColor(.black.copy(alpha: 0.5)!)
+                    if let cp1 = shape.controlPoint1 {
+                        context.move(to: shape.from.position)
+                        context.addLine(to: cp1.position)
+                        if let cp2 = shape.controlPoint2 {
+                            context.addLine(to: cp2.position)
+                            context.addLine(to: shape.to.position)
+                        }
+                    }
+                    context.strokePath()
+                }
+            }
+        }
+        
         // Highlight any free socket, either when asked to do so during the
         // dragging of a link (showAvailableSockets) or when a shape is selected
         // so the user can start creating a new link between shapes.

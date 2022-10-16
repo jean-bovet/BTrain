@@ -24,7 +24,7 @@ struct SwitchboardEditControlsView: View {
     @State private var newTurnoutSheet = false
 
     var body: some View {
-        if state.editable {
+        if state.editing {
             HStack {
                 Group {
                     Button("􀅼 Block") {
@@ -78,7 +78,7 @@ struct SwitchboardEditControlsView_Previews: PreviewProvider {
     
     static let doc: LayoutDocument = {
         let doc = LayoutDocument(layout: LayoutLoop2().newLayout())
-        doc.switchboard.state.editable = true
+        doc.switchboard.state.editing = true
         return doc
     }()
 

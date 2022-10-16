@@ -87,7 +87,7 @@ final class SwitchBoardDragOperation {
             
             // Try to see if there is an action that a shape can perform
             // at the location of the tap, and if so, ignore the rest of the gesture.
-            if !state.editable {
+            if !state.editing {
                 if performAction(at: location) {
                     dragState = .ignore
                 } else {

@@ -45,6 +45,7 @@ struct SwitchBoardView: View {
         switchboard.context.showTrainIcon = state.showTrainIcon
         switchboard.context.fontSize = fontSize
         switchboard.context.darkMode = darkMode
+        switchboard.context.editing = state.editing
         context.withCGContext { cgContext in
             switchboard.renderer.draw(context: cgContext)
         }
@@ -52,7 +53,7 @@ struct SwitchBoardView: View {
     
     var body: some View {
         Canvas { context, size in
-            if switchboard.state.editable {
+            if switchboard.state.editing {
                 context.stroke(
                     Path(CGRect(origin: .zero, size: size)),
                     with: .color(.gray),

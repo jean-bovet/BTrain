@@ -39,7 +39,7 @@ class SwitchboardTests: XCTestCase {
     }
     
     func testDragCreateLink() throws {
-        state.editable = true
+        state.editing = true
         XCTAssertEqual(provider.shapes.count, 3)
         
         let b1 = provider.blockShapes[0]
@@ -83,7 +83,7 @@ class SwitchboardTests: XCTestCase {
     }
     
     func testDragTrainSameBlock() throws {
-        state.editable = false
+        state.editing = false
 
         let b1 = provider.blockShapes[0]
         let train = layout.trains[0]
@@ -105,7 +105,7 @@ class SwitchboardTests: XCTestCase {
     }
     
     func testDragTrainDifferentBlocks() throws {
-        state.editable = false
+        state.editing = false
 
         let b1 = provider.blockShapes[0]
         let b2 = provider.blockShapes[1]

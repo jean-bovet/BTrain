@@ -18,7 +18,7 @@ final class SwitchBoard: ObservableObject {
     final class State: ObservableObject {
         @Published var selectedShape: Shape?
         @Published var ephemeralDraggableShape: EphemeralDraggableShape?
-        @Published var editable: Bool = false
+        @Published var editing: Bool = false
         @AppStorage("snapToGrid") var snapToGrid: Bool = true
 
         @AppStorage("showBlockName") var showBlockName: Bool = false
@@ -138,6 +138,6 @@ final class SwitchBoard: ObservableObject {
         provider.shapes.forEach { $0.selected = false }
         provider.hideControlPointShapes()
         state.selectedShape = nil
-        state.editable = false
+        state.editing = false
     }
 }

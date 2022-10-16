@@ -168,8 +168,8 @@ struct SwitchboardEditButton: View {
     var body: some View {
         if !document.connected {
             Button("􀈊") {
-                state.editable.toggle()
-                if state.editable {
+                state.editing.toggle()
+                if state.editing {
                     document.switchboard.startEditing()
                 } else {
                     document.switchboard.doneEditing()
