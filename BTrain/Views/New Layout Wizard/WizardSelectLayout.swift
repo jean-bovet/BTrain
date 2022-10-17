@@ -95,6 +95,7 @@ struct SwitchboardPreview: View {
     
     var body: some View {
         SwitchBoardView(switchboard: switchboard,
+                        containerSize: switchboard.idealSize,
                         state: switchboard.state,
                         layout: layout,
                         layoutController: coordinator,

@@ -47,8 +47,8 @@ final class LayoutDocument: ObservableObject {
     /// Used to trigger the layout diagnostic from the UX
     @Published var triggerLayoutDiagnostic = false
     
-    /// Used to trigger the switchboard setting dialog from the UX
-    @Published var triggerSwitchboardSettings = false
+    /// Used to show or hide the switchboard view settings
+    @Published var showSwitchboardViewSettings = false
 
     /// Property used to confirm the download of the locomotives command
     @Published var discoverLocomotiveConfirmation = false

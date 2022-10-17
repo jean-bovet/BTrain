@@ -13,14 +13,16 @@
 import Foundation
 import AppKit
 
-// https://nshipster.com/dark-mode/
+/// This is the context class being passed down all the elements being rendered in the switchboard.
 final class ShapeContext {
             
     var simulator: Simulator?
 
     var trainIconManager: TrainIconManager?
     
+    // https://nshipster.com/dark-mode/
     var darkMode = false
+    
     var editing = false
     var showBlockName = false
     var showStationName = false
@@ -28,6 +30,9 @@ final class ShapeContext {
     var showTrainIcon = true
     
     var fontSize: CGFloat = 12.0
+    
+    /// Scale of the rendering of the switchboard
+    var scale: CGFloat = 1.0
     
     var expectedFeedbackIds: Set<Identifier<Feedback>>?
 

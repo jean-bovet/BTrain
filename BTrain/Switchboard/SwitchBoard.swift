@@ -28,6 +28,8 @@ final class SwitchBoard: ObservableObject {
 
         @Published var triggerRedraw: Bool = false // Used to trigger a redraw of the switchboard
 
+        @AppStorage("zoomToFit") var zoomToFit: Bool = false
+        
         struct TrainDragInfo {
             let trainId: Identifier<Train>
             let blockId: Identifier<Block>

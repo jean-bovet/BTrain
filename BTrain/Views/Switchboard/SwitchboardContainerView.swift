@@ -39,22 +39,28 @@ struct SwitchboardContainerView: View {
     var body: some View {
         VStack(spacing: 0) {
             VStack(spacing: 0) {
-                SwitchboardEditControlsView(layout: layout, state: state, document: document, switchboard: switchboard)
-                ScrollView([.horizontal, .vertical]) {
-                    if switchboard.isEmpty && !state.editing {
-                        VStack {
-                            Text("No Elements")
-                            
-                            HStack {
-                                Button("􀈊 Edit Layout") {
-                                    state.editing.toggle()
-                                }                                
+                if state.editing {
+                    SwitchboardEditControlsView(layout: layout, state: state, document: document, switchboard: switchboard)
+                } else if document.showSwitchboardViewSettings {
+                    SwitchboardSettingsView(document: document)
+                }
+                GeometryReader { geometry in
+                    ScrollView([.horizontal, .vertical]) {
+                        if switchboard.isEmpty && !state.editing {
+                            VStack {
+                                Text("No Elements")
+                                
+                                HStack {
+                                    Button("􀈊 Edit Layout") {
+                                        state.editing.toggle()
+                                    }
+                                }
                             }
+                        } else {
+                            SwitchBoardView(switchboard: switchboard, containerSize: geometry.size, state: state, layout: layout, layoutController: layoutController, gestureEnabled: true)
                         }
-                    } else {
-                        SwitchBoardView(switchboard: switchboard, state: state, layout: layout, layoutController: layoutController, gestureEnabled: true)
-                    }
-                }.background(backgroundColor)
+                    }.background(backgroundColor)
+                }
             }
             if layout.runtimeError != nil {
                 SwitchboardRuntimeErrorView(debugger: document.layoutController.debugger, error: $layout.runtimeError)
@@ -64,6 +70,7 @@ struct SwitchboardContainerView: View {
                 .padding()
         }
     }
+        
 }
 
 struct OverviewSwitchboardView_Previews: PreviewProvider {

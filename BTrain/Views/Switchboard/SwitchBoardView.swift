@@ -16,6 +16,8 @@ struct SwitchBoardView: View {
         
     let switchboard: SwitchBoard
         
+    let containerSize: CGSize
+    
     // Because SwiftUI only reacts to changes to the object itself and not
     // its children parameters, we require the state of the switchboard
     // to be specified here - although it is accessible via `switchboard.state`.
@@ -38,7 +40,7 @@ struct SwitchBoardView: View {
     
     // Note: we pass `redraw` and `coordinator` to this method, even if unused,
     // in order to force SwiftUI to re-draw the view if one of them change.
-    func draw(context: GraphicsContext, darkMode: Bool, coordinator: LayoutController, layout: Layout, state: SwitchBoard.State) {
+    func draw(context: GraphicsContext, darkMode: Bool, coordinator: LayoutController, layout: Layout, state: SwitchBoard.State, scale: CGFloat) {
         switchboard.context.showBlockName = state.showBlockName
         switchboard.context.showStationName = state.showStationName
         switchboard.context.showTurnoutName = state.showTurnoutName
@@ -46,7 +48,9 @@ struct SwitchBoardView: View {
         switchboard.context.fontSize = fontSize
         switchboard.context.darkMode = darkMode
         switchboard.context.editing = state.editing
+        switchboard.context.scale = scale
         context.withCGContext { cgContext in
+            cgContext.scaleBy(x: switchboard.context.scale, y: switchboard.context.scale)
             switchboard.renderer.draw(context: cgContext)
         }
     }
@@ -60,7 +64,7 @@ struct SwitchBoardView: View {
                     style: .init(dash: [5, 10]))
             }
 
-            draw(context: context, darkMode: colorScheme == .dark, coordinator: layoutController, layout: layout, state: switchboard.state)
+            draw(context: context, darkMode: colorScheme == .dark, coordinator: layoutController, layout: layout, state: switchboard.state, scale: scale(containerSize: containerSize))
         }
         .if(gestureEnabled) {
             $0.gesture(
@@ -76,8 +80,24 @@ struct SwitchBoardView: View {
                     }
             )
         }
-        .frame(idealWidth: switchboard.idealSize.width, idealHeight: switchboard.idealSize.height)
+        .if(!state.zoomToFit) {
+            $0.frame(idealWidth: switchboard.idealSize.width, idealHeight: switchboard.idealSize.height)
+        }
+        .if(state.zoomToFit) {
+            $0.frame(idealWidth: containerSize.width, idealHeight: containerSize.height)
+        }
     }
+    
+    func scale(containerSize: CGSize) -> CGFloat {
+        let scale: CGFloat
+        if state.zoomToFit {
+            scale = min(containerSize.width / switchboard.idealSize.width, containerSize.height / switchboard.idealSize.height)
+        } else {
+            scale = 1.0
+        }
+        return scale
+    }
+
 }
 
 struct SwitchBoardView_Previews: PreviewProvider {
@@ -97,7 +117,7 @@ struct SwitchBoardView_Previews: PreviewProvider {
     }
     
     static var previews: some View {
-        SwitchBoardView(switchboard: doc.switchboard,
+        SwitchBoardView(switchboard: doc.switchboard, containerSize: .init(width: 800, height: 600),
                         state: doc.switchboard.state,
                         layout: doc.layout,
                         layoutController: doc.layoutController,

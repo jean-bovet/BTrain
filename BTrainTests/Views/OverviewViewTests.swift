@@ -30,8 +30,22 @@ class OverviewViewTests: RootViewTests {
     func testOverviewSwitchboardView() throws {
         let doc = newDocument()
         let sut = SwitchboardContainerView(layout: doc.layout, layoutController: doc.layoutController, document: doc, switchboard: doc.switchboard, state: doc.switchboard.state)
-        XCTAssertNoThrow(try sut.inspect().vStack().vStack(0).view(SwitchboardEditControlsView.self, 0))
-        XCTAssertNoThrow(try sut.inspect().vStack().vStack(0).scrollView(1).view(SwitchBoardView.self))
+
+        doc.showSwitchboardViewSettings = false
+        doc.switchboard.state.editing = false
+
+        XCTAssertThrowsError(try sut.inspect().find(SwitchboardSettingsView.self))
+        XCTAssertNoThrow(try sut.inspect().find(SwitchBoardView.self))
+
+        doc.showSwitchboardViewSettings = true
+        XCTAssertNoThrow(try sut.inspect().find(SwitchboardSettingsView.self))
+        XCTAssertNoThrow(try sut.inspect().find(SwitchBoardView.self))
+        
+        doc.showSwitchboardViewSettings = true
+        doc.switchboard.state.editing = true
+        XCTAssertThrowsError(try sut.inspect().find(SwitchboardSettingsView.self))
+        XCTAssertNoThrow(try sut.inspect().find(SwitchboardEditControlsView.self))
+        XCTAssertNoThrow(try sut.inspect().find(SwitchBoardView.self))
     }
     
     func testLayoutRuntimeError() throws {

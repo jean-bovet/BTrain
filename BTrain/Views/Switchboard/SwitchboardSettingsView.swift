@@ -15,8 +15,6 @@ import SwiftUI
 struct SwitchboardSettingsView: View {
     
     let document: LayoutDocument
-    
-    @Environment(\.presentationMode) var presentationMode
 
     @AppStorage("showBlockName") var showBlockName: Bool = false
     @AppStorage("showStationName") var showStationName: Bool = false
@@ -25,23 +23,24 @@ struct SwitchboardSettingsView: View {
     @AppStorage("showSimulator") var showSimulator: Bool = false
 
     var body: some View {
-        VStack {
-            Form {
-                Toggle("Block Name", isOn: $showBlockName)
-                Toggle("Station Name", isOn: $showStationName)
-                Toggle("Turnout Name", isOn: $showTurnoutName)
-                Toggle("Train Icon", isOn: $showTrainIcon)
-                if document.simulator.enabled {
-                    Toggle("Simulator", isOn: $showSimulator)
-                }
-            }.padding()
-            Divider()
-            HStack {
-                Button("OK") {
-                    presentationMode.wrappedValue.dismiss()
-                }.keyboardShortcut(.defaultAction)
+        HStack {
+            Toggle("Block Name", isOn: $showBlockName)
+            Toggle("Station Name", isOn: $showStationName)
+            Toggle("Turnout Name", isOn: $showTurnoutName)
+            Toggle("Train Icon", isOn: $showTrainIcon)
+            if document.simulator.enabled {
+                Toggle("Simulator", isOn: $showSimulator)
             }
-        }
+            
+            Spacer()
+            
+            Button("􀝯") {
+                document.switchboard.state.zoomToFit = true
+            }
+            Button("􀊮") {
+                document.switchboard.state.zoomToFit = false
+            }
+        }.padding()
     }
 }
 

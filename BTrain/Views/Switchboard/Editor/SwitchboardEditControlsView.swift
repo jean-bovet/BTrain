@@ -24,52 +24,50 @@ struct SwitchboardEditControlsView: View {
     @State private var newTurnoutSheet = false
 
     var body: some View {
-        if state.editing {
-            HStack {
-                Group {
-                    Button("􀅼 Block") {
-                        newBlockSheet.toggle()
-                    }
-                    
-                    Button("􀅼 Turnout") {
-                        newTurnoutSheet.toggle()
-                    }
-                    
-                    if let linkShape = state.selectedShape as? LinkShape {
-                        Button("􁀘") {
-                            switchboard.toggleControlPoints(linkShape)
-                        }
-                    }
+        HStack {
+            Group {
+                Button("􀅼 Block") {
+                    newBlockSheet.toggle()
                 }
                 
-                Spacer().fixedSpace()
-                
-                Button("􀈑") {
-                    switchboard.remove(state.selectedShape!)
-                }.disabled(state.selectedShape == nil)
-                
-                Spacer()
-                
-                Toggle("Snap to Grid", isOn: $state.snapToGrid)
-                Button("Fit Size") {
-                    switchboard.fitSize()
+                Button("􀅼 Turnout") {
+                    newTurnoutSheet.toggle()
                 }
                 
-                Spacer()
-                
-                Button("Done") {
-                    switchboard.doneEditing()
+                if let linkShape = state.selectedShape as? LinkShape {
+                    Button("􁀘") {
+                        switchboard.toggleControlPoints(linkShape)
+                    }
                 }
-            }.sheet(isPresented: $newBlockSheet) {
-                NewBlockSheet(layout: layout)
-                    .frame(width: 400)
-                    .padding()
-            }.sheet(isPresented: $newTurnoutSheet) {
-                NewTurnoutSheet(layout: layout)
-                    .frame(width: 400)
-                    .padding()
-            }.padding()
-        }        
+            }
+            
+            Spacer().fixedSpace()
+            
+            Button("􀈑") {
+                switchboard.remove(state.selectedShape!)
+            }.disabled(state.selectedShape == nil)
+            
+            Spacer()
+            
+            Toggle("Snap to Grid", isOn: $state.snapToGrid)
+            Button("Fit Size") {
+                switchboard.fitSize()
+            }
+            
+            Spacer()
+            
+            Button("Done") {
+                switchboard.doneEditing()
+            }
+        }.sheet(isPresented: $newBlockSheet) {
+            NewBlockSheet(layout: layout)
+                .frame(width: 400)
+                .padding()
+        }.sheet(isPresented: $newTurnoutSheet) {
+            NewTurnoutSheet(layout: layout)
+                .frame(width: 400)
+                .padding()
+        }.padding()
     }
     
 }

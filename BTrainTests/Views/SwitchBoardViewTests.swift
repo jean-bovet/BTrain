@@ -30,7 +30,7 @@ class SwitchBoardViewTests: XCTestCase {
         let provider = ShapeProvider(layout: layout, context: context)
         let switchboard = SwitchBoard(layout: layout, provider: provider, context: context)
         let coordinator = LayoutController(layout: layout, switchboard: switchboard, interface: MarklinInterface())
-        let v = SwitchBoardView(switchboard: switchboard, state: switchboard.state, layout: layout, layoutController: coordinator, gestureEnabled: true)
+        let v = SwitchBoardView(switchboard: switchboard, containerSize: switchboard.idealSize, state: switchboard.state, layout: layout, layoutController: coordinator, gestureEnabled: true)
         
         let canvas = try v.inspect().view(Canvas<SwitchBoardView>.self)
         
@@ -44,7 +44,7 @@ class SwitchBoardViewTests: XCTestCase {
         let doc = LayoutDocument(layout: layout)
         let state = doc.switchboard.state
         
-        let sut = SwitchboardEditControlsView(layout: layout, state: state, document: doc, switchboard: doc.switchboard)
+        let sut = SwitchboardContainerView(layout: layout, layoutController: doc.layoutController, document: doc, switchboard: doc.switchboard, state: state)
         
         state.editing = false
         

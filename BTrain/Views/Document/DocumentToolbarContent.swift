@@ -185,8 +185,8 @@ struct SwitchboardSettingsButton: View {
 
     var body: some View {
         Button("􀋭") {
-            document.triggerSwitchboardSettings.toggle()
-        }.help("Switchboard Settings")
+            document.showSwitchboardViewSettings.toggle()
+        }.help("Show/hide Switchboard View Settings")
     }
     
 }

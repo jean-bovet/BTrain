@@ -1004,7 +1004,6 @@
 				A77A96DD2727767C009E7ECB /* ConnectSheet.swift */,
 				A744D13A276714A2005C2F37 /* DiagnosticsSheet.swift */,
 				A7907992277EC86200771A60 /* DocumentToolbarContent.swift */,
-				A75933E427E9774600ECB7A0 /* SwitchboardSettingsView.swift */,
 			);
 			path = Document;
 			sourceTree = "<group>";
@@ -1224,6 +1223,7 @@
 			isa = PBXGroup;
 			children = (
 				A7710E6E2779A50A00C08150 /* SwitchboardContainerView.swift */,
+				A75933E427E9774600ECB7A0 /* SwitchboardSettingsView.swift */,
 				A783EAAC2789290F00E69B6D /* SwitchboardRuntimeErrorView.swift */,
 				A784136A273CA4DE00381341 /* SwitchBoardView.swift */,
 				A798BB4427A79DCC000BB4D1 /* Preview */,
