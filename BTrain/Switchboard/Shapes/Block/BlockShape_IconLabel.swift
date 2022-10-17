@@ -34,40 +34,45 @@ struct BlockShape_IconLabel: BlockShapeLabel {
         self.size = .init(width: width, height: height)
     }
 
-    func draw(at anchor: CGPoint, rotation: CGFloat, rotationCenter: CGPoint) {
-        guard let cgImage = icon.cgImage(forProposedRect: nil, context: nil, hints: nil) else {
-            return
+    func draw(at anchor: CGPoint, rotation: CGFloat, rotationCenter: CGPoint) -> BlockShapeLabelPath? {
+        guard !hidden else {
+            return nil
         }
 
+        guard let cgImage = icon.cgImage(forProposedRect: nil, context: nil, hints: nil) else {
+            return nil
+        }
+
+        // Maintain rotation such that the icon is always on top or to the left
+        var transform = CGAffineTransform.identity
+            .rotation(by: rotation, around: anchor)
+        
+        // Flip the icon vertically
+        transform = transform
+            .translatedBy(x: anchor.x, y: anchor.y)
+            .scaledBy(x: 1.0, y: -1.0)
+            .translatedBy(x: -anchor.x, y: -anchor.y)
+        
+        // Apply translation
         let hAlignment = HTextAlignment.left
+        switch hAlignment {
+        case .center:
+            transform = transform.translatedBy(x: -size.width/2, y: 0)
+        case .left:
+            break
+        case .right:
+            transform = transform.translatedBy(x: size.width/2, y: 0)
+        }
+
+        transform = transform.translatedBy(x: 0, y: -size.height/2)
 
         ctx.with {
-            // Maintain rotation such that the icon is always on top or to the left
-            var transform = CGAffineTransform.identity
-                .rotation(by: rotation, around: anchor)
-            
-            // Flip the icon vertically
-            transform = transform
-                .translatedBy(x: anchor.x, y: anchor.y)
-                .scaledBy(x: 1.0, y: -1.0)
-                .translatedBy(x: -anchor.x, y: -anchor.y)
-            
-            // Apply translation
-            switch hAlignment {
-            case .center:
-                transform = transform.translatedBy(x: -size.width/2, y: 0)
-            case .left:
-                break
-            case .right:
-                transform = transform.translatedBy(x: size.width/2, y: 0)
-            }
-
-            transform = transform.translatedBy(x: 0, y: -size.height/2)
-
             ctx.concatenate(transform)
-            
             ctx.draw(cgImage, in: CGRect(x: anchor.x, y: anchor.y, width: size.width, height: size.height))
         }
+        
+        return BlockShapeLabelPath(path: CGPath(rect: CGRect(x: anchor.x, y: anchor.y, width: size.width, height: size.height), transform: nil),
+                                       transform: transform)
     }
 
 }

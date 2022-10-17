@@ -34,11 +34,18 @@ struct BlockShape_TextLabel: BlockShapeLabel {
         self.size = textRect.size
     }
     
-    func draw(at anchor: CGPoint, rotation: CGFloat, rotationCenter: CGPoint) {
+    func draw(at anchor: CGPoint, rotation: CGFloat, rotationCenter: CGPoint) -> BlockShapeLabelPath? {
+        guard !hidden else {
+            return nil
+        }
+        
         ctx.with {
             ctx.drawText(at: anchor, vAlignment: .center, hAlignment: .left, rotation: rotation,
                          text: text, color: shapeContext.color, fontSize: shapeContext.fontSize, borderColor: borderColor, backgroundColor: shapeContext.backgroundLabelColor)
         }
+        
+        return nil
     }
+    
 }
 

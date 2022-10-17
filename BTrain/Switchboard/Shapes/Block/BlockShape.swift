@@ -224,15 +224,21 @@ final class BlockShape: Shape, DraggableShape, ConnectableShape {
             }
         }
     }
-        
+    
+    /// An array of label paths that will be used to determine if the user taps on any labels
+    /// when dragging the train from this block
+    internal var labelPaths = [BlockShapeLabelPath]()
+
     func drawLabels(ctx: CGContext, forceHideBlockName: Bool = false) {
-        let showBlockName = (shapeContext.showBlockName || block.category == .station && shapeContext.showStationName) && !forceHideBlockName
+        let showBlockName = (shapeContext.showBlockName || block.category == .station && shapeContext.showStationName)
         let showIcon = shapeContext.showTrainIcon && block.blockContainsLocomotive
-        
+
         var labels = [BlockShapeLabel]()
         
-        let blockNameLabel = BlockShape_TextLabel(ctx: ctx, text: block.name, borderColor: shapeContext.borderLabelColor, shapeContext: shapeContext, hidden: !showBlockName)
-        labels.append(blockNameLabel)
+        if showBlockName {
+            let blockNameLabel = BlockShape_TextLabel(ctx: ctx, text: block.name, borderColor: shapeContext.borderLabelColor, shapeContext: shapeContext, hidden: forceHideBlockName)
+            labels.append(blockNameLabel)
+        }
         
         if let train = train {
             if let icon = shapeContext.trainIconManager?.icon(for: train.id), showIcon {
@@ -243,21 +249,27 @@ final class BlockShape: Shape, DraggableShape, ConnectableShape {
                 labels.append(trainNameLabel)
             }
             
-            let timeRemainingLabel = BlockShape_TextLabel(ctx: ctx, text: "􀐫 \(Int(train.timeUntilAutomaticRestart)) s.", borderColor: shapeContext.borderLabelColor, shapeContext: shapeContext, hidden: train.timeUntilAutomaticRestart <= 0)
-            labels.append(timeRemainingLabel)
+            if train.timeUntilAutomaticRestart > 0 {
+                let timeRemainingLabel = BlockShape_TextLabel(ctx: ctx, text: "􀐫 \(Int(train.timeUntilAutomaticRestart)) s.", borderColor: shapeContext.borderLabelColor, shapeContext: shapeContext)
+                labels.append(timeRemainingLabel)
+            }
         }
+        
         drawLabels(labels: labels)
     }
 
     private func drawLabels(labels: [BlockShapeLabel]) {
         let space = CGFloat(12.0)
-        let visibleLabels = labels.filter({ !$0.hidden })
-        let totalWidth = visibleLabels.reduce(0, { partialResult, label in partialResult + label.size.width }) + space * CGFloat(visibleLabels.count - 1)
+        let totalWidth = labels.reduce(0, { partialResult, label in partialResult + label.size.width }) + space * CGFloat(labels.count - 1)
         
+        labelPaths.removeAll()
+
         var cursor = center.translatedBy(x: -totalWidth/2, y: -size.height/1.5)
-        for label in visibleLabels {
+        for label in labels {
             let anchor = cursor.rotate(by: labelRotationAngle, around: rotationCenter)
-            label.draw(at: anchor, rotation: labelRotationAngle, rotationCenter: rotationCenter)
+            if let drawable = label.draw(at: anchor, rotation: labelRotationAngle, rotationCenter: rotationCenter) {
+                labelPaths.append(drawable)
+            }
             cursor = cursor.translatedBy(x: label.size.width + space, y: 0)
         }
     }

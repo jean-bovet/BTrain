@@ -16,7 +16,7 @@ import GraphicsRenderer
 extension BlockShape: EphemeralDragProvider {
     
     func draggableShape(at location: CGPoint) -> EphemeralDraggableShape? {
-        guard inside(location) else {
+        guard inside(location) || insideLabels(location) else {
             return nil
         }
         
@@ -41,6 +41,15 @@ extension BlockShape: EphemeralDragProvider {
             self.center = center
         }
         return EphemeralDraggedTrainShape(trainId: train.id, image: image, center: center)
+    }
+    
+    private func insideLabels(_ location: CGPoint) -> Bool {
+        for path in labelPaths {
+            if path.inside(location) {
+                return true
+            }
+        }
+        return false
     }
     
 }

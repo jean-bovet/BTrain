@@ -27,7 +27,19 @@ protocol BlockShapeLabel {
     ///   - anchor: the anchor where to start drawing the label
     ///   - rotation: the rotation angle of the label
     ///   - rotationCenter: the rotation center of the label
-    func draw(at anchor: CGPoint, rotation: CGFloat, rotationCenter: CGPoint)
+    /// - Returns: an optional path representing the content that was drawn
+    func draw(at anchor: CGPoint, rotation: CGFloat, rotationCenter: CGPoint) -> BlockShapeLabelPath?
 }
 
-
+/// Defines the path of a label which can be used to interrogate the path for selection purpose
+struct BlockShapeLabelPath {
+    let path: CGPath
+    let transform: CGAffineTransform
+    
+    /// Returns true if the point is inside the path
+    /// - Parameter point: the point
+    /// - Returns: true if the point is inside the path, false otherwise
+    func inside(_ point: CGPoint) -> Bool {
+        path.contains(point, transform: transform)
+    }
+}
