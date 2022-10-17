@@ -63,13 +63,13 @@ struct TrainControlLocationView: View {
                 Spacer()
             }
         }.sheet(isPresented: $setTrainLocationSheet) {
-            TrainControlSetLocationSheet(layout: layout, controller: controller, actionSet: .setOnly, train: train)
+            TrainControlSetLocationSheet(layout: layout, controller: controller, train: train)
                 .padding()
         }.sheet(isPresented: $moveTrainLocationSheet) {
-            TrainControlSetLocationSheet(layout: layout, controller: controller, actionSet: .moveOrSet, train: train)
+            TrainControlMoveSheet(layout: layout, controller: controller, train: train)
                 .padding()
         }.sheet(isPresented: $removeTrainSheet) {
-            TrainControlSetLocationSheet(layout: layout, controller: controller, actionSet: .removeOnly, train: train)
+            TrainControlRemoveSheet(layout: layout, controller: controller, train: train)
                 .padding()
         }
     }

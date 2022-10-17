@@ -12,65 +12,28 @@
 
 import SwiftUI
 
-struct TrainControlSetLocationSheet: View {
+struct TrainControlRemoveSheet: View {
     let layout: Layout
     let controller: LayoutController
-                    
+    
     @ObservedObject var train: Train
     
     @State private var blockId: Identifier<Block>? = nil
-    
-    @State private var direction: Direction = .next
-            
+                
     @State private var errorStatus: String?
 
     @Environment(\.presentationMode) var presentationMode
-    
-    var sortedBlockIds: [Identifier<Block>] {
-        layout.blocks.sorted {
-            $0.name < $1.name
-        }.map {
-            $0.id
-        }
-    }
-    
-    var selectedBlockName: String {
-        if let block = layout.block(for: blockId) {
-            return block.name
-        } else {
-            return "?"
-        }
-    }
-        
+            
     var body: some View {
         VStack {
-            HStack {
-                Text("Set \"\(train.name)\"")
-                
-                Picker("to block", selection: $blockId) {
-                    ForEach(sortedBlockIds, id:\.self) { blockId in
-                        if let block = layout.block(for: blockId) {
-                            Text(block.nameForLocation).tag(blockId as Identifier<Block>?)
-                        } else {
-                            Text(blockId.uuid).tag(blockId as Identifier<Block>?)
-                        }
-                    }
-                }
-                .onAppear {
-                    blockId = train.blockId
-                }
-
-                Picker("with direction", selection: $direction) {
-                    ForEach(Direction.allCases, id:\.self) { direction in
-                        Text(direction.description).tag(direction)
-                    }
-                }
-                .help("This is the direction of travel of the train relative to \(selectedBlockName)")
-                .fixedSize()
-
-                Spacer()
+            if let block = layout.block(for: blockId) {
+                Text("Remove \"\(train.name)\" from block \(block.nameForLocation)?")
+                    .fixedSize()
+            } else if let blockId = blockId {
+                Text("Remove \"\(train.name)\" from block \(blockId.uuid)?")
+                    .fixedSize()
             }
-                        
+
             if let errorStatus = errorStatus {
                 Text(errorStatus)
                     .foregroundColor(.red)
@@ -84,12 +47,9 @@ struct TrainControlSetLocationSheet: View {
                     self.presentationMode.wrappedValue.dismiss()
                 }.keyboardShortcut(.cancelAction)
                 
-                Button("Set") {
+                Button("Remove") {
                     do {
-                        if let selectedBlock = blockId {
-                            try controller.setTrainToBlock(train, selectedBlock, position: .end, direction: direction)
-                            controller.redrawSwitchboard()
-                        }
+                        try controller.remove(train: train)
                         errorStatus = nil
                         self.presentationMode.wrappedValue.dismiss()
                     } catch {
@@ -99,6 +59,9 @@ struct TrainControlSetLocationSheet: View {
                 .disabled(blockId == nil)
                 .keyboardShortcut(.defaultAction)
             }.padding([.top])
+        }
+        .onAppear {
+            blockId = train.blockId
         }
     }
     
@@ -116,12 +79,12 @@ private extension Block {
     }
 }
 
-struct TrainControlSetLocationSheet_Previews: PreviewProvider {
+struct TrainControlRemoveSheet_Previews: PreviewProvider {
     
     static let doc = LayoutDocument(layout: LayoutLoop2().newLayout())
     
     static var previews: some View {
-        TrainControlSetLocationSheet(layout: doc.layout, controller: doc.layoutController, train: doc.layout.trains[0])
+        TrainControlRemoveSheet(layout: doc.layout, controller: doc.layoutController, train: doc.layout.trains[0])
     }
     
 }

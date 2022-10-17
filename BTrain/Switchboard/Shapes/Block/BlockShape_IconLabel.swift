@@ -23,6 +23,8 @@ struct BlockShape_IconLabel: BlockShapeLabel {
 
     var hidden: Bool = false
 
+    let hAlignment = HTextAlignment.left
+
     internal init(ctx: CGContext, icon: NSImage, shapeContext: ShapeContext) {
         self.ctx = ctx
         self.icon = icon
@@ -54,7 +56,6 @@ struct BlockShape_IconLabel: BlockShapeLabel {
             .translatedBy(x: -anchor.x, y: -anchor.y)
         
         // Apply translation
-        let hAlignment = HTextAlignment.left
         switch hAlignment {
         case .center:
             transform = transform.translatedBy(x: -size.width/2, y: 0)

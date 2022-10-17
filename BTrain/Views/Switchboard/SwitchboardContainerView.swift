@@ -60,7 +60,7 @@ struct SwitchboardContainerView: View {
                 SwitchboardRuntimeErrorView(debugger: document.layoutController.debugger, error: $layout.runtimeError)
             }
         }.sheet(isPresented: $state.trainDroppedInBlockAction) {
-            TrainControlSetLocationSheet(layout: layout, controller: document.layoutController, trainDragInfo: state.trainDragInfo, actionSet: .moveOrSet, train: layout.train(for: state.trainDragInfo?.trainId)!)
+            TrainControlMoveSheet(layout: layout, controller: document.layoutController, trainDragInfo: state.trainDragInfo, train: layout.train(for: state.trainDragInfo?.trainId)!)
                 .padding()
         }
     }

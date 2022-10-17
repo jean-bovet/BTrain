@@ -12,16 +12,21 @@
 
 import SwiftUI
 
-struct TrainControlSetLocationSheet: View {
+struct TrainControlMoveSheet: View {
     let layout: Layout
     let controller: LayoutController
-                    
+    
+    // Optional information resulting from dragging the train on the switchboard
+    var trainDragInfo: SwitchBoard.State.TrainDragInfo?
+            
     @ObservedObject var train: Train
     
     @State private var blockId: Identifier<Block>? = nil
     
     @State private var direction: Direction = .next
-            
+        
+    @State private var routeDescription: String?
+    
     @State private var errorStatus: String?
 
     @Environment(\.presentationMode) var presentationMode
@@ -45,7 +50,7 @@ struct TrainControlSetLocationSheet: View {
     var body: some View {
         VStack {
             HStack {
-                Text("Set \"\(train.name)\"")
+                Text("Move \"\(train.name)\"")
                 
                 Picker("to block", selection: $blockId) {
                     ForEach(sortedBlockIds, id:\.self) { blockId in
@@ -57,7 +62,11 @@ struct TrainControlSetLocationSheet: View {
                     }
                 }
                 .onAppear {
-                    blockId = train.blockId
+                    if let trainDragInfo = trainDragInfo {
+                        blockId = trainDragInfo.blockId
+                    } else {
+                        blockId = train.blockId
+                    }
                 }
 
                 Picker("with direction", selection: $direction) {
@@ -67,10 +76,22 @@ struct TrainControlSetLocationSheet: View {
                 }
                 .help("This is the direction of travel of the train relative to \(selectedBlockName)")
                 .fixedSize()
+                .onAppear {
+                    evaluateBestRoute(fromBlockId: trainDragInfo?.blockId ?? train.blockId, forDirection: nil)
+                }
 
                 Spacer()
             }
                         
+            HStack {
+                if let routeDescription = routeDescription {
+                    Text("Route: \(routeDescription)")
+                } else {
+                    Text("No Route Found")
+                }
+                Spacer()
+            }
+
             if let errorStatus = errorStatus {
                 Text(errorStatus)
                     .foregroundColor(.red)
@@ -84,11 +105,12 @@ struct TrainControlSetLocationSheet: View {
                     self.presentationMode.wrappedValue.dismiss()
                 }.keyboardShortcut(.cancelAction)
                 
-                Button("Set") {
+                Button("Move") {
                     do {
                         if let selectedBlock = blockId {
-                            try controller.setTrainToBlock(train, selectedBlock, position: .end, direction: direction)
-                            controller.redrawSwitchboard()
+                            let routeId = Route.automaticRouteId(for: train.id)
+                            let destination = Destination(selectedBlock, direction: direction)
+                            try controller.start(routeID: routeId, trainID: train.id, destination: destination)
                         }
                         errorStatus = nil
                         self.presentationMode.wrappedValue.dismiss()
@@ -96,12 +118,57 @@ struct TrainControlSetLocationSheet: View {
                         errorStatus = error.localizedDescription
                     }
                 }
-                .disabled(blockId == nil)
+                .disabled(blockId == nil || routeDescription == nil)
                 .keyboardShortcut(.defaultAction)
             }.padding([.top])
         }
+        .onChange(of: blockId) { newValue in
+            evaluateBestRoute(fromBlockId: blockId, forDirection: direction)
+        }
+        .onChange(of: direction) { newValue in
+            evaluateBestRoute(fromBlockId: blockId, forDirection: direction)
+        }
     }
     
+    func evaluateBestRoute(fromBlockId: Identifier<Block>?, forDirection: Direction?) {
+        if let block = layout.block(for: fromBlockId) {
+            do {
+                let result = try layout.bestRoute(ofTrain: train, toReachBlock: block, withDirection: forDirection)
+                applySuggestedRoute(result)
+                if forDirection == nil {
+                    applySuggestedDirection(result)
+                }
+            } catch {
+                BTLogger.error("Unable to retrieve the direction of the train: \(error.localizedDescription)")
+            }
+        }
+    }
+    
+    func applySuggestedRoute(_ gp: GraphPath?) {
+        if let gp = gp {
+            let description = layout.routeDescription(for: train, steps: gp.elements.toBlockSteps)
+            routeDescription = description
+        } else {
+            routeDescription = nil
+        }
+    }
+    
+    func applySuggestedDirection(_ gp: GraphPath?) {
+        guard let gp = gp else {
+            return
+        }
+        
+        guard let lastElement = gp.elements.last else {
+            return
+        }
+        
+        if lastElement.entrySocket == Block.previousSocket {
+            direction = .next
+        } else {
+            direction = .previous
+        }
+    }
+
 }
 
 private extension Block {
@@ -116,12 +183,12 @@ private extension Block {
     }
 }
 
-struct TrainControlSetLocationSheet_Previews: PreviewProvider {
+struct TrainControlMoveSheet_Previews: PreviewProvider {
     
     static let doc = LayoutDocument(layout: LayoutLoop2().newLayout())
     
     static var previews: some View {
-        TrainControlSetLocationSheet(layout: doc.layout, controller: doc.layoutController, train: doc.layout.trains[0])
+        TrainControlMoveSheet(layout: doc.layout, controller: doc.layoutController, train: doc.layout.trains[0])
     }
     
 }
