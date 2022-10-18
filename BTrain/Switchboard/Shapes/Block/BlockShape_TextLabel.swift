@@ -43,8 +43,19 @@ struct BlockShape_TextLabel: BlockShapeLabel {
             ctx.drawText(at: anchor, vAlignment: .center, hAlignment: .left, rotation: rotation,
                          text: text, color: shapeContext.color, fontSize: shapeContext.fontSize, borderColor: borderColor, backgroundColor: shapeContext.backgroundLabelColor)
         }
-        
-        return nil
+
+        var transform = CGAffineTransform.identity.rotation(by: rotation, around: anchor)
+
+        transform = transform
+            .translatedBy(x: anchor.x, y: anchor.y)
+            .scaledBy(x: 1.0, y: -1.0)
+            .translatedBy(x: -anchor.x, y: -anchor.y)
+
+        transform = transform.translatedBy(x: 0, y: -size.height/2)
+
+        let r = CGRect(x: anchor.x, y: anchor.y, width: size.width, height: size.height)
+        return BlockShapeLabelPath(path: CGPath(rect: r, transform: nil),
+                                   transform: transform)
     }
     
 }
