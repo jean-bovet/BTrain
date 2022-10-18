@@ -26,6 +26,7 @@ struct SwitchboardSettingsView: View {
         HStack {
             Toggle("Block Name", isOn: $showBlockName)
             Toggle("Station Name", isOn: $showStationName)
+                .disabled(showBlockName)
             Toggle("Turnout Name", isOn: $showTurnoutName)
             Toggle("Train Icon", isOn: $showTrainIcon)
             if document.simulator.enabled {
