@@ -21,6 +21,7 @@ struct SwitchboardSettingsView: View {
     @AppStorage("showTurnoutName") var showTurnoutName: Bool = false
     @AppStorage("showTrainIcon") var showTrainIcon: Bool = false
     @AppStorage("showSimulator") var showSimulator: Bool = false
+    @AppStorage("zoomToFit") var zoomToFit: Bool = false
 
     var body: some View {
         HStack {
@@ -35,12 +36,7 @@ struct SwitchboardSettingsView: View {
             
             Spacer()
             
-            Button("􀝯") {
-                document.switchboard.state.zoomToFit = true
-            }
-            Button("􀊮") {
-                document.switchboard.state.zoomToFit = false
-            }
+            Toggle("􀝯 Zoom to Fit", isOn: $zoomToFit)
         }.padding()
     }
 }
