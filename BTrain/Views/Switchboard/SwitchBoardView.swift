@@ -70,7 +70,8 @@ struct SwitchBoardView: View {
             $0.gesture(
                 DragGesture(minimumDistance: 0)
                     .onChanged { gesture in
-                        switchboard.drag.onDragChanged(location: gesture.location, translation: gesture.translation)
+                        let scale = scale(containerSize: containerSize)
+                        switchboard.drag.onDragChanged(location: gesture.location.scaledBy(value: 1 / scale), translation: gesture.translation.scaledBy(value: 1 / scale))
                     }
                     .onEnded { _ in
                         switchboard.drag.onDragEnded()

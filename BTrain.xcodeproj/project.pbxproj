@@ -11,6 +11,7 @@
 		A7012C8528344AC0003AC687 /* DeveloperMetrics.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7012C8428344AC0003AC687 /* DeveloperMetrics.swift */; };
 		A7012C8E2839BDC4003AC687 /* MockCommandInterface.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7012C8D2839BDC4003AC687 /* MockCommandInterface.swift */; };
 		A7012C91283AED29003AC687 /* Types.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7012C90283AED29003AC687 /* Types.swift */; };
+		A702F22D28FE25BF0076186D /* CGSize+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A702F22C28FE25BF0076186D /* CGSize+Extension.swift */; };
 		A711B1502739EBD7002FE7DB /* LayoutController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A711B14F2739EBD7002FE7DB /* LayoutController.swift */; };
 		A7145F8A27F90FBA00BF5F61 /* NewLayoutWizardViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7145F8927F90FBA00BF5F61 /* NewLayoutWizardViewTests.swift */; };
 		A7145F8C27F911F000BF5F61 /* TrainSpeedMeasurementViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7145F8B27F911F000BF5F61 /* TrainSpeedMeasurementViewTests.swift */; };
@@ -338,6 +339,7 @@
 		A7012C8428344AC0003AC687 /* DeveloperMetrics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeveloperMetrics.swift; sourceTree = "<group>"; };
 		A7012C8D2839BDC4003AC687 /* MockCommandInterface.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockCommandInterface.swift; sourceTree = "<group>"; };
 		A7012C90283AED29003AC687 /* Types.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Types.swift; sourceTree = "<group>"; };
+		A702F22C28FE25BF0076186D /* CGSize+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "CGSize+Extension.swift"; sourceTree = "<group>"; };
 		A711B14F2739EBD7002FE7DB /* LayoutController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutController.swift; sourceTree = "<group>"; };
 		A7145F8927F90FBA00BF5F61 /* NewLayoutWizardViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewLayoutWizardViewTests.swift; sourceTree = "<group>"; };
 		A7145F8B27F911F000BF5F61 /* TrainSpeedMeasurementViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainSpeedMeasurementViewTests.swift; sourceTree = "<group>"; };
@@ -703,6 +705,7 @@
 				A78413852740791C00381341 /* CGContext+DrawText.swift */,
 				A7907954277D071000771A60 /* CGContext+Extension.swift */,
 				A784137D273F4DB700381341 /* CGPoint+Extension.swift */,
+				A702F22C28FE25BF0076186D /* CGSize+Extension.swift */,
 				A71715882758448D00200F92 /* CGRect+Extension.swift */,
 				A7907956277D136500771A60 /* CGAffineTransform+Extension.swift */,
 			);
@@ -1878,6 +1881,7 @@
 				A79466CE279B775D006E2A4C /* NSImage+Extension.swift in Sources */,
 				A71A3DB428B1BC0C007F93C4 /* BlockShape_TextLabel.swift in Sources */,
 				A795A03D27B87CCE00AE90EB /* LayoutController+Locomotives.swift in Sources */,
+				A702F22D28FE25BF0076186D /* CGSize+Extension.swift in Sources */,
 				A7907957277D136500771A60 /* CGAffineTransform+Extension.swift in Sources */,
 				A7E1F75527DE9E99009FB75F /* WizardCreateLayout.swift in Sources */,
 				A73AFE862726594600E1ED21 /* BTrainApp.swift in Sources */,

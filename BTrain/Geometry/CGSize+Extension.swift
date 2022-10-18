@@ -12,22 +12,10 @@
 
 import Foundation
 
-extension CGPoint {
-    
-    func rotate(by angle: CGFloat, around center: CGPoint) -> CGPoint {
-        applying(CGAffineTransform.identity.rotation(by: angle, around: center))
-    }
-    
-    func translatedBy(x: CGFloat, y: CGFloat) -> CGPoint {
-        CGPoint(x: self.x + x, y: self.y + y)
-    }
-    
-    func distance(to: CGPoint) -> CGSize {
-        .init(width: to.x - self.x, height: to.y - self.y)
-    }
-    
-    func scaledBy(value: CGFloat) -> CGPoint {
-        CGPoint(x: self.x * value, y: self.y * value)
+extension CGSize {
+        
+    func scaledBy(value: CGFloat) -> CGSize {
+        CGSize(width: self.width * value, height: self.height * value)
     }
 
 }
