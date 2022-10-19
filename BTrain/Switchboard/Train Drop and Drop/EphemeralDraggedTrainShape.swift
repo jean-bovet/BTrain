@@ -64,7 +64,7 @@ final class EphemeralDraggedTrainShape: EphemeralDraggableShape {
                 return false
             }
                         
-            return blockShape.block.reservation == nil && blockShape.block.trainInstance == nil
+            return blockShape.block.reservation == nil && blockShape.block.trainInstance == nil && blockShape.block.enabled
         }
     }
 
