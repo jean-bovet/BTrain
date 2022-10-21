@@ -39,7 +39,7 @@ extension Block {
     // Returns the length (in cm) of the part at the specified index,
     // starting from the beginning of the block.
     func partLength(at index: Int) throws -> Double? {
-        if index == feedbacks.count {
+        if index == feedbacks.count && index > 0 {
             // Last part:
             // [ p0  |   p1 |   p2 ]
             // [ <0> f1 <1> f2 <2> ]
@@ -64,7 +64,7 @@ extension Block {
                 return nil
             }
             return feedback1Distance - feedback2Distance
-        } else if index == 0 {
+        } else if index == 0 && feedbacks.count > 0 {
             // First part:
             // [ p0  |   p1 |   p2 ]
             // [ <0> f1 <1> f2 <2> ]
