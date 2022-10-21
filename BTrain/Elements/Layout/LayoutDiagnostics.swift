@@ -27,20 +27,12 @@ final class LayoutDiagnostic: ObservableObject {
     }
 
     let layout: Layout
-    let observer: LayoutObserver
         
     @Published var hasErrors = false
     @Published var errorCount = 0
 
     init(layout: Layout) {
         self.layout = layout
-        self.observer = LayoutObserver(layout: layout)
-        
-        observer.registerForAnyChange { [weak self] in
-            DispatchQueue.main.async {
-                self?.automaticCheck()
-            }
-        }
     }
 
     func automaticCheck() {
