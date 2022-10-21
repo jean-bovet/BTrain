@@ -43,7 +43,7 @@ import OrderedCollections
  should be avoided will be ignored. However, elements reserved for other trains will be taken into account because the reservations
  will change as the trains move in the layout.
  */
-final class LayoutController {
+final class LayoutController: ObservableObject {
     
     // The layout being managed
     let layout: Layout
@@ -64,6 +64,17 @@ final class LayoutController {
     lazy var reservation: LayoutReservation = {
         LayoutReservation(layout: layout, executor: self, verbose: SettingsKeys.bool(forKey: SettingsKeys.logReservation))
     }()
+    
+    /// Describes a feedback in the layout
+    struct FeedbackAttributes {
+        let deviceID: UInt16
+        let contactID: UInt16
+    }
+    
+    /// Contains the last detected feedback in the layout. This feedback does not necessarily belongs
+    /// to the list of feedbacks declared in the layout. For example, a new feedback added to the physical
+    /// layout will be detected but might not have been added, yet, to the list of feedbacks by the user.
+    @Published var lastDetectedFeedback: FeedbackAttributes?
 
     // Speed manager for each train.
     private var speedManagers = [Identifier<Train>:TrainSpeedManager]()

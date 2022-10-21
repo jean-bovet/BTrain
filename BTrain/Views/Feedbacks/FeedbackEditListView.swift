@@ -13,8 +13,25 @@
 import SwiftUI
 
 struct FeedbackEditListView: View {
+    
+    @ObservedObject var doc: LayoutDocument
     @ObservedObject var layout: Layout
+    @ObservedObject var layoutController: LayoutController
+    
     @State private var selection: Identifier<Feedback>? = nil
+    @State private var showAddNewFeedback = false
+    
+    struct NewFeedback: Equatable {
+        let name: String
+        let deviceID: UInt16
+        let contactID: UInt16
+        
+        static func empty() -> NewFeedback {
+            NewFeedback(name: "", deviceID: 0, contactID: 0)
+        }
+    }
+    
+    @State private var newFeedback = NewFeedback.empty()
     
     @Environment(\.undoManager) var undoManager
 
@@ -57,12 +74,13 @@ struct FeedbackEditListView: View {
                 Spacer()
                 
                 Button("+") {
-                    let feedback = layout.newFeedback()
-                    undoManager?.registerUndo(withTarget: layout, handler: { layout in
-                        layout.feedbacks.removeAll { t in
-                            t.id == feedback.id
-                        }
-                    })
+                    addNewFeedback()
+                }
+                
+                if doc.connected {
+                    Button("􀥄") {
+                        showAddNewFeedback.toggle()
+                    }
                 }
                 
                 Button("-") {
@@ -80,12 +98,34 @@ struct FeedbackEditListView: View {
                     layout.sortFeedbacks()
                 }
             }.padding()
+        }.sheet(isPresented: $showAddNewFeedback, onDismiss: {
+            if newFeedback != NewFeedback.empty() {
+                addNewFeedback(name: newFeedback.name, deviceID: newFeedback.deviceID, contactID: newFeedback.contactID)
+            }
+        }) {
+            FeedbackAddView(doc: doc, layoutController: layoutController, newFeedback: $newFeedback)
+                .padding()
         }
+    }
+    
+    func addNewFeedback(name: String = "", deviceID: UInt16 = 0, contactID: UInt16 = 0) {
+        let feedback = layout.newFeedback()
+        feedback.name = name
+        feedback.deviceID = deviceID
+        feedback.contactID = contactID
+        undoManager?.registerUndo(withTarget: layout, handler: { layout in
+            layout.feedbacks.removeAll { t in
+                t.id == feedback.id
+            }
+        })
     }
 }
 
 struct FeedbackEditListView_Previews: PreviewProvider {
+    
+    static let doc = LayoutDocument(layout: LayoutLoop2().newLayout())
+    
     static var previews: some View {
-        FeedbackEditListView(layout: LayoutLoop2().newLayout())
+        FeedbackEditListView(doc: doc, layout: doc.layout, layoutController: doc.layoutController)
     }
 }

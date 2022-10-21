@@ -21,9 +21,10 @@ extension LayoutController {
             }
             if let feedback = sSelf.layout.feedbacks.find(deviceID: deviceID, contactID: contactID) {
                 feedback.detected = value == 1
-                BTLogger.debug("Feedback \(feedback) changed to \(feedback.detected)")
+                BTLogger.debug("Feedback \(feedback) changed to \(feedback.detected)")                
                 sSelf.runControllers(.feedbackTriggered(feedback))
             }
+            sSelf.lastDetectedFeedback = FeedbackAttributes(deviceID: deviceID, contactID: contactID)
         })
     }
                 
