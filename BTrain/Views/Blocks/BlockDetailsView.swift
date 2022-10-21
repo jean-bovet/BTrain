@@ -34,17 +34,15 @@ struct BlockDetailsView: View {
                 HStack {
                     UndoProvider($block.waitingTime) { waitingTime in
                         TextField("Waiting Time:", value: waitingTime, format: .number)
+                            .unitStyle("s.")
                     }
-                    Text("s.")
                 }.disabled(block.category != .station)
                 
-                HStack {
-                    UndoProvider($block.length) { length in
-                        TextField("Length:", value: length, format: .number)
-                    }
-                    Text("cm")
+                UndoProvider($block.length) { length in
+                    TextField("Length:", value: length, format: .number)
+                        .unitStyle("cm")
+                        .unitMenu(length)
                 }
-                
             }
             
             SectionTitleView(label: "Feedbacks")

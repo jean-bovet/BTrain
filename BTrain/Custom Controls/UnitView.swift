@@ -16,6 +16,11 @@ extension View {
     func unitStyle(_ unit: String) -> some View {
         modifier(UnitViewModifier(text: unit))
     }
+    
+    func unitMenu(_ value: Binding<Double?>) -> some View {
+        modifier(UnitMenuViewModifier(value: value))
+    }
+
 }
 
 struct UnitViewModifier: ViewModifier {
@@ -25,6 +30,25 @@ struct UnitViewModifier: ViewModifier {
         HStack {
             content
             Text(text)
+        }
+    }
+}
+
+struct UnitMenuViewModifier: ViewModifier {
+    @Binding var value: Double?
+
+    func body(content: Content) -> some View {
+        HStack {
+            content
+                .contextMenu {
+                    Button {
+                        if let originalValue = value {
+                            value = originalValue * 2.54
+                        }
+                    } label: {
+                        Text("inch > centimeters")
+                    }
+                }
         }
     }
 }
