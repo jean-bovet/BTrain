@@ -133,6 +133,9 @@ final class Train: Element, ObservableObject {
     // Note: backward direction is not yet supported
     @Published var directionForward = true
     
+    /// True if the train can move in the backward direction
+    @Published var canMoveBackwards = false
+    
     // The route this train is associated with
     @Published var routeId: Identifier<Route>
     

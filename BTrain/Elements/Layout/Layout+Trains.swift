@@ -128,42 +128,65 @@ extension Layout {
     ///   - toBlock: The destination block of the route
     ///   - toDirection: The optional direction when reaching the ``toBlock``
     /// - Returns: a route, represented as a ``GraphPath`` or nil if no suitable route found.
-    func bestRoute(ofTrain train: Train, toReachBlock toBlock: Block, withDirection toDirection: Direction?) throws -> GraphPath? {
+    func bestRoute(ofTrain train: Train, toReachBlock toBlock: Block?, withDirection toDirection: Direction?, reservedBlockBehavior: PathFinder.Constraints.ReservedBlockBehavior) throws -> GraphPath? {
+        let paths = try possibleRoutes(for: train, toBlock: toBlock, toDirection: toDirection, reservedBlockBehavior: reservedBlockBehavior)
+            .sorted(by: { $0.count < $1.count })
+        return paths.first
+    }
+    
+    private func possibleRoutes(for train: Train, toBlock: Block?, toDirection: Direction?, reservedBlockBehavior: PathFinder.Constraints.ReservedBlockBehavior) throws -> [GraphPath] {
+        var paths = [GraphPath]()
+        
+        guard let fromBlock = self.block(for: train.blockId) else {
+            return []
+        }
+
+        guard let trainInstance = fromBlock.trainInstance else {
+            throw LayoutError.trainNotFoundInBlock(blockId: fromBlock.id)
+        }
+
+        let fromDirections: [Direction]
+        if train.canMoveBackwards {
+            fromDirections = [.previous, .next]
+        } else {
+            fromDirections = [trainInstance.direction]
+        }
+        
+        for fromDirection in fromDirections {
+            if let path = try path(for: train, fromDirection: fromDirection, toBlock: toBlock, toDirection: toDirection, reservedBlockBehavior: reservedBlockBehavior) {
+                paths.append(path)
+            }
+        }
+
+        return paths
+    }
+
+    // TODO: Graph+Elements also has a path function. Group these functions together
+    private func path(for train: Train, fromDirection: Direction, toBlock: Block?, toDirection: Direction?, reservedBlockBehavior: PathFinder.Constraints.ReservedBlockBehavior) throws -> GraphPath? {
         let constraints = PathFinder.Constraints(layout: self,
                                                  train: train,
-                                                 reservedBlockBehavior: .ignoreReserved,
+                                                 reservedBlockBehavior: reservedBlockBehavior,
                                                  stopAtFirstBlock: false,
                                                  relaxed: false)
         
-        let settings = PathFinder.Settings(verbose: false, random: false, overflow: pathFinderOverflowLimit)
+        let settings = PathFinder.Settings(verbose: SettingsKeys.bool(forKey: SettingsKeys.logRoutingResolutionSteps),
+                                           random: automaticRouteRandom,
+                                           overflow: pathFinderOverflowLimit)
         let pf = PathFinder(constraints: constraints, settings: settings)
         
         guard let fromBlock = self.block(for: train.blockId) else {
             return nil
         }
-        guard let fromDirection = fromBlock.trainInstance?.direction else {
-            return nil
-        }
         
-        let gp1 = (toDirection == nil || toDirection == .next) ? try shortestPath(for: train, from: (fromBlock, fromDirection), to: (toBlock, .next), pathFinder: pf) : nil
-        let gp2 = (toDirection == nil || toDirection == .previous) ? try shortestPath(for: train, from: (fromBlock, fromDirection), to: (toBlock, .previous), pathFinder: pf) : nil
-
-        let gp: GraphPath
-        if let gp1 = gp1, let gp2 = gp2 {
-            if gp1.count < gp2.count {
-                gp = gp1
+        if let toBlock = toBlock {
+            if let toDirection = toDirection, SettingsKeys.bool(forKey: SettingsKeys.shortestRouteEnabled) {
+                return try shortestPath(for: train, from: (fromBlock, fromDirection), to: (toBlock, toDirection), pathFinder: pf)
             } else {
-                gp = gp2
+                return path(for: train, from: (fromBlock, fromDirection), to: (toBlock, toDirection), pathFinder: pf)
             }
-        } else if let gp1 = gp1 {
-            gp = gp1
-        } else if let gp2 = gp2 {
-            gp = gp2
         } else {
-            return nil
+            return path(for: train, from: (fromBlock, fromDirection), to: nil, pathFinder: pf)
         }
-        
-        return gp
     }
     
     func hasTrainReachedStationOrDestination(_ route: Route?, _ train: Train, _ block: Block) -> Bool {

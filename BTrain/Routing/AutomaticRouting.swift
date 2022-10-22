@@ -30,15 +30,7 @@ final class AutomaticRouting {
         guard let train = layout.train(for: trainId) else {
             throw LayoutError.trainNotFound(trainId: trainId)
         }
-        
-        guard let blockId = train.blockId else {
-            throw LayoutError.trainNotAssignedToABlock(train: train)
-        }
-        
-        guard let currentBlock = layout.block(for: blockId) else {
-            throw LayoutError.blockNotFound(blockId: blockId)
-        }
-        
+                        
         let destination: Destination?
         switch(route.mode) {
         case .automaticOnce(destination: let routeDestination):
@@ -48,26 +40,6 @@ final class AutomaticRouting {
         case .fixed:
             throw LayoutError.routeIsNotAutomatic(route: route)
         }
-        
-        guard let trainInstance = currentBlock.trainInstance else {
-            throw LayoutError.trainNotFoundInBlock(blockId: currentBlock.id)
-        }
-
-        let settings = PathFinder.Settings(verbose: SettingsKeys.bool(forKey: SettingsKeys.logRoutingResolutionSteps),
-                                           random: layout.automaticRouteRandom,
-                                           overflow: layout.pathFinderOverflowLimit)
-        
-        // Note: if `destination` is specified, always avoid reserved block. Otherwise,
-        // just avoid the reserved block in front of the current one but ignore the others
-        // (the automatic route will re-evaluate itself if it encounters a reserved block later
-        // during execution, to avoid deadlocking).
-        let rbb: PathFinder.Constraints.ReservedBlockBehavior = destination == nil ? .avoidFirstReservedBlock : .avoidReserved
-        let constraints = PathFinder.Constraints(layout: layout,
-                                                 train: train,
-                                                 reservedBlockBehavior: rbb,
-                                                 stopAtFirstBlock: false,
-                                                 relaxed: false)
-        let pf = PathFinder(constraints: constraints, settings: settings)
         
         let to: (Block, Direction?)?
         if let destination = destination {
@@ -79,12 +51,13 @@ final class AutomaticRouting {
             to = nil
         }
         
-        let path: GraphPath?
-        if let to = to, let toBlockDirection = to.1, SettingsKeys.bool(forKey: SettingsKeys.shortestRouteEnabled) {
-            path = try layout.shortestPath(for: train, from: (currentBlock, trainInstance.direction), to: (to.0, toBlockDirection), pathFinder: pf)
-        } else {
-            path = layout.path(for: train, from: (currentBlock, trainInstance.direction), to: to, pathFinder: pf)
-        }
+        // Note: if `destination` is specified, always avoid reserved block. Otherwise,
+        // just avoid the reserved block in front of the current one but ignore the others
+        // (the automatic route will re-evaluate itself if it encounters a reserved block later
+        // during execution, to avoid deadlocking).
+        let rbb: PathFinder.Constraints.ReservedBlockBehavior = destination == nil ? .avoidFirstReservedBlock : .avoidReserved
+        
+        let path = try layout.bestRoute(ofTrain: train, toReachBlock: to?.0, withDirection: to?.1, reservedBlockBehavior: rbb)
         
         if let path = path {
             route.lastMessage = nil
