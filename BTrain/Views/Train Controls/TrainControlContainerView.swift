@@ -25,7 +25,7 @@ struct TrainControlContainerView: View {
             HStack(alignment: .top) {
                 VStack(alignment: .leading) {
                     Text(train.name).font(.headline)
-                    TrainControlLocationView(controller: document.layoutController, layout: document.layout, train: train)
+                    TrainControlLocationView(controller: document.layoutController, doc: document, layout: document.layout, train: train)
                 }
 
                 TrainIconView(trainIconManager: document.trainIconManager, train: train, size: .medium, hideIfNotDefined: true)

@@ -16,6 +16,7 @@ struct TrainControlLocationView: View {
     
     let controller: LayoutController
     
+    @ObservedObject var doc: LayoutDocument
     @ObservedObject var layout: Layout
         
     @ObservedObject var train: Train
@@ -36,27 +37,31 @@ struct TrainControlLocationView: View {
                         
                         Spacer()
                         
-                        Button("􀅄") {
-                            setTrainLocationSheet.toggle()
-                        }
-                        .help("Set Location")
-                        .buttonStyle(.borderless)
-                        
-                        Button("􀅂") {
-                            moveTrainLocationSheet.toggle()
-                        }
-                        .help("Move Train")
-                        .buttonStyle(.borderless)
-                        
-                        Button("􀄨") {
-                            removeTrainSheet.toggle()
-                        }
-                        .help("Remove Train")
-                        .buttonStyle(.borderless)
+                        Group {
+                            Button("􀅄") {
+                                setTrainLocationSheet.toggle()
+                            }
+                            .help("Set Location")
+                            .buttonStyle(.borderless)
+                            
+                            Button("􀅂") {
+                                moveTrainLocationSheet.toggle()
+                            }
+                            .help("Move Train")
+                            .buttonStyle(.borderless)
+                            
+                            Button("􀄨") {
+                                removeTrainSheet.toggle()
+                            }
+                            .help("Remove Train")
+                            .buttonStyle(.borderless)
+                        }.disabled(!doc.connected)
                     } else {
                         Button("Set Location 􀅄") {
                             setTrainLocationSheet.toggle()
-                        }.help("Set Location")
+                        }
+                        .disabled(!doc.connected)
+                        .help("Set Location")
                     }
                 }
 
@@ -86,8 +91,8 @@ struct TrainControlLocationView_Previews: PreviewProvider {
 
     static var previews: some View {
         Group {
-            TrainControlLocationView(controller: doc.layoutController, layout: doc.layout, train: doc.layout.trains[0])
-            TrainControlLocationView(controller: doc2.layoutController, layout: doc2.layout, train: doc2.layout.trains[0])
+            TrainControlLocationView(controller: doc.layoutController, doc: doc, layout: doc.layout, train: doc.layout.trains[0])
+            TrainControlLocationView(controller: doc2.layoutController, doc: doc2, layout: doc2.layout, train: doc2.layout.trains[0])
         }
     }
 }

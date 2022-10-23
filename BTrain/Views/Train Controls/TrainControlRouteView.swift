@@ -51,12 +51,12 @@ struct TrainControlRouteView: View {
             }
             if selectedRouteDescription.isEmpty {
                 Text(layout.defaultRouteDescription)
-                    .lineLimit(2)
+                    .lineLimit(4)
                     .fixedSize(horizontal: false, vertical: true)
                     .hidden()
             } else {
                 Text(selectedRouteDescription)
-                    .lineLimit(2)
+                    .lineLimit(4)
                     .fixedSize(horizontal: false, vertical: true)
             }
         }.onAppear() {
