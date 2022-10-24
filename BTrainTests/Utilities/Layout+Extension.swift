@@ -11,6 +11,7 @@
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 import Foundation
+import XCTest
 
 @testable import BTrain
 
@@ -71,6 +72,42 @@ extension Layout {
         return self
     }
 
+    func reserve(_ block: String, with train: String, direction: Direction) {
+        self.block(for: Identifier<Block>(uuid: block))?.reservation = Reservation(trainId: Identifier<Train>(uuid: train), direction: direction)
+    }
+
+    func free(_ block: String) {
+        self.block(for: Identifier<Block>(uuid: block))?.reservation = nil
+    }
+        
+    func bestPath(from: String, toReachBlock toBlockName: String? = nil, withDirection toDirection: Direction? = nil, reservedBlockBehavior: PathFinder.Constraints.ReservedBlockBehavior, shortestPath: Bool = true) throws -> GraphPath? {
+        setTrain(train: trains[0], toBlockNamed: from)
+        let toBlock = (toBlockName != nil) ? block(named: toBlockName!) : nil
+        return try bestPath(ofTrain: trains[0], toReachBlock: toBlock, withDirection: toDirection, reservedBlockBehavior: reservedBlockBehavior, shortestPath: shortestPath)
+    }
+
+    func assertShortPath(_ from: (String, Direction), _ to: (String, Direction), _ expectedPath: [String]) throws {
+        // Note: it is important to remove all the trains from the layout to avoid unexpected reserved blocks!
+        let layout = self.removeTrains()
+        
+        // Let's use a brand new train
+        let train = Train(id: Identifier<Train>(uuid: "foo"), name: "foo", address: 0)
+
+        let fromBlock = layout.block(named: from.0)
+        let toBlock = layout.block(named: to.0)
+
+        setTrain(train: train, toBlockNamed: fromBlock.name, direction: from.1)
+        let path = try layout.bestPath(ofTrain: train, toReachBlock: toBlock, withDirection: to.1, reservedBlockBehavior: .avoidReserved)!
+        XCTAssertEqual(path.toStrings, expectedPath)
+    }
+
+    private func setTrain(train: Train, toBlockNamed blockName: String, direction: Direction = .next) {
+        let block = block(named: blockName)
+        
+        train.blockId = block.id
+        block.trainInstance = .init(train.id, direction)
+    }
+    
 }
 
 extension Array where Element == Block {

@@ -112,27 +112,25 @@ class GraphTests: XCTestCase {
 
     func testFindPathWithReservedBlock() throws {
         let layout = LayoutLoopWithStation().newLayout()
-        let s1 = layout.block(named: "s1")
-        let s2 = layout.block(named: "s2")
-        let b1 = layout.block(named: "b1")
         
         // Without block reserved, the straightforward path from s1 to s2 is s1-b1-s2
-        var p = layout.path(for: layout.trains[0], from: (s1, .next), to: (s2, .next))!
-        XCTAssertEqual(p.toStrings, ["s1:1", "0:t1:1", "0:t2:1", "0:b1:1", "1:t4:0", "0:s2"])
+        var p = try layout.bestPath(from: "s1", toReachBlock: "s2", withDirection: .next, reservedBlockBehavior: .avoidReserved)!
+        XCTAssertEqual(p.toStrings, ["0:s1:1", "0:t1:1", "0:t2:1", "0:b1:1", "1:t4:0", "0:s2:1"])
         
         // Reserve b1 so the algorithm needs to find the alternate route s1-b3-s2
+        let b1 = layout.block(named: "b1")
         b1.reservation = .init("foo", .next)
                 
-        p = layout.path(for: layout.trains[0], from: (s1, .next), to: (s2, .next))!
-        XCTAssertEqual(p.toStrings, ["s1:1", "0:t1:1", "0:t2:2", "2:t3:0", "0:b3:1", "2:t4:0", "0:s2"])
+        p = try layout.bestPath(from: "s1", toReachBlock: "s2", withDirection: .next, reservedBlockBehavior: .avoidReserved)!
+        XCTAssertEqual(p.toStrings, ["0:s1:1", "0:t1:1", "0:t2:2", "2:t3:0", "0:b3:1", "2:t4:0", "0:s2:1"])
     }
 
     func testFindPathUntilStation() throws {
         let layout = LayoutLoopWithStation().newLayout()
-        let s1 = layout.block(named: "s1")
-        
+
         // Do not specify the destination block, so the algorithm will stop at the first station it finds
-        let p = layout.path(for: layout.trains[0], from: (s1, .next), to: nil)!
+        let p = try layout.bestPath(from: "s1", reservedBlockBehavior: .avoidReserved)!
+
         XCTAssertEqual(p.toStrings, ["s1:1", "0:t1:1", "0:t2:1", "0:b1:1", "1:t4:0", "0:s2"])
     }
 }

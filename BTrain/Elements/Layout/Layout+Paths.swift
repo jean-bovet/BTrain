@@ -18,39 +18,20 @@ extension Layout {
         (turnouts.count + blocks.count) * 4
     }
         
-    func path(for train: Train, from: (Block, Direction), to: (Block, Direction)?, pathFinder: PathFinder) -> GraphPath? {
-        // Note: when direction is `next`, it means we are leaving the starting element from its `nextSocket`
-        let fromElement = GraphPathElement.starting(from.0, from.1 == .next ? Block.nextSocket : Block.previousSocket)
-        let toElement: GraphPathElement?
-        if let to = to {
-            // Note: when direction is `next`, it means we are entering the last block from its `previousSocket`
-            toElement = .ending(to.0, to.1 == .next ? Block.previousSocket : Block.nextSocket)
-        } else {
-            toElement = nil
-        }
-        return pathFinder.path(graph: self, from: fromElement, to: toElement)
-    }
- 
-    func shortestPath(for train: Train, from: (Block, Direction), to: (Block, Direction), pathFinder: PathFinder) throws -> GraphPath? {
-        let fromElement = from.1 == .next ? from.0.elementDirectionNext:from.0.elementDirectionPrevious
-        let toElement = to.1 == .next ? to.0.elementDirectionNext:to.0.elementDirectionPrevious
-
-        return try pathFinder.shortestPath(graph: self, from: fromElement, to: toElement)
-    }
-    
     /// Returns the best route to reach ``toBlock`` given the specified ``train``.
     /// - Parameters:
     ///   - train: The train from which to start the route
     ///   - toBlock: The destination block of the route
     ///   - toDirection: The optional direction when reaching the ``toBlock``
+    ///   - shortestPath: true if the shortest path is to be found, false if any path is suitable
     /// - Returns: a route, represented as a ``GraphPath`` or nil if no suitable route found.
-    func bestPath(ofTrain train: Train, toReachBlock toBlock: Block?, withDirection toDirection: Direction?, reservedBlockBehavior: PathFinder.Constraints.ReservedBlockBehavior) throws -> GraphPath? {
-        let paths = try possiblePaths(for: train, toBlock: toBlock, toDirection: toDirection, reservedBlockBehavior: reservedBlockBehavior)
+    func bestPath(ofTrain train: Train, toReachBlock toBlock: Block?, withDirection toDirection: Direction?, reservedBlockBehavior: PathFinder.Constraints.ReservedBlockBehavior, shortestPath: Bool = SettingsKeys.bool(forKey: SettingsKeys.shortestRouteEnabled)) throws -> GraphPath? {
+        let paths = try possiblePaths(for: train, toBlock: toBlock, toDirection: toDirection, reservedBlockBehavior: reservedBlockBehavior, shortestPath: shortestPath)
             .sorted(by: { $0.count < $1.count })
         return paths.first
     }
     
-    private func possiblePaths(for train: Train, toBlock: Block?, toDirection: Direction?, reservedBlockBehavior: PathFinder.Constraints.ReservedBlockBehavior) throws -> [GraphPath] {
+    private func possiblePaths(for train: Train, toBlock: Block?, toDirection: Direction?, reservedBlockBehavior: PathFinder.Constraints.ReservedBlockBehavior, shortestPath: Bool) throws -> [GraphPath] {
         var paths = [GraphPath]()
         
         guard let fromBlock = self.block(for: train.blockId) else {
@@ -77,7 +58,7 @@ extension Layout {
         
         for fromDirection in fromDirections {
             for toDirection in toDirections {
-                if let path = try path(for: train, fromDirection: fromDirection, toBlock: toBlock, toDirection: toDirection, reservedBlockBehavior: reservedBlockBehavior) {
+                if let path = try path(for: train, fromDirection: fromDirection, toBlock: toBlock, toDirection: toDirection, reservedBlockBehavior: reservedBlockBehavior, shortestPath: shortestPath) {
                     paths.append(path)
                 }
             }
@@ -86,8 +67,7 @@ extension Layout {
         return paths
     }
 
-    // TODO: Graph+Elements also has a path function. Group these functions together
-    private func path(for train: Train, fromDirection: Direction, toBlock: Block?, toDirection: Direction, reservedBlockBehavior: PathFinder.Constraints.ReservedBlockBehavior) throws -> GraphPath? {
+    private func path(for train: Train, fromDirection: Direction, toBlock: Block?, toDirection: Direction, reservedBlockBehavior: PathFinder.Constraints.ReservedBlockBehavior, shortestPath: Bool) throws -> GraphPath? {
         let constraints = PathFinder.Constraints(layout: self,
                                                  train: train,
                                                  reservedBlockBehavior: reservedBlockBehavior,
@@ -104,14 +84,34 @@ extension Layout {
         }
         
         if let toBlock = toBlock {
-            if SettingsKeys.bool(forKey: SettingsKeys.shortestRouteEnabled) {
-                return try shortestPath(for: train, from: (fromBlock, fromDirection), to: (toBlock, toDirection), pathFinder: pf)
+            if shortestPath {
+                return try self.shortestPath(for: train, from: (fromBlock, fromDirection), to: (toBlock, toDirection), pathFinder: pf)
             } else {
                 return path(for: train, from: (fromBlock, fromDirection), to: (toBlock, toDirection), pathFinder: pf)
             }
         } else {
             return path(for: train, from: (fromBlock, fromDirection), to: nil, pathFinder: pf)
         }
+    }
+    
+    private func path(for train: Train, from: (Block, Direction), to: (Block, Direction)?, pathFinder: PathFinder) -> GraphPath? {
+        // Note: when direction is `next`, it means we are leaving the starting element from its `nextSocket`
+        let fromElement = GraphPathElement.starting(from.0, from.1 == .next ? Block.nextSocket : Block.previousSocket)
+        let toElement: GraphPathElement?
+        if let to = to {
+            // Note: when direction is `next`, it means we are entering the last block from its `previousSocket`
+            toElement = .ending(to.0, to.1 == .next ? Block.previousSocket : Block.nextSocket)
+        } else {
+            toElement = nil
+        }
+        return pathFinder.path(graph: self, from: fromElement, to: toElement)
+    }
+ 
+    private func shortestPath(for train: Train, from: (Block, Direction), to: (Block, Direction), pathFinder: PathFinder) throws -> GraphPath? {
+        let fromElement = from.1 == .next ? from.0.elementDirectionNext:from.0.elementDirectionPrevious
+        let toElement = to.1 == .next ? to.0.elementDirectionNext:to.0.elementDirectionPrevious
+
+        return try pathFinder.shortestPath(graph: self, from: fromElement, to: toElement)
     }
     
 }
