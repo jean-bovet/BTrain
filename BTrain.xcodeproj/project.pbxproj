@@ -53,6 +53,7 @@
 		A72180852760428E00831998 /* Socket.swift in Sources */ = {isa = PBXBuildFile; fileRef = A72180842760428E00831998 /* Socket.swift */; };
 		A7218087276055AD00831998 /* FeedbackTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7218086276055AD00831998 /* FeedbackTests.swift */; };
 		A72180892760578000831998 /* RouteTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A72180882760578000831998 /* RouteTests.swift */; };
+		A724335729064F4C00926A78 /* RouteValidationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A724335629064F4C00926A78 /* RouteValidationView.swift */; };
 		A7281840278E9EDC007BE810 /* Direction.swift in Sources */ = {isa = PBXBuildFile; fileRef = A728183F278E9EDC007BE810 /* Direction.swift */; };
 		A73A7DD0284AD41D00ABEADE /* TrainEventStateMachine.swift in Sources */ = {isa = PBXBuildFile; fileRef = A73A7DCF284AD41D00ABEADE /* TrainEventStateMachine.swift */; };
 		A73A7DD2284B247E00ABEADE /* TrainEventStateMachineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A73A7DD1284B247E00ABEADE /* TrainEventStateMachineTests.swift */; };
@@ -382,6 +383,7 @@
 		A72180842760428E00831998 /* Socket.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Socket.swift; sourceTree = "<group>"; };
 		A7218086276055AD00831998 /* FeedbackTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedbackTests.swift; sourceTree = "<group>"; };
 		A72180882760578000831998 /* RouteTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteTests.swift; sourceTree = "<group>"; };
+		A724335629064F4C00926A78 /* RouteValidationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteValidationView.swift; sourceTree = "<group>"; };
 		A728183F278E9EDC007BE810 /* Direction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Direction.swift; sourceTree = "<group>"; };
 		A73A7DCF284AD41D00ABEADE /* TrainEventStateMachine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainEventStateMachine.swift; sourceTree = "<group>"; };
 		A73A7DD1284B247E00ABEADE /* TrainEventStateMachineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainEventStateMachineTests.swift; sourceTree = "<group>"; };
@@ -1139,6 +1141,7 @@
 			children = (
 				A7710E562777D69400C08150 /* RouteListView.swift */,
 				A7710E582777D7FE00C08150 /* RouteView.swift */,
+				A724335629064F4C00926A78 /* RouteValidationView.swift */,
 				A74F38082818C7B10013FD23 /* RouteStepBlockView.swift */,
 				A74F3817281A61230013FD23 /* RouteStepStationView.swift */,
 				A74F3815281A5E0E0013FD23 /* RouteNewElementSheet.swift */,
@@ -1685,6 +1688,7 @@
 				A798BB4A27ABAB6F000BB4D1 /* RouteResolver.swift in Sources */,
 				A7710E6327799C9F00C08150 /* Layout+Blocks.swift in Sources */,
 				A783EA9F2787C6DA00E69B6D /* LayoutObserver.swift in Sources */,
+				A724335729064F4C00926A78 /* RouteValidationView.swift in Sources */,
 				A73A7DD0284AD41D00ABEADE /* TrainEventStateMachine.swift in Sources */,
 				A7C8A2E7279BB89E000C7246 /* DocumentView.swift in Sources */,
 				A7214916279A56FA0095E5EE /* LayoutController+Debug.swift in Sources */,

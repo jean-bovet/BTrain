@@ -298,19 +298,21 @@ final class LayoutDiagnostic: ObservableObject {
     func checkRoutes(_ errors: inout [DiagnosticError]) {
         var resolverErrors = [PathFinderResolver.ResolverError]()
         for route in layout.routes.filter({ $0.automatic == false }) {
-            checkRoute(route: route, &errors, resolverErrors: &resolverErrors)
+            var resolvedRoutes = RouteResolver.ResolvedRoutes()
+            checkRoute(route: route, &errors, resolverErrors: &resolverErrors, resolverPaths: &resolvedRoutes)
         }
     }
     
-    func checkRoute(route: Route, _ errors: inout [DiagnosticError], resolverErrors: inout [PathFinderResolver.ResolverError]) {
+    func checkRoute(route: Route, _ errors: inout [DiagnosticError], resolverErrors: inout [PathFinderResolver.ResolverError], resolverPaths: inout RouteResolver.ResolvedRoutes) {
         let train = Train(id: Identifier<Train>(uuid: UUID().uuidString), name: "", address: 0)
         let resolver = RouteResolver(layout: layout, train: train)
         do {
             try route.completePartialSteps(layout: layout, train: train)
             let result = try resolver.resolve(unresolvedPath: route.steps)
             switch result {
-            case .success(_):
-                break
+            case .success(let resolvedPaths):
+                resolverPaths = resolvedPaths
+                
             case .failure(let resolverError):
                 resolverErrors.append(resolverError)
                 errors.append(DiagnosticError.invalidRoute(route: route, error: "No path found"))

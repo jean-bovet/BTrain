@@ -144,7 +144,7 @@ struct PathFinderResolver {
     
     private func resolveSegment(graph: Graph, from: GraphPathElement, to: GraphPathElement) throws -> GraphPath {
         // Performance Optimization:
-        // If both previousElement and to are separated only by turnouts,
+        // If both `from` and `to` are separated only by turnouts,
         // we can more quickly find the missing turnouts by using the standard path finder
         // algorithm (instead of the shorted path algorithm which is going to analyze the entire
         // graph which takes time).

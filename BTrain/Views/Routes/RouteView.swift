@@ -14,11 +14,6 @@ import SwiftUI
 
 struct RouteView: View {
     
-    struct RouteError {
-        let resolverErrors: [PathFinderResolver.ResolverError]
-        let valid: Bool
-    }
-    
     @Environment(\.undoManager) var undoManager
 
     @ObservedObject var layout: Layout
@@ -26,7 +21,7 @@ struct RouteView: View {
     @ObservedObject var route: Route
 
     @State private var selection: String?
-    @State private var routeError: RouteError?
+    @State private var routeError: RouteValidationView.RouteError?
 
     @State private var showAddRouteElementSheet = false
         
@@ -106,6 +101,11 @@ struct RouteView: View {
             }.listStyle(.inset(alternatesRowBackgrounds: true))
             
             HStack {
+                RouteValidationView(layout: layout, route: route, routeError: $routeError)
+                Spacer()
+            }
+            
+            HStack {
                 Text("\(route.partialSteps.count) steps")
                 
                 Spacer()
@@ -129,22 +129,6 @@ struct RouteView: View {
                 
                 MoveUpButtonView(selection: $selection, elements: $route.partialSteps)
                 MoveDownButtonView(selection: $selection, elements: $route.partialSteps)
-
-                Spacer().fixedSpace()
-                
-                HStack {
-                    Button("Verify") {
-                        validateRoute()
-                    }
-                    if let routeError = routeError {
-                        if routeError.valid {
-                            Text("􀁢")
-                        } else {
-                            Text("􀇾")
-                        }
-                    }
-                }
-                
             }
             .padding()
         }.sheet(isPresented: $showAddRouteElementSheet) {
@@ -153,17 +137,6 @@ struct RouteView: View {
         }
     }
     
-    func validateRoute() {
-        let diag = LayoutDiagnostic(layout: layout)
-        var errors = [LayoutDiagnostic.DiagnosticError]()
-        var resolverError = [PathFinderResolver.ResolverError]()
-        diag.checkRoute(route: route, &errors, resolverErrors: &resolverError)
-        if errors.isEmpty {
-            routeError = .init(resolverErrors: resolverError, valid: true)
-        } else {
-            routeError = .init(resolverErrors: resolverError, valid: false)
-        }
-    }
 }
 
 struct RouteView_Previews: PreviewProvider {
