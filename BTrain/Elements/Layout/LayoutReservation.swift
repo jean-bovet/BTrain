@@ -447,7 +447,8 @@ final class LayoutReservation {
         return maximumSpeedAllowed
     }
     
-    /// Returns true if the train can stop within the available lead distance at the specified speed.
+    /// Returns true if the train can stop within the available lead distance, including any remaining distance
+    /// in the current block, at the specified speed.
     ///
     /// The leading distance is the distance of all the reserved leading blocks in front of the train.
     /// The goal is to ensure that a train can stop safely at any moment with the leading distance
@@ -458,7 +459,14 @@ final class LayoutReservation {
     ///   - speed: the speed to evaluate
     /// - Returns: true if the train can stop with the available leading distance, false otherwise
     func isBrakingDistanceRespected(train: Train, speed: TrainSpeed.UnitKph) -> Bool {
-        let leadingDistance = train.leading.settledDistance
+        guard let currentBlock = layout.currentBlock(train: train) else {
+            return false
+        }
+        guard let distanceLeftInBlock = currentBlock.distanceLeftInBlock(train: train) else {
+            return false
+        }
+        
+        let leadingDistance = distanceLeftInBlock + train.leading.settledDistance
         
         // Compute the distance necessary to bring the train to a full stop
         let steps = train.speed.steps(for: speed).value

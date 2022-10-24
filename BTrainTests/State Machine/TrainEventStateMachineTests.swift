@@ -72,6 +72,7 @@ class TrainEventStateMachineTests: XCTestCase {
         XCTAssertEqual(try tsm.handle(trainEvent: .modeChanged(train), train: train), nil)
 
         train.mode = .stopManaged
+        train.onReservedBlocksLengthEnough = { _ in return true }
         XCTAssertEqual(try tsm.handle(trainEvent: .modeChanged(train), train: train), nil)
 
         train.mode = .stopManaged
@@ -91,6 +92,7 @@ class TrainEventStateMachineTests: XCTestCase {
         train.state = .running
         train.mode = .managed
         train.hasReservedBlocks = false
+        train.onReservedBlocksLengthEnough = { _ in return true }
         XCTAssertEqual(try tsm.handle(trainEvent: .stateChanged(train), train: train), nil)
         XCTAssertEqual(train.state, .running)
 
@@ -108,6 +110,7 @@ class TrainEventStateMachineTests: XCTestCase {
 
         train.state = .stopped
         train.hasReservedBlocks = true
+        train.mode = .unmanaged
         XCTAssertEqual(try tsm.handle(trainEvent: .stateChanged(train), train: train), .reservedBlocksChanged(train))
         XCTAssertEqual(train.state, .stopped)
     }

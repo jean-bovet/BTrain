@@ -56,7 +56,10 @@ protocol TrainControlling: AnyObject {
     
     /// Returns true if the train is located in a station or at the destination block as specified by the route
     var atStationOrDestination: Bool { get }
-
+    
+    /// Returns true if the reserved blocks are still settling
+    var reservedBlocksSettling: Bool { get }
+    
     /// Returns true if the length of reserved blocks is long enough to allow the train
     /// to move at the specified speed. The lenght must only includes settled turnouts,
     /// because un-settled turnouts are not yet ready to be used by the train.

@@ -41,6 +41,8 @@ final class MockTrainController: TrainControlling {
     
     var atStationOrDestination: Bool = false
     
+    var reservedBlocksSettling: Bool = false
+    
     init(route: Route) {
         self.route = route
     }

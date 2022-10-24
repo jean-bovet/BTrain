@@ -108,7 +108,22 @@ final class TrainLeadingReservation: TrainReservation {
 
         return true
     }
+    
+    /// Returns true if the reserved blocks (and turnouts) are still settling.
+    var settling: Bool {
+        if blocks.isEmpty {
+            return false
+        }
         
+        for turnout in turnouts {
+            if !turnout.settled {
+                return true
+            }
+        }
+
+        return false
+    }
+    
     /// Returns the distance that has been settled. In other words, returns the distance
     /// that contains only consecutive elements (blocks and turnouts) that have settled.
     ///

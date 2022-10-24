@@ -98,6 +98,10 @@ final class TrainController: TrainControlling, CustomStringConvertible {
         layout.hasTrainReachedStationOrDestination(route, train, currentBlock)
     }
     
+    var reservedBlocksSettling: Bool {
+        train.leading.settling
+    }
+    
     init(train: Train, route: Route, layout: Layout, currentBlock: Block, trainInstance: TrainInstance, layoutController: LayoutController, reservation: LayoutReservation) {
         self.train = train
         self.route = route

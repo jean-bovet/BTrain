@@ -73,7 +73,10 @@ struct TrainEventStateMachine {
             }
             
         case .stateChanged(_):
-            if train.state == .stopped {
+            // Note: do not remove the reserved blocks if they are still settling. The train
+            // can be in the stopped state because the reserved blocks are still settling and
+            // the train does not have enough free distance to movei.
+            if train.state == .stopped && !train.reservedBlocksSettling {
                 if try train.removeReservedBlocks() {
                     return .reservedBlocksChanged(train)
                 }
@@ -119,7 +122,7 @@ struct TrainEventStateMachine {
     
     private func adjustSpeed(ofTrain train: TrainControlling, stateChanged: Bool) {
         if train.mode != .unmanaged {
-            train.adjustSpeed(stateChanged: true)
+            train.adjustSpeed(stateChanged: stateChanged)
         }
     }
 }

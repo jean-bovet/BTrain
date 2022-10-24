@@ -90,4 +90,38 @@ extension Block {
         return results
     }
     
+    /// Returns the distance left in the block given the train current position
+    /// - Parameter train: The train
+    /// - Returns: the distance, if available, that remains in the block
+    func distanceLeftInBlock(train: Train) -> Double? {
+        guard let ti = trainInstance else {
+            return nil
+        }
+        
+        guard let length = length else {
+            return nil
+        }
+
+        switch ti.direction {
+        case .next:
+            let p = train.position
+            if p < feedbacks.count {
+                if let feedbackDistance = feedbacks[p].distance {
+                    return length - feedbackDistance
+                } else {
+                    return 0
+                }
+            } else {
+                return 0
+            }
+            
+        case .previous:
+            let p = train.position - 1
+            if p >= 0 && p < feedbacks.count {
+                return feedbacks[p].distance
+            } else {
+                return 0
+            }
+        }
+    }
 }

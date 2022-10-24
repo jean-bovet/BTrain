@@ -19,6 +19,12 @@ extension TrainControlling {
         shouldStopInBlock(ignoreReservedBlocks: false)
     }
     
+    /// Returns true if the train should stop in the current block because there is not enough
+    /// reserved (and settled) blocks for it.
+    var shouldStopInBlockBecauseNotEnoughReservedBlocksLength: Bool {
+        !reservedBlocksLengthEnough(forSpeed: LayoutFactory.DefaultBrakingSpeed)
+    }
+    
     /// Returns true if the train should stop in the current block
     /// - Parameter ignoreReservedBlocks: true to ignore the reserved blocks. For example, to allow a train to start,
     /// we need to ignore the reserved block because the train, which is stopped, doesn't have any reserved blocks yet.
@@ -49,8 +55,7 @@ extension TrainControlling {
         }
         
         if !ignoreReservedBlocks {
-            // Not enough room to run at least at limited speed?
-            if !reservedBlocksLengthEnough(forSpeed: LayoutFactory.DefaultBrakingSpeed) {
+            if shouldStopInBlockBecauseNotEnoughReservedBlocksLength {
                 return true
             }
         }

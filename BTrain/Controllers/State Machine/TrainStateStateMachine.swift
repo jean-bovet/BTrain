@@ -44,6 +44,8 @@ struct TrainStateStateMachine {
                 train.state = .braking
             } else if train.stopFeedbackActivated && train.shouldStopInBlock {
                 train.state = .stopping
+            } else if train.shouldStopInBlockBecauseNotEnoughReservedBlocksLength {
+                train.state = .stopping
             }
         }
     }
