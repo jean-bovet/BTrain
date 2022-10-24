@@ -28,7 +28,7 @@ struct TrainStateStateMachine {
             handleStoppedState(train: train)
         }
         let stateChanged = originalState != train.state
-        if stateChanged && train.state == .stopped {
+        if train.state == .stopped && (stateChanged || train.mode == .stopManaged) {
             trainDidStop(train: train)
         }
         return stateChanged
