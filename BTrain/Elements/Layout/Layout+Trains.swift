@@ -152,9 +152,18 @@ extension Layout {
             fromDirections = [trainInstance.direction]
         }
         
+        let toDirections: [Direction]
+        if let toDirection = toDirection {
+            toDirections = [toDirection]
+        } else {
+            toDirections = [.previous, .next]
+        }
+        
         for fromDirection in fromDirections {
-            if let path = try path(for: train, fromDirection: fromDirection, toBlock: toBlock, toDirection: toDirection, reservedBlockBehavior: reservedBlockBehavior) {
-                paths.append(path)
+            for toDirection in toDirections {
+                if let path = try path(for: train, fromDirection: fromDirection, toBlock: toBlock, toDirection: toDirection, reservedBlockBehavior: reservedBlockBehavior) {
+                    paths.append(path)
+                }
             }
         }
 
@@ -162,7 +171,7 @@ extension Layout {
     }
 
     // TODO: Graph+Elements also has a path function. Group these functions together
-    private func path(for train: Train, fromDirection: Direction, toBlock: Block?, toDirection: Direction?, reservedBlockBehavior: PathFinder.Constraints.ReservedBlockBehavior) throws -> GraphPath? {
+    private func path(for train: Train, fromDirection: Direction, toBlock: Block?, toDirection: Direction, reservedBlockBehavior: PathFinder.Constraints.ReservedBlockBehavior) throws -> GraphPath? {
         let constraints = PathFinder.Constraints(layout: self,
                                                  train: train,
                                                  reservedBlockBehavior: reservedBlockBehavior,
@@ -179,7 +188,7 @@ extension Layout {
         }
         
         if let toBlock = toBlock {
-            if let toDirection = toDirection, SettingsKeys.bool(forKey: SettingsKeys.shortestRouteEnabled) {
+            if SettingsKeys.bool(forKey: SettingsKeys.shortestRouteEnabled) {
                 return try shortestPath(for: train, from: (fromBlock, fromDirection), to: (toBlock, toDirection), pathFinder: pf)
             } else {
                 return path(for: train, from: (fromBlock, fromDirection), to: (toBlock, toDirection), pathFinder: pf)
