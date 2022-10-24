@@ -57,7 +57,7 @@ final class AutomaticRouting {
         // during execution, to avoid deadlocking).
         let rbb: PathFinder.Constraints.ReservedBlockBehavior = destination == nil ? .avoidFirstReservedBlock : .avoidReserved
         
-        let path = try layout.bestRoute(ofTrain: train, toReachBlock: to?.0, withDirection: to?.1, reservedBlockBehavior: rbb)
+        let path = try layout.bestPath(ofTrain: train, toReachBlock: to?.0, withDirection: to?.1, reservedBlockBehavior: rbb)
         
         if let path = path {
             route.lastMessage = nil

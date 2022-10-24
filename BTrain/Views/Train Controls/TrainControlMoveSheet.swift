@@ -134,7 +134,7 @@ struct TrainControlMoveSheet: View {
     func evaluateBestRoute(fromBlockId: Identifier<Block>?, forDirection: Direction?) {
         if let block = layout.block(for: fromBlockId) {
             do {
-                let result = try layout.bestRoute(ofTrain: train, toReachBlock: block, withDirection: forDirection, reservedBlockBehavior: .ignoreReserved)
+                let result = try layout.bestPath(ofTrain: train, toReachBlock: block, withDirection: forDirection, reservedBlockBehavior: .ignoreReserved)
                 applySuggestedRoute(result)
                 if forDirection == nil {
                     applySuggestedDirection(result)

@@ -113,37 +113,6 @@ class LayoutErrorTests: XCTestCase {
         }
     }
 
-    func testTrainNotAssignedToABlock() {
-        do {
-            train0.blockId = nil
-            _ = try layout.directionOfTrainInBlock(train0)
-            XCTFail("Must throw an exception")
-        } catch {
-            XCTAssertEqual(error.localizedDescription, "Train lw1 does not have any assigned block (train.blockId is nil)")
-        }
-    }
-    
-    func testTrainNotFoundInBlock() {
-        do {
-            train0.blockId = b1.id
-            _ = try layout.directionOfTrainInBlock(train0)
-            XCTFail("Must throw an exception")
-        } catch {
-            XCTAssertEqual(error.localizedDescription, "Block b1 does not have any train assigned to it (TrainInstance is nil)")
-        }
-    }
-
-    func testTrainInBlockDoesNotMatch() {
-        do {
-            train0.blockId = b1.id
-            b1.trainInstance = .init(train1.id, .next)
-            _ = try layout.directionOfTrainInBlock(train0)
-            XCTFail("Must throw an exception")
-        } catch {
-            XCTAssertEqual(error.localizedDescription, "Block b1 has another train (lw2) than lw1 assigned to it")
-        }
-    }
-    
     func testRouteNotFound() {
         do {
             let doc = LayoutDocument(layout: layout)

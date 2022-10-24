@@ -190,40 +190,6 @@ extension Layout: Graph {
         
 }
 
-extension Layout {
-        
-    var pathFinderOverflowLimit: Int {
-        (turnouts.count + blocks.count) * 4
-    }
-        
-    func path(for train: Train, from: (Block, Direction), to: (Block, Direction?)?, pathFinder: PathFinder) -> GraphPath? {
-        // Note: when direction is `next`, it means we are leaving the starting element from its `nextSocket`
-        let fromElement = GraphPathElement.starting(from.0, from.1 == .next ? Block.nextSocket : Block.previousSocket)
-        let toElement: GraphPathElement?
-        if let to = to {
-            // The destination direction is optional. If missing, the algorithm is going to try to reach the
-            // destination block from both sides.
-            if let direction = to.1 {
-                // Note: when direction is `next`, it means we are entering the last block from its `previousSocket`
-                toElement = .ending(to.0, direction == .next ? Block.previousSocket : Block.nextSocket)
-            } else {
-                toElement = .ending(to.0, nil)
-            }
-        } else {
-            toElement = nil
-        }
-        return pathFinder.path(graph: self, from: fromElement, to: toElement)
-    }
- 
-    func shortestPath(for train: Train, from: (Block, Direction), to: (Block, Direction), pathFinder: PathFinder) throws -> GraphPath? {
-        let fromElement = from.1 == .next ? from.0.elementDirectionNext:from.0.elementDirectionPrevious
-        let toElement = to.1 == .next ? to.0.elementDirectionNext:to.0.elementDirectionPrevious
-
-        return try pathFinder.shortestPath(graph: self, from: fromElement, to: toElement)
-    }
-    
-}
-
 extension Array where Element == GraphPathElement {
     
     var toBlockSteps: [RouteItem] {
