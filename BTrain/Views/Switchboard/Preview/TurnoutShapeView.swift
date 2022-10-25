@@ -19,6 +19,11 @@ struct TurnoutShapeView: View {
     let requestedState: Turnout.State
     let actualState: Turnout.State
     let shapeContext: ShapeContext
+    
+    /// True if a reservation should be used to simulate how a specific branch of
+    /// the turnout is highlighted to show the path of the reservation.
+    let reservation: Bool
+    
     var name: String = ""
     var rotation: Double = 0
     
@@ -32,6 +37,15 @@ struct TurnoutShapeView: View {
         t.actualState = actualState
         t.center = .init(x: viewSize.width/2, y: viewSize.height/2)
         t.rotationAngle = rotation
+        
+        if reservation {
+            let sockets = Turnout.sockets(forState: requestedState, category: category)
+            if sockets.count == 2 {
+                // Initialize the reservation using the sockets that are available
+                // given the category and state of the turnout.
+                t.reserved = .init(train: .init(uuid: "t1"), sockets: .init(fromSocketId: sockets[0], toSocketId: sockets[1]))
+            }
+        }
         return t
     }
     
@@ -61,9 +75,16 @@ struct TurnoutShapeView_Previews: PreviewProvider {
             ForEach(Turnout.Category.allCases, id:\.self) { category in
                 HStack {
                     ForEach(Turnout.states(for: category)) { state in
-                        TurnoutShapeView(layout: layout, category: category, requestedState: state, actualState: Turnout.defaultState(for: category), shapeContext: context)
-                        if state != Turnout.defaultState(for: category) {
-                            TurnoutShapeView(layout: layout, category: category, requestedState: state, actualState: state, shapeContext: context)
+                        VStack {
+                            Text(category.rawValue)
+                            Text(state.rawValue)
+                        }
+
+                        VStack {
+                            TurnoutShapeView(layout: layout, category: category, requestedState: state, actualState: Turnout.defaultState(for: category), shapeContext: context, reservation: true)
+                            if state != Turnout.defaultState(for: category) {
+                                TurnoutShapeView(layout: layout, category: category, requestedState: state, actualState: state, shapeContext: context, reservation: true)
+                            }
                         }
                     }
                 }

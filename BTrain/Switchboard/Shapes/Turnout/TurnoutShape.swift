@@ -167,7 +167,16 @@ final class TurnoutShape: Shape, DraggableShape, ConnectableShape {
         return path
     }
     
-    func activePath(for state: Turnout.State) -> CGPath {
+    private func reservationExists(between socket1: Int, and socket2: Int) -> Bool {
+        if let sockets = turnout.reserved?.sockets {
+            return sockets.fromSocketId == socket1 && sockets.toSocketId == socket2 ||
+            sockets.fromSocketId == socket2 && sockets.toSocketId == socket1
+        } else {
+            return false
+        }
+    }
+    
+    func activePath(for state: Turnout.State, ignoreReservation: Bool) -> CGPath {
         let path = CGMutablePath()
         
         let sp = socketPoints
@@ -176,12 +185,16 @@ final class TurnoutShape: Shape, DraggableShape, ConnectableShape {
         case .singleLeft, .singleRight:
             switch state {
             case .straight:
-                path.move(to: sp[0])
-                path.addLine(to: sp[1])
+                if ignoreReservation || reservationExists(between: 0, and: 1) {
+                    path.move(to: sp[0])
+                    path.addLine(to: sp[1])
+                }
             case .branchLeft, .branchRight:
-                path.move(to: sp[0])
-                path.addLine(to: center)
-                path.addLine(to: sp[2])
+                if ignoreReservation || reservationExists(between: 0, and: 2) {
+                    path.move(to: sp[0])
+                    path.addLine(to: center)
+                    path.addLine(to: sp[2])
+                }
             default:
                 break
             }
@@ -189,18 +202,26 @@ final class TurnoutShape: Shape, DraggableShape, ConnectableShape {
         case .doubleSlip:
             switch state {
             case .straight:
-                path.move(to: sp[0])
-                path.addLine(to: sp[1])
+                if ignoreReservation || reservationExists(between: 0, and: 1) {
+                    path.move(to: sp[0])
+                    path.addLine(to: sp[1])
+                }
                 
-                path.move(to: sp[2])
-                path.addLine(to: sp[3])
+                if ignoreReservation || reservationExists(between: 2, and: 3) {
+                    path.move(to: sp[2])
+                    path.addLine(to: sp[3])
+                }
 
             case .branch:
-                path.move(to: sp[0])
-                path.addLine(to: sp[3])
+                if ignoreReservation || reservationExists(between: 0, and: 3) {
+                    path.move(to: sp[0])
+                    path.addLine(to: sp[3])
+                }
 
-                path.move(to: sp[2])
-                path.addLine(to: sp[1])
+                if ignoreReservation || reservationExists(between: 2, and: 1) {
+                    path.move(to: sp[2])
+                    path.addLine(to: sp[1])
+                }
 
             default:
                 break
@@ -209,19 +230,27 @@ final class TurnoutShape: Shape, DraggableShape, ConnectableShape {
         case .doubleSlip2:
             switch state {
             case .straight01:
-                path.move(to: sp[0])
-                path.addLine(to: sp[1])
+                if ignoreReservation || reservationExists(between: 0, and: 1) {
+                    path.move(to: sp[0])
+                    path.addLine(to: sp[1])
+                }
             case .straight23:
-                path.move(to: sp[2])
-                path.addLine(to: sp[3])
+                if ignoreReservation || reservationExists(between: 2, and: 3) {
+                    path.move(to: sp[2])
+                    path.addLine(to: sp[3])
+                }
             case .branch03:
-                path.move(to: sp[0])
-                path.addLine(to: center)
-                path.addLine(to: sp[3])
+                if ignoreReservation || reservationExists(between: 0, and: 3) {
+                    path.move(to: sp[0])
+                    path.addLine(to: center)
+                    path.addLine(to: sp[3])
+                }
             case .branch21:
-                path.move(to: sp[2])
-                path.addLine(to: center)
-                path.addLine(to: sp[1])
+                if ignoreReservation || reservationExists(between: 2, and: 1) {
+                    path.move(to: sp[2])
+                    path.addLine(to: center)
+                    path.addLine(to: sp[1])
+                }
             default:
                 break
             }
@@ -229,16 +258,22 @@ final class TurnoutShape: Shape, DraggableShape, ConnectableShape {
         case .threeWay:
             switch state {
             case .straight:
-                path.move(to: sp[0])
-                path.addLine(to: sp[1])
+                if ignoreReservation || reservationExists(between: 0, and: 1) {
+                    path.move(to: sp[0])
+                    path.addLine(to: sp[1])
+                }
             case .branchLeft:
-                path.move(to: sp[0])
-                path.addLine(to: center)
-                path.addLine(to: sp[3])
+                if ignoreReservation || reservationExists(between: 0, and: 3) {
+                    path.move(to: sp[0])
+                    path.addLine(to: center)
+                    path.addLine(to: sp[3])
+                }
             case .branchRight:
-                path.move(to: sp[0])
-                path.addLine(to: center)
-                path.addLine(to: sp[2])
+                if ignoreReservation || reservationExists(between: 0, and: 2) {
+                    path.move(to: sp[0])
+                    path.addLine(to: center)
+                    path.addLine(to: sp[2])
+                }
             default:
                 break
             }
@@ -276,31 +311,40 @@ final class TurnoutShape: Shape, DraggableShape, ConnectableShape {
     func draw(ctx: CGContext) {
         ctx.with {
             let lineWidth = selected ? shapeContext.selectedTrackWidth : shapeContext.trackWidth
-
+            ctx.setStrokeColor(shapeContext.color.copy(alpha: 0.5)!)
+            ctx.setLineWidth(lineWidth)
+            ctx.addPath(path)
+            ctx.drawPath(using: .stroke)
+            
             if turnout.enabled {
-                ctx.setStrokeColor(shapeContext.color.copy(alpha: 0.5)!)
-                ctx.setLineWidth(lineWidth)
-                ctx.addPath(path)
-                ctx.drawPath(using: .stroke)
-                
-                ctx.setStrokeColor(shapeContext.pathColor(reserved != nil, train: turnout.train != nil))
-                ctx.setLineWidth(shapeContext.trackWidth)
-                ctx.addPath(activePath(for: turnout.actualState))
-                ctx.drawPath(using: .stroke)
+                if !turnout.settled && reserved != nil {
+                    // If there is a reservation BUT the turnout hasn't yet settled, draw
+                    // the current state with the color of the turnout without reservation nor train
+                    // so the user sees its state. The requestedState will be displayed with the reservation or train coloring.
+                    ctx.setStrokeColor(shapeContext.pathColor(false, train: false))
+                    ctx.setLineWidth(shapeContext.trackWidth)
+                    ctx.addPath(activePath(for: turnout.actualState, ignoreReservation: true))
+                    ctx.drawPath(using: .stroke)
+                } else {
+                    ctx.setStrokeColor(shapeContext.pathColor(false, train: false))
+                    ctx.setLineWidth(shapeContext.trackWidth)
+                    ctx.addPath(activePath(for: turnout.actualState, ignoreReservation: true))
+                    ctx.drawPath(using: .stroke)
+                    
+                    ctx.setStrokeColor(shapeContext.pathColor(reserved != nil, train: turnout.train != nil))
+                    ctx.setLineWidth(shapeContext.trackWidth)
+                    ctx.addPath(activePath(for: turnout.actualState, ignoreReservation: reserved == nil))
+                    ctx.drawPath(using: .stroke)
+                }
 
                 if !turnout.settled {
                     ctx.setLineDash(phase: 0, lengths: [2, 2])
 
                     ctx.setStrokeColor(shapeContext.pathColor(reserved != nil, train: turnout.train != nil))
                     ctx.setLineWidth(shapeContext.trackWidth)
-                    ctx.addPath(activePath(for: turnout.requestedState))
+                    ctx.addPath(activePath(for: turnout.requestedState, ignoreReservation: reserved == nil))
                     ctx.drawPath(using: .stroke)
                 }
-            } else {
-                ctx.setStrokeColor(shapeContext.color.copy(alpha: 0.5)!)
-                ctx.setLineWidth(lineWidth)
-                ctx.addPath(path)
-                ctx.drawPath(using: .stroke)
             }
         }
                 

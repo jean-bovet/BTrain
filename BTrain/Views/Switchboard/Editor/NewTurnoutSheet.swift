@@ -34,7 +34,7 @@ struct NewTurnoutSheet: View {
                             Spacer()
                             HStack {
                                 ForEach(Turnout.states(for: category)) { state in
-                                    TurnoutShapeView(layout: layout, category: category, requestedState: state, actualState: state, shapeContext: context)
+                                    TurnoutShapeView(layout: layout, category: category, requestedState: state, actualState: state, shapeContext: context, reservation: false)
                                 }
                             }
                         }

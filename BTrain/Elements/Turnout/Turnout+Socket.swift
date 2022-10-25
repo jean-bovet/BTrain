@@ -197,4 +197,70 @@ extension Turnout {
         }
     }
     
+    /// Returns the sockets that participate in the specific turnout state and turnout category.
+    /// - Parameters:
+    ///   - state: the turnout state
+    ///   - category: the turnout category
+    /// - Returns: an array of sockets
+    static func sockets(forState state: State, category: Category) -> [Int] {
+        switch category {
+        case .singleLeft:
+            switch state {
+            case .branchLeft:
+                return [0, 2]
+            case .straight:
+                return [0, 1]
+            default:
+                return []
+            }
+            
+        case .singleRight:
+            switch state {
+            case .branchRight:
+                return [0, 2]
+            case .straight:
+                return [0, 1]
+            default:
+                return []
+            }
+
+        case .threeWay:
+            switch state {
+            case .branchLeft:
+                return [0, 3]
+            case .branchRight:
+                return [0, 2]
+            case .straight:
+                return [0, 1]
+            default:
+                return []
+            }
+
+        case .doubleSlip:
+            switch state {
+            case .branch:
+                return [0, 3]
+            case .straight:
+                return [0, 1]
+            default:
+                return []
+            }
+
+        case .doubleSlip2:
+            switch state {
+            case .branch03:
+                return [0, 3]
+            case .branch21:
+                return [2, 1]
+            case .straight01:
+                return [0, 1]
+            case .straight23:
+                return [2, 3]
+            default:
+                return []
+            }
+
+        }
+    }
+    
 }

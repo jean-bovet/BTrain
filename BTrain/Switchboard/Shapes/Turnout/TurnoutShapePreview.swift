@@ -23,8 +23,18 @@ struct TurnoutShapePreview: View {
     
     var body: some View {
         VStack {
-            ForEach(0..<8) { index in
-                TurnoutShapeView(layout: layout, category: .singleLeft, requestedState: .straight, actualState: .straight, shapeContext: context, name: "foo", rotation: .pi/4 * Double(index))
+            ForEach(Turnout.Category.allCases, id:\.self) { category in
+                HStack {
+                    ForEach(0..<8) { index in
+                        TurnoutShapeView(layout: layout,
+                                         category: category,
+                                         requestedState: Turnout.states(for: category)[0],
+                                         actualState: Turnout.states(for: category)[1],
+                                         shapeContext: context, reservation: false,
+                                         name: "foo",
+                                         rotation: .pi/4 * Double(index))
+                    }
+                }
             }
         }
     }
