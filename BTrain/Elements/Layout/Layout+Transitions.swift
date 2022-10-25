@@ -44,21 +44,11 @@ extension Layout {
         guard let b2 = self.block(for: nextBlock) else {
             throw LayoutError.blockNotFound(blockId: nextBlock)
         }
-        return try transitions(from: b1, to: b2, direction: direction)
+        return try transitions(from: LayoutVector(block: b1, direction: direction), to: LayoutVector(block: b2, direction: nil))
     }
     
-    func transitions(from fromBlock: Block, to nextBlock: Block, direction: Direction) throws -> [ITransition] {
-        if direction == .next {
-            // If the train travels in the natural direction of the fromBlock,
-            // returns all the transitions that starts at the "next" end
-            // of the fromBlock.
-            return try transitions(from: fromBlock.next, to: nextBlock.any)
-        } else {
-            // If the train travels in the opposite direction of the natural direction
-            // of the fromBlock, returns all the transitions that starts at the "previous"
-            // end of the fromBlock.
-            return try transitions(from: fromBlock.previous, to: nextBlock.any)
-        }
+    func transitions(from fromBlock: LayoutVector, to nextBlock: LayoutVector) throws -> [ITransition] {
+        return try transitions(from: fromBlock.exitSocket, to: nextBlock.entrySocket)
     }
 
     // Returns the transition from the specified socket. There is either no transition
@@ -141,16 +131,27 @@ extension Layout {
             }
             return []
         } else if let blockId = transition.b.block {
-            if blockId == to.block {
-                // If the transition ends at the block specified in `to` socket,
-                // returns the transition now.
-                return [transition]
+            if let toSocketId = to.socketId {
+                // If the destination socket is specified, check that the transition
+                // is actually using that socket id. Otherwise, it means that the transition
+                // is entered the block from the "wrong" side and should be ignored.
+                if blockId == to.block && transition.b.socketId == toSocketId {
+                    return [transition]
+                } else {
+                    return []
+                }
             } else {
-                // If the block does not match the one in the transition,
-                // let's stop here the search. In the future, we might want
-                // to continue the search past this block until we find
-                // the one we want.
-                return []
+                if blockId == to.block {
+                    // If the transition ends at the block specified in `to` socket,
+                    // returns the transition now.
+                    return [transition]
+                } else {
+                    // If the block does not match the one in the transition,
+                    // let's stop here the search. In the future, we might want
+                    // to continue the search past this block until we find
+                    // the one we want.
+                    return []
+                }
             }
         } else {
             throw LayoutError.invalidTransition(transition: transition)

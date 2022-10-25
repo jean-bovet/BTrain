@@ -20,7 +20,7 @@ final class LayoutASCIIProducer {
         self.layout = layout
     }
     
-    func stringFrom(route: Route, trainId: Identifier<Train>) throws -> String {
+    func stringFrom(route: Route, trainId: Identifier<Train>, useBlockName: Bool = false, useTurnoutName: Bool = false) throws -> String {
         var text = ""
                 
         guard let train = layout.train(for: trainId) else {
@@ -36,10 +36,10 @@ final class LayoutASCIIProducer {
                     switch step {
                     case .block(let stepBlock):
                         addSpace(&text)
-                        try generateBlock(step: stepBlock, text: &text)
+                        try generateBlock(step: stepBlock, useBlockName: useBlockName, text: &text)
                     case .turnout(let stepTurnout):
                         addSpace(&text)
-                        generateTurnout(step: stepTurnout, text: &text)
+                        generateTurnout(step: stepTurnout, useTurnoutName: useTurnoutName, text: &text)
                     }
                 }
             }
@@ -50,7 +50,7 @@ final class LayoutASCIIProducer {
         }        
     }
 
-    private func generateBlock(step: ResolvedRouteItemBlock, text: inout String) throws {
+    private func generateBlock(step: ResolvedRouteItemBlock, useBlockName: Bool, text: inout String) throws {
         let block = step.block
         
         let reverse = step.direction == .previous
@@ -64,14 +64,22 @@ final class LayoutASCIIProducer {
                 text += "r\(reserved.trainId)"
                 text += "{"
             }
-            text += "\(block.id)"
+            if useBlockName {
+                text += "\(block.name)"
+            } else {
+                text += "\(block.id)"
+            }
         case .free, .sidingNext, .sidingPrevious:
             text += "["
             if let reserved = block.reservation {
                 text += "r\(reserved.trainId)"
                 text += "["
             }
-            text += "\(block.id)"
+            if useBlockName {
+                text += "\(block.name)"
+            } else {
+                text += "\(block.id)"
+            }
         }
                     
         // 0 | 1 | 2
@@ -133,7 +141,7 @@ final class LayoutASCIIProducer {
         }
     }
     
-    func generateTurnout(step: ResolvedRouteItemTurnout, text: inout String) {
+    func generateTurnout(step: ResolvedRouteItemTurnout, useTurnoutName: Bool, text: inout String) {
         let turnout = step.turnout
         
         text += "<"
@@ -143,7 +151,11 @@ final class LayoutASCIIProducer {
         }
 
         // <t0{sl}(0,1),s>
-        text += "\(turnout.id)"
+        if useTurnoutName {
+            text += "\(turnout.name)"
+        } else {
+            text += "\(turnout.id)"
+        }
         text += "{\(turnoutType(turnout))}"
   
         let entrySocket = step.entrySocketId

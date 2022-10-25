@@ -23,6 +23,12 @@ extension Layout {
         }))
     }
     
+    func route(named name: String) -> Route {
+        routes.first {
+            $0.name == name
+        }!
+    }
+
     func block(_ uuid: String) -> Block {
         block(for: Identifier<Block>(uuid: uuid))!
     }

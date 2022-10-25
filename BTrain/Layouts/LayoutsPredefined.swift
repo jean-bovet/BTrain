@@ -224,13 +224,24 @@ final class LayoutComplexLoop: LayoutCreating {
     
 }
 
-// This layout represent an actual physical layout used for real-world testing
+// This layout represents an actual physical layout used for real-world testing
 final class LayoutComplex: LayoutCreating {
     
     static let id = Identifier<Layout>(uuid: "Complex Layout")
 
     func newLayout() -> Layout {
         LayoutFactory.layoutFromBundle(named: LayoutComplex.id.uuid)
+    }
+    
+}
+
+// This layout represents an actual physical layout with hidden station used for real-world testing
+final class LayoutComplexWithHiddenStation: LayoutCreating {
+    
+    static let id = Identifier<Layout>(uuid: "Complex Layout with Hidden Station")
+
+    func newLayout() -> Layout {
+        LayoutFactory.layoutFromBundle(named: LayoutComplexWithHiddenStation.id.uuid)
     }
     
 }

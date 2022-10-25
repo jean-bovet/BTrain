@@ -27,7 +27,7 @@ final class LayoutAsserter {
         self.layoutController = layoutController
     }
     
-    func assert(_ strings: [String], trains: [Train], drainAll: Bool = true) throws {
+    func assert(_ strings: [String], trains: [Train], drainAll: Bool = true, expectRuntimeError: Bool = false) throws {
         let expectedLayout = try LayoutFactory.layoutFrom(strings)
         let expectedTrains = Array(expectedLayout.trains)
         
@@ -47,6 +47,13 @@ final class LayoutAsserter {
         // Then run the controller to update the real layout states
         if drainAll {
             layoutController.waitUntilSettled()
+        }
+
+        // Ensure there is no generic runtime error
+        if expectRuntimeError {
+            XCTAssertNotNil(layout.runtimeError, "A layout runtime error is expected")
+        } else {
+            XCTAssertNil(layout.runtimeError, "The layout runtime encoutered an error")
         }
 
         // Now assert the routes to see if they match the real layout

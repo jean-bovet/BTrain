@@ -301,7 +301,6 @@ final class TurnoutShape: Shape, DraggableShape, ConnectableShape {
                 ctx.setLineWidth(lineWidth)
                 ctx.addPath(path)
                 ctx.drawPath(using: .stroke)
-
             }
         }
                 

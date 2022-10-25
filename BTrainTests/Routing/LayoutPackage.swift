@@ -110,11 +110,11 @@ final class Package {
         toggle(f2)
     }
 
-    func assert(_ r1: String, _ leadingBlocks: [String]? = nil) throws {
+    func assert(_ r1: String, _ leadingBlocks: [String]? = nil, expectRuntimeError: Bool = false) throws {
         // Drain all events when the interface is running. If the interface is on pause,
         // do not drain because the drain will never exits as the interface never executes.
         let drainAll = digitalController.running
-        try asserter.assert([r1], trains: trains, drainAll: drainAll)
+        try asserter.assert([r1], trains: trains, drainAll: drainAll, expectRuntimeError: expectRuntimeError)
         if let leadingBlocks = leadingBlocks {
             try assertLeadingBlocks(leadingBlocks)
         }
@@ -128,4 +128,8 @@ final class Package {
         XCTAssertEqual(train.leading.blocks.toStrings(), blockNames)
     }
     
+    func printASCII() throws {
+        let producer = LayoutASCIIProducer(layout: layout)
+        print(try producer.stringFrom(route: route, trainId: train.id, useBlockName: true, useTurnoutName: true))
+    }
 }

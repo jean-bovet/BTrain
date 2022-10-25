@@ -79,8 +79,16 @@ extension Layout {
         guard let direction = fromBlock.trainInstance?.direction else {
             throw LayoutError.trainNotFoundInBlock(blockId: fromBlock.id)
         }
+
+        // The direction in which to enter the next block can be determined
+        // by the reservation of the block, if available. Otherwise,
+        // the algorithm will try both directions.
+        let nextDirection = nextBlock.reservation?.direction
         
-        let transitions = try transitions(from: fromBlock, to: nextBlock, direction: direction)
+        let transitions = try transitions(from: LayoutVector(block: fromBlock, direction: direction),
+                                          to: LayoutVector(block: nextBlock, direction: nextDirection))
+        
+        // Note: grab the last transition which is the one that leads to the `nextBlock`.
         guard let lastTransition = transitions.last else {
             throw LayoutError.noTransition(fromBlockId: fromBlock.id, toBlockId: nextBlock.id)
         }

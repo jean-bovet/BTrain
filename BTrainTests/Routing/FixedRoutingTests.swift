@@ -421,7 +421,7 @@ class FixedRoutingTests: BTTestCase {
         
         // Train should stop because the next block b2's feedback is triggered but the train is not at the end of block b1
         // Note: the reservation are kept when stopping with an unexpected feedback
-        try p.assert("r1: {r1{b1 🔴🚂1 ≏ ≏ }} <r1<t0>> [r1[b2 ≡ ≏ ]] <t1(0,2)> [b3 ≏ ≏ ] <r1<t0(2,0)>> !{r1{b1 ≏ ≏ }}")
+        try p.assert("r1: {r1{b1 🔴🚂1 ≏ ≏ }} <r1<t0>> [r1[b2 ≡ ≏ ]] <t1(0,2)> [b3 ≏ ≏ ] <r1<t0(2,0)>> !{r1{b1 ≏ ≏ }}", expectRuntimeError: true)
         XCTAssertNotNil(layout.runtimeError)
     }
 
@@ -476,7 +476,7 @@ class FixedRoutingTests: BTTestCase {
         try p.assert("r1: {r1{b1 🟢🚂1 ≏ ≏ }} <r1<t0>> [r1[b2 ≏ ≏ ]] <t1(0,2)> [b3 ≏ ≏ ] <r1<t0(2,0)>> !{r1{b1 ≏ ≏ }}")
         // The train should stop because the next block feedback is triggered but it is not the one expected
         // to be triggered given the direction of travel of the train
-        try p.assert("r1: {r1{b1 🔴🚂1 ≏ ≏ }} <r1<t0>> [r1[b2 ≏ ≡ ]] <t1(0,2)> [b3 ≏ ≏ ] <r1<t0(2,0)>> !{r1{b1 ≏ ≏ }}")
+        try p.assert("r1: {r1{b1 🔴🚂1 ≏ ≏ }} <r1<t0>> [r1[b2 ≏ ≡ ]] <t1(0,2)> [b3 ≏ ≏ ] <r1<t0(2,0)>> !{r1{b1 ≏ ≏ }}", expectRuntimeError: true)
         XCTAssertNotNil(layout.runtimeError)
     }
 
@@ -923,6 +923,37 @@ class FixedRoutingTests: BTTestCase {
         try p.assert("r1: |[A ≏ ≏ ] <AB> [B ≏ ≏ ] [r0[C 💺0 ≏ 💺0 ≏ 💺0]] [r0[D 💺0 ≏ 💺0 ≡ 🔵🚂0 ]] <r0<DE(1,0)>> [r0[E ≏ ≏ ]]|")
         try p.assert("r1: |[A ≏ ≏ ] <AB> [B ≏ ≏ ] [C ≏ ≏ ] [r0[D 💺0 ≏ 💺0 ≏ 💺0 ]] <r0<DE(1,0)>> [r0[E 💺0 ≡ 🟡🚂0 ≏ ]]|")
         try p.assert("r1: |[A ≏ ≏ ] <AB> [B ≏ ≏ ] [C ≏ ≏ ] [D ≏ ≏ ] <DE(1,0)> [r0[E ≏ 💺0 ≡ 🔴🚂0 ]]|")
+    }
+    
+    
+    /// Ensure the next feedback is properly determined when a loop is involved where there are more than one transition
+    /// possible to reach the block that does the loop. In this case, we are using the complex layout with hidden station
+    /// to run a train from (s3, previous) to (s3, next) via the block (L1, next)) > (L3, next) > (L1, previous).
+    func testRouteWithLoop() throws {
+        let layout = LayoutComplexWithHiddenStation().newLayout()
+        layout.removeAllTrains()
+
+        let train = layout.trains[0]
+        let s3 = layout.block(named: "S3")
+        
+        let route = layout.route(named: "testRouteWithLoop")
+        
+        let p = Package(layout: layout)
+        try p.prepare(routeID: route.id.uuid, trainID: train.id.uuid, fromBlockId: s3.id.uuid, position: .start, direction: .previous)
+        
+        train.locomotiveLength = 22
+        train.wagonsLength = 0
+        layout.strictRouteFeedbackStrategy = false
+        
+        // Tip: use `try p.printASCII()` to get the inital ASCII representation
+        try p.assert("r6: !{r16390{S3 🔴🚂16390 ≏ ≏ ≏ }} <T15{ds}(3,2),s> <T18{sr}(0,2),r> [L1 ≏ ≏ ] <T19{sl}(1,0),s> <T20{sl}(1,0),s> <T22{sr}(0,2),r> [L3 ≏ ≏ ] <T21{sr}(2,0),r> <T22{sr}(1,0),r> <T20{sl}(0,1),s> <T19{sl}(0,1),s> ![L1 ≏ ≏ ] <T18{sr}(2,0),r> <T15{ds}(2,3),s> {r16390{S3 ≏ ≏ ≏ 🔴🚂16390 }}")
+
+        try p.start()
+        
+        try p.assert("r6: !{r16390{S3 🔵🚂16390 ≏ ≏ ≏ }} <r16390<T15{ds}(3,2),s>> <r16390<T18{sr}(0,2),r>> [r16390[L1 ≏ ≏ ]] <r16390<T19{sl}(1,0),s>> <r16390<T20{sl}(1,0),s>> <r16390<T22{sr}(0,2),r>> [r16390[L3 ≏ ≏ ]] <T21{sr}(2,0),r> <r16390<T22{sr}(1,0),r>> <r16390<T20{sl}(0,1),s>> <r16390<T19{sl}(0,1),s>> ![r16390[L1 ≏ ≏ ]] <r16390<T18{sr}(2,0),r>> <r16390<T15{ds}(2,3),s>> {r16390{S3 ≏ ≏ ≏ 🔵🚂16390 }}")
+        try p.assert("r6: !{S3 ≏ ≏ ≏ } <T15{ds}(3,2),s> <r16390<T18{sr}(0,2),r>> [r16390[L1 ≡ 🔵🚂16390 ≏ ]] <r16390<T19{sl}(1,0),s>> <r16390<T20{sl}(1,0),s>> <r16390<T22{sr}(0,2),r>> [r16390[L3 ≏ ≏ ]] <T21{sr}(2,0),r> <r16390<T22{sr}(1,0),r>> <r16390<T20{sl}(0,1),s>> <r16390<T19{sl}(0,1),s>> ![r16390[L1 ≏ 🔵🚂16390 ≡ ]] <r16390<T18{sr}(2,0),r>> <T15{ds}(2,3),s> {S3 ≏ ≏ ≏ }")
+        
+        try p.assert("r6: !{S3 ≏ ≏ ≏ } <T15{ds}(3,2),s> <T18{sr}(0,2),r> [L1 ≏ ≏ ] <T19{sl}(1,0),s> <T20{sl}(1,0),s> <r16390<T22{sr}(0,2),r>> [r16390[L3 ≡ 🟡🚂16390 ≏ ]] <T21{sr}(2,0),r> <r16390<T22{sr}(1,0),r>> <T20{sl}(0,1),s> <T19{sl}(0,1),s> ![L1 ≏ ≏ ] <T18{sr}(2,0),r> <T15{ds}(2,3),s> {S3 ≏ ≏ ≏ }")
     }
     
     func testASCIIProducer() throws {

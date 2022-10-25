@@ -185,7 +185,7 @@ extension Layout {
             throw LayoutError.blockNotFound(blockId: toBlockNotIncluded)
         }
 
-        let transitions = try self.transitions(from: b1, to: b2, direction: direction)
+        let transitions = try self.transitions(from: LayoutVector(block: b1, direction: direction), to: LayoutVector(block: b2, direction: nil))
         if transitions.count > 0 {
             for transition in transitions {
                 transition.reserved = nil
