@@ -74,27 +74,24 @@ extension Layout {
                                                  stopAtFirstBlock: false,
                                                  relaxed: false)
         
-        let settings = PathFinder.Settings(verbose: SettingsKeys.bool(forKey: SettingsKeys.logRoutingResolutionSteps),
-                                           random: automaticRouteRandom,
-                                           overflow: pathFinderOverflowLimit)
-        let pf = PathFinder(constraints: constraints, settings: settings)
-        
+        let verbose = SettingsKeys.bool(forKey: SettingsKeys.logRoutingResolutionSteps)
+
         guard let fromBlock = self.block(for: train.blockId) else {
             return nil
         }
         
         if let toBlock = toBlock {
             if shortestPath {
-                return try self.shortestPath(for: train, from: (fromBlock, fromDirection), to: (toBlock, toDirection), pathFinder: pf)
+                return try self.shortestPath(for: train, from: (fromBlock, fromDirection), to: (toBlock, toDirection), constraints: constraints, verbose: verbose)
             } else {
-                return path(for: train, from: (fromBlock, fromDirection), to: (toBlock, toDirection), pathFinder: pf)
+                return path(for: train, from: (fromBlock, fromDirection), to: (toBlock, toDirection), constraints: constraints, verbose: verbose)
             }
         } else {
-            return path(for: train, from: (fromBlock, fromDirection), to: nil, pathFinder: pf)
+            return path(for: train, from: (fromBlock, fromDirection), to: nil, constraints: constraints, verbose: verbose)
         }
     }
     
-    private func path(for train: Train, from: (Block, Direction), to: (Block, Direction)?, pathFinder: PathFinder) -> GraphPath? {
+    private func path(for train: Train, from: (Block, Direction), to: (Block, Direction)?, constraints: PathFinder.Constraints, verbose: Bool) -> GraphPath? {
         // Note: when direction is `next`, it means we are leaving the starting element from its `nextSocket`
         let fromElement = GraphPathElement.starting(from.0, from.1 == .next ? Block.nextSocket : Block.previousSocket)
         let toElement: GraphPathElement?
@@ -104,14 +101,19 @@ extension Layout {
         } else {
             toElement = nil
         }
-        return pathFinder.path(graph: self, from: fromElement, to: toElement)
+        
+        let settings = PathFinder.Settings(verbose: verbose,
+                                           random: automaticRouteRandom,
+                                           overflow: pathFinderOverflowLimit)
+        let pf = PathFinder(constraints: constraints, settings: settings)
+        return pf.path(graph: self, from: fromElement, to: toElement)
     }
  
-    private func shortestPath(for train: Train, from: (Block, Direction), to: (Block, Direction), pathFinder: PathFinder) throws -> GraphPath? {
+    private func shortestPath(for train: Train, from: (Block, Direction), to: (Block, Direction), constraints: PathFinder.Constraints, verbose: Bool) throws -> GraphPath? {
         let fromElement = from.1 == .next ? from.0.elementDirectionNext:from.0.elementDirectionPrevious
         let toElement = to.1 == .next ? to.0.elementDirectionNext:to.0.elementDirectionPrevious
 
-        return try pathFinder.shortestPath(graph: self, from: fromElement, to: toElement)
+        return try ShortestPathFinder.shortestPath(graph: self, from: fromElement, to: toElement, constraints: constraints, verbose: verbose)
     }
     
 }

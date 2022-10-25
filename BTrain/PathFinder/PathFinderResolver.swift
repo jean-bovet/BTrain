@@ -173,8 +173,8 @@ struct PathFinderResolver {
         }
     }
     
-    private func resolve(graph: Graph, from: GraphPathElement, to: GraphPathElement) throws -> GraphPath {
-        if let p = try lpf.shortestPath(graph: graph, from: from, to: to) {
+    private func resolve(graph: Graph, from: GraphPathElement, to: GraphPathElement) throws -> GraphPath {        
+        if let p = try ShortestPathFinder.shortestPath(graph: graph, from: from, to: to, constraints: lpf.constraints, verbose: lpf.settings.verbose) {
             return GraphPath(p.elements.dropFirst())
         } else {
             return GraphPath.empty()

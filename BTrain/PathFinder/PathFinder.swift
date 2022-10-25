@@ -69,18 +69,6 @@ struct PathFinder {
         path(graph: graph, from: from, to: to, currentPath: GraphPath([from]))
     }
 
-    /// Returns the shortest path between two path elements in a graph, given the specified constraints and context.
-    ///
-    /// A path element is a node with a specific entry and exit socket defined.
-    /// - Parameters:
-    ///   - graph: the graph
-    ///   - from: the starting element
-    ///   - to: the destination element
-    /// - Returns: the shortest path or nil if no path is found
-    func shortestPath(graph: Graph, from: GraphPathElement, to: GraphPathElement) throws -> GraphPath? {
-        try ShortestPathFinder.shortestPath(graph: graph, from: from, to: to, constraints: constraints, verbose: settings.verbose)
-    }
-    
     /// Resolves an unresolved path by making sure each element is resolved. For example, a station is unresolved
     /// because it contains one or more blocks: it gets resolved by selecting a particular block given the constraints.
     ///
