@@ -211,7 +211,7 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
     }
     
     func turnoutChanged(address: CommandTurnoutAddress, state: UInt8, power: UInt8) {
-        BTLogger.debug("[Simulator] Turnout changed for \(address.address): state \(state), power \(power)")
+        BTLogger.debug("[Simulator] Turnout changed for \(address.address.toHex()): state \(state), power \(power)")
         let message = MarklinCANMessageFactory.accessory(addr: address.actualAddress, state: state, power: power)
         DispatchQueue.main.asyncAfter(deadline: .now() + turnoutSpeed) {
             self.send(message.ack)
