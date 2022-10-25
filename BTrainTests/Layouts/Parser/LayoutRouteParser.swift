@@ -98,7 +98,7 @@ final class LayoutRouteParser {
             if let existingBlock = layout.blocks.first(where: { $0.id == blockID }) {
                 block = existingBlock
                 assert(block.category == category, "The existing block \(blockID) does not match the type defined in the ASCII representation")
-                assert(block.reservation == blockHeader.reserved, "The existing block \(blockID) does not match the reserved type defined in the ASCII representation")
+                assert(block.reservation?.trainId == blockHeader.reserved?.trainId, "The existing block \(blockID) does not match the reserved type defined in the ASCII representation")
                 newBlock = false
             } else {
                 block = Block(name: blockID.uuid)
