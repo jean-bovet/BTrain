@@ -31,8 +31,8 @@ protocol Resolvable: CustomStringConvertible {
 /// leaving all the other blocks unspecified. The role of this algorithm is to find these unspecified blocks
 struct PathFinderResolver {
     
-    /// A reference to the path finding algoritm
-    let lpf: PathFinder
+    /// The settings
+    let settings: PathFinder.Settings
     
     /// The constraints
     let constraints: PathFinder.Constraints
@@ -159,13 +159,12 @@ struct PathFinderResolver {
     }
     
     private func fastResolve(graph: Graph, from: GraphPathElement, to: GraphPathElement) -> GraphPath {
-        let oc = lpf.constraints
-        let pfc = PathFinder.Constraints(layout: oc.layout,
-                                         train: oc.train,
-                                         reservedBlockBehavior: oc.reservedBlockBehavior,
+        let pfc = PathFinder.Constraints(layout: constraints.layout,
+                                         train: constraints.train,
+                                         reservedBlockBehavior: constraints.reservedBlockBehavior,
                                          stopAtFirstBlock: true,
-                                         relaxed: oc.relaxed)
-        let pf = PathFinder(constraints: pfc, settings: lpf.settings)
+                                         relaxed: constraints.relaxed)
+        let pf = PathFinder(constraints: pfc, settings: settings)
         if let p = pf.path(graph: graph, from: from, to: to) {
             return GraphPath(p.elements.dropFirst())
         } else {
@@ -174,7 +173,7 @@ struct PathFinderResolver {
     }
     
     private func resolve(graph: Graph, from: GraphPathElement, to: GraphPathElement) throws -> GraphPath {        
-        if let p = try ShortestPathFinder.shortestPath(graph: graph, from: from, to: to, constraints: lpf.constraints, verbose: lpf.settings.verbose) {
+        if let p = try ShortestPathFinder.shortestPath(graph: graph, from: from, to: to, constraints: constraints, verbose: settings.verbose) {
             return GraphPath(p.elements.dropFirst())
         } else {
             return GraphPath.empty()
