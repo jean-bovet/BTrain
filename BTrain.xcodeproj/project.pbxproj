@@ -101,6 +101,11 @@
 		A744D13B276714A2005C2F37 /* DiagnosticsSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A744D13A276714A2005C2F37 /* DiagnosticsSheet.swift */; };
 		A744FD962909EA5000852283 /* Resolvable.swift in Sources */ = {isa = PBXBuildFile; fileRef = A744FD952909EA5000852283 /* Resolvable.swift */; };
 		A744FD982909EAED00852283 /* RouteItem+Resolvable.swift in Sources */ = {isa = PBXBuildFile; fileRef = A744FD972909EAED00852283 /* RouteItem+Resolvable.swift */; };
+		A744FD9A2909EB7000852283 /* Block+Graph.swift in Sources */ = {isa = PBXBuildFile; fileRef = A744FD992909EB7000852283 /* Block+Graph.swift */; };
+		A744FD9C2909EB9200852283 /* Turnout+Graph.swift in Sources */ = {isa = PBXBuildFile; fileRef = A744FD9B2909EB9200852283 /* Turnout+Graph.swift */; };
+		A744FD9E2909EBB800852283 /* Transition+Graph.swift in Sources */ = {isa = PBXBuildFile; fileRef = A744FD9D2909EBB800852283 /* Transition+Graph.swift */; };
+		A744FDA12909EC2800852283 /* Layout+Graph.swift in Sources */ = {isa = PBXBuildFile; fileRef = A744FDA02909EC2800852283 /* Layout+Graph.swift */; };
+		A744FDA32909EC6C00852283 /* RouteItem+Graph.swift in Sources */ = {isa = PBXBuildFile; fileRef = A744FDA22909EC6C00852283 /* RouteItem+Graph.swift */; };
 		A745C16A282F2199006D16B0 /* TrainReservation.swift in Sources */ = {isa = PBXBuildFile; fileRef = A745C169282F2199006D16B0 /* TrainReservation.swift */; };
 		A74925D028E8D15C00FF39C3 /* TurnoutShapePreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = A74925CF28E8D15C00FF39C3 /* TurnoutShapePreview.swift */; };
 		A74C0E7E275C9E900043FEE5 /* MarklinLocomotiveConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = A74C0E7D275C9E900043FEE5 /* MarklinLocomotiveConfig.swift */; };
@@ -216,7 +221,6 @@
 		A785C089278E59A4002FD538 /* CommandTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = A785C088278E59A4002FD538 /* CommandTypes.swift */; };
 		A78B996227FCC4080021EFE4 /* Graph.swift in Sources */ = {isa = PBXBuildFile; fileRef = A78B996127FCC4080021EFE4 /* Graph.swift */; };
 		A78B996427FD56D80021EFE4 /* GraphTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A78B996327FD56D80021EFE4 /* GraphTests.swift */; };
-		A78B996727FD57B20021EFE4 /* Graph+Elements.swift in Sources */ = {isa = PBXBuildFile; fileRef = A78B996627FD57B20021EFE4 /* Graph+Elements.swift */; };
 		A78B996927FE41A90021EFE4 /* PathFinder.swift in Sources */ = {isa = PBXBuildFile; fileRef = A78B996827FE41A90021EFE4 /* PathFinder.swift */; };
 		A78B996D2800BABB0021EFE4 /* GraphPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = A78B996C2800BABB0021EFE4 /* GraphPath.swift */; };
 		A7907955277D071000771A60 /* CGContext+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7907954277D071000771A60 /* CGContext+Extension.swift */; };
@@ -438,6 +442,11 @@
 		A744D13A276714A2005C2F37 /* DiagnosticsSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiagnosticsSheet.swift; sourceTree = "<group>"; };
 		A744FD952909EA5000852283 /* Resolvable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Resolvable.swift; sourceTree = "<group>"; };
 		A744FD972909EAED00852283 /* RouteItem+Resolvable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RouteItem+Resolvable.swift"; sourceTree = "<group>"; };
+		A744FD992909EB7000852283 /* Block+Graph.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Block+Graph.swift"; sourceTree = "<group>"; };
+		A744FD9B2909EB9200852283 /* Turnout+Graph.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Turnout+Graph.swift"; sourceTree = "<group>"; };
+		A744FD9D2909EBB800852283 /* Transition+Graph.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Transition+Graph.swift"; sourceTree = "<group>"; };
+		A744FDA02909EC2800852283 /* Layout+Graph.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Layout+Graph.swift"; sourceTree = "<group>"; };
+		A744FDA22909EC6C00852283 /* RouteItem+Graph.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RouteItem+Graph.swift"; sourceTree = "<group>"; };
 		A745C169282F2199006D16B0 /* TrainReservation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainReservation.swift; sourceTree = "<group>"; };
 		A74925CF28E8D15C00FF39C3 /* TurnoutShapePreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TurnoutShapePreview.swift; sourceTree = "<group>"; };
 		A74BDD6E282C725800BA7160 /* Routing.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; name = Routing.xctestplan; path = BTrain.xcodeproj/Routing.xctestplan; sourceTree = "<group>"; };
@@ -553,7 +562,6 @@
 		A785C088278E59A4002FD538 /* CommandTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommandTypes.swift; sourceTree = "<group>"; };
 		A78B996127FCC4080021EFE4 /* Graph.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Graph.swift; sourceTree = "<group>"; };
 		A78B996327FD56D80021EFE4 /* GraphTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GraphTests.swift; sourceTree = "<group>"; };
-		A78B996627FD57B20021EFE4 /* Graph+Elements.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Graph+Elements.swift"; sourceTree = "<group>"; };
 		A78B996827FE41A90021EFE4 /* PathFinder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PathFinder.swift; sourceTree = "<group>"; };
 		A78B996C2800BABB0021EFE4 /* GraphPath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GraphPath.swift; sourceTree = "<group>"; };
 		A7907954277D071000771A60 /* CGContext+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CGContext+Extension.swift"; sourceTree = "<group>"; };
@@ -953,6 +961,7 @@
 				A7218082275F0BFC00831998 /* Turnout+Socket.swift */,
 				A7218080275F0BDB00831998 /* Turnout+State.swift */,
 				A798BB4D27AF4477000BB4D1 /* Turnout+Reservation.swift */,
+				A744FD9B2909EB9200852283 /* Turnout+Graph.swift */,
 			);
 			path = Turnout;
 			sourceTree = "<group>";
@@ -1047,6 +1056,15 @@
 			path = Switchboard;
 			sourceTree = "<group>";
 		};
+		A744FD9F2909EBBE00852283 /* Transition */ = {
+			isa = PBXGroup;
+			children = (
+				A74CCC71272A5A18004E58F5 /* Transition.swift */,
+				A744FD9D2909EBB800852283 /* Transition+Graph.swift */,
+			);
+			path = Transition;
+			sourceTree = "<group>";
+		};
 		A74CCC73272A5A1C004E58F5 /* Elements */ = {
 			isa = PBXGroup;
 			children = (
@@ -1054,13 +1072,13 @@
 				A7710E5D277850F000C08150 /* Reservation.swift */,
 				A728183F278E9EDC007BE810 /* Direction.swift */,
 				A7F779CD272B445B00E73275 /* Feedback.swift */,
-				A74CCC71272A5A18004E58F5 /* Transition.swift */,
 				A74F380C281927E10013FD23 /* Station.swift */,
 				A72180842760428E00831998 /* Socket.swift */,
 				A76FD43128FB3C0E00E1A295 /* ControlPoint.swift */,
 				A795A03927B6AE9B00AE90EB /* Element */,
 				A7CA5ECA27965ACF00171398 /* Block */,
 				A73B164B274E1EA50073947D /* Turnout */,
+				A744FD9F2909EBBE00852283 /* Transition */,
 				A785C087278D0EE4002FD538 /* Train */,
 				A76507F5275BEEC50079C71A /* Layout */,
 				A74F38032818C0D60013FD23 /* Route */,
@@ -1078,6 +1096,7 @@
 				A74F37FD2817BC940013FD23 /* RouteItemStation.swift */,
 				A717FB14281CA84C00310B5D /* ResolvedRouteItem.swift */,
 				A744FD972909EAED00852283 /* RouteItem+Resolvable.swift */,
+				A744FDA22909EC6C00852283 /* RouteItem+Graph.swift */,
 				A771680128915DEA00A71657 /* Legacy */,
 			);
 			path = Route;
@@ -1128,6 +1147,7 @@
 				A7710E6C27799E4A00C08150 /* Layout+Feedbacks.swift */,
 				A717FB222820A1C300310B5D /* Layout+NextBlock.swift */,
 				A72720B42907311B00E7B177 /* Layout+Paths.swift */,
+				A744FDA02909EC2800852283 /* Layout+Graph.swift */,
 				A7E78C4127A08F9E004D1821 /* LayoutReservation.swift */,
 				A744D1362765C5A3005C2F37 /* LayoutError.swift */,
 				A783EA9E2787C6DA00E69B6D /* LayoutObserver.swift */,
@@ -1311,7 +1331,6 @@
 				A78B996127FCC4080021EFE4 /* Graph.swift */,
 				A78B996C2800BABB0021EFE4 /* GraphPath.swift */,
 				A7B4956F289522D1001707DA /* GraphPathElement.swift */,
-				A78B996627FD57B20021EFE4 /* Graph+Elements.swift */,
 			);
 			path = Graph;
 			sourceTree = "<group>";
@@ -1509,6 +1528,7 @@
 				A7CA5EC82796550C00171398 /* Block+Socket.swift */,
 				A7CA5EC6279654EB00171398 /* Block+Feedback.swift */,
 				A71D97FB27A6210300EBEA06 /* Block+Occupation.swift */,
+				A744FD992909EB7000852283 /* Block+Graph.swift */,
 			);
 			path = Block;
 			sourceTree = "<group>";
@@ -1781,6 +1801,8 @@
 				A74F3811281A14DD0013FD23 /* StationView.swift in Sources */,
 				A717158B275844AE00200F92 /* SwitchBoardTrainDragInfo.swift in Sources */,
 				A73A7DD5284BD7C000ABEADE /* TrainControlling.swift in Sources */,
+				A744FD9A2909EB7000852283 /* Block+Graph.swift in Sources */,
+				A744FDA32909EC6C00852283 /* RouteItem+Graph.swift in Sources */,
 				A7710E6F2779A50A00C08150 /* SwitchboardContainerView.swift in Sources */,
 				A73A7DDD284F07FA00ABEADE /* CS3ReceivedMessageView.swift in Sources */,
 				A74CCC6E272A5A08004E58F5 /* Route.swift in Sources */,
@@ -1810,7 +1832,6 @@
 				A785C075278A5CE1002FD538 /* TrainIconManager.swift in Sources */,
 				A74F38002817C1330013FD23 /* RouteStep_v1.swift in Sources */,
 				A763F19727BF0FE100B3499A /* TrainSpeedGraphView.swift in Sources */,
-				A78B996727FD57B20021EFE4 /* Graph+Elements.swift in Sources */,
 				A7710E592777D7FE00C08150 /* RouteView.swift in Sources */,
 				A792DEF82783A09C004B0439 /* SimulatorTrainControlView.swift in Sources */,
 				A77167FF288BD43F00A71657 /* PathFinder+Constraints.swift in Sources */,
@@ -1850,6 +1871,7 @@
 				A783EAAD2789290F00E69B6D /* SwitchboardRuntimeErrorView.swift in Sources */,
 				A744FD982909EAED00852283 /* RouteItem+Resolvable.swift in Sources */,
 				A7E1F74E27DE980C009FB75F /* WizardSelectLocomotive.swift in Sources */,
+				A744FDA12909EC2800852283 /* Layout+Graph.swift in Sources */,
 				A721806A275D1CA700831998 /* MarklinCommand.swift in Sources */,
 				A717FB15281CA84C00310B5D /* ResolvedRouteItem.swift in Sources */,
 				A7B0B5172762FB6500F11A3E /* BlockListView.swift in Sources */,
@@ -1899,11 +1921,13 @@
 				A77168032892B0E100A71657 /* Route+Resolver.swift in Sources */,
 				A763F19927BF185100B3499A /* TrainSpeedMeasureControlsView.swift in Sources */,
 				A7012C8328344A1C003AC687 /* DeveloperView.swift in Sources */,
+				A744FD9E2909EBB800852283 /* Transition+Graph.swift in Sources */,
 				A7F779F82732407E00E73275 /* TrainControlContainerView.swift in Sources */,
 				A73B1643274DC4D20073947D /* FeedbackEditListView.swift in Sources */,
 				A74F380B2819108A0013FD23 /* RouteItem.swift in Sources */,
 				A79466CE279B775D006E2A4C /* NSImage+Extension.swift in Sources */,
 				A71A3DB428B1BC0C007F93C4 /* BlockShape_TextLabel.swift in Sources */,
+				A744FD9C2909EB9200852283 /* Turnout+Graph.swift in Sources */,
 				A795A03D27B87CCE00AE90EB /* LayoutController+Locomotives.swift in Sources */,
 				A702F22D28FE25BF0076186D /* CGSize+Extension.swift in Sources */,
 				A7907957277D136500771A60 /* CGAffineTransform+Extension.swift in Sources */,
