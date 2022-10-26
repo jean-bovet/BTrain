@@ -44,11 +44,4 @@ struct RouteItemBlock: Equatable, Codable, CustomStringConvertible {
         self.waitingTime = waitingTime
     }
     
-    func resolve(_ constraints: PathFinder.Constraints) -> [GraphPathElement]? {
-        guard let block = constraints.layout.block(for: blockId) else {
-            return nil
-        }
-        
-        return [GraphPathElement.direction(block, direction)]
-    }
 }

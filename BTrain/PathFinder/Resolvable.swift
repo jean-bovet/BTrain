@@ -12,28 +12,12 @@
 
 import Foundation
 
-struct RouteItemTurnout: Equatable, Codable {
+/// Protocol describing an item that can be resolved to a single path element
+protocol Resolvable: CustomStringConvertible {
     
-    static func ==(lhs: RouteItemTurnout, rhs: RouteItemTurnout) -> Bool {
-        lhs.id == rhs.id
-    }
+    /// Resolves this object using the specified constraints
+    /// - Parameter constraints: the constraints
+    /// - Returns: a resolved path element or nil if it cannot be resolved
+    func resolve(_ constraints: PathFinder.Constraints) -> [GraphPathElement]?
 
-    var id = UUID().uuidString
-
-    var turnoutId: Identifier<Turnout>
-    
-    var exitSocket: Socket
-    
-    var entrySocket: Socket
-
-    var description: String {
-        "\(turnoutId):(\(entrySocket.socketId!)>\(exitSocket.socketId!))"
-    }
-    
-    init(_ turnoutId: Identifier<Turnout>, _ fromSocket: Socket, _ toSocket: Socket) {
-        self.turnoutId = turnoutId
-        self.entrySocket = fromSocket
-        self.exitSocket = toSocket
-    }
-    
 }

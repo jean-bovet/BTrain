@@ -99,6 +99,8 @@
 		A744D13527659330005C2F37 /* TrainControlRouteView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A744D13427659330005C2F37 /* TrainControlRouteView.swift */; };
 		A744D1372765C5A3005C2F37 /* LayoutError.swift in Sources */ = {isa = PBXBuildFile; fileRef = A744D1362765C5A3005C2F37 /* LayoutError.swift */; };
 		A744D13B276714A2005C2F37 /* DiagnosticsSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A744D13A276714A2005C2F37 /* DiagnosticsSheet.swift */; };
+		A744FD962909EA5000852283 /* Resolvable.swift in Sources */ = {isa = PBXBuildFile; fileRef = A744FD952909EA5000852283 /* Resolvable.swift */; };
+		A744FD982909EAED00852283 /* RouteItem+Resolvable.swift in Sources */ = {isa = PBXBuildFile; fileRef = A744FD972909EAED00852283 /* RouteItem+Resolvable.swift */; };
 		A745C16A282F2199006D16B0 /* TrainReservation.swift in Sources */ = {isa = PBXBuildFile; fileRef = A745C169282F2199006D16B0 /* TrainReservation.swift */; };
 		A74925D028E8D15C00FF39C3 /* TurnoutShapePreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = A74925CF28E8D15C00FF39C3 /* TurnoutShapePreview.swift */; };
 		A74C0E7E275C9E900043FEE5 /* MarklinLocomotiveConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = A74C0E7D275C9E900043FEE5 /* MarklinLocomotiveConfig.swift */; };
@@ -434,6 +436,8 @@
 		A744D13427659330005C2F37 /* TrainControlRouteView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainControlRouteView.swift; sourceTree = "<group>"; };
 		A744D1362765C5A3005C2F37 /* LayoutError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutError.swift; sourceTree = "<group>"; };
 		A744D13A276714A2005C2F37 /* DiagnosticsSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiagnosticsSheet.swift; sourceTree = "<group>"; };
+		A744FD952909EA5000852283 /* Resolvable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Resolvable.swift; sourceTree = "<group>"; };
+		A744FD972909EAED00852283 /* RouteItem+Resolvable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RouteItem+Resolvable.swift"; sourceTree = "<group>"; };
 		A745C169282F2199006D16B0 /* TrainReservation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainReservation.swift; sourceTree = "<group>"; };
 		A74925CF28E8D15C00FF39C3 /* TurnoutShapePreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TurnoutShapePreview.swift; sourceTree = "<group>"; };
 		A74BDD6E282C725800BA7160 /* Routing.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; name = Routing.xctestplan; path = BTrain.xcodeproj/Routing.xctestplan; sourceTree = "<group>"; };
@@ -1073,6 +1077,7 @@
 				A74F38042818C0E50013FD23 /* RouteItemTurnout.swift */,
 				A74F37FD2817BC940013FD23 /* RouteItemStation.swift */,
 				A717FB14281CA84C00310B5D /* ResolvedRouteItem.swift */,
+				A744FD972909EAED00852283 /* RouteItem+Resolvable.swift */,
 				A771680128915DEA00A71657 /* Legacy */,
 			);
 			path = Route;
@@ -1162,6 +1167,7 @@
 				A77167FE288BD43F00A71657 /* PathFinder+Constraints.swift */,
 				A76C1C6628813ED400A22509 /* PathFinderResolver.swift */,
 				A7940657280789B300F6A427 /* ShortestPathFinder.swift */,
+				A744FD952909EA5000852283 /* Resolvable.swift */,
 			);
 			path = PathFinder;
 			sourceTree = "<group>";
@@ -1842,6 +1848,7 @@
 				A7DB7D4E27C714E3000893BA /* LayoutTurnoutManager.swift in Sources */,
 				A74F380F281A13CC0013FD23 /* StationListView.swift in Sources */,
 				A783EAAD2789290F00E69B6D /* SwitchboardRuntimeErrorView.swift in Sources */,
+				A744FD982909EAED00852283 /* RouteItem+Resolvable.swift in Sources */,
 				A7E1F74E27DE980C009FB75F /* WizardSelectLocomotive.swift in Sources */,
 				A721806A275D1CA700831998 /* MarklinCommand.swift in Sources */,
 				A717FB15281CA84C00310B5D /* ResolvedRouteItem.swift in Sources */,
@@ -1858,6 +1865,7 @@
 				A7F779D4272BB38F00E73275 /* LayoutFactory.swift in Sources */,
 				A7710E6D27799E4A00C08150 /* Layout+Feedbacks.swift in Sources */,
 				A717FB17281DEE5E00310B5D /* Layout+Stations.swift in Sources */,
+				A744FD962909EA5000852283 /* Resolvable.swift in Sources */,
 				A711B1502739EBD7002FE7DB /* LayoutController.swift in Sources */,
 				A7CA5EC1279649CF00171398 /* BlockFeedbacksView.swift in Sources */,
 				A76FD43228FB3C0E00E1A295 /* ControlPoint.swift in Sources */,
