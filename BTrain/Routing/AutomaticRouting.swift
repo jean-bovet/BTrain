@@ -61,14 +61,9 @@ final class AutomaticRouting {
             to = nil
         }
         
-        // Note: if `destination` is specified, always avoid reserved blocks. Otherwise,
-        // just avoid the reserved block in front of the current one but ignore the others
-        // (the automatic route will re-evaluate itself if it encounters a reserved block later
-        // during execution, to avoid deadlocking).
-        let rbb: PathFinder.Constraints.ReservedBlockBehavior = destination == nil ? .avoidFirstReservedBlock : .avoidReserved
-        
-        // Find the best path
-        let path = try layout.bestPath(ofTrain: train, toReachBlock: to?.block, withDirection: to?.direction, reservedBlockBehavior: rbb)
+        // Find the best path by avoiding reserved blocks
+        let path = try layout.bestPath(ofTrain: train, toReachBlock: to?.block, withDirection: to?.direction,
+                                       reservedBlockBehavior: .avoidReserved)
         
         if let path = path {
             route.lastMessage = nil

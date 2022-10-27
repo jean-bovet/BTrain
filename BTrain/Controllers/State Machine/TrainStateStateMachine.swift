@@ -71,7 +71,7 @@ struct TrainStateStateMachine {
     }
     
     private func handleStoppedState(train: TrainControlling) {
-        if train.mode == .managed {
+        if train.mode == .managed || train.mode == .finishManaged {
             if !train.shouldStopInBlock {
                 train.state = .running
             }

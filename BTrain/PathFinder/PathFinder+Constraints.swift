@@ -26,10 +26,6 @@ extension PathFinder {
             // take them into account even if they are
             // reserved for another train).
             case ignoreReserved
-            
-            // Avoid the first reserved block encountered,
-            // then ignore all the others reserved blocks.
-            case avoidFirstReservedBlock
         }
         
         let layout: Layout
@@ -75,16 +71,6 @@ extension PathFinder {
                         
                     case .ignoreReserved:
                         break
-                        
-                    case .avoidFirstReservedBlock:
-                        // Count how many blocks there is in the current path, ignoring the first block which
-                        // is the starting block. The "first reserved block" means the first block after the starting block.
-                        if currentPath.numberOfBlocksIgnoringStartingBlock == 0 {
-                            // If there are zero blocks in the path, it means that `node` is the first block,
-                            // in which case we need to avoid it because it is reserved.
-                            return false
-                        }
-                        break
                     }
                 }
                 
@@ -106,14 +92,6 @@ extension PathFinder {
                         return false
                         
                     case .ignoreReserved:
-                        break
-                        
-                    case .avoidFirstReservedBlock:
-                        // Count how many blocks there is in the current path, ignoring the first block which
-                        // is the starting block. The "first reserved block" means the first block after the starting block.
-                        if currentPath.numberOfBlocksIgnoringStartingBlock == 0 {
-                            return false
-                        }
                         break
                     }
                 }
