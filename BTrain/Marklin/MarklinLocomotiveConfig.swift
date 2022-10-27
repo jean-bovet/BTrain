@@ -35,11 +35,11 @@ final class MarklinLocomotiveConfig {
             configDataLength = Int(length)
             configData.removeAll()
             return .processing
-        } else {
+        } else if configDataLength > 0 {
             configData.append(contentsOf: data)
             BTLogger.debug("Received \(configData.count) so far")
             
-            if configData.count >= configDataLength {
+            if configData.count >= configDataLength && configDataLength >= 4 {
                 // Remove the first 4 bytes which is probably the CRC value
                 // but is not part of the gzip data itself.
                 let actualData = configData[4..<configDataLength]
@@ -64,6 +64,8 @@ final class MarklinLocomotiveConfig {
             } else {
                 return .processing
             }
+        } else {
+            return .unknown
         }
     }
     
