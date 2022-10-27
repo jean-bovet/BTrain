@@ -210,6 +210,8 @@ final class TrainController: TrainControlling, CustomStringConvertible {
                 desiredKph = nil
             }
         } else if train.state == .running {
+            // When running, always try to use the maximum speed.
+            // Note: it will be lowered if necessary below.
             desiredKph = LayoutFactory.DefaultMaximumSpeed
         } else {
             desiredKph = nil

@@ -469,25 +469,39 @@ final class LayoutReservation {
         let leadingDistance = distanceLeftInBlock + train.leading.settledDistance
         
         // Compute the distance necessary to bring the train to a full stop
-        let steps = train.speed.steps(for: speed).value
+        let result = distanceNeededToChangeSpeed(ofTrain: train, from: speed, to: 0)
+        
+        // The braking distance is respected if it is shorter or equal
+        // to the leading distance available.
+        let respected = result.distance <= leadingDistance
+        if respected {
+            BTLogger.router.debug("\(train, privacy: .public): can come to a full stop in \(result.distance, format: .fixed(precision: 1))cm (in \(result.duration, format: .fixed(precision: 1))s) at \(Double(speed), format: .fixed(precision: 1))kph. The leading distance is \(leadingDistance, format: .fixed(precision: 1))cm with blocks \(train.leading.blocks, privacy: .public)")
+        } else {
+            BTLogger.router.debug("\(train, privacy: .public): ⚠️ cannot come to a full stop in \(result.distance, format: .fixed(precision: 1))cm (in \(result.duration, format: .fixed(precision: 1))s) at \(Double(speed), format: .fixed(precision: 1))kph because the leading distance is \(leadingDistance, format: .fixed(precision: 1))cm with blocks \(train.leading.blocks, privacy: .public)")
+        }
+        return respected
+    }
+    
+    struct DistanceChangeResult {
+        let distance: Double
+        let duration: TimeInterval
+    }
+    
+    func distanceNeededToChangeSpeed(ofTrain train: Train, from speed1:TrainSpeed.UnitKph, to speed2: TrainSpeed.UnitKph) -> DistanceChangeResult {
+        let steps1 = train.speed.steps(for: speed1).value
+        let steps2 = train.speed.steps(for: speed2).value
+        let steps = steps1 - steps2
+        
         let brakingStepSize = train.speed.accelerationStepSize ?? TrainSpeedManager.DefaultStepSize
         let brakingStepDelay = Double(train.speed.accelerationStepDelay ?? TrainSpeedManager.DefaultStepDelay) / 1000.0
         
         let brakingDelaySeconds = Double(steps) / Double(brakingStepSize) * Double(brakingStepDelay) + train.speed.stopSettleDelay
         
-        let speedKph = Double(speed)
+        let speedKph = Double(speed1)
         let brakingDistanceKm = speedKph * (brakingDelaySeconds / 3600.0)
         let brakingDistanceH0cm = (brakingDistanceKm * 1000*100) / 87.0
-                            
-        // The braking distance is respected if it is shorter or equal
-        // to the leading distance available.
-        let respected = brakingDistanceH0cm <= leadingDistance
-        if respected {
-            BTLogger.router.debug("\(train, privacy: .public): can come to a full stop in \(brakingDistanceH0cm, format: .fixed(precision: 1))cm (in \(brakingDelaySeconds, format: .fixed(precision: 1))s) at \(speedKph, format: .fixed(precision: 1))kph. The leading distance is \(leadingDistance, format: .fixed(precision: 1))cm with blocks \(train.leading.blocks, privacy: .public)")
-        } else {
-            BTLogger.router.debug("\(train, privacy: .public): ⚠️ cannot come to a full stop in \(brakingDistanceH0cm, format: .fixed(precision: 1))cm (in \(brakingDelaySeconds, format: .fixed(precision: 1))s) at \(speedKph, format: .fixed(precision: 1))kph because the leading distance is \(leadingDistance, format: .fixed(precision: 1))cm with blocks \(train.leading.blocks, privacy: .public)")
-        }
-        return respected
+
+        return DistanceChangeResult(distance: brakingDistanceH0cm, duration: brakingDelaySeconds)
     }
     
     private func debug(_ msg: String) {
