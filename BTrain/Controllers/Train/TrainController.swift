@@ -179,13 +179,16 @@ final class TrainController: TrainControlling, CustomStringConvertible {
     }
 
     private func updateAutomaticRoute(for train: Train, layout: Layout) throws -> Bool {
-        let (success, route) = try layout.automaticRouting.updateAutomaticRoute(for: train.id)
-        if success {
+        let result = try layout.automaticRouting.updateAutomaticRoute(for: train.id)
+        switch result {
+        case .success(let route):
             BTLogger.router.debug("\(train, privacy: .public): generated route is \(route.steps.debugDescription, privacy: .public)")
             return true
-        } else {
-            BTLogger.router.warning("\(train, privacy: .public): unable to find a suitable route")
+
+        case .failure(let error):
+            BTLogger.router.warning("\(train, privacy: .public): \(error.localizedDescription, privacy: .public)")
             return false
+
         }
     }
 

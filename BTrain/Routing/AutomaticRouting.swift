@@ -12,15 +12,23 @@
 
 import Foundation
 
+/// Handles the automatic route associated with a train
 final class AutomaticRouting {
     
+    enum UpdateRouteError: Error {
+        case cannotUpdateRoute(message: String)
+    }
+
     let layout: Layout
     
     init(layout: Layout) {
         self.layout = layout
     }
     
-    func updateAutomaticRoute(for trainId: Identifier<Train>) throws -> (Bool, Route) {
+    /// Update the automatic route associated with the train
+    /// - Parameter trainId: The train
+    /// - Returns: the result of updating the automatic route
+    func updateAutomaticRoute(for trainId: Identifier<Train>) throws -> Result<Route, UpdateRouteError> {
         let routeId = Route.automaticRouteId(for: trainId)
         
         guard let route = layout.route(for: routeId, trainId: trainId) else {
@@ -31,8 +39,9 @@ final class AutomaticRouting {
             throw LayoutError.trainNotFound(trainId: trainId)
         }
                         
+        // Determine the destination of the route
         let destination: Destination?
-        switch(route.mode) {
+        switch route.mode {
         case .automaticOnce(destination: let routeDestination):
             destination = routeDestination
         case .automatic:
@@ -41,40 +50,44 @@ final class AutomaticRouting {
             throw LayoutError.routeIsNotAutomatic(route: route)
         }
         
-        let to: (Block, Direction?)?
+        // Determine the destination block, if available
+        let to: LayoutVector?
         if let destination = destination {
             guard let block = layout.block(for: destination.blockId) else {
                 throw LayoutError.blockNotFound(blockId: destination.blockId)
             }
-            to = (block, destination.direction)
+            to = .init(block: block, direction: destination.direction)
         } else {
             to = nil
         }
         
-        // Note: if `destination` is specified, always avoid reserved block. Otherwise,
+        // Note: if `destination` is specified, always avoid reserved blocks. Otherwise,
         // just avoid the reserved block in front of the current one but ignore the others
         // (the automatic route will re-evaluate itself if it encounters a reserved block later
         // during execution, to avoid deadlocking).
         let rbb: PathFinder.Constraints.ReservedBlockBehavior = destination == nil ? .avoidFirstReservedBlock : .avoidReserved
         
-        let path = try layout.bestPath(ofTrain: train, toReachBlock: to?.0, withDirection: to?.1, reservedBlockBehavior: rbb)
+        // Find the best path
+        let path = try layout.bestPath(ofTrain: train, toReachBlock: to?.block, withDirection: to?.direction, reservedBlockBehavior: rbb)
         
         if let path = path {
             route.lastMessage = nil
             route.steps = path.elements.toBlockSteps
             train.routeStepIndex = 0
             train.startRouteIndex = 0
-            return (true, route)
+            return .success(route)
         } else {
+            let message: String
             if let to = to {
-                route.lastMessage = "Unable to find a suitable route to \(to.0.name)"
+                message = "Unable to find a suitable route to \(to.block.name)"
             } else {
-                route.lastMessage = "Unable to find a suitable route"
+                message = "Unable to find a suitable route"
             }
+            route.lastMessage = message
             route.steps.removeAll()
             train.routeStepIndex = 0
             train.startRouteIndex = 0
-            return (false, route)
+            return .failure(.cannotUpdateRoute(message: message))
         }
     }
 
