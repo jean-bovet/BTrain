@@ -86,11 +86,15 @@ class Server {
     
     func stop(_ completion: @escaping CompletionBlock) {
         listener.newConnectionHandler = nil
-        assert(didCancelListener == nil, "Cancel listener block should be nil")
-        didCancelListener = {
+        if listener.state != .cancelled {
+            assert(didCancelListener == nil, "Cancel listener block should be nil")
+            didCancelListener = {
+                completion()
+            }
+            listener.cancel()
+        } else {
             completion()
         }
-        listener.cancel()
         for connection in self.connectionsByID.values {
             connection.didStopCallback = nil
             connection.stop()
