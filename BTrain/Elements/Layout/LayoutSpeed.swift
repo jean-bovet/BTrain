@@ -131,21 +131,21 @@ struct LayoutSpeed {
     /// - Returns: the maximum speed to brake within the distance
     private func maximumSpeedToBrake(train: Train, toSpeed speed: TrainSpeed.UnitKph, withDistance distance: Double) -> TrainSpeed.UnitKph {
         var brakingDistance = distanceNeededToChangeSpeed(ofTrain: train, from: LayoutFactory.DefaultMaximumSpeed, to: speed)
-        if brakingDistance.distance > distance {
-            brakingDistance = distanceNeededToChangeSpeed(ofTrain: train, from: LayoutFactory.DefaultLimitedSpeed, to: speed)
-            if brakingDistance.distance > distance {
-                brakingDistance = distanceNeededToChangeSpeed(ofTrain: train, from: LayoutFactory.DefaultBrakingSpeed, to: speed)
-                if brakingDistance.distance > distance {
-                    return 0
-                } else {
-                    return LayoutFactory.DefaultBrakingSpeed
-                }
-            } else {
-                return LayoutFactory.DefaultLimitedSpeed
-            }
-        } else {
+        guard brakingDistance.distance > distance else {
             return LayoutFactory.DefaultMaximumSpeed
         }
+        
+        brakingDistance = distanceNeededToChangeSpeed(ofTrain: train, from: LayoutFactory.DefaultLimitedSpeed, to: speed)
+        guard brakingDistance.distance > distance else {
+            return LayoutFactory.DefaultLimitedSpeed
+        }
+
+        brakingDistance = distanceNeededToChangeSpeed(ofTrain: train, from: LayoutFactory.DefaultBrakingSpeed, to: speed)
+        guard brakingDistance.distance > distance else {
+            return LayoutFactory.DefaultBrakingSpeed
+        }
+
+        return 0
     }
     
     /// Returns the maximum speed allowed by the available lead settled distance, including the distance left
