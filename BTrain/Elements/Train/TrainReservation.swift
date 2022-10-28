@@ -132,7 +132,20 @@ final class TrainLeadingReservation: TrainReservation {
     /// to not use the un-settled turnout otherwise they will be taking a wrong path!
     var settledDistance: Double = 0.0
 
-    func computeSettledDistance() -> Double {
+    /// Updates the settled distance and returns an indication if that distance has changed
+    /// - Returns: true if the settled distance changed, false otherwise
+    @discardableResult
+    func updateSettledDistance() -> Bool {
+        let newDistance = computeSettledDistance()
+        if newDistance != settledDistance {
+            settledDistance = newDistance
+            return true
+        } else {
+            return false
+        }
+    }
+    
+    private func computeSettledDistance() -> Double {
         var distance = 0.0
         for item in items {
             switch item {
@@ -152,4 +165,5 @@ final class TrainLeadingReservation: TrainReservation {
         }
         return distance
     }
+    
 }

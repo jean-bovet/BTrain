@@ -105,8 +105,13 @@ class FixedRoutingWithTurnoutDelays: BTTestCase {
 
         // And the train will restart because the leading turnouts are settled
         XCTAssertEqual(p.train.state, .running)
-        // Note: the speed of the train is "limited" because b1 is a destination
-        try p.assert("r1: {r1{b1 ≏ ≏ }} <t0> [b2 ≏ ≏ ] [r1[b3 ≡ 🔵🚂1 ≏ ]] <r1<t1>> [r1[b4 ≏ ≏]] {r1{b1 ≏ ≏ }}")
+
+        try p.assert("r1: {r1{b1 ≏ ≏ }} <t0> [b2 ≏ ≏ ] [r1[b3 ≡ 🟢🚂1 ≏ ]] <r1<t1>> [r1[b4 ≏ ≏]] {r1{b1 ≏ ≏ }}")
+        try p.assert("r1: {r1{b1 ≏ ≏ }} <t0> [b2 ≏ ≏ ] [r1[b3 ≏ ≡ 🟢🚂1 ]] <r1<t1>> [r1[b4 ≏ ≏]] {r1{b1 ≏ ≏ }}")
+        try p.assert("r1: {r1{b1 ≏ ≏ }} <t0> [b2 ≏ ≏ ] [b3 ≏ ≏ ] <t1> [r1[b4 ≡ 🔵🚂1 ≏]] {r1{b1 ≏ ≏ }}")
+        try p.assert("r1: {r1{b1 ≏ ≏ }} <t0> [b2 ≏ ≏ ] [b3 ≏ ≏ ] <t1> [r1[b4 ≏ ≡ 🔵🚂1]] {r1{b1 ≏ ≏ }}")
+        try p.assert("r1: {r1{b1 ≡ 🟡🚂1 ≏ }} <t0> [b2 ≏ ≏ ] [b3 ≏ ≏ ] <t1> [b4 ≏ ≏ ] {r1{b1 ≡ 🟡🚂1 ≏ }}")
+        try p.assert("r1: {r1{b1 ≏ ≡ 🔴🚂1 }} <t0> [b2 ≏ ≏ ] [b3 ≏ ≏ ] <t1> [b4 ≏ ≏ ] {r1{b1 ≏ ≡ 🔴🚂1 }}")
     }
 
 }

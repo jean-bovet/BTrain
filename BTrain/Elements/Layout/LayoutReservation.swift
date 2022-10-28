@@ -113,7 +113,7 @@ final class LayoutReservation {
 
         // Reserve the number of leading blocks necessary
         if try reserveLeadingBlocks(train: train, reservedTurnouts: reservedTurnouts) {
-            train.leading.settledDistance = train.leading.computeSettledDistance()
+            train.leading.updateSettledDistance()
             // Return the result by determining if the leading or occupied items have changed
             if previousLeadingItems != train.leading.items || previousOccupiedItems != train.occupied.items {
                 return .success
@@ -390,118 +390,6 @@ final class LayoutReservation {
             }
         layout.turnouts.filter { $0.reserved?.train == train.id }.forEach { $0.reserved = nil; $0.train = nil }
         layout.transitions.filter { $0.reserved == train.id }.forEach { $0.reserved = nil; $0.train = nil }
-    }
-    
-    /// This method returns the maximum speed allowed by all the elements occupied by
-    /// the specified train, which includes blocks and turnouts.
-    func maximumSpeedAllowed(train: Train, route: Route?) -> TrainSpeed.UnitKph {
-        var maximumSpeedAllowed: TrainSpeed.UnitKph = LayoutFactory.DefaultMaximumSpeed
-        
-        layout.blocks.filter({ $0.reservation?.trainId == train.id }).forEach { block in
-            switch block.speedLimit {
-            case .unlimited:
-                break
-            case .limited:
-                maximumSpeedAllowed = min(maximumSpeedAllowed, LayoutFactory.DefaultLimitedSpeed)
-            }
-        }
-        
-        layout.turnouts.filter { $0.reserved?.train == train.id }.forEach { turnout in
-            if let speedLimit = turnout.stateSpeedLimit[turnout.requestedState] {
-                switch speedLimit {
-                case .unlimited:
-                    break
-                case .limited:
-                    maximumSpeedAllowed = min(maximumSpeedAllowed, LayoutFactory.DefaultLimitedSpeed)
-                }
-            }
-        }
-                        
-        // If there is a leading reserved block where the train needs to stop,
-        // make sure the speed is limited, otherwise the train will likely overshoot
-        // the block in which it must stop.
-        for block in train.leading.blocks {
-            if layout.hasTrainReachedStationOrDestination(route, train, block) {
-                maximumSpeedAllowed = min(maximumSpeedAllowed, LayoutFactory.DefaultLimitedSpeed)
-                break
-            }
-        }
-
-        // Limit the speed if the train is one block away from the destination block
-        if let route = layout.route(for: train.routeId, trainId: train.id), route.steps.count > 0, train.routeStepIndex >= route.lastStepIndex - 1 {
-            maximumSpeedAllowed = min(maximumSpeedAllowed, LayoutFactory.DefaultLimitedSpeed)
-        }
-        
-        // Check if the current maximum speed is allowed
-        if !isBrakingDistanceRespected(train: train, speed: maximumSpeedAllowed) {
-            // If not, check if the default limited speed is allowed
-            maximumSpeedAllowed = min(maximumSpeedAllowed, LayoutFactory.DefaultLimitedSpeed)
-            if !isBrakingDistanceRespected(train: train, speed: maximumSpeedAllowed) {
-                // If not, the braking speed is used
-                maximumSpeedAllowed = min(maximumSpeedAllowed, LayoutFactory.DefaultBrakingSpeed)
-            }
-        }
-
-        BTLogger.router.debug("\(train, privacy: .public): maximum allowed speed is \(maximumSpeedAllowed)kph")
-        
-        return maximumSpeedAllowed
-    }
-    
-    /// Returns true if the train can stop within the available lead distance, including any remaining distance
-    /// in the current block, at the specified speed.
-    ///
-    /// The leading distance is the distance of all the reserved leading blocks in front of the train.
-    /// The goal is to ensure that a train can stop safely at any moment with the leading distance
-    /// available - otherwise, it might overshoot the leading blocks in case a stop is requested.
-    ///
-    /// - Parameters:
-    ///   - train: the train
-    ///   - speed: the speed to evaluate
-    /// - Returns: true if the train can stop with the available leading distance, false otherwise
-    func isBrakingDistanceRespected(train: Train, speed: TrainSpeed.UnitKph) -> Bool {
-        guard let currentBlock = layout.currentBlock(train: train) else {
-            return false
-        }
-        guard let distanceLeftInBlock = currentBlock.distanceLeftInBlock(train: train) else {
-            return false
-        }
-        
-        let leadingDistance = distanceLeftInBlock + train.leading.settledDistance
-        
-        // Compute the distance necessary to bring the train to a full stop
-        let result = distanceNeededToChangeSpeed(ofTrain: train, from: speed, to: 0)
-        
-        // The braking distance is respected if it is shorter or equal
-        // to the leading distance available.
-        let respected = result.distance <= leadingDistance
-        if respected {
-            BTLogger.router.debug("\(train, privacy: .public): can come to a full stop in \(result.distance, format: .fixed(precision: 1))cm (in \(result.duration, format: .fixed(precision: 1))s) at \(Double(speed), format: .fixed(precision: 1))kph. The leading distance is \(leadingDistance, format: .fixed(precision: 1))cm with blocks \(train.leading.blocks, privacy: .public)")
-        } else {
-            BTLogger.router.debug("\(train, privacy: .public): ⚠️ cannot come to a full stop in \(result.distance, format: .fixed(precision: 1))cm (in \(result.duration, format: .fixed(precision: 1))s) at \(Double(speed), format: .fixed(precision: 1))kph because the leading distance is \(leadingDistance, format: .fixed(precision: 1))cm with blocks \(train.leading.blocks, privacy: .public)")
-        }
-        return respected
-    }
-    
-    struct DistanceChangeResult {
-        let distance: Double
-        let duration: TimeInterval
-    }
-    
-    func distanceNeededToChangeSpeed(ofTrain train: Train, from speed1:TrainSpeed.UnitKph, to speed2: TrainSpeed.UnitKph) -> DistanceChangeResult {
-        let steps1 = train.speed.steps(for: speed1).value
-        let steps2 = train.speed.steps(for: speed2).value
-        let steps = steps1 - steps2
-        
-        let brakingStepSize = train.speed.accelerationStepSize ?? TrainSpeedManager.DefaultStepSize
-        let brakingStepDelay = Double(train.speed.accelerationStepDelay ?? TrainSpeedManager.DefaultStepDelay) / 1000.0
-        
-        let brakingDelaySeconds = Double(steps) / Double(brakingStepSize) * Double(brakingStepDelay) + train.speed.stopSettleDelay
-        
-        let speedKph = Double(speed1)
-        let brakingDistanceKm = speedKph * (brakingDelaySeconds / 3600.0)
-        let brakingDistanceH0cm = (brakingDistanceKm * 1000*100) / 87.0
-
-        return DistanceChangeResult(distance: brakingDistanceH0cm, duration: brakingDelaySeconds)
     }
     
     private func debug(_ msg: String) {

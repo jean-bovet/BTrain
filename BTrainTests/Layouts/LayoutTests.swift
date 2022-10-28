@@ -127,56 +127,5 @@ class LayoutTests: BTTestCase {
         XCTAssertEqual(train1.state, .stopped)
         XCTAssertEqual(train1.scheduling, .unmanaged)
     }
-  
-    func testBlockSpeedLimit() throws {
-        let doc = LayoutDocument(layout: LayoutLoopWithStation().newLayout())
-        let layout = doc.layout
-        let train = layout.trains[0]
-        
-        let s1 = layout.block(named: "s1")
-        let b1 = layout.block(named: "b1")
-
-        try layout.setTrainToBlock(train.id, s1.id, direction: .next)
-
-        train.leading.append(s1)
-        train.leading.append(b1)
-        train.startRouteIndex = 0
-        train.leading.settledDistance = train.leading.computeSettledDistance()
-
-        XCTAssertEqual(doc.layoutController.reservation.maximumSpeedAllowed(train: train, route: nil), LayoutFactory.DefaultMaximumSpeed)
-        
-        s1.speedLimit = .limited
-        XCTAssertEqual(doc.layoutController.reservation.maximumSpeedAllowed(train: train, route: nil), LayoutFactory.DefaultLimitedSpeed)
-    }
-
-    func testTurnoutSpeedLimit() throws {
-        let doc = LayoutDocument(layout: LayoutLoopWithStation().newLayout())
-        let layout = doc.layout
-        let train = layout.trains[0]
-
-        let s1 = layout.block(named: "s1")
-        let b1 = layout.block(named: "b1")
-
-        try layout.setTrainToBlock(train.id, s1.id, direction: .next)
-        
-        train.leading.append(s1)
-        train.leading.append(b1)
-        train.startRouteIndex = 0
-        train.leading.settledDistance = train.leading.computeSettledDistance()
-
-        XCTAssertEqual(doc.layoutController.reservation.maximumSpeedAllowed(train: train, route: nil), LayoutFactory.DefaultMaximumSpeed)
-
-        let b2 = layout.block(named: "b2")
-        let route = layout.newRoute(id: "s1-b2", [(s1.id.uuid, .next), (b2.id.uuid, .next)])
-        
-        try doc.start(train: train.id, withRoute: route.id, destination: .init(b2.id, direction: .next))
-        
-        // Settle manually turnout t1 so we can test the speed limit of the turnout in branch-right state.
-        let t = layout.turnout(named: "t1")
-        t.actualState = t.requestedState
-        train.leading.settledDistance = train.leading.computeSettledDistance()
-
-        XCTAssertEqual(doc.layoutController.reservation.maximumSpeedAllowed(train: train, route: route), LayoutFactory.DefaultLimitedSpeed)
-    }
 
 }

@@ -18,7 +18,8 @@ final class TrainController: TrainControlling, CustomStringConvertible {
     let layout: Layout
     let layoutController: LayoutController
     let reservation: LayoutReservation
-
+    let layoutSpeed: LayoutSpeed
+    
     var currentBlock: Block
     var trainInstance: TrainInstance
 
@@ -110,10 +111,11 @@ final class TrainController: TrainControlling, CustomStringConvertible {
         self.trainInstance = trainInstance
         self.layoutController = layoutController
         self.reservation = reservation
+        self.layoutSpeed = LayoutSpeed(layout: layout)
     }
     
     func reservedBlocksLengthEnough(forSpeed speed: TrainSpeed.UnitKph) -> Bool {
-        return reservation.isBrakingDistanceRespected(train: train, speed: speed)
+        return layoutSpeed.isBrakingDistanceRespected(train: train, speed: speed)
     }
     
     func updatePosition(with feedback: Feedback) throws -> Bool {
@@ -126,13 +128,7 @@ final class TrainController: TrainControlling, CustomStringConvertible {
     }
     
     func updateReservedBlocksSettledLength(with turnout: Turnout) -> Bool {
-        let newSettledLength = train.leading.computeSettledDistance()
-        if newSettledLength != train.leading.settledDistance {
-            train.leading.settledDistance = newSettledLength
-            return true
-        } else {
-            return false
-        }
+        train.leading.updateSettledDistance()
     }
     
     func updateOccupiedAndReservedBlocks() throws -> Bool {
@@ -218,7 +214,7 @@ final class TrainController: TrainControlling, CustomStringConvertible {
         }
         
         if let desiredKph = desiredKph {
-            let requestedKph = min(desiredKph, reservation.maximumSpeedAllowed(train: train, route: route))
+            let requestedKph = min(desiredKph, layoutSpeed.maximumSpeedAllowed(train: train))
             if requestedKph != train.speed.requestedKph {
                 BTLogger.speed.debug("\(self.train, privacy: .public): controller adjusts speed to \(requestedKph)")
                 layoutController.setTrainSpeed(train, requestedKph)
