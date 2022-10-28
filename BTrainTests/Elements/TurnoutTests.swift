@@ -303,6 +303,13 @@ class TurnoutTests: XCTestCase {
         t1.requestedState = .branch21
         XCTAssertEqual(t1.nextState, .invalid)
         XCTAssertEqual(t1.requestedStateValue, 0)
+        
+        t1.setActualState(value: 0, for: t1.address.actualAddress)
+        t1.setActualState(value: 0, for: t1.address2.actualAddress)
+        XCTAssertEqual(t1.actualState, .invalid)
+        
+        t1.setActualState(value: 1, for: t1.address.actualAddress)
+        XCTAssertEqual(t1.actualState, .branchRight)
     }
 
     func testSafeSetState() {
