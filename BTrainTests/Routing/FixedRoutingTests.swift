@@ -895,7 +895,44 @@ class FixedRoutingTests: BTTestCase {
             XCTFail("Unexpected error: \(error.localizedDescription)")
         }
     }
+    
+    /// This test ensures that the speed is reduced enough (slower than the default brake speed) so the train can brake in block b1.
+    /// We do that by artificially modifying the distance of the last feedback of block b1 in order for the distance from that feedback
+    /// to the end of the block to be shorter than the distance needed for the train running at the default brake speed. This will force
+    /// the algorithm to find a slower speed to make that work.
+    func testRouteWithNotEnoughBrakingDistance() throws {
+        let layout = LayoutLoopWithStation().newLayout()
+        let s1 = layout.block(named: "s1")
 
+        let b1 = layout.block(named: "b1")
+        
+        let p = Package(layout: layout)
+        
+        try p.prepare(routeID: "r1", trainID: "0", fromBlockId: s1.uuid)
+
+        // Artificially modify the distance of the last feedback of block "b1" in order for it to be equal to the braking distance to stop the train.
+        let d = LayoutSpeed(layout: layout).distanceNeededToChangeSpeed(ofTrain: p.train, fromSpeed: LayoutFactory.DefaultBrakingSpeed, toSpeed: 0)
+        b1.feedbacks[1].distance = b1.length! - d.distance
+
+        layout.strictRouteFeedbackStrategy = false
+        
+        try p.assert("r1: {r0{s1 🔴🚂0 ≏ ≏ }} <t1{sr}(0,1),s> <t2{sr}(0,1),s> [b1 ≏ ≏ ]")
+
+        try p.start()
+        
+        try p.assert("r1: {r0{s1 🟢🚂0 ≏ ≏ }} <r0<t1{sr}(0,1),s>> <r0<t2{sr}(0,1),s>> [r0[b1 ≏ ≏ ]]")
+        try p.assert("r1: {s1 ≏ ≏ } <t1{sr}(0,1),s> <t2{sr}(0,1),s> [r0[b1 ≡ 🟡15🚂0 ≏ ]]")
+        
+        XCTAssertEqual(p.train.speed.actualKph, 15)
+        XCTAssertEqual(p.train.state, .braking)
+        XCTAssertEqual(p.train.scheduling, .managed)
+        
+        try p.assert("r1: {s1 ≏ ≏ } <t1{sr}(0,1),s> <t2{sr}(0,1),s> [r0[b1 ≏ ≡ 🔴🚂0 ]]")
+        XCTAssertEqual(p.train.speed.actualKph, 0)
+        XCTAssertEqual(p.train.state, .stopped)
+        XCTAssertEqual(p.train.scheduling, .unmanaged)
+    }
+    
     func testStraightLine1WithIncompleteRoute() throws {
         let layout = LayoutPointToPoint().newLayout()
 

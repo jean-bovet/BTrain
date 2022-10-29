@@ -77,12 +77,7 @@ struct SettingsView: View {
            
             Form {
                 Toggle("Find the Shortest Possible Route", isOn: $shortestRouteEnabled)
-                HStack {
-                    Spacer().fixedSpace()
-                    Toggle("Generate Automatic Route at Random", isOn: $automaticRouteRandom)
-                        .disabled(shortestRouteEnabled)
-                }
-
+                Toggle("Generate Automatic Route at Random", isOn: $automaticRouteRandom)
                 Toggle("Detect Unexpected Feedbacks", isOn: $detectUnexpectedFeedback)
                 Toggle("Strict Route Feedback Detection", isOn: $strictRouteFeedbackStrategy)
             }

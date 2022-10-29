@@ -35,7 +35,7 @@ struct LayoutSpeed {
         let leadingDistance = distanceLeftInBlock + train.leading.settledDistance
         
         // Compute the distance necessary to bring the train to a full stop
-        let result = distanceNeededToChangeSpeed(ofTrain: train, from: speed, to: 0)
+        let result = distanceNeededToChangeSpeed(ofTrain: train, fromSpeed: speed, toSpeed: 0)
         
         // The braking distance is respected if it is shorter or equal to the leading distance available.
         let respected = result.distance <= leadingDistance
@@ -124,28 +124,39 @@ struct LayoutSpeed {
     }
     
     /// Returns the maximum speed allowed to safely change the speed of the train to the specified target speed given the distance available.
+    ///
+    /// Note that the resulting speed can be slower than the default braking speed if necessary.
+    ///
     /// - Parameters:
     ///   - train: the train
     ///   - speed: the desired target speed
     ///   - distance: the distance available to change the train speed
     /// - Returns: the maximum speed to brake within the distance
     private func maximumSpeedToBrake(train: Train, toSpeed speed: TrainSpeed.UnitKph, withDistance distance: Double) -> TrainSpeed.UnitKph {
-        var brakingDistance = distanceNeededToChangeSpeed(ofTrain: train, from: LayoutFactory.DefaultMaximumSpeed, to: speed)
-        guard brakingDistance.distance > distance else {
-            return LayoutFactory.DefaultMaximumSpeed
+        let maxSpeeds = [LayoutFactory.DefaultMaximumSpeed, LayoutFactory.DefaultLimitedSpeed, LayoutFactory.DefaultBrakingSpeed]
+        var brakingDistance = DistanceChangeResult(distance: 0, duration: 0)
+        for maxSpeed in maxSpeeds {
+            brakingDistance = distanceNeededToChangeSpeed(ofTrain: train, fromSpeed: maxSpeed, toSpeed: speed)
+            guard brakingDistance.distance > distance else {
+                return maxSpeed
+            }
         }
-        
-        brakingDistance = distanceNeededToChangeSpeed(ofTrain: train, from: LayoutFactory.DefaultLimitedSpeed, to: speed)
-        guard brakingDistance.distance > distance else {
-            return LayoutFactory.DefaultLimitedSpeed
-        }
-
-        brakingDistance = distanceNeededToChangeSpeed(ofTrain: train, from: LayoutFactory.DefaultBrakingSpeed, to: speed)
-        guard brakingDistance.distance > distance else {
-            return LayoutFactory.DefaultBrakingSpeed
+           
+        guard let lastMaxSpeed = maxSpeeds.last else {
+            return 0
         }
 
-        return 0
+        var maxSpeed = lastMaxSpeed/2
+        while brakingDistance.distance > distance && maxSpeed > 0 {
+            brakingDistance = distanceNeededToChangeSpeed(ofTrain: train, fromSpeed: maxSpeed, toSpeed: speed)
+            if brakingDistance.distance <= distance {
+                return maxSpeed
+            } else {
+                maxSpeed = maxSpeed / 2
+            }
+        }
+
+        return maxSpeed
     }
     
     /// Returns the maximum speed allowed by the available lead settled distance, including the distance left
@@ -178,16 +189,24 @@ struct LayoutSpeed {
         let duration: TimeInterval
     }
     
-    /// Returns the distance needed to change the speed from one speed to another
+    /// Returns the distance needed to change the speed from one speed to another speed.
+    ///
+    /// The computation uses the duration it takes to brake the train from one speed to another
+    /// using the number of decoder steps necessary as well as the time per step.
+    ///
     /// - Parameters:
     ///   - train: the train
-    ///   - speed1: the original speed
+    ///   - fromSpeed: the original speed
     ///   - speed2: the desired speed
     /// - Returns: the distance
-    private func distanceNeededToChangeSpeed(ofTrain train: Train, from speed1:TrainSpeed.UnitKph, to speed2: TrainSpeed.UnitKph) -> DistanceChangeResult {
-        let steps1 = train.speed.steps(for: speed1).value
-        let steps2 = train.speed.steps(for: speed2).value
-        let steps = steps1 - steps2
+    func distanceNeededToChangeSpeed(ofTrain train: Train, fromSpeed:TrainSpeed.UnitKph, toSpeed: TrainSpeed.UnitKph) -> DistanceChangeResult {
+        // numberOfSteps = steps(speed1) - steps(speed2)
+        // changeSpeedDuration = numberOfSteps / stepSize * stepDelay + stopSettledDelay
+        // changeSpeedDistance = speed1 * changeSpeedDuration
+        
+        let fromSteps = train.speed.steps(for: fromSpeed).value
+        let toSteps = train.speed.steps(for: toSpeed).value
+        let steps = fromSteps - toSteps
         
         guard steps != 0 else {
             return DistanceChangeResult(distance: 0, duration: 0)
@@ -198,7 +217,7 @@ struct LayoutSpeed {
         
         let brakingDelaySeconds = Double(steps) / Double(brakingStepSize) * Double(brakingStepDelay) + train.speed.stopSettleDelay
         
-        let speedKph = Double(speed1)
+        let speedKph = Double(fromSpeed)
         let brakingDistanceKm = speedKph * (brakingDelaySeconds / 3600.0)
         let brakingDistanceH0cm = (brakingDistanceKm * 1000*100) / 87.0
 
