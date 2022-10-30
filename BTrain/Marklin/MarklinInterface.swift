@@ -15,8 +15,6 @@ import Foundation
 /// Implementation of the CommandInterface for the Marklin Central Station 3
 final class MarklinInterface: CommandInterface, ObservableObject {
     
-    @Published var messages = [MarklinCANMessage]()
-
     var callbacks = CommandInterfaceCallbacks()
             
     var client: Client?
@@ -26,6 +24,13 @@ final class MarklinInterface: CommandInterface, ObservableObject {
     typealias CompletionBlock = () -> Void
     private var disconnectCompletionBlocks: CompletionBlock?
     
+    /// True if CAN messages should be collected. The ``messages`` will be populated as the message arrive.
+    @Published var collectMessages = false
+    
+    /// Public array of messages that the interface received from the CS3. Used mainly
+    /// for debugging purpose.
+    @Published var messages = [MarklinCANMessage]()
+
     /// Map of CAN message to pending completion block.
     ///
     /// This map is used to invoke the completion block for each command based on the acknowledgement from the Central Station.
@@ -81,13 +86,6 @@ final class MarklinInterface: CommandInterface, ObservableObject {
         return SpeedStep(value: UInt16(steps))
     }
 
-    typealias MessageCallback = (MarklinCANMessage) -> Void
-    private var messageCallbacks = [MessageCallback]()
-    
-    func register(for callback: @escaping MessageCallback) {
-        messageCallbacks.append(callback)
-    }
-
     private func triggerCompletionBlock(for message: MarklinCANMessage) {
         if let blocks = completionBlocks[message.raw] {
             for completionBlock in blocks {
@@ -98,11 +96,26 @@ final class MarklinInterface: CommandInterface, ObservableObject {
     }
     
     func onMessage(msg: MarklinCANMessage) {
-        messageCallbacks.forEach { $0(msg) }
+        if collectMessages {
+            messages.append(msg)
+        }
         if msg.isAck {
             handleAcknowledgment(msg)
         } else {
             handleCommand(msg)
+        }
+    }
+    
+    static func isKnownMessage(msg: MarklinCANMessage) -> Bool {
+        if MarklinCommand.from(message: msg) != nil {
+            return true
+        } else {
+            let cmd = Command.from(message: msg)
+            if case .unknown = cmd {                
+                return false
+            } else {
+                return true
+            }
         }
     }
     

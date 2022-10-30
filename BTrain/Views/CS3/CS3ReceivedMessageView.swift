@@ -17,9 +17,19 @@ struct CS3ReceivedMessageView: View {
     @ObservedObject var mi: MarklinInterface
     
     @State private var selectedMessage: MarklinCANMessage.ID? = nil
+
+    @State private var showKnownMessages = true
+    @State private var showUnknownMessages = true
+
+    var messages: [MarklinCANMessage] {
+        return mi.messages.filter { message in
+            let knownMessage = MarklinInterface.isKnownMessage(msg: message)
+            return showKnownMessages && knownMessage || showUnknownMessages && !knownMessage
+        }
+    }
     
-    var body: some View {
-        Table(mi.messages, selection: $selectedMessage) {
+    var table: some View {
+        Table(messages, selection: $selectedMessage) {
             TableColumn("Prio") { message in
                 Text("\(message.prio.toHex())")
             }.width(60)
@@ -47,6 +57,28 @@ struct CS3ReceivedMessageView: View {
                     Text("\(message.byte7.toHex())")
                 }
             }
+            TableColumn("Description") { message in
+                if let description = MarklinCANMessagePrinter.description(message: message) {
+                    Text(description)
+                } else {
+                    Text("?")
+                }
+            }
+        }
+    }
+    
+    var body: some View {
+        VStack {
+            HStack {
+                Toggle("Listen", isOn: $mi.collectMessages)
+                Toggle("Show Know Messages", isOn: $showKnownMessages)
+                Toggle("Show Unknown Messages", isOn: $showUnknownMessages)
+                Spacer()
+                Button("Clear") {
+                    mi.messages.removeAll()
+                }
+            }
+            table
         }
     }
 }

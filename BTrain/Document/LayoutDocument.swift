@@ -42,7 +42,15 @@ final class LayoutDocument: ObservableObject {
     var measurement: TrainSpeedMeasurement?
 
     /// True if the layout is connected to the Digital Controller, false otherwise
-    @Published var connected = false
+    @Published var connected = false {
+        didSet {
+            listenToPowerEvents()
+        }
+    }
+    
+    /// True if the layout has power enabled, false otherwise. It is only valid
+    /// if the ``connected`` attribute is true.
+    @Published var power = false
 
     /// Used to trigger the layout diagnostic from the UX
     @Published var triggerLayoutDiagnostic = false
@@ -61,7 +69,7 @@ final class LayoutDocument: ObservableObject {
         
     /// Class handling tasks that must run when the connection to the Digital Controller is established
     @Published var onConnectTasks: LayoutOnConnectTasks
-
+    
     init(layout: Layout, interface: CommandInterface = MarklinInterface()) {
         let simulator = MarklinCommandSimulator(layout: layout, interface: interface)
         
@@ -91,4 +99,18 @@ final class LayoutDocument: ObservableObject {
         layout.apply(other: other)
         switchboard.fitSize()
     }
+    
+    private var stateChangeUUID: UUID?
+
+    private func listenToPowerEvents() {
+        if connected {
+            stateChangeUUID = interface.callbacks.stateChanges.register { [weak self] enabled in
+                self?.power = enabled
+            }
+        } else if let stateChangeUUID = stateChangeUUID {
+            interface.callbacks.stateChanges.unregister(stateChangeUUID)
+            self.stateChangeUUID = nil
+        }
+    }
+    
 }
