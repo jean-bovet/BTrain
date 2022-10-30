@@ -108,6 +108,9 @@
 		A744FDA32909EC6C00852283 /* RouteItem+Graph.swift in Sources */ = {isa = PBXBuildFile; fileRef = A744FDA22909EC6C00852283 /* RouteItem+Graph.swift */; };
 		A744FDA5290B437F00852283 /* LayoutSpeed.swift in Sources */ = {isa = PBXBuildFile; fileRef = A744FDA4290B437F00852283 /* LayoutSpeed.swift */; };
 		A744FDA7290B44D100852283 /* LayoutSpeedTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A744FDA6290B44D100852283 /* LayoutSpeedTests.swift */; };
+		A744FDA9290F375100852283 /* LayoutTrainsObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = A744FDA8290F375100852283 /* LayoutTrainsObserver.swift */; };
+		A744FDAB290F376B00852283 /* LayoutTrainsStateObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = A744FDAA290F376B00852283 /* LayoutTrainsStateObserver.swift */; };
+		A744FDAD290F377B00852283 /* LayoutTrainsSchedulingObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = A744FDAC290F377B00852283 /* LayoutTrainsSchedulingObserver.swift */; };
 		A745C16A282F2199006D16B0 /* TrainReservation.swift in Sources */ = {isa = PBXBuildFile; fileRef = A745C169282F2199006D16B0 /* TrainReservation.swift */; };
 		A74925D028E8D15C00FF39C3 /* TurnoutShapePreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = A74925CF28E8D15C00FF39C3 /* TurnoutShapePreview.swift */; };
 		A74C0E7E275C9E900043FEE5 /* MarklinLocomotiveConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = A74C0E7D275C9E900043FEE5 /* MarklinLocomotiveConfig.swift */; };
@@ -451,6 +454,9 @@
 		A744FDA22909EC6C00852283 /* RouteItem+Graph.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RouteItem+Graph.swift"; sourceTree = "<group>"; };
 		A744FDA4290B437F00852283 /* LayoutSpeed.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutSpeed.swift; sourceTree = "<group>"; };
 		A744FDA6290B44D100852283 /* LayoutSpeedTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutSpeedTests.swift; sourceTree = "<group>"; };
+		A744FDA8290F375100852283 /* LayoutTrainsObserver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutTrainsObserver.swift; sourceTree = "<group>"; };
+		A744FDAA290F376B00852283 /* LayoutTrainsStateObserver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutTrainsStateObserver.swift; sourceTree = "<group>"; };
+		A744FDAC290F377B00852283 /* LayoutTrainsSchedulingObserver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutTrainsSchedulingObserver.swift; sourceTree = "<group>"; };
 		A745C169282F2199006D16B0 /* TrainReservation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainReservation.swift; sourceTree = "<group>"; };
 		A74925CF28E8D15C00FF39C3 /* TurnoutShapePreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TurnoutShapePreview.swift; sourceTree = "<group>"; };
 		A74BDD6E282C725800BA7160 /* Routing.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; name = Routing.xctestplan; path = BTrain.xcodeproj/Routing.xctestplan; sourceTree = "<group>"; };
@@ -1070,6 +1076,17 @@
 			path = Transition;
 			sourceTree = "<group>";
 		};
+		A744FDAE290F379B00852283 /* Observers */ = {
+			isa = PBXGroup;
+			children = (
+				A783EA9E2787C6DA00E69B6D /* LayoutObserver.swift */,
+				A744FDA8290F375100852283 /* LayoutTrainsObserver.swift */,
+				A744FDAA290F376B00852283 /* LayoutTrainsStateObserver.swift */,
+				A744FDAC290F377B00852283 /* LayoutTrainsSchedulingObserver.swift */,
+			);
+			path = Observers;
+			sourceTree = "<group>";
+		};
 		A74CCC73272A5A1C004E58F5 /* Elements */ = {
 			isa = PBXGroup;
 			children = (
@@ -1155,7 +1172,7 @@
 				A744FDA02909EC2800852283 /* Layout+Graph.swift */,
 				A7E78C4127A08F9E004D1821 /* LayoutReservation.swift */,
 				A744D1362765C5A3005C2F37 /* LayoutError.swift */,
-				A783EA9E2787C6DA00E69B6D /* LayoutObserver.swift */,
+				A744FDAE290F379B00852283 /* Observers */,
 				A76507F3275BEE5F0079C71A /* LayoutDiagnostics.swift */,
 				A76C1C602880515500A22509 /* LayoutDiagnostics+Error.swift */,
 				A72720B629086B4F00E7B177 /* LayoutVector.swift */,
@@ -1783,6 +1800,7 @@
 				A7B49570289522D1001707DA /* GraphPathElement.swift in Sources */,
 				A794065E2809D51600F6A427 /* View+Snapshot.swift in Sources */,
 				A73A7DDF284F0F0D00ABEADE /* CS3DebuggerView.swift in Sources */,
+				A744FDA9290F375100852283 /* LayoutTrainsObserver.swift in Sources */,
 				A7CA5EC527964B6700171398 /* Array+Extension.swift in Sources */,
 				A7B06AF92727ACCB00BDD88C /* ServerConnection.swift in Sources */,
 				A73A7DDA284EBC8800ABEADE /* CS3SendMessageView.swift in Sources */,
@@ -1821,6 +1839,7 @@
 				A74C0E7E275C9E900043FEE5 /* MarklinLocomotiveConfig.swift in Sources */,
 				A75933E727E9903E00ECB7A0 /* TurnoutDetailsView.swift in Sources */,
 				A785C079278A6468002FD538 /* LayoutDocument+ReferenceFileDocument.swift in Sources */,
+				A744FDAB290F376B00852283 /* LayoutTrainsStateObserver.swift in Sources */,
 				A744D13327659208005C2F37 /* TrainControlSpeedView.swift in Sources */,
 				A7DB7D5827CBEAD2000893BA /* SpeedSlider.swift in Sources */,
 				A7841378273E4EB900381341 /* TurnoutShape.swift in Sources */,
@@ -1947,6 +1966,7 @@
 				A7012C91283AED29003AC687 /* Types.swift in Sources */,
 				A7CA5EBF2795D05A00171398 /* TrainControlActionsView.swift in Sources */,
 				A744FDA5290B437F00852283 /* LayoutSpeed.swift in Sources */,
+				A744FDAD290F377B00852283 /* LayoutTrainsSchedulingObserver.swift in Sources */,
 				A78B996927FE41A90021EFE4 /* PathFinder.swift in Sources */,
 				A73E0829276BF554005F9D64 /* TrainControlSetLocationSheet.swift in Sources */,
 				A792DEF627839F55004B0439 /* SimulatorView.swift in Sources */,

@@ -70,6 +70,19 @@ final class LayoutDocument: ObservableObject {
     /// Class handling tasks that must run when the connection to the Digital Controller is established
     @Published var onConnectTasks: LayoutOnConnectTasks
     
+    /// True if at least one train can be started
+    @Published var trainsThatCanBeStarted = false
+
+    /// True if at least one train can be stopped
+    @Published var trainsThatCanBeStopped = false
+
+    /// True if at least one train can be finished
+    @Published var trainsThatCanBeFinished = false
+
+    private let trainsStateObserver: LayoutTrainsStateObserver
+    private let trainsSchedulingObserver: LayoutTrainsSchedulingObserver
+    private var stateChangeUUID: UUID?
+
     init(layout: Layout, interface: CommandInterface = MarklinInterface()) {
         let simulator = MarklinCommandSimulator(layout: layout, interface: interface)
         
@@ -93,6 +106,11 @@ final class LayoutDocument: ObservableObject {
         
         switchboard.provider.layoutController = layoutController
         switchboard.update()
+        
+        self.trainsStateObserver = LayoutTrainsStateObserver(layout: layout)
+        self.trainsSchedulingObserver = LayoutTrainsSchedulingObserver(layout: layout)
+        
+        listenToTrainsStateChange(layout: layout)
     }
     
     func apply(_ other: Layout) {
@@ -100,8 +118,25 @@ final class LayoutDocument: ObservableObject {
         switchboard.fitSize()
     }
     
-    private var stateChangeUUID: UUID?
-
+    /// Listen to change in the train state and scheduling attributes
+    /// - Parameter layout: the layout
+    private func listenToTrainsStateChange(layout: Layout) {
+        self.trainsStateObserver.registerForChange { [weak self] train in
+            self?.trainStateChanged()
+        }
+        self.trainsSchedulingObserver.registerForChange { [weak self] train in
+            self?.trainStateChanged()
+        }
+    }
+    
+    /// Re-compute the states that depend from a train internal state
+    private func trainStateChanged() {
+        trainsThatCanBeStarted = layout.trainsThatCanBeStarted().count > 0
+        trainsThatCanBeStopped = layout.trainsThatCanBeStopped().count > 0
+        trainsThatCanBeFinished = layout.trainsThatCanBeFinished().count > 0
+    }
+    
+    /// Listen to power event from the Digital Controller (power on, power off)
     private func listenToPowerEvents() {
         if connected {
             stateChangeUUID = interface.callbacks.stateChanges.register { [weak self] enabled in

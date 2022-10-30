@@ -30,7 +30,7 @@ struct TrainControlListView: View {
             Spacer()
         } else {
             VStack(spacing: 0) {
-                TrainControlActionsView(layout: layout, document: document)
+                TrainControlActionsView(document: document)
                     .padding()
                 List {
                     ForEach(layout.trains.filter({$0.enabled}), id:\.self) { train in

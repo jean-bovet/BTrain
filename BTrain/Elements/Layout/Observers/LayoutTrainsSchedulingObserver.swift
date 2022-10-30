@@ -10,37 +10,20 @@
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-import SwiftUI
+import Foundation
+import Combine
 
-struct TrainControlActionsView: View {
+/// Observe any change to the ``Train/scheduling`` attribute
+final class LayoutTrainsSchedulingObserver: LayoutTrainsObserver {
     
-    @ObservedObject var document: LayoutDocument
-    
-    var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            HStack {
-                Button("􀊋 Start All") {
-                    document.startAll()
-                }.disabled(!document.trainsThatCanBeStarted)
-                
-                Spacer()
-                
-                Button("􀛷 Stop All") {
-                    document.stopAll()
-                }.disabled(!document.trainsThatCanBeStopped)
-                
-                Button("􀊆 Finish All") {
-                    document.finishAll()
-                }.disabled(!document.trainsThatCanBeFinished)
+    internal override func registerForTrainChange(_ train: Train) -> AnyCancellable {
+        let cancellable = train.$scheduling
+            .removeDuplicates()
+            .receive(on: RunLoop.main)
+            .sink { [weak self] scheduling in
+                self?.trainChanged(train)
             }
-        }
+        return cancellable
     }
-}
 
-struct TrainControlActionsView_Previews: PreviewProvider {
-    static let doc = LayoutDocument(layout: LayoutLoop2().newLayout())
-
-    static var previews: some View {
-        TrainControlActionsView(document: doc)
-    }
 }
