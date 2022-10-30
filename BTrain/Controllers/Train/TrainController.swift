@@ -222,6 +222,11 @@ final class TrainController: TrainControlling, CustomStringConvertible {
         }
     }
  
+    func stopImmediately() {
+        BTLogger.speed.debug("\(self.train, privacy: .public): stop immediately")
+        layoutController.setTrainSpeed(train, 0)
+    }
+    
     // MARK: --
     
     private func isFeedbackTriggered(layout: Layout, train: Train, feedbackId: Identifier<Feedback>) -> Bool {

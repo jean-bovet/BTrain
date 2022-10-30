@@ -35,7 +35,7 @@ extension TrainControlling {
         }
         
         // User requested to stop managing the train?
-        if mode == .stopManaged {
+        if mode == .stopManaged || mode == .stopImmediatelyManaged {
             return true
         }
         

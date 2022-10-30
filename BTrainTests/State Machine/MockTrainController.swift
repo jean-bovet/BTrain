@@ -151,6 +151,10 @@ final class MockTrainController: TrainControlling {
         }
     }
     
+    func stopImmediately() {
+        
+    }
+    
     func reschedule() {
         // no-op
     }

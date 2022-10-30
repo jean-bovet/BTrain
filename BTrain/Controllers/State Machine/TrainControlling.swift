@@ -98,6 +98,9 @@ protocol TrainControlling: AnyObject {
     /// - Parameter stateChanged: true if this method is called when the state of the train changed
     func adjustSpeed(stateChanged: Bool)
     
+    /// Stops the train immediately
+    func stopImmediately()
+    
     /// Schedule a timer that will restart the train after a specific waiting period
     func reschedule()
 }

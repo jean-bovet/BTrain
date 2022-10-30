@@ -35,12 +35,12 @@ struct TrainControlRouteActionsView: View {
                 Button("Stop") {
                     route.lastMessage = nil
                     document.stop(train: train)
-                }.disabled(train.scheduling == .stopManaged)
+                }
                 
                 Button("Finish") {
                     route.lastMessage = nil
                     document.finish(train: train)
-                }.disabled(train.scheduling == .finishManaged || train.scheduling == .stopManaged)
+                }.disabled(train.scheduling == .finishManaged || train.scheduling == .stopManaged || train.scheduling == .stopImmediatelyManaged)
             }
         }
     }

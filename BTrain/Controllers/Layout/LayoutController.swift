@@ -233,11 +233,20 @@ final class LayoutController: ObservableObject {
         }
     }
     
-    /// Stops the specified train as soon as possible. BTrain will wait until the train
-    /// as entered a block and triggered the stop feedback of the train to stop it.
+    /// Stops the specified train as soon as possible.
+    ///
+    /// The first call to this method stops the train as soon as possible, when
+    /// the train as entered a block and triggered the stop feedback.
+    ///
+    /// Calling this method again while the train is stopping is going to stop it immediately.
+    ///
     /// - Parameter train: the train to stop
     func stop(train: Train) {
-        train.scheduling = .stopManaged
+        if train.scheduling == .stopManaged {
+            train.scheduling = .stopImmediatelyManaged
+        } else {
+            train.scheduling = .stopManaged
+        }
         runControllers(.schedulingChanged(train))
     }
 

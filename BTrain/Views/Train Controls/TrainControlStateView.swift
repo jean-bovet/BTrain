@@ -41,6 +41,8 @@ struct TrainControlStateView: View {
             return "\(stateString) - automatic"
         case .stopManaged:
             return "\(stateString) - stopping"
+        case .stopImmediatelyManaged:
+            return "\(stateString) - stop immediately"
         case .finishManaged:
             return "\(stateString) - finishing"
         }                

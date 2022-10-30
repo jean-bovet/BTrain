@@ -933,6 +933,42 @@ class FixedRoutingTests: BTTestCase {
         XCTAssertEqual(p.train.scheduling, .unmanaged)
     }
     
+    func testRouteWithStopImmediately() throws {
+        let layout = LayoutLoopWithStation().newLayout()
+        let s1 = layout.block(named: "s1")
+        
+        let p = Package(layout: layout)
+        
+        try p.prepare(routeID: "r1", trainID: "0", fromBlockId: s1.uuid)
+
+        layout.strictRouteFeedbackStrategy = false
+        
+        try p.assert("r1: {r0{s1 🔴🚂0 ≏ ≏ }} <t1{sr}(0,1),s> <t2{sr}(0,1),s> [b1 ≏ ≏ ]")
+
+        try p.start()
+        
+        try p.assert("r1: {r0{s1 🟢🚂0 ≏ ≏ }} <r0<t1{sr}(0,1),s>> <r0<t2{sr}(0,1),s>> [r0[b1 ≏ ≏ ]]")
+
+        // Stop the train for the first time - the train continues to run because it has not yet reached
+        // the end of the block it is located in.
+        p.stop()
+        p.layoutController.waitUntilSettled()
+
+        XCTAssertEqual(p.train.speed.actualKph, LayoutFactory.DefaultMaximumSpeed)
+        XCTAssertEqual(p.train.state, .running)
+        XCTAssertEqual(p.train.scheduling, .stopManaged)
+        
+        // Stop the train for the second time, this time, the train will stop immedately.
+        p.stop()
+        p.layoutController.waitUntilSettled()
+
+        XCTAssertEqual(p.train.speed.actualKph, 0)
+        XCTAssertEqual(p.train.state, .stopped)
+        XCTAssertEqual(p.train.scheduling, .unmanaged)
+
+        try p.assert("r1: {r0{s1 🔴🚂0 ≏ ≏ }} <t1{sr}(0,1),s> <t2{sr}(0,1),s> [b1 ≏ ≏ ]")
+    }
+
     func testStraightLine1WithIncompleteRoute() throws {
         let layout = LayoutPointToPoint().newLayout()
 

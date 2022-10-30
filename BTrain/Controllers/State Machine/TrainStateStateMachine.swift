@@ -17,16 +17,23 @@ struct TrainStateStateMachine {
     
     func handleTrainState(train: TrainControlling) -> Bool {
         let originalState = train.state
-        switch train.state {
-        case .running:
-            handleRunningState(train: train)
-        case .braking:
-            handleBrakingState(train: train)
-        case .stopping:
-            handleStoppingState(train: train)
-        case .stopped:
-            handleStoppedState(train: train)
+        
+        if train.mode == .stopImmediatelyManaged {
+            train.state = .stopped
+            train.stopImmediately()
+        } else {
+            switch train.state {
+            case .running:
+                handleRunningState(train: train)
+            case .braking:
+                handleBrakingState(train: train)
+            case .stopping:
+                handleStoppingState(train: train)
+            case .stopped:
+                handleStoppedState(train: train)
+            }
         }
+        
         let stateChanged = originalState != train.state
         if train.state == .stopped && (stateChanged || train.mode == .stopManaged) {
             trainDidStop(train: train)
@@ -100,7 +107,7 @@ extension TrainStateStateMachine {
         switch train.route.mode {
         case .fixed:
             if (reachedStationOrDestination && train.mode == .finishManaged)
-                || train.mode == .stopManaged
+                || train.mode == .stopManaged || train.mode == .stopImmediatelyManaged
                 || train.atEndOfRoute {
                 train.mode = .unmanaged
             } else if reachedStationOrDestination {
@@ -109,14 +116,14 @@ extension TrainStateStateMachine {
 
         case .automatic:
             if (reachedStationOrDestination && train.mode == .finishManaged)
-                || train.mode == .stopManaged {
+                || train.mode == .stopManaged || train.mode == .stopImmediatelyManaged {
                 train.mode = .unmanaged
             } else if reachedStationOrDestination {
                 train.reschedule()
             }
 
         case .automaticOnce(destination: _):
-            if reachedStationOrDestination || train.mode == .stopManaged {
+            if reachedStationOrDestination || train.mode == .stopManaged || train.mode == .stopImmediatelyManaged {
                 train.mode = .unmanaged
             }
         }

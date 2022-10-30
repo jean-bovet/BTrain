@@ -58,7 +58,7 @@ struct TrainEventStateMachine {
                     return .reservedBlocksChanged(train)
                 }
             } else {
-                if train.mode == .stopManaged && train.state == .stopped {
+                if (train.mode == .stopManaged || train.mode == .stopImmediatelyManaged) && train.state == .stopped {
                     // Note: explicitly remove the reserved blocks when a stop is requested
                     // while the train is already stopped.
                     if try train.removeReservedBlocks() {
@@ -75,8 +75,8 @@ struct TrainEventStateMachine {
         case .stateChanged(_):
             // Note: do not remove the reserved blocks if they are still settling. The train
             // can be in the stopped state because the reserved blocks are still settling and
-            // the train does not have enough free distance to movei.
-            if train.state == .stopped && !train.reservedBlocksSettling {
+            // the train does not have enough free distance to move.
+            if train.state == .stopped && (!train.reservedBlocksSettling || train.mode == .unmanaged) {
                 if try train.removeReservedBlocks() {
                     return .reservedBlocksChanged(train)
                 }

@@ -170,8 +170,11 @@ final class Train: Element, ObservableObject {
         /// The train is managed by BTrain. This mode is used when BTrain is driving the train using either a fixed or automatic route.
         case managed
         
-        /// Request to stop the train and go to unmanaged mode
+        /// Request to stop the train as soon as possible and go to unmanaged mode
         case stopManaged
+
+        /// Request to stop the train immediately and go to unmanaged mode
+        case stopImmediatelyManaged
 
         /// Request to stop the train at the next station and go to unmanaged mode
         case finishManaged
