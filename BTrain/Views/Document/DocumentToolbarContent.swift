@@ -58,23 +58,21 @@ struct ConnectCommandsView: View {
 
             Spacer()
             
-            SimulatorIndicationView(simulator: document.simulator)
+            PowerStateIndicationView(document: document, simulator: document.simulator)
                         
             Spacer()
 
-            Button("Go") {
-                document.enable {}
+            if document.power {
+                Button("Stop") {
+                    document.disable {}
+                }
+                .help("Disable Power")
+            } else {
+                Button("Go") {
+                    document.enable {}
+                }
+                .help("Enable Power")
             }
-            .disabled(!document.connected)
-            .help("Enable Power")
-            .foregroundColor(.green)
-
-            Button("Stop") {
-                document.disable {}
-            }
-            .disabled(!document.connected)
-            .help("Disable Power")
-            .foregroundColor(.red)
         } else {
             Button("Connect") {
                 self.connectAlertShowing.toggle()
@@ -107,20 +105,32 @@ struct DiagnosticsIndicationView: View {
     
 }
 
-struct SimulatorIndicationView: View {
+struct PowerStateIndicationView: View {
     
+    @ObservedObject var document: LayoutDocument
     @ObservedObject var simulator: MarklinCommandSimulator
     
-    var body: some View {
-        if simulator.started {
-            Text("Running in Simulation Mode")
-                .bold()
-                .padding([.leading, .trailing])
-                .background(simulator.enabled ? .green : .gray)
-                .foregroundColor(.white)
-                .clipShape(Capsule())
-            Spacer()
+    var text: String {
+        var t = ""
+        if document.power {
+            t += "􀋦 Power ON"
+        } else {
+            t += "􀋪 Power OFF"
         }
+        if simulator.started {
+            t += " [Simulator]"
+        }
+        return t
+    }
+    
+    var body: some View {
+        Text(text)
+            .bold()
+            .padding([.all], 5)
+            .background(document.power ? .green : .red)
+            .foregroundColor(.white)
+            .clipShape(Capsule())
+        Spacer()
     }
 }
 
