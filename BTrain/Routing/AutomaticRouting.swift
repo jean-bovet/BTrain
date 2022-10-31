@@ -74,9 +74,9 @@ final class AutomaticRouting {
         } else {
             let message: String
             if let to = to {
-                message = "Unable to find a suitable route to \(to.block.name)"
+                message = "No route available to \(to.block.name)"
             } else {
-                message = "Unable to find a suitable route"
+                message = "No route available"
             }
             route.lastMessage = message
             route.steps.removeAll()
