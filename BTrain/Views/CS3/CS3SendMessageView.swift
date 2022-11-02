@@ -12,18 +12,96 @@
 
 import SwiftUI
 
+// TODO: split into several views
+struct CS3CommandDirectionView: View {
+
+    let doc: LayoutDocument
+    let query: Bool
+    @Binding var command: Command?
+
+    @State private var selectedTrain: Identifier<Train>?
+    
+    var body: some View {
+        Picker("Train:", selection: $selectedTrain) {
+            ForEach(doc.layout.trains, id:\.self) { train in
+                Text("\(train.name)").tag(train.id as Identifier<Train>?)
+            }
+        }
+        .onChange(of: selectedTrain) { newValue in
+            command = command(trainId: selectedTrain)
+        }
+    }
+    
+    private func command(trainId: Identifier<Train>?) -> Command? {
+        guard let trainId = trainId else {
+            return nil
+        }
+
+        guard let train = doc.layout.train(for: trainId) else {
+            return nil
+        }
+        
+        if query {
+            return .queryDirection(address: train.address, decoderType: train.decoder, descriptor: nil)
+        } else {
+            return .direction(address: train.address, decoderType: train.decoder, direction: .forward, priority: .normal, descriptor: nil)
+        }
+    }
+
+}
+
+struct CS3CommandSpeedView: View {
+
+    let doc: LayoutDocument
+    @Binding var command: Command?
+
+    @State private var selectedTrain: Identifier<Train>?
+    @State private var speedValue: UInt16 = 0
+
+    var body: some View {
+        HStack {
+            Picker("Train:", selection: $selectedTrain) {
+                ForEach(doc.layout.trains, id:\.self) { train in
+                    Text("\(train.name)").tag(train.id as Identifier<Train>?)
+                }
+            }
+            TextField("Value:", value: $speedValue, format: .number)
+        }
+        .onChange(of: selectedTrain) { newValue in
+            command = createCommand()
+        }
+        .onChange(of: speedValue) { newValue in
+            command = createCommand()
+        }
+    }
+    
+    private func createCommand() -> Command? {
+        guard let trainId = selectedTrain else {
+            return nil
+        }
+
+        guard let train = doc.layout.train(for: trainId) else {
+            return nil
+        }
+        
+        return .speed(address: train.address, decoderType: train.decoder, value: SpeedValue(value: speedValue))
+    }
+
+}
+
 struct CS3SendMessageView: View {
     
     enum CS3Command {
         case setDirection
         case queryDirection
+        case speed
     }
     
     let doc: LayoutDocument
     
     @State private var selection: CS3Command = .queryDirection
-    @State private var selectedTrain: Identifier<Train>?
-
+    @State private var cs3Command: Command? = nil
+    
     @State private var priority: UInt8 = 0
     @State private var command: UInt8 = 0
     @State private var resp: UInt8 = 0
@@ -44,21 +122,24 @@ struct CS3SendMessageView: View {
                 Picker("Command:", selection: $selection) {
                     Text("Set Direction").tag(CS3Command.setDirection)
                     Text("Query Direction").tag(CS3Command.queryDirection)
+                    Text("Speed").tag(CS3Command.speed)
                 }
                 
                 switch selection {
-                case .setDirection, .queryDirection:
-                    Picker("Train:", selection: $selectedTrain) {
-                        ForEach(doc.layout.trains, id:\.self) { train in
-                            Text("\(train.name)").tag(train.id as Identifier<Train>?)
-                        }
-                    }
+                case .setDirection:
+                    CS3CommandDirectionView(doc: doc, query: false, command: $cs3Command)
+                    
+                case .queryDirection:
+                    CS3CommandDirectionView(doc: doc, query: true, command: $cs3Command)
+                    
+                case .speed:
+                    CS3CommandSpeedView(doc: doc, command: $cs3Command)
                 }
             }
             
+            Divider()
+            
             Form {
-                Divider()
-                
                 TextField("Prio:", value: $priority, format: .number).unitStyle(priority.toHex())
                 TextField("Command:", value: $command, format: .number).unitStyle(command.toHex())
                 TextField("Resp:", value: $resp, format: .number).unitStyle(resp.toHex())
@@ -80,41 +161,22 @@ struct CS3SendMessageView: View {
                         TextField("7:", value: $byte7, format: .number).unitStyle(byte7.toHex())
                     }
                 }
-                
-                Button("Send") {
-                    if let command = command(trainId: selectedTrain) {
-                        doc.interface.execute(command: command, completion: nil)
-                    }
+            }
+            
+            Button("Send") {
+                if let command = cs3Command {
+                    doc.interface.execute(command: command, completion: nil)
                 }
             }
         }.onChange(of: selection) { newValue in
-            updateFields(trainId: selectedTrain)
-        }.onChange(of: selectedTrain) { newValue in
-            updateFields(trainId: newValue)
+            updateFields()
         }.onAppear() {
-            updateFields(trainId: selectedTrain)
+            updateFields()
         }
     }
-    
-    func command(trainId: Identifier<Train>?) -> Command? {
-        guard let trainId = trainId else {
-            return nil
-        }
-
-        guard let train = doc.layout.train(for: trainId) else {
-            return nil
-        }
         
-        switch selection {
-        case .setDirection:
-            return .direction(address: train.address, decoderType: train.decoder, direction: .forward, priority: .normal, descriptor: nil)
-        case .queryDirection:
-            return .queryDirection(address: train.address, decoderType: train.decoder, descriptor: nil)
-        }
-    }
-    
-    func updateFields(trainId: Identifier<Train>?) {
-        guard let command = command(trainId: trainId) else {
+    private func updateFields() {
+        guard let command = cs3Command else {
             return
         }
 
