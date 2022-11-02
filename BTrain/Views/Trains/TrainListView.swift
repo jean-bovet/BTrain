@@ -33,11 +33,19 @@ struct TrainListView: View {
                         }
                     }.width(80)
                     
+                    TableColumn("Icon") { train in
+                        if let image = document.trainIconManager.icon(for: train.id) {
+                            Image(nsImage: image)
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .frame(width: 80, height: 25)
+                        }
+                    }.width(80)
+
                     TableColumn("Name") { train in
                         TextField("Name", text: train.name)
                             .labelsHidden()
                     }
-                    
                 } rows: {
                     ForEach($layout.trains) { train in
                         TableRow(train)
