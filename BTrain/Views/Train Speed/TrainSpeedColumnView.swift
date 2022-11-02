@@ -53,7 +53,12 @@ struct TrainSpeedColumnView: View {
                     exportTable()
                 }
                 .help("Export Table")
-                
+
+                Button("􀈄") {
+                    importTable()
+                }
+                .help("Import Table")
+
                 Spacer()
                 
                 Button("􀈑") {
@@ -67,7 +72,7 @@ struct TrainSpeedColumnView: View {
         }
     }
         
-    func exportTable() {
+    private func exportTable() {
         let savePanel = NSSavePanel()
         savePanel.allowedContentTypes = [.json]
         savePanel.canCreateDirectories = true
@@ -80,6 +85,22 @@ struct TrainSpeedColumnView: View {
                 try data.write(to: url)
             } catch {
                 BTLogger.error("Error exporting Speed Table: \(error)")
+            }
+        }
+    }
+    
+    private func importTable() {
+        let openPanel = NSOpenPanel()
+        openPanel.allowedContentTypes = [.json]
+        openPanel.title = "Import Speed Table"
+        let response = openPanel.runModal()
+        if let url = openPanel.url, response == .OK {
+            do {
+                let data = try Data(contentsOf: url)
+                let decoder = JSONDecoder()
+                trainSpeed.speedTable = try decoder.decode([TrainSpeed.SpeedTableEntry].self, from: data)
+            } catch {
+                BTLogger.error("Error importing Speed Table: \(error)")
             }
         }
     }
