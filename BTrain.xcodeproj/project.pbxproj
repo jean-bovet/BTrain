@@ -111,6 +111,7 @@
 		A744FDA9290F375100852283 /* LayoutTrainsObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = A744FDA8290F375100852283 /* LayoutTrainsObserver.swift */; };
 		A744FDAB290F376B00852283 /* LayoutTrainsStateObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = A744FDAA290F376B00852283 /* LayoutTrainsStateObserver.swift */; };
 		A744FDAD290F377B00852283 /* LayoutTrainsSchedulingObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = A744FDAC290F377B00852283 /* LayoutTrainsSchedulingObserver.swift */; };
+		A744FDB02913042C00852283 /* TrainSpeedTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A744FDAF2913042C00852283 /* TrainSpeedTests.swift */; };
 		A745C16A282F2199006D16B0 /* TrainReservation.swift in Sources */ = {isa = PBXBuildFile; fileRef = A745C169282F2199006D16B0 /* TrainReservation.swift */; };
 		A74925D028E8D15C00FF39C3 /* TurnoutShapePreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = A74925CF28E8D15C00FF39C3 /* TurnoutShapePreview.swift */; };
 		A74C0E7E275C9E900043FEE5 /* MarklinLocomotiveConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = A74C0E7D275C9E900043FEE5 /* MarklinLocomotiveConfig.swift */; };
@@ -457,6 +458,7 @@
 		A744FDA8290F375100852283 /* LayoutTrainsObserver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutTrainsObserver.swift; sourceTree = "<group>"; };
 		A744FDAA290F376B00852283 /* LayoutTrainsStateObserver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutTrainsStateObserver.swift; sourceTree = "<group>"; };
 		A744FDAC290F377B00852283 /* LayoutTrainsSchedulingObserver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutTrainsSchedulingObserver.swift; sourceTree = "<group>"; };
+		A744FDAF2913042C00852283 /* TrainSpeedTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainSpeedTests.swift; sourceTree = "<group>"; };
 		A745C169282F2199006D16B0 /* TrainReservation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainReservation.swift; sourceTree = "<group>"; };
 		A74925CF28E8D15C00FF39C3 /* TurnoutShapePreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TurnoutShapePreview.swift; sourceTree = "<group>"; };
 		A74BDD6E282C725800BA7160 /* Routing.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; name = Routing.xctestplan; path = BTrain.xcodeproj/Routing.xctestplan; sourceTree = "<group>"; };
@@ -1017,6 +1019,7 @@
 			isa = PBXGroup;
 			children = (
 				A721807A275DD95900831998 /* TrainTests.swift */,
+				A744FDAF2913042C00852283 /* TrainSpeedTests.swift */,
 				A7DB7D4927C29B32000893BA /* TrainSpeedManagerTests.swift */,
 				A721807E275F099100831998 /* TurnoutTests.swift */,
 				A7F779E8272F06C400E73275 /* BlockTests.swift */,
@@ -1982,6 +1985,7 @@
 				A792DF012785095B004B0439 /* SettingsViewTests.swift in Sources */,
 				A76C1C5D287EA3AD00A22509 /* LayoutControllerTests.swift in Sources */,
 				A73E080D276ABB5C005F9D64 /* LayoutErrorTests.swift in Sources */,
+				A744FDB02913042C00852283 /* TrainSpeedTests.swift in Sources */,
 				A790799D277ED8B000771A60 /* PluggableShapeTests.swift in Sources */,
 				A783EAA12787D12200E69B6D /* BTTestCase.swift in Sources */,
 				A792DEFF278508B0004B0439 /* LayoutCreatorTests.swift in Sources */,

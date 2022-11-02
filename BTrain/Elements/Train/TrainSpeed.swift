@@ -273,6 +273,13 @@ final class TrainSpeed: ObservableObject, Equatable, CustomStringConvertible {
                 }
             }
         }
+        
+        if matchingSteps == SpeedStep.zero {
+            // The table is empty and does not have any corresponding steps for a particular Kph speed.
+            // We use the train maximum speed to interpolate the most meaningful steps corresponding to the speed.
+            matchingSteps = .init(value: UInt16(ceil(Double(speedKph) / Double(maxSpeed) * Double(decoderType.steps))))
+        }
+        
         return matchingSteps
     }
     
