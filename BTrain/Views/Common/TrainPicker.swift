@@ -10,33 +10,36 @@
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-import AppKit
+import SwiftUI
 
-extension NSImage {
-    
-    convenience init(color: NSColor, size: NSSize) {
-        self.init(size: size)
-        lockFocus()
-//        if let context = NSGraphicsContext.current {
-//            color.setFill()
-//            context.cgContext.addRect(.init(origin: .zero, size: size))
-//            context.cgContext.fillPath()
-//        }
+struct TrainPicker: View {
 
-        color.drawSwatch(in: NSRect(origin: .zero, size: size))
-        unlockFocus()
-    }
+    let doc: LayoutDocument
+    @Binding var selectedTrain: Identifier<Train>?
 
-    func pngData() -> Data? {
-        guard let cgImage = cgImage(forProposedRect: nil, context: nil, hints: nil) else {
-            return nil
-        }
-        
-        let bitmapRep = NSBitmapImageRep(cgImage: cgImage)
-        guard let data = bitmapRep.representation(using: .png, properties: [:]) else {
-            return nil
-        }
-        return data
+    var iconSize: CGSize {
+        .init(width: 60, height: 20)
     }
     
+    var trains: [Train] {
+        doc.layout.trains.filter({$0.enabled})
+    }
+    
+    var body: some View {
+        Picker("Train:", selection: $selectedTrain) {
+            ForEach(trains, id:\.self) { train in
+                HStack {
+                    Text(train.name)
+                    if let image = doc.trainIconManager.icon(for: train.id)?.copy(size: iconSize) {
+                        Image(nsImage: image)
+                    } else {
+                        Image(nsImage: NSImage(color: .windowBackgroundColor, size: iconSize))
+                    }
+                }
+                .tag(train.id as Identifier<Train>?)
+                .padding()
+            }
+        }
+    }
 }
+

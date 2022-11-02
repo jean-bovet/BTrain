@@ -56,11 +56,16 @@ struct TrainSpeedMeasurementsView: View {
     var body: some View {
         VStack(alignment: .leading) {
             HStack {
-                Picker("Locomotive:", selection: $selectedTrain) {
-                    ForEach(layout.trains.filter({$0.enabled}), id:\.self) { train in
-                        Text(train.name).tag(train.id.uuid as String?)
+                let b: Binding<Identifier<Train>?> = Binding {
+                    if let selectedTrain = selectedTrain {
+                        return Identifier<Train>(uuid: selectedTrain)
+                    } else {
+                        return nil
                     }
+                } set: {
+                    selectedTrain = $0?.uuid
                 }
+                TrainPicker(doc: document, selectedTrain: b)
                 .fixedSize()
             }
             .disabled(running)

@@ -10,33 +10,39 @@
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-import AppKit
+import SwiftUI
 
-extension NSImage {
-    
-    convenience init(color: NSColor, size: NSSize) {
-        self.init(size: size)
-        lockFocus()
-//        if let context = NSGraphicsContext.current {
-//            color.setFill()
-//            context.cgContext.addRect(.init(origin: .zero, size: size))
-//            context.cgContext.fillPath()
-//        }
+struct CS3CommandSpeedView: View {
 
-        color.drawSwatch(in: NSRect(origin: .zero, size: size))
-        unlockFocus()
+    let doc: LayoutDocument
+    @Binding var command: Command?
+
+    @State private var selectedTrain: Identifier<Train>?
+    @State private var speedValue: UInt16 = 0
+
+    var body: some View {
+        HStack {
+            TrainPicker(doc: doc, selectedTrain: $selectedTrain)
+            TextField("Value:", value: $speedValue, format: .number)
+        }
+        .onChange(of: selectedTrain) { newValue in
+            command = createCommand()
+        }
+        .onChange(of: speedValue) { newValue in
+            command = createCommand()
+        }
     }
+    
+    private func createCommand() -> Command? {
+        guard let trainId = selectedTrain else {
+            return nil
+        }
 
-    func pngData() -> Data? {
-        guard let cgImage = cgImage(forProposedRect: nil, context: nil, hints: nil) else {
+        guard let train = doc.layout.train(for: trainId) else {
             return nil
         }
         
-        let bitmapRep = NSBitmapImageRep(cgImage: cgImage)
-        guard let data = bitmapRep.representation(using: .png, properties: [:]) else {
-            return nil
-        }
-        return data
+        return .speed(address: train.address, decoderType: train.decoder, value: SpeedValue(value: speedValue))
     }
-    
+
 }

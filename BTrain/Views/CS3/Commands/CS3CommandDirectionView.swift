@@ -10,33 +10,37 @@
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-import AppKit
+import SwiftUI
 
-extension NSImage {
+struct CS3CommandDirectionView: View {
+
+    let doc: LayoutDocument
+    let query: Bool
+    @Binding var command: Command?
+
+    @State private var selectedTrain: Identifier<Train>?
     
-    convenience init(color: NSColor, size: NSSize) {
-        self.init(size: size)
-        lockFocus()
-//        if let context = NSGraphicsContext.current {
-//            color.setFill()
-//            context.cgContext.addRect(.init(origin: .zero, size: size))
-//            context.cgContext.fillPath()
-//        }
-
-        color.drawSwatch(in: NSRect(origin: .zero, size: size))
-        unlockFocus()
+    var body: some View {
+        TrainPicker(doc: doc, selectedTrain: $selectedTrain)
+            .onChange(of: selectedTrain) { newValue in
+                command = command(trainId: selectedTrain)
+            }
     }
+    
+    private func command(trainId: Identifier<Train>?) -> Command? {
+        guard let trainId = trainId else {
+            return nil
+        }
 
-    func pngData() -> Data? {
-        guard let cgImage = cgImage(forProposedRect: nil, context: nil, hints: nil) else {
+        guard let train = doc.layout.train(for: trainId) else {
             return nil
         }
         
-        let bitmapRep = NSBitmapImageRep(cgImage: cgImage)
-        guard let data = bitmapRep.representation(using: .png, properties: [:]) else {
-            return nil
+        if query {
+            return .queryDirection(address: train.address, decoderType: train.decoder, descriptor: nil)
+        } else {
+            return .direction(address: train.address, decoderType: train.decoder, direction: .forward, priority: .normal, descriptor: nil)
         }
-        return data
     }
-    
+
 }
