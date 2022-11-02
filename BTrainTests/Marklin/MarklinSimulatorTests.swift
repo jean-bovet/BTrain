@@ -96,7 +96,7 @@ class MarklinSimulatorTests: XCTestCase {
         _ = doc.interface.callbacks.register(forSpeedChange: { address, decoderType, value, ack in
             if ack {
                 acknowledgement.fulfill()
-                XCTAssertEqual(357, value.value)
+                XCTAssertEqual(358, value.value)
                 e.fulfill()
             } else {
                 directCommand.fulfill()

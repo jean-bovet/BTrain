@@ -77,13 +77,25 @@ final class MarklinInterface: CommandInterface, ObservableObject {
     static let maxCANSpeedValue = 1000
 
     func speedValue(for steps: SpeedStep, decoder: DecoderType) -> SpeedValue {
-        let value = round(Double(steps.value) * Double(MarklinInterface.maxCANSpeedValue) / Double(decoder.steps))
-        return SpeedValue(value: UInt16(value))
+        let v = Double(steps.value) * Double(MarklinInterface.maxCANSpeedValue) / Double(decoder.steps)
+        let value = ceil(v)
+        return SpeedValue(value: min(UInt16(MarklinInterface.maxCANSpeedValue), UInt16(value)))
     }
     
     func speedSteps(for value: SpeedValue, decoder: DecoderType) -> SpeedStep {
-        let steps = round(Double(value.value) / Double(MarklinInterface.maxCANSpeedValue) * Double(decoder.steps))
-        return SpeedStep(value: UInt16(steps))
+        guard value.value > 0 else {
+            return .zero
+        }
+        
+        let adjustedValue = min(value.value, UInt16(MarklinInterface.maxCANSpeedValue))
+        let v = Double(adjustedValue) / Double(MarklinInterface.maxCANSpeedValue) * Double(decoder.steps)
+        let roundedSteps = round(v)
+        if roundedSteps == 0 {
+            let ceiledSteps = ceil(v)
+            return SpeedStep(value: UInt16(ceiledSteps))
+        } else {
+            return SpeedStep(value: UInt16(roundedSteps))
+        }
     }
 
     private func triggerCompletionBlock(for message: MarklinCANMessage) {

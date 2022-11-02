@@ -193,14 +193,46 @@ class CommandInterfaceTests: XCTestCase {
         doc.interface.callbacks.unregister(uuid: uuid2)
     }
     
-    func testSpeedValueToStepConversion() {
-        let doc = LayoutDocument(layout: LayoutComplex().newLayout())
-        let train = doc.layout.train("16390") // 460 106-8 SBB
-        
-        let requestedSteps: UInt16 = 1
-        let value = doc.interface.speedValue(for: SpeedStep(value: requestedSteps), decoder: train.decoder)
-        let steps = doc.interface.speedSteps(for: SpeedValue(value: value.value), decoder: train.decoder)
-        XCTAssertEqual(steps.value, requestedSteps)
+    /// Ensures that converting a speed steps to a speed value works fine, including edge cases
+    /// when the value is 0 or 1.
+    func testSpeedStepToValueConversion() {
+        let interface = MarklinInterface()
+
+        for decoder in DecoderType.allCases {
+            let maxSteps = UInt16(decoder.steps)
+            assertSpeedStepToValue(requestedSteps: 0, convertedSteps: 0, interface: interface, decoder: decoder)
+            assertSpeedStepToValue(requestedSteps: 1, convertedSteps: 1, interface: interface, decoder: decoder)
+            assertSpeedStepToValue(requestedSteps: maxSteps, convertedSteps: maxSteps, interface: interface, decoder: decoder)
+            assertSpeedStepToValue(requestedSteps: maxSteps*2, convertedSteps: maxSteps, interface: interface, decoder: decoder)
+        }
     }
     
+    /// Ensures that converting a speed value to a speed steps works fine, including edge cases
+    /// when the value is 0 or 1.
+    func testSpeedValueToStepConversion() {
+        let interface = MarklinInterface()
+        let maxValue = UInt16(MarklinInterface.maxCANSpeedValue)
+        
+        let convertedValues: [UInt16] = [72, 38, 36, 8, 33]
+        
+        for (index, decoder) in DecoderType.allCases.enumerated() {
+            assertSpeedValueToStep(requestedValue: 0, convertedValue: 0, interface: interface, decoder: decoder)
+            assertSpeedValueToStep(requestedValue: 1, convertedValue: convertedValues[index], interface: interface, decoder: decoder)
+            assertSpeedValueToStep(requestedValue: maxValue, convertedValue: maxValue, interface: interface, decoder: decoder)
+            assertSpeedValueToStep(requestedValue: maxValue*2, convertedValue: maxValue, interface: interface, decoder: decoder)
+        }
+    }
+
+    private func assertSpeedValueToStep(requestedValue: UInt16, convertedValue: UInt16, interface: CommandInterface, decoder: DecoderType) {
+        let steps = interface.speedSteps(for: SpeedValue(value: requestedValue), decoder: decoder)
+        let value = interface.speedValue(for: steps, decoder: decoder)
+        XCTAssertEqual(value.value, convertedValue)
+    }
+    
+    private func assertSpeedStepToValue(requestedSteps: UInt16, convertedSteps: UInt16, interface: CommandInterface, decoder: DecoderType) {
+        let value = interface.speedValue(for: SpeedStep(value: requestedSteps), decoder: decoder)
+        let steps = interface.speedSteps(for: SpeedValue(value: value.value), decoder: decoder)
+        XCTAssertEqual(steps.value, convertedSteps)
+    }
+
 }
