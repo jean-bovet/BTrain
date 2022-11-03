@@ -27,46 +27,7 @@ struct CS3ReceivedMessageView: View {
             return showKnownMessages && knownMessage || showUnknownMessages && !knownMessage
         }
     }
-    
-    var table: some View {
-        Table(messages, selection: $selectedMessage) {
-            TableColumn("Prio") { message in
-                Text("\(message.prio.toHex())")
-            }.width(60)
-            TableColumn("Command") { message in
-                Text("\(message.command.toHex())")
-            }.width(60)
-            TableColumn("Resp") { message in
-                Text("\(message.resp.toHex())")
-            }.width(60)
-            TableColumn("Hash") { message in
-                Text("\(message.hash.toHex())")
-            }.width(60)
-            TableColumn("DLC") { message in
-                Text("\(message.dlc.toHex())")
-            }.width(60)
-            TableColumn("Bytes 0 to 7") { message in
-                HStack {
-                    Text("\(message.byte0.toHex())")
-                    Text("\(message.byte1.toHex())")
-                    Text("\(message.byte2.toHex())")
-                    Text("\(message.byte3.toHex())")
-                    Text("\(message.byte4.toHex())")
-                    Text("\(message.byte5.toHex())")
-                    Text("\(message.byte6.toHex())")
-                    Text("\(message.byte7.toHex())")
-                }
-            }
-            TableColumn("Description") { message in
-                if let description = MarklinCANMessagePrinter.description(message: message) {
-                    Text(description)
-                } else {
-                    Text("?")
-                }
-            }
-        }
-    }
-    
+
     var body: some View {
         VStack {
             HStack {
@@ -78,7 +39,42 @@ struct CS3ReceivedMessageView: View {
                     mi.messages.removeAll()
                 }
             }
-            table
+            Table(messages, selection: $selectedMessage) {
+                TableColumn("Prio") { message in
+                    Text("\(message.prio.toHex())")
+                }.width(60)
+                TableColumn("Command") { message in
+                    Text("\(message.command.toHex())")
+                }.width(60)
+                TableColumn("Resp") { message in
+                    Text("\(message.resp.toHex())")
+                }.width(60)
+                TableColumn("Hash") { message in
+                    Text("\(message.hash.toHex())")
+                }.width(60)
+                TableColumn("DLC") { message in
+                    Text("\(message.dlc.toHex())")
+                }.width(60)
+                TableColumn("Bytes 0 to 7") { message in
+                    HStack {
+                        Text("\(message.byte0.toHex())")
+                        Text("\(message.byte1.toHex())")
+                        Text("\(message.byte2.toHex())")
+                        Text("\(message.byte3.toHex())")
+                        Text("\(message.byte4.toHex())")
+                        Text("\(message.byte5.toHex())")
+                        Text("\(message.byte6.toHex())")
+                        Text("\(message.byte7.toHex())")
+                    }
+                }
+                TableColumn("Description") { message in
+                    if let description = MarklinCANMessagePrinter.description(message: message) {
+                        Text(description)
+                    } else {
+                        Text("?")
+                    }
+                }
+            }
         }
     }
 }
