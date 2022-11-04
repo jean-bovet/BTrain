@@ -78,8 +78,10 @@ struct TrainListView: View {
                     
                     Button("􀈄") {
                         document.discoverLocomotiveConfirmation.toggle()
-                    }.help("Download Locomotives")
-                    
+                    }
+                    .disabled(!document.connected)
+                    .help("Download Locomotives")
+
                     Spacer().fixedSpace()
                     
                     Button("􀄬") {

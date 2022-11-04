@@ -60,7 +60,7 @@ extension LayoutController {
         if let maxSpeed = locomotive.maxSpeed {
             train.speed.maxSpeed = TrainSpeed.UnitKph(maxSpeed)
         }
-        train.decoder = locomotive.decoderType
+        train.decoder = locomotive.decoderType ?? .MFX
     }
 
 }

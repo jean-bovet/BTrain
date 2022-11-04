@@ -37,5 +37,6 @@ struct CommandLocomotive {
     let name: String?
     let address: UInt32?
     let maxSpeed: UInt32?
-    let decoderType: DecoderType
+    let decoderType: DecoderType?
+    let icon: Data?
 }

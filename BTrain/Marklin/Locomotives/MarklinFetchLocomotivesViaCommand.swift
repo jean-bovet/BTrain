@@ -13,7 +13,10 @@
 import Foundation
 import Gzip
 
-final class MarklinLocomotiveConfig {
+/// Fetches the locomotive definitions from the CS3 using the CAN protocol.
+/// Note: it is recommended to use the new ``MarklinFetchLocomotives`` class which
+/// uses HTTP directly to fetch the locomotive definitions as well as their associated icons.
+final class MarklinFetchLocomotivesViaCommand {
     
     enum Status {
         case unknown

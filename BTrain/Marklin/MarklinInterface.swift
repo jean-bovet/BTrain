@@ -18,8 +18,9 @@ final class MarklinInterface: CommandInterface, ObservableObject {
     var callbacks = CommandInterfaceCallbacks()
             
     var client: Client?
-    
-    let locomotiveConfig = MarklinLocomotiveConfig()
+
+    let locomotiveConfig = MarklinFetchLocomotivesViaCommand()
+    let locomotivesFetcher = MarklinFetchLocomotives()
 
     typealias CompletionBlock = () -> Void
     private var disconnectCompletionBlocks: CompletionBlock?
@@ -65,12 +66,21 @@ final class MarklinInterface: CommandInterface, ObservableObject {
     }
         
     func execute(command: Command, completion: CompletionBlock? = nil) {
-        guard let (message, priority) = MarklinCANMessage.from(command: command) else {
-            completion?()
-            return
+        if case .locomotives(_, _) = command, let server = client?.hostString {
+            locomotivesFetcher.fetchLocomotives(server: server) { [weak self] locomotives in
+                if let locomotives = locomotives {
+                    self?.callbacks.locomotivesQueries.all.forEach { $0(locomotives) }
+                }
+                completion?()
+            }
+        } else {
+            guard let (message, priority) = MarklinCANMessage.from(command: command) else {
+                completion?()
+                return
+            }
+                            
+            send(message: message, priority: priority, completion: completion)
         }
-                        
-        send(message: message, priority: priority, completion: completion)
     }
     
     // Maximum value of the speed parameters that can be specified in the CAN message.
@@ -236,8 +246,27 @@ extension MarklinInterface: MetricsProvider {
 extension LocomotivesDocumentParser.LocomotiveInfo {
     
     var commandLocomotive: CommandLocomotive {
-        CommandLocomotive(uid: uid, name: name, address: address, maxSpeed: vmax, decoderType: type?.locomotiveDecoderType ?? .MFX)
+        CommandLocomotive(uid: uid, name: name, address: address, maxSpeed: vmax, decoderType: type?.locomotiveDecoderType ?? .MFX, icon: nil)
     }
+}
+
+extension MarklinCS3.Lok {
+    
+    var decoderType: DecoderType? {
+        switch dectyp {
+        case "mfx+", "mfx":
+            return .MFX
+        case "mm":
+            return .MM
+        default:
+            return nil
+        }
+    }
+    
+    func toCommand(icon: Data?) -> CommandLocomotive {
+        CommandLocomotive(uid: uid.valueFromHex, name: name, address: address, maxSpeed: tachomax, decoderType: decoderType, icon: icon)
+    }
+
 }
 
 extension String {

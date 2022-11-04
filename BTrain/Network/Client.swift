@@ -25,6 +25,14 @@ final class Client {
     let host: NWEndpoint.Host
     let port: NWEndpoint.Port
     
+    var hostString: String? {
+        if case .ipv4(let address) = host {
+            return address.debugDescription
+        } else {
+            return nil
+        }
+    }
+    
     init(host: String, port: UInt16) {
         self.host = NWEndpoint.Host(host)
         self.port = NWEndpoint.Port(rawValue: port)!

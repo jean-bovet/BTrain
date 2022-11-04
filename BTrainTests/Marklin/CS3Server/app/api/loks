@@ -1,0 +1,5719 @@
+[
+  {
+    "name": "193 524 SBB",
+    "internname": "193#20524#20SBB",
+    "uid": "0x400e",
+    "tachomax": 160,
+    "symbol": 0,
+    "dectyp": "mfx+",
+    "icon": "/usr/local/cs3/lokicons/SBB 193 524-6 Cargo",
+    "dir": 0,
+    "speed": 0,
+    "recent": 216,
+    "funktionen": [
+      {
+        "nr": 0,
+        "typ": 1,
+        "fs": 0,
+        "typ2": 1,
+        "dauer": 0,
+        "state": 1,
+        "isMoment": false,
+        "icon": "fkticon_a_001"
+      },
+      {
+        "nr": 1,
+        "typ": 3,
+        "fs": 0,
+        "typ2": 3,
+        "dauer": 0,
+        "state": 1,
+        "isMoment": false,
+        "icon": "fkticon_a_003"
+      },
+      {
+        "nr": 2,
+        "typ": 23,
+        "fs": 0,
+        "typ2": 23,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_023"
+      },
+      {
+        "nr": 3,
+        "typ": 10,
+        "fs": 0,
+        "typ2": 10,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_010"
+      },
+      {
+        "nr": 4,
+        "typ": 18,
+        "fs": 0,
+        "typ2": 18,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_018"
+      },
+      {
+        "nr": 5,
+        "typ": 48,
+        "fs": 0,
+        "typ2": 48,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_048"
+      },
+      {
+        "nr": 6,
+        "typ": 41,
+        "fs": 0,
+        "typ2": 41,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_041"
+      },
+      {
+        "nr": 7,
+        "typ": 10,
+        "fs": 0,
+        "typ2": 10,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_010"
+      },
+      {
+        "nr": 8,
+        "typ": 42,
+        "fs": 0,
+        "typ2": 42,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_042"
+      },
+      {
+        "nr": 9,
+        "typ": 20,
+        "fs": 0,
+        "typ2": 20,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_020"
+      },
+      {
+        "nr": 10,
+        "typ": 4,
+        "fs": 0,
+        "typ2": 4,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_004"
+      },
+      {
+        "nr": 11,
+        "typ": 118,
+        "fs": 0,
+        "typ2": 233,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_233"
+      },
+      {
+        "nr": 12,
+        "typ": 47,
+        "fs": 0,
+        "typ2": 47,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_047"
+      },
+      {
+        "nr": 13,
+        "typ": 10,
+        "fs": 0,
+        "typ2": 10,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": true,
+        "icon": "fkticon_i_010"
+      },
+      {
+        "nr": 14,
+        "typ": 118,
+        "fs": 0,
+        "typ2": 118,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_118"
+      },
+      {
+        "nr": 15,
+        "typ": 112,
+        "fs": 0,
+        "typ2": 112,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_112"
+      },
+      {
+        "nr": 16,
+        "typ": 105,
+        "fs": 0,
+        "typ2": 105,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_105"
+      },
+      {
+        "nr": 17,
+        "typ": 29,
+        "fs": 0,
+        "typ2": 29,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_029"
+      },
+      {
+        "nr": 18,
+        "typ": 116,
+        "fs": 0,
+        "typ2": 116,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_116"
+      },
+      {
+        "nr": 19,
+        "typ": 92,
+        "fs": 0,
+        "typ2": 92,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": true,
+        "icon": "fkticon_i_092"
+      },
+      {
+        "nr": 20,
+        "typ": 108,
+        "fs": 0,
+        "typ2": 108,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": true,
+        "icon": "fkticon_i_108"
+      },
+      {
+        "nr": 21,
+        "typ": 28,
+        "fs": 0,
+        "typ2": 146,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_146"
+      },
+      {
+        "nr": 22,
+        "typ": 28,
+        "fs": 0,
+        "typ2": 139,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_139"
+      },
+      {
+        "nr": 23,
+        "typ": 5,
+        "fs": 0,
+        "typ2": 244,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_244"
+      },
+      {
+        "nr": 24,
+        "typ": 45,
+        "fs": 0,
+        "typ2": 132,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": true,
+        "icon": "fkticon_i_132"
+      },
+      {
+        "nr": 25,
+        "typ": 45,
+        "fs": 0,
+        "typ2": 132,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": true,
+        "icon": "fkticon_i_132"
+      },
+      {
+        "nr": 26,
+        "typ": 43,
+        "fs": 0,
+        "typ2": 43,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": true,
+        "icon": "fkticon_i_043"
+      },
+      {
+        "nr": 27,
+        "typ": 43,
+        "fs": 0,
+        "typ2": 43,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": true,
+        "icon": "fkticon_i_043"
+      },
+      {
+        "nr": 28,
+        "typ": 25,
+        "fs": 0,
+        "typ2": 25,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": true,
+        "icon": "fkticon_i_025"
+      },
+      {
+        "nr": 29,
+        "typ": 5,
+        "fs": 0,
+        "typ2": 272,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_272"
+      },
+      {
+        "nr": 30,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 31,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      }
+    ],
+    "fnz": null,
+    "address": 14,
+    "spa": 344,
+    "spm": null,
+    "av": 23,
+    "bv": 23,
+    "volume": 100,
+    "vmin": 4,
+    "vmax": 217,
+    "xprot": 0,
+    "mfxAdr": {
+      "addr": 324,
+      "func": 65,
+      "name": 3,
+      "numfunc": 16,
+      "speedtable": 179,
+      "target": 2,
+      "volume": 301,
+      "xcel": 178
+    },
+    "artikelnr": "39199",
+    "gear": 8,
+    "tachoLabels": {
+      "kmh": "km/h",
+      "speed": 160
+    },
+    "mfxnew": false
+  },
+  {
+    "name": "460 106-8 SBB",
+    "internname": "460#20106-8#20SBB",
+    "uid": "0x4006",
+    "tachomax": 200,
+    "symbol": 0,
+    "dectyp": "mfx+",
+    "icon": "/home/cs3/cs3data/lokicons/SBB Re 460 106-8",
+    "dir": 0,
+    "speed": 0,
+    "recent": 202,
+    "funktionen": [
+      {
+        "nr": 0,
+        "typ": 1,
+        "fs": 0,
+        "typ2": 1,
+        "dauer": 0,
+        "state": 1,
+        "isMoment": false,
+        "icon": "fkticon_a_001"
+      },
+      {
+        "nr": 1,
+        "typ": 4,
+        "fs": 0,
+        "typ2": 4,
+        "dauer": 0,
+        "state": 1,
+        "isMoment": false,
+        "icon": "fkticon_a_004"
+      },
+      {
+        "nr": 2,
+        "typ": 23,
+        "fs": 0,
+        "typ2": 23,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_023"
+      },
+      {
+        "nr": 3,
+        "typ": 10,
+        "fs": 0,
+        "typ2": 10,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_010"
+      },
+      {
+        "nr": 4,
+        "typ": 18,
+        "fs": 0,
+        "typ2": 18,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_018"
+      },
+      {
+        "nr": 5,
+        "typ": 48,
+        "fs": 0,
+        "typ2": 48,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_048"
+      },
+      {
+        "nr": 6,
+        "typ": 41,
+        "fs": 0,
+        "typ2": 41,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_041"
+      },
+      {
+        "nr": 7,
+        "typ": 10,
+        "fs": 0,
+        "typ2": 10,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": true,
+        "icon": "fkticon_i_010"
+      },
+      {
+        "nr": 8,
+        "typ": 42,
+        "fs": 0,
+        "typ2": 42,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_042"
+      },
+      {
+        "nr": 9,
+        "typ": 20,
+        "fs": 0,
+        "typ2": 20,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_020"
+      },
+      {
+        "nr": 10,
+        "typ": 29,
+        "fs": 0,
+        "typ2": 29,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_029"
+      },
+      {
+        "nr": 11,
+        "typ": 11,
+        "fs": 0,
+        "typ2": 11,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_011"
+      },
+      {
+        "nr": 12,
+        "typ": 3,
+        "fs": 0,
+        "typ2": 3,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_003"
+      },
+      {
+        "nr": 13,
+        "typ": 19,
+        "fs": 0,
+        "typ2": 116,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_116"
+      },
+      {
+        "nr": 14,
+        "typ": 3,
+        "fs": 0,
+        "typ2": 3,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_003"
+      },
+      {
+        "nr": 15,
+        "typ": 112,
+        "fs": 0,
+        "typ2": 112,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_112"
+      },
+      {
+        "nr": 16,
+        "typ": 92,
+        "fs": 0,
+        "typ2": 92,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": true,
+        "icon": "fkticon_i_092"
+      },
+      {
+        "nr": 17,
+        "typ": 108,
+        "fs": 0,
+        "typ2": 108,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": true,
+        "icon": "fkticon_i_108"
+      },
+      {
+        "nr": 18,
+        "typ": 8,
+        "fs": 0,
+        "typ2": 8,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_008"
+      },
+      {
+        "nr": 19,
+        "typ": 45,
+        "fs": 0,
+        "typ2": 211,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": true,
+        "icon": "fkticon_i_211"
+      },
+      {
+        "nr": 20,
+        "typ": 47,
+        "fs": 0,
+        "typ2": 47,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_047"
+      },
+      {
+        "nr": 21,
+        "typ": 28,
+        "fs": 0,
+        "typ2": 28,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_028"
+      },
+      {
+        "nr": 22,
+        "typ": 1,
+        "fs": 0,
+        "typ2": 1,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_001"
+      },
+      {
+        "nr": 23,
+        "typ": 25,
+        "fs": 0,
+        "typ2": 25,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": true,
+        "icon": "fkticon_i_025"
+      },
+      {
+        "nr": 24,
+        "typ": 25,
+        "fs": 0,
+        "typ2": 25,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": true,
+        "icon": "fkticon_i_025"
+      },
+      {
+        "nr": 25,
+        "typ": 25,
+        "fs": 0,
+        "typ2": 25,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": true,
+        "icon": "fkticon_i_025"
+      },
+      {
+        "nr": 26,
+        "typ": 25,
+        "fs": 0,
+        "typ2": 25,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": true,
+        "icon": "fkticon_i_025"
+      },
+      {
+        "nr": 27,
+        "typ": 45,
+        "fs": 0,
+        "typ2": 211,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": true,
+        "icon": "fkticon_i_211"
+      },
+      {
+        "nr": 28,
+        "typ": 45,
+        "fs": 0,
+        "typ2": 211,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": true,
+        "icon": "fkticon_i_211"
+      },
+      {
+        "nr": 29,
+        "typ": 45,
+        "fs": 0,
+        "typ2": 211,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": true,
+        "icon": "fkticon_i_211"
+      },
+      {
+        "nr": 30,
+        "typ": 25,
+        "fs": 0,
+        "typ2": 25,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": true,
+        "icon": "fkticon_i_025"
+      },
+      {
+        "nr": 31,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      }
+    ],
+    "fnz": null,
+    "address": 6,
+    "spa": 264,
+    "spm": null,
+    "av": 9,
+    "bv": 9,
+    "volume": 100,
+    "vmin": 4,
+    "vmax": 230,
+    "xprot": 0,
+    "mfxAdr": {
+      "addr": 244,
+      "func": 33,
+      "name": 3,
+      "numfunc": 16,
+      "speedtable": 111,
+      "target": 2,
+      "volume": 221,
+      "xcel": 110
+    },
+    "artikelnr": "39461",
+    "gear": 8,
+    "tachoLabels": {
+      "kmh": "km/h",
+      "speed": 200
+    },
+    "mfxnew": false
+  },
+  {
+    "name": "460 113-4 SBB",
+    "internname": "460#20113-4#20SBB",
+    "uid": "0x400f",
+    "tachomax": 200,
+    "symbol": 0,
+    "dectyp": "mfx+",
+    "icon": "/usr/local/cs3/lokicons/SBB Re 460 113-4 SEV",
+    "dir": 0,
+    "speed": 0,
+    "recent": 210,
+    "funktionen": [
+      {
+        "nr": 0,
+        "typ": 1,
+        "fs": 0,
+        "typ2": 1,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_001"
+      },
+      {
+        "nr": 1,
+        "typ": 3,
+        "fs": 0,
+        "typ2": 3,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_003"
+      },
+      {
+        "nr": 2,
+        "typ": 23,
+        "fs": 0,
+        "typ2": 23,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_023"
+      },
+      {
+        "nr": 3,
+        "typ": 10,
+        "fs": 0,
+        "typ2": 10,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_010"
+      },
+      {
+        "nr": 4,
+        "typ": 4,
+        "fs": 0,
+        "typ2": 4,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_004"
+      },
+      {
+        "nr": 5,
+        "typ": 48,
+        "fs": 0,
+        "typ2": 48,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_048"
+      },
+      {
+        "nr": 6,
+        "typ": 41,
+        "fs": 0,
+        "typ2": 41,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_041"
+      },
+      {
+        "nr": 7,
+        "typ": 10,
+        "fs": 0,
+        "typ2": 10,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": true,
+        "icon": "fkticon_i_010"
+      },
+      {
+        "nr": 8,
+        "typ": 42,
+        "fs": 0,
+        "typ2": 42,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_042"
+      },
+      {
+        "nr": 9,
+        "typ": 20,
+        "fs": 0,
+        "typ2": 20,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_020"
+      },
+      {
+        "nr": 10,
+        "typ": 18,
+        "fs": 0,
+        "typ2": 18,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_018"
+      },
+      {
+        "nr": 11,
+        "typ": 29,
+        "fs": 0,
+        "typ2": 29,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_029"
+      },
+      {
+        "nr": 12,
+        "typ": 11,
+        "fs": 0,
+        "typ2": 11,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_011"
+      },
+      {
+        "nr": 13,
+        "typ": 116,
+        "fs": 0,
+        "typ2": 116,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_116"
+      },
+      {
+        "nr": 14,
+        "typ": 92,
+        "fs": 0,
+        "typ2": 92,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": true,
+        "icon": "fkticon_i_092"
+      },
+      {
+        "nr": 15,
+        "typ": 112,
+        "fs": 0,
+        "typ2": 112,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_112"
+      },
+      {
+        "nr": 16,
+        "typ": 118,
+        "fs": 0,
+        "typ2": 233,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_233"
+      },
+      {
+        "nr": 17,
+        "typ": 108,
+        "fs": 0,
+        "typ2": 108,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": true,
+        "icon": "fkticon_i_108"
+      },
+      {
+        "nr": 18,
+        "typ": 8,
+        "fs": 0,
+        "typ2": 8,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_008"
+      },
+      {
+        "nr": 19,
+        "typ": 45,
+        "fs": 0,
+        "typ2": 211,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": true,
+        "icon": "fkticon_i_211"
+      },
+      {
+        "nr": 20,
+        "typ": 47,
+        "fs": 0,
+        "typ2": 47,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_047"
+      },
+      {
+        "nr": 21,
+        "typ": 28,
+        "fs": 0,
+        "typ2": 28,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_028"
+      },
+      {
+        "nr": 22,
+        "typ": 1,
+        "fs": 0,
+        "typ2": 1,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_001"
+      },
+      {
+        "nr": 23,
+        "typ": 25,
+        "fs": 0,
+        "typ2": 25,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": true,
+        "icon": "fkticon_i_025"
+      },
+      {
+        "nr": 24,
+        "typ": 25,
+        "fs": 0,
+        "typ2": 25,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": true,
+        "icon": "fkticon_i_025"
+      },
+      {
+        "nr": 25,
+        "typ": 25,
+        "fs": 0,
+        "typ2": 25,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": true,
+        "icon": "fkticon_i_025"
+      },
+      {
+        "nr": 26,
+        "typ": 25,
+        "fs": 0,
+        "typ2": 25,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": true,
+        "icon": "fkticon_i_025"
+      },
+      {
+        "nr": 27,
+        "typ": 45,
+        "fs": 0,
+        "typ2": 211,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": true,
+        "icon": "fkticon_i_211"
+      },
+      {
+        "nr": 28,
+        "typ": 45,
+        "fs": 0,
+        "typ2": 211,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": true,
+        "icon": "fkticon_i_211"
+      },
+      {
+        "nr": 29,
+        "typ": 45,
+        "fs": 0,
+        "typ2": 211,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": true,
+        "icon": "fkticon_i_211"
+      },
+      {
+        "nr": 30,
+        "typ": 25,
+        "fs": 0,
+        "typ2": 25,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": true,
+        "icon": "fkticon_i_025"
+      },
+      {
+        "nr": 31,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      }
+    ],
+    "fnz": null,
+    "address": 15,
+    "spa": 264,
+    "spm": null,
+    "av": 21,
+    "bv": 21,
+    "volume": 255,
+    "vmin": 4,
+    "vmax": 230,
+    "xprot": 0,
+    "mfxAdr": {
+      "addr": 244,
+      "func": 33,
+      "name": 3,
+      "numfunc": 16,
+      "speedtable": 111,
+      "target": 2,
+      "volume": 221,
+      "xcel": 110
+    },
+    "artikelnr": "39467",
+    "gear": 8,
+    "tachoLabels": {
+      "kmh": "km/h",
+      "speed": 200
+    },
+    "mfxnew": false
+  },
+  {
+    "name": "465 011-5 BLS",
+    "internname": "465#20011-5#20BLS",
+    "uid": "0x400d",
+    "tachomax": 230,
+    "symbol": 0,
+    "dectyp": "mfx+",
+    "icon": "/usr/local/cs3/lokicons/BLS Re 465 011-5",
+    "dir": 0,
+    "speed": 0,
+    "recent": 219,
+    "funktionen": [
+      {
+        "nr": 0,
+        "typ": 1,
+        "fs": 0,
+        "typ2": 1,
+        "dauer": 0,
+        "state": 1,
+        "isMoment": false,
+        "icon": "fkticon_a_001"
+      },
+      {
+        "nr": 1,
+        "typ": 4,
+        "fs": 0,
+        "typ2": 4,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_004"
+      },
+      {
+        "nr": 2,
+        "typ": 23,
+        "fs": 0,
+        "typ2": 23,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_023"
+      },
+      {
+        "nr": 3,
+        "typ": 10,
+        "fs": 0,
+        "typ2": 10,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_010"
+      },
+      {
+        "nr": 4,
+        "typ": 18,
+        "fs": 0,
+        "typ2": 18,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_018"
+      },
+      {
+        "nr": 5,
+        "typ": 48,
+        "fs": 0,
+        "typ2": 48,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_048"
+      },
+      {
+        "nr": 6,
+        "typ": 41,
+        "fs": 0,
+        "typ2": 41,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_041"
+      },
+      {
+        "nr": 7,
+        "typ": 10,
+        "fs": 0,
+        "typ2": 10,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": true,
+        "icon": "fkticon_i_010"
+      },
+      {
+        "nr": 8,
+        "typ": 42,
+        "fs": 0,
+        "typ2": 42,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_042"
+      },
+      {
+        "nr": 9,
+        "typ": 20,
+        "fs": 0,
+        "typ2": 20,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_020"
+      },
+      {
+        "nr": 10,
+        "typ": 29,
+        "fs": 0,
+        "typ2": 29,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_029"
+      },
+      {
+        "nr": 11,
+        "typ": 11,
+        "fs": 0,
+        "typ2": 11,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_011"
+      },
+      {
+        "nr": 12,
+        "typ": 118,
+        "fs": 0,
+        "typ2": 233,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_233"
+      },
+      {
+        "nr": 13,
+        "typ": 116,
+        "fs": 0,
+        "typ2": 116,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_116"
+      },
+      {
+        "nr": 14,
+        "typ": 3,
+        "fs": 0,
+        "typ2": 3,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_003"
+      },
+      {
+        "nr": 15,
+        "typ": 112,
+        "fs": 0,
+        "typ2": 112,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_112"
+      },
+      {
+        "nr": 16,
+        "typ": 92,
+        "fs": 0,
+        "typ2": 92,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": true,
+        "icon": "fkticon_i_092"
+      },
+      {
+        "nr": 17,
+        "typ": 108,
+        "fs": 0,
+        "typ2": 108,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": true,
+        "icon": "fkticon_i_108"
+      },
+      {
+        "nr": 18,
+        "typ": 8,
+        "fs": 0,
+        "typ2": 8,
+        "dauer": 0,
+        "state": 1,
+        "isMoment": false,
+        "icon": "fkticon_a_008"
+      },
+      {
+        "nr": 19,
+        "typ": 47,
+        "fs": 0,
+        "typ2": 47,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_047"
+      },
+      {
+        "nr": 20,
+        "typ": 28,
+        "fs": 0,
+        "typ2": 28,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_028"
+      },
+      {
+        "nr": 21,
+        "typ": 1,
+        "fs": 0,
+        "typ2": 1,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_001"
+      },
+      {
+        "nr": 22,
+        "typ": 43,
+        "fs": 0,
+        "typ2": 43,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": true,
+        "icon": "fkticon_i_043"
+      },
+      {
+        "nr": 23,
+        "typ": 43,
+        "fs": 0,
+        "typ2": 43,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": true,
+        "icon": "fkticon_i_043"
+      },
+      {
+        "nr": 24,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 25,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 26,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 27,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 28,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 29,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 30,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 31,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      }
+    ],
+    "fnz": null,
+    "address": 13,
+    "spa": 344,
+    "spm": null,
+    "av": 17,
+    "bv": 17,
+    "volume": 255,
+    "vmin": 4,
+    "vmax": 248,
+    "xprot": 0,
+    "mfxAdr": {
+      "addr": 324,
+      "func": 65,
+      "name": 3,
+      "numfunc": 16,
+      "speedtable": 179,
+      "target": 2,
+      "volume": 301,
+      "xcel": 178
+    },
+    "artikelnr": "39462",
+    "gear": 8,
+    "tachoLabels": {
+      "kmh": "km/h",
+      "speed": 230
+    },
+    "mfxnew": false
+  },
+  {
+    "name": "474 003-1 SBBC",
+    "internname": "474#20003-1#20SBBC",
+    "uid": "0x4015",
+    "tachomax": 140,
+    "symbol": 0,
+    "dectyp": "mfx+",
+    "icon": "/home/cs3/cs3data/lokicons/SBB Re 474 014-8 Cargo",
+    "dir": 0,
+    "speed": 0,
+    "recent": 212,
+    "funktionen": [
+      {
+        "nr": 0,
+        "typ": 1,
+        "fs": 0,
+        "typ2": 1,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_001"
+      },
+      {
+        "nr": 1,
+        "typ": 4,
+        "fs": 0,
+        "typ2": 4,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_004"
+      },
+      {
+        "nr": 2,
+        "typ": 23,
+        "fs": 0,
+        "typ2": 23,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_023"
+      },
+      {
+        "nr": 3,
+        "typ": 10,
+        "fs": 0,
+        "typ2": 10,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_010"
+      },
+      {
+        "nr": 4,
+        "typ": 18,
+        "fs": 0,
+        "typ2": 18,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_018"
+      },
+      {
+        "nr": 5,
+        "typ": 20,
+        "fs": 0,
+        "typ2": 20,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_020"
+      },
+      {
+        "nr": 6,
+        "typ": 41,
+        "fs": 0,
+        "typ2": 41,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_041"
+      },
+      {
+        "nr": 7,
+        "typ": 10,
+        "fs": 0,
+        "typ2": 10,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_010"
+      },
+      {
+        "nr": 8,
+        "typ": 42,
+        "fs": 0,
+        "typ2": 42,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_042"
+      },
+      {
+        "nr": 9,
+        "typ": 116,
+        "fs": 0,
+        "typ2": 116,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_116"
+      },
+      {
+        "nr": 10,
+        "typ": 92,
+        "fs": 0,
+        "typ2": 92,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": true,
+        "icon": "fkticon_i_092"
+      },
+      {
+        "nr": 11,
+        "typ": 25,
+        "fs": 0,
+        "typ2": 25,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": true,
+        "icon": "fkticon_i_025"
+      },
+      {
+        "nr": 12,
+        "typ": 11,
+        "fs": 0,
+        "typ2": 11,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_011"
+      },
+      {
+        "nr": 13,
+        "typ": 108,
+        "fs": 0,
+        "typ2": 108,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": true,
+        "icon": "fkticon_i_108"
+      },
+      {
+        "nr": 14,
+        "typ": 43,
+        "fs": 0,
+        "typ2": 43,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_043"
+      },
+      {
+        "nr": 15,
+        "typ": 112,
+        "fs": 0,
+        "typ2": 112,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_112"
+      },
+      {
+        "nr": 16,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 17,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 18,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 19,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 20,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 21,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 22,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 23,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 24,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 25,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 26,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 27,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 28,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 29,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 30,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 31,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      }
+    ],
+    "fnz": null,
+    "address": 21,
+    "spa": 264,
+    "spm": null,
+    "av": 29,
+    "bv": 18,
+    "volume": 255,
+    "vmin": 5,
+    "vmax": 200,
+    "xprot": 0,
+    "mfxAdr": {
+      "addr": 244,
+      "func": 33,
+      "name": 3,
+      "numfunc": 16,
+      "speedtable": 111,
+      "target": 2,
+      "volume": 221,
+      "xcel": 110
+    },
+    "artikelnr": "29861",
+    "gear": 8,
+    "tachoLabels": {
+      "kmh": "km/h",
+      "speed": 140
+    },
+    "mfxnew": false
+  },
+  {
+    "name": "AE 6/6",
+    "internname": "AE#206#2F6",
+    "uid": "0x42",
+    "tachomax": 120,
+    "symbol": 0,
+    "dectyp": "mm",
+    "icon": "/home/cs3/cs3data/lokicons/SBB Ae 6_6 11424",
+    "dir": 1,
+    "speed": 0,
+    "recent": 223,
+    "funktionen": [
+      {
+        "nr": 0,
+        "typ": 1,
+        "fs": 0,
+        "typ2": 1,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_001"
+      },
+      {
+        "nr": 1,
+        "typ": 51,
+        "fs": 0,
+        "typ2": 51,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_051"
+      },
+      {
+        "nr": 2,
+        "typ": 52,
+        "fs": 0,
+        "typ2": 52,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_052"
+      },
+      {
+        "nr": 3,
+        "typ": 53,
+        "fs": 0,
+        "typ2": 53,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_053"
+      },
+      {
+        "nr": 4,
+        "typ": 54,
+        "fs": 0,
+        "typ2": 54,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_054"
+      },
+      {
+        "nr": 5,
+        "typ": 55,
+        "fs": 0,
+        "typ2": 55,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_055"
+      },
+      {
+        "nr": 6,
+        "typ": 56,
+        "fs": 0,
+        "typ2": 56,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_056"
+      },
+      {
+        "nr": 7,
+        "typ": 57,
+        "fs": 0,
+        "typ2": 57,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_057"
+      },
+      {
+        "nr": 8,
+        "typ": 58,
+        "fs": 0,
+        "typ2": 58,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_058"
+      },
+      {
+        "nr": 9,
+        "typ": 59,
+        "fs": 0,
+        "typ2": 59,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_059"
+      },
+      {
+        "nr": 10,
+        "typ": 60,
+        "fs": 0,
+        "typ2": 60,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_060"
+      },
+      {
+        "nr": 11,
+        "typ": 61,
+        "fs": 0,
+        "typ2": 61,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_061"
+      },
+      {
+        "nr": 12,
+        "typ": 62,
+        "fs": 0,
+        "typ2": 62,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_062"
+      },
+      {
+        "nr": 13,
+        "typ": 63,
+        "fs": 0,
+        "typ2": 63,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_063"
+      },
+      {
+        "nr": 14,
+        "typ": 64,
+        "fs": 0,
+        "typ2": 64,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_064"
+      },
+      {
+        "nr": 15,
+        "typ": 65,
+        "fs": 0,
+        "typ2": 65,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_065"
+      }
+    ],
+    "fnz": null,
+    "address": 66,
+    "spa": 0,
+    "spm": null,
+    "av": null,
+    "bv": null,
+    "volume": 64,
+    "vmin": null,
+    "vmax": 255,
+    "xprot": 0,
+    "gear": 8,
+    "tachoLabels": {
+      "kmh": "km/h",
+      "speed": 120
+    },
+    "mfxnew": false
+  },
+  {
+    "name": "Ae 6/6 11425 SBB",
+    "internname": "Ae#206#2F6#2011425#20SBB",
+    "uid": "0x4019",
+    "tachomax": 125,
+    "symbol": 0,
+    "dectyp": "mfx",
+    "icon": "/home/cs3/cs3data/lokicons/SBB Ae 6_6 11424",
+    "dir": 0,
+    "speed": 0,
+    "recent": 224,
+    "funktionen": [
+      {
+        "nr": 0,
+        "typ": 1,
+        "fs": 0,
+        "typ2": 282,
+        "dauer": 0,
+        "state": 1,
+        "isMoment": false,
+        "icon": "fkticon_a_282"
+      },
+      {
+        "nr": 1,
+        "typ": 11,
+        "fs": 0,
+        "typ2": 11,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_011"
+      },
+      {
+        "nr": 2,
+        "typ": 23,
+        "fs": 0,
+        "typ2": 23,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_023"
+      },
+      {
+        "nr": 3,
+        "typ": 12,
+        "fs": 0,
+        "typ2": 12,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_012"
+      },
+      {
+        "nr": 4,
+        "typ": 18,
+        "fs": 0,
+        "typ2": 18,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_018"
+      },
+      {
+        "nr": 5,
+        "typ": 20,
+        "fs": 0,
+        "typ2": 20,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_020"
+      },
+      {
+        "nr": 6,
+        "typ": 45,
+        "fs": 0,
+        "typ2": 45,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": true,
+        "icon": "fkticon_i_045"
+      },
+      {
+        "nr": 7,
+        "typ": 12,
+        "fs": 0,
+        "typ2": 12,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": true,
+        "icon": "fkticon_i_012"
+      },
+      {
+        "nr": 8,
+        "typ": 45,
+        "fs": 0,
+        "typ2": 45,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": true,
+        "icon": "fkticon_i_045"
+      },
+      {
+        "nr": 9,
+        "typ": 45,
+        "fs": 0,
+        "typ2": 45,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": true,
+        "icon": "fkticon_i_045"
+      },
+      {
+        "nr": 10,
+        "typ": 29,
+        "fs": 0,
+        "typ2": 29,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_029"
+      },
+      {
+        "nr": 11,
+        "typ": 20,
+        "fs": 0,
+        "typ2": 20,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_020"
+      },
+      {
+        "nr": 12,
+        "typ": 116,
+        "fs": 0,
+        "typ2": 116,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_116"
+      },
+      {
+        "nr": 13,
+        "typ": 92,
+        "fs": 0,
+        "typ2": 92,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": true,
+        "icon": "fkticon_i_092"
+      },
+      {
+        "nr": 14,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 15,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 16,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 17,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 18,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 19,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 20,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 21,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 22,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 23,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 24,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 25,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 26,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 27,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 28,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 29,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 30,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 31,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      }
+    ],
+    "fnz": null,
+    "address": 25,
+    "spa": 0,
+    "spm": null,
+    "av": 40,
+    "bv": 40,
+    "volume": 255,
+    "vmin": 4,
+    "vmax": 129,
+    "xprot": 0,
+    "mfxAdr": {
+      "addr": 324,
+      "func": 65,
+      "name": 3,
+      "numfunc": 16,
+      "speedtable": 179,
+      "target": 2,
+      "volume": 301,
+      "xcel": 178
+    },
+    "artikelnr": "60977",
+    "gear": 8,
+    "tachoLabels": {
+      "kmh": "km/h",
+      "speed": 125
+    },
+    "mfxnew": false
+  },
+  {
+    "name": "BLS",
+    "internname": "BLS",
+    "uid": "0x2e",
+    "tachomax": 200,
+    "symbol": 0,
+    "dectyp": "mm",
+    "icon": "/home/cs3/cs3data/lokicons/BLS Re 465 018-0",
+    "dir": 0,
+    "speed": 0,
+    "recent": 225,
+    "funktionen": [
+      {
+        "nr": 0,
+        "typ": 1,
+        "fs": 0,
+        "typ2": 1,
+        "dauer": 0,
+        "state": 1,
+        "isMoment": false,
+        "icon": "fkticon_a_001"
+      },
+      {
+        "nr": 1,
+        "typ": 51,
+        "fs": 0,
+        "typ2": 51,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_051"
+      },
+      {
+        "nr": 2,
+        "typ": 52,
+        "fs": 0,
+        "typ2": 52,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_052"
+      },
+      {
+        "nr": 3,
+        "typ": 53,
+        "fs": 0,
+        "typ2": 53,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_053"
+      },
+      {
+        "nr": 4,
+        "typ": 54,
+        "fs": 0,
+        "typ2": 54,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_054"
+      },
+      {
+        "nr": 5,
+        "typ": 55,
+        "fs": 0,
+        "typ2": 55,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_055"
+      },
+      {
+        "nr": 6,
+        "typ": 56,
+        "fs": 0,
+        "typ2": 56,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_056"
+      },
+      {
+        "nr": 7,
+        "typ": 57,
+        "fs": 0,
+        "typ2": 57,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_057"
+      }
+    ],
+    "fnz": null,
+    "address": 46,
+    "spa": 0,
+    "spm": null,
+    "spmspecial": "fahrpultelektro",
+    "av": 6,
+    "bv": 6,
+    "volume": 64,
+    "vmin": null,
+    "vmax": 255,
+    "xprot": 0,
+    "gear": 37,
+    "tachoLabels": {
+      "kmh": "km/h",
+      "speed": 200
+    },
+    "mfxnew": false
+  },
+  {
+    "name": "CFF 11414",
+    "internname": "CFF#2011414",
+    "uid": "0x4008",
+    "tachomax": 121,
+    "symbol": 0,
+    "dectyp": "mfx",
+    "icon": "/home/cs3/cs3data/lokicons/SBB Re 4_4 11310",
+    "dir": 0,
+    "speed": 0,
+    "recent": 222,
+    "funktionen": [
+      {
+        "nr": 0,
+        "typ": 1,
+        "fs": 0,
+        "typ2": 1,
+        "dauer": 0,
+        "state": 1,
+        "isMoment": false,
+        "icon": "fkticon_a_001"
+      },
+      {
+        "nr": 1,
+        "typ": 51,
+        "fs": 0,
+        "typ2": 51,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_051"
+      },
+      {
+        "nr": 2,
+        "typ": 52,
+        "fs": 0,
+        "typ2": 52,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_052"
+      },
+      {
+        "nr": 3,
+        "typ": 8,
+        "fs": 0,
+        "typ2": 8,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_008"
+      },
+      {
+        "nr": 4,
+        "typ": 18,
+        "fs": 0,
+        "typ2": 18,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_018"
+      },
+      {
+        "nr": 5,
+        "typ": 55,
+        "fs": 0,
+        "typ2": 55,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_055"
+      },
+      {
+        "nr": 6,
+        "typ": 56,
+        "fs": 0,
+        "typ2": 56,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_056"
+      },
+      {
+        "nr": 7,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 8,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 9,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 10,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 11,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 12,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 13,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 14,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 15,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 16,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 17,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 18,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 19,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 20,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 21,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 22,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 23,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 24,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 25,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 26,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 27,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 28,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 29,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 30,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 31,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      }
+    ],
+    "fnz": null,
+    "address": 8,
+    "spa": 0,
+    "spm": null,
+    "spmspecial": "fahrpultelektro",
+    "av": 20,
+    "bv": 20,
+    "volume": 64,
+    "vmin": 5,
+    "vmax": 180,
+    "xprot": 0,
+    "mfxAdr": {
+      "addr": 324,
+      "func": 65,
+      "name": 3,
+      "numfunc": 16,
+      "speedtable": 179,
+      "target": 2,
+      "volume": 0,
+      "xcel": 178
+    },
+    "artikelnr": "60972",
+    "gear": 8,
+    "tachoLabels": {
+      "kmh": "km/h",
+      "speed": 121
+    },
+    "mfxnew": false
+  },
+  {
+    "name": "Diesel",
+    "internname": "Diesel",
+    "uid": "0x4007",
+    "tachomax": 180,
+    "symbol": 1,
+    "dectyp": "mfx",
+    "icon": "/home/cs3/cs3data/lokicons/SBB Am 4_4 18467",
+    "dir": 0,
+    "speed": 0,
+    "recent": 221,
+    "funktionen": [
+      {
+        "nr": 0,
+        "typ": 1,
+        "fs": 0,
+        "typ2": 1,
+        "dauer": 0,
+        "state": 1,
+        "isMoment": false,
+        "icon": "fkticon_a_001"
+      },
+      {
+        "nr": 1,
+        "typ": 48,
+        "fs": 0,
+        "typ2": 48,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_048"
+      },
+      {
+        "nr": 2,
+        "typ": 23,
+        "fs": 0,
+        "typ2": 23,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_023"
+      },
+      {
+        "nr": 3,
+        "typ": 10,
+        "fs": 0,
+        "typ2": 10,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": true,
+        "icon": "fkticon_i_010"
+      },
+      {
+        "nr": 4,
+        "typ": 18,
+        "fs": 0,
+        "typ2": 18,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_018"
+      },
+      {
+        "nr": 5,
+        "typ": 2,
+        "fs": 0,
+        "typ2": 2,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_002"
+      },
+      {
+        "nr": 6,
+        "typ": 3,
+        "fs": 0,
+        "typ2": 3,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_003"
+      },
+      {
+        "nr": 7,
+        "typ": 10,
+        "fs": 0,
+        "typ2": 10,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": true,
+        "icon": "fkticon_i_010"
+      },
+      {
+        "nr": 8,
+        "typ": 9,
+        "fs": 0,
+        "typ2": 9,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_009"
+      },
+      {
+        "nr": 9,
+        "typ": 20,
+        "fs": 0,
+        "typ2": 20,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_020"
+      },
+      {
+        "nr": 10,
+        "typ": 29,
+        "fs": 0,
+        "typ2": 29,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_029"
+      },
+      {
+        "nr": 11,
+        "typ": 13,
+        "fs": 0,
+        "typ2": 13,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_013"
+      },
+      {
+        "nr": 12,
+        "typ": 25,
+        "fs": 0,
+        "typ2": 25,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": true,
+        "icon": "fkticon_i_025"
+      },
+      {
+        "nr": 13,
+        "typ": 5,
+        "fs": 0,
+        "typ2": 5,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_005"
+      },
+      {
+        "nr": 14,
+        "typ": 37,
+        "fs": 0,
+        "typ2": 37,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_037"
+      },
+      {
+        "nr": 15,
+        "typ": 11,
+        "fs": 0,
+        "typ2": 11,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": true,
+        "icon": "fkticon_i_011"
+      },
+      {
+        "nr": 16,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 17,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 18,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 19,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 20,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 21,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 22,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 23,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 24,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 25,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 26,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 27,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 28,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 29,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 30,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 31,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      }
+    ],
+    "fnz": null,
+    "address": 7,
+    "spa": 0,
+    "spm": null,
+    "spmspecial": "fahrpultdiesel",
+    "av": 20,
+    "bv": 20,
+    "volume": 255,
+    "vmin": 5,
+    "vmax": 180,
+    "xprot": 0,
+    "mfxAdr": {
+      "addr": 324,
+      "func": 65,
+      "name": 3,
+      "numfunc": 16,
+      "speedtable": 179,
+      "target": 2,
+      "volume": 301,
+      "xcel": 178
+    },
+    "artikelnr": "60976",
+    "gear": 8,
+    "tachoLabels": {
+      "kmh": "km/h",
+      "speed": 180
+    },
+    "mfxnew": false
+  },
+  {
+    "name": "Ee 3/3 PTT 7",
+    "internname": "Ee#203#2F3#20PTT#207",
+    "uid": "0x400c",
+    "tachomax": 40,
+    "symbol": 0,
+    "dectyp": "mfx+",
+    "icon": "/home/cs3/cs3data/lokicons/SBB Ee 3_3 PTT 7",
+    "dir": 0,
+    "speed": 0,
+    "recent": 50,
+    "funktionen": [
+      {
+        "nr": 0,
+        "typ": 1,
+        "fs": 0,
+        "typ2": 1,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_001"
+      },
+      {
+        "nr": 1,
+        "typ": 3,
+        "fs": 0,
+        "typ2": 3,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_003"
+      },
+      {
+        "nr": 2,
+        "typ": 23,
+        "fs": 0,
+        "typ2": 23,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_023"
+      },
+      {
+        "nr": 3,
+        "typ": 12,
+        "fs": 0,
+        "typ2": 12,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_012"
+      },
+      {
+        "nr": 4,
+        "typ": 18,
+        "fs": 0,
+        "typ2": 18,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_018"
+      },
+      {
+        "nr": 5,
+        "typ": 20,
+        "fs": 0,
+        "typ2": 20,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_020"
+      },
+      {
+        "nr": 6,
+        "typ": 3,
+        "fs": 0,
+        "typ2": 3,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_003"
+      },
+      {
+        "nr": 7,
+        "typ": 12,
+        "fs": 0,
+        "typ2": 12,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": true,
+        "icon": "fkticon_i_012"
+      },
+      {
+        "nr": 8,
+        "typ": 44,
+        "fs": 0,
+        "typ2": 44,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": true,
+        "icon": "fkticon_i_044"
+      },
+      {
+        "nr": 9,
+        "typ": 92,
+        "fs": 0,
+        "typ2": 92,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": true,
+        "icon": "fkticon_i_092"
+      },
+      {
+        "nr": 10,
+        "typ": 29,
+        "fs": 0,
+        "typ2": 29,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_029"
+      },
+      {
+        "nr": 11,
+        "typ": 106,
+        "fs": 0,
+        "typ2": 106,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_106"
+      },
+      {
+        "nr": 12,
+        "typ": 6,
+        "fs": 0,
+        "typ2": 6,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_006"
+      },
+      {
+        "nr": 13,
+        "typ": 8,
+        "fs": 0,
+        "typ2": 8,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_008"
+      },
+      {
+        "nr": 14,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 15,
+        "typ": 112,
+        "fs": 0,
+        "typ2": 112,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_112"
+      },
+      {
+        "nr": 16,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 17,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 18,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 19,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 20,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 21,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 22,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 23,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 24,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 25,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 26,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 27,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 28,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 29,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 30,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 31,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      }
+    ],
+    "fnz": null,
+    "address": 12,
+    "spa": 236,
+    "spm": null,
+    "av": 77,
+    "bv": 77,
+    "volume": 255,
+    "vmin": 7,
+    "vmax": 190,
+    "xprot": 0,
+    "mfxAdr": {
+      "addr": 216,
+      "func": 25,
+      "name": 3,
+      "numfunc": 16,
+      "speedtable": 103,
+      "target": 2,
+      "volume": 197,
+      "xcel": 102
+    },
+    "artikelnr": "36353",
+    "gear": 8,
+    "tachoLabels": {
+      "kmh": "km/h",
+      "speed": 40
+    },
+    "mfxnew": false
+  },
+  {
+    "name": "Ee3/3 16356 SBB",
+    "internname": "Ee3#2F3#2016356#20SBB",
+    "uid": "0x400a",
+    "tachomax": 40,
+    "symbol": 0,
+    "dectyp": "mfx",
+    "icon": "/home/cs3/cs3data/lokicons/SBB Ee 3_3 16356",
+    "dir": 1,
+    "speed": 0,
+    "recent": 72,
+    "funktionen": [
+      {
+        "nr": 0,
+        "typ": 1,
+        "fs": 0,
+        "typ2": 1,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_001"
+      },
+      {
+        "nr": 1,
+        "typ": 3,
+        "fs": 0,
+        "typ2": 3,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_003"
+      },
+      {
+        "nr": 2,
+        "typ": 83,
+        "fs": 0,
+        "typ2": 83,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_083"
+      },
+      {
+        "nr": 3,
+        "typ": 82,
+        "fs": 0,
+        "typ2": 82,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_082"
+      },
+      {
+        "nr": 4,
+        "typ": 3,
+        "fs": 0,
+        "typ2": 3,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_003"
+      },
+      {
+        "nr": 5,
+        "typ": 8,
+        "fs": 0,
+        "typ2": 8,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_008"
+      },
+      {
+        "nr": 6,
+        "typ": 9,
+        "fs": 0,
+        "typ2": 9,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": true,
+        "icon": "fkticon_i_009"
+      },
+      {
+        "nr": 7,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 8,
+        "typ": 18,
+        "fs": 0,
+        "typ2": 18,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_018"
+      },
+      {
+        "nr": 9,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 10,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 11,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 12,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 13,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 14,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 15,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 16,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 17,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 18,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 19,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 20,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 21,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 22,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 23,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 24,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 25,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 26,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 27,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 28,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 29,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 30,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 31,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      }
+    ],
+    "fnz": null,
+    "address": 10,
+    "spa": 0,
+    "spm": null,
+    "av": 75,
+    "bv": 75,
+    "volume": 64,
+    "vmin": 6,
+    "vmax": 202,
+    "xprot": 0,
+    "mfxAdr": {
+      "addr": 216,
+      "func": 25,
+      "name": 3,
+      "numfunc": 16,
+      "speedtable": 103,
+      "target": 2,
+      "volume": 0,
+      "xcel": 102
+    },
+    "artikelnr": "36333",
+    "gear": 8,
+    "tachoLabels": {
+      "kmh": "km/h",
+      "speed": 40
+    },
+    "mfxnew": false
+  },
+  {
+    "name": "LION 420 202-4",
+    "internname": "LION#20420#20202-4",
+    "uid": "0x4005",
+    "tachomax": 140,
+    "symbol": 0,
+    "dectyp": "mfx+",
+    "icon": "/home/cs3/cs3data/lokicons/SBB Re 4_4 11161",
+    "dir": 0,
+    "speed": 0,
+    "recent": 207,
+    "funktionen": [
+      {
+        "nr": 0,
+        "typ": 1,
+        "fs": 0,
+        "typ2": 1,
+        "dauer": 0,
+        "state": 1,
+        "isMoment": false,
+        "icon": "fkticon_a_001"
+      },
+      {
+        "nr": 1,
+        "typ": 3,
+        "fs": 0,
+        "typ2": 3,
+        "dauer": 0,
+        "state": 1,
+        "isMoment": false,
+        "icon": "fkticon_a_003"
+      },
+      {
+        "nr": 2,
+        "typ": 23,
+        "fs": 0,
+        "typ2": 23,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_023"
+      },
+      {
+        "nr": 3,
+        "typ": 12,
+        "fs": 0,
+        "typ2": 12,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_012"
+      },
+      {
+        "nr": 4,
+        "typ": 20,
+        "fs": 0,
+        "typ2": 20,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_020"
+      },
+      {
+        "nr": 5,
+        "typ": 2,
+        "fs": 0,
+        "typ2": 126,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_126"
+      },
+      {
+        "nr": 6,
+        "typ": 48,
+        "fs": 0,
+        "typ2": 48,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_048"
+      },
+      {
+        "nr": 7,
+        "typ": 4,
+        "fs": 0,
+        "typ2": 4,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_004"
+      },
+      {
+        "nr": 8,
+        "typ": 48,
+        "fs": 0,
+        "typ2": 48,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_048"
+      },
+      {
+        "nr": 9,
+        "typ": 18,
+        "fs": 0,
+        "typ2": 18,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_018"
+      },
+      {
+        "nr": 10,
+        "typ": 41,
+        "fs": 0,
+        "typ2": 41,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_041"
+      },
+      {
+        "nr": 11,
+        "typ": 42,
+        "fs": 0,
+        "typ2": 42,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_042"
+      },
+      {
+        "nr": 12,
+        "typ": 29,
+        "fs": 0,
+        "typ2": 29,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_029"
+      },
+      {
+        "nr": 13,
+        "typ": 92,
+        "fs": 0,
+        "typ2": 92,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": true,
+        "icon": "fkticon_i_092"
+      },
+      {
+        "nr": 14,
+        "typ": 101,
+        "fs": 0,
+        "typ2": 101,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_101"
+      },
+      {
+        "nr": 15,
+        "typ": 112,
+        "fs": 0,
+        "typ2": 112,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_112"
+      },
+      {
+        "nr": 16,
+        "typ": 108,
+        "fs": 0,
+        "typ2": 108,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": true,
+        "icon": "fkticon_i_108"
+      },
+      {
+        "nr": 17,
+        "typ": 28,
+        "fs": 0,
+        "typ2": 28,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_028"
+      },
+      {
+        "nr": 18,
+        "typ": 19,
+        "fs": 0,
+        "typ2": 116,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_116"
+      },
+      {
+        "nr": 19,
+        "typ": 43,
+        "fs": 0,
+        "typ2": 43,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_043"
+      },
+      {
+        "nr": 20,
+        "typ": 11,
+        "fs": 0,
+        "typ2": 11,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_011"
+      },
+      {
+        "nr": 21,
+        "typ": 5,
+        "fs": 0,
+        "typ2": 5,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": true,
+        "icon": "fkticon_i_005"
+      },
+      {
+        "nr": 22,
+        "typ": 12,
+        "fs": 0,
+        "typ2": 12,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": true,
+        "icon": "fkticon_i_012"
+      },
+      {
+        "nr": 23,
+        "typ": 8,
+        "fs": 0,
+        "typ2": 8,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_008"
+      },
+      {
+        "nr": 24,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 25,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 26,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 27,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 28,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 29,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 30,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 31,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      }
+    ],
+    "fnz": null,
+    "address": 5,
+    "spa": 344,
+    "spm": null,
+    "av": 17,
+    "bv": 17,
+    "volume": 100,
+    "vmin": 4,
+    "vmax": 180,
+    "xprot": 0,
+    "mfxAdr": {
+      "addr": 324,
+      "func": 65,
+      "name": 3,
+      "numfunc": 16,
+      "speedtable": 179,
+      "target": 2,
+      "volume": 301,
+      "xcel": 178
+    },
+    "artikelnr": "37304",
+    "gear": 8,
+    "tachoLabels": {
+      "kmh": "km/h",
+      "speed": 140
+    },
+    "mfxnew": false
+  },
+  {
+    "name": "ML 003",
+    "internname": "ML#20003",
+    "uid": "0x4017",
+    "tachomax": 20,
+    "symbol": 1,
+    "dectyp": "mfx",
+    "icon": "/home/cs3/cs3data/lokicons/DVM ML 003",
+    "dir": 0,
+    "speed": 0,
+    "recent": 108,
+    "funktionen": [
+      {
+        "nr": 0,
+        "typ": 1,
+        "fs": 0,
+        "typ2": 282,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_282"
+      },
+      {
+        "nr": 1,
+        "typ": 3,
+        "fs": 0,
+        "typ2": 212,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_212"
+      },
+      {
+        "nr": 2,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 3,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 4,
+        "typ": 18,
+        "fs": 0,
+        "typ2": 18,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_018"
+      },
+      {
+        "nr": 5,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 6,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 7,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 8,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 9,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 10,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 11,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 12,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 13,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 14,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 15,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      }
+    ],
+    "fnz": null,
+    "address": 23,
+    "spa": 0,
+    "spm": null,
+    "av": 15,
+    "bv": 15,
+    "volume": 64,
+    "vmin": 5,
+    "vmax": 255,
+    "xprot": 0,
+    "mfxAdr": {
+      "addr": 136,
+      "func": 21,
+      "name": 3,
+      "numfunc": 16,
+      "speedtable": 79,
+      "target": 2,
+      "volume": 0,
+      "xcel": 78
+    },
+    "artikelnr": "36700",
+    "gear": 8,
+    "tachoLabels": {
+      "kmh": "km/h",
+      "speed": 20
+    },
+    "mfxnew": false
+  },
+  {
+    "name": "RAIL 2000",
+    "internname": "RAIL#202000",
+    "uid": "0x4009",
+    "tachomax": 180,
+    "symbol": 0,
+    "dectyp": "mfx",
+    "icon": "/home/cs3/cs3data/lokicons/SBB Re 4_4 IV Bahn 2000",
+    "dir": 0,
+    "speed": 0,
+    "recent": 215,
+    "funktionen": [
+      {
+        "nr": 0,
+        "typ": 1,
+        "fs": 0,
+        "typ2": 1,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_001"
+      },
+      {
+        "nr": 1,
+        "typ": 51,
+        "fs": 0,
+        "typ2": 51,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_051"
+      },
+      {
+        "nr": 2,
+        "typ": 52,
+        "fs": 0,
+        "typ2": 52,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_052"
+      },
+      {
+        "nr": 3,
+        "typ": 8,
+        "fs": 0,
+        "typ2": 8,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_008"
+      },
+      {
+        "nr": 4,
+        "typ": 18,
+        "fs": 0,
+        "typ2": 18,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_018"
+      },
+      {
+        "nr": 5,
+        "typ": 55,
+        "fs": 0,
+        "typ2": 55,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_055"
+      },
+      {
+        "nr": 6,
+        "typ": 56,
+        "fs": 0,
+        "typ2": 56,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_056"
+      },
+      {
+        "nr": 7,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 8,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 9,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 10,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 11,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 12,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 13,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 14,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 15,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 16,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 17,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 18,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 19,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 20,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 21,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 22,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 23,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 24,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 25,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 26,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 27,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 28,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 29,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 30,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 31,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      }
+    ],
+    "fnz": null,
+    "address": 9,
+    "spa": 0,
+    "spm": null,
+    "spmspecial": "fahrpultelektro",
+    "av": 20,
+    "bv": 20,
+    "volume": 64,
+    "vmin": 5,
+    "vmax": 180,
+    "xprot": 0,
+    "mfxAdr": {
+      "addr": 324,
+      "func": 65,
+      "name": 3,
+      "numfunc": 16,
+      "speedtable": 179,
+      "target": 2,
+      "volume": 0,
+      "xcel": 178
+    },
+    "artikelnr": "60972",
+    "gear": 8,
+    "tachoLabels": {
+      "kmh": "km/h",
+      "speed": 180
+    },
+    "mfxnew": false
+  },
+  {
+    "name": "Re 4/4 I 409 SBB",
+    "internname": "Re#204#2F4#20I#20409#20SBB",
+    "uid": "0x400b",
+    "tachomax": 125,
+    "symbol": 0,
+    "dectyp": "mfx+",
+    "icon": "/home/cs3/cs3data/lokicons/SBB Re 4_4 409",
+    "dir": 0,
+    "speed": 0,
+    "recent": 183,
+    "funktionen": [
+      {
+        "nr": 0,
+        "typ": 1,
+        "fs": 0,
+        "typ2": 1,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_001"
+      },
+      {
+        "nr": 1,
+        "typ": 11,
+        "fs": 0,
+        "typ2": 11,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_011"
+      },
+      {
+        "nr": 2,
+        "typ": 23,
+        "fs": 0,
+        "typ2": 23,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_023"
+      },
+      {
+        "nr": 3,
+        "typ": 12,
+        "fs": 0,
+        "typ2": 12,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_012"
+      },
+      {
+        "nr": 4,
+        "typ": 18,
+        "fs": 0,
+        "typ2": 18,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_018"
+      },
+      {
+        "nr": 5,
+        "typ": 20,
+        "fs": 0,
+        "typ2": 20,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_020"
+      },
+      {
+        "nr": 6,
+        "typ": 41,
+        "fs": 0,
+        "typ2": 41,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_041"
+      },
+      {
+        "nr": 7,
+        "typ": 12,
+        "fs": 0,
+        "typ2": 12,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": true,
+        "icon": "fkticon_i_012"
+      },
+      {
+        "nr": 8,
+        "typ": 42,
+        "fs": 0,
+        "typ2": 42,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_042"
+      },
+      {
+        "nr": 9,
+        "typ": 29,
+        "fs": 0,
+        "typ2": 29,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_029"
+      },
+      {
+        "nr": 10,
+        "typ": 19,
+        "fs": 0,
+        "typ2": 116,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_116"
+      },
+      {
+        "nr": 11,
+        "typ": 5,
+        "fs": 0,
+        "typ2": 5,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_005"
+      },
+      {
+        "nr": 12,
+        "typ": 92,
+        "fs": 0,
+        "typ2": 92,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": true,
+        "icon": "fkticon_i_092"
+      },
+      {
+        "nr": 13,
+        "typ": 25,
+        "fs": 0,
+        "typ2": 25,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": true,
+        "icon": "fkticon_i_025"
+      },
+      {
+        "nr": 14,
+        "typ": 101,
+        "fs": 0,
+        "typ2": 101,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_101"
+      },
+      {
+        "nr": 15,
+        "typ": 112,
+        "fs": 0,
+        "typ2": 112,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_112"
+      },
+      {
+        "nr": 16,
+        "typ": 8,
+        "fs": 0,
+        "typ2": 8,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_008"
+      },
+      {
+        "nr": 17,
+        "typ": 28,
+        "fs": 0,
+        "typ2": 28,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": true,
+        "icon": "fkticon_i_028"
+      },
+      {
+        "nr": 18,
+        "typ": 108,
+        "fs": 0,
+        "typ2": 108,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": true,
+        "icon": "fkticon_i_108"
+      },
+      {
+        "nr": 19,
+        "typ": 43,
+        "fs": 0,
+        "typ2": 43,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_043"
+      },
+      {
+        "nr": 20,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 21,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 22,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 23,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 24,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 25,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 26,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 27,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 28,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 29,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 30,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 31,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      }
+    ],
+    "fnz": null,
+    "address": 11,
+    "spa": 344,
+    "spm": null,
+    "av": 18,
+    "bv": 18,
+    "volume": 255,
+    "vmin": 4,
+    "vmax": 231,
+    "xprot": 0,
+    "mfxAdr": {
+      "addr": 324,
+      "func": 65,
+      "name": 3,
+      "numfunc": 16,
+      "speedtable": 179,
+      "target": 2,
+      "volume": 301,
+      "xcel": 178
+    },
+    "artikelnr": "39422",
+    "gear": 8,
+    "tachoLabels": {
+      "kmh": "km/h",
+      "speed": 125
+    },
+    "mfxnew": false
+  },
+  {
+    "name": "Re 620 011-7 SBB",
+    "internname": "Re#20620#20011-7#20SBB",
+    "uid": "0x401a",
+    "tachomax": 140,
+    "symbol": 0,
+    "dectyp": "mfx+",
+    "icon": "/usr/local/cs3/lokicons/SBB Re 620 011-7",
+    "dir": 0,
+    "speed": 0,
+    "recent": 211,
+    "funktionen": [
+      {
+        "nr": 0,
+        "typ": 1,
+        "fs": 0,
+        "typ2": 1,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_001"
+      },
+      {
+        "nr": 1,
+        "typ": 3,
+        "fs": 0,
+        "typ2": 3,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_003"
+      },
+      {
+        "nr": 2,
+        "typ": 23,
+        "fs": 0,
+        "typ2": 23,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_023"
+      },
+      {
+        "nr": 3,
+        "typ": 12,
+        "fs": 0,
+        "typ2": 12,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_012"
+      },
+      {
+        "nr": 4,
+        "typ": 4,
+        "fs": 0,
+        "typ2": 4,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_004"
+      },
+      {
+        "nr": 5,
+        "typ": 48,
+        "fs": 0,
+        "typ2": 48,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_048"
+      },
+      {
+        "nr": 6,
+        "typ": 41,
+        "fs": 0,
+        "typ2": 41,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_041"
+      },
+      {
+        "nr": 7,
+        "typ": 48,
+        "fs": 0,
+        "typ2": 48,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_048"
+      },
+      {
+        "nr": 8,
+        "typ": 42,
+        "fs": 0,
+        "typ2": 42,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_042"
+      },
+      {
+        "nr": 9,
+        "typ": 18,
+        "fs": 0,
+        "typ2": 18,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_018"
+      },
+      {
+        "nr": 10,
+        "typ": 20,
+        "fs": 0,
+        "typ2": 20,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_020"
+      },
+      {
+        "nr": 11,
+        "typ": 2,
+        "fs": 0,
+        "typ2": 126,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_126"
+      },
+      {
+        "nr": 12,
+        "typ": 12,
+        "fs": 0,
+        "typ2": 12,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": true,
+        "icon": "fkticon_i_012"
+      },
+      {
+        "nr": 13,
+        "typ": 101,
+        "fs": 0,
+        "typ2": 101,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_101"
+      },
+      {
+        "nr": 14,
+        "typ": 29,
+        "fs": 0,
+        "typ2": 29,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_029"
+      },
+      {
+        "nr": 15,
+        "typ": 112,
+        "fs": 0,
+        "typ2": 112,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_112"
+      },
+      {
+        "nr": 16,
+        "typ": 116,
+        "fs": 0,
+        "typ2": 116,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_116"
+      },
+      {
+        "nr": 17,
+        "typ": 92,
+        "fs": 0,
+        "typ2": 92,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": true,
+        "icon": "fkticon_i_092"
+      },
+      {
+        "nr": 18,
+        "typ": 5,
+        "fs": 0,
+        "typ2": 5,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": true,
+        "icon": "fkticon_i_005"
+      },
+      {
+        "nr": 19,
+        "typ": 25,
+        "fs": 0,
+        "typ2": 25,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": true,
+        "icon": "fkticon_i_025"
+      },
+      {
+        "nr": 20,
+        "typ": 11,
+        "fs": 0,
+        "typ2": 11,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_011"
+      },
+      {
+        "nr": 21,
+        "typ": 108,
+        "fs": 0,
+        "typ2": 108,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": true,
+        "icon": "fkticon_i_108"
+      },
+      {
+        "nr": 22,
+        "typ": 5,
+        "fs": 0,
+        "typ2": 5,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_005"
+      },
+      {
+        "nr": 23,
+        "typ": 43,
+        "fs": 0,
+        "typ2": 43,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_043"
+      },
+      {
+        "nr": 24,
+        "typ": 8,
+        "fs": 0,
+        "typ2": 8,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_008"
+      },
+      {
+        "nr": 25,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 26,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 27,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 28,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 29,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 30,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 31,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      }
+    ],
+    "fnz": null,
+    "address": 26,
+    "spa": 344,
+    "spm": null,
+    "av": 24,
+    "bv": 24,
+    "volume": 255,
+    "vmin": 4,
+    "vmax": 167,
+    "xprot": 0,
+    "mfxAdr": {
+      "addr": 324,
+      "func": 65,
+      "name": 3,
+      "numfunc": 16,
+      "speedtable": 179,
+      "target": 2,
+      "volume": 301,
+      "xcel": 178
+    },
+    "artikelnr": "37327",
+    "gear": 8,
+    "tachoLabels": {
+      "kmh": "km/h",
+      "speed": 140
+    },
+    "mfxnew": false
+  },
+  {
+    "name": "TGV EuroDuplex",
+    "internname": "TGV#20EuroDuplex",
+    "uid": "0x4018",
+    "tachomax": 320,
+    "symbol": 0,
+    "dectyp": "mfx+",
+    "icon": "/usr/local/cs3/lokicons/SNCF TGV Duplex",
+    "dir": 0,
+    "speed": 0,
+    "recent": 217,
+    "funktionen": [
+      {
+        "nr": 0,
+        "typ": 1,
+        "fs": 0,
+        "typ2": 1,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_001"
+      },
+      {
+        "nr": 1,
+        "typ": 2,
+        "fs": 0,
+        "typ2": 2,
+        "dauer": 0,
+        "state": 1,
+        "isMoment": false,
+        "icon": "fkticon_a_002"
+      },
+      {
+        "nr": 2,
+        "typ": 23,
+        "fs": 0,
+        "typ2": 23,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_023"
+      },
+      {
+        "nr": 3,
+        "typ": 10,
+        "fs": 0,
+        "typ2": 10,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_010"
+      },
+      {
+        "nr": 4,
+        "typ": 18,
+        "fs": 0,
+        "typ2": 18,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_018"
+      },
+      {
+        "nr": 5,
+        "typ": 20,
+        "fs": 0,
+        "typ2": 20,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_020"
+      },
+      {
+        "nr": 6,
+        "typ": 3,
+        "fs": 0,
+        "typ2": 3,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_003"
+      },
+      {
+        "nr": 7,
+        "typ": 10,
+        "fs": 0,
+        "typ2": 10,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": true,
+        "icon": "fkticon_i_010"
+      },
+      {
+        "nr": 8,
+        "typ": 11,
+        "fs": 0,
+        "typ2": 11,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_011"
+      },
+      {
+        "nr": 9,
+        "typ": 28,
+        "fs": 0,
+        "typ2": 28,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_028"
+      },
+      {
+        "nr": 10,
+        "typ": 25,
+        "fs": 0,
+        "typ2": 25,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": true,
+        "icon": "fkticon_i_025"
+      },
+      {
+        "nr": 11,
+        "typ": 25,
+        "fs": 0,
+        "typ2": 25,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": true,
+        "icon": "fkticon_i_025"
+      },
+      {
+        "nr": 12,
+        "typ": 101,
+        "fs": 0,
+        "typ2": 101,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_101"
+      },
+      {
+        "nr": 13,
+        "typ": 108,
+        "fs": 0,
+        "typ2": 108,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": true,
+        "icon": "fkticon_i_108"
+      },
+      {
+        "nr": 14,
+        "typ": 29,
+        "fs": 0,
+        "typ2": 29,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_029"
+      },
+      {
+        "nr": 15,
+        "typ": 112,
+        "fs": 0,
+        "typ2": 112,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_112"
+      },
+      {
+        "nr": 16,
+        "typ": 92,
+        "fs": 0,
+        "typ2": 92,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": true,
+        "icon": "fkticon_i_092"
+      },
+      {
+        "nr": 17,
+        "typ": 116,
+        "fs": 0,
+        "typ2": 116,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_116"
+      },
+      {
+        "nr": 18,
+        "typ": 45,
+        "fs": 0,
+        "typ2": 121,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": true,
+        "icon": "fkticon_i_121"
+      },
+      {
+        "nr": 19,
+        "typ": 45,
+        "fs": 0,
+        "typ2": 211,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": true,
+        "icon": "fkticon_i_211"
+      },
+      {
+        "nr": 20,
+        "typ": 45,
+        "fs": 0,
+        "typ2": 120,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false,
+        "icon": "fkticon_i_120"
+      },
+      {
+        "nr": 21,
+        "typ": 45,
+        "fs": 0,
+        "typ2": 205,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": true,
+        "icon": "fkticon_i_205"
+      },
+      {
+        "nr": 22,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 23,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 24,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 25,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 26,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 27,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 28,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 29,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 30,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      },
+      {
+        "nr": 31,
+        "typ": 0,
+        "fs": 0,
+        "typ2": 0,
+        "dauer": 0,
+        "state": 0,
+        "isMoment": false
+      }
+    ],
+    "fnz": null,
+    "address": 24,
+    "spa": 344,
+    "spm": null,
+    "av": 30,
+    "bv": 30,
+    "volume": 255,
+    "vmin": 5,
+    "vmax": 240,
+    "xprot": 0,
+    "mfxAdr": {
+      "addr": 324,
+      "func": 65,
+      "name": 3,
+      "numfunc": 16,
+      "speedtable": 179,
+      "target": 2,
+      "volume": 301,
+      "xcel": 178
+    },
+    "artikelnr": "37793",
+    "gear": 8,
+    "tachoLabels": {
+      "kmh": "km/h",
+      "speed": 320
+    },
+    "mfxnew": false
+  }
+]
