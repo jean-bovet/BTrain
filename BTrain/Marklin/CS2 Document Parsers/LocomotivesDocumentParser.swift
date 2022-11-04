@@ -12,16 +12,16 @@
 
 import Foundation
 
-struct Locomotive {
-    var uid: UInt32?
-    var name: String?
-    var address: UInt32?
-    var type: String?
-    var vmax: UInt32?
-}
-
 final class LocomotivesDocumentParser: CS2DocumentParser {
-    
+
+    struct LocomotiveInfo {
+        var uid: UInt32?
+        var name: String?
+        var address: UInt32?
+        var type: String?
+        var vmax: UInt32?
+    }
+
     /*
      [lokomotive]
      version
@@ -46,14 +46,14 @@ final class LocomotivesDocumentParser: CS2DocumentParser {
       .velocity=0
       .richtung=0
      */
-    func parse() -> [Locomotive]? {
+    func parse() -> [LocomotiveInfo]? {
         guard matches("[lokomotive]") else {
             BTLogger.debug("Expecting [lokomotive] header as the first line")
             return nil
         }
 
         // Parse each section
-        var locs = [Locomotive]()
+        var locs = [LocomotiveInfo]()
         while let section = matchesSectionName() {
             switch(section) {
             case "lokomotive":
@@ -67,7 +67,7 @@ final class LocomotivesDocumentParser: CS2DocumentParser {
         return locs
     }
 
-    private func parseLokomotive() -> Locomotive {
+    private func parseLokomotive() -> LocomotiveInfo {
 //        .name=460 106-8 SBB
 //        .uid=0x4006
 //        .mfxuid=0x73f44085
@@ -86,7 +86,7 @@ final class LocomotivesDocumentParser: CS2DocumentParser {
 //        .ft=33
 //        .velocity=0
 //        .richtung=0
-        var loc = Locomotive()
+        var loc = LocomotiveInfo()
         while let line = line, line.starts(with: ".") {
             if let name = valueFor(field: ".name=") {
                 loc.name = name

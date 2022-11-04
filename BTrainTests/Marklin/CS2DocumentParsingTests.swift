@@ -35,7 +35,7 @@ class CS2DocumentParsingTests: XCTestCase {
         assert(loc: locs[2].commandLocomotive, uid: 0x2e, name: "BLS", address: 0x2e, type: .MM)
     }
 
-    func assert(loc: Locomotive, uid: UInt32, name: String, address: UInt32, type: String) {
+    func assert(loc: LocomotivesDocumentParser.LocomotiveInfo, uid: UInt32, name: String, address: UInt32, type: String) {
         XCTAssertEqual(loc.uid, uid)
         XCTAssertEqual(loc.name, name)
         XCTAssertEqual(loc.address, address)

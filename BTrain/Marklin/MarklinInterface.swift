@@ -233,7 +233,7 @@ extension MarklinInterface: MetricsProvider {
     }        
 }
 
-extension Locomotive {
+extension LocomotivesDocumentParser.LocomotiveInfo {
     
     var commandLocomotive: CommandLocomotive {
         CommandLocomotive(uid: uid, name: name, address: address, maxSpeed: vmax, decoderType: type?.locomotiveDecoderType ?? .MFX)

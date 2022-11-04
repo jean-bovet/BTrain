@@ -19,7 +19,7 @@ final class MarklinLocomotiveConfig {
         case unknown
         case error
         case processing
-        case completed(loc: [Locomotive])
+        case completed(loc: [LocomotivesDocumentParser.LocomotiveInfo])
     }
         
     private var configDataLength = 0
@@ -69,7 +69,7 @@ final class MarklinLocomotiveConfig {
         }
     }
     
-    private func parse(data: Data) -> [Locomotive]? {
+    private func parse(data: Data) -> [LocomotivesDocumentParser.LocomotiveInfo]? {
         let text = String(decoding: data, as: UTF8.self)
         let parser = LocomotivesDocumentParser(text: text)
         if let locomotives = parser.parse() {

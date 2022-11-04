@@ -68,7 +68,7 @@ class LayoutDocumentTests: XCTestCase {
         doc.stop(train: train)
     }
     
-    static weak var memoryLeakLayout: Layout?
+    static weak var memoryLeakLayout: BTrain.Layout?
     
     func testMemoryLeak() {
         var doc: LayoutDocument? = LayoutDocument(layout: LayoutLoop1().newLayout())
