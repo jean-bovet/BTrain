@@ -56,7 +56,7 @@ struct TrainSpeedGraphView: View {
                 ctx.addLine(to: CGPoint(x: x, y: y + rect.height))
                 ctx.strokePath()
                 
-                ctx.drawText(at: CGPoint(x: x, y: margin), hAlignment: .center, flip: false, text: "\(index)", color: textColor, fontSize: fontSize)
+                ctx.drawText(at: CGPoint(x: x, y: y - fontSize), vAlignment: .bottom, hAlignment: .center, flip: false, text: "\(index)", color: textColor, fontSize: fontSize)
             }
         }
         
@@ -70,7 +70,7 @@ struct TrainSpeedGraphView: View {
                 ctx.addLine(to: CGPoint(x: rect.width, y: y))
                 ctx.strokePath()
                 
-                ctx.drawText(at: CGPoint(x: vAxisTextRect.width, y: y), hAlignment: .right, flip: false, text: "\(index)", color: textColor, fontSize: fontSize)
+                ctx.drawText(at: CGPoint(x: vAxisTextRect.width, y: y - fontSize/2), hAlignment: .right, flip: false, text: "\(index)", color: textColor, fontSize: fontSize)
             }
         }
         
