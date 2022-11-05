@@ -44,6 +44,8 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
     private var cancellables = [AnyCancellable]()
 
     private var server: Server?
+    
+    private var cs3Server = MarklinCS3Server()
 
     private var timer: Timer?
     
@@ -127,6 +129,8 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
     }
     
     func start() {
+        try! cs3Server.start()
+        
         server = Server(port: 15731)
         server!.didAcceptConnection = { [weak self] connection in
             self?.register(with: connection)
@@ -136,6 +140,8 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
     }
         
     func stop(_ completion: @escaping CompletionBlock) {
+        cs3Server.stop()
+        
         let onCompletionBlock = { [weak self] in
             self?.started = false
             self?.enabled = false

@@ -21,7 +21,7 @@ struct MarklinFetchLocomotives {
     ///   - server: the IP address of the Central Station
     ///   - completion: an array of locomotive commands or nil
     func fetchLocomotives(server: String, completion: @escaping ([CommandLocomotive]?) -> Void) {
-        guard let url = URL(string: "http://\(server)") else {
+        guard let url = URL(string: "http://\(server):8080") else {
             completion(nil)
             return
         }
@@ -29,6 +29,10 @@ struct MarklinFetchLocomotives {
         fetchLocomotives(server: url, completion: completion)
     }
     
+    /// Fetch the locomotive commands from the specified Central Station URL
+    /// - Parameters:
+    ///   - server: the URL of the Central Station (can also be a local file for testing)
+    ///   - completion: an array of locomotive commands or nil
     func fetchLocomotives(server: URL, completion: @escaping ([CommandLocomotive]?) -> Void) {
         Task {
             let cs3 = MarklinCS3()
@@ -60,7 +64,13 @@ struct MarklinFetchLocomotives {
     private func fetchIcon(from url: URL, for lok: MarklinCS3.Lok) async -> Data? {
         do {
             let cs3 = MarklinCS3()
-            return try await cs3.fetchLokIcon(server: url, lok: lok)
+            let data = try await cs3.fetchLokIcon(server: url, lok: lok)
+            if let data = data, data.isEmpty {
+                // Empty data should be returned as nil
+                return nil
+            } else {
+                return data
+            }
         } catch {
             BTLogger.error("Error fetching the icon for locomotive \(lok): \(error)")
             return nil

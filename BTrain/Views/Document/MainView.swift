@@ -59,7 +59,7 @@ struct MainView: View {
         .onChange(of: document.discoverLocomotiveConfirmation, perform: { v in
             if document.discoverLocomotiveConfirmation {
                 if document.layout.trains.isEmpty {
-                    document.layoutController.discoverLocomotives(merge: false)
+                    document.discoverLocomotives(merge: false)
                 } else {
                     showDiscoverLocomotiveConfirmation.toggle()
                 }
@@ -82,10 +82,10 @@ struct MainView: View {
         }.alert("Are you sure you want to change the current list of locomotives with the locomotives definition from the Central Station?", isPresented: $showDiscoverLocomotiveConfirmation) {
             Button("Cancel", role: .cancel) { }
             Button("Download & Merge") {
-                document.layoutController.discoverLocomotives(merge: true)
+                document.discoverLocomotives(merge: true)
             }
             Button("Download & Replace", role: .destructive) {
-                document.layoutController.discoverLocomotives(merge: false)
+                document.discoverLocomotives(merge: false)
             }
         }
     }

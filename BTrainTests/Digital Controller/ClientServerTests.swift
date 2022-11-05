@@ -47,7 +47,7 @@ class ClientServerTests: XCTestCase {
             }
         }
         
-        let client = Client(host: "localhost", port: 15731)
+        let client = Client(address: "localhost", port: 15731)
         let startExpectation = XCTestExpectation(description: "Start")
         client.start {
             startExpectation.fulfill()

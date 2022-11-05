@@ -40,7 +40,7 @@ final class MarklinInterface: CommandInterface, ObservableObject {
     private var completionBlocks = [MarklinCANMessage:[CompletionBlock]]()
 
     func connect(server: String, port: UInt16, onReady: @escaping () -> Void, onError: @escaping (Error) -> Void, onStop: @escaping () -> Void) {
-        client = Client(host: server, port: port)
+        client = Client(address: server, port: port)
         client?.start {
             onReady()
         } onData: { [weak self] msg in
@@ -66,7 +66,7 @@ final class MarklinInterface: CommandInterface, ObservableObject {
     }
         
     func execute(command: Command, completion: CompletionBlock? = nil) {
-        if case .locomotives(_, _) = command, let server = client?.hostString {
+        if case .locomotives(_, _) = command, let server = client?.address {
             locomotivesFetcher.fetchLocomotives(server: server) { [weak self] locomotives in
                 if let locomotives = locomotives {
                     self?.callbacks.locomotivesQueries.all.forEach { $0(locomotives) }

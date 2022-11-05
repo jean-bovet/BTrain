@@ -138,7 +138,8 @@ class CommandInterfaceTests: XCTestCase {
 
     func testDiscoverLocomotives() {
         let doc = LayoutDocument(layout: Layout())
-        
+        XCTAssertEqual(doc.layout.trains.count, 0)
+
         let completionExpectation = XCTestExpectation()
         connectToSimulator(doc: doc)
 
@@ -148,7 +149,7 @@ class CommandInterfaceTests: XCTestCase {
             e.fulfill()
         }
         
-        doc.layoutController.discoverLocomotives(merge: false) {
+        doc.discoverLocomotives(merge: false) {
             completionExpectation.fulfill()
         }
 
@@ -158,11 +159,13 @@ class CommandInterfaceTests: XCTestCase {
             disconnectFromSimulator(doc: doc)
         }
 
-        XCTAssertEqual(doc.layout.trains.count, 11)
+        XCTAssertEqual(doc.layout.trains.count, 18)
 
         let loc1 = doc.layout.trains[0]
-        XCTAssertEqual(loc1.name, "460 106-8 SBB")
-        XCTAssertEqual(loc1.address, 0x6)
+        XCTAssertEqual(loc1.name, "193 524 SBB")
+        XCTAssertEqual(loc1.address, 14)
+        
+        XCTAssertNotNil(doc.trainIconManager.icon(for: loc1.id))
     }
     
     func testFeedbackCallbackOrdering() {

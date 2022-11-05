@@ -16,7 +16,7 @@ import XCTest
 final class MarklinLocomotivesTests: XCTestCase {
     
     var server: URL {
-        Bundle(for: type(of: self)).url(forResource: "CS3Server", withExtension: nil)!
+        MarklinCS3Server.cs3ServerDirectory
     }
     
     func testCS3FetchLocomotives() async throws {

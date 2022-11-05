@@ -12,11 +12,11 @@
 
 import Foundation
 
-extension LayoutController {
+extension LayoutDocument {
         
     func discoverLocomotives(merge: Bool, completion: CompletionBlock? = nil) {
-        interface.callbacks.register(forLocomotivesQuery: { locomotives in
-            self.process(locomotives: locomotives, merge: merge)
+        interface.callbacks.register(forLocomotivesQuery: { [weak self] locomotives in
+            self?.process(locomotives: locomotives, merge: merge)
             completion?()
         })
 
@@ -61,6 +61,10 @@ extension LayoutController {
             train.speed.maxSpeed = TrainSpeed.UnitKph(maxSpeed)
         }
         train.decoder = locomotive.decoderType ?? .MFX
+        if let icon = locomotive.icon {
+            // TODO: error handling
+            try! trainIconManager.setIcon(icon, toTrainId: train.id)
+        }
     }
 
 }

@@ -12,10 +12,14 @@
 
 import AppKit
 
-// This class manages the icons associated with each train. Each icon
-// is stored on the disk using a FileWrapper reference. An in-memory
-// cache is used to return the icon image immediately; this cache can
-// be cleared at anytime and the icon reloaded from disk.
+/// This class manages the icons associated with each train.
+///
+/// Each icon is stored on the disk using a FileWrapper reference. An in-memory
+/// cache is used to return the icon image immediately; this cache can
+/// be cleared at anytime and the icon reloaded from disk.
+///
+/// Note: when saving the ``LayoutDocument``, all the icons will be saved inside the document
+/// package after the appropriate conversion.
 final class TrainIconManager: ObservableObject {
     
     private var fileWrappers = [Identifier<Train>:FileWrapper]()
@@ -42,7 +46,21 @@ final class TrainIconManager: ObservableObject {
         
         return nil
     }
-            
+    
+    /// Set the icon data to a specific train.
+    ///
+    /// The icon data will be saved to a temporary directory until the document is saved, at which point
+    /// the icon will be saved in the document package itself.
+    /// - Parameters:
+    ///   - data: the icon data
+    ///   - trainId: the train
+    func setIcon(_ data: Data, toTrainId trainId: Identifier<Train>) throws {
+        let temporaryDirectoryURL = URL(fileURLWithPath: NSTemporaryDirectory(), isDirectory: true)
+        let temporaryIconFile = temporaryDirectoryURL.appending(path: UUID().uuidString)
+        try data.write(to: temporaryIconFile)
+        setIcon(try FileWrapper(url: temporaryIconFile), toTrainId: trainId)
+    }
+    
     func setIcon(_ url: FileWrapper, toTrainId trainId: Identifier<Train>) {
         objectWillChange.send()
         fileWrappers[trainId] = url
