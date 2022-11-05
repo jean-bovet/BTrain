@@ -15,6 +15,7 @@ import SwiftUI
 struct TrainControlActionsView: View {
     
     @ObservedObject var document: LayoutDocument
+    @Binding var filterRunningTrains: Bool
     
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -32,6 +33,12 @@ struct TrainControlActionsView: View {
                 Button("􀊆 Finish All") {
                     document.finishAll()
                 }.disabled(!document.trainsThatCanBeFinished)
+                
+                Spacer()
+
+                Button(filterRunningTrains ? "􀌉" : "􀌈") {
+                    filterRunningTrains.toggle()
+                }.buttonStyle(.borderless)
             }
         }
     }
@@ -41,6 +48,6 @@ struct TrainControlActionsView_Previews: PreviewProvider {
     static let doc = LayoutDocument(layout: LayoutLoop2().newLayout())
 
     static var previews: some View {
-        TrainControlActionsView(document: doc)
+        TrainControlActionsView(document: doc, filterRunningTrains: .constant(true))
     }
 }

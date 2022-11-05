@@ -17,7 +17,17 @@ struct TrainControlListView: View {
     // Note: necessary to have the layout as a separate property in order for SwiftUI to detect changes
     @ObservedObject var layout: Layout
     @ObservedObject var document: LayoutDocument
-
+    @State private var filterRunningTrains = false
+    
+    var trains: [Train] {
+        layout.trains.filter { train in
+            if filterRunningTrains {
+                return train.enabled && train.scheduling != .unmanaged
+            } else {
+                return train.enabled
+            }
+        }
+    }
     var body: some View {
         if layout.trains.isEmpty {
             Spacer()
@@ -30,10 +40,10 @@ struct TrainControlListView: View {
             Spacer()
         } else {
             VStack(spacing: 0) {
-                TrainControlActionsView(document: document)
+                TrainControlActionsView(document: document, filterRunningTrains: $filterRunningTrains)
                     .padding()
                 List {
-                    ForEach(layout.trains.filter({$0.enabled}), id:\.self) { train in
+                    ForEach(trains, id:\.self) { train in
                         TrainControlContainerView(document: document, train: train)
                         Divider()
                     }

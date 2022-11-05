@@ -80,7 +80,7 @@ class TrainControlsViewTests: RootViewTests {
 
     func testActions() throws {
         let doc = newDocument()
-        let sut = TrainControlActionsView(document: doc)
+        let sut = TrainControlActionsView(document: doc, filterRunningTrains: .constant(true))
         _ = try sut.inspect().find(button: "􀊋 Start All")
     }
     
