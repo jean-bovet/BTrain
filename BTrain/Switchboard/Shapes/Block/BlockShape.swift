@@ -223,6 +223,13 @@ final class BlockShape: Shape, DraggableShape, ConnectableShape {
                 ctx.addPath(path)
                 ctx.strokePath()
             }
+            
+            if let feedbackIds = shapeContext.unexpectedFeedbackIds, feedbackIds.contains(feedback.feedbackId) {
+                let path = unexpectedFeedbackPath(at: index)
+                ctx.addPath(path)
+                ctx.setFillColor(red: 1.0, green: 0.0, blue: 0.0, alpha: 0.5)
+                ctx.fillPath()
+            }
         }
     }
     
@@ -452,6 +459,15 @@ extension BlockShape {
         let path = CGMutablePath()
         path.addPath(CGPath(rect: CGRect(x: rect.origin.x, y: rect.origin.y + rect.height * 3/4, width: rect.width, height: 1), transform: &t))
         path.addPath(CGPath(rect: CGRect(x: rect.origin.x, y: rect.origin.y + rect.height * 1/4, width: rect.width, height: -1), transform: &t))
+        return path
+    }
+
+    func unexpectedFeedbackPath(at index: Int) -> CGPath {
+        let rect = feedbackCellFrame(at: index)
+        var t = CGAffineTransform(translationX: center.x, y: center.y).rotated(by: rotationAngle).translatedBy(x: -center.x, y: -center.y)
+        let path = CGMutablePath()
+        let size = 40.0
+        path.addEllipse(in: .init(origin: rect.center.translatedBy(x: -size/2, y: -size/2), size: .init(width: size, height: size)), transform: t)
         return path
     }
 

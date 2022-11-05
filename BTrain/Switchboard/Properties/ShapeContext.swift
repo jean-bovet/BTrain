@@ -34,7 +34,11 @@ final class ShapeContext {
     /// Scale of the rendering of the switchboard
     var scale: CGFloat = 1.0
     
+    /// The set of expected feedback IDs
     var expectedFeedbackIds: Set<Identifier<Feedback>>?
+    
+    /// The set of unexpected feedback IDs
+    var unexpectedFeedbackIds: Set<Identifier<Feedback>>?
 
     var trackWidth: CGFloat {
         4

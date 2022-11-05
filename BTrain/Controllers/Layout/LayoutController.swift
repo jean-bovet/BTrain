@@ -184,12 +184,18 @@ final class LayoutController: ObservableObject {
     }
 
     private func updateExpectedFeedbacks() throws {
+        switchboard?.context.expectedFeedbackIds = nil
+        switchboard?.context.unexpectedFeedbackIds = nil
+
         if layout.detectUnexpectedFeedback {
             try feedbackMonitor.update(with: layout.trains)
             switchboard?.context.expectedFeedbackIds = feedbackMonitor.expectedFeedbacks
-            try feedbackMonitor.handleUnexpectedFeedbacks()
-        } else {
-            switchboard?.context.expectedFeedbackIds = nil
+            do {
+                try feedbackMonitor.handleUnexpectedFeedbacks()
+            } catch LayoutError.unexpectedFeedback(let feedback) {
+                switchboard?.context.unexpectedFeedbackIds = [feedback.id]
+                throw LayoutError.unexpectedFeedback(feedback: feedback)
+            }
         }
     }
     
