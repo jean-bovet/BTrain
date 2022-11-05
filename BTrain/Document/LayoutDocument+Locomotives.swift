@@ -16,8 +16,10 @@ extension LayoutDocument {
         
     func discoverLocomotives(merge: Bool, completion: CompletionBlock? = nil) {
         interface.callbacks.register(forLocomotivesQuery: { [weak self] locomotives in
-            self?.process(locomotives: locomotives, merge: merge)
-            completion?()
+            DispatchQueue.main.async {
+                self?.process(locomotives: locomotives, merge: merge)
+                completion?()
+            }
         })
 
         interface.execute(command: .locomotives(), completion: nil)
@@ -63,6 +65,7 @@ extension LayoutDocument {
         train.decoder = locomotive.decoderType ?? .MFX
         if let icon = locomotive.icon {
             // TODO: error handling
+            // TODO: what to do if an icon already exists? Replace it?
             try! trainIconManager.setIcon(icon, toTrainId: train.id)
         }
     }
