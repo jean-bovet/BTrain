@@ -37,7 +37,7 @@ struct SwitchboardSettingsView: View {
             Spacer()
             
             Toggle("􀝯 Zoom to Fit", isOn: $zoomToFit)
-        }.padding()
+        }
     }
 }
 

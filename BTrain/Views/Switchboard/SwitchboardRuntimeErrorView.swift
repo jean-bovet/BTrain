@@ -58,8 +58,6 @@ struct SwitchboardRuntimeErrorView: View {
                 Spacer()
             }
         }
-        .padding()
-        .background(.orange)
     }
 }
 

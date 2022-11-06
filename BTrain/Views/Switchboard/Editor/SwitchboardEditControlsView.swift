@@ -67,7 +67,7 @@ struct SwitchboardEditControlsView: View {
             NewTurnoutSheet(layout: layout)
                 .frame(width: 400)
                 .padding()
-        }.padding()
+        }
     }
     
 }

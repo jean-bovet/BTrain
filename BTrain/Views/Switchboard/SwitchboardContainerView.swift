@@ -37,33 +37,40 @@ struct SwitchboardContainerView: View {
     }
     
     var body: some View {
-        VStack(spacing: 0) {
-            VStack(spacing: 0) {
-                if state.editing {
-                    SwitchboardEditControlsView(layout: layout, state: state, document: document, switchboard: switchboard)
-                } else if document.showSwitchboardViewSettings {
-                    SwitchboardSettingsView(document: document)
-                }
-                GeometryReader { geometry in
-                    ScrollView([.horizontal, .vertical]) {
-                        if switchboard.isEmpty && !state.editing {
-                            VStack {
-                                Text("No Elements")
-                                
-                                HStack {
-                                    Button("􀈊 Edit Layout") {
-                                        state.editing.toggle()
-                                    }
+        ZStack(alignment: .topLeading) {
+            GeometryReader { geometry in
+                ScrollView([.horizontal, .vertical]) {
+                    if switchboard.isEmpty && !state.editing {
+                        VStack {
+                            Text("No Elements")
+                            
+                            HStack {
+                                Button("􀈊 Edit Layout") {
+                                    state.editing.toggle()
                                 }
                             }
-                        } else {
-                            SwitchBoardView(switchboard: switchboard, containerSize: geometry.size, state: state, layout: layout, layoutController: layoutController, gestureEnabled: true)
                         }
-                    }.background(backgroundColor)
-                }
+                    } else {
+                        SwitchBoardView(switchboard: switchboard, containerSize: geometry.size, state: state, layout: layout, layoutController: layoutController, gestureEnabled: true)
+                    }
+                }.background(backgroundColor)
             }
-            if layout.runtimeError != nil {
-                SwitchboardRuntimeErrorView(debugger: document.layoutController.debugger, error: $layout.runtimeError)
+            VStack {
+                if state.editing {
+                    SwitchboardEditControlsView(layout: layout, state: state, document: document, switchboard: switchboard)
+                        .padding()
+                        .background(.background.opacity(0.8))
+                } else if document.showSwitchboardViewSettings {
+                    SwitchboardSettingsView(document: document)
+                        .padding()
+                        .background(.background.opacity(0.8))
+                }
+                if layout.runtimeError != nil {
+                    Spacer().hidden()
+                    SwitchboardRuntimeErrorView(debugger: document.layoutController.debugger, error: $layout.runtimeError)
+                        .padding()
+                        .background(.orange).opacity(0.8)
+                }
             }
         }.sheet(isPresented: $state.trainDroppedInBlockAction) {
             TrainControlMoveSheet(layout: layout, controller: document.layoutController, trainDragInfo: state.trainDragInfo, train: layout.train(for: state.trainDragInfo?.trainId)!)
@@ -75,9 +82,18 @@ struct SwitchboardContainerView: View {
 
 struct OverviewSwitchboardView_Previews: PreviewProvider {
     
-    static let doc = LayoutDocument(layout: LayoutLoop2().newLayout())
-
+    static let doc: LayoutDocument = {
+        let doc = LayoutDocument(layout: LayoutLoop2().newLayout())
+        doc.showSwitchboardViewSettings = true
+        doc.layout.runtimeError = "Unexpected feedback"
+        return doc
+    }()
+    
     static var previews: some View {
-        SwitchboardContainerView(layout: doc.layout, layoutController: doc.layoutController, document: doc, switchboard: doc.switchboard, state: doc.switchboard.state)
+        SwitchboardContainerView(layout: doc.layout,
+                                 layoutController: doc.layoutController,
+                                 document: doc,
+                                 switchboard: doc.switchboard,
+                                 state: doc.switchboard.state)
     }
 }
