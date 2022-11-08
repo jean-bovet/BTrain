@@ -464,7 +464,7 @@ extension BlockShape {
 
     func unexpectedFeedbackPath(at index: Int) -> CGPath {
         let rect = feedbackCellFrame(at: index)
-        var t = CGAffineTransform(translationX: center.x, y: center.y).rotated(by: rotationAngle).translatedBy(x: -center.x, y: -center.y)
+        let t = CGAffineTransform(translationX: center.x, y: center.y).rotated(by: rotationAngle).translatedBy(x: -center.x, y: -center.y)
         let path = CGMutablePath()
         let size = 40.0
         path.addEllipse(in: .init(origin: rect.center.translatedBy(x: -size/2, y: -size/2), size: .init(width: size, height: size)), transform: t)

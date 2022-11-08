@@ -123,7 +123,6 @@ struct SwitchBoardView_Previews: PreviewProvider {
                         layout: doc.layout,
                         layoutController: doc.layoutController,
                         gestureEnabled: true)
-            .environmentObject(doc)
             .previewLayout(.fixed(width: 800, height: 600))
     }
 }
