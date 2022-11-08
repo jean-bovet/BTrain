@@ -392,6 +392,8 @@ class TrainSpeedManagerTests: BTTestCase {
         // Ask the layout to stop the train
         p.layoutController.stop(train: t)
 
+        XCTAssertEqual(t.scheduling, .stopManaged)
+        
         p.toggle("A.1")
 
         wait(for: {
@@ -404,8 +406,9 @@ class TrainSpeedManagerTests: BTTestCase {
             t.state == .stopping
         }, timeout: 1.0)
         
-        // Ask to restart the train before it has a change to fully stop
-        try p.start(routeID: t.routeId.uuid, trainID: t.id.uuid, expectedState: .running)
+        // Ask to restart the train before it has a chance to fully stop
+        t.scheduling = .managed
+        p.layoutController.runControllers(.schedulingChanged(t))
                 
         p.layoutController.stop(train: t)
         p.layoutController.waitUntilSettled()

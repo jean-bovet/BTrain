@@ -381,6 +381,13 @@ extension LayoutController {
             throw LayoutError.trainNotFound(trainId: trainID)
         }
 
+        // Note: do not prepare the route if the train is already running under
+        // management control because it might change the route type (from automaticOnce
+        // to automatic) when this view appears (due to filtering for example).
+        guard train.scheduling == .unmanaged else {
+            throw LayoutError.cannotChangeRouteWhileTrainIsRunning(train: train, route: route)
+        }
+
         // Set the route to the train
         train.routeId = routeID
 

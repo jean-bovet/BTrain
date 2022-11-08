@@ -40,7 +40,7 @@ struct TrainControlRouteView: View {
                     }
                 }.onChange(of: train.routeId) { newValue in
                     updateRoute()
-                }
+                }.disabled(train.scheduling != .unmanaged)
                                     
                 Spacer()
                 

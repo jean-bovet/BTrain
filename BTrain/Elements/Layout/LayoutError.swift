@@ -51,7 +51,8 @@ enum LayoutError: Error {
     
     case cannotReserveBlock(block: Block, train: Train, reserved: Reservation)
     case cannotReserveAllElements(train: Train)
-    
+    case cannotChangeRouteWhileTrainIsRunning(train: Train, route: Route)
+
     case routeNotFound(routeId: Identifier<Route>)
     case noPossibleRoute(train: Train)
     case routeIsNotAutomatic(route: Route)
@@ -100,6 +101,8 @@ extension LayoutError: LocalizedError {
             return "Cannot reserve block \(block.name) for train \(train.name) because the block is already reserved for \(reserved)"
         case .cannotReserveAllElements(train: let train):
             return "Cannot reserve all the elements that train \(train.name) occupies"
+        case .cannotChangeRouteWhileTrainIsRunning(train: let train, route: let route):
+            return "Cannot change route \(route.name) when train \(train.name) is running"
 
         case .socketIdNotFound(socket: let socket):
             return "There is no socket defined for \(socket)"

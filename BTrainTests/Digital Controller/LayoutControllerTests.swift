@@ -34,6 +34,18 @@ class LayoutControllerTests: BTTestCase {
         XCTAssertEqual(t1.actualState, .straight)
     }
     
+    /// Ensure that a train that is running cannot have its route changed
+    func testPrepareRouteWhileRunning() throws {
+        let doc = LayoutDocument(layout: LayoutComplexLoop().newLayout())
+        let t = doc.layout.trains[0]
+        
+        t.scheduling = .unmanaged
+        try doc.layoutController.prepare(routeID: t.routeId, trainID: t.id)
+        
+        t.scheduling = .managed
+        XCTAssertThrowsError(try doc.layoutController.prepare(routeID: t.routeId, trainID: t.id))
+    }
+    
     /// Ensures that when the Digital Controller is "off" and a turnout command it sent, to which no acknowledgement will be returned,
     /// that once the Digital Controller is turned "on" again, a subsequent turnout command it properly executed. This test ensures
     /// the scheduled queue used by the ``LayoutTurnoutManager`` is correctly reset and able to process new commands.
