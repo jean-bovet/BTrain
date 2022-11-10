@@ -40,6 +40,13 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
         4.0 - refreshSpeed
     }
     
+    /// Internal global variable used to create a unique port each time a simulator instance
+    /// is created, which allows for multiple document to be opened (and operated) at the same time
+    static private var globalLocalPort: UInt16 = 15731
+    
+    /// The local port used by the simulator
+    var localPort: UInt16
+    
     private var trainArrayChangesCancellable: AnyCancellable?
     private var cancellables = [AnyCancellable]()
 
@@ -56,6 +63,9 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
     init(layout: Layout, interface: CommandInterface) {
         self.layout = layout
         self.interface = interface
+        
+        MarklinCommandSimulator.globalLocalPort += 1
+        self.localPort = MarklinCommandSimulator.globalLocalPort
         
         // Initialization from the document can sometimes happen in the background,
         // let's make sure these are initialized in the main thread.
@@ -134,7 +144,7 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
     func start() {
         try? cs3Server.start()
         
-        server = Server(port: 15731)
+        server = Server(port: localPort)
         server!.didAcceptConnection = { [weak self] connection in
             self?.register(with: connection)
         }

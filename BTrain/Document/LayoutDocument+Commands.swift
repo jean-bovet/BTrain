@@ -50,7 +50,7 @@ extension LayoutDocument {
 
     func connectToSimulator(enable: Bool, completed: ((Error?) -> Void)? = nil) {
         simulator.start()
-        connect(address: "localhost", port: 15731) { [weak self] error in
+        connect(address: "localhost", port: simulator.localPort) { [weak self] error in
             if enable {
                 self?.enable {
                     completed?(nil)

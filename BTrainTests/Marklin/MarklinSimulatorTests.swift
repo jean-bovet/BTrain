@@ -108,4 +108,16 @@ class MarklinSimulatorTests: XCTestCase {
         wait(for: [directCommand, acknowledgement, e], timeout: 1.0, enforceOrder: true)
     }
 
+    func testMultipleInstances() {
+        let doc = LayoutDocument(layout: Layout())
+
+        let s1 = MarklinCommandSimulator(layout: doc.layout, interface: doc.interface)
+        let s2 = MarklinCommandSimulator(layout: doc.layout, interface: doc.interface)
+        
+        s1.start()
+        s2.start()
+        
+        XCTAssertTrue(s1.started)
+        XCTAssertTrue(s2.started)
+    }
 }
