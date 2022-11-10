@@ -132,7 +132,7 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
     }
     
     func start() {
-        try! cs3Server.start()
+        try? cs3Server.start()
         
         server = Server(port: 15731)
         server!.didAcceptConnection = { [weak self] connection in
