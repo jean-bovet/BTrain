@@ -72,10 +72,10 @@ final class LocomotiveSpeed: ObservableObject, Equatable, CustomStringConvertibl
     /// The number of steps to use during acceleration/deceleration. If nil, defaults to ``LocomotiveControllerAcceleration/DefaultStepSize``.
     @Published var accelerationStepSize: Int?
     
-    // The delay (in ms) between step changes during acceleration/deceleration. If nil, default is used.
+    /// The delay (in ms) between step changes during acceleration/deceleration. If nil, default is used.
     @Published var accelerationStepDelay: Int?
 
-    // The time to wait after the locomotive has been asked to stop until it is considered effectively stopped.
+    /// The time to wait after the locomotive has been asked to stop until it is considered effectively stopped.
     @Published var stopSettleDelay: TimeInterval = 1.0
     
     // Structure defining the number of steps corresponding

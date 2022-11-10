@@ -251,17 +251,10 @@ final class LocomotiveSpeedMeasurement {
     }
     
     private func storeMeasurement(t0: Date, t1: Date, distance: Double) {
-        // TODO: have a common utility with the computation of the braking distance?
         let duration = t1.timeIntervalSince(t0)
-        let durationInHour = duration / (60 * 60)
-        
-        // H0 is 1:87 (1cm in prototype = 0.0115cm in the layout)
-        let modelDistanceKm = distance / 100000
-        let realDistanceKm = modelDistanceKm * 87
-        let speedInKph = realDistanceKm / durationInHour
-                        
+        let speed = LayoutSpeed.speedInKph(distanceInCm: distance, duration: duration)
+
         let entry = speedEntry(for: entryIndex)
-        let speed = LocomotiveSpeed.UnitKph(min(Double(UInt16.max), speedInKph))
         setSpeedEntry(.init(steps: entry.steps, speed: speed), for: entryIndex)
     }
         

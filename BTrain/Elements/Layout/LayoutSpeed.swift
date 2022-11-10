@@ -114,7 +114,11 @@ struct LayoutSpeed {
                 // We stop as soon as a speed restriction is found.
                 // The distance we have accumulated so far is going to
                 // be used below to compute the maximum speed.
-                return try maximumSpeedToBrake(train: train, toSpeed: speed, withDistance: unrestrictedLeadingDistance)
+                let maxSpeed = try maximumSpeedToBrake(train: train, toSpeed: speed, withDistance: unrestrictedLeadingDistance)
+                
+                // The resulting speed cannot be greater than the actual speed value,
+                // because the actual speed value is already limited by the block or turnout specifications.
+                return min(speed, maxSpeed)
             } else {
                 unrestrictedLeadingDistance += distance
             }
@@ -185,7 +189,9 @@ struct LayoutSpeed {
     }
     
     struct DistanceChangeResult {
+        /// The distance in cm
         let distance: Double
+        /// The duration in seconds
         let duration: TimeInterval
     }
     
@@ -197,37 +203,83 @@ struct LayoutSpeed {
     /// - Parameters:
     ///   - train: the train
     ///   - fromSpeed: the original speed
-    ///   - speed2: the desired speed
-    /// - Returns: the distance
+    ///   - toSpeed: the desired speed
+    /// - Returns: the resulting distance and duration
     func distanceNeededToChangeSpeed(ofTrain train: Train, fromSpeed: LocomotiveSpeed.UnitKph, toSpeed: LocomotiveSpeed.UnitKph) throws -> DistanceChangeResult {
-        // numberOfSteps = steps(speed1) - steps(speed2)
-        // changeSpeedDuration = numberOfSteps / stepSize * stepDelay + stopSettledDelay
-        // changeSpeedDistance = speed1 * changeSpeedDuration
-        
         guard let loc = train.locomotive else {
             throw LayoutError.locomotiveNotAssignedToTrain(train: train)
         }
         
-        let fromSteps = loc.speed.steps(for: fromSpeed).value
-        let toSteps = loc.speed.steps(for: toSpeed).value
+        // Compute the duration it will take to change the speed of the train
+        var delaySeconds = LayoutSpeed.durationToChange(speed: loc.speed, fromSpeed: fromSpeed, toSpeed: toSpeed)
+        guard delaySeconds > 0 else {
+            return DistanceChangeResult(distance: 0, duration: 0)
+        }
+        
+        // If we are stopping the train, we need to take into account the time it takes to effectively stop it
+        if toSpeed == 0 {
+            delaySeconds += loc.speed.stopSettleDelay
+        }
+        
+        // Compute the distance it will take to change the speed given the duration and current speed
+        let distanceH0cm = LayoutSpeed.distanceInCm(atSpeed: fromSpeed, forDuration: delaySeconds)
+        
+        return DistanceChangeResult(distance: distanceH0cm, duration: delaySeconds)
+    }
+    
+    /// Returns the duration, in seconds, that it takes to change the speed from one value to another.
+    ///
+    /// - Parameters:
+    ///   - speed: the locomotive speed
+    ///   - fromSpeed: the starting speed value
+    ///   - toSpeed: the target speed value
+    /// - Returns: the duration in seconds
+    static func durationToChange(speed: LocomotiveSpeed, fromSpeed: LocomotiveSpeed.UnitKph, toSpeed: LocomotiveSpeed.UnitKph) -> TimeInterval {
+        let fromSteps = speed.steps(for: fromSpeed).value
+        let toSteps = speed.steps(for: toSpeed).value
         let steps = fromSteps - toSteps
         
         guard steps != 0 else {
-            return DistanceChangeResult(distance: 0, duration: 0)
+            return 0
         }
 
-        let brakingStepSize = loc.speed.accelerationStepSize ?? LocomotiveSpeedManager.DefaultStepSize
-        let brakingStepDelay = Double(loc.speed.accelerationStepDelay ?? LocomotiveSpeedManager.DefaultStepDelay) / 1000.0
+        let stepSize = speed.accelerationStepSize ?? LocomotiveSpeedManager.DefaultStepSize
+        let stepDelay: TimeInterval = Double(speed.accelerationStepDelay ?? LocomotiveSpeedManager.DefaultStepDelay) / 1000.0
         
-        let brakingDelaySeconds = Double(steps) / Double(brakingStepSize) * Double(brakingStepDelay) + loc.speed.stopSettleDelay
-        
-        let speedKph = Double(fromSpeed)
-        let brakingDistanceKm = speedKph * (brakingDelaySeconds / 3600.0)
-        let brakingDistanceH0cm = (brakingDistanceKm * 1000*100) / 87.0
-
-        return DistanceChangeResult(distance: brakingDistanceH0cm, duration: brakingDelaySeconds)
+        let duration: TimeInterval = Double(steps) / Double(stepSize) * stepDelay
+        return duration
     }
     
+    /// Returns the distance, in cm, it takes for a locomotive to move at the specified speed for the specified duration.
+    ///
+    /// - Parameters:
+    ///   - speedKph: the speed, in Kph
+    ///   - duration: the duration, in seconds
+    /// - Returns: the distance, in cm.
+    static func distanceInCm(atSpeed speedKph: LocomotiveSpeed.UnitKph, forDuration duration: TimeInterval) -> Double {
+        let distanceKm = Double(speedKph) * (duration / 3600.0)
+        let distanceH0cm = (distanceKm * 1000*100) / 87.0
+        return distanceH0cm
+    }
+    
+    /// Returns the speed needed to move the specified distance with a specific duration.
+    ///
+    /// - Parameters:
+    ///   - distanceInCm: the distance, in cm
+    ///   - duration: the duration, in seconds
+    /// - Returns: the speed, in Kph.
+    static func speedInKph(distanceInCm: Double, duration: TimeInterval) -> LocomotiveSpeed.UnitKph {
+        let durationInHour = duration / (60 * 60)
+        
+        // H0 is 1:87 (1cm in prototype = 0.0115cm in the layout)
+        let modelDistanceKm = distanceInCm / 100000
+        let realDistanceKm = modelDistanceKm * 87
+        let speedInKph = realDistanceKm / durationInHour
+        
+        let speed = LocomotiveSpeed.UnitKph(min(Double(UInt16.max), speedInKph))
+        return speed
+    }    
+
 }
 
 extension Block {

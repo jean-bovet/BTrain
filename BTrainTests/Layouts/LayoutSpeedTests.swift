@@ -159,4 +159,16 @@ final class LayoutSpeedTests: XCTestCase {
         XCTAssertEqual(try controller.layoutSpeed.maximumSpeedAllowed(train: train), 0)
     }
     
+    func testComputation() {
+        let tspeed = train.speed!
+        
+        let duration = LayoutSpeed.durationToChange(speed: tspeed, fromSpeed: LayoutFactory.DefaultMaximumSpeed, toSpeed: LayoutFactory.DefaultBrakingSpeed)
+        XCTAssertEqual(duration, 2.85, accuracy: 0.1)
+        
+        let distance = LayoutSpeed.distanceInCm(atSpeed: LayoutFactory.DefaultMaximumSpeed, forDuration: duration)
+        XCTAssertEqual(distance, 109, accuracy: 0.5)
+
+        let speed = LayoutSpeed.speedInKph(distanceInCm: distance, duration: duration)
+        XCTAssertEqual(speed, LayoutFactory.DefaultMaximumSpeed)
+    }
 }
