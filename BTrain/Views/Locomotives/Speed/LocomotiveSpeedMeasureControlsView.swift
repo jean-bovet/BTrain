@@ -29,36 +29,53 @@ struct LocomotiveSpeedMeasureControlsView: View {
     @State private var progressInfo: String?
     @State private var progressValue: Double?
     
+    var feedbackAName: String {
+        feedbackName(feedbackID: feedbackA, defaultName: "A")
+    }
+    
+    var feedbackBName: String {
+        feedbackName(feedbackID: feedbackB, defaultName: "B")
+    }
+    
+    var feedbackCName: String {
+        feedbackName(feedbackID: feedbackC, defaultName: "C")
+    }
+    
     var body: some View {
-        VStack(alignment: .leading) {
+        HStack {
             if let progressInfo = progressInfo {
                 Text(progressInfo)
             } else {
-                Text("􀁟 Position locomotive \"\(loc.name)\" before feedback A with its travel direction towards A, B & C.")
+                Text("􀁟 Position locomotive \"\(loc.name)\" before feedback \(feedbackAName) with its travel direction towards \(feedbackAName) 􀄫 \(feedbackBName) 􀄫 \(feedbackCName).")
             }
-
-            HStack {
-                if running {
-                    Button("Cancel") {
-                        cancel()
-                    }
-                } else {
-                    Button("Measure") {
-                        running = true
-                        measure()
-                    }
+            
+            Spacer()
+            
+            if running {
+                if let progressValue = progressValue {
+                    ProgressView(value: progressValue)
                 }
-
-                if let progressValue = progressValue, running {
-                    HStack {
-                        ProgressView(value: progressValue)
-                    }
+                Button("Cancel") {
+                    cancel()
+                }
+            } else {
+                Button("Measure") {
+                    running = true
+                    measure()
                 }
             }
         }
     }
     
-    func measure() {
+    private func feedbackName(feedbackID: String, defaultName: String) -> String {
+        if let name = document.layout.feedback(for: .init(uuid: feedbackID))?.name {
+            return name
+        } else {
+            return defaultName
+        }
+    }
+
+    private func measure() {
         document.measurement = LocomotiveSpeedMeasurement(layout: document.layout, executor: document.layoutController, interface: document.interface, loc: loc, speedEntries: speedEntries,
                                                 feedbackA: Identifier<Feedback>(uuid: feedbackA), feedbackB: Identifier<Feedback>(uuid: feedbackB), feedbackC: Identifier<Feedback>(uuid: feedbackC),
                                                 distanceAB: distanceAB, distanceBC: distanceBC)
@@ -73,12 +90,12 @@ struct LocomotiveSpeedMeasureControlsView: View {
         }
     }
 
-    func cancel() {
+    private func cancel() {
         document.measurement?.cancel()
         done()
     }
     
-    func done() {
+    private func done() {
         progressInfo = nil
         running = false
         currentSpeedEntry = nil

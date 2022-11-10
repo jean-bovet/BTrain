@@ -48,22 +48,12 @@ struct LocomotiveSpeedMeasurementsView: View {
     
     var body: some View {
         VStack(alignment: .leading) {
-            VStack(alignment: .leading) {
-                HStack {
-                    Text("Steps to Measure:")
-                    Button("Auto Select") {
-                        updateSelectedSteps()
-                    }
-                    .disabled(running)
-                }
-                HStack(spacing: 10) {
-                    LocomotiveSpeedTableView(selection: $selectedSpeedEntries, currentSpeedEntry: $currentSpeedEntry, trainSpeed: loc.speed)
-                    LocomotiveSpeedGraphView(trainSpeed: loc.speed)
-                }
-                .id(loc) // ensure the table and graph are updated when train changes
-                .frame(minHeight: 200)
+            HStack(spacing: 10) {
+                LocomotiveSpeedTableView(selection: $selectedSpeedEntries, currentSpeedEntry: $currentSpeedEntry, trainSpeed: loc.speed)
+                LocomotiveSpeedGraphView(trainSpeed: loc.speed)
             }
-            .padding([.leading, .trailing])
+            .id(loc) // ensure the table and graph are updated when train changes
+            .frame(minHeight: 200)
 
             Divider()
             
@@ -84,8 +74,14 @@ struct LocomotiveSpeedMeasurementsView: View {
             Divider()
             
             if let validationError = validationError {
-                Text(validationError)
-                    .padding([.leading, .trailing])
+                HStack {
+                    Text(validationError)
+                        .padding([.leading, .trailing])
+                    Button("Auto Select") {
+                        updateSelectedSteps()
+                    }
+                    .disabled(running)
+                }
             } else {
                 if let loc = loc, let feedbackA = feedbackA, let feedbackB = feedbackB, let feedbackC = feedbackC {
                     LocomotiveSpeedMeasureControlsView(document: document, loc: loc,
