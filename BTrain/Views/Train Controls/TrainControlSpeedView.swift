@@ -20,6 +20,8 @@ struct TrainControlSpeedView: View {
     @ObservedObject var loc: Locomotive
     @ObservedObject var speed: LocomotiveSpeed
         
+    @Binding var trainRuntimeError: String?
+
     var body: some View {
         VStack(alignment: .leading) {
             HStack {
@@ -33,8 +35,12 @@ struct TrainControlSpeedView: View {
                     // Note: force the train speed to change because the SpeedSlider already has changed
                     // the requestedKph during the drag of the knob, which prevents the speed from changing
                     // because `setTrainSpeed` checks if the requestedKph is different from its already established value.
-                    // TODO: Catch and error
-                    try? document.layoutController.setTrainSpeed(train, speed.requestedKph)
+                    do {
+                        trainRuntimeError = nil
+                        try document.layoutController.setTrainSpeed(train, speed.requestedKph)
+                    } catch {
+                        trainRuntimeError = error.localizedDescription
+                    }
                 }
             }.disabled(!document.connected || train.blockId == nil)
         }
@@ -49,6 +55,6 @@ struct TrainControlView_Previews: PreviewProvider {
     }()
 
     static var previews: some View {
-        TrainControlSpeedView(document: doc, train: doc.layout.trains[0], loc: doc.layout.locomotives[0], speed: doc.layout.locomotives[0].speed)
+        TrainControlSpeedView(document: doc, train: doc.layout.trains[0], loc: doc.layout.locomotives[0], speed: doc.layout.locomotives[0].speed, trainRuntimeError: .constant(nil))
     }
 }

@@ -37,7 +37,7 @@ struct TrainControlContainerView: View {
                 
                 if train.blockId != nil {
                     HStack {
-                        TrainControlSpeedView(document: document, train: train, loc: loc, speed: loc.speed)
+                        TrainControlSpeedView(document: document, train: train, loc: loc, speed: loc.speed, trainRuntimeError: $trainRuntimeError)
                         Spacer()
                         TrainControlStateView(train: train, trainRuntimeError: $trainRuntimeError)
                     }
