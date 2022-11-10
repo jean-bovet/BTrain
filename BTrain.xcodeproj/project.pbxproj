@@ -15,7 +15,7 @@
 		A702F22F290243FA0076186D /* FeedbackAddView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A702F22E290243FA0076186D /* FeedbackAddView.swift */; };
 		A711B1502739EBD7002FE7DB /* LayoutController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A711B14F2739EBD7002FE7DB /* LayoutController.swift */; };
 		A7145F8A27F90FBA00BF5F61 /* NewLayoutWizardViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7145F8927F90FBA00BF5F61 /* NewLayoutWizardViewTests.swift */; };
-		A7145F8C27F911F000BF5F61 /* TrainSpeedMeasurementViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7145F8B27F911F000BF5F61 /* TrainSpeedMeasurementViewTests.swift */; };
+		A7145F8C27F911F000BF5F61 /* LocomotiveSpeedMeasurementViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7145F8B27F911F000BF5F61 /* LocomotiveSpeedMeasurementViewTests.swift */; };
 		A7145F8E27F91D0A00BF5F61 /* View+Snapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7145F8D27F91D0A00BF5F61 /* View+Snapshot.swift */; };
 		A714CD7D2802939E0020486D /* Turnout+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A714CD7C2802939E0020486D /* Turnout+Extension.swift */; };
 		A717158427574B1C00200F92 /* ShapeProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = A717158327574B1C00200F92 /* ShapeProvider.swift */; };
@@ -147,10 +147,10 @@
 		A75C2DCB28233C2F0043D462 /* LayoutIdentity.swift in Sources */ = {isa = PBXBuildFile; fileRef = A75C2DCA28233C2F0043D462 /* LayoutIdentity.swift */; };
 		A763F18D27BDD82A00B3499A /* TrainSpeedMeasurementTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A763F18C27BDD82A00B3499A /* TrainSpeedMeasurementTests.swift */; };
 		A763F18F27BE01C300B3499A /* XCTestCase+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A763F18E27BE01C300B3499A /* XCTestCase+Extension.swift */; };
-		A763F19327BE26CF00B3499A /* TrainSpeedMeasurementsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A763F19227BE26CF00B3499A /* TrainSpeedMeasurementsView.swift */; };
-		A763F19527BF0FC800B3499A /* TrainSpeedColumnView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A763F19427BF0FC800B3499A /* TrainSpeedColumnView.swift */; };
-		A763F19727BF0FE100B3499A /* TrainSpeedGraphView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A763F19627BF0FE100B3499A /* TrainSpeedGraphView.swift */; };
-		A763F19927BF185100B3499A /* TrainSpeedMeasureControlsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A763F19827BF185100B3499A /* TrainSpeedMeasureControlsView.swift */; };
+		A763F19327BE26CF00B3499A /* LocomotiveSpeedMeasurementsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A763F19227BE26CF00B3499A /* LocomotiveSpeedMeasurementsView.swift */; };
+		A763F19527BF0FC800B3499A /* LocomotiveSpeedTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A763F19427BF0FC800B3499A /* LocomotiveSpeedTableView.swift */; };
+		A763F19727BF0FE100B3499A /* LocomotiveSpeedGraphView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A763F19627BF0FE100B3499A /* LocomotiveSpeedGraphView.swift */; };
+		A763F19927BF185100B3499A /* LocomotiveSpeedMeasureControlsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A763F19827BF185100B3499A /* LocomotiveSpeedMeasureControlsView.swift */; };
 		A763F19C27BF4A1300B3499A /* FeedbackMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = A763F19B27BF4A1300B3499A /* FeedbackMonitor.swift */; };
 		A76507E6275AC7DA0079C71A /* ScheduledMessageQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = A76507E5275AC7DA0079C71A /* ScheduledMessageQueue.swift */; };
 		A76507E8275AD1FE0079C71A /* TrainControlLocationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A76507E7275AD1FE0079C71A /* TrainControlLocationView.swift */; };
@@ -232,7 +232,6 @@
 		A785C079278A6468002FD538 /* LayoutDocument+ReferenceFileDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = A785C078278A6468002FD538 /* LayoutDocument+ReferenceFileDocument.swift */; };
 		A785C07B278A648B002FD538 /* LayoutDocument+Commands.swift in Sources */ = {isa = PBXBuildFile; fileRef = A785C07A278A648B002FD538 /* LayoutDocument+Commands.swift */; };
 		A785C07E278A64C1002FD538 /* CommandInterface.swift in Sources */ = {isa = PBXBuildFile; fileRef = A785C07D278A64C1002FD538 /* CommandInterface.swift */; };
-		A785C081278BC527002FD538 /* TrainSpeedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A785C080278BC527002FD538 /* TrainSpeedView.swift */; };
 		A785C086278CFD7D002FD538 /* LocomotiveSpeed.swift in Sources */ = {isa = PBXBuildFile; fileRef = A785C085278CFD7D002FD538 /* LocomotiveSpeed.swift */; };
 		A785C089278E59A4002FD538 /* CommandTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = A785C088278E59A4002FD538 /* CommandTypes.swift */; };
 		A78B996227FCC4080021EFE4 /* Graph.swift in Sources */ = {isa = PBXBuildFile; fileRef = A78B996127FCC4080021EFE4 /* Graph.swift */; };
@@ -284,7 +283,7 @@
 		A798BB4E27AF4478000BB4D1 /* Turnout+Reservation.swift in Sources */ = {isa = PBXBuildFile; fileRef = A798BB4D27AF4477000BB4D1 /* Turnout+Reservation.swift */; };
 		A79CD0B9291B2E2F0079968D /* Locomotive.swift in Sources */ = {isa = PBXBuildFile; fileRef = A79CD0B8291B2E2F0079968D /* Locomotive.swift */; };
 		A79CD0BB291B334F0079968D /* Layout+Locomotives.swift in Sources */ = {isa = PBXBuildFile; fileRef = A79CD0BA291B334F0079968D /* Layout+Locomotives.swift */; };
-		A79CD0BD291B37980079968D /* LocDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A79CD0BC291B37980079968D /* LocDetailsView.swift */; };
+		A79CD0BD291B37980079968D /* LocomotiveDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A79CD0BC291B37980079968D /* LocomotiveDetailsView.swift */; };
 		A79CD0BF291B391A0079968D /* LocPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = A79CD0BE291B391A0079968D /* LocPicker.swift */; };
 		A79CD0C1291C26180079968D /* LocomotiveTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A79CD0C0291C26180079968D /* LocomotiveTests.swift */; };
 		A79D43DC283B15BF0068C969 /* LayoutController+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A79D43DB283B15BF0068C969 /* LayoutController+Extension.swift */; };
@@ -331,7 +330,7 @@
 		A7DB7D5827CBEAD2000893BA /* SpeedSlider.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7DB7D5727CBEAD2000893BA /* SpeedSlider.swift */; };
 		A7DB7D5B27CBF378000893BA /* SpeedSlider+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7DB7D5A27CBF378000893BA /* SpeedSlider+Extension.swift */; };
 		A7E1F74827D71C03009FB75F /* LocomotiveSpeedAcceleration.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7E1F74727D71C03009FB75F /* LocomotiveSpeedAcceleration.swift */; };
-		A7E1F74A27D71E51009FB75F /* TrainSpeedTimingFunctionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7E1F74927D71E51009FB75F /* TrainSpeedTimingFunctionView.swift */; };
+		A7E1F74A27D71E51009FB75F /* LocomotiveSpeedTimingFunctionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7E1F74927D71E51009FB75F /* LocomotiveSpeedTimingFunctionView.swift */; };
 		A7E1F74E27DE980C009FB75F /* WizardSelectLocomotive.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7E1F74D27DE980C009FB75F /* WizardSelectLocomotive.swift */; };
 		A7E1F75027DE98E9009FB75F /* WizardSelectLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7E1F74F27DE98E9009FB75F /* WizardSelectLayout.swift */; };
 		A7E1F75227DE9E51009FB75F /* PredefinedLayoutHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7E1F75127DE9E51009FB75F /* PredefinedLayoutHelper.swift */; };
@@ -376,7 +375,7 @@
 		A702F22E290243FA0076186D /* FeedbackAddView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedbackAddView.swift; sourceTree = "<group>"; };
 		A711B14F2739EBD7002FE7DB /* LayoutController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutController.swift; sourceTree = "<group>"; };
 		A7145F8927F90FBA00BF5F61 /* NewLayoutWizardViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewLayoutWizardViewTests.swift; sourceTree = "<group>"; };
-		A7145F8B27F911F000BF5F61 /* TrainSpeedMeasurementViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainSpeedMeasurementViewTests.swift; sourceTree = "<group>"; };
+		A7145F8B27F911F000BF5F61 /* LocomotiveSpeedMeasurementViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocomotiveSpeedMeasurementViewTests.swift; sourceTree = "<group>"; };
 		A7145F8D27F91D0A00BF5F61 /* View+Snapshot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+Snapshot.swift"; sourceTree = "<group>"; };
 		A714CD7C2802939E0020486D /* Turnout+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Turnout+Extension.swift"; sourceTree = "<group>"; };
 		A717158327574B1C00200F92 /* ShapeProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShapeProvider.swift; sourceTree = "<group>"; };
@@ -512,10 +511,10 @@
 		A75C2DCA28233C2F0043D462 /* LayoutIdentity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutIdentity.swift; sourceTree = "<group>"; };
 		A763F18C27BDD82A00B3499A /* TrainSpeedMeasurementTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainSpeedMeasurementTests.swift; sourceTree = "<group>"; };
 		A763F18E27BE01C300B3499A /* XCTestCase+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "XCTestCase+Extension.swift"; sourceTree = "<group>"; };
-		A763F19227BE26CF00B3499A /* TrainSpeedMeasurementsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainSpeedMeasurementsView.swift; sourceTree = "<group>"; };
-		A763F19427BF0FC800B3499A /* TrainSpeedColumnView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainSpeedColumnView.swift; sourceTree = "<group>"; };
-		A763F19627BF0FE100B3499A /* TrainSpeedGraphView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainSpeedGraphView.swift; sourceTree = "<group>"; };
-		A763F19827BF185100B3499A /* TrainSpeedMeasureControlsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainSpeedMeasureControlsView.swift; sourceTree = "<group>"; };
+		A763F19227BE26CF00B3499A /* LocomotiveSpeedMeasurementsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocomotiveSpeedMeasurementsView.swift; sourceTree = "<group>"; };
+		A763F19427BF0FC800B3499A /* LocomotiveSpeedTableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocomotiveSpeedTableView.swift; sourceTree = "<group>"; };
+		A763F19627BF0FE100B3499A /* LocomotiveSpeedGraphView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocomotiveSpeedGraphView.swift; sourceTree = "<group>"; };
+		A763F19827BF185100B3499A /* LocomotiveSpeedMeasureControlsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocomotiveSpeedMeasureControlsView.swift; sourceTree = "<group>"; };
 		A763F19B27BF4A1300B3499A /* FeedbackMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedbackMonitor.swift; sourceTree = "<group>"; };
 		A76507E5275AC7DA0079C71A /* ScheduledMessageQueue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduledMessageQueue.swift; sourceTree = "<group>"; };
 		A76507E7275AD1FE0079C71A /* TrainControlLocationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainControlLocationView.swift; sourceTree = "<group>"; };
@@ -595,7 +594,6 @@
 		A785C078278A6468002FD538 /* LayoutDocument+ReferenceFileDocument.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LayoutDocument+ReferenceFileDocument.swift"; sourceTree = "<group>"; };
 		A785C07A278A648B002FD538 /* LayoutDocument+Commands.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LayoutDocument+Commands.swift"; sourceTree = "<group>"; };
 		A785C07D278A64C1002FD538 /* CommandInterface.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommandInterface.swift; sourceTree = "<group>"; };
-		A785C080278BC527002FD538 /* TrainSpeedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainSpeedView.swift; sourceTree = "<group>"; };
 		A785C085278CFD7D002FD538 /* LocomotiveSpeed.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocomotiveSpeed.swift; sourceTree = "<group>"; };
 		A785C088278E59A4002FD538 /* CommandTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommandTypes.swift; sourceTree = "<group>"; };
 		A78B996127FCC4080021EFE4 /* Graph.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Graph.swift; sourceTree = "<group>"; };
@@ -642,7 +640,7 @@
 		A798BB4D27AF4477000BB4D1 /* Turnout+Reservation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Turnout+Reservation.swift"; sourceTree = "<group>"; };
 		A79CD0B8291B2E2F0079968D /* Locomotive.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Locomotive.swift; sourceTree = "<group>"; };
 		A79CD0BA291B334F0079968D /* Layout+Locomotives.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Layout+Locomotives.swift"; sourceTree = "<group>"; };
-		A79CD0BC291B37980079968D /* LocDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocDetailsView.swift; sourceTree = "<group>"; };
+		A79CD0BC291B37980079968D /* LocomotiveDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocomotiveDetailsView.swift; sourceTree = "<group>"; };
 		A79CD0BE291B391A0079968D /* LocPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocPicker.swift; sourceTree = "<group>"; };
 		A79CD0C0291C26180079968D /* LocomotiveTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocomotiveTests.swift; sourceTree = "<group>"; };
 		A79D43DB283B15BF0068C969 /* LayoutController+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LayoutController+Extension.swift"; sourceTree = "<group>"; };
@@ -690,7 +688,7 @@
 		A7DB7D5727CBEAD2000893BA /* SpeedSlider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeedSlider.swift; sourceTree = "<group>"; };
 		A7DB7D5A27CBF378000893BA /* SpeedSlider+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SpeedSlider+Extension.swift"; sourceTree = "<group>"; };
 		A7E1F74727D71C03009FB75F /* LocomotiveSpeedAcceleration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocomotiveSpeedAcceleration.swift; sourceTree = "<group>"; };
-		A7E1F74927D71E51009FB75F /* TrainSpeedTimingFunctionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainSpeedTimingFunctionView.swift; sourceTree = "<group>"; };
+		A7E1F74927D71E51009FB75F /* LocomotiveSpeedTimingFunctionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocomotiveSpeedTimingFunctionView.swift; sourceTree = "<group>"; };
 		A7E1F74D27DE980C009FB75F /* WizardSelectLocomotive.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WizardSelectLocomotive.swift; sourceTree = "<group>"; };
 		A7E1F74F27DE98E9009FB75F /* WizardSelectLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WizardSelectLayout.swift; sourceTree = "<group>"; };
 		A7E1F75127DE9E51009FB75F /* PredefinedLayoutHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PredefinedLayoutHelper.swift; sourceTree = "<group>"; };
@@ -1033,7 +1031,7 @@
 				A73E0802276AB757005F9D64 /* TurnoutViewTests.swift */,
 				A73E07EF27697127005F9D64 /* FeedbackViewTests.swift */,
 				A7145F8927F90FBA00BF5F61 /* NewLayoutWizardViewTests.swift */,
-				A7145F8B27F911F000BF5F61 /* TrainSpeedMeasurementViewTests.swift */,
+				A7145F8B27F911F000BF5F61 /* LocomotiveSpeedMeasurementViewTests.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -1142,11 +1140,11 @@
 				A7CA5EBA27952ECF00171398 /* Destination.swift */,
 				A7710E5D277850F000C08150 /* Reservation.swift */,
 				A728183F278E9EDC007BE810 /* Direction.swift */,
-				A7F779CD272B445B00E73275 /* Feedback.swift */,
 				A74F380C281927E10013FD23 /* Station.swift */,
 				A72180842760428E00831998 /* Socket.swift */,
 				A76FD43128FB3C0E00E1A295 /* ControlPoint.swift */,
 				A795A03927B6AE9B00AE90EB /* Element */,
+				A769B2EE291CA3DB00E712BC /* Feedback */,
 				A7CA5ECA27965ACF00171398 /* Block */,
 				A73B164B274E1EA50073947D /* Turnout */,
 				A744FD9F2909EBBE00852283 /* Transition */,
@@ -1194,15 +1192,16 @@
 			path = Routing;
 			sourceTree = "<group>";
 		};
-		A763F19A27BF1A6B00B3499A /* Train Speed Measurements */ = {
+		A763F19A27BF1A6B00B3499A /* Speed */ = {
 			isa = PBXGroup;
 			children = (
-				A763F19227BE26CF00B3499A /* TrainSpeedMeasurementsView.swift */,
-				A763F19827BF185100B3499A /* TrainSpeedMeasureControlsView.swift */,
-				A795A03E27B9CB0200AE90EB /* LocomotiveSpeedMeasurement.swift */,
-				A763F19B27BF4A1300B3499A /* FeedbackMonitor.swift */,
+				A763F19227BE26CF00B3499A /* LocomotiveSpeedMeasurementsView.swift */,
+				A763F19827BF185100B3499A /* LocomotiveSpeedMeasureControlsView.swift */,
+				A763F19427BF0FC800B3499A /* LocomotiveSpeedTableView.swift */,
+				A763F19627BF0FE100B3499A /* LocomotiveSpeedGraphView.swift */,
+				A7E1F74927D71E51009FB75F /* LocomotiveSpeedTimingFunctionView.swift */,
 			);
-			path = "Train Speed Measurements";
+			path = Speed;
 			sourceTree = "<group>";
 		};
 		A76507F5275BEEC50079C71A /* Layout */ = {
@@ -1230,6 +1229,15 @@
 				A744FDA4290B437F00852283 /* LayoutSpeed.swift */,
 			);
 			path = Layout;
+			sourceTree = "<group>";
+		};
+		A769B2EE291CA3DB00E712BC /* Feedback */ = {
+			isa = PBXGroup;
+			children = (
+				A7F779CD272B445B00E73275 /* Feedback.swift */,
+				A763F19B27BF4A1300B3499A /* FeedbackMonitor.swift */,
+			);
+			path = Feedback;
 			sourceTree = "<group>";
 		};
 		A76E1B6B28F647D200AF9234 /* Turnout */ = {
@@ -1330,17 +1338,6 @@
 				A7218074275D39A400831998 /* CS2 */,
 			);
 			path = Locomotives;
-			sourceTree = "<group>";
-		};
-		A77BBAB327C09B3500F7828F /* Train Speed */ = {
-			isa = PBXGroup;
-			children = (
-				A785C080278BC527002FD538 /* TrainSpeedView.swift */,
-				A763F19427BF0FC800B3499A /* TrainSpeedColumnView.swift */,
-				A763F19627BF0FE100B3499A /* TrainSpeedGraphView.swift */,
-				A7E1F74927D71E51009FB75F /* TrainSpeedTimingFunctionView.swift */,
-			);
-			path = "Train Speed";
 			sourceTree = "<group>";
 		};
 		A7841372273CE06F00381341 /* Switchboard */ = {
@@ -1515,6 +1512,7 @@
 				A7DB7D4727C21D7C000893BA /* LocomotiveSpeedManager.swift */,
 				A76C1C5A2876D91300A22509 /* LocomotiveSpeedCommand.swift */,
 				A7EBD8732875D03300A35046 /* LocomotiveStopSettledDelayTimer.swift */,
+				A795A03E27B9CB0200AE90EB /* LocomotiveSpeedMeasurement.swift */,
 				A785C074278A5CE1002FD538 /* LocomotiveIconManager.swift */,
 			);
 			path = Locomotive;
@@ -1535,7 +1533,8 @@
 			isa = PBXGroup;
 			children = (
 				A797E521291C9B9000E0E511 /* LocomotiveListView.swift */,
-				A79CD0BC291B37980079968D /* LocDetailsView.swift */,
+				A79CD0BC291B37980079968D /* LocomotiveDetailsView.swift */,
+				A763F19A27BF1A6B00B3499A /* Speed */,
 			);
 			path = Locomotives;
 			sourceTree = "<group>";
@@ -1594,12 +1593,10 @@
 				A7710E5A2777FA0E00C08150 /* Routes */,
 				A73B163A274DC02A0073947D /* Trains */,
 				A797E523291C9B9A00E0E511 /* Locomotives */,
-				A77BBAB327C09B3500F7828F /* Train Speed */,
 				A74F3812281A18CF0013FD23 /* Stations */,
 				A7B0B5182762FBEE00F11A3E /* Blocks */,
 				A73B163D274DC1EB0073947D /* Turnouts */,
 				A73B1641274DC4030073947D /* Feedbacks */,
-				A763F19A27BF1A6B00B3499A /* Train Speed Measurements */,
 				A79466CF279B8B22006E2A4C /* Simulator */,
 				A795A03427B0896800AE90EB /* Common */,
 				A73A7DDB284F07BE00ABEADE /* CS3 */,
@@ -1824,7 +1821,7 @@
 			files = (
 				A73AFEB127265A2300E1ED21 /* MarklinCANMessage.swift in Sources */,
 				A7281840278E9EDC007BE810 /* Direction.swift in Sources */,
-				A763F19327BE26CF00B3499A /* TrainSpeedMeasurementsView.swift in Sources */,
+				A763F19327BE26CF00B3499A /* LocomotiveSpeedMeasurementsView.swift in Sources */,
 				A79466CC279B64D2006E2A4C /* MainThreadQueue.swift in Sources */,
 				A7940658280789B300F6A427 /* ShortestPathFinder.swift in Sources */,
 				A7EBD8742875D03300A35046 /* LocomotiveStopSettledDelayTimer.swift in Sources */,
@@ -1922,7 +1919,7 @@
 				A7940668280A294000F6A427 /* EphemeralDrapAndDrop.swift in Sources */,
 				A74F380D281927E10013FD23 /* Station.swift in Sources */,
 				A784138A274165FB00381341 /* MarklinCommandSimulator.swift in Sources */,
-				A79CD0BD291B37980079968D /* LocDetailsView.swift in Sources */,
+				A79CD0BD291B37980079968D /* LocomotiveDetailsView.swift in Sources */,
 				A7841382273F972B00381341 /* SwitchBoardRenderer.swift in Sources */,
 				A785C089278E59A4002FD538 /* CommandTypes.swift in Sources */,
 				A74F3811281A14DD0013FD23 /* StationView.swift in Sources */,
@@ -1960,7 +1957,7 @@
 				A74F3814281A1BFA0013FD23 /* StationElementView.swift in Sources */,
 				A785C075278A5CE1002FD538 /* LocomotiveIconManager.swift in Sources */,
 				A74F38002817C1330013FD23 /* RouteStep_v1.swift in Sources */,
-				A763F19727BF0FE100B3499A /* TrainSpeedGraphView.swift in Sources */,
+				A763F19727BF0FE100B3499A /* LocomotiveSpeedGraphView.swift in Sources */,
 				A7710E592777D7FE00C08150 /* RouteView.swift in Sources */,
 				A792DEF82783A09C004B0439 /* SimulatorTrainControlView.swift in Sources */,
 				A77167FF288BD43F00A71657 /* PathFinder+Constraints.swift in Sources */,
@@ -1990,7 +1987,7 @@
 				A717FB19281E5F4800310B5D /* MoveUpButtonView.swift in Sources */,
 				A7CA5EC92796550C00171398 /* Block+Socket.swift in Sources */,
 				A717FB1B281E5F6400310B5D /* MoveDownButtonView.swift in Sources */,
-				A763F19527BF0FC800B3499A /* TrainSpeedColumnView.swift in Sources */,
+				A763F19527BF0FC800B3499A /* LocomotiveSpeedTableView.swift in Sources */,
 				A744D13B276714A2005C2F37 /* DiagnosticsSheet.swift in Sources */,
 				A717158D275845F000200F92 /* ShapeContext.swift in Sources */,
 				A784136D273CDFF100381341 /* Shape.swift in Sources */,
@@ -2010,7 +2007,6 @@
 				A76507E6275AC7DA0079C71A /* ScheduledMessageQueue.swift in Sources */,
 				A7940665280A179700F6A427 /* BlockShape+EphemeralDragProvider.swift in Sources */,
 				A76FD43828FD07A000E1A295 /* TrainControlMoveSheet.swift in Sources */,
-				A785C081278BC527002FD538 /* TrainSpeedView.swift in Sources */,
 				A7E1F75727DEDC0C009FB75F /* UnitView.swift in Sources */,
 				A7DB7D5027C7647C000893BA /* View+Extension.swift in Sources */,
 				A7F779D4272BB38F00E73275 /* LayoutFactory.swift in Sources */,
@@ -2052,7 +2048,7 @@
 				A795A04127BC832200AE90EB /* SettingsKeys.swift in Sources */,
 				A75933E527E9774600ECB7A0 /* SwitchboardSettingsView.swift in Sources */,
 				A77168032892B0E100A71657 /* Route+Resolver.swift in Sources */,
-				A763F19927BF185100B3499A /* TrainSpeedMeasureControlsView.swift in Sources */,
+				A763F19927BF185100B3499A /* LocomotiveSpeedMeasureControlsView.swift in Sources */,
 				A7012C8328344A1C003AC687 /* DeveloperView.swift in Sources */,
 				A744FD9E2909EBB800852283 /* Transition+Graph.swift in Sources */,
 				A7F779F82732407E00E73275 /* TrainControlContainerView.swift in Sources */,
@@ -2070,7 +2066,7 @@
 				A7B06AF82727ACCB00BDD88C /* Server.swift in Sources */,
 				A77A96DC27274A17009E7ECB /* MarklinCANMessagePrinter.swift in Sources */,
 				A784137A273F4D5400381341 /* ConnectableShape.swift in Sources */,
-				A7E1F74A27D71E51009FB75F /* TrainSpeedTimingFunctionView.swift in Sources */,
+				A7E1F74A27D71E51009FB75F /* LocomotiveSpeedTimingFunctionView.swift in Sources */,
 				A7012C91283AED29003AC687 /* Types.swift in Sources */,
 				A7CA5EBF2795D05A00171398 /* TrainControlActionsView.swift in Sources */,
 				A744FDA5290B437F00852283 /* LayoutSpeed.swift in Sources */,
@@ -2113,7 +2109,7 @@
 				A797E525291C9E0C00E0E511 /* LocomotiveViewTests.swift in Sources */,
 				A7218087276055AD00831998 /* FeedbackTests.swift in Sources */,
 				A73A7DD7284D00A000ABEADE /* MockTrainController.swift in Sources */,
-				A7145F8C27F911F000BF5F61 /* TrainSpeedMeasurementViewTests.swift in Sources */,
+				A7145F8C27F911F000BF5F61 /* LocomotiveSpeedMeasurementViewTests.swift in Sources */,
 				A73E07F227697285005F9D64 /* TrainViewTests.swift in Sources */,
 				A7012C8E2839BDC4003AC687 /* MockCommandInterface.swift in Sources */,
 				A73E0818276B1059005F9D64 /* SwitchBoardViewTests.swift in Sources */,

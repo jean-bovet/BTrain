@@ -12,7 +12,7 @@
 
 import SwiftUI
 
-struct TrainSpeedMeasureControlsView: View {
+struct LocomotiveSpeedMeasureControlsView: View {
     
     let document: LayoutDocument
     let loc: Locomotive
@@ -85,14 +85,14 @@ struct TrainSpeedMeasureControlsView: View {
     }
 }
 
-struct TrainSpeedMeasureControlsView_Previews: PreviewProvider {
+struct LocomotiveSpeedMeasureControlsView_Previews: PreviewProvider {
     
     static let doc = LayoutDocument(layout: LayoutComplex().newLayout())
     static let measurement = LocomotiveSpeedMeasurement(layout: doc.layout, executor: doc.layoutController, interface: doc.interface, loc: doc.layout.locomotives[0], speedEntries: [10],
                                                    feedbackA: Identifier<Feedback>(uuid: "OL1.1"), feedbackB: Identifier<Feedback>(uuid: "OL1.1"), feedbackC: Identifier<Feedback>(uuid: "OL1.1"),
                                                    distanceAB: 10, distanceBC: 20)
     static var previews: some View {
-        TrainSpeedMeasureControlsView(document: doc, loc: doc.layout.locomotives[0], speedEntries: .constant([]),
+        LocomotiveSpeedMeasureControlsView(document: doc, loc: doc.layout.locomotives[0], speedEntries: .constant([]),
                                       feedbackA: "a", feedbackB: "b", feedbackC: "c", distanceAB: .constant(0), distanceBC: .constant(0),
                                       running: .constant(false), currentSpeedEntry: .constant(nil))
     }

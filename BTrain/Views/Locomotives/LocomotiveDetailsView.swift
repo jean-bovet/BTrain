@@ -62,7 +62,6 @@ struct LocDetailsSpeedSectionView: View {
     @ObservedObject var loc: Locomotive
     
     @State private var speedExpanded = false
-    @State private var showSpeedProfileSheet = false
     @State private var showSpeedMeasureSheet = false
 
     var sheetWidth: Double {
@@ -91,7 +90,7 @@ struct LocDetailsSpeedSectionView: View {
                         ForEach(LocomotiveSpeedAcceleration.Acceleration.allCases, id: \.self) { type in
                             HStack {
                                 Text("\(type.description)")
-                                TrainSpeedTimingFunctionView(tf: LocomotiveSpeedAcceleration(fromSteps: 0, toSteps: 100, timeIncrement: 0.1, stepIncrement: 4, type: type))
+                                LocomotiveSpeedTimingFunctionView(tf: LocomotiveSpeedAcceleration(fromSteps: 0, toSteps: 100, timeIncrement: 0.1, stepIncrement: 4, type: type))
                                     .frame(width: 100, height: 50)
                             }
                         }
@@ -122,26 +121,18 @@ struct LocDetailsSpeedSectionView: View {
                 }
 
                 Button("Profile…") {
-                    showSpeedProfileSheet.toggle()
-                }
-                
-                Button("Measure…") {
                     showSpeedMeasureSheet.toggle()
                 }
             }.padding([.leading])
-        }.sheet(isPresented: $showSpeedProfileSheet) {
-            TrainSpeedView(document: document, loc: loc, trainSpeed: loc.speed)
-                .frame(idealWidth: sheetWidth, idealHeight: sheetHeight)
-                .padding()
         }.sheet(isPresented: $showSpeedMeasureSheet) {
-            TrainSpeedMeasurementsView(document: document, layout: document.layout, loc: loc)
+            LocomotiveSpeedMeasurementsView(document: document, layout: document.layout, loc: loc)
                 .frame(idealWidth: sheetWidth, idealHeight: sheetHeight)
                 .padding()
         }
     }
 }
 
-struct LocDetailsView: View {
+struct LocomotiveDetailsView: View {
     
     let document: LayoutDocument
     @ObservedObject var loc: Locomotive
@@ -156,11 +147,11 @@ struct LocDetailsView: View {
     }
 }
 
-struct LocDetailsView_Previews: PreviewProvider {
+struct LocomotiveDetailsView_Previews: PreviewProvider {
     
     static let doc = LayoutDocument(layout: LayoutLoop1().newLayout())
 
     static var previews: some View {
-        LocDetailsView(document: doc, loc: doc.layout.locomotives[0])
+        LocomotiveDetailsView(document: doc, loc: doc.layout.locomotives[0])
     }
 }

@@ -20,12 +20,11 @@ import AppKit
 extension LocomotiveListView: Inspectable { }
 extension LocDetailsDecoderSectionView: Inspectable { }
 extension LocDetailsSpeedSectionView: Inspectable { }
-extension LocDetailsView: Inspectable { }
+extension LocomotiveDetailsView: Inspectable { }
 
-extension TrainSpeedView: Inspectable { }
-extension TrainSpeedColumnView: Inspectable { }
-extension TrainSpeedGraphView: Inspectable { }
-extension TrainSpeedTimingFunctionView: Inspectable { }
+extension LocomotiveSpeedTableView: Inspectable { }
+extension LocomotiveSpeedGraphView: Inspectable { }
+extension LocomotiveSpeedTimingFunctionView: Inspectable { }
 
 class LocomotiveViewTests: RootViewTests {
     
@@ -36,27 +35,21 @@ class LocomotiveViewTests: RootViewTests {
         XCTAssertEqual(value, "3 locomotives")
     }
 
-    func testSpeedView() throws {
-        let doc = newDocument()
-        let sut = TrainSpeedView(document: doc, loc: doc.layout.locomotives[0], trainSpeed: LocomotiveSpeed(kph: 50, decoderType: .MFX))
-        _ = try sut.inspect().vStack().hStack(0).view(TrainSpeedGraphView.self, 1).canvas(0)
-    }
-
     func testSpeedGraphView() throws {
-        let sut = TrainSpeedGraphView(trainSpeed: .init(kph: 10, decoderType: .DCC))
+        let sut = LocomotiveSpeedGraphView(trainSpeed: .init(kph: 10, decoderType: .DCC))
             .frame(minWidth: 100, minHeight: 100)
         let image = sut.renderAsImage()!
         XCTAssertEqual(image.size, .init(width: 100, height: 100))
-        _ = try sut.inspect().find(TrainSpeedGraphView.self).canvas(0)
+        _ = try sut.inspect().find(LocomotiveSpeedGraphView.self).canvas(0)
     }
     
     func testSpeedColumnView() throws {
-        let sut = TrainSpeedColumnView(selection: .constant([]), currentSpeedEntry: .constant(nil), trainSpeed: LocomotiveSpeed(kph: 0, decoderType: .MFX))
+        let sut = LocomotiveSpeedTableView(selection: .constant([]), currentSpeedEntry: .constant(nil), trainSpeed: LocomotiveSpeed(kph: 0, decoderType: .MFX))
         _ = try sut.inspect().find(button: "􁂥")
     }
 
     func testSpeedTimingFunctionView() throws {
-        let sut = TrainSpeedTimingFunctionView(tf: .init(fromSteps: 0, toSteps: 10, timeIncrement: 100, stepIncrement: 4, type: .bezier))
+        let sut = LocomotiveSpeedTimingFunctionView(tf: .init(fromSteps: 0, toSteps: 10, timeIncrement: 100, stepIncrement: 4, type: .bezier))
         _ = sut.renderAsImage()!
         _ = try sut.inspect().canvas(0)
     }
@@ -66,7 +59,7 @@ class LocomotiveViewTests: RootViewTests {
         let layout = LayoutLoop1().newLayout()
         let loc = layout.locomotives[0]
         
-        let sut = LocDetailsView(document: doc, loc: loc)
+        let sut = LocomotiveDetailsView(document: doc, loc: loc)
         
         let decoderSection = try sut.inspect().find(LocDetailsDecoderSectionView.self)
         _ = try decoderSection.find(text: "Type:")

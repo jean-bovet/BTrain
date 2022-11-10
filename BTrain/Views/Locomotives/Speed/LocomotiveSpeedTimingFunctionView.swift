@@ -12,7 +12,7 @@
 
 import SwiftUI
 
-struct TrainSpeedTimingFunctionView: View {
+struct LocomotiveSpeedTimingFunctionView: View {
     
     let tf: LocomotiveSpeedAcceleration
     
@@ -44,9 +44,9 @@ struct TrainSpeedTimingFunctionView: View {
     }
 }
 
-struct TrainSpeedTimingFunctionView_Previews: PreviewProvider {
+struct LocomotiveSpeedTimingFunctionView_Previews: PreviewProvider {
     static var previews: some View {
-        TrainSpeedTimingFunctionView(tf: LocomotiveSpeedAcceleration(fromSteps: 0, toSteps: 100, timeIncrement: 0.1, stepIncrement: 4, type: .linear))
-        TrainSpeedTimingFunctionView(tf: LocomotiveSpeedAcceleration(fromSteps: 0, toSteps: 100, timeIncrement: 0.1, stepIncrement: 4, type: .bezier))
+        LocomotiveSpeedTimingFunctionView(tf: LocomotiveSpeedAcceleration(fromSteps: 0, toSteps: 100, timeIncrement: 0.1, stepIncrement: 4, type: .linear))
+        LocomotiveSpeedTimingFunctionView(tf: LocomotiveSpeedAcceleration(fromSteps: 0, toSteps: 100, timeIncrement: 0.1, stepIncrement: 4, type: .bezier))
     }
 }

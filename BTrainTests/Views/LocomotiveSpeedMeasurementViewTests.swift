@@ -24,7 +24,7 @@ class LocomotiveSpeedMeasurementViewTests: RootViewTests {
     func testMeasurementsView() throws {
         let doc = newDocument()
         let sut = LocomotiveSpeedMeasurementsView(document: doc, layout: doc.layout, loc: doc.layout.locomotives[0])
-        _ = try sut.inspect().find(LocPicker.self)
+        _ = try sut.inspect().find(LocomotiveSpeedTableView.self)
     }
 
     func testMeasureControlsView() throws {

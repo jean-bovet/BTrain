@@ -92,7 +92,7 @@ struct LocomotiveListView: View {
 
             if let selection = selection, let loc = layout.locomotive(for: selection) {
                 ScrollView {
-                    LocDetailsView(document: document, loc: loc)
+                    LocomotiveDetailsView(document: document, loc: loc)
                         .padding()
                 }
             } else {

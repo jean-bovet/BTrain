@@ -12,7 +12,7 @@
 
 import SwiftUI
 
-struct TrainSpeedColumnView: View {
+struct LocomotiveSpeedTableView: View {
     
     @Binding var selection: Set<LocomotiveSpeed.SpeedTableEntry.ID>
     @Binding var currentSpeedEntry: LocomotiveSpeed.SpeedTableEntry?
@@ -106,12 +106,12 @@ struct TrainSpeedColumnView: View {
     }
 }
 
-struct TrainSpeedColumnView_Previews: PreviewProvider {
+struct LocomotiveSpeedTableView_Previews: PreviewProvider {
     
     static let doc = LayoutDocument(layout: LayoutComplex().newLayout())
 
     static var previews: some View {
-        TrainSpeedColumnView(selection: .constant([]),
+        LocomotiveSpeedTableView(selection: .constant([]),
                              currentSpeedEntry: .constant(nil),
                              trainSpeed: doc.layout.locomotives[0].speed)
     }

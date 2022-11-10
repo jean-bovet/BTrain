@@ -12,8 +12,7 @@
 
 import SwiftUI
 
-// TODO: rename
-struct TrainSpeedMeasurementsView: View {
+struct LocomotiveSpeedMeasurementsView: View {
     
     let document: LayoutDocument
     let layout: Layout
@@ -58,8 +57,8 @@ struct TrainSpeedMeasurementsView: View {
                     .disabled(running)
                 }
                 HStack(spacing: 10) {
-                    TrainSpeedColumnView(selection: $selectedSpeedEntries, currentSpeedEntry: $currentSpeedEntry, trainSpeed: loc.speed)
-                    TrainSpeedGraphView(trainSpeed: loc.speed)
+                    LocomotiveSpeedTableView(selection: $selectedSpeedEntries, currentSpeedEntry: $currentSpeedEntry, trainSpeed: loc.speed)
+                    LocomotiveSpeedGraphView(trainSpeed: loc.speed)
                 }
                 .id(loc) // ensure the table and graph are updated when train changes
                 .frame(minHeight: 200)
@@ -89,7 +88,7 @@ struct TrainSpeedMeasurementsView: View {
                     .padding([.leading, .trailing])
             } else {
                 if let loc = loc, let feedbackA = feedbackA, let feedbackB = feedbackB, let feedbackC = feedbackC {
-                    TrainSpeedMeasureControlsView(document: document, loc: loc,
+                    LocomotiveSpeedMeasureControlsView(document: document, loc: loc,
                                                   speedEntries: $selectedSpeedEntries,
                                                   feedbackA: feedbackA,
                                                   feedbackB: feedbackB,
@@ -178,6 +177,6 @@ struct TrainSpeedMeasureWizardView_Previews: PreviewProvider {
     static let doc = LayoutDocument(layout: LayoutComplex().newLayout())
 
     static var previews: some View {
-        TrainSpeedMeasurementsView(document: doc, layout: doc.layout, loc: doc.layout.locomotives[0])
+        LocomotiveSpeedMeasurementsView(document: doc, layout: doc.layout, loc: doc.layout.locomotives[0])
     }
 }
