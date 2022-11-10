@@ -22,29 +22,31 @@ struct TrainControlContainerView: View {
     
     var body: some View {
         VStack(alignment: .leading) {
-            HStack(alignment: .top) {
-                VStack(alignment: .leading) {
-                    Text(train.name).font(.headline)
-                    TrainControlLocationView(controller: document.layoutController, doc: document, layout: document.layout, train: train)
-                }
+            if let loc = train.locomotive {
+                HStack(alignment: .center) {
+                    VStack(alignment: .leading) {
+                        Text(train.name).font(.headline)
+                        TrainControlLocationView(controller: document.layoutController, doc: document, layout: document.layout, train: train)
+                    }
 
-                if let loc = train.locomotive {
                     TrainIconView(locomotiveIconManager: document.locomotiveIconManager, loc: loc, size: .medium, hideIfNotDefined: true)
-                } else {
-                    Text("No Locomotive")
                 }
-            }
-            
-            if train.blockId != nil {
-                HStack {
-                    if let loc = train.locomotive {
+                
+                if train.blockId != nil {
+                    HStack {
                         TrainControlSpeedView(document: document, train: train, loc: loc, speed: loc.speed)
                         Spacer()
+                        TrainControlStateView(train: train)
                     }
-                    TrainControlStateView(train: train)
-                }
 
-                TrainControlRouteView(document: document, train: train)
+                    TrainControlRouteView(document: document, train: train)
+                }
+            } else {
+                HStack {
+                    Text(train.name).font(.headline)
+                    Spacer()
+                    Text("No Locomotive")
+                }
             }
         }
     }
@@ -60,11 +62,19 @@ struct TrainControlContainerView_Previews: PreviewProvider {
         return LayoutDocument(layout: layout)
     }()
 
+    static let doc3: LayoutDocument = {
+        let layout = LayoutLoop1().newLayout()
+        layout.trains[0].blockId = layout.block(at: 0).id
+        layout.trains[0].locomotive = nil
+        return LayoutDocument(layout: layout)
+    }()
+
     static var previews: some View {
-        Group {
+        VStack {
+            TrainControlContainerView(document: doc3, train: doc3.layout.trains[0])
+            Divider()
             TrainControlContainerView(document: doc1, train: doc1.layout.trains[0])
-        }
-        Group {
+            Divider()
             TrainControlContainerView(document: doc2, train: doc2.layout.trains[0])
         }
     }
