@@ -110,14 +110,36 @@ class MarklinSimulatorTests: XCTestCase {
 
     func testMultipleInstances() {
         let doc = LayoutDocument(layout: Layout())
-
+        
+        XCTAssertFalse(MarklinCS3Server.shared.running)
+        
         let s1 = MarklinCommandSimulator(layout: doc.layout, interface: doc.interface)
         let s2 = MarklinCommandSimulator(layout: doc.layout, interface: doc.interface)
         
         s1.start()
-        s2.start()
-        
         XCTAssertTrue(s1.started)
+        XCTAssertTrue(MarklinCS3Server.shared.running)
+
+        s2.start()
         XCTAssertTrue(s2.started)
+        XCTAssertTrue(MarklinCS3Server.shared.running)
+        
+        let e1 = expectation(description: "stop-s1")
+        s1.stop {
+            e1.fulfill()
+        }
+        waitForExpectations(timeout: 1.0)
+        
+        XCTAssertFalse(s1.started)
+        XCTAssertTrue(MarklinCS3Server.shared.running)
+
+        let e2 = expectation(description: "stop-s2")
+        s2.stop {
+            e2.fulfill()
+        }
+        waitForExpectations(timeout: 1.0)
+        
+        XCTAssertFalse(s2.started)
+        XCTAssertFalse(MarklinCS3Server.shared.running)
     }
 }

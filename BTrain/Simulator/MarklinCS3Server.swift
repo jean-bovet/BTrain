@@ -16,17 +16,21 @@ import Swifter
 /// Simulates the Marklin Central Station HTTP server by servicing http requests such as the locomotive configurations or icons.
 final class MarklinCS3Server {
     
+    /// There is only one instance of the CS3 server for BTrain
+    static let shared = MarklinCS3Server()
+        
     private let httpServer = HttpServer()
+    
+    var running: Bool {
+        httpServer.state == .running
+    }
     
     /// Contains the URL to the CS3 server files that the simulator is using to respond to the appropriate HTTP commands,
     /// such as the commands to fetch the locomotive configurations or locomotive icons.
     static let cs3ServerDirectory = Bundle.main.url(forResource: "CS3Server", withExtension: nil)!
-
-    deinit {
-        stop()
-    }
     
-    func start() throws {
+    /// Private initializer to enforce the singleton
+    private init() {
         httpServer["/app/assets/lok/:icon"] = { [weak self] request in
             guard let dic = request.params.first(where: { key, value in
                 key == ":icon"
@@ -47,20 +51,36 @@ final class MarklinCS3Server {
                 return .ok(.text(""))
             }
         }
+    }
 
-        try httpServer.start()
+    deinit {
+        stop()
+    }
+    
+    /// Keep track of the start() and stop() requests and only start or stop
+    /// the http server when they reach 0.
+    private var startRequests = 0
+    
+    func start() throws {
+        if startRequests == 0 {
+            try httpServer.start()
+        }
+        startRequests += 1
     }
     
     func stop() {
-        httpServer.stop()
+        startRequests -= 1
+        if startRequests == 0 {
+            httpServer.stop()
+        }
     }
     
-    func loksContent() -> String {
+    private func loksContent() -> String {
         let file = Bundle.main.url(forResource: "loks", withExtension: nil, subdirectory: "CS3Server/app/api")!
         return try! String(contentsOf: file)
     }
     
-    func lokIconContent(name: String) -> Data? {
+    private func lokIconContent(name: String) -> Data? {
         let file = MarklinCS3Server.cs3ServerDirectory.appending(components: "app", "assets", "lok", name)
         do {
             return try Data(contentsOf: file)

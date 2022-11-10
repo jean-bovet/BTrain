@@ -52,7 +52,7 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
 
     private var server: Server?
     
-    private var cs3Server = MarklinCS3Server()
+    private var cs3Server = MarklinCS3Server.shared
 
     private var timer: Timer?
     
@@ -142,7 +142,7 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
     }
     
     func start() {
-        try? cs3Server.start()
+        try! cs3Server.start()
         
         server = Server(port: localPort)
         server!.didAcceptConnection = { [weak self] connection in
