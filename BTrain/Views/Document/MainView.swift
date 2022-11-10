@@ -46,8 +46,6 @@ struct MainView: View {
                 TurnoutListView(doc: document, layout: document.layout)
             case .feedback:
                 FeedbackEditListView(doc: document, layout: document.layout, layoutController: document.layoutController)
-            case .speed:
-                TrainSpeedMeasurementsView(document: document, layout: document.layout)
             case .cs3:
                 CS3DebuggerView(doc: document)
             }

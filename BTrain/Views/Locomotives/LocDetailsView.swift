@@ -63,7 +63,8 @@ struct LocDetailsSpeedSectionView: View {
     
     @State private var speedExpanded = false
     @State private var showSpeedProfileSheet = false
-    
+    @State private var showSpeedMeasureSheet = false
+
     var sheetWidth: Double {
         if let screen = NSScreen.main {
             return screen.visibleFrame.width * 0.6
@@ -123,9 +124,17 @@ struct LocDetailsSpeedSectionView: View {
                 Button("Profile…") {
                     showSpeedProfileSheet.toggle()
                 }
+                
+                Button("Measure…") {
+                    showSpeedMeasureSheet.toggle()
+                }
             }.padding([.leading])
         }.sheet(isPresented: $showSpeedProfileSheet) {
             TrainSpeedView(document: document, loc: loc, trainSpeed: loc.speed)
+                .frame(idealWidth: sheetWidth, idealHeight: sheetHeight)
+                .padding()
+        }.sheet(isPresented: $showSpeedMeasureSheet) {
+            TrainSpeedMeasurementsView(document: document, layout: document.layout, loc: loc)
                 .frame(idealWidth: sheetWidth, idealHeight: sheetHeight)
                 .padding()
         }

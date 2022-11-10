@@ -17,9 +17,7 @@ struct TrainSpeedMeasurementsView: View {
     
     let document: LayoutDocument
     let layout: Layout
-
-    @State private var selectedSpeedEntries = Set<LocomotiveSpeed.SpeedTableEntry.ID>()
-    @State private var currentSpeedEntry: LocomotiveSpeed.SpeedTableEntry?
+    let loc: Locomotive
     
     @AppStorage("speedMeasureFeedbackA") private var feedbackA: String?
     @AppStorage("speedMeasureFeedbackB") private var feedbackB: String?
@@ -28,18 +26,13 @@ struct TrainSpeedMeasurementsView: View {
     @AppStorage("speedMeasureDistanceAB") private var distanceAB: Double = 0
     @AppStorage("speedMeasureDistanceBC") private var distanceBC: Double = 0
         
-    @AppStorage("speedMeasureSelectedTrain") private var selectedLoc: String?
+    @Environment(\.presentationMode) var presentationMode
 
+    @State private var selectedSpeedEntries = Set<LocomotiveSpeed.SpeedTableEntry.ID>()
+    @State private var currentSpeedEntry: LocomotiveSpeed.SpeedTableEntry?
+    
     @State private var running = false
-    
-    var loc: Locomotive? {
-        if let selectedLoc = selectedLoc {
-            return layout.locomotive(for: Identifier<Locomotive>(uuid: selectedLoc))
-        } else {
-            return nil
-        }
-    }
-    
+        
     var validationError: String? {
         if selectedSpeedEntries.isEmpty {
             return "􀇿 One or more steps must be selected"
@@ -56,42 +49,22 @@ struct TrainSpeedMeasurementsView: View {
     
     var body: some View {
         VStack(alignment: .leading) {
-            HStack {
-                let b: Binding<Identifier<Locomotive>?> = Binding {
-                    if let selectedLoc = selectedLoc {
-                        return Identifier<Locomotive>(uuid: selectedLoc)
-                    } else {
-                        return nil
+            VStack(alignment: .leading) {
+                HStack {
+                    Text("Steps to Measure:")
+                    Button("Auto Select") {
+                        updateSelectedSteps()
                     }
-                } set: {
-                    selectedLoc = $0?.uuid
+                    .disabled(running)
                 }
-                LocPicker(doc: document, selectedLoc: b)
-                .fixedSize()
-            }
-            .disabled(running)
-            .padding([.leading, .trailing, .top])
-                            
-            Divider()
-
-            if let loc = loc {
-                VStack(alignment: .leading) {
-                    HStack {
-                        Text("Steps to Measure:")
-                        Button("Auto Select") {
-                            updateSelectedSteps()
-                        }
-                        .disabled(running)
-                    }
-                    HStack(spacing: 10) {
-                        TrainSpeedColumnView(selection: $selectedSpeedEntries, currentSpeedEntry: $currentSpeedEntry, trainSpeed: loc.speed)
-                        TrainSpeedGraphView(trainSpeed: loc.speed)
-                    }
-                    .id(loc) // ensure the table and graph are updated when train changes
-                    .frame(minHeight: 200)
+                HStack(spacing: 10) {
+                    TrainSpeedColumnView(selection: $selectedSpeedEntries, currentSpeedEntry: $currentSpeedEntry, trainSpeed: loc.speed)
+                    TrainSpeedGraphView(trainSpeed: loc.speed)
                 }
-                .padding([.leading, .trailing])
+                .id(loc) // ensure the table and graph are updated when train changes
+                .frame(minHeight: 200)
             }
+            .padding([.leading, .trailing])
 
             Divider()
             
@@ -128,20 +101,20 @@ struct TrainSpeedMeasurementsView: View {
                         .padding([.leading, .trailing])
                 }
             }
+            
+            Divider()
 
-            SwitchboardContainerView(layout: document.layout,
-                                     layoutController: document.layoutController,
-                                     document: document,
-                                     switchboard: document.switchboard,
-                                     state: document.switchboard.state)
+            HStack {
+                Spacer()
+                Button("OK") {
+                    presentationMode.wrappedValue.dismiss()
+                }
+                .keyboardShortcut(.defaultAction)
+            }
         }
     }
     
     func updateSelectedSteps() {
-        guard let loc = loc else {
-            return
-        }
-
         selectedSpeedEntries.removeAll()
         
         var steps: Set<LocomotiveSpeed.SpeedTableEntry.ID> = [loc.speed.speedTable[1].id]
@@ -205,6 +178,6 @@ struct TrainSpeedMeasureWizardView_Previews: PreviewProvider {
     static let doc = LayoutDocument(layout: LayoutComplex().newLayout())
 
     static var previews: some View {
-        TrainSpeedMeasurementsView(document: doc, layout: doc.layout)
+        TrainSpeedMeasurementsView(document: doc, layout: doc.layout, loc: doc.layout.locomotives[0])
     }
 }

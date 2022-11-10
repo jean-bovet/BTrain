@@ -27,8 +27,6 @@ struct MenuCommands: Commands {
                 CommandSelectedView(viewType: .feedback, label: "Feedback").keyboardShortcut("7", modifiers: [.command])
             }
             Divider()
-            CommandSelectedView(viewType: .speed, label: "Speed Measurements")
-            Divider()
             CommandSelectedView(viewType: .cs3, label: "Central Station 3 Debugger")
             Divider()
         }
