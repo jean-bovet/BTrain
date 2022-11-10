@@ -237,20 +237,8 @@ final class Train: Element, ObservableObject {
     private var locomotiveId: Identifier<Locomotive>?
 
     func resolve(layout: Layout) {
-        if let locomotive = locomotive {
-            // If a locomotive instance is present at this moment, it means
-            // it is a older-format in which the locomotive was part of the train.
-            assert(locomotiveId == nil)
-            
-            // The locomotive id is assigned
-            self.locomotiveId = locomotive.id
-            
-            // The locomotive is added to the layout
-            layout.locomotives.append(locomotive)
-        } else {
-            // New format: the locomotive is assigned from the layout
-            self.locomotive = layout.locomotive(for: locomotiveId)
-        }
+        assert(locomotive == nil)
+        locomotive = layout.locomotive(for: locomotiveId)
     }
 }
 
@@ -274,9 +262,7 @@ extension Train {
 extension Train: Codable {
     
     enum CodingKeys: CodingKey {
-      case id, enabled, name, locomotive, wagonsLength, route, routeIndex, block, position, maxLeadingBlocks, blocksToAvoid, turnoutsToAvoid,
-           // Previous encoding of the locomotive within the train itself
-           address, locomotiveLength, speed, decoder, direction
+        case id, enabled, name, locomotive, wagonsLength, route, routeIndex, block, position, maxLeadingBlocks, blocksToAvoid, turnoutsToAvoid
     }
 
     convenience init(from decoder: Decoder) throws {
@@ -286,24 +272,8 @@ extension Train: Codable {
 
         self.init(id: id, name: name)
         
-        if container.contains(CodingKeys.address) {
-            // Note: old-format in which the locomotive was part of the train.
-            let id = try container.decode(Identifier<Locomotive>.self, forKey: CodingKeys.id)
-            let name = try container.decode(String.self, forKey: CodingKeys.name)
-            let address = try container.decode(UInt32.self, forKey: CodingKeys.address)
+        self.locomotiveId = try container.decodeIfPresent(Identifier<Locomotive>.self, forKey: CodingKeys.locomotive)
 
-            let loc = Locomotive(id: id, name: name, address: address)
-            loc.enabled = try container.decodeIfPresent(Bool.self, forKey: CodingKeys.enabled) ?? true
-            loc.decoder = try container.decode(DecoderType.self, forKey: CodingKeys.decoder)
-            loc.length = try container.decodeIfPresent(Double.self, forKey: CodingKeys.locomotiveLength)
-            loc.speed = try container.decode(LocomotiveSpeed.self, forKey: CodingKeys.speed)
-            loc.directionForward = try container.decodeIfPresent(Bool.self, forKey: CodingKeys.direction) ?? true
-            
-            self.locomotive = loc
-        } else {
-            self.locomotiveId = try container.decodeIfPresent(Identifier<Locomotive>.self, forKey: CodingKeys.locomotive)
-        }
-        
         self.enabled = try container.decodeIfPresent(Bool.self, forKey: CodingKeys.enabled) ?? true
         self.wagonsLength = try container.decodeIfPresent(Double.self, forKey: CodingKeys.wagonsLength)
         self.routeId = try container.decodeIfPresent(Identifier<Route>.self, forKey: CodingKeys.route) ?? Route.automaticRouteId(for: id)

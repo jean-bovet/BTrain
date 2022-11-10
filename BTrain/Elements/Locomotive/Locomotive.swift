@@ -66,7 +66,7 @@ final class Locomotive: Element, ObservableObject {
 extension Locomotive: Codable {
     
     enum CodingKeys: CodingKey {
-      case id, enabled, name, address, lenght, speed, decoder, direction
+        case id, enabled, name, address, lenght, speed, decoder, direction
     }
     
     convenience init(from decoder: Decoder) throws {
