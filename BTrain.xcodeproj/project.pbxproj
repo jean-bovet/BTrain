@@ -161,6 +161,7 @@
 		A768B19128551B0800B6497F /* StateMachine.swift in Sources */ = {isa = PBXBuildFile; fileRef = A768B19028551B0800B6497F /* StateMachine.swift */; };
 		A768B1932856A3D900B6497F /* LayoutEventStateMachine.swift in Sources */ = {isa = PBXBuildFile; fileRef = A768B1922856A3D900B6497F /* LayoutEventStateMachine.swift */; };
 		A768B1952856A42500B6497F /* LayoutEventStateMachineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A768B1942856A42500B6497F /* LayoutEventStateMachineTests.swift */; };
+		A769B2EF291CD90400E712BC /* CS3Server in Resources */ = {isa = PBXBuildFile; fileRef = A77A02962915BBFB0017667A /* CS3Server */; };
 		A76B903E28330CB4006596A3 /* LayoutYardRoutingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A76B903D28330CB4006596A3 /* LayoutYardRoutingTests.swift */; };
 		A76C1C5B2876D91300A22509 /* LocomotiveSpeedCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = A76C1C5A2876D91300A22509 /* LocomotiveSpeedCommand.swift */; };
 		A76C1C5D287EA3AD00A22509 /* LayoutControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A76C1C5C287EA3AD00A22509 /* LayoutControllerTests.swift */; };
@@ -197,7 +198,6 @@
 		A77A02952915B7260017667A /* MarklinLocomotivesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A77A02942915B7260017667A /* MarklinLocomotivesTests.swift */; };
 		A77A02992915D6880017667A /* MarklinFetchLocomotives.swift in Sources */ = {isa = PBXBuildFile; fileRef = A77A02982915D6880017667A /* MarklinFetchLocomotives.swift */; };
 		A77A029D2915E0B90017667A /* Swifter in Frameworks */ = {isa = PBXBuildFile; productRef = A77A029C2915E0B90017667A /* Swifter */; };
-		A77A029E2915E24A0017667A /* CS3Server in Resources */ = {isa = PBXBuildFile; fileRef = A77A02962915BBFB0017667A /* CS3Server */; };
 		A77A02A0291631600017667A /* MarklinCS3Server.swift in Sources */ = {isa = PBXBuildFile; fileRef = A77A029F291631600017667A /* MarklinCS3Server.swift */; };
 		A77A96DC27274A17009E7ECB /* MarklinCANMessagePrinter.swift in Sources */ = {isa = PBXBuildFile; fileRef = A77A96DB27274A17009E7ECB /* MarklinCANMessagePrinter.swift */; };
 		A77A96DE2727767C009E7ECB /* ConnectSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A77A96DD2727767C009E7ECB /* ConnectSheet.swift */; };
@@ -1795,7 +1795,7 @@
 			files = (
 				A719FEB528023CD800D5FBE1 /* Layouts in Resources */,
 				A7218079275DA74500831998 /* Locomotives.cs2 in Resources */,
-				A77A029E2915E24A0017667A /* CS3Server in Resources */,
+				A769B2EF291CD90400E712BC /* CS3Server in Resources */,
 				A73AFE8D2726594800E1ED21 /* Preview Assets.xcassets in Resources */,
 				A73AFE8A2726594800E1ED21 /* Assets.xcassets in Resources */,
 				A7C8A2EB279BDE52000C7246 /* Predefined.btrain in Resources */,
