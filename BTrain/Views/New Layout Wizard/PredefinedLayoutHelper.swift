@@ -35,15 +35,24 @@ final class PredefinedLayoutHelper: ObservableObject {
         document.apply(LayoutFactory.createLayout(layoutId))
         
         document.layout.trains.removeAll()
+        document.layout.locomotives.removeAll()
         
         for trainId in trains {
             if let train = predefinedDocument.layout.train(for: trainId) {
                 train.enabled = true
                 train.wagonsLength = 0
                 train.blockId = nil
-                document.layout.trains.append(train)
-                if let locId = train.locomotive?.id, let fileWrapper = predefinedDocument.locomotiveIconManager.fileWrapper(for: locId) {
-                    document.locomotiveIconManager.setIcon(fileWrapper, locId: locId)
+                document.layout.addTrain(train)
+                
+                if let loc = predefinedDocument.layout.locomotive(for: train.locomotive?.id) {
+                    loc.enabled = true
+                    loc.length = 20
+                    train.locomotive = loc
+                    document.layout.addLocomotive(loc)
+                    
+                    if let fileWrapper = predefinedDocument.locomotiveIconManager.fileWrapper(for: loc.id) {
+                        document.locomotiveIconManager.setIcon(fileWrapper, locId: loc.id)
+                    }
                 }
             }
         }
