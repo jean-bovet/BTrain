@@ -20,6 +20,9 @@ struct TrainControlContainerView: View {
     // such as speed changes during automatic route execution.
     @ObservedObject var train: Train
     
+    /// Keep track of any runtime error related to the train so it can be displayed to the user
+    @State private var trainRuntimeError: String?
+    
     var body: some View {
         VStack(alignment: .leading) {
             if let loc = train.locomotive {
@@ -36,10 +39,10 @@ struct TrainControlContainerView: View {
                     HStack {
                         TrainControlSpeedView(document: document, train: train, loc: loc, speed: loc.speed)
                         Spacer()
-                        TrainControlStateView(train: train)
+                        TrainControlStateView(train: train, trainRuntimeError: $trainRuntimeError)
                     }
 
-                    TrainControlRouteView(document: document, train: train)
+                    TrainControlRouteView(document: document, train: train, trainRuntimeError: $trainRuntimeError)
                 }
             } else {
                 HStack {

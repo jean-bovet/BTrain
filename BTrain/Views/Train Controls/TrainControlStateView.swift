@@ -16,6 +16,8 @@ struct TrainControlStateView: View {
     
     @ObservedObject var train: Train
     
+    @Binding var trainRuntimeError: String?
+
     @State private var showingAlert = false
 
     let size = 10.0
@@ -63,7 +65,7 @@ struct TrainControlStateView: View {
     
     var body: some View {
         HStack {
-            if let runtimeInfo = train.runtimeInfo {
+            if let runtimeInfo = trainRuntimeError {
                 Button("􀇾") {
                     showingAlert.toggle()
                 }
@@ -75,7 +77,7 @@ struct TrainControlStateView: View {
                     }.keyboardShortcut(.defaultAction)
                     
                     Button("Clear") {
-                        train.runtimeInfo = nil
+                        trainRuntimeError = nil
                     }
                 }
             }
@@ -90,28 +92,27 @@ struct TrainControlStateView: View {
 
 struct TrainControlStateView_Previews: PreviewProvider {
     
-    static func train(with state: Train.State, _ runtimeInfo: String? = nil) -> Train {
+    static func train(with state: Train.State) -> Train {
         let t = Train()
         t.state = state
-        t.runtimeInfo = runtimeInfo
         return t
     }
     
     static var previews: some View {
         Group {
-            TrainControlStateView(train: train(with: .stopped))
+            TrainControlStateView(train: train(with: .stopped), trainRuntimeError: .constant(nil))
         }
         Group {
-            TrainControlStateView(train: train(with: .stopped, "There was an error"))
+            TrainControlStateView(train: train(with: .stopped), trainRuntimeError: .constant("There was an error"))
         }
         Group {
-            TrainControlStateView(train: train(with: .running))
+            TrainControlStateView(train: train(with: .running), trainRuntimeError: .constant(nil))
         }
         Group {
-            TrainControlStateView(train: train(with: .braking))
+            TrainControlStateView(train: train(with: .braking), trainRuntimeError: .constant(nil))
         }
         Group {
-            TrainControlStateView(train: train(with: .stopping))
+            TrainControlStateView(train: train(with: .stopping), trainRuntimeError: .constant(nil))
         }
     }
 }

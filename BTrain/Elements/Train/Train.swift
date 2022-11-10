@@ -96,12 +96,6 @@ final class Train: Element, ObservableObject {
     /// The locomotive assigned to this train or nil of no locomotive is assigned
     @Published var locomotive: Locomotive?
     
-    // Runtime-information only. This is not stored and is only
-    // used to display transient information when the train
-    // is running in the layout.
-    // TODO: why is this here?
-    @Published var runtimeInfo: String?
-    
     // Length of the wagons (in cm)
     @Published var wagonsLength: Double?
 

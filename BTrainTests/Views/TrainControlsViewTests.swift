@@ -59,7 +59,7 @@ class TrainControlsViewTests: RootViewTests {
         let route = layout.routes[0]
         let train = layout.trains[0]
         
-        let sut = TrainControlRouteActionsView(document: doc, train: train, route: route)
+        let sut = TrainControlRouteActionsView(document: doc, train: train, route: route, trainRuntimeError: .constant(nil))
 
         train.scheduling = .unmanaged
         _ = try sut.inspect().find(button: "Start")
@@ -93,8 +93,7 @@ class TrainControlsViewTests: RootViewTests {
     func testTrainControlStateView() throws {
         let doc = newDocument()
         let train = doc.layout.trains[0]
-        train.runtimeInfo = "Error!"
-        let sut = TrainControlStateView(train: train)
+        let sut = TrainControlStateView(train: train, trainRuntimeError: .constant("Error!"))
         _ = try sut.inspect().find(button: "􀇾")
     }
 }

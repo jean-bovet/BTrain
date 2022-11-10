@@ -32,6 +32,7 @@ struct TrainControlListView: View {
         if layout.trains.isEmpty {
             Spacer()
             VStack {
+                // TODO: this is actually No Trains. Re-visit this
                 Text("No Locomotives")
                 Button("􀈄 Download Locomotives") {
                     document.discoverLocomotiveConfirmation.toggle()
