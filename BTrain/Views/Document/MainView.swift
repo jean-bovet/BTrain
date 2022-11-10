@@ -36,6 +36,8 @@ struct MainView: View {
                 RouteListView(layout: document.layout)
             case .trains:
                 TrainListView(document: document, layout: document.layout)
+            case .locomotives:
+                LocomotiveListView(document: document, layout: document.layout)
             case .stations:
                 StationListView(layout: document.layout)
             case .blocks:

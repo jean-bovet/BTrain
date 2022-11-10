@@ -23,6 +23,7 @@ struct LayoutIdentity {
         case transition
         case controlPoint
         case train
+        case locomotive
         case route
         
         var prefix: String {
@@ -41,6 +42,8 @@ struct LayoutIdentity {
                 return "c"
             case .train:
                 return "lw"
+            case .locomotive:
+                return "lc"
             case .route:
                 return "r"
             }

@@ -12,7 +12,7 @@
 
 import SwiftUI
 
-struct TrainListView: View {
+struct LocomotiveListView: View {
     
     @Environment(\.undoManager) var undoManager
     
@@ -20,21 +20,21 @@ struct TrainListView: View {
 
     @ObservedObject var layout: Layout
     
-    @State private var selection: Identifier<Train>? = nil
+    @State private var selection: Identifier<Locomotive>? = nil
 
     var body: some View {
         HStack(alignment: .top) {
             VStack {
                 Table(selection: $selection) {
-                    TableColumn("Enabled") { train in
-                        UndoProvider(train.enabled) { enabled in
+                    TableColumn("Enabled") { loc in
+                        UndoProvider(loc.enabled) { enabled in
                             Toggle("Enabled", isOn: enabled)
                                 .labelsHidden()
                         }
                     }.width(80)
                     
-                    TableColumn("Icon") { train in
-                        if let image = document.locomotiveIconManager.icon(for: train.wrappedValue.locomotive?.id) {
+                    TableColumn("Icon") { loc in
+                        if let image = document.locomotiveIconManager.icon(for: loc.wrappedValue.id) {
                             Image(nsImage: image)
                                 .resizable()
                                 .aspectRatio(contentMode: .fit)
@@ -42,38 +42,46 @@ struct TrainListView: View {
                         }
                     }.width(80)
 
-                    TableColumn("Name") { train in
-                        TextField("Name", text: train.name)
+                    TableColumn("Name") { loc in
+                        TextField("Name", text: loc.name)
                             .labelsHidden()
                     }
                 } rows: {
-                    ForEach($layout.trains) { train in
-                        TableRow(train)
+                    ForEach($layout.locomotives) { locomotive in
+                        TableRow(locomotive)
                     }
                 }
                 
                 HStack {
-                    Text("\(layout.trains.count) trains")
+                    Text("\(layout.locomotives.count) locomotives")
                     
                     Spacer()
                     
                     Button("+") {
-                        let train = layout.newTrain()
+                        let loc = layout.newLocomotive()
                         undoManager?.registerUndo(withTarget: layout, handler: { layout in
-                            layout.trains.removeAll { t in
-                                t.id == train.id
+                            layout.locomotives.removeAll { t in
+                                t.id == loc.id
                             }
                         })
                     }
                     Button("-") {
-                        let train = layout.train(for: selection!)!
-                        document.layoutController.delete(train: train)
+                        let loc = layout.locomotive(for: selection!)!
+                        layout.delete(locId: loc.id)
                         
                         undoManager?.registerUndo(withTarget: layout, handler: { layout in
-                            layout.addTrain(train)
+                            layout.addLocomotive(loc)
                         })
                     }.disabled(selection == nil)
                     
+                    Spacer().fixedSpace()
+                    
+                    Button("􀈄") {
+                        document.discoverLocomotiveConfirmation.toggle()
+                    }
+                    .disabled(!document.connected)
+                    .help("Download Locomotives")
+
                     Spacer().fixedSpace()
                     
                     Button("􀄬") {
@@ -82,27 +90,27 @@ struct TrainListView: View {
                 }.padding()
             }.frame(maxWidth: SideListFixedWidth)
 
-            if let selection = selection, let train = layout.train(for: selection) {
+            if let selection = selection, let loc = layout.locomotive(for: selection) {
                 ScrollView {
-                    TrainDetailsView(document: document, train: train)
+                    LocDetailsView(document: document, loc: loc)
                         .padding()
                 }
             } else {
-                CenteredLabelView(label: "No Selected Train")
+                CenteredLabelView(label: "No Selected Locomotive")
             }
         }.onAppear {
             if selection == nil {
-                selection = layout.trains.first?.id
+                selection = layout.locomotives.first?.id
             }
         }
     }
 }
 
-struct TrainListView_Previews: PreviewProvider {
+struct LocomotiveListView_Previews: PreviewProvider {
     
     static let doc = LayoutDocument(layout: LayoutLoop2().newLayout())
     
     static var previews: some View {
-        TrainListView(document: doc, layout: doc.layout)
+        LocomotiveListView(document: doc, layout: doc.layout)
     }
 }

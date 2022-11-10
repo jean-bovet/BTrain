@@ -27,9 +27,19 @@ extension Layout {
     }
 
     @discardableResult
+    func newLocomotive() -> Locomotive {
+        let id = LayoutIdentity.newIdentity(locomotives, prefix: .locomotive)
+        return addLocomotive(Locomotive(id: id, name: id.uuid, address: 0))
+    }
+
+    @discardableResult
     func addLocomotive(_ loc: Locomotive) -> Locomotive {
         locomotives.append(loc)
         return loc
+    }
+
+    func delete(locId: Identifier<Locomotive>) {
+        locomotiveMap.removeValue(forKey: locId)
     }
 
     func removeAllLocomotives() {
