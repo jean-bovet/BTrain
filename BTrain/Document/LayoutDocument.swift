@@ -78,7 +78,12 @@ final class LayoutDocument: ObservableObject {
 
     /// True if at least one train can be finished
     @Published var trainsThatCanBeFinished = false
-
+    
+    /// True if the document is a new document. This is used to trigger
+    /// the new document wizard to help pre-populate the switchboard
+    /// with a predefined layout and locomotives.
+    @Published var newDocument = false
+    
     private let trainsStateObserver: LayoutTrainsStateObserver
     private let trainsSchedulingObserver: LayoutTrainsSchedulingObserver
     private var stateChangeUUID: UUID?

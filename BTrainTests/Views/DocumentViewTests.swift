@@ -17,7 +17,6 @@ import SwiftUI
 @testable import BTrain
 
 extension NewLayoutWizardView: Inspectable { }
-extension DocumentView: Inspectable { }
 extension ConnectSheet: Inspectable { }
 extension DiagnosticsSheet: Inspectable { }
 
@@ -46,17 +45,7 @@ class DocumentViewTests: RootViewTests {
         XCTAssertThrowsError(try sut.inspect().find(TurnoutListView.self))
         XCTAssertNoThrow(try sut.inspect().find(FeedbackEditListView.self))
     }
-    
-    func testDocumentView() throws {
-        let doc = newDocument()
-        let sut = DocumentView(document: doc, layout: doc.layout)
-        doc.layout.newLayoutWizardExecuted = true
-        _ = try sut.inspect().find(MainView.self)
         
-        doc.layout.newLayoutWizardExecuted = false
-        _ = try sut.inspect().find(NewLayoutWizardView.self)
-    }
-    
     @Binding var connectAlertShowing: Bool = true
 
     func testToolbarContent() {

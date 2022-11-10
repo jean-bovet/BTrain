@@ -19,6 +19,7 @@ struct MainView: View {
 
     @ObservedObject var document: LayoutDocument
     
+    @State private var showNewWizard = false
     @State private var connectAlertShowing = false
     @State private var showDiagnosticsSheet = false
     @State private var showDiscoverLocomotiveConfirmation = false
@@ -67,6 +68,9 @@ struct MainView: View {
             }
         })
         .onAppear {
+            if document.newDocument {
+                showNewWizard.toggle()
+            }
             if autoConnectSimulator {
                 document.connectToSimulator(enable: autoEnableSimulator)
             }
@@ -78,6 +82,9 @@ struct MainView: View {
                 .padding()
         }.sheet(isPresented: $showDiagnosticsSheet) {
             DiagnosticsSheet(layout: document.layout, options: .all)
+                .padding()
+        }.sheet(isPresented: $showNewWizard) {
+            NewLayoutWizardView(document: document)
                 .padding()
         }.alert("Are you sure you want to change the current list of locomotives with the locomotives definition from the Central Station?", isPresented: $showDiscoverLocomotiveConfirmation) {
             Button("Cancel", role: .cancel) { }
