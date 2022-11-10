@@ -19,7 +19,6 @@ import AppKit
 
 extension TrainIconView: Inspectable { }
 extension SectionTitleView: Inspectable { }
-extension TrainDetailsIconSectionView: Inspectable { }
 extension UnitViewModifier: Inspectable { }
 extension TrainDetailsGeometrySectionView: Inspectable { }
 extension TrainDetailsReservationSectionView: Inspectable { }

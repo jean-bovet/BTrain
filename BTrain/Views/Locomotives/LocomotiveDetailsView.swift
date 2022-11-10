@@ -132,6 +132,33 @@ struct LocDetailsSpeedSectionView: View {
     }
 }
 
+struct LocomotiveDetailsIconSectionView: View {
+    
+    @ObservedObject var loc: Locomotive
+    @ObservedObject var locomotiveIconManager: LocomotiveIconManager
+
+    var body: some View {
+        VStack(alignment: .leading) {
+            SectionTitleView(label: "Icon")
+
+            HStack {
+                ZStack {
+                    TrainIconView(locomotiveIconManager: locomotiveIconManager, loc: loc, size: .large, hideIfNotDefined: false)
+                    if locomotiveIconManager.icon(for: loc.id) == nil {
+                        Text("Drag an Image")
+                    }
+                }
+                
+                if locomotiveIconManager.icon(for: loc.id) != nil {
+                    Button("Remove") {
+                        locomotiveIconManager.removeIconFor(loc: loc)
+                    }
+                }
+            }.padding([.leading])
+        }
+    }
+}
+
 struct LocomotiveDetailsView: View {
     
     let document: LayoutDocument
@@ -142,7 +169,7 @@ struct LocomotiveDetailsView: View {
             LocDetailsDecoderSectionView(loc: loc)
             LocDetailsGeometrySectionView(loc: loc)
             LocDetailsSpeedSectionView(document: document, loc: loc)
-            TrainDetailsIconSectionView(loc: loc, locomotiveIconManager: document.locomotiveIconManager)
+            LocomotiveDetailsIconSectionView(loc: loc, locomotiveIconManager: document.locomotiveIconManager)
         }
     }
 }

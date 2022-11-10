@@ -21,6 +21,7 @@ extension LocomotiveListView: Inspectable { }
 extension LocDetailsDecoderSectionView: Inspectable { }
 extension LocDetailsSpeedSectionView: Inspectable { }
 extension LocomotiveDetailsView: Inspectable { }
+extension LocomotiveDetailsIconSectionView: Inspectable { }
 
 extension LocomotiveSpeedTableView: Inspectable { }
 extension LocomotiveSpeedGraphView: Inspectable { }
@@ -72,7 +73,7 @@ class LocomotiveViewTests: RootViewTests {
   
     func testIconSectionView() throws {
         let doc = newDocument()
-        let sut = TrainDetailsIconSectionView(loc: doc.layout.locomotives[0], locomotiveIconManager: doc.locomotiveIconManager)
+        let sut = LocomotiveDetailsIconSectionView(loc: doc.layout.locomotives[0], locomotiveIconManager: doc.locomotiveIconManager)
         _ = try sut.inspect().find(text: "Icon")
     }
     
