@@ -252,7 +252,7 @@ final class LocomotiveSpeedMeasurement {
     
     private func storeMeasurement(t0: Date, t1: Date, distance: Double) {
         let duration = t1.timeIntervalSince(t0)
-        let speed = LayoutSpeed.speedInKph(distanceInCm: distance, duration: duration)
+        let speed = LayoutSpeed.speedToMove(distance: distance, forDuration: duration)
 
         let entry = speedEntry(for: entryIndex)
         setSpeedEntry(.init(steps: entry.steps, speed: speed), for: entryIndex)

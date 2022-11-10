@@ -15,7 +15,7 @@ import Foundation
 
 extension SpeedSlider {
     
-    func setRequestedKph(kph: LocomotiveSpeed.UnitKph) {
+    func setRequestedKph(kph: SpeedKph) {
         self.speed.requestedKph = kph
         self.onEditingChanged?()
     }

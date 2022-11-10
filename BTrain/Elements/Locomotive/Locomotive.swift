@@ -34,7 +34,7 @@ final class Locomotive: Element, ObservableObject {
     }
     
     /// Length of the locomotive (in cm)
-    @Published var length: Double?
+    @Published var length: DistanceCm?
     
     /// Speed of the locomotive
     @Published var speed = LocomotiveSpeed(kph: 0, decoderType: .MFX)
@@ -47,13 +47,13 @@ final class Locomotive: Element, ObservableObject {
     @Published var canMoveBackwards = false
     
     convenience init(uuid: String = UUID().uuidString, name: String = "", address: UInt32 = 0, decoder: DecoderType = .MFX,
-                     locomotiveLength: Double? = nil, maxSpeed: LocomotiveSpeed.UnitKph? = nil) {
+                     locomotiveLength: Double? = nil, maxSpeed: SpeedKph? = nil) {
         self.init(id: Identifier(uuid: uuid), name: name, address: address, decoder: decoder,
                   locomotiveLength: locomotiveLength, maxSpeed: maxSpeed)
     }
     
     init(id: Identifier<Locomotive>, name: String, address: UInt32, decoder: DecoderType = .MFX,
-         locomotiveLength: Double? = nil, maxSpeed: LocomotiveSpeed.UnitKph? = nil) {
+         locomotiveLength: Double? = nil, maxSpeed: SpeedKph? = nil) {
         self.id = id
         self.name = name
         self.address = address

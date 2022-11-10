@@ -311,10 +311,10 @@ final class LayoutRouteParser {
         return uuid
     }
     
-    func parseTrainSpeed() -> LocomotiveSpeed.UnitKph {
-        let speed: LocomotiveSpeed.UnitKph
+    func parseTrainSpeed() -> SpeedKph {
+        let speed: SpeedKph
         if let specifiedSpeed = sp.matchesInteger() {
-            speed = LocomotiveSpeed.UnitKph(specifiedSpeed)
+            speed = SpeedKph(specifiedSpeed)
         } else {
             speed = LayoutFactory.DefaultBrakingSpeed
         }

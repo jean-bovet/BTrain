@@ -167,11 +167,11 @@ final class LocomotiveSpeedTests: XCTestCase {
         
         // Now assert the whole table
         for index in 0...maxSteps {
-            XCTAssertEqual(speed.speedTable[index].speed, LocomotiveSpeed.UnitKph(Double(index) / Double(maxSteps) * 200), "At index \(index)")
+            XCTAssertEqual(speed.speedTable[index].speed, SpeedKph(Double(index) / Double(maxSteps) * 200), "At index \(index)")
         }
     }
     
-    private func assertSpeed(_ speed: LocomotiveSpeed, _ interface: CommandInterface, kph: LocomotiveSpeed.UnitKph, steps: UInt16, value: UInt16) {
+    private func assertSpeed(_ speed: LocomotiveSpeed, _ interface: CommandInterface, kph: SpeedKph, steps: UInt16, value: UInt16) {
         XCTAssertEqual(speed.requestedKph, kph, "Mismatching requested kph values")
         XCTAssertEqual(speed.requestedSteps.value, steps, "Mismatching requested steps values")
         

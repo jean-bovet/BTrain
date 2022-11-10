@@ -19,7 +19,7 @@ final class LocomotiveSpeedCommand {
     let requestUUID: Int
     
     /// The requested speed
-    let requestedKph: LocomotiveSpeed.UnitKph
+    let requestedKph: SpeedKph
             
     /// The requested steps
     let requestedSteps: SpeedStep
@@ -73,7 +73,7 @@ final class LocomotiveSpeedCommand {
     /// the stop settled timer if applicable.
     var running = false
     
-    init(requestUUID: Int, requestedKph: LocomotiveSpeed.UnitKph, requestedSteps: SpeedStep, acceleration: LocomotiveSpeedAcceleration.Acceleration, steps: [SpeedStep], completion: CompletionCancelBlock?) {
+    init(requestUUID: Int, requestedKph: SpeedKph, requestedSteps: SpeedStep, acceleration: LocomotiveSpeedAcceleration.Acceleration, steps: [SpeedStep], completion: CompletionCancelBlock?) {
         self.requestUUID = requestUUID
         self.requestedKph = requestedKph
         self.requestedSteps = requestedSteps

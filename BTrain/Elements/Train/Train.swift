@@ -97,7 +97,7 @@ final class Train: Element, ObservableObject {
     @Published var locomotive: Locomotive?
     
     // Length of the wagons (in cm)
-    @Published var wagonsLength: Double?
+    @Published var wagonsLength: DistanceCm?
 
     // The route this train is associated with
     @Published var routeId: Identifier<Route>
@@ -220,11 +220,11 @@ final class Train: Element, ObservableObject {
         return text
     }
     
-    convenience init(uuid: String = UUID().uuidString, name: String = "", wagonsLength: Double? = nil, maxSpeed: LocomotiveSpeed.UnitKph? = nil, maxNumberOfLeadingReservedBlocks: Int? = nil) {
+    convenience init(uuid: String = UUID().uuidString, name: String = "", wagonsLength: Double? = nil, maxSpeed: SpeedKph? = nil, maxNumberOfLeadingReservedBlocks: Int? = nil) {
         self.init(id: Identifier(uuid: uuid), name: name, wagonsLength: wagonsLength, maxSpeed: maxSpeed, maxNumberOfLeadingReservedBlocks: maxNumberOfLeadingReservedBlocks)
     }
     
-    init(id: Identifier<Train>, name: String, wagonsLength: Double? = nil, maxSpeed: LocomotiveSpeed.UnitKph? = nil, maxNumberOfLeadingReservedBlocks: Int? = nil) {
+    init(id: Identifier<Train>, name: String, wagonsLength: Double? = nil, maxSpeed: SpeedKph? = nil, maxNumberOfLeadingReservedBlocks: Int? = nil) {
         self.id = id
         self.routeId = Route.automaticRouteId(for: id)
         self.name = name

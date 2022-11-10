@@ -120,7 +120,7 @@ class SimulatorViewTests: RootViewTests {
         XCTAssertEqual(train.directionForward, directionForward)
     }
 
-    func wait(for train: Locomotive, kph: LocomotiveSpeed.UnitKph) {
+    func wait(for train: Locomotive, kph: SpeedKph) {
         wait(for: {
             train.speed.actualKph == kph
         }, timeout: 2.0)

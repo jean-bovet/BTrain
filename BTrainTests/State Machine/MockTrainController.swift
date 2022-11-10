@@ -23,7 +23,7 @@ final class MockTrainController: TrainControlling {
     
     var route: Route
     
-    var speed: LocomotiveSpeed.UnitKph = 0
+    var speed: SpeedKph = 0
             
     var brakeFeedbackActivated: Bool = false
     
@@ -52,10 +52,10 @@ final class MockTrainController: TrainControlling {
         endRouteIndex = 10
     }
     
-    typealias OnReservedBlocksLengthEnough = (LocomotiveSpeed.UnitKph) -> Bool
+    typealias OnReservedBlocksLengthEnough = (SpeedKph) -> Bool
     var onReservedBlocksLengthEnough: OnReservedBlocksLengthEnough?
 
-    func reservedBlocksLengthEnough(forSpeed speed: LocomotiveSpeed.UnitKph) -> Bool {
+    func reservedBlocksLengthEnough(forSpeed speed: SpeedKph) -> Bool {
         guard let block = onReservedBlocksLengthEnough else {
             XCTFail("No callback setup to assert this method call")
             return false

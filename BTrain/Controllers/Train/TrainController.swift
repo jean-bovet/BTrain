@@ -49,7 +49,7 @@ final class TrainController: TrainControlling, CustomStringConvertible {
         }
     }
         
-    var speed: LocomotiveSpeed.UnitKph {
+    var speed: SpeedKph {
         get {
             train.locomotive?.speed.actualKph ?? 0
         }
@@ -114,7 +114,7 @@ final class TrainController: TrainControlling, CustomStringConvertible {
         self.layoutSpeed = LayoutSpeed(layout: layout)
     }
     
-    func reservedBlocksLengthEnough(forSpeed speed: LocomotiveSpeed.UnitKph) throws -> Bool {
+    func reservedBlocksLengthEnough(forSpeed speed: SpeedKph) throws -> Bool {
         return try layoutSpeed.isBrakingDistanceRespected(train: train, speed: speed)
     }
     
@@ -193,7 +193,7 @@ final class TrainController: TrainControlling, CustomStringConvertible {
     }
     
     func adjustSpeed(stateChanged: Bool) throws {
-        let desiredKph: LocomotiveSpeed.UnitKph?
+        let desiredKph: SpeedKph?
         if stateChanged {
             switch train.state {
             case .running:

@@ -63,7 +63,7 @@ final class Turnout: Element, ObservableObject {
     @Published var address2: CommandTurnoutAddress = .init(0, .MM)
 
     // Length of the turnout (in cm)
-    @Published var length: Double?
+    @Published var length: DistanceCm?
             
     /// The state of the turnout that has been requested.
     ///

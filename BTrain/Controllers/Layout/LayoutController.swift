@@ -475,7 +475,7 @@ extension LayoutController {
         turnoutManager.sendTurnoutState(turnout: turnout, completion: completion)
     }
         
-    func setTrainSpeed(_ train: Train, _ speed: LocomotiveSpeed.UnitKph, acceleration: LocomotiveSpeedAcceleration.Acceleration? = nil, completion: CompletionCancelBlock? = nil) throws {
+    func setTrainSpeed(_ train: Train, _ speed: SpeedKph, acceleration: LocomotiveSpeedAcceleration.Acceleration? = nil, completion: CompletionCancelBlock? = nil) throws {
         guard let loc = train.locomotive else {
             throw LayoutError.locomotiveNotAssignedToTrain(train: train)
         }

@@ -153,7 +153,7 @@ class UnmanagedTrainOperationTests: BTTestCase {
         let asserter: LayoutAsserter
         let layoutController: LayoutController
 
-        func assertTrain(inBlock named: String, position: Int, speed: LocomotiveSpeed.UnitKph) throws {
+        func assertTrain(inBlock named: String, position: Int, speed: SpeedKph) throws {
             let blockId = Identifier<Block>(uuid: named)
             guard let block = layout.block(for: blockId) else {
                 throw LayoutError.blockNotFound(blockId: blockId)
@@ -173,7 +173,7 @@ class UnmanagedTrainOperationTests: BTTestCase {
             XCTAssertNil(block.trainInstance)
         }
         
-        func setTrainSpeed(_ speed: LocomotiveSpeed.UnitKph) {
+        func setTrainSpeed(_ speed: SpeedKph) {
             let strain = doc.simulator.locomotives.first(where: { $0.loc.id == loc.id })!
             let steps = loc.speed.steps(for: speed)
             strain.speed = steps
@@ -182,7 +182,7 @@ class UnmanagedTrainOperationTests: BTTestCase {
             waitForSpeed(speed)
         }
                 
-        func waitForSpeed(_ speed: LocomotiveSpeed.UnitKph) {
+        func waitForSpeed(_ speed: SpeedKph) {
             let steps = loc.speed.steps(for: speed)
             BTTestCase.wait(for: {
                 abs(loc.speed.actualSteps.value.distance(to: steps.value)) <= 1

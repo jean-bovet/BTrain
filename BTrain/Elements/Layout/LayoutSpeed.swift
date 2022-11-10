@@ -30,7 +30,7 @@ struct LayoutSpeed {
     ///   - train: the train
     ///   - speed: the speed to evaluate
     /// - Returns: true if the train can stop with the available leading distance, false otherwise
-    func isBrakingDistanceRespected(train: Train, speed: LocomotiveSpeed.UnitKph) throws -> Bool {
+    func isBrakingDistanceRespected(train: Train, speed: SpeedKph) throws -> Bool {
         let distanceLeftInBlock = distanceLeftInCurrentBlock(train: train)
         let leadingDistance = distanceLeftInBlock + train.leading.settledDistance
         
@@ -56,7 +56,7 @@ struct LayoutSpeed {
     ///
     /// - Parameter train: the train
     /// - Returns: the maximum allowed speed
-    func maximumSpeedAllowed(train: Train) throws -> LocomotiveSpeed.UnitKph {
+    func maximumSpeedAllowed(train: Train) throws -> SpeedKph {
         var maximumSpeedAllowed = LayoutFactory.DefaultMaximumSpeed
 
         maximumSpeedAllowed = min(maximumSpeedAllowed, occupiedBlocksMaximumSpeed(train: train))
@@ -72,8 +72,8 @@ struct LayoutSpeed {
     /// This takes into account speed limits for turnout branches and more.
     /// - Parameter train: the train
     /// - Returns: the maximum allowed speed
-    private func occupiedBlocksMaximumSpeed(train: Train) -> LocomotiveSpeed.UnitKph {
-        var maximumSpeedAllowed: LocomotiveSpeed.UnitKph = LayoutFactory.DefaultMaximumSpeed
+    private func occupiedBlocksMaximumSpeed(train: Train) -> SpeedKph {
+        var maximumSpeedAllowed: SpeedKph = LayoutFactory.DefaultMaximumSpeed
         for block in train.occupied.blocks {
             maximumSpeedAllowed = block.maximumSpeedAllowed(speed: maximumSpeedAllowed)
         }
@@ -94,7 +94,7 @@ struct LayoutSpeed {
     /// brake within the block it is currently moving in.
     /// - Parameter train: the train
     /// - Returns: the maximum speed
-    private func unrestrictedLeadMaximumSpeed(train: Train) throws -> LocomotiveSpeed.UnitKph {
+    private func unrestrictedLeadMaximumSpeed(train: Train) throws -> SpeedKph {
         let distanceLeftInBlock = distanceLeftInCurrentBlock(train: train)
         var unrestrictedLeadingDistance = distanceLeftInBlock
         var speed = LayoutFactory.DefaultMaximumSpeed
@@ -136,7 +136,7 @@ struct LayoutSpeed {
     ///   - speed: the desired target speed
     ///   - distance: the distance available to change the train speed
     /// - Returns: the maximum speed to brake within the distance
-    private func maximumSpeedToBrake(train: Train, toSpeed speed: LocomotiveSpeed.UnitKph, withDistance distance: Double) throws -> LocomotiveSpeed.UnitKph {
+    private func maximumSpeedToBrake(train: Train, toSpeed speed: SpeedKph, withDistance distance: Double) throws -> SpeedKph {
         let maxSpeeds = [LayoutFactory.DefaultMaximumSpeed, LayoutFactory.DefaultLimitedSpeed, LayoutFactory.DefaultBrakingSpeed]
         var brakingDistance = DistanceChangeResult(distance: 0, duration: 0)
         for maxSpeed in maxSpeeds {
@@ -168,7 +168,7 @@ struct LayoutSpeed {
     ///
     /// - Parameter train: the train
     /// - Returns: the maximum speed
-    private func settledLeadMaximumSpeed(train: Train) throws -> LocomotiveSpeed.UnitKph {
+    private func settledLeadMaximumSpeed(train: Train) throws -> SpeedKph {
         let distanceLeftInBlock = distanceLeftInCurrentBlock(train: train)
         let settledDistance = distanceLeftInBlock + train.leading.settledDistance
         return try maximumSpeedToBrake(train: train, toSpeed: 0, withDistance: settledDistance)
@@ -205,7 +205,7 @@ struct LayoutSpeed {
     ///   - fromSpeed: the original speed
     ///   - toSpeed: the desired speed
     /// - Returns: the resulting distance and duration
-    func distanceNeededToChangeSpeed(ofTrain train: Train, fromSpeed: LocomotiveSpeed.UnitKph, toSpeed: LocomotiveSpeed.UnitKph) throws -> DistanceChangeResult {
+    func distanceNeededToChangeSpeed(ofTrain train: Train, fromSpeed: SpeedKph, toSpeed: SpeedKph) throws -> DistanceChangeResult {
         guard let loc = train.locomotive else {
             throw LayoutError.locomotiveNotAssignedToTrain(train: train)
         }
@@ -222,7 +222,7 @@ struct LayoutSpeed {
         }
         
         // Compute the distance it will take to change the speed given the duration and current speed
-        let distanceH0cm = LayoutSpeed.distanceInCm(atSpeed: fromSpeed, forDuration: delaySeconds)
+        let distanceH0cm: DistanceCm = LayoutSpeed.distance(atSpeed: fromSpeed, forDuration: delaySeconds)
         
         return DistanceChangeResult(distance: distanceH0cm, duration: delaySeconds)
     }
@@ -234,7 +234,7 @@ struct LayoutSpeed {
     ///   - fromSpeed: the starting speed value
     ///   - toSpeed: the target speed value
     /// - Returns: the duration in seconds
-    static func durationToChange(speed: LocomotiveSpeed, fromSpeed: LocomotiveSpeed.UnitKph, toSpeed: LocomotiveSpeed.UnitKph) -> TimeInterval {
+    static func durationToChange(speed: LocomotiveSpeed, fromSpeed: SpeedKph, toSpeed: SpeedKph) -> TimeInterval {
         let fromSteps = speed.steps(for: fromSpeed).value
         let toSteps = speed.steps(for: toSpeed).value
         let steps = fromSteps - toSteps
@@ -256,7 +256,7 @@ struct LayoutSpeed {
     ///   - speedKph: the speed, in Kph
     ///   - duration: the duration, in seconds
     /// - Returns: the distance, in cm.
-    static func distanceInCm(atSpeed speedKph: LocomotiveSpeed.UnitKph, forDuration duration: TimeInterval) -> Double {
+    static func distance(atSpeed speedKph: SpeedKph, forDuration duration: TimeInterval) -> DistanceCm {
         let distanceKm = Double(speedKph) * (duration / 3600.0)
         let distanceH0cm = (distanceKm * 1000*100) / 87.0
         return distanceH0cm
@@ -268,22 +268,22 @@ struct LayoutSpeed {
     ///   - distanceInCm: the distance, in cm
     ///   - duration: the duration, in seconds
     /// - Returns: the speed, in Kph.
-    static func speedInKph(distanceInCm: Double, duration: TimeInterval) -> LocomotiveSpeed.UnitKph {
-        let durationInHour = duration / (60 * 60)
+    static func speedToMove(distance: DistanceCm, forDuration: TimeInterval) -> SpeedKph {
+        let durationInHour = forDuration / (60 * 60)
         
         // H0 is 1:87 (1cm in prototype = 0.0115cm in the layout)
-        let modelDistanceKm = distanceInCm / 100000
+        let modelDistanceKm = distance / 100000
         let realDistanceKm = modelDistanceKm * 87
         let speedInKph = realDistanceKm / durationInHour
         
-        let speed = LocomotiveSpeed.UnitKph(min(Double(UInt16.max), speedInKph))
+        let speed = SpeedKph(min(Double(UInt16.max), speedInKph))
         return speed
     }    
 
 }
 
 extension Block {
-    func maximumSpeedAllowed(speed: LocomotiveSpeed.UnitKph) -> LocomotiveSpeed.UnitKph {
+    func maximumSpeedAllowed(speed: SpeedKph) -> SpeedKph {
         switch speedLimit {
         case .unlimited:
             return speed
@@ -294,7 +294,7 @@ extension Block {
 }
 
 extension Turnout {
-    func maximumSpeedAllowed(speed: LocomotiveSpeed.UnitKph) -> LocomotiveSpeed.UnitKph {
+    func maximumSpeedAllowed(speed: SpeedKph) -> SpeedKph {
         if let speedLimit = stateSpeedLimit[requestedState] {
             switch speedLimit {
             case .unlimited:

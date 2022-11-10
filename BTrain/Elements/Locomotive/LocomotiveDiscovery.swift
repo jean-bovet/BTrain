@@ -86,7 +86,7 @@ final class LocomotiveDiscovery {
             loc.address = address
         }
         if let maxSpeed = locomotive.maxSpeed {
-            loc.speed.maxSpeed = LocomotiveSpeed.UnitKph(maxSpeed)
+            loc.speed.maxSpeed = SpeedKph(maxSpeed)
         }
         loc.decoder = locomotive.decoderType ?? .MFX
         if let icon = locomotive.icon {
