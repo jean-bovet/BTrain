@@ -12,13 +12,31 @@
 
 import Foundation
 
-// TODO: move this into its own class
-extension LayoutDocument {
+/// Discover locomotives from the Digital Controller and populate the layout with them.
+final class LocomotiveDiscovery {
+
+    let interface: CommandInterface
+    let layout: Layout
+    let locomotiveIconManager: LocomotiveIconManager
+
+    private var callbackUUID: UUID?
+    
+    init(interface: CommandInterface, layout: Layout, locomotiveIconManager: LocomotiveIconManager) {
+        self.interface = interface
+        self.layout = layout
+        self.locomotiveIconManager = locomotiveIconManager
+    }
+    
+    deinit {
+        unregisterCallback()
+    }
+    
+    func discover(merge: Bool, completion: CompletionBlock? = nil) {
+        unregisterCallback()
         
-    func discoverLocomotives(merge: Bool, completion: CompletionBlock? = nil) {
-        // TODO: unregister at the end of the discovery
-        interface.callbacks.register(forLocomotivesQuery: { [weak self] locomotives in
+        callbackUUID = interface.callbacks.register(forLocomotivesQuery: { [weak self] locomotives in
             DispatchQueue.main.async {
+                self?.unregisterCallback()
                 self?.process(locomotives: locomotives, merge: merge)
                 completion?()
             }
@@ -27,6 +45,12 @@ extension LayoutDocument {
         interface.execute(command: .locomotives(), completion: nil)
     }
         
+    private func unregisterCallback() {
+        if let callbackUUID = callbackUUID {
+            interface.callbacks.unregister(uuid: callbackUUID)
+        }
+    }
+    
     private func process(locomotives: [CommandLocomotive], merge: Bool) {
         var newLocs = [Locomotive]()
         for cmdLoc in locomotives {

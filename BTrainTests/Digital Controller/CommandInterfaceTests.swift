@@ -148,7 +148,7 @@ class CommandInterfaceTests: XCTestCase {
             e.fulfill()
         }
         
-        doc.discoverLocomotives(merge: false) {
+        doc.locomotiveDiscovery.discover(merge: false) {
             completionExpectation.fulfill()
         }
 

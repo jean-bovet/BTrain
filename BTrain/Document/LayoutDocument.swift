@@ -38,6 +38,9 @@ final class LayoutDocument: ObservableObject {
     /// The locomotive icon manager
     let locomotiveIconManager: LocomotiveIconManager
     
+    /// The locomotive discovery class
+    let locomotiveDiscovery: LocomotiveDiscovery
+    
     /// If non-nil, the instance of the class that is measuring the speed of a train
     var measurement: LocomotiveSpeedMeasurement?
 
@@ -114,6 +117,8 @@ final class LayoutDocument: ObservableObject {
         
         self.trainsStateObserver = LayoutTrainsStateObserver(layout: layout)
         self.trainsSchedulingObserver = LayoutTrainsSchedulingObserver(layout: layout)
+        
+        self.locomotiveDiscovery = LocomotiveDiscovery(interface: interface, layout: layout, locomotiveIconManager: locomotiveIconManager)
         
         listenToTrainsStateChange(layout: layout)
     }

@@ -268,7 +268,7 @@
 		A795A03127AF6C8D00AE90EB /* AutomaticRouting.swift in Sources */ = {isa = PBXBuildFile; fileRef = A795A03027AF6C8D00AE90EB /* AutomaticRouting.swift */; };
 		A795A03327B0894800AE90EB /* CenteredLabelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A795A03227B0894800AE90EB /* CenteredLabelView.swift */; };
 		A795A03827B6848000AE90EB /* TrainVisitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = A795A03727B6848000AE90EB /* TrainVisitor.swift */; };
-		A795A03D27B87CCE00AE90EB /* LayoutDocument+Locomotives.swift in Sources */ = {isa = PBXBuildFile; fileRef = A795A03C27B87CCE00AE90EB /* LayoutDocument+Locomotives.swift */; };
+		A795A03D27B87CCE00AE90EB /* LocomotiveDiscovery.swift in Sources */ = {isa = PBXBuildFile; fileRef = A795A03C27B87CCE00AE90EB /* LocomotiveDiscovery.swift */; };
 		A795A03F27B9CB0200AE90EB /* LocomotiveSpeedMeasurement.swift in Sources */ = {isa = PBXBuildFile; fileRef = A795A03E27B9CB0200AE90EB /* LocomotiveSpeedMeasurement.swift */; };
 		A795A04127BC832200AE90EB /* SettingsKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = A795A04027BC832200AE90EB /* SettingsKeys.swift */; };
 		A796FA2B2772BB5400FA41BA /* Layout.json in Resources */ = {isa = PBXBuildFile; fileRef = A796FA2A2772BB5400FA41BA /* Layout.json */; };
@@ -623,7 +623,7 @@
 		A795A03027AF6C8D00AE90EB /* AutomaticRouting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutomaticRouting.swift; sourceTree = "<group>"; };
 		A795A03227B0894800AE90EB /* CenteredLabelView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CenteredLabelView.swift; sourceTree = "<group>"; };
 		A795A03727B6848000AE90EB /* TrainVisitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainVisitor.swift; sourceTree = "<group>"; };
-		A795A03C27B87CCE00AE90EB /* LayoutDocument+Locomotives.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LayoutDocument+Locomotives.swift"; sourceTree = "<group>"; };
+		A795A03C27B87CCE00AE90EB /* LocomotiveDiscovery.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocomotiveDiscovery.swift; sourceTree = "<group>"; };
 		A795A03E27B9CB0200AE90EB /* LocomotiveSpeedMeasurement.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocomotiveSpeedMeasurement.swift; sourceTree = "<group>"; };
 		A795A04027BC832200AE90EB /* SettingsKeys.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsKeys.swift; sourceTree = "<group>"; };
 		A796FA2A2772BB5400FA41BA /* Layout.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = Layout.json; sourceTree = "<group>"; };
@@ -1381,7 +1381,6 @@
 				A7B06AF1272782C300BDD88C /* LayoutDocument.swift */,
 				A785C078278A6468002FD538 /* LayoutDocument+ReferenceFileDocument.swift */,
 				A785C07A278A648B002FD538 /* LayoutDocument+Commands.swift */,
-				A795A03C27B87CCE00AE90EB /* LayoutDocument+Locomotives.swift */,
 				A71D97F927A499A600EBEA06 /* LayoutOnConnectTasks.swift */,
 				A7C8A2EC279BEA6D000C7246 /* FileWrapper+Layout.swift */,
 			);
@@ -1509,6 +1508,7 @@
 				A7EBD8732875D03300A35046 /* LocomotiveStopSettledDelayTimer.swift */,
 				A795A03E27B9CB0200AE90EB /* LocomotiveSpeedMeasurement.swift */,
 				A785C074278A5CE1002FD538 /* LocomotiveIconManager.swift */,
+				A795A03C27B87CCE00AE90EB /* LocomotiveDiscovery.swift */,
 			);
 			path = Locomotive;
 			sourceTree = "<group>";
@@ -2050,7 +2050,7 @@
 				A79466CE279B775D006E2A4C /* NSImage+Extension.swift in Sources */,
 				A71A3DB428B1BC0C007F93C4 /* BlockShape_TextLabel.swift in Sources */,
 				A744FD9C2909EB9200852283 /* Turnout+Graph.swift in Sources */,
-				A795A03D27B87CCE00AE90EB /* LayoutDocument+Locomotives.swift in Sources */,
+				A795A03D27B87CCE00AE90EB /* LocomotiveDiscovery.swift in Sources */,
 				A702F22D28FE25BF0076186D /* CGSize+Extension.swift in Sources */,
 				A7907957277D136500771A60 /* CGAffineTransform+Extension.swift in Sources */,
 				A73AFE862726594600E1ED21 /* BTrainApp.swift in Sources */,
