@@ -22,7 +22,12 @@ extension LayoutDiagnostic {
         
         case trainIdAlreadyExists(train: Train)
         case trainNameAlreadyExists(train: Train)
-        case trainDuplicateAddress(train: Train)
+        case trainLocomotiveUndefined(train: Train)
+        
+        case locIdAlreadyExists(loc: Locomotive)
+        case locNameAlreadyExists(loc: Locomotive)
+        case locDuplicateAddress(loc: Locomotive)
+        case locMissingLength(loc: Locomotive)
         
         case turnoutIdAlreadyExists(turnout: Turnout)
         case turnoutNameAlreadyExists(turnout: Turnout)
@@ -100,12 +105,22 @@ extension LayoutDiagnostic.DiagnosticError: LocalizedError {
             return "Train \(train.name) does not have a length defined"
         case .invalidRoute(route: let route, error: let error):
             return "Route \"\(route.name)\" is invalid and cannot be resolved: \(error)"
+            
         case .trainIdAlreadyExists(train: let train):
             return "Train ID \(train.id) (named \(train.name)) is used by more than one train"
         case .trainNameAlreadyExists(train: let train):
-            return "Train name \(train.name) is used by more than one train"
-        case .trainDuplicateAddress(train: let train):
-            return "The address of train \(train.name) (\(train.address.actualAddress(for: train.decoder))) is already used by another train"
+            return "Train \(train.name) is used by more than one train"
+        case .trainLocomotiveUndefined(train: let train):
+            return "Train \(train.name) does not have a locomotive assigned to it"
+
+        case .locIdAlreadyExists(loc: let loc):
+            return "Locomotive ID \(loc.id) (named \(loc.name)) is used by more than one locomotive"
+        case .locNameAlreadyExists(loc: let loc):
+            return "Locomotive \(loc.name) is used by more than one locomotive"
+        case .locDuplicateAddress(loc: let loc):
+            return "The address of locomotive \(loc.name) (\(loc.address.actualAddress(for: loc.decoder))) is already used by another locomotive"
+        case .locMissingLength(loc: let loc):
+            return "Locomotive \(loc.name) does not have a length defined"
         }
     }
 }

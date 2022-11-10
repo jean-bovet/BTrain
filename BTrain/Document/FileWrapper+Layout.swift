@@ -31,25 +31,25 @@ extension FileWrapper {
         return layout
     }
     
-    func icons() throws -> [(Identifier<Train>,FileWrapper)] {
+    func locomotiveIcons() throws -> [(Identifier<Locomotive>,FileWrapper)] {
         guard let files = fileWrappers else {
             throw CocoaError(.fileReadCorruptFile)
         }
         
-        var items = [(Identifier<Train>,FileWrapper)]()
+        var items = [(Identifier<Locomotive>,FileWrapper)]()
         if let iconDirectory = files.first(where: {$0.value.isDirectory})?.value, let files = iconDirectory.fileWrappers?.values {
             for file in files {
                 guard let filename = file.filename else {
                     continue
                 }
-                let trainId = (filename as NSString).deletingPathExtension
+                let locId = (filename as NSString).deletingPathExtension
                 
                 // Check that the content can be read and returns something
                 guard file.regularFileContents != nil else {
                     throw CocoaError(.fileReadCorruptFile)
                 }
                                                 
-                items.append((Identifier<Train>(uuid: trainId), file))
+                items.append((Identifier<Locomotive>(uuid: locId), file))
             }
         }
         return items

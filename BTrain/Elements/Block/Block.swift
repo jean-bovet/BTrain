@@ -164,7 +164,7 @@ final class Block: Element, ObservableObject {
     /// Optional block-specific braking speed.
     ///
     /// If nil, the default braking speed is used
-    @Published var brakingSpeed: TrainSpeed.UnitKph?
+    @Published var brakingSpeed: LocomotiveSpeed.UnitKph?
     
     /// The possible speed limits
     enum SpeedLimit: String, Codable, CaseIterable {
@@ -227,7 +227,7 @@ extension Block: Codable {
         self.brakeFeedbackPrevious = try container.decodeIfPresent(Identifier<Feedback>.self, forKey: CodingKeys.brakeFeedbackPrevious)
         self.stopFeedbackPrevious = try container.decodeIfPresent(Identifier<Feedback>.self, forKey: CodingKeys.stopFeedbackPrevious)
         
-        self.brakingSpeed = try container.decodeIfPresent(TrainSpeed.UnitKph.self, forKey: CodingKeys.brakingSpeed)
+        self.brakingSpeed = try container.decodeIfPresent(LocomotiveSpeed.UnitKph.self, forKey: CodingKeys.brakingSpeed)
         self.speedLimit = try container.decodeIfPresent(SpeedLimit.self, forKey: CodingKeys.speedLimit) ?? .unlimited
     }
     

@@ -34,7 +34,7 @@ struct TrainListView: View {
                     }.width(80)
                     
                     TableColumn("Icon") { train in
-                        if let image = document.trainIconManager.icon(for: train.id) {
+                        if let image = document.locomotiveIconManager.icon(for: train.wrappedValue.locomotive?.id) {
                             Image(nsImage: image)
                                 .resizable()
                                 .aspectRatio(contentMode: .fit)
@@ -92,7 +92,7 @@ struct TrainListView: View {
 
             if let selection = selection, let train = layout.train(for: selection) {
                 ScrollView {
-                    TrainDetailsView(document: document, train: train, trainIconManager: document.trainIconManager)
+                    TrainDetailsView(document: document, train: train)
                         .padding()
                 }
             } else {

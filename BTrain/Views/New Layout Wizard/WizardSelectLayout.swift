@@ -76,7 +76,7 @@ struct SwitchboardPreview: View {
     }
     
     var switchboard: SwitchBoard {
-        let context = ShapeContext(simulator: nil, trainIconManager: nil)
+        let context = ShapeContext(simulator: nil, locomotiveIconManager: nil)
         let shapeProvider = ShapeProvider(layout: layout, context: context)
         let switchBoard = SwitchBoard(layout: layout, provider: shapeProvider, context: context)
         switchBoard.update()

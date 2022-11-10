@@ -12,11 +12,11 @@
 
 import Foundation
 
-// This class manages the speed of a train. The speed is always expressed (and stored)
+// This class manages the speed of a locomotive. The speed is always expressed (and stored)
 // as a number of steps of the locomotive decoder. However, the speed in steps
 // can also be converted to kph using a table of conversion that is filled
-// by measuring the speed of the train on the layout using 3 feedback sensors.
-final class TrainSpeed: ObservableObject, Equatable, CustomStringConvertible {
+// by measuring the speed of the locomotive on the layout using 3 feedback sensors.
+final class LocomotiveSpeed: ObservableObject, Equatable, CustomStringConvertible {
     
     // The speed expressed as a number of steps of the locomotive decoder.
     @Published var requestedSteps: SpeedStep = .zero {
@@ -27,9 +27,9 @@ final class TrainSpeed: ObservableObject, Equatable, CustomStringConvertible {
         }
     }
 
-    // The actual speed value of the locomotive. If the train
+    // The actual speed value of the locomotive. If the locomotive
     // does not have any inertia, it is always equal to the `steps` value.
-    // If the train has inertia, this value will change in increment until
+    // If the locomotive has inertia, this value will change in increment until
     // it reaches `steps` value.
     // This value can also be different if the locomotive speed is changed
     // on the Digital Controller directly; in that case, the requestSteps
@@ -63,13 +63,13 @@ final class TrainSpeed: ObservableObject, Equatable, CustomStringConvertible {
         }
     }
     
-    // Maximum speed of the train in kph
+    // Maximum speed of the locomotive in kph
     @Published var maxSpeed: UnitKph = 200
         
-    // Train acceleration profile
-    @Published var accelerationProfile = TrainSpeedAcceleration.Acceleration.bezier
+    // Locomotive acceleration profile
+    @Published var accelerationProfile = LocomotiveSpeedAcceleration.Acceleration.bezier
 
-    /// The number of steps to use during acceleration/deceleration. If nil, defaults to ``TrainControllerAcceleration/DefaultStepSize``.
+    /// The number of steps to use during acceleration/deceleration. If nil, defaults to ``LocomotiveControllerAcceleration/DefaultStepSize``.
     @Published var accelerationStepSize: Int?
     
     // The delay (in ms) between step changes during acceleration/deceleration. If nil, default is used.
@@ -125,7 +125,7 @@ final class TrainSpeed: ObservableObject, Equatable, CustomStringConvertible {
     }
 
     // A speed equality is using only the steps value
-    static func == (lhs: TrainSpeed, rhs: TrainSpeed) -> Bool {
+    static func == (lhs: LocomotiveSpeed, rhs: LocomotiveSpeed) -> Bool {
         lhs.requestedSteps == rhs.requestedSteps
     }
         
@@ -155,7 +155,7 @@ final class TrainSpeed: ObservableObject, Equatable, CustomStringConvertible {
     }
     
     func interpolateSpeedTable() {
-        var newSpeedValues = [TrainSpeed.UnitKph]()
+        var newSpeedValues = [LocomotiveSpeed.UnitKph]()
         
         // Compute all the missing speed value using linear interpolation
         // Note: we assign the interpolated values to a new array in order
@@ -276,7 +276,7 @@ final class TrainSpeed: ObservableObject, Equatable, CustomStringConvertible {
         
         if matchingSteps == SpeedStep.zero {
             // The table is empty and does not have any corresponding steps for a particular Kph speed.
-            // We use the train maximum speed to interpolate the most meaningful steps corresponding to the speed.
+            // We use the locomotive maximum speed to interpolate the most meaningful steps corresponding to the speed.
             matchingSteps = .init(value: UInt16(ceil(Double(speedKph) / Double(maxSpeed) * Double(decoderType.steps))))
         }
         
@@ -285,7 +285,7 @@ final class TrainSpeed: ObservableObject, Equatable, CustomStringConvertible {
     
 }
 
-extension TrainSpeed: Codable {
+extension LocomotiveSpeed: Codable {
     enum CodingKeys: CodingKey {
       case decoderType, maxSpeed, accelerationProfile, accelerationStepSize, accelerationStepDelay, stopSettleDelay, speedTable
     }
@@ -295,7 +295,7 @@ extension TrainSpeed: Codable {
         self.init(decoderType: try container.decode(DecoderType.self, forKey: CodingKeys.decoderType))
         
         self.maxSpeed = try container.decodeIfPresent(UnitKph.self, forKey: CodingKeys.maxSpeed) ?? 200
-        self.accelerationProfile = try container.decodeIfPresent(TrainSpeedAcceleration.Acceleration.self, forKey: CodingKeys.accelerationProfile) ?? .bezier
+        self.accelerationProfile = try container.decodeIfPresent(LocomotiveSpeedAcceleration.Acceleration.self, forKey: CodingKeys.accelerationProfile) ?? .bezier
         self.accelerationStepSize = try container.decodeIfPresent(Int.self, forKey: CodingKeys.accelerationStepSize)
         self.accelerationStepDelay = try container.decodeIfPresent(Int.self, forKey: CodingKeys.accelerationStepDelay)
         self.stopSettleDelay = try container.decodeIfPresent(TimeInterval.self, forKey: CodingKeys.stopSettleDelay) ?? 1.0

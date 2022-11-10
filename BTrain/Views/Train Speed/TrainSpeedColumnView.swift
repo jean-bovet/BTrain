@@ -14,10 +14,10 @@ import SwiftUI
 
 struct TrainSpeedColumnView: View {
     
-    @Binding var selection: Set<TrainSpeed.SpeedTableEntry.ID>
-    @Binding var currentSpeedEntry: TrainSpeed.SpeedTableEntry?
+    @Binding var selection: Set<LocomotiveSpeed.SpeedTableEntry.ID>
+    @Binding var currentSpeedEntry: LocomotiveSpeed.SpeedTableEntry?
 
-    @ObservedObject var trainSpeed: TrainSpeed
+    @ObservedObject var trainSpeed: LocomotiveSpeed
 
     var body: some View {
         VStack {
@@ -98,7 +98,7 @@ struct TrainSpeedColumnView: View {
             do {
                 let data = try Data(contentsOf: url)
                 let decoder = JSONDecoder()
-                trainSpeed.speedTable = try decoder.decode([TrainSpeed.SpeedTableEntry].self, from: data)
+                trainSpeed.speedTable = try decoder.decode([LocomotiveSpeed.SpeedTableEntry].self, from: data)
             } catch {
                 BTLogger.error("Error importing Speed Table: \(error)")
             }
@@ -111,6 +111,8 @@ struct TrainSpeedColumnView_Previews: PreviewProvider {
     static let doc = LayoutDocument(layout: LayoutComplex().newLayout())
 
     static var previews: some View {
-        TrainSpeedColumnView(selection: .constant([]), currentSpeedEntry: .constant(nil), trainSpeed: doc.layout.trains[0].speed)
+        TrainSpeedColumnView(selection: .constant([]),
+                             currentSpeedEntry: .constant(nil),
+                             trainSpeed: doc.layout.locomotives[0].speed)
     }
 }

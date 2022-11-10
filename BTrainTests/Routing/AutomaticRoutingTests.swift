@@ -252,7 +252,7 @@ class AutomaticRoutingTests: BTTestCase {
         p.layoutController.restartTimerFired(layout.trains[0])
         p.layoutController.waitUntilSettled()
 
-        XCTAssertGreaterThan(p.train.speed.requestedKph, 0)
+        XCTAssertGreaterThan(p.loc.speed.requestedKph, 0)
         
         // When restarting, the train automatic route will be updated
         XCTAssertEqual(p.route.steps.toStrings(layout), ["s2:next", "b1:next", "b2:next", "b3:next", "s2:next"])
@@ -284,7 +284,7 @@ class AutomaticRoutingTests: BTTestCase {
         p.layoutController.restartTimerFired(p.train)
 
         // Make sure the train is not moving because we requested to finish the route!
-        XCTAssertTrue(p.train.speed.requestedKph == 0)
+        XCTAssertTrue(p.loc.speed.requestedKph == 0)
         
         // Make sure the route hasn't changed
         XCTAssertEqual(p.route.steps.toStrings(layout), ["s2:next", "b1:next", "b2:next", "b3:next", "s2:next"])
@@ -314,7 +314,7 @@ class AutomaticRoutingTests: BTTestCase {
         p.layoutController.restartTimerFired(p.train)
 
         // Make sure the train is not moving because we requested to finish the route!
-        XCTAssertTrue(p.train.speed.requestedKph == 0)
+        XCTAssertTrue(p.loc.speed.requestedKph == 0)
         
         // Make sure the route hasn't changed
         XCTAssertEqual(p.route.steps.toStrings(layout), ["s1:next", "b1:next", "s2:next"])
@@ -326,10 +326,12 @@ class AutomaticRoutingTests: BTTestCase {
         let layout = LayoutComplex().newLayout().removeTrains()
         let ne4 = layout.block(for: Identifier<Block>(uuid: "NE4"))!
         let train = layout.trains[1]
-        train.locomotiveLength = nil
         train.wagonsLength = nil
         train.maxNumberOfLeadingReservedBlocks = 1
-        train.directionForward = true
+        
+        let loc = train.locomotive!
+        loc.length = nil
+        loc.directionForward = true
         
         let p = try setup(layout: layout, train: train, fromBlockId: ne4.id, destination: nil, position: .end, direction: .previous, routeSteps: ["NE4:previous", "M1:next", "M2U:next", "LCF1:next"])
         

@@ -12,12 +12,12 @@
 
 import Foundation
 
-// This class defines the train in the simulator: each train in the simulator
-// refers to the original train the layout but has its own direction and speed
+// This class defines the locomotive in the simulator: each locomotive in the simulator
+// refers to the original locomotive the layout but has its own direction and speed
 // that can only be changed via the CommandInterface commands (like a real CS 3).
-final class SimulatorTrain: ObservableObject, Element {
-    let id: Identifier<Train>
-    let train: Train
+final class SimulatorLocomotive: ObservableObject, Element {
+    let id: Identifier<Locomotive>
+    let loc: Locomotive
     
     @Published var simulate = true
     @Published var directionForward = true
@@ -26,10 +26,10 @@ final class SimulatorTrain: ObservableObject, Element {
     // to ensure the simulator does not change the speed of the original train directly, but only
     // via commands sent through the interface.
     @Published var speed: SpeedStep = .zero
-        
-    init(train: Train) {
-        self.id = train.id
-        self.train = train
-        self.directionForward = train.directionForward
+  
+    init(loc: Locomotive) {
+        self.id = loc.id
+        self.loc = loc
+        self.directionForward = loc.directionForward
     }
 }

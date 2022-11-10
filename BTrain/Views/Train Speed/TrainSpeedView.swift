@@ -12,14 +12,15 @@
 
 import SwiftUI
 
+// TODO: rename LocSpeedView
 struct TrainSpeedView: View {
     
     let document: LayoutDocument
-    let train: Train
+    let loc: Locomotive
     
-    @ObservedObject var trainSpeed: TrainSpeed
+    @ObservedObject var trainSpeed: LocomotiveSpeed
 
-    @State private var selection = Set<TrainSpeed.SpeedTableEntry.ID>()
+    @State private var selection = Set<LocomotiveSpeed.SpeedTableEntry.ID>()
 
     @Environment(\.presentationMode) var presentationMode
 
@@ -51,6 +52,6 @@ struct TrainSpeedView_Previews: PreviewProvider {
     static let doc = LayoutDocument(layout: LayoutComplex().newLayout())
     
     static var previews: some View {
-        TrainSpeedView(document: doc, train: Train(), trainSpeed: TrainSpeed(decoderType: .MFX))
+        TrainSpeedView(document: doc, loc: Locomotive(), trainSpeed: LocomotiveSpeed(decoderType: .MFX))
     }
 }

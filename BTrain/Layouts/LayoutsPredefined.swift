@@ -202,8 +202,10 @@ final class LayoutComplexLoop: LayoutCreating {
     static let id = Identifier<Layout>(uuid: "Complex Loop")
     
     func newLayoutWithLengths(_ l: Layout) -> Layout {
+        l.locomotives.forEach {
+            $0.length = 20
+        }
         l.trains.forEach {
-            $0.locomotiveLength = 20
             $0.wagonsLength = 80
         }
         l.blocks.forEach { block in

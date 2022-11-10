@@ -44,7 +44,7 @@ class TrainControlsViewTests: RootViewTests {
         let trainControlSpeedView = try trainView.find(TrainControlSpeedView.self)
                         
         _ = try trainControlSpeedView.find(text: "0")
-        doc.layout.trains[0].speed.requestedKph = 79
+        doc.layout.locomotives[0].speed.requestedKph = 79
         _ = try trainControlSpeedView.find(text: "79")
 
         // TrainRouteView

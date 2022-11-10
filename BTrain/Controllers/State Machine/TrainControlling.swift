@@ -31,7 +31,7 @@ protocol TrainControlling: AnyObject {
     var route: Route { get }
     
     /// The speed of the train
-    var speed: TrainSpeed.UnitKph { get set }
+    var speed: LocomotiveSpeed.UnitKph { get set }
     
     /// Returns true if the brake feedback is detected
     var brakeFeedbackActivated: Bool { get }
@@ -65,7 +65,7 @@ protocol TrainControlling: AnyObject {
     /// because un-settled turnouts are not yet ready to be used by the train.
     /// - Parameter speed: the speed to evaluate
     /// - Returns: true if the length of reserved blocks is long enoug, false otherwise
-    func reservedBlocksLengthEnough(forSpeed speed: TrainSpeed.UnitKph) -> Bool
+    func reservedBlocksLengthEnough(forSpeed speed: LocomotiveSpeed.UnitKph) throws -> Bool
     
     /// Updates the position of the train given the specified feedback activation
     /// - Parameter feedback: The feedback that is activated
@@ -96,10 +96,10 @@ protocol TrainControlling: AnyObject {
     ///
     /// This method is called when the reserved blocks changed or the settling length of the reserved block changed.
     /// - Parameter stateChanged: true if this method is called when the state of the train changed
-    func adjustSpeed(stateChanged: Bool)
+    func adjustSpeed(stateChanged: Bool) throws
     
     /// Stops the train immediately
-    func stopImmediately()
+    func stopImmediately() throws
     
     /// Schedule a timer that will restart the train after a specific waiting period
     func reschedule()

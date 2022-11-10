@@ -17,7 +17,7 @@ struct SpeedSlider: View {
     let knobWidth = 26.0
     let knobHeight = 30.0
 
-    @ObservedObject var speed: TrainSpeed
+    @ObservedObject var speed: LocomotiveSpeed
         
     @Environment(\.colorScheme) var colorScheme
 
@@ -74,7 +74,7 @@ struct SpeedSlider: View {
     }
 }
 
-private extension TrainSpeed {
+private extension LocomotiveSpeed {
     
     var requestedkphAsDouble: Double {
         get {
@@ -98,29 +98,29 @@ private extension TrainSpeed {
 
 struct SpeedSlider_Previews: PreviewProvider {
     
-    static let t1: Train = {
-        let t = Train()
+    static let t1: Locomotive = {
+        let t = Locomotive()
         t.speed.requestedKph = 70
         t.speed.actualKph = 30
         return t
     }()
     
-    static let t2: Train = {
-        let t = Train()
+    static let t2: Locomotive = {
+        let t = Locomotive()
         t.speed.requestedKph = 30
         t.speed.actualKph = 70
         return t
     }()
 
-    static let t3: Train = {
-        let t = Train()
+    static let t3: Locomotive = {
+        let t = Locomotive()
         t.speed.requestedKph = 0
         t.speed.actualKph = 0
         return t
     }()
 
-    static let t4: Train = {
-        let t = Train()
+    static let t4: Locomotive = {
+        let t = Locomotive()
         t.speed.requestedKph = t.speed.maxSpeed
         t.speed.actualKph = t.speed.maxSpeed
         return t

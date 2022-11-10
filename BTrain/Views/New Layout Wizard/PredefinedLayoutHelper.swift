@@ -24,7 +24,7 @@ final class PredefinedLayoutHelper: ObservableObject {
         let fw = try FileWrapper(url: file, options: [])
         
         predefinedDocument = LayoutDocument(layout: try fw.layout())
-        predefinedDocument!.trainIconManager.setIcons(try fw.icons())
+        predefinedDocument!.locomotiveIconManager.setIcons(try fw.locomotiveIcons())
     }
 
     func create(layoutId: Identifier<Layout>, trains: Set<Identifier<Train>>, in document: LayoutDocument) {
@@ -42,9 +42,9 @@ final class PredefinedLayoutHelper: ObservableObject {
                 train.wagonsLength = 0
                 train.blockId = nil
                 document.layout.trains.append(train)
-            }
-            if let fileWrapper = predefinedDocument.trainIconManager.fileWrapper(for: trainId) {
-                document.trainIconManager.setIcon(fileWrapper, toTrainId: trainId)
+                if let locId = train.locomotive?.id, let fileWrapper = predefinedDocument.locomotiveIconManager.fileWrapper(for: locId) {
+                    document.locomotiveIconManager.setIcon(fileWrapper, locId: locId)
+                }
             }
         }
     }

@@ -12,9 +12,11 @@
 
 import Foundation
 
+// TODO: move this into its own class
 extension LayoutDocument {
         
     func discoverLocomotives(merge: Bool, completion: CompletionBlock? = nil) {
+        // TODO: unregister at the end of the discovery
         interface.callbacks.register(forLocomotivesQuery: { [weak self] locomotives in
             DispatchQueue.main.async {
                 self?.process(locomotives: locomotives, merge: merge)
@@ -26,47 +28,45 @@ extension LayoutDocument {
     }
         
     private func process(locomotives: [CommandLocomotive], merge: Bool) {
-        var newTrains = [Train]()
-        for loc in locomotives {
-            if let locUID = loc.uid, let train = layout.trains.first(where: { $0.id.uuid == String(locUID) }), merge {
-                mergeLocomotive(loc, with: train)
-            } else if let locAddress = loc.address, let train = layout.trains.find(address: locAddress, decoder: loc.decoderType), merge {
-                mergeLocomotive(loc, with: train)
+        var newLocs = [Locomotive]()
+        for cmdLoc in locomotives {
+            if let locUID = cmdLoc.uid, let loc = layout.locomotives.first(where: { $0.id.uuid == String(locUID) }), merge {
+                mergeLocomotive(cmdLoc, with: loc)
+            } else if let locAddress = cmdLoc.address, let loc = layout.locomotives.find(address: locAddress, decoder: cmdLoc.decoderType), merge {
+                mergeLocomotive(cmdLoc, with: loc)
             } else {
-                let train: Train
-                if let locUID = loc.uid {
-                    train = Train(uuid: String(locUID))
+                let loc: Locomotive
+                if let locUID = cmdLoc.uid {
+                    loc = Locomotive(uuid: String(locUID))
                 } else {
-                    train = Train()
+                    loc = Locomotive()
                 }
-                mergeLocomotive(loc, with: train)
-                newTrains.append(train)
+                mergeLocomotive(cmdLoc, with: loc)
+                newLocs.append(loc)
             }
         }
         
         if merge {
-            layout.trains.append(contentsOf: newTrains)
+            layout.locomotives.append(contentsOf: newLocs)
         } else {
-            layout.removeAllTrains()
-            layout.trains = newTrains
+            layout.removeAllLocomotives()
+            layout.locomotives = newLocs
         }
     }
     
-    private func mergeLocomotive(_ locomotive: CommandLocomotive, with train: Train) {
+    private func mergeLocomotive(_ locomotive: CommandLocomotive, with loc: Locomotive) {
         if let name = locomotive.name {
-            train.name = name
+            loc.name = name
         }
         if let address = locomotive.address {
-            train.address = address
+            loc.address = address
         }
         if let maxSpeed = locomotive.maxSpeed {
-            train.speed.maxSpeed = TrainSpeed.UnitKph(maxSpeed)
+            loc.speed.maxSpeed = LocomotiveSpeed.UnitKph(maxSpeed)
         }
-        train.decoder = locomotive.decoderType ?? .MFX
+        loc.decoder = locomotive.decoderType ?? .MFX
         if let icon = locomotive.icon {
-            // TODO: error handling
-            // TODO: what to do if an icon already exists? Replace it?
-            try! trainIconManager.setIcon(icon, toTrainId: train.id)
+            try! locomotiveIconManager.setIcon(icon, locId: loc.id)
         }
     }
 

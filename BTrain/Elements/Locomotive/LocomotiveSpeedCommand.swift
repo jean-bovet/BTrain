@@ -13,22 +13,22 @@
 import Foundation
 
 /// Defines a single speed change command
-final class TrainSpeedCommand {
+final class LocomotiveSpeedCommand {
     
     /// The unique identifier of this command
     let requestUUID: Int
     
     /// The requested speed
-    let requestedKph: TrainSpeed.UnitKph
+    let requestedKph: LocomotiveSpeed.UnitKph
             
     /// The requested steps
     let requestedSteps: SpeedStep
     
     /// The requested acceleration
-    let acceleration: TrainSpeedAcceleration.Acceleration
+    let acceleration: LocomotiveSpeedAcceleration.Acceleration
 
     /// An array of speed step that need to be sent to the Digital Controller
-    /// in order to change the speed of the train according to the acceleration profile.
+    /// in order to change the speed of the locomotive according to the acceleration profile.
     var steps: [SpeedStep]
             
     /// A list of completion blocks to invoke after this speed command has completed
@@ -73,7 +73,7 @@ final class TrainSpeedCommand {
     /// the stop settled timer if applicable.
     var running = false
     
-    init(requestUUID: Int, requestedKph: TrainSpeed.UnitKph, requestedSteps: SpeedStep, acceleration: TrainSpeedAcceleration.Acceleration, steps: [SpeedStep], completion: CompletionCancelBlock?) {
+    init(requestUUID: Int, requestedKph: LocomotiveSpeed.UnitKph, requestedSteps: SpeedStep, acceleration: LocomotiveSpeedAcceleration.Acceleration, steps: [SpeedStep], completion: CompletionCancelBlock?) {
         self.requestUUID = requestUUID
         self.requestedKph = requestedKph
         self.requestedSteps = requestedSteps

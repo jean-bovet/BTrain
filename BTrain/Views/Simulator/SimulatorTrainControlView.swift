@@ -15,17 +15,17 @@ import SwiftUI
 struct SimulatorTrainControlView: View {
     
     let simulator: MarklinCommandSimulator
-    @ObservedObject var train: SimulatorTrain
+    @ObservedObject var simLoc: SimulatorLocomotive
 
     var body: some View {
         HStack {
-            Toggle("\(train.train.name)", isOn: $train.simulate)
+            Toggle("\(simLoc.loc.name)", isOn: $simLoc.simulate)
 
             Group {
                 Button {
-                    simulator.setTrainDirection(train: train, directionForward: !train.directionForward)
+                    simulator.setTrainDirection(train: simLoc, directionForward: !simLoc.directionForward)
                 } label: {
-                    if train.directionForward {
+                    if simLoc.directionForward {
                         Image(systemName: "arrowtriangle.right.fill")
                     } else {
                         Image(systemName: "arrowtriangle.left.fill")
@@ -34,21 +34,21 @@ struct SimulatorTrainControlView: View {
                 
                 HStack {
                     Slider(
-                        value: $train.speedAsDouble,
-                        in: 0...Double(train.train.decoder.steps)
+                        value: $simLoc.speedAsDouble,
+                        in: 0...Double(simLoc.loc.decoder.steps)
                     ) {
                     } onEditingChanged: { editing in
-                        simulator.setTrainSpeed(train: train)
+                        simulator.setTrainSpeed(train: simLoc)
                     }
                     
-                    Text("\(Int(train.speed.value)) steps")
+                    Text("\(Int(simLoc.speed.value)) steps")
                 }
-            }.disabled(train.simulate == false)
+            }.disabled(simLoc.simulate == false)
         }
     }
 }
 
-private extension SimulatorTrain {
+private extension SimulatorLocomotive {
     
     // Necessary because SwiftUI Slider requires a Double
     // while speed is UInt16.
@@ -67,10 +67,10 @@ struct SimulatorTrainControlView_Previews: PreviewProvider {
 
     static let layout = LayoutLoop1().newLayout()
     
-    static let simulatorTrain = SimulatorTrain(train: layout.trains[0])
+    static let simulatorTrain = SimulatorLocomotive(loc: layout.locomotives[0])
     
     static var previews: some View {
         SimulatorTrainControlView(simulator: MarklinCommandSimulator(layout: layout, interface: MarklinInterface()),
-                                  train: simulatorTrain)
+                                  simLoc: simulatorTrain)
     }
 }

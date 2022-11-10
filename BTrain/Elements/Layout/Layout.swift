@@ -38,7 +38,9 @@ final class Layout: Element, ObservableObject {
     @Published var turnouts = [Turnout]()
     
     @Published var trains = [Train]()
-    
+
+    @Published var locomotiveMap = OrderedDictionary<Identifier<Locomotive>, Locomotive>()
+
     @Published var transitions = [Transition]()
     
     /// Array of optional control points that the user has defined for a particular transition. By default, this array is empty
@@ -127,7 +129,7 @@ final class Layout: Element, ObservableObject {
 extension Layout: Codable {
     
     enum CodingKeys: CodingKey {
-      case id, name, newLayoutWizardExecuted, blocks, stations, feedbacks, turnouts, trains, routes, transitions, controlPoints
+      case id, name, newLayoutWizardExecuted, blocks, stations, feedbacks, turnouts, trains, locomotives, routes, transitions, controlPoints
     }
 
     convenience init(from decoder: Decoder) throws {
@@ -140,6 +142,7 @@ extension Layout: Codable {
         self.feedbacks = try container.decode([Feedback].self, forKey: CodingKeys.feedbacks)
         self.turnouts = try container.decode([Turnout].self, forKey: CodingKeys.turnouts)
         self.trains = try container.decode([Train].self, forKey: CodingKeys.trains)
+        self.locomotives = try container.decodeIfPresent([Locomotive].self, forKey: CodingKeys.locomotives) ?? []
         self.routes = try container.decode([Route].self, forKey: CodingKeys.routes)
         self.transitions = try container.decode([Transition].self, forKey: CodingKeys.transitions)
         self.controlPoints = try container.decodeIfPresent([ControlPoint].self, forKey: CodingKeys.controlPoints) ?? []
@@ -155,6 +158,7 @@ extension Layout: Codable {
         try container.encode(feedbacks, forKey: CodingKeys.feedbacks)
         try container.encode(turnouts, forKey: CodingKeys.turnouts)
         try container.encode(trains, forKey: CodingKeys.trains)
+        try container.encode(locomotives, forKey: CodingKeys.locomotives)
         try container.encode(fixedRoutes, forKey: CodingKeys.routes)
         try container.encode(transitions, forKey: CodingKeys.transitions)
         try container.encode(controlPoints, forKey: CodingKeys.controlPoints)

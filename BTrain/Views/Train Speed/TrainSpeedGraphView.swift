@@ -14,7 +14,7 @@ import SwiftUI
 
 struct TrainSpeedGraphView: View {
     
-    @ObservedObject var trainSpeed: TrainSpeed
+    @ObservedObject var trainSpeed: LocomotiveSpeed
     @Environment(\.colorScheme) var colorScheme
 
     let fontSize = NSFont.systemFontSize
@@ -106,6 +106,6 @@ struct TrainSpeedGraphView_Previews: PreviewProvider {
     static let doc = LayoutDocument(layout: LayoutComplex().newLayout())
 
     static var previews: some View {
-        TrainSpeedGraphView(trainSpeed: doc.layout.trains[0].speed)
+        TrainSpeedGraphView(trainSpeed: doc.layout.locomotives[0].speed)
     }
 }

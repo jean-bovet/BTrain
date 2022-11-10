@@ -30,7 +30,7 @@ struct TrainControlRouteActionsView: View {
                     } catch {
                         train.runtimeInfo = error.localizedDescription
                     }
-                }
+                }.disabled(!document.power)
             } else {
                 Button("Stop") {
                     route.lastMessage = nil

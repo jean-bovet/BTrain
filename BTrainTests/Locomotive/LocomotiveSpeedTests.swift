@@ -14,21 +14,21 @@ import XCTest
 
 @testable import BTrain
 
-final class TrainSpeedTests: XCTestCase {
+final class LocomotiveSpeedTests: XCTestCase {
 
     let mi = MarklinInterface()
 
     func testInitialization() {
-        let s1 = TrainSpeed(kph: 100, decoderType: .MFX)
+        let s1 = LocomotiveSpeed(kph: 100, decoderType: .MFX)
         assertSpeed(s1, mi, kph: 100, steps: 63, value: 500)
         
-        let s2 = TrainSpeed(steps: SpeedStep(value: 63), decoderType: .MFX)
+        let s2 = LocomotiveSpeed(steps: SpeedStep(value: 63), decoderType: .MFX)
         assertSpeed(s2, mi, kph: 100, steps: 63, value: 500)
     }
     
     func testConversion() {
-        let t1 = Train(uuid: "1")
-        t1.address = 0x4001
+        let loc = Locomotive(uuid: "1")
+        loc.address = 0x4001
         
         let halfValues: [DecoderType:UInt16] = [
             .MFX: 500,
@@ -46,106 +46,106 @@ final class TrainSpeedTests: XCTestCase {
         ]
 
         for decoder in DecoderType.allCases {
-            t1.decoder = decoder
-            XCTAssertEqual(t1.speed.speedTable.count, Int(t1.decoder.steps) + 1)
+            loc.decoder = decoder
+            XCTAssertEqual(loc.speed.speedTable.count, Int(loc.decoder.steps) + 1)
             
             let halfSteps = UInt16(ceil(Double(decoder.steps)/2.0))
             let halfKph = halfKphs[decoder]!
             let halfValue = halfValues[decoder]!
             let maxSteps = UInt16(decoder.steps)
             
-            t1.speed.requestedKph = .zero
-            assertSpeed(t1.speed, mi, kph: 0, steps: 0, value: 0)
+            loc.speed.requestedKph = .zero
+            assertSpeed(loc.speed, mi, kph: 0, steps: 0, value: 0)
             
-            t1.speed.requestedKph = 100
-            assertSpeed(t1.speed, mi, kph: halfKph, steps: halfSteps, value: halfValue)
+            loc.speed.requestedKph = 100
+            assertSpeed(loc.speed, mi, kph: halfKph, steps: halfSteps, value: halfValue)
             
-            t1.speed.requestedKph = 200
-            assertSpeed(t1.speed, mi, kph: 200, steps: maxSteps, value: 1000)
+            loc.speed.requestedKph = 200
+            assertSpeed(loc.speed, mi, kph: 200, steps: maxSteps, value: 1000)
             
-            t1.speed.requestedKph = 300
-            assertSpeed(t1.speed, mi, kph: 200, steps: maxSteps, value: 1000)
+            loc.speed.requestedKph = 300
+            assertSpeed(loc.speed, mi, kph: 200, steps: maxSteps, value: 1000)
             
-            t1.speed.requestedSteps = SpeedStep.zero
-            assertSpeed(t1.speed, mi, kph: 0, steps: 0, value: 0)
+            loc.speed.requestedSteps = SpeedStep.zero
+            assertSpeed(loc.speed, mi, kph: 0, steps: 0, value: 0)
             
-            t1.speed.requestedSteps = SpeedStep(value: halfSteps)
-            assertSpeed(t1.speed, mi, kph: halfKph, steps: halfSteps, value: halfValue)
+            loc.speed.requestedSteps = SpeedStep(value: halfSteps)
+            assertSpeed(loc.speed, mi, kph: halfKph, steps: halfSteps, value: halfValue)
 
-            t1.speed.requestedSteps = SpeedStep(value: maxSteps)
-            assertSpeed(t1.speed, mi, kph: 200, steps: maxSteps, value: 1000)
+            loc.speed.requestedSteps = SpeedStep(value: maxSteps)
+            assertSpeed(loc.speed, mi, kph: 200, steps: maxSteps, value: 1000)
 
-            t1.speed.requestedSteps = SpeedStep(value: maxSteps*2)
-            assertSpeed(t1.speed, mi, kph: 200, steps: maxSteps, value: 1000)
+            loc.speed.requestedSteps = SpeedStep(value: maxSteps*2)
+            assertSpeed(loc.speed, mi, kph: 200, steps: maxSteps, value: 1000)
         }
     }
     
     func testConversionWithEmptyTable() {
-        let t1 = Train(uuid: "1")
-        t1.address = 0x4001
+        let loc = Locomotive(uuid: "1")
+        loc.address = 0x4001
         
         for decoder in DecoderType.allCases {
-            t1.decoder = decoder
-            XCTAssertEqual(t1.speed.speedTable.count, Int(decoder.steps) + 1)
+            loc.decoder = decoder
+            XCTAssertEqual(loc.speed.speedTable.count, Int(decoder.steps) + 1)
 
             let halfSteps = UInt16(ceil(Double(decoder.steps)/2.0))
 
-            t1.speed.speedTable.removeAll()
+            loc.speed.speedTable.removeAll()
             
-            XCTAssertTrue(t1.speed.speedTable.isEmpty)
+            XCTAssertTrue(loc.speed.speedTable.isEmpty)
             
-            t1.speed.requestedKph = .zero
-            XCTAssertEqual(t1.speed.requestedSteps.value, 0)
-            XCTAssertEqual(t1.speed.requestedKph, 0)
+            loc.speed.requestedKph = .zero
+            XCTAssertEqual(loc.speed.requestedSteps.value, 0)
+            XCTAssertEqual(loc.speed.requestedKph, 0)
                     
-            t1.speed.requestedKph = 100
-            XCTAssertEqual(t1.speed.requestedSteps.value, halfSteps)
+            loc.speed.requestedKph = 100
+            XCTAssertEqual(loc.speed.requestedSteps.value, halfSteps)
 
-            t1.speed.requestedKph = 200
-            XCTAssertEqual(t1.speed.requestedSteps.value, UInt16(decoder.steps))
+            loc.speed.requestedKph = 200
+            XCTAssertEqual(loc.speed.requestedSteps.value, UInt16(decoder.steps))
             
-            t1.speed.requestedSteps = .zero
-            XCTAssertEqual(t1.speed.requestedSteps.value, 0)
-            XCTAssertEqual(t1.speed.requestedKph, 0)
+            loc.speed.requestedSteps = .zero
+            XCTAssertEqual(loc.speed.requestedSteps.value, 0)
+            XCTAssertEqual(loc.speed.requestedKph, 0)
         }
     }
     
     func testConversionWithUndefinedValue() {
-        let t1 = Train(uuid: "1")
-        t1.address = 0x4001
+        let loc = Locomotive(uuid: "1")
+        loc.address = 0x4001
         
-        XCTAssertEqual(t1.speed.speedTable.count, Int(DecoderType.MFX.steps) + 1)
+        XCTAssertEqual(loc.speed.speedTable.count, Int(DecoderType.MFX.steps) + 1)
 
         let fixedSpeedStep = SpeedStep(value: 10)
         
-        t1.speed.requestedSteps = fixedSpeedStep
+        loc.speed.requestedSteps = fixedSpeedStep
         
-        XCTAssertEqual(t1.speed.requestedSteps.value, 10)
-        XCTAssertEqual(t1.speed.requestedKph, 15)
+        XCTAssertEqual(loc.speed.requestedSteps.value, 10)
+        XCTAssertEqual(loc.speed.requestedKph, 15)
         
-        t1.speed.speedTable[10] = .init(steps: fixedSpeedStep, speed: nil)
+        loc.speed.speedTable[10] = .init(steps: fixedSpeedStep, speed: nil)
 
-        t1.speed.requestedSteps = fixedSpeedStep
+        loc.speed.requestedSteps = fixedSpeedStep
 
-        XCTAssertEqual(t1.speed.requestedSteps.value, 10)
-        XCTAssertEqual(t1.speed.requestedKph, 15)
+        XCTAssertEqual(loc.speed.requestedSteps.value, 10)
+        XCTAssertEqual(loc.speed.requestedKph, 15)
         
         // Put back the speed value
-        t1.speed.speedTable[10] = .init(steps: fixedSpeedStep, speed: 15)
+        loc.speed.speedTable[10] = .init(steps: fixedSpeedStep, speed: 15)
 
-        t1.speed.requestedSteps = fixedSpeedStep
+        loc.speed.requestedSteps = fixedSpeedStep
 
-        XCTAssertEqual(t1.speed.requestedSteps.value, 10)
-        XCTAssertEqual(t1.speed.requestedKph, 15)
+        XCTAssertEqual(loc.speed.requestedSteps.value, 10)
+        XCTAssertEqual(loc.speed.requestedKph, 15)
     }
     
     func testInterpolation() {
-        let t1 = Train(uuid: "1")
-        t1.address = 0x4001
+        let loc = Locomotive(uuid: "1")
+        loc.address = 0x4001
         
         // Empty the whole speed table of its speed value
-        let speed = t1.speed
-        for index in t1.speed.speedTable.indices {
+        let speed = loc.speed
+        for index in loc.speed.speedTable.indices {
             speed.speedTable[index].speed = nil
         }
 
@@ -167,11 +167,11 @@ final class TrainSpeedTests: XCTestCase {
         
         // Now assert the whole table
         for index in 0...maxSteps {
-            XCTAssertEqual(speed.speedTable[index].speed, TrainSpeed.UnitKph(Double(index) / Double(maxSteps) * 200), "At index \(index)")
+            XCTAssertEqual(speed.speedTable[index].speed, LocomotiveSpeed.UnitKph(Double(index) / Double(maxSteps) * 200), "At index \(index)")
         }
     }
     
-    private func assertSpeed(_ speed: TrainSpeed, _ interface: CommandInterface, kph: TrainSpeed.UnitKph, steps: UInt16, value: UInt16) {
+    private func assertSpeed(_ speed: LocomotiveSpeed, _ interface: CommandInterface, kph: LocomotiveSpeed.UnitKph, steps: UInt16, value: UInt16) {
         XCTAssertEqual(speed.requestedKph, kph, "Mismatching requested kph values")
         XCTAssertEqual(speed.requestedSteps.value, steps, "Mismatching requested steps values")
         

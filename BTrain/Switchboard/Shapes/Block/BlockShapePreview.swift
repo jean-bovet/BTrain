@@ -29,7 +29,7 @@ struct BlockShapePreview: View {
     var shapeContext: ShapeContext {
         let c = doc.switchboard.context
         c.darkMode = colorScheme == .dark
-        c.trainIconManager = doc.trainIconManager
+        c.locomotiveIconManager = doc.locomotiveIconManager
         return c
     }
 

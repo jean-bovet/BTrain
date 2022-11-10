@@ -14,7 +14,7 @@ import SwiftUI
 
 struct TrainSpeedTimingFunctionView: View {
     
-    let tf: TrainSpeedAcceleration
+    let tf: LocomotiveSpeedAcceleration
     
     @Environment(\.colorScheme) var colorScheme
 
@@ -46,7 +46,7 @@ struct TrainSpeedTimingFunctionView: View {
 
 struct TrainSpeedTimingFunctionView_Previews: PreviewProvider {
     static var previews: some View {
-        TrainSpeedTimingFunctionView(tf: TrainSpeedAcceleration(fromSteps: 0, toSteps: 100, timeIncrement: 0.1, stepIncrement: 4, type: .linear))
-        TrainSpeedTimingFunctionView(tf: TrainSpeedAcceleration(fromSteps: 0, toSteps: 100, timeIncrement: 0.1, stepIncrement: 4, type: .bezier))
+        TrainSpeedTimingFunctionView(tf: LocomotiveSpeedAcceleration(fromSteps: 0, toSteps: 100, timeIncrement: 0.1, stepIncrement: 4, type: .linear))
+        TrainSpeedTimingFunctionView(tf: LocomotiveSpeedAcceleration(fromSteps: 0, toSteps: 100, timeIncrement: 0.1, stepIncrement: 4, type: .bezier))
     }
 }

@@ -52,6 +52,7 @@ final class LayoutDiagnostic: ObservableObject {
             checkForDuplicateFeedbacks(&errors)
             checkForDuplicateTurnouts(&errors)
             checkForDuplicateTrains(&errors)
+            checkForDuplicateLocomotives(&errors)
             try checkForDuplicateBlocks(&errors)
         }
         
@@ -200,12 +201,33 @@ final class LayoutDiagnostic: ObservableObject {
                 names.insert(train.name)
             }
         }
+    }
+
+    func checkForDuplicateLocomotives(_ errors: inout [DiagnosticError]) {
+        let enabledLocs = layout.locomotives.filter({$0.enabled})
+        var ids = Set<Identifier<Locomotive>>()
+        for loc in enabledLocs {
+            if ids.contains(loc.id) {
+                errors.append(DiagnosticError.locIdAlreadyExists(loc: loc))
+            } else {
+                ids.insert(loc.id)
+            }
+        }
+        
+        var names = Set<String>()
+        for loc in enabledLocs {
+            if names.contains(loc.name) {
+                errors.append(DiagnosticError.locNameAlreadyExists(loc: loc))
+            } else {
+                names.insert(loc.name)
+            }
+        }
 
         var addresses = Set<UInt32>()
-        for train in enabledTrains {
-            let address = train.address.actualAddress(for: train.decoder)
+        for loc in enabledLocs {
+            let address = loc.address.actualAddress(for: loc.decoder)
             if addresses.contains(address) {
-                errors.append(DiagnosticError.trainDuplicateAddress(train: train))
+                errors.append(DiagnosticError.locDuplicateAddress(loc: loc))
             }
             addresses.insert(address)
         }
@@ -263,6 +285,12 @@ final class LayoutDiagnostic: ObservableObject {
                 errors.append(DiagnosticError.unusedFeedback(feedback: fb))
             }
         }
+        
+        for train in layout.trains {
+            if train.locomotive == nil {
+                errors.append(DiagnosticError.trainLocomotiveUndefined(train: train))
+            }
+        }
     }
     
     func checkForLengthAndDistance(_ errors: inout [DiagnosticError]) {
@@ -288,8 +316,13 @@ final class LayoutDiagnostic: ObservableObject {
                 errors.append(DiagnosticError.turnoutMissingLength(turnout: turnout))
             }
         }
+        for loc in layout.locomotives.filter({$0.enabled}) {
+            if loc.length == nil {
+                errors.append(DiagnosticError.locMissingLength(loc: loc))
+            }
+        }
         for train in layout.trains.filter({$0.enabled}) {
-            if train.locomotiveLength == nil {
+            if train.wagonsLength == nil {
                 errors.append(DiagnosticError.trainMissingLength(train: train))
             }
         }
@@ -304,7 +337,7 @@ final class LayoutDiagnostic: ObservableObject {
     }
     
     func checkRoute(route: Route, _ errors: inout [DiagnosticError], resolverErrors: inout [PathFinderResolver.ResolverError], resolverPaths: inout RouteResolver.ResolvedRoutes) {
-        let train = Train(id: Identifier<Train>(uuid: UUID().uuidString), name: "", address: 0)
+        let train = Train(id: Identifier<Train>(uuid: UUID().uuidString), name: "")
         let resolver = RouteResolver(layout: layout, train: train)
         do {
             try route.completePartialSteps(layout: layout, train: train)

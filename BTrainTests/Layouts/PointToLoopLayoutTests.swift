@@ -22,7 +22,8 @@ class PointToLoopLayoutTests: XCTestCase {
         let blockA = layout.block(named: "A")
         
         try layout.setTrainToBlock(train.id, blockA.id, position: .end, direction: .next)
-        XCTAssertEqual(train.speed.requestedKph, 0)
+        
+        XCTAssertEqual(train.speed!.requestedKph, 0)
 
         layout.automaticRouteRandom = false
                 

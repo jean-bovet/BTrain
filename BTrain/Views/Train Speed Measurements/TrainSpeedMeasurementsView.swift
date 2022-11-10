@@ -12,13 +12,14 @@
 
 import SwiftUI
 
+// TODO: rename
 struct TrainSpeedMeasurementsView: View {
     
     let document: LayoutDocument
     let layout: Layout
 
-    @State private var selectedSpeedEntries = Set<TrainSpeed.SpeedTableEntry.ID>()
-    @State private var currentSpeedEntry: TrainSpeed.SpeedTableEntry?
+    @State private var selectedSpeedEntries = Set<LocomotiveSpeed.SpeedTableEntry.ID>()
+    @State private var currentSpeedEntry: LocomotiveSpeed.SpeedTableEntry?
     
     @AppStorage("speedMeasureFeedbackA") private var feedbackA: String?
     @AppStorage("speedMeasureFeedbackB") private var feedbackB: String?
@@ -27,13 +28,13 @@ struct TrainSpeedMeasurementsView: View {
     @AppStorage("speedMeasureDistanceAB") private var distanceAB: Double = 0
     @AppStorage("speedMeasureDistanceBC") private var distanceBC: Double = 0
         
-    @AppStorage("speedMeasureSelectedTrain") private var selectedTrain: String?
+    @AppStorage("speedMeasureSelectedTrain") private var selectedLoc: String?
 
     @State private var running = false
-
-    var train: Train? {
-        if let selectedTrain = selectedTrain {
-            return layout.train(for: Identifier<Train>(uuid: selectedTrain))
+    
+    var loc: Locomotive? {
+        if let selectedLoc = selectedLoc {
+            return layout.locomotive(for: Identifier<Locomotive>(uuid: selectedLoc))
         } else {
             return nil
         }
@@ -56,16 +57,16 @@ struct TrainSpeedMeasurementsView: View {
     var body: some View {
         VStack(alignment: .leading) {
             HStack {
-                let b: Binding<Identifier<Train>?> = Binding {
-                    if let selectedTrain = selectedTrain {
-                        return Identifier<Train>(uuid: selectedTrain)
+                let b: Binding<Identifier<Locomotive>?> = Binding {
+                    if let selectedLoc = selectedLoc {
+                        return Identifier<Locomotive>(uuid: selectedLoc)
                     } else {
                         return nil
                     }
                 } set: {
-                    selectedTrain = $0?.uuid
+                    selectedLoc = $0?.uuid
                 }
-                TrainPicker(doc: document, selectedTrain: b)
+                LocPicker(doc: document, selectedLoc: b)
                 .fixedSize()
             }
             .disabled(running)
@@ -73,7 +74,7 @@ struct TrainSpeedMeasurementsView: View {
                             
             Divider()
 
-            if let train = train {
+            if let loc = loc {
                 VStack(alignment: .leading) {
                     HStack {
                         Text("Steps to Measure:")
@@ -83,10 +84,10 @@ struct TrainSpeedMeasurementsView: View {
                         .disabled(running)
                     }
                     HStack(spacing: 10) {
-                        TrainSpeedColumnView(selection: $selectedSpeedEntries, currentSpeedEntry: $currentSpeedEntry, trainSpeed: train.speed)
-                        TrainSpeedGraphView(trainSpeed: train.speed)
+                        TrainSpeedColumnView(selection: $selectedSpeedEntries, currentSpeedEntry: $currentSpeedEntry, trainSpeed: loc.speed)
+                        TrainSpeedGraphView(trainSpeed: loc.speed)
                     }
-                    .id(train) // ensure the table and graph are updated when train changes
+                    .id(loc) // ensure the table and graph are updated when train changes
                     .frame(minHeight: 200)
                 }
                 .padding([.leading, .trailing])
@@ -114,8 +115,8 @@ struct TrainSpeedMeasurementsView: View {
                 Text(validationError)
                     .padding([.leading, .trailing])
             } else {
-                if let train = train, let feedbackA = feedbackA, let feedbackB = feedbackB, let feedbackC = feedbackC {
-                    TrainSpeedMeasureControlsView(document: document, train: train,
+                if let loc = loc, let feedbackA = feedbackA, let feedbackB = feedbackB, let feedbackC = feedbackC {
+                    TrainSpeedMeasureControlsView(document: document, loc: loc,
                                                   speedEntries: $selectedSpeedEntries,
                                                   feedbackA: feedbackA,
                                                   feedbackB: feedbackB,
@@ -137,19 +138,19 @@ struct TrainSpeedMeasurementsView: View {
     }
     
     func updateSelectedSteps() {
-        guard let train = train else {
+        guard let loc = loc else {
             return
         }
 
         selectedSpeedEntries.removeAll()
         
-        var steps: Set<TrainSpeed.SpeedTableEntry.ID> = [train.speed.speedTable[1].id]
+        var steps: Set<LocomotiveSpeed.SpeedTableEntry.ID> = [loc.speed.speedTable[1].id]
         var index = 10
-        while index < train.speed.speedTable.count {
-            steps.insert(train.speed.speedTable[index].id)
+        while index < loc.speed.speedTable.count {
+            steps.insert(loc.speed.speedTable[index].id)
             index += 10
         }
-        steps.insert(train.speed.speedTable[train.speed.speedTable.count-1].id)
+        steps.insert(loc.speed.speedTable[loc.speed.speedTable.count-1].id)
         selectedSpeedEntries = steps
     }
 }

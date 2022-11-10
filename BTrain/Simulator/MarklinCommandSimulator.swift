@@ -26,7 +26,7 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
     @Published var started = false
     @Published var enabled = false
     
-    @Published var trains = [SimulatorTrain]()
+    @Published var locomotives = [SimulatorLocomotive]()
 
     @AppStorage("simulatorRefreshSpeed") var refreshSpeed = 2.0 {
         didSet {
@@ -65,7 +65,7 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
         }
     }
 
-    func registerForTrainChanges() {
+    private func registerForTrainChanges() {
         guard let layout = layout else {
             return
         }
@@ -88,7 +88,7 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
     // Register to detect when a train is assigned to a different block,
     // which happens when a train moves from one block to another or when
     // a train is assigned a block for the first time (put into the layout).
-    func registerForTrainBlockChange() {
+    private func registerForTrainBlockChange() {
         guard let layout = layout else {
             return
         }
@@ -110,18 +110,21 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
             return
         }
 
-        // Remove train that are not present anymore
-        trains.removeAll(where: { simTrain in
-            layout.train(for: simTrain.train.id) == nil
+        // Remove locomotives that are not present anymore
+        locomotives.removeAll(where: { simLoc in
+            layout.locomotive(for: simLoc.id) == nil
         })
         
-        // Update existing trains, add new ones
+        // Update existing locomotives, add new ones
         for train in layout.trains.filter({$0.blockId != nil}) {
-            if let simTrain = trains.first(where: { $0.train.id == train.id }) {
-                simTrain.speed = train.speed.actualSteps
-                simTrain.directionForward = train.directionForward
+            guard let loc = train.locomotive else {
+                continue
+            }
+            if let simTrain = locomotives.first(where: { $0.id == loc.id }) {
+                simTrain.speed = loc.speed.actualSteps
+                simTrain.directionForward = loc.directionForward
             } else {
-                trains.append(SimulatorTrain(train: train))
+                locomotives.append(SimulatorLocomotive(loc: loc))
             }
         }
         
@@ -225,10 +228,10 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
     }
     
     func speedChanged(address: UInt32, decoderType: DecoderType?, value: SpeedValue) {
-        for train in trains {
-            if train.train.actualAddress == address.actualAddress(for: decoderType) {
-                let steps = interface.speedSteps(for: value, decoder: train.train.decoder)
-                train.speed = steps
+        for loc in locomotives {
+            if loc.loc.actualAddress == address.actualAddress(for: decoderType) {
+                let steps = interface.speedSteps(for: value, decoder: loc.loc.decoder)
+                loc.speed = steps
             }
         }
         let message = MarklinCANMessageFactory.speed(addr: address, speed: value.value)
@@ -236,9 +239,9 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
     }
 
     func directionChanged(address: UInt32, decoderType: DecoderType?, direction: Command.Direction) {
-        for train in trains {
-            if train.train.actualAddress == address.actualAddress(for: decoderType) {
-                train.directionForward = direction == .forward
+        for loc in locomotives {
+            if loc.loc.actualAddress == address.actualAddress(for: decoderType) {
+                loc.directionForward = direction == .forward
             }
         }
         
@@ -278,7 +281,7 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
     }
     
     func provideDirection(address: UInt32) {
-        guard let train = trains.first(where: { $0.train.actualAddress == address }) else {
+        guard let loc = locomotives.first(where: { $0.loc.actualAddress == address }) else {
             BTLogger.error("[Simulator] Unable to find a locomotive for address \(address.toHex())")
             
             // As per spec 3.5, an answer is always returned, even when a locomotive is not known.
@@ -288,7 +291,7 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
             }
             return
         }
-        let message = MarklinCANMessageFactory.direction(addr: address, direction: train.directionForward ? .forward : .backward)
+        let message = MarklinCANMessageFactory.direction(addr: address, direction: loc.directionForward ? .forward : .backward)
         send(message.ack)
     }
     
@@ -298,21 +301,21 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
         send(message.ack)
     }
 
-    func setTrainDirection(train: SimulatorTrain, directionForward: Bool) {
+    func setTrainDirection(train: SimulatorLocomotive, directionForward: Bool) {
         // Remember this direction in the simulator train itself
         train.directionForward = directionForward
         
         // Note: directionForward is actually ignored because the message sent by the Central Station is `emergencyStop`
         // and the client must request the locomotive direction explicitly.
-        let message = MarklinCANMessageFactory.emergencyStop(addr: train.train.actualAddress)
+        let message = MarklinCANMessageFactory.emergencyStop(addr: train.loc.actualAddress)
         send(message)
     }
     
     /// Simulates a change in speed from the Central Station 3
     /// - Parameter train: the train that had his speed changed
-    func setTrainSpeed(train: SimulatorTrain) {
-        let value = interface.speedValue(for: train.speed, decoder: train.train.decoder)
-        let message = MarklinCANMessageFactory.speed(addr: train.train.actualAddress, speed: value.value)
+    func setTrainSpeed(train: SimulatorLocomotive) {
+        let value = interface.speedValue(for: train.speed, decoder: train.loc.decoder)
+        let message = MarklinCANMessageFactory.speed(addr: train.loc.actualAddress, speed: value.value)
         send(message)
         send(message.ack) // Send also the acknowledgement
     }
@@ -337,7 +340,11 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
                 continue
             }
             
-            guard let simulatorTrain = trains.first(where: {$0.train.id == train.id}), simulatorTrain.simulate else {
+            guard let loc = train.locomotive else {
+                continue
+            }
+            
+            guard let simLoc = locomotives.first(where: {$0.loc.id == loc.id}), simLoc.simulate else {
                 continue
             }
                         
@@ -346,27 +353,27 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
             }
             
             do {
-                try simulate(route: route, train: train)
+                try simulate(route: route, train: train, loc: loc)
             } catch {
                 BTLogger.error(error.localizedDescription)
             }
         }
     }
     
-    func simulate(route: Route, train: Train) throws {
-        guard train.speed.actualKph > 0 else {
-            return
-        }
-                
+    func simulate(route: Route, train: Train, loc: Locomotive) throws {
         guard let layout = layout else {
             return
         }
 
+        guard loc.speed.actualKph > 0 else {
+            return
+        }
+                
         guard let block = layout.currentBlock(train: train) else {
             return
         }
                        
-        BTLogger.debug("[Simulator] Simulating route \(route.name) for \(train.name), requested speed \(train.speed.requestedKph) kph, actual speed \(train.speed.actualKph) kph")
+        BTLogger.debug("[Simulator] Simulating route \(route.name) for \(train.name), requested speed \(loc.speed.requestedKph) kph, actual speed \(loc.speed.actualKph) kph")
 
         if let entryFeedback = try layout.entryFeedback(for: train) {
             // Ensure all the feedbacks of the current block is turned off, otherwise there will be
@@ -400,7 +407,7 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
     }
 }
 
-private extension Train {
+private extension Locomotive {
     
     var actualAddress: UInt32 {
         address.actualAddress(for: decoder)

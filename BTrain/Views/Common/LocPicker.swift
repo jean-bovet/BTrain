@@ -10,34 +10,36 @@
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-import Foundation
+import SwiftUI
 
-import XCTest
+struct LocPicker: View {
 
-@testable import BTrain
+    let doc: LayoutDocument
+    @Binding var selectedLoc: Identifier<Locomotive>?
 
-class TrainTests: XCTestCase {
-    
-    func testCodable() throws {
-        let t1 = Train(uuid: "1")
-        t1.name = "Rail 2000"
-        t1.routeStepIndex = 1
-        t1.position = 7
-        t1.blockId = Identifier<Block>(uuid: "111")
-        t1.routeId = Identifier<Route>(uuid: "1212")
-        
-        let encoder = JSONEncoder()
-        let data = try encoder.encode(t1)
-
-        let decoder = JSONDecoder()
-        let t2 = try decoder.decode(Train.self, from: data)
-        
-        XCTAssertEqual(t1.id, t2.id)
-        XCTAssertEqual(t1.name, t2.name)
-        XCTAssertEqual(t1.routeStepIndex, t2.routeStepIndex)
-        XCTAssertEqual(t1.position, t2.position)
-        XCTAssertEqual(t1.blockId, t2.blockId)
-        XCTAssertEqual(t1.routeId, t2.routeId)
+    var iconSize: CGSize {
+        .init(width: 60, height: 20)
     }
     
+    var locomotives: [Locomotive] {
+        doc.layout.locomotives.filter({$0.enabled})
+    }
+    
+    var body: some View {
+        Picker("Train:", selection: $selectedLoc) {
+            ForEach(locomotives, id:\.self) { loc in
+                HStack {
+                    Text(loc.name)
+                    if let image = doc.locomotiveIconManager.icon(for: loc.id)?.copy(size: iconSize) {
+                        Image(nsImage: image)
+                    } else {
+                        Image(nsImage: NSImage(color: .windowBackgroundColor, size: iconSize))
+                    }
+                }
+                .tag(loc.id as Identifier<Locomotive>?)
+                .padding()
+            }
+        }
+    }
 }
+

@@ -35,11 +35,11 @@ final class LayoutDocument: ObservableObject {
     /// The Digital Controller simulator when working offline
     let simulator: MarklinCommandSimulator
 
-    /// The centralized class that manages all train icon-related functions
-    let trainIconManager: TrainIconManager
+    /// The locomotive icon manager
+    let locomotiveIconManager: LocomotiveIconManager
     
     /// If non-nil, the instance of the class that is measuring the speed of a train
-    var measurement: TrainSpeedMeasurement?
+    var measurement: LocomotiveSpeedMeasurement?
 
     /// True if the layout is connected to the Digital Controller, false otherwise
     @Published var connected = false {
@@ -86,9 +86,9 @@ final class LayoutDocument: ObservableObject {
     init(layout: Layout, interface: CommandInterface = MarklinInterface()) {
         let simulator = MarklinCommandSimulator(layout: layout, interface: interface)
         
-        let trainIconManager = TrainIconManager()
+        let locomotiveIconManager = LocomotiveIconManager()
         
-        let context = ShapeContext(simulator: simulator, trainIconManager: trainIconManager)
+        let context = ShapeContext(simulator: simulator, locomotiveIconManager: locomotiveIconManager)
         let shapeProvider = ShapeProvider(layout: layout, context: context)
         let switchboard = SwitchBoard(layout: layout, provider: shapeProvider, context: context)
         
@@ -98,7 +98,7 @@ final class LayoutDocument: ObservableObject {
         self.interface = interface
         self.simulator = simulator
         self.layoutDiagnostics = LayoutDiagnostic(layout: layout)
-        self.trainIconManager = trainIconManager
+        self.locomotiveIconManager = locomotiveIconManager
         self.switchboard = switchboard
         self.layoutController = layoutController
                 

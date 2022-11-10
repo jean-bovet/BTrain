@@ -99,8 +99,7 @@ class CommandInterfaceTests: XCTestCase {
         let doc = LayoutDocument(layout: LayoutLoop1().newLayout())
         // We must set the train in the layout for the direction to be
         // properly emitted from the simulator
-        let train = doc.layout.trains[0]
-        train.blockId = doc.layout.blockIds.first
+        let loc = doc.layout.locomotives[0]
 
         connectToSimulator(doc: doc)
         defer {
@@ -108,7 +107,7 @@ class CommandInterfaceTests: XCTestCase {
         }
         
         let c = expectation(description: "completion")
-        doc.interface.execute(command: .queryDirection(address: train.address, decoderType: train.decoder, priority: .normal, descriptor: nil)) {
+        doc.interface.execute(command: .queryDirection(address: loc.address, decoderType: loc.decoder, priority: .normal, descriptor: nil)) {
             c.fulfill()
         }
         
@@ -138,7 +137,7 @@ class CommandInterfaceTests: XCTestCase {
 
     func testDiscoverLocomotives() {
         let doc = LayoutDocument(layout: Layout())
-        XCTAssertEqual(doc.layout.trains.count, 0)
+        XCTAssertEqual(doc.layout.locomotives.count, 0)
 
         let completionExpectation = XCTestExpectation()
         connectToSimulator(doc: doc)
@@ -159,13 +158,13 @@ class CommandInterfaceTests: XCTestCase {
             disconnectFromSimulator(doc: doc)
         }
 
-        XCTAssertEqual(doc.layout.trains.count, 18)
+        XCTAssertEqual(doc.layout.locomotives.count, 18)
 
-        let loc1 = doc.layout.trains[0]
+        let loc1 = doc.layout.locomotives[0]
         XCTAssertEqual(loc1.name, "193 524 SBB")
         XCTAssertEqual(loc1.address, 14)
         
-        XCTAssertNotNil(doc.trainIconManager.icon(for: loc1.id))
+        XCTAssertNotNil(doc.locomotiveIconManager.icon(for: loc1.id))
     }
     
     func testFeedbackCallbackOrdering() {

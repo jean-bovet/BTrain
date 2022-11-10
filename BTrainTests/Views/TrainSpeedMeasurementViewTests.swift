@@ -17,19 +17,19 @@ import ViewInspector
 
 extension TrainSpeedMeasurementsView: Inspectable { }
 extension TrainSpeedMeasureControlsView: Inspectable { }
-extension TrainPicker: Inspectable { }
+extension LocPicker: Inspectable { }
 
 class TrainSpeedMeasurementViewTests: RootViewTests {
 
     func testMeasurementsView() throws {
         let doc = newDocument()
         let sut = TrainSpeedMeasurementsView(document: doc, layout: doc.layout)
-        _ = try sut.inspect().find(TrainPicker.self)
+        _ = try sut.inspect().find(LocPicker.self)
     }
 
     func testMeasureControlsView() throws {
         let doc = newDocument()
-        let sut = TrainSpeedMeasureControlsView(document: doc, train: doc.layout.trains[0], speedEntries: .constant([]), feedbackA: "a", feedbackB: "b", feedbackC: "c", distanceAB: .constant(10), distanceBC: .constant(20), running: .constant(false), currentSpeedEntry: .constant(nil))
+        let sut = TrainSpeedMeasureControlsView(document: doc, loc: doc.layout.locomotives[0], speedEntries: .constant([]), feedbackA: "a", feedbackB: "b", feedbackC: "c", distanceAB: .constant(10), distanceBC: .constant(20), running: .constant(false), currentSpeedEntry: .constant(nil))
         _ = try sut.inspect().find(text: "Measure")
     }
 

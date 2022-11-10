@@ -15,22 +15,22 @@ import Foundation
 /// State machine that handles only the state transition of the train
 struct TrainStateStateMachine {
     
-    func handleTrainState(train: TrainControlling) -> Bool {
+    func handleTrainState(train: TrainControlling) throws -> Bool {
         let originalState = train.state
         
         if train.mode == .stopImmediatelyManaged {
             train.state = .stopped
-            train.stopImmediately()
+            try train.stopImmediately()
         } else {
             switch train.state {
             case .running:
-                handleRunningState(train: train)
+                try handleRunningState(train: train)
             case .braking:
-                handleBrakingState(train: train)
+                try handleBrakingState(train: train)
             case .stopping:
-                handleStoppingState(train: train)
+                try handleStoppingState(train: train)
             case .stopped:
-                handleStoppedState(train: train)
+                try handleStoppedState(train: train)
             }
         }
         
@@ -41,24 +41,24 @@ struct TrainStateStateMachine {
         return stateChanged
     }
     
-    private func handleRunningState(train: TrainControlling) {
+    private func handleRunningState(train: TrainControlling) throws {
         if train.mode == .unmanaged {
             if train.speed == 0 {
                 train.state = .stopped
             }
         } else {
-            if train.brakeFeedbackActivated && train.shouldStopInBlock {
+            if try train.shouldStopInBlock() && train.brakeFeedbackActivated {
                 train.state = .braking
-            } else if train.stopFeedbackActivated && train.shouldStopInBlock {
+            } else if try train.shouldStopInBlock() && train.stopFeedbackActivated {
                 train.state = .stopping
-            } else if train.shouldStopInBlockBecauseNotEnoughReservedBlocksLength {
+            } else if try train.shouldStopInBlockBecauseNotEnoughReservedBlocksLength() {
                 train.state = .stopping
             }
         }
     }
     
-    private func handleBrakingState(train: TrainControlling) {
-        if train.shouldStopInBlock {
+    private func handleBrakingState(train: TrainControlling) throws {
+        if try train.shouldStopInBlock() {
             if train.stopFeedbackActivated {
                 train.state = .stopping
             }
@@ -67,8 +67,8 @@ struct TrainStateStateMachine {
         }
     }
 
-    private func handleStoppingState(train: TrainControlling) {
-        if train.shouldStopInBlock {
+    private func handleStoppingState(train: TrainControlling) throws {
+        if try train.shouldStopInBlock() {
             if train.speed == 0 {
                 train.state = .stopped
             }
@@ -77,9 +77,9 @@ struct TrainStateStateMachine {
         }
     }
     
-    private func handleStoppedState(train: TrainControlling) {
+    private func handleStoppedState(train: TrainControlling) throws {
         if train.mode == .managed || train.mode == .finishManaged {
-            if !train.shouldStopInBlock {
+            if try !train.shouldStopInBlock() {
                 train.state = .running
             }
         } else if train.mode == .unmanaged {

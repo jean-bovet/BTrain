@@ -22,7 +22,7 @@ struct TrainControlActionsView: View {
             HStack {
                 Button("􀊋 Start All") {
                     document.startAll()
-                }.disabled(!document.trainsThatCanBeStarted)
+                }.disabled(!document.trainsThatCanBeStarted || !document.power)
                 
                 Spacer()
                 

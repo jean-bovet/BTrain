@@ -14,14 +14,15 @@ import Foundation
 
 // This class performs the automatic measurement of the real speed of a locomotive
 // by using 3 feedbacks and running the locomotive between these feedbacks at various decoder steps.
-final class TrainSpeedMeasurement {
+final class LocomotiveSpeedMeasurement {
             
     let layout: Layout
     let executor: LayoutController
     let interface: CommandInterface
-    let train: Train
+    let loc: Locomotive
+    let speedManager: LocomotiveSpeedManager
 
-    let speedEntries: Set<TrainSpeed.SpeedTableEntry.ID>
+    let speedEntries: Set<LocomotiveSpeed.SpeedTableEntry.ID>
     let feedbackA: Identifier<Feedback>
     let feedbackB: Identifier<Feedback>
     let feedbackC: Identifier<Feedback>
@@ -54,19 +55,20 @@ final class TrainSpeedMeasurement {
     }
     
     struct CallbackInfo {
-        let speedEntry: TrainSpeed.SpeedTableEntry
+        let speedEntry: LocomotiveSpeed.SpeedTableEntry
         let step: CallbackStep
         let progress: Double
     }
     
-    init(layout: Layout, executor: LayoutController, interface: CommandInterface, train: Train,
-         speedEntries: Set<TrainSpeed.SpeedTableEntry.ID>,
+    init(layout: Layout, executor: LayoutController, interface: CommandInterface, loc: Locomotive,
+         speedEntries: Set<LocomotiveSpeed.SpeedTableEntry.ID>,
          feedbackA: Identifier<Feedback>, feedbackB: Identifier<Feedback>, feedbackC: Identifier<Feedback>,
          distanceAB: Double, distanceBC: Double, simulator: Bool = false) {
         self.layout = layout
         self.executor = executor
         self.interface = interface
-        self.train = train
+        self.loc = loc
+        self.speedManager = LocomotiveSpeedManager(loc: loc, interface: interface, speedChanged: nil)
         self.speedEntries = speedEntries
         self.feedbackA = feedbackA
         self.feedbackB = feedbackB
@@ -87,6 +89,7 @@ final class TrainSpeedMeasurement {
         forward = true
         entryIndex = 0
         
+        executor.enabled = false
         feedbackMonitor.start()
 
         task = Task {
@@ -98,6 +101,7 @@ final class TrainSpeedMeasurement {
             } catch {
                 BTLogger.error("Speed measurement task error: \(error)")
             }
+            executor.enabled = true
         }
     }
         
@@ -121,14 +125,14 @@ final class TrainSpeedMeasurement {
     }
     
     private func run(callback: @escaping (CallbackInfo) -> Void) async throws {
-        log("Start measuring \(train)")
+        log("Start measuring \(loc)")
         while !Task.isCancelled {
             try await measure(callback: callback)
             try Task.checkCancellation()
             if isFinished(for: entryIndex+1) {
                 try invokeCallback(.done, callback)
                 done()
-                log("Done measuring \(train)")
+                log("Done measuring \(loc)")
                 break
             } else {
                 entryIndex += 1
@@ -196,7 +200,7 @@ final class TrainSpeedMeasurement {
                 let speedEntry = speedEntry(for: entryIndex)
                                 
                 // Set the speed without inertia to ensure the locomotive accelerates as fast as possible
-                executor.setTrainSpeed(train, speedEntry.steps, acceleration: TrainSpeedAcceleration.Acceleration.none) { _ in
+                setTrainSpeed(speedEntry.steps, acceleration: LocomotiveSpeedAcceleration.Acceleration.none) { _ in
                     continuation.resume(returning: ())
                 }
             }
@@ -208,10 +212,18 @@ final class TrainSpeedMeasurement {
             DispatchQueue.main.async { [self] in
                 // Note: the train inertia must be set to true if the locomotive take some time to slow down,
                 // in order for BTrain to wait long enough for the locomotive to be stopped.
-                executor.setTrainSpeed(train, 0) { completed in
+                setTrainSpeed(.zero) { completed in
                     continuation.resume(returning: ())
                 }
             }
+        }
+    }
+    
+    private func setTrainSpeed(_ steps: SpeedStep, acceleration: LocomotiveSpeedAcceleration.Acceleration? = nil, completion: @escaping CompletionCancelBlock) {
+        if let acceleration = acceleration {
+            speedManager.changeSpeed(acceleration: acceleration, completion: completion)
+        } else {
+            speedManager.changeSpeed(completion: completion)
         }
     }
     
@@ -220,7 +232,7 @@ final class TrainSpeedMeasurement {
             DispatchQueue.main.async { [self] in
                 self.forward.toggle()
 
-                executor.setLocomotiveDirection(train, forward: !train.directionForward) {
+                executor.setLocomotiveDirection(loc, forward: !loc.directionForward) {
                     continuation.resume(returning: ())
                 }
             }
@@ -239,6 +251,7 @@ final class TrainSpeedMeasurement {
     }
     
     private func storeMeasurement(t0: Date, t1: Date, distance: Double) {
+        // TODO: have a common utility with the computation of the braking distance?
         let duration = t1.timeIntervalSince(t0)
         let durationInHour = duration / (60 * 60)
         
@@ -248,21 +261,21 @@ final class TrainSpeedMeasurement {
         let speedInKph = realDistanceKm / durationInHour
                         
         let entry = speedEntry(for: entryIndex)
-        let speed = TrainSpeed.UnitKph(min(Double(UInt16.max), speedInKph))
+        let speed = LocomotiveSpeed.UnitKph(min(Double(UInt16.max), speedInKph))
         setSpeedEntry(.init(steps: entry.steps, speed: speed), for: entryIndex)
     }
         
-    private func speedEntry(for entryIndex: Int) -> TrainSpeed.SpeedTableEntry {
+    private func speedEntry(for entryIndex: Int) -> LocomotiveSpeed.SpeedTableEntry {
         let entries = speedEntries.sorted()
         let speedTableIndex = Int(entries[entryIndex])
-        let speedEntry = train.speed.speedTable[speedTableIndex]
+        let speedEntry = loc.speed.speedTable[speedTableIndex]
         return speedEntry
     }
     
-    private func setSpeedEntry(_ speedEntry: TrainSpeed.SpeedTableEntry, for entryIndex: Int) {
+    private func setSpeedEntry(_ speedEntry: LocomotiveSpeed.SpeedTableEntry, for entryIndex: Int) {
         let entries = speedEntries.sorted()
         let speedTableIndex = Int(entries[entryIndex])
-        train.speed.speedTable[speedTableIndex] = speedEntry
+        loc.speed.speedTable[speedTableIndex] = speedEntry
     }
     
     private func progress(for entryIndex: Int) -> Double {

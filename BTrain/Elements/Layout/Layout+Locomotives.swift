@@ -10,36 +10,43 @@
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-import XCTest
+import Foundation
 
-@testable import BTrain
+extension Layout {
+    
+    var locomotives: [Locomotive] {
+        get {
+            locomotiveMap.values.map {
+                $0
+            }
+        }
+        set {
+            locomotiveMap.removeAll()
+            newValue.forEach { locomotiveMap[$0.id] = $0 }
+        }
+    }
 
-class TrainIconManagerTests: XCTestCase {
+    @discardableResult
+    func addLocomotive(_ loc: Locomotive) -> Locomotive {
+        locomotives.append(loc)
+        return loc
+    }
 
-    func testLoad() throws {
-        let tim = TrainIconManager()
-        
-        let url = Bundle(for: LayoutDocument.self).url(forResource: "Predefined", withExtension: "btrain")!
-        
-        let predefinedFileWrapper = try FileWrapper(url: url, options: [])
-        let layout = try predefinedFileWrapper.layout()
-        tim.setIcons(try predefinedFileWrapper.icons())
-        
-        let trainId = layout.trains[0].id
+    func removeAllLocomotives() {
+        // TODO: remove also from the train
+        locomotiveMap.removeAll()
+    }
+    
+    func locomotive(for locomotiveId: Identifier<Locomotive>?) -> Locomotive? {
+        guard let locomotiveId = locomotiveId else {
+            return nil
+        }
+        return locomotiveMap[locomotiveId]
+    }
 
-        XCTAssertNotNil(tim.icon(for: trainId))
-        
-        tim.clearInMemoryCache()
-        
-        XCTAssertNotNil(tim.icon(for: trainId))
-        
-        let fw = tim.fileWrapper(for: trainId)!
-        
-        tim.clear()
-        
-        XCTAssertNil(tim.icon(for: trainId))
-        
-        tim.setFileWrapper(fw, for: trainId)
-        XCTAssertNotNil(tim.icon(for: trainId))
+    func train(forLocomotive locomotive: Locomotive) -> Train? {
+        trains.first { train in
+            train.locomotive?.id == locomotive.id
+        }
     }
 }

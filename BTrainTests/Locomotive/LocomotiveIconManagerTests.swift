@@ -10,34 +10,36 @@
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-import Foundation
-
 import XCTest
 
 @testable import BTrain
 
-class TrainTests: XCTestCase {
-    
-    func testCodable() throws {
-        let t1 = Train(uuid: "1")
-        t1.name = "Rail 2000"
-        t1.routeStepIndex = 1
-        t1.position = 7
-        t1.blockId = Identifier<Block>(uuid: "111")
-        t1.routeId = Identifier<Route>(uuid: "1212")
-        
-        let encoder = JSONEncoder()
-        let data = try encoder.encode(t1)
+class LocomotiveIconManagerTests: XCTestCase {
 
-        let decoder = JSONDecoder()
-        let t2 = try decoder.decode(Train.self, from: data)
+    func testLoad() throws {
+        let tim = LocomotiveIconManager()
         
-        XCTAssertEqual(t1.id, t2.id)
-        XCTAssertEqual(t1.name, t2.name)
-        XCTAssertEqual(t1.routeStepIndex, t2.routeStepIndex)
-        XCTAssertEqual(t1.position, t2.position)
-        XCTAssertEqual(t1.blockId, t2.blockId)
-        XCTAssertEqual(t1.routeId, t2.routeId)
+        let url = Bundle(for: LayoutDocument.self).url(forResource: "Predefined", withExtension: "btrain")!
+        
+        let predefinedFileWrapper = try FileWrapper(url: url, options: [])
+        let layout = try predefinedFileWrapper.layout()
+        tim.setIcons(try predefinedFileWrapper.locomotiveIcons())
+        
+        let locId = layout.trains[0].locomotive!.id
+
+        XCTAssertNotNil(tim.icon(for: locId))
+        
+        tim.clearInMemoryCache()
+        
+        XCTAssertNotNil(tim.icon(for: locId))
+        
+        let fw = tim.fileWrapper(for: locId)!
+        
+        tim.clear()
+        
+        XCTAssertNil(tim.icon(for: locId))
+        
+        tim.setFileWrapper(fw, for: locId)
+        XCTAssertNotNil(tim.icon(for: locId))
     }
-    
 }

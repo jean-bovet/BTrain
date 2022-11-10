@@ -18,7 +18,7 @@ final class ShapeContext {
             
     var simulator: Simulator?
 
-    var trainIconManager: TrainIconManager?
+    var locomotiveIconManager: LocomotiveIconManager?
     
     // https://nshipster.com/dark-mode/
     var darkMode = false
@@ -108,9 +108,9 @@ final class ShapeContext {
         NSColor.blue.cgColor
     }
 
-    init(simulator: Simulator? = nil, trainIconManager: TrainIconManager? = nil) {
+    init(simulator: Simulator? = nil, locomotiveIconManager: LocomotiveIconManager? = nil) {
         self.simulator = simulator
-        self.trainIconManager = trainIconManager
+        self.locomotiveIconManager = locomotiveIconManager
     }
     
     

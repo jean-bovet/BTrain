@@ -45,6 +45,11 @@ import OrderedCollections
  */
 final class LayoutController: ObservableObject {
     
+    /// True to enable the control of the layout, false otherwise. For example, the locomotive speed measurement
+    /// is turning the layout controller off in order to freely move a locomotive between feedbacks without having
+    /// to take into account any unexpected feedback being triggered.
+    var enabled = true
+    
     // The layout being managed
     let layout: Layout
     
@@ -75,9 +80,9 @@ final class LayoutController: ObservableObject {
     /// to the list of feedbacks declared in the layout. For example, a new feedback added to the physical
     /// layout will be detected but might not have been added, yet, to the list of feedbacks by the user.
     @Published var lastDetectedFeedback: FeedbackAttributes?
-
-    // Speed manager for each train.
-    private var speedManagers = [Identifier<Train>:TrainSpeedManager]()
+    
+    /// A map of locomotive to an instance of the speed manager for that locomotive
+    private var speedManagers = [Identifier<Locomotive>:LocomotiveSpeedManager]()
 
     /// The turnout manager class that handles the turnout change towards the Digital Controller
     private var turnoutManager: LayoutTurnoutManager
@@ -121,6 +126,10 @@ final class LayoutController: ObservableObject {
     }
             
     private func run(_ event: LayoutControllerEvent) {
+        guard enabled else {
+            return
+        }
+        
         if let runtimeError = layout.runtimeError {
             BTLogger.router.error("⚙ Cannot evaluate the layout because there is a runtime error: \(runtimeError, privacy: .public)")
             return
@@ -207,7 +216,7 @@ final class LayoutController: ObservableObject {
         // is cleared by the user. We want to make sure the train don't
         // start again if the user re-enable the layout manually.
         for train in layout.trains {
-            setTrainSpeed(train, 0)
+            try? setTrainSpeed(train, 0)
             train.scheduling = .unmanaged
         }
         
@@ -345,27 +354,28 @@ extension LayoutController {
         updateSpeedManagers(with: layout.trains)
     }
     
-    func speedManager(for train: Train) -> TrainSpeedManager {
-        if let speedManager = speedManagers[train.id] {
+    func speedManager(for loc: Locomotive, train: Train) -> LocomotiveSpeedManager {
+        if let speedManager = speedManagers[loc.id] {
             return speedManager
         } else {
-            let speedManager = TrainSpeedManager(train: train, interface: interface, speedChanged: { [weak self] in
-                self?.runControllers(.speedChanged(train, train.speed.actualKph))
+            let speedManager = LocomotiveSpeedManager(loc: loc, interface: interface, speedChanged: { [weak self] in
+                self?.runControllers(.speedChanged(train, loc.speed.actualKph))
             })
-            speedManagers[train.id] = speedManager
+            speedManagers[loc.id] = speedManager
             return speedManager
         }
     }
     
     func updateSpeedManagers(with trains: [Train]) {
+        var existingSpeedManagers = [Identifier<Locomotive>:LocomotiveSpeedManager]()
         for train in trains {
-            _ = speedManager(for: train)
+            if let loc = train.locomotive {
+                existingSpeedManagers[loc.id] = speedManager(for: loc, train: train)
+            }
         }
 
         // Remove controllers that don't belong to an existing train
-        speedManagers = speedManagers.filter({ element in
-            layout.train(for: element.key) != nil
-        })
+        speedManagers = existingSpeedManagers
     }
     
 }
@@ -465,33 +475,40 @@ extension LayoutController {
         turnoutManager.sendTurnoutState(turnout: turnout, completion: completion)
     }
         
-    func setTrainSpeed(_ train: Train, _ speed: TrainSpeed.UnitKph, acceleration: TrainSpeedAcceleration.Acceleration? = nil, completion: CompletionCancelBlock? = nil) {
-        train.speed.requestedKph = speed
-        setTrainSpeed(train, train.speed.requestedSteps, acceleration: acceleration, completion: completion)
+    func setTrainSpeed(_ train: Train, _ speed: LocomotiveSpeed.UnitKph, acceleration: LocomotiveSpeedAcceleration.Acceleration? = nil, completion: CompletionCancelBlock? = nil) throws {
+        guard let loc = train.locomotive else {
+            throw LayoutError.locomotiveNotAssignedToTrain(train: train)
+        }
+        loc.speed.requestedKph = speed
+        try setTrainSpeed(train, loc.speed.requestedSteps, acceleration: acceleration, completion: completion)
     }
 
-    func setTrainSpeed(_ train: Train, _ speed: SpeedStep, acceleration: TrainSpeedAcceleration.Acceleration? = nil, completion: CompletionCancelBlock? = nil) {
-        train.speed.requestedSteps = speed
+    func setTrainSpeed(_ train: Train, _ speed: SpeedStep, acceleration: LocomotiveSpeedAcceleration.Acceleration? = nil, completion: CompletionCancelBlock? = nil) throws {
+        guard let loc = train.locomotive else {
+            throw LayoutError.locomotiveNotAssignedToTrain(train: train)
+        }
+        loc.speed.requestedSteps = speed
+        let speedManager = speedManager(for: loc, train: train)
         if let acceleration = acceleration {
-            speedManager(for: train).changeSpeed(acceleration: acceleration, completion: completion)
+            speedManager.changeSpeed(acceleration: acceleration, completion: completion)
         } else {
-            speedManager(for: train).changeSpeed(completion: completion)
+            speedManager.changeSpeed(completion: completion)
         }
     }
 
     // Set the direction of travel of the locomotive
-    func setLocomotiveDirection(_ train: Train, forward: Bool, completion: CompletionBlock? = nil) {
-        guard train.directionForward != forward else {
+    func setLocomotiveDirection(_ loc: Locomotive, forward: Bool, completion: CompletionBlock? = nil) {
+        guard loc.directionForward != forward else {
             completion?()
             return
         }
         
-        BTLogger.router.debug("\(train, privacy: .public): change train direction to \(forward ? "forward" : "backward")")
+        BTLogger.router.debug("\(loc, privacy: .public): change train direction to \(forward ? "forward" : "backward")")
         let command: Command
         if forward {
-            command = .direction(address: train.address, decoderType: train.decoder, direction: .forward)
+            command = .direction(address: loc.address, decoderType: loc.decoder, direction: .forward)
         } else {
-            command = .direction(address: train.address, decoderType: train.decoder, direction: .backward)
+            command = .direction(address: loc.address, decoderType: loc.decoder, direction: .backward)
         }
         interface.execute(command: command, completion: completion)
     }
@@ -554,7 +571,7 @@ extension LayoutController {
 extension LayoutController: MetricsProvider {
     
     var metrics: [Metric] {
-        turnoutManager.metrics + interface.metrics + [.init(id: "Speed Changes", value: String(TrainSpeedManager.globalRequestUUID))]
+        turnoutManager.metrics + interface.metrics + [.init(id: "Speed Changes", value: String(LocomotiveSpeedManager.globalRequestUUID))]
     }
 
 }

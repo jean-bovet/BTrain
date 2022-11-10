@@ -183,7 +183,7 @@ class BlockTests: XCTestCase {
         block.feedbacks[1].distance = 50
         block.feedbacks[2].distance = 90
         
-        let t = Train(id: .init(uuid: "t1"), name: "SBB", address: 101)
+        let t = Train(id: .init(uuid: "t1"), name: "SBB")
         block.trainInstance = .init(t.id, .next)
 
         // Block:    [ f1 f2 f3 ]

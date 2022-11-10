@@ -23,18 +23,15 @@ class TrainSpeedMeasurementTests: BTTestCase {
         defer {
             disconnectFromSimulator(doc: doc)
         }
-        
-        let train = layout.trains[0]
-        train.blockId = layout.blocks[0].id
-        layout.blocks[0].trainInstance = .init(train.id, .next)
 
+        let loc = layout.locomotives[0]
         let fa = layout.feedback(for: Identifier<Feedback>(uuid: "OL1.2"))!
         let fb = layout.feedback(for: Identifier<Feedback>(uuid: "OL2.1"))!
         let fc = layout.feedback(for: Identifier<Feedback>(uuid: "OL2.2"))!
 
         let step = 10
 
-        let sm = TrainSpeedMeasurement(layout: layout, executor: doc.layoutController, interface: doc.interface, train: train,
+        let sm = LocomotiveSpeedMeasurement(layout: layout, executor: doc.layoutController, interface: doc.interface, loc: loc,
                                        speedEntries: [UInt16(step)],
                                        feedbackA: fa.id, feedbackB: fb.id, feedbackC: fc.id,
                                        distanceAB: 95, distanceBC: 18,
@@ -67,23 +64,14 @@ class TrainSpeedMeasurementTests: BTTestCase {
     
     func testMeasureOneStep() throws {
         let layout = LayoutComplex().newLayout()
-        layout.trains = [layout.trains[0]]
-        
         let doc = LayoutDocument(layout: layout)
-        
+            
         connectToSimulator(doc: doc)
         defer {
             disconnectFromSimulator(doc: doc)
         }
 
-        let train = layout.trains[0]
-        let ol1 = layout.block(named: "OL1")
-        train.blockId = ol1.id
-        ol1.trainInstance = .init(train.id, .next)
-
-        // Ensure the turnouts are properly set
-        layout.turnout(named: "E.1").setState(.straight)
-        layout.turnout(named: "D.1").setState(.straight)
+        let loc = layout.locomotives[0]
 
         let fa = layout.feedback(for: Identifier<Feedback>(uuid: "OL1.2"))!
         let fb = layout.feedback(for: Identifier<Feedback>(uuid: "OL2.1"))!
@@ -91,16 +79,16 @@ class TrainSpeedMeasurementTests: BTTestCase {
 
         let step = 10
         
-        train.speed.speedTable[step] = .init(steps: SpeedStep(value: UInt16(step)), speed: nil)
-        XCTAssertNil(train.speed.speedTable[step].speed)
+        loc.speed.speedTable[step] = .init(steps: SpeedStep(value: UInt16(step)), speed: nil)
+        XCTAssertNil(loc.speed.speedTable[step].speed)
 
-        let sm = TrainSpeedMeasurement(layout: layout, executor: doc.layoutController, interface: doc.interface, train: train,
+        let sm = LocomotiveSpeedMeasurement(layout: layout, executor: doc.layoutController, interface: doc.interface, loc: loc,
                                        speedEntries: [UInt16(step)],
                                        feedbackA: fa.id, feedbackB: fb.id, feedbackC: fc.id,
                                        distanceAB: 95, distanceBC: 18,
                                        simulator: true)
 
-        var expectedInfoArray: [TrainSpeedMeasurement.CallbackStep] = [.trainStarted, .feedbackA, .feedbackB, .feedbackC, .trainStopped, .trainDirectionToggle, .done]
+        var expectedInfoArray: [LocomotiveSpeedMeasurement.CallbackStep] = [.trainStarted, .feedbackA, .feedbackB, .feedbackC, .trainStopped, .trainDirectionToggle, .done]
         
         let callbackExpectation = expectation(description: "Callback")
         callbackExpectation.expectedFulfillmentCount = expectedInfoArray.count
@@ -143,15 +131,15 @@ class TrainSpeedMeasurementTests: BTTestCase {
         wait(for: [callbackExpectation], timeout: 5.0)
 
         XCTAssertEqual(expectedInfoArray.count, 0, "Expected steps are \(expectedInfoArray)")
-        XCTAssertEqual(train.speed.speedTable[step].steps.value, UInt16(step))
-        XCTAssertNotNil(train.speed.speedTable[step].speed)
+        XCTAssertEqual(loc.speed.speedTable[step].steps.value, UInt16(step))
+        XCTAssertNotNil(loc.speed.speedTable[step].speed)
         XCTAssertEqual(sm.feedbackMonitor.pendingRequestCount, 0)
     }
 
     final class InfoStepAsserter {
-        var actualInfoStepArray = [TrainSpeedMeasurement.CallbackStep]()
+        var actualInfoStepArray = [LocomotiveSpeedMeasurement.CallbackStep]()
         
-        func assert(step: TrainSpeedMeasurement.CallbackStep) {
+        func assert(step: LocomotiveSpeedMeasurement.CallbackStep) {
             wait(for: {
                 if actualInfoStepArray.isEmpty {
                     return false
@@ -171,15 +159,7 @@ class TrainSpeedMeasurementTests: BTTestCase {
             disconnectFromSimulator(doc: doc)
         }
 
-        let train = layout.trains[0]
-        let ol1 = layout.block(named: "OL1")
-        train.blockId = ol1.id
-        ol1.trainInstance = .init(train.id, .next)
-
-        // Ensure the turnouts are properly set
-        layout.turnout(named: "E.1").setState(.straight)
-        layout.turnout(named: "D.1").setState(.straight)
-        layout.turnout(named: "A.34").setState(.straight01)
+        let loc = layout.locomotives[0]
 
         let fa = layout.feedback(for: Identifier<Feedback>(uuid: "OL1.2"))!
         let fb = layout.feedback(for: Identifier<Feedback>(uuid: "OL2.1"))!
@@ -188,17 +168,17 @@ class TrainSpeedMeasurementTests: BTTestCase {
         let step1 = 10
         let step2 = 20
 
-        train.speed.speedTable[step1] = .init(steps: SpeedStep(value: UInt16(step1)), speed: nil)
-        train.speed.speedTable[step2] = .init(steps: SpeedStep(value: UInt16(step2)), speed: nil)
-        XCTAssertNil(train.speed.speedTable[step1].speed)
-        XCTAssertNil(train.speed.speedTable[step2].speed)
+        loc.speed.speedTable[step1] = .init(steps: SpeedStep(value: UInt16(step1)), speed: nil)
+        loc.speed.speedTable[step2] = .init(steps: SpeedStep(value: UInt16(step2)), speed: nil)
+        XCTAssertNil(loc.speed.speedTable[step1].speed)
+        XCTAssertNil(loc.speed.speedTable[step2].speed)
 
-        let sm = TrainSpeedMeasurement(layout: layout, executor: doc.layoutController, interface: doc.interface, train: train,
+        let sm = LocomotiveSpeedMeasurement(layout: layout, executor: doc.layoutController, interface: doc.interface, loc: loc,
                                        speedEntries: [UInt16(step1), UInt16(step2)],
                                        feedbackA: fa.id, feedbackB: fb.id, feedbackC: fc.id,
                                        distanceAB: 95, distanceBC: 18, simulator: true)
                 
-        var expectedInfoArray: [TrainSpeedMeasurement.CallbackStep] = [.trainStarted, .feedbackA, .feedbackB, .feedbackC, .trainStopped, .trainDirectionToggle,
+        var expectedInfoArray: [LocomotiveSpeedMeasurement.CallbackStep] = [.trainStarted, .feedbackA, .feedbackB, .feedbackC, .trainStopped, .trainDirectionToggle,
                                                                        .trainStarted, .feedbackC, .feedbackB, .feedbackA, .trainStopped, .trainDirectionToggle, .done]
         
         let callbackExpectation = expectation(description: "Callback")
@@ -260,13 +240,13 @@ class TrainSpeedMeasurementTests: BTTestCase {
 
         wait(for: [callbackExpectation], timeout: 5.0)
 
-        XCTAssertEqual(train.speed.speedTable[step1].steps.value, UInt16(step1))
-        XCTAssertNotNil(train.speed.speedTable[step1].speed)
+        XCTAssertEqual(loc.speed.speedTable[step1].steps.value, UInt16(step1))
+        XCTAssertNotNil(loc.speed.speedTable[step1].speed)
         
-        XCTAssertEqual(train.speed.speedTable[step2].steps.value, UInt16(step2))
-        XCTAssertNotNil(train.speed.speedTable[step2].speed)
+        XCTAssertEqual(loc.speed.speedTable[step2].steps.value, UInt16(step2))
+        XCTAssertNotNil(loc.speed.speedTable[step2].speed)
         
-        XCTAssertNotEqual(train.speed.speedTable[step1].steps.value, train.speed.speedTable[step2].steps.value)
+        XCTAssertNotEqual(loc.speed.speedTable[step1].steps.value, loc.speed.speedTable[step2].steps.value)
         XCTAssertEqual(sm.feedbackMonitor.pendingRequestCount, 0)
     }
     

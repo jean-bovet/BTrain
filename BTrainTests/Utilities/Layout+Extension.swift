@@ -54,7 +54,8 @@ extension Layout {
     }
     
     func removeTrainGeometry() -> Layout {
-        trains.forEach { $0.locomotiveLength = nil; $0.wagonsLength = nil }
+        trains.forEach { $0.wagonsLength = nil }
+        locomotives.forEach { $0.length = nil }
         return self
     }
     
@@ -97,7 +98,8 @@ extension Layout {
         let layout = self.removeTrains()
         
         // Let's use a brand new train
-        let train = Train(id: Identifier<Train>(uuid: "foo"), name: "foo", address: 0)
+        let train = Train(id: Identifier<Train>(uuid: "foo"), name: "foo")
+        train.locomotive = layout.locomotives[0]
 
         let fromBlock = layout.block(named: from.0)
         let toBlock = layout.block(named: to.0)

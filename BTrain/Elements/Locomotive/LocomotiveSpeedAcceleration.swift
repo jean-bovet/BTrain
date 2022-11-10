@@ -12,7 +12,7 @@
 
 import Foundation
 
-final class TrainSpeedAcceleration {
+final class LocomotiveSpeedAcceleration {
     
     let fromSteps: Int
     let toSteps: Int

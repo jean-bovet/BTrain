@@ -28,13 +28,19 @@ struct TrainControlContainerView: View {
                     TrainControlLocationView(controller: document.layoutController, doc: document, layout: document.layout, train: train)
                 }
 
-                TrainIconView(trainIconManager: document.trainIconManager, train: train, size: .medium, hideIfNotDefined: true)
+                if let loc = train.locomotive {
+                    TrainIconView(locomotiveIconManager: document.locomotiveIconManager, loc: loc, size: .medium, hideIfNotDefined: true)
+                } else {
+                    Text("No Locomotive")
+                }
             }
             
             if train.blockId != nil {
                 HStack {
-                    TrainControlSpeedView(document: document, train: train, speed: train.speed)
-                    Spacer()
+                    if let loc = train.locomotive {
+                        TrainControlSpeedView(document: document, train: train, loc: loc, speed: loc.speed)
+                        Spacer()
+                    }
                     TrainControlStateView(train: train)
                 }
 

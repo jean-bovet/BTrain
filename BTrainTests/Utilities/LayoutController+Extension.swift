@@ -16,20 +16,23 @@ import Foundation
 
 extension LayoutController {
     
-    /// This method returns when all the trains have settled.
+    /// This method returns when all the trains (and locomotives) have settled.
     ///
     /// Specifically, a train is considered settled when:
-    /// - It's requested speed is equal to its actual speed
     /// - It's leading blocks and turnouts are settled
+    /// A locomotive is considered settled when:
+    /// - It's requested speed is equal to its actual speed
     func waitUntilSettled() {
         var drain = true
         while drain {
             drain = false
-            for train in layout.trains {
-                if train.speed.requestedSteps != train.speed.actualSteps {
+            for loc in layout.locomotives {
+                if loc.speed.requestedSteps != loc.speed.actualSteps {
                     // Speed is not yet settled
                     drain = true
                 }
+            }
+            for train in layout.trains {
                 if !train.leading.emptyOrSettled && !train.leading.reservedAndSettled {
                     // Leading blocks and turnouts are not yet settled
                     drain = true

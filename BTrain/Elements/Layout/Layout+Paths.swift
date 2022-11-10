@@ -41,9 +41,13 @@ extension Layout {
         guard let trainInstance = fromBlock.trainInstance else {
             throw LayoutError.trainNotFoundInBlock(blockId: fromBlock.id)
         }
+        
+        guard let loc = train.locomotive else {
+            throw LayoutError.locomotiveNotAssignedToTrain(train: train)
+        }
 
         let fromDirections: [Direction]
-        if train.canMoveBackwards {
+        if loc.canMoveBackwards {
             fromDirections = [.previous, .next]
         } else {
             fromDirections = [trainInstance.direction]

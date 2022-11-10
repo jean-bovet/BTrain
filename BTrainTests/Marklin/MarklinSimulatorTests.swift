@@ -40,7 +40,7 @@ class MarklinSimulatorTests: XCTestCase {
         // properly emitted from the simulator
         let train = doc.layout.trains[0]
         train.blockId = doc.layout.blockIds.first
-        XCTAssertTrue(train.directionForward)
+        XCTAssertTrue(train.locomotive!.directionForward)
         
         connectToSimulator(doc: doc)
         defer {
@@ -53,11 +53,11 @@ class MarklinSimulatorTests: XCTestCase {
             e.fulfill()
         })
         
-        doc.simulator.setTrainDirection(train: doc.simulator.trains[0], directionForward: false)
+        doc.simulator.setTrainDirection(train: doc.simulator.locomotives[0], directionForward: false)
         
         waitForExpectations(timeout: 1.0)
         
-        XCTAssertFalse(train.directionForward)
+        XCTAssertFalse(train.locomotive!.directionForward)
     }
 
     func testTurnoutChange() {
@@ -83,7 +83,7 @@ class MarklinSimulatorTests: XCTestCase {
         let doc = LayoutDocument(layout: LayoutLoop1().newLayout())
         let train = doc.layout.trains[0]
         train.blockId = doc.layout.blockIds.first
-        train.speed.actualKph = 70
+        train.speed!.actualKph = 70
         
         connectToSimulator(doc: doc)
         defer {
@@ -103,7 +103,7 @@ class MarklinSimulatorTests: XCTestCase {
             }
         })
         
-        doc.simulator.setTrainSpeed(train: doc.simulator.trains[0])
+        doc.simulator.setTrainSpeed(train: doc.simulator.locomotives[0])
         
         wait(for: [directCommand, acknowledgement, e], timeout: 1.0, enforceOrder: true)
     }

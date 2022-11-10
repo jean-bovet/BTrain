@@ -18,28 +18,24 @@ struct CS3CommandDirectionView: View {
     let query: Bool
     @Binding var command: Command?
 
-    @State private var selectedTrain: Identifier<Train>?
+    @State private var selectedLoc: Identifier<Locomotive>?
     
     var body: some View {
-        TrainPicker(doc: doc, selectedTrain: $selectedTrain)
-            .onChange(of: selectedTrain) { newValue in
-                command = command(trainId: selectedTrain)
+        LocPicker(doc: doc, selectedLoc: $selectedLoc)
+            .onChange(of: selectedLoc) { newValue in
+                command = command(locId: selectedLoc)
             }
     }
     
-    private func command(trainId: Identifier<Train>?) -> Command? {
-        guard let trainId = trainId else {
-            return nil
-        }
-
-        guard let train = doc.layout.train(for: trainId) else {
+    private func command(locId: Identifier<Locomotive>?) -> Command? {
+        guard let loc = doc.layout.locomotive(for: locId) else {
             return nil
         }
         
         if query {
-            return .queryDirection(address: train.address, decoderType: train.decoder, descriptor: nil)
+            return .queryDirection(address: loc.address, decoderType: loc.decoder, descriptor: nil)
         } else {
-            return .direction(address: train.address, decoderType: train.decoder, direction: .forward, priority: .normal, descriptor: nil)
+            return .direction(address: loc.address, decoderType: loc.decoder, direction: .forward, priority: .normal, descriptor: nil)
         }
     }
 
