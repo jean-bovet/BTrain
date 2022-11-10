@@ -30,15 +30,12 @@ struct TrainControlListView: View {
     }
     var body: some View {
         if layout.trains.isEmpty {
-            Spacer()
             VStack {
-                // TODO: this is actually No Trains. Re-visit this
-                Text("No Locomotives")
-                Button("􀈄 Download Locomotives") {
-                    document.discoverLocomotiveConfirmation.toggle()
-                }.disabled(!document.connected)
+                Text("No Trains")
+                Button("Add a Train") {
+                    document.selectedView = .trains
+                }
             }
-            Spacer()
         } else {
             VStack(spacing: 0) {
                 TrainControlActionsView(document: document, filterRunningTrains: $filterRunningTrains)
@@ -57,8 +54,14 @@ struct TrainControlListView: View {
 struct TrainControlListView_Previews: PreviewProvider {
     
     static let doc = LayoutDocument(layout: LayoutLoop2().newLayout())
+    static let emptyDoc = LayoutDocument(layout: Layout())
 
     static var previews: some View {
-        TrainControlListView(layout: doc.layout, document: doc)
+        Group {
+            TrainControlListView(layout: doc.layout, document: doc)
+        }
+        Group {
+            TrainControlListView(layout: emptyDoc.layout, document: emptyDoc)
+        }
     }
 }
