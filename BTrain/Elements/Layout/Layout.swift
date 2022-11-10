@@ -98,11 +98,7 @@ final class Layout: Element, ObservableObject {
     
     // Non-nil when a layout runtime error occurred
     @Published var runtimeError: String?
-    
-    lazy var automaticRouting: AutomaticRouting = {
-        AutomaticRouting(layout: self)
-    }()
-    
+        
     // MARK: Init
     
     convenience init(uuid: String = UUID().uuidString) {

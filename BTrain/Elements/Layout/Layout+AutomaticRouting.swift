@@ -12,17 +12,10 @@
 
 import Foundation
 
-/// Handles the automatic route associated with a train
-final class AutomaticRouting {
+extension Layout {
     
     enum UpdateRouteError: Error {
         case cannotUpdateRoute(message: String)
-    }
-
-    let layout: Layout
-    
-    init(layout: Layout) {
-        self.layout = layout
     }
     
     /// Update the automatic route associated with the train
@@ -31,11 +24,11 @@ final class AutomaticRouting {
     func updateAutomaticRoute(for trainId: Identifier<Train>) throws -> Result<Route, UpdateRouteError> {
         let routeId = Route.automaticRouteId(for: trainId)
         
-        guard let route = layout.route(for: routeId, trainId: trainId) else {
+        guard let route = route(for: routeId, trainId: trainId) else {
             throw LayoutError.routeNotFound(routeId: routeId)
         }
         
-        guard let train = layout.train(for: trainId) else {
+        guard let train = train(for: trainId) else {
             throw LayoutError.trainNotFound(trainId: trainId)
         }
                         
@@ -53,7 +46,7 @@ final class AutomaticRouting {
         // Determine the destination block, if available
         let to: LayoutVector?
         if let destination = destination {
-            guard let block = layout.block(for: destination.blockId) else {
+            guard let block = block(for: destination.blockId) else {
                 throw LayoutError.blockNotFound(blockId: destination.blockId)
             }
             to = .init(block: block, direction: destination.direction)
@@ -62,8 +55,8 @@ final class AutomaticRouting {
         }
         
         // Find the best path by avoiding reserved blocks
-        let path = try layout.bestPath(ofTrain: train, toReachBlock: to?.block, withDirection: to?.direction,
-                                       reservedBlockBehavior: .avoidReserved)
+        let path = try bestPath(ofTrain: train, toReachBlock: to?.block, withDirection: to?.direction,
+                                reservedBlockBehavior: .avoidReserved)
         
         if let path = path {
             route.lastMessage = nil

@@ -175,7 +175,7 @@ final class TrainController: TrainControlling, CustomStringConvertible {
     }
 
     private func updateAutomaticRoute(for train: Train, layout: Layout) throws -> Bool {
-        let result = try layout.automaticRouting.updateAutomaticRoute(for: train.id)
+        let result = try layout.updateAutomaticRoute(for: train.id)
         switch result {
         case .success(let route):
             BTLogger.router.debug("\(train, privacy: .public): generated route is \(route.steps.debugDescription, privacy: .public)")
