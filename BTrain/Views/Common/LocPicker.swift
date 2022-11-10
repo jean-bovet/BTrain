@@ -26,7 +26,8 @@ struct LocPicker: View {
     }
     
     var body: some View {
-        Picker("Train:", selection: $selectedLoc) {
+        Picker("Locomotive:", selection: $selectedLoc) {
+            Text("").tag(nil as Identifier<Locomotive>?)
             ForEach(locomotives, id:\.self) { loc in
                 HStack {
                     Text(loc.name)

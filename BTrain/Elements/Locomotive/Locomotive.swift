@@ -66,7 +66,7 @@ final class Locomotive: Element, ObservableObject {
 extension Locomotive: Codable {
     
     enum CodingKeys: CodingKey {
-      case id, enabled, name, address, locomotiveLength, speed, acceleration, stopSettleDelay, decoder, direction
+      case id, enabled, name, address, lenght, speed, decoder, direction
     }
     
     convenience init(from decoder: Decoder) throws {
@@ -79,7 +79,7 @@ extension Locomotive: Codable {
         
         self.enabled = try container.decodeIfPresent(Bool.self, forKey: CodingKeys.enabled) ?? true
         self.decoder = try container.decode(DecoderType.self, forKey: CodingKeys.decoder)
-        self.length = try container.decodeIfPresent(Double.self, forKey: CodingKeys.locomotiveLength)
+        self.length = try container.decodeIfPresent(Double.self, forKey: CodingKeys.lenght)
         self.speed = try container.decode(LocomotiveSpeed.self, forKey: CodingKeys.speed)
         self.directionForward = try container.decodeIfPresent(Bool.self, forKey: CodingKeys.direction) ?? true
     }
@@ -90,8 +90,9 @@ extension Locomotive: Codable {
         try container.encode(enabled, forKey: CodingKeys.enabled)
         try container.encode(name, forKey: CodingKeys.name)
         try container.encode(address, forKey: CodingKeys.address)
-        try container.encode(decoder, forKey: CodingKeys.decoder)
+        try container.encode(length, forKey: CodingKeys.lenght)
         try container.encode(speed, forKey: CodingKeys.speed)
+        try container.encode(decoder, forKey: CodingKeys.decoder)
         try container.encode(directionForward, forKey: CodingKeys.direction)
     }
 

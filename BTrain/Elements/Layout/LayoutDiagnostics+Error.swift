@@ -22,8 +22,9 @@ extension LayoutDiagnostic {
         
         case trainIdAlreadyExists(train: Train)
         case trainNameAlreadyExists(train: Train)
+        case trainLocomotiveAlreadyUsed(train: Train, locomotive: Locomotive)
         case trainLocomotiveUndefined(train: Train)
-        
+
         case locIdAlreadyExists(loc: Locomotive)
         case locNameAlreadyExists(loc: Locomotive)
         case locDuplicateAddress(loc: Locomotive)
@@ -112,6 +113,8 @@ extension LayoutDiagnostic.DiagnosticError: LocalizedError {
             return "Train \(train.name) is used by more than one train"
         case .trainLocomotiveUndefined(train: let train):
             return "Train \(train.name) does not have a locomotive assigned to it"
+        case .trainLocomotiveAlreadyUsed(train: let train, locomotive: let locomotive):
+            return "Train \(train.name) uses locomotive \(locomotive.name) which is already used by another train"
 
         case .locIdAlreadyExists(loc: let loc):
             return "Locomotive ID \(loc.id) (named \(loc.name)) is used by more than one locomotive"

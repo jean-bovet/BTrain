@@ -282,7 +282,7 @@ extension Train: Codable {
     enum CodingKeys: CodingKey {
       case id, enabled, name, locomotive, wagonsLength, route, routeIndex, block, position, maxLeadingBlocks, blocksToAvoid, turnoutsToAvoid,
            // Previous encoding of the locomotive within the train itself
-           address, locomotiveLength, speed, acceleration, stopSettleDelay, decoder, direction
+           address, locomotiveLength, speed, decoder, direction
     }
 
     convenience init(from decoder: Decoder) throws {

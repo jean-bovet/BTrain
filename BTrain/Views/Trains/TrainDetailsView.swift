@@ -12,6 +12,26 @@
 
 import SwiftUI
 
+struct TrainDetailsLocomotiveSectionView: View {
+    
+    let document: LayoutDocument
+    @ObservedObject var train: Train
+
+    var locIdBinding: Binding<Identifier<Locomotive>?> {
+        let b = Binding {
+            train.locomotive?.id
+        } set: {
+            train.locomotive = document.layout.locomotive(for: $0)
+        }
+        return b
+    }
+
+    var body: some View {
+        LocPicker(doc: document, selectedLoc: locIdBinding)
+            .fixedSize()
+    }
+}
+
 struct TrainDetailsGeometrySectionView: View {
     
     @ObservedObject var train: Train
@@ -150,6 +170,7 @@ struct TrainDetailsView: View {
 
     var body: some View {
         VStack(alignment: .leading) {
+            TrainDetailsLocomotiveSectionView(document: document, train: train)
             TrainDetailsGeometrySectionView(train: train)
             TrainDetailsReservationSectionView(train: train)
             TrainDetailsBlocksToAvoidSectionView(layout: document.layout, train: train)

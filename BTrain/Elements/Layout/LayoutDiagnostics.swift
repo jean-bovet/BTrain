@@ -184,6 +184,7 @@ final class LayoutDiagnostic: ObservableObject {
     
     func checkForDuplicateTrains(_ errors: inout [DiagnosticError]) {
         let enabledTrains = layout.trains.filter({$0.enabled})
+        
         var ids = Set<Identifier<Train>>()
         for train in enabledTrains {
             if ids.contains(train.id) {
@@ -199,6 +200,18 @@ final class LayoutDiagnostic: ObservableObject {
                 errors.append(DiagnosticError.trainNameAlreadyExists(train: train))
             } else {
                 names.insert(train.name)
+            }
+        }
+        
+        var locIds = Set<Identifier<Locomotive>>()
+        for train in enabledTrains {
+            guard let loc = train.locomotive else {
+                continue
+            }
+            if locIds.contains(loc.id) {
+                errors.append(DiagnosticError.trainLocomotiveAlreadyUsed(train: train, locomotive: loc))
+            } else {
+                locIds.insert(loc.id)
             }
         }
     }
