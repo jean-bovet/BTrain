@@ -143,29 +143,31 @@ final class LocomotiveSpeedTests: XCTestCase {
         let loc = Locomotive(uuid: "1")
         loc.address = 0x4001
         
-        // Empty the whole speed table of its speed value
         let speed = loc.speed
-        for index in loc.speed.speedTable.indices {
-            speed.speedTable[index].speed = nil
-        }
-
         let maxSteps = speed.speedTable.count - 1
-        
-        XCTAssertEqual(speed.interpolatedSpeed(at: 0), 0)
-        XCTAssertEqual(speed.interpolatedSpeed(at: maxSteps/3), 66)
-        XCTAssertEqual(speed.interpolatedSpeed(at: maxSteps/2), 100)
-        XCTAssertEqual(speed.interpolatedSpeed(at: maxSteps), 200)
-        
-        // Interpolate the whole table
-        speed.interpolateSpeedTable()
+                
+        let expectedSpeeds = [20:[0, 1, 6, 10, 20], 140: [0, 1, 46, 70, 140], 200: [0, 1, 66, 100, 200]]
+        for maxSpeed in expectedSpeeds {
+            speed.setMaxSpeed(maxSpeed.key, interpolate: false)
+            XCTAssertEqual(speed.interpolatedSpeed(at: 0), SpeedKph(maxSpeed.value[0]))
+            XCTAssertEqual(speed.interpolatedSpeed(at: 1), SpeedKph(maxSpeed.value[1]))
+            XCTAssertEqual(speed.interpolatedSpeed(at: maxSteps/3), SpeedKph(maxSpeed.value[2]))
+            XCTAssertEqual(speed.interpolatedSpeed(at: maxSteps/2), SpeedKph(maxSpeed.value[3]))
+            XCTAssertEqual(speed.interpolatedSpeed(at: maxSteps), SpeedKph(maxSpeed.value[4]))
+        }
         
         // Assert of a few speed values
-        XCTAssertEqual(speed.speedTable[0].speed, 0)
-        XCTAssertEqual(speed.speedTable[maxSteps/3].speed, 66)
-        XCTAssertEqual(speed.speedTable[maxSteps/2].speed, 100)
-        XCTAssertEqual(speed.speedTable[maxSteps].speed, 200)
+        for maxSpeed in expectedSpeeds {
+            speed.setMaxSpeed(maxSpeed.key)
+            XCTAssertEqual(speed.speedTable[0].speed, SpeedKph(maxSpeed.value[0]))
+            XCTAssertEqual(speed.speedTable[1].speed, SpeedKph(maxSpeed.value[1]))
+            XCTAssertEqual(speed.speedTable[maxSteps/3].speed, SpeedKph(maxSpeed.value[2]))
+            XCTAssertEqual(speed.speedTable[maxSteps/2].speed, SpeedKph(maxSpeed.value[3]))
+            XCTAssertEqual(speed.speedTable[maxSteps].speed, SpeedKph(maxSpeed.value[4]))
+        }
         
         // Now assert the whole table
+        speed.setMaxSpeed(200)
         for index in 0...maxSteps {
             XCTAssertEqual(speed.speedTable[index].speed, SpeedKph(Double(index) / Double(maxSteps) * 200), "At index \(index)")
         }
@@ -180,4 +182,21 @@ final class LocomotiveSpeedTests: XCTestCase {
         XCTAssertEqual(interface.speedSteps(for: actualValue, decoder: speed.decoderType).value, steps, "Mismatching actual steps")
     }
     
+}
+
+private extension LocomotiveSpeed {
+    
+    func setMaxSpeed(_ speed: Int, interpolate: Bool = true) {
+        maxSpeed = SpeedKph(speed)
+        clearSpeedTable()
+        if interpolate {
+            interpolateSpeedTable()
+        }
+    }
+    
+    func clearSpeedTable() {
+        for index in speedTable.indices {
+            speedTable[index].speed = nil
+        }
+    }
 }

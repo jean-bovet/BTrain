@@ -234,7 +234,14 @@ final class LocomotiveSpeed: ObservableObject, Equatable, CustomStringConvertibl
         let speed1 = Double(nextSpeed)
         
         let interpolatedSpeed = speed0 + (speed1 - speed0) * x
-        return SpeedKph(interpolatedSpeed)
+        let speed = SpeedKph(interpolatedSpeed)
+        if speed == 0 && index > 0 {
+            // If the index (which represents a step) is greater than 0 but the speed has been rounded
+            // to 0, then use the ceiling rounding to ensure it is > 0.
+            return SpeedKph(ceil(interpolatedSpeed))
+        } else {
+            return speed
+        }
     }
         
     // This method returns the speed in kph for the specified number of steps.
