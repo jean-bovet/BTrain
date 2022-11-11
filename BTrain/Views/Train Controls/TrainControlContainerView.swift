@@ -20,6 +20,8 @@ struct TrainControlContainerView: View {
     // such as speed changes during automatic route execution.
     @ObservedObject var train: Train
     
+    @Binding var pinnedTrainIds: Set<Identifier<Train>>
+
     /// Keep track of any runtime error related to the train so it can be displayed to the user
     @State private var trainRuntimeError: String?
     
@@ -28,7 +30,7 @@ struct TrainControlContainerView: View {
             if let loc = train.locomotive {
                 HStack(alignment: .center) {
                     VStack(alignment: .leading) {
-                        Text(train.name).font(.headline)
+                        TrainControlHeaderView(train: train, pinnedTrainIds: $pinnedTrainIds)
                         TrainControlLocationView(controller: document.layoutController, doc: document, layout: document.layout, train: train)
                     }
 
@@ -46,7 +48,7 @@ struct TrainControlContainerView: View {
                 }
             } else {
                 HStack {
-                    Text(train.name).font(.headline)
+                    TrainControlHeaderView(train: train, pinnedTrainIds: $pinnedTrainIds)
                     Spacer()
                     Text("No Locomotive")
                 }
@@ -74,11 +76,11 @@ struct TrainControlContainerView_Previews: PreviewProvider {
 
     static var previews: some View {
         VStack {
-            TrainControlContainerView(document: doc3, train: doc3.layout.trains[0])
+            TrainControlContainerView(document: doc3, train: doc3.layout.trains[0], pinnedTrainIds: .constant([]))
             Divider()
-            TrainControlContainerView(document: doc1, train: doc1.layout.trains[0])
+            TrainControlContainerView(document: doc1, train: doc1.layout.trains[0], pinnedTrainIds: .constant([]))
             Divider()
-            TrainControlContainerView(document: doc2, train: doc2.layout.trains[0])
+            TrainControlContainerView(document: doc2, train: doc2.layout.trains[0], pinnedTrainIds: .constant([]))
         }
     }
 }

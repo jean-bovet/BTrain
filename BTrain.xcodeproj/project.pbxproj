@@ -117,6 +117,7 @@
 		A744FDB6291337BB00852283 /* CS3CommandSpeedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A744FDB5291337BB00852283 /* CS3CommandSpeedView.swift */; };
 		A744FDB92913383200852283 /* NSImage+Resize.swift in Sources */ = {isa = PBXBuildFile; fileRef = A744FDB82913383200852283 /* NSImage+Resize.swift */; };
 		A745C16A282F2199006D16B0 /* TrainReservation.swift in Sources */ = {isa = PBXBuildFile; fileRef = A745C169282F2199006D16B0 /* TrainReservation.swift */; };
+		A747967F291EA869001DF7FA /* TrainControlHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A747967E291EA869001DF7FA /* TrainControlHeaderView.swift */; };
 		A74925D028E8D15C00FF39C3 /* TurnoutShapePreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = A74925CF28E8D15C00FF39C3 /* TurnoutShapePreview.swift */; };
 		A74C0E7E275C9E900043FEE5 /* MarklinFetchLocomotivesViaCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = A74C0E7D275C9E900043FEE5 /* MarklinFetchLocomotivesViaCommand.swift */; };
 		A74C0E80275C9F490043FEE5 /* Locomotives.cs2 in Resources */ = {isa = PBXBuildFile; fileRef = A74C0E7F275C9F490043FEE5 /* Locomotives.cs2 */; };
@@ -478,6 +479,7 @@
 		A744FDB5291337BB00852283 /* CS3CommandSpeedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CS3CommandSpeedView.swift; sourceTree = "<group>"; };
 		A744FDB82913383200852283 /* NSImage+Resize.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSImage+Resize.swift"; sourceTree = "<group>"; };
 		A745C169282F2199006D16B0 /* TrainReservation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainReservation.swift; sourceTree = "<group>"; };
+		A747967E291EA869001DF7FA /* TrainControlHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainControlHeaderView.swift; sourceTree = "<group>"; };
 		A74925CF28E8D15C00FF39C3 /* TurnoutShapePreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TurnoutShapePreview.swift; sourceTree = "<group>"; };
 		A74BDD6E282C725800BA7160 /* Routing.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; name = Routing.xctestplan; path = BTrain.xcodeproj/Routing.xctestplan; sourceTree = "<group>"; };
 		A74C0E7D275C9E900043FEE5 /* MarklinFetchLocomotivesViaCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarklinFetchLocomotivesViaCommand.swift; sourceTree = "<group>"; };
@@ -985,6 +987,7 @@
 			children = (
 				A7F779E2272E20F500E73275 /* TrainControlListView.swift */,
 				A7CA5EBE2795D05A00171398 /* TrainControlActionsView.swift */,
+				A747967E291EA869001DF7FA /* TrainControlHeaderView.swift */,
 				A7F779F72732407E00E73275 /* TrainControlContainerView.swift */,
 				A76507E7275AD1FE0079C71A /* TrainControlLocationView.swift */,
 				A7DB7D5127C9C0C6000893BA /* TrainControlStateView.swift */,
@@ -1835,6 +1838,7 @@
 				A7214916279A56FA0095E5EE /* LayoutController+Debug.swift in Sources */,
 				A76FD43428FB3CA600E1A295 /* ControlPointShape.swift in Sources */,
 				A71A3DB228B1BBF3007F93C4 /* BlockShapeLabel.swift in Sources */,
+				A747967F291EA869001DF7FA /* TrainControlHeaderView.swift in Sources */,
 				A7710E6527799CF800C08150 /* Layout+Routes.swift in Sources */,
 				A7FFE05B27E63C40002B4A4A /* BlockSpeedView.swift in Sources */,
 				A7710E6927799DA000C08150 /* Layout+Transitions.swift in Sources */,
