@@ -47,6 +47,12 @@ extension Layout {
         locomotiveMap.removeAll()
     }
     
+    func sortLocomotives() {
+        locomotives.sort {
+            $0.name < $1.name
+        }
+    }
+
     func locomotive(for locomotiveId: Identifier<Locomotive>?) -> Locomotive? {
         guard let locomotiveId = locomotiveId else {
             return nil

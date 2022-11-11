@@ -85,7 +85,7 @@ struct LocomotiveListView: View {
                     Spacer().fixedSpace()
                     
                     Button("􀄬") {
-                        layout.sortTrains()
+                        layout.sortLocomotives()
                     }
                 }.padding()
             }.frame(maxWidth: SideListFixedWidth)
