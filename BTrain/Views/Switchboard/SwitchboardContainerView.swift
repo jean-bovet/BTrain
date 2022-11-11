@@ -37,7 +37,19 @@ struct SwitchboardContainerView: View {
     }
     
     var body: some View {
-        ZStack(alignment: .topLeading) {
+        VStack(spacing: 0) {
+            if state.editing {
+                SwitchboardEditControlsView(layout: layout, state: state, document: document, switchboard: switchboard)
+                    .padding()
+            } else if document.showSwitchboardViewSettings {
+                SwitchboardSettingsView(document: document)
+                    .padding()
+            }
+            if layout.runtimeError != nil {
+                SwitchboardRuntimeErrorView(debugger: document.layoutController.debugger, switchboard: switchboard, error: $layout.runtimeError)
+                    .padding()
+                    .background(.orange)
+            }
             GeometryReader { geometry in
                 ScrollView([.horizontal, .vertical]) {
                     if switchboard.isEmpty && !state.editing {
@@ -55,25 +67,8 @@ struct SwitchboardContainerView: View {
                     }
                 }.background(backgroundColor)
             }
-            VStack {
-                if state.editing {
-                    SwitchboardEditControlsView(layout: layout, state: state, document: document, switchboard: switchboard)
-                        .padding()
-                        .background(.background.opacity(0.8))
-                } else if document.showSwitchboardViewSettings {
-                    SwitchboardSettingsView(document: document)
-                        .padding()
-                        .background(.background.opacity(0.8))
-                }
-                if layout.runtimeError != nil {
-                    Spacer().hidden()
-                    SwitchboardRuntimeErrorView(debugger: document.layoutController.debugger, error: $layout.runtimeError)
-                        .padding()
-                        .background(.orange).opacity(0.8)
-                }
-            }
         }.sheet(isPresented: $state.trainDroppedInBlockAction) {
-            TrainControlMoveSheet(layout: layout, controller: document.layoutController, trainDragInfo: state.trainDragInfo, train: layout.train(for: state.trainDragInfo?.trainId)!)
+            TrainControlMoveSheet(layout: layout, doc: document, trainDragInfo: state.trainDragInfo, train: layout.train(for: state.trainDragInfo?.trainId)!)
                 .padding()
         }
     }

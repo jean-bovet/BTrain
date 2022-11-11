@@ -15,7 +15,8 @@ import SwiftUI
 struct SwitchboardRuntimeErrorView: View {
     
     let debugger: LayoutControllerDebugger
-    
+    let switchboard: SwitchBoard
+
     @Binding var error: String?
     
     @State private var exportError: String?
@@ -49,6 +50,7 @@ struct SwitchboardRuntimeErrorView: View {
                 }
                 
                 Button("OK") {
+                    switchboard.context.unexpectedFeedbackIds = nil
                     error = nil
                 }
             }
@@ -62,7 +64,10 @@ struct SwitchboardRuntimeErrorView: View {
 }
 
 struct LayoutRuntimeErrorView_Previews: PreviewProvider {
+    
+    static let doc = LayoutDocument(layout: LayoutLoop1().newLayout())
+    
     static var previews: some View {
-        SwitchboardRuntimeErrorView(debugger: LayoutControllerDebugger(layout: Layout()), error: .constant("Unexpected feedback IL2.1 detected"))
+        SwitchboardRuntimeErrorView(debugger: LayoutControllerDebugger(layout: Layout()), switchboard: doc.switchboard, error: .constant("Unexpected feedback IL2.1 detected"))
     }
 }

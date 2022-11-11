@@ -49,7 +49,8 @@ struct TrainControlLocationView: View {
                             }
                             .help("Move Train")
                             .buttonStyle(.borderless)
-                            
+                            .disabled(!doc.power)
+
                             Button("􀄨") {
                                 removeTrainSheet.toggle()
                             }
@@ -71,7 +72,7 @@ struct TrainControlLocationView: View {
             TrainControlSetLocationSheet(layout: layout, controller: controller, train: train)
                 .padding()
         }.sheet(isPresented: $moveTrainLocationSheet) {
-            TrainControlMoveSheet(layout: layout, controller: controller, train: train)
+            TrainControlMoveSheet(layout: layout, doc: doc, train: train)
                 .padding()
         }.sheet(isPresented: $removeTrainSheet) {
             TrainControlRemoveSheet(layout: layout, controller: controller, train: train)
