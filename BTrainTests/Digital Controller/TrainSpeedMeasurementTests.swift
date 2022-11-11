@@ -40,7 +40,7 @@ class TrainSpeedMeasurementTests: BTTestCase {
         let trainStartedExpectation = expectation(description: "TrainStarted")
 
         sm.start { info in
-            if info.step == .trainStarted {
+            if info.step == .locomotiveStarted {
                 trainStartedExpectation.fulfill()
             } else {
                 XCTFail("Unexpected info.step \(info.step)")
@@ -88,7 +88,7 @@ class TrainSpeedMeasurementTests: BTTestCase {
                                        distanceAB: 95, distanceBC: 18,
                                        simulator: true)
 
-        var expectedInfoArray: [LocomotiveSpeedMeasurement.CallbackStep] = [.trainStarted, .feedbackA, .feedbackB, .feedbackC, .trainStopped, .trainDirectionToggle, .done]
+        var expectedInfoArray: [LocomotiveSpeedMeasurement.CallbackStep] = [.locomotiveStarted, .feedbackA, .feedbackB, .feedbackC, .locomotiveStopped, .locomotiveDirectionToggle, .done]
         
         let callbackExpectation = expectation(description: "Callback")
         callbackExpectation.expectedFulfillmentCount = expectedInfoArray.count
@@ -101,7 +101,7 @@ class TrainSpeedMeasurementTests: BTTestCase {
             XCTAssertEqual(info.progress, 1)
             let expectedInfo = expectedInfoArray.removeFirst()
             XCTAssertEqual(expectedInfo, info.step)
-            if info.step == .trainStarted {
+            if info.step == .locomotiveStarted {
                 trainStartedExpectation.fulfill()
             }
             if info.step == .feedbackA {
@@ -178,8 +178,8 @@ class TrainSpeedMeasurementTests: BTTestCase {
                                        feedbackA: fa.id, feedbackB: fb.id, feedbackC: fc.id,
                                        distanceAB: 95, distanceBC: 18, simulator: true)
                 
-        var expectedInfoArray: [LocomotiveSpeedMeasurement.CallbackStep] = [.trainStarted, .feedbackA, .feedbackB, .feedbackC, .trainStopped, .trainDirectionToggle,
-                                                                       .trainStarted, .feedbackC, .feedbackB, .feedbackA, .trainStopped, .trainDirectionToggle, .done]
+        var expectedInfoArray: [LocomotiveSpeedMeasurement.CallbackStep] = [.locomotiveStarted, .feedbackA, .feedbackB, .feedbackC, .locomotiveStopped, .locomotiveDirectionToggle,
+                                                                       .locomotiveStarted, .feedbackC, .feedbackB, .feedbackA, .locomotiveStopped, .locomotiveDirectionToggle, .done]
         
         let callbackExpectation = expectation(description: "Callback")
         callbackExpectation.expectedFulfillmentCount = expectedInfoArray.count
@@ -194,7 +194,7 @@ class TrainSpeedMeasurementTests: BTTestCase {
             XCTAssertEqual(expectedInfo, info.step)
         }
         
-        infoStepAsserter.assert(step: .trainStarted)
+        infoStepAsserter.assert(step: .locomotiveStarted)
                 
         doc.simulator.setFeedback(feedback: fa, value: 1)
 
@@ -212,9 +212,9 @@ class TrainSpeedMeasurementTests: BTTestCase {
         
         doc.simulator.setFeedback(feedback: fc, value: 0)
 
-        infoStepAsserter.assert(step: .trainStopped)
-        infoStepAsserter.assert(step: .trainDirectionToggle)
-        infoStepAsserter.assert(step: .trainStarted)
+        infoStepAsserter.assert(step: .locomotiveStopped)
+        infoStepAsserter.assert(step: .locomotiveDirectionToggle)
+        infoStepAsserter.assert(step: .locomotiveStarted)
 
         doc.simulator.setFeedback(feedback: fc, value: 1)
 
@@ -232,8 +232,8 @@ class TrainSpeedMeasurementTests: BTTestCase {
         
         doc.simulator.setFeedback(feedback: fa, value: 0)
 
-        infoStepAsserter.assert(step: .trainStopped)
-        infoStepAsserter.assert(step: .trainDirectionToggle)
+        infoStepAsserter.assert(step: .locomotiveStopped)
+        infoStepAsserter.assert(step: .locomotiveDirectionToggle)
         infoStepAsserter.assert(step: .done)
 
         XCTAssertEqual(expectedInfoArray.count, 0)

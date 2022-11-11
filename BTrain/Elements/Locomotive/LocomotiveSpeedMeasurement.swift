@@ -32,25 +32,25 @@ final class LocomotiveSpeedMeasurement {
     let feedbackMonitor: FeedbackMonitor
     
     // True if the measurement is done in the simulator,
-    // which is going to affect some delays after stopping the train
+    // which is going to affect some delays after stopping the locomotive
     let simulator: Bool
     
     private var entryIndex = 0
     
-    // Direction of travel of the train:
-    // If true, the train is moving towards feedback A, B and then C.
-    // If false, the train is moving towards feedback C, B and then A.
+    // Direction of travel of the locomotive:
+    // - If true, the locomotive is moving towards feedback A, B and then C.
+    // - If false, the locomotive is moving towards feedback C, B and then A.
     private var forward = true
     
     private var task: Task<Void, Error>?
     
     enum CallbackStep {
-        case trainStarted
+        case locomotiveStarted
         case feedbackA
         case feedbackB
         case feedbackC
-        case trainStopped
-        case trainDirectionToggle
+        case locomotiveStopped
+        case locomotiveDirectionToggle
         case done
     }
     
@@ -85,7 +85,7 @@ final class LocomotiveSpeedMeasurement {
             task.cancel()
         }
 
-        // The measurement always start with the train moving "forward" towards feedback A, B and then C.
+        // The measurement always start with the locomotive moving "forward" towards feedback A, B and then C.
         forward = true
         entryIndex = 0
         
@@ -140,13 +140,13 @@ final class LocomotiveSpeedMeasurement {
         }
         
         if Task.isCancelled {
-            try await stopTrain()
+            try await stopLocomotive()
         }
     }
     
     private func measure(callback: @escaping (CallbackInfo) -> Void) async throws {
-        await startTrain()
-        try invokeCallback(.trainStarted, callback)
+        await startLocomotive()
+        try invokeCallback(.locomotiveStarted, callback)
         
         let feedbacks: [(Identifier<Feedback>, CallbackStep)]
         if forward {
@@ -168,22 +168,22 @@ final class LocomotiveSpeedMeasurement {
         
         try await waitForFeedback(feedbacks[2].0, detected: false)
 
-        try await stopTrain()
-        try invokeCallback(.trainStopped, callback)
+        try await stopLocomotive()
+        try invokeCallback(.locomotiveStopped, callback)
 
         DispatchQueue.main.sync {
             storeMeasurement(t0: t0, t1: t1, distance: forward ? distanceBC : distanceAB)
         }
         
         if !simulator && !Task.isCancelled {
-            // Wait a bit before toggling the train direction because a locomotive might still
-            // not be fully stopped. Although stopTrain() waits until the train has stopped (from a command
+            // Wait a bit before toggling the locomotive direction because a locomotive might still
+            // not be fully stopped. Although stopLocomotive() waits until the locomotive has stopped (from a command
             // control point of view), some locomotive still need some time to stop fully.
             try await Task.sleep(nanoseconds: 2_000_000_000)
         }
 
-        try await toggleTrainDirection()
-        try invokeCallback(.trainDirectionToggle, callback)
+        try await toggleLocomotiveDirection()
+        try invokeCallback(.locomotiveDirectionToggle, callback)
     }
     
     private func invokeCallback(_ step: CallbackStep, _ callback: @escaping (CallbackInfo) -> Void) throws {
@@ -194,32 +194,33 @@ final class LocomotiveSpeedMeasurement {
         callback(.init(speedEntry: speedEntry, step: step, progress: progress(for: entryIndex)))
     }
     
-    private func startTrain() async {
+    private func startLocomotive() async {
         return await withCheckedContinuation { continuation in
             DispatchQueue.main.async { [self] in
                 let speedEntry = speedEntry(for: entryIndex)
                                 
                 // Set the speed without inertia to ensure the locomotive accelerates as fast as possible
-                setTrainSpeed(speedEntry.steps, acceleration: LocomotiveSpeedAcceleration.Acceleration.none) { _ in
+                setLocomotiveSpeed(speedEntry.steps, acceleration: LocomotiveSpeedAcceleration.Acceleration.none) { _ in
                     continuation.resume(returning: ())
                 }
             }
         }
     }
     
-    private func stopTrain() async throws {
+    private func stopLocomotive() async throws {
         return try await withCheckedThrowingContinuation { continuation in
             DispatchQueue.main.async { [self] in
-                // Note: the train inertia must be set to true if the locomotive take some time to slow down,
+                // Note: the locomotive inertia must be set to true if the locomotive take some time to slow down,
                 // in order for BTrain to wait long enough for the locomotive to be stopped.
-                setTrainSpeed(.zero) { completed in
+                setLocomotiveSpeed(.zero) { completed in
                     continuation.resume(returning: ())
                 }
             }
         }
     }
     
-    private func setTrainSpeed(_ steps: SpeedStep, acceleration: LocomotiveSpeedAcceleration.Acceleration? = nil, completion: @escaping CompletionCancelBlock) {
+    private func setLocomotiveSpeed(_ steps: SpeedStep, acceleration: LocomotiveSpeedAcceleration.Acceleration? = nil, completion: @escaping CompletionCancelBlock) {
+        loc.speed.requestedSteps = steps
         if let acceleration = acceleration {
             speedManager.changeSpeed(acceleration: acceleration, completion: completion)
         } else {
@@ -227,7 +228,7 @@ final class LocomotiveSpeedMeasurement {
         }
     }
     
-    private func toggleTrainDirection() async throws {
+    private func toggleLocomotiveDirection() async throws {
         return try await withCheckedThrowingContinuation { continuation in
             DispatchQueue.main.async { [self] in
                 self.forward.toggle()
