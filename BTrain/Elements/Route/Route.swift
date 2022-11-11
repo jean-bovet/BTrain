@@ -121,6 +121,7 @@ extension Route: Codable {
     convenience init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         let id = try container.decode(Identifier<Route>.self, forKey: CodingKeys.id)
+        // TODO: cleanup previous restore
         let mode: Route.Mode
         if let value = try container.decodeIfPresent(Bool.self, forKey: CodingKeys.automatic), value == true {
             mode = .automatic

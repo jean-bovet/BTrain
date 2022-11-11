@@ -236,10 +236,6 @@ final class Train: Element, ObservableObject {
     /// When deserializing a locomotive, this variable is going to be used to restore the actual ``locomotive`` from the layout.
     private var locomotiveId: Identifier<Locomotive>?
 
-    func resolve(layout: Layout) {
-        assert(locomotive == nil)
-        locomotive = layout.locomotive(for: locomotiveId)
-    }
 }
 
 extension Train {
@@ -257,6 +253,15 @@ extension Train {
     var directionForward: Bool? {
         locomotive?.directionForward
     }
+}
+
+extension Train: Restorable {
+    
+    func restore(layout: Layout) {
+        assert(locomotive == nil)
+        locomotive = layout.locomotive(for: locomotiveId)
+    }
+
 }
 
 extension Train: Codable {

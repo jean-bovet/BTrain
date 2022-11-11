@@ -75,8 +75,8 @@ final class SwitchBoardDragOperation {
     }
     
     func restoreState() {
-        if let snapshot = snapshot {
-            try? layout.restore(from: snapshot)
+        if let snapshot = snapshot, let previousLayout = try? Layout.decode(from: snapshot) {
+            layout.apply(other: previousLayout)
         }
         snapshot = nil
     }

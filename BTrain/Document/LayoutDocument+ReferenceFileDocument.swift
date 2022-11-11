@@ -102,18 +102,30 @@ extension LayoutDocument: ReferenceFileDocument {
             throw CocoaError(.fileReadUnknown)
         }
         let layout = try Layout.decode(from: data)
-        resolve(layout: layout)
+        restore(layout: layout)
         return layout
     }
 
-    /// This method is called after the deserialization happened in order to resolve
+    /// This method is called after the deserialization happened in order to restore
     /// all the variables that depend on an object that has been serialized.
-    static private func resolve(layout: Layout) {
-        layout.trains.forEach({$0.resolve(layout: layout)})
+    static private func restore(layout: Layout) {
+        layout.trains.forEach({$0.restore(layout: layout)})
+        layout.blocks.forEach({$0.restore(layout: layout)})
+        layout.turnouts.forEach({$0.restore(layout: layout)})
+        layout.transitions.forEach({$0.restore(layout: layout)})
     }
 
     func snapshot(contentType: UTType) throws -> Data {
         try layout.encode()
     }
 
+}
+
+/// Declare that an element can be called after the layout has deserialized to perform any initialization needed
+protocol Restorable {
+    
+    /// This method is called after the layout has deserialized. The element can take any action needed, such
+    /// as restored default values, removing others, etc.
+    /// - Parameter layout: the layout
+    func restore(layout: Layout)
 }

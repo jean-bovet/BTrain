@@ -189,6 +189,19 @@ final class Block: Element, ObservableObject {
         
 }
 
+extension Block: Restorable {
+    
+    func restore(layout: Layout) {
+        if trainInstance == nil {
+            // Do not restore the reservation if the train does not belong to this block.
+            // We do not want the user to see reservation upon opening a new document because
+            // the train is not actively running anymore.
+            reservation = nil
+        }
+    }
+
+}
+
 extension Block: Codable {
     
     enum CodingKeys: CodingKey {
@@ -209,12 +222,10 @@ extension Block: Codable {
         self.category = try container.decode(Category.self, forKey: CodingKeys.type)
         self.center = try container.decode(CGPoint.self, forKey: CodingKeys.center)
         self.rotationAngle = try container.decode(Double.self, forKey: CodingKeys.angle)
-        if let waitingTime = try container.decodeIfPresent(TimeInterval.self, forKey: CodingKeys.waitingTime) {
-            self.waitingTime = waitingTime
-        }
+        self.waitingTime = try container.decode(TimeInterval.self, forKey: CodingKeys.waitingTime)
         self.length = try container.decodeIfPresent(Double.self, forKey: CodingKeys.length)
 
-        self.enabled = try container.decodeIfPresent(Bool.self, forKey: CodingKeys.enabled) ?? true
+        self.enabled = try container.decode(Bool.self, forKey: CodingKeys.enabled)
         self.reservation = try container.decodeIfPresent(Reservation.self, forKey: CodingKeys.reserved)
         self.trainInstance = try container.decodeIfPresent(TrainInstance.self, forKey: CodingKeys.train)
         self.feedbacks = try container.decode([BlockFeedback].self, forKey: CodingKeys.feedbacks)
@@ -228,7 +239,7 @@ extension Block: Codable {
         self.stopFeedbackPrevious = try container.decodeIfPresent(Identifier<Feedback>.self, forKey: CodingKeys.stopFeedbackPrevious)
         
         self.brakingSpeed = try container.decodeIfPresent(SpeedKph.self, forKey: CodingKeys.brakingSpeed)
-        self.speedLimit = try container.decodeIfPresent(SpeedLimit.self, forKey: CodingKeys.speedLimit) ?? .unlimited
+        self.speedLimit = try container.decode(SpeedLimit.self, forKey: CodingKeys.speedLimit)
     }
     
     func encode(to encoder: Encoder) throws {

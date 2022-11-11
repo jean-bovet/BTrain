@@ -153,14 +153,14 @@ extension Layout: Codable {
         self.init(id: try container.decode(Identifier<Layout>.self, forKey: CodingKeys.id))
         self.name = try container.decode(String.self, forKey: CodingKeys.name)
         self.blocks = try container.decode([Block].self, forKey: CodingKeys.blocks)
-        self.stations = try container.decodeIfPresent([Station].self, forKey: CodingKeys.stations) ?? []
+        self.stations = try container.decode([Station].self, forKey: CodingKeys.stations)
         self.feedbacks = try container.decode([Feedback].self, forKey: CodingKeys.feedbacks)
         self.turnouts = try container.decode([Turnout].self, forKey: CodingKeys.turnouts)
         self.trains = try container.decode([Train].self, forKey: CodingKeys.trains)
-        self.locomotives = try container.decodeIfPresent([Locomotive].self, forKey: CodingKeys.locomotives) ?? []
+        self.locomotives = try container.decode([Locomotive].self, forKey: CodingKeys.locomotives)
         self.routes = try container.decode([Route].self, forKey: CodingKeys.routes)
         self.transitions = try container.decode([Transition].self, forKey: CodingKeys.transitions)
-        self.controlPoints = try container.decodeIfPresent([ControlPoint].self, forKey: CodingKeys.controlPoints) ?? []
+        self.controlPoints = try container.decode([ControlPoint].self, forKey: CodingKeys.controlPoints)
     }
     
     func encode(to encoder: Encoder) throws {
@@ -176,10 +176,6 @@ extension Layout: Codable {
         try container.encode(fixedRoutes, forKey: CodingKeys.routes)
         try container.encode(transitions, forKey: CodingKeys.transitions)
         try container.encode(controlPoints, forKey: CodingKeys.controlPoints)
-    }
-    
-    func restore(from data: Data) throws {
-        apply(other: try Layout.decode(from: data))
     }
     
     static func decode(from data: Data) throws -> Layout {
