@@ -18,6 +18,8 @@ struct NewLayoutWizardView: View {
 
     @StateObject var helper = PredefinedLayoutHelper()
     
+    @Environment(\.presentationMode) var presentationMode
+
     @State private var errorString: String?
     
     @State private var selectedLayout = LayoutBlankCreator.id
@@ -26,7 +28,6 @@ struct NewLayoutWizardView: View {
     enum Stage {
         case selectLayout
         case selectLocomotive
-        case createLayout
     }
     
     @State private var wizardStage: Stage = .selectLayout
@@ -37,8 +38,15 @@ struct NewLayoutWizardView: View {
             return true
         case .selectLocomotive:
             return !selectedTrains.isEmpty
-        case .createLayout:
-            return false
+        }
+    }
+    
+    var nextButtonTitle: String {
+        switch wizardStage {
+        case .selectLayout:
+            return "Next"
+        case .selectLocomotive:
+            return "Done"
         }
     }
     
@@ -50,9 +58,6 @@ struct NewLayoutWizardView: View {
 
             case .selectLocomotive:
                 WizardSelectLocomotive(document: helper.predefinedDocument!, selectedTrains: $selectedTrains)
-
-            case .createLayout:
-                WizardCreateLayout()
             }
 
             HStack {
@@ -60,9 +65,9 @@ struct NewLayoutWizardView: View {
                 Button("Previous") {
                     wizardStage = .selectLayout
                 }
-                .disabled(wizardStage == .selectLayout || wizardStage == .createLayout)
+                .disabled(wizardStage == .selectLayout)
                 
-                Button("Next") {
+                Button(nextButtonTitle) {
                     switch wizardStage {
                     case .selectLayout:
                         if helper.predefinedDocument == nil {
@@ -75,14 +80,8 @@ struct NewLayoutWizardView: View {
                         wizardStage = .selectLocomotive
 
                     case .selectLocomotive:
-                        wizardStage = .createLayout
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-                            helper.create(layoutId: selectedLayout, trains: selectedTrains, in: document)
-                            document.layout.newLayoutWizardExecuted = true
-                        }
-
-                    case .createLayout:
-                        break
+                        helper.create(layoutId: selectedLayout, trains: selectedTrains, in: document)
+                        self.presentationMode.wrappedValue.dismiss()
                     }
                 }
                 .keyboardShortcut(.defaultAction)
@@ -97,7 +96,7 @@ struct NewLayoutWizardView: View {
                     .foregroundColor(.red)
             }
             Spacer()
-        }.frame(minWidth: 800, minHeight: 600)
+        }.frame(idealWidth: 800, minHeight: 400)
     }
 }
 

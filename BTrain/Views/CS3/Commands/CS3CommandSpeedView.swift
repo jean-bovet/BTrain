@@ -17,15 +17,15 @@ struct CS3CommandSpeedView: View {
     let doc: LayoutDocument
     @Binding var command: Command?
 
-    @State private var selectedTrain: Identifier<Train>?
+    @State private var selectedLoc: Identifier<Locomotive>?
     @State private var speedValue: UInt16 = 0
 
     var body: some View {
         HStack {
-            TrainPicker(doc: doc, selectedTrain: $selectedTrain)
+            LocPicker(doc: doc, selectedLoc: $selectedLoc)
             TextField("Value:", value: $speedValue, format: .number)
         }
-        .onChange(of: selectedTrain) { newValue in
+        .onChange(of: selectedLoc) { newValue in
             command = createCommand()
         }
         .onChange(of: speedValue) { newValue in
@@ -34,15 +34,15 @@ struct CS3CommandSpeedView: View {
     }
     
     private func createCommand() -> Command? {
-        guard let trainId = selectedTrain else {
+        guard let locId = selectedLoc else {
             return nil
         }
 
-        guard let train = doc.layout.train(for: trainId) else {
+        guard let loc = doc.layout.locomotive(for: locId) else {
             return nil
         }
         
-        return .speed(address: train.address, decoderType: train.decoder, value: SpeedValue(value: speedValue))
+        return .speed(address: loc.address, decoderType: loc.decoder, value: SpeedValue(value: speedValue))
     }
 
 }

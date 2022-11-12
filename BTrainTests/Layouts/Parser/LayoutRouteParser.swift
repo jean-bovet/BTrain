@@ -311,10 +311,10 @@ final class LayoutRouteParser {
         return uuid
     }
     
-    func parseTrainSpeed() -> TrainSpeed.UnitKph {
-        let speed: TrainSpeed.UnitKph
+    func parseTrainSpeed() -> SpeedKph {
+        let speed: SpeedKph
         if let specifiedSpeed = sp.matchesInteger() {
-            speed = TrainSpeed.UnitKph(specifiedSpeed)
+            speed = SpeedKph(specifiedSpeed)
         } else {
             speed = LayoutFactory.DefaultBrakingSpeed
         }
@@ -326,17 +326,21 @@ final class LayoutRouteParser {
         let uuid = parseUUID()
         
         if let train = layout.trains.first(where: { $0.id.uuid == uuid }) {
-            assert(train.speed.requestedKph == speed, "Mismatching speed definition for train \(uuid)")
+            let loc = train.locomotive!
+            assert(loc.speed.requestedKph == speed, "Mismatching speed definition for train \(uuid)")
             assert(train.position == position, "Mismatching position definition for train \(uuid)")
             if block.trainInstance == nil {
                 block.trainInstance = TrainInstance(train.id, .next)
             }
             block.trainInstance?.parts[position] = .locomotive
         } else {
+            let loc = Locomotive(uuid: uuid)
+            loc.speed = .init(kph: speed, decoderType: .MFX)
+            
             let train = Train(uuid: uuid)
+            train.locomotive = loc
             train.position = position
             train.routeStepIndex = route.resolvedSteps.count
-            train.speed = .init(kph: speed, decoderType: .MFX)
             train.routeId = route.routeId
             if block.trainInstance == nil {
                 block.trainInstance = TrainInstance(train.id, .next)

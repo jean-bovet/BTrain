@@ -43,7 +43,7 @@ class LayoutDocumentTests: XCTestCase {
         let doc = try LayoutDocument(contentType: .json, file: fw)
         let diag = LayoutDiagnostic(layout: doc.layout)
         let errors = try diag.check(.skipLengths)
-        XCTAssertEqual(errors.count, 0)
+        XCTAssertEqual(errors.count, 1)
         
         let snapshot = try doc.snapshot(contentType: .json)
         _ = try doc.fileWrapper(snapshot: snapshot, contentType: .json)

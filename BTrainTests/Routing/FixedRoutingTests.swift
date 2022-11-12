@@ -24,7 +24,7 @@ class FixedRoutingTests: BTTestCase {
         let layout = LayoutLoop1().newLayout().removeTrainGeometry()
         let p = Package(layout: layout)
         try p.prepare(routeID: "r1", trainID: "1", fromBlockId: "b1")
-        p.train.speed.accelerationProfile = .none
+        p.train.speed!.accelerationProfile = .none
         
         // Reserve a block with another route to make the train stop
         let b3 = layout.block(for: p.route.steps[2].stepBlockId)!
@@ -78,7 +78,7 @@ class FixedRoutingTests: BTTestCase {
         try p.assert("r1:{r1{b1 ≏ ≏ }} <r1<t0,l>> [b2 ≏ ≏ ] <t1(0,2),l> [r1[b3 ≡ 🔵🚂1 ≏ ]] <r1<t0(2,0),l>> !{r1{b1 ≏ ≏ }}")
         try p.assert("r1:{r1{b1 ≏ 🟡17🚂1 ≡ }} <t0,l> [b2 ≏ ≏ ] <t1(0,2),l> [b3 ≏ ≏ ] <t0(2,0),l> !{r1{b1 ≡ 🟡17🚂1 ≏ }}")
         
-        XCTAssertEqual(train.speed.actualKph, 17)
+        XCTAssertEqual(train.speed!.actualKph, 17)
 
         try p.assert("r1:{r1{b1 🔴🚂1 ≡ ≏ }} <t0,l> [b2 ≏ ≏ ] <t1(0,2),l> [b3 ≏ ≏ ] <t0(2,0),l> !{r1{b1 ≏ ≡ 🔴🚂1 }}")
     }
@@ -195,9 +195,9 @@ class FixedRoutingTests: BTTestCase {
 
         try p.start()
 
-        try p.assert("r1: {r1{b1 🟢🚂1 ≏ ≏ }} <r1<t0>> [r1[b2 ≏ ≏ ]] <r1<t1(0,2),l>> [r1[b3 ≏ ≏ ]] <r1<t0(2,0)>> !{r1{b1 ≏ ≏ }}", ["b2", "b3"])
-        try p.assert("r1: {r1{b1 ≡ 🟢🚂1 ≏ }} <r1<t0>> [r1[b2 ≏ ≏ ]] <r1<t1(0,2),l>> [r1[b3 ≏ ≏ ]] <r1<t0(2,0)>> !{r1{b1 ≏ ≡ }}", ["b2", "b3"])
-        try p.assert("r1: {r1{b1 ≏ ≡ 🟢🚂1 }} <r1<t0>> [r1[b2 ≏ ≏ ]] <r1<t1(0,2),l>> [r1[b3 ≏ ≏ ]] <r1<t0(2,0)>> !{r1{b1 ≡ ≏ }}", ["b2", "b3"])
+        try p.assert("r1: {r1{b1 🔵🚂1 ≏ ≏ }} <r1<t0>> [r1[b2 ≏ ≏ ]] <r1<t1(0,2),l>> [r1[b3 ≏ ≏ ]] <r1<t0(2,0)>> !{r1{b1 ≏ ≏ }}", ["b2", "b3"])
+        try p.assert("r1: {r1{b1 ≡ 🔵🚂1 ≏ }} <r1<t0>> [r1[b2 ≏ ≏ ]] <r1<t1(0,2),l>> [r1[b3 ≏ ≏ ]] <r1<t0(2,0)>> !{r1{b1 ≏ ≡ }}", ["b2", "b3"])
+        try p.assert("r1: {r1{b1 ≏ ≡ 🔵🚂1 }} <r1<t0>> [r1[b2 ≏ ≏ ]] <r1<t1(0,2),l>> [r1[b3 ≏ ≏ ]] <r1<t0(2,0)>> !{r1{b1 ≡ ≏ }}", ["b2", "b3"])
         try p.assert("r1: {r1{b1 ≏ ≏ }} <r1<t0,l>> [r1[b2 ≡ 🔵🚂1 ≏ ]] <r1<t1(0,2),l>> [r1[b3 ≏ ≏ ]] <r1<t0(2,0),l>> !{r1{b1 ≏ ≏}}", ["b3", "b1"])
         try p.assert("r1: {r1{b1 ≏ ≏ }} <r1<t0,l>> [r1[b2 ≏ ≡ 🔵🚂1 ]] <r1<t1(0,2),l>> [r1[b3 ≏ ≏ ]] <r1<t0(2,0),l>> !{r1{b1 ≏ ≏ }}", ["b3", "b1"])
         try p.assert("r1: {r1{b1 ≏ ≏ }} <r1<t0,l>> [r1[b2 ≏ ≏ 🔵🚂1 ]] <r1<t1(0,2),l>> [r1[b3 ≏ ≏ ]] <r1<t0(2,0),l>> !{r1{b1 ≏ ≏ }}", ["b3", "b1"])
@@ -268,9 +268,9 @@ class FixedRoutingTests: BTTestCase {
 
         try p.start()
 
-        try p.assert("r1: {r1{b1 🟢🚂1 ≏ ≏ }} <r1<t0>> [r1[b2 ≏ ≏ ]] <r1<t1(0,2),l>> [r1[b3 ≏ ≏ ]] <r1<t0(2,0)>> !{r1{b1 ≏ ≏ }}")
-        try p.assert("r1: {r1{b1 ≡ 🟢🚂1 ≏ }} <r1<t0>> [r1[b2 ≏ ≏ ]] <r1<t1(0,2),l>> [r1[b3 ≏ ≏ ]] <r1<t0(2,0)>> !{r1{b1 ≏ ≡ }}")
-        try p.assert("r1: {r1{b1 ≏ ≡ 🟢🚂1 }} <r1<t0>> [r1[b2 ≏ ≏ ]] <r1<t1(0,2),l>> [r1[b3 ≏ ≏ ]] <r1<t0(2,0)>> !{r1{b1 ≡ ≏ }}")
+        try p.assert("r1: {r1{b1 🔵🚂1 ≏ ≏ }} <r1<t0>> [r1[b2 ≏ ≏ ]] <r1<t1(0,2),l>> [r1[b3 ≏ ≏ ]] <r1<t0(2,0)>> !{r1{b1 ≏ ≏ }}")
+        try p.assert("r1: {r1{b1 ≡ 🔵🚂1 ≏ }} <r1<t0>> [r1[b2 ≏ ≏ ]] <r1<t1(0,2),l>> [r1[b3 ≏ ≏ ]] <r1<t0(2,0)>> !{r1{b1 ≏ ≡ }}")
+        try p.assert("r1: {r1{b1 ≏ ≡ 🔵🚂1 }} <r1<t0>> [r1[b2 ≏ ≏ ]] <r1<t1(0,2),l>> [r1[b3 ≏ ≏ ]] <r1<t0(2,0)>> !{r1{b1 ≡ ≏ }}")
         try p.assert("r1: {r1{b1 ≏ ≏ }} <r1<t0,l>> [r1[b2 ≡ 🔵🚂1 ≏ ]] <r1<t1(0,2),l>> [r1[b3 ≏ ≏ ]] <r1<t0(2,0),l>> !{r1{b1 ≏ ≏}}")
         try p.assert("r1: {r1{b1 ≏ ≏ }} <r1<t0,l>> [r1[b2 ≏ ≡ 🔵🚂1 ]] <r1<t1(0,2),l>> [r1[b3 ≏ ≏ ]] <r1<t0(2,0),l>> !{r1{b1 ≏ ≏ }}")
         try p.assert("r1: {r1{b1 ≏ ≏ }} <r1<t0,l>> [r1[b2 ≏ ≏ 🔵🚂1 ]] <r1<t1(0,2),l>> [r1[b3 ≏ ≏ ]] <r1<t0(2,0),l>> !{r1{b1 ≏ ≏ }}")
@@ -305,7 +305,7 @@ class FixedRoutingTests: BTTestCase {
 
         let t1 = layout.trains[0]
         // That way, the train always needs one occupied block reserved to account for its length
-        t1.locomotiveLength = 20
+        t1.locomotive!.length = 20
         t1.wagonsLength = 130
         t1.maxNumberOfLeadingReservedBlocks = 1
 
@@ -340,7 +340,7 @@ class FixedRoutingTests: BTTestCase {
 
         let t1 = layout.trains[0]
         // That way, the train always needs one occupied block reserved to account for its length
-        t1.locomotiveLength = 20
+        t1.locomotive!.length = 20
         t1.wagonsLength = 120
         t1.maxNumberOfLeadingReservedBlocks = 1
         
@@ -754,7 +754,7 @@ class FixedRoutingTests: BTTestCase {
         p.layoutController.restartTimerFired(layout.trains[0])
         p.layoutController.waitUntilSettled()
 
-        XCTAssertTrue(p.train.speed.requestedKph > 0)
+        XCTAssertTrue(p.train.speed!.requestedKph > 0)
         
         // Assert that the train has restarted and is moving in the correct direction
         try p.assert("2: {s1 ≏ } <r0<t1(2,0),s>> <r0<t2(1,0),s>> [r0[b1 ≏]] <t3> [b2 ≏ ] <t4(1,0)> [b3 ≏ ≏ ] <t5> <t6> {r0{s2 ≏ 🔵🚂0 }} <r0<t1(1,0),s>> <r0<t2(1,0),s>> [r0[b1 ≏]] <t3> [b2 ≏ ] <t4(1,0)> [b3 ≏ ≏ ] <t5> <t6(0,2)> {s1 ≏ }")
@@ -911,7 +911,7 @@ class FixedRoutingTests: BTTestCase {
         try p.prepare(routeID: "r1", trainID: "0", fromBlockId: s1.uuid)
 
         // Artificially modify the distance of the last feedback of block "b1" in order for it to be equal to the braking distance to stop the train.
-        let d = LayoutSpeed(layout: layout).distanceNeededToChangeSpeed(ofTrain: p.train, fromSpeed: LayoutFactory.DefaultBrakingSpeed, toSpeed: 0)
+        let d = try LayoutSpeed(layout: layout).distanceNeededToChangeSpeed(ofTrain: p.train, fromSpeed: LayoutFactory.DefaultBrakingSpeed, toSpeed: 0)
         b1.feedbacks[1].distance = b1.length! - d.distance
 
         layout.strictRouteFeedbackStrategy = false
@@ -923,12 +923,12 @@ class FixedRoutingTests: BTTestCase {
         try p.assert("r1: {r0{s1 🟢🚂0 ≏ ≏ }} <r0<t1{sr}(0,1),s>> <r0<t2{sr}(0,1),s>> [r0[b1 ≏ ≏ ]]")
         try p.assert("r1: {s1 ≏ ≏ } <t1{sr}(0,1),s> <t2{sr}(0,1),s> [r0[b1 ≡ 🟡15🚂0 ≏ ]]")
         
-        XCTAssertEqual(p.train.speed.actualKph, 15)
+        XCTAssertEqual(p.train.speed!.actualKph, 15)
         XCTAssertEqual(p.train.state, .braking)
         XCTAssertEqual(p.train.scheduling, .managed)
         
         try p.assert("r1: {s1 ≏ ≏ } <t1{sr}(0,1),s> <t2{sr}(0,1),s> [r0[b1 ≏ ≡ 🔴🚂0 ]]")
-        XCTAssertEqual(p.train.speed.actualKph, 0)
+        XCTAssertEqual(p.train.speed!.actualKph, 0)
         XCTAssertEqual(p.train.state, .stopped)
         XCTAssertEqual(p.train.scheduling, .unmanaged)
     }
@@ -954,7 +954,7 @@ class FixedRoutingTests: BTTestCase {
         p.stop()
         p.layoutController.waitUntilSettled()
 
-        XCTAssertEqual(p.train.speed.actualKph, LayoutFactory.DefaultMaximumSpeed)
+        XCTAssertEqual(p.train.speed!.actualKph, LayoutFactory.DefaultMaximumSpeed)
         XCTAssertEqual(p.train.state, .running)
         XCTAssertEqual(p.train.scheduling, .stopManaged)
         
@@ -962,7 +962,7 @@ class FixedRoutingTests: BTTestCase {
         p.stop()
         p.layoutController.waitUntilSettled()
 
-        XCTAssertEqual(p.train.speed.actualKph, 0)
+        XCTAssertEqual(p.train.speed!.actualKph, 0)
         XCTAssertEqual(p.train.state, .stopped)
         XCTAssertEqual(p.train.scheduling, .unmanaged)
 
@@ -1015,7 +1015,7 @@ class FixedRoutingTests: BTTestCase {
         let p = Package(layout: layout)
         try p.prepare(routeID: route.id.uuid, trainID: train.id.uuid, fromBlockId: s3.id.uuid, position: .start, direction: .previous)
         
-        train.locomotiveLength = 22
+        train.locomotive!.length = 22
         train.wagonsLength = 0
         layout.strictRouteFeedbackStrategy = false
         

@@ -48,13 +48,13 @@ final class TrainController: TrainControlling, CustomStringConvertible {
             train.state = newValue
         }
     }
-    
-    var speed: TrainSpeed.UnitKph {
+        
+    var speed: SpeedKph {
         get {
-            train.speed.actualKph
+            train.locomotive?.speed.actualKph ?? 0
         }
         set {
-            train.speed.actualKph = newValue
+            train.locomotive?.speed.actualKph = newValue
         }
     }
     
@@ -114,8 +114,8 @@ final class TrainController: TrainControlling, CustomStringConvertible {
         self.layoutSpeed = LayoutSpeed(layout: layout)
     }
     
-    func reservedBlocksLengthEnough(forSpeed speed: TrainSpeed.UnitKph) -> Bool {
-        return layoutSpeed.isBrakingDistanceRespected(train: train, speed: speed)
+    func reservedBlocksLengthEnough(forSpeed speed: SpeedKph) throws -> Bool {
+        return try layoutSpeed.isBrakingDistanceRespected(train: train, speed: speed)
     }
     
     func updatePosition(with feedback: Feedback) throws -> Bool {
@@ -175,7 +175,7 @@ final class TrainController: TrainControlling, CustomStringConvertible {
     }
 
     private func updateAutomaticRoute(for train: Train, layout: Layout) throws -> Bool {
-        let result = try layout.automaticRouting.updateAutomaticRoute(for: train.id)
+        let result = try layout.updateAutomaticRoute(for: train.id)
         switch result {
         case .success(let route):
             BTLogger.router.debug("\(train, privacy: .public): generated route is \(route.steps.debugDescription, privacy: .public)")
@@ -192,8 +192,8 @@ final class TrainController: TrainControlling, CustomStringConvertible {
         try reservation.removeLeadingBlocks(train: train)
     }
     
-    func adjustSpeed(stateChanged: Bool) {
-        let desiredKph: TrainSpeed.UnitKph?
+    func adjustSpeed(stateChanged: Bool) throws {
+        let desiredKph: SpeedKph?
         if stateChanged {
             switch train.state {
             case .running:
@@ -214,17 +214,17 @@ final class TrainController: TrainControlling, CustomStringConvertible {
         }
         
         if let desiredKph = desiredKph {
-            let requestedKph = min(desiredKph, layoutSpeed.maximumSpeedAllowed(train: train))
-            if requestedKph != train.speed.requestedKph {
+            let requestedKph = min(desiredKph, try layoutSpeed.maximumSpeedAllowed(train: train))
+            if requestedKph != train.locomotive?.speed.requestedKph {
                 BTLogger.speed.debug("\(self.train, privacy: .public): controller adjusts speed to \(requestedKph)")
-                layoutController.setTrainSpeed(train, requestedKph)
+                try layoutController.setTrainSpeed(train, requestedKph)
             }
         }
     }
  
-    func stopImmediately() {
+    func stopImmediately() throws {
         BTLogger.speed.debug("\(self.train, privacy: .public): stop immediately")
-        layoutController.setTrainSpeed(train, 0)
+        try layoutController.setTrainSpeed(train, 0)
     }
     
     // MARK: --

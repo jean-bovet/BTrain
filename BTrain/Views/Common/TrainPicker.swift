@@ -30,7 +30,7 @@ struct TrainPicker: View {
             ForEach(trains, id:\.self) { train in
                 HStack {
                     Text(train.name)
-                    if let image = doc.trainIconManager.icon(for: train.id)?.copy(size: iconSize) {
+                    if let loc = train.locomotive, let image = doc.locomotiveIconManager.icon(for: loc.id)?.copy(size: iconSize) {
                         Image(nsImage: image)
                     } else {
                         Image(nsImage: NSImage(color: .windowBackgroundColor, size: iconSize))

@@ -14,7 +14,7 @@ import SwiftUI
 
 struct TrainControlMoveSheet: View {
     let layout: Layout
-    let controller: LayoutController
+    let doc: LayoutDocument
     
     // Optional information resulting from dragging the train on the switchboard
     var trainDragInfo: SwitchBoard.State.TrainDragInfo?
@@ -111,7 +111,7 @@ struct TrainControlMoveSheet: View {
                         if let selectedBlock = blockId {
                             let routeId = Route.automaticRouteId(for: train.id)
                             let destination = Destination(selectedBlock, direction: direction)
-                            try controller.start(routeID: routeId, trainID: train.id, destination: destination)
+                            try doc.start(train: train.id, withRoute: routeId, destination: destination)
                         }
                         errorStatus = nil
                         self.presentationMode.wrappedValue.dismiss()
@@ -119,7 +119,7 @@ struct TrainControlMoveSheet: View {
                         errorStatus = error.localizedDescription
                     }
                 }
-                .disabled(blockId == nil || routeDescription == nil)
+                .disabled(blockId == nil || routeDescription == nil || !doc.power)
                 .keyboardShortcut(.defaultAction)
             }.padding([.top])
         }
@@ -189,7 +189,7 @@ struct TrainControlMoveSheet_Previews: PreviewProvider {
     static let doc = LayoutDocument(layout: LayoutLoop2().newLayout())
     
     static var previews: some View {
-        TrainControlMoveSheet(layout: doc.layout, controller: doc.layoutController, train: doc.layout.trains[0])
+        TrainControlMoveSheet(layout: doc.layout, doc: doc, train: doc.layout.trains[0])
     }
     
 }

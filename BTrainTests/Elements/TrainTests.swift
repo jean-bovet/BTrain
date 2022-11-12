@@ -21,8 +21,6 @@ class TrainTests: XCTestCase {
     func testCodable() throws {
         let t1 = Train(uuid: "1")
         t1.name = "Rail 2000"
-        t1.address = 0x4001
-        t1.speed.requestedKph = 100
         t1.routeStepIndex = 1
         t1.position = 7
         t1.blockId = Identifier<Block>(uuid: "111")
@@ -36,10 +34,6 @@ class TrainTests: XCTestCase {
         
         XCTAssertEqual(t1.id, t2.id)
         XCTAssertEqual(t1.name, t2.name)
-        XCTAssertEqual(t1.address, t2.address)
-        XCTAssertEqual(t1.speed.decoderType, t2.speed.decoderType)
-        XCTAssertEqual(t1.speed.requestedKph, 100)
-        XCTAssertEqual(t2.speed.requestedKph, 0) // When decoding a speed, it always is initialized back to 0 for security reason
         XCTAssertEqual(t1.routeStepIndex, t2.routeStepIndex)
         XCTAssertEqual(t1.position, t2.position)
         XCTAssertEqual(t1.blockId, t2.blockId)

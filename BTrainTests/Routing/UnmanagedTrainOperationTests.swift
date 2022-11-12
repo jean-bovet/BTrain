@@ -99,7 +99,7 @@ class UnmanagedTrainOperationTests: BTTestCase {
         b3.feedbacks[1].distance = 15
 
         let train = layout.trains[0]
-        train.locomotiveLength = 20
+        train.locomotive!.length = 20
         train.wagonsLength = 40
                 
         let p = try setup(layout: layout, fromBlockId: "b1", position: .end)
@@ -149,10 +149,11 @@ class UnmanagedTrainOperationTests: BTTestCase {
         let doc: LayoutDocument
         let layout: Layout
         let train: Train
+        let loc: Locomotive
         let asserter: LayoutAsserter
         let layoutController: LayoutController
 
-        func assertTrain(inBlock named: String, position: Int, speed: TrainSpeed.UnitKph) throws {
+        func assertTrain(inBlock named: String, position: Int, speed: SpeedKph) throws {
             let blockId = Identifier<Block>(uuid: named)
             guard let block = layout.block(for: blockId) else {
                 throw LayoutError.blockNotFound(blockId: blockId)
@@ -160,7 +161,7 @@ class UnmanagedTrainOperationTests: BTTestCase {
             
             XCTAssertEqual(block.trainInstance?.trainId, train.id)
             XCTAssertEqual(train.position, position)
-            XCTAssertEqual(train.speed.actualKph, speed, accuracy: 1)
+            XCTAssertEqual(loc.speed.actualKph, speed, accuracy: 1)
         }
         
         func assertTrain(notInBlock named: String) throws {
@@ -172,19 +173,19 @@ class UnmanagedTrainOperationTests: BTTestCase {
             XCTAssertNil(block.trainInstance)
         }
         
-        func setTrainSpeed(_ speed: TrainSpeed.UnitKph) {
-            let strain = doc.simulator.trains.first(where: { $0.train.id == train.id })!
-            let steps = train.speed.steps(for: speed)
+        func setTrainSpeed(_ speed: SpeedKph) {
+            let strain = doc.simulator.locomotives.first(where: { $0.loc.id == loc.id })!
+            let steps = loc.speed.steps(for: speed)
             strain.speed = steps
             doc.simulator.setTrainSpeed(train: strain)
             
             waitForSpeed(speed)
         }
                 
-        func waitForSpeed(_ speed: TrainSpeed.UnitKph) {
-            let steps = train.speed.steps(for: speed)
+        func waitForSpeed(_ speed: SpeedKph) {
+            let steps = loc.speed.steps(for: speed)
             BTTestCase.wait(for: {
-                abs(train.speed.actualSteps.value.distance(to: steps.value)) <= 1
+                abs(loc.speed.actualSteps.value.distance(to: steps.value)) <= 1
             }, timeout: 2.0)
         }
         
@@ -204,17 +205,17 @@ class UnmanagedTrainOperationTests: BTTestCase {
         layout.strictRouteFeedbackStrategy = true
 
         let train = layout.trains[0]
-        
+        let loc = train.locomotive!
         let doc = LayoutDocument(layout: layout)
 
         try doc.layoutController.setTrainToBlock(train, Identifier<Block>(uuid: fromBlockId), position: position, direction: direction)
         
-        XCTAssertEqual(train.speed.requestedKph, 0)
+        XCTAssertEqual(loc.speed.requestedKph, 0)
         XCTAssertEqual(train.scheduling, .unmanaged)
         XCTAssertEqual(train.state, .stopped)
 
         let asserter = LayoutAsserter(layout: layout, layoutController: doc.layoutController)
-        return Package(doc: doc, layout: layout, train: train, asserter: asserter, layoutController: doc.layoutController)
+        return Package(doc: doc, layout: layout, train: train, loc: loc, asserter: asserter, layoutController: doc.layoutController)
     }
 
 }

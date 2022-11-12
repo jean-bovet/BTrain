@@ -19,6 +19,7 @@ struct MainView: View {
 
     @ObservedObject var document: LayoutDocument
     
+    @State private var showNewWizard = false
     @State private var connectAlertShowing = false
     @State private var showDiagnosticsSheet = false
     @State private var showDiscoverLocomotiveConfirmation = false
@@ -36,6 +37,8 @@ struct MainView: View {
                 RouteListView(layout: document.layout)
             case .trains:
                 TrainListView(document: document, layout: document.layout)
+            case .locomotives:
+                LocomotiveListView(document: document, layout: document.layout)
             case .stations:
                 StationListView(layout: document.layout)
             case .blocks:
@@ -44,8 +47,6 @@ struct MainView: View {
                 TurnoutListView(doc: document, layout: document.layout)
             case .feedback:
                 FeedbackEditListView(doc: document, layout: document.layout, layoutController: document.layoutController)
-            case .speed:
-                TrainSpeedMeasurementsView(document: document, layout: document.layout)
             case .cs3:
                 CS3DebuggerView(doc: document)
             }
@@ -59,7 +60,7 @@ struct MainView: View {
         .onChange(of: document.discoverLocomotiveConfirmation, perform: { v in
             if document.discoverLocomotiveConfirmation {
                 if document.layout.trains.isEmpty {
-                    document.discoverLocomotives(merge: false)
+                    document.locomotiveDiscovery.discover(merge: false)
                 } else {
                     showDiscoverLocomotiveConfirmation.toggle()
                 }
@@ -67,6 +68,9 @@ struct MainView: View {
             }
         })
         .onAppear {
+            if document.newDocument {
+                showNewWizard.toggle()
+            }
             if autoConnectSimulator {
                 document.connectToSimulator(enable: autoEnableSimulator)
             }
@@ -79,13 +83,16 @@ struct MainView: View {
         }.sheet(isPresented: $showDiagnosticsSheet) {
             DiagnosticsSheet(layout: document.layout, options: .all)
                 .padding()
+        }.sheet(isPresented: $showNewWizard) {
+            NewLayoutWizardView(document: document)
+                .padding()
         }.alert("Are you sure you want to change the current list of locomotives with the locomotives definition from the Central Station?", isPresented: $showDiscoverLocomotiveConfirmation) {
             Button("Cancel", role: .cancel) { }
             Button("Download & Merge") {
-                document.discoverLocomotives(merge: true)
+                document.locomotiveDiscovery.discover(merge: true)
             }
             Button("Download & Replace", role: .destructive) {
-                document.discoverLocomotives(merge: false)
+                document.locomotiveDiscovery.discover(merge: false)
             }
         }
     }

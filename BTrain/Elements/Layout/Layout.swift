@@ -14,31 +14,49 @@ import Foundation
 import OrderedCollections
 import SwiftUI
 
-// A layout is an object that represents an actual train layout,
-// with blocks, turnouts, feedbacks, trains and transitions
-// between the blocks and turnouts. It also includes routes
-// that can be assigned to train.
-//
-// This class is the only one that should mutate the element of the
-// layout in order to preserve consistency and code maintenance.
+/// A layout is an object that represents a train layout.
+///
+/// A train layout consists of the following elements:
+/// - blocks
+/// - turnouts
+/// - feedbacks
+/// - train
+/// - locomotive
+/// - routes
+///
+/// Note: this class is the only one that should mutate the element of the
+/// layout in order to preserve consistency and code maintenance.
 final class Layout: Element, ObservableObject {
-        
+    
+    /// The unique identifier of this layout
     let id: Identifier<Layout>
     
+    /// The name of the layout
     var name = ""
-
-    @Published var newLayoutWizardExecuted = false
     
+    /// A map of blocks
     @Published var blockMap = OrderedDictionary<Identifier<Block>, Block>()
-
+    
+    /// A map of station.
+    ///
+    /// A station represents one or more blocks.
     @Published var stationMap = OrderedDictionary<Identifier<Station>, Station>()
-
+    
+    /// An array of feedbacks
     @Published var feedbacks = [Feedback]()
     
+    /// An array of turnouts
     @Published var turnouts = [Turnout]()
     
+    /// An array of trains
     @Published var trains = [Train]()
     
+    /// A map of locomotives
+    @Published var locomotiveMap = OrderedDictionary<Identifier<Locomotive>, Locomotive>()
+    
+    /// An array of transitions.
+    ///
+    /// A transition links two blocks or turnouts together.
     @Published var transitions = [Transition]()
     
     /// Array of optional control points that the user has defined for a particular transition. By default, this array is empty
@@ -47,17 +65,20 @@ final class Layout: Element, ObservableObject {
     /// control points are stored in this array.
     @Published var controlPoints = [ControlPoint]()
 
-    // Note: automatic route have a special ID that follows this pattern:
-    // "automatic-<trainId>"
+    
+    /// An array of routes.
+    ///
+    /// A route can be defined by the users (fixed) or generated automatically (automatic).
+    /// Automatic routes have a special ID that follows the pattern `automatic-<trainId>`
     @Published var routes = [Route]()
             
-    // True if the automatic routes are created
-    // using a random path or false if they are
-    // created using the first-search approach which
-    // always give the same result - useful for unit tests.
+    /// True if the automatic routes are created
+    /// using a random path or false if they are
+    /// created using the first-search approach which
+    /// always give the same result - useful for unit tests.
     @AppStorage(SettingsKeys.automaticRouteRandom) var automaticRouteRandom = true
 
-    // True if unexpected feedback should be detected and the layout stopped.
+    /// True if unexpected feedback should be detected and the layout stopped.
     @AppStorage(SettingsKeys.detectUnexpectedFeedback) var detectUnexpectedFeedback = true
     
     // Defines the route feedback strategy:
@@ -77,11 +98,7 @@ final class Layout: Element, ObservableObject {
     
     // Non-nil when a layout runtime error occurred
     @Published var runtimeError: String?
-    
-    lazy var automaticRouting: AutomaticRouting = {
-        AutomaticRouting(layout: self)
-    }()
-    
+        
     // MARK: Init
     
     convenience init(uuid: String = UUID().uuidString) {
@@ -93,7 +110,7 @@ final class Layout: Element, ObservableObject {
     }
 
     func apply(other: Layout) {
-        self.blockMap = other.blockMap
+        self.blocks = other.blocks
         self.stations = other.stations
         self.feedbacks = other.feedbacks
         self.turnouts = other.turnouts
@@ -101,6 +118,7 @@ final class Layout: Element, ObservableObject {
         self.controlPoints = other.controlPoints
         self.routes = other.routes
         self.trains = other.trains
+        self.locomotives = other.locomotives
     }
     
     func trainsThatCanBeStarted() -> [Train] {
@@ -127,41 +145,37 @@ final class Layout: Element, ObservableObject {
 extension Layout: Codable {
     
     enum CodingKeys: CodingKey {
-      case id, name, newLayoutWizardExecuted, blocks, stations, feedbacks, turnouts, trains, routes, transitions, controlPoints
+      case id, name, blocks, stations, feedbacks, turnouts, trains, locomotives, routes, transitions, controlPoints
     }
 
     convenience init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         self.init(id: try container.decode(Identifier<Layout>.self, forKey: CodingKeys.id))
         self.name = try container.decode(String.self, forKey: CodingKeys.name)
-        self.newLayoutWizardExecuted = try container.decodeIfPresent(Bool.self, forKey: CodingKeys.newLayoutWizardExecuted) ?? true
         self.blocks = try container.decode([Block].self, forKey: CodingKeys.blocks)
-        self.stations = try container.decodeIfPresent([Station].self, forKey: CodingKeys.stations) ?? []
+        self.stations = try container.decode([Station].self, forKey: CodingKeys.stations)
         self.feedbacks = try container.decode([Feedback].self, forKey: CodingKeys.feedbacks)
         self.turnouts = try container.decode([Turnout].self, forKey: CodingKeys.turnouts)
         self.trains = try container.decode([Train].self, forKey: CodingKeys.trains)
+        self.locomotives = try container.decode([Locomotive].self, forKey: CodingKeys.locomotives)
         self.routes = try container.decode([Route].self, forKey: CodingKeys.routes)
         self.transitions = try container.decode([Transition].self, forKey: CodingKeys.transitions)
-        self.controlPoints = try container.decodeIfPresent([ControlPoint].self, forKey: CodingKeys.controlPoints) ?? []
+        self.controlPoints = try container.decode([ControlPoint].self, forKey: CodingKeys.controlPoints)
     }
     
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(id, forKey: CodingKeys.id)
         try container.encode(name, forKey: CodingKeys.name)
-        try container.encode(newLayoutWizardExecuted, forKey: CodingKeys.newLayoutWizardExecuted)
         try container.encode(blocks, forKey: CodingKeys.blocks)
         try container.encode(stations, forKey: CodingKeys.stations)
         try container.encode(feedbacks, forKey: CodingKeys.feedbacks)
         try container.encode(turnouts, forKey: CodingKeys.turnouts)
         try container.encode(trains, forKey: CodingKeys.trains)
+        try container.encode(locomotives, forKey: CodingKeys.locomotives)
         try container.encode(fixedRoutes, forKey: CodingKeys.routes)
         try container.encode(transitions, forKey: CodingKeys.transitions)
         try container.encode(controlPoints, forKey: CodingKeys.controlPoints)
-    }
-    
-    func restore(from data: Data) throws {
-        apply(other: try Layout.decode(from: data))
     }
     
     static func decode(from data: Data) throws -> Layout {

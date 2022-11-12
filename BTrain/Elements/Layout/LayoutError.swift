@@ -20,6 +20,8 @@ enum LayoutError: Error {
     case trainNotFoundInRoute(train: Train, route: Route)
     case trainNotAssignedToARoute(train: Train)
     
+    case locomotiveNotAssignedToTrain(train: Train)
+
     case headWagonNotFound(train: Train)
     case invalidHeadWagonConfiguration(train: Train)
     
@@ -44,7 +46,7 @@ enum LayoutError: Error {
     
     case unexpectedFeedback(feedback: Feedback)
     
-    case noTransition(fromBlockId: Identifier<Block>, toBlockId: Identifier<Block>)
+    case noTransition(fromBlock: Block, toBlock: Block)
     case lastTransitionToBlock(transition: Identifier<Transition>, blockId: Identifier<Block>)
     case alwaysOneAndOnlyOneTransition
     case invalidTransition(transition: ITransition)
@@ -93,8 +95,8 @@ extension LayoutError: LocalizedError {
         case .unexpectedFeedback(feedback: let feedback):
             return "Unexpected feedback \(feedback.name) detected"
 
-        case .noTransition(fromBlockId: let fromBlockId, toBlockId: let toBlockId):
-            return "No transition found from block \(fromBlockId) to block \(toBlockId)"
+        case .noTransition(fromBlock: let fromBlock, toBlock: let toBlock):
+            return "No transition found from block \(fromBlock) to block \(toBlock)"
         case .lastTransitionToBlock(transition: let transition, blockId: let blockId):
             return "The last transition \(transition) should be to block \(blockId)"
         case .cannotReserveBlock(block: let block, train: let train, reserved: let reserved):
@@ -151,6 +153,9 @@ extension LayoutError: LocalizedError {
             return "Invalid transition \(transition)"
         case .shapeNotFoundForSocket(socket: let socket):
             return "Unable to find a shape for socket \(socket)"
+            
+        case .locomotiveNotAssignedToTrain(train: let train):
+            return "Train \(train.name) does not have a locomotive assigned to it"
         }
     }
 }

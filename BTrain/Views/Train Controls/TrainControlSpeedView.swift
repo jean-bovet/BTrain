@@ -17,22 +17,30 @@ struct TrainControlSpeedView: View {
     @ObservedObject var document: LayoutDocument
 
     @ObservedObject var train: Train
-    @ObservedObject var speed: TrainSpeed
-    
+    @ObservedObject var loc: Locomotive
+    @ObservedObject var speed: LocomotiveSpeed
+        
+    @Binding var trainRuntimeError: String?
+
     var body: some View {
         VStack(alignment: .leading) {
             HStack {
-                Button(train.directionForward ? "􀄫" : "􀄪") {
-                    document.layoutController.setLocomotiveDirection(train, forward: !train.directionForward)
+                Button(loc.directionForward ? "􀄫" : "􀄪") {
+                    document.layoutController.setLocomotiveDirection(loc, forward: !loc.directionForward)
                 }
                 .buttonStyle(.borderless)
                 .help("Change Direction of Travel")
-                                
+
                 SpeedSlider(speed: speed) {
                     // Note: force the train speed to change because the SpeedSlider already has changed
                     // the requestedKph during the drag of the knob, which prevents the speed from changing
                     // because `setTrainSpeed` checks if the requestedKph is different from its already established value.
-                    document.layoutController.setTrainSpeed(train, speed.requestedKph)
+                    do {
+                        trainRuntimeError = nil
+                        try document.layoutController.setTrainSpeed(train, speed.requestedKph)
+                    } catch {
+                        trainRuntimeError = error.localizedDescription
+                    }
                 }
             }.disabled(!document.connected || train.blockId == nil)
         }
@@ -47,6 +55,6 @@ struct TrainControlView_Previews: PreviewProvider {
     }()
 
     static var previews: some View {
-        TrainControlSpeedView(document: doc, train: doc.layout.trains[0], speed: doc.layout.trains[0].speed)
+        TrainControlSpeedView(document: doc, train: doc.layout.trains[0], loc: doc.layout.locomotives[0], speed: doc.layout.locomotives[0].speed, trainRuntimeError: .constant(nil))
     }
 }

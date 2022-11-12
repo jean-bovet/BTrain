@@ -16,12 +16,19 @@ import SwiftUI
 struct BTrainApp: App {
     
     @Environment(\.openURL) var openURL
-
+    
+    /// Returns a new document instance
+    var newDocument: LayoutDocument {
+        let doc = LayoutDocument(layout: Layout(uuid: UUID().uuidString))
+        doc.newDocument = true
+        return doc
+    }
+    
     var body: some Scene {
         DocumentGroup {
-            LayoutDocument(layout: Layout(uuid: "new-layout"))
+            newDocument
         } editor: { configuration in
-            DocumentView(document: configuration.document, layout: configuration.document.layout)
+            MainView(document: configuration.document)
         }
         .commands {
             MenuCommands()

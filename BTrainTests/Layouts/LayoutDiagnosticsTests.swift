@@ -23,13 +23,13 @@ class LayoutDiagnosticsTests: XCTestCase {
     }
 
     func testTurnoutMissingTransition() throws {
-        let layout =  LayoutIncomplete().newLayout()
+        let layout = LayoutIncomplete().newLayout()
         let diag = LayoutDiagnostic(layout: layout)
         let errors = try diag.check(.skipLengths)
-        XCTAssertEqual(errors.count, 8)
+        XCTAssertEqual(errors.count, 9)
         
         let turnout = layout.turnouts[0]
-        XCTAssertEqual(errors[1], LayoutDiagnostic.DiagnosticError.turnoutMissingTransition(turnout: turnout, socket: turnout.socketName(turnout.socket0.socketId!)))
+        XCTAssertEqual(errors[0], LayoutDiagnostic.DiagnosticError.turnoutMissingTransition(turnout: turnout, socket: turnout.socketName(turnout.socket0.socketId!)))
     }
     
     func testTurnoutDuplicateAddress() throws {
@@ -52,18 +52,18 @@ class LayoutDiagnosticsTests: XCTestCase {
         XCTAssertEqual(errors.count, 2)
     }
 
-    func testTtrainDuplicateAddress() throws {
+    func testLocomotiveDuplicateAddress() throws {
         let layout = LayoutComplexLoop().newLayout()
         let diag = LayoutDiagnostic(layout: layout)
         var errors = [LayoutDiagnostic.DiagnosticError]()
-        diag.checkForDuplicateTrains(&errors)
+        diag.checkForDuplicateLocomotives(&errors)
         XCTAssertEqual(errors.count, 0)
         
-        let t0 = layout.trains[0]
-        let t1 = layout.trains[1]
+        let t0 = layout.locomotives[0]
+        let t1 = layout.locomotives[1]
 
         t0.address = t1.address
-        diag.checkForDuplicateTrains(&errors)
+        diag.checkForDuplicateLocomotives(&errors)
         XCTAssertEqual(errors.count, 1)
     }
 

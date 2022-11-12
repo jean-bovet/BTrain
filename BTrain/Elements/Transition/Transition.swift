@@ -49,19 +49,14 @@ final class Transition: Element, ITransition, CustomStringConvertible {
 
     let id: Identifier<Transition>
         
-    // Socket to the first element
     var a: Socket
     
-    // Socket to the second element
     var b: Socket
             
-    // Contains the train that has reserved this transition,
-    // or nil if no train has reserved it.
     var reserved: Identifier<Train>?
 
     var train: Identifier<Train>?
 
-    // Returns the inverse of this transition
     var reverse: ITransition {
         TransitionInverse(transition: self)
     }
@@ -172,6 +167,19 @@ final class TransitionInverse: ITransition, CustomStringConvertible {
     var reverse: ITransition {
         TransitionInverse(transition: self)
     }
+}
+
+extension Transition: Restorable {
+    
+    func restore(layout: Layout) {
+        if train == nil {
+            // Do not restore the reservation if the train does not belong to this transition.
+            // We do not want the user to see reservation upon opening a new document because
+            // the train is not actively running anymore.
+            reserved = nil
+        }
+    }
+
 }
 
 extension Transition: Codable {

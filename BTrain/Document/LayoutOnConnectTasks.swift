@@ -45,19 +45,19 @@ final class LayoutOnConnectTasks: ObservableObject {
     }
     
     private func queryLocomotivesDirection(completion: @escaping CompletionBlock) {
-        let trains = layout.trains.filter( { $0.enabled })
-        guard !trains.isEmpty else {
+        let locomotives = layout.locomotives.filter( { $0.enabled })
+        guard !locomotives.isEmpty else {
             completion()
             return
         }
 
         var completionCount = 0
-        for t in trains {
-            let command = Command.queryDirection(address: t.address, decoderType: t.decoder, descriptor: nil)
+        for loc in locomotives {
+            let command = Command.queryDirection(address: loc.address, decoderType: loc.decoder, descriptor: nil)
             interface.execute(command: command) {
                 DispatchQueue.main.async {
                     completionCount += 1
-                    if completionCount == trains.count {
+                    if completionCount == locomotives.count {
                         completion()
                     }
                 }

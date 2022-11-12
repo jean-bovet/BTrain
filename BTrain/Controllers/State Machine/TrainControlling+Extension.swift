@@ -15,21 +15,21 @@ import Foundation
 extension TrainControlling {
     
     /// Returns true if the train should stop in the current block
-    var shouldStopInBlock: Bool {
-        shouldStopInBlock(ignoreReservedBlocks: false)
+    func shouldStopInBlock() throws -> Bool {
+        try shouldStopInBlock(ignoreReservedBlocks: false)
     }
     
     /// Returns true if the train should stop in the current block because there is not enough
     /// reserved (and settled) blocks for it.
-    var shouldStopInBlockBecauseNotEnoughReservedBlocksLength: Bool {
-        !reservedBlocksLengthEnough(forSpeed: LayoutFactory.DefaultBrakingSpeed)
+    func shouldStopInBlockBecauseNotEnoughReservedBlocksLength() throws -> Bool {
+        try !reservedBlocksLengthEnough(forSpeed: LayoutFactory.DefaultBrakingSpeed)
     }
     
     /// Returns true if the train should stop in the current block
     /// - Parameter ignoreReservedBlocks: true to ignore the reserved blocks. For example, to allow a train to start,
     /// we need to ignore the reserved block because the train, which is stopped, doesn't have any reserved blocks yet.
     /// - Returns: true if the train should stop in the current block
-    func shouldStopInBlock(ignoreReservedBlocks: Bool) -> Bool {
+    func shouldStopInBlock(ignoreReservedBlocks: Bool) throws -> Bool {
         guard mode != .unmanaged else {
             return false
         }
@@ -55,7 +55,7 @@ extension TrainControlling {
         }
         
         if !ignoreReservedBlocks {
-            if shouldStopInBlockBecauseNotEnoughReservedBlocksLength {
+            if try shouldStopInBlockBecauseNotEnoughReservedBlocksLength() {
                 return true
             }
         }

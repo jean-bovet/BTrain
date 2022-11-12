@@ -36,7 +36,7 @@ enum LayoutControllerEvent: CustomStringConvertible {
     case directionChanged(Train)
     
     /// A train speed has changed
-    case speedChanged(Train, TrainSpeed.UnitKph)
+    case speedChanged(Train, SpeedKph)
 
     /// The position of a train changed because the user either removed or added manually a train to the layout
     case trainPositionChanged(Train)

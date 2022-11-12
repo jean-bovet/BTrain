@@ -92,8 +92,8 @@ struct CS3ReceivedMessageView_Previews: PreviewProvider {
     
     static let doc: LayoutDocument = {
         let doc = LayoutDocument(layout: LayoutComplex().newLayout())
-        let train = doc.layout.trains[0]
-        let command = Command.queryDirection(address: train.address, decoderType: train.decoder, descriptor: nil)
+        let loc = doc.layout.locomotives[0]
+        let command = Command.queryDirection(address: loc.address, decoderType: loc.decoder, descriptor: nil)
         if let (canMessage, _) = MarklinCANMessage.from(command: command), let mi = doc.interface as? MarklinInterface {
             mi.messages.append(canMessage)
         }

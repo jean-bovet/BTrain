@@ -33,7 +33,7 @@ class BTTestCase: XCTestCase {
         super.setUp()
         backup = UserDefaults.standard.dictionaryRepresentation()
         BaseTimeFactor = 0.0
-        previousSpeedRequestCount = TrainSpeedManager.globalRequestUUID
+        previousSpeedRequestCount = LocomotiveSpeedManager.globalRequestUUID
         LayoutController.memoryLeakCounter = 0
     }
     
@@ -42,8 +42,8 @@ class BTTestCase: XCTestCase {
         UserDefaults.standard.setValuesForKeys(backup)
         BaseTimeFactor = 1.0
         
-        let speedChangeCount = TrainSpeedManager.globalRequestUUID - previousSpeedRequestCount
-        print("Train Speed Change Count is \(TrainSpeedManager.globalRequestUUID) total, \(speedChangeCount) for this test")
+        let speedChangeCount = LocomotiveSpeedManager.globalRequestUUID - previousSpeedRequestCount
+        print("Train Speed Change Count is \(LocomotiveSpeedManager.globalRequestUUID) total, \(speedChangeCount) for this test")
         if let speedChangeRequestCeiling = speedChangeRequestCeiling {
             XCTAssertLessThanOrEqual(speedChangeCount, speedChangeRequestCeiling)
         }

@@ -383,7 +383,7 @@ extension LayoutStateMachineTests {
         XCTAssertEqual(actualHandledEvents, handledEvents)
     }
 
-    func assert(_ train: MockTrainController, _ state: StateMachine.TrainState, _ speed: TrainSpeed.UnitKph, reservedBlock: Bool = true, updatePositionCount: Int) {
+    func assert(_ train: MockTrainController, _ state: StateMachine.TrainState, _ speed: SpeedKph, reservedBlock: Bool = true, updatePositionCount: Int) {
         XCTAssertEqual(train.state, state)
         XCTAssertEqual(train.speed, speed)
         XCTAssertEqual(train.hasReservedBlocks, reservedBlock, "Reserved blocks do not match")

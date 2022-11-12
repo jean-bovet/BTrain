@@ -17,9 +17,14 @@ struct TrainControlListView: View {
     // Note: necessary to have the layout as a separate property in order for SwiftUI to detect changes
     @ObservedObject var layout: Layout
     @ObservedObject var document: LayoutDocument
+    
+    /// True to display only running trains
     @State private var filterRunningTrains = false
     
-    var trains: [Train] {
+    /// Set of trains that have been pinned by the user
+    @State private var pinnedTrainIds = Set<Identifier<Train>>()
+    
+    var filteredTrain: [Train] {
         layout.trains.filter { train in
             if filterRunningTrains {
                 return train.enabled && train.scheduling != .unmanaged
@@ -28,24 +33,48 @@ struct TrainControlListView: View {
             }
         }
     }
+
+    var pinnedTrains: [Train] {
+        filteredTrain.filter { train in
+            pinnedTrainIds.contains(train.id)
+        }
+    }
+    
+    var trains: [Train] {
+        filteredTrain.filter { train in
+            !pinnedTrainIds.contains(train.id)
+        }
+    }
+    
     var body: some View {
         if layout.trains.isEmpty {
-            Spacer()
             VStack {
-                Text("No Locomotives")
-                Button("􀈄 Download Locomotives") {
-                    document.discoverLocomotiveConfirmation.toggle()
-                }.disabled(!document.connected)
+                Text("No Trains")
+                Button("Add a Train") {
+                    document.selectedView = .trains
+                }
             }
-            Spacer()
         } else {
             VStack(spacing: 0) {
                 TrainControlActionsView(document: document, filterRunningTrains: $filterRunningTrains)
                     .padding()
                 List {
-                    ForEach(trains, id:\.self) { train in
-                        TrainControlContainerView(document: document, train: train)
+                    if pinnedTrains.count > 0 {
+                        ForEach(pinnedTrains, id:\.self) { train in
+                            TrainControlContainerView(document: document, train: train, pinnedTrainIds: $pinnedTrainIds)
+                            if train.id != pinnedTrains.last?.id {
+                                Divider()
+                            }
+                        }
                         Divider()
+                            .frame(height: 2)
+                            .overlay(.pink)
+                    }
+                    ForEach(trains, id:\.self) { train in
+                        TrainControlContainerView(document: document, train: train, pinnedTrainIds: $pinnedTrainIds)
+                        if train.id != trains.last?.id {
+                            Divider()
+                        }
                     }
                 }
             }
@@ -56,8 +85,14 @@ struct TrainControlListView: View {
 struct TrainControlListView_Previews: PreviewProvider {
     
     static let doc = LayoutDocument(layout: LayoutLoop2().newLayout())
+    static let emptyDoc = LayoutDocument(layout: Layout())
 
     static var previews: some View {
-        TrainControlListView(layout: doc.layout, document: doc)
+        Group {
+            TrainControlListView(layout: doc.layout, document: doc)
+        }
+        Group {
+            TrainControlListView(layout: emptyDoc.layout, document: emptyDoc)
+        }
     }
 }

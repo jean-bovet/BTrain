@@ -92,50 +92,13 @@ final class Train: Element, ObservableObject {
     
     // Name of the train
     @Published var name = ""
-    
-    // Runtime-information only. This is not stored and is only
-    // used to display transient information when the train
-    // is running in the layout.
-    @Published var runtimeInfo: String?
-    
-    // Address of the train
-    @Published var address: UInt32 = 0
-      
-    // The decoder type of this train
-    @Published var decoder: DecoderType = .MFX {
-        didSet {
-            speed.decoderType = decoder
-        }
-    }
-    
-    // Length of the locomotive (in cm)
-    @Published var locomotiveLength: Double?
+        
+    /// The locomotive assigned to this train or nil of no locomotive is assigned
+    @Published var locomotive: Locomotive?
     
     // Length of the wagons (in cm)
-    @Published var wagonsLength: Double?
+    @Published var wagonsLength: DistanceCm?
 
-    var length: Double? {
-        if let locomotiveLength = locomotiveLength {
-            if let wagonsLength = wagonsLength {
-                return locomotiveLength + wagonsLength
-            } else {
-                return locomotiveLength
-            }
-        } else {
-            return nil
-        }
-    }
-
-    // Speed of the locomotive
-    @Published var speed = TrainSpeed(kph: 0, decoderType: .MFX)
-
-    // Direction of travel of the locomotive
-    // Note: backward direction is not yet supported
-    @Published var directionForward = true
-    
-    /// True if the train can move in the backward direction
-    @Published var canMoveBackwards = false
-    
     // The route this train is associated with
     @Published var routeId: Identifier<Route>
     
@@ -246,52 +209,78 @@ final class Train: Element, ObservableObject {
         if let blockId = blockId {
             text += ", \(blockId)"
         }
-        text += ", \(directionForward ? "f" : "b")"
-        text += ", r=\(speed.requestedKph)kph"
-        text += ", a=\(speed.actualKph)kph"
+        if let directionForward = directionForward {
+            text += ", \(directionForward ? "f" : "b")"
+        }
+        if let speed = speed {
+            text += ", r=\(speed.requestedKph)kph"
+            text += ", a=\(speed.actualKph)kph"
+        }
         text += ")"
         return text
     }
     
-    convenience init(uuid: String = UUID().uuidString, name: String = "", address: UInt32 = 0, decoder: DecoderType = .MFX,
-                     locomotiveLength: Double? = nil, wagonsLength: Double? = nil, maxSpeed: TrainSpeed.UnitKph? = nil, maxNumberOfLeadingReservedBlocks: Int? = nil) {
-        self.init(id: Identifier(uuid: uuid), name: name, address: address, decoder: decoder,
-                  locomotiveLength: locomotiveLength, wagonsLength: wagonsLength, maxSpeed: maxSpeed, maxNumberOfLeadingReservedBlocks: maxNumberOfLeadingReservedBlocks)
+    convenience init(uuid: String = UUID().uuidString, name: String = "", wagonsLength: Double? = nil, maxSpeed: SpeedKph? = nil, maxNumberOfLeadingReservedBlocks: Int? = nil) {
+        self.init(id: Identifier(uuid: uuid), name: name, wagonsLength: wagonsLength, maxSpeed: maxSpeed, maxNumberOfLeadingReservedBlocks: maxNumberOfLeadingReservedBlocks)
     }
     
-    init(id: Identifier<Train>, name: String, address: UInt32, decoder: DecoderType = .MFX,
-         locomotiveLength: Double? = nil, wagonsLength: Double? = nil, maxSpeed: TrainSpeed.UnitKph? = nil, maxNumberOfLeadingReservedBlocks: Int? = nil) {
+    init(id: Identifier<Train>, name: String, wagonsLength: Double? = nil, maxSpeed: SpeedKph? = nil, maxNumberOfLeadingReservedBlocks: Int? = nil) {
         self.id = id
         self.routeId = Route.automaticRouteId(for: id)
         self.name = name
-        self.address = address
-        self.locomotiveLength = locomotiveLength
         self.wagonsLength = wagonsLength
-        self.speed.maxSpeed = maxSpeed ?? self.speed.maxSpeed
         self.maxNumberOfLeadingReservedBlocks = maxNumberOfLeadingReservedBlocks ?? self.maxNumberOfLeadingReservedBlocks
     }
+    
+    /// This variable is serialized instead of ``locomotive`` in order to avoid duplication in the JSON graph.
+    /// When deserializing a locomotive, this variable is going to be used to restore the actual ``locomotive`` from the layout.
+    private var locomotiveId: Identifier<Locomotive>?
+
+}
+
+extension Train {
+    
+    var speed: LocomotiveSpeed? {
+        locomotive?.speed
+    }
+    
+    var length: Double? {
+        let ll = locomotive?.length ?? 0
+        let wl = wagonsLength ?? 0
+        return ll + wl
+    }
+
+    var directionForward: Bool? {
+        locomotive?.directionForward
+    }
+}
+
+extension Train: Restorable {
+    
+    func restore(layout: Layout) {
+        assert(locomotive == nil)
+        locomotive = layout.locomotive(for: locomotiveId)
+    }
+
 }
 
 extension Train: Codable {
     
     enum CodingKeys: CodingKey {
-      case id, enabled, name, address, locomotiveLength, wagonsLength, speed, acceleration, stopSettleDelay, decoder, direction, route, routeIndex, block, position, maxLeadingBlocks, blocksToAvoid, turnoutsToAvoid
+        case id, enabled, name, locomotive, wagonsLength, route, routeIndex, block, position, maxLeadingBlocks, blocksToAvoid, turnoutsToAvoid
     }
 
     convenience init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         let id = try container.decode(Identifier<Train>.self, forKey: CodingKeys.id)
         let name = try container.decode(String.self, forKey: CodingKeys.name)
-        let address = try container.decode(UInt32.self, forKey: CodingKeys.address)
 
-        self.init(id: id, name: name, address: address)
+        self.init(id: id, name: name)
         
+        self.locomotiveId = try container.decodeIfPresent(Identifier<Locomotive>.self, forKey: CodingKeys.locomotive)
+
         self.enabled = try container.decodeIfPresent(Bool.self, forKey: CodingKeys.enabled) ?? true
-        self.decoder = try container.decode(DecoderType.self, forKey: CodingKeys.decoder)
-        self.locomotiveLength = try container.decodeIfPresent(Double.self, forKey: CodingKeys.locomotiveLength)
         self.wagonsLength = try container.decodeIfPresent(Double.self, forKey: CodingKeys.wagonsLength)
-        self.speed = try container.decode(TrainSpeed.self, forKey: CodingKeys.speed)
-        self.directionForward = try container.decodeIfPresent(Bool.self, forKey: CodingKeys.direction) ?? true
         self.routeId = try container.decodeIfPresent(Identifier<Route>.self, forKey: CodingKeys.route) ?? Route.automaticRouteId(for: id)
         self.routeStepIndex = try container.decode(Int.self, forKey: CodingKeys.routeIndex)
         self.blockId = try container.decodeIfPresent(Identifier<Block>.self, forKey: CodingKeys.block)
@@ -306,12 +295,8 @@ extension Train: Codable {
         try container.encode(id, forKey: CodingKeys.id)
         try container.encode(enabled, forKey: CodingKeys.enabled)
         try container.encode(name, forKey: CodingKeys.name)
-        try container.encode(address, forKey: CodingKeys.address)
-        try container.encode(decoder, forKey: CodingKeys.decoder)
+        try container.encode(locomotive?.id, forKey: CodingKeys.locomotive)
         try container.encode(wagonsLength, forKey: CodingKeys.wagonsLength)
-        try container.encode(locomotiveLength, forKey: CodingKeys.locomotiveLength)
-        try container.encode(speed, forKey: CodingKeys.speed)
-        try container.encode(directionForward, forKey: CodingKeys.direction)
         try container.encode(routeId, forKey: CodingKeys.route)
         try container.encode(routeStepIndex, forKey: CodingKeys.routeIndex)
         try container.encode(blockId, forKey: CodingKeys.block)
@@ -321,14 +306,4 @@ extension Train: Codable {
         try container.encode(turnoutsToAvoid, forKey: CodingKeys.turnoutsToAvoid)
     }
 
-}
-
-extension Array where Element : Train {
-
-    func find(address: UInt32, decoder: DecoderType?) -> Element? {
-        self.first { train in
-            train.address.actualAddress(for: train.decoder) == address.actualAddress(for: decoder)
-        }
-    }
-    
 }

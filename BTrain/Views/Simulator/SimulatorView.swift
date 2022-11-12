@@ -33,8 +33,8 @@ struct SimulatorView: View {
             Divider()
             ScrollView {
                 VStack {
-                    ForEach(simulator.trains, id:\.self) { train in
-                        SimulatorTrainControlView(simulator: simulator, train: train)
+                    ForEach(simulator.locomotives, id:\.self) { train in
+                        SimulatorTrainControlView(simulator: simulator, simLoc: train)
                     }
                 }.disabled(!simulator.enabled)
             }

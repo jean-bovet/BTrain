@@ -16,7 +16,7 @@ struct StateMachine {
     
     enum LayoutEvent {
         case feedback(Feedback)
-        case speed(TrainControlling, TrainSpeed.UnitKph)
+        case speed(TrainControlling, SpeedKph)
         case turnout(Turnout)
         case direction(TrainControlling)
     }

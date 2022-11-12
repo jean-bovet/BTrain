@@ -87,7 +87,7 @@ class LayoutErrorTests: XCTestCase {
             _ = try layout.entryFeedback(from: b1, to: b2)
             XCTFail("Must throw an exception")
         } catch {
-            XCTAssertEqual(error.localizedDescription, "No transition found from block b1 to block b2")
+            XCTAssertEqual(error.localizedDescription, "No transition found from block 1 (b1) to block 2 (b2)")
         }
     }
 

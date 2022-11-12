@@ -26,19 +26,19 @@ class SimulatorViewTests: RootViewTests {
         XCTAssertFalse(trains.isEmpty)
         
         let t1 = trains[0]
-        t1.speed.accelerationProfile = .none
+        t1.speed!.accelerationProfile = .none
         t1.blockId = doc.layout.blockIds[0]
         doc.layout.blocks[0].trainInstance = .init(t1.id, .next)
         
-        XCTAssertTrue(t1.directionForward)
-        XCTAssertEqual(t1.speed.requestedKph, 0)
+        XCTAssertTrue(t1.directionForward!)
+        XCTAssertEqual(t1.speed!.requestedKph, 0)
             
         connectToSimulator(doc: doc)
         defer {
             disconnectFromSimulator(doc: doc)
         }
             
-        let simulatorTrain1 = doc.simulator.trains[0]
+        let simulatorTrain1 = doc.simulator.locomotives[0]
 
         // Ensure all the names of the train match.
         let sut = OverviewView(document: doc)
@@ -55,11 +55,11 @@ class SimulatorViewTests: RootViewTests {
         
         try toggleButton.tap()
         XCTAssertFalse(simulatorTrain1.directionForward)
-        wait(for: t1, directionForward: false)
+        wait(for: t1.locomotive!, directionForward: false)
         
         try toggleButton.tap()
         XCTAssertTrue(simulatorTrain1.directionForward)
-        wait(for: t1, directionForward: true)
+        wait(for: t1.locomotive!, directionForward: true)
         
         // Now tap on the direction of the first train in the train list and see if it is reflected in the simulator
         let trainSpeedView = try sut.inspect().find(TrainControlSpeedView.self)
@@ -70,7 +70,7 @@ class SimulatorViewTests: RootViewTests {
             t1.directionForward == false
         }, timeout: 0.1)
 
-        XCTAssertFalse(t1.directionForward)
+        XCTAssertFalse(t1.directionForward!)
         wait(for: simulatorTrain1, directionForward: false)
 
         try trainToggleButton.tap()
@@ -78,7 +78,7 @@ class SimulatorViewTests: RootViewTests {
             t1.directionForward == true
         }, timeout: 0.1)
 
-        XCTAssertTrue(t1.directionForward)
+        XCTAssertTrue(t1.directionForward!)
         wait(for: simulatorTrain1, directionForward: true)
 
         // Change the speed of the first train and see if it is reflected in the train list
@@ -87,24 +87,24 @@ class SimulatorViewTests: RootViewTests {
         try slider.callOnEditingChanged()
         // Note: for some reason, setting the slider.setValue(100)
         // does not set it to 100 but to its max value, 200 (maxSpeed)
-        wait(for: t1, kph: t1.speed.maxSpeed)
+        wait(for: t1.locomotive!, kph: t1.speed!.maxSpeed)
         
         try slider.setValue(0)
         try slider.callOnEditingChanged()
-        wait(for: t1, kph: 0)
+        wait(for: t1.locomotive!, kph: 0)
         
         // Same speed check but from the train list
         let trainSlider = try trainSpeedView.find(SpeedSlider.self).actualView()
         trainSlider.setRequestedKph(kph: 200)
-        XCTAssertEqual(t1.speed.requestedKph, t1.speed.maxSpeed)
-        wait(for: simulatorTrain1, steps: t1.speed.requestedSteps)
+        XCTAssertEqual(t1.speed!.requestedKph, t1.speed!.maxSpeed)
+        wait(for: simulatorTrain1, steps: t1.speed!.requestedSteps)
         
         trainSlider.setRequestedKph(kph: 0)
-        XCTAssertEqual(t1.speed.requestedKph, 0)
+        XCTAssertEqual(t1.speed!.requestedKph, 0)
         wait(for: simulatorTrain1, steps: .zero)
     }
         
-    func wait(for train: Train, directionForward: Bool) {
+    func wait(for train: Locomotive, directionForward: Bool) {
         wait(for: {
             train.directionForward == directionForward
         }, timeout: 2.0)
@@ -112,7 +112,7 @@ class SimulatorViewTests: RootViewTests {
         XCTAssertEqual(train.directionForward, directionForward)
     }
 
-    func wait(for train: SimulatorTrain, directionForward: Bool) {
+    func wait(for train: SimulatorLocomotive, directionForward: Bool) {
         wait(for: {
             train.directionForward == directionForward
         }, timeout: 2.0)
@@ -120,7 +120,7 @@ class SimulatorViewTests: RootViewTests {
         XCTAssertEqual(train.directionForward, directionForward)
     }
 
-    func wait(for train: Train, kph: TrainSpeed.UnitKph) {
+    func wait(for train: Locomotive, kph: SpeedKph) {
         wait(for: {
             train.speed.actualKph == kph
         }, timeout: 2.0)
@@ -128,7 +128,7 @@ class SimulatorViewTests: RootViewTests {
         XCTAssertEqual(train.speed.actualKph, kph)
     }
 
-    func wait(for train: SimulatorTrain, steps: SpeedStep) {
+    func wait(for train: SimulatorLocomotive, steps: SpeedStep) {
         wait(for: {
             train.speed == steps
         }, timeout: 2.0)

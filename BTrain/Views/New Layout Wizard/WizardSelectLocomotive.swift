@@ -31,7 +31,7 @@ struct WizardSelectLocomotive: View {
 
     var body: some View {
         VStack(alignment: .leading) {
-            Text("Select one ore more Locomotive:")
+            Text("Select one ore more locomotive:")
                 .font(.largeTitle)
                 .padding()
             ScrollView(.horizontal) {
@@ -44,11 +44,13 @@ struct WizardSelectLocomotive: View {
                                 .foregroundColor(backgroundColor)
                                 .shadow(radius: 5)
                             
-                            VStack {
-                                TrainIconView(trainIconManager: document.trainIconManager, train: train, size: .large, hideIfNotDefined: true)
-                                Text(train.name)
+                            if let loc = train.locomotive {
+                                VStack {
+                                    TrainIconView(locomotiveIconManager: document.locomotiveIconManager, loc: loc, size: .large, hideIfNotDefined: true)
+                                    Text(train.name)
+                                }
+                                .frame(width: previewSize.width, height: previewSize.height)
                             }
-                            .frame(width: previewSize.width, height: previewSize.height)
 
                             Rectangle()
                                 .frame(width: previewSize.width, height: previewSize.height)

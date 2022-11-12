@@ -50,7 +50,8 @@ class OverviewViewTests: RootViewTests {
     
     func testLayoutRuntimeError() throws {
         let text = "Unknown feedback detected!"
-        let sut = SwitchboardRuntimeErrorView(debugger: LayoutControllerDebugger(layout: Layout()), error: .constant(text))
+        let doc = newDocument()
+        let sut = SwitchboardRuntimeErrorView(debugger: LayoutControllerDebugger(layout: Layout()), switchboard: doc.switchboard, error: .constant(text))
         _ = try sut.inspect().find(button: "OK")
         _ = try sut.inspect().find(text: "\(text)")
     }

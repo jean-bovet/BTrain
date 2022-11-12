@@ -22,12 +22,17 @@ final class Package {
     let layoutController: LayoutController
     
     var trains = [Train]()
+    var locomotives = [Locomotive]()
     var routes = [Route]()
 
     var train: Train {
         trains[0]
     }
 
+    var loc: Locomotive {
+        locomotives[0]
+    }
+    
     var route: Route {
         routes[0]
     }
@@ -50,17 +55,19 @@ final class Package {
     func prepare(routeID: String, trainID: String, fromBlockId: String, position: Position = .start, direction: Direction = .next) throws {
         let train = layout.train(for: .init(uuid: trainID))!
         let route = layout.route(for: .init(uuid: routeID), trainId: .init(uuid: trainID))!
+        let loc = train.locomotive!
         
         train.routeId = route.id
         try layoutController.setTrainToBlock(train, Identifier<Block>(uuid: fromBlockId), position: position, direction: direction)
         
-        XCTAssertEqual(train.speed.requestedKph, 0)
+        XCTAssertEqual(loc.speed.requestedKph, 0)
         XCTAssertEqual(train.scheduling, .unmanaged)
         XCTAssertEqual(train.state, .stopped)
         
         try route.completePartialSteps(layout: layout, train: train)
         
         trains.append(train)
+        locomotives.append(loc)
         routes.append(route)
     }
     

@@ -36,26 +36,32 @@ extension LayoutController {
     
     func directionDidChange(address: UInt32, decoder: DecoderType?, direction: Command.Direction) {
         do {
-            if let train = layout.trains.find(address: address, decoder: decoder) {
-                BTLogger.debug("Direction changed to \(direction) for \(train.name)")
+            if let loc = layout.locomotives.find(address: address, decoder: decoder) {
+                BTLogger.debug("Direction changed to \(direction) for \(loc.name)")
+                var directionChanged = false
                 switch(direction) {
                 case .unchanged:
                     BTLogger.debug("Direction \(direction) for \(address.toHex())")
 
                 case .forward:
-                    if train.directionForward == false {
-                        train.directionForward = true
-                        try toggleTrainDirectionInBlock(train)
-                        runControllers(.directionChanged(train))
+                    if loc.directionForward == false {
+                        loc.directionForward = true
+                        directionChanged = true
                     }
                 case .backward:
-                    if train.directionForward {
-                        train.directionForward = false
-                        try toggleTrainDirectionInBlock(train)
-                        runControllers(.directionChanged(train))
+                    if loc.directionForward {
+                        loc.directionForward = false
+                        directionChanged = true
                     }
                 case .unknown:
                     BTLogger.error("Unknown direction \(direction) for \(address.toHex())")
+                }
+                
+                if directionChanged {
+                    if let train = layout.train(forLocomotive: loc) {
+                        try toggleTrainDirectionInBlock(train)
+                        runControllers(.directionChanged(train))
+                    }
                 }
             } else {
                 BTLogger.error("Unknown address \(address.toHex()) for change in direction event")

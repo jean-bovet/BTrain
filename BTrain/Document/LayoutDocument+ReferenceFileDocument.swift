@@ -39,7 +39,7 @@ extension LayoutDocument: ReferenceFileDocument {
             
         case LayoutDocument.packageType:
             self.init(layout: try file.layout())
-            trainIconManager.setIcons(try file.icons())
+            locomotiveIconManager.setIcons(try file.locomotiveIcons())
 
         default:
             throw CocoaError(.fileReadUnsupportedScheme)
@@ -65,13 +65,13 @@ extension LayoutDocument: ReferenceFileDocument {
             let iconDirectory = FileWrapper(directoryWithFileWrappers: [:])
             iconDirectory.preferredFilename = "icons"
             
-            for train in layout.trains {
-                if let icon = trainIconManager.icon(for: train.id) {
+            for loc in layout.locomotives {
+                if let icon = locomotiveIconManager.icon(for: loc.id) {
                     let key: String?
                     if let pngData = icon.pngData() {
-                        key = iconDirectory.addRegularFile(withContents: pngData, preferredFilename: "\(train.uuid).png")
+                        key = iconDirectory.addRegularFile(withContents: pngData, preferredFilename: "\(loc.uuid).png")
                     } else if let data = icon.tiffRepresentation(using: .lzw, factor: 0) {
-                        key = iconDirectory.addRegularFile(withContents: data, preferredFilename: "\(train.uuid).tiff")
+                        key = iconDirectory.addRegularFile(withContents: data, preferredFilename: "\(loc.uuid).tiff")
                     } else {
                         key = nil
                     }
@@ -79,7 +79,7 @@ extension LayoutDocument: ReferenceFileDocument {
                     // Update the FileWrapper inside the icon manager so it points to the most up to date FileWrapper definition
                     if let key = key {
                         if let fw = iconDirectory.fileWrappers?[key] {
-                            trainIconManager.setFileWrapper(fw, for: train.id)
+                            locomotiveIconManager.setFileWrapper(fw, for: loc.id)
                         } else {
                             BTLogger.error("Unable to retrieve the file wrapper for \(key)")
                             throw CocoaError(.fileWriteUnknown)
@@ -101,11 +101,31 @@ extension LayoutDocument: ReferenceFileDocument {
         guard contentType == .json else {
             throw CocoaError(.fileReadUnknown)
         }
-        return try Layout.decode(from: data)
+        let layout = try Layout.decode(from: data)
+        restore(layout: layout)
+        return layout
     }
-    
+
+    /// This method is called after the deserialization happened in order to restore
+    /// all the variables that depend on an object that has been serialized.
+    static private func restore(layout: Layout) {
+        layout.trains.forEach({$0.restore(layout: layout)})
+        layout.blocks.forEach({$0.restore(layout: layout)})
+        layout.turnouts.forEach({$0.restore(layout: layout)})
+        layout.transitions.forEach({$0.restore(layout: layout)})
+    }
+
     func snapshot(contentType: UTType) throws -> Data {
         try layout.encode()
     }
 
+}
+
+/// Declare that an element can be called after the layout has deserialized to perform any initialization needed
+protocol Restorable {
+    
+    /// This method is called after the layout has deserialized. The element can take any action needed, such
+    /// as restored default values, removing others, etc.
+    /// - Parameter layout: the layout
+    func restore(layout: Layout)
 }

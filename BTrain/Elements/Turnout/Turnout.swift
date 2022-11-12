@@ -63,7 +63,7 @@ final class Turnout: Element, ObservableObject {
     @Published var address2: CommandTurnoutAddress = .init(0, .MM)
 
     // Length of the turnout (in cm)
-    @Published var length: Double?
+    @Published var length: DistanceCm?
             
     /// The state of the turnout that has been requested.
     ///
@@ -180,6 +180,20 @@ final class Turnout: Element, ObservableObject {
     }
 }
 
+extension Turnout: Restorable {
+    
+    func restore(layout: Layout) {
+        if train == nil {
+            // Do not restore the reservation if the train does not belong to this turnout.
+            // We do not want the user to see reservation upon opening a new document because
+            // the train is not actively running anymore.
+            reserved = nil
+        }
+        updateStateSpeedLimits()
+    }
+
+}
+
 extension Turnout: Codable {
     
     enum CodingKeys: CodingKey {
@@ -191,7 +205,7 @@ extension Turnout: Codable {
         let id = try container.decode(Identifier<Turnout>.self, forKey: CodingKeys.id)
 
         self.init(id: id)
-        self.enabled = try container.decodeIfPresent(Bool.self, forKey: CodingKeys.enabled) ?? true
+        self.enabled = try container.decode(Bool.self, forKey: CodingKeys.enabled)
         self.name = try container.decode(String.self, forKey: CodingKeys.name)
         self.category = try container.decode(Category.self, forKey: CodingKeys.type)
         self.address = try container.decode(CommandTurnoutAddress.self, forKey: CodingKeys.address)
@@ -203,15 +217,9 @@ extension Turnout: Codable {
         self.length = try container.decodeIfPresent(Double.self, forKey: CodingKeys.length)
         self.requestedState = try container.decode(State.self, forKey: CodingKeys.state)
         self.actualState = self.requestedState
-        if let reserved = try? container.decodeIfPresent(Identifier<Train>.self, forKey: CodingKeys.reserved) {
-            self.reserved = .init(train: reserved, sockets: nil)
-        } else {
-            self.reserved = try container.decodeIfPresent(Turnout.Reservation.self, forKey: CodingKeys.reserved)
-        }
+        self.reserved = try container.decodeIfPresent(Turnout.Reservation.self, forKey: CodingKeys.reserved)
         self.train = try container.decodeIfPresent(Identifier<Train>.self, forKey: CodingKeys.train)
-        self.stateSpeedLimit = try container.decodeIfPresent(StateSpeedLimits.self, forKey: CodingKeys.stateSpeedLimit) ?? [:]
-        
-        updateStateSpeedLimits()
+        self.stateSpeedLimit = try container.decode(StateSpeedLimits.self, forKey: CodingKeys.stateSpeedLimit)
     }
     
     func encode(to encoder: Encoder) throws {

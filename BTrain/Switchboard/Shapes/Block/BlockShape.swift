@@ -249,7 +249,7 @@ final class BlockShape: Shape, DraggableShape, ConnectableShape {
         }
         
         if let train = train {
-            if let icon = shapeContext.trainIconManager?.icon(for: train.id), showIcon {
+            if let icon = shapeContext.locomotiveIconManager?.icon(for: train.locomotive?.id), showIcon {
                 let trainIconLabel = BlockShape_IconLabel(ctx: ctx, icon: icon, shapeContext: shapeContext)
                 labels.append(trainIconLabel)
             } else {

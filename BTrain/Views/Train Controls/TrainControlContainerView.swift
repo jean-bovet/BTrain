@@ -20,25 +20,38 @@ struct TrainControlContainerView: View {
     // such as speed changes during automatic route execution.
     @ObservedObject var train: Train
     
+    @Binding var pinnedTrainIds: Set<Identifier<Train>>
+
+    /// Keep track of any runtime error related to the train so it can be displayed to the user
+    @State private var trainRuntimeError: String?
+    
     var body: some View {
         VStack(alignment: .leading) {
-            HStack(alignment: .top) {
-                VStack(alignment: .leading) {
-                    Text(train.name).font(.headline)
-                    TrainControlLocationView(controller: document.layoutController, doc: document, layout: document.layout, train: train)
-                }
+            if let loc = train.locomotive {
+                HStack(alignment: .center) {
+                    VStack(alignment: .leading) {
+                        TrainControlHeaderView(train: train, pinnedTrainIds: $pinnedTrainIds)
+                        TrainControlLocationView(controller: document.layoutController, doc: document, layout: document.layout, train: train)
+                    }
 
-                TrainIconView(trainIconManager: document.trainIconManager, train: train, size: .medium, hideIfNotDefined: true)
-            }
-            
-            if train.blockId != nil {
+                    TrainIconView(locomotiveIconManager: document.locomotiveIconManager, loc: loc, size: .medium, hideIfNotDefined: true)
+                }
+                
+                if train.blockId != nil {
+                    HStack {
+                        TrainControlSpeedView(document: document, train: train, loc: loc, speed: loc.speed, trainRuntimeError: $trainRuntimeError)
+                        Spacer()
+                        TrainControlStateView(train: train, trainRuntimeError: $trainRuntimeError)
+                    }
+
+                    TrainControlRouteView(document: document, train: train, trainRuntimeError: $trainRuntimeError)
+                }
+            } else {
                 HStack {
-                    TrainControlSpeedView(document: document, train: train, speed: train.speed)
+                    TrainControlHeaderView(train: train, pinnedTrainIds: $pinnedTrainIds)
                     Spacer()
-                    TrainControlStateView(train: train)
+                    Text("No Locomotive")
                 }
-
-                TrainControlRouteView(document: document, train: train)
             }
         }
     }
@@ -54,12 +67,20 @@ struct TrainControlContainerView_Previews: PreviewProvider {
         return LayoutDocument(layout: layout)
     }()
 
+    static let doc3: LayoutDocument = {
+        let layout = LayoutLoop1().newLayout()
+        layout.trains[0].blockId = layout.block(at: 0).id
+        layout.trains[0].locomotive = nil
+        return LayoutDocument(layout: layout)
+    }()
+
     static var previews: some View {
-        Group {
-            TrainControlContainerView(document: doc1, train: doc1.layout.trains[0])
-        }
-        Group {
-            TrainControlContainerView(document: doc2, train: doc2.layout.trains[0])
+        VStack {
+            TrainControlContainerView(document: doc3, train: doc3.layout.trains[0], pinnedTrainIds: .constant([]))
+            Divider()
+            TrainControlContainerView(document: doc1, train: doc1.layout.trains[0], pinnedTrainIds: .constant([]))
+            Divider()
+            TrainControlContainerView(document: doc2, train: doc2.layout.trains[0], pinnedTrainIds: .constant([]))
         }
     }
 }

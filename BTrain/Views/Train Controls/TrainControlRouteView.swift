@@ -18,6 +18,8 @@ struct TrainControlRouteView: View {
 
     @ObservedObject var train: Train
                 
+    @Binding var trainRuntimeError: String?
+    
     var layout: Layout {
         document.layout
     }
@@ -45,7 +47,7 @@ struct TrainControlRouteView: View {
                 Spacer()
                 
                 if let route = layout.route(for: train.routeId, trainId: train.id) {
-                    TrainControlRouteActionsView(document: document, train: train, route: route)
+                    TrainControlRouteActionsView(document: document, train: train, route: route, trainRuntimeError: $trainRuntimeError)
                         .disabled(!document.connected)
                 }
             }
@@ -74,6 +76,6 @@ struct TrainControlRouteView_Previews: PreviewProvider {
     static let doc = LayoutDocument(layout: LayoutLoop1().newLayout())
 
     static var previews: some View {
-        TrainControlRouteView(document: doc, train: doc.layout.trains[0])
+        TrainControlRouteView(document: doc, train: doc.layout.trains[0], trainRuntimeError: .constant(nil))
     }
 }

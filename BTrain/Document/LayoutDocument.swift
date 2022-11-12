@@ -35,11 +35,14 @@ final class LayoutDocument: ObservableObject {
     /// The Digital Controller simulator when working offline
     let simulator: MarklinCommandSimulator
 
-    /// The centralized class that manages all train icon-related functions
-    let trainIconManager: TrainIconManager
+    /// The locomotive icon manager
+    let locomotiveIconManager: LocomotiveIconManager
+    
+    /// The locomotive discovery class
+    let locomotiveDiscovery: LocomotiveDiscovery
     
     /// If non-nil, the instance of the class that is measuring the speed of a train
-    var measurement: TrainSpeedMeasurement?
+    var measurement: LocomotiveSpeedMeasurement?
 
     /// True if the layout is connected to the Digital Controller, false otherwise
     @Published var connected = false {
@@ -78,7 +81,12 @@ final class LayoutDocument: ObservableObject {
 
     /// True if at least one train can be finished
     @Published var trainsThatCanBeFinished = false
-
+    
+    /// True if the document is a new document. This is used to trigger
+    /// the new document wizard to help pre-populate the switchboard
+    /// with a predefined layout and locomotives.
+    @Published var newDocument = false
+    
     private let trainsStateObserver: LayoutTrainsStateObserver
     private let trainsSchedulingObserver: LayoutTrainsSchedulingObserver
     private var stateChangeUUID: UUID?
@@ -86,9 +94,9 @@ final class LayoutDocument: ObservableObject {
     init(layout: Layout, interface: CommandInterface = MarklinInterface()) {
         let simulator = MarklinCommandSimulator(layout: layout, interface: interface)
         
-        let trainIconManager = TrainIconManager()
+        let locomotiveIconManager = LocomotiveIconManager()
         
-        let context = ShapeContext(simulator: simulator, trainIconManager: trainIconManager)
+        let context = ShapeContext(simulator: simulator, locomotiveIconManager: locomotiveIconManager)
         let shapeProvider = ShapeProvider(layout: layout, context: context)
         let switchboard = SwitchBoard(layout: layout, provider: shapeProvider, context: context)
         
@@ -98,7 +106,7 @@ final class LayoutDocument: ObservableObject {
         self.interface = interface
         self.simulator = simulator
         self.layoutDiagnostics = LayoutDiagnostic(layout: layout)
-        self.trainIconManager = trainIconManager
+        self.locomotiveIconManager = locomotiveIconManager
         self.switchboard = switchboard
         self.layoutController = layoutController
                 
@@ -109,6 +117,8 @@ final class LayoutDocument: ObservableObject {
         
         self.trainsStateObserver = LayoutTrainsStateObserver(layout: layout)
         self.trainsSchedulingObserver = LayoutTrainsSchedulingObserver(layout: layout)
+        
+        self.locomotiveDiscovery = LocomotiveDiscovery(interface: interface, layout: layout, locomotiveIconManager: locomotiveIconManager)
         
         listenToTrainsStateChange(layout: layout)
     }

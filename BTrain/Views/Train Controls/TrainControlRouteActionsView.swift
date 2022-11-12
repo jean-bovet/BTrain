@@ -20,17 +20,19 @@ struct TrainControlRouteActionsView: View {
 
     @ObservedObject var route: Route
         
+    @Binding var trainRuntimeError: String?
+    
     var body: some View {
         HStack {
             if train.scheduling == .unmanaged {
                 Button("Start") {
                     do {
-                        train.runtimeInfo = nil
+                        trainRuntimeError = nil
                         try document.start(train: train.id, withRoute: route.id, destination: nil)
                     } catch {
-                        train.runtimeInfo = error.localizedDescription
+                        trainRuntimeError = error.localizedDescription
                     }
-                }
+                }.disabled(!document.power)
             } else {
                 Button("Stop") {
                     route.lastMessage = nil
@@ -51,7 +53,7 @@ struct TrainControlRouteActionsView_Previews: PreviewProvider {
     static let doc = LayoutDocument(layout: LayoutLoop1().newLayout())
 
     static var previews: some View {
-        TrainControlRouteActionsView(document: doc, train: doc.layout.trains[0], route: doc.layout.routes[0])
+        TrainControlRouteActionsView(document: doc, train: doc.layout.trains[0], route: doc.layout.routes[0], trainRuntimeError: .constant(nil))
     }
 
 }

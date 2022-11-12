@@ -19,7 +19,7 @@ class LayoutTests: BTTestCase {
     func testAddAndRemoveBlock() throws {
         let layout = Layout()
         
-        let t1 = layout.addTrain(Train(uuid: "t1", name: "t1", address: 0))
+        let t1 = layout.addTrain(Train(uuid: "t1", name: "t1"))
         let b1 = layout.newBlock(name: "b1", category: .free)
         let b2 = layout.newBlock(name: "b2", category: .free)
         layout.link(from: b1.next, to: b2.previous)
@@ -81,7 +81,7 @@ class LayoutTests: BTTestCase {
         XCTAssertEqual(train1.directionForward, true)
 
         // Change the train direction
-        doc.layoutController.setLocomotiveDirection(train1, forward: false)
+        doc.layoutController.setLocomotiveDirection(train1.locomotive!, forward: false)
         wait(for: {
             train1.directionForward == false
         }, timeout: 1.0)
@@ -95,7 +95,7 @@ class LayoutTests: BTTestCase {
         XCTAssertEqual(train1.directionForward, false)
 
         // Change the train direction
-        doc.layoutController.setLocomotiveDirection(train1, forward: true)
+        doc.layoutController.setLocomotiveDirection(train1.locomotive!, forward: true)
         wait(for: {
             train1.directionForward == true
         }, timeout: 1.0)

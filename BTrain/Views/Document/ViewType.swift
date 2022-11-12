@@ -17,11 +17,11 @@ enum ViewType: Int {
     case overview
     case routes
     case trains
+    case locomotives
     case stations
     case blocks
     case turnouts
     case feedback
-    case speed
     case cs3
 }
     

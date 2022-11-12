@@ -15,8 +15,8 @@ import UniformTypeIdentifiers
 
 struct TrainIconView: View, DropDelegate {
         
-    @ObservedObject var trainIconManager: TrainIconManager
-    @ObservedObject var train: Train
+    @ObservedObject var locomotiveIconManager: LocomotiveIconManager
+    @ObservedObject var loc: Locomotive
     
     let size: Size
     let hideIfNotDefined: Bool
@@ -41,7 +41,7 @@ struct TrainIconView: View, DropDelegate {
 
     var body: some View {
         HStack {
-            if let image = trainIconManager.icon(for: train.id) {
+            if let image = locomotiveIconManager.icon(for: loc.id) {
                 Image(nsImage: image)
                     .resizable()
                     .aspectRatio(contentMode: .fit)
@@ -68,7 +68,7 @@ struct TrainIconView: View, DropDelegate {
                         let url = NSURL(absoluteURLWithDataRepresentation: urlData, relativeTo: nil) as URL
                         do {
                             let fw = try FileWrapper(url: url)
-                            trainIconManager.setIcon(fw, toTrainId: train.id)
+                            locomotiveIconManager.setIcon(fw, locId: loc.id)
                         } catch {
                             BTLogger.error("Unable to create the image for \(url): \(error)")
                         }
@@ -86,6 +86,6 @@ struct TrainIconView: View, DropDelegate {
 
 struct TrainIconView_Previews: PreviewProvider {
     static var previews: some View {
-        TrainIconView(trainIconManager: TrainIconManager(), train: Train(), size: .large, hideIfNotDefined: false)
+        TrainIconView(locomotiveIconManager: LocomotiveIconManager(), loc: Locomotive(), size: .large, hideIfNotDefined: false)
     }
 }
