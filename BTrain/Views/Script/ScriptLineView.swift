@@ -13,24 +13,14 @@
 import SwiftUI
 import UniformTypeIdentifiers
 
-enum ScriptAction: String, CaseIterable {
-    case move = "Move"
-    case loop = "Repeat"
-    case wait = "Wait"
-}
+struct ScriptLineView: View, DropDelegate {
+    
+    enum DropPosition {
+        case before
+        case after
+    }
 
-struct ScriptCommand: Identifiable, Hashable {
-    let id = UUID()
-    var action: ScriptAction = .move
-    var children = [ScriptCommand]()
-}
-
-private enum DropPosition {
-    case before
-    case after
-}
-
-struct ScriptCommandLineView: View, DropDelegate {
+    let layout: Layout
     
     @Binding var commands: [ScriptCommand]
     @Binding var command: ScriptCommand
@@ -38,25 +28,17 @@ struct ScriptCommandLineView: View, DropDelegate {
     @State private var dropLine: DropPosition?
     
     var body: some View {
-        HStack {
-            Text("􀌇")
-            Picker("Command", selection: $command.action) {
-                ForEach(ScriptAction.allCases, id: \.self) {
-                    Text($0.rawValue).tag($0 as ScriptAction?)
-                }
-            }
-            .labelsHidden()
-            .fixedSize()
-        }.if(dropLine != nil, transform: { view in
-            view.overlay(
-                Rectangle()
-                    .frame(height: 4)
-                    .foregroundColor(.blue),
-                alignment: dropLine! == .after ? .bottom : .top
-            )
-        }).onDrag {
-            return NSItemProvider(object: command.id.uuidString as NSString)
-        }.onDrop(of: [UTType.text], delegate: self)
+        ScriptCommandView(layout: layout, command: $command)
+            .if(dropLine != nil, transform: { view in
+                view.overlay(
+                    Rectangle()
+                        .frame(height: 4)
+                        .foregroundColor(.blue),
+                    alignment: dropLine! == .after ? .bottom : .top
+                )
+            }).onDrag {
+                return NSItemProvider(object: command.id.uuidString as NSString)
+            }.onDrop(of: [UTType.text], delegate: self)
     }
         
     func dropEntered(info: DropInfo) {
@@ -132,7 +114,7 @@ extension Array where Element == ScriptCommand {
     }
     
     @discardableResult
-    mutating fileprivate func insert(source: ScriptCommand, target: ScriptCommand, position: DropPosition) -> Bool {
+    mutating fileprivate func insert(source: ScriptCommand, target: ScriptCommand, position: ScriptLineView.DropPosition) -> Bool {
         for (index, command) in enumerated() {
             if command.id == target.id {
                 switch position {
@@ -151,37 +133,11 @@ extension Array where Element == ScriptCommand {
     }
 }
 
-struct ScriptView: View {
+struct ScriptLineView_Previews: PreviewProvider {
     
-    @State private var commands = [
-        ScriptCommand(action: .move),
-        ScriptCommand(action: .loop, children: [
-            ScriptCommand(action: .move),
-            ScriptCommand(action: .wait),
-        ])
-    ]
-    
-    var body: some View {
-        List {
-            ForEach($commands, id: \.self) { command in
-                ScriptCommandLineView(commands: $commands, command: command)
-                if let children = command.children {
-                    ForEach(children, id: \.self) { command in
-                        HStack {
-                            Spacer().fixedSpace()
-                            ScriptCommandLineView(commands: $commands, command: command)
-                        }
-                    }
-                }
-            }
-        }
-    }
-    
-}
+    static let doc = LayoutDocument(layout: LayoutComplex().newLayout())
 
-struct ScriptView_Previews: PreviewProvider {
-        
     static var previews: some View {
-        ScriptView()
+        ScriptLineView(layout: doc.layout, commands: .constant([]), command: .constant(ScriptCommand(action: .move)))
     }
 }

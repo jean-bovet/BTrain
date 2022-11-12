@@ -12,43 +12,41 @@
 
 import SwiftUI
 
-struct LocPicker: View {
-
-    let doc: LayoutDocument
-    @Binding var selectedLoc: Identifier<Locomotive>?
-
-    var iconSize: CGSize {
-        .init(width: 60, height: 20)
-    }
+struct ScriptView: View {
     
-    var locomotives: [Locomotive] {
-        doc.layout.locomotives.filter({$0.enabled})
-    }
+    let layout: Layout
+
+    @State private var commands = [
+        ScriptCommand(action: .move),
+        ScriptCommand(action: .loop, children: [
+            ScriptCommand(action: .move),
+            ScriptCommand(action: .wait),
+        ])
+    ]
     
     var body: some View {
-        Picker("Locomotive:", selection: $selectedLoc) {
-            Text("").tag(nil as Identifier<Locomotive>?)
-            ForEach(locomotives, id:\.self) { loc in
-                HStack {
-                    Text(loc.name)
-                    if let image = doc.locomotiveIconManager.icon(for: loc.id)?.copy(size: iconSize) {
-                        Image(nsImage: image)
-                    } else {
-                        Image(nsImage: NSImage(color: .windowBackgroundColor, size: iconSize))
+        List {
+            ForEach($commands, id: \.self) { command in
+                ScriptLineView(layout: layout, commands: $commands, command: command)
+                if let children = command.children {
+                    ForEach(children, id: \.self) { command in
+                        HStack {
+                            Spacer().fixedSpace()
+                            ScriptLineView(layout: layout, commands: $commands, command: command)
+                        }
                     }
                 }
-                .tag(loc.id as Identifier<Locomotive>?)
-                .padding()
             }
         }
     }
+    
 }
 
-struct LocPicker_Previews: PreviewProvider {
-    
+struct ScriptView_Previews: PreviewProvider {
+        
     static let doc = LayoutDocument(layout: LayoutComplex().newLayout())
 
     static var previews: some View {
-        LocPicker(doc: doc, selectedLoc: .constant(doc.layout.locomotives[0].id))
+        ScriptView(layout: doc.layout)
     }
 }

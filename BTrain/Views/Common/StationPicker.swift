@@ -12,43 +12,38 @@
 
 import SwiftUI
 
-struct LocPicker: View {
-
-    let doc: LayoutDocument
-    @Binding var selectedLoc: Identifier<Locomotive>?
-
-    var iconSize: CGSize {
-        .init(width: 60, height: 20)
-    }
+struct StationPicker: View {
     
-    var locomotives: [Locomotive] {
-        doc.layout.locomotives.filter({$0.enabled})
+    let layout: Layout
+    @Binding var stationId: Identifier<Station>?
+    
+    var sortedStationIds: [Identifier<Station>] {
+        layout.stations.sorted {
+            $0.name < $1.name
+        }.map {
+            $0.id
+        }
     }
     
     var body: some View {
-        Picker("Locomotive:", selection: $selectedLoc) {
-            Text("").tag(nil as Identifier<Locomotive>?)
-            ForEach(locomotives, id:\.self) { loc in
-                HStack {
-                    Text(loc.name)
-                    if let image = doc.locomotiveIconManager.icon(for: loc.id)?.copy(size: iconSize) {
-                        Image(nsImage: image)
-                    } else {
-                        Image(nsImage: NSImage(color: .windowBackgroundColor, size: iconSize))
-                    }
+        Picker("Station", selection: $stationId) {
+            Text("").tag(nil as Identifier<Station>?)
+            ForEach(sortedStationIds, id:\.self) { stationId in
+                if let station = layout.station(for: stationId) {
+                    Text(station.name).tag(stationId as Identifier<Station>?)
+                } else {
+                    Text(stationId.uuid).tag(stationId as Identifier<Station>?)
                 }
-                .tag(loc.id as Identifier<Locomotive>?)
-                .padding()
             }
-        }
+        }.labelsHidden()
     }
 }
 
-struct LocPicker_Previews: PreviewProvider {
+struct StationPicker_Previews: PreviewProvider {
     
     static let doc = LayoutDocument(layout: LayoutComplex().newLayout())
 
     static var previews: some View {
-        LocPicker(doc: doc, selectedLoc: .constant(doc.layout.locomotives[0].id))
+        StationPicker(layout: doc.layout, stationId: .constant(doc.layout.stations[0].id))
     }
 }
