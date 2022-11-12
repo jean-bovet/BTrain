@@ -46,7 +46,7 @@ enum LayoutError: Error {
     
     case unexpectedFeedback(feedback: Feedback)
     
-    case noTransition(fromBlockId: Identifier<Block>, toBlockId: Identifier<Block>)
+    case noTransition(fromBlock: Block, toBlock: Block)
     case lastTransitionToBlock(transition: Identifier<Transition>, blockId: Identifier<Block>)
     case alwaysOneAndOnlyOneTransition
     case invalidTransition(transition: ITransition)
@@ -95,8 +95,8 @@ extension LayoutError: LocalizedError {
         case .unexpectedFeedback(feedback: let feedback):
             return "Unexpected feedback \(feedback.name) detected"
 
-        case .noTransition(fromBlockId: let fromBlockId, toBlockId: let toBlockId):
-            return "No transition found from block \(fromBlockId) to block \(toBlockId)"
+        case .noTransition(fromBlock: let fromBlock, toBlock: let toBlock):
+            return "No transition found from block \(fromBlock) to block \(toBlock)"
         case .lastTransitionToBlock(transition: let transition, blockId: let blockId):
             return "The last transition \(transition) should be to block \(blockId)"
         case .cannotReserveBlock(block: let block, train: let train, reserved: let reserved):

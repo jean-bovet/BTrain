@@ -92,9 +92,9 @@ extension Layout {
         let transitions = try transitions(from: LayoutVector(block: fromBlock, direction: direction),
                                           to: LayoutVector(block: nextBlock, direction: nextDirection))
         
-        // Note: grab the last transition which is the one that leads to the `nextBlock`.
+        // Note: grab the last transition which is the one that leads to `nextBlock`.
         guard let lastTransition = transitions.last else {
-            throw LayoutError.noTransition(fromBlockId: fromBlock.id, toBlockId: nextBlock.id)
+            throw LayoutError.noTransition(fromBlock: fromBlock, toBlock: nextBlock)
         }
         
         // Determine if the train is moving in the "natural" direction
