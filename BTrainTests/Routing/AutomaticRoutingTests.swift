@@ -27,9 +27,10 @@ class AutomaticRoutingTests: BTTestCase {
         
         try p.assert("automatic-0: {r0{s1 ≏ 🔵🚂0 }} <r0<t1(2,0),l>> <r0<t2(1,0),s>> [r0[b1 ≏ ]] <t3> [b2 ≏ ] <t4(1,0)> [b3 ≏ ≏ ≏ ] <t5> <t6> {s2 ≏ }", ["b1"])
                                 
-        // Let's put another train in b2
+        // Let's put another train in b2 and b5, resulting in no possible path forward
         layout.reserve("b2", with: "1", direction: .next)
-        
+        layout.reserve("b5", with: "1", direction: .next)
+
         try p.assert("automatic-0: {r0{s1 ≏ 🔵🚂0 }} <r0<t1(2,0),l>> <r0<t2(1,0),s>> [r0[b1 ≏ ]] <t3> [r1[b2 ≏ ]] <t4(1,0)> [b3 ≏ ≏ ≏ ] <t5> <t6> {s2 ≏ }", ["b1"])
 
         // Move s1 -> b1
@@ -192,8 +193,9 @@ class AutomaticRoutingTests: BTTestCase {
         
         try p.assert("automatic-0: {r0{s1 ≏ 🔵🚂0 }} <r0<t1(2,0),l>> <r0<t2(1,0),s>> [r0[b1 ≏ ]] <t3> [b2 ≏ ] <t4(1,0)> [b3 ≏ ≏ ] <t5> <t6> {s2 ≏ }")
                         
-        // Let's put another train in b2
+        // Let's put another train in b2 and b5
         layout.reserve("b2", with: "1", direction: .next)
+        layout.reserve("b5", with: "1", direction: .next)
 
         // Indicate that we want the train to finish once the route is completed
         p.finish()

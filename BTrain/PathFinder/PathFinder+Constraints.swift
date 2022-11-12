@@ -17,14 +17,24 @@ extension PathFinder {
     /// The constraints to apply to the path finder algorithm
     struct Constraints {
         
+        /// Behavior of the algorithm when it finds a block that is reserved for another train
         enum ReservedBlockBehavior {
-            // Avoid all reserved blocks (that is, avoid any block
-            // that is reserved for another train).
+            /// Avoid all the reserved block. In other words, only choose blocks that are not reserved.
             case avoidReserved
-            
-            // Ignore all reserved blocks (that is,
-            // take them into account even if they are
-            // reserved for another train).
+
+            /// Avoid only the first reserved block, ignoring the rest of the blocks. In other words,
+            /// the algorithm will pick any block (free or reserved) as the first block of the path and ignore
+            /// reservation for the subsequent blocks.
+            /// This option is the one used by the automatic routing in order for train to be able to start
+            /// moving even if all the route is not yet free. For example, the first few blocks might be free
+            /// but the remaining blocks are not because trains are still moving in them: in this case, we want
+            /// our train to start moving as soon as possible and when a reserved block is encoutered, either we
+            /// stop the train because there are no other alternative or we find another route whose first block is free
+            /// and the process repeat. If we don't do that, any train under automatic control will wait until **all** the blocks
+            /// of the route are free which can take a while and is not a great experience.
+            case avoidFirstReservedBlock
+
+            /// Ignore all the reserved blocks. In other words, choose blocks even if they are reserved for another train.
             case ignoreReserved
         }
         
@@ -69,6 +79,15 @@ extension PathFinder {
                     case .avoidReserved:
                         return false
                         
+                    case .avoidFirstReservedBlock:
+                        // Count how many blocks there is in the current path, ignoring the first block.
+                        if currentPath.numberOfBlocksIgnoringStartingBlock == 0 {
+                            // If there are zero blocks in the path, it means that `node` is the first block,
+                            // in which case we need to avoid it because it is reserved.
+                            return false
+                        }
+                        break
+
                     case .ignoreReserved:
                         break
                     }
@@ -90,7 +109,14 @@ extension PathFinder {
                     switch reservedBlockBehavior {
                     case .avoidReserved:
                         return false
-                        
+                                                
+                    case .avoidFirstReservedBlock:
+                        // Count how many blocks there is in the current path, ignoring the first block.
+                        if currentPath.numberOfBlocksIgnoringStartingBlock == 0 {
+                            return false
+                        }
+                        break
+
                     case .ignoreReserved:
                         break
                     }

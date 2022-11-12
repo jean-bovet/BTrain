@@ -54,9 +54,15 @@ extension Layout {
             to = nil
         }
         
+        // If there is a destination specified, avoid all the reserved blocks
+        // If there is no destination specified, avoid only the first reserved block
+        let rbb: PathFinder.Constraints.ReservedBlockBehavior = destination == nil ? .avoidFirstReservedBlock : .avoidReserved
+
         // Find the best path by avoiding reserved blocks
-        let path = try bestPath(ofTrain: train, toReachBlock: to?.block, withDirection: to?.direction,
-                                reservedBlockBehavior: .avoidReserved)
+        let path = try bestPath(ofTrain: train,
+                                toReachBlock: to?.block,
+                                withDirection: to?.direction,
+                                reservedBlockBehavior: rbb)
         
         if let path = path {
             route.lastMessage = nil

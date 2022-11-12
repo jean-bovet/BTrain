@@ -22,6 +22,14 @@ class PathFinderTests: BTTestCase {
         XCTAssertEqual(path.elements.toBlockSteps.toStrings(layout), ["s1:next", "b1:next", "b2:next", "b3:next", "s2:next"])
         XCTAssertEqual(path.elements.toSteps.toStrings(layout), ["s1:next", "t1:(2>0)", "t2:(1>0)", "b1:next", "t3:(0>1)", "b2:next", "t4:(1>0)", "b3:next", "t5:(0>1)", "t6:(0>1)", "s2:next"])
     }
+    
+    func testSimplePathAvoidingFirstReservedBlock() throws {
+        let layout = LayoutComplexLoop().newLayout()
+        
+        let path = try layout.bestPath(from: "s1", reservedBlockBehavior: .avoidFirstReservedBlock)!
+        XCTAssertEqual(path.elements.toBlockSteps.toStrings(layout), ["s1:next", "b1:next", "b2:next", "b3:next", "s2:next"])
+        XCTAssertEqual(path.elements.toSteps.toStrings(layout), ["s1:next", "t1:(2>0)", "t2:(1>0)", "b1:next", "t3:(0>1)", "b2:next", "t4:(1>0)", "b3:next", "t5:(0>1)", "t6:(0>1)", "s2:next"])
+    }
 
     func testPathWithReservedTurnout() throws {
         let layout = LayoutComplexLoop().newLayout()
@@ -41,7 +49,13 @@ class PathFinderTests: BTTestCase {
         // Ensure that by specifying a look ahead equal to the number of blocks in the layout
         // there is no valid path found because b2 is occupied.
         let path = try layout.bestPath(from: "s1", reservedBlockBehavior: .avoidReserved)
-        XCTAssertNil(path)        
+        XCTAssertNil(path)
+        
+        // Now let's try again with a look ahead of just one block,
+        // in which case the reservation of b2 will be ignored because it is
+        // past the look ahead
+        let path2 = try layout.bestPath(from: "s1", reservedBlockBehavior: .avoidFirstReservedBlock)!
+        XCTAssertEqual(path2.elements.toBlockSteps.toStrings(layout), ["s1:next", "b1:next", "b2:next", "b3:next", "s2:next"])
     }
 
     func testPathWithReservedBlock() throws {
