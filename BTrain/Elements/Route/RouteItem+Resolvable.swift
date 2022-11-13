@@ -30,7 +30,9 @@ extension RouteItemBlock: Resolvable {
             return nil
         }
         
-        return [GraphPathElement.direction(block, direction)]
+        var resolvedElement = GraphPathElement.direction(block, direction)
+        resolvedElement.sourceIdentifier = sourceIdentifier
+        return [resolvedElement]
     }
 }
 

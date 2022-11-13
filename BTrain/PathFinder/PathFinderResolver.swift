@@ -29,7 +29,9 @@ struct PathFinderResolver {
     
     /// Error from the path resolver indicating between which path elements an error occurred
     enum ResolverError: Error {
-        case cannotResolveElement(at: Int)
+        case cannotResolvedSegment(at: Int, from: GraphPathElement, to: GraphPathElement)
+        case cannotResolveElement(_ element: Resolvable, at: Int)
+        // TODO: also include the element so error reporting can go back to the source
         case cannotResolvePath(from: Int, to: Int)
     }
         
@@ -67,7 +69,7 @@ struct PathFinderResolver {
         // does not have its direction specified, 2 resolved elements are returned,
         // one for each direction of the block.
         guard let resolvedElements = unresolvedElement.resolve(constraints) else {
-            return .failure(.cannotResolveElement(at: unresolvedPathIndex))
+            return .failure(.cannotResolveElement(unresolvedElement, at: unresolvedPathIndex))
         }
 
         // Contains the last error that occurred during the resolving process. Because more than
@@ -126,7 +128,7 @@ struct PathFinderResolver {
 
         let p = try resolveSegment(graph: graph, from: from, to: to)
         if p.isEmpty {
-            return .failure(.cannotResolveElement(at: unresolvedPathIndex))
+            return .failure(.cannotResolvedSegment(at: unresolvedPathIndex, from: from, to: to))
         } else {
             return .success(p)
         }
@@ -175,8 +177,10 @@ extension PathFinderResolver.ResolverError: LocalizedError {
     
     var errorDescription: String? {
         switch self {
-        case .cannotResolveElement(let index):
-            return "Cannot resolve element at index \(index)"
+        case .cannotResolvedSegment(let index, let from, let to):
+            return "Cannot resolve segment from \(from) to \(to) at index \(index)"
+        case .cannotResolveElement(let element, let index):
+            return "Cannot resolve element \(element) at index \(index)"
         case .cannotResolvePath(let from, let to):
             return "Cannot resolve path from \(from) to \(to)"
         }

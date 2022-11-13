@@ -17,10 +17,15 @@ struct ScriptCommandView: View {
     let layout: Layout
     @ObservedObject var script: Script
     @Binding var command: ScriptCommand
+    @Binding var commandErrorIds: [String]
 
     var body: some View {
         HStack {
             Text("􀌇")
+            if commandErrorIds.contains(command.id.uuidString) {
+                Text("􀇿")
+                    .foregroundColor(.red)
+            }
             Picker("Command", selection: $command.action) {
                 ForEach(ScriptCommand.ScriptAction.allCases, id: \.self) {
                     Text($0.rawValue).tag($0 as ScriptCommand.ScriptAction?)
@@ -76,7 +81,7 @@ struct ScriptCommandView_Previews: PreviewProvider {
     static var previews: some View {
         VStack(alignment: .leading) {
             ForEach(ScriptCommand.ScriptAction.allCases, id:\.self) { action in
-                ScriptCommandView(layout: doc.layout, script: script, command: .constant(ScriptCommand(action: action)))
+                ScriptCommandView(layout: doc.layout, script: script, command: .constant(ScriptCommand(action: action)), commandErrorIds: .constant([]))
             }
         }
     }

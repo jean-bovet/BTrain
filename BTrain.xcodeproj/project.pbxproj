@@ -298,6 +298,7 @@
 		A7A7D68829203230008FA648 /* Script.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7A7D68729203230008FA648 /* Script.swift */; };
 		A7A7D68A29203476008FA648 /* Layout+Scripts.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7A7D68929203476008FA648 /* Layout+Scripts.swift */; };
 		A7A7D68C2920B120008FA648 /* Script+Route.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7A7D68B2920B120008FA648 /* Script+Route.swift */; };
+		A7A7D68E2920D90D008FA648 /* SourceIdentifiable.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7A7D68D2920D90D008FA648 /* SourceIdentifiable.swift */; };
 		A7ACCE9F2810E5BA006F4310 /* LayoutControllerEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7ACCE9E2810E5BA006F4310 /* LayoutControllerEvent.swift */; };
 		A7B06AE12727786500BDD88C /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7B06AE02727786500BDD88C /* MainView.swift */; };
 		A7B06AF2272782C300BDD88C /* LayoutDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7B06AF1272782C300BDD88C /* LayoutDocument.swift */; };
@@ -664,6 +665,7 @@
 		A7A7D68729203230008FA648 /* Script.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Script.swift; sourceTree = "<group>"; };
 		A7A7D68929203476008FA648 /* Layout+Scripts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Layout+Scripts.swift"; sourceTree = "<group>"; };
 		A7A7D68B2920B120008FA648 /* Script+Route.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Script+Route.swift"; sourceTree = "<group>"; };
+		A7A7D68D2920D90D008FA648 /* SourceIdentifiable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SourceIdentifiable.swift; sourceTree = "<group>"; };
 		A7ACCE9E2810E5BA006F4310 /* LayoutControllerEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutControllerEvent.swift; sourceTree = "<group>"; };
 		A7B06AE02727786500BDD88C /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
 		A7B06AED2727819800BDD88C /* Server.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Server.swift; sourceTree = "<group>"; };
@@ -1515,6 +1517,7 @@
 			children = (
 				A7F779F92734A8C500E73275 /* Element.swift */,
 				A7C8A2F0279E6C6E000C7246 /* ElementVisitor.swift */,
+				A7A7D68D2920D90D008FA648 /* SourceIdentifiable.swift */,
 			);
 			path = Element;
 			sourceTree = "<group>";
@@ -2037,6 +2040,7 @@
 				A783EAAD2789290F00E69B6D /* SwitchboardRuntimeErrorView.swift in Sources */,
 				A744FD982909EAED00852283 /* RouteItem+Resolvable.swift in Sources */,
 				A7E1F74E27DE980C009FB75F /* WizardSelectLocomotive.swift in Sources */,
+				A7A7D68E2920D90D008FA648 /* SourceIdentifiable.swift in Sources */,
 				A744FDA12909EC2800852283 /* Layout+Graph.swift in Sources */,
 				A721806A275D1CA700831998 /* MarklinCommand.swift in Sources */,
 				A717FB15281CA84C00310B5D /* ResolvedRouteItem.swift in Sources */,

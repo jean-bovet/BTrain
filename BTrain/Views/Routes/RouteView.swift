@@ -66,12 +66,17 @@ struct RouteView: View {
 
         for error in routeError.resolverErrors {
             switch error {
+            case .cannotResolvedSegment(let at, _, _):
+                if at == index {
+                    return true
+                }
+
             case .cannotResolvePath(_, let to):
                 if to == index {
                     return true
                 }
                 
-            case .cannotResolveElement(let at):
+            case .cannotResolveElement(_, let at):
                 if at == index {
                     return true
                 }                

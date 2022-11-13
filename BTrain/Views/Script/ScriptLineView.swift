@@ -25,11 +25,12 @@ struct ScriptLineView: View, DropDelegate {
     
     @ObservedObject var script: Script
     @Binding var command: ScriptCommand
-    
+    @Binding var commandErrorIds: [String]
+
     @State private var dropLine: DropPosition?
     
     var body: some View {
-        ScriptCommandView(layout: layout, script: script, command: $command)
+        ScriptCommandView(layout: layout, script: script, command: $command, commandErrorIds: $commandErrorIds)
             .if(dropLine == .inside, transform: { view in
                 view.overlay(
                     Rectangle()
@@ -158,8 +159,12 @@ extension Array where Element == ScriptCommand {
 struct ScriptLineView_Previews: PreviewProvider {
     
     static let doc = LayoutDocument(layout: LayoutComplex().newLayout())
-
+    static let command = ScriptCommand(action: .move)
+    
     static var previews: some View {
-        ScriptLineView(layout: doc.layout, script: Script(), command: .constant(ScriptCommand(action: .move)))
+        VStack(alignment: .leading) {
+            ScriptLineView(layout: doc.layout, script: Script(), command: .constant(command), commandErrorIds: .constant([]))
+            ScriptLineView(layout: doc.layout, script: Script(), command: .constant(command), commandErrorIds: .constant([command.id.uuidString]))
+        }
     }
 }

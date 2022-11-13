@@ -12,38 +12,12 @@
 
 import Foundation
 
-struct RouteItemBlock: Equatable, Codable, CustomStringConvertible, SourceIdentifiable {
-
-    static func ==(lhs: RouteItemBlock, rhs: RouteItemBlock) -> Bool {
-        lhs.id == rhs.id
-    }
-
-    var id = UUID().uuidString
-    
-    var sourceIdentifier: String?
-    
-    // The block identifier
-    var blockId: Identifier<Block>
-
-    // The number of seconds a train will wait in that block
-    // If nil, the block waitingTime is used instead.
-    var waitingTime: TimeInterval?
-    
-    var description: String {
-        return "\(blockId):\(direction)"
-    }
-
-    // The direction of travel of the train within that block
-    var direction: Direction
-
-    init(_ block: Block, _ direction: Direction, _ waitingTime: TimeInterval? = nil) {
-        self.init(block.id, direction, waitingTime)
-    }
-
-    init(_ blockId: Identifier<Block>, _ direction: Direction, _ waitingTime: TimeInterval? = nil) {
-        self.blockId = blockId
-        self.direction = direction
-        self.waitingTime = waitingTime
-    }
+/// Protocol describing the ability to identify the source of element.
+/// For example, each step in a script is mapped to its one or more route elements,
+/// which is used to report any error back to the corresponding script step.
+protocol SourceIdentifiable {
+        
+    /// The unique identifier of the source
+    var sourceIdentifier: String? { get set }
     
 }

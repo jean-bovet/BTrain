@@ -30,6 +30,8 @@ struct ScriptView: View {
     @State private var routeExpanded = false
     @State private var resolvedRouteExpanded = false
 
+    @State private var commandErrorIds = [String]()
+    
     enum VerifyStatus {
         case none
         case failure
@@ -77,12 +79,12 @@ struct ScriptView: View {
         VStack {
             List {
                 ForEach($script.commands, id: \.self) { command in
-                    ScriptLineView(layout: layout, script: script, command: command)
+                    ScriptLineView(layout: layout, script: script, command: command, commandErrorIds: $commandErrorIds)
                     if let children = command.children {
                         ForEach(children, id: \.self) { command in
                             HStack {
                                 Spacer().fixedSpace()
-                                ScriptLineView(layout: layout, script: script, command: command)
+                                ScriptLineView(layout: layout, script: script, command: command, commandErrorIds: $commandErrorIds)
                             }
                         }
                     }
@@ -121,6 +123,7 @@ struct ScriptView: View {
     func validate(script: Script) {
         resolvedRouteResult = nil
         generatedRouteError = nil
+        commandErrorIds.removeAll()
         
         do {
             generatedRoute = try script.toRoute()
@@ -139,6 +142,17 @@ struct ScriptView: View {
         var resolvedRoutes = RouteResolver.ResolvedRoutes()
         diag.checkRoute(route: generatedRoute, &errors, resolverErrors: &resolverError, resolverPaths: &resolvedRoutes)
         if let resolverError = resolverError.first {
+            switch resolverError {
+            case .cannotResolvedSegment(_, let from, let to):
+                if let id = from.sourceIdentifier {
+                    commandErrorIds.append(id)
+                }
+                if let id = to.sourceIdentifier {
+                    commandErrorIds.append(id)
+                }
+            default:
+                break
+            }
             resolvedRouteResult = .failure(resolverError)
         } else {
             resolvedRouteResult = .success(resolvedRoutes.first)

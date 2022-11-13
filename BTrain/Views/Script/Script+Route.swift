@@ -35,7 +35,12 @@ extension ScriptCommand {
             switch destinationType {
             case .block:
                 if let blockId = blockId {
-                    return [.block(.init(blockId, .next, TimeInterval(waitDuration)))]
+                    var item = RouteItemBlock(blockId, .next, TimeInterval(waitDuration))
+                    // Assign to the route item the id of the script command. That way,
+                    // when an error happens during route resolving, we can easily map
+                    // the error to the original script command and highlight it in the UI.
+                    item.sourceIdentifier = id.uuidString
+                    return [.block(item)]
                 } else {
                     throw ScriptError.undefinedBlock
                 }
