@@ -21,8 +21,8 @@ struct ScriptCommandView: View {
         HStack {
             Text("􀌇")
             Picker("Command", selection: $command.action) {
-                ForEach(ScriptAction.allCases, id: \.self) {
-                    Text($0.rawValue).tag($0 as ScriptAction?)
+                ForEach(ScriptCommand.ScriptAction.allCases, id: \.self) {
+                    Text($0.rawValue).tag($0 as ScriptCommand.ScriptAction?)
                 }
             }
             .labelsHidden()
@@ -65,7 +65,7 @@ struct ScriptCommandView_Previews: PreviewProvider {
     
     static var previews: some View {
         VStack(alignment: .leading) {
-            ForEach(ScriptAction.allCases, id:\.self) { action in
+            ForEach(ScriptCommand.ScriptAction.allCases, id:\.self) { action in
                 ScriptCommandView(layout: doc.layout, command: .constant(ScriptCommand(action: action)))
             }
         }

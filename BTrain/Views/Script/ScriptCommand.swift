@@ -12,23 +12,65 @@
 
 import Foundation
 
-enum ScriptAction: String, CaseIterable {
-    case move = "Move"
-    case loop = "Repeat"
-    case wait = "Wait"
-}
-
 struct ScriptCommand: Identifiable, Hashable {
-    enum MoveDestinationType: String, CaseIterable {
-        case block
-        case station
+    
+    let id: UUID
+    
+    enum ScriptAction: String, CaseIterable, Codable {
+        case move = "Move"
+        case loop = "Repeat"
+        case wait = "Wait"
     }
-    let id = UUID()
+
     var action: ScriptAction = .move
+    
     var children = [ScriptCommand]()
     var repeatCount = 0
     var waitDuration = 0
+    
+    enum MoveDestinationType: String, CaseIterable, Codable {
+        case block
+        case station
+    }
+
     var destinationType = MoveDestinationType.block
+    
     var blockId: Identifier<Block>?
     var stationId: Identifier<Station>?
+    
+    init(id: UUID = UUID(), action: ScriptAction) {
+        self.id = id
+    }
+}
+
+extension ScriptCommand: Codable {
+    
+    enum CodingKeys: CodingKey {
+        case id, action, children, repeatCount, waitDuration, destinationType, blockId, stationId
+    }
+    
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.id = try container.decode(UUID.self, forKey: CodingKeys.id)
+        self.action = try container.decode(ScriptAction.self, forKey: CodingKeys.action)
+        self.children = try container.decode([ScriptCommand].self, forKey: CodingKeys.children)
+        self.repeatCount = try container.decode(Int.self, forKey: CodingKeys.repeatCount)
+        self.waitDuration = try container.decode(Int.self, forKey: CodingKeys.waitDuration)
+
+        self.destinationType = try container.decode(MoveDestinationType.self, forKey: CodingKeys.destinationType)
+        self.blockId = try container.decodeIfPresent(Identifier<Block>.self, forKey: CodingKeys.blockId)
+        self.stationId = try container.decodeIfPresent(Identifier<Station>.self, forKey: CodingKeys.stationId)
+    }
+    
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(id, forKey: CodingKeys.id)
+        try container.encode(action, forKey: CodingKeys.action)
+        try container.encode(children, forKey: CodingKeys.children)
+        try container.encode(repeatCount, forKey: CodingKeys.repeatCount)
+        try container.encode(waitDuration, forKey: CodingKeys.waitDuration)
+        try container.encode(destinationType, forKey: CodingKeys.destinationType)
+        try container.encode(blockId, forKey: CodingKeys.blockId)
+        try container.encode(stationId, forKey: CodingKeys.stationId)
+    }
 }

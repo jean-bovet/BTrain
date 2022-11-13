@@ -12,84 +12,78 @@
 
 import SwiftUI
 
-struct RouteListView: View {
+struct ScriptListView: View {
     
     @Environment(\.undoManager) var undoManager
     
     @ObservedObject var layout: Layout
     
-    @State private var selection: Identifier<Route>? = nil
+    @State private var selection: Identifier<Script>?
 
-    var routes: [Route] {
-        layout.fixedRoutes
-    }
-    
     var body: some View {
         HStack {
             VStack(alignment: .leading) {
                 Table(selection: $selection) {
                     TableColumn("Name") { route in
-                        TextField("Route", text: route.name)
+                        TextField("Script", text: route.name)
                             .labelsHidden()
                     }
                 } rows: {
-                    ForEach($layout.routes.filter({ !$0.wrappedValue.automatic })) { route in
+                    ForEach($layout.scripts) { route in
                         TableRow(route)
                     }
                 }
 
                 HStack {
-                    Text("\(layout.fixedRoutes.count) routes")
+                    Text("\(layout.scripts.count) scripts")
                     
                     Spacer()
                     
                     Button("+") {
-                        let route = layout.newRoute()
-                        selection = route.id
+                        let script = layout.newScript()
+                        selection = script.id
                         undoManager?.registerUndo(withTarget: layout, handler: { layout in
-                            layout.remove(routeId: route.id)
+                            layout.remove(scriptId: script.id)
                         })
                     }
                     Button("-") {
-                        let route = layout.route(for: selection!, trainId: nil)!
-                        layout.remove(routeId: route.id)
+                        let script = layout.script(for: selection)!
+                        layout.remove(scriptId: script.id)
                         undoManager?.registerUndo(withTarget: layout, handler: { layout in
-                            layout.routes.append(route)
+                            layout.addScript(script: script)
                         })
                     }.disabled(selection == nil)
                     
                     Spacer().fixedSpace()
 
                     Button("􀉁") {
-                        layout.duplicate(routeId: selection!)
+                        layout.duplicate(scriptId: selection!)
                     }.disabled(selection == nil)
 
                     Spacer().fixedSpace()
                     
                     Button("􀄬") {
-                        layout.sortRoutes()
+                        layout.sortScript()
                     }
                 }.padding()
             }.frame(maxWidth: SideListFixedWidth)
 
-            if let routeId = selection, let route = layout.route(for: routeId, trainId: nil) {
-                RouteView(layout: layout, route: route)
-                    .id(routeId) // SWIFTUI BUG: Need to re-create the view for each route otherwise it crashes when switching between certain routes
+            if let script = layout.script(for: selection) {
+                ScriptView(layout: layout, script: script)
             } else {
-                CenteredLabelView(label: "No Selected Route")
+                CenteredLabelView(label: "No Selected Script")
             }
         }.onAppear {
             if selection == nil {
-                selection = layout.routes.first?.id
+                selection = layout.scripts.first?.id
             }
         }
     }
 }
 
-struct RouteListView_Previews: PreviewProvider {
-    
+struct ScriptListView_Previews: PreviewProvider {
+        
     static var previews: some View {
-        RouteListView(layout: LayoutLoop2().newLayout())
+        ScriptListView(layout: ScriptView_Previews.layout)
     }
-
 }

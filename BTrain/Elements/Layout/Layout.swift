@@ -64,7 +64,9 @@ final class Layout: Element, ObservableObject {
     /// However, the user is free to move these control points for greater flexibility and when this happens, these custom
     /// control points are stored in this array.
     @Published var controlPoints = [ControlPoint]()
-
+    
+    /// A map of scripts
+    @Published var scriptMap = OrderedDictionary<Identifier<Script>, Script>()
     
     /// An array of routes.
     ///
@@ -117,6 +119,7 @@ final class Layout: Element, ObservableObject {
         self.transitions = other.transitions
         self.controlPoints = other.controlPoints
         self.routes = other.routes
+        self.scripts = other.scripts
         self.trains = other.trains
         self.locomotives = other.locomotives
     }
@@ -145,7 +148,7 @@ final class Layout: Element, ObservableObject {
 extension Layout: Codable {
     
     enum CodingKeys: CodingKey {
-      case id, name, blocks, stations, feedbacks, turnouts, trains, locomotives, routes, transitions, controlPoints
+      case id, name, blocks, stations, feedbacks, turnouts, trains, locomotives, routes, scripts, transitions, controlPoints
     }
 
     convenience init(from decoder: Decoder) throws {
@@ -159,6 +162,7 @@ extension Layout: Codable {
         self.trains = try container.decode([Train].self, forKey: CodingKeys.trains)
         self.locomotives = try container.decode([Locomotive].self, forKey: CodingKeys.locomotives)
         self.routes = try container.decode([Route].self, forKey: CodingKeys.routes)
+        self.scripts = try container.decodeIfPresent([Script].self, forKey: CodingKeys.scripts) ?? []
         self.transitions = try container.decode([Transition].self, forKey: CodingKeys.transitions)
         self.controlPoints = try container.decode([ControlPoint].self, forKey: CodingKeys.controlPoints)
     }
@@ -174,16 +178,19 @@ extension Layout: Codable {
         try container.encode(trains, forKey: CodingKeys.trains)
         try container.encode(locomotives, forKey: CodingKeys.locomotives)
         try container.encode(fixedRoutes, forKey: CodingKeys.routes)
+        try container.encode(scripts, forKey: CodingKeys.scripts)
         try container.encode(transitions, forKey: CodingKeys.transitions)
         try container.encode(controlPoints, forKey: CodingKeys.controlPoints)
     }
     
+    // TODO: used for what exactly?
     static func decode(from data: Data) throws -> Layout {
         let decoder = JSONDecoder()
         let layout = try decoder.decode(Layout.self, from: data)
         return layout
     }
     
+    // TODO: used for what exactly?
     func encode() throws -> Data {
         let encoder = JSONEncoder()
         let data = try encoder.encode(self)

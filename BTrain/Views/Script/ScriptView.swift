@@ -15,28 +15,34 @@ import SwiftUI
 struct ScriptView: View {
     
     let layout: Layout
-
-    @State private var commands = [
-        ScriptCommand(action: .move),
-        ScriptCommand(action: .loop, children: [
-            ScriptCommand(action: .move),
-            ScriptCommand(action: .wait),
-        ])
-    ]
+    @ObservedObject var script: Script
     
     var body: some View {
-        List {
-            ForEach($commands, id: \.self) { command in
-                ScriptLineView(layout: layout, commands: $commands, command: command)
-                if let children = command.children {
-                    ForEach(children, id: \.self) { command in
-                        HStack {
-                            Spacer().fixedSpace()
-                            ScriptLineView(layout: layout, commands: $commands, command: command)
+        VStack {
+            List {
+                ForEach($script.commands, id: \.self) { command in
+                    ScriptLineView(layout: layout, commands: $script.commands, command: command)
+                    if let children = command.children {
+                        ForEach(children, id: \.self) { command in
+                            HStack {
+                                Spacer().fixedSpace()
+                                ScriptLineView(layout: layout, commands: $script.commands, command: command)
+                            }
                         }
                     }
                 }
             }
+
+            HStack {
+                Text("\(script.commands.count) commands")
+                Spacer()
+                Button("+") {
+                    script.commands.append(ScriptCommand(action: .move))
+                }
+                Button("-") {
+                    
+                }
+            }.padding()
         }
     }
     
@@ -44,9 +50,21 @@ struct ScriptView: View {
 
 struct ScriptView_Previews: PreviewProvider {
         
-    static let doc = LayoutDocument(layout: LayoutComplex().newLayout())
+    static let layout = {
+        let layout = Layout()
+        let s = Script(name: "Boucle")
+        s.commands.append(ScriptCommand(action: .move))
+        s.commands.append(ScriptCommand(action: .wait))
+        var loop = ScriptCommand(action: .loop)
+        loop.repeatCount = 2
+        loop.children.append(ScriptCommand(action: .move))
+        loop.children.append(ScriptCommand(action: .move))
+        s.commands.append(loop)
+        layout.scriptMap[s.id] = s
+        return layout
+    }()
 
     static var previews: some View {
-        ScriptView(layout: doc.layout)
+        ScriptView(layout: layout, script: layout.scripts[0])
     }
 }

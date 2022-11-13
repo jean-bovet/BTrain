@@ -33,6 +33,8 @@ struct MainView: View {
             switch(document.selectedView) {
             case .overview:
                 OverviewView(document: document)
+            case .scripts:
+                ScriptListView(layout: document.layout)
             case .routes:
                 RouteListView(layout: document.layout)
             case .trains:

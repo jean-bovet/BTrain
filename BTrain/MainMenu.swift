@@ -18,13 +18,14 @@ struct MenuCommands: Commands {
         CommandGroup(after: CommandGroupPlacement.sidebar) {
             Group {
                 CommandSelectedView(viewType: .overview, label: "Switchboard").keyboardShortcut("0", modifiers: [.command])
-                CommandSelectedView(viewType: .routes, label: "Routes").keyboardShortcut("1", modifiers: [.command])
-                CommandSelectedView(viewType: .trains, label: "Trains").keyboardShortcut("2", modifiers: [.command])
-                CommandSelectedView(viewType: .locomotives, label: "Locomotives").keyboardShortcut("3", modifiers: [.command])
-                CommandSelectedView(viewType: .stations, label: "Stations").keyboardShortcut("4", modifiers: [.command])
-                CommandSelectedView(viewType: .blocks, label: "Blocks").keyboardShortcut("5", modifiers: [.command])
-                CommandSelectedView(viewType: .turnouts, label: "Turnouts").keyboardShortcut("6", modifiers: [.command])
-                CommandSelectedView(viewType: .feedback, label: "Feedback").keyboardShortcut("7", modifiers: [.command])
+                CommandSelectedView(viewType: .scripts, label: "Scripts").keyboardShortcut("1", modifiers: [.command])
+                CommandSelectedView(viewType: .routes, label: "Routes").keyboardShortcut("2", modifiers: [.command])
+                CommandSelectedView(viewType: .trains, label: "Trains").keyboardShortcut("3", modifiers: [.command])
+                CommandSelectedView(viewType: .locomotives, label: "Locomotives").keyboardShortcut("4", modifiers: [.command])
+                CommandSelectedView(viewType: .stations, label: "Stations").keyboardShortcut("5", modifiers: [.command])
+                CommandSelectedView(viewType: .blocks, label: "Blocks").keyboardShortcut("6", modifiers: [.command])
+                CommandSelectedView(viewType: .turnouts, label: "Turnouts").keyboardShortcut("7", modifiers: [.command])
+                CommandSelectedView(viewType: .feedback, label: "Feedback").keyboardShortcut("8", modifiers: [.command])
             }
             Divider()
             CommandSelectedView(viewType: .cs3, label: "Central Station 3 Debugger")
