@@ -79,7 +79,7 @@ struct TrainListView: View {
                     Button("􀄬") {
                         layout.sortTrains()
                     }
-                }.padding()
+                }.padding([.leading])
             }.frame(maxWidth: SideListFixedWidth)
 
             if let selection = selection, let train = layout.train(for: selection) {
@@ -103,6 +103,8 @@ struct TrainListView_Previews: PreviewProvider {
     static let doc = LayoutDocument(layout: LayoutLoop2().newLayout())
     
     static var previews: some View {
-        TrainListView(document: doc, layout: doc.layout)
+        ConfigurationSheet(title: "Trains") {
+            TrainListView(document: doc, layout: doc.layout)
+        }
     }
 }

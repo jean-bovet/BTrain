@@ -96,8 +96,8 @@ struct MainView: View {
         }.sheet(isPresented: $showNewWizard) {
             NewLayoutWizardView(document: document)
                 .padding()
-        }.sheet(isPresented: $document.displayScripts) {
-            ScriptListView(layout: document.layout)
+        }.sheet(isPresented: $document.displaySheet) {
+            displaySheetView
                 .frame(idealWidth: idealSheetWidth, idealHeight: idealSheetHeight)
         }.alert("Are you sure you want to change the current list of locomotives with the locomotives definition from the Central Station?", isPresented: $showDiscoverLocomotiveConfirmation) {
             Button("Cancel", role: .cancel) { }
@@ -110,6 +110,18 @@ struct MainView: View {
         }
     }
     
+    var displaySheetView: some View {
+        ConfigurationSheet(title: document.displaySheetType.rawValue) {
+            switch document.displaySheetType {
+            case .script:
+                ScriptListView(layout: document.layout)
+            case .trains:
+                TrainListView(document: document, layout: document.layout)
+            case .locomotives:
+                LocomotiveListView(document: document, layout: document.layout)
+            }
+        }
+    }
 }
 
 struct ContentView_Previews: PreviewProvider {

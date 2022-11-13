@@ -65,8 +65,19 @@ final class LayoutDocument: ObservableObject {
     @Published var discoverLocomotiveConfirmation = false
     
     /// Displays the Scripts sheet
-    @Published var displayScripts = false
     
+    enum DisplaySheetType: String {
+        case script = "Scripts"
+        case trains = "Trains"
+        case locomotives = "Locomotives"
+    }
+    @Published var displaySheetType = DisplaySheetType.script {
+        didSet {
+            displaySheet.toggle()
+        }
+    }
+    @Published var displaySheet = false
+
     /// Property used to switch to a specific view type
     @AppStorage("selectedView") var selectedView: ViewType = .overview
 

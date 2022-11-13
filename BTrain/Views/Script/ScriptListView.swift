@@ -15,36 +15,11 @@ import SwiftUI
 struct ScriptListView: View {
     
     @Environment(\.undoManager) var undoManager
-    @Environment(\.presentationMode) var presentationMode
 
     @ObservedObject var layout: Layout
     
     @State private var selection: Identifier<Script>?
 
-    var header: some View {
-        HStack {
-            Text("Scripts").font(.title)
-            Spacer()
-        }
-        .padding()
-        .background(.yellow)
-    }
-    
-    var footer: some View {
-        VStack(spacing: 0) {
-            Divider()
-            
-            HStack {
-                Spacer()
-                
-                Button("OK") {
-                    presentationMode.wrappedValue.dismiss()
-                }
-                .keyboardShortcut(.defaultAction)
-            }.padding()
-        }
-    }
-    
     var scriptList: some View {
         VStack(alignment: .leading) {
             Table(selection: $selection) {
@@ -59,7 +34,7 @@ struct ScriptListView: View {
             }
             
             HStack {
-                Text(" \(layout.scripts.count) scripts")
+                Text("\(layout.scripts.count) scripts")
                 
                 Spacer()
                 
@@ -89,7 +64,7 @@ struct ScriptListView: View {
                 Button("􀄬") {
                     layout.sortScript()
                 }
-            }
+            }.padding([.leading])
         }
         .onAppear {
             if selection == nil {
@@ -101,21 +76,14 @@ struct ScriptListView: View {
     }
     
     var body: some View {
-        VStack(spacing: 0) {
-            header
-            
-            HStack {
-                scriptList
-                    .frame(maxWidth: SideListFixedWidth)
-                if let script = layout.script(for: selection) {
-                    ScriptView(layout: layout, script: script)
-                } else {
-                    CenteredLabelView(label: "No Selected Script")
-                }
+        HStack(alignment: .top) {
+            scriptList
+                .frame(maxWidth: SideListFixedWidth)
+            if let script = layout.script(for: selection) {
+                ScriptView(layout: layout, script: script)
+            } else {
+                CenteredLabelView(label: "No Selected Script")
             }
-            
-            footer
-                .padding([.top])
         }
     }
 }
@@ -124,10 +92,14 @@ struct ScriptListView_Previews: PreviewProvider {
         
     static var previews: some View {
         Group {
-            ScriptListView(layout: ScriptView_Previews.layout)
+            ConfigurationSheet(title: "Scripts") {
+                ScriptListView(layout: ScriptView_Previews.layout)
+            }
         }
         Group {
-            ScriptListView(layout: Layout())
+            ConfigurationSheet(title: "Scripts") {
+                ScriptListView(layout: Layout())
+            }
         }.previewDisplayName("Empty")
     }
 }

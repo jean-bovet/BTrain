@@ -27,7 +27,13 @@ struct DocumentToolbarContent: ToolbarContent {
 
         ToolbarItemGroup {
             Button("􀬱") {
-                document.displayScripts.toggle()
+                document.displaySheetType = .script
+            }.disabled(document.connected)
+            Button("􀼯") {
+                document.displaySheetType = .trains
+            }.disabled(document.connected)
+            Button("􀼮") {
+                document.displaySheetType = .locomotives
             }.disabled(document.connected)
         }
         

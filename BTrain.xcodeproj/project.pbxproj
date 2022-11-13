@@ -300,6 +300,7 @@
 		A7A7D68E2920D90D008FA648 /* SourceIdentifiable.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7A7D68D2920D90D008FA648 /* SourceIdentifiable.swift */; };
 		A7A7D6902921501A008FA648 /* DirectionPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7A7D68F2921501A008FA648 /* DirectionPicker.swift */; };
 		A7A7D69229215562008FA648 /* CenteredCustomView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7A7D69129215562008FA648 /* CenteredCustomView.swift */; };
+		A7A7D69629217FED008FA648 /* ConfigurationSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7A7D69529217FED008FA648 /* ConfigurationSheet.swift */; };
 		A7ACCE9F2810E5BA006F4310 /* LayoutControllerEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7ACCE9E2810E5BA006F4310 /* LayoutControllerEvent.swift */; };
 		A7B06AE12727786500BDD88C /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7B06AE02727786500BDD88C /* MainView.swift */; };
 		A7B06AF2272782C300BDD88C /* LayoutDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7B06AF1272782C300BDD88C /* LayoutDocument.swift */; };
@@ -668,6 +669,7 @@
 		A7A7D68D2920D90D008FA648 /* SourceIdentifiable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SourceIdentifiable.swift; sourceTree = "<group>"; };
 		A7A7D68F2921501A008FA648 /* DirectionPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DirectionPicker.swift; sourceTree = "<group>"; };
 		A7A7D69129215562008FA648 /* CenteredCustomView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CenteredCustomView.swift; sourceTree = "<group>"; };
+		A7A7D69529217FED008FA648 /* ConfigurationSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfigurationSheet.swift; sourceTree = "<group>"; };
 		A7ACCE9E2810E5BA006F4310 /* LayoutControllerEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutControllerEvent.swift; sourceTree = "<group>"; };
 		A7B06AE02727786500BDD88C /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
 		A7B06AED2727819800BDD88C /* Server.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Server.swift; sourceTree = "<group>"; };
@@ -1096,6 +1098,7 @@
 			children = (
 				A785C076278A6393002FD538 /* ViewType.swift */,
 				A7B06AE02727786500BDD88C /* MainView.swift */,
+				A7A7D69529217FED008FA648 /* ConfigurationSheet.swift */,
 				A77A96DD2727767C009E7ECB /* ConnectSheet.swift */,
 				A744D13A276714A2005C2F37 /* DiagnosticsSheet.swift */,
 				A7907992277EC86200771A60 /* DocumentToolbarContent.swift */,
@@ -1861,6 +1864,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				A73AFEB127265A2300E1ED21 /* MarklinCANMessage.swift in Sources */,
+				A7A7D69629217FED008FA648 /* ConfigurationSheet.swift in Sources */,
 				A7281840278E9EDC007BE810 /* Direction.swift in Sources */,
 				A763F19327BE26CF00B3499A /* LocomotiveSpeedMeasurementsView.swift in Sources */,
 				A79466CC279B64D2006E2A4C /* MainThreadQueue.swift in Sources */,
