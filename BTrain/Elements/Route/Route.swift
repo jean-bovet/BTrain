@@ -43,8 +43,7 @@ final class Route: Element, ObservableObject {
         case automaticOnce(destination: Destination)
     }
     
-    // When automatic is true, this defines the mode in which
-    // the automatic route is defined.
+    /// The mode of the route
     var mode = Mode.automatic
     
     /// Returns true if the route is automatic.

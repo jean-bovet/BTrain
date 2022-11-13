@@ -26,7 +26,12 @@ struct DocumentToolbarContent: ToolbarContent {
         }
 
         ToolbarItemGroup {
-            
+            Button("􀬱") {
+                document.displayScripts.toggle()
+            }.disabled(document.connected)
+        }
+        
+        ToolbarItemGroup {
             DiagnosticsIndicationView(diagnostics: document.layoutDiagnostics, document: document)
 
             Spacer()

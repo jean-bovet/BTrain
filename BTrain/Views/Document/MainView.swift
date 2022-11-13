@@ -28,6 +28,14 @@ struct MainView: View {
     @AppStorage(SettingsKeys.autoConnectSimulator) private var autoConnectSimulator = false
     @AppStorage(SettingsKeys.autoEnableSimulator) private var autoEnableSimulator = false
     
+    var idealSheetWidth: CGFloat {
+        (NSApp.keyWindow?.contentView?.bounds.width ?? 500) * 0.75
+    }
+    
+    var idealSheetHeight: CGFloat {
+        (NSApp.keyWindow?.contentView?.bounds.height ?? 400) * 0.75
+    }
+
     var body: some View {
         Group {
             switch(document.selectedView) {
@@ -88,6 +96,9 @@ struct MainView: View {
         }.sheet(isPresented: $showNewWizard) {
             NewLayoutWizardView(document: document)
                 .padding()
+        }.sheet(isPresented: $document.displayScripts) {
+            ScriptListView(layout: document.layout)
+                .frame(idealWidth: idealSheetWidth, idealHeight: idealSheetHeight)
         }.alert("Are you sure you want to change the current list of locomotives with the locomotives definition from the Central Station?", isPresented: $showDiscoverLocomotiveConfirmation) {
             Button("Cancel", role: .cancel) { }
             Button("Download & Merge") {
@@ -98,6 +109,7 @@ struct MainView: View {
             }
         }
     }
+    
 }
 
 struct ContentView_Previews: PreviewProvider {

@@ -15,68 +15,105 @@ import SwiftUI
 struct ScriptListView: View {
     
     @Environment(\.undoManager) var undoManager
-    
+    @Environment(\.presentationMode) var presentationMode
+
     @ObservedObject var layout: Layout
     
     @State private var selection: Identifier<Script>?
 
-    var body: some View {
+    var header: some View {
         HStack {
-            VStack(alignment: .leading) {
-                Table(selection: $selection) {
-                    TableColumn("Name") { route in
-                        TextField("Script", text: route.name)
-                            .labelsHidden()
-                    }
-                } rows: {
-                    ForEach($layout.scripts) { route in
-                        TableRow(route)
-                    }
+            Text("Scripts").font(.title)
+            Spacer()
+        }
+        .padding()
+        .background(.yellow)
+    }
+    
+    var footer: some View {
+        VStack(spacing: 0) {
+            Divider()
+            
+            HStack {
+                Spacer()
+                
+                Button("OK") {
+                    self.presentationMode.wrappedValue.dismiss()
                 }
-
-                HStack {                    
-                    Text("\(layout.scripts.count) scripts")
-                    
-                    Spacer()
-                    
-                    Button("+") {
-                        let script = layout.newScript()
-                        selection = script.id
-                        undoManager?.registerUndo(withTarget: layout, handler: { layout in
-                            layout.remove(scriptId: script.id)
-                        })
-                    }
-                    Button("-") {
-                        let script = layout.script(for: selection)!
-                        layout.remove(scriptId: script.id)
-                        undoManager?.registerUndo(withTarget: layout, handler: { layout in
-                            layout.addScript(script: script)
-                        })
-                    }.disabled(selection == nil)
-                    
-                    Spacer().fixedSpace()
-
-                    Button("􀉁") {
-                        layout.duplicate(scriptId: selection!)
-                    }.disabled(selection == nil)
-
-                    Spacer().fixedSpace()
-                    
-                    Button("􀄬") {
-                        layout.sortScript()
-                    }
-                }.padding()
-            }.frame(maxWidth: SideListFixedWidth)
-
-            if let script = layout.script(for: selection) {
-                ScriptView(layout: layout, script: script)
-            } else {
-                CenteredLabelView(label: "No Selected Script")
+                .keyboardShortcut(.defaultAction)
+            }.padding()
+        }
+    }
+    
+    var scriptList: some View {
+        VStack(alignment: .leading) {
+            Table(selection: $selection) {
+                TableColumn("Name") { route in
+                    TextField("Script", text: route.name)
+                        .labelsHidden()
+                }
+            } rows: {
+                ForEach($layout.scripts) { route in
+                    TableRow(route)
+                }
             }
-        }.onAppear {
+            
+            HStack {
+                Text("\(layout.scripts.count) scripts")
+                
+                Spacer()
+                
+                Button("+") {
+                    let script = layout.newScript()
+                    selection = script.id
+                    undoManager?.registerUndo(withTarget: layout, handler: { layout in
+                        layout.remove(scriptId: script.id)
+                    })
+                }
+                Button("-") {
+                    let script = layout.script(for: selection)!
+                    layout.remove(scriptId: script.id)
+                    undoManager?.registerUndo(withTarget: layout, handler: { layout in
+                        layout.addScript(script: script)
+                    })
+                }.disabled(selection == nil)
+                
+                Spacer().fixedSpace()
+
+                Button("􀉁") {
+                    layout.duplicate(scriptId: selection!)
+                }.disabled(selection == nil)
+
+                Spacer().fixedSpace()
+                
+                Button("􀄬") {
+                    layout.sortScript()
+                }
+            }
+        }
+        .onAppear {
             if selection == nil {
                 selection = layout.scripts.first?.id
             }
+        }
+    }
+    
+    var body: some View {
+        VStack(spacing: 0) {
+            header
+            
+            HStack {
+                scriptList
+                    .frame(maxWidth: SideListFixedWidth)
+                if let script = layout.script(for: selection) {
+                    ScriptView(layout: layout, script: script)
+                } else {
+                    CenteredLabelView(label: "No Selected Script")
+                }
+            }
+            
+            footer
+                .padding([.top])
         }
     }
 }

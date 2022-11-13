@@ -63,7 +63,10 @@ final class LayoutDocument: ObservableObject {
 
     /// Property used to confirm the download of the locomotives command
     @Published var discoverLocomotiveConfirmation = false
-
+    
+    /// Displays the Scripts sheet
+    @Published var displayScripts = false
+    
     /// Property used to switch to a specific view type
     @AppStorage("selectedView") var selectedView: ViewType = .overview
 
