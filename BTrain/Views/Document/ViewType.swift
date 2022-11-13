@@ -15,11 +15,7 @@ import Foundation
 // The various "views" that the document can present to the user
 enum ViewType: Int {
     case overview
-    case scripts
     case routes
-    case trains
-    case locomotives
-    case stations
     case blocks
     case turnouts
     case feedback

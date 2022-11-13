@@ -26,14 +26,19 @@ struct DocumentToolbarContent: ToolbarContent {
         }
 
         ToolbarItemGroup {
-            Button("􀬱") {
-                document.displaySheetType = .script
-            }.disabled(document.connected)
-            Button("􀼯") {
-                document.displaySheetType = .trains
-            }.disabled(document.connected)
-            Button("􀼮") {
-                document.displaySheetType = .locomotives
+            Group {
+                Button("􀬱") {
+                    document.displaySheetType = .script
+                }.disabled(document.connected)
+                Button("􀼯") {
+                    document.displaySheetType = .trains
+                }.disabled(document.connected)
+                Button("􀼮") {
+                    document.displaySheetType = .locomotives
+                }.disabled(document.connected)
+                Button("􀌃") {
+                    document.displaySheetType = .stations
+                }.disabled(document.connected)
             }.disabled(document.connected)
         }
         

@@ -70,6 +70,7 @@ final class LayoutDocument: ObservableObject {
         case script = "Scripts"
         case trains = "Trains"
         case locomotives = "Locomotives"
+        case stations = "Stations"
     }
     @Published var displaySheetType = DisplaySheetType.script {
         didSet {

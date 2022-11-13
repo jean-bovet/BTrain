@@ -51,7 +51,7 @@ struct TrainControlListView: View {
             VStack {
                 Text("No Trains")
                 Button("Add a Train") {
-                    document.selectedView = .trains
+                    document.displaySheetType = .trains
                 }
             }
         } else {
