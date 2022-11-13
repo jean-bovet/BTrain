@@ -54,41 +54,32 @@ extension Script {
 
 extension ScriptCommand {
     
+    func toBlockItem() throws -> RouteItem {
+        guard let blockId = blockId else {
+            throw ScriptError.undefinedBlock(command: self)
+        }
+        
+        guard let direction = direction else {
+            throw ScriptError.undefinedDirection(command: self)
+        }
+
+        var item = RouteItemBlock(blockId, direction, TimeInterval(waitDuration))
+        // Assign to the route item the id of the script command. That way,
+        // when an error happens during route resolving, we can easily map
+        // the error to the original script command and highlight it in the UI.
+        item.sourceIdentifier = id.uuidString
+        return .block(item)
+    }
+    
     func toRouteItems() throws -> [RouteItem] {
         switch action {
         case .start:
-            guard let direction = direction else {
-                throw ScriptError.undefinedDirection(command: self)
-            }
-            
-            guard let blockId = blockId else {
-                throw ScriptError.undefinedBlock(command: self)
-            }
-            
-            var item = RouteItemBlock(blockId, direction, TimeInterval(waitDuration))
-            // Assign to the route item the id of the script command. That way,
-            // when an error happens during route resolving, we can easily map
-            // the error to the original script command and highlight it in the UI.
-            item.sourceIdentifier = id.uuidString
-            return [.block(item)]
+            return [try toBlockItem()]
 
         case .move:
             switch destinationType {
             case .block:
-                guard let direction = direction else {
-                    throw ScriptError.undefinedDirection(command: self)
-                }
-                
-                guard let blockId = blockId else {
-                    throw ScriptError.undefinedBlock(command: self)
-                }
-                
-                var item = RouteItemBlock(blockId, direction, TimeInterval(waitDuration))
-                // Assign to the route item the id of the script command. That way,
-                // when an error happens during route resolving, we can easily map
-                // the error to the original script command and highlight it in the UI.
-                item.sourceIdentifier = id.uuidString
-                return [.block(item)]
+                return [try toBlockItem()]
             case .station:
                 if let stationId = stationId {
                     return [.station(.init(stationId: stationId))]

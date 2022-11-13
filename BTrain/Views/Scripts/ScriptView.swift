@@ -27,8 +27,7 @@ struct ScriptView: View {
   
     @State private var resolvedRouteResult: Result<[ResolvedRouteItem]?, Error>?
 
-    @State private var routeExpanded = false
-    @State private var resolvedRouteExpanded = false
+    @State private var showResultsSummary = false
 
     @State private var commandErrorIds = [String]()
     
@@ -75,6 +74,16 @@ struct ScriptView: View {
         }
     }
     
+    var errorSummary: String? {
+        if let error = generatedRouteError {
+            return error.localizedDescription
+        } else if case .failure(let error) = resolvedRouteResult {
+            return error.localizedDescription
+        } else {
+            return nil
+        }
+    }
+        
     var body: some View {
         VStack {
             if script.commands.isEmpty {
@@ -98,33 +107,53 @@ struct ScriptView: View {
                         }
                     }
                 }
-                VStack(alignment: .leading) {
-                    HStack {
-                        Button("Verify") {
-                            validate(script: script)
-                        }
-                        switch verifyStatus {
-                        case .none:
-                            Text("")
-                        case .failure:
-                            Text("􀇾")
-                        case .success:
-                            Text("􀁢")
+                HStack {
+                    Button("Verify") {
+                        validate(script: script)
+                    }
+                    switch verifyStatus {
+                    case .none:
+                        Spacer()
+                        
+                    case .failure:
+                        Text("􀇾")
+                        if let errorSummary = errorSummary {
+                            Text(errorSummary)
                         }
                         Spacer()
+                        
+                    case .success:
+                        Text("􀁢")
+                        
+                        Spacer()
+                        
+                        Button("View Resulting Route") {
+                            showResultsSummary.toggle()
+                        }
+                        .sheet(isPresented: $showResultsSummary, content: {
+                            AlertCustomView {
+                                VStack(alignment: .leading) {
+                                    VStack(alignment: .leading) {
+                                        Text("Generated Route:")
+                                            .font(.title2)
+                                        ScrollView {
+                                            Text("\(generatedRouteDescription)")
+                                        }.frame(minHeight: 80)
+                                    }
+                                    VStack(alignment: .leading) {
+                                        Text("Resolved Route:")
+                                            .font(.title2)
+                                        ScrollView {
+                                            Text("\(resolvedRouteDescription)")
+                                        }.frame(minHeight: 80)
+                                    }
+                                }
+                                .padding()
+                                .frame(maxWidth: 600)
+                            }
+                        })
                     }
-
-                    ScrollView {
-                        DisclosureGroup("Generated Route") {
-                            Text(generatedRouteDescription)
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                        }
-                        DisclosureGroup("Resolved Route") {
-                            Text(resolvedRouteDescription)
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                        }
-                    }.frame(maxHeight: 200)
-                }.padding()
+                }.padding([.leading, .trailing])
             }
         }
     }

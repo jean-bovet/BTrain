@@ -301,6 +301,7 @@
 		A7A7D6902921501A008FA648 /* DirectionPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7A7D68F2921501A008FA648 /* DirectionPicker.swift */; };
 		A7A7D69229215562008FA648 /* CenteredCustomView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7A7D69129215562008FA648 /* CenteredCustomView.swift */; };
 		A7A7D69629217FED008FA648 /* ConfigurationSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7A7D69529217FED008FA648 /* ConfigurationSheet.swift */; };
+		A7A7D6982921A6E2008FA648 /* AlertCustomView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7A7D6972921A6E2008FA648 /* AlertCustomView.swift */; };
 		A7ACCE9F2810E5BA006F4310 /* LayoutControllerEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7ACCE9E2810E5BA006F4310 /* LayoutControllerEvent.swift */; };
 		A7B06AE12727786500BDD88C /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7B06AE02727786500BDD88C /* MainView.swift */; };
 		A7B06AF2272782C300BDD88C /* LayoutDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7B06AF1272782C300BDD88C /* LayoutDocument.swift */; };
@@ -670,6 +671,7 @@
 		A7A7D68F2921501A008FA648 /* DirectionPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DirectionPicker.swift; sourceTree = "<group>"; };
 		A7A7D69129215562008FA648 /* CenteredCustomView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CenteredCustomView.swift; sourceTree = "<group>"; };
 		A7A7D69529217FED008FA648 /* ConfigurationSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfigurationSheet.swift; sourceTree = "<group>"; };
+		A7A7D6972921A6E2008FA648 /* AlertCustomView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertCustomView.swift; sourceTree = "<group>"; };
 		A7ACCE9E2810E5BA006F4310 /* LayoutControllerEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutControllerEvent.swift; sourceTree = "<group>"; };
 		A7B06AE02727786500BDD88C /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
 		A7B06AED2727819800BDD88C /* Server.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Server.swift; sourceTree = "<group>"; };
@@ -1158,7 +1160,7 @@
 			path = Commands;
 			sourceTree = "<group>";
 		};
-		A747968C2920211F001DF7FA /* Script */ = {
+		A747968C2920211F001DF7FA /* Scripts */ = {
 			isa = PBXGroup;
 			children = (
 				A7A7D68529202CEA008FA648 /* ScriptListView.swift */,
@@ -1169,7 +1171,7 @@
 				A7A7D68B2920B120008FA648 /* Script+Route.swift */,
 				A747968429201FB2001DF7FA /* ScriptCommand.swift */,
 			);
-			path = Script;
+			path = Scripts;
 			sourceTree = "<group>";
 		};
 		A74CCC73272A5A1C004E58F5 /* Elements */ = {
@@ -1514,6 +1516,7 @@
 				A747968829202038001DF7FA /* BlockPicker.swift */,
 				A747968A292020D4001DF7FA /* StationPicker.swift */,
 				A7A7D68F2921501A008FA648 /* DirectionPicker.swift */,
+				A7A7D6972921A6E2008FA648 /* AlertCustomView.swift */,
 			);
 			path = Common;
 			sourceTree = "<group>";
@@ -1634,7 +1637,7 @@
 				A73E07F9276A70F5005F9D64 /* Overview */,
 				A73B1645274DC5BC0073947D /* Train Controls */,
 				A7841372273CE06F00381341 /* Switchboard */,
-				A747968C2920211F001DF7FA /* Script */,
+				A747968C2920211F001DF7FA /* Scripts */,
 				A7710E5A2777FA0E00C08150 /* Routes */,
 				A73B163A274DC02A0073947D /* Trains */,
 				A797E523291C9B9A00E0E511 /* Locomotives */,
@@ -1933,6 +1936,7 @@
 				A7710E5E277850F000C08150 /* Reservation.swift in Sources */,
 				A7479683292010F4001DF7FA /* ScriptCommandView.swift in Sources */,
 				A76507F4275BEE5F0079C71A /* LayoutDiagnostics.swift in Sources */,
+				A7A7D6982921A6E2008FA648 /* AlertCustomView.swift in Sources */,
 				A7F779E3272E20F500E73275 /* TrainControlListView.swift in Sources */,
 				A73AFEB727265ADA00E1ED21 /* MarklinInterface.swift in Sources */,
 				A7B06AFB2727B73300BDD88C /* FeedbackView.swift in Sources */,
