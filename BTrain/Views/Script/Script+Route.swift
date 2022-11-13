@@ -34,8 +34,12 @@ extension ScriptError: LocalizedError {
 
 extension Script {
     
+    /// Creates a route representing the script. The route ID will be the same as the script ID.
+    /// 
+    /// - Returns: a new route
     func toRoute() throws -> Route {
-        let route = Route()
+        let route = Route(uuid: id.uuid, mode: .fixed)
+        route.name = name
         route.partialSteps.append(contentsOf: try commands.toRouteItems())
         return route
     }

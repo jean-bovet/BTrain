@@ -64,5 +64,20 @@ extension Layout {
             $0.name < $1.name
         }
     }
-     
+    
+    /// Convert all the scripts in the layout into individual routes, updating any existing route.
+    ///
+    /// Each route unique ID matches the unique ID of the script. When the script is updated, the
+    /// same route is going to be updated.
+    func convertScriptsToRoute() {
+        for script in scripts {
+            if let route = try? script.toRoute() {
+                if route.partialSteps.isEmpty {
+                    remove(routeId: route.id)
+                } else {
+                    addOrUpdate(route: route)
+                }
+            }
+        }
+    }
 }

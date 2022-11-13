@@ -38,7 +38,7 @@ struct ScriptListView: View {
                 Spacer()
                 
                 Button("OK") {
-                    self.presentationMode.wrappedValue.dismiss()
+                    presentationMode.wrappedValue.dismiss()
                 }
                 .keyboardShortcut(.defaultAction)
             }.padding()
@@ -59,7 +59,7 @@ struct ScriptListView: View {
             }
             
             HStack {
-                Text("\(layout.scripts.count) scripts")
+                Text(" \(layout.scripts.count) scripts")
                 
                 Spacer()
                 
@@ -95,6 +95,8 @@ struct ScriptListView: View {
             if selection == nil {
                 selection = layout.scripts.first?.id
             }
+        }.onDisappear() {
+            layout.convertScriptsToRoute()
         }
     }
     

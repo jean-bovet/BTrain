@@ -113,6 +113,7 @@ extension LayoutDocument: ReferenceFileDocument {
         layout.blocks.forEach({$0.restore(layout: layout)})
         layout.turnouts.forEach({$0.restore(layout: layout)})
         layout.transitions.forEach({$0.restore(layout: layout)})
+        layout.convertScriptsToRoute()
     }
 
     func snapshot(contentType: UTType) throws -> Data {

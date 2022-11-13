@@ -53,7 +53,18 @@ extension Layout {
         routes.append(route)
         return route
     }
-
+    
+    /// Add or update the existing route with the specified route.
+    /// - Parameter route: the route
+    func addOrUpdate(route: Route) {
+        if let existingRoute = self.route(for: route.id) {
+            existingRoute.name = route.name
+            existingRoute.partialSteps = route.partialSteps
+        } else {
+            routes.append(route)
+        }
+    }
+    
     func duplicate(routeId: Identifier<Route>) {
         guard let route = route(for: routeId) else {
             return
