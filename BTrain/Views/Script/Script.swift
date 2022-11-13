@@ -13,7 +13,9 @@
 import Foundation
 
 final class Script: Element, ObservableObject {
+        
     let id: Identifier<Script>
+    
     @Published var name: String
     @Published var commands: [ScriptCommand] = []
     
@@ -27,6 +29,59 @@ final class Script: Element, ObservableObject {
         self.name = name
     }
 
+    func toRoute() throws -> Route {
+        let route = Route()
+        route.steps.append(contentsOf: try commands.toRouteItems())
+        return route
+    }
+        
+}
+
+enum ScriptError: Error {
+    case undefinedBlock
+    case undefinedStation
+}
+
+extension Array where Element == ScriptCommand {
+    
+    func toRouteItems() throws -> [RouteItem] {
+        var items = [RouteItem]()
+        try forEach { cmd in
+            let routeItems = try cmd.toRouteItems()
+            items.append(contentsOf: routeItems)
+        }
+        return items
+    }
+}
+
+extension ScriptCommand {
+    
+    func toRouteItems() throws -> [RouteItem] {
+        switch action {
+        case .move:
+            switch destinationType {
+            case .block:
+                if let blockId = blockId {
+                    return [.block(.init(blockId, .next, TimeInterval(waitDuration)))]
+                } else {
+                    throw ScriptError.undefinedBlock
+                }
+            case .station:
+                if let stationId = stationId {
+                    return [.station(.init(stationId: stationId))]
+                } else {
+                    throw ScriptError.undefinedStation
+                }
+            }
+        case .loop:
+            var items = [RouteItem]()
+            for _ in 0...repeatCount {
+                let routeItems = try children.toRouteItems()
+                items.append(contentsOf: routeItems)
+            }
+            return items
+        }
+    }
 }
 
 extension Script: Codable {

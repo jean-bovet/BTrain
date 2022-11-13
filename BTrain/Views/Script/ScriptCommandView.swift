@@ -47,11 +47,11 @@ struct ScriptCommandView: View {
                     StationPicker(layout: layout, stationId: $command.stationId)
                         .fixedSize()
                 }
+                
+                Stepper("\(command.waitDuration) seconds", value: $command.waitDuration, in: 0...100)
+                    .fixedSize()
             case .loop:
                 Stepper("\(command.repeatCount) times", value: $command.repeatCount, in: 1...10)
-                    .fixedSize()
-            case .wait:
-                Stepper("\(command.waitDuration) seconds", value: $command.waitDuration, in: 0...100)
                     .fixedSize()
             }
         }

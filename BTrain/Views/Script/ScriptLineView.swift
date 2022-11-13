@@ -17,6 +17,7 @@ struct ScriptLineView: View, DropDelegate {
     
     enum DropPosition {
         case before
+        case inside
         case after
     }
 
@@ -29,7 +30,13 @@ struct ScriptLineView: View, DropDelegate {
     
     var body: some View {
         ScriptCommandView(layout: layout, command: $command)
-            .if(dropLine != nil, transform: { view in
+            .if(dropLine == .inside, transform: { view in
+                view.overlay(
+                    Rectangle()
+                        .foregroundColor(.blue).opacity(0.5),
+                    alignment: .center
+                )
+            }).if(dropLine == .before || dropLine == .after, transform: { view in
                 view.overlay(
                     Rectangle()
                         .frame(height: 4)
@@ -58,8 +65,10 @@ struct ScriptLineView: View, DropDelegate {
         let items = info.itemProviders(for: [UTType.text])
         if let item = items.first, let dropLine = dropLine {
             item.loadItem(forTypeIdentifier: UTType.text.identifier, options: nil) { (data, error) in
-                if let data = data as? Data, let sourceUUID = String(data: data, encoding: .utf8) {
-                    move(sourceUUID: sourceUUID, targetUUID: command.id.uuidString, position: dropLine)
+                DispatchQueue.main.async {
+                    if let data = data as? Data, let sourceUUID = String(data: data, encoding: .utf8), sourceUUID != command.id.uuidString {
+                        move(sourceUUID: sourceUUID, targetUUID: command.id.uuidString, position: dropLine)
+                    }
                 }
             }
             return true
@@ -69,10 +78,20 @@ struct ScriptLineView: View, DropDelegate {
     }
     
     func updateDropLine(info: DropInfo) {
-        if info.location.y <= 10 {
-            dropLine = .before
+        if command.action == .loop {
+            if info.location.y <= 5 {
+                dropLine = .before
+            } else if info.location.y >= 15 {
+                dropLine = .after
+            } else {
+                dropLine = .inside
+            }
         } else {
-            dropLine = .after
+            if info.location.y <= 10 {
+                dropLine = .before
+            } else {
+                dropLine = .after
+            }
         }
     }
 
@@ -120,6 +139,8 @@ extension Array where Element == ScriptCommand {
                 switch position {
                 case .before:
                     insert(source, at: index)
+                case .inside:
+                    self[index].children.append(source)
                 case .after:
                     insert(source, at: index + 1)
                 }

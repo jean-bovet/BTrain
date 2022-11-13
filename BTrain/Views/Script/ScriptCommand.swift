@@ -19,7 +19,6 @@ struct ScriptCommand: Identifiable, Hashable {
     enum ScriptAction: String, CaseIterable, Codable {
         case move = "Move"
         case loop = "Repeat"
-        case wait = "Wait"
     }
 
     var action: ScriptAction = .move

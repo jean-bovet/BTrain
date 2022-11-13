@@ -64,5 +64,8 @@ extension Layout {
             $0.name < $1.name
         }
     }
-            
+     
+    func verify(script: Script) throws -> Route {
+        try script.toRoute()
+    }
 }

@@ -16,20 +16,34 @@ struct ScriptView: View {
     
     let layout: Layout
     @ObservedObject var script: Script
+    @State private var verifyResults = ""
     
     var body: some View {
         VStack {
-            List {
-                ForEach($script.commands, id: \.self) { command in
-                    ScriptLineView(layout: layout, commands: $script.commands, command: command)
-                    if let children = command.children {
-                        ForEach(children, id: \.self) { command in
-                            HStack {
-                                Spacer().fixedSpace()
-                                ScriptLineView(layout: layout, commands: $script.commands, command: command)
+            HStack {
+                List {
+                    ForEach($script.commands, id: \.self) { command in
+                        ScriptLineView(layout: layout, commands: $script.commands, command: command)
+                        if let children = command.children {
+                            ForEach(children, id: \.self) { command in
+                                HStack {
+                                    Spacer().fixedSpace()
+                                    ScriptLineView(layout: layout, commands: $script.commands, command: command)
+                                }
                             }
                         }
                     }
+                }
+                VStack {
+                    Button("Verify") {
+                        do {
+                            let route = try layout.verify(script: script)
+                            verifyResults = route.description
+                        } catch {
+                            verifyResults = error.localizedDescription
+                        }
+                    }
+                    Text(verifyResults)
                 }
             }
 
@@ -54,7 +68,6 @@ struct ScriptView_Previews: PreviewProvider {
         let layout = Layout()
         let s = Script(name: "Boucle")
         s.commands.append(ScriptCommand(action: .move))
-        s.commands.append(ScriptCommand(action: .wait))
         var loop = ScriptCommand(action: .loop)
         loop.repeatCount = 2
         loop.children.append(ScriptCommand(action: .move))
