@@ -147,6 +147,9 @@ struct ScriptView: View {
 
             case .undefinedStation(let command):
                 commandErrorIds.append(command.id.uuidString)
+                
+            case .missingStartCommand:
+                script.commands.insert(ScriptCommand(action: .start), at: 0)
             }
             return
         } catch {

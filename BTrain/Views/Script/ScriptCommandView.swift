@@ -21,20 +21,33 @@ struct ScriptCommandView: View {
 
     var body: some View {
         HStack {
-            Text("􀌇")
+            if command.action != .start {
+                Text("􀌇")
+            }
             if commandErrorIds.contains(command.id.uuidString) {
                 Text("􀇿")
                     .foregroundColor(.red)
             }
-            Picker("Command", selection: $command.action) {
-                ForEach(ScriptCommand.ScriptAction.allCases, id: \.self) {
-                    Text($0.rawValue).tag($0 as ScriptCommand.ScriptAction?)
+            
+            if command.action != .start {
+                Picker("Command", selection: $command.action) {
+                    ForEach(ScriptCommand.ScriptAction.allCases.filter({$0 != .start}), id: \.self) {
+                        Text($0.rawValue).tag($0 as ScriptCommand.ScriptAction?)
+                    }
                 }
+                .labelsHidden()
+                .fixedSize()
             }
-            .labelsHidden()
-            .fixedSize()
             
             switch command.action {
+            case .start:
+                Text("Start in")
+                BlockPicker(layout: layout, blockId: $command.blockId)
+                    .fixedSize()
+                Text("with direction")
+                    .fixedSize()
+                DirectionPicker(direction: $command.direction)
+
             case .move:
                 Text("to")
                 Picker("DestinationType", selection: $command.destinationType) {
@@ -68,9 +81,11 @@ struct ScriptCommandView: View {
                 script.commands.insert(source: ScriptCommand(action: .move), target: command, position: .after)
             }.buttonStyle(.borderless)
             
-            Button("􀁎") {
-                script.commands.remove(source: command)
-            }.buttonStyle(.borderless)
+            if command.action != .start {
+                Button("􀁎") {
+                    script.commands.remove(source: command)
+                }.buttonStyle(.borderless)
+            }
         }
     }
 }
@@ -85,6 +100,7 @@ struct ScriptCommandView_Previews: PreviewProvider {
         VStack(alignment: .leading) {
             ForEach(ScriptCommand.ScriptAction.allCases, id:\.self) { action in
                 ScriptCommandView(layout: doc.layout, script: script, command: .constant(ScriptCommand(action: action)), commandErrorIds: .constant([]))
+                    .fixedSize()
             }
         }
     }

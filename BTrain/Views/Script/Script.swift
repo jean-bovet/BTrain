@@ -19,14 +19,14 @@ final class Script: Element, ObservableObject {
     @Published var name: String
     @Published var commands: [ScriptCommand] = []
     
-    internal init(uuid: String = UUID().uuidString, name: String = "") {
-        self.id = Identifier<Script>(uuid: uuid)
-        self.name = name
+    internal convenience init(uuid: String = UUID().uuidString, name: String = "") {
+        self.init(id: Identifier<Script>(uuid: uuid), name: name)
     }
 
     internal init(id: Identifier<Script>, name: String = "") {
         self.id = id
         self.name = name
+        self.commands = [.init(action: .start)]
     }
 
 }

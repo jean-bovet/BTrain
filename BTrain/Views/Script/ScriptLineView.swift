@@ -44,11 +44,17 @@ struct ScriptLineView: View, DropDelegate {
                         .foregroundColor(.blue),
                     alignment: dropLine! == .after ? .bottom : .top
                 )
-            }).onDrag {
-                return NSItemProvider(object: command.id.uuidString as NSString)
-            }.onDrop(of: [UTType.text], delegate: self)
+            }).if(command.action != .start, transform: { view in
+                view.onDrag {
+                    NSItemProvider(object: command.id.uuidString as NSString)
+                }
+            }).onDrop(of: [UTType.text], delegate: self)
     }
         
+    func validateDrop(info: DropInfo) -> Bool {
+        command.action != .start
+    }
+    
     func dropEntered(info: DropInfo) {
         updateDropLine(info: info)
     }
@@ -58,8 +64,12 @@ struct ScriptLineView: View, DropDelegate {
     }
 
     func dropUpdated(info: DropInfo) -> DropProposal? {
-        updateDropLine(info: info)
-        return DropProposal(operation: .move)
+        if command.action == .start {
+            return DropProposal(operation: .forbidden)
+        } else {
+            updateDropLine(info: info)
+            return DropProposal(operation: .move)
+        }
     }
     
     func performDrop(info: DropInfo) -> Bool {

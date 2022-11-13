@@ -13,6 +13,7 @@
 import Foundation
 
 enum ScriptError: Error {
+    case missingStartCommand
     case undefinedBlock(command: ScriptCommand)
     case undefinedDirection(command: ScriptCommand)
     case undefinedStation(command: ScriptCommand)
@@ -22,6 +23,8 @@ extension ScriptError: LocalizedError {
 
     var errorDescription: String? {
         switch self {
+        case .missingStartCommand:
+            return "The first command should be the `start` command"
         case .undefinedBlock(_):
             return "Block is undefined"
         case .undefinedDirection(_):
@@ -35,9 +38,12 @@ extension ScriptError: LocalizedError {
 extension Script {
     
     /// Creates a route representing the script. The route ID will be the same as the script ID.
-    /// 
+    ///
     /// - Returns: a new route
     func toRoute() throws -> Route {
+        guard commands.first?.action == .start else {
+            throw ScriptError.missingStartCommand
+        }
         let route = Route(uuid: id.uuid, mode: .fixed)
         route.name = name
         route.partialSteps.append(contentsOf: try commands.toRouteItems())
@@ -50,6 +56,22 @@ extension ScriptCommand {
     
     func toRouteItems() throws -> [RouteItem] {
         switch action {
+        case .start:
+            guard let direction = direction else {
+                throw ScriptError.undefinedDirection(command: self)
+            }
+            
+            guard let blockId = blockId else {
+                throw ScriptError.undefinedBlock(command: self)
+            }
+            
+            var item = RouteItemBlock(blockId, direction, TimeInterval(waitDuration))
+            // Assign to the route item the id of the script command. That way,
+            // when an error happens during route resolving, we can easily map
+            // the error to the original script command and highlight it in the UI.
+            item.sourceIdentifier = id.uuidString
+            return [.block(item)]
+
         case .move:
             switch destinationType {
             case .block:

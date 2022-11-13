@@ -17,6 +17,7 @@ struct ScriptCommand: Identifiable, Hashable {
     let id: UUID
     
     enum ScriptAction: String, CaseIterable, Codable {
+        case start = "Start"
         case move = "Move"
         case loop = "Repeat"
     }
