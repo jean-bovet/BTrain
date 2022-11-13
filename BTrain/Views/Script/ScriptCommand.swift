@@ -39,6 +39,7 @@ struct ScriptCommand: Identifiable, Hashable {
     
     init(id: UUID = UUID(), action: ScriptAction) {
         self.id = id
+        self.action = action
     }
 }
 

@@ -23,13 +23,13 @@ struct ScriptLineView: View, DropDelegate {
 
     let layout: Layout
     
-    @Binding var commands: [ScriptCommand]
+    @ObservedObject var script: Script
     @Binding var command: ScriptCommand
     
     @State private var dropLine: DropPosition?
     
     var body: some View {
-        ScriptCommandView(layout: layout, command: $command)
+        ScriptCommandView(layout: layout, script: script, command: $command)
             .if(dropLine == .inside, transform: { view in
                 view.overlay(
                     Rectangle()
@@ -96,15 +96,15 @@ struct ScriptLineView: View, DropDelegate {
     }
 
     fileprivate func move(sourceUUID: String, targetUUID: String, position: DropPosition) {
-        guard let sourceCommand = commands.commandWith(uuid: sourceUUID) else {
+        guard let sourceCommand = script.commands.commandWith(uuid: sourceUUID) else {
             return
         }
-        guard let targetCommand = commands.commandWith(uuid: targetUUID) else {
+        guard let targetCommand = script.commands.commandWith(uuid: targetUUID) else {
             return
         }
         
-        commands.remove(source: sourceCommand)
-        commands.insert(source: sourceCommand, target: targetCommand, position: position)
+        script.commands.remove(source: sourceCommand)
+        script.commands.insert(source: sourceCommand, target: targetCommand, position: position)
     }
 }
 
@@ -133,7 +133,7 @@ extension Array where Element == ScriptCommand {
     }
     
     @discardableResult
-    mutating fileprivate func insert(source: ScriptCommand, target: ScriptCommand, position: ScriptLineView.DropPosition) -> Bool {
+    mutating func insert(source: ScriptCommand, target: ScriptCommand, position: ScriptLineView.DropPosition) -> Bool {
         for (index, command) in enumerated() {
             if command.id == target.id {
                 switch position {
@@ -152,6 +152,7 @@ extension Array where Element == ScriptCommand {
         }
         return false
     }
+        
 }
 
 struct ScriptLineView_Previews: PreviewProvider {
@@ -159,6 +160,6 @@ struct ScriptLineView_Previews: PreviewProvider {
     static let doc = LayoutDocument(layout: LayoutComplex().newLayout())
 
     static var previews: some View {
-        ScriptLineView(layout: doc.layout, commands: .constant([]), command: .constant(ScriptCommand(action: .move)))
+        ScriptLineView(layout: doc.layout, script: Script(), command: .constant(ScriptCommand(action: .move)))
     }
 }

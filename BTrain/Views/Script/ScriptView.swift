@@ -22,93 +22,126 @@ struct ScriptView: View {
     let layout: Layout
     @ObservedObject var script: Script
     
-    @State private var scriptToRouteError: Error?
-    @State private var scriptValidationError: ValidationError?
-    @State private var resolvedRouteItems: [ResolvedRouteItem]?
+    @State private var generatedRoute: Route?
+    @State private var generatedRouteError: Error?
+  
+    @State private var resolvedRouteResult: Result<[ResolvedRouteItem]?, Error>?
 
-    var verifyDescription: String {
-        if let error = scriptToRouteError {
-            return error.localizedDescription
+    @State private var routeExpanded = false
+    @State private var resolvedRouteExpanded = false
+
+    enum VerifyStatus {
+        case none
+        case failure
+        case success
+    }
+    
+    var verifyStatus: VerifyStatus {
+        if generatedRouteError != nil {
+            return .failure
         }
         
-        if let routeError = scriptValidationError {
-            if routeError.valid {
-                return resolvedRouteItems?.toBlockNames().joined(separator: "→") ?? "?"
-            } else {
-                return routeError.resolverErrors.first?.localizedDescription ?? ""
-            }
+        switch resolvedRouteResult {
+        case .success:
+            return .success
+        case .failure:
+            return .failure
+        case .none:
+            return .none
+        }
+    }
+    
+    var generatedRouteDescription: String {
+        if let error = generatedRouteError {
+            return error.localizedDescription
+        } else if let generatedRoute = generatedRoute {
+            return layout.routeDescription(for: nil, steps: generatedRoute.steps)
         } else {
             return ""
+        }
+    }
+        
+    var resolvedRouteDescription: String {
+        guard let resolvedRouteResult = resolvedRouteResult else {
+            return ""
+        }
+        switch resolvedRouteResult {
+        case .failure(let error):
+            return error.localizedDescription
+        case .success(let resolvedRouteItems):
+            return resolvedRouteItems?.toBlockNames().joined(separator: "→") ?? "Empty Route"
         }
     }
     
     var body: some View {
         VStack {
-            HStack {
-                List {
-                    ForEach($script.commands, id: \.self) { command in
-                        ScriptLineView(layout: layout, commands: $script.commands, command: command)
-                        if let children = command.children {
-                            ForEach(children, id: \.self) { command in
-                                HStack {
-                                    Spacer().fixedSpace()
-                                    ScriptLineView(layout: layout, commands: $script.commands, command: command)
-                                }
+            List {
+                ForEach($script.commands, id: \.self) { command in
+                    ScriptLineView(layout: layout, script: script, command: command)
+                    if let children = command.children {
+                        ForEach(children, id: \.self) { command in
+                            HStack {
+                                Spacer().fixedSpace()
+                                ScriptLineView(layout: layout, script: script, command: command)
                             }
                         }
                     }
                 }
-                VStack(alignment: .leading) {
-                    HStack {
-                        Button("Verify") {
-                            validate(script: script)
-                        }
-                        if let routeError = scriptValidationError {
-                            if routeError.valid {
-                                Text("􀁢")
-                            } else {
-                                Text("􀇾")
-                            }
-                        }
-                        Spacer()
-                    }
-                    Text(verifyDescription)
-                    Spacer()
-                }.padding()
             }
+            VStack(alignment: .leading) {
+                HStack {
+                    Button("Verify") {
+                        validate(script: script)
+                    }
+                    switch verifyStatus {
+                    case .none:
+                        Text("")
+                    case .failure:
+                        Text("􀇾")
+                    case .success:
+                        Text("􀁢")
+                    }
+                    Spacer()
+                }
 
-            HStack {
-                Text("\(script.commands.count) commands")
-                Spacer()
-                Button("+") {
-                    script.commands.append(ScriptCommand(action: .move))
-                }
-                Button("-") {
-                    
-                }
+                ScrollView {
+                    DisclosureGroup("Generated Route") {
+                        Text(generatedRouteDescription)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                    }
+                    DisclosureGroup("Resolved Route") {
+                        Text(resolvedRouteDescription)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                    }
+                }.frame(maxHeight: 200)
             }.padding()
         }
     }
     
     func validate(script: Script) {
-        let route: Route
+        resolvedRouteResult = nil
+        generatedRouteError = nil
+        
         do {
-            route = try script.toRoute()
+            generatedRoute = try script.toRoute()
         } catch {
-            scriptToRouteError = error
+            generatedRouteError = error
             return
         }
 
+        guard let generatedRoute = generatedRoute else {
+            return
+        }
+        
         let diag = LayoutDiagnostic(layout: layout)
         var errors = [LayoutDiagnostic.DiagnosticError]()
         var resolverError = [PathFinderResolver.ResolverError]()
         var resolvedRoutes = RouteResolver.ResolvedRoutes()
-        diag.checkRoute(route: route, &errors, resolverErrors: &resolverError, resolverPaths: &resolvedRoutes)
-        if errors.isEmpty {
-            resolvedRouteItems = resolvedRoutes.first
-            scriptValidationError = .init(resolverErrors: resolverError, valid: true)
+        diag.checkRoute(route: generatedRoute, &errors, resolverErrors: &resolverError, resolverPaths: &resolvedRoutes)
+        if let resolverError = resolverError.first {
+            resolvedRouteResult = .failure(resolverError)
         } else {
-            scriptValidationError = .init(resolverErrors: resolverError, valid: false)
+            resolvedRouteResult = .success(resolvedRoutes.first)
         }
     }
     

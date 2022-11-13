@@ -15,6 +15,7 @@ import SwiftUI
 struct ScriptCommandView: View {
 
     let layout: Layout
+    @ObservedObject var script: Script
     @Binding var command: ScriptCommand
 
     var body: some View {
@@ -48,7 +49,7 @@ struct ScriptCommandView: View {
                         .fixedSize()
                 }
                 
-                Stepper("\(command.waitDuration) seconds", value: $command.waitDuration, in: 0...100, step: 10)
+                Stepper("and wait \(command.waitDuration) seconds", value: $command.waitDuration, in: 0...100, step: 10)
                     .fixedSize()
             case .loop:
                 Stepper("\(command.repeatCount) times", value: $command.repeatCount, in: 1...10)
@@ -56,11 +57,11 @@ struct ScriptCommandView: View {
             }
             
             Button("􀁌") {
-                
+                script.commands.insert(source: ScriptCommand(action: .move), target: command, position: .after)
             }.buttonStyle(.borderless)
             
             Button("􀁎") {
-                
+                script.commands.remove(source: command)
             }.buttonStyle(.borderless)
         }
     }
@@ -70,11 +71,12 @@ struct ScriptCommandView: View {
 struct ScriptCommandView_Previews: PreviewProvider {
     
     static let doc = LayoutDocument(layout: LayoutComplex().newLayout())
+    static let script = Script()
     
     static var previews: some View {
         VStack(alignment: .leading) {
             ForEach(ScriptCommand.ScriptAction.allCases, id:\.self) { action in
-                ScriptCommandView(layout: doc.layout, command: .constant(ScriptCommand(action: action)))
+                ScriptCommandView(layout: doc.layout, script: script, command: .constant(ScriptCommand(action: action)))
             }
         }
     }
