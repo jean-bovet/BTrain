@@ -184,7 +184,6 @@
 		A76FD43A28FD07AA00E1A295 /* TrainControlRemoveSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A76FD43928FD07AA00E1A295 /* TrainControlRemoveSheet.swift */; };
 		A7710E572777D69400C08150 /* RouteListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7710E562777D69400C08150 /* RouteListView.swift */; };
 		A7710E592777D7FE00C08150 /* RouteView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7710E582777D7FE00C08150 /* RouteView.swift */; };
-		A7710E5C27784B1900C08150 /* TrainControlRouteActionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7710E5B27784B1900C08150 /* TrainControlRouteActionsView.swift */; };
 		A7710E5E277850F000C08150 /* Reservation.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7710E5D277850F000C08150 /* Reservation.swift */; };
 		A7710E612778E8DE00C08150 /* OrderedCollections in Frameworks */ = {isa = PBXBuildFile; productRef = A7710E602778E8DE00C08150 /* OrderedCollections */; };
 		A7710E6327799C9F00C08150 /* Layout+Blocks.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7710E6227799C9F00C08150 /* Layout+Blocks.swift */; };
@@ -560,7 +559,6 @@
 		A76FD43928FD07AA00E1A295 /* TrainControlRemoveSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainControlRemoveSheet.swift; sourceTree = "<group>"; };
 		A7710E562777D69400C08150 /* RouteListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteListView.swift; sourceTree = "<group>"; };
 		A7710E582777D7FE00C08150 /* RouteView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteView.swift; sourceTree = "<group>"; };
-		A7710E5B27784B1900C08150 /* TrainControlRouteActionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainControlRouteActionsView.swift; sourceTree = "<group>"; };
 		A7710E5D277850F000C08150 /* Reservation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Reservation.swift; sourceTree = "<group>"; };
 		A7710E6227799C9F00C08150 /* Layout+Blocks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Layout+Blocks.swift"; sourceTree = "<group>"; };
 		A7710E6427799CF800C08150 /* Layout+Routes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Layout+Routes.swift"; sourceTree = "<group>"; };
@@ -1022,7 +1020,6 @@
 				A76FD43728FD07A000E1A295 /* TrainControlMoveSheet.swift */,
 				A76FD43928FD07AA00E1A295 /* TrainControlRemoveSheet.swift */,
 				A744D13427659330005C2F37 /* TrainControlRouteView.swift */,
-				A7710E5B27784B1900C08150 /* TrainControlRouteActionsView.swift */,
 			);
 			path = "Train Controls";
 			sourceTree = "<group>";
@@ -1902,7 +1899,6 @@
 				A77A02A0291631600017667A /* MarklinCS3Server.swift in Sources */,
 				A72720B729086B4F00E7B177 /* LayoutVector.swift in Sources */,
 				A791EEBE28035645008F58C8 /* LayoutsPredefined.swift in Sources */,
-				A7710E5C27784B1900C08150 /* TrainControlRouteActionsView.swift in Sources */,
 				A785C07B278A648B002FD538 /* LayoutDocument+Commands.swift in Sources */,
 				A763F19C27BF4A1300B3499A /* FeedbackMonitor.swift in Sources */,
 				A702F22F290243FA0076186D /* FeedbackAddView.swift in Sources */,
