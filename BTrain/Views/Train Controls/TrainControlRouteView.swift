@@ -78,9 +78,10 @@ struct TrainControlRouteView: View {
                     .fixedSize(horizontal: false, vertical: true)
                     .hidden()
             } else {
-                Text(selectedRouteDescription)
-                    .lineLimit(4)
-                    .fixedSize(horizontal: false, vertical: true)
+                ScrollView {
+                    Text(selectedRouteDescription)
+                        .fixedSize(horizontal: false, vertical: true)
+                }.frame(maxHeight: 120)
             }
         }.onAppear() {
             updateRoute()
