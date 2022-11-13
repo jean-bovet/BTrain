@@ -22,7 +22,6 @@ struct MainView: View {
     @State private var showNewWizard = false
     @State private var connectAlertShowing = false
     @State private var showDiagnosticsSheet = false
-    @State private var showDiscoverLocomotiveConfirmation = false
     @State private var repairLayoutTrigger = false
     
     @AppStorage(SettingsKeys.autoConnectSimulator) private var autoConnectSimulator = false
@@ -53,16 +52,6 @@ struct MainView: View {
                 document.triggerLayoutDiagnostic = false
             }
         })
-        .onChange(of: document.discoverLocomotiveConfirmation, perform: { v in
-            if document.discoverLocomotiveConfirmation {
-                if document.layout.trains.isEmpty {
-                    document.locomotiveDiscovery.discover(merge: false)
-                } else {
-                    showDiscoverLocomotiveConfirmation.toggle()
-                }
-                document.discoverLocomotiveConfirmation = false
-            }
-        })
         .onAppear {
             if document.newDocument {
                 showNewWizard.toggle()
@@ -85,14 +74,6 @@ struct MainView: View {
         }.sheet(isPresented: $document.displaySheet) {
             displaySheetView
                 .frame(idealWidth: idealSheetWidth, idealHeight: idealSheetHeight)
-        }.alert("Are you sure you want to change the current list of locomotives with the locomotives definition from the Central Station?", isPresented: $showDiscoverLocomotiveConfirmation) {
-            Button("Cancel", role: .cancel) { }
-            Button("Download & Merge") {
-                document.locomotiveDiscovery.discover(merge: true)
-            }
-            Button("Download & Replace", role: .destructive) {
-                document.locomotiveDiscovery.discover(merge: false)
-            }
         }
     }
     

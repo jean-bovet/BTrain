@@ -22,6 +22,8 @@ struct LocomotiveListView: View {
     
     @State private var selection: Identifier<Locomotive>? = nil
 
+    @State private var discoverLocomotiveConfirmation = false
+    
     var body: some View {
         HStack(alignment: .top) {
             VStack {
@@ -76,9 +78,8 @@ struct LocomotiveListView: View {
                     
                     Spacer().fixedSpace()
                     
-                    // TODO: does not work anymore because the sheet only shows when connected
                     Button("􀈄") {
-                        document.discoverLocomotiveConfirmation.toggle()
+                        discoverLocomotiveConfirmation.toggle()
                     }
                     .disabled(!document.connected)
                     .help("Download Locomotives")
@@ -102,6 +103,14 @@ struct LocomotiveListView: View {
         }.onAppear {
             if selection == nil {
                 selection = layout.locomotives.first?.id
+            }
+        }.alert("Are you sure you want to change the current list of locomotives with the locomotives definition from the Central Station?", isPresented: $discoverLocomotiveConfirmation) {
+            Button("Cancel", role: .cancel) { }
+            Button("Download & Merge") {
+                document.locomotiveDiscovery.discover(merge: true)
+            }
+            Button("Download & Replace", role: .destructive) {
+                document.locomotiveDiscovery.discover(merge: false)
             }
         }
     }

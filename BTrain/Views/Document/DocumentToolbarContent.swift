@@ -48,7 +48,7 @@ struct DocumentToolbarContent: ToolbarContent {
                 Button("􁕶") {
                     document.displaySheetType = .feedbacks
                 }
-            }.disabled(document.connected)
+            }.disabled(document.power)
         }
         
         ToolbarItemGroup {

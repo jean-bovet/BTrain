@@ -103,7 +103,6 @@ struct FeedbackEditListView: View {
                 addNewFeedback(name: newFeedback.name, deviceID: newFeedback.deviceID, contactID: newFeedback.contactID)
             }
         }) {
-            // TODO: does not show anymore
             FeedbackAddView(doc: doc, layoutController: layoutController, newFeedback: $newFeedback)
                 .padding()
         }

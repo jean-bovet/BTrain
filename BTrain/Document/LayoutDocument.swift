@@ -60,9 +60,6 @@ final class LayoutDocument: ObservableObject {
     
     /// Used to show or hide the switchboard view settings
     @Published var showSwitchboardViewSettings = false
-
-    /// Property used to confirm the download of the locomotives command
-    @Published var discoverLocomotiveConfirmation = false
     
     /// The various type of sheets that can be displayed
     enum DisplaySheetType: String {
