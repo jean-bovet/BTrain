@@ -14,9 +14,33 @@ import SwiftUI
 
 struct ScriptView: View {
     
+    struct ValidationError {
+        let resolverErrors: [PathFinderResolver.ResolverError]
+        let valid: Bool
+    }
+
     let layout: Layout
     @ObservedObject var script: Script
-    @State private var verifyResults = ""
+    
+    @State private var scriptToRouteError: Error?
+    @State private var scriptValidationError: ValidationError?
+    @State private var resolvedRouteItems: [ResolvedRouteItem]?
+
+    var verifyDescription: String {
+        if let error = scriptToRouteError {
+            return error.localizedDescription
+        }
+        
+        if let routeError = scriptValidationError {
+            if routeError.valid {
+                return resolvedRouteItems?.toBlockNames().joined(separator: "→") ?? "?"
+            } else {
+                return routeError.resolverErrors.first?.localizedDescription ?? ""
+            }
+        } else {
+            return ""
+        }
+    }
     
     var body: some View {
         VStack {
@@ -34,17 +58,23 @@ struct ScriptView: View {
                         }
                     }
                 }
-                VStack {
-                    Button("Verify") {
-                        do {
-                            let route = try layout.verify(script: script)
-                            verifyResults = route.description
-                        } catch {
-                            verifyResults = error.localizedDescription
+                VStack(alignment: .leading) {
+                    HStack {
+                        Button("Verify") {
+                            validate(script: script)
                         }
+                        if let routeError = scriptValidationError {
+                            if routeError.valid {
+                                Text("􀁢")
+                            } else {
+                                Text("􀇾")
+                            }
+                        }
+                        Spacer()
                     }
-                    Text(verifyResults)
-                }
+                    Text(verifyDescription)
+                    Spacer()
+                }.padding()
             }
 
             HStack {
@@ -57,6 +87,28 @@ struct ScriptView: View {
                     
                 }
             }.padding()
+        }
+    }
+    
+    func validate(script: Script) {
+        let route: Route
+        do {
+            route = try script.toRoute()
+        } catch {
+            scriptToRouteError = error
+            return
+        }
+
+        let diag = LayoutDiagnostic(layout: layout)
+        var errors = [LayoutDiagnostic.DiagnosticError]()
+        var resolverError = [PathFinderResolver.ResolverError]()
+        var resolvedRoutes = RouteResolver.ResolvedRoutes()
+        diag.checkRoute(route: route, &errors, resolverErrors: &resolverError, resolverPaths: &resolvedRoutes)
+        if errors.isEmpty {
+            resolvedRouteItems = resolvedRoutes.first
+            scriptValidationError = .init(resolverErrors: resolverError, valid: true)
+        } else {
+            scriptValidationError = .init(resolverErrors: resolverError, valid: false)
         }
     }
     

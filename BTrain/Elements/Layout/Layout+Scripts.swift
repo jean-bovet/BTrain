@@ -65,7 +65,4 @@ extension Layout {
         }
     }
      
-    func verify(script: Script) throws -> Route {
-        try script.toRoute()
-    }
 }

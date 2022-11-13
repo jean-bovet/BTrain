@@ -48,12 +48,20 @@ struct ScriptCommandView: View {
                         .fixedSize()
                 }
                 
-                Stepper("\(command.waitDuration) seconds", value: $command.waitDuration, in: 0...100)
+                Stepper("\(command.waitDuration) seconds", value: $command.waitDuration, in: 0...100, step: 10)
                     .fixedSize()
             case .loop:
                 Stepper("\(command.repeatCount) times", value: $command.repeatCount, in: 1...10)
                     .fixedSize()
             }
+            
+            Button("􀁌") {
+                
+            }.buttonStyle(.borderless)
+            
+            Button("􀁎") {
+                
+            }.buttonStyle(.borderless)
         }
     }
 }

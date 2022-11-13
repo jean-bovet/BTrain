@@ -94,7 +94,7 @@ extension Layout {
         return text
     }
     
-    func routeDescription(for train: Train, steps: [RouteItem]) -> String {
+    func routeDescription(for train: Train?, steps: [RouteItem]) -> String {
         var index = 0
         var text = ""
         for step in steps {
@@ -108,7 +108,7 @@ extension Layout {
             
             text += description
             
-            if train.routeStepIndex == index {
+            if train?.routeStepIndex == index {
                 // Indicate the block in the route where the train
                 // is currently located
                 text += "􀼮"

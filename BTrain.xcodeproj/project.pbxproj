@@ -297,6 +297,7 @@
 		A7A7D68629202CEA008FA648 /* ScriptListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7A7D68529202CEA008FA648 /* ScriptListView.swift */; };
 		A7A7D68829203230008FA648 /* Script.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7A7D68729203230008FA648 /* Script.swift */; };
 		A7A7D68A29203476008FA648 /* Layout+Scripts.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7A7D68929203476008FA648 /* Layout+Scripts.swift */; };
+		A7A7D68C2920B120008FA648 /* Script+Route.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7A7D68B2920B120008FA648 /* Script+Route.swift */; };
 		A7ACCE9F2810E5BA006F4310 /* LayoutControllerEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7ACCE9E2810E5BA006F4310 /* LayoutControllerEvent.swift */; };
 		A7B06AE12727786500BDD88C /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7B06AE02727786500BDD88C /* MainView.swift */; };
 		A7B06AF2272782C300BDD88C /* LayoutDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7B06AF1272782C300BDD88C /* LayoutDocument.swift */; };
@@ -662,6 +663,7 @@
 		A7A7D68529202CEA008FA648 /* ScriptListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScriptListView.swift; sourceTree = "<group>"; };
 		A7A7D68729203230008FA648 /* Script.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Script.swift; sourceTree = "<group>"; };
 		A7A7D68929203476008FA648 /* Layout+Scripts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Layout+Scripts.swift"; sourceTree = "<group>"; };
+		A7A7D68B2920B120008FA648 /* Script+Route.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Script+Route.swift"; sourceTree = "<group>"; };
 		A7ACCE9E2810E5BA006F4310 /* LayoutControllerEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutControllerEvent.swift; sourceTree = "<group>"; };
 		A7B06AE02727786500BDD88C /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
 		A7B06AED2727819800BDD88C /* Server.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Server.swift; sourceTree = "<group>"; };
@@ -1158,6 +1160,7 @@
 				A747968629201FE4001DF7FA /* ScriptLineView.swift */,
 				A7479682292010F4001DF7FA /* ScriptCommandView.swift */,
 				A7A7D68729203230008FA648 /* Script.swift */,
+				A7A7D68B2920B120008FA648 /* Script+Route.swift */,
 				A747968429201FB2001DF7FA /* ScriptCommand.swift */,
 			);
 			path = Script;
@@ -1903,6 +1906,7 @@
 				A768B1932856A3D900B6497F /* LayoutEventStateMachine.swift in Sources */,
 				A7B06AF4272783F600BDD88C /* MarklinCANMessageFactory.swift in Sources */,
 				A7218083275F0BFC00831998 /* Turnout+Socket.swift in Sources */,
+				A7A7D68C2920B120008FA648 /* Script+Route.swift in Sources */,
 				A745C16A282F2199006D16B0 /* TrainReservation.swift in Sources */,
 				A74F3816281A5E0E0013FD23 /* RouteNewElementSheet.swift in Sources */,
 				A78B996D2800BABB0021EFE4 /* GraphPath.swift in Sources */,

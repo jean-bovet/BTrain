@@ -170,3 +170,15 @@ struct PathFinderResolver {
         }
     }
 }
+
+extension PathFinderResolver.ResolverError: LocalizedError {
+    
+    var errorDescription: String? {
+        switch self {
+        case .cannotResolveElement(let index):
+            return "Cannot resolve element at index \(index)"
+        case .cannotResolvePath(let from, let to):
+            return "Cannot resolve path from \(from) to \(to)"
+        }
+    }
+}
