@@ -17,7 +17,6 @@ import ViewInspector
 @testable import BTrain
 
 extension TrainControlActionsView: Inspectable { }
-extension TrainControlRouteActionsView: Inspectable { }
 extension TrainControlSetLocationSheet: Inspectable { }
 extension TrainControlStateView: Inspectable { }
 
@@ -56,10 +55,10 @@ class TrainControlsViewTests: RootViewTests {
     func testRouteActions() throws {
         let layout = LayoutLoop1().newLayout()
         let doc = LayoutDocument(layout: layout)
-        let route = layout.routes[0]
+        doc.connected = true
         let train = layout.trains[0]
         
-        let sut = TrainControlRouteActionsView(document: doc, train: train, route: route, trainRuntimeError: .constant(nil))
+        let sut = TrainControlRouteView(document: doc, train: train, trainRuntimeError: .constant(nil))
 
         train.scheduling = .unmanaged
         _ = try sut.inspect().find(button: "Start")
