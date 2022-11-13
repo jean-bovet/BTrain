@@ -16,9 +16,6 @@ import Foundation
 enum ViewType: Int {
     case overview
     case routes
-    case blocks
-    case turnouts
-    case feedback
     case cs3
 }
     

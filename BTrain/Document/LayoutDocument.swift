@@ -64,19 +64,25 @@ final class LayoutDocument: ObservableObject {
     /// Property used to confirm the download of the locomotives command
     @Published var discoverLocomotiveConfirmation = false
     
-    /// Displays the Scripts sheet
-    
+    /// The various type of sheets that can be displayed
     enum DisplaySheetType: String {
         case script = "Scripts"
         case trains = "Trains"
         case locomotives = "Locomotives"
         case stations = "Stations"
+        case blocks = "Blocks"
+        case turnouts = "Turnouts"
+        case feedbacks = "Feedbacks"
     }
+    
+    /// Show the specific sheet type
     @Published var displaySheetType = DisplaySheetType.script {
         didSet {
             displaySheet.toggle()
         }
     }
+        
+    /// Toggle showing the sheet when the sheet type changes
     @Published var displaySheet = false
 
     /// Property used to switch to a specific view type

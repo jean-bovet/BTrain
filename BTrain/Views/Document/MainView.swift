@@ -43,12 +43,6 @@ struct MainView: View {
                 OverviewView(document: document)
             case .routes:
                 RouteListView(layout: document.layout)
-            case .blocks:
-                BlockListView(layout: document.layout)
-            case .turnouts:
-                TurnoutListView(doc: document, layout: document.layout)
-            case .feedback:
-                FeedbackEditListView(doc: document, layout: document.layout, layoutController: document.layoutController)
             case .cs3:
                 CS3DebuggerView(doc: document)
             }
@@ -113,6 +107,12 @@ struct MainView: View {
                 LocomotiveListView(document: document, layout: document.layout)
             case .stations:
                 StationListView(layout: document.layout)
+            case .blocks:
+                BlockListView(layout: document.layout)
+            case .turnouts:
+                TurnoutListView(doc: document, layout: document.layout)
+            case .feedbacks:
+                FeedbackEditListView(doc: document, layout: document.layout, layoutController: document.layoutController)
             }
         }
     }

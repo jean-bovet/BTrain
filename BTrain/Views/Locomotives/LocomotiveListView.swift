@@ -76,6 +76,7 @@ struct LocomotiveListView: View {
                     
                     Spacer().fixedSpace()
                     
+                    // TODO: does not work anymore because the sheet only shows when connected
                     Button("􀈄") {
                         document.discoverLocomotiveConfirmation.toggle()
                     }

@@ -76,7 +76,7 @@ struct BlockListView: View {
                         Button("􀄬") {
                             layout.sortBlocks()
                         }
-                    }.padding()
+                    }.padding([.leading])
                 }.frame(maxWidth: SideListFixedWidth)
 
                 if let selection = selection, let block = layout.block(for: selection) {
@@ -99,6 +99,8 @@ struct BlockListView: View {
 struct BlockEditListView_Previews: PreviewProvider {
 
     static var previews: some View {
-        BlockListView(layout: LayoutLoop2().newLayout())
+        ConfigurationSheet(title: "Blocks") {
+            BlockListView(layout: LayoutLoop2().newLayout())
+        }
     }
 }

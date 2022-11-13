@@ -19,9 +19,6 @@ struct MenuCommands: Commands {
             Group {
                 CommandSelectedView(viewType: .overview, label: "Switchboard").keyboardShortcut("0", modifiers: [.command])
                 CommandSelectedView(viewType: .routes, label: "Routes").keyboardShortcut("2", modifiers: [.command])
-                CommandSelectedView(viewType: .blocks, label: "Blocks").keyboardShortcut("6", modifiers: [.command])
-                CommandSelectedView(viewType: .turnouts, label: "Turnouts").keyboardShortcut("7", modifiers: [.command])
-                CommandSelectedView(viewType: .feedback, label: "Feedback").keyboardShortcut("8", modifiers: [.command])
             }
             Divider()
             CommandSelectedView(viewType: .cs3, label: "Central Station 3 Debugger")

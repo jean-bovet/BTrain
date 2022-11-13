@@ -29,16 +29,25 @@ struct DocumentToolbarContent: ToolbarContent {
             Group {
                 Button("􀬱") {
                     document.displaySheetType = .script
-                }.disabled(document.connected)
+                }
                 Button("􀼯") {
                     document.displaySheetType = .trains
-                }.disabled(document.connected)
+                }
                 Button("􀼮") {
                     document.displaySheetType = .locomotives
-                }.disabled(document.connected)
+                }
                 Button("􀌃") {
                     document.displaySheetType = .stations
-                }.disabled(document.connected)
+                }
+                Button("􀏭") {
+                    document.displaySheetType = .blocks
+                }
+                Button("􀄭") {
+                    document.displaySheetType = .turnouts
+                }
+                Button("􁕶") {
+                    document.displaySheetType = .feedbacks
+                }
             }.disabled(document.connected)
         }
         
