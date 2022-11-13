@@ -57,7 +57,7 @@ struct ScriptView: View {
         if let error = generatedRouteError {
             return error.localizedDescription
         } else if let generatedRoute = generatedRoute {
-            return layout.routeDescription(for: nil, steps: generatedRoute.steps)
+            return layout.routeDescription(for: nil, steps: generatedRoute.partialSteps)
         } else {
             return ""
         }
@@ -77,46 +77,55 @@ struct ScriptView: View {
     
     var body: some View {
         VStack {
-            List {
-                ForEach($script.commands, id: \.self) { command in
-                    ScriptLineView(layout: layout, script: script, command: command, commandErrorIds: $commandErrorIds)
-                    if let children = command.children {
-                        ForEach(children, id: \.self) { command in
-                            HStack {
-                                Spacer().fixedSpace()
-                                ScriptLineView(layout: layout, script: script, command: command, commandErrorIds: $commandErrorIds)
+            if script.commands.isEmpty {
+                CenteredCustomView {
+                    Text("No Commands")
+                    Button("+") {
+                        script.commands.append(ScriptCommand(action: .move))
+                    }
+                }
+            } else {
+                List {
+                    ForEach($script.commands, id: \.self) { command in
+                        ScriptLineView(layout: layout, script: script, command: command, commandErrorIds: $commandErrorIds)
+                        if let children = command.children {
+                            ForEach(children, id: \.self) { command in
+                                HStack {
+                                    Spacer().fixedSpace()
+                                    ScriptLineView(layout: layout, script: script, command: command, commandErrorIds: $commandErrorIds)
+                                }
                             }
                         }
                     }
                 }
-            }
-            VStack(alignment: .leading) {
-                HStack {
-                    Button("Verify") {
-                        validate(script: script)
+                VStack(alignment: .leading) {
+                    HStack {
+                        Button("Verify") {
+                            validate(script: script)
+                        }
+                        switch verifyStatus {
+                        case .none:
+                            Text("")
+                        case .failure:
+                            Text("􀇾")
+                        case .success:
+                            Text("􀁢")
+                        }
+                        Spacer()
                     }
-                    switch verifyStatus {
-                    case .none:
-                        Text("")
-                    case .failure:
-                        Text("􀇾")
-                    case .success:
-                        Text("􀁢")
-                    }
-                    Spacer()
-                }
 
-                ScrollView {
-                    DisclosureGroup("Generated Route") {
-                        Text(generatedRouteDescription)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                    }
-                    DisclosureGroup("Resolved Route") {
-                        Text(resolvedRouteDescription)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                    }
-                }.frame(maxHeight: 200)
-            }.padding()
+                    ScrollView {
+                        DisclosureGroup("Generated Route") {
+                            Text(generatedRouteDescription)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                        }
+                        DisclosureGroup("Resolved Route") {
+                            Text(resolvedRouteDescription)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                        }
+                    }.frame(maxHeight: 200)
+                }.padding()
+            }
         }
     }
     
@@ -127,6 +136,19 @@ struct ScriptView: View {
         
         do {
             generatedRoute = try script.toRoute()
+        } catch let error as ScriptError {
+            generatedRouteError = error
+            switch error {
+            case .undefinedBlock(let command):
+                commandErrorIds.append(command.id.uuidString)
+
+            case .undefinedDirection(command: let command):
+                commandErrorIds.append(command.id.uuidString)
+
+            case .undefinedStation(let command):
+                commandErrorIds.append(command.id.uuidString)
+            }
+            return
         } catch {
             generatedRouteError = error
             return
@@ -177,6 +199,11 @@ struct ScriptView_Previews: PreviewProvider {
     }()
 
     static var previews: some View {
-        ScriptView(layout: layout, script: layout.scripts[0])
+        Group {
+            ScriptView(layout: layout, script: layout.scripts[0])
+        }.previewDisplayName("Script")
+        Group {
+            ScriptView(layout: layout, script: Script())
+        }.previewDisplayName("Empty Script")
     }
 }

@@ -35,6 +35,7 @@ struct ScriptCommand: Identifiable, Hashable {
     var destinationType = MoveDestinationType.block
     
     var blockId: Identifier<Block>?
+    var direction: Direction?
     var stationId: Identifier<Station>?
     
     init(id: UUID = UUID(), action: ScriptAction) {
@@ -46,7 +47,7 @@ struct ScriptCommand: Identifiable, Hashable {
 extension ScriptCommand: Codable {
     
     enum CodingKeys: CodingKey {
-        case id, action, children, repeatCount, waitDuration, destinationType, blockId, stationId
+        case id, action, children, repeatCount, waitDuration, destinationType, blockId, direction, stationId
     }
     
     init(from decoder: Decoder) throws {
@@ -59,6 +60,7 @@ extension ScriptCommand: Codable {
 
         self.destinationType = try container.decode(MoveDestinationType.self, forKey: CodingKeys.destinationType)
         self.blockId = try container.decodeIfPresent(Identifier<Block>.self, forKey: CodingKeys.blockId)
+        self.direction = try container.decodeIfPresent(Direction.self, forKey: CodingKeys.direction)
         self.stationId = try container.decodeIfPresent(Identifier<Station>.self, forKey: CodingKeys.stationId)
     }
     
@@ -71,6 +73,7 @@ extension ScriptCommand: Codable {
         try container.encode(waitDuration, forKey: CodingKeys.waitDuration)
         try container.encode(destinationType, forKey: CodingKeys.destinationType)
         try container.encode(blockId, forKey: CodingKeys.blockId)
+        try container.encode(direction, forKey: CodingKeys.direction)
         try container.encode(stationId, forKey: CodingKeys.stationId)
     }
 }

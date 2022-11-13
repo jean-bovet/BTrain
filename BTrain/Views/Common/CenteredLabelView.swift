@@ -17,19 +17,14 @@ struct CenteredLabelView: View {
     let label: String
     
     var body: some View {
-        Spacer()
-        VStack {
-            Spacer()
-            Text(label)
-                .padding()
-            Spacer()
+        CenteredCustomView {
+            Text(label).padding()
         }
-        Spacer()
     }
 }
 
 struct CenteredLabelView_Previews: PreviewProvider {
     static var previews: some View {
-        CenteredLabelView(label: "Hello, world")
+        CenteredLabelView(label: "Hello, world!")
     }
 }

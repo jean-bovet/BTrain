@@ -169,9 +169,9 @@ final class Train: Element, ObservableObject {
     struct BlockItem: Identifiable, Codable, Hashable {
         let id: String
         
-        var blockId: Identifier<Block>
+        var blockId: Identifier<Block>?
         
-        init(_ blockId: Identifier<Block>) {
+        init(_ blockId: Identifier<Block>?) {
             self.id = UUID().uuidString
             self.blockId = blockId
         }

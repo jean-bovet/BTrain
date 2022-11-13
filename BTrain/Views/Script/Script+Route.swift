@@ -13,8 +13,23 @@
 import Foundation
 
 enum ScriptError: Error {
-    case undefinedBlock
-    case undefinedStation
+    case undefinedBlock(command: ScriptCommand)
+    case undefinedDirection(command: ScriptCommand)
+    case undefinedStation(command: ScriptCommand)
+}
+
+extension ScriptError: LocalizedError {
+
+    var errorDescription: String? {
+        switch self {
+        case .undefinedBlock(_):
+            return "Block is undefined"
+        case .undefinedDirection(_):
+            return "Direction is undefined"
+        case .undefinedStation(_):
+            return "Station is undefined"
+        }
+    }
 }
 
 extension Script {
@@ -34,21 +49,25 @@ extension ScriptCommand {
         case .move:
             switch destinationType {
             case .block:
-                if let blockId = blockId {
-                    var item = RouteItemBlock(blockId, .next, TimeInterval(waitDuration))
-                    // Assign to the route item the id of the script command. That way,
-                    // when an error happens during route resolving, we can easily map
-                    // the error to the original script command and highlight it in the UI.
-                    item.sourceIdentifier = id.uuidString
-                    return [.block(item)]
-                } else {
-                    throw ScriptError.undefinedBlock
+                guard let direction = direction else {
+                    throw ScriptError.undefinedDirection(command: self)
                 }
+                
+                guard let blockId = blockId else {
+                    throw ScriptError.undefinedBlock(command: self)
+                }
+                
+                var item = RouteItemBlock(blockId, direction, TimeInterval(waitDuration))
+                // Assign to the route item the id of the script command. That way,
+                // when an error happens during route resolving, we can easily map
+                // the error to the original script command and highlight it in the UI.
+                item.sourceIdentifier = id.uuidString
+                return [.block(item)]
             case .station:
                 if let stationId = stationId {
                     return [.station(.init(stationId: stationId))]
                 } else {
-                    throw ScriptError.undefinedStation
+                    throw ScriptError.undefinedStation(command: self)
                 }
             }
         case .loop:

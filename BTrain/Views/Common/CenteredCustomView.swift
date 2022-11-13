@@ -12,41 +12,35 @@
 
 import SwiftUI
 
-struct BlockPicker: View {
+struct CenteredCustomView<Content: View>: View {
     
-    let layout: Layout
-    @Binding var blockId: Identifier<Block>?
-    var showLabels = false
-
-    var sortedBlockIds: [Identifier<Block>] {
-        layout.blocks.sorted {
-            $0.name < $1.name
-        }.map {
-            $0.id
-        }
+    let content: Content
+    
+    init(@ViewBuilder content: () -> Content) {
+        self.content = content()
     }
     
     var body: some View {
-        Picker("Block", selection: $blockId) {
-            Text("").tag(nil as Identifier<Block>?)
-            ForEach(sortedBlockIds, id:\.self) { blockId in
-                if let block = layout.block(for: blockId) {
-                    Text(block.name).tag(blockId as Identifier<Block>?)
-                } else {
-                    Text(blockId.uuid).tag(blockId as Identifier<Block>?)
-                }
+        HStack {
+            Spacer()
+            VStack {
+                Spacer()
+                self.content
+                Spacer()
             }
-        }.if(!showLabels, transform: { view in
-            view.labelsHidden()
-        })
+            Spacer()
+        }
     }
 }
 
-struct BlockPicker_Previews: PreviewProvider {
-    
-    static let doc = LayoutDocument(layout: LayoutComplex().newLayout())
 
+struct CenteredCustomView_Previews: PreviewProvider {
     static var previews: some View {
-        BlockPicker(layout: doc.layout, blockId: .constant(doc.layout.blockIds[0]))
+        CenteredCustomView {
+            Text("Hello, world!")
+            Button("Click to Add") {
+                
+            }
+        }
     }
 }

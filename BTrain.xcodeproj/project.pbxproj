@@ -299,6 +299,8 @@
 		A7A7D68A29203476008FA648 /* Layout+Scripts.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7A7D68929203476008FA648 /* Layout+Scripts.swift */; };
 		A7A7D68C2920B120008FA648 /* Script+Route.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7A7D68B2920B120008FA648 /* Script+Route.swift */; };
 		A7A7D68E2920D90D008FA648 /* SourceIdentifiable.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7A7D68D2920D90D008FA648 /* SourceIdentifiable.swift */; };
+		A7A7D6902921501A008FA648 /* DirectionPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7A7D68F2921501A008FA648 /* DirectionPicker.swift */; };
+		A7A7D69229215562008FA648 /* CenteredCustomView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7A7D69129215562008FA648 /* CenteredCustomView.swift */; };
 		A7ACCE9F2810E5BA006F4310 /* LayoutControllerEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7ACCE9E2810E5BA006F4310 /* LayoutControllerEvent.swift */; };
 		A7B06AE12727786500BDD88C /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7B06AE02727786500BDD88C /* MainView.swift */; };
 		A7B06AF2272782C300BDD88C /* LayoutDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7B06AF1272782C300BDD88C /* LayoutDocument.swift */; };
@@ -666,6 +668,8 @@
 		A7A7D68929203476008FA648 /* Layout+Scripts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Layout+Scripts.swift"; sourceTree = "<group>"; };
 		A7A7D68B2920B120008FA648 /* Script+Route.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Script+Route.swift"; sourceTree = "<group>"; };
 		A7A7D68D2920D90D008FA648 /* SourceIdentifiable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SourceIdentifiable.swift; sourceTree = "<group>"; };
+		A7A7D68F2921501A008FA648 /* DirectionPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DirectionPicker.swift; sourceTree = "<group>"; };
+		A7A7D69129215562008FA648 /* CenteredCustomView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CenteredCustomView.swift; sourceTree = "<group>"; };
 		A7ACCE9E2810E5BA006F4310 /* LayoutControllerEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutControllerEvent.swift; sourceTree = "<group>"; };
 		A7B06AE02727786500BDD88C /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
 		A7B06AED2727819800BDD88C /* Server.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Server.swift; sourceTree = "<group>"; };
@@ -1502,12 +1506,14 @@
 			children = (
 				A7C8A2EE279DD19A000C7246 /* SectionTitleView.swift */,
 				A795A03227B0894800AE90EB /* CenteredLabelView.swift */,
+				A7A7D69129215562008FA648 /* CenteredCustomView.swift */,
 				A717FB18281E5F4800310B5D /* MoveUpButtonView.swift */,
 				A717FB1A281E5F6400310B5D /* MoveDownButtonView.swift */,
 				A744FDB12913377500852283 /* TrainPicker.swift */,
 				A79CD0BE291B391A0079968D /* LocPicker.swift */,
 				A747968829202038001DF7FA /* BlockPicker.swift */,
 				A747968A292020D4001DF7FA /* StationPicker.swift */,
+				A7A7D68F2921501A008FA648 /* DirectionPicker.swift */,
 			);
 			path = Common;
 			sourceTree = "<group>";
@@ -1913,6 +1919,7 @@
 				A745C16A282F2199006D16B0 /* TrainReservation.swift in Sources */,
 				A74F3816281A5E0E0013FD23 /* RouteNewElementSheet.swift in Sources */,
 				A78B996D2800BABB0021EFE4 /* GraphPath.swift in Sources */,
+				A7A7D69229215562008FA648 /* CenteredCustomView.swift in Sources */,
 				A717158427574B1C00200F92 /* ShapeProvider.swift in Sources */,
 				A7C8A2ED279BEA6D000C7246 /* FileWrapper+Layout.swift in Sources */,
 				A7841376273DD5A200381341 /* Vector2D.swift in Sources */,
@@ -2034,6 +2041,7 @@
 				A744D13B276714A2005C2F37 /* DiagnosticsSheet.swift in Sources */,
 				A717158D275845F000200F92 /* ShapeContext.swift in Sources */,
 				A784136D273CDFF100381341 /* Shape.swift in Sources */,
+				A7A7D6902921501A008FA648 /* DirectionPicker.swift in Sources */,
 				A76C1C612880515500A22509 /* LayoutDiagnostics+Error.swift in Sources */,
 				A7DB7D4E27C714E3000893BA /* LayoutTurnoutManager.swift in Sources */,
 				A74F380F281A13CC0013FD23 /* StationListView.swift in Sources */,

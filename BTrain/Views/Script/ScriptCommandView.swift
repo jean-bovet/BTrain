@@ -49,6 +49,9 @@ struct ScriptCommandView: View {
                 case .block:
                     BlockPicker(layout: layout, blockId: $command.blockId)
                         .fixedSize()
+                    Text("with direction")
+                        .fixedSize()
+                    DirectionPicker(direction: $command.direction)
                 case .station:
                     StationPicker(layout: layout, stationId: $command.stationId)
                         .fixedSize()

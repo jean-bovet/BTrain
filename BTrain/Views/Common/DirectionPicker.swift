@@ -12,41 +12,26 @@
 
 import SwiftUI
 
-struct BlockPicker: View {
+struct DirectionPicker: View {
     
-    let layout: Layout
-    @Binding var blockId: Identifier<Block>?
+    @Binding var direction: Direction?
     var showLabels = false
 
-    var sortedBlockIds: [Identifier<Block>] {
-        layout.blocks.sorted {
-            $0.name < $1.name
-        }.map {
-            $0.id
-        }
-    }
-    
     var body: some View {
-        Picker("Block", selection: $blockId) {
-            Text("").tag(nil as Identifier<Block>?)
-            ForEach(sortedBlockIds, id:\.self) { blockId in
-                if let block = layout.block(for: blockId) {
-                    Text(block.name).tag(blockId as Identifier<Block>?)
-                } else {
-                    Text(blockId.uuid).tag(blockId as Identifier<Block>?)
-                }
+        Picker("Direction:", selection: $direction) {
+            ForEach(Direction.allCases, id:\.self) { direction in
+                Text(direction.description).tag(direction as Direction?)
             }
-        }.if(!showLabels, transform: { view in
+        }
+        .if(!showLabels, transform: { view in
             view.labelsHidden()
         })
+        .fixedSize()
     }
 }
 
-struct BlockPicker_Previews: PreviewProvider {
-    
-    static let doc = LayoutDocument(layout: LayoutComplex().newLayout())
-
+struct DirectionPicker_Previews: PreviewProvider {
     static var previews: some View {
-        BlockPicker(layout: doc.layout, blockId: .constant(doc.layout.blockIds[0]))
+        DirectionPicker(direction: .constant(.previous))
     }
 }

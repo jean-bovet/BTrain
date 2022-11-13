@@ -34,7 +34,7 @@ struct ScriptListView: View {
                     }
                 }
 
-                HStack {
+                HStack {                    
                     Text("\(layout.scripts.count) scripts")
                     
                     Spacer()
@@ -84,6 +84,11 @@ struct ScriptListView: View {
 struct ScriptListView_Previews: PreviewProvider {
         
     static var previews: some View {
-        ScriptListView(layout: ScriptView_Previews.layout)
+        Group {
+            ScriptListView(layout: ScriptView_Previews.layout)
+        }
+        Group {
+            ScriptListView(layout: Layout())
+        }.previewDisplayName("Empty")
     }
 }
