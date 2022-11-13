@@ -18,7 +18,7 @@ struct ScriptCommandView: View {
     @ObservedObject var script: Script
     @Binding var command: ScriptCommand
     @Binding var commandErrorIds: [String]
-
+    
     var body: some View {
         HStack {
             if command.action != .start {
@@ -70,8 +70,10 @@ struct ScriptCommandView: View {
                         .fixedSize()
                 }
                 
-                Stepper("and wait \(command.waitDuration) seconds", value: $command.waitDuration, in: 0...100, step: 10)
-                    .fixedSize()
+                if layout.block(for: command.blockId)?.category == .station {
+                    Stepper("and wait \(command.waitDuration) seconds", value: $command.waitDuration, in: 0...100, step: 10)
+                        .fixedSize()
+                }
             case .loop:
                 Stepper("\(command.repeatCount) times", value: $command.repeatCount, in: 1...10)
                     .fixedSize()
@@ -90,16 +92,40 @@ struct ScriptCommandView: View {
     }
 }
 
-
 struct ScriptCommandView_Previews: PreviewProvider {
     
     static let doc = LayoutDocument(layout: LayoutComplex().newLayout())
     static let script = Script()
     
+    static let start = ScriptCommand(action: .start)
+    
+    static let moveToFreeBlock = {
+        var cmd = ScriptCommand(action: .move)
+        cmd.blockId = doc.layout.blocks.first(where: {$0.category == .free})!.id
+        cmd.direction = .next
+        return cmd
+    }()
+    
+    static let moveToStationBlock = {
+        var cmd = ScriptCommand(action: .move)
+        cmd.blockId = doc.layout.blocks.first(where: {$0.category == .station})!.id
+        cmd.direction = .next
+        return cmd
+    }()
+
+    static let loop = {
+        var cmd = ScriptCommand(action: .loop)
+        cmd.repeatCount = 2
+        cmd.children = [moveToFreeBlock, moveToStationBlock]
+        return cmd
+    }()
+
+    static let commands = [start, moveToFreeBlock, moveToStationBlock, loop]
+    
     static var previews: some View {
         VStack(alignment: .leading) {
-            ForEach(ScriptCommand.ScriptAction.allCases, id:\.self) { action in
-                ScriptCommandView(layout: doc.layout, script: script, command: .constant(ScriptCommand(action: action)), commandErrorIds: .constant([]))
+            ForEach(commands, id:\.self) { command in
+                ScriptCommandView(layout: doc.layout, script: script, command: .constant(command), commandErrorIds: .constant([]))
                     .fixedSize()
             }
         }
