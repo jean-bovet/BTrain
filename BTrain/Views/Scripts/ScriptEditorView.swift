@@ -12,7 +12,7 @@
 
 import SwiftUI
 
-struct ScriptView: View {
+struct ScriptEditorView: View {
     
     struct ValidationError {
         let resolverErrors: [PathFinderResolver.ResolverError]
@@ -233,10 +233,10 @@ struct ScriptView_Previews: PreviewProvider {
 
     static var previews: some View {
         Group {
-            ScriptView(layout: layout, script: layout.scripts[0])
+            ScriptEditorView(layout: layout, script: layout.scripts[0])
         }.previewDisplayName("Script")
         Group {
-            ScriptView(layout: layout, script: Script())
+            ScriptEditorView(layout: layout, script: Script())
         }.previewDisplayName("Empty Script")
     }
 }

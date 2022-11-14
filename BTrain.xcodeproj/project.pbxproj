@@ -118,7 +118,7 @@
 		A744FDB92913383200852283 /* NSImage+Resize.swift in Sources */ = {isa = PBXBuildFile; fileRef = A744FDB82913383200852283 /* NSImage+Resize.swift */; };
 		A745C16A282F2199006D16B0 /* TrainReservation.swift in Sources */ = {isa = PBXBuildFile; fileRef = A745C169282F2199006D16B0 /* TrainReservation.swift */; };
 		A747967F291EA869001DF7FA /* TrainControlHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A747967E291EA869001DF7FA /* TrainControlHeaderView.swift */; };
-		A7479681291F437E001DF7FA /* ScriptView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7479680291F437E001DF7FA /* ScriptView.swift */; };
+		A7479681291F437E001DF7FA /* ScriptEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7479680291F437E001DF7FA /* ScriptEditorView.swift */; };
 		A7479683292010F4001DF7FA /* ScriptCommandView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7479682292010F4001DF7FA /* ScriptCommandView.swift */; };
 		A747968529201FB2001DF7FA /* ScriptCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = A747968429201FB2001DF7FA /* ScriptCommand.swift */; };
 		A747968729201FE4001DF7FA /* ScriptLineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A747968629201FE4001DF7FA /* ScriptLineView.swift */; };
@@ -495,7 +495,7 @@
 		A744FDB82913383200852283 /* NSImage+Resize.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSImage+Resize.swift"; sourceTree = "<group>"; };
 		A745C169282F2199006D16B0 /* TrainReservation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainReservation.swift; sourceTree = "<group>"; };
 		A747967E291EA869001DF7FA /* TrainControlHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainControlHeaderView.swift; sourceTree = "<group>"; };
-		A7479680291F437E001DF7FA /* ScriptView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScriptView.swift; sourceTree = "<group>"; };
+		A7479680291F437E001DF7FA /* ScriptEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScriptEditorView.swift; sourceTree = "<group>"; };
 		A7479682292010F4001DF7FA /* ScriptCommandView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScriptCommandView.swift; sourceTree = "<group>"; };
 		A747968429201FB2001DF7FA /* ScriptCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScriptCommand.swift; sourceTree = "<group>"; };
 		A747968629201FE4001DF7FA /* ScriptLineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScriptLineView.swift; sourceTree = "<group>"; };
@@ -1166,7 +1166,7 @@
 			isa = PBXGroup;
 			children = (
 				A7A7D68529202CEA008FA648 /* ScriptListView.swift */,
-				A7479680291F437E001DF7FA /* ScriptView.swift */,
+				A7479680291F437E001DF7FA /* ScriptEditorView.swift */,
 				A747968629201FE4001DF7FA /* ScriptLineView.swift */,
 				A7479682292010F4001DF7FA /* ScriptCommandView.swift */,
 				A7A7D68729203230008FA648 /* Script.swift */,
@@ -2104,7 +2104,7 @@
 				A768B19128551B0800B6497F /* StateMachine.swift in Sources */,
 				A7C8A2EF279DD19A000C7246 /* SectionTitleView.swift in Sources */,
 				A74F38092818C7B10013FD23 /* RouteStepBlockView.swift in Sources */,
-				A7479681291F437E001DF7FA /* ScriptView.swift in Sources */,
+				A7479681291F437E001DF7FA /* ScriptEditorView.swift in Sources */,
 				A785C071278A4561002FD538 /* TrainDetailsView.swift in Sources */,
 				A7C8A2E9279BB8A6000C7246 /* NewLayoutWizardView.swift in Sources */,
 				A744FDB92913383200852283 /* NSImage+Resize.swift in Sources */,

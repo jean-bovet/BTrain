@@ -80,8 +80,7 @@ struct ScriptListView: View {
             scriptList
                 .frame(maxWidth: SideListFixedWidth)
             if let script = layout.script(for: selection) {
-                ScriptView(layout: layout, script: script)
-                    .id(script.id) // In order for each view to be unique and not display the previous verification status
+                ScriptEditorView(layout: layout, script: script)
             } else {
                 CenteredLabelView(label: "No Selected Script")
             }
