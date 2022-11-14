@@ -20,7 +20,7 @@ struct OverviewView: View {
     var body: some View {
         HStack(spacing: 0) {
             VStack(spacing: 0) {
-                TrainControlListView(layout: document.layout, document: document)
+                TrainControlListView(layout: document.layout, document: document, pinnedTrainIds: $document.pinnedTrainIds)
                 if document.showDebugModeControls {
                     DeveloperView(doc: document)
                         .frame(height: 150)

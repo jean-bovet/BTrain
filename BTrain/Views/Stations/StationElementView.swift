@@ -20,20 +20,11 @@ struct StationElementView: View {
     var body: some View {
         HStack {
             UndoProvider($element.blockId) { blockId in
-                Picker("Block:", selection: blockId) {
-                    ForEach(layout.blockMap.values, id:\.self) { block in
-                        Text("\(block.name) — \(block.category.description)").tag(block.id as Identifier<Block>?)
-                    }
-                }
+                BlockPicker(layout: layout, blockId: blockId, showLabels: true)
             }
             
             UndoProvider($element.direction) { direction in
-                Picker("Direction:", selection: direction) {
-                    ForEach(Direction.allCases, id:\.self) { direction in
-                        Text(direction.description).tag(direction as Direction?)
-                    }
-                }
-                .fixedSize()
+                DirectionPicker(direction: direction, showLabels: true)
             }
         }
     }}

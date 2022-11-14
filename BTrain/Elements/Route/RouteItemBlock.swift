@@ -12,13 +12,15 @@
 
 import Foundation
 
-struct RouteItemBlock: Equatable, Codable, CustomStringConvertible {
+struct RouteItemBlock: Equatable, Codable, CustomStringConvertible, SourceIdentifiable {
 
     static func ==(lhs: RouteItemBlock, rhs: RouteItemBlock) -> Bool {
         lhs.id == rhs.id
     }
 
     var id = UUID().uuidString
+    
+    var sourceIdentifier: String?
     
     // The block identifier
     var blockId: Identifier<Block>

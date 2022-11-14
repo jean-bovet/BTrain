@@ -44,3 +44,11 @@ struct LocPicker: View {
     }
 }
 
+struct LocPicker_Previews: PreviewProvider {
+    
+    static let doc = LayoutDocument(layout: LayoutComplex().newLayout())
+
+    static var previews: some View {
+        LocPicker(doc: doc, selectedLoc: .constant(doc.layout.locomotives[0].id))
+    }
+}

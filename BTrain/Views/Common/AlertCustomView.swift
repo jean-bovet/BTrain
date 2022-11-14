@@ -10,35 +10,48 @@
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-import XCTest
-import ViewInspector
+import SwiftUI
 
-@testable import BTrain
-
-extension DocumentView: Inspectable { }
-extension OverviewView: Inspectable { }
-extension SwitchboardContainerView: Inspectable { }
-extension BlockListView: Inspectable { }
-extension TurnoutListView: Inspectable { }
-extension FeedbackEditListView: Inspectable { }
-extension TrainControlListView: Inspectable { }
-extension SwitchBoardView: Inspectable { }
-extension FeedbackView: Inspectable { }
-extension TrainListView: Inspectable { }
-extension TrainDetailsView: Inspectable { }
-extension TrainControlContainerView: Inspectable { }
-extension TrainControlSpeedView: Inspectable { }
-extension TrainControlLocationView: Inspectable { }
-extension TrainControlRouteView: Inspectable { }
-extension UndoProvider: Inspectable { }
-
-class RootViewTests: BTTestCase {
+struct AlertCustomView<Content: View>: View {
     
-    func newLayout() -> Layout {
-        newDocument().layout
+    let content: Content
+    
+    @Environment(\.presentationMode) var presentationMode
+
+    init(@ViewBuilder content: () -> Content) {
+        self.content = content()
+    }
+        
+    var footer: some View {
+        VStack(spacing: 0) {
+            Divider()
+            
+            HStack {
+                Spacer()
+                
+                Button("OK") {
+                    presentationMode.wrappedValue.dismiss()
+                }
+                .keyboardShortcut(.defaultAction)
+            }.padding()
+        }
     }
     
-    func newDocument() -> LayoutDocument {
-        LayoutDocument(layout: LayoutLoop2().newLayout())
+    var body: some View {
+        VStack(spacing: 0) {
+            content
+            
+            footer
+                .padding([.top])
+        }
+    }
+}
+
+
+struct AlertCustomView_Previews: PreviewProvider {
+    static var previews: some View {
+        AlertCustomView() {
+            Text("This is the content of the alert")
+        }
     }
 }

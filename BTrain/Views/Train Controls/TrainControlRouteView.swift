@@ -47,8 +47,29 @@ struct TrainControlRouteView: View {
                 Spacer()
                 
                 if let route = layout.route(for: train.routeId, trainId: train.id) {
-                    TrainControlRouteActionsView(document: document, train: train, route: route, trainRuntimeError: $trainRuntimeError)
-                        .disabled(!document.connected)
+                    HStack {
+                        if train.scheduling == .unmanaged {
+                            Button("Start") {
+                                do {
+                                    trainRuntimeError = nil
+                                    try document.start(train: train.id, withRoute: route.id, destination: nil)
+                                } catch {
+                                    trainRuntimeError = error.localizedDescription
+                                }
+                            }.disabled(!document.power)
+                        } else {
+                            Button("Stop") {
+                                route.lastMessage = nil
+                                document.stop(train: train)
+                            }
+                            
+                            Button("Finish") {
+                                route.lastMessage = nil
+                                document.finish(train: train)
+                            }.disabled(train.scheduling == .finishManaged || train.scheduling == .stopManaged || train.scheduling == .stopImmediatelyManaged)
+                        }
+                    }
+                    .disabled(!document.connected)
                 }
             }
             if selectedRouteDescription.isEmpty {
@@ -57,9 +78,10 @@ struct TrainControlRouteView: View {
                     .fixedSize(horizontal: false, vertical: true)
                     .hidden()
             } else {
-                Text(selectedRouteDescription)
-                    .lineLimit(4)
-                    .fixedSize(horizontal: false, vertical: true)
+                ScrollView {
+                    Text(selectedRouteDescription)
+                        .fixedSize(horizontal: false, vertical: true)
+                }.frame(maxHeight: 120)
             }
         }.onAppear() {
             updateRoute()

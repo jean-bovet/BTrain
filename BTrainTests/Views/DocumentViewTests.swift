@@ -21,30 +21,6 @@ extension ConnectSheet: Inspectable { }
 extension DiagnosticsSheet: Inspectable { }
 
 class DocumentViewTests: RootViewTests {
-
-    func testMainView() throws {
-        let doc = newDocument()
-        let sut = MainView(document: doc)
-        
-        doc.selectedView = .overview
-        XCTAssertNoThrow(try sut.inspect().find(OverviewView.self))
-        
-        doc.selectedView = .trains
-        XCTAssertThrowsError(try sut.inspect().find(OverviewView.self))
-        XCTAssertNoThrow(try sut.inspect().find(TrainListView.self))
-        
-        doc.selectedView = .blocks
-        XCTAssertThrowsError(try sut.inspect().find(TrainDetailsView.self))
-        XCTAssertNoThrow(try sut.inspect().find(BlockListView.self))
-        
-        doc.selectedView = .turnouts
-        XCTAssertThrowsError(try sut.inspect().find(BlockListView.self))
-        XCTAssertNoThrow(try sut.inspect().find(TurnoutListView.self))
-
-        doc.selectedView = .feedback
-        XCTAssertThrowsError(try sut.inspect().find(TurnoutListView.self))
-        XCTAssertNoThrow(try sut.inspect().find(FeedbackEditListView.self))
-    }
         
     @Binding var connectAlertShowing: Bool = true
 

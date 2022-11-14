@@ -10,35 +10,28 @@
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-import XCTest
-import ViewInspector
+import SwiftUI
 
-@testable import BTrain
-
-extension DocumentView: Inspectable { }
-extension OverviewView: Inspectable { }
-extension SwitchboardContainerView: Inspectable { }
-extension BlockListView: Inspectable { }
-extension TurnoutListView: Inspectable { }
-extension FeedbackEditListView: Inspectable { }
-extension TrainControlListView: Inspectable { }
-extension SwitchBoardView: Inspectable { }
-extension FeedbackView: Inspectable { }
-extension TrainListView: Inspectable { }
-extension TrainDetailsView: Inspectable { }
-extension TrainControlContainerView: Inspectable { }
-extension TrainControlSpeedView: Inspectable { }
-extension TrainControlLocationView: Inspectable { }
-extension TrainControlRouteView: Inspectable { }
-extension UndoProvider: Inspectable { }
-
-class RootViewTests: BTTestCase {
+struct DirectionPicker: View {
     
-    func newLayout() -> Layout {
-        newDocument().layout
+    @Binding var direction: Direction?
+    var showLabels = false
+
+    var body: some View {
+        Picker("Direction:", selection: $direction) {
+            ForEach(Direction.allCases, id:\.self) { direction in
+                Text(direction.description).tag(direction as Direction?)
+            }
+        }
+        .if(!showLabels, transform: { view in
+            view.labelsHidden()
+        })
+        .fixedSize()
     }
-    
-    func newDocument() -> LayoutDocument {
-        LayoutDocument(layout: LayoutLoop2().newLayout())
+}
+
+struct DirectionPicker_Previews: PreviewProvider {
+    static var previews: some View {
+        DirectionPicker(direction: .constant(.previous))
     }
 }

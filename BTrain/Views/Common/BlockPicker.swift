@@ -10,35 +10,43 @@
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-import XCTest
-import ViewInspector
+import SwiftUI
 
-@testable import BTrain
-
-extension DocumentView: Inspectable { }
-extension OverviewView: Inspectable { }
-extension SwitchboardContainerView: Inspectable { }
-extension BlockListView: Inspectable { }
-extension TurnoutListView: Inspectable { }
-extension FeedbackEditListView: Inspectable { }
-extension TrainControlListView: Inspectable { }
-extension SwitchBoardView: Inspectable { }
-extension FeedbackView: Inspectable { }
-extension TrainListView: Inspectable { }
-extension TrainDetailsView: Inspectable { }
-extension TrainControlContainerView: Inspectable { }
-extension TrainControlSpeedView: Inspectable { }
-extension TrainControlLocationView: Inspectable { }
-extension TrainControlRouteView: Inspectable { }
-extension UndoProvider: Inspectable { }
-
-class RootViewTests: BTTestCase {
+struct BlockPicker: View {
     
-    func newLayout() -> Layout {
-        newDocument().layout
+    let layout: Layout
+    @Binding var blockId: Identifier<Block>?
+    var showLabels = false
+
+    var sortedBlockIds: [Identifier<Block>] {
+        layout.blocks.sorted {
+            $0.name < $1.name
+        }.map {
+            $0.id
+        }
     }
     
-    func newDocument() -> LayoutDocument {
-        LayoutDocument(layout: LayoutLoop2().newLayout())
+    var body: some View {
+        Picker("Block", selection: $blockId) {
+            Text("").tag(nil as Identifier<Block>?)
+            ForEach(sortedBlockIds, id:\.self) { blockId in
+                if let block = layout.block(for: blockId) {
+                    Text(block.name).tag(blockId as Identifier<Block>?)
+                } else {
+                    Text(blockId.uuid).tag(blockId as Identifier<Block>?)
+                }
+            }
+        }.if(!showLabels, transform: { view in
+            view.labelsHidden()
+        })
+    }
+}
+
+struct BlockPicker_Previews: PreviewProvider {
+    
+    static let doc = LayoutDocument(layout: LayoutComplex().newLayout())
+
+    static var previews: some View {
+        BlockPicker(layout: doc.layout, blockId: .constant(doc.layout.blockIds[0]))
     }
 }

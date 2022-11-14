@@ -97,7 +97,7 @@ struct FeedbackEditListView: View {
                 Button("􀄬") {
                     layout.sortFeedbacks()
                 }
-            }.padding()
+            }.padding([.leading])
         }.sheet(isPresented: $showAddNewFeedback, onDismiss: {
             if newFeedback != NewFeedback.empty() {
                 addNewFeedback(name: newFeedback.name, deviceID: newFeedback.deviceID, contactID: newFeedback.contactID)
@@ -126,6 +126,8 @@ struct FeedbackEditListView_Previews: PreviewProvider {
     static let doc = LayoutDocument(layout: LayoutLoop2().newLayout())
     
     static var previews: some View {
-        FeedbackEditListView(doc: doc, layout: doc.layout, layoutController: doc.layoutController)
+        ConfigurationSheet(title: "Feedbacks") {
+            FeedbackEditListView(doc: doc, layout: doc.layout, layoutController: doc.layoutController)
+        }
     }
 }

@@ -80,11 +80,7 @@ struct TrainDetailsBlocksToAvoidSectionView: View {
                 ForEach($train.blocksToAvoid, id: \.self) { blockItem in
                     HStack {
                         UndoProvider(blockItem.blockId) { value in
-                            Picker("Block:", selection: value) {
-                                ForEach(layout.blockMap.values, id:\.self) { block in
-                                    Text("\(block.name) — \(block.category.description)").tag(block.id as Identifier<Block>)
-                                }
-                            }.labelsHidden()
+                            BlockPicker(layout: layout, blockId: value)
                         }
                         Spacer()
                         Button("-") {
@@ -95,7 +91,7 @@ struct TrainDetailsBlocksToAvoidSectionView: View {
             }.frame(minHeight: 100)
             
             Button("+") {
-                train.blocksToAvoid.append(.init(layout.blockIds.first!))
+                train.blocksToAvoid.append(.init(layout.blockIds.first))
             }.disabled(layout.blockIds.isEmpty)
         }
     }

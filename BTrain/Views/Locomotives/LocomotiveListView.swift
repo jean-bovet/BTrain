@@ -22,6 +22,8 @@ struct LocomotiveListView: View {
     
     @State private var selection: Identifier<Locomotive>? = nil
 
+    @State private var discoverLocomotiveConfirmation = false
+    
     var body: some View {
         HStack(alignment: .top) {
             VStack {
@@ -77,7 +79,7 @@ struct LocomotiveListView: View {
                     Spacer().fixedSpace()
                     
                     Button("􀈄") {
-                        document.discoverLocomotiveConfirmation.toggle()
+                        discoverLocomotiveConfirmation.toggle()
                     }
                     .disabled(!document.connected)
                     .help("Download Locomotives")
@@ -87,7 +89,7 @@ struct LocomotiveListView: View {
                     Button("􀄬") {
                         layout.sortLocomotives()
                     }
-                }.padding()
+                }.padding([.leading])
             }.frame(maxWidth: SideListFixedWidth)
 
             if let selection = selection, let loc = layout.locomotive(for: selection) {
@@ -102,6 +104,14 @@ struct LocomotiveListView: View {
             if selection == nil {
                 selection = layout.locomotives.first?.id
             }
+        }.alert("Are you sure you want to change the current list of locomotives with the locomotives definition from the Central Station?", isPresented: $discoverLocomotiveConfirmation) {
+            Button("Cancel", role: .cancel) { }
+            Button("Download & Merge") {
+                document.locomotiveDiscovery.discover(merge: true)
+            }
+            Button("Download & Replace", role: .destructive) {
+                document.locomotiveDiscovery.discover(merge: false)
+            }
         }
     }
 }
@@ -111,6 +121,8 @@ struct LocomotiveListView_Previews: PreviewProvider {
     static let doc = LayoutDocument(layout: LayoutLoop2().newLayout())
     
     static var previews: some View {
-        LocomotiveListView(document: doc, layout: doc.layout)
+        ConfigurationSheet(title: "Locomotives") {
+            LocomotiveListView(document: doc, layout: doc.layout)
+        }
     }
 }

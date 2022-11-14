@@ -73,7 +73,7 @@ struct TurnoutListView: View {
                     Button("􀄬") {
                         layout.sortTurnouts()
                     }.help("Sort Turnouts")
-                }.padding()
+                }.padding([.leading])
             }.frame(maxWidth: SideListFixedWidth)
             
             if let selection = selection, let turnout = layout.turnout(for: selection) {
@@ -97,6 +97,8 @@ struct TurnoutEditListView_Previews: PreviewProvider {
     static let doc = LayoutDocument(layout: LayoutLoop2().newLayout())
     
     static var previews: some View {
-        TurnoutListView(doc: doc, layout: doc.layout)
+        ConfigurationSheet(title: "Turnouts") {
+            TurnoutListView(doc: doc, layout: doc.layout)
+        }
     }
 }

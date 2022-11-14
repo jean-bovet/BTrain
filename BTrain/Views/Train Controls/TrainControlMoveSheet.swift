@@ -31,14 +31,6 @@ struct TrainControlMoveSheet: View {
 
     @Environment(\.presentationMode) var presentationMode
     
-    var sortedBlockIds: [Identifier<Block>] {
-        layout.blocks.sorted {
-            $0.name < $1.name
-        }.map {
-            $0.id
-        }
-    }
-    
     var selectedBlockName: String {
         if let block = layout.block(for: blockId) {
             return block.name
@@ -50,17 +42,10 @@ struct TrainControlMoveSheet: View {
     var body: some View {
         VStack {
             HStack {
-                Text("Move \"\(train.name)\"")
+                Text("Move \"\(train.name)\" to")
+                    .fixedSize()
                 
-                Picker("to block", selection: $blockId) {
-                    ForEach(sortedBlockIds, id:\.self) { blockId in
-                        if let block = layout.block(for: blockId) {
-                            Text(block.nameForLocation).tag(blockId as Identifier<Block>?)
-                        } else {
-                            Text(blockId.uuid).tag(blockId as Identifier<Block>?)
-                        }
-                    }
-                }
+                BlockPicker(layout: layout, blockId: $blockId)
                 .onAppear {
                     if let trainDragInfo = trainDragInfo {
                         blockId = trainDragInfo.blockId
@@ -170,18 +155,6 @@ struct TrainControlMoveSheet: View {
         }
     }
 
-}
-
-private extension Block {
-    var nameForLocation: String {
-        let name: String
-        if category == .station {
-            name = "\(self.name) - Station"
-        } else {
-            name = self.name
-        }
-        return name
-    }
 }
 
 struct TrainControlMoveSheet_Previews: PreviewProvider {

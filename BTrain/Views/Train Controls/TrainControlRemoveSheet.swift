@@ -27,7 +27,7 @@ struct TrainControlRemoveSheet: View {
     var body: some View {
         VStack {
             if let block = layout.block(for: blockId) {
-                Text("Remove \"\(train.name)\" from block \(block.nameForLocation)?")
+                Text("Remove \"\(train.name)\" from block \(block.name)?")
                     .fixedSize()
             } else if let blockId = blockId {
                 Text("Remove \"\(train.name)\" from block \(blockId.uuid)?")
@@ -65,18 +65,6 @@ struct TrainControlRemoveSheet: View {
         }
     }
     
-}
-
-private extension Block {
-    var nameForLocation: String {
-        let name: String
-        if category == .station {
-            name = "\(self.name) - Station"
-        } else {
-            name = self.name
-        }
-        return name
-    }
 }
 
 struct TrainControlRemoveSheet_Previews: PreviewProvider {

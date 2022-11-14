@@ -10,35 +10,25 @@
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-import XCTest
-import ViewInspector
+import Foundation
 
-@testable import BTrain
-
-extension DocumentView: Inspectable { }
-extension OverviewView: Inspectable { }
-extension SwitchboardContainerView: Inspectable { }
-extension BlockListView: Inspectable { }
-extension TurnoutListView: Inspectable { }
-extension FeedbackEditListView: Inspectable { }
-extension TrainControlListView: Inspectable { }
-extension SwitchBoardView: Inspectable { }
-extension FeedbackView: Inspectable { }
-extension TrainListView: Inspectable { }
-extension TrainDetailsView: Inspectable { }
-extension TrainControlContainerView: Inspectable { }
-extension TrainControlSpeedView: Inspectable { }
-extension TrainControlLocationView: Inspectable { }
-extension TrainControlRouteView: Inspectable { }
-extension UndoProvider: Inspectable { }
-
-class RootViewTests: BTTestCase {
+/// Holds the user interface settings that are serialized along with the layout information.
+struct UserInterfaceSettings: Codable {
     
-    func newLayout() -> Layout {
-        newDocument().layout
+    let pinnedTrainIds: Set<Identifier<Train>>?
+    
+    init(layoutDocument: LayoutDocument) {
+        self.pinnedTrainIds = layoutDocument.pinnedTrainIds
     }
     
-    func newDocument() -> LayoutDocument {
-        LayoutDocument(layout: LayoutLoop2().newLayout())
+    func encode() throws -> Data {
+        let encoder = JSONEncoder()
+        let data = try encoder.encode(self)
+        return data
     }
+
+    func apply(layoutDocument: LayoutDocument) {
+        layoutDocument.pinnedTrainIds = pinnedTrainIds ?? []
+    }
+
 }

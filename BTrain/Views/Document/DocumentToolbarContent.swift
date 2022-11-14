@@ -24,19 +24,57 @@ struct DocumentToolbarContent: ToolbarContent {
             ConnectCommandsView(document: document, connectAlertShowing: $connectAlertShowing)
             Spacer()
         }
-
+        
         ToolbarItemGroup {
-            
+            Group {
+                Button("􀬱") {
+                    document.displaySheetType = .script
+                }
+                Button("􀼯") {
+                    document.displaySheetType = .trains
+                }
+                Button("􀼮") {
+                    document.displaySheetType = .locomotives
+                }
+                Button("􀌃") {
+                    document.displaySheetType = .stations
+                }
+                Button("􀏭") {
+                    document.displaySheetType = .blocks
+                }
+                Button("􀄭") {
+                    document.displaySheetType = .turnouts
+                }
+                Button("􁕶") {
+                    document.displaySheetType = .feedbacks
+                }
+                Spacer()
+            }.disabled(document.power)
+        }
+        
+        ToolbarItemGroup {
+            if document.showDebugModeControls {
+                Button("􁆬") {
+                    document.displaySheetType = .routes
+                }
+                Button("􀯔") {
+                    document.displaySheetType = .cs3
+                }
+                Spacer()
+            }
+        }
+        
+        ToolbarItemGroup {
             DiagnosticsIndicationView(diagnostics: document.layoutDiagnostics, document: document)
 
             Spacer()
 
             DeveloperCommandsView(document: document)
 
-            if let switchboard = document.switchboard, document.selectedView == .overview {
+            if let switchboard = document.switchboard {
                 SwitchboardSettingsButton(document: document)
                 SwitchboardEditButton(document: document, state: switchboard.state)
-            }            
+            }
         }
     }
 }
@@ -131,22 +169,6 @@ struct PowerStateIndicationView: View {
             .foregroundColor(.white)
             .clipShape(Capsule())
         Spacer()
-    }
-}
-
-struct CommandSelectedView: View {
-    
-    @AppStorage("selectedView") var selectedView: ViewType = .overview
-    let viewType: ViewType
-    let label: String
-    
-    var body: some View {
-        let b = Binding {
-            selectedView == viewType
-        } set: {
-            selectedView = $0 ? viewType : viewType
-        }
-        Toggle(label, isOn: b)
     }
 }
 

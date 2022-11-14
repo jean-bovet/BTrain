@@ -62,7 +62,7 @@ struct RouteListView: View {
 
                     Button("􀉁") {
                         layout.duplicate(routeId: selection!)
-                    }
+                    }.disabled(selection == nil)
 
                     Spacer().fixedSpace()
                     

@@ -15,24 +15,64 @@ import SwiftUI
 let SideListFixedWidth = 400.0
 
 // This is the main application view. It knows how to switch between views and how to respond to most of the commands.
-struct MainView: View {
+struct DocumentView: View {
 
     @ObservedObject var document: LayoutDocument
     
     @State private var showNewWizard = false
     @State private var connectAlertShowing = false
     @State private var showDiagnosticsSheet = false
-    @State private var showDiscoverLocomotiveConfirmation = false
     @State private var repairLayoutTrigger = false
     
     @AppStorage(SettingsKeys.autoConnectSimulator) private var autoConnectSimulator = false
     @AppStorage(SettingsKeys.autoEnableSimulator) private var autoEnableSimulator = false
     
+    var idealSheetWidth: CGFloat {
+        (NSApp.keyWindow?.contentView?.bounds.width ?? 500) * 0.75
+    }
+    
+    var idealSheetHeight: CGFloat {
+        (NSApp.keyWindow?.contentView?.bounds.height ?? 400) * 0.75
+    }
+
     var body: some View {
-        Group {
-            switch(document.selectedView) {
-            case .overview:
-                OverviewView(document: document)
+        OverviewView(document: document)
+            .onChange(of: document.triggerLayoutDiagnostic, perform: { v in
+                if document.triggerLayoutDiagnostic {
+                    showDiagnosticsSheet = true
+                    document.triggerLayoutDiagnostic = false
+                }
+            })
+            .onAppear {
+                if document.newDocument {
+                    showNewWizard.toggle()
+                }
+                if autoConnectSimulator {
+                    document.connectToSimulator(enable: autoEnableSimulator)
+                }
+            }.toolbar {
+                DocumentToolbarContent(document: document,
+                                       connectAlertShowing: $connectAlertShowing)
+            }.sheet(isPresented: $connectAlertShowing) {
+                ConnectSheet(document: document, onConnectTasks: document.onConnectTasks)
+                    .padding()
+            }.sheet(isPresented: $showDiagnosticsSheet) {
+                DiagnosticsSheet(layout: document.layout, options: .all)
+                    .padding()
+            }.sheet(isPresented: $showNewWizard) {
+                NewLayoutWizardView(document: document)
+                    .padding()
+            }.sheet(isPresented: $document.displaySheet) {
+                displaySheetView
+                    .frame(idealWidth: idealSheetWidth, idealHeight: idealSheetHeight)
+            }
+    }
+    
+    var displaySheetView: some View {
+        ConfigurationSheet(title: document.displaySheetType.rawValue) {
+            switch document.displaySheetType {
+            case .script:
+                ScriptListView(layout: document.layout)
             case .routes:
                 RouteListView(layout: document.layout)
             case .trains:
@@ -45,54 +85,10 @@ struct MainView: View {
                 BlockListView(layout: document.layout)
             case .turnouts:
                 TurnoutListView(doc: document, layout: document.layout)
-            case .feedback:
+            case .feedbacks:
                 FeedbackEditListView(doc: document, layout: document.layout, layoutController: document.layoutController)
             case .cs3:
                 CS3DebuggerView(doc: document)
-            }
-        }
-        .onChange(of: document.triggerLayoutDiagnostic, perform: { v in
-            if document.triggerLayoutDiagnostic {
-                showDiagnosticsSheet = true
-                document.triggerLayoutDiagnostic = false
-            }
-        })
-        .onChange(of: document.discoverLocomotiveConfirmation, perform: { v in
-            if document.discoverLocomotiveConfirmation {
-                if document.layout.trains.isEmpty {
-                    document.locomotiveDiscovery.discover(merge: false)
-                } else {
-                    showDiscoverLocomotiveConfirmation.toggle()
-                }
-                document.discoverLocomotiveConfirmation = false
-            }
-        })
-        .onAppear {
-            if document.newDocument {
-                showNewWizard.toggle()
-            }
-            if autoConnectSimulator {
-                document.connectToSimulator(enable: autoEnableSimulator)
-            }
-        }.toolbar {
-            DocumentToolbarContent(document: document,
-                                   connectAlertShowing: $connectAlertShowing)
-        }.sheet(isPresented: $connectAlertShowing) {
-            ConnectSheet(document: document, onConnectTasks: document.onConnectTasks)
-                .padding()
-        }.sheet(isPresented: $showDiagnosticsSheet) {
-            DiagnosticsSheet(layout: document.layout, options: .all)
-                .padding()
-        }.sheet(isPresented: $showNewWizard) {
-            NewLayoutWizardView(document: document)
-                .padding()
-        }.alert("Are you sure you want to change the current list of locomotives with the locomotives definition from the Central Station?", isPresented: $showDiscoverLocomotiveConfirmation) {
-            Button("Cancel", role: .cancel) { }
-            Button("Download & Merge") {
-                document.locomotiveDiscovery.discover(merge: true)
-            }
-            Button("Download & Replace", role: .destructive) {
-                document.locomotiveDiscovery.discover(merge: false)
             }
         }
     }
@@ -100,6 +96,6 @@ struct MainView: View {
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        MainView(document: LayoutDocument(layout: Layout()))
+        DocumentView(document: LayoutDocument(layout: Layout()))
     }
 }

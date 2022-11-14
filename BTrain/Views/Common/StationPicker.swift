@@ -10,35 +10,40 @@
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-import XCTest
-import ViewInspector
+import SwiftUI
 
-@testable import BTrain
-
-extension DocumentView: Inspectable { }
-extension OverviewView: Inspectable { }
-extension SwitchboardContainerView: Inspectable { }
-extension BlockListView: Inspectable { }
-extension TurnoutListView: Inspectable { }
-extension FeedbackEditListView: Inspectable { }
-extension TrainControlListView: Inspectable { }
-extension SwitchBoardView: Inspectable { }
-extension FeedbackView: Inspectable { }
-extension TrainListView: Inspectable { }
-extension TrainDetailsView: Inspectable { }
-extension TrainControlContainerView: Inspectable { }
-extension TrainControlSpeedView: Inspectable { }
-extension TrainControlLocationView: Inspectable { }
-extension TrainControlRouteView: Inspectable { }
-extension UndoProvider: Inspectable { }
-
-class RootViewTests: BTTestCase {
+struct StationPicker: View {
     
-    func newLayout() -> Layout {
-        newDocument().layout
+    let layout: Layout
+    @Binding var stationId: Identifier<Station>?
+    
+    var sortedStationIds: [Identifier<Station>] {
+        layout.stations.sorted {
+            $0.name < $1.name
+        }.map {
+            $0.id
+        }
     }
     
-    func newDocument() -> LayoutDocument {
-        LayoutDocument(layout: LayoutLoop2().newLayout())
+    var body: some View {
+        Picker("Station", selection: $stationId) {
+            Text("").tag(nil as Identifier<Station>?)
+            ForEach(sortedStationIds, id:\.self) { stationId in
+                if let station = layout.station(for: stationId) {
+                    Text(station.name).tag(stationId as Identifier<Station>?)
+                } else {
+                    Text(stationId.uuid).tag(stationId as Identifier<Station>?)
+                }
+            }
+        }.labelsHidden()
+    }
+}
+
+struct StationPicker_Previews: PreviewProvider {
+    
+    static let doc = LayoutDocument(layout: LayoutComplex().newLayout())
+
+    static var previews: some View {
+        StationPicker(layout: doc.layout, stationId: .constant(doc.layout.stations[0].id))
     }
 }

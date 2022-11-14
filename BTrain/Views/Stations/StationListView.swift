@@ -60,7 +60,7 @@ struct StationListView: View {
                     Button("􀄬") {
                         layout.sortStations()
                     }
-                }.padding()
+                }.padding([.leading])
             }.frame(maxWidth: SideListFixedWidth)
 
             if let stationId = selection, let station = layout.station(for: stationId) {
@@ -78,6 +78,8 @@ struct StationListView: View {
 
 struct StationListView_Previews: PreviewProvider {
     static var previews: some View {
-        StationListView(layout: LayoutLoop1().newLayout())
+        ConfigurationSheet(title: "Stations") {
+            StationListView(layout: LayoutLoop1().newLayout())
+        }
     }
 }

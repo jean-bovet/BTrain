@@ -43,3 +43,11 @@ struct TrainPicker: View {
     }
 }
 
+struct TrainPicker_Previews: PreviewProvider {
+    
+    static let doc = LayoutDocument(layout: LayoutComplex().newLayout())
+
+    static var previews: some View {
+        TrainPicker(doc: doc, selectedTrain: .constant(doc.layout.trains[0].id))
+    }
+}

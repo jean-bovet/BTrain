@@ -15,12 +15,14 @@ import Foundation
 // Each element is a `node` with specific exit and entry sockets.
 // A starting element only has an exit socket while the last
 // element in the path only has an entry socket.
-struct GraphPathElement: Equatable, Hashable, CustomStringConvertible {
+struct GraphPathElement: Equatable, Hashable, CustomStringConvertible, SourceIdentifiable {
         
     let node: GraphNode
     let entrySocket: SocketId?
     let exitSocket: SocketId?
 
+    var sourceIdentifier: String?
+    
     var description: String {
         var text = ""
         if let enterSocket = entrySocket {

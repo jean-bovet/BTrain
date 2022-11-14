@@ -12,16 +12,12 @@
 
 import Foundation
 
-// The various "views" that the document can present to the user
-enum ViewType: Int {
-    case overview
-    case routes
-    case trains
-    case locomotives
-    case stations
-    case blocks
-    case turnouts
-    case feedback
-    case cs3
-}
+/// Protocol describing the ability to identify the source of element.
+/// For example, each step in a script is mapped to its one or more route elements,
+/// which is used to report any error back to the corresponding script step.
+protocol SourceIdentifiable {
+        
+    /// The unique identifier of the source
+    var sourceIdentifier: String? { get set }
     
+}

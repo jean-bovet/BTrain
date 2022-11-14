@@ -51,6 +51,9 @@ final class LayoutDocument: ObservableObject {
         }
     }
     
+    /// Set of trains that have been pinned by the user
+    @Published var pinnedTrainIds = Set<Identifier<Train>>()
+
     /// True if the layout has power enabled, false otherwise. It is only valid
     /// if the ``connected`` attribute is true.
     @Published var power = false
@@ -60,12 +63,29 @@ final class LayoutDocument: ObservableObject {
     
     /// Used to show or hide the switchboard view settings
     @Published var showSwitchboardViewSettings = false
-
-    /// Property used to confirm the download of the locomotives command
-    @Published var discoverLocomotiveConfirmation = false
-
-    /// Property used to switch to a specific view type
-    @AppStorage("selectedView") var selectedView: ViewType = .overview
+    
+    /// The various type of sheets that can be displayed
+    enum DisplaySheetType: String {
+        case script = "Scripts"
+        case routes = "Routes"
+        case trains = "Trains"
+        case locomotives = "Locomotives"
+        case stations = "Stations"
+        case blocks = "Blocks"
+        case turnouts = "Turnouts"
+        case feedbacks = "Feedbacks"
+        case cs3 = "Central Station 3 Debugger"
+    }
+    
+    /// Show the specific sheet type
+    @Published var displaySheetType = DisplaySheetType.script {
+        didSet {
+            displaySheet.toggle()
+        }
+    }
+        
+    /// Toggle showing the sheet when the sheet type changes
+    @Published var displaySheet = false
 
     /// Property used to toggle showing debug-only controls
     @AppStorage(SettingsKeys.debugMode) var showDebugModeControls = false

@@ -55,4 +55,22 @@ extension FileWrapper {
         return items
     }
     
+    func userInterfaceSettings() throws -> UserInterfaceSettings? {
+        guard let files = fileWrappers else {
+            throw CocoaError(.fileReadCorruptFile)
+        }
+        
+        guard let layoutFile = files.first(where: {$0.value.filename == LayoutDocument.userInterfaceFileName }) else {
+            return nil
+        }
+        
+        guard let data = layoutFile.value.regularFileContents else {
+            throw CocoaError(.fileReadCorruptFile)
+        }
+
+        let decoder = JSONDecoder()
+        let settings = try decoder.decode(UserInterfaceSettings.self, from: data)
+        return settings
+    }
+
 }

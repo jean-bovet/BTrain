@@ -53,7 +53,18 @@ extension Layout {
         routes.append(route)
         return route
     }
-
+    
+    /// Add or update the existing route with the specified route.
+    /// - Parameter route: the route
+    func addOrUpdate(route: Route) {
+        if let existingRoute = self.route(for: route.id) {
+            existingRoute.name = route.name
+            existingRoute.partialSteps = route.partialSteps
+        } else {
+            routes.append(route)
+        }
+    }
+    
     func duplicate(routeId: Identifier<Route>) {
         guard let route = route(for: routeId) else {
             return
@@ -94,7 +105,7 @@ extension Layout {
         return text
     }
     
-    func routeDescription(for train: Train, steps: [RouteItem]) -> String {
+    func routeDescription(for train: Train?, steps: [RouteItem]) -> String {
         var index = 0
         var text = ""
         for step in steps {
@@ -108,7 +119,7 @@ extension Layout {
             
             text += description
             
-            if train.routeStepIndex == index {
+            if train?.routeStepIndex == index {
                 // Indicate the block in the route where the train
                 // is currently located
                 text += "􀼮"

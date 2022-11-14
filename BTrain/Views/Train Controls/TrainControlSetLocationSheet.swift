@@ -25,15 +25,7 @@ struct TrainControlSetLocationSheet: View {
     @State private var errorStatus: String?
 
     @Environment(\.presentationMode) var presentationMode
-    
-    var sortedBlockIds: [Identifier<Block>] {
-        layout.blocks.sorted {
-            $0.name < $1.name
-        }.map {
-            $0.id
-        }
-    }
-    
+        
     var selectedBlockName: String {
         if let block = layout.block(for: blockId) {
             return block.name
@@ -45,17 +37,10 @@ struct TrainControlSetLocationSheet: View {
     var body: some View {
         VStack {
             HStack {
-                Text("Set \"\(train.name)\"")
-                
-                Picker("to block", selection: $blockId) {
-                    ForEach(sortedBlockIds, id:\.self) { blockId in
-                        if let block = layout.block(for: blockId) {
-                            Text(block.nameForLocation).tag(blockId as Identifier<Block>?)
-                        } else {
-                            Text(blockId.uuid).tag(blockId as Identifier<Block>?)
-                        }
-                    }
-                }
+                Text("Set \"\(train.name)\" to")
+                    .fixedSize()
+
+                BlockPicker(layout: layout, blockId: $blockId)
                 .onAppear {
                     blockId = train.blockId
                 }
@@ -102,18 +87,6 @@ struct TrainControlSetLocationSheet: View {
         }
     }
     
-}
-
-private extension Block {
-    var nameForLocation: String {
-        let name: String
-        if category == .station {
-            name = "\(self.name) - Station"
-        } else {
-            name = self.name
-        }
-        return name
-    }
 }
 
 struct TrainControlSetLocationSheet_Previews: PreviewProvider {
