@@ -302,6 +302,7 @@
 		A7A7D69229215562008FA648 /* CenteredCustomView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7A7D69129215562008FA648 /* CenteredCustomView.swift */; };
 		A7A7D69629217FED008FA648 /* ConfigurationSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7A7D69529217FED008FA648 /* ConfigurationSheet.swift */; };
 		A7A7D6982921A6E2008FA648 /* AlertCustomView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7A7D6972921A6E2008FA648 /* AlertCustomView.swift */; };
+		A7A7D69A2921CB76008FA648 /* UserInterfaceSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7A7D6992921CB76008FA648 /* UserInterfaceSettings.swift */; };
 		A7ACCE9F2810E5BA006F4310 /* LayoutControllerEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7ACCE9E2810E5BA006F4310 /* LayoutControllerEvent.swift */; };
 		A7B06AE12727786500BDD88C /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7B06AE02727786500BDD88C /* MainView.swift */; };
 		A7B06AF2272782C300BDD88C /* LayoutDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7B06AF1272782C300BDD88C /* LayoutDocument.swift */; };
@@ -672,6 +673,7 @@
 		A7A7D69129215562008FA648 /* CenteredCustomView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CenteredCustomView.swift; sourceTree = "<group>"; };
 		A7A7D69529217FED008FA648 /* ConfigurationSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfigurationSheet.swift; sourceTree = "<group>"; };
 		A7A7D6972921A6E2008FA648 /* AlertCustomView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertCustomView.swift; sourceTree = "<group>"; };
+		A7A7D6992921CB76008FA648 /* UserInterfaceSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserInterfaceSettings.swift; sourceTree = "<group>"; };
 		A7ACCE9E2810E5BA006F4310 /* LayoutControllerEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutControllerEvent.swift; sourceTree = "<group>"; };
 		A7B06AE02727786500BDD88C /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
 		A7B06AED2727819800BDD88C /* Server.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Server.swift; sourceTree = "<group>"; };
@@ -1429,6 +1431,7 @@
 				A785C07A278A648B002FD538 /* LayoutDocument+Commands.swift */,
 				A71D97F927A499A600EBEA06 /* LayoutOnConnectTasks.swift */,
 				A7C8A2EC279BEA6D000C7246 /* FileWrapper+Layout.swift */,
+				A7A7D6992921CB76008FA648 /* UserInterfaceSettings.swift */,
 			);
 			path = Document;
 			sourceTree = "<group>";
@@ -1879,6 +1882,7 @@
 				A7218081275F0BDB00831998 /* Turnout+State.swift in Sources */,
 				A784137E273F4DB700381341 /* CGPoint+Extension.swift in Sources */,
 				A721806F275D396A00831998 /* Hexadecimal.swift in Sources */,
+				A7A7D69A2921CB76008FA648 /* UserInterfaceSettings.swift in Sources */,
 				A7218073275D399500831998 /* LocomotivesDocumentParser.swift in Sources */,
 				A7B0B5132761CF8400F11A3E /* SwitchboardLinkUpdater.swift in Sources */,
 				A798BB4A27ABAB6F000BB4D1 /* RouteResolver.swift in Sources */,

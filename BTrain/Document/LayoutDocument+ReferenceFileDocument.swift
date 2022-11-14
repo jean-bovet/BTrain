@@ -22,7 +22,8 @@ extension LayoutDocument: ReferenceFileDocument {
     static var writableContentTypes: [UTType] { [ packageType] }
     
     static let layoutFileName = "layout.json"
-    
+    static let userInterfaceFileName = "userInterface.json"
+
     convenience init(configuration: ReadConfiguration) throws {
         try self.init(contentType: configuration.contentType, file: configuration.file)
     }
@@ -40,6 +41,7 @@ extension LayoutDocument: ReferenceFileDocument {
         case LayoutDocument.packageType:
             self.init(layout: try file.layout())
             locomotiveIconManager.setIcons(try file.locomotiveIcons())
+            try file.userInterfaceSettings()?.apply(layoutDocument: self)
 
         default:
             throw CocoaError(.fileReadUnsupportedScheme)
@@ -90,6 +92,10 @@ extension LayoutDocument: ReferenceFileDocument {
             
             wrapper.addFileWrapper(iconDirectory)
             
+            let uxJsonFile = FileWrapper(regularFileWithContents: try UserInterfaceSettings(layoutDocument: self).encode())
+            uxJsonFile.preferredFilename = LayoutDocument.userInterfaceFileName
+            wrapper.addFileWrapper(uxJsonFile)
+
             return wrapper
             
         default:

@@ -10,19 +10,25 @@
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-import SwiftUI
+import Foundation
 
-struct MenuCommands: Commands {
-
-    var body: some Commands {
-        CommandGroup(after: CommandGroupPlacement.sidebar) {
-            Group {
-                CommandSelectedView(viewType: .overview, label: "Switchboard").keyboardShortcut("0", modifiers: [.command])
-                CommandSelectedView(viewType: .routes, label: "Routes").keyboardShortcut("1", modifiers: [.command])
-            }
-            Divider()
-            CommandSelectedView(viewType: .cs3, label: "Central Station 3 Debugger")
-            Divider()
-        }
+/// Holds the user interface settings that are serialized along with the layout information.
+struct UserInterfaceSettings: Codable {
+    
+    let pinnedTrainIds: Set<Identifier<Train>>?
+    
+    init(layoutDocument: LayoutDocument) {
+        self.pinnedTrainIds = layoutDocument.pinnedTrainIds
     }
+    
+    func encode() throws -> Data {
+        let encoder = JSONEncoder()
+        let data = try encoder.encode(self)
+        return data
+    }
+
+    func apply(layoutDocument: LayoutDocument) {
+        layoutDocument.pinnedTrainIds = pinnedTrainIds ?? []
+    }
+
 }

@@ -190,6 +190,7 @@ struct ScriptView: View {
             return
         }
         
+        // TODO: simplify this whole thing
         let diag = LayoutDiagnostic(layout: layout)
         var errors = [LayoutDiagnostic.DiagnosticError]()
         var resolverError = [PathFinderResolver.ResolverError]()

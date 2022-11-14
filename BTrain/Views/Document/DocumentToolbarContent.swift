@@ -48,6 +48,7 @@ struct DocumentToolbarContent: ToolbarContent {
                 Button("􁕶") {
                     document.displaySheetType = .feedbacks
                 }
+                Spacer()
             }.disabled(document.power)
         }
         

@@ -51,6 +51,9 @@ final class LayoutDocument: ObservableObject {
         }
     }
     
+    /// Set of trains that have been pinned by the user
+    @Published var pinnedTrainIds = Set<Identifier<Train>>()
+
     /// True if the layout has power enabled, false otherwise. It is only valid
     /// if the ``connected`` attribute is true.
     @Published var power = false

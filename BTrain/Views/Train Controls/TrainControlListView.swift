@@ -21,8 +21,7 @@ struct TrainControlListView: View {
     /// True to display only running trains
     @State private var filterRunningTrains = false
     
-    /// Set of trains that have been pinned by the user
-    @State private var pinnedTrainIds = Set<Identifier<Train>>()
+    @Binding var pinnedTrainIds: Set<Identifier<Train>>
     
     var filteredTrain: [Train] {
         layout.trains.filter { train in
@@ -89,10 +88,13 @@ struct TrainControlListView_Previews: PreviewProvider {
 
     static var previews: some View {
         Group {
-            TrainControlListView(layout: doc.layout, document: doc)
-        }
+            TrainControlListView(layout: doc.layout, document: doc, pinnedTrainIds: .constant([]))
+        }.previewDisplayName("With Trains")
         Group {
-            TrainControlListView(layout: emptyDoc.layout, document: emptyDoc)
-        }
+            TrainControlListView(layout: doc.layout, document: doc, pinnedTrainIds: .constant([doc.layout.trains[1].id]))
+        }.previewDisplayName("With Trains and Pinned")
+        Group {
+            TrainControlListView(layout: emptyDoc.layout, document: emptyDoc, pinnedTrainIds: .constant([]))
+        }.previewDisplayName("No Trains")
     }
 }
