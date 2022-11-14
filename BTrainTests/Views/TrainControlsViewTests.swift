@@ -29,7 +29,7 @@ class TrainControlsViewTests: RootViewTests {
         let doc = newDocument()
         doc.layout.trains[0].blockId = doc.layout.blockIds[0]
         
-        let sut = TrainControlListView(layout: doc.layout, document: doc)
+        let sut = TrainControlListView(layout: doc.layout, document: doc, pinnedTrainIds: .constant([]))
         
         let trainView = try sut.inspect().find(TrainControlContainerView.self)
         

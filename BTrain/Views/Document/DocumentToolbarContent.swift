@@ -24,7 +24,7 @@ struct DocumentToolbarContent: ToolbarContent {
             ConnectCommandsView(document: document, connectAlertShowing: $connectAlertShowing)
             Spacer()
         }
-
+        
         ToolbarItemGroup {
             Group {
                 Button("􀬱") {
@@ -53,16 +53,28 @@ struct DocumentToolbarContent: ToolbarContent {
         }
         
         ToolbarItemGroup {
+            if document.showDebugModeControls {
+                Button("􁆬") {
+                    document.displaySheetType = .routes
+                }
+                Button("􀯔") {
+                    document.displaySheetType = .cs3
+                }
+                Spacer()
+            }
+        }
+        
+        ToolbarItemGroup {
             DiagnosticsIndicationView(diagnostics: document.layoutDiagnostics, document: document)
 
             Spacer()
 
             DeveloperCommandsView(document: document)
 
-            if let switchboard = document.switchboard, document.selectedView == .overview {
+            if let switchboard = document.switchboard {
                 SwitchboardSettingsButton(document: document)
                 SwitchboardEditButton(document: document, state: switchboard.state)
-            }            
+            }
         }
     }
 }
@@ -157,22 +169,6 @@ struct PowerStateIndicationView: View {
             .foregroundColor(.white)
             .clipShape(Capsule())
         Spacer()
-    }
-}
-
-struct CommandSelectedView: View {
-    
-    @AppStorage("selectedView") var selectedView: ViewType = .overview
-    let viewType: ViewType
-    let label: String
-    
-    var body: some View {
-        let b = Binding {
-            selectedView == viewType
-        } set: {
-            selectedView = $0 ? viewType : viewType
-        }
-        Toggle(label, isOn: b)
     }
 }
 

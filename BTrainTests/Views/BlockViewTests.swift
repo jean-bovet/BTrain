@@ -42,7 +42,7 @@ class BlockViewTests: RootViewTests {
     
     func testBlockShapeView() throws {
         let sut = BlockShapeView(layout: Layout(), category: .free)
-        _ = try sut.inspect().find(ViewType.Canvas)
+        _ = try sut.inspect().find(ViewType.Canvas.self)
         _ = sut.block
         _ = sut.shape
     }

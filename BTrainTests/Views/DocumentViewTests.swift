@@ -21,18 +21,6 @@ extension ConnectSheet: Inspectable { }
 extension DiagnosticsSheet: Inspectable { }
 
 class DocumentViewTests: RootViewTests {
-
-    func testMainView() throws {
-        let doc = newDocument()
-        let sut = MainView(document: doc)
-        
-        doc.selectedView = .overview
-        XCTAssertNoThrow(try sut.inspect().find(OverviewView.self))
-        
-        doc.selectedView = .routes
-        XCTAssertThrowsError(try sut.inspect().find(OverviewView.self))
-        XCTAssertNoThrow(try sut.inspect().find(RouteListView.self))        
-    }
         
     @Binding var connectAlertShowing: Bool = true
 

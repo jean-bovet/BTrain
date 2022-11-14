@@ -28,11 +28,9 @@ struct BTrainApp: App {
         DocumentGroup {
             newDocument
         } editor: { configuration in
-            MainView(document: configuration.document)
+            DocumentView(document: configuration.document)
         }
         .commands {
-            MenuCommands()
-
             CommandGroup(replacing: CommandGroupPlacement.help) {
                 Button("BTrain Repository") {
                     openURL(URL(string: "https://github.com/jean-bovet/BTrain")!)

@@ -67,12 +67,14 @@ final class LayoutDocument: ObservableObject {
     /// The various type of sheets that can be displayed
     enum DisplaySheetType: String {
         case script = "Scripts"
+        case routes = "Routes"
         case trains = "Trains"
         case locomotives = "Locomotives"
         case stations = "Stations"
         case blocks = "Blocks"
         case turnouts = "Turnouts"
         case feedbacks = "Feedbacks"
+        case cs3 = "Central Station 3 Debugger"
     }
     
     /// Show the specific sheet type
@@ -84,9 +86,6 @@ final class LayoutDocument: ObservableObject {
         
     /// Toggle showing the sheet when the sheet type changes
     @Published var displaySheet = false
-
-    /// Property used to switch to a specific view type
-    @AppStorage("selectedView") var selectedView: ViewType = .overview
 
     /// Property used to toggle showing debug-only controls
     @AppStorage(SettingsKeys.debugMode) var showDebugModeControls = false

@@ -26,7 +26,9 @@ struct ConfigurationSheet<Content: View>: View {
     
     var header: some View {
         HStack {
-            Text(title).font(.title)
+            Text(title)
+                .font(.title)
+                .foregroundColor(.black)
             Spacer()
         }
         .padding()
@@ -62,9 +64,17 @@ struct ConfigurationSheet<Content: View>: View {
 
 struct ConfigurationView_Previews: PreviewProvider {
     static var previews: some View {
-        ConfigurationSheet(title: "This is the title") {
-            Text("This is the content")
-                .padding()
-        }
+        Group {
+            ConfigurationSheet(title: "This is the title") {
+                Text("This is the content")
+                    .padding()
+            }
+        }.preferredColorScheme(.dark)
+        Group {
+            ConfigurationSheet(title: "This is the title") {
+                Text("This is the content")
+                    .padding()
+            }
+        }.preferredColorScheme(.light)
     }
 }
