@@ -35,6 +35,7 @@ struct LayoutScriptEditorView: View {
                             ForEach(children, id: \.self) { command in
                                 HStack {
                                     Spacer().fixedSpace()
+                                    Text("􀄵")
                                     LayoutScriptLineView(doc: doc, layout: layout, script: script, command: command)
                                 }
                             }

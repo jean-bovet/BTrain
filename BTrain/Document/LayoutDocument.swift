@@ -41,7 +41,11 @@ final class LayoutDocument: ObservableObject {
     /// The locomotive discovery class
     let locomotiveDiscovery: LocomotiveDiscovery
     
+    /// The layout scripts conductor
+    let conductor: LayoutScriptConductor
+
     /// If non-nil, the instance of the class that is measuring the speed of a train
+    // TODO: why optional? Why here?
     var measurement: LocomotiveSpeedMeasurement?
 
     /// True if the layout is connected to the Digital Controller, false otherwise
@@ -169,6 +173,9 @@ final class LayoutDocument: ObservableObject {
         self.trainsSchedulingObserver = LayoutTrainsSchedulingObserver(layout: layout)
         
         self.locomotiveDiscovery = LocomotiveDiscovery(interface: interface, layout: layout, locomotiveIconManager: locomotiveIconManager)
+        
+        self.conductor = LayoutScriptConductor(layout: layout)
+        self.conductor.layoutController = layoutController
         
         listenToTrainsStateChange(layout: layout)
     }

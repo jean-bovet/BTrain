@@ -15,39 +15,96 @@ import SwiftUI
 struct TrainControlActionsView: View {
     
     @ObservedObject var document: LayoutDocument
+    @ObservedObject var layout: Layout
+    
     @Binding var filterRunningTrains: Bool
+    @State private var selectedLayoutScript: Identifier<LayoutScript>?
+
+    var trainActions: some View {
+        HStack {
+            Button("􀊋 Start All") {
+                document.startAll()
+            }.disabled(!document.trainsThatCanBeStarted || !document.power)
+            
+            Spacer().fixedSpace()
+
+            Button("􀛷 Stop All") {
+                document.stopAll()
+            }.disabled(!document.trainsThatCanBeStopped)
+            
+            Spacer().fixedSpace()
+
+            Button("􀊆 Finish All") {
+                document.finishAll()
+            }.disabled(!document.trainsThatCanBeFinished)
+            
+            Spacer()
+
+            Button(filterRunningTrains ? "􀌉" : "􀌈") {
+                filterRunningTrains.toggle()
+            }.buttonStyle(.borderless)
+        }
+    }
+        
+    var layoutScriptActions: some View {
+        HStack {
+            Picker("Script:", selection: $selectedLayoutScript) {
+                ForEach(layout.layoutScripts.elements, id:\.self) { script in
+                    Text(script.name).tag(script.id as Identifier<LayoutScript>?)
+                }
+            }
+            .labelsHidden()
+            .fixedSize()
+            .onAppear() {
+                selectedLayoutScript = layout.layoutScripts.elements.first?.id
+            }
+
+            Spacer().fixedSpace()
+
+            Button("􀊄 Start") {
+                document.conductor.start(selectedLayoutScript!)
+            }.disabled(selectedLayoutScript == nil)
+
+            Spacer().fixedSpace()
+            
+            Button("􀛷 Stop") {
+                document.conductor.stop()
+            }.disabled(selectedLayoutScript == nil)
+
+            Spacer()
+        }.disabled(!document.power)
+    }
     
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            HStack {
-                Button("􀊋 Start All") {
-                    document.startAll()
-                }.disabled(!document.trainsThatCanBeStarted || !document.power)
-                
-                Spacer()
-                
-                Button("􀛷 Stop All") {
-                    document.stopAll()
-                }.disabled(!document.trainsThatCanBeStopped)
-                
-                Button("􀊆 Finish All") {
-                    document.finishAll()
-                }.disabled(!document.trainsThatCanBeFinished)
-                
-                Spacer()
-
-                Button(filterRunningTrains ? "􀌉" : "􀌈") {
-                    filterRunningTrains.toggle()
-                }.buttonStyle(.borderless)
+            if layout.layoutScripts.elements.count > 0 {
+                layoutScriptActions
+                    .padding([.bottom])
+                Divider()
+                    .padding([.bottom])
             }
+            trainActions
         }
     }
 }
 
 struct TrainControlActionsView_Previews: PreviewProvider {
-    static let doc = LayoutDocument(layout: LayoutLoop2().newLayout())
+
+    static let doc: LayoutDocument = {
+        let d = LayoutDocument(layout: LayoutLoop2().newLayout())
+        let s = LayoutScript(uuid: "foo", name: "Demo Loop 1")
+        d.layout.layoutScripts.add(s)
+        return d
+    }()
+
+    static let docEmpty = LayoutDocument(layout: LayoutLoop2().newLayout())
 
     static var previews: some View {
-        TrainControlActionsView(document: doc, filterRunningTrains: .constant(true))
+        Group {
+            TrainControlActionsView(document: doc, layout: doc.layout, filterRunningTrains: .constant(true))
+        }.previewDisplayName("With Script")
+        Group {
+            TrainControlActionsView(document: docEmpty, layout: docEmpty.layout, filterRunningTrains: .constant(true))
+        }.previewDisplayName("No Script")
     }
 }

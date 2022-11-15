@@ -12,6 +12,7 @@
 
 import SwiftUI
 
+// TODO: move near DocumentView and rename?
 struct OverviewView: View {
     
     @ObservedObject var document: LayoutDocument

@@ -26,34 +26,51 @@ final class LayoutScriptConductor {
     
     private var anyCancellables = [AnyCancellable]()
     
-    func start() {
-        addListener(toTrainNamed: "Cargo 474") { train, scheduling in
-            
-        }
-        addListener(toTrainNamed: "S-Bahn") { train, scheduling in
-            
-        }
-        addListener(toTrainNamed: "TGV") { [weak self] train, scheduling in
-            if scheduling == .unmanaged {
-                self?.start(trainNamed: "Cargo 474", routeNamed: "S2 Loop")
-            }
+    func start(_ scriptId: Identifier<LayoutScript>) {
+        guard let script = layout.layoutScripts[scriptId] else {
+            return
         }
         
-        start(trainNamed: "TGV", routeNamed: "HS_T7 Loop")
-        start(trainNamed: "S-Bahn", routeNamed: "S3 Loop")
+        for command in script.commands {
+            start(trainId: command.train, routeScriptId: command.route)
+        }
+//        addListener(toTrainNamed: "Cargo 474") { train, scheduling in
+//
+//        }
+//        addListener(toTrainNamed: "S-Bahn") { train, scheduling in
+//
+//        }
+//        addListener(toTrainNamed: "TGV") { [weak self] train, scheduling in
+//            if scheduling == .unmanaged {
+//                self?.start(trainNamed: "Cargo 474", routeNamed: "S2 Loop")
+//            }
+//        }
+//
+//        start(trainNamed: "TGV", routeNamed: "HS_T7 Loop")
+//        start(trainNamed: "S-Bahn", routeNamed: "S3 Loop")
     }
     
-    func addListener(toTrainNamed trainName: String, callback: @escaping (Train, Train.Schedule) -> Void)  {
-        let train = train(named: trainName)
-        anyCancellables.append(train.$scheduling.dropFirst().removeDuplicates().sink { schedule in
-            print("** \(train.name): \(schedule)")
-            callback(train, schedule)
-        })
+    func stop() {
+        // TODO: stop
     }
     
-    func start(trainNamed: String, routeNamed: String) {
-        let route = self.route(named: routeNamed)
-        let train = self.train(named: trainNamed)
+//    func addListener(toTrainNamed trainName: String, callback: @escaping (Train, Train.Schedule) -> Void)  {
+//        let train = train(named: trainName)
+//        anyCancellables.append(train.$scheduling.dropFirst().removeDuplicates().sink { schedule in
+//            print("** \(train.name): \(schedule)")
+//            callback(train, schedule)
+//        })
+//    }
+    
+    func start(trainId: Identifier<Train>?, routeScriptId: Identifier<RouteScript>?) {
+        guard let route = layout.routes.first(where: {$0.id.uuid == routeScriptId?.uuid}) else {
+            return
+        }
+        
+        guard let train = layout.train(for: trainId) else {
+            return
+        }
+        
         do {
             try layoutController?.start(routeID: route.id, trainID: train.id)
         } catch {
@@ -61,11 +78,4 @@ final class LayoutScriptConductor {
         }
     }
     
-    func route(named: String) -> Route {
-        layout.routes.first(where: {$0.name == named})!
-    }
-    
-    func train(named: String) -> Train {
-        layout.trains.first(where: {$0.name == named})!
-    }
 }

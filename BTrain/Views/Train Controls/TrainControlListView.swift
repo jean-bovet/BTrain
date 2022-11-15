@@ -55,7 +55,7 @@ struct TrainControlListView: View {
             }
         } else {
             VStack(spacing: 0) {
-                TrainControlActionsView(document: document, filterRunningTrains: $filterRunningTrains)
+                TrainControlActionsView(document: document, layout: layout, filterRunningTrains: $filterRunningTrains)
                     .padding()
                 List {
                     if pinnedTrains.count > 0 {
