@@ -29,7 +29,11 @@ struct LayoutScriptCommandView: View {
                 .fixedSize()
             
             Text("with route")
-//            RoutePicker()
+            Picker("Route:", selection: $command.route) {
+                ForEach(layout.routeScripts.elements, id:\.self) { item in
+                    Text(item.name).tag(item.id as Identifier<RouteScript>?)
+                }
+            }
             
             Button("􀁌") {
                 script.commands.insert(source: LayoutScriptCommand(action: .run), target: command, position: .after)

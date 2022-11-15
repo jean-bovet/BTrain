@@ -41,6 +41,8 @@ struct LayoutScriptEditorView: View {
                         }
                     }
                 }.padding([.leading, .trailing])
+                
+                // TODO: Add verify button to validate that all referenced RouteScript are also valid
             }
         }
     }    
