@@ -21,7 +21,7 @@ struct RouteScriptLineView: View {
     @Binding var commandErrorIds: [String]
     
     var body: some View {
-        DragAndDropLineView(commandID: command.id.uuidString, dragAllowed: command.action != .start, dragInsideAllowed: command.action == .loop) {
+        DragAndDropLineView(lineUUID: command.id.uuidString, dragAllowed: command.action != .start, dragInsideAllowed: command.action == .loop) {
             RouteScriptCommandView(layout: layout, script: script, command: $command, commandErrorIds: $commandErrorIds)
         } onMove: { sourceUUID, targetUUID, position in
             guard let sourceCommand = script.commands.commandWith(uuid: sourceUUID) else {
@@ -32,7 +32,14 @@ struct RouteScriptLineView: View {
             }
             
             script.commands.remove(source: sourceCommand)
-            script.commands.insert(source: sourceCommand, target: targetCommand, position: position)
+            switch position {
+            case .before:
+                script.commands.insert(source: sourceCommand, before: targetCommand)
+            case .inside:
+                script.commands.insert(source: sourceCommand, inside: targetCommand)
+            case .after:
+                script.commands.insert(source: sourceCommand, after: targetCommand)
+            }
         }
     }
     

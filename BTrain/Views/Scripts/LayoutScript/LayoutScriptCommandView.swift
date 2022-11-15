@@ -39,7 +39,7 @@ struct LayoutScriptCommandView: View {
             .fixedSize()
             
             Button("􀁌") {
-                script.commands.insert(source: LayoutScriptCommand(action: .run), target: command, position: .after)
+                script.commands.insert(source: LayoutScriptCommand(action: .run), after: command)
             }.buttonStyle(.borderless)
             
             Button("􀁎") {

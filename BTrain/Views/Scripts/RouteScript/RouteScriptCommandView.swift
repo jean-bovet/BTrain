@@ -86,7 +86,7 @@ struct RouteScriptCommandView: View {
             }
             
             Button("􀁌") {
-                script.commands.insert(source: RouteScriptCommand(action: .move), target: command, position: .after)
+                script.commands.insert(source: RouteScriptCommand(action: .move), after: command)
             }.buttonStyle(.borderless)
             
             if command.action != .start {

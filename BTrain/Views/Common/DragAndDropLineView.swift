@@ -13,26 +13,26 @@
 import SwiftUI
 import UniformTypeIdentifiers
 
-enum DragAndDropLinePosition {
-    case before
-    case inside
-    case after
-}
-
 struct DragAndDropLineView<Content: View>: View, DropDelegate {
 
-    typealias OnMoveBlock = (_ sourceUUID: String, _ targetUUID: String, _ position: DragAndDropLinePosition) -> Void
+    enum Position {
+        case before
+        case inside
+        case after
+    }
+
+    typealias OnMoveBlock = (_ sourceUUID: String, _ targetUUID: String, _ position: Position) -> Void
     
-    @State private var dropLine: DragAndDropLinePosition?
+    @State private var dropLine: Position?
 
     let dragAllowed: Bool
     let dragInsideAllowed: Bool
-    let commandID: String // command.id.uuidString
+    let lineUUID: String
     let onMoveBlock: OnMoveBlock
     let content: Content
     
-    init(commandID: String, dragAllowed: Bool = true, dragInsideAllowed: Bool = false, @ViewBuilder content: () -> Content, onMove: @escaping OnMoveBlock) {
-        self.commandID = commandID
+    init(lineUUID: String, dragAllowed: Bool = true, dragInsideAllowed: Bool = false, @ViewBuilder content: () -> Content, onMove: @escaping OnMoveBlock) {
+        self.lineUUID = lineUUID
         self.dragAllowed = dragAllowed
         self.dragInsideAllowed = dragInsideAllowed
         self.content = content()
@@ -56,7 +56,7 @@ struct DragAndDropLineView<Content: View>: View, DropDelegate {
                 )
             }).if(dragAllowed, transform: { view in
                 view.onDrag {
-                    NSItemProvider(object: commandID as NSString)
+                    NSItemProvider(object: lineUUID as NSString)
                 }
             }).onDrop(of: [UTType.text], delegate: self)
     }
@@ -87,8 +87,8 @@ struct DragAndDropLineView<Content: View>: View, DropDelegate {
         if let item = items.first, let dropLine = dropLine {
             item.loadItem(forTypeIdentifier: UTType.text.identifier, options: nil) { (data, error) in
                 DispatchQueue.main.async {
-                    if let data = data as? Data, let sourceUUID = String(data: data, encoding: .utf8), sourceUUID != commandID {
-                        onMoveBlock(sourceUUID, commandID, dropLine)
+                    if let data = data as? Data, let sourceUUID = String(data: data, encoding: .utf8), sourceUUID != lineUUID {
+                        onMoveBlock(sourceUUID, lineUUID, dropLine)
                     }
                 }
             }
@@ -118,10 +118,10 @@ struct DragAndDropLineView<Content: View>: View, DropDelegate {
 
 }
 
-struct ScriptDropLineView_Previews: PreviewProvider {
+struct DragAndDropLineView_Previews: PreviewProvider {
     static var previews: some View {
-        DragAndDropLineView(commandID: "foo") {
-            Text("This is a command")
+        DragAndDropLineView(lineUUID: "foo") {
+            Text("This is the content of the line")
         } onMove: { sourceUUID, targetUUID, position in
             print("Moving")
         }

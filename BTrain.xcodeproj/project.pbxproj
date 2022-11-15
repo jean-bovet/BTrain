@@ -895,6 +895,16 @@
 			path = LayoutScript;
 			sourceTree = "<group>";
 		};
+		A733225729240B3F000648EA /* Sheets */ = {
+			isa = PBXGroup;
+			children = (
+				A7A7D69529217FED008FA648 /* ConfigurationSheet.swift */,
+				A77A96DD2727767C009E7ECB /* ConnectSheet.swift */,
+				A744D13A276714A2005C2F37 /* DiagnosticsSheet.swift */,
+			);
+			path = Sheets;
+			sourceTree = "<group>";
+		};
 		A73A7DD3284BD7B400ABEADE /* State Machine */ = {
 			isa = PBXGroup;
 			children = (
@@ -1160,9 +1170,7 @@
 			children = (
 				A7B06AE02727786500BDD88C /* DocumentView.swift */,
 				A7907992277EC86200771A60 /* DocumentToolbarContent.swift */,
-				A7A7D69529217FED008FA648 /* ConfigurationSheet.swift */,
-				A77A96DD2727767C009E7ECB /* ConnectSheet.swift */,
-				A744D13A276714A2005C2F37 /* DiagnosticsSheet.swift */,
+				A733225529236FB8000648EA /* LayoutElementsEditingView.swift */,
 			);
 			path = Document;
 			sourceTree = "<group>";
@@ -1584,7 +1592,6 @@
 				A747968A292020D4001DF7FA /* StationPicker.swift */,
 				A7A7D68F2921501A008FA648 /* DirectionPicker.swift */,
 				A7A7D6972921A6E2008FA648 /* AlertCustomView.swift */,
-				A733225529236FB8000648EA /* LayoutElementsEditingView.swift */,
 				A77F761A2922D594008682D9 /* DragAndDropLineView.swift */,
 			);
 			path = Common;
@@ -1703,6 +1710,7 @@
 				A7012C8628345F0C003AC687 /* Metrics */,
 				A795A04227BC833B00AE90EB /* Settings */,
 				A73E07F8276A708A005F9D64 /* Document */,
+				A733225729240B3F000648EA /* Sheets */,
 				A7E1F75327DE9E65009FB75F /* New Layout Wizard */,
 				A73E07F9276A70F5005F9D64 /* Overview */,
 				A73B1645274DC5BC0073947D /* Train Controls */,
