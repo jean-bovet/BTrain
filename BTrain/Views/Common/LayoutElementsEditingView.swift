@@ -12,14 +12,13 @@
 
 import SwiftUI
 
-// TODO: move to a proper location in the project
-struct ElementListView<E: LayoutElement<E> & ObservableObject, Editor: View>: View {
+struct LayoutElementsEditingView<E: LayoutElement<E> & ObservableObject, Editor: View>: View {
     
-    let content: (E) -> Editor
+    let editor: (E) -> Editor
     
-    init(layout: Layout, elementContainer: Binding<LayoutElementContainer<E>>, @ViewBuilder content: @escaping (E) -> Editor) {
+    init(layout: Layout, elementContainer: Binding<LayoutElementContainer<E>>, @ViewBuilder editor: @escaping (E) -> Editor) {
         self.layout = layout
-        self.content = content
+        self.editor = editor
         _elementContainer = elementContainer
     }
 
@@ -42,17 +41,7 @@ struct ElementListView<E: LayoutElement<E> & ObservableObject, Editor: View>: Vi
             return "\(count) Scripts"
         }
     }
-    
-    struct ElementNameView: View {
-
-        @ObservedObject var element: E
         
-        var body: some View {
-            Text(element.name)
-        }
-
-    }
-    
     struct ListOfElements: View {
         
         @Binding var selection: Identifier<E.ItemType>?
@@ -60,10 +49,10 @@ struct ElementListView<E: LayoutElement<E> & ObservableObject, Editor: View>: Vi
         
         var body: some View {
             List(selection: $selection) {
-                ForEach(elements) { element in
-                    ElementNameView(element: element)
+                ForEach($elements) { element in
+                    TextField("", text: element.name)
                 }
-            }
+            }.listStyle(.inset(alternatesRowBackgrounds: true))
         }
     }
     
@@ -73,9 +62,10 @@ struct ElementListView<E: LayoutElement<E> & ObservableObject, Editor: View>: Vi
             
             HStack {
                 Text(statusLabel)
+                    .fixedSize()
                 
-                Spacer()
-                
+                Spacer().fixedSpace()
+
                 Button("+") {
                     let element = elementContainer.add(E())
                     selection = element.id
@@ -116,9 +106,10 @@ struct ElementListView<E: LayoutElement<E> & ObservableObject, Editor: View>: Vi
     var body: some View {
         HStack(alignment: .top) {
             scriptList
-                .frame(maxWidth: SideListFixedWidth)
+                .fixedSize(horizontal: true, vertical: false)
+            Divider()
             if let element = elementContainer[selection] {
-                content(element)
+                editor(element)
             } else {
                 CenteredLabelView(label: "No Selected Script")
             }

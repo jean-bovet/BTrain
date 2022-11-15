@@ -64,7 +64,7 @@
 		A733224E2923290C000648EA /* LayoutScriptLineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A733224D2923290C000648EA /* LayoutScriptLineView.swift */; };
 		A73322502923293B000648EA /* LayoutScriptCommandView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A733224F2923293B000648EA /* LayoutScriptCommandView.swift */; };
 		A733225229232A78000648EA /* ScriptCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = A733225129232A78000648EA /* ScriptCommand.swift */; };
-		A733225629236FB8000648EA /* ElementListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A733225529236FB8000648EA /* ElementListView.swift */; };
+		A733225629236FB8000648EA /* LayoutElementsEditingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A733225529236FB8000648EA /* LayoutElementsEditingView.swift */; };
 		A73A7DD0284AD41D00ABEADE /* TrainEventStateMachine.swift in Sources */ = {isa = PBXBuildFile; fileRef = A73A7DCF284AD41D00ABEADE /* TrainEventStateMachine.swift */; };
 		A73A7DD2284B247E00ABEADE /* TrainEventStateMachineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A73A7DD1284B247E00ABEADE /* TrainEventStateMachineTests.swift */; };
 		A73A7DD5284BD7C000ABEADE /* TrainControlling.swift in Sources */ = {isa = PBXBuildFile; fileRef = A73A7DD4284BD7C000ABEADE /* TrainControlling.swift */; };
@@ -215,7 +215,7 @@
 		A77A96DC27274A17009E7ECB /* MarklinCANMessagePrinter.swift in Sources */ = {isa = PBXBuildFile; fileRef = A77A96DB27274A17009E7ECB /* MarklinCANMessagePrinter.swift */; };
 		A77A96DE2727767C009E7ECB /* ConnectSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A77A96DD2727767C009E7ECB /* ConnectSheet.swift */; };
 		A77F76192922094A008682D9 /* LayoutScriptConductor.swift in Sources */ = {isa = PBXBuildFile; fileRef = A77F76182922094A008682D9 /* LayoutScriptConductor.swift */; };
-		A77F761B2922D594008682D9 /* ScriptDropLineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A77F761A2922D594008682D9 /* ScriptDropLineView.swift */; };
+		A77F761B2922D594008682D9 /* DragAndDropLineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A77F761A2922D594008682D9 /* DragAndDropLineView.swift */; };
 		A77F761E29231E6B008682D9 /* LayoutElementContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A77F761D29231E6B008682D9 /* LayoutElementContainer.swift */; };
 		A783EA5B278530BF00E69B6D /* SimulatorLocomotive.swift in Sources */ = {isa = PBXBuildFile; fileRef = A783EA5A278530BF00E69B6D /* SimulatorLocomotive.swift */; };
 		A783EA9F2787C6DA00E69B6D /* LayoutObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = A783EA9E2787C6DA00E69B6D /* LayoutObserver.swift */; };
@@ -447,7 +447,7 @@
 		A733224D2923290C000648EA /* LayoutScriptLineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutScriptLineView.swift; sourceTree = "<group>"; };
 		A733224F2923293B000648EA /* LayoutScriptCommandView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutScriptCommandView.swift; sourceTree = "<group>"; };
 		A733225129232A78000648EA /* ScriptCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScriptCommand.swift; sourceTree = "<group>"; };
-		A733225529236FB8000648EA /* ElementListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ElementListView.swift; sourceTree = "<group>"; };
+		A733225529236FB8000648EA /* LayoutElementsEditingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutElementsEditingView.swift; sourceTree = "<group>"; };
 		A73A7DCF284AD41D00ABEADE /* TrainEventStateMachine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainEventStateMachine.swift; sourceTree = "<group>"; };
 		A73A7DD1284B247E00ABEADE /* TrainEventStateMachineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainEventStateMachineTests.swift; sourceTree = "<group>"; };
 		A73A7DD4284BD7C000ABEADE /* TrainControlling.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainControlling.swift; sourceTree = "<group>"; };
@@ -601,7 +601,7 @@
 		A77A96DB27274A17009E7ECB /* MarklinCANMessagePrinter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarklinCANMessagePrinter.swift; sourceTree = "<group>"; };
 		A77A96DD2727767C009E7ECB /* ConnectSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectSheet.swift; sourceTree = "<group>"; };
 		A77F76182922094A008682D9 /* LayoutScriptConductor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutScriptConductor.swift; sourceTree = "<group>"; };
-		A77F761A2922D594008682D9 /* ScriptDropLineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScriptDropLineView.swift; sourceTree = "<group>"; };
+		A77F761A2922D594008682D9 /* DragAndDropLineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DragAndDropLineView.swift; sourceTree = "<group>"; };
 		A77F761D29231E6B008682D9 /* LayoutElementContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutElementContainer.swift; sourceTree = "<group>"; };
 		A783EA5A278530BF00E69B6D /* SimulatorLocomotive.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimulatorLocomotive.swift; sourceTree = "<group>"; };
 		A783EA9E2787C6DA00E69B6D /* LayoutObserver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutObserver.swift; sourceTree = "<group>"; };
@@ -1222,8 +1222,6 @@
 		A747968C2920211F001DF7FA /* Scripts */ = {
 			isa = PBXGroup;
 			children = (
-				A733225529236FB8000648EA /* ElementListView.swift */,
-				A77F761A2922D594008682D9 /* ScriptDropLineView.swift */,
 				A733225429232C17000648EA /* LayoutScript */,
 				A77F761C292303A0008682D9 /* RouteScript */,
 			);
@@ -1586,6 +1584,8 @@
 				A747968A292020D4001DF7FA /* StationPicker.swift */,
 				A7A7D68F2921501A008FA648 /* DirectionPicker.swift */,
 				A7A7D6972921A6E2008FA648 /* AlertCustomView.swift */,
+				A733225529236FB8000648EA /* LayoutElementsEditingView.swift */,
+				A77F761A2922D594008682D9 /* DragAndDropLineView.swift */,
 			);
 			path = Common;
 			sourceTree = "<group>";
@@ -1954,7 +1954,7 @@
 				A7A7D69A2921CB76008FA648 /* UserInterfaceSettings.swift in Sources */,
 				A7218073275D399500831998 /* LocomotivesDocumentParser.swift in Sources */,
 				A7B0B5132761CF8400F11A3E /* SwitchboardLinkUpdater.swift in Sources */,
-				A77F761B2922D594008682D9 /* ScriptDropLineView.swift in Sources */,
+				A77F761B2922D594008682D9 /* DragAndDropLineView.swift in Sources */,
 				A798BB4A27ABAB6F000BB4D1 /* RouteResolver.swift in Sources */,
 				A7710E6327799C9F00C08150 /* Layout+Blocks.swift in Sources */,
 				A783EA9F2787C6DA00E69B6D /* LayoutObserver.swift in Sources */,
@@ -2141,7 +2141,7 @@
 				A76C1C5F287ECBEC00A22509 /* CommandInterfaceCallbacks.swift in Sources */,
 				A7710E6727799D5C00C08150 /* Layout+Trains.swift in Sources */,
 				A76507E6275AC7DA0079C71A /* ScheduledMessageQueue.swift in Sources */,
-				A733225629236FB8000648EA /* ElementListView.swift in Sources */,
+				A733225629236FB8000648EA /* LayoutElementsEditingView.swift in Sources */,
 				A7940665280A179700F6A427 /* BlockShape+EphemeralDragProvider.swift in Sources */,
 				A76FD43828FD07A000E1A295 /* TrainControlMoveSheet.swift in Sources */,
 				A7E1F75727DEDC0C009FB75F /* UnitView.swift in Sources */,

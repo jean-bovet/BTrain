@@ -17,7 +17,7 @@ struct RouteScriptListView: View {
     @ObservedObject var layout: Layout
 
     var body: some View {
-        ElementListView(layout: layout, elementContainer: $layout.routeScripts) { script in
+        LayoutElementsEditingView(layout: layout, elementContainer: $layout.routeScripts) { script in
             RouteScriptEditorView(layout: layout, script: script)
         }
     }

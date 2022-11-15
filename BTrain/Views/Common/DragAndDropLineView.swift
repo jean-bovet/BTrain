@@ -13,17 +13,17 @@
 import SwiftUI
 import UniformTypeIdentifiers
 
-enum ScriptDropLinePosition {
+enum DragAndDropLinePosition {
     case before
     case inside
     case after
 }
 
-struct ScriptDropLineView<Content: View>: View, DropDelegate {
+struct DragAndDropLineView<Content: View>: View, DropDelegate {
 
-    typealias OnMoveBlock = (_ sourceUUID: String, _ targetUUID: String, _ position: ScriptDropLinePosition) -> Void
+    typealias OnMoveBlock = (_ sourceUUID: String, _ targetUUID: String, _ position: DragAndDropLinePosition) -> Void
     
-    @State private var dropLine: ScriptDropLinePosition?
+    @State private var dropLine: DragAndDropLinePosition?
 
     let dragAllowed: Bool
     let dragInsideAllowed: Bool
@@ -120,7 +120,7 @@ struct ScriptDropLineView<Content: View>: View, DropDelegate {
 
 struct ScriptDropLineView_Previews: PreviewProvider {
     static var previews: some View {
-        ScriptDropLineView(commandID: "foo") {
+        DragAndDropLineView(commandID: "foo") {
             Text("This is a command")
         } onMove: { sourceUUID, targetUUID, position in
             print("Moving")

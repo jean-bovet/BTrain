@@ -22,6 +22,8 @@ struct LayoutScriptCommandView: View {
     
     var body: some View {
         HStack {
+            Text("􀌃")
+
             Text("Run train")
             TrainPicker(doc: doc, selectedTrain: $command.train)
                 .labelsHidden()

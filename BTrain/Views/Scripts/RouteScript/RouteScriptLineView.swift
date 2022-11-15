@@ -21,7 +21,7 @@ struct RouteScriptLineView: View {
     @Binding var commandErrorIds: [String]
     
     var body: some View {
-        ScriptDropLineView(commandID: command.id.uuidString, dragAllowed: command.action != .start, dragInsideAllowed: command.action == .loop) {
+        DragAndDropLineView(commandID: command.id.uuidString, dragAllowed: command.action != .start, dragInsideAllowed: command.action == .loop) {
             RouteScriptCommandView(layout: layout, script: script, command: $command, commandErrorIds: $commandErrorIds)
         } onMove: { sourceUUID, targetUUID, position in
             guard let sourceCommand = script.commands.commandWith(uuid: sourceUUID) else {

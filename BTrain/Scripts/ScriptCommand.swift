@@ -38,7 +38,7 @@ extension Array where Element: ScriptCommand<Element> {
     }
     
     @discardableResult
-    mutating func insert(source: Element, target: Element, position: ScriptDropLinePosition) -> Bool {
+    mutating func insert(source: Element, target: Element, position: DragAndDropLinePosition) -> Bool {
         for (index, command) in enumerated() {
             if command.id == target.id {
                 switch position {

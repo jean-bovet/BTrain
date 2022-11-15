@@ -21,8 +21,8 @@ struct RouteScriptCommandView: View {
     
     var body: some View {
         HStack {
-            if command.action == .start {
-                Text("􀎠")
+            if command.action != .start {
+                Text("􀌃")
             }
             if commandErrorIds.contains(command.id.uuidString) {
                 Text("􀇿")

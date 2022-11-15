@@ -20,11 +20,6 @@ struct LayoutScriptEditorView: View {
         
     var body: some View {
         VStack {
-            HStack {
-                Text("Name:")
-                TextField("", text: $script.name)
-            }.padding([.top, .leading, .trailing])
-            
             if script.commands.isEmpty {
                 CenteredCustomView {
                     Text("No Commands")
