@@ -16,7 +16,6 @@ struct BlockPicker: View {
     
     let layout: Layout
     @Binding var blockId: Identifier<Block>?
-    var showLabels = false
 
     var sortedBlockIds: [Identifier<Block>] {
         layout.blocks.sorted {
@@ -36,9 +35,7 @@ struct BlockPicker: View {
                     Text(blockId.uuid).tag(blockId as Identifier<Block>?)
                 }
             }
-        }.if(!showLabels, transform: { view in
-            view.labelsHidden()
-        })
+        }
     }
 }
 

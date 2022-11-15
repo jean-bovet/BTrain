@@ -20,11 +20,11 @@ struct StationElementView: View {
     var body: some View {
         HStack {
             UndoProvider($element.blockId) { blockId in
-                BlockPicker(layout: layout, blockId: blockId, showLabels: true)
+                BlockPicker(layout: layout, blockId: blockId)
             }
             
             UndoProvider($element.direction) { direction in
-                DirectionPicker(direction: direction, showLabels: true)
+                DirectionPicker(direction: direction)
             }
         }
     }}

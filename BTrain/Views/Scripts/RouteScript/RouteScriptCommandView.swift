@@ -21,8 +21,8 @@ struct RouteScriptCommandView: View {
     
     var body: some View {
         HStack {
-            if command.action != .start {
-                Text("􀌇")
+            if command.action == .start {
+                Text("􀎠")
             }
             if commandErrorIds.contains(command.id.uuidString) {
                 Text("􀇿")
@@ -42,14 +42,18 @@ struct RouteScriptCommandView: View {
             switch command.action {
             case .start:
                 Text("Start in")
+                    .fixedSize()
                 BlockPicker(layout: layout, blockId: $command.blockId)
+                    .labelsHidden()
                     .fixedSize()
                 Text("with direction")
                     .fixedSize()
                 DirectionPicker(direction: $command.direction)
+                    .labelsHidden()
 
             case .move:
                 Text("to")
+                    .fixedSize()
                 Picker("DestinationType", selection: $command.destinationType) {
                     ForEach(RouteScriptCommand.MoveDestinationType.allCases, id: \.self) {
                         Text($0.rawValue).tag($0 as RouteScriptCommand.MoveDestinationType)
@@ -61,10 +65,12 @@ struct RouteScriptCommandView: View {
                 switch command.destinationType {
                 case .block:
                     BlockPicker(layout: layout, blockId: $command.blockId)
+                        .labelsHidden()
                         .fixedSize()
                     Text("with direction")
                         .fixedSize()
                     DirectionPicker(direction: $command.direction)
+                        .labelsHidden()
                 case .station:
                     StationPicker(layout: layout, stationId: $command.stationId)
                         .fixedSize()

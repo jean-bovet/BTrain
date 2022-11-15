@@ -22,10 +22,9 @@ struct LayoutScriptCommandView: View {
     
     var body: some View {
         HStack {
-            Text("􀌇")
-            
             Text("Run train")
             TrainPicker(doc: doc, selectedTrain: $command.train)
+                .labelsHidden()
                 .fixedSize()
             
             Text("with route")
@@ -34,6 +33,8 @@ struct LayoutScriptCommandView: View {
                     Text(item.name).tag(item.id as Identifier<RouteScript>?)
                 }
             }
+            .labelsHidden()
+            .fixedSize()
             
             Button("􀁌") {
                 script.commands.insert(source: LayoutScriptCommand(action: .run), target: command, position: .after)

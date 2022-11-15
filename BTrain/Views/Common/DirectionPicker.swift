@@ -15,7 +15,6 @@ import SwiftUI
 struct DirectionPicker: View {
     
     @Binding var direction: Direction?
-    var showLabels = false
 
     var body: some View {
         Picker("Direction:", selection: $direction) {
@@ -23,9 +22,6 @@ struct DirectionPicker: View {
                 Text(direction.description).tag(direction as Direction?)
             }
         }
-        .if(!showLabels, transform: { view in
-            view.labelsHidden()
-        })
         .fixedSize()
     }
 }
