@@ -71,7 +71,9 @@ struct DocumentView: View {
     var displaySheetView: some View {
         ConfigurationSheet(title: document.displaySheetType.rawValue) {
             switch document.displaySheetType {
-            case .script:
+            case .layoutScripts:
+                LayoutScriptListView(doc: document, layout: document.layout)
+            case .routeScripts:
                 RouteScriptListView(layout: document.layout)
             case .routes:
                 RouteListView(layout: document.layout)

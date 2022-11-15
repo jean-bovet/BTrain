@@ -12,7 +12,7 @@
 
 import Foundation
 
-struct RouteScriptCommand: Identifiable, Hashable {
+struct RouteScriptCommand: ScriptCommand, Identifiable, Hashable {
     
     let id: UUID
     

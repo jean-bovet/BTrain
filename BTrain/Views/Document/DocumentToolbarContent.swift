@@ -27,44 +27,22 @@ struct DocumentToolbarContent: ToolbarContent {
         
         ToolbarItemGroup {
             Group {
-                // TODO: ForEach with displaySheetType
-                Button("􀬱") {
-                    document.displaySheetType = .script
+                ForEach(LayoutDocument.DisplaySheetType.allCases.filter({!$0.debugOnly}), id:\.self) { type in
+                    Button(type.label) {
+                        document.displaySheetType = type
+                    }
                 }
-                Button("􀼯") {
-                    document.displaySheetType = .trains
-                }
-                Button("􀼮") {
-                    document.displaySheetType = .locomotives
-                }
-                Button("􀌃") {
-                    document.displaySheetType = .stations
-                }
-                Button("􀏭") {
-                    document.displaySheetType = .blocks
-                }
-                Button("􀄭") {
-                    document.displaySheetType = .turnouts
-                }
-                Button("􁕶") {
-                    document.displaySheetType = .feedbacks
+                if document.showDebugModeControls {
+                    ForEach(LayoutDocument.DisplaySheetType.allCases.filter({$0.debugOnly}), id:\.self) { type in
+                        Button(type.label) {
+                            document.displaySheetType = type
+                        }
+                    }
                 }
                 Spacer()
             }.disabled(document.power)
         }
-        
-        ToolbarItemGroup {
-            if document.showDebugModeControls {
-                Button("􁆬") {
-                    document.displaySheetType = .routes
-                }
-                Button("􀯔") {
-                    document.displaySheetType = .cs3
-                }
-                Spacer()
-            }
-        }
-        
+                
         ToolbarItemGroup {
             DiagnosticsIndicationView(diagnostics: document.layoutDiagnostics, document: document)
 

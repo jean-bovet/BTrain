@@ -65,8 +65,9 @@ final class LayoutDocument: ObservableObject {
     @Published var showSwitchboardViewSettings = false
     
     /// The various type of sheets that can be displayed
-    enum DisplaySheetType: String {
-        case script = "Scripts"
+    enum DisplaySheetType: String, CaseIterable {
+        case layoutScripts = "Layout Scripts"
+        case routeScripts = "Route Scripts"
         case routes = "Routes"
         case trains = "Trains"
         case locomotives = "Locomotives"
@@ -75,10 +76,39 @@ final class LayoutDocument: ObservableObject {
         case turnouts = "Turnouts"
         case feedbacks = "Feedbacks"
         case cs3 = "Central Station 3 Debugger"
+        
+        var label: String {
+            switch self {
+            case .layoutScripts:
+                return "􁅥"
+            case .routeScripts:
+                return "􀬱"
+            case .routes:
+                return "􁆬"
+            case .trains:
+                return "􀼯"
+            case .locomotives:
+                return "􀼮"
+            case .stations:
+                return "􀌃"
+            case .blocks:
+                return "􀏭"
+            case .turnouts:
+                return "􀄭"
+            case .feedbacks:
+                return "􁕶"
+            case .cs3:
+                return "􀯔"
+            }
+        }
+        
+        var debugOnly: Bool {
+            return self == .routes || self == .cs3
+        }
     }
     
     /// Show the specific sheet type
-    @Published var displaySheetType = DisplaySheetType.script {
+    @Published var displaySheetType = DisplaySheetType.routeScripts {
         didSet {
             displaySheet.toggle()
         }

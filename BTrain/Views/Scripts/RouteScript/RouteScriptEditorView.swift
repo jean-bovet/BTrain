@@ -234,9 +234,9 @@ struct ScriptView_Previews: PreviewProvider {
     static var previews: some View {
         Group {
             RouteScriptEditorView(layout: layout, script: layout.routeScripts[0])
-        }.previewDisplayName("Script")
+        }.previewDisplayName("Route")
         Group {
             RouteScriptEditorView(layout: layout, script: RouteScript())
-        }.previewDisplayName("Empty Script")
+        }.previewDisplayName("Empty Route")
     }
 }

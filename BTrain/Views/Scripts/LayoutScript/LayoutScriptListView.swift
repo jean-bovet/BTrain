@@ -12,14 +12,28 @@
 
 import SwiftUI
 
-struct RouteScriptListView: View {
+struct LayoutScriptListView: View {
     
     @Environment(\.undoManager) var undoManager
 
+    @ObservedObject var doc: LayoutDocument
     @ObservedObject var layout: Layout
     
-    @State private var selection: Identifier<RouteScript>?
+    @State private var selection: Identifier<LayoutScript>?
 
+    // TODO: refactor into a single container for many other elements?
+    var statusLabel: String {
+        let count = layout.layoutScripts.elements.count
+        switch count {
+        case 0:
+            return "No Script"
+        case 1:
+            return "One Script"
+        default:
+            return "\(count) Scripts"
+        }
+    }
+    
     var scriptList: some View {
         VStack(alignment: .leading) {
             Table(selection: $selection) {
@@ -28,50 +42,48 @@ struct RouteScriptListView: View {
                         .labelsHidden()
                 }
             } rows: {
-                ForEach($layout.routeScripts.elements) { route in
+                ForEach($layout.layoutScripts.elements) { route in
                     TableRow(route)
                 }
             }
             
             HStack {
-                Text("\(layout.routeScripts.elements.count) routes")
+                Text(statusLabel)
                 
                 Spacer()
                 
                 Button("+") {
-                    let script = layout.routeScripts.add(RouteScript())
+                    let script = layout.layoutScripts.add(LayoutScript())
                     selection = script.id
                     undoManager?.registerUndo(withTarget: layout, handler: { layout in
-                        layout.routeScripts.remove(script.id)
+                        layout.layoutScripts.remove(script.id)
                     })
                 }
                 Button("-") {
-                    let script = layout.routeScripts[selection]!
-                    layout.routeScripts.remove(script.id)
+                    let script = layout.layoutScripts[selection]!
+                    layout.layoutScripts.remove(script.id)
                     undoManager?.registerUndo(withTarget: layout, handler: { layout in
-                        layout.routeScripts.add(script)
+                        layout.layoutScripts.add(script)
                     })
                 }.disabled(selection == nil)
                 
                 Spacer().fixedSpace()
 
                 Button("􀉁") {
-                    layout.routeScripts.duplicate(selection!)
+                    layout.layoutScripts.duplicate(selection!)
                 }.disabled(selection == nil)
 
                 Spacer().fixedSpace()
                 
                 Button("􀄬") {
-                    layout.routeScripts.sort()
+                    layout.layoutScripts.sort()
                 }
             }.padding([.leading])
         }
         .onAppear {
             if selection == nil {
-                selection = layout.routeScripts.elements.first?.id
+                selection = layout.layoutScripts.elements.first?.id
             }
-        }.onDisappear() {
-            layout.updateRoutesUsingRouteScripts()
         }
     }
     
@@ -79,8 +91,8 @@ struct RouteScriptListView: View {
         HStack(alignment: .top) {
             scriptList
                 .frame(maxWidth: SideListFixedWidth)
-            if let script = layout.routeScripts[selection] {
-                RouteScriptEditorView(layout: layout, script: script)
+            if let script = layout.layoutScripts[selection] {
+                LayoutScriptEditorView(doc: doc, layout: layout, script: script)
             } else {
                 CenteredLabelView(label: "No Selected Script")
             }
@@ -88,17 +100,19 @@ struct RouteScriptListView: View {
     }
 }
 
-struct ScriptListView_Previews: PreviewProvider {
-        
+struct LayoutScriptListView_Previews: PreviewProvider {
+    
+    static let doc = LayoutDocument(layout: Layout())
+    
     static var previews: some View {
         Group {
             ConfigurationSheet(title: "Routes") {
-                RouteScriptListView(layout: ScriptView_Previews.layout)
+                LayoutScriptListView(doc: doc, layout: ScriptView_Previews.layout)
             }
         }
         Group {
             ConfigurationSheet(title: "Routes") {
-                RouteScriptListView(layout: Layout())
+                LayoutScriptListView(doc: doc, layout: Layout())
             }
         }.previewDisplayName("Empty")
     }

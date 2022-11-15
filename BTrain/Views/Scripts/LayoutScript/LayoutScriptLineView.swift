@@ -12,17 +12,17 @@
 
 import SwiftUI
 
-struct RouteScriptLineView: View {
+struct LayoutScriptLineView: View {
     
+    let doc: LayoutDocument
     let layout: Layout
     
-    @ObservedObject var script: RouteScript
-    @Binding var command: RouteScriptCommand
-    @Binding var commandErrorIds: [String]
+    @ObservedObject var script: LayoutScript
+    @Binding var command: LayoutScriptCommand
     
     var body: some View {
-        ScriptDropLineView(commandID: command.id.uuidString, dragAllowed: command.action != .start, dragInsideAllowed: command.action == .loop) {
-            RouteScriptCommandView(layout: layout, script: script, command: $command, commandErrorIds: $commandErrorIds)
+        ScriptDropLineView(commandID: command.id.uuidString, dragInsideAllowed: true) {
+            LayoutScriptCommandView(doc: doc, layout: layout, script: script, command: $command)
         } onMove: { sourceUUID, targetUUID, position in
             guard let sourceCommand = script.commands.commandWith(uuid: sourceUUID) else {
                 return
@@ -38,15 +38,13 @@ struct RouteScriptLineView: View {
     
 }
 
-struct ScriptLineView_Previews: PreviewProvider {
-    
+struct LayoutScriptLineView_Previews: PreviewProvider {
     static let doc = LayoutDocument(layout: LayoutComplex().newLayout())
-    static let command = RouteScriptCommand(action: .move)
+    static let command = LayoutScriptCommand(action: .run)
     
     static var previews: some View {
         VStack(alignment: .leading) {
-            RouteScriptLineView(layout: doc.layout, script: RouteScript(), command: .constant(command), commandErrorIds: .constant([]))
-            RouteScriptLineView(layout: doc.layout, script: RouteScript(), command: .constant(command), commandErrorIds: .constant([command.id.uuidString]))
+            LayoutScriptLineView(doc: doc, layout: doc.layout, script: LayoutScript(), command: .constant(command))
         }
     }
 }

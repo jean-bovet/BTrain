@@ -12,41 +12,49 @@
 
 import SwiftUI
 
-struct RouteScriptLineView: View {
-    
+struct LayoutScriptCommandView: View {
+
+    let doc: LayoutDocument
     let layout: Layout
     
-    @ObservedObject var script: RouteScript
-    @Binding var command: RouteScriptCommand
-    @Binding var commandErrorIds: [String]
+    @ObservedObject var script: LayoutScript
+    @Binding var command: LayoutScriptCommand
     
     var body: some View {
-        ScriptDropLineView(commandID: command.id.uuidString, dragAllowed: command.action != .start, dragInsideAllowed: command.action == .loop) {
-            RouteScriptCommandView(layout: layout, script: script, command: $command, commandErrorIds: $commandErrorIds)
-        } onMove: { sourceUUID, targetUUID, position in
-            guard let sourceCommand = script.commands.commandWith(uuid: sourceUUID) else {
-                return
-            }
-            guard let targetCommand = script.commands.commandWith(uuid: targetUUID) else {
-                return
-            }
+        HStack {
+            Text("􀌇")
             
-            script.commands.remove(source: sourceCommand)
-            script.commands.insert(source: sourceCommand, target: targetCommand, position: position)
+            Text("Run train")
+            TrainPicker(doc: doc, selectedTrain: $command.train)
+                .fixedSize()
+            
+            Text("with route")
+//            RoutePicker()
+            
+            Button("􀁌") {
+                script.commands.insert(source: LayoutScriptCommand(action: .run), target: command, position: .after)
+            }.buttonStyle(.borderless)
+            
+            Button("􀁎") {
+                script.commands.remove(source: command)
+            }.buttonStyle(.borderless)
         }
     }
-    
 }
 
-struct ScriptLineView_Previews: PreviewProvider {
-    
+struct LayoutScriptCommandView_Previews: PreviewProvider {
     static let doc = LayoutDocument(layout: LayoutComplex().newLayout())
-    static let command = RouteScriptCommand(action: .move)
+    static let script = LayoutScript()
+    
+    static let run = LayoutScriptCommand(action: .run)
+    
+    static let commands = [run]
     
     static var previews: some View {
         VStack(alignment: .leading) {
-            RouteScriptLineView(layout: doc.layout, script: RouteScript(), command: .constant(command), commandErrorIds: .constant([]))
-            RouteScriptLineView(layout: doc.layout, script: RouteScript(), command: .constant(command), commandErrorIds: .constant([command.id.uuidString]))
+            ForEach(commands, id:\.self) { command in
+                LayoutScriptCommandView(doc: doc, layout: doc.layout, script: script, command: .constant(command))
+                    .fixedSize()
+            }
         }
-    }
-}
+    }}
