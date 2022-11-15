@@ -19,6 +19,10 @@ final class LayoutScript: Element, ElementCopying, ElementNaming, ObservableObje
     @Published var name: String
     @Published var commands: [LayoutScriptCommand] = []
     
+    convenience init() {
+        self.init(uuid: UUID().uuidString, name: "")
+    }
+
     internal convenience init(uuid: String = UUID().uuidString, name: String = "") {
         self.init(id: Identifier<LayoutScript>(uuid: uuid), name: name)
     }

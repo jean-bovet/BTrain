@@ -14,78 +14,14 @@ import SwiftUI
 
 struct RouteScriptListView: View {
     
-    @Environment(\.undoManager) var undoManager
-
     @ObservedObject var layout: Layout
-    
-    @State private var selection: Identifier<RouteScript>?
 
-    var scriptList: some View {
-        VStack(alignment: .leading) {
-            Table(selection: $selection) {
-                TableColumn("Name") { route in
-                    TextField("Script", text: route.name)
-                        .labelsHidden()
-                }
-            } rows: {
-                ForEach($layout.routeScripts.elements) { route in
-                    TableRow(route)
-                }
-            }
-            
-            HStack {
-                Text("\(layout.routeScripts.elements.count) routes")
-                
-                Spacer()
-                
-                Button("+") {
-                    let script = layout.routeScripts.add(RouteScript())
-                    selection = script.id
-                    undoManager?.registerUndo(withTarget: layout, handler: { layout in
-                        layout.routeScripts.remove(script.id)
-                    })
-                }
-                Button("-") {
-                    let script = layout.routeScripts[selection]!
-                    layout.routeScripts.remove(script.id)
-                    undoManager?.registerUndo(withTarget: layout, handler: { layout in
-                        layout.routeScripts.add(script)
-                    })
-                }.disabled(selection == nil)
-                
-                Spacer().fixedSpace()
-
-                Button("􀉁") {
-                    layout.routeScripts.duplicate(selection!)
-                }.disabled(selection == nil)
-
-                Spacer().fixedSpace()
-                
-                Button("􀄬") {
-                    layout.routeScripts.sort()
-                }
-            }.padding([.leading])
-        }
-        .onAppear {
-            if selection == nil {
-                selection = layout.routeScripts.elements.first?.id
-            }
-        }.onDisappear() {
-            layout.updateRoutesUsingRouteScripts()
-        }
-    }
-    
     var body: some View {
-        HStack(alignment: .top) {
-            scriptList
-                .frame(maxWidth: SideListFixedWidth)
-            if let script = layout.routeScripts[selection] {
-                RouteScriptEditorView(layout: layout, script: script)
-            } else {
-                CenteredLabelView(label: "No Selected Script")
-            }
+        ElementListView(layout: layout, elementContainer: $layout.routeScripts) { script in
+            RouteScriptEditorView(layout: layout, script: script)
         }
     }
+
 }
 
 struct ScriptListView_Previews: PreviewProvider {
@@ -93,7 +29,7 @@ struct ScriptListView_Previews: PreviewProvider {
     static var previews: some View {
         Group {
             ConfigurationSheet(title: "Routes") {
-                RouteScriptListView(layout: ScriptView_Previews.layout)
+                RouteScriptListView(layout: RouteScriptEditorView_Previews.layout)
             }
         }
         Group {

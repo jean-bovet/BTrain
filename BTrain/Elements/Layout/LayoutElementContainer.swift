@@ -16,17 +16,23 @@ import OrderedCollections
 protocol ElementCopying<E> {
     associatedtype E: Element
     func copy() -> E
+
+    // TODO: move to its own protocol for more clarity?
+    /// Allow for a default element to be created
+    init()
 }
 
 protocol ElementNaming<E> {
     associatedtype E: Element
-    var name: String { get }
+    var name: String { get set }
 }
+
+typealias LayoutElement<E> = Element & Codable & ElementCopying<E> & ElementNaming<E>
 
 // TODO: add unit tests
 /// Container capable of holding a map of elements and implementing the most common functions
 /// expected by the layout
-struct LayoutElementContainer<E: Element & Codable & ElementCopying<E> & ElementNaming<E>> {
+struct LayoutElementContainer<E: LayoutElement<E>> {
     
     private var elementsMap = OrderedDictionary<Identifier<E.ItemType>,E>()
     

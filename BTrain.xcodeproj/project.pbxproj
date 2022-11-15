@@ -64,6 +64,7 @@
 		A733224E2923290C000648EA /* LayoutScriptLineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A733224D2923290C000648EA /* LayoutScriptLineView.swift */; };
 		A73322502923293B000648EA /* LayoutScriptCommandView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A733224F2923293B000648EA /* LayoutScriptCommandView.swift */; };
 		A733225229232A78000648EA /* ScriptCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = A733225129232A78000648EA /* ScriptCommand.swift */; };
+		A733225629236FB8000648EA /* ElementListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A733225529236FB8000648EA /* ElementListView.swift */; };
 		A73A7DD0284AD41D00ABEADE /* TrainEventStateMachine.swift in Sources */ = {isa = PBXBuildFile; fileRef = A73A7DCF284AD41D00ABEADE /* TrainEventStateMachine.swift */; };
 		A73A7DD2284B247E00ABEADE /* TrainEventStateMachineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A73A7DD1284B247E00ABEADE /* TrainEventStateMachineTests.swift */; };
 		A73A7DD5284BD7C000ABEADE /* TrainControlling.swift in Sources */ = {isa = PBXBuildFile; fileRef = A73A7DD4284BD7C000ABEADE /* TrainControlling.swift */; };
@@ -446,6 +447,7 @@
 		A733224D2923290C000648EA /* LayoutScriptLineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutScriptLineView.swift; sourceTree = "<group>"; };
 		A733224F2923293B000648EA /* LayoutScriptCommandView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutScriptCommandView.swift; sourceTree = "<group>"; };
 		A733225129232A78000648EA /* ScriptCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScriptCommand.swift; sourceTree = "<group>"; };
+		A733225529236FB8000648EA /* ElementListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ElementListView.swift; sourceTree = "<group>"; };
 		A73A7DCF284AD41D00ABEADE /* TrainEventStateMachine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainEventStateMachine.swift; sourceTree = "<group>"; };
 		A73A7DD1284B247E00ABEADE /* TrainEventStateMachineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainEventStateMachineTests.swift; sourceTree = "<group>"; };
 		A73A7DD4284BD7C000ABEADE /* TrainControlling.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainControlling.swift; sourceTree = "<group>"; };
@@ -1220,6 +1222,7 @@
 		A747968C2920211F001DF7FA /* Scripts */ = {
 			isa = PBXGroup;
 			children = (
+				A733225529236FB8000648EA /* ElementListView.swift */,
 				A77F761A2922D594008682D9 /* ScriptDropLineView.swift */,
 				A733225429232C17000648EA /* LayoutScript */,
 				A77F761C292303A0008682D9 /* RouteScript */,
@@ -2138,6 +2141,7 @@
 				A76C1C5F287ECBEC00A22509 /* CommandInterfaceCallbacks.swift in Sources */,
 				A7710E6727799D5C00C08150 /* Layout+Trains.swift in Sources */,
 				A76507E6275AC7DA0079C71A /* ScheduledMessageQueue.swift in Sources */,
+				A733225629236FB8000648EA /* ElementListView.swift in Sources */,
 				A7940665280A179700F6A427 /* BlockShape+EphemeralDragProvider.swift in Sources */,
 				A76FD43828FD07A000E1A295 /* TrainControlMoveSheet.swift in Sources */,
 				A7E1F75727DEDC0C009FB75F /* UnitView.swift in Sources */,

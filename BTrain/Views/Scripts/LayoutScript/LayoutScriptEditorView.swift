@@ -20,6 +20,11 @@ struct LayoutScriptEditorView: View {
         
     var body: some View {
         VStack {
+            HStack {
+                Text("Name:")
+                TextField("", text: $script.name)
+            }.padding([.top, .leading, .trailing])
+            
             if script.commands.isEmpty {
                 CenteredCustomView {
                     Text("No Commands")
@@ -41,8 +46,7 @@ struct LayoutScriptEditorView: View {
                             }
                         }
                     }
-                }.padding([.leading, .trailing])
-                
+                }
                 // TODO: Add verify button to validate that all referenced RouteScript are also valid
             }
         }

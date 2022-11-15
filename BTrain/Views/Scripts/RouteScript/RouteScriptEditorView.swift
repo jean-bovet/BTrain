@@ -216,7 +216,7 @@ struct RouteScriptEditorView: View {
     
 }
 
-struct ScriptView_Previews: PreviewProvider {
+struct RouteScriptEditorView_Previews: PreviewProvider {
         
     static let layout = {
         let layout = Layout()
