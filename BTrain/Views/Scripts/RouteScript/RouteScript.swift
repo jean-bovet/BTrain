@@ -12,26 +12,32 @@
 
 import Foundation
 
-final class Script: Element, ObservableObject {
+final class RouteScript: Element, ElementCopying, ElementNaming, ObservableObject {
         
-    let id: Identifier<Script>
+    let id: Identifier<RouteScript>
     
     @Published var name: String
-    @Published var commands: [ScriptCommand] = []
+    @Published var commands: [RouteScriptCommand] = []
     
     internal convenience init(uuid: String = UUID().uuidString, name: String = "") {
-        self.init(id: Identifier<Script>(uuid: uuid), name: name)
+        self.init(id: Identifier<RouteScript>(uuid: uuid), name: name)
     }
 
-    internal init(id: Identifier<Script>, name: String = "") {
+    internal init(id: Identifier<RouteScript>, name: String = "") {
         self.id = id
         self.name = name
         self.commands = [.init(action: .start)]
     }
 
+    func copy() -> RouteScript {
+        let newScript = RouteScript(name: "\(name) copy")
+        newScript.commands = commands
+        return newScript
+    }
+
 }
 
-extension Script: Codable {
+extension RouteScript: Codable {
     
     enum CodingKeys: CodingKey {
         case id, name, commands
@@ -39,12 +45,12 @@ extension Script: Codable {
     
     convenience init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        let id = try container.decode(Identifier<Script>.self, forKey: CodingKeys.id)
+        let id = try container.decode(Identifier<RouteScript>.self, forKey: CodingKeys.id)
         let name = try container.decode(String.self, forKey: CodingKeys.name)
         
         self.init(id: id, name: name)
         
-        self.commands = try container.decode([ScriptCommand].self, forKey: CodingKeys.commands)
+        self.commands = try container.decode([RouteScriptCommand].self, forKey: CodingKeys.commands)
     }
     
     func encode(to encoder: Encoder) throws {

@@ -12,13 +12,13 @@
 
 import SwiftUI
 
-struct ScriptListView: View {
+struct RouteScriptListView: View {
     
     @Environment(\.undoManager) var undoManager
 
     @ObservedObject var layout: Layout
     
-    @State private var selection: Identifier<Script>?
+    @State private var selection: Identifier<RouteScript>?
 
     var scriptList: some View {
         VStack(alignment: .leading) {
@@ -28,50 +28,50 @@ struct ScriptListView: View {
                         .labelsHidden()
                 }
             } rows: {
-                ForEach($layout.scripts) { route in
+                ForEach($layout.routeScripts.elements) { route in
                     TableRow(route)
                 }
             }
             
             HStack {
-                Text("\(layout.scripts.count) scripts")
+                Text("\(layout.routeScripts.elements.count) scripts")
                 
                 Spacer()
                 
                 Button("+") {
-                    let script = layout.newScript()
+                    let script = layout.routeScripts.add(RouteScript())
                     selection = script.id
                     undoManager?.registerUndo(withTarget: layout, handler: { layout in
-                        layout.remove(scriptId: script.id)
+                        layout.routeScripts.remove(script.id)
                     })
                 }
                 Button("-") {
-                    let script = layout.script(for: selection)!
-                    layout.remove(scriptId: script.id)
+                    let script = layout.routeScripts[selection]!
+                    layout.routeScripts.remove(script.id)
                     undoManager?.registerUndo(withTarget: layout, handler: { layout in
-                        layout.addScript(script: script)
+                        layout.routeScripts.add(script)
                     })
                 }.disabled(selection == nil)
                 
                 Spacer().fixedSpace()
 
                 Button("􀉁") {
-                    layout.duplicate(scriptId: selection!)
+                    layout.routeScripts.duplicate(selection!)
                 }.disabled(selection == nil)
 
                 Spacer().fixedSpace()
                 
                 Button("􀄬") {
-                    layout.sortScript()
+                    layout.routeScripts.sort()
                 }
             }.padding([.leading])
         }
         .onAppear {
             if selection == nil {
-                selection = layout.scripts.first?.id
+                selection = layout.routeScripts[0].id
             }
         }.onDisappear() {
-            layout.convertScriptsToRoute()
+            layout.updateRoutesUsingRouteScripts()
         }
     }
     
@@ -79,8 +79,8 @@ struct ScriptListView: View {
         HStack(alignment: .top) {
             scriptList
                 .frame(maxWidth: SideListFixedWidth)
-            if let script = layout.script(for: selection) {
-                ScriptEditorView(layout: layout, script: script)
+            if let script = layout.routeScripts[selection] {
+                RouteScriptEditorView(layout: layout, script: script)
             } else {
                 CenteredLabelView(label: "No Selected Script")
             }
@@ -93,12 +93,12 @@ struct ScriptListView_Previews: PreviewProvider {
     static var previews: some View {
         Group {
             ConfigurationSheet(title: "Scripts") {
-                ScriptListView(layout: ScriptView_Previews.layout)
+                RouteScriptListView(layout: ScriptView_Previews.layout)
             }
         }
         Group {
             ConfigurationSheet(title: "Scripts") {
-                ScriptListView(layout: Layout())
+                RouteScriptListView(layout: Layout())
             }
         }.previewDisplayName("Empty")
     }

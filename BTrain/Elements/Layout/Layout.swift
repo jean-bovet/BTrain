@@ -65,9 +65,9 @@ final class Layout: Element, ObservableObject {
     /// control points are stored in this array.
     @Published var controlPoints = [ControlPoint]()
     
-    /// A map of scripts
-    @Published var scriptMap = OrderedDictionary<Identifier<Script>, Script>()
-    
+    /// A container holding the route scripts
+    @Published var routeScripts = LayoutElementContainer<RouteScript>()
+
     /// An array of routes.
     ///
     /// A route can be defined by the users (fixed) or generated automatically (automatic).
@@ -119,7 +119,7 @@ final class Layout: Element, ObservableObject {
         self.transitions = other.transitions
         self.controlPoints = other.controlPoints
         self.routes = other.routes
-        self.scripts = other.scripts
+        self.routeScripts = other.routeScripts
         self.trains = other.trains
         self.locomotives = other.locomotives
     }
@@ -148,7 +148,7 @@ final class Layout: Element, ObservableObject {
 extension Layout: Codable {
     
     enum CodingKeys: CodingKey {
-      case id, name, blocks, stations, feedbacks, turnouts, trains, locomotives, routes, scripts, transitions, controlPoints
+      case id, name, blocks, stations, feedbacks, turnouts, trains, locomotives, routes, scripts, routeScripts, transitions, controlPoints
     }
 
     convenience init(from decoder: Decoder) throws {
@@ -162,7 +162,12 @@ extension Layout: Codable {
         self.trains = try container.decode([Train].self, forKey: CodingKeys.trains)
         self.locomotives = try container.decode([Locomotive].self, forKey: CodingKeys.locomotives)
         self.routes = try container.decode([Route].self, forKey: CodingKeys.routes)
-        self.scripts = try container.decodeIfPresent([Script].self, forKey: CodingKeys.scripts) ?? []
+        // TODO: update all the files and move away from this key
+        if let routeScripts = try container.decodeIfPresent([RouteScript].self, forKey: CodingKeys.scripts) {
+            self.routeScripts.elements = routeScripts
+        } else {
+            self.routeScripts = try container.decodeIfPresent(LayoutElementContainer<RouteScript>.self, forKey: CodingKeys.routeScripts) ?? LayoutElementContainer<RouteScript>()
+        }
         self.transitions = try container.decode([Transition].self, forKey: CodingKeys.transitions)
         self.controlPoints = try container.decode([ControlPoint].self, forKey: CodingKeys.controlPoints)
     }
@@ -178,7 +183,7 @@ extension Layout: Codable {
         try container.encode(trains, forKey: CodingKeys.trains)
         try container.encode(locomotives, forKey: CodingKeys.locomotives)
         try container.encode(fixedRoutes, forKey: CodingKeys.routes)
-        try container.encode(scripts, forKey: CodingKeys.scripts)
+        try container.encode(routeScripts, forKey: CodingKeys.routeScripts)
         try container.encode(transitions, forKey: CodingKeys.transitions)
         try container.encode(controlPoints, forKey: CodingKeys.controlPoints)
     }

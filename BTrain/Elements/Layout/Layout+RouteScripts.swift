@@ -13,64 +13,13 @@
 import Foundation
 
 extension Layout {
-        
-    var scripts: [Script] {
-        get {
-            scriptMap.values.map {
-                $0
-            }
-        }
-        set {
-            scriptMap.removeAll()
-            newValue.forEach { scriptMap[$0.id] = $0 }
-        }
-    }
-
-    func script(for identifier: Identifier<Script>?) -> Script? {
-        if let identifier = identifier {
-            return scriptMap[identifier]
-        } else {
-            return nil
-        }
-    }
-    
-    func newScript() -> Script {
-        let s = Script()
-        addScript(script: s)
-        return s
-    }
-    
-    func addScript(script: Script) {
-        scriptMap[script.id] = script
-    }
-    
-    func duplicate(scriptId: Identifier<Script>) {
-        guard let script = script(for: scriptId) else {
-            return
-        }
-        
-        // TODO: should we encode and decode again to ensure full separate object? Same for route and other duplicated object?
-        let newScript = newScript()
-        newScript.name = "\(script.name) copy"
-        newScript.commands = script.commands
-    }
-    
-    func remove(scriptId: Identifier<Script>) {
-        scriptMap.removeValue(forKey: scriptId)
-    }
-    
-    func sortScript() {
-        scripts.sort {
-            $0.name < $1.name
-        }
-    }
-    
+            
     /// Convert all the scripts in the layout into individual routes, updating any existing route.
     ///
     /// Each route unique ID matches the unique ID of the script. When the script is updated, the
     /// same route is going to be updated.
-    func convertScriptsToRoute() {
-        for script in scripts {
+    func updateRoutesUsingRouteScripts() {
+        for script in routeScripts.elements {
             if let route = try? script.toRoute() {
                 if route.partialSteps.isEmpty {
                     remove(routeId: route.id)

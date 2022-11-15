@@ -12,7 +12,7 @@
 
 import SwiftUI
 
-struct ScriptEditorView: View {
+struct RouteScriptEditorView: View {
     
     struct ValidationError {
         let resolverErrors: [PathFinderResolver.ResolverError]
@@ -20,7 +20,7 @@ struct ScriptEditorView: View {
     }
 
     let layout: Layout
-    @ObservedObject var script: Script
+    @ObservedObject var script: RouteScript
     
     @State private var generatedRoute: Route?
     @State private var generatedRouteError: Error?
@@ -90,18 +90,18 @@ struct ScriptEditorView: View {
                 CenteredCustomView {
                     Text("No Commands")
                     Button("+") {
-                        script.commands.append(ScriptCommand(action: .move))
+                        script.commands.append(RouteScriptCommand(action: .move))
                     }
                 }
             } else {
                 List {
                     ForEach($script.commands, id: \.self) { command in
-                        ScriptLineView(layout: layout, script: script, command: command, commandErrorIds: $commandErrorIds)
+                        RouteScriptLineView(layout: layout, script: script, command: command, commandErrorIds: $commandErrorIds)
                         if let children = command.children {
                             ForEach(children, id: \.self) { command in
                                 HStack {
                                     Spacer().fixedSpace()
-                                    ScriptLineView(layout: layout, script: script, command: command, commandErrorIds: $commandErrorIds)
+                                    RouteScriptLineView(layout: layout, script: script, command: command, commandErrorIds: $commandErrorIds)
                                 }
                             }
                         }
@@ -158,7 +158,7 @@ struct ScriptEditorView: View {
         }
     }
     
-    func validate(script: Script) {
+    func validate(script: RouteScript) {
         resolvedRouteResult = nil
         generatedRouteError = nil
         commandErrorIds.removeAll()
@@ -178,7 +178,7 @@ struct ScriptEditorView: View {
                 commandErrorIds.append(command.id.uuidString)
                 
             case .missingStartCommand:
-                script.commands.insert(ScriptCommand(action: .start), at: 0)
+                script.commands.insert(RouteScriptCommand(action: .start), at: 0)
             }
             return
         } catch {
@@ -220,23 +220,23 @@ struct ScriptView_Previews: PreviewProvider {
         
     static let layout = {
         let layout = Layout()
-        let s = Script(name: "Boucle")
-        s.commands.append(ScriptCommand(action: .move))
-        var loop = ScriptCommand(action: .loop)
+        let s = RouteScript(name: "Boucle")
+        s.commands.append(RouteScriptCommand(action: .move))
+        var loop = RouteScriptCommand(action: .loop)
         loop.repeatCount = 2
-        loop.children.append(ScriptCommand(action: .move))
-        loop.children.append(ScriptCommand(action: .move))
+        loop.children.append(RouteScriptCommand(action: .move))
+        loop.children.append(RouteScriptCommand(action: .move))
         s.commands.append(loop)
-        layout.scriptMap[s.id] = s
+        layout.routeScripts.add(s)
         return layout
     }()
 
     static var previews: some View {
         Group {
-            ScriptEditorView(layout: layout, script: layout.scripts[0])
+            RouteScriptEditorView(layout: layout, script: layout.routeScripts[0])
         }.previewDisplayName("Script")
         Group {
-            ScriptEditorView(layout: layout, script: Script())
+            RouteScriptEditorView(layout: layout, script: RouteScript())
         }.previewDisplayName("Empty Script")
     }
 }

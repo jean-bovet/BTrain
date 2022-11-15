@@ -12,19 +12,19 @@
 
 import Foundation
 
-struct ScriptCommand: Identifiable, Hashable {
+struct RouteScriptCommand: Identifiable, Hashable {
     
     let id: UUID
     
-    enum ScriptAction: String, CaseIterable, Codable {
+    enum Action: String, CaseIterable, Codable {
         case start = "Start"
         case move = "Move"
         case loop = "Repeat"
     }
 
-    var action: ScriptAction = .move
+    var action: Action = .move
     
-    var children = [ScriptCommand]()
+    var children = [RouteScriptCommand]()
     var repeatCount = 0
     var waitDuration = 0
     
@@ -39,13 +39,13 @@ struct ScriptCommand: Identifiable, Hashable {
     var direction: Direction?
     var stationId: Identifier<Station>?
     
-    init(id: UUID = UUID(), action: ScriptAction) {
+    init(id: UUID = UUID(), action: Action) {
         self.id = id
         self.action = action
     }
 }
 
-extension ScriptCommand: Codable {
+extension RouteScriptCommand: Codable {
     
     enum CodingKeys: CodingKey {
         case id, action, children, repeatCount, waitDuration, destinationType, blockId, direction, stationId
@@ -54,8 +54,8 @@ extension ScriptCommand: Codable {
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         self.id = try container.decode(UUID.self, forKey: CodingKeys.id)
-        self.action = try container.decode(ScriptAction.self, forKey: CodingKeys.action)
-        self.children = try container.decode([ScriptCommand].self, forKey: CodingKeys.children)
+        self.action = try container.decode(Action.self, forKey: CodingKeys.action)
+        self.children = try container.decode([RouteScriptCommand].self, forKey: CodingKeys.children)
         self.repeatCount = try container.decode(Int.self, forKey: CodingKeys.repeatCount)
         self.waitDuration = try container.decode(Int.self, forKey: CodingKeys.waitDuration)
 

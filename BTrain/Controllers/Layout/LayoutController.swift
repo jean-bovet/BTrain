@@ -56,14 +56,17 @@ final class LayoutController: ObservableObject {
     /// The observer that keeps us informed of any change in the layout
     let layoutObserver: LayoutObserver
     
-    // A helper class that monitors feedbacks
+    /// A helper class that monitors feedbacks
     let feedbackMonitor: LayoutFeedbackMonitor
     
-    // The interface to the Digital Controller
+    /// The layout scripts conductor
+    let conductor: LayoutScriptConductor
+    
+    /// The interface to the Digital Controller
     var interface: CommandInterface
         
-    // The switchboard state, used to refresh the switchboard
-    // when certain events happen in the layout controller
+    /// The switchboard state, used to refresh the switchboard
+    /// when certain events happen in the layout controller
     let switchboard: SwitchBoard?
     
     lazy var reservation: LayoutReservation = {
@@ -96,11 +99,14 @@ final class LayoutController: ObservableObject {
     init(layout: Layout, switchboard: SwitchBoard?, interface: CommandInterface) {
         self.layout = layout
         self.layoutObserver = LayoutObserver(layout: layout)
-        self.switchboard = switchboard
+        self.conductor = LayoutScriptConductor(layout: layout)
         self.feedbackMonitor = LayoutFeedbackMonitor(layout: layout)
+        self.switchboard = switchboard
         self.interface = interface
         self.turnoutManager = LayoutTurnoutManager(interface: interface)
         self.debugger = LayoutControllerDebugger(layout: layout)
+        
+        self.conductor.layoutController = self
         
         registerForFeedbackChange()
         registerForDirectionChange()
@@ -239,6 +245,8 @@ final class LayoutController: ObservableObject {
     }
         
     func startAll() {
+        // TODO: finish
+//        conductor.start()
         for train in layout.trainsThatCanBeStarted() {
             do {
                 try start(routeID: train.routeId, trainID: train.id, destination: nil)

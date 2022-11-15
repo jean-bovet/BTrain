@@ -34,6 +34,9 @@ class LayoutTrainsObserver {
     
     func registerForChange(_ callback: @escaping TrainChangeCallback) {
         trainCallbacks.append(callback)
+        for train in layout.trains {
+            callback(train)
+        }
     }
     
     private func registerForTrainsChange() {

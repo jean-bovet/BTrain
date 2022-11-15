@@ -118,10 +118,10 @@
 		A744FDB92913383200852283 /* NSImage+Resize.swift in Sources */ = {isa = PBXBuildFile; fileRef = A744FDB82913383200852283 /* NSImage+Resize.swift */; };
 		A745C16A282F2199006D16B0 /* TrainReservation.swift in Sources */ = {isa = PBXBuildFile; fileRef = A745C169282F2199006D16B0 /* TrainReservation.swift */; };
 		A747967F291EA869001DF7FA /* TrainControlHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A747967E291EA869001DF7FA /* TrainControlHeaderView.swift */; };
-		A7479681291F437E001DF7FA /* ScriptEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7479680291F437E001DF7FA /* ScriptEditorView.swift */; };
-		A7479683292010F4001DF7FA /* ScriptCommandView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7479682292010F4001DF7FA /* ScriptCommandView.swift */; };
-		A747968529201FB2001DF7FA /* ScriptCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = A747968429201FB2001DF7FA /* ScriptCommand.swift */; };
-		A747968729201FE4001DF7FA /* ScriptLineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A747968629201FE4001DF7FA /* ScriptLineView.swift */; };
+		A7479681291F437E001DF7FA /* RouteScriptEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7479680291F437E001DF7FA /* RouteScriptEditorView.swift */; };
+		A7479683292010F4001DF7FA /* RouteScriptCommandView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7479682292010F4001DF7FA /* RouteScriptCommandView.swift */; };
+		A747968529201FB2001DF7FA /* RouteScriptCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = A747968429201FB2001DF7FA /* RouteScriptCommand.swift */; };
+		A747968729201FE4001DF7FA /* RouteScriptLineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A747968629201FE4001DF7FA /* RouteScriptLineView.swift */; };
 		A747968929202038001DF7FA /* BlockPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = A747968829202038001DF7FA /* BlockPicker.swift */; };
 		A747968B292020D4001DF7FA /* StationPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = A747968A292020D4001DF7FA /* StationPicker.swift */; };
 		A74925D028E8D15C00FF39C3 /* TurnoutShapePreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = A74925CF28E8D15C00FF39C3 /* TurnoutShapePreview.swift */; };
@@ -206,6 +206,9 @@
 		A77A02A0291631600017667A /* MarklinCS3Server.swift in Sources */ = {isa = PBXBuildFile; fileRef = A77A029F291631600017667A /* MarklinCS3Server.swift */; };
 		A77A96DC27274A17009E7ECB /* MarklinCANMessagePrinter.swift in Sources */ = {isa = PBXBuildFile; fileRef = A77A96DB27274A17009E7ECB /* MarklinCANMessagePrinter.swift */; };
 		A77A96DE2727767C009E7ECB /* ConnectSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A77A96DD2727767C009E7ECB /* ConnectSheet.swift */; };
+		A77F76192922094A008682D9 /* LayoutScriptConductor.swift in Sources */ = {isa = PBXBuildFile; fileRef = A77F76182922094A008682D9 /* LayoutScriptConductor.swift */; };
+		A77F761B2922D594008682D9 /* ScriptDropLineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A77F761A2922D594008682D9 /* ScriptDropLineView.swift */; };
+		A77F761E29231E6B008682D9 /* LayoutElementContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A77F761D29231E6B008682D9 /* LayoutElementContainer.swift */; };
 		A783EA5B278530BF00E69B6D /* SimulatorLocomotive.swift in Sources */ = {isa = PBXBuildFile; fileRef = A783EA5A278530BF00E69B6D /* SimulatorLocomotive.swift */; };
 		A783EA9F2787C6DA00E69B6D /* LayoutObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = A783EA9E2787C6DA00E69B6D /* LayoutObserver.swift */; };
 		A783EAA12787D12200E69B6D /* BTTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = A783EAA02787D12200E69B6D /* BTTestCase.swift */; };
@@ -291,10 +294,10 @@
 		A79CD0BF291B391A0079968D /* LocPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = A79CD0BE291B391A0079968D /* LocPicker.swift */; };
 		A79CD0C1291C26180079968D /* LocomotiveTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A79CD0C0291C26180079968D /* LocomotiveTests.swift */; };
 		A79D43DC283B15BF0068C969 /* LayoutController+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A79D43DB283B15BF0068C969 /* LayoutController+Extension.swift */; };
-		A7A7D68629202CEA008FA648 /* ScriptListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7A7D68529202CEA008FA648 /* ScriptListView.swift */; };
-		A7A7D68829203230008FA648 /* Script.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7A7D68729203230008FA648 /* Script.swift */; };
-		A7A7D68A29203476008FA648 /* Layout+Scripts.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7A7D68929203476008FA648 /* Layout+Scripts.swift */; };
-		A7A7D68C2920B120008FA648 /* Script+Route.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7A7D68B2920B120008FA648 /* Script+Route.swift */; };
+		A7A7D68629202CEA008FA648 /* RouteScriptListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7A7D68529202CEA008FA648 /* RouteScriptListView.swift */; };
+		A7A7D68829203230008FA648 /* RouteScript.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7A7D68729203230008FA648 /* RouteScript.swift */; };
+		A7A7D68A29203476008FA648 /* Layout+RouteScripts.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7A7D68929203476008FA648 /* Layout+RouteScripts.swift */; };
+		A7A7D68C2920B120008FA648 /* RouteScript+Route.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7A7D68B2920B120008FA648 /* RouteScript+Route.swift */; };
 		A7A7D68E2920D90D008FA648 /* SourceIdentifiable.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7A7D68D2920D90D008FA648 /* SourceIdentifiable.swift */; };
 		A7A7D6902921501A008FA648 /* DirectionPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7A7D68F2921501A008FA648 /* DirectionPicker.swift */; };
 		A7A7D69229215562008FA648 /* CenteredCustomView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7A7D69129215562008FA648 /* CenteredCustomView.swift */; };
@@ -493,10 +496,10 @@
 		A744FDB82913383200852283 /* NSImage+Resize.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSImage+Resize.swift"; sourceTree = "<group>"; };
 		A745C169282F2199006D16B0 /* TrainReservation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainReservation.swift; sourceTree = "<group>"; };
 		A747967E291EA869001DF7FA /* TrainControlHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainControlHeaderView.swift; sourceTree = "<group>"; };
-		A7479680291F437E001DF7FA /* ScriptEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScriptEditorView.swift; sourceTree = "<group>"; };
-		A7479682292010F4001DF7FA /* ScriptCommandView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScriptCommandView.swift; sourceTree = "<group>"; };
-		A747968429201FB2001DF7FA /* ScriptCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScriptCommand.swift; sourceTree = "<group>"; };
-		A747968629201FE4001DF7FA /* ScriptLineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScriptLineView.swift; sourceTree = "<group>"; };
+		A7479680291F437E001DF7FA /* RouteScriptEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteScriptEditorView.swift; sourceTree = "<group>"; };
+		A7479682292010F4001DF7FA /* RouteScriptCommandView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteScriptCommandView.swift; sourceTree = "<group>"; };
+		A747968429201FB2001DF7FA /* RouteScriptCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteScriptCommand.swift; sourceTree = "<group>"; };
+		A747968629201FE4001DF7FA /* RouteScriptLineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteScriptLineView.swift; sourceTree = "<group>"; };
 		A747968829202038001DF7FA /* BlockPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockPicker.swift; sourceTree = "<group>"; };
 		A747968A292020D4001DF7FA /* StationPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StationPicker.swift; sourceTree = "<group>"; };
 		A74925CF28E8D15C00FF39C3 /* TurnoutShapePreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TurnoutShapePreview.swift; sourceTree = "<group>"; };
@@ -581,6 +584,9 @@
 		A77A029F291631600017667A /* MarklinCS3Server.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarklinCS3Server.swift; sourceTree = "<group>"; };
 		A77A96DB27274A17009E7ECB /* MarklinCANMessagePrinter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarklinCANMessagePrinter.swift; sourceTree = "<group>"; };
 		A77A96DD2727767C009E7ECB /* ConnectSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectSheet.swift; sourceTree = "<group>"; };
+		A77F76182922094A008682D9 /* LayoutScriptConductor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutScriptConductor.swift; sourceTree = "<group>"; };
+		A77F761A2922D594008682D9 /* ScriptDropLineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScriptDropLineView.swift; sourceTree = "<group>"; };
+		A77F761D29231E6B008682D9 /* LayoutElementContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutElementContainer.swift; sourceTree = "<group>"; };
 		A783EA5A278530BF00E69B6D /* SimulatorLocomotive.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimulatorLocomotive.swift; sourceTree = "<group>"; };
 		A783EA9E2787C6DA00E69B6D /* LayoutObserver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutObserver.swift; sourceTree = "<group>"; };
 		A783EAA02787D12200E69B6D /* BTTestCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BTTestCase.swift; sourceTree = "<group>"; };
@@ -660,10 +666,10 @@
 		A79CD0BE291B391A0079968D /* LocPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocPicker.swift; sourceTree = "<group>"; };
 		A79CD0C0291C26180079968D /* LocomotiveTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocomotiveTests.swift; sourceTree = "<group>"; };
 		A79D43DB283B15BF0068C969 /* LayoutController+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LayoutController+Extension.swift"; sourceTree = "<group>"; };
-		A7A7D68529202CEA008FA648 /* ScriptListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScriptListView.swift; sourceTree = "<group>"; };
-		A7A7D68729203230008FA648 /* Script.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Script.swift; sourceTree = "<group>"; };
-		A7A7D68929203476008FA648 /* Layout+Scripts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Layout+Scripts.swift"; sourceTree = "<group>"; };
-		A7A7D68B2920B120008FA648 /* Script+Route.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Script+Route.swift"; sourceTree = "<group>"; };
+		A7A7D68529202CEA008FA648 /* RouteScriptListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteScriptListView.swift; sourceTree = "<group>"; };
+		A7A7D68729203230008FA648 /* RouteScript.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteScript.swift; sourceTree = "<group>"; };
+		A7A7D68929203476008FA648 /* Layout+RouteScripts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Layout+RouteScripts.swift"; sourceTree = "<group>"; };
+		A7A7D68B2920B120008FA648 /* RouteScript+Route.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "RouteScript+Route.swift"; sourceTree = "<group>"; };
 		A7A7D68D2920D90D008FA648 /* SourceIdentifiable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SourceIdentifiable.swift; sourceTree = "<group>"; };
 		A7A7D68F2921501A008FA648 /* DirectionPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DirectionPicker.swift; sourceTree = "<group>"; };
 		A7A7D69129215562008FA648 /* CenteredCustomView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CenteredCustomView.swift; sourceTree = "<group>"; };
@@ -1159,13 +1165,8 @@
 		A747968C2920211F001DF7FA /* Scripts */ = {
 			isa = PBXGroup;
 			children = (
-				A7A7D68529202CEA008FA648 /* ScriptListView.swift */,
-				A7479680291F437E001DF7FA /* ScriptEditorView.swift */,
-				A747968629201FE4001DF7FA /* ScriptLineView.swift */,
-				A7479682292010F4001DF7FA /* ScriptCommandView.swift */,
-				A7A7D68729203230008FA648 /* Script.swift */,
-				A7A7D68B2920B120008FA648 /* Script+Route.swift */,
-				A747968429201FB2001DF7FA /* ScriptCommand.swift */,
+				A77F761A2922D594008682D9 /* ScriptDropLineView.swift */,
+				A77F761C292303A0008682D9 /* RouteScript */,
 			);
 			path = Scripts;
 			sourceTree = "<group>";
@@ -1246,7 +1247,7 @@
 				A75C2DCA28233C2F0043D462 /* LayoutIdentity.swift */,
 				A7710E6227799C9F00C08150 /* Layout+Blocks.swift */,
 				A717FB16281DEE5E00310B5D /* Layout+Stations.swift */,
-				A7A7D68929203476008FA648 /* Layout+Scripts.swift */,
+				A7A7D68929203476008FA648 /* Layout+RouteScripts.swift */,
 				A7710E6427799CF800C08150 /* Layout+Routes.swift */,
 				A7710E6627799D5C00C08150 /* Layout+Trains.swift */,
 				A79CD0BA291B334F0079968D /* Layout+Locomotives.swift */,
@@ -1257,6 +1258,7 @@
 				A72720B42907311B00E7B177 /* Layout+Paths.swift */,
 				A744FDA02909EC2800852283 /* Layout+Graph.swift */,
 				A795A03027AF6C8D00AE90EB /* Layout+AutomaticRouting.swift */,
+				A77F761D29231E6B008682D9 /* LayoutElementContainer.swift */,
 				A7E78C4127A08F9E004D1821 /* LayoutReservation.swift */,
 				A744D1362765C5A3005C2F37 /* LayoutError.swift */,
 				A744FDAE290F379B00852283 /* Observers */,
@@ -1375,6 +1377,20 @@
 				A7218074275D39A400831998 /* CS2 */,
 			);
 			path = Locomotives;
+			sourceTree = "<group>";
+		};
+		A77F761C292303A0008682D9 /* RouteScript */ = {
+			isa = PBXGroup;
+			children = (
+				A7A7D68529202CEA008FA648 /* RouteScriptListView.swift */,
+				A7479680291F437E001DF7FA /* RouteScriptEditorView.swift */,
+				A747968629201FE4001DF7FA /* RouteScriptLineView.swift */,
+				A7479682292010F4001DF7FA /* RouteScriptCommandView.swift */,
+				A7A7D68729203230008FA648 /* RouteScript.swift */,
+				A7A7D68B2920B120008FA648 /* RouteScript+Route.swift */,
+				A747968429201FB2001DF7FA /* RouteScriptCommand.swift */,
+			);
+			path = RouteScript;
 			sourceTree = "<group>";
 		};
 		A7841372273CE06F00381341 /* Switchboard */ = {
@@ -1620,6 +1636,7 @@
 				A798BB4727A8EA06000BB4D1 /* LayoutControllerDebugger.swift */,
 				A7DB7D4D27C714E2000893BA /* LayoutTurnoutManager.swift */,
 				A783EAA82788C1F700E69B6D /* LayoutFeedbackMonitor.swift */,
+				A77F76182922094A008682D9 /* LayoutScriptConductor.swift */,
 			);
 			path = Layout;
 			sourceTree = "<group>";
@@ -1871,6 +1888,7 @@
 				A7940658280789B300F6A427 /* ShortestPathFinder.swift in Sources */,
 				A7EBD8742875D03300A35046 /* LocomotiveStopSettledDelayTimer.swift in Sources */,
 				A7DB7D5427C9E33D000893BA /* Line2D.swift in Sources */,
+				A77F761E29231E6B008682D9 /* LayoutElementContainer.swift in Sources */,
 				A798BB4227A79CFE000BB4D1 /* TurnoutShapeView.swift in Sources */,
 				A7907993277EC86200771A60 /* DocumentToolbarContent.swift in Sources */,
 				A7218081275F0BDB00831998 /* Turnout+State.swift in Sources */,
@@ -1879,6 +1897,7 @@
 				A7A7D69A2921CB76008FA648 /* UserInterfaceSettings.swift in Sources */,
 				A7218073275D399500831998 /* LocomotivesDocumentParser.swift in Sources */,
 				A7B0B5132761CF8400F11A3E /* SwitchboardLinkUpdater.swift in Sources */,
+				A77F761B2922D594008682D9 /* ScriptDropLineView.swift in Sources */,
 				A798BB4A27ABAB6F000BB4D1 /* RouteResolver.swift in Sources */,
 				A7710E6327799C9F00C08150 /* Layout+Blocks.swift in Sources */,
 				A783EA9F2787C6DA00E69B6D /* LayoutObserver.swift in Sources */,
@@ -1916,7 +1935,7 @@
 				A768B1932856A3D900B6497F /* LayoutEventStateMachine.swift in Sources */,
 				A7B06AF4272783F600BDD88C /* MarklinCANMessageFactory.swift in Sources */,
 				A7218083275F0BFC00831998 /* Turnout+Socket.swift in Sources */,
-				A7A7D68C2920B120008FA648 /* Script+Route.swift in Sources */,
+				A7A7D68C2920B120008FA648 /* RouteScript+Route.swift in Sources */,
 				A745C16A282F2199006D16B0 /* TrainReservation.swift in Sources */,
 				A74F3816281A5E0E0013FD23 /* RouteNewElementSheet.swift in Sources */,
 				A78B996D2800BABB0021EFE4 /* GraphPath.swift in Sources */,
@@ -1931,7 +1950,7 @@
 				A795A03F27B9CB0200AE90EB /* LocomotiveSpeedMeasurement.swift in Sources */,
 				A7B06AF2272782C300BDD88C /* LayoutDocument.swift in Sources */,
 				A7710E5E277850F000C08150 /* Reservation.swift in Sources */,
-				A7479683292010F4001DF7FA /* ScriptCommandView.swift in Sources */,
+				A7479683292010F4001DF7FA /* RouteScriptCommandView.swift in Sources */,
 				A76507F4275BEE5F0079C71A /* LayoutDiagnostics.swift in Sources */,
 				A7A7D6982921A6E2008FA648 /* AlertCustomView.swift in Sources */,
 				A7F779E3272E20F500E73275 /* TrainControlListView.swift in Sources */,
@@ -1950,9 +1969,10 @@
 				A77A02912915AC200017667A /* MarklinCS3.swift in Sources */,
 				A73A7DDA284EBC8800ABEADE /* CS3SendMessageView.swift in Sources */,
 				A7DB7D4827C21D7C000893BA /* LocomotiveSpeedManager.swift in Sources */,
+				A77F76192922094A008682D9 /* LayoutScriptConductor.swift in Sources */,
 				A7710E73277A3BC200C08150 /* NewTurnoutSheet.swift in Sources */,
 				A7F31BA1277C3D7B00FE0C65 /* BlockDetailsView.swift in Sources */,
-				A747968729201FE4001DF7FA /* ScriptLineView.swift in Sources */,
+				A747968729201FE4001DF7FA /* RouteScriptLineView.swift in Sources */,
 				A7E78C4627A1D669004D1821 /* TrainInstance.swift in Sources */,
 				A7710E71277A344300C08150 /* NewBlockSheet.swift in Sources */,
 				A7CA5EC7279654EB00171398 /* Block+Feedback.swift in Sources */,
@@ -1966,7 +1986,7 @@
 				A77A02992915D6880017667A /* MarklinFetchLocomotives.swift in Sources */,
 				A73E0825276B99A8005F9D64 /* BlockAllFeedbacksView.swift in Sources */,
 				A785C086278CFD7D002FD538 /* LocomotiveSpeed.swift in Sources */,
-				A7A7D68829203230008FA648 /* Script.swift in Sources */,
+				A7A7D68829203230008FA648 /* RouteScript.swift in Sources */,
 				A7940668280A294000F6A427 /* EphemeralDrapAndDrop.swift in Sources */,
 				A74F380D281927E10013FD23 /* Station.swift in Sources */,
 				A784138A274165FB00381341 /* MarklinCommandSimulator.swift in Sources */,
@@ -2053,10 +2073,10 @@
 				A744FDA12909EC2800852283 /* Layout+Graph.swift in Sources */,
 				A721806A275D1CA700831998 /* MarklinCommand.swift in Sources */,
 				A717FB15281CA84C00310B5D /* ResolvedRouteItem.swift in Sources */,
-				A747968529201FB2001DF7FA /* ScriptCommand.swift in Sources */,
+				A747968529201FB2001DF7FA /* RouteScriptCommand.swift in Sources */,
 				A7B0B5172762FB6500F11A3E /* BlockListView.swift in Sources */,
 				A758295F27925DE300AA0649 /* LayoutController+Listeners.swift in Sources */,
-				A7A7D68629202CEA008FA648 /* ScriptListView.swift in Sources */,
+				A7A7D68629202CEA008FA648 /* RouteScriptListView.swift in Sources */,
 				A76C1C5F287ECBEC00A22509 /* CommandInterfaceCallbacks.swift in Sources */,
 				A7710E6727799D5C00C08150 /* Layout+Trains.swift in Sources */,
 				A76507E6275AC7DA0079C71A /* ScheduledMessageQueue.swift in Sources */,
@@ -2090,13 +2110,13 @@
 				A79CD0BB291B334F0079968D /* Layout+Locomotives.swift in Sources */,
 				A7841371273CE02000381341 /* LinkShape.swift in Sources */,
 				A784136F273CE00C00381341 /* BlockShape.swift in Sources */,
-				A7A7D68A29203476008FA648 /* Layout+Scripts.swift in Sources */,
+				A7A7D68A29203476008FA648 /* Layout+RouteScripts.swift in Sources */,
 				A747968929202038001DF7FA /* BlockPicker.swift in Sources */,
 				A798BB4627A7B093000BB4D1 /* LayoutASCIIProducer.swift in Sources */,
 				A768B19128551B0800B6497F /* StateMachine.swift in Sources */,
 				A7C8A2EF279DD19A000C7246 /* SectionTitleView.swift in Sources */,
 				A74F38092818C7B10013FD23 /* RouteStepBlockView.swift in Sources */,
-				A7479681291F437E001DF7FA /* ScriptEditorView.swift in Sources */,
+				A7479681291F437E001DF7FA /* RouteScriptEditorView.swift in Sources */,
 				A785C071278A4561002FD538 /* TrainDetailsView.swift in Sources */,
 				A7C8A2E9279BB8A6000C7246 /* NewLayoutWizardView.swift in Sources */,
 				A744FDB92913383200852283 /* NSImage+Resize.swift in Sources */,

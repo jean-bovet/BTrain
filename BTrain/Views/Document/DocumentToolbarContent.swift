@@ -27,6 +27,7 @@ struct DocumentToolbarContent: ToolbarContent {
         
         ToolbarItemGroup {
             Group {
+                // TODO: ForEach with displaySheetType
                 Button("􀬱") {
                     document.displaySheetType = .script
                 }

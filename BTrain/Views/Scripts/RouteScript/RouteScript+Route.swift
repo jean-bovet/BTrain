@@ -14,9 +14,9 @@ import Foundation
 
 enum ScriptError: Error {
     case missingStartCommand
-    case undefinedBlock(command: ScriptCommand)
-    case undefinedDirection(command: ScriptCommand)
-    case undefinedStation(command: ScriptCommand)
+    case undefinedBlock(command: RouteScriptCommand)
+    case undefinedDirection(command: RouteScriptCommand)
+    case undefinedStation(command: RouteScriptCommand)
 }
 
 extension ScriptError: LocalizedError {
@@ -35,7 +35,7 @@ extension ScriptError: LocalizedError {
     }
 }
 
-extension Script {
+extension RouteScript {
     
     /// Creates a route representing the script. The route ID will be the same as the script ID.
     ///
@@ -52,7 +52,7 @@ extension Script {
         
 }
 
-extension ScriptCommand {
+extension RouteScriptCommand {
     
     func toBlockItem() throws -> RouteItem {
         guard let blockId = blockId else {
@@ -98,7 +98,7 @@ extension ScriptCommand {
     }
 }
 
-extension Array where Element == ScriptCommand {
+extension Array where Element == RouteScriptCommand {
     
     func toRouteItems() throws -> [RouteItem] {
         var items = [RouteItem]()
