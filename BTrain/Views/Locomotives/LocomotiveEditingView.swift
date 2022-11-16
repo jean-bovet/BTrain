@@ -24,11 +24,17 @@ struct LocomotiveEditingView: View {
             layout.newLocomotive()
         }, delete: { loc in
             document.layout.locomotives.remove(loc.id)
-        },sort: {
+        }, sort: {
             layout.locomotives.elements.sort {
                 $0.name < $1.name
             }
-        }, elementContainer: $layout.locomotives, row: { loc in
+        }, elementContainer: $layout.locomotives, more: {
+            Button("􀈄") {
+                discoverLocomotiveConfirmation.toggle()
+            }
+            .disabled(!document.connected)
+            .help("Download Locomotives")
+        }, row: { loc in
             HStack {
                 Toggle("Enabled", isOn: loc.enabled)
                 if let image = document.locomotiveIconManager.icon(for: loc.id) {
@@ -45,13 +51,6 @@ struct LocomotiveEditingView: View {
                     .padding()
             }
         }
-        // TODO: discover locomotive
-//
-//        Button("􀈄") {
-//            discoverLocomotiveConfirmation.toggle()
-//        }
-//        .disabled(!document.connected)
-//        .help("Download Locomotives")
         .alert("Are you sure you want to change the current list of locomotives with the locomotives definition from the Central Station?", isPresented: $discoverLocomotiveConfirmation) {
             Button("Cancel", role: .cancel) { }
             Button("Download & Merge") {

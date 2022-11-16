@@ -12,26 +12,51 @@
 
 import SwiftUI
 
-struct LayoutElementsEditingView<E: LayoutElement, Row: View, Editor: View>: View {
+extension LayoutElementsEditingView where More == EmptyView {
+    
+    init(layout: Layout,
+         new: @escaping () -> E,
+         delete: @escaping (E) -> Void,
+         sort: @escaping CompletionBlock,
+         elementContainer: Binding<LayoutElementContainer<E>>,
+         @ViewBuilder row: @escaping RowViewBuilder,
+         @ViewBuilder editor: @escaping (E) -> Editor) {
+        self.init(layout: layout, new: new, delete: delete, sort: sort, elementContainer: elementContainer, more: { EmptyView() }, row: row, editor: editor)
+    }
+
+}
+
+struct LayoutElementsEditingView<E: LayoutElement, More: View, Row: View, Editor: View>: View {
     
     typealias RowViewBuilder = (Binding<E>) -> Row
-    
+    typealias MoreViewBuilder = () -> More
+
     let new: () -> E
     let delete: (E) -> Void
     let sort: CompletionBlock
+    let more: MoreViewBuilder
     let row: RowViewBuilder
     let editor: (E) -> Editor
-    
-    init(layout: Layout, new: @escaping () -> E, delete: @escaping (E) -> Void, sort: @escaping CompletionBlock, elementContainer: Binding<LayoutElementContainer<E>>, @ViewBuilder row: @escaping RowViewBuilder, @ViewBuilder editor: @escaping (E) -> Editor) {
+        
+    init(layout: Layout,
+         new: @escaping () -> E,
+         delete: @escaping (E) -> Void,
+         sort: @escaping CompletionBlock,
+         elementContainer: Binding<LayoutElementContainer<E>>,
+         @ViewBuilder more: @escaping MoreViewBuilder,
+         @ViewBuilder row: @escaping RowViewBuilder,
+         @ViewBuilder editor: @escaping (E) -> Editor) {
         self.layout = layout
         self.new = new
         self.delete = delete
         self.sort = sort
+        self.more = more
         self.row = row
         self.editor = editor
         _elementContainer = elementContainer
     }
 
+    
     @ObservedObject var layout: Layout
     @Binding var elementContainer: LayoutElementContainer<E>
     
@@ -104,6 +129,11 @@ struct LayoutElementsEditingView<E: LayoutElement, Row: View, Editor: View>: Vie
                 
                 Button("􀄬") {
                     sort()
+                }
+                
+                if let view = more(), !(view is EmptyView) {
+                    Spacer().fixedSpace()
+                    view
                 }
             }.padding([.leading])
         }

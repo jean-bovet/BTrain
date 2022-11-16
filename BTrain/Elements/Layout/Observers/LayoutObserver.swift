@@ -23,11 +23,11 @@ final class LayoutObserver {
     init(layout: Layout) {
         self.layout = layout
   
-        // TODO: important
-//        cancellables.append(layout.trains.elements.dropFirst().sink(receiveValue: { [weak self] trains in
-//            self?.trainCallbacks.forEach { $0(trains) }
-//            self?.anyCallbacks.forEach { $0() }
-//        }))
+        // TODO: add unit tests
+        cancellables.append(layout.$trains.dropFirst().sink(receiveValue: { [weak self] trains in
+            self?.trainCallbacks.forEach { $0(trains.elements) }
+            self?.anyCallbacks.forEach { $0() }
+        }))
         
         cancellables.append(layout.$blockMap.dropFirst().sink(receiveValue: { [weak self] blocks in
             // Note: need to pass the `blocks` parameter here because the layout.blocks
