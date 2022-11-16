@@ -48,7 +48,7 @@ final class Layout: Element, ObservableObject {
     /// An array of turnouts
     @Published var turnouts = [Turnout]()
     
-    /// An array of trains
+    /// A container holding the trains
     @Published var trains = LayoutElementContainer<Train>()
     
     /// A map of locomotives

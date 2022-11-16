@@ -219,11 +219,7 @@ final class Train: Element, ElementCopiable, ObservableObject {
         text += ")"
         return text
     }
-    
-    convenience init() {
-        self.init(name: "New Train")
-    }
-    
+        
     convenience init(uuid: String = UUID().uuidString, name: String = "", wagonsLength: Double? = nil, maxSpeed: SpeedKph? = nil, maxNumberOfLeadingReservedBlocks: Int? = nil) {
         self.init(id: Identifier(uuid: uuid), name: name, wagonsLength: wagonsLength, maxSpeed: maxSpeed, maxNumberOfLeadingReservedBlocks: maxNumberOfLeadingReservedBlocks)
     }
@@ -237,8 +233,14 @@ final class Train: Element, ElementCopiable, ObservableObject {
     }
     
     func copy() -> Train {
-        // TODO: do this
-        return Train()
+        let nt = Train(name: "\(name) copy")
+        nt.routeId = routeId
+        nt.locomotive = locomotive
+        nt.wagonsLength = wagonsLength
+        nt.maxNumberOfLeadingReservedBlocks = maxNumberOfLeadingReservedBlocks
+        nt.blocksToAvoid = blocksToAvoid
+        nt.turnoutsToAvoid = turnoutsToAvoid
+        return nt
     }
     
     /// This variable is serialized instead of ``locomotive`` in order to avoid duplication in the JSON graph.

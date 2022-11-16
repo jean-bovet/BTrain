@@ -18,11 +18,7 @@ final class RouteScript: Element, ElementCopiable, ObservableObject {
     
     @Published var name: String
     @Published var commands: [RouteScriptCommand] = []
-    
-    internal convenience init() {
-        self.init(uuid: UUID().uuidString, name: "")
-    }
-    
+        
     internal convenience init(uuid: String = UUID().uuidString, name: String = "") {
         self.init(id: Identifier<RouteScript>(uuid: uuid), name: name)
     }
