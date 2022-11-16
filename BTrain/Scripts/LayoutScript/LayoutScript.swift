@@ -12,7 +12,7 @@
 
 import Foundation
 
-final class LayoutScript: Element, ElementCopiable, ObservableObject {
+final class LayoutScript: Element, ObservableObject {
         
     let id: Identifier<LayoutScript>
     
@@ -27,12 +27,6 @@ final class LayoutScript: Element, ElementCopiable, ObservableObject {
         self.id = id
         self.name = name
         self.commands = [.init(action: .run)]
-    }
-
-    func copy() -> LayoutScript {
-        let newScript = LayoutScript(name: "\(name) copy")
-        newScript.commands = commands
-        return newScript
     }
 
 }

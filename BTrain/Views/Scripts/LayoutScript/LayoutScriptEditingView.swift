@@ -19,15 +19,19 @@ struct LayoutScriptEditingView: View {
     
     var body: some View {
         LayoutElementsEditingView(layout: layout, new: {
-            LayoutScript(name: "New Script")
+            layout.newLayoutScript()
         }, delete: { script in
             layout.layoutScripts.remove(script.id)
+        }, duplicate: { script in
+            layout.duplicate(script: script)
         }, sort: {
             layout.layoutScripts.elements.sort {
                 $0.name < $1.name
             }
         }, elementContainer: $layout.layoutScripts, row: { script in
-            TextField("", text: script.name)
+            UndoProvider(script) { script in
+                TextField("", text: script.name)
+            }
         }) { script in
             LayoutScriptEditorView(doc: doc, layout: layout, script: script)
         }

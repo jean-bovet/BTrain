@@ -52,7 +52,7 @@ struct NewTurnoutSheet: View {
                 Spacer().fixedSpace()
                 
                 Button("OK") {
-                    layout.newTurnout(name: name, category: category)
+                    layout.turnouts.add(layout.newTurnout(name: name, category: category))
                     presentationMode.wrappedValue.dismiss()
                 }.keyboardShortcut(.defaultAction)
             }

@@ -13,7 +13,20 @@
 import Foundation
 
 extension Layout {
-            
+          
+    @discardableResult
+    func newRouteScript() -> RouteScript {
+        let script = RouteScript(id: LayoutIdentity.newIdentity(routeScripts.elements, prefix: .routeScript), name: "New Script")
+        return routeScripts.add(script)
+    }
+
+    @discardableResult
+    func duplicate(script: RouteScript) -> RouteScript {
+        let newScript = RouteScript(id: LayoutIdentity.newIdentity(routeScripts.elements, prefix: .routeScript), name: "\(script.name) copy")
+        newScript.commands = script.commands
+        return routeScripts.add(newScript)
+    }
+    
     /// Convert all the scripts in the layout into individual routes, updating any existing route.
     ///
     /// Each route unique ID matches the unique ID of the script. When the script is updated, the

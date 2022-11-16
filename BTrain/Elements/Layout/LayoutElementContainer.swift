@@ -13,12 +13,7 @@
 import Foundation
 import OrderedCollections
 
-protocol ElementCopiable {
-    associatedtype E
-    func copy() -> E
-}
-
-typealias LayoutElement = Element & ElementCopiable & Codable
+typealias LayoutElement = Element & Codable
 
 // TODO: add unit tests
 /// Container capable of holding a map of elements and implementing the most common functions
@@ -79,16 +74,6 @@ struct LayoutElementContainer<E: LayoutElement> {
     mutating func add(_ element: E) -> E {
         elementsMap[element.id] = element
         return element
-    }
-
-    @discardableResult
-    mutating func duplicate(_ elementId: Identifier<E.ItemType>) -> E? {
-        guard let existingElement = self[elementId] else {
-            return nil
-        }
-        
-        let newElement = existingElement.copy()
-        return add(newElement as! E)
     }
     
     mutating func remove(_ elementId: Identifier<E.ItemType>) {

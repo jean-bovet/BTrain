@@ -83,7 +83,7 @@ import Foundation
 // ◀: Locomotive
 // ■: Wagon
 // ──▶: Direction in which the train is moving from one block to another
-final class Train: Element, ElementCopiable, ObservableObject {
+final class Train: Element, ObservableObject {
     // Unique identifier of the train
     let id: Identifier<Train>
     
@@ -230,17 +230,6 @@ final class Train: Element, ElementCopiable, ObservableObject {
         self.name = name
         self.wagonsLength = wagonsLength
         self.maxNumberOfLeadingReservedBlocks = maxNumberOfLeadingReservedBlocks ?? self.maxNumberOfLeadingReservedBlocks
-    }
-    
-    func copy() -> Train {
-        let nt = Train(name: "\(name) copy")
-        nt.routeId = routeId
-        nt.locomotive = locomotive
-        nt.wagonsLength = wagonsLength
-        nt.maxNumberOfLeadingReservedBlocks = maxNumberOfLeadingReservedBlocks
-        nt.blocksToAvoid = blocksToAvoid
-        nt.turnoutsToAvoid = turnoutsToAvoid
-        return nt
     }
     
     /// This variable is serialized instead of ``locomotive`` in order to avoid duplication in the JSON graph.

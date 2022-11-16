@@ -15,7 +15,7 @@ import Foundation
 /// Defines a station which is an element grouping one or more blocks that belong to the same station.
 ///
 /// The station will pick a block given specific behaviors (ie random, round-robin) for the given train.
-final class Station: Element, ElementCopiable, ObservableObject {
+final class Station: Element, ObservableObject {
     
     let id: Identifier<Station>
     
@@ -27,10 +27,6 @@ final class Station: Element, ElementCopiable, ObservableObject {
         self.id = id
         self.name = name
         self.elements = elements
-    }
-
-    func copy() -> Station {
-        Station(id: .init(uuid: UUID().uuidString), name: "\(name) copy", elements: elements)
     }
     
     func contains(blockId: Identifier<Block>) -> Bool {

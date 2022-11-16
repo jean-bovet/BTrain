@@ -18,15 +18,19 @@ struct RouteScriptEditingView: View {
 
     var body: some View {
         LayoutElementsEditingView(layout: layout, new: {
-            RouteScript(name: "New Route")
+            layout.newRouteScript()
         }, delete: { script in
             layout.routeScripts.remove(script.id)
+        }, duplicate: { script in
+            layout.duplicate(script: script)
         }, sort: {
             layout.routeScripts.elements.sort {
                 $0.name < $1.name
             }
         }, elementContainer: $layout.routeScripts, row: { script in
-            TextField("", text: script.name)
+            UndoProvider(script) { script in
+                TextField("", text: script.name)
+            }
         }) { script in
             RouteScriptEditorView(layout: layout, script: script)
         }

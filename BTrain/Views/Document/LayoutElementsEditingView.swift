@@ -17,11 +17,12 @@ extension LayoutElementsEditingView where More == EmptyView {
     init(layout: Layout,
          new: @escaping () -> E,
          delete: @escaping (E) -> Void,
+         duplicate: @escaping (E) -> E,
          sort: @escaping CompletionBlock,
          elementContainer: Binding<LayoutElementContainer<E>>,
          @ViewBuilder row: @escaping RowViewBuilder,
          @ViewBuilder editor: @escaping (E) -> Editor) {
-        self.init(layout: layout, new: new, delete: delete, sort: sort, elementContainer: elementContainer, more: { EmptyView() }, row: row, editor: editor)
+        self.init(layout: layout, new: new, delete: delete, duplicate: duplicate, sort: sort, elementContainer: elementContainer, more: { EmptyView() }, row: row, editor: editor)
     }
 
 }
@@ -33,6 +34,7 @@ struct LayoutElementsEditingView<E: LayoutElement, More: View, Row: View, Editor
 
     let new: () -> E
     let delete: (E) -> Void
+    let duplicate: (E) -> E
     let sort: CompletionBlock
     let more: MoreViewBuilder
     let row: RowViewBuilder
@@ -41,6 +43,7 @@ struct LayoutElementsEditingView<E: LayoutElement, More: View, Row: View, Editor
     init(layout: Layout,
          new: @escaping () -> E,
          delete: @escaping (E) -> Void,
+         duplicate: @escaping (E) -> E,
          sort: @escaping CompletionBlock,
          elementContainer: Binding<LayoutElementContainer<E>>,
          @ViewBuilder more: @escaping MoreViewBuilder,
@@ -49,13 +52,13 @@ struct LayoutElementsEditingView<E: LayoutElement, More: View, Row: View, Editor
         self.layout = layout
         self.new = new
         self.delete = delete
+        self.duplicate = duplicate
         self.sort = sort
         self.more = more
         self.row = row
         self.editor = editor
         _elementContainer = elementContainer
     }
-
     
     @ObservedObject var layout: Layout
     @Binding var elementContainer: LayoutElementContainer<E>
@@ -120,9 +123,11 @@ struct LayoutElementsEditingView<E: LayoutElement, More: View, Row: View, Editor
                 Spacer().fixedSpace()
 
                 Button("􀐅") {
-                    if let selection = selection {
-                        // TODO: add undo manager and unit test it?
-                        elementContainer.duplicate(selection)
+                    if let selection = selection, let element = elementContainer[selection] {
+                        let newElement = elementContainer.add(duplicate(element))
+                        undoManager?.registerUndo(withTarget: layout, handler: { layout in
+                            elementContainer.remove(newElement.id)
+                        })
                     }
                 }.disabled(selection == nil)
 

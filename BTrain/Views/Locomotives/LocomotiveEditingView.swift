@@ -23,7 +23,9 @@ struct LocomotiveEditingView: View {
         LayoutElementsEditingView(layout: layout, new: {
             layout.newLocomotive()
         }, delete: { loc in
-            document.layout.locomotives.remove(loc.id)
+            layout.remove(locomotive: loc)
+        }, duplicate: { loc in
+            layout.duplicate(locomotive: loc)
         }, sort: {
             layout.locomotives.elements.sort {
                 $0.name < $1.name
@@ -36,14 +38,18 @@ struct LocomotiveEditingView: View {
             .help("Download Locomotives")
         }, row: { loc in
             HStack {
-                Toggle("Enabled", isOn: loc.enabled)
+                UndoProvider(loc) { loc in
+                    Toggle("Enabled", isOn: loc.enabled)
+                }
                 if let image = document.locomotiveIconManager.icon(for: loc.id) {
                     Image(nsImage: image)
                         .resizable()
                         .aspectRatio(contentMode: .fit)
                         .frame(width: 80, height: 25)
                 }
-                TextField("Name", text: loc.name)
+                UndoProvider(loc) { loc in
+                    TextField("Name", text: loc.name)
+                }
             }.labelsHidden()
         }) { loc in
             ScrollView {

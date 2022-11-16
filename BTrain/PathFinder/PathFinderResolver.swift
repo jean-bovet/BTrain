@@ -31,7 +31,6 @@ struct PathFinderResolver {
     enum ResolverError: Error {
         case cannotResolvedSegment(at: Int, from: GraphPathElement, to: GraphPathElement)
         case cannotResolveElement(_ element: Resolvable, at: Int)
-        // TODO: also include the element so error reporting can go back to the source
         case cannotResolvePath(from: Int, to: Int)
     }
         

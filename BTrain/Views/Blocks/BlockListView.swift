@@ -21,14 +21,21 @@ struct BlockListView: View {
             layout.newBlock(name: "New Block", category: .free)
         }, delete: { block in
             layout.remove(blockID: block.id)
+        }, duplicate: { block in
+            layout.duplicate(block: block)
         }, sort: {
             layout.blocks.elements.sort {
                 $0.name < $1.name
             }
         }, elementContainer: $layout.blocks, row: { block in
             HStack {
-                Toggle("Enabled", isOn: block.enabled)
-                TextField("Name", text: block.name)
+                UndoProvider(block) { block in
+                    Toggle("Enabled", isOn: block.enabled)
+                }
+                
+                UndoProvider(block) { block in
+                    TextField("Name", text: block.name)
+                }
             }.labelsHidden()
         }) { block in
             ScrollView {

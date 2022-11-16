@@ -13,7 +13,7 @@
 import Foundation
 
 /// This class represents a single locomotive in the layout.
-final class Locomotive: Element, ElementCopiable, ObservableObject {
+final class Locomotive: Element, ObservableObject {
     
     /// Unique identifier of the locomotive
     let id: Identifier<Locomotive>
@@ -62,10 +62,6 @@ final class Locomotive: Element, ElementCopiable, ObservableObject {
         self.speed.maxSpeed = maxSpeed ?? self.speed.maxSpeed
     }
 
-    func copy() -> Locomotive {
-        // TODO: copy
-        Locomotive(name: "\(name) copy")
-    }
 }
 
 extension Locomotive: Codable {

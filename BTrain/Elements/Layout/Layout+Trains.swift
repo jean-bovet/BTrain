@@ -26,11 +26,23 @@ extension Layout {
         return trains.add(Train(id: id, name: id.uuid))
     }
         
+    @discardableResult
+    func duplicate(train: Train) -> Train {
+        let nt = Train(name: "\(train.name) copy")
+        nt.routeId = train.routeId
+        nt.locomotive = train.locomotive
+        nt.wagonsLength = train.wagonsLength
+        nt.maxNumberOfLeadingReservedBlocks = train.maxNumberOfLeadingReservedBlocks
+        nt.blocksToAvoid = train.blocksToAvoid
+        nt.turnoutsToAvoid = train.turnoutsToAvoid
+        return trains.add(nt)
+    }
+
     func delete(trainId: Identifier<Train>) {
         try? remove(trainId: trainId)
         trains.remove(trainId)
     }
-        
+     
     // Returns the new position of the train given the specified feedback. This is used
     // to follow the train within a block when feedbacks are activated when the locomotive moves.
     //      ╲       ██            ██            ██

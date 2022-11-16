@@ -25,6 +25,8 @@ struct LayoutIdentity {
         case train
         case locomotive
         case route
+        case routeScript
+        case layoutScript
         
         var prefix: String {
             switch self {
@@ -46,6 +48,10 @@ struct LayoutIdentity {
                 return "lc"
             case .route:
                 return "r"
+            case .routeScript:
+                return "rs"
+            case .layoutScript:
+                return "ls"
             }
         }
     }

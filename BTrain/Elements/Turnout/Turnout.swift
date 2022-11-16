@@ -13,7 +13,7 @@
 import Foundation
 
 // This class defines a turnout in the layout.
-final class Turnout: Element, ElementCopiable, ObservableObject {
+final class Turnout: Element, ObservableObject {
 
     // The various types of turnouts that are supported
     enum Category: String, Codable, CaseIterable {
@@ -147,12 +147,7 @@ final class Turnout: Element, ElementCopiable, ObservableObject {
     convenience init(name: String = UUID().uuidString) {
         self.init(id: Identifier<Turnout>(uuid: name), name: name)
     }
-        
-    func copy() -> Turnout {
-        // TODO: move that to the layout container editor so it can uses the layout to generate a new ID?
-        Turnout()
-    }
-    
+            
     func updateStateSpeedLimits() {
         let previous = stateSpeedLimit
         stateSpeedLimit.removeAll()

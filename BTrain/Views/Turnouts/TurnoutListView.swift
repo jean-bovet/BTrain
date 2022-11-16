@@ -22,14 +22,20 @@ struct TurnoutListView: View {
             layout.newTurnout(name: "New Turnout", category: .singleLeft)
         }, delete: { turnout in
             layout.remove(turnoutID: turnout.id)
+        }, duplicate: { turnout in
+            layout.duplicate(turnout: turnout)
         }, sort: {
             layout.blocks.elements.sort {
                 $0.name < $1.name
             }
         }, elementContainer: $layout.turnouts, row: { turnout in
             HStack {
-                Toggle("Enabled", isOn: turnout.enabled)
-                TextField("Name", text: turnout.name)
+                UndoProvider(turnout) { turnout in
+                    Toggle("Enabled", isOn: turnout.enabled)
+                }
+                UndoProvider(turnout) { turnout in
+                    TextField("Name", text: turnout.name)
+                }
             }.labelsHidden()
         }) { turnout in
             ScrollView {

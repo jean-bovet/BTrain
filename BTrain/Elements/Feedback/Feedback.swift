@@ -15,7 +15,7 @@ import Foundation
 // A feedback is an element that is triggered when
 // a train is detected on the train. It is for example
 // associated with a reed feedback in the actual layout.
-final class Feedback: Element, ElementCopiable, ObservableObject {
+final class Feedback: Element, ObservableObject {
     
     let id: Identifier<Feedback>
         
@@ -38,10 +38,6 @@ final class Feedback: Element, ElementCopiable, ObservableObject {
         self.init(id: Identifier(uuid: uuid), deviceID: deviceID, contactID: contactID)
     }
 
-    func copy() -> Feedback {
-        // TODO: move outside of this?
-        Feedback("foo")
-    }
 }
 
 extension Feedback: Codable {

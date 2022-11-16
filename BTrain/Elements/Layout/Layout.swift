@@ -220,14 +220,17 @@ extension Layout: Codable {
         try container.encode(controlPoints, forKey: CodingKeys.controlPoints)
     }
     
-    // TODO: used for what exactly?
+    /// Decode a layout from data
+    /// - Parameter data: the data to decode
+    /// - Returns: a new layout
     static func decode(from data: Data) throws -> Layout {
         let decoder = JSONDecoder()
         let layout = try decoder.decode(Layout.self, from: data)
         return layout
     }
     
-    // TODO: used for what exactly?
+    /// Encode a layout into JSON data
+    /// - Returns: the encoded JSON Data
     func encode() throws -> Data {
         let encoder = JSONEncoder()
         let data = try encoder.encode(self)

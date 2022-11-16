@@ -24,6 +24,29 @@ extension Layout {
         return block
     }
     
+    @discardableResult
+    func duplicate(block: Block) -> Block {
+        let nb = Block(id: LayoutIdentity.newIdentity(blocks.elements, prefix: .block), name: "\(name) copy")
+        
+        nb.length = block.length
+        nb.waitingTime = block.waitingTime
+        nb.center = block.center
+        nb.rotationAngle = block.rotationAngle
+        nb.feedbacks = block.feedbacks
+        
+        nb.entryFeedbackNext = block.entryFeedbackNext
+        nb.brakeFeedbackNext = block.brakeFeedbackNext
+        nb.stopFeedbackNext = block.stopFeedbackNext
+        
+        nb.entryFeedbackPrevious = block.entryFeedbackPrevious
+        nb.brakeFeedbackPrevious = block.brakeFeedbackPrevious
+        nb.stopFeedbackPrevious = block.stopFeedbackPrevious
+
+        blocks.add(nb)
+
+        return nb
+    }
+
     func remove(blockID: Identifier<Block>) {
         transitions.removeAll { transition in
             transition.a.block == blockID ||

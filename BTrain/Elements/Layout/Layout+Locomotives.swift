@@ -20,8 +20,32 @@ extension Layout {
         return locomotives.add(Locomotive(id: id, name: "New Locomotive", address: 0))
     }
 
+    @discardableResult
+    func duplicate(locomotive: Locomotive) -> Locomotive {
+        let id = LayoutIdentity.newIdentity(locomotives.elements, prefix: .locomotive)
+        let nl = locomotives.add(Locomotive(id: id, name: "\(locomotive.name) copy", address: locomotive.address, decoder: locomotive.decoder, locomotiveLength: locomotive.length, maxSpeed: locomotive.speed.maxSpeed))
+        nl.speed = locomotive.speed
+        locomotives.add(nl)
+        return nl
+    }
+    
+    func removeLocomotiveFromTrain(locomotive: Locomotive) {
+        trains.elements.forEach { train in
+            if train.locomotive == locomotive {
+                train.locomotive = nil
+            }
+        }
+    }
+    
+    func remove(locomotive: Locomotive) {
+        removeLocomotiveFromTrain(locomotive: locomotive)
+        locomotives.remove(locomotive.id)
+    }
+    
     func removeAllLocomotives() {
-        // TODO: remove also from the train
+        locomotives.elements.forEach { loc in
+            removeLocomotiveFromTrain(locomotive: loc)
+        }
         locomotives.elements.removeAll()
     }
     

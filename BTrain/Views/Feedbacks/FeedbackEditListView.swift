@@ -39,6 +39,8 @@ struct FeedbackEditListView: View {
             layout.newFeedback()
         }, delete: { feedback in
             layout.remove(feedbackID: feedback.id)
+        }, duplicate: { feedback in
+            layout.duplicate(feedback: feedback)
         }, sort: {
             layout.feedbacks.elements.sort {
                 $0.name < $1.name
@@ -51,7 +53,9 @@ struct FeedbackEditListView: View {
             }
         }, row: { feedback in
             HStack {
-                TextField("Name", text: feedback.name)
+                UndoProvider(feedback) { feedback in
+                    TextField("Name", text: feedback.name)
+                }
                 FeedbackView(label: "", state: feedback.detected)
                     .frame(maxWidth: 50)
             }.labelsHidden()

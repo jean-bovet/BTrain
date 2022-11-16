@@ -12,7 +12,7 @@
 
 import Foundation
 
-final class RouteScript: Element, ElementCopiable, ObservableObject {
+final class RouteScript: Element, ObservableObject {
         
     let id: Identifier<RouteScript>
     
@@ -27,12 +27,6 @@ final class RouteScript: Element, ElementCopiable, ObservableObject {
         self.id = id
         self.name = name
         self.commands = [.init(action: .start)]
-    }
-
-    func copy() -> RouteScript {
-        let newScript = RouteScript(name: "\(name) copy")
-        newScript.commands = commands
-        return newScript
     }
 
 }

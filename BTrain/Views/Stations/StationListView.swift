@@ -20,19 +20,20 @@ struct StationListView: View {
     
     var body: some View {
         LayoutElementsEditingView(layout: layout, new: {
-            // TODO: use newIdentity in the other editors
             Station(id: LayoutIdentity.newIdentity(layout.stations.elements, prefix: .station), name: "New Station", elements: [])
         }, delete: { station in
             layout.stations.remove(station.id)
+        }, duplicate: { station in
+            Station(id: LayoutIdentity.newIdentity(layout.stations.elements, prefix: .station), name: "\(station.name) copy", elements: station.elements)
         }, sort: {
             layout.stations.elements.sort {
                 $0.name < $1.name
             }
         }, elementContainer: $layout.stations, row: { station in
-            HStack {
-                // TODO: undo manager also in the other editor?
+            UndoProvider(station) { station in
                 TextField("Name", text: station.name)
-            }.labelsHidden()
+                    .labelsHidden()
+            }
         }) { station in
             StationView(layout: layout, station: station)
         }

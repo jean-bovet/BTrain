@@ -19,23 +19,29 @@ struct TrainEditingView: View {
     
     var body: some View {
         LayoutElementsEditingView(layout: layout, new: {
-            Train(name: "New Train")
+            layout.newTrain()
         }, delete: { train in
-            document.layout.delete(trainId: train.id)
-        },sort: {
+            layout.delete(trainId: train.id)
+        }, duplicate: { train in
+            layout.duplicate(train: train)
+        }, sort: {
             layout.trains.elements.sort {
                 $0.name < $1.name
             }
         }, elementContainer: $layout.trains, row: { train in
             HStack {
-                Toggle("Enabled", isOn: train.enabled)
+                UndoProvider(train) { train in
+                    Toggle("Enabled", isOn: train.enabled)
+                }
                 if let image = document.locomotiveIconManager.icon(for: train.wrappedValue.locomotive?.id) {
                     Image(nsImage: image)
                         .resizable()
                         .aspectRatio(contentMode: .fit)
                         .frame(width: 80, height: 25)
                 }
-                TextField("Name", text: train.name)
+                UndoProvider(train) { train in
+                    TextField("Name", text: train.name)
+                }
             }.labelsHidden()
         }) { train in
             ScrollView {
