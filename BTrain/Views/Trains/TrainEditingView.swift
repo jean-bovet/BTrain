@@ -12,11 +12,10 @@
 
 import SwiftUI
 
-struct TrainListView: View {
+struct TrainEditingView: View {
     
     @ObservedObject var document: LayoutDocument
     @ObservedObject var layout: Layout
-
     
     // TODO: when deleting, invoke this
     //    document.layoutController.delete(train: train)
@@ -48,7 +47,7 @@ struct TrainListView_Previews: PreviewProvider {
     
     static var previews: some View {
         ConfigurationSheet(title: "Trains") {
-            TrainListView(document: doc, layout: doc.layout)
+            TrainEditingView(document: doc, layout: doc.layout)
         }
     }
 }

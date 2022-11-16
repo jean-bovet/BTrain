@@ -78,7 +78,7 @@ struct DocumentView: View {
             case .routes:
                 RouteListView(layout: document.layout)
             case .trains:
-                TrainListView(document: document, layout: document.layout)
+                TrainEditingView(document: document, layout: document.layout)
             case .locomotives:
                 LocomotiveListView(document: document, layout: document.layout)
             case .stations:
