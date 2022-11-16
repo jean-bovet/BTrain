@@ -12,12 +12,16 @@
 
 import SwiftUI
 
-struct LayoutElementsEditingView<E: LayoutElement<E> & ObservableObject, Editor: View>: View {
+struct LayoutElementsEditingView<E: LayoutElement<E> & ObservableObject, Row: View, Editor: View>: View {
     
+    typealias RowViewBuilder = (Binding<E>) -> Row
+    
+    let row: RowViewBuilder
     let editor: (E) -> Editor
     
-    init(layout: Layout, elementContainer: Binding<LayoutElementContainer<E>>, @ViewBuilder editor: @escaping (E) -> Editor) {
+    init(layout: Layout, elementContainer: Binding<LayoutElementContainer<E>>, @ViewBuilder row: @escaping RowViewBuilder, @ViewBuilder editor: @escaping (E) -> Editor) {
         self.layout = layout
+        self.row = row
         self.editor = editor
         _elementContainer = elementContainer
     }
@@ -34,23 +38,25 @@ struct LayoutElementsEditingView<E: LayoutElement<E> & ObservableObject, Editor:
         let count = elementContainer.elements.count
         switch count {
         case 0:
-            return "No Script"
+            return "No Element"
         case 1:
-            return "One Script"
+            return "One Element"
         default:
-            return "\(count) Scripts"
+            return "\(count) Elements"
         }
     }
         
     struct ListOfElements: View {
         
+        let row: RowViewBuilder
+
         @Binding var selection: Identifier<E.ItemType>?
         @Binding var elements: [E]
         
         var body: some View {
             List(selection: $selection) {
                 ForEach($elements) { element in
-                    TextField("", text: element.name)
+                    row(element)
                 }
             }.listStyle(.inset(alternatesRowBackgrounds: true))
         }
@@ -58,7 +64,7 @@ struct LayoutElementsEditingView<E: LayoutElement<E> & ObservableObject, Editor:
     
     var scriptList: some View {
         VStack(alignment: .leading) {
-            ListOfElements(selection: $selection, elements: $elementContainer.elements)
+            ListOfElements(row: row, selection: $selection, elements: $elementContainer.elements)
             
             HStack {
                 Text(statusLabel)
@@ -111,7 +117,7 @@ struct LayoutElementsEditingView<E: LayoutElement<E> & ObservableObject, Editor:
             if let element = elementContainer[selection] {
                 editor(element)
             } else {
-                CenteredLabelView(label: "No Selected Script")
+                CenteredLabelView(label: "No Selected Element")
             }
         }
     }

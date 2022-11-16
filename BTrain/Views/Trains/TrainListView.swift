@@ -17,8 +17,22 @@ struct TrainListView: View {
     @ObservedObject var document: LayoutDocument
     @ObservedObject var layout: Layout
 
+    
+    // TODO: when deleting, invoke this
+    //    document.layoutController.delete(train: train)
     var body: some View {
-        LayoutElementsEditingView(layout: layout, elementContainer: $layout.trains) { train in
+        LayoutElementsEditingView(layout: layout, elementContainer: $layout.trains, row: { train in
+            HStack {
+                Toggle("Enabled", isOn: train.enabled)
+                if let image = document.locomotiveIconManager.icon(for: train.wrappedValue.locomotive?.id) {
+                    Image(nsImage: image)
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 80, height: 25)
+                }
+                TextField("Name", text: train.name)
+            }.labelsHidden()
+        }) { train in
             ScrollView {
                 TrainDetailsView(document: document, train: train)
                     .padding()
@@ -27,92 +41,6 @@ struct TrainListView: View {
     }
 
 }
-
-/*struct TrainListView: View {
-    
-    @Environment(\.undoManager) var undoManager
-    
-    @ObservedObject var document: LayoutDocument
-
-    @ObservedObject var layout: Layout
-    
-    @State private var selection: Identifier<Train>? = nil
-
-    var body: some View {
-        HStack(alignment: .top) {
-            VStack {
-                Table(selection: $selection) {
-                    TableColumn("Enabled") { train in
-                        UndoProvider(train.enabled) { enabled in
-                            Toggle("Enabled", isOn: enabled)
-                                .labelsHidden()
-                        }
-                    }.width(80)
-                    
-                    TableColumn("Icon") { train in
-                        if let image = document.locomotiveIconManager.icon(for: train.wrappedValue.locomotive?.id) {
-                            Image(nsImage: image)
-                                .resizable()
-                                .aspectRatio(contentMode: .fit)
-                                .frame(width: 80, height: 25)
-                        }
-                    }.width(80)
-
-                    TableColumn("Name") { train in
-                        TextField("Name", text: train.name)
-                            .labelsHidden()
-                    }
-                } rows: {
-                    ForEach($layout.trains.elements) { train in
-                        TableRow(train)
-                    }
-                }
-                
-                HStack {
-                    Text("\(layout.trains.count) trains")
-                    
-                    Spacer()
-                    
-                    Button("+") {
-                        let train = layout.newTrain()
-                        undoManager?.registerUndo(withTarget: layout, handler: { layout in
-                            layout.trains.removeAll { t in
-                                t.id == train.id
-                            }
-                        })
-                    }
-                    Button("-") {
-                        let train = layout.train(for: selection!)!
-                        document.layoutController.delete(train: train)
-                        
-                        undoManager?.registerUndo(withTarget: layout, handler: { layout in
-                            layout.addTrain(train)
-                        })
-                    }.disabled(selection == nil)
-                    
-                    Spacer().fixedSpace()
-                    
-                    Button("􀄬") {
-                        layout.trains.sort()
-                    }
-                }.padding([.leading])
-            }.frame(maxWidth: SideListFixedWidth)
-
-            if let selection = selection, let train = layout.train(for: selection) {
-                ScrollView {
-                    TrainDetailsView(document: document, train: train)
-                        .padding()
-                }
-            } else {
-                CenteredLabelView(label: "No Selected Train")
-            }
-        }.onAppear {
-            if selection == nil {
-                selection = layout.trains.first?.id
-            }
-        }
-    }
-}*/
 
 struct TrainListView_Previews: PreviewProvider {
     
