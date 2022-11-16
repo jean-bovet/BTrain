@@ -16,16 +16,16 @@ extension Layout {
     
     @discardableResult
     func newTurnout(name: String, category: Turnout.Category) -> Turnout {
-        let turnout = Turnout(id: LayoutIdentity.newIdentity(turnouts, prefix: .turnout), name: name)
+        let turnout = Turnout(id: LayoutIdentity.newIdentity(turnouts.elements, prefix: .turnout), name: name)
         turnout.category = category
         turnout.address = CommandTurnoutAddress(0, .MM)
         turnout.center = .init(x: 100, y: 100)
-        turnouts.append(turnout)
+        turnouts.add(turnout)
         return turnout
     }
 
     func duplicate(turnoutID: Identifier<Turnout>) {
-        guard let turnout = turnout(for: turnoutID) else {
+        guard let turnout = turnouts[turnoutID] else {
             return
         }
         
@@ -39,21 +39,11 @@ extension Layout {
     }
     
     func remove(turnoutID: Identifier<Turnout>) {
-        turnouts.removeAll(where: { $0.id == turnoutID })
+        turnouts.remove(turnoutID)
         
         transitions.removeAll { transition in
             transition.a.turnout == turnoutID ||
                     transition.b.turnout == turnoutID
-        }
-    }
-
-    func turnout(for id: Identifier<Turnout>?) -> Turnout? {
-        turnouts.first(where: { $0.id == id })
-    }
-
-    func sortTurnouts() {
-        turnouts.sort {
-            $0.name < $1.name
         }
     }
     

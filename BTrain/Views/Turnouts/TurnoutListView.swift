@@ -16,77 +16,25 @@ struct TurnoutListView: View {
     
     let doc: LayoutDocument
     @ObservedObject var layout: Layout
-    @State private var selection: Identifier<Turnout>? = nil
-    @Environment(\.undoManager) var undoManager
 
     var body: some View {
-        HStack {
-            VStack {
-                Table(selection: $selection) {
-                    TableColumn("Enabled") { turnout in
-                        UndoProvider(turnout.enabled) { enabled in
-                            Toggle("Enabled", isOn: enabled)
-                                .labelsHidden()
-                        }
-                    }.width(80)
-                    
-                    TableColumn("Name") { turnout in
-                        UndoProvider(turnout.name) { name in
-                            TextField("Name", text: name)
-                                .labelsHidden()
-                        }
-                    }
-                } rows: {
-                    ForEach($layout.turnouts) { turnout in
-                        TableRow(turnout)
-                    }
-                }
-                HStack {
-                    Text("\(layout.turnouts.count) turnouts")
-                    
-                    Spacer()
-                    
-                    Button("+") {
-                        let turnout = layout.newTurnout(name: "New Turnout", category: .singleLeft)
-                        undoManager?.registerUndo(withTarget: layout, handler: { layout in
-                            layout.remove(turnoutID: turnout.id)
-                        })
-                    }
-                    
-                    Button("-") {
-                        if let turnout = layout.turnout(for: selection) {
-                            layout.remove(turnoutID: turnout.id)
-                            undoManager?.registerUndo(withTarget: layout, handler: { layout in
-                                layout.turnouts.append(turnout)
-                            })
-                        }
-                    }.disabled(selection == nil)
-
-                    Spacer().fixedSpace()
-
-                    Button("􀉁") {
-                        layout.duplicate(turnoutID: selection!)
-                    }
-
-                    Spacer().fixedSpace()
-                    
-                    Button("􀄬") {
-                        layout.sortTurnouts()
-                    }.help("Sort Turnouts")
-                }.padding([.leading])
-            }.frame(maxWidth: SideListFixedWidth)
-            
-            if let selection = selection, let turnout = layout.turnout(for: selection) {
-                ScrollView {
-                    TurnoutDetailsView(doc: doc, layout: layout, turnout: turnout)
-                        .padding()
-                }
-            } else {
-                CenteredLabelView(label: "No Selected Turnout")
+        LayoutElementsEditingView(layout: layout, new: {
+            layout.newTurnout(name: "New Turnout", category: .singleLeft)
+        }, delete: { turnout in
+            layout.remove(turnoutID: turnout.id)
+        },sort: {
+            layout.blocks.elements.sort {
+                $0.name < $1.name
             }
-        }.onAppear {
-            if selection == nil {
-                selection = layout.turnouts.first?.id
+        }, elementContainer: $layout.turnouts, row: { turnout in
+            HStack {
+                Toggle("Enabled", isOn: turnout.enabled)
+                TextField("Name", text: turnout.name)
+            }.labelsHidden()
+        }) { turnout in
+            ScrollView {
+                TurnoutDetailsView(doc: doc, layout: layout, turnout: turnout)
+                    .padding()
             }
         }
     }

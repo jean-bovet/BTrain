@@ -66,7 +66,7 @@ final class LayoutOnConnectTasks: ObservableObject {
     }
     
     private func applyTurnoutStateToDigitalController(completion: @escaping CompletionBlock) {
-        let turnouts = layout.turnouts
+        let turnouts = layout.turnouts.elements
         guard !turnouts.isEmpty else {
             completion()
             return

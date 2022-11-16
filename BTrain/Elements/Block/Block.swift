@@ -189,6 +189,7 @@ final class Block: Element, ElementCopiable, ObservableObject {
         
     func copy() -> Block {
         // TODO: can't we serialize and back to copy?
+        // TODO: finish that
 //        let nb = Block(id: LayoutIdentity.newIdentity(blocks.elements, prefix: .block), name: "\(name) copy", category: category)
         let nb = Block()
         nb.length = length

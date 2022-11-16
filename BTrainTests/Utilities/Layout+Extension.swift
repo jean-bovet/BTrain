@@ -40,11 +40,11 @@ extension Layout {
     }
 
     func turnout(_ uuid: String) -> Turnout {
-        turnout(for: Identifier<Turnout>(uuid: uuid))!
+        turnouts[Identifier<Turnout>(uuid: uuid)]!
     }
 
     func turnout(named name: String) -> Turnout {
-        turnouts.first {
+        turnouts.elements.first {
             $0.name == name
         }!
     }
@@ -60,7 +60,7 @@ extension Layout {
     }
     
     func removeTurnoutGeometry() -> Layout {
-        turnouts.forEach { $0.length = nil }
+        turnouts.elements.forEach { $0.length = nil }
         return self
     }
 

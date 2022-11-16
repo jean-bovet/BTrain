@@ -388,7 +388,7 @@ final class LayoutReservation {
                     block.trainInstance = nil
                 }
             }
-        layout.turnouts.filter { $0.reserved?.train == train.id }.forEach { $0.reserved = nil; $0.train = nil }
+        layout.turnouts.elements.filter { $0.reserved?.train == train.id }.forEach { $0.reserved = nil; $0.train = nil }
         layout.transitions.filter { $0.reserved == train.id }.forEach { $0.reserved = nil; $0.train = nil }
     }
     

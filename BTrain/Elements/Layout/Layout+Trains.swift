@@ -168,7 +168,7 @@ extension Layout {
             for transition in transitions {
                 transition.reserved = nil
                 if let turnoutId = transition.b.turnout {
-                    guard let turnout = self.turnout(for: turnoutId) else {
+                    guard let turnout = turnouts[turnoutId] else {
                         throw LayoutError.turnoutNotFound(turnoutId: turnoutId)
                     }
                     turnout.reserved = nil
@@ -214,7 +214,7 @@ extension Layout {
                 block.reservation = nil
                 block.trainInstance = nil
             }
-        turnouts.filter { $0.reserved?.train == train.id }.forEach { $0.reserved = nil; $0.train = nil }
+        turnouts.elements.filter { $0.reserved?.train == train.id }.forEach { $0.reserved = nil; $0.train = nil }
         transitions.filter { $0.reserved == train.id }.forEach { $0.reserved = nil; $0.train = nil }
         
         train.blockId = nil

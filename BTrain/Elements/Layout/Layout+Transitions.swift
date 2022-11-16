@@ -114,7 +114,7 @@ extension Layout {
         } else if let turnoutId = transition.b.turnout {
             // If the transition ends at a turnout, iterate over all the sockets
             // until a transition to the `to` socket is found.
-            guard let turnout = self.turnout(for: turnoutId) else {
+            guard let turnout = turnouts[turnoutId] else {
                 throw LayoutError.turnoutNotFound(turnoutId: turnoutId)
             }
             if let socketId = transition.b.socketId {

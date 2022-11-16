@@ -15,7 +15,7 @@ import Foundation
 extension Layout {
     
     var pathFinderOverflowLimit: Int {
-        (turnouts.count + blocks.elements.count) * 4
+        (turnouts.elements.count + blocks.elements.count) * 4
     }
         
     /// Returns the best route to reach ``toBlock`` given the specified ``train``.

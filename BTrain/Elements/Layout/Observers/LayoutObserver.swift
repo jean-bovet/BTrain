@@ -39,7 +39,7 @@ final class LayoutObserver {
         cancellables.append(layout.$turnouts.dropFirst().sink(receiveValue: { [weak self] turnouts in
             // Note: need to pass the `turnouts` parameter here because the layout.turnouts
             // has not yet had the time to be updated
-            self?.turnoutCallbacks.forEach { $0(turnouts) }
+            self?.turnoutCallbacks.forEach { $0(turnouts.elements) }
             self?.anyCallbacks.forEach { $0() }
         }))
         

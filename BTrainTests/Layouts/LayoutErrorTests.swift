@@ -62,7 +62,7 @@ class LayoutErrorTests: XCTestCase {
 
     func testMissingTurnout() throws {
         layout.link(from: b1.next, to: turnout.socket0)
-        layout.turnouts.removeAll()
+        layout.turnouts.elements.removeAll()
         do {
             try layout.free(fromBlock: b1.id, toBlockNotIncluded: b2.id, direction: .next)
             XCTFail("Must throw an exception")

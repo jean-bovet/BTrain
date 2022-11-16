@@ -129,7 +129,7 @@ final class ElementVisitor {
             }
         } else if let turnoutId = transition.b.turnout {
             // Transition is leading to a turnout
-            guard let turnout = layout.turnout(for: turnoutId) else {
+            guard let turnout = layout.turnouts[turnoutId] else {
                 throw LayoutError.turnoutNotFound(turnoutId: turnoutId)
             }
                         
@@ -175,7 +175,7 @@ final class ElementVisitor {
                     // We stop at the first block we find that is not matching toReachBlock
                     return nil
                 }
-            } else if let turnoutId = transition.b.turnout, let turnout = layout.turnout(for: turnoutId), let socketId = transition.b.socketId {
+            } else if let turnoutId = transition.b.turnout, let turnout = layout.turnouts[turnoutId], let socketId = transition.b.socketId {
                 if let socket = try exitSocketOf(turnout: turnout, fromSocketId: socketId, toReachBlock: toReachBlock) {
                     return socket
                 }

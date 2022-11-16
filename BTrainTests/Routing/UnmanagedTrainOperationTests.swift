@@ -80,7 +80,7 @@ class UnmanagedTrainOperationTests: BTTestCase {
         
         layout.turnouts[1].setState(.branchLeft)
         
-        layout.turnouts.forEach { $0.length = nil }
+        layout.turnouts.elements.forEach { $0.length = nil }
         
         let b1 = layout.blocks[0]
         let b2 = layout.blocks[1]

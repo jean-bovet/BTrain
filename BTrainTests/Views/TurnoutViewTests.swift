@@ -23,8 +23,7 @@ class TurnoutViewTests: RootViewTests {
     func testListView() throws {
         let doc = newDocument()
         let sut = TurnoutListView(doc: doc, layout: LayoutLoop2().newLayout())
-        let value = try sut.inspect().hStack().vStack(0).hStack(1).text(0).string()
-        XCTAssertEqual(value, "2 turnouts")
+        _ = try sut.inspect().find(text: "2 Elements")
     }
 
     func testShapeView() throws {

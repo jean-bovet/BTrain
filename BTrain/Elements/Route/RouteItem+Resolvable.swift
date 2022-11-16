@@ -38,7 +38,7 @@ extension RouteItemBlock: Resolvable {
 
 extension RouteItemTurnout: Resolvable {
     func resolve(_ constraints: PathFinder.Constraints) -> [GraphPathElement]? {
-        guard let turnout = constraints.layout.turnout(for: turnoutId) else {
+        guard let turnout = constraints.layout.turnouts[turnoutId] else {
             return nil
         }
         return [GraphPathElement(node: turnout, entrySocket: entrySocket.socketId, exitSocket: exitSocket.socketId)]

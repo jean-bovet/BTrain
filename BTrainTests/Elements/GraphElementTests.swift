@@ -24,7 +24,7 @@ class GraphElementTests: XCTestCase {
         
         let layout = Layout()
         layout.blocks.add(Block(id: blockA, name: "A"))
-        layout.turnouts.append(Turnout(id: turnoutA, name: "A"))
+        layout.turnouts.add(Turnout(id: turnoutA, name: "A"))
         
         let blockIdentifier = layout.blocks[0].identifier
         let turnoutIdentifier = layout.turnouts[0].identifier

@@ -63,11 +63,11 @@ class LayoutTests: BTTestCase {
         layout.link(from: t1.socket1, to: b1.previous)
         XCTAssertEqual(layout.transitions.count, 2)
 
-        let t11 = layout.turnout(for: t1.id)
+        let t11 = layout.turnouts[t1.id]
         XCTAssertEqual(t1, t11)
         
         layout.remove(turnoutID: t1.id)
-        XCTAssertNil(layout.turnout(for: t1.id))
+        XCTAssertNil(layout.turnouts[t1.id])
         XCTAssertEqual(layout.transitions.count, 0)
     }
     

@@ -46,7 +46,7 @@ extension Array where Element == RouteItem {
                     return "\(stepBlock.blockId.uuid):\(stepBlock.direction)"
                 }
             case .turnout(let stepTurnout):
-                if let turnout = layout.turnout(for: stepTurnout.turnoutId) {
+                if let turnout = layout.turnouts[stepTurnout.turnoutId] {
                     return "\(useNameInsteadOfId ? turnout.name : turnout.id.uuid):(\(stepTurnout.entrySocket.socketId!)>\(stepTurnout.exitSocket.socketId!))"
                 } else {
                     return "\(stepTurnout.turnoutId.uuid):(\(stepTurnout.entrySocket.socketId!)>\(stepTurnout.exitSocket.socketId!))"

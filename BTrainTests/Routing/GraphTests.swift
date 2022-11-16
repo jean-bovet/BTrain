@@ -71,7 +71,7 @@ class GraphTests: XCTestCase {
         let b1 = layout.block("b1")
         let b3 = layout.block("b3")
 
-        let t0 = layout.turnout(for: Identifier<Turnout>(uuid: "t0"))!
+        let t0 = layout.turnouts[Identifier<Turnout>(uuid: "t0")]!
 
         let partialPath = [ GraphPathElement.starting(b1, 1), GraphPathElement.between(t0, 0, 1), GraphPathElement.ending(b3, 0) ]
 
@@ -85,8 +85,8 @@ class GraphTests: XCTestCase {
         let b1 = layout.block("b1")
         let b3 = layout.block("b3")
 
-        let t0 = layout.turnout(for: Identifier<Turnout>(uuid: "t0"))!
-        let t1 = layout.turnout(for: Identifier<Turnout>(uuid: "t1"))!
+        let t0 = layout.turnouts[Identifier<Turnout>(uuid: "t0")]!
+        let t1 = layout.turnouts[Identifier<Turnout>(uuid: "t1")]!
 
         let partialPath = [ GraphPathElement.starting(b1, 1), GraphPathElement.between(t0, 0, 1), GraphPathElement.between(t1, 0, 2), GraphPathElement.ending(b3, 0) ]
 

@@ -281,7 +281,7 @@ extension LayoutAsserter {
     }
 
     private func namedId(_ turnoutId: Identifier<Turnout>?) -> Identifier<Turnout>? {
-        if let turnout = layout.turnout(for: turnoutId) {
+        if let turnout = layout.turnouts[turnoutId] {
             return .init(uuid: turnout.name)
         } else {
             return turnoutId

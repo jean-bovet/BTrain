@@ -91,7 +91,7 @@ extension LayoutController {
                 return
             }
             
-            if let turnout = layout.turnouts.find(address: address) {
+            if let turnout = layout.turnouts.elements.find(address: address) {
                 turnout.setActualState(value: state, for: address.actualAddress)
                 BTLogger.debug("Turnout \(turnout.name) state changed to \(state) (ack=\(acknowledgement)), power \(power), for address \(address.actualAddress.toHex()). Actual state \"\(turnout.actualState)\" (value=\(turnout.actualStateValue)). Requested state \"\(turnout.requestedState)\" (value=\(turnout.requestedStateValue))")
                 self?.runControllers(.turnoutChanged(turnout))

@@ -139,7 +139,7 @@ final class LayoutDiagnostic: ObservableObject {
     }
 
     func checkForDuplicateTurnouts(_ errors: inout [DiagnosticError]) {
-        let enabledTurnouts = layout.turnouts.filter({ $0.enabled })
+        let enabledTurnouts = layout.turnouts.elements.filter({ $0.enabled })
         
         var ids = Set<Identifier<Turnout>>()
         for turnout in enabledTurnouts {
@@ -248,7 +248,7 @@ final class LayoutDiagnostic: ObservableObject {
 
     func checkForOrphanedElements(_ errors: inout [DiagnosticError]) throws {
         // Check for elements that are not linked together (orphaned sockets)
-        for turnout in layout.turnouts {
+        for turnout in layout.turnouts.elements {
             for socket in turnout.allSockets {
                 if try layout.transition(from: socket) == nil {
                     let name: String
@@ -324,7 +324,7 @@ final class LayoutDiagnostic: ObservableObject {
             }
         }
         
-        for turnout in layout.turnouts.filter({$0.enabled}) {
+        for turnout in layout.turnouts.elements.filter({$0.enabled}) {
             if turnout.length == nil {
                 errors.append(DiagnosticError.turnoutMissingLength(turnout: turnout))
             }

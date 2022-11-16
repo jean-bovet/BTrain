@@ -93,7 +93,7 @@ final class ShapeProvider {
         if let turnouts = turnouts {
             updateTurnouts(turnouts: turnouts)
         } else {
-            updateTurnouts(turnouts: layout.turnouts)
+            updateTurnouts(turnouts: layout.turnouts.elements)
         }
         
         for transition in transitions ?? layout.transitions {

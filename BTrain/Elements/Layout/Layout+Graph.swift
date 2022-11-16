@@ -61,6 +61,6 @@ extension Layout {
         guard let turnoutIdentifier = identifier as? TurnoutGraphElementIdentifier else {
             return nil
         }
-        return turnout(for: turnoutIdentifier.turnoutId)
+        return turnouts[turnoutIdentifier.turnoutId]
     }
 }

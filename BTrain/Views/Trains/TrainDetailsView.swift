@@ -111,7 +111,7 @@ struct TrainDetailsTurnoutsToAvoidSectionView: View {
                     HStack {
                         UndoProvider(turnoutItem.turnoutId) { value in
                             Picker("Turnout:", selection: value) {
-                                ForEach(layout.turnouts, id:\.self) { turnout in
+                                ForEach(layout.turnouts.elements, id:\.self) { turnout in
                                     Text("\(turnout.name)").tag(turnout.id as Identifier<Turnout>)
                                 }
                             }.labelsHidden()
@@ -125,8 +125,8 @@ struct TrainDetailsTurnoutsToAvoidSectionView: View {
             }.frame(minHeight: 100)
             
             Button("+") {
-                train.turnoutsToAvoid.append(.init(layout.turnouts.first!.id))
-            }.disabled(layout.turnouts.isEmpty)
+                train.turnoutsToAvoid.append(.init(layout.turnouts.elements.first!.id))
+            }.disabled(layout.turnouts.elements.isEmpty)
         }
     }
 }
