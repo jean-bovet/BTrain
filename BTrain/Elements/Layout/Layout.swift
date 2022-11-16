@@ -51,8 +51,8 @@ final class Layout: Element, ObservableObject {
     /// A container holding the trains
     @Published var trains = LayoutElementContainer<Train>()
     
-    /// A map of locomotives
-    @Published var locomotiveMap = OrderedDictionary<Identifier<Locomotive>, Locomotive>()
+    /// A container holding the locomotives
+    @Published var locomotives = LayoutElementContainer<Locomotive>()
     
     /// An array of transitions.
     ///
@@ -171,7 +171,11 @@ extension Layout: Codable {
         } else {
             self.trains = try container.decode(LayoutElementContainer<Train>.self, forKey: CodingKeys.trains)
         }
-        self.locomotives = try container.decode([Locomotive].self, forKey: CodingKeys.locomotives)
+        if let locomotives = try? container.decode([Locomotive].self, forKey: CodingKeys.locomotives) {
+            self.locomotives.elements = locomotives
+        } else {
+            self.locomotives = try container.decode(LayoutElementContainer<Locomotive>.self, forKey: CodingKeys.locomotives)
+        }
         self.routes = try container.decode([Route].self, forKey: CodingKeys.routes)
         self.layoutScripts = try container.decodeIfPresent(LayoutElementContainer<LayoutScript>.self, forKey: CodingKeys.layoutScripts) ?? LayoutElementContainer<LayoutScript>()
 

@@ -143,7 +143,7 @@ struct LocomotiveDetailsIconSectionView: View {
 
             HStack {
                 ZStack {
-                    TrainIconView(locomotiveIconManager: locomotiveIconManager, loc: loc, size: .large, hideIfNotDefined: false)
+                    LocomotiveIconView(locomotiveIconManager: locomotiveIconManager, loc: loc, size: .large, hideIfNotDefined: false)
                     if locomotiveIconManager.icon(for: loc.id) == nil {
                         Text("Drag an Image")
                     }

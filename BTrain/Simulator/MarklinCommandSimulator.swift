@@ -121,7 +121,7 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
 
         // Remove locomotives that are not present anymore
         locomotives.removeAll(where: { simLoc in
-            layout.locomotive(for: simLoc.id) == nil
+            layout.locomotives[simLoc.id] == nil
         })
         
         // Update existing locomotives, add new ones

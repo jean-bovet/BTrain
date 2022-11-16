@@ -55,7 +55,7 @@ extension Layout {
     
     func removeTrainGeometry() -> Layout {
         trains.elements.forEach { $0.wagonsLength = nil }
-        locomotives.forEach { $0.length = nil }
+        locomotives.elements.forEach { $0.length = nil }
         return self
     }
     

@@ -14,55 +14,27 @@ import Foundation
 
 extension Layout {
     
-    var locomotives: [Locomotive] {
-        get {
-            locomotiveMap.values.map {
-                $0
-            }
-        }
-        set {
-            locomotiveMap.removeAll()
-            newValue.forEach { locomotiveMap[$0.id] = $0 }
-        }
-    }
-
     @discardableResult
     func newLocomotive() -> Locomotive {
-        let id = LayoutIdentity.newIdentity(locomotives, prefix: .locomotive)
-        return addLocomotive(Locomotive(id: id, name: id.uuid, address: 0))
-    }
-
-    @discardableResult
-    func addLocomotive(_ loc: Locomotive) -> Locomotive {
-        locomotives.append(loc)
-        return loc
-    }
-
-    func delete(locId: Identifier<Locomotive>) {
-        locomotiveMap.removeValue(forKey: locId)
+        let id = LayoutIdentity.newIdentity(locomotives.elements, prefix: .locomotive)
+        return locomotives.add(Locomotive(id: id, name: "New Locomotive", address: 0))
     }
 
     func removeAllLocomotives() {
         // TODO: remove also from the train
-        locomotiveMap.removeAll()
+        locomotives.elements.removeAll()
     }
     
-    func sortLocomotives() {
-        locomotives.sort {
-            $0.name < $1.name
-        }
+}
+
+extension LayoutElementContainer where E == Train {
+    
+    subscript(identifier: Identifier<Locomotive>?) -> Train? {
+      get {
+          elements.first { train in
+              train.locomotive?.id == identifier
+          }
+      }
     }
 
-    func locomotive(for locomotiveId: Identifier<Locomotive>?) -> Locomotive? {
-        guard let locomotiveId = locomotiveId else {
-            return nil
-        }
-        return locomotiveMap[locomotiveId]
-    }
-
-    func train(forLocomotive locomotive: Locomotive) -> Train? {
-        trains.elements.first { train in
-            train.locomotive?.id == locomotive.id
-        }
-    }
 }

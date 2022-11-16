@@ -21,7 +21,7 @@ struct TrainDetailsLocomotiveSectionView: View {
         let b = Binding {
             train.locomotive?.id
         } set: {
-            train.locomotive = document.layout.locomotive(for: $0)
+            train.locomotive = document.layout.locomotives[$0]
         }
         return b
     }

@@ -46,7 +46,7 @@ struct WizardSelectLocomotive: View {
                             
                             if let loc = train.locomotive {
                                 VStack {
-                                    TrainIconView(locomotiveIconManager: document.locomotiveIconManager, loc: loc, size: .large, hideIfNotDefined: true)
+                                    LocomotiveIconView(locomotiveIconManager: document.locomotiveIconManager, loc: loc, size: .large, hideIfNotDefined: true)
                                     Text(train.name)
                                 }
                                 .frame(width: previewSize.width, height: previewSize.height)

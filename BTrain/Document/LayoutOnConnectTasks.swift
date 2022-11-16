@@ -45,7 +45,7 @@ final class LayoutOnConnectTasks: ObservableObject {
     }
     
     private func queryLocomotivesDirection(completion: @escaping CompletionBlock) {
-        let locomotives = layout.locomotives.filter( { $0.enabled })
+        let locomotives = layout.locomotives.elements.filter( { $0.enabled })
         guard !locomotives.isEmpty else {
             completion()
             return

@@ -49,6 +49,16 @@ struct LayoutElementContainer<E: LayoutElement> {
       }
     }
 
+    subscript(uuid: String) -> E? {
+      get {
+          self[Identifier(uuid: uuid)]
+      }
+     
+      set(newValue) {
+          self[Identifier(uuid: uuid)] = newValue
+      }
+    }
+
     subscript(identifier: Identifier<E.ItemType>?) -> E? {
       get {
           if let identifier = identifier {

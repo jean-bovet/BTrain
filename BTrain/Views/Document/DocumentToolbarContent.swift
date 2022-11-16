@@ -30,13 +30,13 @@ struct DocumentToolbarContent: ToolbarContent {
                 ForEach(LayoutDocument.DisplaySheetType.allCases.filter({!$0.debugOnly}), id:\.self) { type in
                     Button(type.label) {
                         document.displaySheetType = type
-                    }
+                    }.help(type.rawValue)
                 }
                 if document.showDebugModeControls {
                     ForEach(LayoutDocument.DisplaySheetType.allCases.filter({$0.debugOnly}), id:\.self) { type in
                         Button(type.label) {
                             document.displaySheetType = type
-                        }
+                        }.help(type.rawValue)
                     }
                 }
                 Spacer()

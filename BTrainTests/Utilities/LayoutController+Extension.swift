@@ -26,7 +26,7 @@ extension LayoutController {
         var drain = true
         while drain {
             drain = false
-            for loc in layout.locomotives {
+            for loc in layout.locomotives.elements {
                 if loc.speed.requestedSteps != loc.speed.actualSteps {
                     // Speed is not yet settled
                     drain = true

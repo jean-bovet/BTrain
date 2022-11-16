@@ -17,7 +17,7 @@ import AppKit
 
 @testable import BTrain
 
-extension LocomotiveListView: Inspectable { }
+extension LocomotiveEditingView: Inspectable { }
 extension LocDetailsDecoderSectionView: Inspectable { }
 extension LocDetailsSpeedSectionView: Inspectable { }
 extension LocomotiveDetailsView: Inspectable { }
@@ -31,9 +31,8 @@ class LocomotiveViewTests: RootViewTests {
     
     func testStringValue() throws {
         let doc = newDocument()
-        let sut = LocomotiveListView(document: doc, layout: doc.layout)
-        let value = try sut.inspect().hStack().vStack(0).hStack(1).text(0).string()
-        XCTAssertEqual(value, "3 locomotives")
+        let sut = LocomotiveEditingView(document: doc, layout: doc.layout)
+        _ = try sut.inspect().find(text: "3 Elements")
     }
 
     func testSpeedGraphView() throws {
@@ -79,11 +78,11 @@ class LocomotiveViewTests: RootViewTests {
     
     func testIconView() throws {
         let layout = LayoutLoop1().newLayout()
-        let loc = layout.addLocomotive(Locomotive(uuid: "16390"))
+        let loc = layout.locomotives.add(Locomotive(uuid: "16390"))
         
         let tim = LocomotiveIconManager()
 
-        let sut = TrainIconView(locomotiveIconManager: tim, loc: loc, size: .medium, hideIfNotDefined: false)
+        let sut = LocomotiveIconView(locomotiveIconManager: tim, loc: loc, size: .medium, hideIfNotDefined: false)
         _ = try sut.inspect().hStack().shape(0)
 
         let url = Bundle(for: LayoutDocument.self).url(forResource: "Predefined", withExtension: "btrain")!

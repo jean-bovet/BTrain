@@ -34,7 +34,7 @@ struct TrainControlContainerView: View {
                         TrainControlLocationView(controller: document.layoutController, doc: document, layout: document.layout, train: train)
                     }
 
-                    TrainIconView(locomotiveIconManager: document.locomotiveIconManager, loc: loc, size: .medium, hideIfNotDefined: true)
+                    LocomotiveIconView(locomotiveIconManager: document.locomotiveIconManager, loc: loc, size: .medium, hideIfNotDefined: true)
                 }
                 
                 if train.blockId != nil {

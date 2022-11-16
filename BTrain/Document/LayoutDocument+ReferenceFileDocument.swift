@@ -67,7 +67,7 @@ extension LayoutDocument: ReferenceFileDocument {
             let iconDirectory = FileWrapper(directoryWithFileWrappers: [:])
             iconDirectory.preferredFilename = "icons"
             
-            for loc in layout.locomotives {
+            for loc in layout.locomotives.elements {
                 if let icon = locomotiveIconManager.icon(for: loc.id) {
                     let key: String?
                     if let pngData = icon.pngData() {

@@ -36,7 +36,7 @@ extension LayoutController {
     
     func directionDidChange(address: UInt32, decoder: DecoderType?, direction: Command.Direction) {
         do {
-            if let loc = layout.locomotives.find(address: address, decoder: decoder) {
+            if let loc = layout.locomotives.elements.find(address: address, decoder: decoder) {
                 BTLogger.debug("Direction changed to \(direction) for \(loc.name)")
                 var directionChanged = false
                 switch(direction) {
@@ -58,7 +58,7 @@ extension LayoutController {
                 }
                 
                 if directionChanged {
-                    if let train = layout.train(forLocomotive: loc) {
+                    if let train = layout.trains[loc.id] {
                         try toggleTrainDirectionInBlock(train)
                         runControllers(.directionChanged(train))
                     }

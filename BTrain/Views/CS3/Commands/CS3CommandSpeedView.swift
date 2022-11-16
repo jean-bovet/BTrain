@@ -38,7 +38,7 @@ struct CS3CommandSpeedView: View {
             return nil
         }
 
-        guard let loc = doc.layout.locomotive(for: locId) else {
+        guard let loc = doc.layout.locomotives[locId] else {
             return nil
         }
         

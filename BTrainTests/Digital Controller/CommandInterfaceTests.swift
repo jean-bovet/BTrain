@@ -137,7 +137,7 @@ class CommandInterfaceTests: XCTestCase {
 
     func testDiscoverLocomotives() {
         let doc = LayoutDocument(layout: Layout())
-        XCTAssertEqual(doc.layout.locomotives.count, 0)
+        XCTAssertEqual(doc.layout.locomotives.elements.count, 0)
 
         let completionExpectation = XCTestExpectation()
         connectToSimulator(doc: doc)
@@ -158,7 +158,7 @@ class CommandInterfaceTests: XCTestCase {
             disconnectFromSimulator(doc: doc)
         }
 
-        XCTAssertEqual(doc.layout.locomotives.count, 18)
+        XCTAssertEqual(doc.layout.locomotives.elements.count, 18)
 
         let loc1 = doc.layout.locomotives[0]
         XCTAssertEqual(loc1.name, "193 524 SBB")

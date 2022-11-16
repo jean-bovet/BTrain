@@ -270,7 +270,7 @@ extension Train: Restorable {
     
     func restore(layout: Layout) {
         assert(locomotive == nil)
-        locomotive = layout.locomotive(for: locomotiveId)
+        locomotive = layout.locomotives[locomotiveId]
     }
 
 }

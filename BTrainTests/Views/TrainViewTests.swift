@@ -17,7 +17,7 @@ import AppKit
 
 @testable import BTrain
 
-extension TrainIconView: Inspectable { }
+extension LocomotiveIconView: Inspectable { }
 extension SectionTitleView: Inspectable { }
 extension UnitViewModifier: Inspectable { }
 extension TrainDetailsGeometrySectionView: Inspectable { }

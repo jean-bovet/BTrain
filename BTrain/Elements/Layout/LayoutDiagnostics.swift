@@ -217,7 +217,7 @@ final class LayoutDiagnostic: ObservableObject {
     }
 
     func checkForDuplicateLocomotives(_ errors: inout [DiagnosticError]) {
-        let enabledLocs = layout.locomotives.filter({$0.enabled})
+        let enabledLocs = layout.locomotives.elements.filter({$0.enabled})
         var ids = Set<Identifier<Locomotive>>()
         for loc in enabledLocs {
             if ids.contains(loc.id) {
@@ -329,7 +329,7 @@ final class LayoutDiagnostic: ObservableObject {
                 errors.append(DiagnosticError.turnoutMissingLength(turnout: turnout))
             }
         }
-        for loc in layout.locomotives.filter({$0.enabled}) {
+        for loc in layout.locomotives.elements.filter({$0.enabled}) {
             if loc.length == nil {
                 errors.append(DiagnosticError.locMissingLength(loc: loc))
             }

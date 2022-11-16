@@ -54,9 +54,9 @@ final class LocomotiveDiscovery {
     private func process(locomotives: [CommandLocomotive], merge: Bool) {
         var newLocs = [Locomotive]()
         for cmdLoc in locomotives {
-            if let locUID = cmdLoc.uid, let loc = layout.locomotives.first(where: { $0.id.uuid == String(locUID) }), merge {
+            if let locUID = cmdLoc.uid, let loc = layout.locomotives[String(locUID)], merge {
                 mergeLocomotive(cmdLoc, with: loc)
-            } else if let locAddress = cmdLoc.address, let loc = layout.locomotives.find(address: locAddress, decoder: cmdLoc.decoderType), merge {
+            } else if let locAddress = cmdLoc.address, let loc = layout.locomotives.elements.find(address: locAddress, decoder: cmdLoc.decoderType), merge {
                 mergeLocomotive(cmdLoc, with: loc)
             } else {
                 let loc: Locomotive
@@ -71,10 +71,10 @@ final class LocomotiveDiscovery {
         }
         
         if merge {
-            layout.locomotives.append(contentsOf: newLocs)
+            layout.locomotives.elements.append(contentsOf: newLocs)
         } else {
             layout.removeAllLocomotives()
-            layout.locomotives = newLocs
+            layout.locomotives.elements = newLocs
         }
     }
     

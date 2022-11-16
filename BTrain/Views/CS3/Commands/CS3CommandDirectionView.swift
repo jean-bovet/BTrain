@@ -28,7 +28,7 @@ struct CS3CommandDirectionView: View {
     }
     
     private func command(locId: Identifier<Locomotive>?) -> Command? {
-        guard let loc = doc.layout.locomotive(for: locId) else {
+        guard let loc = doc.layout.locomotives[locId] else {
             return nil
         }
         

@@ -13,7 +13,7 @@
 import SwiftUI
 import UniformTypeIdentifiers
 
-struct TrainIconView: View, DropDelegate {
+struct LocomotiveIconView: View, DropDelegate {
         
     @ObservedObject var locomotiveIconManager: LocomotiveIconManager
     @ObservedObject var loc: Locomotive
@@ -84,8 +84,8 @@ struct TrainIconView: View, DropDelegate {
 
 }
 
-struct TrainIconView_Previews: PreviewProvider {
+struct LocomotiveIconView_Previews: PreviewProvider {
     static var previews: some View {
-        TrainIconView(locomotiveIconManager: LocomotiveIconManager(), loc: Locomotive(), size: .large, hideIfNotDefined: false)
+        LocomotiveIconView(locomotiveIconManager: LocomotiveIconManager(), loc: Locomotive(), size: .large, hideIfNotDefined: false)
     }
 }

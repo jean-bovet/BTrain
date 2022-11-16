@@ -35,7 +35,7 @@ final class PredefinedLayoutHelper: ObservableObject {
         document.apply(LayoutFactory.createLayout(layoutId))
         
         document.layout.trains.elements.removeAll()
-        document.layout.locomotives.removeAll()
+        document.layout.locomotives.elements.removeAll()
         
         for trainId in trains {
             if let train = predefinedDocument.layout.trains[trainId] {
@@ -44,11 +44,11 @@ final class PredefinedLayoutHelper: ObservableObject {
                 train.blockId = nil
                 document.layout.trains.add(train)
                 
-                if let loc = predefinedDocument.layout.locomotive(for: train.locomotive?.id) {
+                if let loc = predefinedDocument.layout.locomotives[train.locomotive?.id] {
                     loc.enabled = true
                     loc.length = 20
                     train.locomotive = loc
-                    document.layout.addLocomotive(loc)
+                    document.layout.locomotives.add(loc)
                     
                     if let fileWrapper = predefinedDocument.locomotiveIconManager.fileWrapper(for: loc.id) {
                         document.locomotiveIconManager.setIcon(fileWrapper, locId: loc.id)
