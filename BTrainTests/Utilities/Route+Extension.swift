@@ -52,7 +52,7 @@ extension Array where Element == RouteItem {
                     return "\(stepTurnout.turnoutId.uuid):(\(stepTurnout.entrySocket.socketId!)>\(stepTurnout.exitSocket.socketId!))"
                 }
             case .station(let stepStation):
-                if let station = layout.station(for: stepStation.stationId) {
+                if let station = layout.stations[stepStation.stationId] {
                     return "\(useNameInsteadOfId ? station.name : station.id.uuid)"
                 } else {
                     return "\(stepStation.stationId.uuid)"

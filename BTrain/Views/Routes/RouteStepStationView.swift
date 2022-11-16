@@ -21,7 +21,7 @@ struct RouteStepStationView: View {
         HStack {
             UndoProvider($stepStation.stationId) { stationId in
                 Picker("Station:", selection: stationId) {
-                    ForEach(layout.stations, id:\.self) { station in
+                    ForEach(layout.stations.elements, id:\.self) { station in
                         Text("\(station.name)").tag(station.id as Identifier<Station>)
                     }
                 }

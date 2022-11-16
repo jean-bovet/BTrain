@@ -13,68 +13,31 @@
 import SwiftUI
 
 struct StationListView: View {
-    
-    @Environment(\.undoManager) var undoManager
-    
+        
     @ObservedObject var layout: Layout
     
     @State private var selection: Identifier<Station>? = nil
     
     var body: some View {
-        HStack {
-            VStack(alignment: .leading) {
-                Table(selection: $selection) {
-                    TableColumn("Name") { station in
-                        TextField("Station", text: station.name)
-                            .labelsHidden()
-                    }
-                } rows: {
-                    ForEach($layout.stations) { station in
-                        TableRow(station)
-                    }
-                }
-
-                HStack {
-                    Text("\(layout.stations.count) stations")
-                    
-                    Spacer()
-                    
-                    Button("+") {
-                        let station = layout.newStation()
-                        selection = station.id
-                        undoManager?.registerUndo(withTarget: layout, handler: { layout in
-                            layout.remove(stationId: station.id)
-                        })
-                    }
-                    
-                    Button("-") {
-                        let station = layout.station(for: selection!)!
-                        layout.remove(stationId: station.id)
-                        undoManager?.registerUndo(withTarget: layout, handler: { layout in
-                            layout.stationMap[station.id] = station
-                        })
-                    }.disabled(selection == nil)
-                    
-                    Spacer().fixedSpace()
-                    
-                    Button("􀄬") {
-                        layout.sortStations()
-                    }
-                }.padding([.leading])
-            }.frame(maxWidth: SideListFixedWidth)
-
-            if let stationId = selection, let station = layout.station(for: stationId) {
-                StationView(layout: layout, station: station)
-                    .id(stationId) // SWIFTUI BUG: Need to re-create the view for each route otherwise it crashes when switching between certain routes
-            } else {
-                CenteredLabelView(label: "No Selected Station")
+        LayoutElementsEditingView(layout: layout, new: {
+            // TODO: use newIdentity in the other editors
+            Station(id: LayoutIdentity.newIdentity(layout.stations.elements, prefix: .station), name: "New Station", elements: [])
+        }, delete: { station in
+            layout.stations.remove(station.id)
+        },sort: {
+            layout.stations.elements.sort {
+                $0.name < $1.name
             }
-        }.onAppear {
-            if selection == nil {
-                selection = layout.stations.first?.id
-            }
+        }, elementContainer: $layout.stations, row: { station in
+            HStack {
+                // TODO: undo manager also in the other editor?
+                TextField("Name", text: station.name)
+            }.labelsHidden()
+        }) { station in
+            StationView(layout: layout, station: station)
         }
-    }}
+    }
+}
 
 struct StationListView_Previews: PreviewProvider {
     static var previews: some View {

@@ -874,7 +874,7 @@ class FixedRoutingTests: BTTestCase {
         
         for routeItem in route.partialSteps {
             if case .station(let station) = routeItem {
-                let station = layout.station(for: station.stationId)!
+                let station = layout.stations[station.stationId]!
                 for (index, _) in station.elements.enumerated() {
                     station.elements[index].direction = nil
                 }

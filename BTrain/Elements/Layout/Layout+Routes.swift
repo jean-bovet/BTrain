@@ -136,7 +136,7 @@ extension Layout {
             return description(of: stepBlock.blockId)
 
         case .station(let stepStation):
-            if let station = station(for: stepStation.stationId) {
+            if let station = stations[stepStation.stationId] {
                 return "\(station.name)"
             } else {
                 return "\(stepStation.stationId)"

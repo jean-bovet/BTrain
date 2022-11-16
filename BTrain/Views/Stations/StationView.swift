@@ -76,10 +76,9 @@ struct StationView: View {
 
                 Spacer().fixedSpace()
             }
-            .padding()
         }
     }
-    }
+}
 
 struct StationView_Previews: PreviewProvider {
     static var previews: some View {

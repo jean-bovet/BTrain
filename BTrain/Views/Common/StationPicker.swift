@@ -18,7 +18,7 @@ struct StationPicker: View {
     @Binding var stationId: Identifier<Station>?
     
     var sortedStationIds: [Identifier<Station>] {
-        layout.stations.sorted {
+        layout.stations.elements.sorted {
             $0.name < $1.name
         }.map {
             $0.id
@@ -29,7 +29,7 @@ struct StationPicker: View {
         Picker("Station", selection: $stationId) {
             Text("").tag(nil as Identifier<Station>?)
             ForEach(sortedStationIds, id:\.self) { stationId in
-                if let station = layout.station(for: stationId) {
+                if let station = layout.stations[stationId] {
                     Text(station.name).tag(stationId as Identifier<Station>?)
                 } else {
                     Text(stationId.uuid).tag(stationId as Identifier<Station>?)

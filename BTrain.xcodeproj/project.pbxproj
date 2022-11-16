@@ -23,7 +23,6 @@
 		A717158B275844AE00200F92 /* SwitchBoardTrainDragInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = A717158A275844AE00200F92 /* SwitchBoardTrainDragInfo.swift */; };
 		A717158D275845F000200F92 /* ShapeContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = A717158C275845F000200F92 /* ShapeContext.swift */; };
 		A717FB15281CA84C00310B5D /* ResolvedRouteItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = A717FB14281CA84C00310B5D /* ResolvedRouteItem.swift */; };
-		A717FB17281DEE5E00310B5D /* Layout+Stations.swift in Sources */ = {isa = PBXBuildFile; fileRef = A717FB16281DEE5E00310B5D /* Layout+Stations.swift */; };
 		A717FB19281E5F4800310B5D /* MoveUpButtonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A717FB18281E5F4800310B5D /* MoveUpButtonView.swift */; };
 		A717FB1B281E5F6400310B5D /* MoveDownButtonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A717FB1A281E5F6400310B5D /* MoveDownButtonView.swift */; };
 		A717FB1F281F980300310B5D /* Graph+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A717FB1E281F980300310B5D /* Graph+Extension.swift */; };
@@ -405,7 +404,6 @@
 		A717158A275844AE00200F92 /* SwitchBoardTrainDragInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwitchBoardTrainDragInfo.swift; sourceTree = "<group>"; };
 		A717158C275845F000200F92 /* ShapeContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShapeContext.swift; sourceTree = "<group>"; };
 		A717FB14281CA84C00310B5D /* ResolvedRouteItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResolvedRouteItem.swift; sourceTree = "<group>"; };
-		A717FB16281DEE5E00310B5D /* Layout+Stations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Layout+Stations.swift"; sourceTree = "<group>"; };
 		A717FB18281E5F4800310B5D /* MoveUpButtonView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoveUpButtonView.swift; sourceTree = "<group>"; };
 		A717FB1A281E5F6400310B5D /* MoveDownButtonView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoveDownButtonView.swift; sourceTree = "<group>"; };
 		A717FB1E281F980300310B5D /* Graph+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Graph+Extension.swift"; sourceTree = "<group>"; };
@@ -1300,7 +1298,6 @@
 				A74CCC67272A59F0004E58F5 /* Layout.swift */,
 				A75C2DCA28233C2F0043D462 /* LayoutIdentity.swift */,
 				A7710E6227799C9F00C08150 /* Layout+Blocks.swift */,
-				A717FB16281DEE5E00310B5D /* Layout+Stations.swift */,
 				A7A7D68929203476008FA648 /* Layout+RouteScripts.swift */,
 				A7710E6427799CF800C08150 /* Layout+Routes.swift */,
 				A7710E6627799D5C00C08150 /* Layout+Trains.swift */,
@@ -2145,7 +2142,6 @@
 				A7DB7D5027C7647C000893BA /* View+Extension.swift in Sources */,
 				A7F779D4272BB38F00E73275 /* LayoutFactory.swift in Sources */,
 				A7710E6D27799E4A00C08150 /* Layout+Feedbacks.swift in Sources */,
-				A717FB17281DEE5E00310B5D /* Layout+Stations.swift in Sources */,
 				A744FD962909EA5000852283 /* Resolvable.swift in Sources */,
 				A711B1502739EBD7002FE7DB /* LayoutController.swift in Sources */,
 				A7CA5EC1279649CF00171398 /* BlockFeedbacksView.swift in Sources */,

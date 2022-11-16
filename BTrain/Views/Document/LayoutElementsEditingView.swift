@@ -121,6 +121,7 @@ struct LayoutElementsEditingView<E: LayoutElement, More: View, Row: View, Editor
 
                 Button("􀐅") {
                     if let selection = selection {
+                        // TODO: add undo manager and unit test it?
                         elementContainer.duplicate(selection)
                     }
                 }.disabled(selection == nil)

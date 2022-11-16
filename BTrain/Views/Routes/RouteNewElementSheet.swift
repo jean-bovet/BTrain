@@ -33,7 +33,7 @@ struct RouteNewElementSheet: View {
                 if layout.blocks.count > 0 {
                     Text("Block").tag(ElementType.block)
                 }
-                if layout.stations.count > 0 {
+                if layout.stations.elements.count > 0 {
                     Text("Station").tag(ElementType.station)
                 }
             }
@@ -58,7 +58,7 @@ struct RouteNewElementSheet: View {
                         })
                         
                     case .station:
-                        if let station = layout.stations.first {
+                        if let station = layout.stations.elements.first {
                             let step = RouteItemStation(stationId: station.id)
                             route.partialSteps.append(.station(step))
                             

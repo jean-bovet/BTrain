@@ -226,7 +226,7 @@ extension Layout {
             return (stepBlock.blockId, stepBlock.direction)
 
         case .station(let stepStation):
-            guard let station = self.station(for: stepStation.stationId) else {
+            guard let station = stations[stepStation.stationId] else {
                 return nil
             }
             guard let item = station.blockWith(train: train, layout: self) else {

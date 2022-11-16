@@ -49,7 +49,7 @@ extension RouteItemTurnout: Resolvable {
 extension RouteItemStation: Resolvable {
     
     func resolve(_ constraints: PathFinder.Constraints) -> [GraphPathElement]? {
-        guard let station = constraints.layout.station(for: stationId) else {
+        guard let station = constraints.layout.stations[stationId] else {
             return nil
         }
                 
