@@ -287,10 +287,6 @@ final class LayoutController: ObservableObject {
             finish(train: train)
         }
     }
-
-    func delete(train: Train) {
-        layout.delete(trainId: train.id)
-    }
     
     func remove(train: Train) throws {
         try layout.remove(trainId: train.id)

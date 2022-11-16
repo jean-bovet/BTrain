@@ -17,12 +17,12 @@ struct TrainEditingView: View {
     @ObservedObject var document: LayoutDocument
     @ObservedObject var layout: Layout
     
-    // TODO: when deleting, invoke this
-    //    document.layoutController.delete(train: train)
     var body: some View {
         LayoutElementsEditingView(layout: layout, new: {
             Train(name: "New Train")
-        }, sort: {
+        }, delete: { train in
+            document.layout.delete(trainId: train.id)
+        },sort: {
             layout.trains.elements.sort {
                 $0.name < $1.name
             }

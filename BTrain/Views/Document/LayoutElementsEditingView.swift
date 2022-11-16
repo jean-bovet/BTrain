@@ -17,13 +17,15 @@ struct LayoutElementsEditingView<E: LayoutElement, Row: View, Editor: View>: Vie
     typealias RowViewBuilder = (Binding<E>) -> Row
     
     let new: () -> E
+    let delete: (E) -> Void
     let sort: CompletionBlock
     let row: RowViewBuilder
     let editor: (E) -> Editor
     
-    init(layout: Layout, new: @escaping () -> E, sort: @escaping CompletionBlock, elementContainer: Binding<LayoutElementContainer<E>>, @ViewBuilder row: @escaping RowViewBuilder, @ViewBuilder editor: @escaping (E) -> Editor) {
+    init(layout: Layout, new: @escaping () -> E, delete: @escaping (E) -> Void, sort: @escaping CompletionBlock, elementContainer: Binding<LayoutElementContainer<E>>, @ViewBuilder row: @escaping RowViewBuilder, @ViewBuilder editor: @escaping (E) -> Editor) {
         self.layout = layout
         self.new = new
+        self.delete = delete
         self.sort = sort
         self.row = row
         self.editor = editor
@@ -37,7 +39,6 @@ struct LayoutElementsEditingView<E: LayoutElement, Row: View, Editor: View>: Vie
 
     @Environment(\.undoManager) var undoManager
 
-    // TODO: refactor into a single container for many other elements?
     var statusLabel: String {
         let count = elementContainer.elements.count
         switch count {
@@ -80,12 +81,12 @@ struct LayoutElementsEditingView<E: LayoutElement, Row: View, Editor: View>: Vie
                     let element = elementContainer.add(new())
                     selection = element.id
                     undoManager?.registerUndo(withTarget: layout, handler: { layout in
-                        elementContainer.remove(element.id)
+                        delete(element)
                     })
                 }
                 Button("-") {
                     let script = elementContainer[selection]!
-                    elementContainer.remove(script.id)
+                    delete(script)
                     undoManager?.registerUndo(withTarget: layout, handler: { layout in
                         elementContainer.add(script)
                     })

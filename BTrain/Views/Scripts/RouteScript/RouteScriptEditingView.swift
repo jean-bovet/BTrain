@@ -19,6 +19,8 @@ struct RouteScriptEditingView: View {
     var body: some View {
         LayoutElementsEditingView(layout: layout, new: {
             RouteScript(name: "New Route")
+        }, delete: { script in
+            layout.routeScripts.remove(script.id)
         }, sort: {
             layout.routeScripts.elements.sort {
                 $0.name < $1.name

@@ -18,12 +18,13 @@ let SideListFixedWidth = 400.0
 struct DocumentView: View {
 
     @ObservedObject var document: LayoutDocument
-    
+
     @State private var showNewWizard = false
     @State private var connectAlertShowing = false
     @State private var showDiagnosticsSheet = false
     @State private var repairLayoutTrigger = false
     
+    @AppStorage("showSimulator") var showSimulator: Bool = false
     @AppStorage(SettingsKeys.autoConnectSimulator) private var autoConnectSimulator = false
     @AppStorage(SettingsKeys.autoEnableSimulator) private var autoEnableSimulator = false
     
@@ -36,36 +37,55 @@ struct DocumentView: View {
     }
 
     var body: some View {
-        OverviewView(document: document)
-            .onChange(of: document.triggerLayoutDiagnostic, perform: { v in
-                if document.triggerLayoutDiagnostic {
-                    showDiagnosticsSheet = true
-                    document.triggerLayoutDiagnostic = false
+        HStack(spacing: 0) {
+            VStack(spacing: 0) {
+                TrainControlListView(layout: document.layout, document: document, pinnedTrainIds: $document.pinnedTrainIds)
+                if document.showDebugModeControls {
+                    DeveloperView(doc: document)
+                        .frame(height: 150)
                 }
-            })
-            .onAppear {
-                if document.newDocument {
-                    showNewWizard.toggle()
+                if document.simulator.started && showSimulator {
+                    SimulatorView(simulator: document.simulator)
+                        .frame(height: 300)
                 }
-                if autoConnectSimulator {
-                    document.connectToSimulator(enable: autoEnableSimulator)
-                }
-            }.toolbar {
-                DocumentToolbarContent(document: document,
-                                       connectAlertShowing: $connectAlertShowing)
-            }.sheet(isPresented: $connectAlertShowing) {
-                ConnectSheet(document: document, onConnectTasks: document.onConnectTasks)
-                    .padding()
-            }.sheet(isPresented: $showDiagnosticsSheet) {
-                DiagnosticsSheet(layout: document.layout, options: .all)
-                    .padding()
-            }.sheet(isPresented: $showNewWizard) {
-                NewLayoutWizardView(document: document)
-                    .padding()
-            }.sheet(isPresented: $document.displaySheet) {
-                displaySheetView
-                    .frame(idealWidth: idealSheetWidth, idealHeight: idealSheetHeight)
             }
+            .frame(width: 500)
+            
+            SwitchboardContainerView(layout: document.layout,
+                                     layoutController: document.layoutController,
+                                     document: document,
+                                     switchboard: document.switchboard,
+                                     state: document.switchboard.state)
+        }
+        .onChange(of: document.triggerLayoutDiagnostic, perform: { v in
+            if document.triggerLayoutDiagnostic {
+                showDiagnosticsSheet = true
+                document.triggerLayoutDiagnostic = false
+            }
+        })
+        .onAppear {
+            if document.newDocument {
+                showNewWizard.toggle()
+            }
+            if autoConnectSimulator {
+                document.connectToSimulator(enable: autoEnableSimulator)
+            }
+        }.toolbar {
+            DocumentToolbarContent(document: document,
+                                   connectAlertShowing: $connectAlertShowing)
+        }.sheet(isPresented: $connectAlertShowing) {
+            ConnectSheet(document: document, onConnectTasks: document.onConnectTasks)
+                .padding()
+        }.sheet(isPresented: $showDiagnosticsSheet) {
+            DiagnosticsSheet(layout: document.layout, options: .all)
+                .padding()
+        }.sheet(isPresented: $showNewWizard) {
+            NewLayoutWizardView(document: document)
+                .padding()
+        }.sheet(isPresented: $document.displaySheet) {
+            displaySheetView
+                .frame(idealWidth: idealSheetWidth, idealHeight: idealSheetHeight)
+        }
     }
     
     var displaySheetView: some View {

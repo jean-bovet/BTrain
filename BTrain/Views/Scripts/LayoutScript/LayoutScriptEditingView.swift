@@ -20,6 +20,8 @@ struct LayoutScriptEditingView: View {
     var body: some View {
         LayoutElementsEditingView(layout: layout, new: {
             LayoutScript(name: "New Script")
+        }, delete: { script in
+            layout.layoutScripts.remove(script.id)
         }, sort: {
             layout.layoutScripts.elements.sort {
                 $0.name < $1.name

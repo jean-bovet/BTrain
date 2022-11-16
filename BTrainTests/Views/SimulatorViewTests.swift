@@ -41,7 +41,7 @@ class SimulatorViewTests: RootViewTests {
         let simulatorTrain1 = doc.simulator.locomotives[0]
 
         // Ensure all the names of the train match.
-        let sut = OverviewView(document: doc)
+        let sut = DocumentView(document: doc)
         sut.showSimulator = true
         let simulatorView = try sut.inspect().find(SimulatorView.self)
         let forEachView = try simulatorView.find(ViewType.ForEach.self)
