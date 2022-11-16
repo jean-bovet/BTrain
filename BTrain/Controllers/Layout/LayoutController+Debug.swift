@@ -21,7 +21,7 @@ extension LayoutController {
             text += "\n "+LayoutController.attributesFor(train: train, layout: layout)
         }
         text += "\nInteresting Blocks:"
-        for block in layout.blocks.filter({$0.enabled && ($0.reservation != nil || $0.trainInstance != nil)}) {
+        for block in layout.blocks.elements.filter({$0.enabled && ($0.reservation != nil || $0.trainInstance != nil)}) {
             text += "\n "+LayoutController.attributesFor(block: block, layout: layout)
         }
         text += "\nRoutes:"

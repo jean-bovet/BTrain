@@ -21,7 +21,7 @@ class AutomaticRoutingTests: BTTestCase {
     
     func testUpdateAutomaticRoute() throws {
         let layout = LayoutComplexLoop().newLayout()
-        let s1 = layout.block(for: Identifier<Block>(uuid: "s1"))!
+        let s1 = layout.blocks[Identifier<Block>(uuid: "s1")]!
 
         let p = try setup(layout: layout, fromBlockId: s1.id, destination: nil, position: .end, routeSteps: ["s1:next", "b1:next", "b2:next", "b3:next", "s2:next"])
         
@@ -89,7 +89,7 @@ class AutomaticRoutingTests: BTTestCase {
 
     func testUpdateAutomaticRouteWithBlockToAvoid() throws {
         let layout = LayoutComplexLoop().newLayout()
-        let s1 = layout.block(for: Identifier<Block>(uuid: "s1"))!
+        let s1 = layout.blocks[Identifier<Block>(uuid: "s1")]!
         let train = layout.trains[0]
         
         // The route will choose "s2" as the arrival block
@@ -114,7 +114,7 @@ class AutomaticRoutingTests: BTTestCase {
     
     func testAutomaticRouteWithTurnoutToAvoid() throws {
         let layout = LayoutComplexLoop().newLayout()
-        let s1 = layout.block(for: Identifier<Block>(uuid: "s1"))!
+        let s1 = layout.blocks[Identifier<Block>(uuid: "s1")]!
 
         // The route will choose "s2" as the arrival block
         var p = try setup(layout: layout, fromBlockId: s1.id, destination: nil, position: .end, routeSteps: ["s1:next", "b1:next", "b2:next", "b3:next", "s2:next"])
@@ -166,7 +166,7 @@ class AutomaticRoutingTests: BTTestCase {
 
     func testAutomaticRouteFinishing() throws {
         let layout = LayoutComplexLoop().newLayout()
-        let s1 = layout.block(for: Identifier<Block>(uuid: "s1"))!
+        let s1 = layout.blocks[Identifier<Block>(uuid: "s1")]!
 
         let p = try setup(layout: layout, fromBlockId: s1.id, destination: nil, position: .end, routeSteps: ["s1:next", "b1:next", "b2:next", "b3:next", "s2:next"])
         
@@ -187,7 +187,7 @@ class AutomaticRoutingTests: BTTestCase {
 
     func testFinishingDoesNotStopUntilEndOfRoute() throws {
         let layout = LayoutComplexLoop().newLayout()
-        let s1 = layout.block(for: Identifier<Block>(uuid: "s1"))!
+        let s1 = layout.blocks[Identifier<Block>(uuid: "s1")]!
 
         let p = try setup(layout: layout, fromBlockId: s1.id, destination: nil, position: .end, routeSteps: ["s1:next", "b1:next", "b2:next", "b3:next", "s2:next"])
         
@@ -235,7 +235,7 @@ class AutomaticRoutingTests: BTTestCase {
 
     func testAutomaticRouteStationRestart() throws {
         let layout = LayoutComplexLoop().newLayout()
-        let s2 = layout.block(for: Identifier<Block>(uuid: "s2"))!
+        let s2 = layout.blocks[Identifier<Block>(uuid: "s2")]!
 
         let p = try setup(layout: layout, fromBlockId: s2.id, destination: nil, position: .end, routeSteps: ["s2:next", "b1:next", "b2:next", "b3:next", "s2:next"])
         
@@ -266,7 +266,7 @@ class AutomaticRoutingTests: BTTestCase {
     
     func testAutomaticRouteStationRestartFinishing() throws {
         let layout = LayoutComplexLoop().newLayout()
-        let s2 = layout.block(for: Identifier<Block>(uuid: "s2"))!
+        let s2 = layout.blocks[Identifier<Block>(uuid: "s2")]!
 
         let p = try setup(layout: layout, fromBlockId: s2.id, destination: nil, position: .end, routeSteps: ["s2:next", "b1:next", "b2:next", "b3:next", "s2:next"])
         
@@ -326,7 +326,7 @@ class AutomaticRoutingTests: BTTestCase {
 
     func testAutomaticRouteStationRestartWhenStoppingInPreviousBlock() throws {
         let layout = LayoutComplex().newLayout().removeTrains()
-        let ne4 = layout.block(for: Identifier<Block>(uuid: "NE4"))!
+        let ne4 = layout.blocks[Identifier<Block>(uuid: "NE4")]!
         let train = layout.trains[1]
         train.wagonsLength = nil
         train.maxNumberOfLeadingReservedBlocks = 1
@@ -366,7 +366,7 @@ class AutomaticRoutingTests: BTTestCase {
 
     func testAutomaticRouteStationRestartCannotUpdateAutomaticRouteImmediately() throws {
         let layout = LayoutComplexLoop().newLayout()
-        let s2 = layout.block(for: Identifier<Block>(uuid: "s2"))!
+        let s2 = layout.blocks[Identifier<Block>(uuid: "s2")]!
 
         let p = try setup(layout: layout, fromBlockId: s2.id, destination: nil, position: .end, routeSteps: ["s2:next", "b1:next", "b2:next", "b3:next", "s2:next"])
         
@@ -403,8 +403,8 @@ class AutomaticRoutingTests: BTTestCase {
     func testAutomaticRouteModeOnce() throws {
         let layout = LayoutComplexLoop().newLayout()
 
-        let s2 = layout.block(for: Identifier<Block>(uuid: "s2"))!
-        let b3 = layout.block(for: Identifier<Block>(uuid: "b3"))!
+        let s2 = layout.blocks[Identifier<Block>(uuid: "s2")]!
+        let b3 = layout.blocks[Identifier<Block>(uuid: "b3")]!
 
         let p = try setup(layout: layout, fromBlockId: s2.id, destination: Destination(b3.id), routeSteps: ["s2:next", "b1:next", "b2:next", "b3:next"])
         
@@ -421,8 +421,8 @@ class AutomaticRoutingTests: BTTestCase {
 
     func testAutomaticRouteModeOnceWithUnreachableDestinationPosition() throws {
         let layout = LayoutComplexLoop().newLayout()
-        let s2 = layout.block(for: Identifier<Block>(uuid: "s2"))!
-        let b3 = layout.block(for: Identifier<Block>(uuid: "b3"))!
+        let s2 = layout.blocks[Identifier<Block>(uuid: "s2")]!
+        let b3 = layout.blocks[Identifier<Block>(uuid: "b3")]!
 
         // Position 0 is not reachable because when the train enters block b3, it is because the first feedback is detected,
         // which is always position 1. We want to make sure that if that is the case, the TrainController still stops the
@@ -442,8 +442,8 @@ class AutomaticRoutingTests: BTTestCase {
 
     func testAutomaticRouteModeOnceWithReservedBlock() throws {
         let layout = LayoutComplexLoop().newLayout().removeTrainGeometry()
-        let s2 = layout.block(for: Identifier<Block>(uuid: "s2"))!
-        let b3 = layout.block(for: Identifier<Block>(uuid: "b3"))!
+        let s2 = layout.blocks[Identifier<Block>(uuid: "s2")]!
+        let b3 = layout.blocks[Identifier<Block>(uuid: "b3")]!
 
         let p = try setup(layout: layout, fromBlockId: s2.id, destination: Destination(b3.id), routeSteps: ["s2:next", "b1:next", "b2:next", "b3:next"])
         
@@ -469,8 +469,8 @@ class AutomaticRoutingTests: BTTestCase {
     func testAutomaticRouteModeOnceAndStopBeforeReachingDestination() throws {
         let layout = LayoutComplexLoop().newLayout()
 
-        let s2 = layout.block(for: Identifier<Block>(uuid: "s2"))!
-        let b3 = layout.block(for: Identifier<Block>(uuid: "b3"))!
+        let s2 = layout.blocks[Identifier<Block>(uuid: "s2")]!
+        let b3 = layout.blocks[Identifier<Block>(uuid: "b3")]!
 
         let p = try setup(layout: layout, fromBlockId: s2.id, destination: Destination(b3.id), routeSteps: ["s2:next", "b1:next", "b2:next", "b3:next"])
         
@@ -491,8 +491,8 @@ class AutomaticRoutingTests: BTTestCase {
     func testAutomaticRouteModeOnceAndFinishBeforeReachingDestination() throws {
         let layout = LayoutComplexLoop().newLayout()
 
-        let s2 = layout.block(for: Identifier<Block>(uuid: "s2"))!
-        let b3 = layout.block(for: Identifier<Block>(uuid: "b3"))!
+        let s2 = layout.blocks[Identifier<Block>(uuid: "s2")]!
+        let b3 = layout.blocks[Identifier<Block>(uuid: "b3")]!
 
         let p = try setup(layout: layout, fromBlockId: s2.id, destination: Destination(b3.id), routeSteps: ["s2:next", "b1:next", "b2:next", "b3:next"])
         
@@ -514,7 +514,7 @@ class AutomaticRoutingTests: BTTestCase {
 
     func testEmergencyStop() throws {
         let layout = LayoutComplexLoop().newLayout()
-        let s1 = layout.block(for: Identifier<Block>(uuid: "s1"))!
+        let s1 = layout.blocks[Identifier<Block>(uuid: "s1")]!
 
         let p = try setup(layout: layout, fromBlockId: s1.id, destination: nil, position: .end, routeSteps: ["s1:next", "b1:next", "b2:next", "b3:next", "s2:next"])
         

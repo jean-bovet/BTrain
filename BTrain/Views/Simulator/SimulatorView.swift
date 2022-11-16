@@ -92,8 +92,8 @@ struct SimulatorView_Previews: PreviewProvider {
     
     static let simulator: MarklinCommandSimulator = {
         let layout = LayoutLoop1().newLayout()
-        layout.trains[0].blockId = layout.blockIds[0]
-        layout.trains[1].blockId = layout.blockIds[1]
+        layout.trains[0].blockId = layout.blocks[0].id
+        layout.trains[1].blockId = layout.blocks[1].id
         return MarklinCommandSimulator(layout: layout, interface: MarklinInterface())
     }()
 

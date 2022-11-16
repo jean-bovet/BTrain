@@ -32,7 +32,7 @@ struct TrainControlMoveSheet: View {
     @Environment(\.presentationMode) var presentationMode
     
     var selectedBlockName: String {
-        if let block = layout.block(for: blockId) {
+        if let block = layout.blocks[blockId] {
             return block.name
         } else {
             return "?"
@@ -117,7 +117,7 @@ struct TrainControlMoveSheet: View {
     }
     
     func evaluateBestRoute(fromBlockId: Identifier<Block>?, forDirection: Direction?) {
-        if let block = layout.block(for: fromBlockId) {
+        if let block = layout.blocks[fromBlockId] {
             do {
                 let result = try layout.bestPath(ofTrain: train, toReachBlock: block, withDirection: forDirection, reservedBlockBehavior: .ignoreReserved)
                 applySuggestedRoute(result)

@@ -91,8 +91,8 @@ struct TrainDetailsBlocksToAvoidSectionView: View {
             }.frame(minHeight: 100)
             
             Button("+") {
-                train.blocksToAvoid.append(.init(layout.blockIds.first))
-            }.disabled(layout.blockIds.isEmpty)
+                train.blocksToAvoid.append(.init(layout.blocks.elements.first?.id))
+            }.disabled(layout.blocks.elements.isEmpty)
         }
     }
 }

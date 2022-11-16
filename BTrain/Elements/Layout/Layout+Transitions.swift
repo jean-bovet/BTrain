@@ -38,10 +38,10 @@ extension Layout {
     }
     
     func transitions(from fromBlock: Identifier<Block>, to nextBlock: Identifier<Block>, direction: Direction) throws -> [ITransition] {
-        guard let b1 = self.block(for: fromBlock) else {
+        guard let b1 = self.blocks[fromBlock] else {
             throw LayoutError.blockNotFound(blockId: fromBlock)
         }
-        guard let b2 = self.block(for: nextBlock) else {
+        guard let b2 = self.blocks[nextBlock] else {
             throw LayoutError.blockNotFound(blockId: nextBlock)
         }
         return try transitions(from: LayoutVector(block: b1, direction: direction), to: LayoutVector(block: b2, direction: nil))

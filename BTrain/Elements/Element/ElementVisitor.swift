@@ -80,13 +80,13 @@ final class ElementVisitor {
     // If toBlockId = nil, the algorithm follows the turnout and transitions until it cannot go any further.
     // If toBlockId != nil, the algorithm stops when the toBlockId is reached.
     func visit(fromBlockId: Identifier<Block>, toBlockId: Identifier<Block>? = nil, direction: Direction, callback: VisitorCallback) throws {
-        guard let block = layout.block(for: fromBlockId) else {
+        guard let block = layout.blocks[fromBlockId] else {
             throw LayoutError.blockNotFound(blockId: fromBlockId)
         }
         guard try callback(ElementInfo.block(block, direction: direction, index: 0)) == .continue else {
             return
         }
-        let toBlock = layout.block(for: toBlockId)
+        let toBlock = layout.blocks[toBlockId]
         let fromSocket = direction == .next ? block.next : block.previous
         try visit(fromSocket: fromSocket, toBlock: toBlock, index: 1, callback: callback)
     }
@@ -107,7 +107,7 @@ final class ElementVisitor {
         
         if let blockId = transition.b.block {
             // Transition is leading to a block
-            guard let block = layout.block(for: blockId) else {
+            guard let block = layout.blocks[blockId] else {
                 throw LayoutError.blockNotFound(blockId: blockId)
             }
             

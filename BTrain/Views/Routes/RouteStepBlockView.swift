@@ -21,7 +21,7 @@ struct RouteStepBlockView: View {
         HStack {
             UndoProvider($stepBlock.blockId) { blockId in
                 Picker("Block:", selection: blockId) {
-                    ForEach(layout.blockMap.values, id:\.self) { block in
+                    ForEach(layout.blocks.elements, id:\.self) { block in
                         Text("\(block.name) — \(block.category.description)").tag(block.id as Identifier<Block>)
                     }
                 }
@@ -36,7 +36,7 @@ struct RouteStepBlockView: View {
                 .fixedSize()
             }
             
-            if let block = layout.block(for: stepBlock.blockId)  {
+            if let block = layout.blocks[stepBlock.blockId]  {
                 Text("Waiting Time:")
                 TextField("", value: $stepBlock.waitingTime, format: .number)
                     .disabled(block.category != .station)

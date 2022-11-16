@@ -40,7 +40,7 @@ extension Array where Element == RouteItem {
         self.map { step in
             switch step {
             case .block(let stepBlock):
-                if let block = layout.block(for: stepBlock.blockId) {
+                if let block = layout.blocks[stepBlock.blockId] {
                     return "\(useNameInsteadOfId ? block.name : block.id.uuid):\(stepBlock.direction)"
                 } else {
                     return "\(stepBlock.blockId.uuid):\(stepBlock.direction)"

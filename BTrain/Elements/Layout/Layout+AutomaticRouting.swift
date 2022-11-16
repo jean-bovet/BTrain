@@ -46,7 +46,7 @@ extension Layout {
         // Determine the destination block, if available
         let to: LayoutVector?
         if let destination = destination {
-            guard let block = block(for: destination.blockId) else {
+            guard let block = blocks[destination.blockId] else {
                 throw LayoutError.blockNotFound(blockId: destination.blockId)
             }
             to = .init(block: block, direction: destination.direction)

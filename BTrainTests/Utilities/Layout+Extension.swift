@@ -30,11 +30,11 @@ extension Layout {
     }
 
     func block(_ uuid: String) -> Block {
-        block(for: Identifier<Block>(uuid: uuid))!
+        blocks[Identifier<Block>(uuid: uuid)]!
     }
     
     func block(named name: String) -> Block {
-        blocks.first {
+        blocks.elements.first {
             $0.name == name
         }!
     }
@@ -65,7 +65,7 @@ extension Layout {
     }
 
     func removeBlockGeometry() -> Layout {
-        blocks.forEach { block in
+        blocks.elements.forEach { block in
             block.length = nil
             for index in block.feedbacks.indices {
                 block.feedbacks[index].distance = nil
@@ -83,11 +83,11 @@ extension Layout {
     }
 
     func reserve(_ block: String, with train: String, direction: Direction) {
-        self.block(for: Identifier<Block>(uuid: block))?.reservation = Reservation(trainId: Identifier<Train>(uuid: train), direction: direction)
+        self.blocks[Identifier<Block>(uuid: block)]?.reservation = Reservation(trainId: Identifier<Train>(uuid: train), direction: direction)
     }
 
     func free(_ block: String) {
-        self.block(for: Identifier<Block>(uuid: block))?.reservation = nil
+        self.blocks[Identifier<Block>(uuid: block)]?.reservation = nil
     }
         
     func bestPath(from: String, toReachBlock toBlockName: String? = nil, withDirection toDirection: Direction? = nil, reservedBlockBehavior: PathFinder.Constraints.ReservedBlockBehavior, shortestPath: Bool = true) throws -> GraphPath? {

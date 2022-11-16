@@ -26,7 +26,7 @@ extension RouteItem: Resolvable {
 
 extension RouteItemBlock: Resolvable {
     func resolve(_ constraints: PathFinder.Constraints) -> [GraphPathElement]? {
-        guard let block = constraints.layout.block(for: blockId) else {
+        guard let block = constraints.layout.blocks[blockId] else {
             return nil
         }
         
@@ -57,7 +57,7 @@ extension RouteItemStation: Resolvable {
             return nil
         }
         
-        guard let block = constraints.layout.block(for: element.blockId) else {
+        guard let block = constraints.layout.blocks[element.blockId] else {
             return nil
         }
         
@@ -82,7 +82,7 @@ extension RouteItemStation: Resolvable {
     
     private func firstAvailableElement(station: Station, constraints: PathFinder.Constraints) -> Station.StationElement? {
         for element in station.elements {
-            guard let block = constraints.layout.block(for: element.blockId) else {
+            guard let block = constraints.layout.blocks[element.blockId] else {
                 continue
             }
             
@@ -101,7 +101,7 @@ extension RouteItemStation: Resolvable {
     
     private func elementWithTrain(station: Station, train: Train, layout: Layout) -> Station.StationElement? {
         for element in station.elements {
-            guard let block = layout.block(for: element.blockId) else {
+            guard let block = layout.blocks[element.blockId] else {
                 continue
             }
             if block.id == train.blockId {

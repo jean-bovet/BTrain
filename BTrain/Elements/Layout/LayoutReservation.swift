@@ -379,7 +379,7 @@ final class LayoutReservation {
         train.leading.clear()
         train.occupied.clear()
 
-        layout.blockMap.values
+        layout.blocks.elements
             .filter { $0.reservation?.trainId == train.id }
             .forEach { block in
                 // Only free a block if the block is not the one the train is located on or

@@ -75,7 +75,7 @@ final class LayoutDiagnostic: ObservableObject {
     }
     
     func checkForDuplicateBlocks(_ errors: inout [DiagnosticError]) throws {
-        let enabledBlocks = layout.blocks.filter({$0.enabled})
+        let enabledBlocks = layout.blocks.elements.filter({$0.enabled})
         var ids = Set<Identifier<Block>>()
         for block in enabledBlocks {
             if ids.contains(block.id) {
@@ -262,7 +262,7 @@ final class LayoutDiagnostic: ObservableObject {
             }
         }
         
-        for block in layout.blocks {
+        for block in layout.blocks.elements {
             for socket in block.allSockets {
                 if try layout.transition(from: socket) == nil {
                     let name: String
@@ -288,7 +288,7 @@ final class LayoutDiagnostic: ObservableObject {
         for feedback in layout.feedbacks {
             feedbacks.insert(feedback.id)
         }
-        for block in layout.blocks {
+        for block in layout.blocks.elements {
             for bf in block.feedbacks {
                 feedbacks.remove(bf.feedbackId)
             }
@@ -307,7 +307,7 @@ final class LayoutDiagnostic: ObservableObject {
     }
     
     func checkForLengthAndDistance(_ errors: inout [DiagnosticError]) {
-        for block in layout.blocks.filter({$0.enabled}) {
+        for block in layout.blocks.elements.filter({$0.enabled}) {
             guard let bl = block.length else {
                 errors.append(DiagnosticError.blockMissingLength(block: block))
                 continue
@@ -375,7 +375,7 @@ final class LayoutDiagnostic: ObservableObject {
         }
         
         // Remove any train that do not exist anymore
-        for block in layout.blocks {
+        for block in layout.blocks.elements {
             if let trainId = block.trainInstance?.trainId {
                 if layout.trains[trainId] == nil {
                     block.trainInstance = nil

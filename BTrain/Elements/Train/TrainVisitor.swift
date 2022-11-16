@@ -60,7 +60,7 @@ final class TrainVisitor {
             throw LayoutError.trainNotAssignedToABlock(train: train)
         }
         
-        guard let locomotiveBlock = layout.block(for: locomotiveBlockId) else {
+        guard let locomotiveBlock = layout.blocks[locomotiveBlockId] else {
             throw LayoutError.blockNotFound(blockId: locomotiveBlockId)
         }
                 

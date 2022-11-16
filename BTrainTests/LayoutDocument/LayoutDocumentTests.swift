@@ -62,7 +62,7 @@ class LayoutDocumentTests: XCTestCase {
         let train = layout.trains[0]
         let route = layout.routes[0]
         train.blockId = route.partialSteps[0].stepBlockId
-        layout.block(for: train.blockId!)?.trainInstance = .init(train.id, .next)
+        layout.blocks[train.blockId!]?.trainInstance = .init(train.id, .next)
         
         try doc.start(train: train.id, withRoute: route.id, destination: nil)
         doc.stop(train: train)
@@ -96,7 +96,7 @@ class LayoutDocumentTests: XCTestCase {
  
     func testApplyOtherLayout() throws {
         let doc = LayoutDocument(layout: LayoutBlankCreator().newLayout())
-        XCTAssertEqual(0, doc.layout.blocks.count)
+        XCTAssertEqual(0, doc.layout.blocks.elements.count)
         XCTAssertEqual(0, doc.layout.turnouts.count)
         XCTAssertEqual(0, doc.layout.feedbacks.count)
         XCTAssertEqual(0, doc.layout.transitions.count)
@@ -104,7 +104,7 @@ class LayoutDocumentTests: XCTestCase {
 
         doc.apply(LayoutLoop1().newLayout())
         
-        XCTAssertEqual(3, doc.layout.blocks.count)
+        XCTAssertEqual(3, doc.layout.blocks.elements.count)
         XCTAssertEqual(2, doc.layout.turnouts.count)
         XCTAssertEqual(6, doc.layout.feedbacks.count)
         XCTAssertEqual(6, doc.layout.transitions.count)

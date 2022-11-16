@@ -148,7 +148,7 @@ extension Layout {
     }
     
     func description(of blockId: Identifier<Block>) -> String {
-        if let block = block(for: blockId) {
+        if let block = blocks[blockId] {
             return "\(block.name)"
         } else {
             return "\(blockId)"

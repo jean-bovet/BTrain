@@ -29,11 +29,11 @@ class LayoutTests: BTTestCase {
         XCTAssertEqual(t1.blockId, b1.id)
         XCTAssertEqual(layout.transitions.count, 2)
 
-        let b11 = layout.block(for: b1.id)
+        let b11 = layout.blocks[b1.id]
         XCTAssertTrue(b1 === b11)
         
         layout.remove(blockID: b1.id)
-        XCTAssertNil(layout.block(for: b1.id))
+        XCTAssertNil(layout.blocks[b1.id])
         XCTAssertNil(t1.blockId)
         XCTAssertEqual(layout.transitions.count, 0)
     }

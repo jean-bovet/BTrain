@@ -155,7 +155,7 @@ class UnmanagedTrainOperationTests: BTTestCase {
 
         func assertTrain(inBlock named: String, position: Int, speed: SpeedKph) throws {
             let blockId = Identifier<Block>(uuid: named)
-            guard let block = layout.block(for: blockId) else {
+            guard let block = layout.blocks[blockId] else {
                 throw LayoutError.blockNotFound(blockId: blockId)
             }
             
@@ -166,7 +166,7 @@ class UnmanagedTrainOperationTests: BTTestCase {
         
         func assertTrain(notInBlock named: String) throws {
             let blockId = Identifier<Block>(uuid: named)
-            guard let block = layout.block(for: blockId) else {
+            guard let block = layout.blocks[blockId] else {
                 throw LayoutError.blockNotFound(blockId: blockId)
             }
 

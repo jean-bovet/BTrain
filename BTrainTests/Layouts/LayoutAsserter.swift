@@ -99,7 +99,7 @@ final class LayoutAsserter {
                     // the ASCII representation does not allow to specify an ID for the feedback,
                     // which means they will have random UUID. It is best to use the index
                     // of the feedback within the block instead.
-                    let block = layout.block(for: expectedBlock.id) ?? layout.block(named: expectedBlock.id.uuid)
+                    let block = layout.blocks[expectedBlock.id] ?? layout.block(named: expectedBlock.id.uuid)
                     let blockFeedback = block.feedbacks[index]
                     let feedback = layout.feedback(for: blockFeedback.feedbackId)!
                     feedback.detected = expectedFeedback.detected
@@ -233,7 +233,7 @@ final class LayoutAsserter {
     private func assertBlockAt(index: Int, routeName: String, step: ResolvedRouteItemBlock, expectedStep: ResolvedRouteItemBlock, expectedLayout: LayoutParser.ParsedLayout) {
         XCTAssertEqual(step.direction, expectedStep.direction, "Step direction mismatch at index \(index)")
 
-        let block = layout.block(for: step.blockId)!
+        let block = layout.blocks[step.blockId]!
         let expectedBlock = expectedLayout.blocks.first(where: { $0.id == expectedStep.blockId})!
         XCTAssertEqual(block.category, expectedBlock.category, "Block category mismatch for block \(block)")
 
@@ -273,7 +273,7 @@ final class LayoutAsserter {
 extension LayoutAsserter {
     
     private func namedId(_ blockId: Identifier<Block>?) -> Identifier<Block>? {
-        if let block = layout.block(for: blockId) {
+        if let block = layout.blocks[blockId] {
             return .init(uuid: block.name)
         } else {
             return blockId

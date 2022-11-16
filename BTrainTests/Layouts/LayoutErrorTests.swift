@@ -30,11 +30,11 @@ class LayoutErrorTests: XCTestCase {
     }
     
     var b1: Block {
-        layout.block(at: 0)
+        layout.blocks[0]
     }
     
     var b2: Block {
-        layout.block(at: 1)
+        layout.blocks[1]
     }
 
     var turnout: Turnout {

@@ -116,7 +116,7 @@ extension LayoutDocument: ReferenceFileDocument {
     /// all the variables that depend on an object that has been serialized.
     static private func restore(layout: Layout) {
         layout.trains.elements.forEach({$0.restore(layout: layout)})
-        layout.blocks.forEach({$0.restore(layout: layout)})
+        layout.blocks.elements.forEach({$0.restore(layout: layout)})
         layout.turnouts.forEach({$0.restore(layout: layout)})
         layout.transitions.forEach({$0.restore(layout: layout)})
         layout.updateRoutesUsingRouteScripts()

@@ -424,7 +424,7 @@ extension LayoutController {
                     continue
                 }
                 
-                guard let block = layout.block(for: train.blockId) else {
+                guard let block = layout.blocks[train.blockId] else {
                     continue
                 }
 
@@ -529,7 +529,7 @@ extension LayoutController {
             throw LayoutError.trainNotAssignedToABlock(train: train)
         }
         
-        guard let block = layout.block(for: blockId) else {
+        guard let block = layout.blocks[blockId] else {
             throw LayoutError.blockNotFound(blockId: blockId)
         }
 

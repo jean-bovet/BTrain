@@ -14,50 +14,14 @@ import Foundation
 import OrderedCollections
 
 extension Layout {
-    
-    var blockIds: OrderedSet<Identifier<Block>> {
-        blockMap.keys
-    }
-    
-    var blocks: [Block] {
-        get {
-            blockMap.values.map {
-                $0
-            }
-        }
-        set {
-            blockMap.removeAll()
-            newValue.forEach { blockMap[$0.id] = $0 }
-        }
-    }
-
+        
     @discardableResult
     func newBlock(name: String, category: Block.Category) -> Block {
-        let block = Block(id: LayoutIdentity.newIdentity(blockMap, prefix: .block), name: name)
+        let block = Block(id: LayoutIdentity.newIdentity(blocks.elements, prefix: .block), name: name)
         block.category = category
         block.center = .init(x: 100, y: 100)
-        blockMap[block.id] = block
+        blocks.add(block)
         return block
-    }
-
-    func duplicate(blockId: Identifier<Block>) {
-        guard let block = block(for: blockId) else {
-            return
-        }
-        let nb = newBlock(name: "\(block.name) copy", category: block.category)
-        nb.length = block.length
-        nb.waitingTime = block.waitingTime
-        nb.center = block.center.translatedBy(x: 50, y: 50)
-        nb.rotationAngle = block.rotationAngle
-        nb.feedbacks = block.feedbacks
-        
-        nb.entryFeedbackNext = block.entryFeedbackNext
-        nb.brakeFeedbackNext = block.brakeFeedbackNext
-        nb.stopFeedbackNext = block.stopFeedbackNext
-        
-        nb.entryFeedbackPrevious = block.entryFeedbackPrevious
-        nb.brakeFeedbackPrevious = block.brakeFeedbackPrevious
-        nb.stopFeedbackPrevious = block.stopFeedbackPrevious
     }
     
     func remove(blockID: Identifier<Block>) {
@@ -66,7 +30,7 @@ extension Layout {
                     transition.b.block == blockID
         }
 
-        blockMap.removeValue(forKey: blockID)
+        blocks.remove(blockID)
 
         trains.elements.forEach { train in
             if train.blockId == blockID {
@@ -74,29 +38,11 @@ extension Layout {
             }
         }
     }
-    
-    func block(at index: Int) -> Block {
-        blockMap.values[index]
-    }
-    
-    func block(for blockId: Identifier<Block>?) -> Block? {
-        if let blockId = blockId {
-            return blockMap[blockId]
-        } else {
-            return nil
-        }
-    }
-    
+        
     func block(for trainId: Identifier<Train>) -> Block? {
-        blockMap.first(where: { $0.value.trainInstance?.trainId == trainId })?.value
+        blocks.elements.first(where: { $0.trainInstance?.trainId == trainId })
     }
-    
-    func sortBlocks() {
-        blockMap.sort {
-            $0.value.name < $1.value.name
-        }
-    }
-    
+        
     func assign(_ block: Block, _ feedbacks: [Feedback]) {
         block.assign(feedbacks.map { $0.id })
         for feedback in feedbacks {
@@ -105,16 +51,10 @@ extension Layout {
             }
         }
     }
-
-    func add(_ blocks: [Block]) {
-        for block in blocks {
-            self.blockMap[block.id] = block
-        }
-    }
         
     func currentBlock(train: Train) -> Block? {
         if let blockId = train.blockId {
-            return block(for: blockId)
+            return blocks[blockId]
         } else {
             return nil
         }

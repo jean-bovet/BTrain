@@ -34,6 +34,6 @@ struct StationElementView_Previews: PreviewProvider {
     static let layout = LayoutLoop1().newLayout()
     
     static var previews: some View {
-        StationElementView(layout: layout, element: .constant(.init(blockId: layout.blockIds[0], direction: .next)))
+        StationElementView(layout: layout, element: .constant(.init(blockId: layout.blocks[0].id, direction: .next)))
     }
 }

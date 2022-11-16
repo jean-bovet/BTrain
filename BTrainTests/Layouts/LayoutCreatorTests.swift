@@ -19,49 +19,49 @@ class LayoutCreatorTests: XCTestCase {
     func testEmptyLayout() {
         XCTAssertEqual(LayoutBlankCreator.id.uuid, "Empty Layout")
         let layout = LayoutBlankCreator().newLayout()
-        XCTAssertEqual(layout.blockMap.count, 0)
+        XCTAssertEqual(layout.blocks.elements.count, 0)
     }
 
     func testLayoutA() {
         XCTAssertEqual(LayoutLoop1.id.uuid, "Loop 1")
         
         let layout = LayoutLoop1().newLayout()
-        XCTAssertEqual(layout.blockMap.count, 3)
+        XCTAssertEqual(layout.blocks.elements.count, 3)
     }
 
     func testLayoutB() {
         XCTAssertEqual(LayoutFigure8.id.uuid, "Figure 8")
         
         let layout = LayoutFigure8().newLayout()
-        XCTAssertEqual(layout.blockMap.count, 4)
+        XCTAssertEqual(layout.blocks.elements.count, 4)
     }
 
     func testLayoutC() {
         XCTAssertEqual(LayoutLoop2.id.uuid, "Loop 2")
         
         let layout = LayoutLoop2().newLayout()
-        XCTAssertEqual(layout.blockMap.count, 5)
+        XCTAssertEqual(layout.blocks.elements.count, 5)
     }
 
     func testLayoutD() {
         XCTAssertEqual(LayoutIncomplete.id.uuid, "Incomplete Layout")
         
         let layout = LayoutIncomplete().newLayout()
-        XCTAssertEqual(layout.blockMap.count, 2)
+        XCTAssertEqual(layout.blocks.elements.count, 2)
     }
 
     func testLayoutE() {
         XCTAssertEqual(LayoutComplexLoop.id.uuid, "Complex Loop")
         
         let layout = LayoutComplexLoop().newLayout()
-        XCTAssertEqual(layout.blockMap.count, 8)
+        XCTAssertEqual(layout.blocks.elements.count, 8)
     }
 
     func testLayoutF() {
         XCTAssertEqual(LayoutComplex.id.uuid, "Complex Layout")
         
         let layout = LayoutComplex().newLayout()
-        XCTAssertEqual(layout.blockMap.count, 29)
+        XCTAssertEqual(layout.blocks.elements.count, 29)
     }
 
 }

@@ -26,7 +26,7 @@ struct TrainControlRemoveSheet: View {
             
     var body: some View {
         VStack {
-            if let block = layout.block(for: blockId) {
+            if let block = layout.blocks[blockId] {
                 Text("Remove \"\(train.name)\" from block \(block.name)?")
                     .fixedSize()
             } else if let blockId = blockId {

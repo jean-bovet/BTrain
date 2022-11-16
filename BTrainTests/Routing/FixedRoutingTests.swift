@@ -27,7 +27,7 @@ class FixedRoutingTests: BTTestCase {
         p.train.speed!.accelerationProfile = .none
         
         // Reserve a block with another route to make the train stop
-        let b3 = layout.block(for: p.route.steps[2].stepBlockId)!
+        let b3 = layout.blocks[p.route.steps[2].stepBlockId]!
         b3.reservation = .init("2", .next)
         
         try p.assert("r1:{r1{b1 🔴🚂1 ≏ ≏ }} <t0> [b2 ≏ ≏ ] <t1(0,2)> [r2[b3 ≏ ≏ ]] <t0(2,0)> !{r1{b1 ≏ ≏ }}")
@@ -89,7 +89,7 @@ class FixedRoutingTests: BTTestCase {
         try p.prepare(routeID: "r1", trainID: "1", fromBlockId: "b1")
 
         // Disable a block to make the train stop
-        let b3 = layout.block(for: p.route.steps[2].stepBlockId)!
+        let b3 = layout.blocks[p.route.steps[2].stepBlockId]!
         b3.enabled = false
         
         try p.assert("r1:{r1{b1 🔴🚂1 ≏ ≏ }} <t0> [b2 ≏ ≏ ] <t1(0,2)> [b3 ≏ ≏ ] <t0(2,0)> !{r1{b1 ≏ ≏ }}")
@@ -297,7 +297,7 @@ class FixedRoutingTests: BTTestCase {
         let layout = LayoutFigure8().newLayout().removeBlockGeometry().removeTrainGeometry()
         
         // Let's only define block length and omit feedback distances
-        for block in layout.blocks {
+        for block in layout.blocks.elements {
             block.length = 100
             block.feedbacks[0].distance = 20
             block.feedbacks[1].distance = 80
@@ -332,7 +332,7 @@ class FixedRoutingTests: BTTestCase {
     func testMoveWith1OccupiedReservationWithFeedbacks() throws {
         let layout = LayoutFigure8().newLayout()
         
-        for block in layout.blocks {
+        for block in layout.blocks.elements {
             block.length = 100
             block.feedbacks[0].distance = 20
             block.feedbacks[1].distance = 100 - 20
@@ -665,7 +665,7 @@ class FixedRoutingTests: BTTestCase {
                         
         let train = layout.trains[0]
         
-        let b3 = layout.block(for: Identifier<Block>(uuid: "b3"))!
+        let b3 = layout.blocks[Identifier<Block>(uuid: "b3")]!
         b3.brakeFeedbackNext = Identifier<Feedback>(uuid: "fb3.1")
         b3.stopFeedbackNext = Identifier<Feedback>(uuid: "fb3.2")
 

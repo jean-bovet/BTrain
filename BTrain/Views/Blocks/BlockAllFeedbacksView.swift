@@ -70,6 +70,6 @@ struct BlockFeedbackView_Previews: PreviewProvider {
     static let layout = LayoutLoop2().newLayout()
     
     static var previews: some View {
-        BlockAllFeedbacksView(layout: layout, block: layout.block(at: 0))
+        BlockAllFeedbacksView(layout: layout, block: layout.blocks[0])
     }
 }

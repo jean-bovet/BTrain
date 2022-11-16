@@ -208,7 +208,7 @@ final class LayoutComplexLoop: LayoutCreating {
         l.trains.elements.forEach {
             $0.wagonsLength = 80
         }
-        l.blocks.forEach { block in
+        l.blocks.elements.forEach { block in
             block.length = 60
             let fbDistanceIncrement = 60.0 / Double(block.feedbacks.count+1)
             var fbDistance = fbDistanceIncrement

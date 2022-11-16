@@ -288,7 +288,7 @@ final class TrainController: TrainControlling, CustomStringConvertible {
         // in order to avoid re-activating them each time unnecessarily.
         try layoutController.setTrainToBlock(train, entryFeedback.block.id, position: .custom(value: position), direction: entryFeedback.direction, routeIndex: train.routeStepIndex + 1, removeLeadingBlocks: false)
         
-        guard let newBlock = layout.block(for: entryFeedback.block.id) else {
+        guard let newBlock = layout.blocks[entryFeedback.block.id] else {
             throw LayoutError.blockNotFound(blockId: entryFeedback.block.id)
         }
         

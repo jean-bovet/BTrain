@@ -30,7 +30,7 @@ struct RouteNewElementSheet: View {
     var body: some View {
         VStack(alignment: .leading) {
             Picker("Element:", selection: $elementType) {
-                if layout.blocks.count > 0 {
+                if layout.blocks.elements.count > 0 {
                     Text("Block").tag(ElementType.block)
                 }
                 if layout.stations.elements.count > 0 {
@@ -48,7 +48,7 @@ struct RouteNewElementSheet: View {
                 Button("Add") {
                     switch elementType {
                     case .block:
-                        let step = RouteItemBlock(layout.block(at: 0).id, .next)
+                        let step = RouteItemBlock(layout.blocks[0].id, .next)
                         route.partialSteps.append(.block(step))
                         
                         undoManager?.registerUndo(withTarget: route, handler: { route in

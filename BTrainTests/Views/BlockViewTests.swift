@@ -28,8 +28,7 @@ class BlockViewTests: RootViewTests {
     
     func testListView() throws {
         let sut = BlockListView(layout: LayoutLoop2().newLayout())
-        let value = try sut.inspect().vStack().hStack(0).vStack(0).hStack(1).text(0).string()
-        XCTAssertEqual(value, "5 blocks")
+        _ = try sut.inspect().find(text: "5 Elements")
     }
     
     func testBlockEditView() throws {
@@ -49,7 +48,7 @@ class BlockViewTests: RootViewTests {
     
     func testAllFeedbackView() throws {
         let layout = newLayout()
-        let block = layout.block(at: 0)
+        let block = layout.blocks[0]
         let sut = BlockAllFeedbacksView(layout: layout, block: block)
         
         _ = try sut.inspect().find(button: "+")
@@ -59,7 +58,7 @@ class BlockViewTests: RootViewTests {
     
     func testDirectionFeedbacksView() throws {
         let layout = newLayout()
-        let block = layout.block(at: 0)
+        let block = layout.blocks[0]
         let sut = BlockDirectionFeedbacksView(layout: layout, direction: .next, block: block)
         _ = try sut.inspect().find(text: "Entry:")
 
@@ -67,7 +66,7 @@ class BlockViewTests: RootViewTests {
 
     func testBlockSpeedView() throws {
         let layout = newLayout()
-        let sut = BlockSpeedView(block: layout.block(at: 0))
+        let sut = BlockSpeedView(block: layout.blocks[0])
         _ = try sut.inspect().find(text: "Braking:")
     }
 }

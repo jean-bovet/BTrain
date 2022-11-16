@@ -50,7 +50,7 @@ extension Layout {
             return nil
         }
     
-        return block(for: blockIdentifier.blockId)
+        return blocks[blockIdentifier.blockId]
     }
 
     func turnout(_ node: GraphNode) -> Turnout? {

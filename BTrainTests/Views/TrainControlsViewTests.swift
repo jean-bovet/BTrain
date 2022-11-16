@@ -27,7 +27,7 @@ class TrainControlsViewTests: RootViewTests {
 
     func testControlList() throws {
         let doc = newDocument()
-        doc.layout.trains[0].blockId = doc.layout.blockIds[0]
+        doc.layout.trains[0].blockId = doc.layout.blocks[0].id
         
         let sut = TrainControlListView(layout: doc.layout, document: doc, pinnedTrainIds: .constant([]))
         

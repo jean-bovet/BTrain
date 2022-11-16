@@ -119,7 +119,7 @@ extension Layout {
             throw LayoutError.trainNotFound(trainId: trainId)
         }
         
-        guard let toBlock = self.block(for: toBlockId) else {
+        guard let toBlock = self.blocks[toBlockId] else {
             throw LayoutError.blockNotFound(blockId: toBlockId)
         }
 
@@ -155,11 +155,11 @@ extension Layout {
     }
 
     func free(fromBlock: Identifier<Block>, toBlockNotIncluded: Identifier<Block>, direction: Direction) throws {
-        guard let b1 = self.block(for: fromBlock) else {
+        guard let b1 = self.blocks[fromBlock] else {
             throw LayoutError.blockNotFound(blockId: fromBlock)
         }
 
-        guard let b2 = self.block(for: toBlockNotIncluded) else {
+        guard let b2 = self.blocks[toBlockNotIncluded] else {
             throw LayoutError.blockNotFound(blockId: toBlockNotIncluded)
         }
 
@@ -182,7 +182,7 @@ extension Layout {
     }
     
     func free(block: Identifier<Block>) throws {
-        guard let b1 = self.block(for: block) else {
+        guard let b1 = self.blocks[block] else {
             throw LayoutError.blockNotFound(blockId: block)
         }
 
@@ -208,7 +208,7 @@ extension Layout {
         }
         
         // Remove the train from the blocks
-        blockMap.values
+        blocks.elements
             .filter { $0.reservation?.trainId == train.id }
             .forEach { block in
                 block.reservation = nil

@@ -76,7 +76,7 @@ struct RouteScriptCommandView: View {
                         .fixedSize()
                 }
                 
-                if layout.block(for: command.blockId)?.category == .station {
+                if layout.blocks[command.blockId]?.category == .station {
                     Stepper("and wait \(command.waitDuration) seconds", value: $command.waitDuration, in: 0...100, step: 10)
                         .fixedSize()
                 }
@@ -107,14 +107,14 @@ struct ScriptCommandView_Previews: PreviewProvider {
     
     static let moveToFreeBlock = {
         var cmd = RouteScriptCommand(action: .move)
-        cmd.blockId = doc.layout.blocks.first(where: {$0.category == .free})!.id
+        cmd.blockId = doc.layout.blocks.elements.first(where: {$0.category == .free})!.id
         cmd.direction = .next
         return cmd
     }()
     
     static let moveToStationBlock = {
         var cmd = RouteScriptCommand(action: .move)
-        cmd.blockId = doc.layout.blocks.first(where: {$0.category == .station})!.id
+        cmd.blockId = doc.layout.blocks.elements.first(where: {$0.category == .station})!.id
         cmd.direction = .next
         return cmd
     }()

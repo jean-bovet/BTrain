@@ -34,8 +34,8 @@ final class Layout: Element, ObservableObject {
     /// The name of the layout
     var name = ""
     
-    /// A map of blocks
-    @Published var blockMap = OrderedDictionary<Identifier<Block>, Block>()
+    /// A container holding the blocks
+    @Published var blocks = LayoutElementContainer<Block>()
     
     /// A container holding the stations
     @Published var stations = LayoutElementContainer<Station>()
@@ -160,7 +160,11 @@ extension Layout: Codable {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         self.init(id: try container.decode(Identifier<Layout>.self, forKey: CodingKeys.id))
         self.name = try container.decode(String.self, forKey: CodingKeys.name)
-        self.blocks = try container.decode([Block].self, forKey: CodingKeys.blocks)
+        if let blocks = try? container.decode([Block].self, forKey: CodingKeys.blocks) {
+            self.blocks.elements = blocks
+        } else {
+            self.blocks = try container.decode(LayoutElementContainer<Block>.self, forKey: CodingKeys.blocks)
+        }
         if let stations = try? container.decode([Station].self, forKey: CodingKeys.stations) {
             self.stations.elements = stations
         } else {

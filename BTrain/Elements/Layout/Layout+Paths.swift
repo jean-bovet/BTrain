@@ -15,7 +15,7 @@ import Foundation
 extension Layout {
     
     var pathFinderOverflowLimit: Int {
-        (turnouts.count + blocks.count) * 4
+        (turnouts.count + blocks.elements.count) * 4
     }
         
     /// Returns the best route to reach ``toBlock`` given the specified ``train``.
@@ -34,7 +34,7 @@ extension Layout {
     private func possiblePaths(for train: Train, toBlock: Block?, toDirection: Direction?, reservedBlockBehavior: PathFinder.Constraints.ReservedBlockBehavior, shortestPath: Bool) throws -> [GraphPath] {
         var paths = [GraphPath]()
         
-        guard let fromBlock = self.block(for: train.blockId) else {
+        guard let fromBlock = blocks[train.blockId] else {
             return []
         }
 
@@ -80,7 +80,7 @@ extension Layout {
         
         let verbose = SettingsKeys.bool(forKey: SettingsKeys.logRoutingResolutionSteps)
 
-        guard let fromBlock = self.block(for: train.blockId) else {
+        guard let fromBlock = blocks[train.blockId] else {
             return nil
         }
         

@@ -57,7 +57,7 @@ import Foundation
 ///      │       Feedback     │
 ///      │ ──────Distance────▶│
 /// ```
-final class Block: Element, ObservableObject {
+final class Block: Element, ElementCopiable, ObservableObject {
     
     /// The category of the block
     enum Category: String, Codable, CaseIterable {
@@ -187,6 +187,26 @@ final class Block: Element, ObservableObject {
         self.init(id: Identifier<Block>(uuid: name), name: name)
     }
         
+    func copy() -> Block {
+        // TODO: can't we serialize and back to copy?
+//        let nb = Block(id: LayoutIdentity.newIdentity(blocks.elements, prefix: .block), name: "\(name) copy", category: category)
+        let nb = Block()
+        nb.length = length
+        nb.waitingTime = waitingTime
+        nb.center = center.translatedBy(x: 50, y: 50)
+        nb.rotationAngle = rotationAngle
+        nb.feedbacks = feedbacks
+        
+        nb.entryFeedbackNext = entryFeedbackNext
+        nb.brakeFeedbackNext = brakeFeedbackNext
+        nb.stopFeedbackNext = stopFeedbackNext
+        
+        nb.entryFeedbackPrevious = entryFeedbackPrevious
+        nb.brakeFeedbackPrevious = brakeFeedbackPrevious
+        nb.stopFeedbackPrevious = stopFeedbackPrevious
+
+        return nb
+    }
 }
 
 extension Block: CustomStringConvertible {

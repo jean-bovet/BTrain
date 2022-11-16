@@ -29,10 +29,10 @@ final class LayoutObserver {
             self?.anyCallbacks.forEach { $0() }
         }))
         
-        cancellables.append(layout.$blockMap.dropFirst().sink(receiveValue: { [weak self] blocks in
+        cancellables.append(layout.$blocks.dropFirst().sink(receiveValue: { [weak self] blocks in
             // Note: need to pass the `blocks` parameter here because the layout.blocks
             // has not yet had the time to be updated
-            self?.blockCallbacks.forEach { $0(blocks) }
+            self?.blockCallbacks.forEach { $0(blocks.elements) }
             self?.anyCallbacks.forEach { $0() }
         }))
         
@@ -53,7 +53,7 @@ final class LayoutObserver {
     }
     
     typealias TrainChangeCallback = ([Train]) -> Void
-    typealias BlockChangeCallback = (OrderedDictionary<Identifier<Block>, Block>) -> Void
+    typealias BlockChangeCallback = ([Block]) -> Void
     typealias TurnoutChangeCallback = ([Turnout]) -> Void
     typealias TransitionChangeCallback = ([Transition]) -> Void
     typealias AnyChangeCallback = () -> Void

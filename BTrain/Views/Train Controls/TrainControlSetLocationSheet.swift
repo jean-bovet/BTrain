@@ -27,7 +27,7 @@ struct TrainControlSetLocationSheet: View {
     @Environment(\.presentationMode) var presentationMode
         
     var selectedBlockName: String {
-        if let block = layout.block(for: blockId) {
+        if let block = layout.blocks[blockId] {
             return block.name
         } else {
             return "?"

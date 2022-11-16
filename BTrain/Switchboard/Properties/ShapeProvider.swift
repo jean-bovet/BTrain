@@ -67,7 +67,7 @@ final class ShapeProvider {
         observer.registerForBlockChange { [weak self] blocks in
             // Note: need to pass the `blocks` parameter here because the layout.blocks
             // has not yet had the time to be updated
-            self?.updateShapes(blocks: blocks.values.map { $0 as Block })
+            self?.updateShapes(blocks: blocks )
         }
         
         observer.registerForTurnoutChange { [weak self] turnouts in
@@ -87,7 +87,7 @@ final class ShapeProvider {
         if let blocks = blocks {
             updateBlocks(blocks: blocks)
         } else {
-            updateBlocks(blocks: layout.blocks)
+            updateBlocks(blocks: layout.blocks.elements)
         }
         
         if let turnouts = turnouts {
