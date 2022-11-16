@@ -205,7 +205,7 @@ final class LayoutComplexLoop: LayoutCreating {
         l.locomotives.forEach {
             $0.length = 20
         }
-        l.trains.forEach {
+        l.trains.elements.forEach {
             $0.wagonsLength = 80
         }
         l.blocks.forEach { block in

@@ -61,7 +61,7 @@ extension Layout {
     }
 
     func train(forLocomotive locomotive: Locomotive) -> Train? {
-        trains.first { train in
+        trains.elements.first { train in
             train.locomotive?.id == locomotive.id
         }
     }

@@ -68,7 +68,7 @@ struct SwitchboardContainerView: View {
                 }.background(backgroundColor)
             }
         }.sheet(isPresented: $state.trainDroppedInBlockAction) {
-            TrainControlMoveSheet(layout: layout, doc: document, trainDragInfo: state.trainDragInfo, train: layout.train(for: state.trainDragInfo?.trainId)!)
+            TrainControlMoveSheet(layout: layout, doc: document, trainDragInfo: state.trainDragInfo, train: layout.trains[state.trainDragInfo?.trainId]!)
                 .padding()
         }
     }

@@ -24,7 +24,7 @@ struct TrainControlListView: View {
     @Binding var pinnedTrainIds: Set<Identifier<Train>>
     
     var filteredTrain: [Train] {
-        layout.trains.filter { train in
+        layout.trains.elements.filter { train in
             if filterRunningTrains {
                 return train.enabled && train.scheduling != .unmanaged
             } else {
@@ -46,7 +46,7 @@ struct TrainControlListView: View {
     }
     
     var body: some View {
-        if layout.trains.isEmpty {
+        if layout.trains.elements.isEmpty {
             VStack {
                 Text("No Trains")
                 Button("Add a Train") {

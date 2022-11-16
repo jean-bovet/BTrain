@@ -80,19 +80,20 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
             return
         }
 
-        let cancellable = layout.$trains
-            .removeDuplicates()
-            .receive(on: RunLoop.main)
-            .sink { [weak self] value in
-                // When the array of trains changes, we need
-                // to re-register for changes for each individual trains
-                // because these instances have likely changed.
-                self?.registerForTrainBlockChange()
-                
-                // Then update the list of trains
-                self?.updateListOfTrains()
-            }
-        trainArrayChangesCancellable = cancellable
+        // TODO: listen to train changes
+//        let cancellable = layout.$trains
+//            .removeDuplicates()
+//            .receive(on: RunLoop.main)
+//            .sink { [weak self] value in
+//                // When the array of trains changes, we need
+//                // to re-register for changes for each individual trains
+//                // because these instances have likely changed.
+//                self?.registerForTrainBlockChange()
+//
+//                // Then update the list of trains
+//                self?.updateListOfTrains()
+//            }
+//        trainArrayChangesCancellable = cancellable
     }
 
     // Register to detect when a train is assigned to a different block,
@@ -104,7 +105,7 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
         }
 
         cancellables.removeAll()
-        for train in layout.trains {
+        for train in layout.trains.elements {
             let cancellable = train.$blockId
                 .removeDuplicates()
                 .receive(on: RunLoop.main)
@@ -126,7 +127,7 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
         })
         
         // Update existing locomotives, add new ones
-        for train in layout.trains.filter({$0.blockId != nil}) {
+        for train in layout.trains.elements.filter({$0.blockId != nil}) {
             guard let loc = train.locomotive else {
                 continue
             }
@@ -345,7 +346,7 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
             return
         }
 
-        for train in layout.trains {
+        for train in layout.trains.elements {
             guard train.scheduling != .unmanaged else {
                 continue
             }

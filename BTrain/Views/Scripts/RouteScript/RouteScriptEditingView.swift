@@ -12,7 +12,7 @@
 
 import SwiftUI
 
-struct RouteScriptListView: View {
+struct RouteScriptEditingView: View {
     
     @ObservedObject var layout: Layout
 
@@ -24,17 +24,17 @@ struct RouteScriptListView: View {
 
 }
 
-struct ScriptListView_Previews: PreviewProvider {
+struct RouteScriptEditingView_Previews: PreviewProvider {
         
     static var previews: some View {
         Group {
             ConfigurationSheet(title: "Routes") {
-                RouteScriptListView(layout: RouteScriptEditorView_Previews.layout)
+                RouteScriptEditingView(layout: RouteScriptEditorView_Previews.layout)
             }
         }
         Group {
             ConfigurationSheet(title: "Routes") {
-                RouteScriptListView(layout: Layout())
+                RouteScriptEditingView(layout: Layout())
             }
         }.previewDisplayName("Empty")
     }

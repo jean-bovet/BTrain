@@ -28,7 +28,7 @@ extension Layout {
             throw LayoutError.routeNotFound(routeId: routeId)
         }
         
-        guard let train = train(for: trainId) else {
+        guard let train = trains[trainId] else {
             throw LayoutError.trainNotFound(trainId: trainId)
         }
                         

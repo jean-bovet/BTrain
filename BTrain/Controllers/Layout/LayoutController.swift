@@ -151,7 +151,7 @@ final class LayoutController: ObservableObject {
             var events: [StateMachine.TrainEvent]? = []
             try lsm.handle(layoutEvent: event.layoutEvent(layoutController: self),
                            trainEvent: event.trainEvent(layoutController: self),
-                           trains: layout.trains.compactMap({ train in trainController(forTrain: train) }),
+                           trains: layout.trains.elements.compactMap({ train in trainController(forTrain: train) }),
                            handledTrainEvents: &events)
             #if DEBUG
             if let events = events {
@@ -197,7 +197,7 @@ final class LayoutController: ObservableObject {
         switchboard?.context.unexpectedFeedbackIds = nil
 
         if layout.detectUnexpectedFeedback {
-            try feedbackMonitor.update(with: layout.trains)
+            try feedbackMonitor.update(with: layout.trains.elements)
             switchboard?.context.expectedFeedbackIds = feedbackMonitor.expectedFeedbacks
             do {
                 try feedbackMonitor.handleUnexpectedFeedbacks()
@@ -215,7 +215,7 @@ final class LayoutController: ObservableObject {
         // because the run() method won't run until the runtimeError
         // is cleared by the user. We want to make sure the train don't
         // start again if the user re-enable the layout manually.
-        for train in layout.trains {
+        for train in layout.trains.elements {
             try? setTrainSpeed(train, 0)
             train.scheduling = .unmanaged
         }
@@ -268,7 +268,7 @@ final class LayoutController: ObservableObject {
     func stopAll(includingManualTrains: Bool) {
         let trains: [Train]
         if includingManualTrains {
-            trains = layout.trains
+            trains = layout.trains.elements
         } else {
             trains = layout.trainsThatCanBeStopped()
         }
@@ -351,7 +351,7 @@ extension LayoutController {
             self?.updateSpeedManagers(with: trains)
         }
         
-        updateSpeedManagers(with: layout.trains)
+        updateSpeedManagers(with: layout.trains.elements)
     }
     
     func speedManager(for loc: Locomotive, train: Train) -> LocomotiveSpeedManager {
@@ -387,7 +387,7 @@ extension LayoutController {
             throw LayoutError.routeNotFound(routeId: routeID)
         }
         
-        guard let train = layout.train(for: trainID) else {
+        guard let train = layout.trains[trainID] else {
             throw LayoutError.trainNotFound(trainId: trainID)
         }
 
@@ -451,7 +451,7 @@ extension LayoutController {
     }
     
     func start(routeID: Identifier<Route>, trainID: Identifier<Train>, destination: Destination? = nil) throws {
-        guard let train = layout.train(for: trainID) else {
+        guard let train = layout.trains[trainID] else {
             throw LayoutError.trainNotFound(trainId: trainID)
         }
 

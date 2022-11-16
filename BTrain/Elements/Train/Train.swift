@@ -83,7 +83,7 @@ import Foundation
 // ◀: Locomotive
 // ■: Wagon
 // ──▶: Direction in which the train is moving from one block to another
-final class Train: Element, ObservableObject {
+final class Train: Element, ElementCopying, ElementNaming, ObservableObject {
     // Unique identifier of the train
     let id: Identifier<Train>
     
@@ -220,6 +220,10 @@ final class Train: Element, ObservableObject {
         return text
     }
     
+    convenience init() {
+        self.init(name: "New Train")
+    }
+    
     convenience init(uuid: String = UUID().uuidString, name: String = "", wagonsLength: Double? = nil, maxSpeed: SpeedKph? = nil, maxNumberOfLeadingReservedBlocks: Int? = nil) {
         self.init(id: Identifier(uuid: uuid), name: name, wagonsLength: wagonsLength, maxSpeed: maxSpeed, maxNumberOfLeadingReservedBlocks: maxNumberOfLeadingReservedBlocks)
     }
@@ -230,6 +234,11 @@ final class Train: Element, ObservableObject {
         self.name = name
         self.wagonsLength = wagonsLength
         self.maxNumberOfLeadingReservedBlocks = maxNumberOfLeadingReservedBlocks ?? self.maxNumberOfLeadingReservedBlocks
+    }
+    
+    func copy() -> Train {
+        // TODO: do this
+        return Train()
     }
     
     /// This variable is serialized instead of ``locomotive`` in order to avoid duplication in the JSON graph.

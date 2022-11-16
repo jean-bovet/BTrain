@@ -17,7 +17,7 @@ extension LayoutController {
     func dumpAll() {
         var text = "*******************************************"
         text += "\nEnabled Trains:"
-        for train in layout.trains.filter({$0.enabled}) {
+        for train in layout.trains.elements.filter({$0.enabled}) {
             text += "\n "+LayoutController.attributesFor(train: train, layout: layout)
         }
         text += "\nInteresting Blocks:"
@@ -71,14 +71,14 @@ extension LayoutController {
 
     static func attributesFor(block: Block, layout: Layout) -> String {
         var info = "\(block.name)-[\(block.id)]"
-        if let reserved = block.reservation, let train = layout.train(for: reserved.trainId) {
+        if let reserved = block.reservation, let train = layout.trains[reserved.trainId] {
             info += ", reserved for \(train.name)-\(reserved.direction)"
         }
         if let trainInstance = block.trainInstance {
-            if let train = layout.train(for: trainInstance.trainId) {
+            if let train = layout.trains[trainInstance.trainId] {
                 info += ", train \(train.name)"
             }
-            if let t = layout.train(for: trainInstance.trainId) {
+            if let t = layout.trains[trainInstance.trainId] {
                 info += " at position \(t.position)"
             }
             if trainInstance.direction == .next {

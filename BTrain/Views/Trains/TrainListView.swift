@@ -14,6 +14,22 @@ import SwiftUI
 
 struct TrainListView: View {
     
+    @ObservedObject var document: LayoutDocument
+    @ObservedObject var layout: Layout
+
+    var body: some View {
+        LayoutElementsEditingView(layout: layout, elementContainer: $layout.trains) { train in
+            ScrollView {
+                TrainDetailsView(document: document, train: train)
+                    .padding()
+            }
+        }
+    }
+
+}
+
+/*struct TrainListView: View {
+    
     @Environment(\.undoManager) var undoManager
     
     @ObservedObject var document: LayoutDocument
@@ -47,7 +63,7 @@ struct TrainListView: View {
                             .labelsHidden()
                     }
                 } rows: {
-                    ForEach($layout.trains) { train in
+                    ForEach($layout.trains.elements) { train in
                         TableRow(train)
                     }
                 }
@@ -77,7 +93,7 @@ struct TrainListView: View {
                     Spacer().fixedSpace()
                     
                     Button("􀄬") {
-                        layout.sortTrains()
+                        layout.trains.sort()
                     }
                 }.padding([.leading])
             }.frame(maxWidth: SideListFixedWidth)
@@ -96,7 +112,7 @@ struct TrainListView: View {
             }
         }
     }
-}
+}*/
 
 struct TrainListView_Previews: PreviewProvider {
     

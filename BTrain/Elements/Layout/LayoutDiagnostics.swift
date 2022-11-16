@@ -183,7 +183,7 @@ final class LayoutDiagnostic: ObservableObject {
     }
     
     func checkForDuplicateTrains(_ errors: inout [DiagnosticError]) {
-        let enabledTrains = layout.trains.filter({$0.enabled})
+        let enabledTrains = layout.trains.elements.filter({$0.enabled})
         
         var ids = Set<Identifier<Train>>()
         for train in enabledTrains {
@@ -299,7 +299,7 @@ final class LayoutDiagnostic: ObservableObject {
             }
         }
         
-        for train in layout.trains {
+        for train in layout.trains.elements {
             if train.locomotive == nil {
                 errors.append(DiagnosticError.trainLocomotiveUndefined(train: train))
             }
@@ -334,7 +334,7 @@ final class LayoutDiagnostic: ObservableObject {
                 errors.append(DiagnosticError.locMissingLength(loc: loc))
             }
         }
-        for train in layout.trains.filter({$0.enabled}) {
+        for train in layout.trains.elements.filter({$0.enabled}) {
             if train.wagonsLength == nil {
                 errors.append(DiagnosticError.trainMissingLength(train: train))
             }
@@ -377,12 +377,12 @@ final class LayoutDiagnostic: ObservableObject {
         // Remove any train that do not exist anymore
         for block in layout.blocks {
             if let trainId = block.trainInstance?.trainId {
-                if layout.train(for: trainId) == nil {
+                if layout.trains[trainId] == nil {
                     block.trainInstance = nil
                 }
             }
             if let trainId = block.reservation?.trainId {
-                if layout.train(for: trainId) == nil {
+                if layout.trains[trainId] == nil {
                     block.reservation = nil
                 }
             }

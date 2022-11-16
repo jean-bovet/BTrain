@@ -49,7 +49,7 @@ final class Layout: Element, ObservableObject {
     @Published var turnouts = [Turnout]()
     
     /// An array of trains
-    @Published var trains = [Train]()
+    @Published var trains = LayoutElementContainer<Train>()
     
     /// A map of locomotives
     @Published var locomotiveMap = OrderedDictionary<Identifier<Locomotive>, Locomotive>()
@@ -129,19 +129,19 @@ final class Layout: Element, ObservableObject {
     }
     
     func trainsThatCanBeStarted() -> [Train] {
-        trains.filter { train in
+        trains.elements.filter { train in
             train.enabled && train.blockId != nil && train.scheduling == .unmanaged
         }
     }
     
     func trainsThatCanBeStopped() -> [Train] {
-        trains.filter { train in
+        trains.elements.filter { train in
             train.scheduling == .managed || train.scheduling == .finishManaged
         }
     }
     
     func trainsThatCanBeFinished() -> [Train] {
-        trains.filter { train in
+        trains.elements.filter { train in
             train.scheduling == .managed
         }
     }
@@ -152,7 +152,10 @@ final class Layout: Element, ObservableObject {
 extension Layout: Codable {
     
     enum CodingKeys: CodingKey {
-      case id, name, blocks, stations, feedbacks, turnouts, trains, locomotives, routes, scripts, layoutScripts, routeScripts, transitions, controlPoints
+        case id, name, blocks, stations, feedbacks, turnouts, trains, locomotives, routes, layoutScripts, routeScripts, transitions, controlPoints
+        
+        // TODO: deprecated
+        case scripts
     }
 
     convenience init(from decoder: Decoder) throws {
@@ -163,7 +166,11 @@ extension Layout: Codable {
         self.stations = try container.decode([Station].self, forKey: CodingKeys.stations)
         self.feedbacks = try container.decode([Feedback].self, forKey: CodingKeys.feedbacks)
         self.turnouts = try container.decode([Turnout].self, forKey: CodingKeys.turnouts)
-        self.trains = try container.decode([Train].self, forKey: CodingKeys.trains)
+        if let trains = try? container.decode([Train].self, forKey: CodingKeys.trains) {
+            self.trains.elements = trains
+        } else {
+            self.trains = try container.decode(LayoutElementContainer<Train>.self, forKey: CodingKeys.trains)
+        }
         self.locomotives = try container.decode([Locomotive].self, forKey: CodingKeys.locomotives)
         self.routes = try container.decode([Route].self, forKey: CodingKeys.routes)
         self.layoutScripts = try container.decodeIfPresent(LayoutElementContainer<LayoutScript>.self, forKey: CodingKeys.layoutScripts) ?? LayoutElementContainer<LayoutScript>()

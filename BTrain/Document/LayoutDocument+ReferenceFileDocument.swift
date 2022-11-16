@@ -115,7 +115,7 @@ extension LayoutDocument: ReferenceFileDocument {
     /// This method is called after the deserialization happened in order to restore
     /// all the variables that depend on an object that has been serialized.
     static private func restore(layout: Layout) {
-        layout.trains.forEach({$0.restore(layout: layout)})
+        layout.trains.elements.forEach({$0.restore(layout: layout)})
         layout.blocks.forEach({$0.restore(layout: layout)})
         layout.turnouts.forEach({$0.restore(layout: layout)})
         layout.transitions.forEach({$0.restore(layout: layout)})

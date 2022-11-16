@@ -36,7 +36,7 @@ struct WizardSelectLocomotive: View {
                 .padding()
             ScrollView(.horizontal) {
                 LazyHStack {
-                    ForEach(document.layout.trains, id:\.self) { train in
+                    ForEach(document.layout.trains.elements, id:\.self) { train in
                         ZStack {
                             Rectangle()
                                 .frame(width: previewSize.width, height: previewSize.height)
@@ -71,7 +71,7 @@ struct WizardSelectLocomotive: View {
                 }
             }
         }.onAppear {
-            if let train = document.layout.trains.first {
+            if let train = document.layout.trains.elements.first {
                 selectedTrains.insert(train.id)
             }
         }

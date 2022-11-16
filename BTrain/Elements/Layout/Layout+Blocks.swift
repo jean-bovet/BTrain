@@ -68,7 +68,7 @@ extension Layout {
 
         blockMap.removeValue(forKey: blockID)
 
-        trains.forEach { train in
+        trains.elements.forEach { train in
             if train.blockId == blockID {
                 train.blockId = nil
             }

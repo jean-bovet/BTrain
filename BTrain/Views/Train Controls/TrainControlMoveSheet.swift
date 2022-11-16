@@ -160,9 +160,10 @@ struct TrainControlMoveSheet: View {
 struct TrainControlMoveSheet_Previews: PreviewProvider {
     
     static let doc = LayoutDocument(layout: LayoutLoop2().newLayout())
+    static let trains = doc.layout.trains
     
     static var previews: some View {
-        TrainControlMoveSheet(layout: doc.layout, doc: doc, train: doc.layout.trains[0])
+        TrainControlMoveSheet(layout: doc.layout, doc: doc, train: trains[0])
     }
     
 }

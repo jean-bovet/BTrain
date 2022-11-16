@@ -23,7 +23,7 @@ final class LayoutASCIIProducer {
     func stringFrom(route: Route, trainId: Identifier<Train>, useBlockName: Bool = false, useTurnoutName: Bool = false) throws -> String {
         var text = ""
                 
-        guard let train = layout.train(for: trainId) else {
+        guard let train = layout.trains[trainId] else {
             throw LayoutError.trainNotFound(trainId: trainId)
         }
         
@@ -214,7 +214,7 @@ final class LayoutASCIIProducer {
             return nil
         }
               
-        guard let train = layout.train(for: trainInstance.trainId) else {
+        guard let train = layout.trains[trainInstance.trainId] else {
             return nil
         }
 

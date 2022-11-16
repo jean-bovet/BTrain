@@ -22,36 +22,20 @@ extension Layout {
     
     @discardableResult
     func newTrain() -> Train {
-        let id = LayoutIdentity.newIdentity(trains, prefix: .train)
-        return addTrain(Train(id: id, name: id.uuid))
+        let id = LayoutIdentity.newIdentity(trains.elements, prefix: .train)
+        return trains.add(Train(id: id, name: id.uuid))
     }
-    
-    @discardableResult
-    func addTrain(_ train: Train) -> Train {
-        trains.append(train)
-        return train
-    }
-    
-    func train(for trainId: Identifier<Train>?) -> Train? {
-        trains.first(where: { $0.id == trainId })
-    }
-
+        
     func delete(trainId: Identifier<Train>) {
         try? remove(trainId: trainId)
-        trains.removeAll(where: { $0.id == trainId})
+        trains.remove(trainId)
     }
-    
-    func sortTrains() {
-        trains.sort {
-            $0.name < $1.name
-        }
-    }
-
-    func removeAllTrains() {
-        trains.forEach {
-            try? remove(trainId: $0.id)
-        }
-    }
+//    
+//    func removeAllTrains() {
+//        trains.elements.forEach {
+//            try? remove(trainId: $0.id)
+//        }
+//    }
     
     // Returns the new position of the train given the specified feedback. This is used
     // to follow the train within a block when feedbacks are activated when the locomotive moves.
@@ -137,7 +121,7 @@ extension Layout {
     ///   - routeIndex: optional index in the route
     ///   - removeLeadingBlocks: true to remove the leading blocks (by default), false to keep the leading blocks
     func setTrainToBlock(_ trainId: Identifier<Train>, _ toBlockId: Identifier<Block>, position: Position = .start, direction: Direction, routeIndex: Int? = nil) throws {
-        guard let train = self.train(for: trainId) else {
+        guard let train = trains[trainId] else {
             throw LayoutError.trainNotFound(trainId: trainId)
         }
         
@@ -212,7 +196,7 @@ extension Layout {
         
         b1.reservation = nil
         if let blockTrain = b1.trainInstance {
-            guard let train = self.train(for: blockTrain.trainId) else {
+            guard let train = trains[blockTrain.trainId] else {
                 throw LayoutError.trainNotFound(trainId: blockTrain.trainId)
             }
             // Remove the block assignment from the train if the train is located in the block
@@ -225,7 +209,7 @@ extension Layout {
     
     // Remove the train from the layout (but not from the list of train)
     func remove(trainId: Identifier<Train>) throws {
-        guard let train = self.train(for: trainId) else {
+        guard let train = trains[trainId] else {
             throw LayoutError.trainNotFound(trainId: trainId)
         }
         

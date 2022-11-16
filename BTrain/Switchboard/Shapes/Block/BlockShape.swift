@@ -88,7 +88,7 @@ final class BlockShape: Shape, DraggableShape, ConnectableShape {
     }
     
     var train: Train? {
-        layout?.train(for: block.trainInstance?.trainId)
+        layout?.trains[block.trainInstance?.trainId]
     }
         
     var path: CGPath {

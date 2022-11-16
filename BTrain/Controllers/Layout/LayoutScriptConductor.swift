@@ -67,7 +67,7 @@ final class LayoutScriptConductor {
             return
         }
         
-        guard let train = layout.train(for: trainId) else {
+        guard let train = layout.trains[trainId] else {
             return
         }
         

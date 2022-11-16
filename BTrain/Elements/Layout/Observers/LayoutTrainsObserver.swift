@@ -34,14 +34,14 @@ class LayoutTrainsObserver {
     
     func registerForChange(_ callback: @escaping TrainChangeCallback) {
         trainCallbacks.append(callback)
-        for train in layout.trains {
+        for train in layout.trains.elements {
             callback(train)
         }
     }
     
     private func registerForTrainsChange() {
         cancellables.removeAll()
-        for train in layout.trains {
+        for train in layout.trains.elements {
             if let cancellable = registerForTrainChange(train) {
                 cancellables.append(cancellable)
             }

@@ -22,7 +22,7 @@ struct TrainPicker: View {
     }
     
     var trains: [Train] {
-        doc.layout.trains.filter({$0.enabled})
+        doc.layout.trains.elements.filter({$0.enabled})
     }
     
     var body: some View {

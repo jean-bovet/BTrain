@@ -49,7 +49,7 @@ final class LayoutControllerDebugger {
         
         let layout = layoutController.layout
         let producer = LayoutASCIIProducer(layout: layout)
-        for train in layout.trains {
+        for train in layout.trains.elements {
             if let route = layout.route(for: train.routeId, trainId: train.id), !route.steps.isEmpty {
                 if let s = try? producer.stringFrom(route: route, trainId: train.id) {
                     if info.routes.index(forKey: route.id) == nil {

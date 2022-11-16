@@ -79,7 +79,7 @@ extension Layout {
         routes.removeAll { t in
             t.id == routeId
         }
-        trains.forEach { train in
+        trains.elements.forEach { train in
             if train.routeId == routeId {
                 train.routeId = Route.automaticRouteId(for: train.id)
             }
@@ -95,7 +95,7 @@ extension Layout {
     func routeDescription(for train: Train) -> String {
         var text = ""
         if let route = self.route(for: train.routeId, trainId: train.id),
-           let train = self.train(for: train.id) {
+           let train = trains[train.id] {
             if let message = route.lastMessage {
                 text = message
             } else {
