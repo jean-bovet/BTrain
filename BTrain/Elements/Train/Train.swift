@@ -83,7 +83,7 @@ import Foundation
 // ◀: Locomotive
 // ■: Wagon
 // ──▶: Direction in which the train is moving from one block to another
-final class Train: Element, ElementCopying, ElementNaming, ObservableObject {
+final class Train: Element, ElementCopiable, ObservableObject {
     // Unique identifier of the train
     let id: Identifier<Train>
     

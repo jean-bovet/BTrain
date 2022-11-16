@@ -12,7 +12,7 @@
 
 import Foundation
 
-final class RouteScript: Element, ElementCopying, ElementNaming, ObservableObject {
+final class RouteScript: Element, ElementCopiable, ObservableObject {
         
     let id: Identifier<RouteScript>
     

@@ -28,8 +28,7 @@ class TrainViewTests: RootViewTests {
     func testStringValue() throws {
         let doc = newDocument()
         let sut = TrainEditingView(document: doc, layout: doc.layout)
-        let value = try sut.inspect().hStack().vStack(0).hStack(1).text(0).string()
-        XCTAssertEqual(value, "3 trains")
+        _ = try sut.inspect().find(text: "3 Elements")
     }
 
     func testDetailsView() throws {

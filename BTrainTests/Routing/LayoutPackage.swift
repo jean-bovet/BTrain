@@ -53,7 +53,7 @@ final class Package {
     }
     
     func prepare(routeID: String, trainID: String, fromBlockId: String, position: Position = .start, direction: Direction = .next) throws {
-        let train = layout.train(for: .init(uuid: trainID))!
+        let train = layout.trains[Identifier<Train>(uuid: trainID)]!
         let route = layout.route(for: .init(uuid: routeID), trainId: .init(uuid: trainID))!
         let loc = train.locomotive!
         
@@ -77,7 +77,7 @@ final class Package {
 
     func start(routeID: String, trainID: String, destination: Destination? = nil, expectedState: Train.State = .running, routeSteps: [String]? = nil) throws {
         try layoutController.start(routeID: Identifier<Route>(uuid: routeID), trainID: Identifier<Train>(uuid: trainID), destination: destination)
-        let train = layout.train(for: Identifier<Train>(uuid: trainID))!
+        let train = layout.trains[Identifier<Train>(uuid: trainID)]!
         XCTAssertEqual(train.scheduling, .managed)
         if let routeSteps = routeSteps {
             XCTAssertEqual(route.steps.toStrings(layout), routeSteps)

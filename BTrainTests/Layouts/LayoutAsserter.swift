@@ -117,7 +117,7 @@ final class LayoutAsserter {
     
     private func assert(routeName: String, actualSteps: [ResolvedRouteItem], expectedSteps: [ResolvedRouteItem], trains: [Train], expectedTrains: [Train], expectedLayout: LayoutParser.ParsedLayout) throws {
         for (index, expectedTrain) in expectedTrains.enumerated() {
-            let train = layout.train(for: expectedTrain.id)!
+            let train = layout.trains[expectedTrain.id]!
             XCTAssertEqual(train.id, expectedTrain.id, "Unexpected train mismatch at index \(index), route \(routeName)")
             XCTAssertEqual(train.position, expectedTrain.position, "Mismatching train position for train \(expectedTrain.id), route \(routeName)")
             XCTAssertEqual(train.speed!.requestedKph, expectedTrain.speed!.requestedKph, accuracy: 1, "Mismatching train speed for train \(expectedTrain.id), route \(routeName)")

@@ -24,6 +24,8 @@ extension FeedbackEditListView: Inspectable { }
 extension TrainControlListView: Inspectable { }
 extension SwitchBoardView: Inspectable { }
 extension FeedbackView: Inspectable { }
+extension LayoutElementsEditingView: Inspectable { }
+extension LayoutElementsEditingView.ListOfElements: Inspectable { }
 extension TrainEditingView: Inspectable { }
 extension TrainDetailsView: Inspectable { }
 extension TrainControlContainerView: Inspectable { }

@@ -48,10 +48,11 @@ struct LayoutScriptLineView: View {
 struct LayoutScriptLineView_Previews: PreviewProvider {
     static let doc = LayoutDocument(layout: LayoutComplex().newLayout())
     static let command = LayoutScriptCommand(action: .run)
+    static let layout = doc.layout
     
     static var previews: some View {
         VStack(alignment: .leading) {
-            LayoutScriptLineView(doc: doc, layout: doc.layout, script: LayoutScript(), command: .constant(command))
+            LayoutScriptLineView(doc: doc, layout: layout, script: LayoutScript(), command: .constant(command))
         }
     }
 }

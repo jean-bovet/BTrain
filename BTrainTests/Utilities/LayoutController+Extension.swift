@@ -32,7 +32,7 @@ extension LayoutController {
                     drain = true
                 }
             }
-            for train in layout.trains {
+            for train in layout.trains.elements {
                 if !train.leading.emptyOrSettled && !train.leading.reservedAndSettled {
                     // Leading blocks and turnouts are not yet settled
                     drain = true

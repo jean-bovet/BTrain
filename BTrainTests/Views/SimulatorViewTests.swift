@@ -23,7 +23,7 @@ class SimulatorViewTests: RootViewTests {
     func testSimulatorView() throws {
         let doc = newDocument()
         let trains = doc.layout.trains
-        XCTAssertFalse(trains.isEmpty)
+        XCTAssertFalse(trains.elements.isEmpty)
         
         let t1 = trains[0]
         t1.speed!.accelerationProfile = .none

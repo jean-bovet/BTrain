@@ -80,20 +80,18 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
             return
         }
 
-        // TODO: listen to train changes
-//        let cancellable = layout.$trains
-//            .removeDuplicates()
-//            .receive(on: RunLoop.main)
-//            .sink { [weak self] value in
-//                // When the array of trains changes, we need
-//                // to re-register for changes for each individual trains
-//                // because these instances have likely changed.
-//                self?.registerForTrainBlockChange()
-//
-//                // Then update the list of trains
-//                self?.updateListOfTrains()
-//            }
-//        trainArrayChangesCancellable = cancellable
+        let cancellable = layout.$trains
+            .receive(on: RunLoop.main)
+            .sink { [weak self] value in
+                // When the array of trains changes, we need
+                // to re-register for changes for each individual trains
+                // because these instances have likely changed.
+                self?.registerForTrainBlockChange()
+
+                // Then update the list of trains
+                self?.updateListOfTrains()
+            }
+        trainArrayChangesCancellable = cancellable
     }
 
     // Register to detect when a train is assigned to a different block,

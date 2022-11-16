@@ -19,7 +19,7 @@ class LayoutTests: BTTestCase {
     func testAddAndRemoveBlock() throws {
         let layout = Layout()
         
-        let t1 = layout.addTrain(Train(uuid: "t1", name: "t1"))
+        let t1 = layout.trains.add(Train(uuid: "t1", name: "t1"))
         let b1 = layout.newBlock(name: "b1", category: .free)
         let b2 = layout.newBlock(name: "b2", category: .free)
         layout.link(from: b1.next, to: b2.previous)

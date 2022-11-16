@@ -13,26 +13,17 @@
 import Foundation
 import OrderedCollections
 
-protocol ElementCopying<E> {
-    associatedtype E: Element
+protocol ElementCopiable {
+    associatedtype E
     func copy() -> E
-
-    // TODO: move to its own protocol for more clarity?
-    /// Allow for a default element to be created
-    init()
 }
 
-protocol ElementNaming<E> {
-    associatedtype E: Element
-    var name: String { get set }
-}
-
-typealias LayoutElement<E> = Element & Codable & ElementCopying<E> & ElementNaming<E>
+typealias LayoutElement = Element & ElementCopiable & Codable
 
 // TODO: add unit tests
 /// Container capable of holding a map of elements and implementing the most common functions
 /// expected by the layout
-struct LayoutElementContainer<E: LayoutElement<E>> {
+struct LayoutElementContainer<E: LayoutElement> {
     
     private var elementsMap = OrderedDictionary<Identifier<E.ItemType>,E>()
     
@@ -87,19 +78,13 @@ struct LayoutElementContainer<E: LayoutElement<E>> {
         }
         
         let newElement = existingElement.copy()
-        return add(newElement)
+        return add(newElement as! E)
     }
     
     mutating func remove(_ elementId: Identifier<E.ItemType>) {
         elementsMap.removeValue(forKey: elementId)
     }
     
-    mutating func sort() {
-        elements.sort {
-            $0.name < $1.name
-        }
-    }
-
 }
 
 extension LayoutElementContainer: Codable {

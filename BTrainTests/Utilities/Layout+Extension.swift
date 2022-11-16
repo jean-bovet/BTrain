@@ -50,11 +50,11 @@ extension Layout {
     }
 
     func train(_ uuid: String) -> Train {
-        train(for: Identifier<Train>(uuid: uuid))!
+        trains[Identifier<Train>(uuid: uuid)]!
     }
     
     func removeTrainGeometry() -> Layout {
-        trains.forEach { $0.wagonsLength = nil }
+        trains.elements.forEach { $0.wagonsLength = nil }
         locomotives.forEach { $0.length = nil }
         return self
     }
@@ -74,8 +74,11 @@ extension Layout {
         return self
     }
     
+    @discardableResult
     func removeTrains() -> Layout {
-        removeAllTrains()
+        trains.elements.forEach {
+            try? remove(trainId: $0.id)
+        }
         return self
     }
 

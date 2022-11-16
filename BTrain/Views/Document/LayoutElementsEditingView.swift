@@ -12,15 +12,19 @@
 
 import SwiftUI
 
-struct LayoutElementsEditingView<E: LayoutElement<E> & ObservableObject, Row: View, Editor: View>: View {
+struct LayoutElementsEditingView<E: LayoutElement, Row: View, Editor: View>: View {
     
     typealias RowViewBuilder = (Binding<E>) -> Row
     
+    let new: () -> E
+    let sort: CompletionBlock
     let row: RowViewBuilder
     let editor: (E) -> Editor
     
-    init(layout: Layout, elementContainer: Binding<LayoutElementContainer<E>>, @ViewBuilder row: @escaping RowViewBuilder, @ViewBuilder editor: @escaping (E) -> Editor) {
+    init(layout: Layout, new: @escaping () -> E, sort: @escaping CompletionBlock, elementContainer: Binding<LayoutElementContainer<E>>, @ViewBuilder row: @escaping RowViewBuilder, @ViewBuilder editor: @escaping (E) -> Editor) {
         self.layout = layout
+        self.new = new
+        self.sort = sort
         self.row = row
         self.editor = editor
         _elementContainer = elementContainer
@@ -73,7 +77,7 @@ struct LayoutElementsEditingView<E: LayoutElement<E> & ObservableObject, Row: Vi
                 Spacer().fixedSpace()
 
                 Button("+") {
-                    let element = elementContainer.add(E())
+                    let element = elementContainer.add(new())
                     selection = element.id
                     undoManager?.registerUndo(withTarget: layout, handler: { layout in
                         elementContainer.remove(element.id)
@@ -98,7 +102,7 @@ struct LayoutElementsEditingView<E: LayoutElement<E> & ObservableObject, Row: Vi
                 Spacer().fixedSpace()
                 
                 Button("􀄬") {
-                    elementContainer.sort()
+                    sort()
                 }
             }.padding([.leading])
         }

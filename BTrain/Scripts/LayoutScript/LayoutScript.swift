@@ -12,7 +12,7 @@
 
 import Foundation
 
-final class LayoutScript: Element, ElementCopying, ElementNaming, ObservableObject {
+final class LayoutScript: Element, ElementCopiable, ObservableObject {
         
     let id: Identifier<LayoutScript>
     

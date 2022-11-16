@@ -30,13 +30,7 @@ extension Layout {
         try? remove(trainId: trainId)
         trains.remove(trainId)
     }
-//    
-//    func removeAllTrains() {
-//        trains.elements.forEach {
-//            try? remove(trainId: $0.id)
-//        }
-//    }
-    
+        
     // Returns the new position of the train given the specified feedback. This is used
     // to follow the train within a block when feedbacks are activated when the locomotive moves.
     //      ╲       ██            ██            ██

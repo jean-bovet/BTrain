@@ -20,7 +20,13 @@ struct TrainEditingView: View {
     // TODO: when deleting, invoke this
     //    document.layoutController.delete(train: train)
     var body: some View {
-        LayoutElementsEditingView(layout: layout, elementContainer: $layout.trains, row: { train in
+        LayoutElementsEditingView(layout: layout, new: {
+            Train(name: "New Train")
+        }, sort: {
+            layout.trains.elements.sort {
+                $0.name < $1.name
+            }
+        }, elementContainer: $layout.trains, row: { train in
             HStack {
                 Toggle("Enabled", isOn: train.enabled)
                 if let image = document.locomotiveIconManager.icon(for: train.wrappedValue.locomotive?.id) {
