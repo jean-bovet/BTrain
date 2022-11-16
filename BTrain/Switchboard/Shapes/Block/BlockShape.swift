@@ -204,7 +204,7 @@ final class BlockShape: Shape, DraggableShape, ConnectableShape {
     
     private func drawFeedbacks(ctx: CGContext) {
         for (index, feedback) in block.feedbacks.enumerated() {
-            if let f = layout?.feedback(for: feedback.feedbackId), f.detected {
+            if let f = layout?.feedbacks[feedback.feedbackId], f.detected {
                 ctx.setFillColor(shapeContext.activeFeedbackColor)
             } else {
                 ctx.setFillColor(shapeContext.inactiveFeedbackColor)
@@ -478,7 +478,7 @@ extension BlockShape: ActionableShape {
     func performAction(at location: CGPoint) -> Bool {
         for (index, blockFeedback) in block.feedbacks.enumerated() {
             let path = feedbackPath(at: index)
-            if path.contains(location), let feedback = layout?.feedback(for: blockFeedback.feedbackId) {
+            if path.contains(location), let feedback = layout?.feedbacks[blockFeedback.feedbackId] {
                 shapeContext.simulator?.setFeedback(feedback: feedback, value: feedback.detected ? 0 : 1)
                 return true
             }

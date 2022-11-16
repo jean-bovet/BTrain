@@ -23,7 +23,7 @@ struct BlockAllFeedbacksView: View {
             Table(selection: $selection) {
                 TableColumn("Feedback") { blockFeedback in
                     Picker("Feedback:", selection: blockFeedback.feedbackId) {
-                        ForEach(layout.feedbacks, id:\.self) { feedback in
+                        ForEach(layout.feedbacks.elements, id:\.self) { feedback in
                             Text(feedback.name).tag(feedback.id)
                         }
                     }
@@ -48,7 +48,7 @@ struct BlockAllFeedbacksView: View {
             HStack {
                 Button("+") {
                     block.add(layout.feedbacks[0].id)
-                }.disabled(layout.feedbacks.isEmpty)
+                }.disabled(layout.feedbacks.elements.isEmpty)
                 
                 Button("-") {
                     block.feedbacks.removeAll(where: {$0.id == selection})

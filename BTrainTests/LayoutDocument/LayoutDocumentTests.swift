@@ -98,7 +98,7 @@ class LayoutDocumentTests: XCTestCase {
         let doc = LayoutDocument(layout: LayoutBlankCreator().newLayout())
         XCTAssertEqual(0, doc.layout.blocks.elements.count)
         XCTAssertEqual(0, doc.layout.turnouts.elements.count)
-        XCTAssertEqual(0, doc.layout.feedbacks.count)
+        XCTAssertEqual(0, doc.layout.feedbacks.elements.count)
         XCTAssertEqual(0, doc.layout.transitions.count)
         XCTAssertEqual(0, doc.switchboard.provider.shapes.count)
 
@@ -106,7 +106,7 @@ class LayoutDocumentTests: XCTestCase {
         
         XCTAssertEqual(3, doc.layout.blocks.elements.count)
         XCTAssertEqual(2, doc.layout.turnouts.elements.count)
-        XCTAssertEqual(6, doc.layout.feedbacks.count)
+        XCTAssertEqual(6, doc.layout.feedbacks.elements.count)
         XCTAssertEqual(6, doc.layout.transitions.count)
         
         XCTAssertEqual(11, doc.switchboard.provider.shapes.count)

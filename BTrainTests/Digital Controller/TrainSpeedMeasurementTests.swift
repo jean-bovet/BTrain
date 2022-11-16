@@ -25,9 +25,9 @@ class TrainSpeedMeasurementTests: BTTestCase {
         }
 
         let loc = layout.locomotives[0]
-        let fa = layout.feedback(for: Identifier<Feedback>(uuid: "OL1.2"))!
-        let fb = layout.feedback(for: Identifier<Feedback>(uuid: "OL2.1"))!
-        let fc = layout.feedback(for: Identifier<Feedback>(uuid: "OL2.2"))!
+        let fa = layout.feedbacks[Identifier<Feedback>(uuid: "OL1.2")]!
+        let fb = layout.feedbacks[Identifier<Feedback>(uuid: "OL2.1")]!
+        let fc = layout.feedbacks[Identifier<Feedback>(uuid: "OL2.2")]!
 
         let step = 10
 
@@ -73,9 +73,9 @@ class TrainSpeedMeasurementTests: BTTestCase {
 
         let loc = layout.locomotives[0]
 
-        let fa = layout.feedback(for: Identifier<Feedback>(uuid: "OL1.2"))!
-        let fb = layout.feedback(for: Identifier<Feedback>(uuid: "OL2.1"))!
-        let fc = layout.feedback(for: Identifier<Feedback>(uuid: "OL2.2"))!
+        let fa = layout.feedbacks[Identifier<Feedback>(uuid: "OL1.2")]!
+        let fb = layout.feedbacks[Identifier<Feedback>(uuid: "OL2.1")]!
+        let fc = layout.feedbacks[Identifier<Feedback>(uuid: "OL2.2")]!
 
         let step = 10
         
@@ -161,9 +161,9 @@ class TrainSpeedMeasurementTests: BTTestCase {
 
         let loc = layout.locomotives[0]
 
-        let fa = layout.feedback(for: Identifier<Feedback>(uuid: "OL1.2"))!
-        let fb = layout.feedback(for: Identifier<Feedback>(uuid: "OL2.1"))!
-        let fc = layout.feedback(for: Identifier<Feedback>(uuid: "OL2.2"))!
+        let fa = layout.feedbacks[Identifier<Feedback>(uuid: "OL1.2")]!
+        let fb = layout.feedbacks[Identifier<Feedback>(uuid: "OL2.1")]!
+        let fc = layout.feedbacks[Identifier<Feedback>(uuid: "OL2.2")]!
 
         let step1 = 10
         let step2 = 20

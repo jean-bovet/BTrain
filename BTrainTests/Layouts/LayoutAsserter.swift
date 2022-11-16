@@ -101,7 +101,7 @@ final class LayoutAsserter {
                     // of the feedback within the block instead.
                     let block = layout.blocks[expectedBlock.id] ?? layout.block(named: expectedBlock.id.uuid)
                     let blockFeedback = block.feedbacks[index]
-                    let feedback = layout.feedback(for: blockFeedback.feedbackId)!
+                    let feedback = layout.feedbacks[blockFeedback.feedbackId]!
                     feedback.detected = expectedFeedback.detected
                     if feedback.detected {
                         detectedFeedbacks.append(feedback)

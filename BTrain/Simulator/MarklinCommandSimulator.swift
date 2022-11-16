@@ -389,7 +389,7 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
             // an unexpected feedback error in the layout. This happens when there is less than 250ms
             // between the time the feedback was triggered (because the feedback gets reset after 250ms)
             for bf in block.feedbacks {
-                if let feedback = layout.feedback(for: bf.feedbackId) {
+                if let feedback = layout.feedbacks[bf.feedbackId] {
                     setFeedback(feedback: feedback, value: 0)
                 }
             }
@@ -399,7 +399,7 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
         } else if try layout.atEndOfBlock(train: train) == false {
             let naturalDirection = block.trainInstance?.direction == .next
             let feedback = block.feedbacks[naturalDirection ? train.position : train.position - 1]
-            if let feedback = layout.feedback(for: feedback.feedbackId) {
+            if let feedback = layout.feedbacks[feedback.feedbackId] {
                 BTLogger.debug("[Simulator] Trigger feedback \(feedback.name) to move train \(train.name) within \(block.name)")
                 triggerFeedback(feedback: feedback)
             }

@@ -51,7 +51,7 @@ final class FeedbackMonitor {
     }
     
     func waitForFeedback(_ feedbackId: Identifier<Feedback>, detected: Bool, completion: @escaping CompletionBlock) {
-        if let feedback = layout.feedback(for: feedbackId), feedback.detected == detected {
+        if let feedback = layout.feedbacks[feedbackId], feedback.detected == detected {
             completion()
         } else {
             requests.append(Request(completion: completion, detected: detected, feedbackId: feedbackId))
@@ -64,7 +64,7 @@ final class FeedbackMonitor {
                 return
             }
             
-            guard let feedback = sSelf.layout.feedbacks.find(deviceID: deviceID, contactID: contactID) else {
+            guard let feedback = sSelf.layout.feedbacks.elements.find(deviceID: deviceID, contactID: contactID) else {
                 return
             }
                             

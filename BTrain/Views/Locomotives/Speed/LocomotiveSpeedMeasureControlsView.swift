@@ -68,7 +68,7 @@ struct LocomotiveSpeedMeasureControlsView: View {
     }
     
     private func feedbackName(feedbackID: String, defaultName: String) -> String {
-        if let name = document.layout.feedback(for: .init(uuid: feedbackID))?.name {
+        if let name = document.layout.feedbacks[.init(uuid: feedbackID)]?.name {
             return name
         } else {
             return defaultName

@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A700B1CE2925A2DD001CC33E /* FeedbackDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A700B1CD2925A2DD001CC33E /* FeedbackDetailsView.swift */; };
 		A7012C8328344A1C003AC687 /* DeveloperView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7012C8228344A1C003AC687 /* DeveloperView.swift */; };
 		A7012C8528344AC0003AC687 /* DeveloperMetrics.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7012C8428344AC0003AC687 /* DeveloperMetrics.swift */; };
 		A7012C8E2839BDC4003AC687 /* MockCommandInterface.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7012C8D2839BDC4003AC687 /* MockCommandInterface.swift */; };
@@ -388,6 +389,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		A700B1CD2925A2DD001CC33E /* FeedbackDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedbackDetailsView.swift; sourceTree = "<group>"; };
 		A7012C8228344A1C003AC687 /* DeveloperView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeveloperView.swift; sourceTree = "<group>"; };
 		A7012C8428344AC0003AC687 /* DeveloperMetrics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeveloperMetrics.swift; sourceTree = "<group>"; };
 		A7012C8D2839BDC4003AC687 /* MockCommandInterface.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockCommandInterface.swift; sourceTree = "<group>"; };
@@ -1069,6 +1071,7 @@
 			isa = PBXGroup;
 			children = (
 				A73B1642274DC4D20073947D /* FeedbackEditListView.swift */,
+				A700B1CD2925A2DD001CC33E /* FeedbackDetailsView.swift */,
 				A7B06AFA2727B73300BDD88C /* FeedbackView.swift */,
 				A702F22E290243FA0076186D /* FeedbackAddView.swift */,
 			);
@@ -1959,6 +1962,7 @@
 				A71A3DB228B1BBF3007F93C4 /* BlockShapeLabel.swift in Sources */,
 				A747967F291EA869001DF7FA /* TrainControlHeaderView.swift in Sources */,
 				A7710E6527799CF800C08150 /* Layout+Routes.swift in Sources */,
+				A700B1CE2925A2DD001CC33E /* FeedbackDetailsView.swift in Sources */,
 				A7FFE05B27E63C40002B4A4A /* BlockSpeedView.swift in Sources */,
 				A7710E6927799DA000C08150 /* Layout+Transitions.swift in Sources */,
 				A76C1C6728813ED400A22509 /* PathFinderResolver.swift in Sources */,

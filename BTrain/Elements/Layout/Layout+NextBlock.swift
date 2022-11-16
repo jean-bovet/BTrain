@@ -110,7 +110,7 @@ extension Layout {
         // Now return the appropriate feedback depending on the direction
         // of travel of the train into the next block.
         let entryFeedbackId = nextBlock.entryFeedback(for: nextBlockDirectionOfTravel)
-        if let entryFeedback = self.feedback(for: entryFeedbackId) {
+        if let entryFeedback = self.feedbacks[entryFeedbackId] {
             return .init(block: nextBlock, feedback: entryFeedback, direction: nextBlockDirectionOfTravel)
         } else {
             return nil

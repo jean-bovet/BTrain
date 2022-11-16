@@ -231,7 +231,7 @@ final class TrainController: TrainControlling, CustomStringConvertible {
     
     private func isFeedbackTriggered(layout: Layout, train: Train, feedbackId: Identifier<Feedback>) -> Bool {
         for bf in currentBlock.feedbacks {
-            guard let f = layout.feedback(for: bf.feedbackId) else {
+            guard let f = layout.feedbacks[bf.feedbackId] else {
                 continue
             }
             
@@ -245,7 +245,7 @@ final class TrainController: TrainControlling, CustomStringConvertible {
     func moveInsideBlock() throws -> Bool {
         // Iterate over all the feedbacks of the block and react to those who are triggered (aka detected)
         for (index, feedback) in currentBlock.feedbacks.enumerated() {
-            guard let f = layout.feedback(for: feedback.feedbackId), f.detected else {
+            guard let f = layout.feedbacks[feedback.feedbackId], f.detected else {
                 continue
             }
             

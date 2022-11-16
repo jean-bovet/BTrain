@@ -46,11 +46,11 @@ class LayoutTests: BTTestCase {
         layout.assign(b1, [f1])
         XCTAssertEqual(b1.feedbacks.count, 1)
 
-        let f11 = layout.feedback(for: f1.id)
+        let f11 = layout.feedbacks[f1.id]
         XCTAssertEqual(f1, f11)
         
         layout.remove(feedbackID: f1.id)
-        XCTAssertNil(layout.feedback(for: f1.id))
+        XCTAssertNil(layout.feedbacks[f1.id])
         XCTAssertEqual(b1.feedbacks.count, 0)
     }
     

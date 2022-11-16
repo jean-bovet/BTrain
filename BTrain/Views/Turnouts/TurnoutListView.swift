@@ -22,7 +22,7 @@ struct TurnoutListView: View {
             layout.newTurnout(name: "New Turnout", category: .singleLeft)
         }, delete: { turnout in
             layout.remove(turnoutID: turnout.id)
-        },sort: {
+        }, sort: {
             layout.blocks.elements.sort {
                 $0.name < $1.name
             }

@@ -191,7 +191,7 @@ class UnmanagedTrainOperationTests: BTTestCase {
         
         func triggerFeedback(_ named: String, _ detected: Bool = true) throws {
             let feedbackId = Identifier<Feedback>(uuid: named)
-            guard let feedback = layout.feedback(for: feedbackId) else {
+            guard let feedback = layout.feedbacks[feedbackId] else {
                 throw LayoutError.feedbackNotFound(feedbackId: feedbackId)
             }
 

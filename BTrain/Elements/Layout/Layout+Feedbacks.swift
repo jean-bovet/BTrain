@@ -16,26 +16,17 @@ extension Layout {
                 
     @discardableResult
     func newFeedback() -> Feedback {
-        let feedback = Feedback(id: LayoutIdentity.newIdentity(feedbacks, prefix: .feedback))
-        feedbacks.append(feedback)
+        let feedback = Feedback(id: LayoutIdentity.newIdentity(feedbacks.elements, prefix: .feedback))
+        feedbacks.add(feedback)
         return feedback
     }
 
     func remove(feedbackID: Identifier<Feedback>) {
-        feedbacks.removeAll(where: { $0.id == feedbackID })
+        feedbacks.elements.removeAll(where: { $0.id == feedbackID })
         
         blocks.elements.forEach { block in
             block.remove(feedbackId: feedbackID)
         }
     }
 
-    func feedback(for feedbackId: Identifier<Feedback>?) -> Feedback? {
-        feedbacks.first(where: { $0.id == feedbackId })
-    }
-    
-    func sortFeedbacks() {
-        feedbacks.sort {
-            $0.name < $1.name
-        }
-    }
 }

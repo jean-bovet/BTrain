@@ -21,7 +21,7 @@ struct BlockListView: View {
             layout.newBlock(name: "New Block", category: .free)
         }, delete: { block in
             layout.remove(blockID: block.id)
-        },sort: {
+        }, sort: {
             layout.blocks.elements.sort {
                 $0.name < $1.name
             }

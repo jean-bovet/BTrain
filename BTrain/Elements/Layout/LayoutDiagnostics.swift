@@ -98,7 +98,7 @@ final class LayoutDiagnostic: ObservableObject {
         for block in enabledBlocks {
             for blockFeedback in block.feedbacks {
                 if feedbacks.contains(blockFeedback.feedbackId) {
-                    guard let feedback = layout.feedback(for: blockFeedback.feedbackId) else {
+                    guard let feedback = layout.feedbacks[blockFeedback.feedbackId] else {
                         throw LayoutError.feedbackNotFound(feedbackId: blockFeedback.feedbackId)
                     }
                     errors.append(DiagnosticError.blockDuplicateFeedback(block: block, feedback: feedback))
@@ -110,7 +110,7 @@ final class LayoutDiagnostic: ObservableObject {
 
     func checkForDuplicateFeedbacks(_ errors: inout [DiagnosticError]) {
         var ids = Set<Identifier<Feedback>>()
-        for f in layout.feedbacks {
+        for f in layout.feedbacks.elements {
             if ids.contains(f.id) {
                 errors.append(DiagnosticError.feedbackIdAlreadyExists(feedback: f))
             } else {
@@ -119,7 +119,7 @@ final class LayoutDiagnostic: ObservableObject {
         }
 
         var names = Set<String>()
-        for f in layout.feedbacks {
+        for f in layout.feedbacks.elements {
             if names.contains(f.name) {
                 errors.append(DiagnosticError.feedbackNameAlreadyExists(feedback: f))
             } else {
@@ -128,7 +128,7 @@ final class LayoutDiagnostic: ObservableObject {
         }
 
         var addresses = Set<String>()
-        for f in layout.feedbacks {
+        for f in layout.feedbacks.elements {
             let key = "\(f.deviceID)-\(f.contactID)"
             if addresses.contains(key) {
                 errors.append(DiagnosticError.feedbackDuplicateAddress(feedback: f))
@@ -285,7 +285,7 @@ final class LayoutDiagnostic: ObservableObject {
         }
         
         var feedbacks = Set<Identifier<Feedback>>()
-        for feedback in layout.feedbacks {
+        for feedback in layout.feedbacks.elements {
             feedbacks.insert(feedback.id)
         }
         for block in layout.blocks.elements {
@@ -294,7 +294,7 @@ final class LayoutDiagnostic: ObservableObject {
             }
         }
         for unusedFeedback in feedbacks {
-            if let fb = layout.feedback(for: unusedFeedback) {
+            if let fb = layout.feedbacks[unusedFeedback] {
                 errors.append(DiagnosticError.unusedFeedback(feedback: fb))
             }
         }

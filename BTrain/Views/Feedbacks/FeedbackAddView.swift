@@ -32,6 +32,7 @@ struct FeedbackAddView: View {
                     .fixedSize()
             } else {
                 Text("Activate a feedback in the layout and it will be automatically detected here")
+                    .fixedSize()
             }
             HStack {
                 Text("Name:")

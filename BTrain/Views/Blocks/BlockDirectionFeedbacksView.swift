@@ -27,13 +27,13 @@ struct BlockFeedbackDirectionView: View {
         HStack {
             UndoProvider($feedback) { feedbackId in
                 Picker(label, selection: feedbackId) {
-                    if let defaultFeedback = defaultFeedback, let df = layout.feedback(for: defaultFeedback) {
+                    if let defaultFeedback = defaultFeedback, let df = layout.feedbacks[defaultFeedback] {
                         Text("\(df.name) (default)").tag(nil as Identifier<Feedback>?)
                     } else {
                         Text("No Feedback").tag(nil as Identifier<Feedback>?)
                     }
                     ForEach(block.feedbacks, id:\.self) { bf in
-                        if let candidate = layout.feedback(for: bf.feedbackId) {
+                        if let candidate = layout.feedbacks[bf.feedbackId] {
                             Text(candidate.name).tag(candidate.id as Identifier<Feedback>?)
                         }
                     }

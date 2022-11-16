@@ -41,7 +41,7 @@ final class Layout: Element, ObservableObject {
     @Published var stations = LayoutElementContainer<Station>()
     
     /// An array of feedbacks
-    @Published var feedbacks = [Feedback]()
+    @Published var feedbacks = LayoutElementContainer<Feedback>()
     
     /// An array of turnouts
     @Published var turnouts = LayoutElementContainer<Turnout>()
@@ -170,7 +170,11 @@ extension Layout: Codable {
         } else {
             self.stations = try container.decode(LayoutElementContainer<Station>.self, forKey: CodingKeys.stations)
         }
-        self.feedbacks = try container.decode([Feedback].self, forKey: CodingKeys.feedbacks)
+        if let feedbacks = try? container.decode([Feedback].self, forKey: CodingKeys.feedbacks) {
+            self.feedbacks.elements = feedbacks
+        } else {
+            self.feedbacks = try container.decode(LayoutElementContainer<Feedback>.self, forKey: CodingKeys.feedbacks)
+        }
         if let turnouts = try? container.decode([Turnout].self, forKey: CodingKeys.turnouts) {
             self.turnouts.elements = turnouts
         } else {

@@ -97,7 +97,7 @@ final class LayoutASCIIProducer {
             let actualIndex = reverse ? feedbacks.count - index - 1 : index
             
             let feedback = feedbacks[actualIndex]
-            guard let f = layout.feedback(for: feedback.feedbackId) else {
+            guard let f = layout.feedbacks[feedback.feedbackId] else {
                 throw LayoutError.feedbackNotFound(feedbackId: feedback.feedbackId)
             }
             

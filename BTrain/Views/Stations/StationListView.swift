@@ -24,7 +24,7 @@ struct StationListView: View {
             Station(id: LayoutIdentity.newIdentity(layout.stations.elements, prefix: .station), name: "New Station", elements: [])
         }, delete: { station in
             layout.stations.remove(station.id)
-        },sort: {
+        }, sort: {
             layout.stations.elements.sort {
                 $0.name < $1.name
             }

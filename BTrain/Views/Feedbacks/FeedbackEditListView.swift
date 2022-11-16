@@ -18,7 +18,6 @@ struct FeedbackEditListView: View {
     @ObservedObject var layout: Layout
     @ObservedObject var layoutController: LayoutController
     
-    @State private var selection: Identifier<Feedback>? = nil
     @State private var showAddNewFeedback = false
     
     struct NewFeedback: Equatable {
@@ -36,69 +35,30 @@ struct FeedbackEditListView: View {
     @Environment(\.undoManager) var undoManager
 
     var body: some View {
-        VStack {
-            Table(selection: $selection) {
-                
-                TableColumn("Name") { feedback in
-                    UndoProvider(feedback.name) { name in
-                        TextField("Name", text: name)
-                            .labelsHidden()
-                    }
-                }
-                
-                TableColumn("Device ID") { feedback in
-                    UndoProvider(feedback.deviceID) { deviceID in
-                        TextField("Device ID", value: deviceID,
-                                  format: .number)
-                    }
-                }
-                
-                TableColumn("Contact ID") { feedback in
-                    UndoProvider(feedback.contactID) { contactID in
-                        TextField("Contact ID", value: contactID,
-                                  format: .number)
-                    }
-                }
-                
-                TableColumn("State") { feedback in
-                    FeedbackView(label: "", state: feedback.detected)
-                }
-            } rows: {
-                ForEach($layout.feedbacks) { feedback in
-                    TableRow(feedback)
+        LayoutElementsEditingView(layout: layout, new: {
+            layout.newFeedback()
+        }, delete: { feedback in
+            layout.remove(feedbackID: feedback.id)
+        }, sort: {
+            layout.feedbacks.elements.sort {
+                $0.name < $1.name
+            }
+        }, elementContainer: $layout.feedbacks, more: {
+            if doc.connected {
+                Button("􀥄") {
+                    showAddNewFeedback.toggle()
                 }
             }
+        }, row: { feedback in
             HStack {
-                Text("\(layout.feedbacks.count) feedbacks")
-                
-                Spacer()
-                
-                Button("+") {
-                    addNewFeedback()
-                }
-                
-                if doc.connected {
-                    Button("􀥄") {
-                        showAddNewFeedback.toggle()
-                    }
-                }
-                
-                Button("-") {
-                    if let feedback = layout.feedback(for: selection!) {
-                        layout.remove(feedbackID: feedback.id)
-                        undoManager?.registerUndo(withTarget: layout, handler: { layout in
-                            layout.feedbacks.append(feedback)
-                        })
-                    }
-                }.disabled(selection == nil)
-                
-                Spacer().fixedSpace()
-                
-                Button("􀄬") {
-                    layout.sortFeedbacks()
-                }
-            }.padding([.leading])
-        }.sheet(isPresented: $showAddNewFeedback, onDismiss: {
+                TextField("Name", text: feedback.name)
+                FeedbackView(label: "", state: feedback.detected)
+                    .frame(maxWidth: 50)
+            }.labelsHidden()
+        }) { feedback in
+            FeedbackDetailsView(layout: layout, feedback: feedback)
+        }
+        .sheet(isPresented: $showAddNewFeedback, onDismiss: {
             if newFeedback != NewFeedback.empty() {
                 addNewFeedback(name: newFeedback.name, deviceID: newFeedback.deviceID, contactID: newFeedback.contactID)
             }
@@ -114,9 +74,7 @@ struct FeedbackEditListView: View {
         feedback.deviceID = deviceID
         feedback.contactID = contactID
         undoManager?.registerUndo(withTarget: layout, handler: { layout in
-            layout.feedbacks.removeAll { t in
-                t.id == feedback.id
-            }
+            layout.feedbacks.remove(feedback.id)
         })
     }
 }

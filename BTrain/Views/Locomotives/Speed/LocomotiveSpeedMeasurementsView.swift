@@ -132,7 +132,7 @@ struct TrainSpeedMeasureFeedbackView: View {
     @Binding var feedbackUUID: String?
     
     var feedback: Feedback? {
-        if let feedbackUUID = feedbackUUID, let feedback = layout.feedback(for: Identifier<Feedback>(uuid: feedbackUUID)) {
+        if let feedbackUUID = feedbackUUID, let feedback = layout.feedbacks[Identifier<Feedback>(uuid: feedbackUUID)] {
             return feedback
         } else {
             return nil
@@ -143,7 +143,7 @@ struct TrainSpeedMeasureFeedbackView: View {
         VStack {
             Text(label)
             Picker(label, selection: $feedbackUUID) {
-                ForEach(layout.feedbacks, id:\.self) { feedback in
+                ForEach(layout.feedbacks.elements, id:\.self) { feedback in
                     Text(feedback.name).tag(feedback.id.uuid as String?)
                 }
             }
