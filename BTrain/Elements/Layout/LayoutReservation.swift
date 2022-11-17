@@ -389,7 +389,7 @@ final class LayoutReservation {
                 }
             }
         layout.turnouts.elements.filter { $0.reserved?.train == train.id }.forEach { $0.reserved = nil; $0.train = nil }
-        layout.transitions.filter { $0.reserved == train.id }.forEach { $0.reserved = nil; $0.train = nil }
+        layout.transitions.elements.filter { $0.reserved == train.id }.forEach { $0.reserved = nil; $0.train = nil }
     }
     
     private func debug(_ msg: String) {

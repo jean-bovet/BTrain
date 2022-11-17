@@ -276,7 +276,7 @@ final class LayoutDiagnostic: ObservableObject {
             }
         }
         
-        for transition in layout.transitions {
+        for transition in layout.transitions.elements {
             for socket in [transition.a, transition.b] {
                 if try layout.transition(from: socket) == nil {
                     errors.append(DiagnosticError.invalidTransition(transitionId: transition.id, socket: socket))
@@ -370,7 +370,7 @@ final class LayoutDiagnostic: ObservableObject {
     
     func repair() {
         // Remove any transitions that are looping back to the same socket
-        layout.transitions.removeAll { transition in
+        layout.transitions.elements.removeAll { transition in
             transition.a == transition.b
         }
         

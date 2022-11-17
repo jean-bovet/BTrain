@@ -63,8 +63,8 @@ final class LayoutObserverTests: XCTestCase {
         let t1 = Turnout(name: "T_1")
 
         let registerBlock: RegisterBlock = { callback in
-            lo.registerForTurnoutChange { trains in
-                callback(trains)
+            lo.registerForTurnoutChange { turnouts in
+                callback(turnouts)
             }
         }
         
@@ -76,6 +76,27 @@ final class LayoutObserverTests: XCTestCase {
         await assertChange(expected: [], operation: { layout.turnouts.remove(t1.id) }, register: registerBlock, unregister: unregister)
         await assertChange(expected: [t1], operation: { layout.turnouts.elements.append(t1) }, register: registerBlock, unregister: unregister)
         await assertChange(expected: [], operation: { layout.turnouts.elements.removeFirst() }, register: registerBlock, unregister: unregister)
+    }
+
+    func testTransitions() async {
+        let layout = Layout()
+        let lo = LayoutObserver(layout: layout)
+        let t1 = Transition(id: .init(uuid: "t1"), a: .block(.init(uuid: "b1")), b: .block(.init(uuid: "b2")))
+
+        let registerBlock: RegisterBlock = { callback in
+            lo.registerForTransitionChange { transitions in
+                callback(transitions)
+            }
+        }
+        
+        let unregister: UnregisterBlock = {
+            lo.unregisterAll()
+        }
+
+        await assertChange(expected: [t1], operation: { layout.transitions.add(t1) }, register: registerBlock, unregister: unregister)
+        await assertChange(expected: [], operation: { layout.transitions.remove(t1.id) }, register: registerBlock, unregister: unregister)
+        await assertChange(expected: [t1], operation: { layout.transitions.elements.append(t1) }, register: registerBlock, unregister: unregister)
+        await assertChange(expected: [], operation: { layout.transitions.elements.removeFirst() }, register: registerBlock, unregister: unregister)
     }
 
     typealias RegisterBlock<E> = (@escaping ([E]) -> Void) -> Void

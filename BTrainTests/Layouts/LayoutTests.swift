@@ -27,7 +27,7 @@ class LayoutTests: BTTestCase {
 
         try layout.setTrainToBlock(t1.id, b1.id, direction: .next)
         XCTAssertEqual(t1.blockId, b1.id)
-        XCTAssertEqual(layout.transitions.count, 2)
+        XCTAssertEqual(layout.transitions.elements.count, 2)
 
         let b11 = layout.blocks[b1.id]
         XCTAssertTrue(b1 === b11)
@@ -35,7 +35,7 @@ class LayoutTests: BTTestCase {
         layout.remove(blockID: b1.id)
         XCTAssertNil(layout.blocks[b1.id])
         XCTAssertNil(t1.blockId)
-        XCTAssertEqual(layout.transitions.count, 0)
+        XCTAssertEqual(layout.transitions.elements.count, 0)
     }
 
     func testAddAndRemoveFeedback() throws {
@@ -61,14 +61,14 @@ class LayoutTests: BTTestCase {
         let t1 = layout.newTurnout(name: "t1", category: .doubleSlip)
         layout.link(from: b1.next, to: t1.socket0)
         layout.link(from: t1.socket1, to: b1.previous)
-        XCTAssertEqual(layout.transitions.count, 2)
+        XCTAssertEqual(layout.transitions.elements.count, 2)
 
         let t11 = layout.turnouts[t1.id]
         XCTAssertEqual(t1, t11)
         
         layout.remove(turnoutID: t1.id)
         XCTAssertNil(layout.turnouts[t1.id])
-        XCTAssertEqual(layout.transitions.count, 0)
+        XCTAssertEqual(layout.transitions.elements.count, 0)
     }
     
     func testTrainDirection() throws {

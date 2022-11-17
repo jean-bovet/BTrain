@@ -48,7 +48,7 @@ extension Layout {
     }
 
     func remove(blockID: Identifier<Block>) {
-        transitions.removeAll { transition in
+        transitions.elements.removeAll { transition in
             transition.a.block == blockID ||
                     transition.b.block == blockID
         }

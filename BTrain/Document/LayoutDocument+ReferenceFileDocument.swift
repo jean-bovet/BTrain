@@ -118,7 +118,7 @@ extension LayoutDocument: ReferenceFileDocument {
         layout.trains.elements.forEach({$0.restore(layout: layout)})
         layout.blocks.elements.forEach({$0.restore(layout: layout)})
         layout.turnouts.elements.forEach({$0.restore(layout: layout)})
-        layout.transitions.forEach({$0.restore(layout: layout)})
+        layout.transitions.elements.forEach({$0.restore(layout: layout)})
         layout.updateRoutesUsingRouteScripts()
     }
 

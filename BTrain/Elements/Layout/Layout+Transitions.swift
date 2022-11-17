@@ -19,24 +19,20 @@ extension Layout {
     }
 
     func link(from: Socket, to: Socket) {
-        add(Transition(id: LayoutIdentity.newIdentity(transitions, prefix: .transition), a: from, b: to))
+        add(Transition(id: LayoutIdentity.newIdentity(transitions.elements, prefix: .transition), a: from, b: to))
     }
     
     func add(_ transition: Transition) {
-        guard transitions.first(where: { $0.same(as: transition) }) == nil else {
+        guard transitions.elements.first(where: { $0.same(as: transition) }) == nil else {
             return
         }
-        transitions.append(transition)
+        transitions.add(transition)
     }
     
     func remove(transitionID: Identifier<Transition>) {
-        transitions.removeAll(where: { $0.id == transitionID })        
+        transitions.elements.removeAll(where: { $0.id == transitionID })
     }
 
-    func transition(for transitionID: Identifier<Transition>) -> ITransition? {
-        transitions.first(where: { $0.id == transitionID })
-    }
-    
     func transitions(from fromBlock: Identifier<Block>, to nextBlock: Identifier<Block>, direction: Direction) throws -> [ITransition] {
         guard let b1 = self.blocks[fromBlock] else {
             throw LayoutError.blockNotFound(blockId: fromBlock)
@@ -55,7 +51,7 @@ extension Layout {
     // or a single transition out of a socket.
     // An exception is thrown if more than one transition is found because this is an error.
     func transition(from: Socket) throws -> ITransition? {
-        let candidates: [ITransition] = self.transitions.compactMap { transition in
+        let candidates: [ITransition] = self.transitions.elements.compactMap { transition in
             if transition.a.contains(other: from) {
                 return transition
             } else if transition.b.contains(other: from) {

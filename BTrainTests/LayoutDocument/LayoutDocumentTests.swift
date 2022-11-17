@@ -99,7 +99,7 @@ class LayoutDocumentTests: XCTestCase {
         XCTAssertEqual(0, doc.layout.blocks.elements.count)
         XCTAssertEqual(0, doc.layout.turnouts.elements.count)
         XCTAssertEqual(0, doc.layout.feedbacks.elements.count)
-        XCTAssertEqual(0, doc.layout.transitions.count)
+        XCTAssertEqual(0, doc.layout.transitions.elements.count)
         XCTAssertEqual(0, doc.switchboard.provider.shapes.count)
 
         doc.apply(LayoutLoop1().newLayout())
@@ -107,7 +107,7 @@ class LayoutDocumentTests: XCTestCase {
         XCTAssertEqual(3, doc.layout.blocks.elements.count)
         XCTAssertEqual(2, doc.layout.turnouts.elements.count)
         XCTAssertEqual(6, doc.layout.feedbacks.elements.count)
-        XCTAssertEqual(6, doc.layout.transitions.count)
+        XCTAssertEqual(6, doc.layout.transitions.elements.count)
         
         XCTAssertEqual(11, doc.switchboard.provider.shapes.count)
     }

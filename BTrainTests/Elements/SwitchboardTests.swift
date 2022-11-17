@@ -24,7 +24,7 @@ class SwitchboardTests: XCTestCase {
     
     override func setUp() {
         layout = LayoutIncomplete().newLayout()
-        XCTAssertEqual(layout.transitions.count, 0)
+        XCTAssertEqual(layout.transitions.elements.count, 0)
         controller = LayoutController(layout: layout, switchboard: nil, interface: MarklinInterface())
         
         let context = ShapeContext()
@@ -60,7 +60,7 @@ class SwitchboardTests: XCTestCase {
         dragOp.onDragChanged(location: t1Socket0, translation: b1NextSocket.distance(to: t1Socket0))
         dragOp.onDragEnded()
         
-        XCTAssertEqual(layout.transitions.count, 1)
+        XCTAssertEqual(layout.transitions.elements.count, 1)
         
         let tr1 = layout.transitions[0]
         XCTAssertEqual(tr1.a.block!, b1.block.id)
@@ -75,7 +75,7 @@ class SwitchboardTests: XCTestCase {
         dragOp.onDragChanged(location: b2PreviousSocket, translation: t1Socket1.distance(to: b2PreviousSocket))
         dragOp.onDragEnded()
         
-        XCTAssertEqual(layout.transitions.count, 2)
+        XCTAssertEqual(layout.transitions.elements.count, 2)
         
         let tr2 = layout.transitions[1]
         XCTAssertEqual(tr2.a.turnout!, t1.turnout.id)

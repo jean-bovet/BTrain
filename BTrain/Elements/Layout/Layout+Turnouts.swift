@@ -40,7 +40,7 @@ extension Layout {
     func remove(turnoutID: Identifier<Turnout>) {
         turnouts.remove(turnoutID)
         
-        transitions.removeAll { transition in
+        transitions.elements.removeAll { transition in
             transition.a.turnout == turnoutID ||
                     transition.b.turnout == turnoutID
         }

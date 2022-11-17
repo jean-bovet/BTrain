@@ -52,10 +52,8 @@ final class Layout: Element, ObservableObject {
     /// A container holding the locomotives
     @Published var locomotives = LayoutElementContainer<Locomotive>()
     
-    /// An array of transitions.
-    ///
-    /// A transition links two blocks or turnouts together.
-    @Published var transitions = [Transition]()
+    /// A container holding the transitions
+    @Published var transitions = LayoutElementContainer<Transition>()
     
     /// Array of optional control points that the user has defined for a particular transition. By default, this array is empty
     /// because the transition automatically create their control point given the positions of the origin and target element.
@@ -199,7 +197,11 @@ extension Layout: Codable {
         } else {
             self.routeScripts = try container.decodeIfPresent(LayoutElementContainer<RouteScript>.self, forKey: CodingKeys.routeScripts) ?? LayoutElementContainer<RouteScript>()
         }
-        self.transitions = try container.decode([Transition].self, forKey: CodingKeys.transitions)
+        if let transitions = try? container.decode([Transition].self, forKey: CodingKeys.transitions) {
+            self.transitions.elements = transitions
+        } else {
+            self.transitions = try container.decode(LayoutElementContainer<Transition>.self, forKey: CodingKeys.transitions)
+        }
         self.controlPoints = try container.decode([ControlPoint].self, forKey: CodingKeys.controlPoints)
     }
     

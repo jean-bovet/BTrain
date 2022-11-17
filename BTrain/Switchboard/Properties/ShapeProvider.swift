@@ -96,7 +96,7 @@ final class ShapeProvider {
             updateTurnouts(turnouts: layout.turnouts.elements)
         }
         
-        for transition in transitions ?? layout.transitions {
+        for transition in transitions ?? layout.transitions.elements {
             do {
                 append(LinkShape(from: try socketInstance(for: transition.a, shapes: self),
                                  to: try socketInstance(for: transition.b, shapes: self),

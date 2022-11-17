@@ -43,7 +43,8 @@ final class LayoutObserver {
         }))
         
         cancellables.append(layout.$transitions.dropFirst().sink(receiveValue: { [weak self] transitions in
-            self?.transitionsCallbacks.forEach { $0(transitions) }
+            self?.transitionsCallbacks.forEach { $0(transitions.elements) }
+            self?.anyCallbacks.forEach { $0() }
         }))
 
         cancellables.append(layout.$feedbacks.dropFirst().sink(receiveValue: { [weak self] feedbacks in

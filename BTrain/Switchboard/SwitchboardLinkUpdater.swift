@@ -31,7 +31,7 @@ final class SwitchboardLinkUpdater {
 
         // Always remove the transition from the layout because a new one will be added
         if let transition = linkShape.transition {
-            layout.transitions.removeAll { $0.id == transition.id }
+            layout.transitions.elements.removeAll { $0.id == transition.id }
         }
 
         linkShape.selected = false
@@ -46,7 +46,7 @@ final class SwitchboardLinkUpdater {
             
             // If both sockets are found, this means there is a link
             // established between two elements (two shapes).
-            let t = Transition(id: LayoutIdentity.newIdentity(layout.transitions, prefix: .transition), a: fromSocket, b: toSocket)
+            let t = Transition(id: LayoutIdentity.newIdentity(layout.transitions.elements, prefix: .transition), a: fromSocket, b: toSocket)
             
             // Assign the new transition to the shape
             linkShape.transition = t

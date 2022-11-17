@@ -227,7 +227,7 @@ extension Layout {
                 block.trainInstance = nil
             }
         turnouts.elements.filter { $0.reserved?.train == train.id }.forEach { $0.reserved = nil; $0.train = nil }
-        transitions.filter { $0.reserved == train.id }.forEach { $0.reserved = nil; $0.train = nil }
+        transitions.elements.filter { $0.reserved == train.id }.forEach { $0.reserved = nil; $0.train = nil }
         
         train.blockId = nil
     }
