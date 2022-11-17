@@ -12,7 +12,6 @@
 
 import Foundation
 import Combine
-import OrderedCollections
 
 final class LayoutObserver {
     
@@ -25,30 +24,26 @@ final class LayoutObserver {
   
         cancellables.append(layout.$trains.dropFirst().sink(receiveValue: { [weak self] trains in
             self?.trainCallbacks.forEach { $0(trains.elements) }
-            self?.anyCallbacks.forEach { $0() }
         }))
         
         cancellables.append(layout.$blocks.dropFirst().sink(receiveValue: { [weak self] blocks in
             // Note: need to pass the `blocks` parameter here because the layout.blocks
             // has not yet had the time to be updated
             self?.blockCallbacks.forEach { $0(blocks.elements) }
-            self?.anyCallbacks.forEach { $0() }
         }))
         
         cancellables.append(layout.$turnouts.dropFirst().sink(receiveValue: { [weak self] turnouts in
             // Note: need to pass the `turnouts` parameter here because the layout.turnouts
             // has not yet had the time to be updated
             self?.turnoutCallbacks.forEach { $0(turnouts.elements) }
-            self?.anyCallbacks.forEach { $0() }
         }))
         
         cancellables.append(layout.$transitions.dropFirst().sink(receiveValue: { [weak self] transitions in
             self?.transitionsCallbacks.forEach { $0(transitions.elements) }
-            self?.anyCallbacks.forEach { $0() }
         }))
 
         cancellables.append(layout.$feedbacks.dropFirst().sink(receiveValue: { [weak self] feedbacks in
-            self?.anyCallbacks.forEach { $0() }
+            self?.feedbackCallbacks.forEach { $0(feedbacks.elements) }
         }))
     }
     
@@ -56,13 +51,13 @@ final class LayoutObserver {
     typealias BlockChangeCallback = ([Block]) -> Void
     typealias TurnoutChangeCallback = ([Turnout]) -> Void
     typealias TransitionChangeCallback = ([Transition]) -> Void
-    typealias AnyChangeCallback = () -> Void
+    typealias FeedbackChangeCallback = ([Feedback]) -> Void
 
     private var trainCallbacks = [TrainChangeCallback]()
     private var blockCallbacks = [BlockChangeCallback]()
     private var turnoutCallbacks = [TurnoutChangeCallback]()
     private var transitionsCallbacks = [TransitionChangeCallback]()
-    private var anyCallbacks = [AnyChangeCallback]()
+    private var feedbackCallbacks = [FeedbackChangeCallback]()
 
     func registerForTrainChange(_ callback: @escaping TrainChangeCallback) {
         trainCallbacks.append(callback)
@@ -80,8 +75,8 @@ final class LayoutObserver {
         transitionsCallbacks.append(callback)
     }
 
-    func registerForAnyChange(_ callback: @escaping AnyChangeCallback) {
-        anyCallbacks.append(callback)
+    func registerForFeedbackChange(_ callback: @escaping FeedbackChangeCallback) {
+        feedbackCallbacks.append(callback)
     }
     
     func unregisterAll() {
@@ -89,7 +84,7 @@ final class LayoutObserver {
         blockCallbacks.removeAll()
         turnoutCallbacks.removeAll()
         transitionsCallbacks.removeAll()
-        anyCallbacks.removeAll()
+        feedbackCallbacks.removeAll()
     }
 
 }

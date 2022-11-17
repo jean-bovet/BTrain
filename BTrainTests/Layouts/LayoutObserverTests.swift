@@ -99,6 +99,27 @@ final class LayoutObserverTests: XCTestCase {
         await assertChange(expected: [], operation: { layout.transitions.elements.removeFirst() }, register: registerBlock, unregister: unregister)
     }
 
+    func testFeedbacks() async {
+        let layout = Layout()
+        let lo = LayoutObserver(layout: layout)
+        let t1 = Feedback(id: .init(uuid: "f_1"))
+
+        let registerBlock: RegisterBlock = { callback in
+            lo.registerForFeedbackChange { feedbacks in
+                callback(feedbacks)
+            }
+        }
+        
+        let unregister: UnregisterBlock = {
+            lo.unregisterAll()
+        }
+
+        await assertChange(expected: [t1], operation: { layout.feedbacks.add(t1) }, register: registerBlock, unregister: unregister)
+        await assertChange(expected: [], operation: { layout.feedbacks.remove(t1.id) }, register: registerBlock, unregister: unregister)
+        await assertChange(expected: [t1], operation: { layout.feedbacks.elements.append(t1) }, register: registerBlock, unregister: unregister)
+        await assertChange(expected: [], operation: { layout.feedbacks.elements.removeFirst() }, register: registerBlock, unregister: unregister)
+    }
+
     typealias RegisterBlock<E> = (@escaping ([E]) -> Void) -> Void
     typealias UnregisterBlock = () -> Void
     
