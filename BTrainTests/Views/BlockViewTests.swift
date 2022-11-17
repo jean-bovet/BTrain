@@ -27,7 +27,7 @@ extension BlockSpeedView: Inspectable { }
 class BlockViewTests: RootViewTests {
     
     func testListView() throws {
-        let sut = BlockListView(layout: LayoutLoop2().newLayout())
+        let sut = BlockEditingView(layout: LayoutLoop2().newLayout())
         _ = try sut.inspect().find(text: "5 Elements")
     }
     

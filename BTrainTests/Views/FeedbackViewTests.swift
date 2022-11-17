@@ -25,7 +25,7 @@ class FeedbackViewTests: RootViewTests {
     
     func testEditList() throws {
         let doc = LayoutDocument(layout: LayoutLoop2().newLayout())
-        let sut = FeedbackEditListView(doc: doc, layout: doc.layout, layoutController: doc.layoutController)
+        let sut = FeedbackEditingView(doc: doc, layout: doc.layout, layoutController: doc.layoutController)
         _ = try sut.inspect().find(text: "10 Elements")
     }
 

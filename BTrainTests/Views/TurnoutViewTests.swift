@@ -22,7 +22,7 @@ class TurnoutViewTests: RootViewTests {
     
     func testListView() throws {
         let doc = newDocument()
-        let sut = TurnoutListView(doc: doc, layout: LayoutLoop2().newLayout())
+        let sut = TurnoutEditingView(doc: doc, layout: LayoutLoop2().newLayout())
         _ = try sut.inspect().find(text: "2 Elements")
     }
 

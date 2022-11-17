@@ -11,35 +11,32 @@
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 import XCTest
-import ViewInspector
 
 @testable import BTrain
+import ViewInspector
 
-extension DocumentView: Inspectable { }
-extension SwitchboardContainerView: Inspectable { }
-extension BlockEditingView: Inspectable { }
-extension TurnoutEditingView: Inspectable { }
-extension FeedbackEditingView: Inspectable { }
-extension TrainControlListView: Inspectable { }
-extension SwitchBoardView: Inspectable { }
-extension FeedbackView: Inspectable { }
-extension LayoutElementsEditingView: Inspectable { }
-extension LayoutElementsEditingView.ListOfElements: Inspectable { }
-extension TrainEditingView: Inspectable { }
-extension TrainDetailsView: Inspectable { }
-extension TrainControlContainerView: Inspectable { }
-extension TrainControlSpeedView: Inspectable { }
-extension TrainControlLocationView: Inspectable { }
-extension TrainControlRouteView: Inspectable { }
-extension UndoProvider: Inspectable { }
+extension LayoutScriptEditingView: Inspectable { }
 
-class RootViewTests: BTTestCase {
-    
-    func newLayout() -> Layout {
-        newDocument().layout
+final class LayoutScriptEditingViewTests: XCTestCase {
+
+    func testAddNewScript() throws {
+        let doc = LayoutDocument(layout: Layout())
+        let layout = doc.layout
+        let sut = LayoutScriptEditingView(doc: doc, layout: layout)
+        
+        XCTAssertEqual(layout.layoutScripts.elements.count, 0)
+        
+        let addButton = try sut.inspect().find(button: "+")
+        try addButton.tap()
+
+        XCTAssertEqual(layout.layoutScripts.elements.count, 1)
+        XCTAssertEqual(layout.layoutScripts[0].name, "New Script")
+
+        let deleteButton = try sut.inspect().find(button: "-")
+        XCTAssertTrue(deleteButton.isDisabled())
+
+        let duplicateButton = try sut.inspect().find(button: "􀐅")
+        XCTAssertTrue(duplicateButton.isDisabled())
     }
-    
-    func newDocument() -> LayoutDocument {
-        LayoutDocument(layout: LayoutLoop2().newLayout())
-    }
+
 }

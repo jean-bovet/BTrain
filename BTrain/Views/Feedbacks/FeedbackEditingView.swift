@@ -12,7 +12,7 @@
 
 import SwiftUI
 
-struct FeedbackEditListView: View {
+struct FeedbackEditingView: View {
     
     @ObservedObject var doc: LayoutDocument
     @ObservedObject var layout: Layout
@@ -83,13 +83,13 @@ struct FeedbackEditListView: View {
     }
 }
 
-struct FeedbackEditListView_Previews: PreviewProvider {
+struct FeedbackEditingView_Previews: PreviewProvider {
     
     static let doc = LayoutDocument(layout: LayoutLoop2().newLayout())
     
     static var previews: some View {
         ConfigurationSheet(title: "Feedbacks") {
-            FeedbackEditListView(doc: doc, layout: doc.layout, layoutController: doc.layoutController)
+            FeedbackEditingView(doc: doc, layout: doc.layout, layoutController: doc.layoutController)
         }
     }
 }

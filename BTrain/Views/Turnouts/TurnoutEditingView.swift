@@ -12,45 +12,47 @@
 
 import SwiftUI
 
-struct BlockListView: View {
+struct TurnoutEditingView: View {
     
+    let doc: LayoutDocument
     @ObservedObject var layout: Layout
-        
+
     var body: some View {
         LayoutElementsEditingView(layout: layout, new: {
-            layout.newBlock(name: "New Block", category: .free)
-        }, delete: { block in
-            layout.remove(blockID: block.id)
-        }, duplicate: { block in
-            layout.duplicate(block: block)
+            layout.newTurnout(name: "New Turnout", category: .singleLeft)
+        }, delete: { turnout in
+            layout.remove(turnoutID: turnout.id)
+        }, duplicate: { turnout in
+            layout.duplicate(turnout: turnout)
         }, sort: {
             layout.blocks.elements.sort {
                 $0.name < $1.name
             }
-        }, elementContainer: $layout.blocks, row: { block in
+        }, elementContainer: $layout.turnouts, row: { turnout in
             HStack {
-                UndoProvider(block) { block in
-                    Toggle("Enabled", isOn: block.enabled)
+                UndoProvider(turnout) { turnout in
+                    Toggle("Enabled", isOn: turnout.enabled)
                 }
-                
-                UndoProvider(block) { block in
-                    TextField("Name", text: block.name)
+                UndoProvider(turnout) { turnout in
+                    TextField("Name", text: turnout.name)
                 }
             }.labelsHidden()
-        }) { block in
+        }) { turnout in
             ScrollView {
-                BlockDetailsView(layout: layout, block: block)
+                TurnoutDetailsView(doc: doc, layout: layout, turnout: turnout)
                     .padding()
             }
         }
     }
 }
 
-struct BlockEditListView_Previews: PreviewProvider {
+struct TurnoutEditingView_Previews: PreviewProvider {
 
+    static let doc = LayoutDocument(layout: LayoutLoop2().newLayout())
+    
     static var previews: some View {
-        ConfigurationSheet(title: "Blocks") {
-            BlockListView(layout: LayoutLoop2().newLayout())
+        ConfigurationSheet(title: "Turnouts") {
+            TurnoutEditingView(doc: doc, layout: doc.layout)
         }
     }
 }

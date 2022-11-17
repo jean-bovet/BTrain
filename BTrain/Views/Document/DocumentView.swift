@@ -102,13 +102,13 @@ struct DocumentView: View {
             case .locomotives:
                 LocomotiveEditingView(document: document, layout: document.layout)
             case .stations:
-                StationListView(layout: document.layout)
+                StationEditingView(layout: document.layout)
             case .blocks:
-                BlockListView(layout: document.layout)
+                BlockEditingView(layout: document.layout)
             case .turnouts:
-                TurnoutListView(doc: document, layout: document.layout)
+                TurnoutEditingView(doc: document, layout: document.layout)
             case .feedbacks:
-                FeedbackEditListView(doc: document, layout: document.layout, layoutController: document.layoutController)
+                FeedbackEditingView(doc: document, layout: document.layout, layoutController: document.layoutController)
             case .cs3:
                 CS3DebuggerView(doc: document)
             }

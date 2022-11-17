@@ -19,7 +19,7 @@ struct FeedbackAddView: View {
     @ObservedObject var doc: LayoutDocument
     @ObservedObject var layoutController: LayoutController
 
-    @Binding var newFeedback: FeedbackEditListView.NewFeedback
+    @Binding var newFeedback: FeedbackEditingView.NewFeedback
 
     @State private var name = ""
     
@@ -42,15 +42,15 @@ struct FeedbackAddView: View {
                 Spacer()
                 
                 Button("Cancel") {
-                    newFeedback = FeedbackEditListView.NewFeedback.empty()
+                    newFeedback = FeedbackEditingView.NewFeedback.empty()
                     presentationMode.wrappedValue.dismiss()
                 }.keyboardShortcut(.cancelAction)
                 
                 Button("Add") {
                     if let feedback = layoutController.lastDetectedFeedback {
-                        newFeedback = FeedbackEditListView.NewFeedback(name: name, deviceID: feedback.deviceID, contactID: feedback.contactID)
+                        newFeedback = FeedbackEditingView.NewFeedback(name: name, deviceID: feedback.deviceID, contactID: feedback.contactID)
                     } else {
-                        newFeedback = FeedbackEditListView.NewFeedback.empty()
+                        newFeedback = FeedbackEditingView.NewFeedback.empty()
                     }
                     presentationMode.wrappedValue.dismiss()
                 }
@@ -73,7 +73,7 @@ struct FeedbackAddView: View {
 struct FeedbackAddView_Previews: PreviewProvider {
     
     static let doc = LayoutDocument(layout: LayoutYard().newLayout())
-    static let feedback = FeedbackEditListView.NewFeedback.empty()
+    static let feedback = FeedbackEditingView.NewFeedback.empty()
     
     static var previews: some View {
         FeedbackAddView(doc: doc, layoutController: doc.layoutController, newFeedback: .constant(feedback))

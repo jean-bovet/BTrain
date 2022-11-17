@@ -10,6 +10,7 @@
 		A700B1CE2925A2DD001CC33E /* FeedbackDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A700B1CD2925A2DD001CC33E /* FeedbackDetailsView.swift */; };
 		A700B1D02925AEB2001CC33E /* Layout+LayoutScripts.swift in Sources */ = {isa = PBXBuildFile; fileRef = A700B1CF2925AEB2001CC33E /* Layout+LayoutScripts.swift */; };
 		A700B1D22925C6E8001CC33E /* LayoutObserverTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A700B1D12925C6E8001CC33E /* LayoutObserverTests.swift */; };
+		A700B1D42925E57C001CC33E /* LayoutScriptEditingViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A700B1D32925E57C001CC33E /* LayoutScriptEditingViewTests.swift */; };
 		A7012C8328344A1C003AC687 /* DeveloperView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7012C8228344A1C003AC687 /* DeveloperView.swift */; };
 		A7012C8528344AC0003AC687 /* DeveloperMetrics.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7012C8428344AC0003AC687 /* DeveloperMetrics.swift */; };
 		A7012C8E2839BDC4003AC687 /* MockCommandInterface.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7012C8D2839BDC4003AC687 /* MockCommandInterface.swift */; };
@@ -82,8 +83,8 @@
 		A73AFEB527265A4B00E1ED21 /* ClientConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = A73AFEB327265A4B00E1ED21 /* ClientConnection.swift */; };
 		A73AFEB727265ADA00E1ED21 /* MarklinInterface.swift in Sources */ = {isa = PBXBuildFile; fileRef = A73AFEB627265ADA00E1ED21 /* MarklinInterface.swift */; };
 		A73B1639274B60A10073947D /* BTLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = A73B1638274B60A10073947D /* BTLogger.swift */; };
-		A73B163C274DC0F50073947D /* TurnoutListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A73B163B274DC0F50073947D /* TurnoutListView.swift */; };
-		A73B1643274DC4D20073947D /* FeedbackEditListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A73B1642274DC4D20073947D /* FeedbackEditListView.swift */; };
+		A73B163C274DC0F50073947D /* TurnoutEditingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A73B163B274DC0F50073947D /* TurnoutEditingView.swift */; };
+		A73B1643274DC4D20073947D /* FeedbackEditingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A73B1642274DC4D20073947D /* FeedbackEditingView.swift */; };
 		A73E07EB27694D17005F9D64 /* Gzip in Frameworks */ = {isa = PBXBuildFile; productRef = A73E07EA27694D17005F9D64 /* Gzip */; };
 		A73E07EE276970ED005F9D64 /* ViewInspector in Frameworks */ = {isa = PBXBuildFile; productRef = A73E07ED276970ED005F9D64 /* ViewInspector */; };
 		A73E07F027697127005F9D64 /* FeedbackViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A73E07EF27697127005F9D64 /* FeedbackViewTests.swift */; };
@@ -151,7 +152,7 @@
 		A74F38092818C7B10013FD23 /* RouteStepBlockView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A74F38082818C7B10013FD23 /* RouteStepBlockView.swift */; };
 		A74F380B2819108A0013FD23 /* RouteItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = A74F380A2819108A0013FD23 /* RouteItem.swift */; };
 		A74F380D281927E10013FD23 /* Station.swift in Sources */ = {isa = PBXBuildFile; fileRef = A74F380C281927E10013FD23 /* Station.swift */; };
-		A74F380F281A13CC0013FD23 /* StationListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A74F380E281A13CC0013FD23 /* StationListView.swift */; };
+		A74F380F281A13CC0013FD23 /* StationEditingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A74F380E281A13CC0013FD23 /* StationEditingView.swift */; };
 		A74F3811281A14DD0013FD23 /* StationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A74F3810281A14DD0013FD23 /* StationView.swift */; };
 		A74F3814281A1BFA0013FD23 /* StationElementView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A74F3813281A1BFA0013FD23 /* StationElementView.swift */; };
 		A74F3816281A5E0E0013FD23 /* RouteNewElementSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A74F3815281A5E0E0013FD23 /* RouteNewElementSheet.swift */; };
@@ -321,7 +322,7 @@
 		A7B06AF92727ACCB00BDD88C /* ServerConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7B06AEE2727819800BDD88C /* ServerConnection.swift */; };
 		A7B06AFB2727B73300BDD88C /* FeedbackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7B06AFA2727B73300BDD88C /* FeedbackView.swift */; };
 		A7B0B5132761CF8400F11A3E /* SwitchboardLinkUpdater.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7B0B5122761CF8400F11A3E /* SwitchboardLinkUpdater.swift */; };
-		A7B0B5172762FB6500F11A3E /* BlockListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7B0B5162762FB6500F11A3E /* BlockListView.swift */; };
+		A7B0B5172762FB6500F11A3E /* BlockEditingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7B0B5162762FB6500F11A3E /* BlockEditingView.swift */; };
 		A7B49570289522D1001707DA /* GraphPathElement.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7B4956F289522D1001707DA /* GraphPathElement.swift */; };
 		A7BD6259276D50380039B6C2 /* LayoutDocumentTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7BD6258276D50380039B6C2 /* LayoutDocumentTests.swift */; };
 		A7BE366B2751AAA300286709 /* BlockTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7F779E8272F06C400E73275 /* BlockTests.swift */; };
@@ -394,6 +395,7 @@
 		A700B1CD2925A2DD001CC33E /* FeedbackDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedbackDetailsView.swift; sourceTree = "<group>"; };
 		A700B1CF2925AEB2001CC33E /* Layout+LayoutScripts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Layout+LayoutScripts.swift"; sourceTree = "<group>"; };
 		A700B1D12925C6E8001CC33E /* LayoutObserverTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutObserverTests.swift; sourceTree = "<group>"; };
+		A700B1D32925E57C001CC33E /* LayoutScriptEditingViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutScriptEditingViewTests.swift; sourceTree = "<group>"; };
 		A7012C8228344A1C003AC687 /* DeveloperView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeveloperView.swift; sourceTree = "<group>"; };
 		A7012C8428344AC0003AC687 /* DeveloperMetrics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeveloperMetrics.swift; sourceTree = "<group>"; };
 		A7012C8D2839BDC4003AC687 /* MockCommandInterface.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockCommandInterface.swift; sourceTree = "<group>"; };
@@ -469,8 +471,8 @@
 		A73AFEB327265A4B00E1ED21 /* ClientConnection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ClientConnection.swift; sourceTree = "<group>"; };
 		A73AFEB627265ADA00E1ED21 /* MarklinInterface.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarklinInterface.swift; sourceTree = "<group>"; };
 		A73B1638274B60A10073947D /* BTLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BTLogger.swift; sourceTree = "<group>"; };
-		A73B163B274DC0F50073947D /* TurnoutListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TurnoutListView.swift; sourceTree = "<group>"; };
-		A73B1642274DC4D20073947D /* FeedbackEditListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedbackEditListView.swift; sourceTree = "<group>"; };
+		A73B163B274DC0F50073947D /* TurnoutEditingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TurnoutEditingView.swift; sourceTree = "<group>"; };
+		A73B1642274DC4D20073947D /* FeedbackEditingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedbackEditingView.swift; sourceTree = "<group>"; };
 		A73B164F274F13890073947D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		A73D39DA2780C31100EBE409 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		A73E07EF27697127005F9D64 /* FeedbackViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedbackViewTests.swift; sourceTree = "<group>"; };
@@ -539,7 +541,7 @@
 		A74F38082818C7B10013FD23 /* RouteStepBlockView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteStepBlockView.swift; sourceTree = "<group>"; };
 		A74F380A2819108A0013FD23 /* RouteItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteItem.swift; sourceTree = "<group>"; };
 		A74F380C281927E10013FD23 /* Station.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Station.swift; sourceTree = "<group>"; };
-		A74F380E281A13CC0013FD23 /* StationListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StationListView.swift; sourceTree = "<group>"; };
+		A74F380E281A13CC0013FD23 /* StationEditingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StationEditingView.swift; sourceTree = "<group>"; };
 		A74F3810281A14DD0013FD23 /* StationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StationView.swift; sourceTree = "<group>"; };
 		A74F3813281A1BFA0013FD23 /* StationElementView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StationElementView.swift; sourceTree = "<group>"; };
 		A74F3815281A5E0E0013FD23 /* RouteNewElementSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteNewElementSheet.swift; sourceTree = "<group>"; };
@@ -703,7 +705,7 @@
 		A7B06AFA2727B73300BDD88C /* FeedbackView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedbackView.swift; sourceTree = "<group>"; };
 		A7B06AFE2727C01100BDD88C /* MarklinTestMessageFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarklinTestMessageFactory.swift; sourceTree = "<group>"; };
 		A7B0B5122761CF8400F11A3E /* SwitchboardLinkUpdater.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwitchboardLinkUpdater.swift; sourceTree = "<group>"; };
-		A7B0B5162762FB6500F11A3E /* BlockListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockListView.swift; sourceTree = "<group>"; };
+		A7B0B5162762FB6500F11A3E /* BlockEditingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockEditingView.swift; sourceTree = "<group>"; };
 		A7B4956F289522D1001707DA /* GraphPathElement.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GraphPathElement.swift; sourceTree = "<group>"; };
 		A7BD6258276D50380039B6C2 /* LayoutDocumentTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutDocumentTests.swift; sourceTree = "<group>"; };
 		A7BE36A72751BDAB00286709 /* ConnectorSocket.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectorSocket.swift; sourceTree = "<group>"; };
@@ -1065,7 +1067,7 @@
 		A73B163D274DC1EB0073947D /* Turnouts */ = {
 			isa = PBXGroup;
 			children = (
-				A73B163B274DC0F50073947D /* TurnoutListView.swift */,
+				A73B163B274DC0F50073947D /* TurnoutEditingView.swift */,
 				A75933E627E9903E00ECB7A0 /* TurnoutDetailsView.swift */,
 			);
 			path = Turnouts;
@@ -1074,7 +1076,7 @@
 		A73B1641274DC4030073947D /* Feedbacks */ = {
 			isa = PBXGroup;
 			children = (
-				A73B1642274DC4D20073947D /* FeedbackEditListView.swift */,
+				A73B1642274DC4D20073947D /* FeedbackEditingView.swift */,
 				A700B1CD2925A2DD001CC33E /* FeedbackDetailsView.swift */,
 				A7B06AFA2727B73300BDD88C /* FeedbackView.swift */,
 				A702F22E290243FA0076186D /* FeedbackAddView.swift */,
@@ -1129,6 +1131,7 @@
 				A73E0802276AB757005F9D64 /* TurnoutViewTests.swift */,
 				A73E07EF27697127005F9D64 /* FeedbackViewTests.swift */,
 				A7145F8927F90FBA00BF5F61 /* NewLayoutWizardViewTests.swift */,
+				A700B1D32925E57C001CC33E /* LayoutScriptEditingViewTests.swift */,
 				A7145F8B27F911F000BF5F61 /* LocomotiveSpeedMeasurementViewTests.swift */,
 			);
 			path = Views;
@@ -1272,7 +1275,7 @@
 		A74F3812281A18CF0013FD23 /* Stations */ = {
 			isa = PBXGroup;
 			children = (
-				A74F380E281A13CC0013FD23 /* StationListView.swift */,
+				A74F380E281A13CC0013FD23 /* StationEditingView.swift */,
 				A74F3810281A14DD0013FD23 /* StationView.swift */,
 				A74F3813281A1BFA0013FD23 /* StationElementView.swift */,
 			);
@@ -1728,7 +1731,7 @@
 		A7B0B5182762FBEE00F11A3E /* Blocks */ = {
 			isa = PBXGroup;
 			children = (
-				A7B0B5162762FB6500F11A3E /* BlockListView.swift */,
+				A7B0B5162762FB6500F11A3E /* BlockEditingView.swift */,
 				A7F31BA0277C3D7A00FE0C65 /* BlockDetailsView.swift */,
 				A7CA5EC0279649CF00171398 /* BlockFeedbacksView.swift */,
 				A73E0824276B99A8005F9D64 /* BlockAllFeedbacksView.swift */,
@@ -2130,7 +2133,7 @@
 				A7A7D6902921501A008FA648 /* DirectionPicker.swift in Sources */,
 				A76C1C612880515500A22509 /* LayoutDiagnostics+Error.swift in Sources */,
 				A7DB7D4E27C714E3000893BA /* LayoutTurnoutManager.swift in Sources */,
-				A74F380F281A13CC0013FD23 /* StationListView.swift in Sources */,
+				A74F380F281A13CC0013FD23 /* StationEditingView.swift in Sources */,
 				A733224529232425000648EA /* LayoutScript.swift in Sources */,
 				A783EAAD2789290F00E69B6D /* SwitchboardRuntimeErrorView.swift in Sources */,
 				A744FD982909EAED00852283 /* RouteItem+Resolvable.swift in Sources */,
@@ -2140,7 +2143,7 @@
 				A721806A275D1CA700831998 /* MarklinCommand.swift in Sources */,
 				A717FB15281CA84C00310B5D /* ResolvedRouteItem.swift in Sources */,
 				A747968529201FB2001DF7FA /* RouteScriptCommand.swift in Sources */,
-				A7B0B5172762FB6500F11A3E /* BlockListView.swift in Sources */,
+				A7B0B5172762FB6500F11A3E /* BlockEditingView.swift in Sources */,
 				A758295F27925DE300AA0649 /* LayoutController+Listeners.swift in Sources */,
 				A7A7D68629202CEA008FA648 /* RouteScriptEditingView.swift in Sources */,
 				A76C1C5F287ECBEC00A22509 /* CommandInterfaceCallbacks.swift in Sources */,
@@ -2157,7 +2160,7 @@
 				A711B1502739EBD7002FE7DB /* LayoutController.swift in Sources */,
 				A7CA5EC1279649CF00171398 /* BlockFeedbacksView.swift in Sources */,
 				A76FD43228FB3C0E00E1A295 /* ControlPoint.swift in Sources */,
-				A73B163C274DC0F50073947D /* TurnoutListView.swift in Sources */,
+				A73B163C274DC0F50073947D /* TurnoutEditingView.swift in Sources */,
 				A785C06F2789F324002FD538 /* UndoProvider.swift in Sources */,
 				A72180852760428E00831998 /* Socket.swift in Sources */,
 				A7E78C4427A09931004D1821 /* TrainPathFactory.swift in Sources */,
@@ -2195,7 +2198,7 @@
 				A7012C8328344A1C003AC687 /* DeveloperView.swift in Sources */,
 				A744FD9E2909EBB800852283 /* Transition+Graph.swift in Sources */,
 				A7F779F82732407E00E73275 /* TrainControlContainerView.swift in Sources */,
-				A73B1643274DC4D20073947D /* FeedbackEditListView.swift in Sources */,
+				A73B1643274DC4D20073947D /* FeedbackEditingView.swift in Sources */,
 				A74F380B2819108A0013FD23 /* RouteItem.swift in Sources */,
 				A79466CE279B775D006E2A4C /* NSImage+Extension.swift in Sources */,
 				A71A3DB428B1BC0C007F93C4 /* BlockShape_TextLabel.swift in Sources */,
@@ -2298,6 +2301,7 @@
 				A73E0827276BAED3005F9D64 /* SwitchboardRenderingTests.swift in Sources */,
 				A7C8A2F3279FA56C000C7246 /* TrainLengthTests.swift in Sources */,
 				A794065A28087C2100F6A427 /* LayoutRouteParser.swift in Sources */,
+				A700B1D42925E57C001CC33E /* LayoutScriptEditingViewTests.swift in Sources */,
 				A73E07F72769B5A1005F9D64 /* DocumentViewTests.swift in Sources */,
 				A79406552807463E00F6A427 /* ShortestPathComplexTests.swift in Sources */,
 				A73E0803276AB757005F9D64 /* TurnoutViewTests.swift in Sources */,

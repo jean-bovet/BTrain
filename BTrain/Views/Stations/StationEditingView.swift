@@ -12,7 +12,7 @@
 
 import SwiftUI
 
-struct StationListView: View {
+struct StationEditingView: View {
         
     @ObservedObject var layout: Layout
     
@@ -40,10 +40,10 @@ struct StationListView: View {
     }
 }
 
-struct StationListView_Previews: PreviewProvider {
+struct StationEditingView_Previews: PreviewProvider {
     static var previews: some View {
         ConfigurationSheet(title: "Stations") {
-            StationListView(layout: LayoutLoop1().newLayout())
+            StationEditingView(layout: LayoutLoop1().newLayout())
         }
     }
 }
