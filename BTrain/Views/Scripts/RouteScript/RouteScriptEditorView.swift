@@ -14,76 +14,12 @@ import SwiftUI
 
 struct RouteScriptEditorView: View {
     
-    struct ValidationError {
-        let resolverErrors: [PathFinderResolver.ResolverError]
-        let valid: Bool
-    }
-
     let layout: Layout
     @ObservedObject var script: RouteScript
     
-    @State private var generatedRoute: Route?
-    @State private var generatedRouteError: Error?
-  
-    @State private var resolvedRouteResult: Result<[ResolvedRouteItem]?, Error>?
-
     @State private var showResultsSummary = false
-
-    @State private var commandErrorIds = [String]()
+    @State private var validator = RouteScriptValidator()
     
-    enum VerifyStatus {
-        case none
-        case failure
-        case success
-    }
-    
-    var verifyStatus: VerifyStatus {
-        if generatedRouteError != nil {
-            return .failure
-        }
-        
-        switch resolvedRouteResult {
-        case .success:
-            return .success
-        case .failure:
-            return .failure
-        case .none:
-            return .none
-        }
-    }
-    
-    var generatedRouteDescription: String {
-        if let error = generatedRouteError {
-            return error.localizedDescription
-        } else if let generatedRoute = generatedRoute {
-            return layout.routeDescription(for: nil, steps: generatedRoute.partialSteps)
-        } else {
-            return ""
-        }
-    }
-        
-    var resolvedRouteDescription: String {
-        guard let resolvedRouteResult = resolvedRouteResult else {
-            return ""
-        }
-        switch resolvedRouteResult {
-        case .failure(let error):
-            return error.localizedDescription
-        case .success(let resolvedRouteItems):
-            return resolvedRouteItems?.toBlockNames().joined(separator: "→") ?? "Empty Route"
-        }
-    }
-    
-    var errorSummary: String? {
-        if let error = generatedRouteError {
-            return error.localizedDescription
-        } else if case .failure(let error) = resolvedRouteResult {
-            return error.localizedDescription
-        } else {
-            return nil
-        }
-    }
-        
     var body: some View {
         VStack {
             if script.commands.isEmpty {
@@ -96,12 +32,12 @@ struct RouteScriptEditorView: View {
             } else {
                 List {
                     ForEach($script.commands, id: \.self) { command in
-                        RouteScriptLineView(layout: layout, script: script, command: command, commandErrorIds: $commandErrorIds)
+                        RouteScriptLineView(layout: layout, script: script, command: command, commandErrorIds: $validator.commandErrorIds)
                         if let children = command.children {
                             ForEach(children, id: \.self) { command in
                                 HStack {
                                     Spacer().fixedSpace()
-                                    RouteScriptLineView(layout: layout, script: script, command: command, commandErrorIds: $commandErrorIds)
+                                    RouteScriptLineView(layout: layout, script: script, command: command, commandErrorIds: $validator.commandErrorIds)
                                 }
                             }
                         }
@@ -109,15 +45,15 @@ struct RouteScriptEditorView: View {
                 }
                 HStack {
                     Button("Verify") {
-                        validate(script: script)
+                        validator.validate(script: script, layout: layout)
                     }
-                    switch verifyStatus {
+                    switch validator.verifyStatus {
                     case .none:
                         Spacer()
                         
                     case .failure:
                         Text("􀇾")
-                        if let errorSummary = errorSummary {
+                        if let errorSummary = validator.errorSummary {
                             Text(errorSummary)
                         }
                         Spacer()
@@ -137,14 +73,14 @@ struct RouteScriptEditorView: View {
                                         Text("Generated Route:")
                                             .font(.title2)
                                         ScrollView {
-                                            Text("\(generatedRouteDescription)")
+                                            Text("\(validator.generatedRouteDescription(layout: layout))")
                                         }.frame(minHeight: 80)
                                     }
                                     VStack(alignment: .leading) {
                                         Text("Resolved Route:")
                                             .font(.title2)
                                         ScrollView {
-                                            Text("\(resolvedRouteDescription)")
+                                            Text("\(validator.resolvedRouteDescription)")
                                         }.frame(minHeight: 80)
                                     }
                                 }
@@ -155,62 +91,6 @@ struct RouteScriptEditorView: View {
                     }
                 }.padding([.leading, .trailing])
             }
-        }
-    }
-    
-    func validate(script: RouteScript) {
-        resolvedRouteResult = nil
-        generatedRouteError = nil
-        commandErrorIds.removeAll()
-        
-        do {
-            generatedRoute = try script.toRoute()
-        } catch let error as ScriptError {
-            generatedRouteError = error
-            switch error {
-            case .undefinedBlock(let command):
-                commandErrorIds.append(command.id.uuidString)
-
-            case .undefinedDirection(command: let command):
-                commandErrorIds.append(command.id.uuidString)
-
-            case .undefinedStation(let command):
-                commandErrorIds.append(command.id.uuidString)
-                
-            case .missingStartCommand:
-                script.commands.insert(RouteScriptCommand(action: .start), at: 0)
-            }
-            return
-        } catch {
-            generatedRouteError = error
-            return
-        }
-
-        guard let generatedRoute = generatedRoute else {
-            return
-        }
-        
-        // TODO: simplify this whole thing
-        let diag = LayoutDiagnostic(layout: layout)
-        var errors = [LayoutDiagnostic.DiagnosticError]()
-        var resolverError = [PathFinderResolver.ResolverError]()
-        var resolvedRoutes = RouteResolver.ResolvedRoutes()
-        diag.checkRoute(route: generatedRoute, &errors, resolverErrors: &resolverError, resolverPaths: &resolvedRoutes)
-        if let resolverError = resolverError.first {
-            switch resolverError {
-            case .cannotResolvedSegment(_, let from, let to):
-                if let id = from.sourceIdentifier {
-                    commandErrorIds.append(id)
-                }
-                if let id = to.sourceIdentifier {
-                    commandErrorIds.append(id)
-                }
-            default:
-                break
-            }
-            resolvedRouteResult = .failure(resolverError)
-        } else {
-            resolvedRouteResult = .success(resolvedRoutes.first)
         }
     }
     
