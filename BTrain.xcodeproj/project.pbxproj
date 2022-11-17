@@ -13,6 +13,7 @@
 		A700B1D42925E57C001CC33E /* LayoutScriptEditingViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A700B1D32925E57C001CC33E /* LayoutScriptEditingViewTests.swift */; };
 		A700B1D82925EDB5001CC33E /* LayoutElementContainerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A700B1D72925EDB5001CC33E /* LayoutElementContainerTests.swift */; };
 		A700B1DA2925F393001CC33E /* RouteScriptValidator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A700B1D92925F393001CC33E /* RouteScriptValidator.swift */; };
+		A700B218292697F1001CC33E /* MainMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = A700B217292697F1001CC33E /* MainMenu.swift */; };
 		A7012C8328344A1C003AC687 /* DeveloperView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7012C8228344A1C003AC687 /* DeveloperView.swift */; };
 		A7012C8528344AC0003AC687 /* DeveloperMetrics.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7012C8428344AC0003AC687 /* DeveloperMetrics.swift */; };
 		A7012C8E2839BDC4003AC687 /* MockCommandInterface.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7012C8D2839BDC4003AC687 /* MockCommandInterface.swift */; };
@@ -400,6 +401,7 @@
 		A700B1D32925E57C001CC33E /* LayoutScriptEditingViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutScriptEditingViewTests.swift; sourceTree = "<group>"; };
 		A700B1D72925EDB5001CC33E /* LayoutElementContainerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutElementContainerTests.swift; sourceTree = "<group>"; };
 		A700B1D92925F393001CC33E /* RouteScriptValidator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteScriptValidator.swift; sourceTree = "<group>"; };
+		A700B217292697F1001CC33E /* MainMenu.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainMenu.swift; sourceTree = "<group>"; };
 		A7012C8228344A1C003AC687 /* DeveloperView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeveloperView.swift; sourceTree = "<group>"; };
 		A7012C8428344AC0003AC687 /* DeveloperMetrics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeveloperMetrics.swift; sourceTree = "<group>"; };
 		A7012C8D2839BDC4003AC687 /* MockCommandInterface.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockCommandInterface.swift; sourceTree = "<group>"; };
@@ -980,6 +982,7 @@
 			children = (
 				A73B164F274F13890073947D /* Info.plist */,
 				A73AFE852726594600E1ED21 /* BTrainApp.swift */,
+				A700B217292697F1001CC33E /* MainMenu.swift */,
 				A7B06B062728DD9500BDD88C /* Views */,
 				A785C07C278A64A4002FD538 /* Document */,
 				A743AF0A27CC88BE00A4AE79 /* Switchboard */,
@@ -2223,6 +2226,7 @@
 				A7012C91283AED29003AC687 /* Types.swift in Sources */,
 				A7CA5EBF2795D05A00171398 /* TrainControlActionsView.swift in Sources */,
 				A744FDA5290B437F00852283 /* LayoutSpeed.swift in Sources */,
+				A700B218292697F1001CC33E /* MainMenu.swift in Sources */,
 				A744FDAD290F377B00852283 /* LayoutTrainsSchedulingObserver.swift in Sources */,
 				A78B996927FE41A90021EFE4 /* PathFinder.swift in Sources */,
 				A73E0829276BF554005F9D64 /* TrainControlSetLocationSheet.swift in Sources */,

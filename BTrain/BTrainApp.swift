@@ -29,8 +29,10 @@ struct BTrainApp: App {
             newDocument
         } editor: { configuration in
             DocumentView(document: configuration.document)
+                .focusedSceneValue(\.document, configuration.document)
         }
         .commands {
+            MenuCommands()
             CommandGroup(replacing: CommandGroupPlacement.help) {
                 Button("BTrain Repository") {
                     openURL(URL(string: "https://github.com/jean-bovet/BTrain")!)

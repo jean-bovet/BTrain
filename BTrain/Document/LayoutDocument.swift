@@ -80,28 +80,53 @@ final class LayoutDocument: ObservableObject {
         var label: String {
             switch self {
             case .layoutScripts:
-                return "􁅥"
+                return "Scripts"
             case .routeScripts:
-                return "􀬱"
+                return "Routes"
             case .routes:
-                return "􁆬"
+                return "Routes (Raw)"
             case .trains:
-                return "􀼯"
+                return "Trains"
             case .locomotives:
-                return "􀼮"
+                return "Locomotives"
             case .stations:
-                return "􀌃"
+                return "Stations"
             case .blocks:
-                return "􀏭"
+                return "Blocks"
             case .turnouts:
-                return "􀄭"
+                return "Turnouts"
             case .feedbacks:
-                return "􁕶"
+                return "Feedbacks"
             case .cs3:
-                return "􀯔"
+                return "Central Station 3 Debugger"
             }
         }
-        
+
+        var shortcut: KeyEquivalent? {
+            switch self {
+            case .layoutScripts:
+                return "1"
+            case .routeScripts:
+                return "2"
+            case .routes:
+                return nil
+            case .trains:
+                return "3"
+            case .locomotives:
+                return "4"
+            case .stations:
+                return "5"
+            case .blocks:
+                return "6"
+            case .turnouts:
+                return "7"
+            case .feedbacks:
+                return "8"
+            case .cs3:
+                return "9"
+            }
+        }
+
         var debugOnly: Bool {
             return self == .routes || self == .cs3
         }

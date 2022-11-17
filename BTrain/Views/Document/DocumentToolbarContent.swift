@@ -24,24 +24,6 @@ struct DocumentToolbarContent: ToolbarContent {
             ConnectCommandsView(document: document, connectAlertShowing: $connectAlertShowing)
             Spacer()
         }
-        
-        ToolbarItemGroup {
-            Group {
-                ForEach(LayoutDocument.DisplaySheetType.allCases.filter({!$0.debugOnly}), id:\.self) { type in
-                    Button(type.label) {
-                        document.displaySheetType = type
-                    }.help(type.rawValue)
-                }
-                if document.showDebugModeControls {
-                    ForEach(LayoutDocument.DisplaySheetType.allCases.filter({$0.debugOnly}), id:\.self) { type in
-                        Button(type.label) {
-                            document.displaySheetType = type
-                        }.help(type.rawValue)
-                    }
-                }
-                Spacer()
-            }.disabled(document.power)
-        }
                 
         ToolbarItemGroup {
             DiagnosticsIndicationView(diagnostics: document.layoutDiagnostics, document: document)
