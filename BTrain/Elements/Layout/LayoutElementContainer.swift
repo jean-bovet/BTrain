@@ -15,9 +15,7 @@ import OrderedCollections
 
 typealias LayoutElement = Element & Codable
 
-// TODO: add unit tests
-/// Container capable of holding a map of elements and implementing the most common functions
-/// expected by the layout
+/// Container capable of holding a map of elements and implementing the most common functions expected by the layout
 struct LayoutElementContainer<E: LayoutElement> {
     
     private var elementsMap = OrderedDictionary<Identifier<E.ItemType>,E>()
@@ -41,16 +39,6 @@ struct LayoutElementContainer<E: LayoutElement> {
      
       set(newValue) {
           elements[index] = newValue
-      }
-    }
-
-    subscript(uuid: String) -> E? {
-      get {
-          self[Identifier(uuid: uuid)]
-      }
-     
-      set(newValue) {
-          self[Identifier(uuid: uuid)] = newValue
       }
     }
 

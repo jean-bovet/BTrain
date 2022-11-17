@@ -11,6 +11,7 @@
 		A700B1D02925AEB2001CC33E /* Layout+LayoutScripts.swift in Sources */ = {isa = PBXBuildFile; fileRef = A700B1CF2925AEB2001CC33E /* Layout+LayoutScripts.swift */; };
 		A700B1D22925C6E8001CC33E /* LayoutObserverTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A700B1D12925C6E8001CC33E /* LayoutObserverTests.swift */; };
 		A700B1D42925E57C001CC33E /* LayoutScriptEditingViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A700B1D32925E57C001CC33E /* LayoutScriptEditingViewTests.swift */; };
+		A700B1D82925EDB5001CC33E /* LayoutElementContainerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A700B1D72925EDB5001CC33E /* LayoutElementContainerTests.swift */; };
 		A7012C8328344A1C003AC687 /* DeveloperView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7012C8228344A1C003AC687 /* DeveloperView.swift */; };
 		A7012C8528344AC0003AC687 /* DeveloperMetrics.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7012C8428344AC0003AC687 /* DeveloperMetrics.swift */; };
 		A7012C8E2839BDC4003AC687 /* MockCommandInterface.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7012C8D2839BDC4003AC687 /* MockCommandInterface.swift */; };
@@ -396,6 +397,7 @@
 		A700B1CF2925AEB2001CC33E /* Layout+LayoutScripts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Layout+LayoutScripts.swift"; sourceTree = "<group>"; };
 		A700B1D12925C6E8001CC33E /* LayoutObserverTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutObserverTests.swift; sourceTree = "<group>"; };
 		A700B1D32925E57C001CC33E /* LayoutScriptEditingViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutScriptEditingViewTests.swift; sourceTree = "<group>"; };
+		A700B1D72925EDB5001CC33E /* LayoutElementContainerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutElementContainerTests.swift; sourceTree = "<group>"; };
 		A7012C8228344A1C003AC687 /* DeveloperView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeveloperView.swift; sourceTree = "<group>"; };
 		A7012C8428344AC0003AC687 /* DeveloperMetrics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeveloperMetrics.swift; sourceTree = "<group>"; };
 		A7012C8D2839BDC4003AC687 /* MockCommandInterface.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockCommandInterface.swift; sourceTree = "<group>"; };
@@ -1163,6 +1165,7 @@
 				A721807C275DF1B100831998 /* TransitionsTests.swift */,
 				A7218086276055AD00831998 /* FeedbackTests.swift */,
 				A72180882760578000831998 /* RouteTests.swift */,
+				A700B1D72925EDB5001CC33E /* LayoutElementContainerTests.swift */,
 				A790799C277ED8B000771A60 /* PluggableShapeTests.swift */,
 				A73E0808276ABA09005F9D64 /* SwitchboardTests.swift */,
 				A73E0826276BAED3005F9D64 /* SwitchboardRenderingTests.swift */,
@@ -2251,6 +2254,7 @@
 				A774B8E52801FA6F00E8043C /* PointToLoopLayoutTests.swift in Sources */,
 				A73E07F027697127005F9D64 /* FeedbackViewTests.swift in Sources */,
 				A73E080F276ACC79005F9D64 /* ScheduledMessageQueueTests.swift in Sources */,
+				A700B1D82925EDB5001CC33E /* LayoutElementContainerTests.swift in Sources */,
 				A744FDA7290B44D100852283 /* LayoutSpeedTests.swift in Sources */,
 				A763F18F27BE01C300B3499A /* XCTestCase+Extension.swift in Sources */,
 				A797E525291C9E0C00E0E511 /* LocomotiveViewTests.swift in Sources */,

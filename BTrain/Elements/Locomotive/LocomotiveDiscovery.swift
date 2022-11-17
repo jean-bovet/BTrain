@@ -54,7 +54,7 @@ final class LocomotiveDiscovery {
     private func process(locomotives: [CommandLocomotive], merge: Bool) {
         var newLocs = [Locomotive]()
         for cmdLoc in locomotives {
-            if let locUID = cmdLoc.uid, let loc = layout.locomotives[String(locUID)], merge {
+            if let locUID = cmdLoc.uid, let loc = layout.locomotives[Identifier<Locomotive>(uuid: String(locUID))], merge {
                 mergeLocomotive(cmdLoc, with: loc)
             } else if let locAddress = cmdLoc.address, let loc = layout.locomotives.elements.find(address: locAddress, decoder: cmdLoc.decoderType), merge {
                 mergeLocomotive(cmdLoc, with: loc)
