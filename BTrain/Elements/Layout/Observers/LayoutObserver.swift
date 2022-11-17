@@ -23,7 +23,6 @@ final class LayoutObserver {
     init(layout: Layout) {
         self.layout = layout
   
-        // TODO: add unit tests
         cancellables.append(layout.$trains.dropFirst().sink(receiveValue: { [weak self] trains in
             self?.trainCallbacks.forEach { $0(trains.elements) }
             self?.anyCallbacks.forEach { $0() }
@@ -82,6 +81,14 @@ final class LayoutObserver {
 
     func registerForAnyChange(_ callback: @escaping AnyChangeCallback) {
         anyCallbacks.append(callback)
+    }
+    
+    func unregisterAll() {
+        trainCallbacks.removeAll()
+        blockCallbacks.removeAll()
+        turnoutCallbacks.removeAll()
+        transitionsCallbacks.removeAll()
+        anyCallbacks.removeAll()
     }
 
 }

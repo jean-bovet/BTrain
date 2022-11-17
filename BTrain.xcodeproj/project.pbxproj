@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		A700B1CE2925A2DD001CC33E /* FeedbackDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A700B1CD2925A2DD001CC33E /* FeedbackDetailsView.swift */; };
 		A700B1D02925AEB2001CC33E /* Layout+LayoutScripts.swift in Sources */ = {isa = PBXBuildFile; fileRef = A700B1CF2925AEB2001CC33E /* Layout+LayoutScripts.swift */; };
+		A700B1D22925C6E8001CC33E /* LayoutObserverTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A700B1D12925C6E8001CC33E /* LayoutObserverTests.swift */; };
 		A7012C8328344A1C003AC687 /* DeveloperView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7012C8228344A1C003AC687 /* DeveloperView.swift */; };
 		A7012C8528344AC0003AC687 /* DeveloperMetrics.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7012C8428344AC0003AC687 /* DeveloperMetrics.swift */; };
 		A7012C8E2839BDC4003AC687 /* MockCommandInterface.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7012C8D2839BDC4003AC687 /* MockCommandInterface.swift */; };
@@ -392,6 +393,7 @@
 /* Begin PBXFileReference section */
 		A700B1CD2925A2DD001CC33E /* FeedbackDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedbackDetailsView.swift; sourceTree = "<group>"; };
 		A700B1CF2925AEB2001CC33E /* Layout+LayoutScripts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Layout+LayoutScripts.swift"; sourceTree = "<group>"; };
+		A700B1D12925C6E8001CC33E /* LayoutObserverTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutObserverTests.swift; sourceTree = "<group>"; };
 		A7012C8228344A1C003AC687 /* DeveloperView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeveloperView.swift; sourceTree = "<group>"; };
 		A7012C8428344AC0003AC687 /* DeveloperMetrics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeveloperMetrics.swift; sourceTree = "<group>"; };
 		A7012C8D2839BDC4003AC687 /* MockCommandInterface.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockCommandInterface.swift; sourceTree = "<group>"; };
@@ -1143,6 +1145,7 @@
 				A792DEFE278508B0004B0439 /* LayoutCreatorTests.swift */,
 				A7C8A2F2279FA56C000C7246 /* TrainLengthTests.swift */,
 				A76C1C62288051D400A22509 /* LayoutDiagnosticsTests.swift */,
+				A700B1D12925C6E8001CC33E /* LayoutObserverTests.swift */,
 				A794065C28087C5000F6A427 /* Parser */,
 			);
 			path = Layouts;
@@ -2232,6 +2235,7 @@
 				A79CD0C1291C26180079968D /* LocomotiveTests.swift in Sources */,
 				A792DEFF278508B0004B0439 /* LayoutCreatorTests.swift in Sources */,
 				A74F38072818C4410013FD23 /* Route+Extension.swift in Sources */,
+				A700B1D22925C6E8001CC33E /* LayoutObserverTests.swift in Sources */,
 				A79D43DC283B15BF0068C969 /* LayoutController+Extension.swift in Sources */,
 				A7DB7D4A27C29B32000893BA /* LocomotiveSpeedManagerTests.swift in Sources */,
 				A73E0801276A8DA9005F9D64 /* BlockViewTests.swift in Sources */,
