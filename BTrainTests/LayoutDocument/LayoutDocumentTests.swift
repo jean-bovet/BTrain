@@ -32,17 +32,14 @@ class LayoutDocumentTests: XCTestCase {
     }
 
     func testReadJSONFile() throws {
-        guard let url = Bundle(for: type(of: self)).url(forResource: "Layout", withExtension: "json") else {
-            XCTFail("Unable to find the Layout.json file")
-            return
-        }
+        let url = Bundle(for: LayoutDocument.self).url(forResource: "Predefined", withExtension: "btrain")!.appending(path: "layout.json")
 
         let fw = try FileWrapper(url: url, options: [])
 
         let doc = try LayoutDocument(contentType: .json, file: fw)
         let diag = LayoutDiagnostic(layout: doc.layout)
         let errors = try diag.check(.skipLengths)
-        XCTAssertEqual(errors.count, 1)
+        XCTAssertEqual(errors.count, 0)
 
         let snapshot = try doc.snapshot(contentType: .json)
         _ = try doc.fileWrapper(snapshot: snapshot, contentType: .json)

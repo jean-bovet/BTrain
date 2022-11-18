@@ -294,7 +294,6 @@
 		A795A03D27B87CCE00AE90EB /* LocomotiveDiscovery.swift in Sources */ = {isa = PBXBuildFile; fileRef = A795A03C27B87CCE00AE90EB /* LocomotiveDiscovery.swift */; };
 		A795A03F27B9CB0200AE90EB /* LocomotiveSpeedMeasurement.swift in Sources */ = {isa = PBXBuildFile; fileRef = A795A03E27B9CB0200AE90EB /* LocomotiveSpeedMeasurement.swift */; };
 		A795A04127BC832200AE90EB /* SettingsKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = A795A04027BC832200AE90EB /* SettingsKeys.swift */; };
-		A796FA2B2772BB5400FA41BA /* Layout.json in Resources */ = {isa = PBXBuildFile; fileRef = A796FA2A2772BB5400FA41BA /* Layout.json */; };
 		A796FA2E2775642B00FA41BA /* LayoutAsserter.swift in Sources */ = {isa = PBXBuildFile; fileRef = A796FA2D2775642B00FA41BA /* LayoutAsserter.swift */; };
 		A797E522291C9B9000E0E511 /* LocomotiveEditingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A797E521291C9B9000E0E511 /* LocomotiveEditingView.swift */; };
 		A797E525291C9E0C00E0E511 /* LocomotiveViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A797E524291C9E0C00E0E511 /* LocomotiveViewTests.swift */; };
@@ -682,7 +681,6 @@
 		A795A03C27B87CCE00AE90EB /* LocomotiveDiscovery.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocomotiveDiscovery.swift; sourceTree = "<group>"; };
 		A795A03E27B9CB0200AE90EB /* LocomotiveSpeedMeasurement.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocomotiveSpeedMeasurement.swift; sourceTree = "<group>"; };
 		A795A04027BC832200AE90EB /* SettingsKeys.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsKeys.swift; sourceTree = "<group>"; };
-		A796FA2A2772BB5400FA41BA /* Layout.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = Layout.json; sourceTree = "<group>"; };
 		A796FA2D2775642B00FA41BA /* LayoutAsserter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutAsserter.swift; sourceTree = "<group>"; };
 		A797E521291C9B9000E0E511 /* LocomotiveEditingView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocomotiveEditingView.swift; sourceTree = "<group>"; };
 		A797E524291C9E0C00E0E511 /* LocomotiveViewTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocomotiveViewTests.swift; sourceTree = "<group>"; };
@@ -1644,7 +1642,6 @@
 			isa = PBXGroup;
 			children = (
 				A7BD6258276D50380039B6C2 /* LayoutDocumentTests.swift */,
-				A796FA2A2772BB5400FA41BA /* Layout.json */,
 			);
 			path = LayoutDocument;
 			sourceTree = "<group>";
@@ -1956,7 +1953,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A796FA2B2772BB5400FA41BA /* Layout.json in Resources */,
 				A74C0E80275C9F490043FEE5 /* Locomotives.cs2 in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

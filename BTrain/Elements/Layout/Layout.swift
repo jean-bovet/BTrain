@@ -147,59 +147,23 @@ final class Layout: Element, ObservableObject {
 extension Layout: Codable {
     enum CodingKeys: CodingKey {
         case id, name, blocks, stations, feedbacks, turnouts, trains, locomotives, routes, layoutScripts, routeScripts, transitions, controlPoints
-
-        // TODO: deprecated
-        case scripts
     }
 
     convenience init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         self.init(id: try container.decode(Identifier<Layout>.self, forKey: CodingKeys.id))
         name = try container.decode(String.self, forKey: CodingKeys.name)
-        if let blocks = try? container.decode([Block].self, forKey: CodingKeys.blocks) {
-            self.blocks.elements = blocks
-        } else {
-            blocks = try container.decode(LayoutElementContainer<Block>.self, forKey: CodingKeys.blocks)
-        }
-        if let stations = try? container.decode([Station].self, forKey: CodingKeys.stations) {
-            self.stations.elements = stations
-        } else {
-            stations = try container.decode(LayoutElementContainer<Station>.self, forKey: CodingKeys.stations)
-        }
-        if let feedbacks = try? container.decode([Feedback].self, forKey: CodingKeys.feedbacks) {
-            self.feedbacks.elements = feedbacks
-        } else {
-            feedbacks = try container.decode(LayoutElementContainer<Feedback>.self, forKey: CodingKeys.feedbacks)
-        }
-        if let turnouts = try? container.decode([Turnout].self, forKey: CodingKeys.turnouts) {
-            self.turnouts.elements = turnouts
-        } else {
-            turnouts = try container.decode(LayoutElementContainer<Turnout>.self, forKey: CodingKeys.turnouts)
-        }
-        if let trains = try? container.decode([Train].self, forKey: CodingKeys.trains) {
-            self.trains.elements = trains
-        } else {
-            trains = try container.decode(LayoutElementContainer<Train>.self, forKey: CodingKeys.trains)
-        }
-        if let locomotives = try? container.decode([Locomotive].self, forKey: CodingKeys.locomotives) {
-            self.locomotives.elements = locomotives
-        } else {
-            locomotives = try container.decode(LayoutElementContainer<Locomotive>.self, forKey: CodingKeys.locomotives)
-        }
+        blocks = try container.decode(LayoutElementContainer<Block>.self, forKey: CodingKeys.blocks)
+        stations = try container.decode(LayoutElementContainer<Station>.self, forKey: CodingKeys.stations)
+        feedbacks = try container.decode(LayoutElementContainer<Feedback>.self, forKey: CodingKeys.feedbacks)
+        turnouts = try container.decode(LayoutElementContainer<Turnout>.self, forKey: CodingKeys.turnouts)
+        trains = try container.decode(LayoutElementContainer<Train>.self, forKey: CodingKeys.trains)
+        locomotives = try container.decode(LayoutElementContainer<Locomotive>.self, forKey: CodingKeys.locomotives)
         routes = try container.decode([Route].self, forKey: CodingKeys.routes)
         layoutScripts = try container.decodeIfPresent(LayoutElementContainer<LayoutScript>.self, forKey: CodingKeys.layoutScripts) ?? LayoutElementContainer<LayoutScript>()
 
-        // TODO: update all the files and move away from this key
-        if let routeScripts = try container.decodeIfPresent([RouteScript].self, forKey: CodingKeys.scripts) {
-            self.routeScripts.elements = routeScripts
-        } else {
-            routeScripts = try container.decodeIfPresent(LayoutElementContainer<RouteScript>.self, forKey: CodingKeys.routeScripts) ?? LayoutElementContainer<RouteScript>()
-        }
-        if let transitions = try? container.decode([Transition].self, forKey: CodingKeys.transitions) {
-            self.transitions.elements = transitions
-        } else {
-            transitions = try container.decode(LayoutElementContainer<Transition>.self, forKey: CodingKeys.transitions)
-        }
+        routeScripts = try container.decodeIfPresent(LayoutElementContainer<RouteScript>.self, forKey: CodingKeys.routeScripts) ?? LayoutElementContainer<RouteScript>()
+        transitions = try container.decode(LayoutElementContainer<Transition>.self, forKey: CodingKeys.transitions)
         controlPoints = try container.decode([ControlPoint].self, forKey: CodingKeys.controlPoints)
     }
 
