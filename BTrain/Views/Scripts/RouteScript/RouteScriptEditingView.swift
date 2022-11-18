@@ -32,6 +32,8 @@ struct RouteScriptEditingView: View {
             }
         }) { script in
             RouteScriptEditorView(layout: layout, script: script)
+        }.onDisappear() {
+            layout.updateRoutesUsingRouteScripts()
         }
     }
 }

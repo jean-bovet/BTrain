@@ -80,7 +80,7 @@ final class LayoutDocument: ObservableObject {
             case .routeScripts:
                 return "Routes"
             case .routes:
-                return "Routes (Developer)"
+                return "Steps"
             case .trains:
                 return "Trains"
             case .locomotives:
@@ -119,7 +119,7 @@ final class LayoutDocument: ObservableObject {
             case .feedbacks:
                 return "8"
             case .cs3:
-                return "9"
+                return nil
             }
         }
 

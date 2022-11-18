@@ -45,11 +45,6 @@ class UnmanagedTrainOperationTests: BTTestCase {
         try p.assertTrain(notInBlock: "b2")
         try p.assertTrain(inBlock: "b1", position: 1, speed: LayoutFactory.DefaultMaximumSpeed)
 
-        // Put another train in b2 and ensure the train is stopped when
-        // it reaches the end of b1 as a protection mechanism
-        // TODO: semi-automatic mode
-//        layout.blocks[1].reserved = .init("anotherTrain", .next)
-
         try p.triggerFeedback("f11", false)
         try p.triggerFeedback("f12")
 

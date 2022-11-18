@@ -21,8 +21,6 @@ struct RouteItemStation: Equatable, Codable {
 
     var stationId: Identifier<Station>
 
-    // TODO: waiting time as well?
-
     var description: String {
         "\(stationId)"
     }
