@@ -126,4 +126,16 @@ class LayoutTests: BTTestCase {
         XCTAssertEqual(train1.state, .stopped)
         XCTAssertEqual(train1.scheduling, .unmanaged)
     }
+    
+    func testNoTransitions() throws {
+        let layout = LayoutIncomplete().newLayout()
+        let b1 = layout.blocks[0]
+        let b2 = layout.blocks[1]
+        let t1 = layout.trains[1]
+
+        b1.trainInstance = .init(t1.id, .next)
+        let f = try layout.entryFeedback(from: b1, to: b2)
+        XCTAssertNil(f)
+    }
+
 }

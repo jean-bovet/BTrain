@@ -55,7 +55,10 @@ protocol TrainControlling: AnyObject {
 
     /// Returns true if the train is located in a station or at the destination block as specified by the route
     var atStationOrDestination: Bool { get }
-
+    
+    /// Returns true if the train needs to change direction in the current block to continue along the current route
+    var shouldChangeDirection: Bool { get }
+    
     /// Returns true if the reserved blocks are still settling
     var reservedBlocksSettling: Bool { get }
 
@@ -99,6 +102,9 @@ protocol TrainControlling: AnyObject {
 
     /// Stops the train immediately
     func stopImmediately() throws
+    
+    /// Flip the direction of the train
+    func changeDirection() throws
 
     /// Schedule a timer that will restart the train after a specific waiting period
     func reschedule()

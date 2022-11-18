@@ -99,6 +99,28 @@ final class TrainController: TrainControlling, CustomStringConvertible {
         layout.hasTrainReachedStationOrDestination(route, train, currentBlock)
     }
 
+    var shouldChangeDirection: Bool {
+        guard let directionInBlock = currentBlock.trainInstance?.direction else {
+            return false
+        }
+
+        guard let routeItem = route.steps.element(at: train.routeStepIndex) else {
+            return false
+        }
+
+        switch routeItem {
+        case .block(let routeItemBlock):
+            // TODO: take into account train that cannot change direction
+            return routeItemBlock.direction != directionInBlock
+            
+        case .turnout:
+            return false
+            
+        case .station:
+            return false
+        }
+    }
+    
     var reservedBlocksSettling: Bool {
         train.leading.settling
     }
@@ -226,6 +248,13 @@ final class TrainController: TrainControlling, CustomStringConvertible {
         try layoutController.setTrainSpeed(train, 0)
     }
 
+    func changeDirection() throws {
+        guard let loc = train.locomotive else {
+            throw LayoutError.locomotiveNotAssignedToTrain(train: train)
+        }
+        layoutController.setLocomotiveDirection(loc, forward: !loc.directionForward)
+    }
+    
     // MARK: - -
 
     private func isFeedbackTriggered(layout: Layout, feedbackId: Identifier<Feedback>) -> Bool {

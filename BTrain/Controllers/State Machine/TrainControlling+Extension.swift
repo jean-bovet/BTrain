@@ -53,12 +53,18 @@ extension TrainControlling {
             return true
         }
 
+        // If there is not enough reserved block length available, we should stop
         if !ignoreReservedBlocks {
             if try shouldStopInBlockBecauseNotEnoughReservedBlocksLength() {
                 return true
             }
         }
 
+        // If the block requires a change of direction, we need to stop
+        if shouldChangeDirection {
+            return true
+        }
+        
         return false
     }
 }

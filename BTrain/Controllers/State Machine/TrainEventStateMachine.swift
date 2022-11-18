@@ -54,6 +54,13 @@ struct TrainEventStateMachine {
         case .modeChanged:
             if train.mode == .managed {
                 if try train.updateReservedBlocks() {
+                    // Note: change the train direction is necessary after the necessary blocks
+                    // have been reserved. Changing the direction will unblock the train which
+                    // is going to be started automatically.
+                    if train.shouldChangeDirection {
+                        try train.changeDirection()
+                    }
+
                     return .reservedBlocksChanged(train)
                 }
             } else {

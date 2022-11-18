@@ -14,6 +14,7 @@
 import XCTest
 
 final class MockTrainController: TrainControlling {
+    
     var id: String = UUID().uuidString
 
     var mode: StateMachine.TrainMode = .unmanaged
@@ -39,6 +40,8 @@ final class MockTrainController: TrainControlling {
     }
 
     var atStationOrDestination: Bool = false
+
+    var shouldChangeDirection: Bool = false
 
     var reservedBlocksSettling: Bool = false
 
@@ -151,6 +154,8 @@ final class MockTrainController: TrainControlling {
     }
 
     func stopImmediately() {}
+
+    func changeDirection() throws { }
 
     func reschedule() {
         // no-op

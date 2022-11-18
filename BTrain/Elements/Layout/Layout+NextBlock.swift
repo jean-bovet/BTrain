@@ -84,7 +84,10 @@ extension Layout {
 
         // Note: grab the last transition which is the one that leads to `nextBlock`.
         guard let lastTransition = transitions.last else {
-            throw LayoutError.noTransition(fromBlock: fromBlock, toBlock: nextBlock)
+            // It is possible that there are no transitions between these two blocks, for example,
+            // when moving between two blocks that requires the train to move backwards but the
+            // train has not yet changed direction. Instead of throwing an error, we simply return nil.
+            return nil
         }
 
         // Determine if the train is moving in the "natural" direction

@@ -54,7 +54,7 @@ final class LayoutFeedbackMonitor {
     func handleUnexpectedFeedbacks() throws {
         for feedback in layout.feedbacks.elements.filter({ $0.detected }) {
             if !expectedFeedbacks.contains(feedback.id) {
-                BTLogger.error("Unexpected feedback \(feedback.name) detected! Expected feedbacks: \(expectedFeedbacks)")
+                BTLogger.error("Unexpected feedback \(feedback.name) detected! Expected feedbacks: \(expectedFeedbacks.toString(layout: layout))")
                 throw LayoutError.unexpectedFeedback(feedback: feedback)
             }
         }

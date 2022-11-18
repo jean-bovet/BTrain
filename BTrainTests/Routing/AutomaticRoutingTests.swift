@@ -530,6 +530,53 @@ class AutomaticRoutingTests: BTTestCase {
         XCTAssertEqual(p.train.scheduling, .unmanaged)
     }
 
+    // MARK: - - Backward
+    
+    //    ┌─────────┐                      ┌─────────┐             ┌─────────┐
+    //    │   s1    │───▶  t1  ───▶  t2  ─▶│   b1    │─▶  t4  ────▶│   s2    │
+    //    └─────────┘                      └─────────┘             └─────────┘
+    //         ▲            │         │                    ▲            │
+    //         │            │         │                    │            │
+    //         │            ▼         ▼                    │            │
+    //         │       ┌─────────┐                    ┌─────────┐       │
+    //         │       │   b2    │─▶ t3  ────────────▶│   b3    │       │
+    //         │       └─────────┘                    └─────────┘       ▼
+    //    ┌─────────┐                                              ┌─────────┐
+    //    │   b5    │◀─────────────────────────────────────────────│   b4    │
+    //    └─────────┘                                              └─────────┘
+    
+    
+    /// Test that a locomotive that does not support going backward will not move when a route that requires
+    /// it to go backward is setup. The route path finder will fail to find a path for the train and the train won't move.
+    func testBackwardRouteWithLocomotiveThatDontGoBackward() throws {
+        let layout = LayoutLoopWithStation().newLayout()
+        let s1 = layout.block(named: "s1")
+        let s2 = layout.block(named: "s2")
+
+        let t1 = layout.trains[0]
+        t1.locomotive?.directionForward = true
+        t1.locomotive?.allowedDirections = .forward
+
+        _ = try setup(layout: layout, fromBlockId: s1.id, destination: .init(s2.id, direction: .next), position: .end, direction: .previous, expectedState: .stopped, routeSteps: [])
+    }
+
+    func testBackwardRoute() throws {
+        let layout = LayoutLoopWithStation().newLayout()
+        let s1 = layout.block(named: "s1")
+        let s2 = layout.block(named: "s2")
+
+        let t1 = layout.trains[0]
+        t1.locomotive?.directionForward = true
+        t1.locomotive?.allowedDirections = .any
+
+        let p = try setup(layout: layout, fromBlockId: s1.id, destination: .init(s2.id, direction: .next), position: .end, direction: .previous, routeSteps: ["s1:next", "b1:next", "s2:next"])
+        p.layout.strictRouteFeedbackStrategy = false
+        
+        try p.assert("automatic-0: {r0{s1 🟢🚂0 ≏ 💺0 ≏ }} <r0<t1{sr}(0,1),s>> <r0<t2{sr}(0,1),s>> [r0[b1 ≏ ≏ ]] <t4{sl}(1,0),s> {s2 ≏ ≏ }", ["b1"])
+        try p.assert("automatic-0: {s1 ≏ ≏ } <t1{sr}(0,1),s> <t2{sr}(0,1),s> [r0[b1 💺0 ≡ 🔵🚂0 ≏ ]] <r0<t4{sl}(1,0),s>> {r0{s2 ≏ ≏ }}", ["s2"])
+        try p.assert("automatic-0: {s1 ≏ ≏ } <t1{sr}(0,1),s> <t2{sr}(0,1),s> [b1 ≏ ≏ ] <t4{sl}(1,0),s> {r0{s2 💺0 ≡ 🟡🚂0 ≏ }}", [])
+    }
+
     // MARK: - - Utility
 
     private func setup(layout: Layout, fromBlockId: Identifier<Block>, destination: Destination?, position: Position = .start, direction: Direction = .next, expectedState: Train.State = .running, routeSteps: [String]) throws -> Package {
