@@ -25,12 +25,12 @@ struct LayoutScriptCommandView: View {
             Text("􀌃")
 
             Text("Run train")
-            TrainPicker(doc: doc, selectedTrain: $command.train)
+            TrainPicker(doc: doc, selectedTrain: $command.trainId)
                 .labelsHidden()
                 .fixedSize()
             
             Text("with route")
-            Picker("Route:", selection: $command.route) {
+            Picker("Route:", selection: $command.routeScriptId) {
                 ForEach(layout.routeScripts.elements, id:\.self) { item in
                     Text(item.name).tag(item.id as Identifier<RouteScript>?)
                 }

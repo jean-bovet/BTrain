@@ -14,6 +14,12 @@ import Foundation
 import Combine
 import OrderedCollections
 
+/// Abstraction of the LayoutController
+protocol LayoutControlling: AnyObject {
+    func start(routeID: Identifier<Route>, trainID: Identifier<Train>) throws
+    func stop(train: Train)
+}
+
 /**
  Manages the operation of all the trains in the layout.
  
@@ -43,8 +49,8 @@ import OrderedCollections
  should be avoided will be ignored. However, elements reserved for other trains will be taken into account because the reservations
  will change as the trains move in the layout.
  */
-final class LayoutController: ObservableObject {
-    
+final class LayoutController: ObservableObject, LayoutControlling {
+
     /// True to enable the control of the layout, false otherwise. For example, the locomotive speed measurement
     /// is turning the layout controller off in order to freely move a locomotive between feedbacks without having
     /// to take into account any unexpected feedback being triggered.
@@ -65,6 +71,9 @@ final class LayoutController: ObservableObject {
     /// The switchboard state, used to refresh the switchboard
     /// when certain events happen in the layout controller
     let switchboard: SwitchBoard?
+    
+    /// The layout script conductor
+    let conductor: LayoutScriptConductor
     
     lazy var reservation: LayoutReservation = {
         LayoutReservation(layout: layout, executor: self, verbose: SettingsKeys.bool(forKey: SettingsKeys.logReservation))
@@ -99,6 +108,7 @@ final class LayoutController: ObservableObject {
         self.feedbackMonitor = LayoutFeedbackMonitor(layout: layout)
         self.switchboard = switchboard
         self.interface = interface
+        self.conductor = LayoutScriptConductor(layout: layout)
         self.turnoutManager = LayoutTurnoutManager(interface: interface)
         self.debugger = LayoutControllerDebugger(layout: layout)
         
@@ -106,6 +116,8 @@ final class LayoutController: ObservableObject {
         registerForDirectionChange()
         registerForTurnoutChange()
         registerForTrainChange()
+        
+        self.conductor.layoutControlling = self
         
         #if DEBUG
         LayoutController.memoryLeakCounter += 1
@@ -165,6 +177,9 @@ final class LayoutController: ObservableObject {
             // might have moved and hence the expected feedbacks
             // should be updated promptly to reflect the new state.
             try updateExpectedFeedbacks()
+            
+            // Update and run any layout scripts
+            try conductor.tick()
         } catch {
             // Stop everything in case there is a problem processing the layout
             BTLogger.router.error("Stopping all trains because there is an error processing the layout: \(error.localizedDescription, privacy: .public)")
@@ -247,7 +262,7 @@ final class LayoutController: ObservableObject {
             }
         }
     }
-    
+        
     /// Stops the specified train as soon as possible.
     ///
     /// The first call to this method stops the train as soon as possible, when
@@ -293,6 +308,17 @@ final class LayoutController: ObservableObject {
         runControllers(.trainPositionChanged(train))
     }
     
+    // MARK: Layout Scripts
+    
+    func schedule(scriptId: Identifier<LayoutScript>) {
+        conductor.schedule(scriptId)
+        runControllers(.scriptScheduled)
+    }
+
+    func stop(scriptId: Identifier<LayoutScript>) {
+        conductor.stop(scriptId)
+    }
+
     // MARK: Paused Train Management
     
     // A map that contains all trains that are currently paused
@@ -446,6 +472,10 @@ extension LayoutController {
         }
     }
     
+    func start(routeID: Identifier<Route>, trainID: Identifier<Train>) throws {
+        try start(routeID: routeID, trainID: trainID, destination: nil)
+    }
+
     func start(routeID: Identifier<Route>, trainID: Identifier<Train>, destination: Destination? = nil) throws {
         guard let train = layout.trains[trainID] else {
             throw LayoutError.trainNotFound(trainId: trainID)

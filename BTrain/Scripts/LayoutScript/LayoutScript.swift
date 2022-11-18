@@ -26,7 +26,6 @@ final class LayoutScript: Element, ObservableObject {
     internal init(id: Identifier<LayoutScript>, name: String = "") {
         self.id = id
         self.name = name
-        self.commands = [.init(action: .run)]
     }
 
 }

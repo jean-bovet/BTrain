@@ -25,8 +25,8 @@ struct LayoutScriptCommand: ScriptCommand, Identifiable, Hashable {
     
     var children = [LayoutScriptCommand]()
     
-    var train: Identifier<Train>?
-    var route: Identifier<RouteScript>?
+    var trainId: Identifier<Train>?
+    var routeScriptId: Identifier<RouteScript>?
     
     init(id: UUID = UUID(), action: Action) {
         self.id = id
@@ -46,8 +46,8 @@ extension LayoutScriptCommand: Codable {
         self.action = try container.decode(Action.self, forKey: CodingKeys.action)
         self.children = try container.decode([LayoutScriptCommand].self, forKey: CodingKeys.children)
         
-        self.train = try container.decode(Identifier<Train>.self, forKey: CodingKeys.train)
-        self.route = try container.decode(Identifier<RouteScript>.self, forKey: CodingKeys.route)
+        self.trainId = try container.decode(Identifier<Train>.self, forKey: CodingKeys.train)
+        self.routeScriptId = try container.decode(Identifier<RouteScript>.self, forKey: CodingKeys.route)
     }
     
     func encode(to encoder: Encoder) throws {
@@ -55,7 +55,7 @@ extension LayoutScriptCommand: Codable {
         try container.encode(id, forKey: CodingKeys.id)
         try container.encode(action, forKey: CodingKeys.action)
         try container.encode(children, forKey: CodingKeys.children)
-        try container.encode(train, forKey: CodingKeys.train)
-        try container.encode(route, forKey: CodingKeys.route)
+        try container.encode(trainId, forKey: CodingKeys.train)
+        try container.encode(routeScriptId, forKey: CodingKeys.route)
     }
 }

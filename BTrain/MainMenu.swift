@@ -55,6 +55,7 @@ struct CommandSelectedView: View {
 }
 
 struct DocumentFocusedValueKey: FocusedValueKey {
+    // TODO: ideally should be observable but not sure how to achieve that
     typealias Value = LayoutDocument
 }
 

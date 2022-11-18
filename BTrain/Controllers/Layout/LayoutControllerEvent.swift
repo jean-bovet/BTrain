@@ -40,6 +40,9 @@ enum LayoutControllerEvent: CustomStringConvertible {
 
     /// The position of a train changed because the user either removed or added manually a train to the layout
     case trainPositionChanged(Train)
+    
+    /// A layout script has been scheduled for execution
+    case scriptScheduled
 
     var description: String {
         switch self {
@@ -57,6 +60,8 @@ enum LayoutControllerEvent: CustomStringConvertible {
             return "Speed Changed"
         case .trainPositionChanged(let train):
             return "Train removed: \(train)"
+        case .scriptScheduled:
+            return "Script scheduled"
         }
     }
 }
