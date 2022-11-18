@@ -144,6 +144,50 @@ final class LayoutScriptConductorTests: XCTestCase {
         XCTAssertEqual(controller.startedCount, 2)
         XCTAssertNil(conductor.currentScript)
     }
+    
+    func testScriptWithIdenticalCommands() throws {
+        let layout = LayoutLoop1().newLayout()
+        let conductor = LayoutScriptConductor(layout: layout)
+        
+        let controller = LayoutController(layout: layout, switchboard: nil, interface: MockCommandInterface())
+        conductor.layoutControlling = controller
+        
+        XCTAssertTrue(layout.layoutScripts.elements.isEmpty)
+        
+        let route = layout.routes[0]
+        let train = layout.trains[0]
+        try layout.setTrainToBlock(train.id, route.partialSteps[0].stepBlockId!, direction: .next)
+        
+        // Note: RouteScripts have the same UUID as their Route counterpart so they can update the Route whenever they are updated.
+        let routeScript = simpleRouteScript(withUUID: route.id.uuid)
+        layout.routeScripts.add(routeScript)
+        
+        let layoutScript = layoutScriptTwoSiblingIdenticalCommand(train: train.id, routeScript: layout.routeScripts[0].id)
+        layout.layoutScripts.add(layoutScript)
+        
+        // Schedule to start the script which will schedule for execution all the commands at the same level.
+        // Because the two commands use the same train, the second command will have to wait for the first train
+        // to finish before start - otherwise there will be an exception because one train cannot be started
+        // more than once!
+        conductor.schedule(layoutScript.id)
+        XCTAssertNotNil(conductor.currentScript)
+
+        try conductor.tick()
+        try conductor.tick()
+
+        // Indicate that the train has stopped
+        train.scheduling = .unmanaged
+        
+        // Now the second command will start executing
+        try conductor.tick()
+        XCTAssertNotNil(conductor.currentScript)
+                
+        train.scheduling = .unmanaged
+
+        try conductor.tick()
+        XCTAssertNil(conductor.currentScript)
+    }
+
 
     private func simpleRouteScript(withUUID uuid: String) -> RouteScript {
         let script = RouteScript(uuid: uuid)
@@ -173,6 +217,22 @@ final class LayoutScriptConductorTests: XCTestCase {
         command.children.append(child)
         
         script.commands.append(command)
+        return script
+    }
+
+    private func layoutScriptTwoSiblingIdenticalCommand(train: Identifier<Train>, routeScript: Identifier<RouteScript>) -> LayoutScript {
+        let script = LayoutScript(name: "Test")
+        
+        var command = LayoutScriptCommand(action: .run)
+        command.trainId = train
+        command.routeScriptId = routeScript
+        script.commands.append(command)
+
+        var command2 = LayoutScriptCommand(action: .run)
+        command2.trainId = train
+        command2.routeScriptId = routeScript
+        script.commands.append(command2)
+
         return script
     }
 
