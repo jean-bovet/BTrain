@@ -26,10 +26,6 @@ struct DocumentToolbarContent: ToolbarContent {
         }
                 
         ToolbarItemGroup {
-            DiagnosticsIndicationView(diagnostics: document.layoutDiagnostics, document: document)
-
-            Spacer()
-
             DeveloperCommandsView(document: document)
 
             if let switchboard = document.switchboard {
@@ -79,29 +75,6 @@ struct ConnectCommandsView: View {
             .foregroundColor(.green)
         }
     }
-}
-
-struct DiagnosticsIndicationView: View {
-    
-    @ObservedObject var diagnostics: LayoutDiagnostic
-    @ObservedObject var document: LayoutDocument
-
-    var body: some View {
-        if diagnostics.hasErrors {
-            Button("\(diagnostics.errorCount) 􀇾") {
-                document.triggerLayoutDiagnostic.toggle()
-            }
-            .foregroundColor(.red)
-            .help("The layout has some issues")
-        } else {
-            Button("􀁢") {
-                document.triggerLayoutDiagnostic.toggle()
-            }
-            .foregroundColor(.green)
-            .help("The layout is valid")
-        }
-    }
-    
 }
 
 struct PowerStateIndicationView: View {

@@ -32,6 +32,12 @@ struct MenuCommands: Commands {
                     }
                 }
                 Divider()
+                
+                Button("Diagnostic") {
+                    document?.triggerLayoutDiagnostic.toggle()
+                }.keyboardShortcut("d", modifiers: [.command])
+
+                Divider()
             }
         }
     }
