@@ -16,7 +16,6 @@ import SwiftUI
 /// This is the root model class that holds everything needed to manage a  layout.
 /// It also handles loading and saving of the layout model to disk.
 final class LayoutDocument: ObservableObject {
-        
     /// The layout model
     @Published var layout: Layout
 
@@ -31,23 +30,23 @@ final class LayoutDocument: ObservableObject {
 
     /// Class that is used to diagnostic the layout and report any error
     let layoutDiagnostics: LayoutDiagnostic
-        
+
     /// The Digital Controller simulator when working offline
     let simulator: MarklinCommandSimulator
 
     /// The locomotive icon manager
     let locomotiveIconManager: LocomotiveIconManager
-    
+
     /// The locomotive discovery class
     let locomotiveDiscovery: LocomotiveDiscovery
-    
+
     /// True if the layout is connected to the Digital Controller, false otherwise
     @Published var connected = false {
         didSet {
             listenToPowerEvents()
         }
     }
-    
+
     /// Set of trains that have been pinned by the user
     @Published var pinnedTrainIds = Set<Identifier<Train>>()
 
@@ -57,10 +56,10 @@ final class LayoutDocument: ObservableObject {
 
     /// Used to trigger the layout diagnostic from the UX
     @Published var triggerLayoutDiagnostic = false
-    
+
     /// Used to show or hide the switchboard view settings
     @Published var showSwitchboardViewSettings = false
-    
+
     /// The various type of sheets that can be displayed
     enum DisplaySheetType: String, CaseIterable {
         case layoutScripts = "Layout Scripts"
@@ -73,7 +72,7 @@ final class LayoutDocument: ObservableObject {
         case turnouts = "Turnouts"
         case feedbacks = "Feedbacks"
         case cs3 = "Central Station 3 Debugger"
-        
+
         var label: String {
             switch self {
             case .layoutScripts:
@@ -125,26 +124,26 @@ final class LayoutDocument: ObservableObject {
         }
 
         var debugOnly: Bool {
-            return self == .routes || self == .cs3
+            self == .routes || self == .cs3
         }
     }
-    
+
     /// Show the specific sheet type
     @Published var displaySheetType = DisplaySheetType.routeScripts {
         didSet {
             displaySheet.toggle()
         }
     }
-        
+
     /// Toggle showing the sheet when the sheet type changes
     @Published var displaySheet = false
 
     /// Property used to toggle showing debug-only controls
     @AppStorage(SettingsKeys.debugMode) var showDebugModeControls = false
-        
+
     /// Class handling tasks that must run when the connection to the Digital Controller is established
     @Published var onConnectTasks: LayoutOnConnectTasks
-    
+
     /// True if at least one train can be started
     @Published var trainsThatCanBeStarted = false
 
@@ -153,12 +152,12 @@ final class LayoutDocument: ObservableObject {
 
     /// True if at least one train can be finished
     @Published var trainsThatCanBeFinished = false
-    
+
     /// True if the document is a new document. This is used to trigger
     /// the new document wizard to help pre-populate the switchboard
     /// with a predefined layout and locomotives.
     @Published var newDocument = false
-    
+
     /// If non-nil, the instance of the class that is measuring the speed of a train
     var measurement: LocomotiveSpeedMeasurement?
 
@@ -168,59 +167,59 @@ final class LayoutDocument: ObservableObject {
 
     init(layout: Layout, interface: CommandInterface = MarklinInterface()) {
         let simulator = MarklinCommandSimulator(layout: layout, interface: interface)
-        
+
         let locomotiveIconManager = LocomotiveIconManager()
-        
+
         let context = ShapeContext(simulator: simulator, locomotiveIconManager: locomotiveIconManager)
         let shapeProvider = ShapeProvider(layout: layout, context: context)
         let switchboard = SwitchBoard(layout: layout, provider: shapeProvider, context: context)
-        
+
         let layoutController = LayoutController(layout: layout, switchboard: switchboard, interface: interface)
-        
+
         self.layout = layout
         self.interface = interface
         self.simulator = simulator
-        self.layoutDiagnostics = LayoutDiagnostic(layout: layout)
+        layoutDiagnostics = LayoutDiagnostic(layout: layout)
         self.locomotiveIconManager = locomotiveIconManager
         self.switchboard = switchboard
         self.layoutController = layoutController
-                
-        self.onConnectTasks = LayoutOnConnectTasks(layout: layout, layoutController: layoutController, interface: interface)
-        
+
+        onConnectTasks = LayoutOnConnectTasks(layout: layout, layoutController: layoutController, interface: interface)
+
         switchboard.provider.layoutController = layoutController
         switchboard.update()
-        
-        self.trainsStateObserver = LayoutTrainsStateObserver(layout: layout)
-        self.trainsSchedulingObserver = LayoutTrainsSchedulingObserver(layout: layout)
-        
-        self.locomotiveDiscovery = LocomotiveDiscovery(interface: interface, layout: layout, locomotiveIconManager: locomotiveIconManager)
-        
+
+        trainsStateObserver = LayoutTrainsStateObserver(layout: layout)
+        trainsSchedulingObserver = LayoutTrainsSchedulingObserver(layout: layout)
+
+        locomotiveDiscovery = LocomotiveDiscovery(interface: interface, layout: layout, locomotiveIconManager: locomotiveIconManager)
+
         listenToTrainsStateChange(layout: layout)
     }
-    
+
     func apply(_ other: Layout) {
         layout.apply(other: other)
         switchboard.fitSize()
     }
-    
+
     /// Listen to change in the train state and scheduling attributes
     /// - Parameter layout: the layout
-    private func listenToTrainsStateChange(layout: Layout) {
-        self.trainsStateObserver.registerForChange { [weak self] train in
+    private func listenToTrainsStateChange(layout _: Layout) {
+        trainsStateObserver.registerForChange { [weak self] _ in
             self?.trainStateChanged()
         }
-        self.trainsSchedulingObserver.registerForChange { [weak self] train in
+        trainsSchedulingObserver.registerForChange { [weak self] _ in
             self?.trainStateChanged()
         }
     }
-    
+
     /// Re-compute the states that depend from a train internal state
     private func trainStateChanged() {
         trainsThatCanBeStarted = layout.trainsThatCanBeStarted().count > 0
         trainsThatCanBeStopped = layout.trainsThatCanBeStopped().count > 0
         trainsThatCanBeFinished = layout.trainsThatCanBeFinished().count > 0
     }
-    
+
     /// Listen to power event from the Digital Controller (power on, power off)
     private func listenToPowerEvents() {
         if connected {
@@ -232,5 +231,4 @@ final class LayoutDocument: ObservableObject {
             self.stateChangeUUID = nil
         }
     }
-    
 }

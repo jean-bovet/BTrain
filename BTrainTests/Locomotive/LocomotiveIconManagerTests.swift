@@ -15,30 +15,29 @@ import XCTest
 @testable import BTrain
 
 class LocomotiveIconManagerTests: XCTestCase {
-
     func testLoad() throws {
         let tim = LocomotiveIconManager()
-        
+
         let url = Bundle(for: LayoutDocument.self).url(forResource: "Predefined", withExtension: "btrain")!
-        
+
         let predefinedFileWrapper = try FileWrapper(url: url, options: [])
         let layout = try predefinedFileWrapper.layout()
         tim.setIcons(try predefinedFileWrapper.locomotiveIcons())
-        
+
         let locId = layout.trains[0].locomotive!.id
 
         XCTAssertNotNil(tim.icon(for: locId))
-        
+
         tim.clearInMemoryCache()
-        
+
         XCTAssertNotNil(tim.icon(for: locId))
-        
+
         let fw = tim.fileWrapper(for: locId)!
-        
+
         tim.clear()
-        
+
         XCTAssertNil(tim.icon(for: locId))
-        
+
         tim.setFileWrapper(fw, for: locId)
         XCTAssertNotNil(tim.icon(for: locId))
     }

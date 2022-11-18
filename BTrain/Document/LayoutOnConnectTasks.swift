@@ -13,11 +13,10 @@
 import Foundation
 
 final class LayoutOnConnectTasks: ObservableObject {
-
     let layout: Layout
     let layoutController: LayoutController
     let interface: CommandInterface
-    
+
     // Property used to keep track of the progress when activating the turnouts
     // when connecting to the Digital Controller
     @Published var activateTurnoutPercentage: Double? = nil
@@ -27,7 +26,7 @@ final class LayoutOnConnectTasks: ObservableObject {
         self.layoutController = layoutController
         self.interface = interface
     }
-    
+
     func performOnConnectTasks(activateTurnouts: Bool, completion: @escaping CompletionBlock) {
         queryLocomotivesDirection {
             if activateTurnouts {
@@ -43,9 +42,9 @@ final class LayoutOnConnectTasks: ObservableObject {
             }
         }
     }
-    
+
     private func queryLocomotivesDirection(completion: @escaping CompletionBlock) {
-        let locomotives = layout.locomotives.elements.filter( { $0.enabled })
+        let locomotives = layout.locomotives.elements.filter { $0.enabled }
         guard !locomotives.isEmpty else {
             completion()
             return
@@ -64,18 +63,18 @@ final class LayoutOnConnectTasks: ObservableObject {
             }
         }
     }
-    
+
     private func applyTurnoutStateToDigitalController(completion: @escaping CompletionBlock) {
         let turnouts = layout.turnouts.elements
         guard !turnouts.isEmpty else {
             completion()
             return
         }
-        
+
         activateTurnoutPercentage = 0.0
         var completionCount = 0
         for t in turnouts {
-            layoutController.sendTurnoutState(turnout: t) { completed in
+            layoutController.sendTurnoutState(turnout: t) { _ in
                 completionCount += 1
                 self.activateTurnoutPercentage = Double(completionCount) / Double(turnouts.count)
                 if completionCount == turnouts.count {
@@ -85,5 +84,4 @@ final class LayoutOnConnectTasks: ObservableObject {
             }
         }
     }
-    
 }

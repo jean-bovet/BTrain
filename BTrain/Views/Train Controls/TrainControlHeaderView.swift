@@ -13,7 +13,6 @@
 import SwiftUI
 
 struct TrainControlHeaderView: View {
-    
     @ObservedObject var train: Train
     @Binding var pinnedTrainIds: Set<Identifier<Train>>
 
@@ -34,7 +33,6 @@ struct TrainControlHeaderView: View {
 }
 
 struct TrainControlHeaderView_Previews: PreviewProvider {
-    
     static let doc = LayoutDocument(layout: LayoutLoop1().newLayout())
 
     static var previews: some View {

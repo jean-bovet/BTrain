@@ -22,79 +22,78 @@ import OrderedCollections
 ///
 /// See [Dijkstra on Wikipedia](https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm)
 final class ShortestPathFinder {
-    
     /// The error this class can throw
     enum PathFinderError: Error {
         case missingExitSocket(from: GraphPathElement)
-        case distanceNotFound(`for`: GraphPathElement)
-        case pathNotFound(`for`: GraphPathElement)
+        case distanceNotFound(for: GraphPathElement)
+        case pathNotFound(for: GraphPathElement)
         case nodeNotFound(identifier: GraphElementIdentifier)
-        case destinationSocketNotFound(`for`: GraphEdge)
-        case edgeNotFound(`for`: GraphNode, socketId: SocketId)
+        case destinationSocketNotFound(for: GraphEdge)
+        case edgeNotFound(for: GraphNode, socketId: SocketId)
         case invalidElement(_ element: GraphPathElement)
     }
-    
+
     /// The graph to analyze
     private let graph: Graph
-    
+
     /// True to output debugging information
     private let verbose: Bool
-        
+
     /// Map of the distances between each element of the graph and the starting element.
     ///
     /// An element is identifier by its node and its entry and exit sockets. For example:
     /// - 0:s1:1 indicates the block s1 in the direction of travel "next".
     /// - 1:s1:0 indicates the block s1 in the direction of travel "previous".
     /// - 0:t1:2 indicates the turnout t1 with the exit socket (2) indicating the right-branch.
-    private var distances = [GraphPathElement:Double]()
-    
+    private var distances = [GraphPathElement: Double]()
+
     /// Map of the path from the starting node to the element. This is used to build the shortest path
     /// as the algorithm visits all the nodes. Each time a node is visited with a distance shorter than
     /// any previous distance assigned to the node, the path is set for that node. The next time the
     /// algorithm picks that node to continue the evaluation, it knows which path to use.
-    private var paths = [GraphPathElement:GraphPath]()
+    private var paths = [GraphPathElement: GraphPath]()
 
     /// Set of elements that have been already visited.
     private var visitedElements = Set<GraphPathElement>()
-        
+
     /// Set of elements that have been evaluated (that is, a distance has been computed for that element)
     /// but have not yet been visited.
     ///
     /// Note: use `OrderedSet` to ensure stable outcome of the algorithm.
     private var evaluatedButNotVisitedElements = OrderedSet<GraphPathElement>()
-    
+
     /// The shortest path found so far. This variable is updated each time the destination node is reached
     /// with a distance that's shorter than the previous one.
     /// nil if the algorithm is not able to reach the destination node.
     private var shortestPath: GraphPath?
-    
+
     // The comments in this class will follow this graph as an illustration
-    //┌─────────┐                      ┌─────────┐             ┌─────────┐
-    //│   s1    │───▶  t1  ───▶  t2  ─▶│   b1    │─▶  t4  ────▶│   s2    │
-    //└─────────┘                      └─────────┘             └─────────┘
+    // ┌─────────┐                      ┌─────────┐             ┌─────────┐
+    // │   s1    │───▶  t1  ───▶  t2  ─▶│   b1    │─▶  t4  ────▶│   s2    │
+    // └─────────┘                      └─────────┘             └─────────┘
     //     ▲            │         │                    ▲            │
     //     │            │         │                    │            │
     //     │            ▼         ▼                    │            │
     //     │       ┌─────────┐                    ┌─────────┐       │
     //     │       │   b2    │─▶ t3  ────────────▶│   b3    │       │
     //     │       └─────────┘                    └─────────┘       ▼
-    //┌─────────┐                                              ┌─────────┐
-    //│   b5    │◀─────────────────────────────────────────────│   b4    │
-    //└─────────┘                                              └─────────┘
+    // ┌─────────┐                                              ┌─────────┐
+    // │   b5    │◀─────────────────────────────────────────────│   b4    │
+    // └─────────┘                                              └─────────┘
     // The length of each block and turnout are used as the "weight" of the algorithm,
     // which is traditionally indicated on the edges:
-    //┌─────────┐                      ┌─────────┐             ┌─────────┐
-    //│   100   │───▶  15  ───▶  15  ─▶│   100   │─▶  15  ────▶│   100   │
-    //└─────────┘                      └─────────┘             └─────────┘
+    // ┌─────────┐                      ┌─────────┐             ┌─────────┐
+    // │   100   │───▶  15  ───▶  15  ─▶│   100   │─▶  15  ────▶│   100   │
+    // └─────────┘                      └─────────┘             └─────────┘
     //     ▲            │         │                    ▲            │
     //     │            │         │                    │            │
     //     │            ▼         ▼                    │            │
     //     │       ┌─────────┐                    ┌─────────┐       │
     //     │       │   100   │─▶ 15  ────────────▶│   100   │       │
     //     │       └─────────┘                    └─────────┘       ▼
-    //┌─────────┐                                              ┌─────────┐
-    //│   100   │◀─────────────────────────────────────────────│   100   │
-    //└─────────┘                                              └─────────┘
+    // ┌─────────┐                                              ┌─────────┐
+    // │   100   │◀─────────────────────────────────────────────│   100   │
+    // └─────────┘                                              └─────────┘
     // The algorithm will run and produce the following output at each stage:
     // Set distance 0.0 to 0:s1:1, with path []
     // Set distance 15.0 to 0:t1:1, with path [0:s1:1, 0:t1:1]
@@ -116,7 +115,7 @@ final class ShortestPathFinder {
         self.graph = graph
         self.verbose = verbose
     }
-        
+
     /// Find and return the shortest path between two element of the graph.
     /// - Parameters:
     ///   - graph: the graph
@@ -128,27 +127,27 @@ final class ShortestPathFinder {
     static func shortestPath(graph: Graph, from: GraphPathElement, to: GraphPathElement, constraints: PathFinder.Constraints, verbose: Bool) throws -> GraphPath? {
         try ShortestPathFinder(graph: graph, verbose: verbose).shortestPath(from: from, to: to, constraints: constraints)
     }
-    
+
     // For example:
     // from = 0:s1:1 (which means, block "s1" with entry socket 0 and exit socket 1, indicating a natural direction of "next" in the block)
     // to = 0:s2:1
     private func shortestPath(from: GraphPathElement, to: GraphPathElement, constraints: PathFinder.Constraints) throws -> GraphPath? {
         // Set the distance of the starting element `from` to 0 as well as an empty path.
         setDistance(0, to: from, path: GraphPath([]))
-        
+
         // Visit the graph and assign distances to all the nodes until the `to` node is reached
         try visitGraph(from: from, to: to, currentPath: GraphPath([from]), constraints: constraints)
-        
+
         if verbose {
             BTLogger.debug("Distances:")
             for item in distances.sorted(by: { $0.key.node.identifier.uuid < $1.key.node.identifier.uuid }) {
                 BTLogger.debug("\(item.key) = \(item.value)")
             }
         }
-                
+
         return shortestPath
     }
-    
+
     private func setDistance(_ distance: Double, to: GraphPathElement, path: GraphPath) {
         distances[to] = distance
         paths[to] = path
@@ -157,8 +156,9 @@ final class ShortestPathFinder {
             BTLogger.debug("Set distance \(distance) to \(to.description), with path \(path.elements.description)")
         }
     }
-        
+
     // MARK: -
+
     // MARK: Distances evaluation
 
     /// Visit the graph from node `from` to node `to`, assigning the shortest distances to each newly discovered nodes.
@@ -171,10 +171,10 @@ final class ShortestPathFinder {
         guard !visitedElements.contains(from) else {
             return
         }
-                
+
         // Remember this element as `visited`
         visitedElements.insert(from)
-        
+
         // And remove it from the list of evaluated elements that have not been visited.
         evaluatedButNotVisitedElements.remove(from)
 
@@ -185,25 +185,25 @@ final class ShortestPathFinder {
             guard let fromNodeDistance = distances[from] else {
                 throw PathFinderError.distanceNotFound(for: from)
             }
-            
+
             // Compute the new distance to the adjacent node
             // For example: if nextElement is "t1", the distance will be distance(s1) + distance(t1).
             // In effect, the distance is the length of each node (which is actually the length of each
             // block and turnout). The goal is to assign the distance the train will use when following
             // "s1" and "t1" to each of the adjacent nodes of "t1", which are going to be "t2" and "b2".
             let nextElementDistance = fromNodeDistance + nextElement.node.weight()
-            
+
             // Assign to all the adjacent nodes of `nextElement` the distance of `nextElement`
             assignDistanceToPathConfigurationsOf(element: nextElement, to: to, distance: nextElementDistance, path: currentPath, constraints: constraints)
         }
-        
+
         // Now, from all the elements that have been evaluated, that is, assigned a distance, pick the element
         // that has the shortest distance. In our example, from s1, we evaluated "0:t1:1" and "0:t1:2".
         guard let shortestDistanceElement = evaluatedButNotVisitedElements.sorted(by: { distances[$0]! < distances[$1]! }).first else {
             // This happens when there are no edges out of the `from` node or when all the adjacent nodes of `from` have been evaluated.
             return
         }
-                
+
         if verbose {
             BTLogger.debug("Shortest distance element is \(shortestDistanceElement) with distance \(distances[shortestDistanceElement]!)")
         }
@@ -213,38 +213,38 @@ final class ShortestPathFinder {
         guard let path = paths[shortestDistanceElement] else {
             throw PathFinderError.pathNotFound(for: shortestDistanceElement)
         }
-        
+
         // Continue to evaluate the distances recursively, starting now with the element with the shortest distance
         try visitGraph(from: shortestDistanceElement, to: to, currentPath: path, constraints: constraints)
     }
-    
+
     struct NextElement {
         let node: GraphNode
         let entrySocket: SocketId
     }
-    
+
     /// Returns the element following the specified `element`. There is always zero or one element following
     /// an element (zero in case of a siding block).
     private func nextElement(of element: GraphPathElement) throws -> NextElement? {
         guard let fromExitSocket = element.exitSocket else {
             throw PathFinderError.missingExitSocket(from: element)
         }
-        
+
         guard let edge = graph.edge(from: element.node, socketId: fromExitSocket) else {
             return nil
         }
-        
+
         guard let node = graph.node(for: edge.toNode) else {
             throw PathFinderError.nodeNotFound(identifier: edge.toNode)
         }
-            
+
         guard let entrySocket = edge.toNodeSocket else {
             throw PathFinderError.destinationSocketNotFound(for: edge)
         }
-        
+
         return NextElement(node: node, entrySocket: entrySocket)
     }
-    
+
     /// Assign the distance computed for an element to all the paths that this element can produce to the next element(s).
     ///
     /// For example, starting our example with element "0:s1:1", the next element `element` is "t1", which is a turnout. This turnout
@@ -267,10 +267,10 @@ final class ShortestPathFinder {
             // For example, starting with element "0:t1", we will have:
             // 0:t1:1 and 0:t1:2
             let elementConfiguration = GraphPathElement.between(element.node, element.entrySocket, exitSocket)
-            
+
             // Skip any element that has been visited before
             guard !visitedElements.contains(elementConfiguration) else {
-                if to.isSame(as: elementConfiguration) && shortestPath == nil {
+                if to.isSame(as: elementConfiguration), shortestPath == nil {
                     shortestPath = path + to
                 }
                 continue
@@ -289,10 +289,10 @@ final class ShortestPathFinder {
             if let existingDistance = distances[elementConfiguration], existingDistance <= distance {
                 continue
             }
-                                        
+
             // Otherwise, assign the new distance to the element
             setDistance(distance, to: elementConfiguration, path: path + elementConfiguration)
-            
+
             // If the element is also the destination element, remember the shortest path
             if to.isSame(as: elementConfiguration) {
                 shortestPath = path + to
@@ -301,34 +301,31 @@ final class ShortestPathFinder {
                 }
             }
         }
-    }    
-    
+    }
 }
 
 extension ShortestPathFinder.PathFinderError: LocalizedError {
-    
     var errorDescription: String? {
         switch self {
-        case .missingExitSocket(from: let from):
+        case let .missingExitSocket(from: from):
             return "Missing exit socket from \(from)"
-        case .distanceNotFound(for: let element):
+        case let .distanceNotFound(for: element):
             return "Distance not found for \(element)"
-        case .pathNotFound(for: let element):
+        case let .pathNotFound(for: element):
             return "Path not found for \(element)"
-        case .nodeNotFound(identifier: let identifier):
+        case let .nodeNotFound(identifier: identifier):
             return "Node not found for \(identifier)"
-        case .destinationSocketNotFound(for: let element):
+        case let .destinationSocketNotFound(for: element):
             return "Destination socket not found for \(element)"
-        case .edgeNotFound(for: let node, socketId: let socketId):
+        case let .edgeNotFound(for: node, socketId: socketId):
             return "Edge not found for \(node) and socket \(socketId)"
-        case .invalidElement(element: let element):
+        case let .invalidElement(element: element):
             return "Invalid element \(element)"
         }
     }
 }
 
 extension GraphPathElement {
-    
     func inverse() throws -> GraphPathElement {
         if let entrySocket = entrySocket, let exitSocket = exitSocket {
             return .between(node, exitSocket, entrySocket)

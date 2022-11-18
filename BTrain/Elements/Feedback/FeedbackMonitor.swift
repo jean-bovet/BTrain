@@ -15,41 +15,40 @@ import Foundation
 // This class allows the monitoring of individual feedbacks
 // on either side of the detection pulse.
 final class FeedbackMonitor {
-    
     private let layout: Layout
     private let interface: CommandInterface
     private var feedbackChangeUUID: UUID?
-    
+
     struct Request {
         let completion: CompletionBlock
         let detected: Bool
         let feedbackId: Identifier<Feedback>
     }
-    
+
     private var requests = [Request]()
-        
+
     var pendingRequestCount: Int {
         requests.count
     }
-    
+
     init(layout: Layout, interface: CommandInterface) {
         self.layout = layout
         self.interface = interface
     }
-    
+
     func start() {
         registerForFeedbackChanges()
     }
-    
+
     func cancel() {
         requests.forEach { $0.completion() }
         requests.removeAll()
     }
-    
+
     func stop() {
         unregisterForFeedbackChanges()
     }
-    
+
     func waitForFeedback(_ feedbackId: Identifier<Feedback>, detected: Bool, completion: @escaping CompletionBlock) {
         if let feedback = layout.feedbacks[feedbackId], feedback.detected == detected {
             completion()
@@ -57,30 +56,29 @@ final class FeedbackMonitor {
             requests.append(Request(completion: completion, detected: detected, feedbackId: feedbackId))
         }
     }
-    
+
     private func registerForFeedbackChanges() {
         feedbackChangeUUID = interface.callbacks.register(forFeedbackChange: { [weak self] deviceID, contactID, value in
             guard let sSelf = self else {
                 return
             }
-            
+
             guard let feedback = sSelf.layout.feedbacks.elements.find(deviceID: deviceID, contactID: contactID) else {
                 return
             }
-                            
+
             sSelf.process(feedback: feedback, detected: value == 1)
         })
     }
-    
+
     private func process(feedback: Feedback, detected: Bool) {
         requests.filter { $0.feedbackId == feedback.id && $0.detected == detected }.forEach { $0.completion() }
         requests.removeAll(where: { $0.feedbackId == feedback.id && $0.detected == detected })
     }
-    
+
     private func unregisterForFeedbackChanges() {
         if let feedbackChangeUUID = feedbackChangeUUID {
             interface.callbacks.unregister(uuid: feedbackChangeUUID)
         }
     }
-
 }

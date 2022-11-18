@@ -10,48 +10,47 @@
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-import XCTest
 @testable import BTrain
+import XCTest
 
 final class MockTrainController: TrainControlling {
-
     var id: String = UUID().uuidString
-    
+
     var mode: StateMachine.TrainMode = .unmanaged
-    
+
     var state: StateMachine.TrainState = .stopped
-    
+
     var route: Route
-    
+
     var speed: SpeedKph = 0
-            
+
     var brakeFeedbackActivated: Bool = false
-    
+
     var stopFeedbackActivated: Bool = false
-            
+
     var hasReservedBlocks = false
-    
+
     var startedRouteIndex: Int = 0
     var currentRouteIndex: Int = 0
     var endRouteIndex: Int = 10
-        
+
     var atEndOfRoute: Bool {
         currentRouteIndex >= endRouteIndex
     }
-    
+
     var atStationOrDestination: Bool = false
-    
+
     var reservedBlocksSettling: Bool = false
-    
+
     init(route: Route) {
         self.route = route
     }
-    
+
     func moveToEndOfRoute() {
         currentRouteIndex = 10
         endRouteIndex = 10
     }
-    
+
     typealias OnReservedBlocksLengthEnough = (SpeedKph) -> Bool
     var onReservedBlocksLengthEnough: OnReservedBlocksLengthEnough?
 
@@ -78,7 +77,7 @@ final class MockTrainController: TrainControlling {
 
         return block(feedback)
     }
-        
+
     var onUpdateReservedBlocksSettledLength: ((Turnout) -> Bool)?
 
     func updateReservedBlocksSettledLength(with turnout: Turnout) -> Bool {
@@ -103,10 +102,10 @@ final class MockTrainController: TrainControlling {
         }
         return result
     }
-        
+
     var onUpdateReservedBlocks: CallbackBlock?
     var updateReservedBlocksInvocationCount = 0
-    
+
     func updateReservedBlocks() -> Bool {
         updateReservedBlocksInvocationCount += 1
         guard let block = onUpdateReservedBlocks else {
@@ -120,7 +119,7 @@ final class MockTrainController: TrainControlling {
         }
         return result
     }
-    
+
     func removeReservedBlocks() -> Bool {
         if hasReservedBlocks {
             hasReservedBlocks = false
@@ -129,12 +128,12 @@ final class MockTrainController: TrainControlling {
             return false
         }
     }
-    
+
     var adjustSpeedCount = 0
-    
+
     func adjustSpeed(stateChanged: Bool) {
         adjustSpeedCount += 1
-        
+
         if stateChanged {
             switch state {
             case .running:
@@ -150,11 +149,9 @@ final class MockTrainController: TrainControlling {
             speed = LayoutFactory.DefaultMaximumSpeed
         }
     }
-    
-    func stopImmediately() {
-        
-    }
-    
+
+    func stopImmediately() {}
+
     func reschedule() {
         // no-op
     }

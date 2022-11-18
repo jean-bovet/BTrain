@@ -13,7 +13,6 @@
 import SwiftUI
 
 struct SwitchboardSettingsView: View {
-    
     let document: LayoutDocument
 
     @AppStorage("showBlockName") var showBlockName: Bool = false
@@ -33,9 +32,9 @@ struct SwitchboardSettingsView: View {
             if document.simulator.enabled {
                 Toggle("Simulator", isOn: $showSimulator)
             }
-            
+
             Spacer()
-            
+
             Toggle("􀝯 Zoom to Fit", isOn: $zoomToFit)
         }
     }

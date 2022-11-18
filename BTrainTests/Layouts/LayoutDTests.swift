@@ -10,20 +10,19 @@ import XCTest
 @testable import BTrain
 
 class LayoutErrorTests: LayoutTests {
-    
     override var layoutID: Identifier<Layout>? {
-        return LayoutDCreator.id
+        LayoutDCreator.id
     }
-    
+
     func testDiagnostic() {
         let diag = LayoutDiagnostic(layout: layout)
         let errors = diag.check()
         XCTAssertEqual(errors.count, 7)
-        
+
         let turnout = layout.turnouts[0]
         XCTAssertEqual(errors[0], DiagnosticError.turnoutMissingTransition(turnoutId: turnout.id, socket: turnout.socketName(turnout.socket0.socketId!)))
     }
-    
+
     func testMissingBlock() {
         let unknownBlock = Identifier<Block>(uuid: "foo")
         do {
@@ -33,7 +32,7 @@ class LayoutErrorTests: LayoutTests {
             XCTAssertEqual(error.localizedDescription, "Block foo not found")
         }
     }
-    
+
     func testMissingTrain() {
         do {
             try layout.free(trainID: Identifier<Train>(uuid: "foo"), removeFromLayout: false)
@@ -109,21 +108,21 @@ class LayoutErrorTests: LayoutTests {
     }
 
     var train0: Train {
-        return layout.mutableTrains[0]
+        layout.mutableTrains[0]
     }
-    
+
     var b1: Block {
-        return layout.mutableBlocks[0]
+        layout.mutableBlocks[0]
     }
-    
+
     var b2: Block {
-        return layout.mutableBlocks[1]
+        layout.mutableBlocks[1]
     }
 
     var turnout: Turnout {
-        return layout.turnouts[0]
+        layout.turnouts[0]
     }
-    
+
     func testSocketIdNotFond() {
         do {
             layout.link(from: layout.blocks[0].next, to: layout.turnouts[0].socket0)
@@ -147,5 +146,4 @@ class LayoutErrorTests: LayoutTests {
             XCTAssertEqual(error.localizedDescription, "Cannot reserve block 1 for train 1 because the block is already reserved for 2")
         }
     }
-
 }

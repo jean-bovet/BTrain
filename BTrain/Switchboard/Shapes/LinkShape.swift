@@ -10,30 +10,29 @@
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-import Foundation
 import CoreGraphics
+import Foundation
 
 final class LinkShape: Shape, PluggableShape {
-        
     let shapeContext: ShapeContext
-    
+
     var identifier = UUID().uuidString
-    
+
     var visible = true
 
     var selected = false
-            
+
     var transition: Transition?
     var controlPoint1: ControlPoint?
     var controlPoint2: ControlPoint?
 
     let from = ConnectorPlug(id: 0)
     let to = ConnectorPlug(id: 1)
-        
+
     var bounds: CGRect {
         path.boundingBoxOfPath
     }
-    
+
     var path: CGPath {
         let path = CGMutablePath()
         path.move(to: from.position)
@@ -42,12 +41,12 @@ final class LinkShape: Shape, PluggableShape {
                       control2: ctrlPoint2)
         return path
     }
-    
+
     /// Returns the point where the two lines, originating from the ``from`` and ``to`` connector cross. Nil if they don't cross each other.
     var intersection: CGPoint? {
         Line2D.linesCross(start1: from.position, end1: from.linePoint, start2: to.position, end2: to.linePoint)
     }
-    
+
     /// Returns the first control point
     var ctrlPoint1: CGPoint {
         if let controlPoint1 = controlPoint1 {
@@ -58,7 +57,7 @@ final class LinkShape: Shape, PluggableShape {
             return from.control
         }
     }
-    
+
     /// Returns the second control point
     var ctrlPoint2: CGPoint {
         if let controlPoint2 = controlPoint2 {
@@ -83,7 +82,7 @@ final class LinkShape: Shape, PluggableShape {
             return false
         }
     }
-    
+
     var occupied: Bool {
         if let transition = transition {
             return transition.train != nil
@@ -100,7 +99,7 @@ final class LinkShape: Shape, PluggableShape {
         self.transition = transition
         self.shapeContext = shapeContext
     }
-        
+
     func draw(ctx: CGContext) {
         ctx.saveGState()
 
@@ -108,9 +107,9 @@ final class LinkShape: Shape, PluggableShape {
         ctx.setStrokeColor(shapeContext.pathColor(reserved, train: occupied))
         ctx.setLineWidth(shapeContext.trackWidth)
         ctx.drawPath(using: .stroke)
-        
+
         ctx.restoreGState()
-        
+
         if selected {
             for plug in plugs {
                 ctx.addPath(plug.shape)
@@ -120,7 +119,7 @@ final class LinkShape: Shape, PluggableShape {
             ctx.fillPath()
         }
     }
-    
+
     func inside(_ point: CGPoint) -> Bool {
         // Create a new path that is wider than the one drawn on the screen
         // to allow the selection to happen more easily for the user.

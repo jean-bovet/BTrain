@@ -17,23 +17,22 @@ import Foundation
 /// When a speed change is requested, this class will progressively change the speed until it reaches the requested speed value.
 /// The speed is incremented by a specified number of steps that is small enough to be executed by the Digital Controller.
 final class LocomotiveSpeedManager {
-    
     let loc: Locomotive
     let interface: CommandInterface
-        
+
     /// The default step size when accelerating or decelerating.
     static let DefaultStepSize = 2
-    
+
     /// The default step delay (100ms)
     static let DefaultStepDelay = 100
-    
+
     /// This timer is scheduled each time a speed change is requested. It will fire every `stepDelay`
     /// and send a command to the Digital Controller.
     private var speedChangeTimer: Timer?
 
     /// The timer that handles the delay to allow the locomotive to fully stop
     var stopSettlingDelayTimer: LocomotiveStopSettledDelayTimer = DefaultLocomotiveStopSettledDelayTimer()
-            
+
     /// The delay between step increments, recommended to be about 100ms.
     var stepDelay: TimeInterval {
         if let delay = loc.speed.accelerationStepDelay {
@@ -42,7 +41,7 @@ final class LocomotiveSpeedManager {
             return Double(LocomotiveSpeedManager.DefaultStepDelay) / 1000
         }
     }
-    
+
     /// An array of speed commands waiting to be executed.
     /// Note that as soon as more than one command is queued,
     /// the first commands are cancelled in order to honor always
@@ -58,7 +57,7 @@ final class LocomotiveSpeedManager {
     init(loc: Locomotive, interface: CommandInterface, speedChanged: CompletionBlock? = nil) {
         self.loc = loc
         self.interface = interface
-        
+
         interface.callbacks.register(forSpeedChange: { address, decoder, value, acknowledgment in
             if loc.address.actualAddress(for: loc.decoder) == address.actualAddress(for: decoder) {
                 let steps = interface.speedSteps(for: value, decoder: loc.decoder)
@@ -77,7 +76,7 @@ final class LocomotiveSpeedManager {
             }
         })
     }
-    
+
     /// Request a change in the speed of the locomotive, given an optional acceleration/deceleration profile.
     ///
     /// - Parameters:
@@ -86,24 +85,24 @@ final class LocomotiveSpeedManager {
     func changeSpeed(completion: CompletionCancelBlock? = nil) {
         changeSpeed(acceleration: loc.speed.accelerationProfile, completion: completion)
     }
-    
+
     func changeSpeed(acceleration: LocomotiveSpeedAcceleration.Acceleration, completion: CompletionCancelBlock? = nil) {
         let command = newSpeedChangeCommand(acceleration: acceleration, completion: completion)
         commandQueue.append(command)
-        
+
         processCommands()
     }
-    
+
     private func processCommands() {
         guard let command = commandQueue.first else {
             return
         }
-        
+
         // The first command should be cancelled as soon as more
         // commands are queued up, because we only want the last
         // speed command to be honored.
         let shouldCancelFirstCommand = commandQueue.count > 1
-        
+
         switch command.status {
         case .pending:
             if loc.speed.actualKph == command.requestedKph {
@@ -115,7 +114,7 @@ final class LocomotiveSpeedManager {
             } else {
                 executeSpeedChangeCommand(command)
             }
-            
+
         case .finished, .cancelled:
             // Remove the command only after it has finished running
             if command.running == false {
@@ -123,7 +122,7 @@ final class LocomotiveSpeedManager {
                 commandQueue.removeFirst()
                 processCommands()
             }
-            
+
         case .working:
             if shouldCancelFirstCommand {
                 BTLogger.speed.debug("\(self.loc, privacy: .public): cancelling in-progress speed request {\(command.requestUUID)} of \(command.requestedKph) kph")
@@ -134,10 +133,10 @@ final class LocomotiveSpeedManager {
             }
         }
     }
-    
+
     /// Global UUID used to uniquely identify each speed change request in order to ease the debugging
     static var globalRequestUUID = 0
-    
+
     private func newSpeedChangeCommand(acceleration: LocomotiveSpeedAcceleration.Acceleration, completion: CompletionCancelBlock?) -> LocomotiveSpeedCommand {
         LocomotiveSpeedManager.globalRequestUUID += 1
         let requestUUID = LocomotiveSpeedManager.globalRequestUUID
@@ -147,7 +146,7 @@ final class LocomotiveSpeedManager {
         let steps = stepsArray(from: loc.speed.actualSteps, to: loc.speed.requestedSteps, acceleration: acceleration)
         return LocomotiveSpeedCommand(requestUUID: requestUUID, requestedKph: loc.speed.requestedKph, requestedSteps: loc.speed.requestedSteps, acceleration: acceleration, steps: steps, completion: completion)
     }
-        
+
     private func executeSpeedChangeCommand(_ command: LocomotiveSpeedCommand) {
         assert(command.status == .pending, "Only pending speed command can be executed!")
 
@@ -160,7 +159,7 @@ final class LocomotiveSpeedManager {
             self?.speedChangeTimerFired(command: command, timer: timer)
         })
     }
-    
+
     private func speedChangeTimerFired(command: LocomotiveSpeedCommand, timer: Timer) {
         // Ignore the timer if we are still waiting for a command to be completed
         // by the interface (the interface completion is necessary as it indicates
@@ -168,13 +167,13 @@ final class LocomotiveSpeedManager {
         guard command.isProcessedByDigitalController == false else {
             return
         }
-        
+
         guard command.status != .cancelled else {
             timer.invalidate()
             speedCommandCompleted(command: command)
             return
         }
-        
+
         assert(command.status == .working, "Only working speed command expected!")
 
         let steps = command.steps.removeFirst()
@@ -182,11 +181,11 @@ final class LocomotiveSpeedManager {
             command.status = .finished
             timer.invalidate()
         }
-        
+
         let value = interface.speedValue(for: steps, decoder: loc.decoder)
         let speedKph = loc.speed.speedKph(for: steps)
         BTLogger.speed.debug("\(self.loc, privacy: .public): {\(command.requestUUID)} 􀐫 speed command for \(speedKph) kph (value=\(value), \(steps)), requested \(command.requestedKph) kph, status: \(command.status, privacy: .public)")
-        
+
         assert(command.isProcessedByDigitalController == false)
         command.isProcessedByDigitalController = true
         interface.execute(command: .speed(address: loc.address, decoderType: loc.decoder, value: value)) { [weak self] in
@@ -194,19 +193,19 @@ final class LocomotiveSpeedManager {
             self?.speedCommandExecuted(command: command, steps: steps)
         }
     }
-        
+
     private func speedCommandExecuted(command: LocomotiveSpeedCommand, steps: SpeedStep) {
         loc.speed.actualSteps = steps
-        
+
         let speedKph = loc.speed.speedKph(for: steps)
         BTLogger.speed.debug("\(self.loc, privacy: .public): {\(command.requestUUID)} 􀆅 speed command for \(speedKph) kph (\(steps)), requested \(command.requestedKph) kph, status: \(command.status, privacy: .public)")
 
         if command.status == .finished || command.status == .cancelled {
             let finished = command.status == .finished
-            if loc.speed.actualSteps == .zero && finished {
+            if loc.speed.actualSteps == .zero, finished {
                 /// Settle only if the locomotive stopped and the speed change hasn't been cancelled.
                 /// Note: see comment in ``LocomotiveControllerAcceleration/StopSettleDelayTimer``
-                stopSettlingDelayTimer.schedule(loc: loc, completed: finished) { [weak self] completed in
+                stopSettlingDelayTimer.schedule(loc: loc, completed: finished) { [weak self] _ in
                     self?.speedCommandCompleted(command: command)
                 }
             } else {
@@ -214,17 +213,17 @@ final class LocomotiveSpeedManager {
             }
         }
     }
-    
+
     private func speedCommandCompleted(command: LocomotiveSpeedCommand) {
         command.running = false
         processCommands()
     }
-            
+
     private func stepsArray(from fromStep: SpeedStep, to toStep: SpeedStep, acceleration: LocomotiveSpeedAcceleration.Acceleration) -> [SpeedStep] {
         guard acceleration != .none else {
             return [toStep]
         }
-        
+
         // The number of steps to increment when changing the speed
         let stepIncrement = loc.speed.accelerationStepSize ?? LocomotiveSpeedManager.DefaultStepSize
 
@@ -251,7 +250,7 @@ final class LocomotiveSpeedManager {
             }
         }
     }
-            
+
     private func stepValue(value: Int, accelerating: Bool, desired: SpeedStep) -> (SpeedStep, Bool) {
         var newValue = value
         if newValue < 0 {
@@ -259,9 +258,9 @@ final class LocomotiveSpeedManager {
         } else if newValue > loc.decoder.steps {
             newValue = Int(loc.decoder.steps)
         }
-        
+
         var actual = SpeedStep(value: UInt16(newValue))
-        
+
         var done = false
         if actual.value == desired.value {
             done = true
@@ -278,8 +277,7 @@ final class LocomotiveSpeedManager {
                 }
             }
         }
-        
+
         return (actual, done)
     }
-    
 }

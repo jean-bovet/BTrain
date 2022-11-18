@@ -13,51 +13,50 @@
 import Foundation
 
 final class LayoutASCIIProducer {
-    
     let layout: Layout
-    
+
     init(layout: Layout) {
         self.layout = layout
     }
-    
+
     func stringFrom(route: Route, trainId: Identifier<Train>, useBlockName: Bool = false, useTurnoutName: Bool = false) throws -> String {
         var text = ""
-                
+
         guard let train = layout.trains[trainId] else {
             throw LayoutError.trainNotFound(trainId: trainId)
         }
-        
+
         let resolver = RouteResolver(layout: layout, train: train)
         let result = try resolver.resolve(unresolvedPath: route.steps, verbose: false)
         switch result {
-        case .success(let resolvedPaths):
+        case let .success(resolvedPaths):
             if let resolvedPath = resolvedPaths.randomElement() {
                 for step in resolvedPath {
                     switch step {
-                    case .block(let stepBlock):
+                    case let .block(stepBlock):
                         addSpace(&text)
                         try generateBlock(step: stepBlock, useBlockName: useBlockName, text: &text)
-                    case .turnout(let stepTurnout):
+                    case let .turnout(stepTurnout):
                         addSpace(&text)
                         generateTurnout(step: stepTurnout, useTurnoutName: useTurnoutName, text: &text)
                     }
                 }
             }
             return text
-            
-        case .failure(_):
+
+        case .failure:
             return text
-        }        
+        }
     }
 
     private func generateBlock(step: ResolvedRouteItemBlock, useBlockName: Bool, text: inout String) throws {
         let block = step.block
-        
+
         let reverse = step.direction == .previous
         if reverse {
             text += "!"
         }
-        switch(block.category) {
+        switch block.category {
         case .station:
             text += "{"
             if let reserved = block.reservation {
@@ -81,7 +80,7 @@ final class LayoutASCIIProducer {
                 text += "\(block.id)"
             }
         }
-                    
+
         // 0 | 1 | 2
         // [ A ≏ B ≏ C ]
         // 2 | 1 | 0
@@ -95,37 +94,37 @@ final class LayoutASCIIProducer {
         let feedbacks = reverse ? block.feedbacks.reversed() : block.feedbacks
         for index in feedbacks.indices {
             let actualIndex = reverse ? feedbacks.count - index - 1 : index
-            
+
             let feedback = feedbacks[actualIndex]
             guard let f = layout.feedbacks[feedback.feedbackId] else {
                 throw LayoutError.feedbackNotFound(feedbackId: feedback.feedbackId)
             }
-            
+
             if reverse {
-                if let part = train(block, actualIndex+1) {
+                if let part = train(block, actualIndex + 1) {
                     text += " " + part
                 }
             }
-            
+
             if f.detected {
                 text += " ≡"
             } else {
                 text += " ≏"
             }
-            
+
             if !reverse {
-                if let part = train(block, actualIndex+1) {
+                if let part = train(block, actualIndex + 1) {
                     text += " " + part
                 }
             }
         }
-        
+
         if reverse {
             if let part = train(block, 0) {
                 text += " " + part
             }
         }
-        switch(block.category) {
+        switch block.category {
         case .station:
             if block.reservation != nil {
                 text += " }}"
@@ -140,10 +139,10 @@ final class LayoutASCIIProducer {
             }
         }
     }
-    
+
     func generateTurnout(step: ResolvedRouteItemTurnout, useTurnoutName: Bool, text: inout String) {
         let turnout = step.turnout
-        
+
         text += "<"
         if let reserved = turnout.reserved?.train {
             text += "r\(reserved)"
@@ -157,7 +156,7 @@ final class LayoutASCIIProducer {
             text += "\(turnout.id)"
         }
         text += "{\(turnoutType(turnout))}"
-  
+
         let entrySocket = step.entrySocketId
         let exitSocket = step.exitSocketId
         text += "(\(entrySocket),\(exitSocket))"
@@ -170,8 +169,8 @@ final class LayoutASCIIProducer {
         }
         text += ">"
     }
-    
-    func turnoutState(_ state: Turnout.State) -> String? {        
+
+    func turnoutState(_ state: Turnout.State) -> String? {
         switch state {
         case .straight:
             return "s"
@@ -193,7 +192,7 @@ final class LayoutASCIIProducer {
             return nil
         }
     }
-    
+
     func turnoutType(_ turnout: Turnout) -> String {
         switch turnout.category {
         case .singleLeft:
@@ -208,17 +207,17 @@ final class LayoutASCIIProducer {
             return "ds2"
         }
     }
-        
+
     func train(_ block: Block, _ position: Int) -> String? {
         guard let trainInstance = block.trainInstance else {
             return nil
         }
-              
+
         guard let train = layout.trains[trainInstance.trainId] else {
             return nil
         }
 
-        if trainInstance.parts.isEmpty && train.position == position {
+        if trainInstance.parts.isEmpty, train.position == position {
             return stringFrom(train)
         } else if let part = trainInstance.parts[position] {
             switch part {
@@ -231,7 +230,7 @@ final class LayoutASCIIProducer {
             return nil
         }
     }
-    
+
     func stringFrom(_ train: Train) -> String {
         switch train.state {
         case .running:
@@ -244,7 +243,7 @@ final class LayoutASCIIProducer {
             return "🔴🚂\(train.id)"
         }
     }
-    
+
     private func addSpace(_ text: inout String) {
         if text.isEmpty {
             return
@@ -254,5 +253,4 @@ final class LayoutASCIIProducer {
         }
         text += " "
     }
-    
 }

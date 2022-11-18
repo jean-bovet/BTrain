@@ -15,15 +15,15 @@ import SwiftUI
 struct TrainControlRemoveSheet: View {
     let layout: Layout
     let controller: LayoutController
-    
+
     @ObservedObject var train: Train
-    
+
     @State private var blockId: Identifier<Block>? = nil
-                
+
     @State private var errorStatus: String?
 
     @Environment(\.presentationMode) var presentationMode
-            
+
     var body: some View {
         VStack {
             if let block = layout.blocks[blockId] {
@@ -39,14 +39,14 @@ struct TrainControlRemoveSheet: View {
                     .foregroundColor(.red)
                     .fixedSize()
             }
-            
+
             HStack {
                 Spacer()
-                
+
                 Button("Cancel") {
                     self.presentationMode.wrappedValue.dismiss()
                 }.keyboardShortcut(.cancelAction)
-                
+
                 Button("Remove") {
                     do {
                         try controller.remove(train: train)
@@ -64,15 +64,12 @@ struct TrainControlRemoveSheet: View {
             blockId = train.blockId
         }
     }
-    
 }
 
 struct TrainControlRemoveSheet_Previews: PreviewProvider {
-    
     static let doc = LayoutDocument(layout: LayoutLoop2().newLayout())
-    
+
     static var previews: some View {
         TrainControlRemoveSheet(layout: doc.layout, controller: doc.layoutController, train: doc.layout.trains[0])
     }
-    
 }

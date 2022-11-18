@@ -13,7 +13,6 @@
 import Foundation
 
 extension Layout: Graph {
-    
     func edge(from: GraphNode, socketId: SocketId) -> GraphEdge? {
         let socket: Socket
         if let block = block(from) {
@@ -26,7 +25,7 @@ extension Layout: Graph {
 
         return try? transition(from: socket)
     }
-    
+
     func node(for elementId: GraphElementIdentifier) -> GraphNode? {
         if let block = block(elementId) {
             return block
@@ -36,11 +35,9 @@ extension Layout: Graph {
             return nil
         }
     }
-        
 }
 
 extension Layout {
-    
     func block(_ node: GraphNode) -> Block? {
         block(node.identifier)
     }
@@ -49,14 +46,14 @@ extension Layout {
         guard let blockIdentifier = identifier as? BlockGraphElementIdentifier else {
             return nil
         }
-    
+
         return blocks[blockIdentifier.blockId]
     }
 
     func turnout(_ node: GraphNode) -> Turnout? {
         turnout(node.identifier)
     }
-    
+
     func turnout(_ identifier: GraphElementIdentifier) -> Turnout? {
         guard let turnoutIdentifier = identifier as? TurnoutGraphElementIdentifier else {
             return nil

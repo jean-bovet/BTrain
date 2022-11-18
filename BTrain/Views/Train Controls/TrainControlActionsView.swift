@@ -13,30 +13,29 @@
 import SwiftUI
 
 struct TrainControlActionsView: View {
-    
     @ObservedObject var document: LayoutDocument
     @ObservedObject var layout: Layout
-    
+
     @Binding var filterRunningTrains: Bool
-        
+
     var body: some View {
         HStack {
             Button("􀊋 Start All") {
                 document.startAll()
             }.disabled(!document.trainsThatCanBeStarted || !document.power)
-            
+
             Spacer().fixedSpace()
 
             Button("􀛷 Stop All") {
                 document.stopAll()
             }.disabled(!document.trainsThatCanBeStopped || !document.power)
-            
+
             Spacer().fixedSpace()
 
             Button("􀊆 Finish All") {
                 document.finishAll()
             }.disabled(!document.trainsThatCanBeFinished || !document.power)
-            
+
             Spacer()
 
             Button(filterRunningTrains ? "􀌉" : "􀌈") {
@@ -47,7 +46,6 @@ struct TrainControlActionsView: View {
 }
 
 struct TrainControlActionsView_Previews: PreviewProvider {
-
     static let doc = LayoutDocument(layout: LayoutLoop2().newLayout())
 
     static var previews: some View {

@@ -13,9 +13,8 @@
 import SwiftUI
 
 struct CS3DebuggerView: View {
-    
     @ObservedObject var doc: LayoutDocument
-    
+
     var body: some View {
         VStack {
             CS3SendMessageView(doc: doc)
@@ -28,7 +27,6 @@ struct CS3DebuggerView: View {
 }
 
 struct CS3DebuggerView_Previews: PreviewProvider {
-    
     static let doc = LayoutDocument(layout: LayoutComplex().newLayout())
 
     static var previews: some View {

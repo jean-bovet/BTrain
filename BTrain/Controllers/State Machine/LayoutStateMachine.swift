@@ -15,10 +15,9 @@ import Foundation
 /// State machine for the entire layout. It uses internally two sub-state machine
 /// to handle events specific to the layout and events specific to a train.
 struct LayoutStateMachine {
-    
     let lesm = LayoutEventStateMachine()
     let tesm = TrainEventStateMachine()
-    
+
     func handle(layoutEvent: StateMachine.LayoutEvent? = nil, trainEvent: StateMachine.TrainEvent? = nil, trains: [TrainControlling], handledTrainEvents: inout [StateMachine.TrainEvent]?) throws {
         var trainEvents = [StateMachine.TrainEvent]()
         if let layoutEvent = layoutEvent {
@@ -28,13 +27,13 @@ struct LayoutStateMachine {
                 }
             }
         }
-        
+
         if let trainEvent = trainEvent {
             trainEvents.append(trainEvent)
         }
-        
+
         handledTrainEvents?.append(contentsOf: trainEvents)
-        
+
         while trainEvents.count > 0 {
             let nextTrainEvent = trainEvents.removeFirst()
             for train in trains {
@@ -45,5 +44,4 @@ struct LayoutStateMachine {
             }
         }
     }
-    
 }

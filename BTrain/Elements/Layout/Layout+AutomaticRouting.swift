@@ -13,36 +13,35 @@
 import Foundation
 
 extension Layout {
-    
     enum UpdateRouteError: Error {
         case cannotUpdateRoute(message: String)
     }
-    
+
     /// Update the automatic route associated with the train
     /// - Parameter trainId: The train
     /// - Returns: the result of updating the automatic route
     func updateAutomaticRoute(for trainId: Identifier<Train>) throws -> Result<Route, UpdateRouteError> {
         let routeId = Route.automaticRouteId(for: trainId)
-        
+
         guard let route = route(for: routeId, trainId: trainId) else {
             throw LayoutError.routeNotFound(routeId: routeId)
         }
-        
+
         guard let train = trains[trainId] else {
             throw LayoutError.trainNotFound(trainId: trainId)
         }
-                        
+
         // Determine the destination of the route
         let destination: Destination?
         switch route.mode {
-        case .automaticOnce(destination: let routeDestination):
+        case let .automaticOnce(destination: routeDestination):
             destination = routeDestination
         case .automatic:
             destination = nil
         case .fixed:
             throw LayoutError.routeIsNotAutomatic(route: route)
         }
-        
+
         // Determine the destination block, if available
         let to: LayoutVector?
         if let destination = destination {
@@ -53,7 +52,7 @@ extension Layout {
         } else {
             to = nil
         }
-        
+
         // If there is a destination specified, avoid all the reserved blocks
         // If there is no destination specified, avoid only the first reserved block
         let rbb: PathFinder.Constraints.ReservedBlockBehavior = destination == nil ? .avoidFirstReservedBlock : .avoidReserved
@@ -63,7 +62,7 @@ extension Layout {
                                 toReachBlock: to?.block,
                                 withDirection: to?.direction,
                                 reservedBlockBehavior: rbb)
-        
+
         if let path = path {
             route.lastMessage = nil
             route.steps = path.elements.toBlockSteps
@@ -84,5 +83,4 @@ extension Layout {
             return .failure(.cannotUpdateRoute(message: message))
         }
     }
-
 }

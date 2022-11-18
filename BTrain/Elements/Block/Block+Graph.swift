@@ -15,27 +15,26 @@ import Foundation
 struct BlockGraphElementIdentifier: GraphElementIdentifier {
     let uuid: String
     let blockId: Identifier<Block>
-    
+
     init(_ blockId: Identifier<Block>) {
-        self.uuid = "b" + blockId.uuid
+        uuid = "b" + blockId.uuid
         self.blockId = blockId
     }
 }
 
 extension Block: GraphNode {
-    
     var identifier: GraphElementIdentifier {
         BlockGraphElementIdentifier(id)
     }
-     
+
     func weight() -> Double {
         length ?? 0
     }
-    
+
     func sockets() -> [SocketId] {
         allSockets.compactMap { $0.socketId }
     }
-    
+
     func reachableSockets(from socket: SocketId) -> [SocketId] {
         if socket == Block.previousSocket {
             return [Block.nextSocket]
@@ -43,17 +42,14 @@ extension Block: GraphNode {
             return [Block.previousSocket]
         }
     }
-        
 }
 
 extension Block {
-    
     var elementDirectionNext: GraphPathElement {
         .between(self, Block.previousSocket, Block.nextSocket)
     }
-    
+
     var elementDirectionPrevious: GraphPathElement {
         .between(self, Block.nextSocket, Block.previousSocket)
     }
-
 }

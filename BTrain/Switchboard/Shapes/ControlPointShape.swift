@@ -10,24 +10,23 @@
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-import Foundation
 import CoreGraphics
+import Foundation
 
 /// Shape representing a ``ControlPoint``
 final class ControlPointShape: Shape, DraggableShape {
-        
     let controlPoint: ControlPoint
     let shapeContext: ShapeContext
 
     var identifier = UUID().uuidString
-    
+
     /// This shape is only visible during editing
     var visible: Bool = false
-    
+
     var selected: Bool = false
-    
+
     let width = 6.0
-    
+
     var bounds: CGRect {
         path.boundingBox
     }
@@ -43,7 +42,7 @@ final class ControlPointShape: Shape, DraggableShape {
 
     var path: CGPath {
         let path = CGMutablePath()
-        path.addRect(.init(x: center.x - width/2, y: center.y - width/2, width: width, height: width))
+        path.addRect(.init(x: center.x - width / 2, y: center.y - width / 2, width: width, height: width))
         return path
     }
 
@@ -51,7 +50,7 @@ final class ControlPointShape: Shape, DraggableShape {
         self.controlPoint = controlPoint
         self.shapeContext = shapeContext
     }
-    
+
     func draw(ctx: CGContext) {
         ctx.saveGState()
 
@@ -59,13 +58,11 @@ final class ControlPointShape: Shape, DraggableShape {
         ctx.setStrokeColor(shapeContext.pathColor(false, train: false))
         ctx.setLineWidth(shapeContext.trackWidth)
         ctx.drawPath(using: .fill)
-        
+
         ctx.restoreGState()
     }
-    
+
     func inside(_ point: CGPoint) -> Bool {
-        return bounds.contains(point)
+        bounds.contains(point)
     }
-    
-    
 }

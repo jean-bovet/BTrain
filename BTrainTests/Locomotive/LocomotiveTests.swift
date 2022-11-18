@@ -17,19 +17,18 @@ import XCTest
 @testable import BTrain
 
 class LocomotiveTests: XCTestCase {
-    
     func testCodable() throws {
         let t1 = Locomotive(uuid: "1")
         t1.name = "Rail 2000"
         t1.address = 0x4001
         t1.speed.requestedKph = 100
-        
+
         let encoder = JSONEncoder()
         let data = try encoder.encode(t1)
 
         let decoder = JSONDecoder()
         let t2 = try decoder.decode(Locomotive.self, from: data)
-        
+
         XCTAssertEqual(t1.id, t2.id)
         XCTAssertEqual(t1.name, t2.name)
         XCTAssertEqual(t1.address, t2.address)
@@ -37,5 +36,4 @@ class LocomotiveTests: XCTestCase {
         XCTAssertEqual(t1.speed.requestedKph, 100)
         XCTAssertEqual(t2.speed.requestedKph, 0) // When decoding a speed, it always is initialized back to 0 for security reason
     }
-    
 }

@@ -13,10 +13,9 @@
 import SwiftUI
 
 struct LayoutScriptLineView: View {
-    
     let doc: LayoutDocument
     let layout: Layout
-    
+
     @ObservedObject var script: LayoutScript
     @Binding var command: LayoutScriptCommand
     @Binding var invalidCommandIds: Set<UUID>
@@ -31,7 +30,7 @@ struct LayoutScriptLineView: View {
             guard let targetCommand = script.commands.commandWith(uuid: targetUUID) else {
                 return
             }
-            
+
             script.commands.remove(source: sourceCommand)
             switch position {
             case .before:
@@ -43,14 +42,13 @@ struct LayoutScriptLineView: View {
             }
         }
     }
-    
 }
 
 struct LayoutScriptLineView_Previews: PreviewProvider {
     static let doc = LayoutDocument(layout: LayoutComplex().newLayout())
     static let command = LayoutScriptCommand(action: .run)
     static let layout = doc.layout
-    
+
     static var previews: some View {
         VStack(alignment: .leading) {
             LayoutScriptLineView(doc: doc, layout: layout, script: LayoutScript(), command: .constant(command), invalidCommandIds: .constant([]))

@@ -13,15 +13,13 @@
 import Foundation
 
 extension RouteItem: Resolvable {
-    
     func resolve(_ constraints: PathFinder.Constraints) -> [GraphPathElement]? {
         switch self {
-        case .block(let block): return block.resolve(constraints)
-        case .turnout(let turnout): return turnout.resolve(constraints)
-        case .station(let station): return station.resolve(constraints)
+        case let .block(block): return block.resolve(constraints)
+        case let .turnout(turnout): return turnout.resolve(constraints)
+        case let .station(station): return station.resolve(constraints)
         }
     }
-    
 }
 
 extension RouteItemBlock: Resolvable {
@@ -29,7 +27,7 @@ extension RouteItemBlock: Resolvable {
         guard let block = constraints.layout.blocks[blockId] else {
             return nil
         }
-        
+
         var resolvedElement = GraphPathElement.direction(block, direction)
         resolvedElement.sourceIdentifier = sourceIdentifier
         return [resolvedElement]
@@ -42,25 +40,23 @@ extension RouteItemTurnout: Resolvable {
             return nil
         }
         return [GraphPathElement(node: turnout, entrySocket: entrySocket.socketId, exitSocket: exitSocket.socketId)]
-
     }
 }
 
 extension RouteItemStation: Resolvable {
-    
     func resolve(_ constraints: PathFinder.Constraints) -> [GraphPathElement]? {
         guard let station = constraints.layout.stations[stationId] else {
             return nil
         }
-                
+
         guard let element = bestElement(station: station, constraints: constraints) else {
             return nil
         }
-        
+
         guard let block = constraints.layout.blocks[element.blockId] else {
             return nil
         }
-        
+
         if let direction = element.direction {
             return [GraphPathElement.direction(block, direction)]
         } else {
@@ -72,24 +68,24 @@ extension RouteItemStation: Resolvable {
         if let element = elementWithTrain(station: station, train: constraints.train, layout: constraints.layout) {
             return element
         }
-        
+
         if let element = firstAvailableElement(station: station, constraints: constraints) {
             return element
         }
-        
+
         return nil
     }
-    
+
     private func firstAvailableElement(station: Station, constraints: PathFinder.Constraints) -> Station.StationElement? {
         for element in station.elements {
             guard let block = constraints.layout.blocks[element.blockId] else {
                 continue
             }
-            
+
             guard block.enabled else {
                 continue
             }
-            
+
             if constraints.reservedBlockBehavior == .ignoreReserved {
                 return element
             } else if block.reservation == nil || block.reservation?.trainId == constraints.train.id {
@@ -98,7 +94,7 @@ extension RouteItemStation: Resolvable {
         }
         return nil
     }
-    
+
     private func elementWithTrain(station: Station, train: Train, layout: Layout) -> Station.StationElement? {
         for element in station.elements {
             guard let block = layout.blocks[element.blockId] else {
@@ -110,5 +106,4 @@ extension RouteItemStation: Resolvable {
         }
         return nil
     }
-
 }

@@ -14,7 +14,6 @@ import SwiftUI
 import UniformTypeIdentifiers
 
 struct DragAndDropLineView<Content: View>: View, DropDelegate {
-
     enum Position {
         case before
         case inside
@@ -22,7 +21,7 @@ struct DragAndDropLineView<Content: View>: View, DropDelegate {
     }
 
     typealias OnMoveBlock = (_ sourceUUID: String, _ targetUUID: String, _ position: Position) -> Void
-    
+
     @State private var dropLine: Position?
 
     let dragAllowed: Bool
@@ -30,13 +29,13 @@ struct DragAndDropLineView<Content: View>: View, DropDelegate {
     let lineUUID: String
     let onMoveBlock: OnMoveBlock
     let content: Content
-    
+
     init(lineUUID: String, dragAllowed: Bool = true, dragInsideAllowed: Bool = false, @ViewBuilder content: () -> Content, onMove: @escaping OnMoveBlock) {
         self.lineUUID = lineUUID
         self.dragAllowed = dragAllowed
         self.dragInsideAllowed = dragInsideAllowed
         self.content = content()
-        self.onMoveBlock = onMove
+        onMoveBlock = onMove
     }
 
     var body: some View {
@@ -60,16 +59,16 @@ struct DragAndDropLineView<Content: View>: View, DropDelegate {
                 }
             }).onDrop(of: [UTType.text], delegate: self)
     }
-        
-    func validateDrop(info: DropInfo) -> Bool {
+
+    func validateDrop(info _: DropInfo) -> Bool {
         dragAllowed
     }
-    
+
     func dropEntered(info: DropInfo) {
         updateDropLine(info: info)
     }
-    
-    func dropExited(info: DropInfo) {
+
+    func dropExited(info _: DropInfo) {
         dropLine = .none
     }
 
@@ -81,11 +80,11 @@ struct DragAndDropLineView<Content: View>: View, DropDelegate {
             return DropProposal(operation: .forbidden)
         }
     }
-    
+
     func performDrop(info: DropInfo) -> Bool {
         let items = info.itemProviders(for: [UTType.text])
         if let item = items.first, let dropLine = dropLine {
-            item.loadItem(forTypeIdentifier: UTType.text.identifier, options: nil) { (data, error) in
+            item.loadItem(forTypeIdentifier: UTType.text.identifier, options: nil) { data, _ in
                 DispatchQueue.main.async {
                     if let data = data as? Data, let sourceUUID = String(data: data, encoding: .utf8), sourceUUID != lineUUID {
                         onMoveBlock(sourceUUID, lineUUID, dropLine)
@@ -97,7 +96,7 @@ struct DragAndDropLineView<Content: View>: View, DropDelegate {
             return false
         }
     }
-    
+
     private func updateDropLine(info: DropInfo) {
         if dragInsideAllowed {
             if info.location.y <= 5 {
@@ -115,16 +114,14 @@ struct DragAndDropLineView<Content: View>: View, DropDelegate {
             }
         }
     }
-
 }
 
 struct DragAndDropLineView_Previews: PreviewProvider {
     static var previews: some View {
         DragAndDropLineView(lineUUID: "foo") {
             Text("This is the content of the line")
-        } onMove: { sourceUUID, targetUUID, position in
+        } onMove: { _, _, _ in
             print("Moving")
         }
-
     }
 }

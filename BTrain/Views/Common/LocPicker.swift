@@ -13,22 +13,21 @@
 import SwiftUI
 
 struct LocPicker: View {
-
     let doc: LayoutDocument
     @Binding var selectedLoc: Identifier<Locomotive>?
 
     var iconSize: CGSize {
         .init(width: 60, height: 20)
     }
-    
+
     var locomotives: [Locomotive] {
-        doc.layout.locomotives.elements.filter({$0.enabled})
+        doc.layout.locomotives.elements.filter { $0.enabled }
     }
-    
+
     var body: some View {
         Picker("Locomotive:", selection: $selectedLoc) {
             Text("").tag(nil as Identifier<Locomotive>?)
-            ForEach(locomotives, id:\.self) { loc in
+            ForEach(locomotives, id: \.self) { loc in
                 HStack {
                     Text(loc.name)
                     if let image = doc.locomotiveIconManager.icon(for: loc.id)?.copy(size: iconSize) {
@@ -45,7 +44,6 @@ struct LocPicker: View {
 }
 
 struct LocPicker_Previews: PreviewProvider {
-    
     static let doc = LayoutDocument(layout: LayoutComplex().newLayout())
 
     static var previews: some View {

@@ -10,34 +10,33 @@
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-import Foundation
 import Combine
+import Foundation
 
 final class LayoutObserver {
-    
     let layout: Layout
-    
+
     private var cancellables = [AnyCancellable]()
 
     init(layout: Layout) {
         self.layout = layout
-  
+
         cancellables.append(layout.$trains.dropFirst().sink(receiveValue: { [weak self] trains in
             self?.trainCallbacks.forEach { $0(trains.elements) }
         }))
-        
+
         cancellables.append(layout.$blocks.dropFirst().sink(receiveValue: { [weak self] blocks in
             // Note: need to pass the `blocks` parameter here because the layout.blocks
             // has not yet had the time to be updated
             self?.blockCallbacks.forEach { $0(blocks.elements) }
         }))
-        
+
         cancellables.append(layout.$turnouts.dropFirst().sink(receiveValue: { [weak self] turnouts in
             // Note: need to pass the `turnouts` parameter here because the layout.turnouts
             // has not yet had the time to be updated
             self?.turnoutCallbacks.forEach { $0(turnouts.elements) }
         }))
-        
+
         cancellables.append(layout.$transitions.dropFirst().sink(receiveValue: { [weak self] transitions in
             self?.transitionsCallbacks.forEach { $0(transitions.elements) }
         }))
@@ -46,7 +45,7 @@ final class LayoutObserver {
             self?.feedbackCallbacks.forEach { $0(feedbacks.elements) }
         }))
     }
-    
+
     typealias TrainChangeCallback = ([Train]) -> Void
     typealias BlockChangeCallback = ([Block]) -> Void
     typealias TurnoutChangeCallback = ([Turnout]) -> Void
@@ -62,11 +61,11 @@ final class LayoutObserver {
     func registerForTrainChange(_ callback: @escaping TrainChangeCallback) {
         trainCallbacks.append(callback)
     }
-    
+
     func registerForBlockChange(_ callback: @escaping BlockChangeCallback) {
         blockCallbacks.append(callback)
     }
-    
+
     func registerForTurnoutChange(_ callback: @escaping TurnoutChangeCallback) {
         turnoutCallbacks.append(callback)
     }
@@ -78,7 +77,7 @@ final class LayoutObserver {
     func registerForFeedbackChange(_ callback: @escaping FeedbackChangeCallback) {
         feedbackCallbacks.append(callback)
     }
-    
+
     func unregisterAll() {
         trainCallbacks.removeAll()
         blockCallbacks.removeAll()
@@ -86,5 +85,4 @@ final class LayoutObserver {
         transitionsCallbacks.removeAll()
         feedbackCallbacks.removeAll()
     }
-
 }

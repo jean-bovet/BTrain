@@ -13,16 +13,15 @@
 import SwiftUI
 
 struct SwitchBoardView: View {
-        
     let switchboard: SwitchBoard
-        
+
     let containerSize: CGSize
-    
+
     // Because SwiftUI only reacts to changes to the object itself and not
     // its children parameters, we require the state of the switchboard
     // to be specified here - although it is accessible via `switchboard.state`.
     @ObservedObject var state: SwitchBoard.State
-    
+
     // The layout is observed for any change
     // that can cause the switchboard to be re-drawn.
     @ObservedObject var layout: Layout
@@ -35,12 +34,12 @@ struct SwitchBoardView: View {
     @Environment(\.colorScheme) var colorScheme
 
     @AppStorage(SettingsKeys.fontSize) var fontSize = 12.0
-    
+
     @Environment(\.undoManager) var undoManager
-    
+
     // Note: we pass `redraw` and `coordinator` to this method, even if unused,
     // in order to force SwiftUI to re-draw the view if one of them change.
-    func draw(context: GraphicsContext, darkMode: Bool, coordinator: LayoutController, layout: Layout, state: SwitchBoard.State, scale: CGFloat) {
+    func draw(context: GraphicsContext, darkMode: Bool, coordinator _: LayoutController, layout _: Layout, state: SwitchBoard.State, scale: CGFloat) {
         switchboard.context.showBlockName = state.showBlockName
         switchboard.context.showStationName = state.showStationName
         switchboard.context.showTurnoutName = state.showTurnoutName
@@ -54,14 +53,15 @@ struct SwitchBoardView: View {
             switchboard.renderer.draw(context: cgContext)
         }
     }
-    
+
     var body: some View {
         Canvas { context, size in
             if switchboard.state.editing {
                 context.stroke(
                     Path(CGRect(origin: .zero, size: size)),
                     with: .color(.gray),
-                    style: .init(dash: [5, 10]))
+                    style: .init(dash: [5, 10])
+                )
             }
 
             draw(context: context, darkMode: colorScheme == .dark, coordinator: layoutController, layout: layout, state: switchboard.state, scale: scale(containerSize: containerSize))
@@ -75,7 +75,7 @@ struct SwitchBoardView: View {
                     }
                     .onEnded { _ in
                         switchboard.drag.onDragEnded()
-                        undoManager?.registerUndo(withTarget: layout, handler: { layout in
+                        undoManager?.registerUndo(withTarget: layout, handler: { _ in
                             switchboard.drag.restoreState()
                         })
                     }
@@ -88,7 +88,7 @@ struct SwitchBoardView: View {
             $0.frame(idealWidth: containerSize.width, idealHeight: containerSize.height)
         }
     }
-    
+
     func scale(containerSize: CGSize) -> CGFloat {
         let scale: CGFloat
         if state.zoomToFit {
@@ -98,16 +98,14 @@ struct SwitchBoardView: View {
         }
         return scale
     }
-
 }
 
 struct SwitchBoardView_Previews: PreviewProvider {
-    
     static let doc = LayoutDocument(layout: generateLayout())
 
     static func generateLayout() -> Layout {
         let lt = LayoutLoop2().newLayout()
-        
+
         try! doc.layoutController.setTrainPosition(lt.trains[0], 1)
         try! doc.layoutController.setTrainPosition(lt.trains[1], 2)
 
@@ -116,7 +114,7 @@ struct SwitchBoardView_Previews: PreviewProvider {
 
         return lt
     }
-    
+
     static var previews: some View {
         SwitchBoardView(switchboard: doc.switchboard, containerSize: .init(width: 800, height: 600),
                         state: doc.switchboard.state,

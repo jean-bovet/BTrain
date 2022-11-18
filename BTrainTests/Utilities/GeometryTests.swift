@@ -10,21 +10,19 @@
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-import XCTest
 @testable import BTrain
+import XCTest
 
 class GeometryTests: XCTestCase {
-
     func testVector2D() {
         let v = Vector2D(x: 6, y: 12)
         XCTAssertEqual(13.41, v.magnitude, accuracy: 0.1)
-        
+
         let v1 = v.normalized
         XCTAssertEqual(1, v1.normalized.magnitude)
-        
+
         let v2 = Vector2D(x: 10, y: 4)
         XCTAssertEqual(0.72, v.angle(to: v2), accuracy: 0.1)
         XCTAssertEqual(-7.1, Vector2D.cross(left: v1, right: v2), accuracy: 0.1)
     }
-
 }

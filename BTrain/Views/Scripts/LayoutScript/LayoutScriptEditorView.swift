@@ -13,15 +13,14 @@
 import SwiftUI
 
 struct LayoutScriptEditorView: View {
-    
     let doc: LayoutDocument
     let layout: Layout
-    
+
     @ObservedObject var script: LayoutScript
-    
+
     @State private var invalidCommandIds = Set<UUID>()
     @State private var verifyStatus: RouteScriptValidator.VerifyStatus = .none
-    
+
     var body: some View {
         VStack {
             if script.commands.isEmpty {
@@ -46,35 +45,34 @@ struct LayoutScriptEditorView: View {
                         }
                     }
                 }
-                
+
                 HStack {
                     Button("Verify") {
                         verify()
                     }
-                    
+
                     switch verifyStatus {
                     case .none:
                         Spacer()
-                        
+
                     case .failure:
                         Text("􀇾")
                         Spacer()
-                        
+
                     case .success:
                         Text("􀁢")
-                        
+
                         Spacer()
                     }
-
                 }
             }
         }
-    }    
-    
+    }
+
     func verify() {
         invalidCommandIds.removeAll()
         verifyStatus = .success
-        
+
         for command in script.commands {
             guard let routeScript = layout.routeScripts[command.routeScriptId] else {
                 invalidCommandIds.insert(command.id)
@@ -93,9 +91,8 @@ struct LayoutScriptEditorView: View {
 }
 
 struct LayoutScriptEditorView_Previews: PreviewProvider {
-    
     static let doc = LayoutDocument(layout: Layout())
-    
+
     static let layout = {
         let layout = doc.layout
         let s = LayoutScript(name: "Boucle")

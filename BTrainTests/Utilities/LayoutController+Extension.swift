@@ -15,7 +15,6 @@ import Foundation
 @testable import BTrain
 
 extension LayoutController {
-    
     /// This method returns when all the trains (and locomotives) have settled.
     ///
     /// Specifically, a train is considered settled when:
@@ -33,7 +32,7 @@ extension LayoutController {
                 }
             }
             for train in layout.trains.elements {
-                if !train.leading.emptyOrSettled && !train.leading.reservedAndSettled {
+                if !train.leading.emptyOrSettled, !train.leading.reservedAndSettled {
                     // Leading blocks and turnouts are not yet settled
                     drain = true
                 }
@@ -41,5 +40,4 @@ extension LayoutController {
             RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.001))
         }
     }
-
 }

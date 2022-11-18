@@ -10,16 +10,15 @@
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-import Foundation
 import CoreGraphics
+import Foundation
 
 final class ConnectorPlug {
-    
     let id: Int
-        
+
     var socket: ConnectorSocketInstance?
     var freePoint: CGPoint?
-        
+
     var position: CGPoint {
         if let point = connectorSocket?.center {
             return point
@@ -27,7 +26,7 @@ final class ConnectorPlug {
             return freePoint ?? .zero
         }
     }
-    
+
     var control: CGPoint {
         if let point = connectorSocket?.controlPoint {
             return point
@@ -46,20 +45,19 @@ final class ConnectorPlug {
 
     var shape: CGPath {
         let size = 10.0
-        let shape = CGPath(ellipseIn: CGRect(x: position.x-size/2, y: position.y-size/2, width: size, height: size), transform: nil)
+        let shape = CGPath(ellipseIn: CGRect(x: position.x - size / 2, y: position.y - size / 2, width: size, height: size), transform: nil)
         return shape
     }
-    
+
     var connectorSocket: ConnectorSocket? {
         guard let socket = socket else {
             return nil
         }
-        
+
         return socket.shape.sockets.first(where: { $0.id == socket.socketId })
     }
-    
+
     init(id: Int) {
         self.id = id
     }
-        
 }

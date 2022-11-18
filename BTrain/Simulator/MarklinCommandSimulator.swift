@@ -10,22 +10,21 @@
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+import Combine
 import Foundation
 import Gzip
-import Combine
 import SwiftUI
 
 // This class simulates the Marklin Central Station 3 in order for BTrain
 // to work offline. It does so by processing the most common commands and
 // driving automatically trains that are on enabled routes.
 final class MarklinCommandSimulator: Simulator, ObservableObject {
-    
     weak var layout: Layout?
     let interface: CommandInterface
-    
+
     @Published var started = false
     @Published var enabled = false
-    
+
     @Published var locomotives = [SimulatorLocomotive]()
 
     @AppStorage("simulatorRefreshSpeed") var refreshSpeed = 2.0 {
@@ -39,34 +38,34 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
     var refreshTimeInterval: TimeInterval {
         4.0 - refreshSpeed
     }
-    
+
     /// Internal global variable used to create a unique port each time a simulator instance
     /// is created, which allows for multiple document to be opened (and operated) at the same time
-    static private var globalLocalPort: UInt16 = 15731
-    
+    private static var globalLocalPort: UInt16 = 15731
+
     /// The local port used by the simulator
     var localPort: UInt16
-    
+
     private var trainArrayChangesCancellable: AnyCancellable?
     private var cancellables = [AnyCancellable]()
 
     private var server: Server?
-    
+
     private var cs3Server = MarklinCS3Server.shared
 
     private var timer: Timer?
-    
+
     private var connection: ServerConnection? {
         server?.connections.first
     }
-    
+
     init(layout: Layout, interface: CommandInterface) {
         self.layout = layout
         self.interface = interface
-        
+
         MarklinCommandSimulator.globalLocalPort += 1
-        self.localPort = MarklinCommandSimulator.globalLocalPort
-        
+        localPort = MarklinCommandSimulator.globalLocalPort
+
         // Initialization from the document can sometimes happen in the background,
         // let's make sure these are initialized in the main thread.
         MainThreadQueue.sync {
@@ -82,7 +81,7 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
 
         let cancellable = layout.$trains
             .receive(on: RunLoop.main)
-            .sink { [weak self] value in
+            .sink { [weak self] _ in
                 // When the array of trains changes, we need
                 // to re-register for changes for each individual trains
                 // because these instances have likely changed.
@@ -107,7 +106,7 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
             let cancellable = train.$blockId
                 .removeDuplicates()
                 .receive(on: RunLoop.main)
-                .sink { [weak self] value in
+                .sink { [weak self] _ in
                     self?.updateListOfTrains()
                 }
             cancellables.append(cancellable)
@@ -123,9 +122,9 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
         locomotives.removeAll(where: { simLoc in
             layout.locomotives[simLoc.id] == nil
         })
-        
+
         // Update existing locomotives, add new ones
-        for train in layout.trains.elements.filter({$0.blockId != nil}) {
+        for train in layout.trains.elements.filter({ $0.blockId != nil }) {
             guard let loc = train.locomotive else {
                 continue
             }
@@ -136,13 +135,13 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
                 locomotives.append(SimulatorLocomotive(loc: loc))
             }
         }
-        
+
         objectWillChange.send()
     }
-    
+
     func start() {
         try? cs3Server.start()
-        
+
         server = Server(port: localPort)
         server!.didAcceptConnection = { [weak self] connection in
             self?.register(with: connection)
@@ -150,16 +149,16 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
         try! server!.start()
         started = true
     }
-        
+
     func stop(_ completion: @escaping CompletionBlock) {
         cs3Server.stop()
-        
+
         let onCompletionBlock = { [weak self] in
             self?.started = false
             self?.enabled = false
             completion()
         }
-        
+
         if let server = server {
             server.stop {
                 onCompletionBlock()
@@ -168,14 +167,14 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
             onCompletionBlock()
         }
     }
-    
+
     func scheduleTimer() {
-        self.timer?.invalidate()
-        self.timer = Timer.scheduledTimer(withTimeInterval: refreshTimeInterval * BaseTimeFactor, repeats: true) { [weak self] timer in
+        timer?.invalidate()
+        timer = Timer.scheduledTimer(withTimeInterval: refreshTimeInterval * BaseTimeFactor, repeats: true) { [weak self] _ in
             self?.simulateLayout()
         }
     }
-    
+
     func register(with connection: ServerConnection) {
         connection.receiveMessageCallback = { [weak self] message in
             if let self = self {
@@ -185,7 +184,7 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
     }
 
     private func handleMessage(message: Command) {
-        switch(message) {
+        switch message {
         case .go:
             enabled = true
             scheduleTimer()
@@ -198,25 +197,25 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
 
         case .emergencyStop(address: let address, decoderType: _, priority: _, descriptor: _):
             send(MarklinCANMessageFactory.emergencyStop(addr: address).ack)
-            
+
         case .speed(address: let address, decoderType: let decoderType, value: let value, priority: _, descriptor: _):
             if enabled {
                 speedChanged(address: address, decoderType: decoderType, value: value)
             }
-            
+
         case .direction(address: let address, decoderType: let decoderType, direction: let direction, priority: _, descriptor: _):
             if enabled {
                 directionChanged(address: address, decoderType: decoderType, direction: direction)
             }
-            
+
         case .turnout(address: let address, state: let state, power: let power, priority: _, descriptor: _):
             if enabled {
                 turnoutChanged(address: address, state: state, power: power)
             }
-            
+
         case .feedback(deviceID: _, contactID: _, oldValue: _, newValue: _, time: _, priority: _, descriptor: _):
             break
-            
+
         case .locomotives(priority: _, descriptor: _):
             provideLocomotives()
 
@@ -227,7 +226,7 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
             break
         }
     }
-    
+
     func turnoutChanged(address: CommandTurnoutAddress, state: UInt8, power: UInt8) {
         BTLogger.debug("[Simulator] Turnout changed for \(address.address.toHex()): state \(state), power \(power)")
         let message = MarklinCANMessageFactory.accessory(addr: address.actualAddress, state: state, power: power)
@@ -235,7 +234,7 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
             self.send(message.ack)
         }
     }
-    
+
     func speedChanged(address: UInt32, decoderType: DecoderType?, value: SpeedValue) {
         for loc in locomotives {
             if loc.loc.actualAddress == address.actualAddress(for: decoderType) {
@@ -253,7 +252,7 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
                 loc.directionForward = direction == .forward
             }
         }
-        
+
         // Send back the acknowledgement for this command
         DispatchQueue.global(qos: .background).async {
             let message = MarklinCANMessageFactory.direction(addr: address, direction: direction == .forward ? .forward : .backward)
@@ -270,8 +269,8 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
         var compressedData = try! data.gzipped()
 
         // Insert the 4 bytes CRC (?)
-        compressedData.insert(contentsOf: [0,0,0,0], at: 0)
-        
+        compressedData.insert(contentsOf: [0, 0, 0, 0], at: 0)
+
         // Send the compressed data in the background
         DispatchQueue.global(qos: .background).async {
             let message = MarklinCANMessageFactory.configData(length: UInt32(compressedData.count))
@@ -279,20 +278,20 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
 
             let dataLength = 8 // 8 bytes at a time can be sent out
             let numberOfMessages = Int(round(Double(compressedData.count) / Double(dataLength)))
-            for index in 0..<numberOfMessages {
+            for index in 0 ..< numberOfMessages {
                 let start = index * dataLength
                 let end = min(compressedData.count, (index + 1) * dataLength)
-                let slice = compressedData[start..<end]
+                let slice = compressedData[start ..< end]
                 let message = MarklinCANMessageFactory.configData(bytes: [UInt8](slice))
                 self.send(message)
             }
         }
     }
-    
+
     func provideDirection(address: UInt32) {
         guard let loc = locomotives.first(where: { $0.loc.actualAddress == address }) else {
             BTLogger.error("[Simulator] Unable to find a locomotive for address \(address.toHex())")
-            
+
             // As per spec 3.5, an answer is always returned, even when a locomotive is not known.
             DispatchQueue.main.async {
                 let message = MarklinCANMessageFactory.direction(addr: address, direction: .nochange)
@@ -303,7 +302,7 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
         let message = MarklinCANMessageFactory.direction(addr: address, direction: loc.directionForward ? .forward : .backward)
         send(message.ack)
     }
-    
+
     func setFeedback(feedback: Feedback, value: UInt8) {
         let oldValue: UInt8 = feedback.detected ? 1 : 0
         let message = MarklinCANMessageFactory.feedback(deviceID: feedback.deviceID, contactID: feedback.contactID, oldValue: oldValue, newValue: value, time: 0)
@@ -313,13 +312,13 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
     func setTrainDirection(train: SimulatorLocomotive, directionForward: Bool) {
         // Remember this direction in the simulator train itself
         train.directionForward = directionForward
-        
+
         // Note: directionForward is actually ignored because the message sent by the Central Station is `emergencyStop`
         // and the client must request the locomotive direction explicitly.
         let message = MarklinCANMessageFactory.emergencyStop(addr: train.loc.actualAddress)
         send(message)
     }
-    
+
     /// Simulates a change in speed from the Central Station 3
     /// - Parameter train: the train that had his speed changed
     func setTrainSpeed(train: SimulatorLocomotive) {
@@ -328,18 +327,18 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
         send(message)
         send(message.ack) // Send also the acknowledgement
     }
-    
+
     func send(_ message: MarklinCANMessage) {
-        server?.connections.forEach({ connection in
+        server?.connections.forEach { connection in
             connection.send(data: message.data)
-        })
+        }
     }
-    
+
     func simulateLayout() {
         guard enabled else {
             return
         }
-        
+
         guard let layout = layout else {
             return
         }
@@ -348,19 +347,19 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
             guard train.scheduling != .unmanaged else {
                 continue
             }
-            
+
             guard let loc = train.locomotive else {
                 continue
             }
-            
-            guard let simLoc = locomotives.first(where: {$0.loc.id == loc.id}), simLoc.simulate else {
+
+            guard let simLoc = locomotives.first(where: { $0.loc.id == loc.id }), simLoc.simulate else {
                 continue
             }
-                        
+
             guard let route = layout.route(for: train.routeId, trainId: train.id) else {
                 continue
             }
-            
+
             do {
                 try simulate(route: route, train: train, loc: loc)
             } catch {
@@ -368,7 +367,7 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
             }
         }
     }
-    
+
     func simulate(route: Route, train: Train, loc: Locomotive) throws {
         guard let layout = layout else {
             return
@@ -377,11 +376,11 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
         guard loc.speed.actualKph > 0 else {
             return
         }
-                
+
         guard let block = layout.currentBlock(train: train) else {
             return
         }
-                       
+
         BTLogger.debug("[Simulator] Simulating route \(route.name) for \(train.name), requested speed \(loc.speed.requestedKph) kph, actual speed \(loc.speed.actualKph) kph")
 
         if let entryFeedback = try layout.entryFeedback(for: train) {
@@ -393,7 +392,7 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
                     setFeedback(feedback: feedback, value: 0)
                 }
             }
-            
+
             BTLogger.debug("[Simulator] Trigger feedback \(entryFeedback.feedback.name) to move train \(train.name) to next block \(entryFeedback.block.name)")
             triggerFeedback(feedback: entryFeedback.feedback)
         } else if try layout.atEndOfBlock(train: train) == false {
@@ -410,16 +409,14 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
 
     func triggerFeedback(feedback: Feedback) {
         setFeedback(feedback: feedback, value: 1)
-        Timer.scheduledTimer(withTimeInterval: 0.25 * BaseTimeFactor, repeats: false) { timer in
+        Timer.scheduledTimer(withTimeInterval: 0.25 * BaseTimeFactor, repeats: false) { _ in
             self.setFeedback(feedback: feedback, value: 0)
         }
     }
 }
 
 private extension Locomotive {
-    
     var actualAddress: UInt32 {
         address.actualAddress(for: decoder)
     }
-
 }

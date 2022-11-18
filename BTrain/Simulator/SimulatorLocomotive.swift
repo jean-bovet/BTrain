@@ -18,18 +18,18 @@ import Foundation
 final class SimulatorLocomotive: ObservableObject, Element {
     let id: Identifier<Locomotive>
     let loc: Locomotive
-    
+
     @Published var simulate = true
     @Published var directionForward = true
-    
+
     // Note: ensure that the speed of the simulated train is decoupled from the train itself
     // to ensure the simulator does not change the speed of the original train directly, but only
     // via commands sent through the interface.
     @Published var speed: SpeedStep = .zero
-  
+
     init(loc: Locomotive) {
-        self.id = loc.id
+        id = loc.id
         self.loc = loc
-        self.directionForward = loc.directionForward
+        directionForward = loc.directionForward
     }
 }

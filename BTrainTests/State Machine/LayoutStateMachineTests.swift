@@ -10,11 +10,10 @@
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-import XCTest
 @testable import BTrain
+import XCTest
 
 class LayoutStateMachineTests: XCTestCase {
-
     var train: MockTrainController!
     let lsm = LayoutStateMachine()
 
@@ -22,16 +21,16 @@ class LayoutStateMachineTests: XCTestCase {
         super.setUp()
         train = MockTrainController(route: Route(uuid: "fixed-test", mode: .fixed))
     }
-    
+
     func testTrainStart() throws {
         XCTAssertEqual(train.state, .stopped)
         train.mode = .managed
 
-        train.onReservedBlocksLengthEnough = { speed in
-            return false
+        train.onReservedBlocksLengthEnough = { _ in
+            false
         }
         train.onUpdateReservedBlocks = {
-            return true
+            true
         }
         try handle(trainEvent: .modeChanged(train), train: train, handledEvents: [.modeChanged(train), .reservedBlocksChanged(train)])
 
@@ -39,11 +38,11 @@ class LayoutStateMachineTests: XCTestCase {
         XCTAssertEqual(train.adjustSpeedCount, 1)
         XCTAssertEqual(train.speed, 0)
 
-        train.onReservedBlocksLengthEnough = { speed in
-            return true
+        train.onReservedBlocksLengthEnough = { _ in
+            true
         }
         train.onUpdateReservedBlocks = {
-            return true
+            true
         }
         try handle(trainEvent: .modeChanged(train), train: train, handledEvents: [.modeChanged(train), .reservedBlocksChanged(train), .stateChanged(train)])
 
@@ -51,47 +50,47 @@ class LayoutStateMachineTests: XCTestCase {
         XCTAssertEqual(train.adjustSpeedCount, 2)
         XCTAssertEqual(train.speed, LayoutFactory.DefaultMaximumSpeed)
     }
-    
+
     func testTrainStart2() throws {
         let t1 = MockTrainController(route: train.route)
         let t2 = MockTrainController(route: train.route)
-                
+
         XCTAssertEqual(t1.state, .stopped)
         XCTAssertEqual(t2.state, .stopped)
-        
+
         t1.mode = .managed
 
-        t1.onReservedBlocksLengthEnough = { speed in
-            return true
+        t1.onReservedBlocksLengthEnough = { _ in
+            true
         }
 
         t1.onUpdateReservedBlocks = {
-            return true
+            true
         }
-        
+
         t2.onUpdateReservedBlocks = {
-            return false
+            false
         }
 
         try handle(trainEvent: .modeChanged(t1), trains: [t1, t2], handledEvents: [.modeChanged(t1), .reservedBlocksChanged(t1), .stateChanged(t1)])
-        
+
         XCTAssertEqual(t1.state, .running)
         XCTAssertEqual(t1.updateReservedBlocksInvocationCount, 1)
 
         XCTAssertEqual(t2.state, .stopped)
         XCTAssertEqual(t2.updateReservedBlocksInvocationCount, 0) // unmanaged train should not reserve any blocks
     }
-    
+
     func testTrainMove() throws {
         train.mode = .managed
         train.state = .running
         train.speed = LayoutFactory.DefaultMaximumSpeed
-        
+
         let f1 = Feedback("f1")
 
-        train.onReservedBlocksLengthEnough = { speed in return true }
-        train.onUpdatePosition = { f in return f == f1 }
-        train.onUpdateOccupiedAndReservedBlocks = { return true }
+        train.onReservedBlocksLengthEnough = { _ in true }
+        train.onUpdatePosition = { f in f == f1 }
+        train.onUpdateOccupiedAndReservedBlocks = { true }
         try handle(layoutEvent: .feedback(f1), train: train, handledEvents: [.position(train), .reservedBlocksChanged(train)])
         assert(train, .running, LayoutFactory.DefaultMaximumSpeed, updatePositionCount: 1)
 
@@ -100,15 +99,15 @@ class LayoutStateMachineTests: XCTestCase {
         try handle(layoutEvent: .feedback(f2), train: train, handledEvents: [])
         assert(train, .running, LayoutFactory.DefaultMaximumSpeed, updatePositionCount: 2)
     }
-    
+
     func testTrainMoveAndBrakeBecauseSettledDistance() throws {
         train.mode = .managed
         train.state = .running
         train.speed = LayoutFactory.DefaultMaximumSpeed
-        
+
         let f1 = Feedback("f1")
 
-        train.onUpdatePosition = { f in return f == f1 }
+        train.onUpdatePosition = { f in f == f1 }
         train.onReservedBlocksLengthEnough = { speed in
             if speed >= LayoutFactory.DefaultBrakingSpeed {
                 return false
@@ -117,21 +116,21 @@ class LayoutStateMachineTests: XCTestCase {
             }
         }
         train.onUpdateOccupiedAndReservedBlocks = {
-            return true
+            true
         }
         train.brakeFeedbackActivated = true
         try handle(layoutEvent: .feedback(f1), train: train, handledEvents: [.position(train), .reservedBlocksChanged(train), .stateChanged(train)])
         assert(train, .braking, LayoutFactory.DefaultBrakingSpeed, updatePositionCount: 1)
     }
-    
+
     func testTrainBrakingAndRunAfterSettledDistanceIsUpdated() throws {
         train.mode = .managed
         train.state = .running
         train.speed = LayoutFactory.DefaultMaximumSpeed
         train.hasReservedBlocks = true
-        
+
         let t1 = Turnout(name: "t1")
-        
+
         train.onUpdateReservedBlocksSettledLength = { t in t == t1 }
         train.onReservedBlocksLengthEnough = { speed in
             if speed >= LayoutFactory.DefaultBrakingSpeed {
@@ -143,8 +142,8 @@ class LayoutStateMachineTests: XCTestCase {
         train.brakeFeedbackActivated = true
         try handle(layoutEvent: .turnout(t1), train: train, handledEvents: [.reservedBlocksSettledLengthChanged(train), .stateChanged(train)])
         assert(train, .braking, LayoutFactory.DefaultBrakingSpeed, updatePositionCount: 0)
-        
-        train.onReservedBlocksLengthEnough = { speed in return true }
+
+        train.onReservedBlocksLengthEnough = { _ in true }
         try handle(layoutEvent: .turnout(t1), train: train, handledEvents: [.reservedBlocksSettledLengthChanged(train), .stateChanged(train)])
         assert(train, .running, LayoutFactory.DefaultMaximumSpeed, updatePositionCount: 0)
     }
@@ -154,9 +153,9 @@ class LayoutStateMachineTests: XCTestCase {
         train.state = .running
         train.speed = LayoutFactory.DefaultMaximumSpeed
         train.hasReservedBlocks = true
-        
+
         let t1 = Turnout(name: "t1")
-        
+
         train.onUpdateReservedBlocksSettledLength = { t in t == t1 }
         train.onReservedBlocksLengthEnough = { speed in
             if speed >= LayoutFactory.DefaultBrakingSpeed {
@@ -166,18 +165,18 @@ class LayoutStateMachineTests: XCTestCase {
             }
         }
         train.brakeFeedbackActivated = true
-        
+
         try handle(layoutEvent: .turnout(t1), train: train, handledEvents: [.reservedBlocksSettledLengthChanged(train), .stateChanged(train)])
         assert(train, .braking, LayoutFactory.DefaultBrakingSpeed, updatePositionCount: 0)
 
-        train.onReservedBlocksLengthEnough = { speed in return false }
+        train.onReservedBlocksLengthEnough = { _ in false }
         train.brakeFeedbackActivated = false
         train.stopFeedbackActivated = true
 
         try handle(layoutEvent: .turnout(t1), train: train, handledEvents: [.reservedBlocksSettledLengthChanged(train), .stateChanged(train)])
         assert(train, .stopping, LayoutFactory.DefaultBrakingSpeed, updatePositionCount: 0)
 
-        train.onReservedBlocksLengthEnough = { speed in return true }
+        train.onReservedBlocksLengthEnough = { _ in true }
         try handle(layoutEvent: .turnout(t1), train: train, handledEvents: [.reservedBlocksSettledLengthChanged(train), .stateChanged(train)])
         assert(train, .running, LayoutFactory.DefaultMaximumSpeed, updatePositionCount: 0)
     }
@@ -186,15 +185,15 @@ class LayoutStateMachineTests: XCTestCase {
         train.mode = .managed
         train.state = .running
         train.speed = LayoutFactory.DefaultMaximumSpeed
-        
+
         let f1 = Feedback("f1")
 
-        train.onUpdatePosition = { f in return f == f1 }
-        train.onReservedBlocksLengthEnough = { speed in
-            return false
+        train.onUpdatePosition = { f in f == f1 }
+        train.onReservedBlocksLengthEnough = { _ in
+            false
         }
         train.onUpdateOccupiedAndReservedBlocks = {
-            return true
+            true
         }
         train.brakeFeedbackActivated = true
         train.stopFeedbackActivated = true
@@ -202,19 +201,19 @@ class LayoutStateMachineTests: XCTestCase {
         // Note: 2 state changes, running>braking>stopping because the length of the reserved block does not allow the train to run at all.
         try handle(layoutEvent: .feedback(f1), train: train, handledEvents: [.position(train), .reservedBlocksChanged(train), .stateChanged(train), .stateChanged(train)])
         assert(train, .stopping, LayoutFactory.DefaultBrakingSpeed, updatePositionCount: 1)
-        
+
         try handle(layoutEvent: .speed(train, 0), train: train, handledEvents: [.speed(train), .stateChanged(train), .reservedBlocksChanged(train)])
         assert(train, .stopped, 0, reservedBlock: false, updatePositionCount: 1)
     }
-    
+
     func testTrainMoveBrakeAndRunBecauseSettledDistance() throws {
         train.mode = .managed
         train.state = .running
         train.speed = LayoutFactory.DefaultMaximumSpeed
-        
+
         let f1 = Feedback("f1")
 
-        train.onUpdatePosition = { f in return f == f1 }
+        train.onUpdatePosition = { f in f == f1 }
         train.onReservedBlocksLengthEnough = { speed in
             if speed >= LayoutFactory.DefaultBrakingSpeed {
                 return false
@@ -223,15 +222,15 @@ class LayoutStateMachineTests: XCTestCase {
             }
         }
         train.onUpdateOccupiedAndReservedBlocks = {
-            return true
+            true
         }
         train.brakeFeedbackActivated = true
 
         try handle(layoutEvent: .feedback(f1), train: train, handledEvents: [.position(train), .reservedBlocksChanged(train), .stateChanged(train)])
         assert(train, .braking, LayoutFactory.DefaultBrakingSpeed, updatePositionCount: 1)
 
-        train.onReservedBlocksLengthEnough = { speed in
-            return true
+        train.onReservedBlocksLengthEnough = { _ in
+            true
         }
 
         try handle(layoutEvent: .feedback(f1), train: train, handledEvents: [.position(train), .reservedBlocksChanged(train), .stateChanged(train)])
@@ -239,34 +238,34 @@ class LayoutStateMachineTests: XCTestCase {
     }
 
     func testTrainStopManaged() throws {
-        try assertTrainStop() {
+        try assertTrainStop {
             train.mode = .stopManaged
         }
     }
-    
+
     func testTrainStopManagedAtEndOfRoute() throws {
-        try assertTrainStop() {
+        try assertTrainStop {
             train.moveToEndOfRoute()
             train.mode = .stopManaged
         }
     }
-    
+
     func testTrainFinishManaged() throws {
-        try assertTrainStop() {
+        try assertTrainStop {
             train.moveToEndOfRoute()
             train.mode = .finishManaged
         }
     }
 
     func testTrainStopAtEndOfRoute() throws {
-        try assertTrainStop() {
+        try assertTrainStop {
             train.moveToEndOfRoute()
             train.mode = .managed
         }
     }
 
     func testTrainStopAtStation() throws {
-        try assertTrainStop() {
+        try assertTrainStop {
             train.atStationOrDestination = true
         }
     }
@@ -275,36 +274,36 @@ class LayoutStateMachineTests: XCTestCase {
         train.mode = .managed
         train.state = .running
         train.speed = LayoutFactory.DefaultMaximumSpeed
-        
+
         let f1 = Feedback("f1")
 
         train.onUpdatePosition = { f in
             self.train.currentRouteIndex += 1
             return f == f1
         }
-        train.onReservedBlocksLengthEnough = { speed in
-            return true
+        train.onReservedBlocksLengthEnough = { _ in
+            true
         }
         train.onUpdateOccupiedAndReservedBlocks = {
-            return true
+            true
         }
         try handle(layoutEvent: .feedback(f1), train: train, handledEvents: [.position(train), .reservedBlocksChanged(train)])
         assert(train, .running, LayoutFactory.DefaultMaximumSpeed, updatePositionCount: 1)
-        
+
         stopTrigger()
-        
+
         try handle(layoutEvent: .feedback(f1), train: train, handledEvents: [.position(train), .reservedBlocksChanged(train)])
         assert(train, .running, LayoutFactory.DefaultMaximumSpeed, updatePositionCount: 2)
-        
+
         train.brakeFeedbackActivated = true
         try handle(layoutEvent: .feedback(f1), train: train, handledEvents: [.position(train), .reservedBlocksChanged(train), .stateChanged(train)])
         assert(train, .braking, LayoutFactory.DefaultBrakingSpeed, updatePositionCount: 3)
-        
+
         train.brakeFeedbackActivated = false
         train.stopFeedbackActivated = true
         try handle(layoutEvent: .feedback(f1), train: train, handledEvents: [.position(train), .reservedBlocksChanged(train), .stateChanged(train)])
         assert(train, .stopping, LayoutFactory.DefaultBrakingSpeed, updatePositionCount: 4)
-        
+
         try handle(layoutEvent: .speed(train, 0), train: train, handledEvents: [.speed(train), .stateChanged(train), .reservedBlocksChanged(train)])
         assert(train, .stopped, 0, reservedBlock: false, updatePositionCount: 4)
 
@@ -314,10 +313,10 @@ class LayoutStateMachineTests: XCTestCase {
 
         // And now test when the feedback is used for both the braking and stopping feedback
         stopTrigger()
-        
+
         train.state = .running
         train.speed = LayoutFactory.DefaultMaximumSpeed
-        
+
         train.brakeFeedbackActivated = true
         train.stopFeedbackActivated = true
         try handle(layoutEvent: .feedback(f1), train: train, handledEvents: [.position(train), .reservedBlocksChanged(train), .stateChanged(train), .stateChanged(train)])
@@ -328,7 +327,7 @@ class LayoutStateMachineTests: XCTestCase {
         train.mode = .managed
         train.state = .running
         train.speed = LayoutFactory.DefaultMaximumSpeed
-        
+
         let f1 = Feedback("f1")
 
         train.onUpdatePosition = { f in
@@ -336,47 +335,45 @@ class LayoutStateMachineTests: XCTestCase {
             return f == f1
         }
         train.onUpdateReservedBlocks = {
-            return true
+            true
         }
-        train.onReservedBlocksLengthEnough = { speed in
-            return true
+        train.onReservedBlocksLengthEnough = { _ in
+            true
         }
         train.onUpdateOccupiedAndReservedBlocks = {
-            return true
+            true
         }
         try handle(layoutEvent: .feedback(f1), train: train, handledEvents: [.position(train), .reservedBlocksChanged(train)])
         assert(train, .running, LayoutFactory.DefaultMaximumSpeed, updatePositionCount: 1)
-        
+
         train.atStationOrDestination = true
         try handle(layoutEvent: .feedback(f1), train: train, handledEvents: [.position(train), .reservedBlocksChanged(train)])
         assert(train, .running, LayoutFactory.DefaultMaximumSpeed, updatePositionCount: 2)
-        
+
         train.stopFeedbackActivated = true
         try handle(layoutEvent: .feedback(f1), train: train, handledEvents: [.position(train), .reservedBlocksChanged(train), .stateChanged(train)])
         assert(train, .stopping, LayoutFactory.DefaultBrakingSpeed, updatePositionCount: 3)
-        
+
         try handle(layoutEvent: .speed(train, 0), train: train, handledEvents: [.speed(train), .stateChanged(train), .reservedBlocksChanged(train)])
         assert(train, .stopped, 0, reservedBlock: false, updatePositionCount: 3)
-        
+
         // Ensure the train stays stopped
         try handle(layoutEvent: .speed(train, 0), train: train, handledEvents: [.speed(train)])
         assert(train, .stopped, 0, reservedBlock: false, updatePositionCount: 3)
-                
+
         // Simulate the restart timer firing
         try handle(trainEvent: .restartTimerFired(train), train: train, handledEvents: [.restartTimerFired(train), .reservedBlocksChanged(train), .stateChanged(train)])
         assert(train, .running, LayoutFactory.DefaultMaximumSpeed, updatePositionCount: 3)
     }
-
 }
 
 // MARK: - Extensions
 
 extension LayoutStateMachineTests {
-    
     func handle(layoutEvent: StateMachine.LayoutEvent? = nil, trainEvent: StateMachine.TrainEvent? = nil, train: TrainControlling, handledEvents: [StateMachine.TrainEvent]) throws {
         try handle(layoutEvent: layoutEvent, trainEvent: trainEvent, trains: [train], handledEvents: handledEvents)
     }
-    
+
     func handle(layoutEvent: StateMachine.LayoutEvent? = nil, trainEvent: StateMachine.TrainEvent? = nil, trains: [TrainControlling], handledEvents: [StateMachine.TrainEvent]) throws {
         var actualHandledEvents: [StateMachine.TrainEvent]? = [StateMachine.TrainEvent]()
         try lsm.handle(layoutEvent: layoutEvent, trainEvent: trainEvent, trains: trains, handledTrainEvents: &actualHandledEvents)

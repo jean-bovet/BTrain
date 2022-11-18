@@ -13,17 +13,16 @@
 import SwiftUI
 
 struct BlockAllFeedbacksView: View {
- 
     let layout: Layout
     @ObservedObject var block: Block
     @State private var selection: Block.BlockFeedback.ID?
-    
+
     var body: some View {
         VStack(alignment: .leading) {
             Table(selection: $selection) {
                 TableColumn("Feedback") { blockFeedback in
                     Picker("Feedback:", selection: blockFeedback.feedbackId) {
-                        ForEach(layout.feedbacks.elements, id:\.self) { feedback in
+                        ForEach(layout.feedbacks.elements, id: \.self) { feedback in
                             Text(feedback.name).tag(feedback.id)
                         }
                     }
@@ -44,31 +43,29 @@ struct BlockAllFeedbacksView: View {
                     TableRow(block)
                 }
             }.frame(height: 140)
-            
+
             HStack {
                 Button("+") {
                     block.add(layout.feedbacks[0].id)
                 }.disabled(layout.feedbacks.elements.isEmpty)
-                
+
                 Button("-") {
-                    block.feedbacks.removeAll(where: {$0.id == selection})
+                    block.feedbacks.removeAll(where: { $0.id == selection })
                 }.disabled(selection == nil)
 
                 Spacer()
-                
+
                 Button("Auto Fill") {
                     block.autoFillFeedbacks()
                 }
             }
         }
     }
-    
 }
 
 struct BlockFeedbackView_Previews: PreviewProvider {
-    
     static let layout = LayoutLoop2().newLayout()
-    
+
     static var previews: some View {
         BlockAllFeedbacksView(layout: layout, block: layout.blocks[0])
     }

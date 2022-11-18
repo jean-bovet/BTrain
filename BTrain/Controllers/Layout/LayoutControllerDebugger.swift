@@ -14,12 +14,11 @@ import Foundation
 import SwiftUI
 
 final class LayoutControllerDebugger {
-    
     @AppStorage(SettingsKeys.recordDiagnosticLogs) private var enabled = false
-    
+
     struct Iterations: Codable {
         var iterations = [String]()
-        
+
         mutating func add(_ ascii: String) -> Bool {
             if iterations.last == ascii {
                 return false
@@ -28,25 +27,25 @@ final class LayoutControllerDebugger {
             return true
         }
     }
-    
+
     struct Information: Codable {
         let layout: Layout
-        var routes = [Identifier<Route>:Iterations]()
+        var routes = [Identifier<Route>: Iterations]()
     }
-    
+
     let layout: Layout
     var info: Information
-    
+
     init(layout: Layout) {
         self.layout = layout
-        self.info = Information(layout: layout)
+        info = Information(layout: layout)
     }
-    
+
     func record(layoutController: LayoutController) {
         guard enabled else {
             return
         }
-        
+
         let layout = layoutController.layout
         let producer = LayoutASCIIProducer(layout: layout)
         for train in layout.trains.elements {
@@ -56,9 +55,9 @@ final class LayoutControllerDebugger {
                         info.routes[route.id] = Iterations()
                     }
 
-                    let ascii = "\(route.id): "+s
+                    let ascii = "\(route.id): " + s
                     if let result = info.routes[route.id]?.add(ascii), result {
-                        BTLogger.debug("[LayoutController] "+ascii)
+                        BTLogger.debug("[LayoutController] " + ascii)
                     }
                 }
             }

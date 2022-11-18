@@ -13,11 +13,10 @@
 import Foundation
 
 extension Layout {
-    
     var fixedRoutes: [Route] {
-        routes.filter({ !$0.automatic })
+        routes.filter { !$0.automatic }
     }
-    
+
     func route(for routeId: Identifier<Route>, trainId: Identifier<Train>?) -> Route? {
         if let trainId = trainId, routeId == Route.automaticRouteId(for: trainId), route(for: routeId) == nil {
             // Automatic route, ensure it exists for the train
@@ -26,14 +25,14 @@ extension Layout {
             routes.append(automaticRoute)
             return automaticRoute
         }
-        
+
         return route(for: routeId)
     }
-    
+
     private func route(for routeId: Identifier<Route>?) -> Route? {
         routes.first(where: { $0.id == routeId })
     }
-    
+
     func newRoute(_ id: String, name: String, _ steps: [(Block, Direction, TimeInterval?)]) -> Route {
         var routeSteps = [RouteItem]()
         for step in steps {
@@ -41,11 +40,11 @@ extension Layout {
         }
         return newRoute(Identifier<Route>(uuid: id), name: name, routeSteps)
     }
-    
+
     func newRoute() -> Route {
         newRoute(LayoutIdentity.newIdentity(routes, prefix: .route), name: "", [])
     }
-    
+
     func newRoute(_ id: Identifier<Route>, name: String, _ steps: [RouteItem]) -> Route {
         let route = Route(id: id)
         route.name = name
@@ -53,7 +52,7 @@ extension Layout {
         routes.append(route)
         return route
     }
-    
+
     /// Add or update the existing route with the specified route.
     /// - Parameter route: the route
     func addOrUpdate(route: Route) {
@@ -64,17 +63,17 @@ extension Layout {
             routes.append(route)
         }
     }
-    
+
     func duplicate(routeId: Identifier<Route>) {
         guard let route = route(for: routeId) else {
             return
         }
-        
+
         let newRoute = newRoute()
         newRoute.name = "\(route.name) copy"
         newRoute.partialSteps = route.partialSteps
     }
-    
+
     func remove(routeId: Identifier<Route>) {
         routes.removeAll { t in
             t.id == routeId
@@ -85,17 +84,18 @@ extension Layout {
             }
         }
     }
-    
+
     func sortRoutes() {
         routes.sort {
             $0.name < $1.name
         }
     }
-    
+
     func routeDescription(for train: Train) -> String {
         var text = ""
-        if let route = self.route(for: train.routeId, trainId: train.id),
-           let train = trains[train.id] {
+        if let route = route(for: train.routeId, trainId: train.id),
+           let train = trains[train.id]
+        {
             if let message = route.lastMessage {
                 text = message
             } else {
@@ -104,49 +104,49 @@ extension Layout {
         }
         return text
     }
-    
+
     func routeDescription(for train: Train?, steps: [RouteItem]) -> String {
         var index = 0
         var text = ""
         for step in steps {
-            guard let description = self.description(of: step) else {
+            guard let description = description(of: step) else {
                 continue
             }
-            
+
             if !text.isEmpty {
                 text += "→"
             }
-            
+
             text += description
-            
+
             if train?.routeStepIndex == index {
                 // Indicate the block in the route where the train
                 // is currently located
                 text += "􀼮"
             }
-            
+
             index += 1
         }
         return text
     }
-    
+
     func description(of item: RouteItem) -> String? {
         switch item {
-        case .block(let stepBlock):
+        case let .block(stepBlock):
             return description(of: stepBlock.blockId)
 
-        case .station(let stepStation):
+        case let .station(stepStation):
             if let station = stations[stepStation.stationId] {
                 return "\(station.name)"
             } else {
                 return "\(stepStation.stationId)"
             }
-            
-        case .turnout(let stepTurnout):
+
+        case let .turnout(stepTurnout):
             return description(of: stepTurnout.turnoutId)
         }
     }
-    
+
     func description(of blockId: Identifier<Block>) -> String {
         if let block = blocks[blockId] {
             return "\(block.name)"
@@ -154,7 +154,7 @@ extension Layout {
             return "\(blockId)"
         }
     }
-    
+
     func description(of turnoutId: Identifier<Turnout>) -> String {
         if let turnout = turnouts[turnoutId] {
             return "\(turnout.name)"
@@ -162,9 +162,8 @@ extension Layout {
             return "\(turnoutId)"
         }
     }
-    
+
     var defaultRouteDescription: String {
         "􀼮→"
     }
-            
 }

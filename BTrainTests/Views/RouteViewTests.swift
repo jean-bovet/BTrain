@@ -10,28 +10,27 @@
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-import XCTest
 @testable import BTrain
 import ViewInspector
+import XCTest
 
-extension RouteView: Inspectable { }
-extension RouteListView: Inspectable { }
-extension CenteredCustomView: Inspectable { }
-extension CenteredLabelView: Inspectable { }
+extension RouteView: Inspectable {}
+extension RouteListView: Inspectable {}
+extension CenteredCustomView: Inspectable {}
+extension CenteredLabelView: Inspectable {}
 
 class RouteViewTests: XCTestCase {
-
     func testLayout() throws {
         let layout = LayoutLoop1().newLayout()
         let sut = RouteView(layout: layout, route: layout.routes[0])
-        
+
         _ = try sut.inspect().find(text: "4 steps")
     }
 
     func testRouteListView() throws {
         let layout = LayoutLoop1().newLayout()
         let sut = RouteListView(layout: layout)
-        
+
         _ = try sut.inspect().find(text: "2 routes")
         _ = try sut.inspect().find(text: "No Selected Route")
     }

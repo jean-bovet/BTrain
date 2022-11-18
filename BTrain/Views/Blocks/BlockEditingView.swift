@@ -13,9 +13,8 @@
 import SwiftUI
 
 struct BlockEditingView: View {
-    
     @ObservedObject var layout: Layout
-        
+
     var body: some View {
         LayoutElementsEditingView(layout: layout, new: {
             layout.newBlock(name: "New Block", category: .free)
@@ -32,7 +31,7 @@ struct BlockEditingView: View {
                 UndoProvider(block) { block in
                     Toggle("Enabled", isOn: block.enabled)
                 }
-                
+
                 UndoProvider(block) { block in
                     TextField("Name", text: block.name)
                 }
@@ -47,7 +46,6 @@ struct BlockEditingView: View {
 }
 
 struct BlockEditingView_Previews: PreviewProvider {
-
     static var previews: some View {
         ConfigurationSheet(title: "Blocks") {
             BlockEditingView(layout: LayoutLoop2().newLayout())

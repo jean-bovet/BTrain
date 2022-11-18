@@ -13,7 +13,6 @@
 import SwiftUI
 
 struct RouteStepStationView: View {
-    
     let layout: Layout
     @Binding var stepStation: RouteItemStation
 
@@ -21,7 +20,7 @@ struct RouteStepStationView: View {
         HStack {
             UndoProvider($stepStation.stationId) { stationId in
                 Picker("Station:", selection: stationId) {
-                    ForEach(layout.stations.elements, id:\.self) { station in
+                    ForEach(layout.stations.elements, id: \.self) { station in
                         Text("\(station.name)").tag(station.id as Identifier<Station>)
                     }
                 }
@@ -31,7 +30,6 @@ struct RouteStepStationView: View {
 }
 
 struct RouteStepStationView_Previews: PreviewProvider {
-    
     static let layout = LayoutLoopWithStations().newLayout()
 
     static var previews: some View {

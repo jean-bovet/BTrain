@@ -14,9 +14,8 @@ import Foundation
 
 /// Definition of a Marklin CAN-bus message
 struct MarklinCANMessage: Equatable, Hashable {
-    
     static let messageLength = 13
-    
+
     let prio: UInt8
     let command: UInt8
     let resp: UInt8
@@ -30,17 +29,17 @@ struct MarklinCANMessage: Equatable, Hashable {
     let byte5: UInt8
     let byte6: UInt8
     let byte7: UInt8
-    
+
     /// Returns the same message but with the response bit set to 1 (acknowledgement)
     var ack: MarklinCANMessage {
         .init(prio: prio, command: command, resp: 1, hash: hash, dlc: dlc, byte0: byte0, byte1: byte1, byte2: byte2, byte3: byte3, byte4: byte4, byte5: byte5, byte6: byte6, byte7: byte7)
     }
-    
+
     /// Returns true if this message is an acknowledgement
     var isAck: Bool {
         resp == 1
     }
-    
+
     var raw: MarklinCANMessage {
         if command == 0x05 {
             // Special treatment for the queryDirection or direction command, which differ only by their DLC field. The acknowldgement we get from the Central Station for either command
@@ -57,7 +56,6 @@ struct MarklinCANMessage: Equatable, Hashable {
 // MARK: Utility
 
 extension MarklinCANMessage {
-    
     // Example: 00 08 bf 46 06 00 00 40 09 00 71 00 00
     //      Filler   | 2+2bits | 8 bits command | 1 bit rep | 16 bits hash | DLC 4 bit | Byte 0 | .. Byte 7
     // Bin: 000        1111      0100 0100         0
@@ -67,7 +65,7 @@ extension MarklinCANMessage {
         let prio: UInt8 = (bytes[0] >> 1) & 0x0F
         let command: UInt8 = ((bytes[0] << 7) & 0xFF) | ((bytes[1] >> 1) & 0xFF)
         let resp: UInt8 = (bytes[1] & 0x01)
-        let hash: UInt16 = UInt16(bytes[2]) << 8 | UInt16(bytes[3])
+        let hash = UInt16(bytes[2]) << 8 | UInt16(bytes[3])
         let dlc: UInt8 = bytes[4]
         let byte0: UInt8 = bytes[5]
         let byte1: UInt8 = bytes[6]
@@ -79,12 +77,12 @@ extension MarklinCANMessage {
         let byte7: UInt8 = bytes[12]
         return MarklinCANMessage(prio: prio, command: command, resp: resp, hash: hash, dlc: dlc, byte0: byte0, byte1: byte1, byte2: byte2, byte3: byte3, byte4: byte4, byte5: byte5, byte6: byte6, byte7: byte7)
     }
-    
+
     var bytes: [UInt8] {
         var byteArray = [UInt8]()
 
-        byteArray.append((prio << 1) & 0xFF | (command >> 7) & 0xFF)   // Filler + priority + command bit 7
-        byteArray.append((command << 1) & 0xFF | (resp & 0x01))   // Command bit 0 to 6 + resp bit
+        byteArray.append((prio << 1) & 0xFF | (command >> 7) & 0xFF) // Filler + priority + command bit 7
+        byteArray.append((command << 1) & 0xFF | (resp & 0x01)) // Command bit 0 to 6 + resp bit
         byteArray.append(UInt8((hash >> 8) & 0xFF)) // hashbyte1
         byteArray.append(UInt8((hash >> 0) & 0xFF)) // hashbyte2
         byteArray.append(dlc) // DLC (Data Length Code)
@@ -100,7 +98,7 @@ extension MarklinCANMessage {
 
         return byteArray
     }
-            
+
     var data: Data {
         let bytes = bytes
         return Data(bytes: bytes, count: bytes.count)

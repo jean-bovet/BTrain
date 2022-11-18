@@ -14,17 +14,16 @@ import SwiftUI
 
 // This structure defines the window toolbar content
 struct DocumentToolbarContent: ToolbarContent {
-
     @ObservedObject var document: LayoutDocument
-    
+
     @Binding var connectAlertShowing: Bool
-    
+
     var body: some ToolbarContent {
         ToolbarItemGroup {
             ConnectCommandsView(document: document, connectAlertShowing: $connectAlertShowing)
             Spacer()
         }
-                
+
         ToolbarItemGroup {
             DeveloperCommandsView(document: document)
 
@@ -40,21 +39,20 @@ struct DocumentToolbarContent: ToolbarContent {
 // in the document, you have to put each control inside a separate SwiftUI view,
 // otherwise the command state is never updated.
 struct ConnectCommandsView: View {
-    
     @ObservedObject var document: LayoutDocument
     @Binding var connectAlertShowing: Bool
-    
+
     var body: some View {
         if document.connected {
             Button("Disconnect") {
-                document.disconnect { }
+                document.disconnect {}
             }
             .foregroundColor(.red)
 
             Spacer()
-            
+
             PowerStateIndicationView(document: document, simulator: document.simulator)
-                        
+
             Spacer()
 
             if document.power {
@@ -78,10 +76,9 @@ struct ConnectCommandsView: View {
 }
 
 struct PowerStateIndicationView: View {
-    
     @ObservedObject var document: LayoutDocument
     @ObservedObject var simulator: MarklinCommandSimulator
-    
+
     var text: String {
         var t = ""
         if document.power {
@@ -94,7 +91,7 @@ struct PowerStateIndicationView: View {
         }
         return t
     }
-    
+
     var body: some View {
         Text(text)
             .bold()
@@ -107,7 +104,6 @@ struct PowerStateIndicationView: View {
 }
 
 struct DeveloperCommandsView: View {
-    
     @ObservedObject var document: LayoutDocument
     @AppStorage("switchboardWhiteBackground") var switchboardWhiteBackground = false
 
@@ -117,20 +113,19 @@ struct DeveloperCommandsView: View {
                 Button("Repair Layout") {
                     LayoutDiagnostic(layout: document.layout).repair()
                 }
-                
+
                 Divider()
-                
+
                 Toggle("White Background", isOn: $switchboardWhiteBackground)
             }
         }
-    }    
+    }
 }
 
 struct SwitchboardEditButton: View {
-    
     @ObservedObject var document: LayoutDocument
     @ObservedObject var state: SwitchBoard.State
-    
+
     var body: some View {
         if !document.connected {
             Button("􀈊") {
@@ -146,7 +141,6 @@ struct SwitchboardEditButton: View {
 }
 
 struct SwitchboardSettingsButton: View {
-    
     @ObservedObject var document: LayoutDocument
 
     var body: some View {
@@ -154,5 +148,4 @@ struct SwitchboardSettingsButton: View {
             document.showSwitchboardViewSettings.toggle()
         }.help("Show/hide Switchboard View Settings")
     }
-    
 }

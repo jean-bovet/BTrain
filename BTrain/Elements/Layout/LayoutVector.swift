@@ -16,13 +16,13 @@ import Foundation
 struct LayoutVector {
     let block: Block
     let direction: Direction?
-    
+
     var entrySocket: Socket {
         switch direction {
         case .none:
             return block.any
-            
-        case .some(let wrapped):
+
+        case let .some(wrapped):
             switch wrapped {
             case .previous:
                 return block.next
@@ -36,8 +36,8 @@ struct LayoutVector {
         switch direction {
         case .none:
             return block.any
-            
-        case .some(let wrapped):
+
+        case let .some(wrapped):
             switch wrapped {
             case .previous:
                 return block.previous
@@ -46,5 +46,4 @@ struct LayoutVector {
             }
         }
     }
-    
 }

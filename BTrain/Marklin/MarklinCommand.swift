@@ -15,5 +15,5 @@ import Foundation
 /// These are the commands specific to the Marklin CS2/3
 enum MarklinCommand {
     /// This command is received from the CS3 when requesting configuration data, like the list of locomotives.
-    case configDataStream(length: UInt32?, data: [UInt8], descriptor: CommandDescriptor? = nil)    
+    case configDataStream(length: UInt32?, data: [UInt8], descriptor: CommandDescriptor? = nil)
 }

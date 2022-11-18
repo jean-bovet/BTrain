@@ -10,22 +10,21 @@
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-import XCTest
 @testable import BTrain
+import XCTest
 
 class PathFinderTests: BTTestCase {
-                
     func testSimplePath() throws {
         let layout = LayoutComplexLoop().newLayout()
-        
+
         let path = try layout.bestPath(from: "s1", reservedBlockBehavior: .avoidReserved)!
         XCTAssertEqual(path.elements.toBlockSteps.toStrings(layout), ["s1:next", "b1:next", "b2:next", "b3:next", "s2:next"])
         XCTAssertEqual(path.elements.toSteps.toStrings(layout), ["s1:next", "t1:(2>0)", "t2:(1>0)", "b1:next", "t3:(0>1)", "b2:next", "t4:(1>0)", "b3:next", "t5:(0>1)", "t6:(0>1)", "s2:next"])
     }
-    
+
     func testSimplePathAvoidingFirstReservedBlock() throws {
         let layout = LayoutComplexLoop().newLayout()
-        
+
         let path = try layout.bestPath(from: "s1", reservedBlockBehavior: .avoidFirstReservedBlock)!
         XCTAssertEqual(path.elements.toBlockSteps.toStrings(layout), ["s1:next", "b1:next", "b2:next", "b3:next", "s2:next"])
         XCTAssertEqual(path.elements.toSteps.toStrings(layout), ["s1:next", "t1:(2>0)", "t2:(1>0)", "b1:next", "t3:(0>1)", "b2:next", "t4:(1>0)", "b3:next", "t5:(0>1)", "t6:(0>1)", "s2:next"])
@@ -36,21 +35,21 @@ class PathFinderTests: BTTestCase {
 
         let t6 = layout.turnout("t6")
         t6.reserved = .init(train: Identifier<Train>(uuid: "foo"), sockets: nil)
-        
+
         let path = try layout.bestPath(from: "s1", reservedBlockBehavior: .avoidReserved)!
         XCTAssertEqual(path.elements.toBlockSteps.toStrings(layout), ["s1:next", "b1:next", "b2:next", "b3:next", "b5:next", "b1:previous", "s2:previous"])
     }
-    
+
     func testPathLookAhead() throws {
         let layout = LayoutComplexLoop().newLayout()
         let b2 = layout.block("b2")
         b2.reservation = Reservation("other", .next)
-        
+
         // Ensure that by specifying a look ahead equal to the number of blocks in the layout
         // there is no valid path found because b2 is occupied.
         let path = try layout.bestPath(from: "s1", reservedBlockBehavior: .avoidReserved)
         XCTAssertNil(path)
-        
+
         // Now let's try again with a look ahead of just one block,
         // in which case the reservation of b2 will be ignored because it is
         // past the look ahead
@@ -65,10 +64,10 @@ class PathFinderTests: BTTestCase {
 
         var path = try layout.bestPath(from: "s1", reservedBlockBehavior: .avoidReserved)!
         XCTAssertEqual(path.elements.toBlockSteps.toStrings(layout), ["s1:next", "b3:next", "s2:next"])
-        
+
         let t2 = layout.turnout(named: "t2")
         t2.reserved = .init(train: Identifier<Train>(uuid: "foo"), sockets: nil)
-        
+
         path = try layout.bestPath(from: "s1", reservedBlockBehavior: .avoidReserved)!
         XCTAssertEqual(path.elements.toBlockSteps.toStrings(layout), ["s1:next", "b2:next", "b3:next", "s2:next"])
     }
@@ -78,10 +77,10 @@ class PathFinderTests: BTTestCase {
 
         var path = try layout.bestPath(from: "s1", reservedBlockBehavior: .avoidReserved)!
         XCTAssertEqual(path.elements.toBlockSteps.toStrings(layout), ["s1:next", "b1:next", "s2:next"])
-        
+
         let b1 = layout.block(named: "b1")
         b1.enabled = false
-        
+
         path = try layout.bestPath(from: "s1", reservedBlockBehavior: .avoidReserved)!
         XCTAssertEqual(path.elements.toBlockSteps.toStrings(layout), ["s1:next", "b3:next", "s2:next"])
     }
@@ -94,21 +93,21 @@ class PathFinderTests: BTTestCase {
 
         let t2 = layout.turnout(named: "t2")
         t2.enabled = false
-        
+
         path = try layout.bestPath(from: "s1", reservedBlockBehavior: .avoidReserved)!
         XCTAssertEqual(path.elements.toBlockSteps.toStrings(layout), ["s1:next", "b2:next", "b3:next", "s2:next"])
     }
 
     func testPathBetweenStations() throws {
         let layout = LayoutComplex().newLayout().removeTrains()
-        
+
         layout.reserve("NE1", with: "1", direction: .next)
-        
+
         let train = layout.trains[0]
 
         train.blocksToAvoid = []
         train.turnoutsToAvoid = []
-        
+
         guard let path = try layout.bestPath(from: "NE1", toReachBlock: "LCF1", toDirection: .next, reservedBlockBehavior: .avoidReserved, shortestPath: false) else {
             XCTFail("Unable to find path from NE1 to LCF1")
             return
@@ -121,7 +120,7 @@ class PathFinderTests: BTTestCase {
         XCTAssertTrue(shortestPath.elements.toBlockSteps.count < path.elements.toBlockSteps.count)
         XCTAssertEqual(shortestPath.elements.toBlockSteps.toStrings(layout), ["NE1:next", "IL1:next", "IL2:next", "IL3:next", "S:next", "IL1:previous", "NE4:previous", "M1:next", "M2U:next", "LCF1:next"])
 
-        self.measure {
+        measure {
             let path = try? layout.bestPath(from: "NE1", toReachBlock: "LCF1", toDirection: .next, reservedBlockBehavior: .avoidReserved, shortestPath: true)
             XCTAssertNotNil(path)
         }
@@ -129,19 +128,19 @@ class PathFinderTests: BTTestCase {
 
     func testPathBetweenStations2() throws {
         let layout = LayoutComplexLoop().newLayout()
-        
+
         layout.reserve("s1", with: "1", direction: .next)
-        
+
         let path = try layout.bestPath(from: "s1", toReachBlock: "s2", toDirection: .next, reservedBlockBehavior: .avoidReserved, shortestPath: true)!
         XCTAssertEqual(path.elements.toBlockSteps.toStrings(layout), ["s1:next", "b1:next", "b2:next", "b3:next", "s2:next"])
     }
- 
+
     func testPathBetweenTwoBlocksWithMultipleTurnouts() throws {
         let layout = LayoutComplexWithHiddenStation().newLayout()
-        
+
         let path = try layout.bestPath(from: "S3", fromDirection: .previous, toReachBlock: "IL_3", toDirection: .next, reservedBlockBehavior: .avoidReserved)!
         XCTAssertEqual(path.elements.toBlockSteps.toStrings(layout), ["S3:previous", "IL_3:next"])
-        
+
         // Note: ensure the path goes via the turnouts T15-T18-T17 and not via T15-T13-T17 which is a longer initiative.
         XCTAssertEqual(path.elements.toSteps.toStrings(layout), ["S3:previous", "T15:(3>2)", "T18:(0>1)", "T17:(2>0)", "T12:(2>0)", "IL_3:next"])
     }

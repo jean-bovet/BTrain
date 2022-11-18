@@ -16,8 +16,6 @@ import Foundation
 /// For example, each step in a script is mapped to its one or more route elements,
 /// which is used to report any error back to the corresponding script step.
 protocol SourceIdentifiable {
-        
     /// The unique identifier of the source
     var sourceIdentifier: String? { get set }
-    
 }

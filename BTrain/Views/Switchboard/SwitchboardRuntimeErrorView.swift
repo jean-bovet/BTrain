@@ -13,14 +13,13 @@
 import SwiftUI
 
 struct SwitchboardRuntimeErrorView: View {
-    
     let debugger: LayoutControllerDebugger
     let switchboard: SwitchBoard
 
     @Binding var error: String?
-    
+
     @State private var exportError: String?
-    
+
     func exportDiagnosticLogs() {
         let savePanel = NSSavePanel()
         savePanel.allowedContentTypes = [.json]
@@ -36,7 +35,7 @@ struct SwitchboardRuntimeErrorView: View {
             }
         }
     }
-    
+
     var body: some View {
         VStack {
             HStack {
@@ -44,17 +43,17 @@ struct SwitchboardRuntimeErrorView: View {
                     Text("\(error)")
                     Spacer()
                 }
-                
+
                 Button("Export Diagnostic Logs…") {
                     exportDiagnosticLogs()
                 }
-                
+
                 Button("OK") {
                     switchboard.context.unexpectedFeedbackIds = nil
                     error = nil
                 }
             }
-            
+
             if let exportError = exportError {
                 Text("\(exportError)")
                 Spacer()
@@ -64,9 +63,8 @@ struct SwitchboardRuntimeErrorView: View {
 }
 
 struct LayoutRuntimeErrorView_Previews: PreviewProvider {
-    
     static let doc = LayoutDocument(layout: LayoutLoop1().newLayout())
-    
+
     static var previews: some View {
         SwitchboardRuntimeErrorView(debugger: LayoutControllerDebugger(layout: Layout()), switchboard: doc.switchboard, error: .constant("Unexpected feedback IL2.1 detected"))
     }

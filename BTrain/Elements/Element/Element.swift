@@ -16,15 +16,14 @@ import OrderedCollections
 // Describes a unique identifier for each element of the layout
 struct Identifier<T>: Codable, Comparable, Hashable, CustomStringConvertible, ElementUUID {
     let uuid: String
-    
+
     var description: String {
         uuid
     }
-    
+
     static func < (lhs: Identifier<T>, rhs: Identifier<T>) -> Bool {
         lhs.uuid < rhs.uuid
     }
-    
 }
 
 protocol ElementUUID {
@@ -41,7 +40,7 @@ extension Element {
     static func == (lhs: Self, rhs: Self) -> Bool {
         lhs.id == rhs.id
     }
-    
+
     static func < (lhs: Self, rhs: Self) -> Bool {
         lhs.id < rhs.id
     }
@@ -53,9 +52,8 @@ extension Element {
     var uuid: String {
         id.uuid
     }
-    
+
     var description: String {
         id.description
     }
-
 }

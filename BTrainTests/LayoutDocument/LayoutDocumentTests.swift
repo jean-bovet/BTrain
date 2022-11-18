@@ -10,30 +10,29 @@
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-import XCTest
 import SwiftUI
 import UniformTypeIdentifiers
+import XCTest
 
 @testable import BTrain
 
 class LayoutDocumentTests: XCTestCase {
-    
     func testReadPackageFile() throws {
         let url = Bundle(for: LayoutDocument.self).url(forResource: "Predefined", withExtension: "btrain")!
-        
+
         let fw = try FileWrapper(url: url, options: [])
 
         let doc = try LayoutDocument(contentType: LayoutDocument.packageType, file: fw)
         let diag = LayoutDiagnostic(layout: doc.layout)
         let errors = try diag.check(.skipLengths)
         XCTAssertEqual(errors.count, 0)
-        
+
         let snapshot = try doc.snapshot(contentType: LayoutDocument.packageType)
         _ = try doc.fileWrapper(snapshot: snapshot, contentType: LayoutDocument.packageType)
     }
-    
+
     func testReadJSONFile() throws {
-        guard let url = Bundle(for: type(of: self )).url(forResource: "Layout", withExtension: "json") else {
+        guard let url = Bundle(for: type(of: self)).url(forResource: "Layout", withExtension: "json") else {
             XCTFail("Unable to find the Layout.json file")
             return
         }
@@ -44,17 +43,17 @@ class LayoutDocumentTests: XCTestCase {
         let diag = LayoutDiagnostic(layout: doc.layout)
         let errors = try diag.check(.skipLengths)
         XCTAssertEqual(errors.count, 1)
-        
+
         let snapshot = try doc.snapshot(contentType: .json)
         _ = try doc.fileWrapper(snapshot: snapshot, contentType: .json)
     }
-    
+
     func testUXCommands() throws {
         let layout = LayoutLoop1().newLayout()
         let doc = LayoutDocument(layout: layout)
 
         connectToSimulator(doc: doc)
-        
+
         defer {
             disconnectFromSimulator(doc: doc)
         }
@@ -63,13 +62,13 @@ class LayoutDocumentTests: XCTestCase {
         let route = layout.routes[0]
         train.blockId = route.partialSteps[0].stepBlockId
         layout.blocks[train.blockId!]?.trainInstance = .init(train.id, .next)
-        
+
         try doc.start(train: train.id, withRoute: route.id, destination: nil)
         doc.stop(train: train)
     }
-    
-    static weak var memoryLeakLayout: BTrain.Layout?
-    
+
+    weak static var memoryLeakLayout: BTrain.Layout?
+
     func testMemoryLeak() {
         var doc: LayoutDocument? = LayoutDocument(layout: LayoutLoop1().newLayout())
         LayoutDocumentTests.memoryLeakLayout = doc!.layout
@@ -77,23 +76,23 @@ class LayoutDocumentTests: XCTestCase {
         doc = nil
         XCTAssertNil(LayoutDocumentTests.memoryLeakLayout)
     }
-    
+
     func testOnConnectTasks() throws {
         let doc = LayoutDocument(layout: LayoutLoop1().newLayout())
         let t = LayoutOnConnectTasks(layout: doc.layout, layoutController: doc.layoutController, interface: doc.interface)
-        
+
         connectToSimulator(doc: doc)
         defer {
             disconnectFromSimulator(doc: doc)
         }
-        
+
         let expectation = expectation(description: "Completion")
         t.performOnConnectTasks(activateTurnouts: true) {
             expectation.fulfill()
         }
         wait(for: [expectation], timeout: 2)
-    }    
- 
+    }
+
     func testApplyOtherLayout() throws {
         let doc = LayoutDocument(layout: LayoutBlankCreator().newLayout())
         XCTAssertEqual(0, doc.layout.blocks.elements.count)
@@ -103,12 +102,12 @@ class LayoutDocumentTests: XCTestCase {
         XCTAssertEqual(0, doc.switchboard.provider.shapes.count)
 
         doc.apply(LayoutLoop1().newLayout())
-        
+
         XCTAssertEqual(3, doc.layout.blocks.elements.count)
         XCTAssertEqual(2, doc.layout.turnouts.elements.count)
         XCTAssertEqual(6, doc.layout.feedbacks.elements.count)
         XCTAssertEqual(6, doc.layout.transitions.elements.count)
-        
+
         XCTAssertEqual(11, doc.switchboard.provider.shapes.count)
     }
 }

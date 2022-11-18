@@ -21,7 +21,6 @@ extension Reservation {
 }
 
 class BlockTests: XCTestCase {
-    
     func testBlockDirection() {
         let b1 = Block(name: "empty")
         b1.category = .station
@@ -30,11 +29,11 @@ class BlockTests: XCTestCase {
         b1.reservation = Reservation("t1", .previous)
         b1.trainInstance = .init(b1.reservation!.trainId, .previous)
         XCTAssertEqual(b1.trainInstance?.direction, .previous)
-        
+
         b1.trainInstance = .init(b1.reservation!.trainId, .next)
         XCTAssertEqual(b1.trainInstance?.direction, .next)
     }
-    
+
     func testBlockSockets() {
         let b1 = Block(name: "empty")
         b1.category = .station
@@ -44,7 +43,7 @@ class BlockTests: XCTestCase {
         XCTAssertNil(b1.previous.turnout)
         XCTAssertEqual(b1.previous.block, b1.id)
         XCTAssertEqual(b1.previous.socketId, Block.previousSocket)
-        
+
         XCTAssertNil(b1.next.turnout)
         XCTAssertEqual(b1.next.block, b1.id)
         XCTAssertEqual(b1.next.socketId, Block.nextSocket)
@@ -53,7 +52,7 @@ class BlockTests: XCTestCase {
         XCTAssertEqual(b1.any.block, b1.id)
         XCTAssertNil(b1.any.socketId)
     }
-    
+
     func testCodable() throws {
         let b1 = Block(name: "empty")
         b1.category = .station
@@ -61,10 +60,10 @@ class BlockTests: XCTestCase {
         b1.rotationAngle = .pi
         b1.reservation = Reservation("t1", .previous)
         b1.trainInstance = .init(b1.reservation!.trainId, .previous)
-        
+
         let feedbacks = [Identifier<Feedback>(uuid: "1"), Identifier<Feedback>(uuid: "2")]
         b1.assign(feedbacks)
-        
+
         XCTAssertFalse(b1.trainInstance?.direction == .next)
 
         let encoder = JSONEncoder()
@@ -89,14 +88,14 @@ class BlockTests: XCTestCase {
 
         XCTAssertNil(block.entryFeedback(for: .next))
         XCTAssertNil(block.entryFeedback(for: .previous))
-        
+
         XCTAssertNil(block.brakeFeedback(for: .next))
         XCTAssertNil(block.brakeFeedback(for: .previous))
-        
+
         XCTAssertNil(block.stopFeedback(for: .next))
         XCTAssertNil(block.stopFeedback(for: .previous))
     }
-    
+
     let f1 = Identifier<Feedback>(uuid: "f1")
     let f2 = Identifier<Feedback>(uuid: "f2")
     let f3 = Identifier<Feedback>(uuid: "f3")
@@ -105,72 +104,72 @@ class BlockTests: XCTestCase {
     func testFeedbacksForBlockWith1Feedback() {
         let block = Block(name: "empty")
         block.assign([f1])
-        
+
         XCTAssertEqual(block.entryFeedback(for: .next), f1)
         XCTAssertEqual(block.entryFeedback(for: .previous), f1)
-        
+
         XCTAssertEqual(block.brakeFeedback(for: .next), f1)
         XCTAssertEqual(block.brakeFeedback(for: .previous), f1)
-        
+
         XCTAssertEqual(block.stopFeedback(for: .next), f1)
         XCTAssertEqual(block.stopFeedback(for: .previous), f1)
     }
-    
+
     func testFeedbacksForBlockWith2Feedbacks() {
         let block = Block(name: "empty")
         block.assign([f1, f2])
-        
+
         XCTAssertEqual(block.entryFeedback(for: .next), f1)
         XCTAssertEqual(block.entryFeedback(for: .previous), f2)
-        
+
         XCTAssertEqual(block.brakeFeedback(for: .next), f1)
         XCTAssertEqual(block.brakeFeedback(for: .previous), f2)
-        
+
         XCTAssertEqual(block.stopFeedback(for: .next), f2)
         XCTAssertEqual(block.stopFeedback(for: .previous), f1)
     }
-    
+
     func testFeedbacksForBlockWith3Feedbacks() {
         let block = Block(name: "empty")
         block.assign([f1, f2, f3])
-        
+
         XCTAssertEqual(block.entryFeedback(for: .next), f1)
         XCTAssertEqual(block.entryFeedback(for: .previous), f3)
-        
+
         XCTAssertEqual(block.brakeFeedback(for: .next), f2)
         XCTAssertEqual(block.brakeFeedback(for: .previous), f2)
-        
+
         XCTAssertEqual(block.stopFeedback(for: .next), f3)
         XCTAssertEqual(block.stopFeedback(for: .previous), f1)
     }
-    
+
     func testFeedbacksForBlockWith4Feedbacks() {
         let block = Block(name: "empty")
         block.assign([f1, f2, f3, f4])
 
         XCTAssertEqual(block.entryFeedback(for: .next), f1)
         XCTAssertEqual(block.entryFeedback(for: .previous), f4)
-        
+
         XCTAssertEqual(block.brakeFeedback(for: .next), f2)
         XCTAssertEqual(block.brakeFeedback(for: .previous), f3)
-        
+
         XCTAssertEqual(block.stopFeedback(for: .next), f4)
         XCTAssertEqual(block.stopFeedback(for: .previous), f1)
-        
+
         block.entryFeedbackNext = f2
         block.brakeFeedbackNext = f3
         block.stopFeedbackNext = f4
-        
+
         block.entryFeedbackPrevious = f3
         block.brakeFeedbackPrevious = f2
         block.stopFeedbackPrevious = f1
-        
+
         XCTAssertEqual(block.entryFeedback(for: .next), f2)
         XCTAssertEqual(block.entryFeedback(for: .previous), f3)
-        
+
         XCTAssertEqual(block.brakeFeedback(for: .next), f3)
         XCTAssertEqual(block.brakeFeedback(for: .previous), f2)
-        
+
         XCTAssertEqual(block.stopFeedback(for: .next), f4)
         XCTAssertEqual(block.stopFeedback(for: .previous), f1)
     }
@@ -182,7 +181,7 @@ class BlockTests: XCTestCase {
         block.feedbacks[0].distance = 10
         block.feedbacks[1].distance = 50
         block.feedbacks[2].distance = 90
-        
+
         let t = Train(id: .init(uuid: "t1"), name: "SBB")
         block.trainInstance = .init(t.id, .next)
 
@@ -197,7 +196,7 @@ class BlockTests: XCTestCase {
         XCTAssertEqual(block.distanceLeftInBlock(train: t), 10)
         t.position = 3
         XCTAssertEqual(block.distanceLeftInBlock(train: t), 0)
-        
+
         block.trainInstance = .init(t.id, .previous)
 
         // Block:    [ f1 f2 f3 ]

@@ -13,7 +13,6 @@
 import Foundation
 
 struct LayoutEventStateMachine {
-    
     /// Handles a layout event and returning an optional train event.
     ///
     /// The rules applied are:
@@ -27,33 +26,32 @@ struct LayoutEventStateMachine {
     /// - Returns: an optional train event
     func handle(layoutEvent: StateMachine.LayoutEvent, train: TrainControlling) throws -> StateMachine.TrainEvent? {
         switch layoutEvent {
-        case .feedback(let feedback):
+        case let .feedback(feedback):
             if train.state != .stopped {
                 if try train.updatePosition(with: feedback) {
                     return .position(train)
                 }
             }
-            
-        case .speed(let eventTrain, let speed):
+
+        case let .speed(eventTrain, speed):
             if eventTrain.id == train.id {
                 train.speed = speed
                 return .speed(train)
             }
-            
-        case .turnout(let turnout):
+
+        case let .turnout(turnout):
             if train.updateReservedBlocksSettledLength(with: turnout) {
                 return .reservedBlocksSettledLengthChanged(train)
             }
-            
-        case .direction(let eventTrain):
+
+        case let .direction(eventTrain):
             if eventTrain.id == train.id {
                 if try train.updateReservedBlocks() {
                     return .reservedBlocksChanged(train)
                 }
             }
         }
-        
+
         return nil
     }
-    
 }

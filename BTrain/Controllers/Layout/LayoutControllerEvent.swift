@@ -16,7 +16,7 @@ import Foundation
 enum LayoutControllerEvent: CustomStringConvertible {
     /// A feedback sensor has been triggered
     case feedbackTriggered(Feedback)
-    
+
     /// The scheduling state of the train has changed.
     ///
     /// This happens in the following scenarios:
@@ -24,23 +24,23 @@ enum LayoutControllerEvent: CustomStringConvertible {
     /// - When a train stops
     /// - When a train finishes a route
     case schedulingChanged(Train)
-        
+
     /// A train restart timer has expired, meaning that the train associated with this timer
     /// should restart again.
     case restartTimerExpired(Train)
-    
+
     /// A turnout state changed
     case turnoutChanged(Turnout)
-    
+
     /// A train direction has changed
     case directionChanged(Train)
-    
+
     /// A train speed has changed
     case speedChanged(Train, SpeedKph)
 
     /// The position of a train changed because the user either removed or added manually a train to the layout
     case trainPositionChanged(Train)
-    
+
     /// A layout script has been scheduled for execution
     case scriptScheduled
 
@@ -50,7 +50,7 @@ enum LayoutControllerEvent: CustomStringConvertible {
             return "Feedback Triggered"
         case .schedulingChanged:
             return "Scheduling Changed"
-        case .restartTimerExpired(let train):
+        case let .restartTimerExpired(train):
             return "Restart Timer Expired for \(train)"
         case .turnoutChanged:
             return "Turnout Changed"
@@ -58,7 +58,7 @@ enum LayoutControllerEvent: CustomStringConvertible {
             return "Direction Changed"
         case .speedChanged:
             return "Speed Changed"
-        case .trainPositionChanged(let train):
+        case let .trainPositionChanged(train):
             return "Train removed: \(train)"
         case .scriptScheduled:
             return "Script scheduled"

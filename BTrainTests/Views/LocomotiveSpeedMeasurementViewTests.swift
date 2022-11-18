@@ -15,12 +15,11 @@ import XCTest
 @testable import BTrain
 import ViewInspector
 
-extension LocomotiveSpeedMeasurementsView: Inspectable { }
-extension LocomotiveSpeedMeasureControlsView: Inspectable { }
-extension LocPicker: Inspectable { }
+extension LocomotiveSpeedMeasurementsView: Inspectable {}
+extension LocomotiveSpeedMeasureControlsView: Inspectable {}
+extension LocPicker: Inspectable {}
 
 class LocomotiveSpeedMeasurementViewTests: RootViewTests {
-
     func testMeasurementsView() throws {
         let doc = newDocument()
         let sut = LocomotiveSpeedMeasurementsView(document: doc, layout: doc.layout, loc: doc.layout.locomotives[0])
@@ -32,5 +31,4 @@ class LocomotiveSpeedMeasurementViewTests: RootViewTests {
         let sut = LocomotiveSpeedMeasureControlsView(document: doc, loc: doc.layout.locomotives[0], speedEntries: .constant([]), feedbackA: "a", feedbackB: "b", feedbackC: "c", distanceAB: .constant(10), distanceBC: .constant(20), running: .constant(false), currentSpeedEntry: .constant(nil))
         _ = try sut.inspect().find(text: "Measure")
     }
-
 }

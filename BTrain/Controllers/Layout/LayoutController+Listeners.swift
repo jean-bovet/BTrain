@@ -13,7 +13,6 @@
 import Foundation
 
 extension LayoutController {
-    
     func registerForFeedbackChange() {
         interface.callbacks.register(forFeedbackChange: { [weak self] deviceID, contactID, value in
             guard let sSelf = self else {
@@ -21,25 +20,25 @@ extension LayoutController {
             }
             if let feedback = sSelf.layout.feedbacks.elements.find(deviceID: deviceID, contactID: contactID) {
                 feedback.detected = value == 1
-                BTLogger.debug("Feedback \(feedback) changed to \(feedback.detected)")                
+                BTLogger.debug("Feedback \(feedback) changed to \(feedback.detected)")
                 sSelf.runControllers(.feedbackTriggered(feedback))
             }
             sSelf.lastDetectedFeedback = FeedbackAttributes(deviceID: deviceID, contactID: contactID)
         })
     }
-                
+
     func registerForDirectionChange() {
         interface.callbacks.register(forDirectionChange: { [weak self] address, decoder, direction in
             self?.directionDidChange(address: address, decoder: decoder, direction: direction)
         })
     }
-    
+
     func directionDidChange(address: UInt32, decoder: DecoderType?, direction: Command.Direction) {
         do {
             if let loc = layout.locomotives.elements.find(address: address, decoder: decoder) {
                 BTLogger.debug("Direction changed to \(direction) for \(loc.name)")
                 var directionChanged = false
-                switch(direction) {
+                switch direction {
                 case .unchanged:
                     BTLogger.debug("Direction \(direction) for \(address.toHex())")
 
@@ -56,7 +55,7 @@ extension LayoutController {
                 case .unknown:
                     BTLogger.error("Unknown direction \(direction) for \(address.toHex())")
                 }
-                
+
                 if directionChanged {
                     if let train = layout.trains[loc.id] {
                         try toggleTrainDirectionInBlock(train)
@@ -70,7 +69,7 @@ extension LayoutController {
             BTLogger.error("Error handling a direction change: \(error.localizedDescription)")
         }
     }
-    
+
     func registerForTurnoutChange() {
         interface.callbacks.register(forTurnoutChange: { [weak self] address, state, power, acknowledgement in
             guard let layout = self?.layout else {
@@ -84,13 +83,13 @@ extension LayoutController {
             guard power == 1 else {
                 return
             }
-            
+
             // We are only interested in acknowledgment messages which confirm
             // the actual state of a turnout.
             guard acknowledgement == true else {
                 return
             }
-            
+
             if let turnout = layout.turnouts.elements.find(address: address) {
                 turnout.setActualState(value: state, for: address.actualAddress)
                 BTLogger.debug("Turnout \(turnout.name) state changed to \(state) (ack=\(acknowledgement)), power \(power), for address \(address.actualAddress.toHex()). Actual state \"\(turnout.actualState)\" (value=\(turnout.actualStateValue)). Requested state \"\(turnout.requestedState)\" (value=\(turnout.requestedStateValue))")
@@ -100,5 +99,4 @@ extension LayoutController {
             }
         })
     }
-    
 }

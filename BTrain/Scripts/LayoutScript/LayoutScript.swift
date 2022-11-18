@@ -13,12 +13,11 @@
 import Foundation
 
 final class LayoutScript: Element, ObservableObject {
-        
     let id: Identifier<LayoutScript>
-    
+
     @Published var name: String
     @Published var commands: [LayoutScriptCommand] = []
-    
+
     internal convenience init(uuid: String = UUID().uuidString, name: String = "") {
         self.init(id: Identifier<LayoutScript>(uuid: uuid), name: name)
     }
@@ -27,25 +26,23 @@ final class LayoutScript: Element, ObservableObject {
         self.id = id
         self.name = name
     }
-
 }
 
 extension LayoutScript: Codable {
-    
     enum CodingKeys: CodingKey {
         case id, name, commands
     }
-    
+
     convenience init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         let id = try container.decode(Identifier<LayoutScript>.self, forKey: CodingKeys.id)
         let name = try container.decode(String.self, forKey: CodingKeys.name)
-        
+
         self.init(id: id, name: name)
-        
-        self.commands = try container.decode([LayoutScriptCommand].self, forKey: CodingKeys.commands)
+
+        commands = try container.decode([LayoutScriptCommand].self, forKey: CodingKeys.commands)
     }
-    
+
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(id, forKey: CodingKeys.id)

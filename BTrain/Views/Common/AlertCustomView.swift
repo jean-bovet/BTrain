@@ -13,22 +13,21 @@
 import SwiftUI
 
 struct AlertCustomView<Content: View>: View {
-    
     let content: Content
-    
+
     @Environment(\.presentationMode) var presentationMode
 
     init(@ViewBuilder content: () -> Content) {
         self.content = content()
     }
-        
+
     var footer: some View {
         VStack(spacing: 0) {
             Divider()
-            
+
             HStack {
                 Spacer()
-                
+
                 Button("OK") {
                     presentationMode.wrappedValue.dismiss()
                 }
@@ -36,21 +35,20 @@ struct AlertCustomView<Content: View>: View {
             }.padding()
         }
     }
-    
+
     var body: some View {
         VStack(spacing: 0) {
             content
-            
+
             footer
                 .padding([.top])
         }
     }
 }
 
-
 struct AlertCustomView_Previews: PreviewProvider {
     static var previews: some View {
-        AlertCustomView() {
+        AlertCustomView {
             Text("This is the content of the alert")
         }
     }

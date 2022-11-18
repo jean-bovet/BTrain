@@ -15,18 +15,15 @@ import XCTest
 @testable import BTrain
 
 class FeedbackViewTests: RootViewTests {
-
     func testFeedbackView() throws {
         let sut = FeedbackView(label: "1:2015", state: .constant(true))
         let value = try sut.inspect().text().string()
         XCTAssertEqual(value, "1:2015")
     }
 
-    
     func testEditList() throws {
         let doc = LayoutDocument(layout: LayoutLoop2().newLayout())
         let sut = FeedbackEditingView(doc: doc, layout: doc.layout, layoutController: doc.layoutController)
         _ = try sut.inspect().find(text: "10 Elements")
     }
-
 }

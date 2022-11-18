@@ -13,7 +13,6 @@
 import SwiftUI
 
 struct WizardSelectLayout: View {
-
     @Binding var selectedLayout: Identifier<Layout>
 
     @Environment(\.colorScheme) var colorScheme
@@ -27,7 +26,7 @@ struct WizardSelectLayout: View {
             return .white
         }
     }
-    
+
     var body: some View {
         VStack(alignment: .leading) {
             Text("Select a Layout:")
@@ -35,7 +34,7 @@ struct WizardSelectLayout: View {
                 .padding()
             ScrollView(.horizontal) {
                 LazyHStack {
-                    ForEach(LayoutFactory.GlobalLayoutIDs, id:\.self) { layout in
+                    ForEach(LayoutFactory.GlobalLayoutIDs, id: \.self) { layout in
                         VStack {
                             ZStack {
                                 Rectangle()
@@ -63,18 +62,16 @@ struct WizardSelectLayout: View {
             }
         }
     }
-
 }
 
 struct SwitchboardPreview: View {
-    
     let previewSize: CGSize
     let layoutId: Identifier<Layout>
 
     var layout: Layout {
         LayoutFactory.createLayout(layoutId)
     }
-    
+
     var switchboard: SwitchBoard {
         let context = ShapeContext(simulator: nil, locomotiveIconManager: nil)
         let shapeProvider = ShapeProvider(layout: layout, context: context)
@@ -82,17 +79,17 @@ struct SwitchboardPreview: View {
         switchBoard.update()
         return switchBoard
     }
-    
+
     var coordinator: LayoutController {
         LayoutController(layout: layout, switchboard: switchboard, interface: MarklinInterface())
     }
-    
+
     var scale: Double {
-        let r1 = previewSize.width/switchboard.idealSize.width
-        let r2 = previewSize.height/switchboard.idealSize.height
+        let r1 = previewSize.width / switchboard.idealSize.width
+        let r2 = previewSize.height / switchboard.idealSize.height
         return min(r1, r2)
     }
-    
+
     var body: some View {
         SwitchBoardView(switchboard: switchboard,
                         containerSize: switchboard.idealSize,

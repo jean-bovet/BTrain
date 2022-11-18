@@ -14,13 +14,12 @@ import Foundation
 
 /// Holds the user interface settings that are serialized along with the layout information.
 struct UserInterfaceSettings: Codable {
-    
     let pinnedTrainIds: Set<Identifier<Train>>?
-    
+
     init(layoutDocument: LayoutDocument) {
-        self.pinnedTrainIds = layoutDocument.pinnedTrainIds
+        pinnedTrainIds = layoutDocument.pinnedTrainIds
     }
-    
+
     func encode() throws -> Data {
         let encoder = JSONEncoder()
         let data = try encoder.encode(self)
@@ -30,5 +29,4 @@ struct UserInterfaceSettings: Codable {
     func apply(layoutDocument: LayoutDocument) {
         layoutDocument.pinnedTrainIds = pinnedTrainIds ?? []
     }
-
 }

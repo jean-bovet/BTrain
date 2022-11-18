@@ -14,40 +14,37 @@ import Foundation
 
 struct RouteStep_v1: Codable {
     let id: String
-    
+
     var blockId: Identifier<Block>?
-    
+
     var direction: Direction?
-    
+
     var turnoutId: Identifier<Turnout>?
-    
+
     // The number of seconds a train will wait in that block
     // If nil, the block waitingTime is used instead.
     var waitingTime: TimeInterval?
-    
+
     // Returns the socket where the train will exit
     // the block represented by this step, taking
     // into account the direction of travel of the train.
     var exitSocket: Socket?
-    
+
     // Returns the socket where the train will enter
     // the block represented by this step, taking
     // into account the direction of travel of the train.
     var entrySocket: Socket?
-
 }
 
 extension Array where Element == RouteStep_v1 {
-    
     var toRouteSteps: [RouteItem] {
-        self.map { routeStepv1 in
+        map { routeStepv1 in
             routeStepv1.toRouteStep
         }
     }
 }
 
 extension RouteStep_v1 {
-    
     var toRouteStep: RouteItem {
         if let blockId = blockId {
             if let direction = direction {

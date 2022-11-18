@@ -13,7 +13,6 @@
 import SwiftUI
 
 struct BlockPicker: View {
-    
     let layout: Layout
     @Binding var blockId: Identifier<Block>?
 
@@ -24,11 +23,11 @@ struct BlockPicker: View {
             $0.id
         }
     }
-    
+
     var body: some View {
         Picker("Block", selection: $blockId) {
             Text("").tag(nil as Identifier<Block>?)
-            ForEach(sortedBlockIds, id:\.self) { blockId in
+            ForEach(sortedBlockIds, id: \.self) { blockId in
                 if let block = layout.blocks[blockId] {
                     Text(block.name).tag(blockId as Identifier<Block>?)
                 } else {
@@ -40,7 +39,6 @@ struct BlockPicker: View {
 }
 
 struct BlockPicker_Previews: PreviewProvider {
-    
     static let doc = LayoutDocument(layout: LayoutComplex().newLayout())
 
     static var previews: some View {

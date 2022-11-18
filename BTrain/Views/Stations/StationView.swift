@@ -13,11 +13,10 @@
 import SwiftUI
 
 struct StationView: View {
-    
     @Environment(\.undoManager) var undoManager
 
     @ObservedObject var layout: Layout
-        
+
     @ObservedObject var station: Station
 
     @State private var selection: String? = nil
@@ -25,7 +24,7 @@ struct StationView: View {
     func stepBlockBinding(_ routeItem: Binding<RouteItem>) -> Binding<RouteItemBlock> {
         Binding<RouteItemBlock>(
             get: {
-                if case .block(let stepBlock) = routeItem.wrappedValue {
+                if case let .block(stepBlock) = routeItem.wrappedValue {
                     return stepBlock
                 } else {
                     fatalError()
@@ -42,12 +41,12 @@ struct StationView: View {
             List($station.elements, selection: $selection) { element in
                 StationElementView(layout: layout, element: element)
             }.listStyle(.inset(alternatesRowBackgrounds: true))
-            
+
             HStack {
                 Text("\(station.elements.count) elements")
-                
+
                 Spacer()
-                
+
                 Button("+") {
                     let element = Station.StationElement()
                     station.elements.append(element)
@@ -68,9 +67,9 @@ struct StationView: View {
                         })
                     }
                 }.disabled(selection == nil)
-                
+
                 Spacer().fixedSpace()
-                                
+
                 MoveUpButtonView(selection: $selection, elements: $station.elements)
                 MoveDownButtonView(selection: $selection, elements: $station.elements)
 

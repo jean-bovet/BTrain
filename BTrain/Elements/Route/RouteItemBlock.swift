@@ -13,24 +13,23 @@
 import Foundation
 
 struct RouteItemBlock: Equatable, Codable, CustomStringConvertible, SourceIdentifiable {
-
-    static func ==(lhs: RouteItemBlock, rhs: RouteItemBlock) -> Bool {
+    static func == (lhs: RouteItemBlock, rhs: RouteItemBlock) -> Bool {
         lhs.id == rhs.id
     }
 
     var id = UUID().uuidString
-    
+
     var sourceIdentifier: String?
-    
+
     // The block identifier
     var blockId: Identifier<Block>
 
     // The number of seconds a train will wait in that block
     // If nil, the block waitingTime is used instead.
     var waitingTime: TimeInterval?
-    
+
     var description: String {
-        return "\(blockId):\(direction)"
+        "\(blockId):\(direction)"
     }
 
     // The direction of travel of the train within that block
@@ -45,5 +44,4 @@ struct RouteItemBlock: Equatable, Codable, CustomStringConvertible, SourceIdenti
         self.direction = direction
         self.waitingTime = waitingTime
     }
-    
 }

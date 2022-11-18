@@ -13,8 +13,7 @@
 import Foundation
 
 final class MainThreadQueue {
-
-    static func sync(_ callback: ()->Void) {
+    static func sync(_ callback: () -> Void) {
         if Thread.isMainThread {
             callback()
         } else {

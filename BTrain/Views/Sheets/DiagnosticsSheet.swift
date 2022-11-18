@@ -14,17 +14,16 @@ import SwiftUI
 
 // This view displays to the user the list of errors, if any, for the current layout
 struct DiagnosticsSheet: View {
-    
     let layout: Layout
     let options: LayoutDiagnostic.Options
-    
+
     @Environment(\.presentationMode) var presentationMode
 
     struct DisplayError: Identifiable, Hashable {
         let id = UUID().uuidString
         let error: String
     }
-    
+
     var errors: [DisplayError] {
         do {
             let diag = LayoutDiagnostic(layout: layout)
@@ -34,7 +33,7 @@ struct DiagnosticsSheet: View {
             return [DisplayError(error: error.localizedDescription)]
         }
     }
-    
+
     var body: some View {
         VStack {
             if errors.isEmpty {
@@ -50,10 +49,10 @@ struct DiagnosticsSheet: View {
                         TableRow(error)
                     }
                 }.frame(width: 800, height: 600)
-                
+
                 Divider()
             }
-            
+
             Button("OK") {
                 self.presentationMode.wrappedValue.dismiss()
             }.keyboardShortcut(.defaultAction)
@@ -62,7 +61,6 @@ struct DiagnosticsSheet: View {
 }
 
 struct DiagnosticsSheet_Previews: PreviewProvider {
-
     static let doc = LayoutDocument(layout: LayoutLoop2().newLayout())
 
     static var previews: some View {

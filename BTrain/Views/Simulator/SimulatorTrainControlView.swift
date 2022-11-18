@@ -13,7 +13,6 @@
 import SwiftUI
 
 struct SimulatorTrainControlView: View {
-    
     let simulator: MarklinCommandSimulator
     @ObservedObject var simLoc: SimulatorLocomotive
 
@@ -31,16 +30,15 @@ struct SimulatorTrainControlView: View {
                         Image(systemName: "arrowtriangle.left.fill")
                     }
                 }.buttonStyle(.borderless)
-                
+
                 HStack {
                     Slider(
                         value: $simLoc.speedAsDouble,
-                        in: 0...Double(simLoc.loc.decoder.steps)
-                    ) {
-                    } onEditingChanged: { editing in
+                        in: 0 ... Double(simLoc.loc.decoder.steps)
+                    ) {} onEditingChanged: { _ in
                         simulator.setTrainSpeed(train: simLoc)
                     }
-                    
+
                     Text("\(Int(simLoc.speed.value)) steps")
                 }
             }.disabled(simLoc.simulate == false)
@@ -49,26 +47,23 @@ struct SimulatorTrainControlView: View {
 }
 
 private extension SimulatorLocomotive {
-    
     // Necessary because SwiftUI Slider requires a Double
     // while speed is UInt16.
     var speedAsDouble: Double {
         get {
-            Double(self.speed.value)
+            Double(speed.value)
         }
         set {
-            self.speed.value = UInt16(newValue)
+            speed.value = UInt16(newValue)
         }
     }
-    
 }
 
 struct SimulatorTrainControlView_Previews: PreviewProvider {
-
     static let layout = LayoutLoop1().newLayout()
-    
+
     static let simulatorTrain = SimulatorLocomotive(loc: layout.locomotives[0])
-    
+
     static var previews: some View {
         SimulatorTrainControlView(simulator: MarklinCommandSimulator(layout: layout, interface: MarklinInterface()),
                                   simLoc: simulatorTrain)

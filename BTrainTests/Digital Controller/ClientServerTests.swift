@@ -10,12 +10,12 @@
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-import XCTest
 @testable import BTrain
+import XCTest
 
 extension Command: Equatable {
     public static func == (lhs: Command, rhs: Command) -> Bool {
-        switch(lhs, rhs) {
+        switch (lhs, rhs) {
         case (.go, .go): return true
         case (.stop, .stop): return true
         case (.speed, .speed): return true
@@ -32,47 +32,43 @@ extension Command: Equatable {
 }
 
 class ClientServerTests: XCTestCase {
-
     func testClientWithSimulator() throws {
         let cmd = Command.go()
 
         let server = Server(port: 15731)
         try server.start()
-        
+
         let serverReceivedMessageExpectation = XCTestExpectation(description: "Received")
         server.didAcceptConnection = { connection in
-            connection.receiveMessageCallback = { command in                
+            connection.receiveMessageCallback = { command in
                 XCTAssertEqual(command, cmd)
                 serverReceivedMessageExpectation.fulfill()
             }
         }
-        
+
         let client = Client(address: "localhost", port: 15731)
         let startExpectation = XCTestExpectation(description: "Start")
         client.start {
             startExpectation.fulfill()
-        } onData: { data in
-            
+        } onData: { _ in
+
         } onError: { error in
             XCTAssertNil(error)
-        } onStop: {
-            
-        }
+        } onStop: {}
         wait(for: [startExpectation], timeout: 0.250)
-        
+
         let (msg, priority) = MarklinCANMessage.from(command: cmd)!
 
         client.send(data: msg.data, priority: priority == .high) {}
         wait(for: [serverReceivedMessageExpectation], timeout: 1.0)
-        
+
         let stopExpectation = XCTestExpectation(description: "Stop")
 
         server.stop {
             stopExpectation.fulfill()
         }
         client.stop()
-        
+
         wait(for: [stopExpectation], timeout: 0.5)
     }
-
 }

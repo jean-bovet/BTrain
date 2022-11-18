@@ -13,7 +13,6 @@
 import Foundation
 
 final class LocomotivesDocumentParser: CS2DocumentParser {
-
     struct LocomotiveInfo {
         var uid: UInt32?
         var name: String?
@@ -55,15 +54,15 @@ final class LocomotivesDocumentParser: CS2DocumentParser {
         // Parse each section
         var locs = [LocomotiveInfo]()
         while let section = matchesSectionName() {
-            switch(section) {
+            switch section {
             case "lokomotive":
                 locs.append(parseLokomotive())
-                
+
             default:
                 parseSectionAndIgnore()
             }
         }
-        
+
         return locs
     }
 
@@ -107,5 +106,4 @@ final class LocomotivesDocumentParser: CS2DocumentParser {
         }
         return loc
     }
-    
 }

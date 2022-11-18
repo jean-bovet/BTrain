@@ -15,7 +15,7 @@ import Foundation
 @testable import BTrain
 
 extension GraphPathElement: Resolvable {
-    public func resolve(_ constraints: PathFinder.Constraints) -> [GraphPathElement]? {
+    public func resolve(_: PathFinder.Constraints) -> [GraphPathElement]? {
         [self]
     }
 }

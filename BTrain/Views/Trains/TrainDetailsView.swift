@@ -13,7 +13,6 @@
 import SwiftUI
 
 struct TrainDetailsLocomotiveSectionView: View {
-    
     let document: LayoutDocument
     @ObservedObject var train: Train
 
@@ -33,7 +32,6 @@ struct TrainDetailsLocomotiveSectionView: View {
 }
 
 struct TrainDetailsGeometrySectionView: View {
-    
     @ObservedObject var train: Train
 
     var body: some View {
@@ -51,7 +49,6 @@ struct TrainDetailsGeometrySectionView: View {
 }
 
 struct TrainDetailsReservationSectionView: View {
-    
     @ObservedObject var train: Train
 
     var body: some View {
@@ -60,7 +57,7 @@ struct TrainDetailsReservationSectionView: View {
 
             Form {
                 UndoProvider($train.maxNumberOfLeadingReservedBlocks) { value in
-                    Stepper("Leading: \(train.maxNumberOfLeadingReservedBlocks)", value: value, in: 1...10)
+                    Stepper("Leading: \(train.maxNumberOfLeadingReservedBlocks)", value: value, in: 1 ... 10)
                 }
             }.padding([.leading])
         }
@@ -68,7 +65,6 @@ struct TrainDetailsReservationSectionView: View {
 }
 
 struct TrainDetailsBlocksToAvoidSectionView: View {
-    
     let layout: Layout
     @ObservedObject var train: Train
 
@@ -89,7 +85,7 @@ struct TrainDetailsBlocksToAvoidSectionView: View {
                     }
                 }
             }.frame(minHeight: 100)
-            
+
             Button("+") {
                 train.blocksToAvoid.append(.init(layout.blocks.elements.first?.id))
             }.disabled(layout.blocks.elements.isEmpty)
@@ -98,7 +94,6 @@ struct TrainDetailsBlocksToAvoidSectionView: View {
 }
 
 struct TrainDetailsTurnoutsToAvoidSectionView: View {
-    
     let layout: Layout
     @ObservedObject var train: Train
 
@@ -111,7 +106,7 @@ struct TrainDetailsTurnoutsToAvoidSectionView: View {
                     HStack {
                         UndoProvider(turnoutItem.turnoutId) { value in
                             Picker("Turnout:", selection: value) {
-                                ForEach(layout.turnouts.elements, id:\.self) { turnout in
+                                ForEach(layout.turnouts.elements, id: \.self) { turnout in
                                     Text("\(turnout.name)").tag(turnout.id as Identifier<Turnout>)
                                 }
                             }.labelsHidden()
@@ -123,7 +118,7 @@ struct TrainDetailsTurnoutsToAvoidSectionView: View {
                     }
                 }
             }.frame(minHeight: 100)
-            
+
             Button("+") {
                 train.turnoutsToAvoid.append(.init(layout.turnouts.elements.first!.id))
             }.disabled(layout.turnouts.elements.isEmpty)
@@ -132,7 +127,6 @@ struct TrainDetailsTurnoutsToAvoidSectionView: View {
 }
 
 struct TrainDetailsView: View {
-    
     let document: LayoutDocument
     @ObservedObject var train: Train
 
@@ -148,9 +142,8 @@ struct TrainDetailsView: View {
 }
 
 struct TrainEditView_Previews: PreviewProvider {
-    
     static let doc = LayoutDocument(layout: LayoutLoop1().newLayout())
-    
+
     static var previews: some View {
         TrainDetailsView(document: doc, train: doc.layout.trains[0])
     }

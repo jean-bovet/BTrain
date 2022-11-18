@@ -8,11 +8,10 @@
 import SwiftUI
 
 struct TrainEditListView: View {
-    
     @EnvironmentObject var app: AppModel
 
     @Binding var trains: [BTTrain]
-    
+
     var body: some View {
         List {
             ForEach($trains) { train in
@@ -25,7 +24,6 @@ struct TrainEditListView: View {
 }
 
 struct LocoListView_Previews: PreviewProvider {
-    
     static let model = AppModel()
         .setLayout(BTLayoutV8Creator().newLayout())
 

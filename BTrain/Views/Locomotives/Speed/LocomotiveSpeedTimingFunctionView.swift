@@ -13,9 +13,8 @@
 import SwiftUI
 
 struct LocomotiveSpeedTimingFunctionView: View {
-    
     let tf: LocomotiveSpeedAcceleration
-    
+
     @Environment(\.colorScheme) var colorScheme
 
     var body: some View {
@@ -25,7 +24,7 @@ struct LocomotiveSpeedTimingFunctionView: View {
                 .scaledBy(x: 1.0, y: -1.0)
 
             context.transform = transform
-            
+
             context.withCGContext { cg in
                 cg.move(to: .zero)
                 let deltaX = size.width / tf.totalDuration

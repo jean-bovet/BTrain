@@ -15,22 +15,22 @@ import SwiftUI
 struct TrainControlMoveSheet: View {
     let layout: Layout
     let doc: LayoutDocument
-    
+
     // Optional information resulting from dragging the train on the switchboard
     var trainDragInfo: SwitchBoard.State.TrainDragInfo?
-            
+
     @ObservedObject var train: Train
-    
+
     @State private var blockId: Identifier<Block>? = nil
-    
+
     @State private var direction: Direction = .next
-        
+
     @State private var routeDescription: String?
-    
+
     @State private var errorStatus: String?
 
     @Environment(\.presentationMode) var presentationMode
-    
+
     var selectedBlockName: String {
         if let block = layout.blocks[blockId] {
             return block.name
@@ -38,24 +38,24 @@ struct TrainControlMoveSheet: View {
             return "?"
         }
     }
-        
+
     var body: some View {
         VStack {
             HStack {
                 Text("Move \"\(train.name)\" to")
                     .fixedSize()
-                
+
                 BlockPicker(layout: layout, blockId: $blockId)
-                .onAppear {
-                    if let trainDragInfo = trainDragInfo {
-                        blockId = trainDragInfo.blockId
-                    } else {
-                        blockId = train.blockId
+                    .onAppear {
+                        if let trainDragInfo = trainDragInfo {
+                            blockId = trainDragInfo.blockId
+                        } else {
+                            blockId = train.blockId
+                        }
                     }
-                }
 
                 Picker("with direction", selection: $direction) {
-                    ForEach(Direction.allCases, id:\.self) { direction in
+                    ForEach(Direction.allCases, id: \.self) { direction in
                         Text(direction.description).tag(direction)
                     }
                 }
@@ -67,7 +67,7 @@ struct TrainControlMoveSheet: View {
 
                 Spacer()
             }
-                        
+
             HStack {
                 if let routeDescription = routeDescription {
                     Text("Route: \(routeDescription)")
@@ -83,14 +83,14 @@ struct TrainControlMoveSheet: View {
                     .foregroundColor(.red)
                     .fixedSize()
             }
-            
+
             HStack {
                 Spacer()
-                
+
                 Button("Cancel") {
                     self.presentationMode.wrappedValue.dismiss()
                 }.keyboardShortcut(.cancelAction)
-                
+
                 Button("Move") {
                     do {
                         if let selectedBlock = blockId {
@@ -108,14 +108,14 @@ struct TrainControlMoveSheet: View {
                 .keyboardShortcut(.defaultAction)
             }.padding([.top])
         }
-        .onChange(of: blockId) { newValue in
+        .onChange(of: blockId) { _ in
             evaluateBestRoute(fromBlockId: blockId, forDirection: direction)
         }
-        .onChange(of: direction) { newValue in
+        .onChange(of: direction) { _ in
             evaluateBestRoute(fromBlockId: blockId, forDirection: direction)
         }
     }
-    
+
     func evaluateBestRoute(fromBlockId: Identifier<Block>?, forDirection: Direction?) {
         if let block = layout.blocks[fromBlockId] {
             do {
@@ -129,7 +129,7 @@ struct TrainControlMoveSheet: View {
             }
         }
     }
-    
+
     func applySuggestedRoute(_ gp: GraphPath?) {
         if let gp = gp {
             let description = layout.routeDescription(for: train, steps: gp.elements.toBlockSteps)
@@ -138,32 +138,29 @@ struct TrainControlMoveSheet: View {
             routeDescription = nil
         }
     }
-    
+
     func applySuggestedDirection(_ gp: GraphPath?) {
         guard let gp = gp else {
             return
         }
-        
+
         guard let lastElement = gp.elements.last else {
             return
         }
-        
+
         if lastElement.entrySocket == Block.previousSocket {
             direction = .next
         } else {
             direction = .previous
         }
     }
-
 }
 
 struct TrainControlMoveSheet_Previews: PreviewProvider {
-    
     static let doc = LayoutDocument(layout: LayoutLoop2().newLayout())
     static let trains = doc.layout.trains
-    
+
     static var previews: some View {
         TrainControlMoveSheet(layout: doc.layout, doc: doc, train: trains[0])
     }
-    
 }

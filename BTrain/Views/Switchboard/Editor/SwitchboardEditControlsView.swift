@@ -13,7 +13,6 @@
 import SwiftUI
 
 struct SwitchboardEditControlsView: View {
-    
     let layout: Layout
 
     @ObservedObject var state: SwitchBoard.State
@@ -29,33 +28,33 @@ struct SwitchboardEditControlsView: View {
                 Button("􀅼 Block") {
                     newBlockSheet.toggle()
                 }
-                
+
                 Button("􀅼 Turnout") {
                     newTurnoutSheet.toggle()
                 }
-                
+
                 if let linkShape = state.selectedShape as? LinkShape {
                     Button("􁀘") {
                         switchboard.toggleControlPoints(linkShape)
                     }
                 }
             }
-            
+
             Spacer().fixedSpace()
-            
+
             Button("􀈑") {
                 switchboard.remove(state.selectedShape!)
             }.disabled(state.selectedShape == nil)
-            
+
             Spacer()
-            
+
             Toggle("Snap to Grid", isOn: $state.snapToGrid)
             Button("Fit Size") {
                 switchboard.fitSize()
             }
-            
+
             Spacer()
-            
+
             Button("Done") {
                 switchboard.doneEditing()
             }
@@ -69,11 +68,9 @@ struct SwitchboardEditControlsView: View {
                 .padding()
         }
     }
-    
 }
 
 struct SwitchboardEditControlsView_Previews: PreviewProvider {
-    
     static let doc: LayoutDocument = {
         let doc = LayoutDocument(layout: LayoutLoop2().newLayout())
         doc.switchboard.state.editing = true

@@ -13,33 +13,32 @@
 import Foundation
 
 extension Block {
-    
     // Returns true if the block is reserved and occupied by the train or a portion of the train.
     func isOccupied(by trainId: Identifier<Train>) -> Bool {
         reservation?.trainId == trainId && trainInstance?.trainId == trainId
     }
-    
+
     func canBeReserved(withTrain: Train, direction: Direction) -> Bool {
         guard enabled else {
             return false
         }
-        
+
         guard trainInstance == nil else {
             return false
         }
-        
+
         let reservation = Reservation(trainId: withTrain.id, direction: direction)
         guard self.reservation == nil || self.reservation == reservation else {
             return false
         }
-        
+
         return true
     }
-    
+
     // Returns the length (in cm) of the part at the specified index,
     // starting from the beginning of the block.
     func partLength(at index: Int) throws -> DistanceCm? {
-        if index == feedbacks.count && index > 0 {
+        if index == feedbacks.count, index > 0 {
             // Last part:
             // [ p0  |   p1 |   p2 ]
             // [ <0> f1 <1> f2 <2> ]
@@ -64,7 +63,7 @@ extension Block {
                 return nil
             }
             return feedback1Distance - feedback2Distance
-        } else if index == 0 && feedbacks.count > 0 {
+        } else if index == 0, feedbacks.count > 0 {
             // First part:
             // [ p0  |   p1 |   p2 ]
             // [ <0> f1 <1> f2 <2> ]
@@ -73,14 +72,13 @@ extension Block {
         } else {
             throw LayoutError.invalidPartIndex(index: index, block: self)
         }
-
     }
-    
+
     // Returns all the part length (in cm) for the entire block or nil
     // if one (or more) feedback distance is not defined.
-    func allPartsLength() throws -> [Int:DistanceCm]? {
-        var results = [Int:Double]()
-        for index in 0...feedbacks.count {
+    func allPartsLength() throws -> [Int: DistanceCm]? {
+        var results = [Int: Double]()
+        for index in 0 ... feedbacks.count {
             if let length = try partLength(at: index) {
                 results[index] = length
             } else {
@@ -89,7 +87,7 @@ extension Block {
         }
         return results
     }
-    
+
     /// Returns the distance left in the block given the train current position
     /// - Parameter train: The train
     /// - Returns: the distance, if available, that remains in the block
@@ -97,7 +95,7 @@ extension Block {
         guard let ti = trainInstance else {
             return nil
         }
-        
+
         guard let length = length else {
             return nil
         }
@@ -114,10 +112,10 @@ extension Block {
             } else {
                 return 0
             }
-            
+
         case .previous:
             let p = train.position - 1
-            if p >= 0 && p < feedbacks.count {
+            if p >= 0, p < feedbacks.count {
                 return feedbacks[p].distance
             } else {
                 return 0

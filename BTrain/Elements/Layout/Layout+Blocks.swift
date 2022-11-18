@@ -14,7 +14,6 @@ import Foundation
 import OrderedCollections
 
 extension Layout {
-        
     @discardableResult
     func newBlock(name: String, category: Block.Category) -> Block {
         let block = Block(id: LayoutIdentity.newIdentity(blocks.elements, prefix: .block), name: name)
@@ -23,21 +22,21 @@ extension Layout {
         blocks.add(block)
         return block
     }
-    
+
     @discardableResult
     func duplicate(block: Block) -> Block {
         let nb = Block(id: LayoutIdentity.newIdentity(blocks.elements, prefix: .block), name: "\(name) copy")
-        
+
         nb.length = block.length
         nb.waitingTime = block.waitingTime
         nb.center = block.center
         nb.rotationAngle = block.rotationAngle
         nb.feedbacks = block.feedbacks
-        
+
         nb.entryFeedbackNext = block.entryFeedbackNext
         nb.brakeFeedbackNext = block.brakeFeedbackNext
         nb.stopFeedbackNext = block.stopFeedbackNext
-        
+
         nb.entryFeedbackPrevious = block.entryFeedbackPrevious
         nb.brakeFeedbackPrevious = block.brakeFeedbackPrevious
         nb.stopFeedbackPrevious = block.stopFeedbackPrevious
@@ -50,7 +49,7 @@ extension Layout {
     func remove(blockID: Identifier<Block>) {
         transitions.elements.removeAll { transition in
             transition.a.block == blockID ||
-                    transition.b.block == blockID
+                transition.b.block == blockID
         }
 
         blocks.remove(blockID)
@@ -61,18 +60,18 @@ extension Layout {
             }
         }
     }
-        
+
     func block(for trainId: Identifier<Train>) -> Block? {
         blocks.elements.first(where: { $0.trainInstance?.trainId == trainId })
     }
-        
+
     func assign(_ block: Block, _ feedbacks: [Feedback]) {
         block.assign(feedbacks.map { $0.id })
         for feedback in feedbacks {
             self.feedbacks.add(feedback)
         }
     }
-        
+
     func currentBlock(train: Train) -> Block? {
         if let blockId = train.blockId {
             return blocks[blockId]
@@ -80,7 +79,7 @@ extension Layout {
             return nil
         }
     }
-    
+
     func atEndOfBlock(train: Train) throws -> Bool {
         if let currentBlock = currentBlock(train: train) {
             guard let ti = currentBlock.trainInstance else {
@@ -95,5 +94,4 @@ extension Layout {
             return false
         }
     }
-
 }

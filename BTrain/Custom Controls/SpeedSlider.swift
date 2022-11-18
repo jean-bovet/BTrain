@@ -13,12 +13,11 @@
 import SwiftUI
 
 struct SpeedSlider: View {
-    
     let knobWidth = 26.0
     let knobHeight = 30.0
 
     @ObservedObject var speed: LocomotiveSpeed
-        
+
     @Environment(\.colorScheme) var colorScheme
 
     var onEditingChanged: (() -> Void)?
@@ -30,27 +29,27 @@ struct SpeedSlider: View {
             return Color(NSColor.darkGray)
         }
     }
-    
+
     var body: some View {
         HStack {
             CustomSlider(value: $speed.requestedkphAsDouble, secondaryValue: $speed.actualKphAsDouble, range: (0, Double(speed.maxSpeed)), knobWidth: knobWidth, onEditingChanged: onEditingChanged) { modifiers in
                 ZStack {
                     Rectangle().foregroundColor(Color(NSColor.windowBackgroundColor)).frame(height: 8).cornerRadius(4)
-                    
+
                     Rectangle()
                         .foregroundColor(.accentColor)
                         .opacity(0.5)
                         .frame(height: 8)
                         .cornerRadius(4)
                         .modifier(modifiers.barLeft)
-                    
+
                     Rectangle()
                         .foregroundColor(.accentColor)
                         .opacity(0.8)
                         .frame(height: 8)
                         .cornerRadius(4)
                         .modifier(modifiers.barLeftSecondary)
-                    
+
                     ZStack {
                         Rectangle()
                             .fill(knobColor)
@@ -58,9 +57,9 @@ struct SpeedSlider: View {
                             .shadow(radius: 1.2)
                             .frame(width: knobWidth, height: knobHeight)
                         VStack {
-                            Text(("\(Int(speed.requestedKph))"))
+                            Text("\(Int(speed.requestedKph))")
                                 .foregroundColor(Color(NSColor.controlTextColor))
-                            Text(("\(Int(speed.actualKph))"))
+                            Text("\(Int(speed.actualKph))")
                                 .foregroundColor(Color(NSColor.controlTextColor))
                         }
                     }
@@ -75,36 +74,33 @@ struct SpeedSlider: View {
 }
 
 private extension LocomotiveSpeed {
-    
     var requestedkphAsDouble: Double {
         get {
-            Double(self.requestedKph)
+            Double(requestedKph)
         }
         set {
-            self.requestedKph = UInt16(round(newValue))
-        }
-    }
-    
-    var actualKphAsDouble: Double {
-        get {
-            Double(self.actualKph)
-        }
-        set {
-            self.actualKph = UInt16(round(newValue))
+            requestedKph = UInt16(round(newValue))
         }
     }
 
+    var actualKphAsDouble: Double {
+        get {
+            Double(actualKph)
+        }
+        set {
+            actualKph = UInt16(round(newValue))
+        }
+    }
 }
 
 struct SpeedSlider_Previews: PreviewProvider {
-    
     static let t1: Locomotive = {
         let t = Locomotive()
         t.speed.requestedKph = 70
         t.speed.actualKph = 30
         return t
     }()
-    
+
     static let t2: Locomotive = {
         let t = Locomotive()
         t.speed.requestedKph = 30
@@ -135,7 +131,7 @@ struct SpeedSlider_Previews: PreviewProvider {
         }
         .preferredColorScheme(.dark)
         .padding()
-        
+
         VStack {
             SpeedSlider(speed: t1.speed)
             SpeedSlider(speed: t2.speed)
@@ -146,4 +142,3 @@ struct SpeedSlider_Previews: PreviewProvider {
         .padding()
     }
 }
-

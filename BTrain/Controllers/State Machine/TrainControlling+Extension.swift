@@ -13,18 +13,17 @@
 import Foundation
 
 extension TrainControlling {
-    
     /// Returns true if the train should stop in the current block
     func shouldStopInBlock() throws -> Bool {
         try shouldStopInBlock(ignoreReservedBlocks: false)
     }
-    
+
     /// Returns true if the train should stop in the current block because there is not enough
     /// reserved (and settled) blocks for it.
     func shouldStopInBlockBecauseNotEnoughReservedBlocksLength() throws -> Bool {
         try !reservedBlocksLengthEnough(forSpeed: LayoutFactory.DefaultBrakingSpeed)
     }
-    
+
     /// Returns true if the train should stop in the current block
     /// - Parameter ignoreReservedBlocks: true to ignore the reserved blocks. For example, to allow a train to start,
     /// we need to ignore the reserved block because the train, which is stopped, doesn't have any reserved blocks yet.
@@ -33,27 +32,27 @@ extension TrainControlling {
         guard mode != .unmanaged else {
             return false
         }
-        
+
         // User requested to stop managing the train?
         if mode == .stopManaged || mode == .stopImmediatelyManaged {
             return true
         }
-        
+
         // User requested to finish managing the train when it reaches the end of the route?
-        if mode == .finishManaged && currentRouteIndex >= endRouteIndex {
+        if mode == .finishManaged, currentRouteIndex >= endRouteIndex {
             return true
         }
 
         // In a station but not in the first step of the route?
-        if atStationOrDestination && currentRouteIndex > startedRouteIndex {
+        if atStationOrDestination, currentRouteIndex > startedRouteIndex {
             return true
         }
-        
+
         // At the end of the route?
-        if currentRouteIndex >= endRouteIndex && route.mode != .automatic {
+        if currentRouteIndex >= endRouteIndex, route.mode != .automatic {
             return true
         }
-        
+
         if !ignoreReservedBlocks {
             if try shouldStopInBlockBecauseNotEnoughReservedBlocksLength() {
                 return true
@@ -62,5 +61,4 @@ extension TrainControlling {
 
         return false
     }
-
 }

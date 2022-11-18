@@ -20,23 +20,21 @@ enum ScriptError: Error {
 }
 
 extension ScriptError: LocalizedError {
-
     var errorDescription: String? {
         switch self {
         case .missingStartCommand:
             return "The first command should be the `start` command"
-        case .undefinedBlock(_):
+        case .undefinedBlock:
             return "Block is undefined"
-        case .undefinedDirection(_):
+        case .undefinedDirection:
             return "Direction is undefined"
-        case .undefinedStation(_):
+        case .undefinedStation:
             return "Station is undefined"
         }
     }
 }
 
 extension RouteScript {
-    
     /// Creates a route representing the script. The route ID will be the same as the script ID.
     ///
     /// - Returns: a new route
@@ -49,16 +47,14 @@ extension RouteScript {
         route.partialSteps.append(contentsOf: try commands.toRouteItems())
         return route
     }
-        
 }
 
 extension RouteScriptCommand {
-    
     func toBlockItem() throws -> RouteItem {
         guard let blockId = blockId else {
             throw ScriptError.undefinedBlock(command: self)
         }
-        
+
         guard let direction = direction else {
             throw ScriptError.undefinedDirection(command: self)
         }
@@ -70,7 +66,7 @@ extension RouteScriptCommand {
         item.sourceIdentifier = id.uuidString
         return .block(item)
     }
-    
+
     func toRouteItems() throws -> [RouteItem] {
         switch action {
         case .start:
@@ -89,7 +85,7 @@ extension RouteScriptCommand {
             }
         case .loop:
             var items = [RouteItem]()
-            for _ in 1...repeatCount {
+            for _ in 1 ... repeatCount {
                 let routeItems = try children.toRouteItems()
                 items.append(contentsOf: routeItems)
             }
@@ -99,7 +95,6 @@ extension RouteScriptCommand {
 }
 
 extension Array where Element == RouteScriptCommand {
-    
     func toRouteItems() throws -> [RouteItem] {
         var items = [RouteItem]()
         try forEach { cmd in

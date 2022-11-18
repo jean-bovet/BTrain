@@ -16,13 +16,12 @@ import Foundation
 // A starting element only has an exit socket while the last
 // element in the path only has an entry socket.
 struct GraphPathElement: Equatable, Hashable, CustomStringConvertible, SourceIdentifiable {
-        
     let node: GraphNode
     let entrySocket: SocketId?
     let exitSocket: SocketId?
 
     var sourceIdentifier: String?
-    
+
     var description: String {
         var text = ""
         if let enterSocket = entrySocket {
@@ -34,7 +33,7 @@ struct GraphPathElement: Equatable, Hashable, CustomStringConvertible, SourceIde
         }
         return text
     }
-    
+
     func hash(into hasher: inout Hasher) {
         hasher.combine(node.identifier.uuid)
         hasher.combine(entrySocket)
@@ -50,30 +49,30 @@ struct GraphPathElement: Equatable, Hashable, CustomStringConvertible, SourceIde
         guard node.identifier.uuid == other.node.identifier.uuid else {
             return false
         }
-        
+
         if let entrySocket = entrySocket, entrySocket != other.entrySocket {
             return false
         }
-        
+
         if let exitSocket = exitSocket, exitSocket != other.exitSocket {
             return false
         }
 
         return true
     }
-    
+
     static func starting(_ node: GraphNode, _ exitSocket: SocketId) -> GraphPathElement {
         .init(node: node, entrySocket: nil, exitSocket: exitSocket)
     }
-    
+
     static func ending(_ node: GraphNode, _ entrySocket: SocketId?) -> GraphPathElement {
         .init(node: node, entrySocket: entrySocket, exitSocket: nil)
     }
-    
+
     static func between(_ node: GraphNode, _ entrySocket: SocketId, _ exitSocket: SocketId) -> GraphPathElement {
         .init(node: node, entrySocket: entrySocket, exitSocket: exitSocket)
     }
-    
+
     static func any(_ node: GraphNode) -> GraphPathElement {
         .init(node: node, entrySocket: nil, exitSocket: nil)
     }
@@ -87,5 +86,4 @@ struct GraphPathElement: Equatable, Hashable, CustomStringConvertible, SourceIde
     static func == (lhs: GraphPathElement, rhs: GraphPathElement) -> Bool {
         lhs.node.identifier.uuid == rhs.node.identifier.uuid && lhs.entrySocket == rhs.entrySocket && lhs.exitSocket == rhs.exitSocket
     }
-    
 }

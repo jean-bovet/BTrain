@@ -10,14 +10,13 @@
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-import XCTest
 @testable import BTrain
+import XCTest
 
 class ScheduledMessageQueueTests: XCTestCase {
-
     func testDelay() throws {
         let queue = ScheduledMessageQueue(name: "test")
-        let expectation = XCTestExpectation.init(description: "scheduled")
+        let expectation = XCTestExpectation(description: "scheduled")
         let startTime = Date()
         queue.schedule(priority: false) { completion in
             XCTAssertGreaterThanOrEqual(Date().timeIntervalSince(startTime), queue.delay)
@@ -29,14 +28,14 @@ class ScheduledMessageQueueTests: XCTestCase {
 
     func testPriorityNormal() throws {
         let queue = ScheduledMessageQueue(name: "test")
-        let normalExpectation = XCTestExpectation.init(description: "normal")
-        let normalExpectation2 = XCTestExpectation.init(description: "normal2")
+        let normalExpectation = XCTestExpectation(description: "normal")
+        let normalExpectation2 = XCTestExpectation(description: "normal2")
         let startTime = Date()
         var normalExecutedFirst = false
         queue.schedule(priority: false) { completion in
             XCTAssertFalse(normalExecutedFirst)
             normalExecutedFirst = true
-            
+
             XCTAssertGreaterThanOrEqual(Date().timeIntervalSince(startTime), queue.delay)
             normalExpectation.fulfill()
             completion()
@@ -44,7 +43,7 @@ class ScheduledMessageQueueTests: XCTestCase {
         queue.schedule(priority: false) { completion in
             XCTAssertTrue(normalExecutedFirst)
             normalExecutedFirst = false
-            
+
             XCTAssertGreaterThanOrEqual(Date().timeIntervalSince(startTime), queue.delay)
             normalExpectation2.fulfill()
             completion()
@@ -54,14 +53,14 @@ class ScheduledMessageQueueTests: XCTestCase {
 
     func testPriorityHigh() throws {
         let queue = ScheduledMessageQueue(name: "test")
-        let normalExpectation = XCTestExpectation.init(description: "normal")
-        let highExpectation = XCTestExpectation.init(description: "high")
+        let normalExpectation = XCTestExpectation(description: "normal")
+        let highExpectation = XCTestExpectation(description: "high")
         let startTime = Date()
         var highPriorityMessageExecuted = false
         queue.schedule(priority: false) { completion in
             XCTAssertTrue(highPriorityMessageExecuted)
             highPriorityMessageExecuted = false
-            
+
             XCTAssertGreaterThanOrEqual(Date().timeIntervalSince(startTime), queue.delay)
             normalExpectation.fulfill()
             completion()
@@ -69,12 +68,11 @@ class ScheduledMessageQueueTests: XCTestCase {
         queue.schedule(priority: true) { completion in
             XCTAssertFalse(highPriorityMessageExecuted)
             highPriorityMessageExecuted = true
-            
+
             XCTAssertGreaterThanOrEqual(Date().timeIntervalSince(startTime), queue.delay)
             highExpectation.fulfill()
             completion()
         }
         wait(for: [normalExpectation, highExpectation], timeout: 1)
     }
-
 }

@@ -13,24 +13,23 @@
 import XCTest
 
 @testable import BTrain
-import ViewInspector
 import SwiftUI
+import ViewInspector
 
-extension BlockAllFeedbacksView: Inspectable { }
-extension BlockDetailsView: Inspectable { }
-extension BlockShapeView: Inspectable { }
-extension BlockFeedbacksView: Inspectable { }
-extension BlockDirectionFeedbacksView: Inspectable { }
-extension BlockFeedbackDirectionView: Inspectable { }
-extension BlockSpeedView: Inspectable { }
+extension BlockAllFeedbacksView: Inspectable {}
+extension BlockDetailsView: Inspectable {}
+extension BlockShapeView: Inspectable {}
+extension BlockFeedbacksView: Inspectable {}
+extension BlockDirectionFeedbacksView: Inspectable {}
+extension BlockFeedbackDirectionView: Inspectable {}
+extension BlockSpeedView: Inspectable {}
 
 class BlockViewTests: RootViewTests {
-    
     func testListView() throws {
         let sut = BlockEditingView(layout: LayoutLoop2().newLayout())
         _ = try sut.inspect().find(text: "5 Elements")
     }
-    
+
     func testBlockEditView() throws {
         let layout = LayoutLoop2().newLayout()
         let sut = BlockDetailsView(layout: layout, block: layout.blocks[0])
@@ -38,30 +37,29 @@ class BlockViewTests: RootViewTests {
         _ = try feedbacks.find(text: "Previous Direction")
         _ = try feedbacks.find(text: "Next Direction")
     }
-    
+
     func testBlockShapeView() throws {
         let sut = BlockShapeView(layout: Layout(), category: .free)
         _ = try sut.inspect().find(ViewType.Canvas.self)
         _ = sut.block
         _ = sut.shape
     }
-    
+
     func testAllFeedbackView() throws {
         let layout = newLayout()
         let block = layout.blocks[0]
         let sut = BlockAllFeedbacksView(layout: layout, block: block)
-        
+
         _ = try sut.inspect().find(button: "+")
         _ = try sut.inspect().find(button: "-")
         _ = try sut.inspect().find(button: "Auto Fill")
     }
-    
+
     func testDirectionFeedbacksView() throws {
         let layout = newLayout()
         let block = layout.blocks[0]
         let sut = BlockDirectionFeedbacksView(layout: layout, direction: .next, block: block)
         _ = try sut.inspect().find(text: "Entry:")
-
     }
 
     func testBlockSpeedView() throws {

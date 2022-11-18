@@ -13,7 +13,6 @@
 import SwiftUI
 
 struct SettingsView: View {
-    
     private enum Tabs: Hashable {
         case general, speed, routing, logging, advanced
     }
@@ -36,7 +35,7 @@ struct SettingsView: View {
     @AppStorage(SettingsKeys.logRoutingResolutionSteps) private var logRoutingResolutionSteps = false
     @AppStorage(SettingsKeys.logReservation) private var logReservation = false
     @AppStorage(SettingsKeys.logUnknownMessages) private var logUnknownMessages = false
-    
+
     @AppStorage(SettingsKeys.logCategoryNetwork) private var logCategoryNetwork = false
     @AppStorage(SettingsKeys.logCategoryRouter) private var logCategoryRouter = false
     @AppStorage(SettingsKeys.logCategorySpeed) private var logCategorySpeed = false
@@ -46,14 +45,14 @@ struct SettingsView: View {
         TabView {
             Form {
                 Toggle("Connect to Simulator At Startup", isOn: $autoConnectSimulator)
-                
+
                 HStack {
                     Spacer().fixedSpace()
                     Toggle("Enable Simulator", isOn: $autoEnableSimulator)
                         .disabled(!autoConnectSimulator)
                 }
 
-                Slider(value: $fontSize, in: 9...96) {
+                Slider(value: $fontSize, in: 9 ... 96) {
                     Text("Font Size (\(fontSize, specifier: "%.0f") pts)")
                 }
             }
@@ -74,7 +73,7 @@ struct SettingsView: View {
                 Label("Speed", systemImage: "speedometer")
             }
             .tag(Tabs.speed)
-           
+
             Form {
                 Toggle("Find the Shortest Possible Route", isOn: $shortestRouteEnabled)
                 Toggle("Generate Automatic Route at Random", isOn: $automaticRouteRandom)
@@ -85,7 +84,7 @@ struct SettingsView: View {
                 Label("Routing", systemImage: "point.topleft.down.curvedto.point.filled.bottomright.up")
             }
             .tag(Tabs.routing)
-           
+
             Form {
                 Toggle("Record Diagnostic Logs", isOn: $recordDiagnosticLogs)
                 Toggle("Log Routing Resolution Steps", isOn: $logRoutingResolutionSteps)
@@ -106,7 +105,7 @@ struct SettingsView: View {
                 Label("Logging", systemImage: "doc.text.fill")
             }
             .tag(Tabs.advanced)
-            
+
             Form {
                 Toggle("Developer Tools", isOn: $showDebugControls)
             }

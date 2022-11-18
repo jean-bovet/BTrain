@@ -13,17 +13,16 @@
 import SwiftUI
 
 struct LocomotiveSpeedGraphView: View {
-    
     @ObservedObject var trainSpeed: LocomotiveSpeed
     @Environment(\.colorScheme) var colorScheme
 
     let fontSize = NSFont.systemFontSize
-    let margin = NSFont.systemFontSize/2
+    let margin = NSFont.systemFontSize / 2
 
     var textColor: CGColor {
         colorScheme == .dark ? .white : .black
     }
-    
+
     func maxSpeed() -> Int {
         var speed = 0
         for entry in trainSpeed.speedTable {
@@ -33,47 +32,47 @@ struct LocomotiveSpeedGraphView: View {
         }
         return speed
     }
-        
+
     func drawChart(in rect: CGRect, ctx: CGContext) {
         let maxY = maxSpeed()
         let (_, vAxisTextRect) = ctx.prepareText(text: "\(maxY)", color: .black, fontSize: fontSize)
-        
+
         let maxX = trainSpeed.speedTable.count
         let (_, hAxisTextRect) = ctx.prepareText(text: "\(maxX)", color: .black, fontSize: fontSize)
 
         let xOffset = vAxisTextRect.width
         let yOffset = hAxisTextRect.height
 
-        let gRect = CGRect(x: rect.origin.x+xOffset, y: rect.origin.y+yOffset, width: rect.width - xOffset, height: rect.height - yOffset)
-        
+        let gRect = CGRect(x: rect.origin.x + xOffset, y: rect.origin.y + yOffset, width: rect.width - xOffset, height: rect.height - yOffset)
+
         // Draw X-Axis
         ctx.setStrokeColor(.init(gray: 0.5, alpha: 0.5))
-        for index in 0...maxX {
+        for index in 0 ... maxX {
             if index % 10 == 0 {
                 let x = gRect.origin.x + Double(gRect.width) / Double(maxX) * Double(index)
                 let y = gRect.origin.y
                 ctx.move(to: CGPoint(x: x, y: y))
                 ctx.addLine(to: CGPoint(x: x, y: y + rect.height))
                 ctx.strokePath()
-                
+
                 ctx.drawText(at: CGPoint(x: x, y: y - fontSize), vAlignment: .bottom, hAlignment: .center, flip: false, text: "\(index)", color: textColor, fontSize: fontSize)
             }
         }
-        
+
         // Draw Y-Axis
         ctx.setStrokeColor(.init(gray: 0.5, alpha: 0.5))
-        for index in 0...maxY {
+        for index in 0 ... maxY {
             if index % 20 == 0 {
                 let x = gRect.origin.x
                 let y = gRect.origin.y + Double(gRect.height) / Double(maxY) * Double(index)
                 ctx.move(to: CGPoint(x: x, y: y))
                 ctx.addLine(to: CGPoint(x: rect.width, y: y))
                 ctx.strokePath()
-                
-                ctx.drawText(at: CGPoint(x: vAxisTextRect.width, y: y - fontSize/2), hAlignment: .right, flip: false, text: "\(index)", color: textColor, fontSize: fontSize)
+
+                ctx.drawText(at: CGPoint(x: vAxisTextRect.width, y: y - fontSize / 2), hAlignment: .right, flip: false, text: "\(index)", color: textColor, fontSize: fontSize)
             }
         }
-        
+
         // Draw line
         ctx.move(to: gRect.origin)
         for (index, speed) in trainSpeed.speedTable.enumerated() {
@@ -88,10 +87,10 @@ struct LocomotiveSpeedGraphView: View {
         ctx.setLineWidth(2.0)
         ctx.strokePath()
     }
-    
+
     var body: some View {
         Canvas { context, size in
-            let flipVertical: CGAffineTransform = CGAffineTransform(a: 1, b: 0, c: 0, d: -1, tx: 0, ty: size.height)
+            let flipVertical: CGAffineTransform = .init(a: 1, b: 0, c: 0, d: -1, tx: 0, ty: size.height)
             context.concatenate(flipVertical)
 
             let rect = CGRect(x: margin, y: margin, width: size.width - 2 * margin, height: size.height - 2 * margin)

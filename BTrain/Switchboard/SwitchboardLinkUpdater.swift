@@ -16,15 +16,14 @@ import Foundation
 // specified LinkShape. It is invoked after the user dragged one of the end
 // of the LinkShape in order to either remove or add a link between elements.
 final class SwitchboardLinkUpdater {
-    
     let layout: Layout
     let shapeProvider: ShapeProvider
-    
+
     init(layout: Layout, shapes: ShapeProvider) {
         self.layout = layout
-        self.shapeProvider = shapes
+        shapeProvider = shapes
     }
-    
+
     func updateTransitions(for linkShape: LinkShape) throws {
         let fromSocket = socket(from: linkShape.from.socket)
         let toSocket = socket(from: linkShape.to.socket)
@@ -43,14 +42,14 @@ final class SwitchboardLinkUpdater {
                 shapeProvider.remove(linkShape)
                 return
             }
-            
+
             // If both sockets are found, this means there is a link
             // established between two elements (two shapes).
             let t = Transition(id: LayoutIdentity.newIdentity(layout.transitions.elements, prefix: .transition), a: fromSocket, b: toSocket)
-            
+
             // Assign the new transition to the shape
             linkShape.transition = t
-            
+
             // Add the transition to the layout
             layout.add(t)
         } else {
@@ -58,7 +57,7 @@ final class SwitchboardLinkUpdater {
             shapeProvider.remove(linkShape)
         }
     }
-        
+
     func socket(from socketInstance: ConnectorSocketInstance?) -> Socket? {
         guard let socketInstance = socketInstance else {
             return nil
@@ -73,5 +72,4 @@ final class SwitchboardLinkUpdater {
             return nil
         }
     }
-
 }

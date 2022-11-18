@@ -15,7 +15,6 @@ import XCTest
 @testable import BTrain
 
 class TurnoutTests: XCTestCase {
-
     func testCodable() throws {
         let t1 = Turnout(name: "1")
         t1.category = .doubleSlip2
@@ -24,13 +23,13 @@ class TurnoutTests: XCTestCase {
         t1.requestedState = .straight01
         t1.center = .init(x: 7.5, y: 8.5)
         t1.rotationAngle = 90
-        
+
         let encoder = JSONEncoder()
         let data = try encoder.encode(t1)
 
         let decoder = JSONDecoder()
         let t2 = try decoder.decode(Turnout.self, from: data)
-        
+
         XCTAssertTrue(t1.doubleAddress)
         XCTAssertTrue(t2.doubleAddress)
         XCTAssertEqual(t1.id, t2.id)
@@ -44,16 +43,16 @@ class TurnoutTests: XCTestCase {
 
     func testSingleLeftSockets() {
         let t1 = Turnout.singleLeft()
-        
+
         XCTAssertEqual(t1.socket0, Socket.turnout(t1.id, socketId: 0))
         XCTAssertEqual(t1.socket1, Socket.turnout(t1.id, socketId: 1))
         XCTAssertEqual(t1.socket2, Socket.turnout(t1.id, socketId: 2))
-                        
+
         XCTAssertEqual(t1.sockets(from: 0), [1, 2])
         XCTAssertEqual(t1.sockets(from: 1), [0])
         XCTAssertEqual(t1.sockets(from: 2), [0])
         XCTAssertEqual(t1.sockets(from: 3), [])
-        
+
         XCTAssertEqual(t1.state(fromSocket: 0, toSocket: 1), .straight)
         XCTAssertEqual(t1.state(fromSocket: 0, toSocket: 2), .branchLeft)
         XCTAssertEqual(t1.state(fromSocket: 1, toSocket: 0), .straight)
@@ -67,19 +66,19 @@ class TurnoutTests: XCTestCase {
         XCTAssertEqual(t1.socket0, Socket.turnout(t1.id, socketId: 0))
         XCTAssertEqual(t1.socket1, Socket.turnout(t1.id, socketId: 1))
         XCTAssertEqual(t1.socket2, Socket.turnout(t1.id, socketId: 2))
-                        
+
         XCTAssertEqual(t1.sockets(from: 0), [1, 2])
         XCTAssertEqual(t1.sockets(from: 1), [0])
         XCTAssertEqual(t1.sockets(from: 2), [0])
         XCTAssertEqual(t1.sockets(from: 3), [])
-        
+
         XCTAssertEqual(t1.state(fromSocket: 0, toSocket: 1), .straight)
         XCTAssertEqual(t1.state(fromSocket: 0, toSocket: 2), .branchRight)
         XCTAssertEqual(t1.state(fromSocket: 1, toSocket: 0), .straight)
         XCTAssertEqual(t1.state(fromSocket: 2, toSocket: 0), .branchRight)
         XCTAssertEqual(t1.state(fromSocket: 0, toSocket: 3), .invalid)
     }
-    
+
     func testCrossingSockets() {
         let t1 = Turnout.doubleSlip2()
 
@@ -87,13 +86,13 @@ class TurnoutTests: XCTestCase {
         XCTAssertEqual(t1.socket1, Socket.turnout(t1.id, socketId: 1))
         XCTAssertEqual(t1.socket2, Socket.turnout(t1.id, socketId: 2))
         XCTAssertEqual(t1.socket3, Socket.turnout(t1.id, socketId: 3))
-        
+
         XCTAssertEqual(t1.sockets(from: 0), [1, 3])
         XCTAssertEqual(t1.sockets(from: 1), [0, 2])
         XCTAssertEqual(t1.sockets(from: 2), [1, 3])
         XCTAssertEqual(t1.sockets(from: 3), [0, 2])
         XCTAssertEqual(t1.sockets(from: 4), [])
-        
+
         XCTAssertEqual(t1.state(fromSocket: 0, toSocket: 1), .straight01)
         XCTAssertEqual(t1.state(fromSocket: 1, toSocket: 0), .straight01)
         XCTAssertEqual(t1.state(fromSocket: 0, toSocket: 3), .branch03)
@@ -124,7 +123,7 @@ class TurnoutTests: XCTestCase {
         XCTAssertEqual(t1.sockets(from: 2), [0])
         XCTAssertEqual(t1.sockets(from: 3), [0])
         XCTAssertEqual(t1.sockets(from: 4), [])
-        
+
         XCTAssertEqual(t1.state(fromSocket: 0, toSocket: 1), .straight)
         XCTAssertEqual(t1.state(fromSocket: 1, toSocket: 0), .straight)
         XCTAssertEqual(t1.state(fromSocket: 0, toSocket: 2), .branchRight)
@@ -136,10 +135,10 @@ class TurnoutTests: XCTestCase {
 
     func testSingleLeftStateSockets() {
         let t1 = Turnout.singleLeft()
-        
+
         XCTAssertEqual(t1.socketId(fromSocketId: t1.socket0.socketId!, withState: .straight), t1.socket1.socketId)
         XCTAssertEqual(t1.socketId(fromSocketId: t1.socket1.socketId!, withState: .straight), t1.socket0.socketId)
-        
+
         XCTAssertEqual(t1.socketId(fromSocketId: t1.socket0.socketId!, withState: .branchLeft), t1.socket2.socketId)
         XCTAssertEqual(t1.socketId(fromSocketId: t1.socket2.socketId!, withState: .branchLeft), t1.socket0.socketId)
     }
@@ -149,27 +148,27 @@ class TurnoutTests: XCTestCase {
 
         XCTAssertEqual(t1.socketId(fromSocketId: t1.socket0.socketId!, withState: .straight), t1.socket1.socketId)
         XCTAssertEqual(t1.socketId(fromSocketId: t1.socket1.socketId!, withState: .straight), t1.socket0.socketId)
-        
+
         XCTAssertEqual(t1.socketId(fromSocketId: t1.socket0.socketId!, withState: .branchRight), t1.socket2.socketId)
         XCTAssertEqual(t1.socketId(fromSocketId: t1.socket2.socketId!, withState: .branchRight), t1.socket0.socketId)
     }
 
     func testThreewayStateSockets() {
         let t1 = Turnout.threeWay()
-        
+
         XCTAssertEqual(t1.socketId(fromSocketId: t1.socket0.socketId!, withState: .straight), t1.socket1.socketId)
         XCTAssertEqual(t1.socketId(fromSocketId: t1.socket1.socketId!, withState: .straight), t1.socket0.socketId)
-        
+
         XCTAssertEqual(t1.socketId(fromSocketId: t1.socket0.socketId!, withState: .branchRight), t1.socket2.socketId)
         XCTAssertEqual(t1.socketId(fromSocketId: t1.socket2.socketId!, withState: .branchRight), t1.socket0.socketId)
-        
+
         XCTAssertEqual(t1.socketId(fromSocketId: t1.socket0.socketId!, withState: .branchLeft), t1.socket3.socketId)
         XCTAssertEqual(t1.socketId(fromSocketId: t1.socket3.socketId!, withState: .branchLeft), t1.socket0.socketId)
     }
 
     func testDoubleSlipStateSockets() {
         let t1 = Turnout.doubleSlip()
-        
+
         XCTAssertEqual(t1.socketId(fromSocketId: t1.socket0.socketId!, withState: .straight), t1.socket1.socketId)
         XCTAssertEqual(t1.socketId(fromSocketId: t1.socket1.socketId!, withState: .straight), t1.socket0.socketId)
 
@@ -185,7 +184,7 @@ class TurnoutTests: XCTestCase {
 
     func testDoubleSlip2StateSockets() {
         let t1 = Turnout.doubleSlip2()
-        
+
         XCTAssertEqual(t1.socketId(fromSocketId: t1.socket0.socketId!, withState: .straight01), t1.socket1.socketId)
         XCTAssertEqual(t1.socketId(fromSocketId: t1.socket1.socketId!, withState: .straight01), t1.socket0.socketId)
 
@@ -202,7 +201,7 @@ class TurnoutTests: XCTestCase {
     func testSingleLeftStates() {
         let t1 = Turnout.singleLeft()
         XCTAssertEqual(t1.allStates, [.straight, .branchLeft])
-        
+
         XCTAssertEqual(t1.nextState, .branchLeft)
         t1.toggleToNextState()
         XCTAssertEqual(t1.requestedState, .branchLeft)
@@ -212,7 +211,7 @@ class TurnoutTests: XCTestCase {
         t1.toggleToNextState()
         XCTAssertEqual(t1.requestedState, .straight)
         XCTAssertEqual(t1.requestedStateValue, 1)
-        
+
         t1.requestedState = .branchRight
         XCTAssertEqual(t1.nextState, .invalid)
         XCTAssertEqual(t1.requestedStateValue, 0)
@@ -221,7 +220,7 @@ class TurnoutTests: XCTestCase {
     func testSingleRightStates() {
         let t1 = Turnout.singleRight()
         XCTAssertEqual(t1.allStates, [.straight, .branchRight])
-        
+
         XCTAssertEqual(t1.nextState, .branchRight)
         t1.toggleToNextState()
         XCTAssertEqual(t1.requestedState, .branchRight)
@@ -240,7 +239,7 @@ class TurnoutTests: XCTestCase {
     func testDoubleSlipStates() {
         let t1 = Turnout.doubleSlip()
         XCTAssertEqual(t1.allStates, [.straight, .branch])
-        
+
         XCTAssertEqual(t1.nextState, .branch)
         t1.toggleToNextState()
         XCTAssertEqual(t1.requestedState, .branch)
@@ -255,7 +254,7 @@ class TurnoutTests: XCTestCase {
     func testDoubleSlip2ToggleToNextState() {
         let t1 = Turnout.doubleSlip2()
         XCTAssertEqual(t1.allStates, [.straight01, .straight23, .branch03, .branch21])
-        
+
         XCTAssertEqual(t1.nextState, .straight23)
         t1.toggleToNextState()
         XCTAssertEqual(t1.requestedState, .straight23)
@@ -284,7 +283,7 @@ class TurnoutTests: XCTestCase {
     func testThreewayStates() {
         let t1 = Turnout.threeWay()
         XCTAssertEqual(t1.allStates, [.straight, .branchLeft, .branchRight])
-        
+
         XCTAssertEqual(t1.nextState, .branchLeft)
         t1.toggleToNextState()
         XCTAssertEqual(t1.requestedState, .branchLeft)
@@ -303,11 +302,11 @@ class TurnoutTests: XCTestCase {
         t1.requestedState = .branch21
         XCTAssertEqual(t1.nextState, .invalid)
         XCTAssertEqual(t1.requestedStateValue, 0)
-        
+
         t1.setActualState(value: 0, for: t1.address.actualAddress)
         t1.setActualState(value: 0, for: t1.address2.actualAddress)
         XCTAssertEqual(t1.actualState, .invalid)
-        
+
         t1.setActualState(value: 1, for: t1.address.actualAddress)
         XCTAssertEqual(t1.actualState, .branchRight)
     }
@@ -318,22 +317,22 @@ class TurnoutTests: XCTestCase {
 
         t1.setStateSafe(.branch03)
         XCTAssertEqual(.branch03, t1.requestedState)
-        
+
         t1.reserved = .init(train: Identifier<Train>(uuid: "12"), sockets: nil)
         t1.setStateSafe(.straight01)
         XCTAssertEqual(.branch03, t1.requestedState)
-        
+
         t1.reserved = nil
         t1.setStateSafe(.straight01)
         XCTAssertEqual(.straight01, t1.requestedState)
     }
-    
+
     func testSingleLeftCommand() {
         let t = Turnout.singleLeft()
-        
+
         var cmds = t.requestedStateCommands(power: 0x1)
         assertTurnout(cmd: cmds[0], expectedAddress: 1, expectedPower: 1, expectedStateValue: 1)
-        
+
         t.requestedState = .branchLeft
         cmds = t.requestedStateCommands(power: 0x1)
         assertTurnout(cmd: cmds[0], expectedAddress: 1, expectedPower: 1, expectedStateValue: 0)
@@ -345,7 +344,7 @@ class TurnoutTests: XCTestCase {
         var cmds = t.requestedStateCommands(power: 0x1)
         XCTAssertEqual(cmds.count, 1)
         assertTurnout(cmd: cmds[0], expectedAddress: 1, expectedPower: 1, expectedStateValue: 1)
-        
+
         t.requestedState = .branchRight
         cmds = t.requestedStateCommands(power: 0x1)
         assertTurnout(cmd: cmds[0], expectedAddress: 1, expectedPower: 1, expectedStateValue: 0)
@@ -353,10 +352,10 @@ class TurnoutTests: XCTestCase {
 
     func testDoubleSlipCommands() {
         let t = Turnout.doubleSlip()
-        
+
         var cmds = t.requestedStateCommands(power: 0x1)
         assertTurnout(cmd: cmds[0], expectedAddress: 1, expectedPower: 1, expectedStateValue: 1)
-        
+
         t.requestedState = .branch
         cmds = t.requestedStateCommands(power: 0x1)
         assertTurnout(cmd: cmds[0], expectedAddress: 1, expectedPower: 1, expectedStateValue: 0)
@@ -364,28 +363,28 @@ class TurnoutTests: XCTestCase {
 
     func testDoubleSlip2Commands() {
         let t = Turnout.doubleSlip2()
-        
+
         t.requestedState = .straight01
         var cmds = t.requestedStateCommands(power: 0x1)
         assertTurnout(cmd: cmds[0], expectedAddress: 1, expectedPower: 1, expectedStateValue: 1)
         assertTurnout(cmd: cmds[1], expectedAddress: 2, expectedPower: 1, expectedStateValue: 1)
-        
+
         t.requestedState = .straight23
         cmds = t.requestedStateCommands(power: 0x1)
         assertTurnout(cmd: cmds[0], expectedAddress: 1, expectedPower: 1, expectedStateValue: 0)
         assertTurnout(cmd: cmds[1], expectedAddress: 2, expectedPower: 1, expectedStateValue: 0)
-        
+
         t.requestedState = .branch03
         cmds = t.requestedStateCommands(power: 0x1)
         assertTurnout(cmd: cmds[0], expectedAddress: 1, expectedPower: 1, expectedStateValue: 1)
         assertTurnout(cmd: cmds[1], expectedAddress: 2, expectedPower: 1, expectedStateValue: 0)
-        
+
         t.requestedState = .branch21
         cmds = t.requestedStateCommands(power: 0x1)
         assertTurnout(cmd: cmds[0], expectedAddress: 1, expectedPower: 1, expectedStateValue: 0)
         assertTurnout(cmd: cmds[1], expectedAddress: 2, expectedPower: 1, expectedStateValue: 1)
     }
-    
+
     func testDoubleSlip2States() {
         let t = Turnout.doubleSlip2()
 
@@ -395,12 +394,12 @@ class TurnoutTests: XCTestCase {
         assertDoubleSlip2(t, .branch21, .branch03, [0, 1], .straight23)
         assertDoubleSlip2(t, .straight01, .branch21, [1, 1], .straight01)
     }
-    
+
     private func assertDoubleSlip2(_ t: Turnout, _ requestedState: Turnout.State, _ actualState: Turnout.State, _ values: [UInt8], _ intermediateActualState: Turnout.State) {
         t.requestedState = requestedState
         XCTAssertEqual(t.requestedState, requestedState)
         XCTAssertEqual(t.actualState, actualState)
-        
+
         t.setActualState(value: values[0], for: t.address.actualAddress)
         XCTAssertEqual(t.requestedState, requestedState)
         XCTAssertEqual(t.actualState, intermediateActualState)
@@ -409,7 +408,7 @@ class TurnoutTests: XCTestCase {
         XCTAssertEqual(t.requestedState, requestedState)
         XCTAssertEqual(t.actualState, requestedState)
     }
-    
+
     func testFindTurnoutsWith2Addresses() {
         let t1 = Turnout.doubleSlip2()
         let t2 = Turnout.doubleSlip2()
@@ -417,32 +416,32 @@ class TurnoutTests: XCTestCase {
         t2.address2 = .init(20, .MM)
 
         let turnouts = [t1, t2]
-        
+
         XCTAssertEqual(turnouts.find(address: t1.address), t1)
         XCTAssertEqual(turnouts.find(address: t1.address2), t1)
-        
+
         XCTAssertEqual(turnouts.find(address: t2.address), t2)
         XCTAssertEqual(turnouts.find(address: t2.address2), t2)
     }
-    
+
     func testThreewayCommands() {
         let t = Turnout.threeWay()
-        
+
         var cmds = t.requestedStateCommands(power: 0x1)
         assertTurnout(cmd: cmds[0], expectedAddress: 1, expectedPower: 1, expectedStateValue: 1)
         assertTurnout(cmd: cmds[1], expectedAddress: 2, expectedPower: 1, expectedStateValue: 1)
-                
+
         t.requestedState = .branchLeft
         cmds = t.requestedStateCommands(power: 0x1)
         assertTurnout(cmd: cmds[0], expectedAddress: 1, expectedPower: 1, expectedStateValue: 0)
         assertTurnout(cmd: cmds[1], expectedAddress: 2, expectedPower: 1, expectedStateValue: 1)
-        
+
         t.requestedState = .branchRight
         cmds = t.requestedStateCommands(power: 0x1)
         assertTurnout(cmd: cmds[0], expectedAddress: 1, expectedPower: 1, expectedStateValue: 1)
         assertTurnout(cmd: cmds[1], expectedAddress: 2, expectedPower: 1, expectedStateValue: 0)
     }
-    
+
     func assertTurnout(cmd: Command, expectedAddress: UInt32, expectedPower: UInt8, expectedStateValue: UInt8) {
         if case .turnout(address: let address, state: let state, power: let power, priority: let priority, descriptor: _) = cmd {
             XCTAssertEqual(priority, .normal)
@@ -451,5 +450,4 @@ class TurnoutTests: XCTestCase {
             XCTAssertEqual(state, expectedStateValue)
         }
     }
-
 }

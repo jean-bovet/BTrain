@@ -13,16 +13,15 @@
 import SwiftUI
 
 struct BlockDetailsView: View {
-    
     let layout: Layout
     @ObservedObject var block: Block
-        
+
     var body: some View {
         VStack(alignment: .leading) {
             Form {
                 UndoProvider($block.category) { category in
                     Picker("Type:", selection: category) {
-                        ForEach(Block.Category.allCases, id:\.self) { category in
+                        ForEach(Block.Category.allCases, id: \.self) { category in
                             HStack {
                                 Text(category.description)
                                 BlockShapeView(layout: layout, category: category)
@@ -30,21 +29,21 @@ struct BlockDetailsView: View {
                         }
                     }.pickerStyle(.inline)
                 }
-                
+
                 HStack {
                     UndoProvider($block.waitingTime) { waitingTime in
                         TextField("Waiting Time:", value: waitingTime, format: .number)
                             .unitStyle("s.")
                     }
                 }.disabled(block.category != .station)
-                
+
                 UndoProvider($block.length) { length in
                     TextField("Length:", value: length, format: .number)
                         .unitStyle("cm")
                         .unitMenu(length)
                 }
             }
-            
+
             SectionTitleView(label: "Feedbacks")
 
             BlockFeedbacksView(layout: layout, block: block)
@@ -52,14 +51,13 @@ struct BlockDetailsView: View {
             SectionTitleView(label: "Speed")
 
             BlockSpeedView(block: block)
-            
+
             Spacer()
         }
     }
 }
 
 struct BlockEditView_Previews: PreviewProvider {
-    
     static let layout = LayoutLoop2().newLayout()
     static var previews: some View {
         BlockDetailsView(layout: layout, block: layout.blocks[0])

@@ -13,10 +13,9 @@
 import Foundation
 
 class CS2DocumentParser {
-    
     let lines: [String]
     var lineIndex = 0
-    
+
     var line: String? {
         if lineIndex < lines.count {
             return lines[lineIndex]
@@ -24,17 +23,17 @@ class CS2DocumentParser {
             return nil
         }
     }
-    
+
     init(text: String) {
-        self.lines = text.components(separatedBy: .newlines).map { $0.trimmingCharacters(in: .whitespacesAndNewlines)}
+        lines = text.components(separatedBy: .newlines).map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
     }
-    
+
     func parseSectionAndIgnore() {
         while let line = line, line.starts(with: ".") {
             lineIndex += 1
         }
     }
-    
+
     func valueFor(field: String) -> String? {
         guard let line = line else {
             return nil
@@ -46,24 +45,24 @@ class CS2DocumentParser {
             return nil
         }
     }
-    
+
     func matchesSectionName() -> String? {
         guard let line = line else {
             return nil
         }
 
         if !line.starts(with: ".") {
-            lineIndex+=1
+            lineIndex += 1
             return line
         } else {
             return nil
         }
     }
-    
+
     func matches(_ text: String) -> Bool {
         if let line = line {
             if line == text {
-                lineIndex+=1
+                lineIndex += 1
                 return true
             } else {
                 return false
@@ -72,5 +71,4 @@ class CS2DocumentParser {
             return false
         }
     }
-        
 }

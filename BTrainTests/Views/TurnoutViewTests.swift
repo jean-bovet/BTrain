@@ -15,11 +15,10 @@ import XCTest
 @testable import BTrain
 import ViewInspector
 
-extension TurnoutShapeView: Inspectable { }
-extension TurnoutDetailsView: Inspectable { }
+extension TurnoutShapeView: Inspectable {}
+extension TurnoutDetailsView: Inspectable {}
 
 class TurnoutViewTests: RootViewTests {
-    
     func testListView() throws {
         let doc = newDocument()
         let sut = TurnoutEditingView(doc: doc, layout: LayoutLoop2().newLayout())
@@ -32,7 +31,7 @@ class TurnoutViewTests: RootViewTests {
         _ = sut.renderAsImage()!
         _ = try sut.inspect().canvas(0)
     }
-    
+
     func testTurnoutDetailsView() throws {
         let doc = newDocument()
         let sut = TurnoutDetailsView(doc: doc, layout: doc.layout, turnout: Turnout.singleLeft())
@@ -44,5 +43,4 @@ class TurnoutViewTests: RootViewTests {
         let sut = TurnoutDetailsView(doc: doc, layout: doc.layout, turnout: Turnout.doubleSlip())
         _ = try sut.inspect().find(text: "Protocol:")
     }
-
 }

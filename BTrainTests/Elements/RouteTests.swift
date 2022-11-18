@@ -10,29 +10,28 @@
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-import XCTest
 @testable import BTrain
+import XCTest
 
 class RouteTests: XCTestCase {
-
     func testCodable() throws {
         let r1 = Route(uuid: "1")
         r1.name = "r1"
         r1.steps = [.block(RouteItemBlock(Identifier<Block>(uuid: "1"), .next)),
                     .block(RouteItemBlock(Identifier<Block>(uuid: "2"), .previous)),
                     .block(RouteItemBlock(Identifier<Block>(uuid: "3"), .next))]
-        
+
         let encoder = JSONEncoder()
         let data = try encoder.encode(r1)
 
         let decoder = JSONDecoder()
         let r2 = try decoder.decode(Route.self, from: data)
-        
+
         XCTAssertEqual(r1.id, r2.id)
         XCTAssertEqual(r1.name, r2.name)
         XCTAssertEqual(r1.partialSteps, r2.partialSteps)
     }
-    
+
     func testStep() {
         let s1 = RouteItemBlock(Identifier<Block>(uuid: "1"), .next)
         let s2 = RouteItemBlock(Identifier<Block>(uuid: "1"), .previous)

@@ -13,14 +13,13 @@
 import Foundation
 
 struct StateMachine {
-    
     enum LayoutEvent {
         case feedback(Feedback)
         case speed(TrainControlling, SpeedKph)
         case turnout(Turnout)
         case direction(TrainControlling)
     }
-    
+
     enum TrainEvent {
         case position(TrainControlling)
         case speed(TrainControlling)
@@ -30,31 +29,29 @@ struct StateMachine {
         case reservedBlocksChanged(TrainControlling)
         case reservedBlocksSettledLengthChanged(TrainControlling)
     }
-     
+
     typealias TrainState = Train.State
 
     typealias TrainMode = Train.Schedule
-
 }
 
 extension LayoutControllerEvent {
-    
     func layoutEvent(layoutController: LayoutController) -> StateMachine.LayoutEvent? {
         switch self {
-        case .feedbackTriggered(let feedback):
+        case let .feedbackTriggered(feedback):
             return .feedback(feedback)
-            
-        case .turnoutChanged(let turnout):
+
+        case let .turnoutChanged(turnout):
             return .turnout(turnout)
-            
-        case .directionChanged(let train):
+
+        case let .directionChanged(train):
             if let tc = layoutController.trainController(forTrain: train) {
                 return .direction(tc)
             } else {
                 return nil
             }
 
-        case .speedChanged(let train, let actualKph):
+        case let .speedChanged(train, actualKph):
             if let tc = layoutController.trainController(forTrain: train) {
                 return .speed(tc, actualKph)
             } else {
@@ -64,18 +61,18 @@ extension LayoutControllerEvent {
             return nil
         }
     }
-    
+
     func trainEvent(layoutController: LayoutController) -> StateMachine.TrainEvent? {
         switch self {
-        case .schedulingChanged(let train):
+        case let .schedulingChanged(train):
             if let tc = layoutController.trainController(forTrain: train) {
                 return .modeChanged(tc)
             }
-        case .restartTimerExpired(train: let train):
+        case let .restartTimerExpired(train: train):
             if let tc = layoutController.trainController(forTrain: train) {
                 return .restartTimerFired(tc)
             }
-        case .trainPositionChanged(let train):
+        case let .trainPositionChanged(train):
             if let tc = layoutController.trainController(forTrain: train) {
                 return .position(tc)
             }
@@ -86,24 +83,22 @@ extension LayoutControllerEvent {
 }
 
 extension StateMachine.TrainEvent: CustomStringConvertible {
-    
     public var description: String {
         switch self {
-        case .position(_):
+        case .position:
             return "position"
-        case .speed(_):
+        case .speed:
             return "speed"
-        case .modeChanged(_):
+        case .modeChanged:
             return "scheduling"
-        case .stateChanged(_):
+        case .stateChanged:
             return "stateChanged"
-        case .restartTimerFired(_):
+        case .restartTimerFired:
             return "restartTimerFired"
-        case .reservedBlocksChanged(_):
+        case .reservedBlocksChanged:
             return "reservedBlocksChanged"
-        case .reservedBlocksSettledLengthChanged(_):
+        case .reservedBlocksSettledLengthChanged:
             return "reservedBlocksSettledLengthChanged"
         }
     }
-
 }

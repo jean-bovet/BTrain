@@ -13,7 +13,6 @@
 import Foundation
 
 extension Route {
-    
     /// Find all the missing blocks from the ``partialSteps`` steps and assign the completed
     /// array of blocks to ``steps``.
     ///
@@ -25,13 +24,13 @@ extension Route {
     func completePartialSteps(layout: Layout, train: Train) throws {
         steps = try complete(partialItems: partialSteps, layout: layout, train: train)
     }
-    
+
     private func complete(partialItems: [RouteItem], layout: Layout, train: Train) throws -> [RouteItem] {
         let resolver = RouteResolver(layout: layout, train: train)
         guard var previousItem = partialItems.first else {
             return partialItems
         }
-        
+
         var completeItems = [previousItem]
 
         // This loop will take each partial item and will resolve the missing items
@@ -39,26 +38,25 @@ extension Route {
         for nextItem in partialItems.dropFirst() {
             let result = try resolver.resolve(unresolvedPath: [previousItem, nextItem])
             switch result {
-            case .success(let resolvedPaths):
+            case let .success(resolvedPaths):
                 if let resolvedPath = resolvedPaths.randomElement() {
                     // The first and last of the resolved steps are the same as previousItem
                     // and nextItem, so we skip them because we need to keep the original
                     // previousItem and nextItem to preserve their original settings.
                     for rs in resolvedPath.dropFirst().dropLast() {
-                        if case .block(let rrib) = rs {
+                        if case let .block(rrib) = rs {
                             completeItems.append(.block(.init(rrib.block, rrib.direction)))
                         }
                     }
                 }
-                
-            case .failure(_):
+
+            case .failure:
                 return partialItems
             }
             completeItems.append(nextItem)
             previousItem = nextItem
         }
-        
+
         return completeItems
     }
-
 }

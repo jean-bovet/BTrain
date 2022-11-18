@@ -13,27 +13,25 @@
 import Foundation
 
 struct RouteItemTurnout: Equatable, Codable {
-    
-    static func ==(lhs: RouteItemTurnout, rhs: RouteItemTurnout) -> Bool {
+    static func == (lhs: RouteItemTurnout, rhs: RouteItemTurnout) -> Bool {
         lhs.id == rhs.id
     }
 
     var id = UUID().uuidString
 
     var turnoutId: Identifier<Turnout>
-    
+
     var exitSocket: Socket
-    
+
     var entrySocket: Socket
 
     var description: String {
         "\(turnoutId):(\(entrySocket.socketId!)>\(exitSocket.socketId!))"
     }
-    
+
     init(_ turnoutId: Identifier<Turnout>, _ fromSocket: Socket, _ toSocket: Socket) {
         self.turnoutId = turnoutId
-        self.entrySocket = fromSocket
-        self.exitSocket = toSocket
+        entrySocket = fromSocket
+        exitSocket = toSocket
     }
-    
 }

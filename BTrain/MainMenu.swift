@@ -13,13 +13,12 @@
 import SwiftUI
 
 struct MenuCommands: Commands {
-
     @FocusedValue(\.document) var document
 
     var body: some Commands {
         CommandGroup(after: CommandGroupPlacement.sidebar) {
             Group {
-                ForEach(LayoutDocument.DisplaySheetType.allCases.filter({!$0.debugOnly}), id:\.self) { type in
+                ForEach(LayoutDocument.DisplaySheetType.allCases.filter { !$0.debugOnly }, id: \.self) { type in
                     if type == .trains {
                         Divider()
                     }
@@ -27,12 +26,12 @@ struct MenuCommands: Commands {
                 }
                 if document?.showDebugModeControls == true {
                     Divider()
-                    ForEach(LayoutDocument.DisplaySheetType.allCases.filter({$0.debugOnly}), id:\.self) { type in
+                    ForEach(LayoutDocument.DisplaySheetType.allCases.filter { $0.debugOnly }, id: \.self) { type in
                         CommandSelectedView(viewType: type)
                     }
                 }
                 Divider()
-                
+
                 Button("Diagnostic") {
                     document?.triggerLayoutDiagnostic.toggle()
                 }.keyboardShortcut("d", modifiers: [.command])
@@ -44,11 +43,10 @@ struct MenuCommands: Commands {
 }
 
 struct CommandSelectedView: View {
-    
     @FocusedValue(\.document) var document
 
     let viewType: LayoutDocument.DisplaySheetType
-    
+
     var body: some View {
         Button(viewType.label) {
             document?.displaySheetType = viewType
@@ -68,9 +66,9 @@ struct DocumentFocusedValueKey: FocusedValueKey {
 extension FocusedValues {
     var document: DocumentFocusedValueKey.Value? {
         get {
-            return self[DocumentFocusedValueKey.self]
+            self[DocumentFocusedValueKey.self]
         }
-        
+
         set {
             self[DocumentFocusedValueKey.self] = newValue
         }

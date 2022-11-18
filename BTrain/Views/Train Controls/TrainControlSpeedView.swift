@@ -13,13 +13,12 @@
 import SwiftUI
 
 struct TrainControlSpeedView: View {
-    
     @ObservedObject var document: LayoutDocument
 
     @ObservedObject var train: Train
     @ObservedObject var loc: Locomotive
     @ObservedObject var speed: LocomotiveSpeed
-        
+
     @Binding var trainRuntimeError: String?
 
     var body: some View {
@@ -48,7 +47,6 @@ struct TrainControlSpeedView: View {
 }
 
 struct TrainControlView_Previews: PreviewProvider {
-    
     static let doc: LayoutDocument = {
         let layout = LayoutLoop1().newLayout()
         return LayoutDocument(layout: layout)

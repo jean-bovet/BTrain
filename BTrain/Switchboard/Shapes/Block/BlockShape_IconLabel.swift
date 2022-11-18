@@ -10,12 +10,11 @@
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-import Foundation
 import AppKit
+import Foundation
 
 /// Displays the train icon as a label
 struct BlockShape_IconLabel: BlockShapeLabel {
-            
     let ctx: CGContext
     let icon: NSImage
     let shapeContext: ShapeContext
@@ -29,14 +28,14 @@ struct BlockShape_IconLabel: BlockShapeLabel {
         self.ctx = ctx
         self.icon = icon
         self.shapeContext = shapeContext
-        
+
         let ratio = icon.size.width / icon.size.height
         let height = shapeContext.fontSize * 2
         let width = height * ratio
-        self.size = .init(width: width, height: height)
+        size = .init(width: width, height: height)
     }
 
-    func draw(at anchor: CGPoint, rotation: CGFloat, rotationCenter: CGPoint) -> BlockShapeLabelPath? {
+    func draw(at anchor: CGPoint, rotation: CGFloat, rotationCenter _: CGPoint) -> BlockShapeLabelPath? {
         guard !hidden else {
             return nil
         }
@@ -48,32 +47,31 @@ struct BlockShape_IconLabel: BlockShapeLabel {
         // Maintain rotation such that the icon is always on top or to the left
         var transform = CGAffineTransform.identity
             .rotation(by: rotation, around: anchor)
-        
+
         // Flip the icon vertically
         transform = transform
             .translatedBy(x: anchor.x, y: anchor.y)
             .scaledBy(x: 1.0, y: -1.0)
             .translatedBy(x: -anchor.x, y: -anchor.y)
-        
+
         // Apply translation
         switch hAlignment {
         case .center:
-            transform = transform.translatedBy(x: -size.width/2, y: 0)
+            transform = transform.translatedBy(x: -size.width / 2, y: 0)
         case .left:
             break
         case .right:
-            transform = transform.translatedBy(x: size.width/2, y: 0)
+            transform = transform.translatedBy(x: size.width / 2, y: 0)
         }
 
-        transform = transform.translatedBy(x: 0, y: -size.height/2)
+        transform = transform.translatedBy(x: 0, y: -size.height / 2)
 
         ctx.with {
             ctx.concatenate(transform)
             ctx.draw(cgImage, in: CGRect(x: anchor.x, y: anchor.y, width: size.width, height: size.height))
         }
-        
-        return BlockShapeLabelPath(path: CGPath(rect: CGRect(x: anchor.x, y: anchor.y, width: size.width, height: size.height), transform: nil),
-                                       transform: transform)
-    }
 
+        return BlockShapeLabelPath(path: CGPath(rect: CGRect(x: anchor.x, y: anchor.y, width: size.width, height: size.height), transform: nil),
+                                   transform: transform)
+    }
 }

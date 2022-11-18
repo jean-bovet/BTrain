@@ -10,19 +10,19 @@
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-import Foundation
 import CoreGraphics
+import Foundation
 
 /// The ephemeral drag info for a train
 final class SwitchBoardTrainDragInfo: EphemeralDragInfo {
     let trainId: Identifier<Train>
 
     let shape: DraggableShape
-    
+
     var dropPath: CGPath?
 
     var dropBlock: Block?
-    
+
     init(trainId: Identifier<Train>, shape: DraggableShape) {
         self.trainId = trainId
         self.shape = shape

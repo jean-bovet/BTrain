@@ -13,7 +13,6 @@
 import Foundation
 
 extension Layout {
-    
     @discardableResult
     func newLocomotive() -> Locomotive {
         let id = LayoutIdentity.newIdentity(locomotives.elements, prefix: .locomotive)
@@ -28,7 +27,7 @@ extension Layout {
         locomotives.add(nl)
         return nl
     }
-    
+
     func removeLocomotiveFromTrain(locomotive: Locomotive) {
         trains.elements.forEach { train in
             if train.locomotive == locomotive {
@@ -36,29 +35,24 @@ extension Layout {
             }
         }
     }
-    
+
     func remove(locomotive: Locomotive) {
         removeLocomotiveFromTrain(locomotive: locomotive)
         locomotives.remove(locomotive.id)
     }
-    
+
     func removeAllLocomotives() {
         locomotives.elements.forEach { loc in
             removeLocomotiveFromTrain(locomotive: loc)
         }
         locomotives.elements.removeAll()
     }
-    
 }
 
 extension LayoutElementContainer where E == Train {
-    
     subscript(identifier: Identifier<Locomotive>?) -> Train? {
-      get {
-          elements.first { train in
-              train.locomotive?.id == identifier
-          }
-      }
+        elements.first { train in
+            train.locomotive?.id == identifier
+        }
     }
-
 }

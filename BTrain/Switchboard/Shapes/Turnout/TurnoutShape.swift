@@ -10,24 +10,24 @@
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-import Foundation
 import CoreGraphics
+import Foundation
 
 final class TurnoutShape: Shape, DraggableShape, ConnectableShape {
     weak var layoutController: LayoutController?
     weak var layout: Layout?
-    
+
     let turnout: Turnout
     let shapeContext: ShapeContext
-    
+
     var identifier: String {
         "turnout-\(turnout.id)"
     }
-        
+
     var bounds: CGRect {
         path.boundingBox
     }
-            
+
     var center: CGPoint {
         get {
             turnout.center
@@ -36,19 +36,19 @@ final class TurnoutShape: Shape, DraggableShape, ConnectableShape {
             turnout.center = newValue
         }
     }
-    
+
     var radius = 15.0
-    
+
     var visible = true
 
     var selected = false
-    
+
     /// The length of the line point which is used to determine when two lines representing
     /// each element are joining, in order to determine the control point of the bezier curve.
     let linePointLength = 160.0
 
     var sockets: [ConnectorSocket] {
-        socketPoints.enumerated().map { (index, point) in
+        socketPoints.enumerated().map { index, point in
             // The control point is computed by extending the vector from
             // the center of the turnout to the socket point.
             let v = Vector2D(x: point.x - center.x, y: point.y - center.y)
@@ -59,7 +59,7 @@ final class TurnoutShape: Shape, DraggableShape, ConnectableShape {
             return ConnectorSocket.create(id: index, center: point, controlPoint: ctrlPoint, linePoint: linePoint)
         }
     }
-    
+
     var freeSockets: [ConnectorSocket] {
         // Returns all the sockets that don't have any transitions coming out of them
         sockets.filter { connectorSocket in
@@ -67,65 +67,65 @@ final class TurnoutShape: Shape, DraggableShape, ConnectableShape {
             return (try? layout?.transition(from: s)) == nil
         }
     }
-    
+
     var reserved: Identifier<Train>? {
         turnout.reserved?.train
     }
-    
+
     func socketInstance(_ id: Int) -> ConnectorSocketInstance {
         ConnectorSocketInstance(shape: self, socketId: id)
     }
-    
+
     var socketPoints: [CGPoint] {
         let points: [CGPoint]
-        switch(turnout.category) {
+        switch turnout.category {
         case .singleLeft:
             points = [
-                CGPoint(x: center.x-radius, y: center.y),
-                CGPoint(x: center.x+radius, y: center.y),
-                CGPoint(x: center.x+radius, y: center.y).rotate(by: -.pi/4, around: center)
+                CGPoint(x: center.x - radius, y: center.y),
+                CGPoint(x: center.x + radius, y: center.y),
+                CGPoint(x: center.x + radius, y: center.y).rotate(by: -.pi / 4, around: center),
             ]
-            
+
         case .singleRight:
             points = [
-                CGPoint(x: center.x-radius, y: center.y),
-                CGPoint(x: center.x+radius, y: center.y),
-                CGPoint(x: center.x+radius, y: center.y).rotate(by: .pi/4, around: center)
+                CGPoint(x: center.x - radius, y: center.y),
+                CGPoint(x: center.x + radius, y: center.y),
+                CGPoint(x: center.x + radius, y: center.y).rotate(by: .pi / 4, around: center),
             ]
-            
+
         case .doubleSlip:
             points = [
-                CGPoint(x: center.x-radius, y: center.y),
-                CGPoint(x: center.x+radius, y: center.y),
-                CGPoint(x: center.x-radius, y: center.y).rotate(by: .pi/4, around: center),
-                CGPoint(x: center.x+radius, y: center.y).rotate(by: .pi/4, around: center)
+                CGPoint(x: center.x - radius, y: center.y),
+                CGPoint(x: center.x + radius, y: center.y),
+                CGPoint(x: center.x - radius, y: center.y).rotate(by: .pi / 4, around: center),
+                CGPoint(x: center.x + radius, y: center.y).rotate(by: .pi / 4, around: center),
             ]
-            
+
         case .doubleSlip2:
             points = [
-                CGPoint(x: center.x-radius, y: center.y),
-                CGPoint(x: center.x+radius, y: center.y),
-                CGPoint(x: center.x-radius, y: center.y).rotate(by: .pi/4, around: center),
-                CGPoint(x: center.x+radius, y: center.y).rotate(by: .pi/4, around: center)
+                CGPoint(x: center.x - radius, y: center.y),
+                CGPoint(x: center.x + radius, y: center.y),
+                CGPoint(x: center.x - radius, y: center.y).rotate(by: .pi / 4, around: center),
+                CGPoint(x: center.x + radius, y: center.y).rotate(by: .pi / 4, around: center),
             ]
-            
+
         case .threeWay:
             points = [
-                CGPoint(x: center.x-radius, y: center.y),
-                CGPoint(x: center.x+radius, y: center.y),
-                CGPoint(x: center.x+radius, y: center.y).rotate(by: .pi/4, around: center),
-                CGPoint(x: center.x+radius, y: center.y).rotate(by: -.pi/4, around: center)
+                CGPoint(x: center.x - radius, y: center.y),
+                CGPoint(x: center.x + radius, y: center.y),
+                CGPoint(x: center.x + radius, y: center.y).rotate(by: .pi / 4, around: center),
+                CGPoint(x: center.x + radius, y: center.y).rotate(by: -.pi / 4, around: center),
             ]
         }
-        return points.map { $0.rotate(by: rotationAngle, around: center)}
+        return points.map { $0.rotate(by: rotationAngle, around: center) }
     }
-    
+
     var path: CGPath {
         let path = CGMutablePath()
-        
+
         let sp = socketPoints
-        
-        switch(turnout.category) {
+
+        switch turnout.category {
         case .singleLeft:
             path.move(to: sp[0])
             path.addLine(to: sp[1])
@@ -167,26 +167,26 @@ final class TurnoutShape: Shape, DraggableShape, ConnectableShape {
 
         return path
     }
-        
+
     struct ActivePathReservation {
         let reserved: Turnout.Reservation?
-        
+
         func reservationExists(between socket1: Int, and socket2: Int) -> Bool {
             if let sockets = reserved?.sockets {
                 return sockets.fromSocketId == socket1 && sockets.toSocketId == socket2 ||
-                sockets.fromSocketId == socket2 && sockets.toSocketId == socket1
+                    sockets.fromSocketId == socket2 && sockets.toSocketId == socket1
             } else {
                 return true
             }
         }
     }
-    
+
     func activePath(for state: Turnout.State, reservation: ActivePathReservation) -> CGPath {
         let path = CGMutablePath()
-        
+
         let sp = socketPoints
-        
-        switch(turnout.category) {
+
+        switch turnout.category {
         case .singleLeft, .singleRight:
             switch state {
             case .straight:
@@ -211,7 +211,7 @@ final class TurnoutShape: Shape, DraggableShape, ConnectableShape {
                     path.move(to: sp[0])
                     path.addLine(to: sp[1])
                 }
-                
+
                 if reservation.reservationExists(between: 2, and: 3) {
                     path.move(to: sp[2])
                     path.addLine(to: sp[3])
@@ -290,43 +290,43 @@ final class TurnoutShape: Shape, DraggableShape, ConnectableShape {
     func endCaps(_ radius: CGFloat) -> CGPath {
         let path = CGMutablePath()
         for p in socketPoints {
-            path.addEllipse(in: CGRect(origin: p, size: CGSize(width: radius, height: radius)).offsetBy(dx: -radius/2, dy: -radius/2))
+            path.addEllipse(in: CGRect(origin: p, size: CGSize(width: radius, height: radius)).offsetBy(dx: -radius / 2, dy: -radius / 2))
         }
         return path
     }
-    
+
     var outlinePath: CGPath {
-        let rect = CGRect(origin: CGPoint(x: center.x-radius, y: center.y-radius), size: CGSize(width: 2*radius, height: 2*radius))
+        let rect = CGRect(origin: CGPoint(x: center.x - radius, y: center.y - radius), size: CGSize(width: 2 * radius, height: 2 * radius))
         return CGPath(ellipseIn: rect, transform: nil)
     }
-    
+
     convenience init(layoutController: LayoutController?, layout: Layout, turnout: Turnout, center: CGPoint, rotationAngle: CGFloat = 0, shapeContext: ShapeContext) {
         self.init(layoutController: layoutController, layout: layout, turnout: turnout, shapeContext: shapeContext)
         self.turnout.center = center
         self.turnout.rotationAngle = rotationAngle
     }
-    
+
     init(layoutController: LayoutController?, layout: Layout, turnout: Turnout, shapeContext: ShapeContext) {
         self.layoutController = layoutController
         self.layout = layout
         self.turnout = turnout
         self.shapeContext = shapeContext
     }
-    
+
     func draw(ctx: CGContext) {
         drawBaseTurnout(ctx: ctx)
-        
+
         if turnout.enabled {
             drawActiveTurnout(ctx: ctx)
         }
-        
+
         if shapeContext.showTurnoutName {
             ctx.with {
                 drawLabel(ctx: ctx, label: turnout.name, at: center, color: shapeContext.color, fontSize: shapeContext.fontSize)
             }
         }
     }
-            
+
     /// Draw the base shape of the turnout with all its possible paths.
     private func drawBaseTurnout(ctx: CGContext) {
         ctx.with {
@@ -337,19 +337,19 @@ final class TurnoutShape: Shape, DraggableShape, ConnectableShape {
             ctx.drawPath(using: .stroke)
         }
     }
-    
+
     /// Draw the active path of the turnout given its state and reservation
     private func drawActiveTurnout(ctx: CGContext) {
         ctx.with {
             let activeColor = shapeContext.pathColor(false, train: false)
             let activeReservedColor = shapeContext.pathColor(reserved != nil, train: turnout.train != nil)
-            
+
             // Draw the active path without any reservation color, which represents the actual state of the turnout.
             ctx.setStrokeColor(activeColor)
             ctx.setLineWidth(shapeContext.trackWidth)
             ctx.addPath(activePath(for: turnout.actualState, reservation: ActivePathReservation(reserved: nil)))
             ctx.drawPath(using: .stroke)
-            
+
             if turnout.settled {
                 // Draw the active path with the current reservation color for the actual state (which is the same
                 // as the requested state because the turnout has settled).
@@ -369,17 +369,17 @@ final class TurnoutShape: Shape, DraggableShape, ConnectableShape {
             }
         }
     }
-    
+
     @discardableResult
     private func drawLabel(ctx: CGContext, label: String, at location: CGPoint, color: CGColor, fontSize: CGFloat) -> CGSize {
         let angle = rotationAngle.truncatingRemainder(dividingBy: 2 * .pi)
-        if abs(angle) <= .pi/2 || abs(angle) >= 2 * .pi*3/4 {
+        if abs(angle) <= .pi / 2 || abs(angle) >= 2 * .pi * 3 / 4 {
             let textCenter = location.translatedBy(x: 0, y: -radius).rotate(by: rotationAngle, around: rotationCenter)
             return ctx.drawText(at: textCenter, vAlignment: .bottom, hAlignment: .center, rotation: angle,
-                            text: label, color: color, fontSize: fontSize)
+                                text: label, color: color, fontSize: fontSize)
         } else {
             // Always displays the text facing downwards so it is easier to read
-            let textCenter = location.translatedBy(x: 0, y: radius/2).rotate(by: rotationAngle, around: rotationCenter)
+            let textCenter = location.translatedBy(x: 0, y: radius / 2).rotate(by: rotationAngle, around: rotationCenter)
             return ctx.drawText(at: textCenter, vAlignment: .bottom, hAlignment: .center, rotation: angle + .pi,
                                 text: label, color: color, fontSize: fontSize)
         }
@@ -388,7 +388,6 @@ final class TurnoutShape: Shape, DraggableShape, ConnectableShape {
     func inside(_ point: CGPoint) -> Bool {
         outlinePath.contains(point)
     }
-                
 }
 
 extension TurnoutShape: RotableShape {
@@ -400,11 +399,11 @@ extension TurnoutShape: RotableShape {
             turnout.rotationAngle = newValue
         }
     }
-        
+
     var rotationCenter: CGPoint {
         center
     }
-    
+
     var rotationPoint: CGPoint {
         let anchor = CGPoint(x: center.x, y: center.y - 1.5 * radius)
         let r = anchor.rotate(by: rotationAngle, around: center)
@@ -414,13 +413,11 @@ extension TurnoutShape: RotableShape {
     var rotationHandle: CGPath {
         let r = rotationPoint
         let size = 10.0
-        return CGPath(ellipseIn: CGRect(x: r.x-size/2, y: r.y-size/2, width: size, height: size), transform: nil)
+        return CGPath(ellipseIn: CGRect(x: r.x - size / 2, y: r.y - size / 2, width: size, height: size), transform: nil)
     }
-
 }
 
 extension TurnoutShape: ActionableShape {
-    
     func performAction(at location: CGPoint) -> Bool {
         if inside(location) {
             turnout.toggleToNextState()
@@ -430,5 +427,4 @@ extension TurnoutShape: ActionableShape {
             return false
         }
     }
-        
 }

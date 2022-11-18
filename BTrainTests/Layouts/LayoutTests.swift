@@ -15,10 +15,9 @@ import XCTest
 @testable import BTrain
 
 class LayoutTests: BTTestCase {
-
     func testAddAndRemoveBlock() throws {
         let layout = Layout()
-        
+
         let t1 = layout.trains.add(Train(uuid: "t1", name: "t1"))
         let b1 = layout.newBlock(name: "b1", category: .free)
         let b2 = layout.newBlock(name: "b2", category: .free)
@@ -31,7 +30,7 @@ class LayoutTests: BTTestCase {
 
         let b11 = layout.blocks[b1.id]
         XCTAssertTrue(b1 === b11)
-        
+
         layout.remove(blockID: b1.id)
         XCTAssertNil(layout.blocks[b1.id])
         XCTAssertNil(t1.blockId)
@@ -48,12 +47,12 @@ class LayoutTests: BTTestCase {
 
         let f11 = layout.feedbacks[f1.id]
         XCTAssertEqual(f1, f11)
-        
+
         layout.remove(feedbackID: f1.id)
         XCTAssertNil(layout.feedbacks[f1.id])
         XCTAssertEqual(b1.feedbacks.count, 0)
     }
-    
+
     func testAddAndRemoveTurnout() throws {
         let layout = Layout()
         let b1 = layout.newBlock(name: "b1", category: .free)
@@ -65,18 +64,18 @@ class LayoutTests: BTTestCase {
 
         let t11 = layout.turnouts[t1.id]
         XCTAssertEqual(t1, t11)
-        
+
         layout.remove(turnoutID: t1.id)
         XCTAssertNil(layout.turnouts[t1.id])
         XCTAssertEqual(layout.transitions.elements.count, 0)
     }
-    
+
     func testTrainDirection() throws {
         let interface = MockCommandInterface()
         let doc = LayoutDocument(layout: LayoutFigure8().newLayout(), interface: interface)
         let train1 = doc.layout.trains[0]
         let block1 = doc.layout.blocks[0]
-        
+
         try doc.layout.setTrainToBlock(train1.id, block1.id, direction: .next)
         XCTAssertEqual(train1.directionForward, true)
 
@@ -110,22 +109,21 @@ class LayoutTests: BTTestCase {
         let block1 = p.layout.blocks[0]
 
         try p.prepare(trainID: train1.id.uuid, fromBlockId: block1.id.uuid)
-        
+
         try p.start(routeID: p.layout.routes[0].id.uuid, trainID: train1.id.uuid)
 
         p.stop()
         p.layoutController.waitUntilSettled()
 
         XCTAssertEqual(train1.scheduling, .stopManaged)
-        
+
         // Need to trigger braking feedback to start braking
         p.toggle("f11")
-        
+
         // Need to trigger stop feedback to start braking
         p.toggle("f12")
 
         XCTAssertEqual(train1.state, .stopped)
         XCTAssertEqual(train1.scheduling, .unmanaged)
     }
-
 }

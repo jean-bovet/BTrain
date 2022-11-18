@@ -15,7 +15,6 @@ import Foundation
 /// Fetches the locomotive definitions and icons from the Central Station by using an HTTP request.
 /// See ``MarklinCS3`` for more information.
 struct MarklinFetchLocomotives {
-    
     /// Fetch the locomotive commands from the specified Central Station address
     /// - Parameters:
     ///   - server: the IP address of the Central Station
@@ -28,7 +27,7 @@ struct MarklinFetchLocomotives {
 
         fetchLocomotives(server: url, completion: completion)
     }
-    
+
     /// Fetch the locomotive commands from the specified Central Station URL
     /// - Parameters:
     ///   - server: the URL of the Central Station (can also be a local file for testing)
@@ -46,7 +45,7 @@ struct MarklinFetchLocomotives {
             }
         }
     }
-    
+
     private func convert(_ loks: [MarklinCS3.Lok], url: URL) async -> [CommandLocomotive] {
         var cmdLoks = [CommandLocomotive]()
         for lok in loks {
@@ -54,13 +53,13 @@ struct MarklinFetchLocomotives {
         }
         return cmdLoks
     }
-    
+
     private func convert(_ lok: MarklinCS3.Lok, url: URL) async -> CommandLocomotive {
         let icon = await fetchIcon(from: url, for: lok)
         let cmdLok = lok.toCommand(icon: icon)
         return cmdLok
     }
-    
+
     private func fetchIcon(from url: URL, for lok: MarklinCS3.Lok) async -> Data? {
         do {
             let cs3 = MarklinCS3()
@@ -76,5 +75,4 @@ struct MarklinFetchLocomotives {
             return nil
         }
     }
-    
 }

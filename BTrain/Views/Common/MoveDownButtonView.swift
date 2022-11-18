@@ -12,28 +12,26 @@
 
 import SwiftUI
 
-struct MoveDownButtonView<T:Identifiable>: View {
-    
+struct MoveDownButtonView<T: Identifiable>: View {
     @Binding var selection: T.ID?
     @Binding var elements: [T]
-    
+
     var body: some View {
         Button("􀄩") {
             guard let index = elements.firstIndex(where: { $0.id == selection }) else {
                 return
             }
-            
+
             guard index < elements.endIndex else {
                 return
             }
-            
+
             let indexAfter = elements.index(after: index)
             guard indexAfter < elements.endIndex else {
                 return
             }
-            
+
             elements.swapAt(index, indexAfter)
         }.disabled(selection == nil)
     }
-
 }

@@ -20,13 +20,11 @@ class NoInsetHostingView<V>: NSHostingView<V> where V: View {
 }
 
 extension View {
-    
     func renderAsImage() -> NSImage? {
         let view = NoInsetHostingView(rootView: self)
         view.setFrameSize(view.fittingSize)
         return view.bitmapImage()
     }
-
 }
 
 extension Image {

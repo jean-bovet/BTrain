@@ -13,17 +13,16 @@
 import SwiftUI
 
 struct RouteListView: View {
-    
     @Environment(\.undoManager) var undoManager
-    
+
     @ObservedObject var layout: Layout
-    
+
     @State private var selection: Identifier<Route>? = nil
 
     var routes: [Route] {
         layout.fixedRoutes
     }
-    
+
     var body: some View {
         HStack {
             VStack(alignment: .leading) {
@@ -33,16 +32,16 @@ struct RouteListView: View {
                             .labelsHidden()
                     }
                 } rows: {
-                    ForEach($layout.routes.filter({ !$0.wrappedValue.automatic })) { route in
+                    ForEach($layout.routes.filter { !$0.wrappedValue.automatic }) { route in
                         TableRow(route)
                     }
                 }
 
                 HStack {
                     Text("\(layout.fixedRoutes.count) routes")
-                    
+
                     Spacer()
-                    
+
                     Button("+") {
                         let route = layout.newRoute()
                         selection = route.id
@@ -57,7 +56,7 @@ struct RouteListView: View {
                             layout.routes.append(route)
                         })
                     }.disabled(selection == nil)
-                    
+
                     Spacer().fixedSpace()
 
                     Button("􀉁") {
@@ -65,7 +64,7 @@ struct RouteListView: View {
                     }.disabled(selection == nil)
 
                     Spacer().fixedSpace()
-                    
+
                     Button("􀄬") {
                         layout.sortRoutes()
                     }
@@ -87,9 +86,7 @@ struct RouteListView: View {
 }
 
 struct RouteListView_Previews: PreviewProvider {
-    
     static var previews: some View {
         RouteListView(layout: LayoutLoop2().newLayout())
     }
-
 }

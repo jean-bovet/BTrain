@@ -13,17 +13,16 @@
 import Foundation
 
 extension Block {
-    
     // Returns the integer that indicates the "previous" socket
     static var previousSocket: Int {
         0
     }
-    
+
     // Returns the integer that indicates the "next" socket
     static var nextSocket: Int {
         1
     }
-    
+
     // Returns the socket from the "previous" side
     var previous: Socket {
         Socket.block(id, socketId: Block.previousSocket)
@@ -33,17 +32,17 @@ extension Block {
     var next: Socket {
         Socket.block(id, socketId: Block.nextSocket)
     }
-    
+
     // Returns a socket that does not have any side indication,
     // which can be useful when we want to refer to "any socket
     // from block" in transitions calculation.
     var any: Socket {
         Socket.block(id)
     }
-    
+
     // Returns all the sockets
     var allSockets: [Socket] {
-        switch(category) {
+        switch category {
         case .station, .free:
             return [previous, next]
         case .sidingPrevious:
@@ -52,10 +51,10 @@ extension Block {
             return [previous]
         }
     }
-    
+
     // Returns the name of the specific socket
     func socketName(_ socketId: Int) -> String {
-        switch(socketId) {
+        switch socketId {
         case 0:
             return "previous"
         case 1:
@@ -64,5 +63,4 @@ extension Block {
             return "?"
         }
     }
-
 }

@@ -14,15 +14,13 @@ import Foundation
 
 /// Defines a specific reservation of a train in a block or turnout.
 struct Reservation: Codable, Equatable, CustomStringConvertible {
-    
     /// The train that is owning the reservation
     let trainId: Identifier<Train>
-    
+
     /// Expected direction of travel of the train in the block.
     let direction: Direction
 
     var description: String {
         "Reservation(train=\(trainId), direction=\(direction.rawValue))"
     }
-    
 }

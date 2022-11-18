@@ -13,26 +13,25 @@
 import SwiftUI
 
 struct TurnoutShapePreview: View {
-    
     let layout = Layout()
     let context: ShapeContext = {
         let c = ShapeContext()
         c.showTurnoutName = true
         return c
     }()
-    
+
     var body: some View {
         VStack {
-            ForEach(Turnout.Category.allCases, id:\.self) { category in
+            ForEach(Turnout.Category.allCases, id: \.self) { category in
                 HStack {
-                    ForEach(0..<8) { index in
+                    ForEach(0 ..< 8) { index in
                         TurnoutShapeView(layout: layout,
                                          category: category,
                                          requestedState: Turnout.states(for: category)[0],
                                          actualState: Turnout.states(for: category)[1],
                                          shapeContext: context, reservation: false,
                                          name: "foo",
-                                         rotation: .pi/4 * Double(index))
+                                         rotation: .pi / 4 * Double(index))
                     }
                 }
             }

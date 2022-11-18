@@ -13,18 +13,17 @@
 import SwiftUI
 
 struct TrainControlContainerView: View {
-            
     @ObservedObject var document: LayoutDocument
-    
+
     // Observe the train so any changes is reflected in the UX,
     // such as speed changes during automatic route execution.
     @ObservedObject var train: Train
-    
+
     @Binding var pinnedTrainIds: Set<Identifier<Train>>
 
     /// Keep track of any runtime error related to the train so it can be displayed to the user
     @State private var trainRuntimeError: String?
-    
+
     var body: some View {
         VStack(alignment: .leading) {
             if let loc = train.locomotive {
@@ -36,7 +35,7 @@ struct TrainControlContainerView: View {
 
                     LocomotiveIconView(locomotiveIconManager: document.locomotiveIconManager, loc: loc, size: .medium, hideIfNotDefined: true)
                 }
-                
+
                 if train.blockId != nil {
                     HStack {
                         TrainControlSpeedView(document: document, train: train, loc: loc, speed: loc.speed, trainRuntimeError: $trainRuntimeError)
@@ -58,7 +57,6 @@ struct TrainControlContainerView: View {
 }
 
 struct TrainControlContainerView_Previews: PreviewProvider {
-        
     static let doc1 = LayoutDocument(layout: LayoutLoop1().newLayout())
 
     static let doc2: LayoutDocument = {

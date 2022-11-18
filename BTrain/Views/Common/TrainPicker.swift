@@ -13,21 +13,20 @@
 import SwiftUI
 
 struct TrainPicker: View {
-
     let doc: LayoutDocument
     @Binding var selectedTrain: Identifier<Train>?
 
     var iconSize: CGSize {
         .init(width: 60, height: 20)
     }
-    
+
     var trains: [Train] {
-        doc.layout.trains.elements.filter({$0.enabled})
+        doc.layout.trains.elements.filter { $0.enabled }
     }
-    
+
     var body: some View {
         Picker("Train:", selection: $selectedTrain) {
-            ForEach(trains, id:\.self) { train in
+            ForEach(trains, id: \.self) { train in
                 HStack {
                     Text(train.name)
                     if let loc = train.locomotive, let image = doc.locomotiveIconManager.icon(for: loc.id)?.copy(size: iconSize) {
@@ -44,7 +43,6 @@ struct TrainPicker: View {
 }
 
 struct TrainPicker_Previews: PreviewProvider {
-    
     static let doc = LayoutDocument(layout: LayoutComplex().newLayout())
 
     static var previews: some View {

@@ -13,10 +13,9 @@
 import SwiftUI
 
 struct LayoutScriptEditingView: View {
-    
     @ObservedObject var doc: LayoutDocument
     @ObservedObject var layout: Layout
-    
+
     var body: some View {
         LayoutElementsEditingView(layout: layout, new: {
             layout.newLayoutScript()
@@ -39,9 +38,8 @@ struct LayoutScriptEditingView: View {
 }
 
 struct LayoutScriptEditingView_Previews: PreviewProvider {
-    
     static let doc = LayoutDocument(layout: Layout())
-    
+
     static var previews: some View {
         Group {
             ConfigurationSheet(title: "Routes") {

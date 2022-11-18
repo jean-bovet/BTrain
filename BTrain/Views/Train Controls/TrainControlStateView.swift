@@ -13,15 +13,14 @@
 import SwiftUI
 
 struct TrainControlStateView: View {
-    
     @ObservedObject var train: Train
-    
+
     @Binding var trainRuntimeError: String?
 
     @State private var showingAlert = false
 
     let size = 10.0
-    
+
     var stateString: String {
         switch train.state {
         case .running:
@@ -34,7 +33,7 @@ struct TrainControlStateView: View {
             return "Stopped"
         }
     }
-    
+
     var statusInformation: String {
         switch train.scheduling {
         case .unmanaged:
@@ -47,11 +46,11 @@ struct TrainControlStateView: View {
             return "\(stateString) - stop immediately"
         case .finishManaged:
             return "\(stateString) - finishing"
-        }                
+        }
     }
-    
+
     var stateColor: Color {
-        switch(train.state) {
+        switch train.state {
         case .running:
             return .green
         case .braking:
@@ -62,7 +61,7 @@ struct TrainControlStateView: View {
             return .red
         }
     }
-    
+
     var body: some View {
         HStack {
             if let runtimeInfo = trainRuntimeError {
@@ -73,9 +72,8 @@ struct TrainControlStateView: View {
                 .buttonStyle(.borderless)
                 .help(runtimeInfo)
                 .alert(runtimeInfo, isPresented: $showingAlert) {
-                    Button("OK", role: .cancel) {
-                    }.keyboardShortcut(.defaultAction)
-                    
+                    Button("OK", role: .cancel) {}.keyboardShortcut(.defaultAction)
+
                     Button("Clear") {
                         trainRuntimeError = nil
                     }
@@ -87,17 +85,15 @@ struct TrainControlStateView: View {
                 .help(statusInformation)
         }
     }
-
 }
 
 struct TrainControlStateView_Previews: PreviewProvider {
-    
     static func train(with state: Train.State) -> Train {
         let t = Train()
         t.state = state
         return t
     }
-    
+
     static var previews: some View {
         Group {
             TrainControlStateView(train: train(with: .stopped), trainRuntimeError: .constant(nil))

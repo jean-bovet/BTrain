@@ -15,7 +15,6 @@ import XCTest
 @testable import BTrain
 
 extension XCTestCase {
-
     /// Returns the estimated time it will take to settle all the turnouts of the specified train.
     ///
     /// The time depends on the number of turnouts and the number of commands for each turnout
@@ -34,15 +33,12 @@ extension XCTestCase {
 }
 
 extension XCTestCase {
-    
     func wait(for block: () -> Bool, timeout: TimeInterval) {
         BTTestCase.wait(for: block, timeout: timeout)
     }
-
 }
 
 extension XCTestCase {
-    
     func wait(for duration: TimeInterval) {
         let current = RunLoop.current
         let startTime = Date()

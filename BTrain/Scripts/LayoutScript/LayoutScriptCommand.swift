@@ -13,21 +13,20 @@
 import Foundation
 
 struct LayoutScriptCommand: ScriptCommand, Identifiable, Hashable {
-    
     let id: UUID
-    
+
     enum Action: String, CaseIterable, Codable {
         // Run train "S-Bahn" with route "Outer Loop"
         case run = "Run"
     }
 
     var action: Action = .run
-    
+
     var children = [LayoutScriptCommand]()
-    
+
     var trainId: Identifier<Train>?
     var routeScriptId: Identifier<RouteScript>?
-    
+
     init(id: UUID = UUID(), action: Action) {
         self.id = id
         self.action = action
@@ -35,21 +34,20 @@ struct LayoutScriptCommand: ScriptCommand, Identifiable, Hashable {
 }
 
 extension LayoutScriptCommand: Codable {
-    
     enum CodingKeys: CodingKey {
         case id, action, children, train, route
     }
-    
+
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        self.id = try container.decode(UUID.self, forKey: CodingKeys.id)
-        self.action = try container.decode(Action.self, forKey: CodingKeys.action)
-        self.children = try container.decode([LayoutScriptCommand].self, forKey: CodingKeys.children)
-        
-        self.trainId = try container.decodeIfPresent(Identifier<Train>.self, forKey: CodingKeys.train)
-        self.routeScriptId = try container.decodeIfPresent(Identifier<RouteScript>.self, forKey: CodingKeys.route)
+        id = try container.decode(UUID.self, forKey: CodingKeys.id)
+        action = try container.decode(Action.self, forKey: CodingKeys.action)
+        children = try container.decode([LayoutScriptCommand].self, forKey: CodingKeys.children)
+
+        trainId = try container.decodeIfPresent(Identifier<Train>.self, forKey: CodingKeys.train)
+        routeScriptId = try container.decodeIfPresent(Identifier<RouteScript>.self, forKey: CodingKeys.route)
     }
-    
+
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(id, forKey: CodingKeys.id)

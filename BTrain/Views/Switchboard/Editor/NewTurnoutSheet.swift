@@ -13,22 +13,21 @@
 import SwiftUI
 
 struct NewTurnoutSheet: View {
-    
     let layout: Layout
     let context = ShapeContext()
-    
+
     @Environment(\.presentationMode) var presentationMode
 
     @State private var name = ""
-    
+
     @State private var category = Turnout.Category.singleLeft
-    
+
     var body: some View {
         VStack {
             Form {
                 TextField("Name:", text: $name)
                 Picker("Type:", selection: $category) {
-                    ForEach(Turnout.Category.allCases, id:\.self) { category in
+                    ForEach(Turnout.Category.allCases, id: \.self) { category in
                         HStack {
                             Text(category.description)
                             Spacer()
@@ -40,7 +39,6 @@ struct NewTurnoutSheet: View {
                         }
                     }
                 }.pickerStyle(.inline)
-                
             }
             HStack {
                 Spacer()
@@ -48,9 +46,9 @@ struct NewTurnoutSheet: View {
                     presentationMode.wrappedValue.dismiss()
                 }
                 .keyboardShortcut(.cancelAction)
-                
+
                 Spacer().fixedSpace()
-                
+
                 Button("OK") {
                     layout.turnouts.add(layout.newTurnout(name: name, category: category))
                     presentationMode.wrappedValue.dismiss()
@@ -61,7 +59,6 @@ struct NewTurnoutSheet: View {
 }
 
 struct NewTurnoutSheet_Previews: PreviewProvider {
-    
     static var previews: some View {
         NewTurnoutSheet(layout: LayoutLoop2().newLayout())
     }

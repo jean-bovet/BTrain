@@ -14,62 +14,61 @@ import Foundation
 
 /// This class represents a single locomotive in the layout.
 final class Locomotive: Element, ObservableObject {
-    
     /// Unique identifier of the locomotive
     let id: Identifier<Locomotive>
-    
+
     /// True if enabled, false otherwise
     @Published var enabled = true
-    
+
     /// Name of the locomotive
     @Published var name = ""
 
     /// Address of the locomotive
     @Published var address: UInt32 = 0
-      
+
     /// The decoder type of the locomotive
     @Published var decoder: DecoderType = .MFX {
         didSet {
             speed.decoderType = decoder
         }
     }
-    
+
     /// Length of the locomotive (in cm)
     @Published var length: DistanceCm?
-    
+
     /// Speed of the locomotive
     @Published var speed = LocomotiveSpeed(kph: 0, decoderType: .MFX)
 
     /// Direction of travel of the locomotive
     /// Note: backward direction is not yet supported
     @Published var directionForward = true
-    
+
     /// True if the locomotive can move in the backward direction
     @Published var canMoveBackwards = false
-    
+
     convenience init(uuid: String = UUID().uuidString, name: String = "", address: UInt32 = 0, decoder: DecoderType = .MFX,
-                     locomotiveLength: Double? = nil, maxSpeed: SpeedKph? = nil) {
+                     locomotiveLength: Double? = nil, maxSpeed: SpeedKph? = nil)
+    {
         self.init(id: Identifier(uuid: uuid), name: name, address: address, decoder: decoder,
                   locomotiveLength: locomotiveLength, maxSpeed: maxSpeed)
     }
-    
-    init(id: Identifier<Locomotive>, name: String, address: UInt32, decoder: DecoderType = .MFX,
-         locomotiveLength: Double? = nil, maxSpeed: SpeedKph? = nil) {
+
+    init(id: Identifier<Locomotive>, name: String, address: UInt32, decoder _: DecoderType = .MFX,
+         locomotiveLength: Double? = nil, maxSpeed: SpeedKph? = nil)
+    {
         self.id = id
         self.name = name
         self.address = address
-        self.length = locomotiveLength
-        self.speed.maxSpeed = maxSpeed ?? self.speed.maxSpeed
+        length = locomotiveLength
+        speed.maxSpeed = maxSpeed ?? speed.maxSpeed
     }
-
 }
 
 extension Locomotive: Codable {
-    
     enum CodingKeys: CodingKey {
         case id, enabled, name, address, lenght, speed, decoder, direction
     }
-    
+
     convenience init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         let id = try container.decode(Identifier<Locomotive>.self, forKey: CodingKeys.id)
@@ -77,12 +76,12 @@ extension Locomotive: Codable {
         let address = try container.decode(UInt32.self, forKey: CodingKeys.address)
 
         self.init(id: id, name: name, address: address)
-        
-        self.enabled = try container.decodeIfPresent(Bool.self, forKey: CodingKeys.enabled) ?? true
+
+        enabled = try container.decodeIfPresent(Bool.self, forKey: CodingKeys.enabled) ?? true
         self.decoder = try container.decode(DecoderType.self, forKey: CodingKeys.decoder)
-        self.length = try container.decodeIfPresent(Double.self, forKey: CodingKeys.lenght)
-        self.speed = try container.decode(LocomotiveSpeed.self, forKey: CodingKeys.speed)
-        self.directionForward = try container.decodeIfPresent(Bool.self, forKey: CodingKeys.direction) ?? true
+        length = try container.decodeIfPresent(Double.self, forKey: CodingKeys.lenght)
+        speed = try container.decode(LocomotiveSpeed.self, forKey: CodingKeys.speed)
+        directionForward = try container.decodeIfPresent(Bool.self, forKey: CodingKeys.direction) ?? true
     }
 
     func encode(to encoder: Encoder) throws {
@@ -96,15 +95,12 @@ extension Locomotive: Codable {
         try container.encode(decoder, forKey: CodingKeys.decoder)
         try container.encode(directionForward, forKey: CodingKeys.direction)
     }
-
 }
 
-extension Array where Element : Locomotive {
-
+extension Array where Element: Locomotive {
     func find(address: UInt32, decoder: DecoderType?) -> Element? {
-        self.first { loc in
+        first { loc in
             loc.address.actualAddress(for: loc.decoder) == address.actualAddress(for: decoder)
         }
     }
-    
 }

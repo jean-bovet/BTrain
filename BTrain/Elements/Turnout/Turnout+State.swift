@@ -13,7 +13,6 @@
 import Foundation
 
 extension Turnout {
-    
     static func states(for category: Category) -> [State] {
         switch category {
         case .singleLeft:
@@ -28,12 +27,12 @@ extension Turnout {
             return [.straight01, .straight23, .branch03, .branch21]
         }
     }
-    
+
     static func defaultState(for category: Category) -> State {
         switch category {
         case .singleLeft, .singleRight, .threeWay:
             return .straight
-            
+
         case .doubleSlip:
             return .straight
 
@@ -41,18 +40,18 @@ extension Turnout {
             return .straight01
         }
     }
-    
+
     // Returns all the possible states for the turnout
     var allStates: [State] {
         Turnout.states(for: category)
     }
-    
+
     // Returns the next state the turnout will take when toggling between
     // the states - see toggle() method below.
     var nextState: State {
         switch category {
         case .singleLeft:
-            switch(requestedState) {
+            switch requestedState {
             case .straight:
                 return .branchLeft
             case .branchLeft:
@@ -60,9 +59,9 @@ extension Turnout {
             default:
                 return .invalid
             }
-            
+
         case .singleRight:
-            switch(requestedState) {
+            switch requestedState {
             case .straight:
                 return .branchRight
             case .branchRight:
@@ -70,9 +69,9 @@ extension Turnout {
             default:
                 return .invalid
             }
-            
+
         case .doubleSlip:
-            switch(requestedState) {
+            switch requestedState {
             case .straight:
                 return .branch
             case .branch:
@@ -82,7 +81,7 @@ extension Turnout {
             }
 
         case .doubleSlip2:
-            switch(requestedState) {
+            switch requestedState {
             case .straight01:
                 return .straight23
             case .straight23:
@@ -96,7 +95,7 @@ extension Turnout {
             }
 
         case .threeWay:
-            switch(requestedState) {
+            switch requestedState {
             case .straight:
                 return .branchLeft
             case .branchRight:
@@ -108,15 +107,15 @@ extension Turnout {
             }
         }
     }
-    
-    static var statesMap: [Turnout.Category:[Turnout.State:UInt8]] = [
-        .singleLeft:[.straight: 1, .branchLeft: 0],
-        .singleRight:[.straight: 1, .branchRight: 0],
-        .doubleSlip:[.straight: 1, .branch: 0],
-        .doubleSlip2:[.straight01: 3, .straight23: 0, .branch21: 2, .branch03: 1],
-        .threeWay:[.straight: 3, .branchLeft: 2, .branchRight: 1],
+
+    static var statesMap: [Turnout.Category: [Turnout.State: UInt8]] = [
+        .singleLeft: [.straight: 1, .branchLeft: 0],
+        .singleRight: [.straight: 1, .branchRight: 0],
+        .doubleSlip: [.straight: 1, .branch: 0],
+        .doubleSlip2: [.straight01: 3, .straight23: 0, .branch21: 2, .branch03: 1],
+        .threeWay: [.straight: 3, .branchLeft: 2, .branchRight: 1],
     ]
-    
+
     var requestedStateValue: UInt8 {
         stateValue(for: requestedState)
     }
@@ -133,21 +132,21 @@ extension Turnout {
             return 0
         }
     }
-    
+
     private func setActualState(for value: UInt8) {
         guard let states = Turnout.statesMap[category] else {
             BTLogger.error("Unknown turnout category \(category)")
-            self.actualState = .invalid
+            actualState = .invalid
             return
         }
         guard let state = states.first(where: { $0.value == value }) else {
             BTLogger.error("Unknown turnout state value \(value) for \(category)")
-            self.actualState = .invalid
+            actualState = .invalid
             return
         }
-        self.actualState = state.key
+        actualState = state.key
     }
-    
+
     // Return the socket reachable from the "fromSocket" given the specific "state"
     func socketId(fromSocketId: Int, withState state: State) -> Int? {
         let candidates = sockets(from: fromSocketId)
@@ -159,14 +158,14 @@ extension Turnout {
         }
         return nil
     }
-    
+
     // Use this method to set an individual turnout address's state.
     // This is only useful for double slip or threeway turnout with
     // two addresses, each corresponding to a single turnout in
     // the real layout.
     func setActualState(value state: UInt8, for stateAddress: UInt32) {
         if category == .doubleSlip2 || category == .threeWay {
-            let actualValue = stateValue(for: self.actualState)
+            let actualValue = stateValue(for: actualState)
             if address2.actualAddress == stateAddress {
                 let value1 = (actualValue & 0x01)
                 let value2 = (state & 0x01) << 1
@@ -180,7 +179,7 @@ extension Turnout {
             setActualState(for: state)
         }
     }
-    
+
     // Returns the command corresponding to
     // the state of the turnout.
     func requestedStateCommands(power: UInt8) -> [Command] {
@@ -196,9 +195,9 @@ extension Turnout {
     }
 
     func state(fromSocket: Int, toSocket: Int) -> State {
-        switch(category) {
+        switch category {
         case .singleLeft:
-            switch(fromSocket, toSocket) {
+            switch (fromSocket, toSocket) {
             case (0, 1), (1, 0):
                 return .straight
             case (0, 2), (2, 0):
@@ -208,7 +207,7 @@ extension Turnout {
             }
 
         case .singleRight:
-            switch(fromSocket, toSocket) {
+            switch (fromSocket, toSocket) {
             case (0, 1), (1, 0):
                 return .straight
             case (0, 2), (2, 0):
@@ -218,7 +217,7 @@ extension Turnout {
             }
 
         case .doubleSlip:
-            switch(fromSocket, toSocket) {
+            switch (fromSocket, toSocket) {
             case (0, 1), (1, 0):
                 return .straight
             case (2, 3), (3, 2):
@@ -232,7 +231,7 @@ extension Turnout {
             }
 
         case .doubleSlip2:
-            switch(fromSocket, toSocket) {
+            switch (fromSocket, toSocket) {
             case (0, 1), (1, 0):
                 return .straight01
             case (2, 3), (3, 2):
@@ -246,7 +245,7 @@ extension Turnout {
             }
 
         case .threeWay:
-            switch(fromSocket, toSocket) {
+            switch (fromSocket, toSocket) {
             case (0, 1), (1, 0):
                 return .straight
             case (0, 2), (2, 0):
@@ -256,17 +255,16 @@ extension Turnout {
             default:
                 return .invalid
             }
-
         }
     }
 
     // Use this method to safely set the state
     func setStateSafe(_ state: State) {
         if reserved == nil {
-            self.requestedState = state
+            requestedState = state
         }
     }
-    
+
     // Use this method to toggle to the next available
     // state of the turnout. This is mainly used by the
     // UX when the user click on the turnout and it rotates
@@ -274,5 +272,4 @@ extension Turnout {
     func toggleToNextState() {
         setStateSafe(nextState)
     }
-    
 }

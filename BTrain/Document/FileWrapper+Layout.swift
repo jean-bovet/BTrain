@@ -13,16 +13,15 @@
 import AppKit
 
 extension FileWrapper {
-    
     func layout() throws -> Layout {
         guard let files = fileWrappers else {
             throw CocoaError(.fileReadCorruptFile)
         }
-        
-        guard let layoutFile = files.first(where: {$0.value.filename == LayoutDocument.layoutFileName }) else {
+
+        guard let layoutFile = files.first(where: { $0.value.filename == LayoutDocument.layoutFileName }) else {
             throw CocoaError(.fileReadCorruptFile)
         }
-        
+
         guard let data = layoutFile.value.regularFileContents else {
             throw CocoaError(.fileReadCorruptFile)
         }
@@ -30,40 +29,40 @@ extension FileWrapper {
         let layout = try LayoutDocument.layout(contentType: .json, data: data)
         return layout
     }
-    
-    func locomotiveIcons() throws -> [(Identifier<Locomotive>,FileWrapper)] {
+
+    func locomotiveIcons() throws -> [(Identifier<Locomotive>, FileWrapper)] {
         guard let files = fileWrappers else {
             throw CocoaError(.fileReadCorruptFile)
         }
-        
-        var items = [(Identifier<Locomotive>,FileWrapper)]()
-        if let iconDirectory = files.first(where: {$0.value.isDirectory})?.value, let files = iconDirectory.fileWrappers?.values {
+
+        var items = [(Identifier<Locomotive>, FileWrapper)]()
+        if let iconDirectory = files.first(where: { $0.value.isDirectory })?.value, let files = iconDirectory.fileWrappers?.values {
             for file in files {
                 guard let filename = file.filename else {
                     continue
                 }
                 let locId = (filename as NSString).deletingPathExtension
-                
+
                 // Check that the content can be read and returns something
                 guard file.regularFileContents != nil else {
                     throw CocoaError(.fileReadCorruptFile)
                 }
-                                                
+
                 items.append((Identifier<Locomotive>(uuid: locId), file))
             }
         }
         return items
     }
-    
+
     func userInterfaceSettings() throws -> UserInterfaceSettings? {
         guard let files = fileWrappers else {
             throw CocoaError(.fileReadCorruptFile)
         }
-        
-        guard let layoutFile = files.first(where: {$0.value.filename == LayoutDocument.userInterfaceFileName }) else {
+
+        guard let layoutFile = files.first(where: { $0.value.filename == LayoutDocument.userInterfaceFileName }) else {
             return nil
         }
-        
+
         guard let data = layoutFile.value.regularFileContents else {
             throw CocoaError(.fileReadCorruptFile)
         }
@@ -72,5 +71,4 @@ extension FileWrapper {
         let settings = try decoder.decode(UserInterfaceSettings.self, from: data)
         return settings
     }
-
 }

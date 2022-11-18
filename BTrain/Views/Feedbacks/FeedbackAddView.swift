@@ -15,14 +15,13 @@ import SwiftUI
 /// This view enables the user to add a feedback by automatically detecting its contact and device ID using the Digital Controller:
 /// - Each time the user activates a feedback in the layout, its addresses will be reported in this view.
 struct FeedbackAddView: View {
-    
     @ObservedObject var doc: LayoutDocument
     @ObservedObject var layoutController: LayoutController
 
     @Binding var newFeedback: FeedbackEditingView.NewFeedback
 
     @State private var name = ""
-    
+
     @Environment(\.presentationMode) var presentationMode
 
     var body: some View {
@@ -40,12 +39,12 @@ struct FeedbackAddView: View {
             }
             HStack {
                 Spacer()
-                
+
                 Button("Cancel") {
                     newFeedback = FeedbackEditingView.NewFeedback.empty()
                     presentationMode.wrappedValue.dismiss()
                 }.keyboardShortcut(.cancelAction)
-                
+
                 Button("Add") {
                     if let feedback = layoutController.lastDetectedFeedback {
                         newFeedback = FeedbackEditingView.NewFeedback(name: name, deviceID: feedback.deviceID, contactID: feedback.contactID)
@@ -58,11 +57,11 @@ struct FeedbackAddView: View {
                 .disabled(layoutController.lastDetectedFeedback == nil || name.isEmpty)
             }
         }
-        .onAppear() {
+        .onAppear {
             layoutController.lastDetectedFeedback = nil
             if doc.simulator.started {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-                    layoutController.lastDetectedFeedback = .init(deviceID: UInt16.random(in: 1..<10), contactID: UInt16.random(in: 1..<100))
+                    layoutController.lastDetectedFeedback = .init(deviceID: UInt16.random(in: 1 ..< 10), contactID: UInt16.random(in: 1 ..< 100))
                 }
             }
         }
@@ -71,10 +70,9 @@ struct FeedbackAddView: View {
 }
 
 struct FeedbackAddView_Previews: PreviewProvider {
-    
     static let doc = LayoutDocument(layout: LayoutYard().newLayout())
     static let feedback = FeedbackEditingView.NewFeedback.empty()
-    
+
     static var previews: some View {
         FeedbackAddView(doc: doc, layoutController: doc.layoutController, newFeedback: .constant(feedback))
     }

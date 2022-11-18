@@ -21,36 +21,35 @@ import AppKit
 /// Note: when saving the ``LayoutDocument``, all the icons will be saved inside the document
 /// package after the appropriate conversion.
 final class LocomotiveIconManager: ObservableObject {
-    
-    private var fileWrappers = [Identifier<Locomotive>:FileWrapper]()
+    private var fileWrappers = [Identifier<Locomotive>: FileWrapper]()
     private let imageCache = NSCache<NSString, NSImage>()
-    
+
     func fileWrapper(for locId: Identifier<Locomotive>) -> FileWrapper? {
         fileWrappers[locId]
     }
-    
+
     func setFileWrapper(_ fw: FileWrapper, for locId: Identifier<Locomotive>) {
         fileWrappers[locId] = fw
     }
-    
+
     func icon(for locId: Identifier<Locomotive>?) -> NSImage? {
         guard let locId = locId else {
             return nil
         }
-        
+
         // Return from cache if it exists
         if let image = imageCache.object(forKey: locId.uuid as NSString) {
             return image
         }
-        
+
         // Load the icon from disk
         if let url = fileWrappers[locId] {
             return load(url, locId: locId)
         }
-        
+
         return nil
     }
-    
+
     /// Set the icon data to a specific locomotive.
     ///
     /// The icon data will be saved to a temporary directory until the document is saved, at which point
@@ -64,37 +63,37 @@ final class LocomotiveIconManager: ObservableObject {
         try data.write(to: temporaryIconFile)
         setIcon(try FileWrapper(url: temporaryIconFile), locId: locId)
     }
-    
+
     func setIcon(_ url: FileWrapper, locId: Identifier<Locomotive>) {
         objectWillChange.send()
         fileWrappers[locId] = url
         _ = load(url, locId: locId)
     }
-    
-    func setIcons(_ icons: [(Identifier<Locomotive>,FileWrapper)]) {
+
+    func setIcons(_ icons: [(Identifier<Locomotive>, FileWrapper)]) {
         clear()
         for value in icons {
             setIcon(value.1, locId: value.0)
         }
     }
-    
-    private func load(_ url: FileWrapper, locId: Identifier<Locomotive>) -> NSImage? {
+
+    private func load(_: FileWrapper, locId: Identifier<Locomotive>) -> NSImage? {
         guard let url = fileWrappers[locId] else {
             return nil
         }
-        
+
         guard let data = url.regularFileContents else {
             BTLogger.error("Unable to retrieve the content of \(url)")
             return nil
         }
-        
+
         guard let image = NSImage(data: data) else {
             BTLogger.error("Invalid image format for \(url)")
             return nil
         }
-        
+
         imageCache.setObject(image, forKey: locId.uuid as NSString)
-        
+
         return image
     }
 
@@ -103,7 +102,7 @@ final class LocomotiveIconManager: ObservableObject {
         imageCache.removeAllObjects()
         fileWrappers.removeAll()
     }
-    
+
     func removeIconFor(loc: Locomotive?) {
         guard let loc = loc else {
             return

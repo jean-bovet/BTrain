@@ -13,13 +13,12 @@
 import SwiftUI
 
 struct CenteredCustomView<Content: View>: View {
-    
     let content: Content
-    
+
     init(@ViewBuilder content: () -> Content) {
         self.content = content()
     }
-    
+
     var body: some View {
         HStack {
             Spacer()
@@ -33,14 +32,11 @@ struct CenteredCustomView<Content: View>: View {
     }
 }
 
-
 struct CenteredCustomView_Previews: PreviewProvider {
     static var previews: some View {
         CenteredCustomView {
             Text("Hello, world!")
-            Button("Click to Add") {
-                
-            }
+            Button("Click to Add") {}
         }
     }
 }

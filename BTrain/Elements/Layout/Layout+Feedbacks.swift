@@ -13,7 +13,6 @@
 import Foundation
 
 extension Layout {
-                
     @discardableResult
     func newFeedback() -> Feedback {
         let f = Feedback(id: LayoutIdentity.newIdentity(feedbacks.elements, prefix: .feedback))
@@ -25,13 +24,12 @@ extension Layout {
         let f = Feedback(id: LayoutIdentity.newIdentity(feedbacks.elements, prefix: .feedback), deviceID: feedback.deviceID, contactID: feedback.contactID)
         return feedbacks.add(f)
     }
-    
+
     func remove(feedbackID: Identifier<Feedback>) {
         feedbacks.remove(feedbackID)
-        
+
         blocks.elements.forEach { block in
             block.remove(feedbackId: feedbackID)
         }
     }
-
 }

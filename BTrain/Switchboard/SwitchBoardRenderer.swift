@@ -10,18 +10,17 @@
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-import Foundation
 import CoreGraphics
+import Foundation
 
 final class SwitchBoardRenderer {
- 
     let provider: ShapeProvider
     let shapeContext: ShapeContext
-    
+
     var ephemeralDragInfo: EphemeralDragInfo?
-    
+
     var showAvailableSockets = false
-    
+
     var color: CGColor {
         .init(red: 0, green: 0, blue: 1, alpha: 1)
     }
@@ -30,14 +29,14 @@ final class SwitchBoardRenderer {
         self.provider = provider
         self.shapeContext = shapeContext
     }
-    
+
     func draw(context: CGContext) {
-        for shape in provider.shapes.filter({$0.visible}) {
+        for shape in provider.shapes.filter({ $0.visible }) {
             context.with {
                 shape.draw(ctx: context)
             }
         }
-        
+
         // Draw dotted line between the custom control points
         if shapeContext.editing {
             for shape in provider.linkShapes {
@@ -55,7 +54,7 @@ final class SwitchBoardRenderer {
                 }
             }
         }
-        
+
         // Highlight any free socket, either when asked to do so during the
         // dragging of a link (showAvailableSockets) or when a shape is selected
         // so the user can start creating a new link between shapes.
@@ -77,7 +76,7 @@ final class SwitchBoardRenderer {
                 context.fillPath()
             }
         }
-        
+
         if let ephemeralDropPath = ephemeralDragInfo?.dropPath {
             context.with {
                 context.setFillColor(shapeContext.dropPathColor.copy(alpha: 0.5)!)
@@ -91,7 +90,5 @@ final class SwitchBoardRenderer {
                 ephemeralDragShape.draw(ctx: context)
             }
         }
-
     }
-
 }

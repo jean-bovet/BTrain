@@ -14,10 +14,9 @@ import Foundation
 
 /// Helper class to fetch configuration information from the Central Station using HTTP requests.
 struct MarklinCS3 {
-    
     /// API to retrieve a JSON file containing the definition of all the locomotives
     let API_LOKS = "app/api/loks"
-        
+
     /// API to retrieve the locomotive icons
     let API_LOKS_ICON = "app/assets/lok"
 
@@ -30,7 +29,7 @@ struct MarklinCS3 {
         let address: UInt32
         let icon: String
     }
-    
+
     /// Fetches all the locomotives
     /// - Parameter server: the Central Station IP address
     /// - Returns: the array of locomotives
@@ -40,7 +39,7 @@ struct MarklinCS3 {
         let loks = try JSONDecoder().decode([Lok].self, from: data)
         return loks
     }
-    
+
     /// Fetches the icon for the specified locomotive
     /// - Parameters:
     ///   - server: the Central Station IP address
@@ -50,12 +49,12 @@ struct MarklinCS3 {
         guard let iconName = iconName(lok: lok) else {
             return nil
         }
-                
+
         let url = server.appending(path: API_LOKS_ICON).appending(component: iconName)
         let (data, _) = try await URLSession.shared.data(from: url)
         return data
     }
-    
+
     private func iconName(lok: Lok) -> String? {
         // /usr/local/cs3/lokicons/SBB 193 524-6 Cargo
         if let name = lok.icon.split(separator: "/").last {

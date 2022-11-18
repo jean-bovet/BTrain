@@ -10,8 +10,8 @@
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-import Foundation
 @testable import BTrain
+import Foundation
 
 final class LayoutStringParser {
     let ls: String
@@ -20,16 +20,16 @@ final class LayoutStringParser {
     var more: Bool {
         index < ls.endIndex
     }
-    
+
     var c: Character {
         ls[index]
     }
-    
+
     init(ls: String) {
         self.ls = ls
-        self.index = ls.startIndex
+        index = ls.startIndex
     }
-    
+
     func matchesSingleDigit() -> Int? {
         if let n = Int(String(c)) {
             eat()
@@ -38,7 +38,7 @@ final class LayoutStringParser {
             return nil
         }
     }
-    
+
     func matchesInteger() -> Int? {
         var intString = ""
         while Int(String(c)) != nil {
@@ -47,7 +47,7 @@ final class LayoutStringParser {
         }
         return Int(intString)
     }
-    
+
     func matches(_ char: Character) -> Bool {
         if c == char {
             eat(char)
@@ -56,7 +56,7 @@ final class LayoutStringParser {
             return false
         }
     }
-     
+
     func matches(_ s: String) -> Bool {
         let previousIndex = index
         for expectedC in s {
@@ -77,15 +77,15 @@ final class LayoutStringParser {
     func matchString(_ endCharacter: Character = " ") -> String {
         matchString([endCharacter])
     }
-    
+
     func matchString(_ endCharacters: [Character]) -> String {
         var text = ""
-        while more && !endCharacters.contains(c) {
+        while more, !endCharacters.contains(c) {
             text += String(eat())
         }
         return text
     }
-    
+
     @discardableResult
     func eat(_ expected: Character? = nil) -> Character {
         if let expected = expected {
@@ -95,5 +95,4 @@ final class LayoutStringParser {
         index = ls.index(after: index)
         return eatenCharacter
     }
-    
 }

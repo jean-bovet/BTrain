@@ -13,31 +13,30 @@
 import SwiftUI
 
 struct TurnoutShapeView: View {
-    
     let layout: Layout
     let category: Turnout.Category
     let requestedState: Turnout.State
     let actualState: Turnout.State
     let shapeContext: ShapeContext
-    
+
     /// True if a reservation should be used to simulate how a specific branch of
     /// the turnout is highlighted to show the path of the reservation.
     let reservation: Bool
-    
+
     var name: String = ""
     var rotation: Double = 0
-    
-    let viewSize = CGSize(width: 64, height: 34*2)
-    
+
+    let viewSize = CGSize(width: 64, height: 34 * 2)
+
     var turnout: Turnout {
         let t = Turnout()
         t.name = name
         t.category = category
         t.requestedState = requestedState
         t.actualState = actualState
-        t.center = .init(x: viewSize.width/2, y: viewSize.height/2)
+        t.center = .init(x: viewSize.width / 2, y: viewSize.height / 2)
         t.rotationAngle = rotation
-        
+
         if reservation {
             let sockets = Turnout.sockets(forState: requestedState, category: category)
             if sockets.count == 2 {
@@ -48,31 +47,28 @@ struct TurnoutShapeView: View {
         }
         return t
     }
-    
+
     var shape: TurnoutShape {
         let shape = TurnoutShape(layoutController: nil, layout: layout, turnout: turnout, shapeContext: shapeContext)
         return shape
     }
-    
+
     var body: some View {
-        Canvas { context, size in
+        Canvas { context, _ in
             context.withCGContext { context in
                 shape.draw(ctx: context)
             }
         }.frame(width: viewSize.width, height: viewSize.height)
     }
-    
 }
 
-
 struct TurnoutShapeView_Previews: PreviewProvider {
-    
     static let layout = LayoutLoop1().newLayout()
     static let context = ShapeContext()
-    
+
     static var previews: some View {
         VStack(alignment: .leading) {
-            ForEach(Turnout.Category.allCases, id:\.self) { category in
+            ForEach(Turnout.Category.allCases, id: \.self) { category in
                 HStack {
                     ForEach(Turnout.states(for: category)) { state in
                         VStack {

@@ -10,21 +10,20 @@
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-import XCTest
-import ViewInspector
-import SwiftUI
 import AppKit
+import SwiftUI
+import ViewInspector
+import XCTest
 
 @testable import BTrain
 
-extension LocomotiveIconView: Inspectable { }
-extension SectionTitleView: Inspectable { }
-extension UnitViewModifier: Inspectable { }
-extension TrainDetailsGeometrySectionView: Inspectable { }
-extension TrainDetailsReservationSectionView: Inspectable { }
+extension LocomotiveIconView: Inspectable {}
+extension SectionTitleView: Inspectable {}
+extension UnitViewModifier: Inspectable {}
+extension TrainDetailsGeometrySectionView: Inspectable {}
+extension TrainDetailsReservationSectionView: Inspectable {}
 
 class TrainViewTests: RootViewTests {
-    
     func testStringValue() throws {
         let doc = newDocument()
         let sut = TrainEditingView(document: doc, layout: doc.layout)
@@ -35,25 +34,24 @@ class TrainViewTests: RootViewTests {
         let doc = newDocument()
         let layout = LayoutLoop1().newLayout()
         let t1 = layout.trains[0]
-        
+
         let sut = TrainDetailsView(document: doc, train: t1)
-        
+
         let geometrySection = try sut.inspect().find(TrainDetailsGeometrySectionView.self)
         _ = try geometrySection.find(text: "Wagons:")
-        
+
         let reservationSection = try sut.inspect().find(TrainDetailsReservationSectionView.self)
         _ = try reservationSection.find(text: "Leading: 2")
     }
-      
+
     func testUnitView() throws {
         let sut = TextField("Distance", text: .constant("")).unitStyle("mm")
         _ = try sut.inspect().find(text: "Distance")
         _ = try sut.inspect().find(text: "mm")
     }
-    
+
     func testSectionTitleView() throws {
         let sut = SectionTitleView(label: "This is a section")
         _ = try sut.inspect().find(text: "This is a section")
     }
-
 }

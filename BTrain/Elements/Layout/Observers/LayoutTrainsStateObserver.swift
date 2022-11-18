@@ -10,20 +10,18 @@
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-import Foundation
 import Combine
+import Foundation
 
 /// Observe any change to the ``Train/state`` attribute
 final class LayoutTrainsStateObserver: LayoutTrainsObserver {
-    
-    internal override func registerForTrainChange(_ train: Train) -> AnyCancellable {
+    override internal func registerForTrainChange(_ train: Train) -> AnyCancellable {
         let cancellable = train.$state
             .removeDuplicates()
             .receive(on: RunLoop.main)
-            .sink { [weak self] state in
+            .sink { [weak self] _ in
                 self?.trainChanged(train)
             }
         return cancellable
     }
-
 }

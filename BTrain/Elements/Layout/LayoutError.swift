@@ -19,19 +19,19 @@ enum LayoutError: Error {
     case trainInBlockDoesNotMatch(trainId: Identifier<Train>, blockId: Identifier<Block>, blockTrainId: Identifier<Train>)
     case trainNotFoundInRoute(train: Train, route: Route)
     case trainNotAssignedToARoute(train: Train)
-    
+
     case locomotiveNotAssignedToTrain(train: Train)
 
     case headWagonNotFound(train: Train)
     case invalidHeadWagonConfiguration(train: Train)
-    
+
     case blockNotFound(blockId: Identifier<Block>)
     case blockNotFoundInStation(stationId: Identifier<Station>)
     case stationNotFound(stationId: Identifier<Station>)
     case turnoutNotFound(turnoutId: Identifier<Turnout>)
     case feedbackNotFound(feedbackId: Identifier<Feedback>)
     case socketIdNotFound(socket: Socket)
-        
+
     case invalidSocket(socket: Socket)
 
     case brakeFeedbackNotFound(block: Block)
@@ -43,14 +43,14 @@ enum LayoutError: Error {
     case blockAlreadyReserved(block: Block)
     case turnoutAlreadyReserved(turnout: Turnout)
     case transitionAlreadyReserved(transition: ITransition)
-    
+
     case unexpectedFeedback(feedback: Feedback)
-    
+
     case noTransition(fromBlock: Block, toBlock: Block)
     case lastTransitionToBlock(transition: Identifier<Transition>, blockId: Identifier<Block>)
     case alwaysOneAndOnlyOneTransition
     case invalidTransition(transition: ITransition)
-    
+
     case cannotReserveBlock(block: Block, train: Train, reserved: Reservation)
     case cannotReserveAllElements(train: Train)
     case cannotChangeRouteWhileTrainIsRunning(train: Train, route: Route)
@@ -58,103 +58,103 @@ enum LayoutError: Error {
     case routeNotFound(routeId: Identifier<Route>)
     case noPossibleRoute(train: Train)
     case routeIsNotAutomatic(route: Route)
-        
+
     case destinationBlockMismatch(currentBlock: Block, destination: Destination)
-        
+
     case invalidPartIndex(index: Int, block: Block)
-    
+
     case shapeNotFoundForSocket(socket: Socket)
 }
-    
+
 extension LayoutError: LocalizedError {
     var errorDescription: String? {
         switch self {
-        case .trainNotFound(trainId: let trainId):
+        case let .trainNotFound(trainId: trainId):
             return "Train \(trainId) not found"
-        case .blockNotFound(blockId: let blockId):
+        case let .blockNotFound(blockId: blockId):
             return "Block \(blockId) not found"
-        case .blockNotFoundInStation(stationId: let stationId):
+        case let .blockNotFoundInStation(stationId: stationId):
             return "No block found in station \(stationId)"
-        case .stationNotFound(stationId: let stationId):
+        case let .stationNotFound(stationId: stationId):
             return "Station \(stationId) not found"
-        case .turnoutNotFound(turnoutId: let turnoutId):
+        case let .turnoutNotFound(turnoutId: turnoutId):
             return "Turnout \(turnoutId) not found"
-        case .feedbackNotFound(feedbackId: let feedbackId):
+        case let .feedbackNotFound(feedbackId: feedbackId):
             return "Feedback \(feedbackId) not found"
-        case .blockNotEmpty(blockId: let blockId):
+        case let .blockNotEmpty(blockId: blockId):
             return "Block \(blockId) is not empty"
-        case .blockNotReservedForTrain(block: let block, train: let train):
+        case let .blockNotReservedForTrain(block: block, train: train):
             return "Block \(block.name) did not get reserved for train \(train)"
-            
-        case .brakeFeedbackNotFound(block: let block):
+
+        case let .brakeFeedbackNotFound(block: block):
             return "Block \(block.name) does not have a brake feedback"
 
-        case .stopFeedbackNotFound(block: let block):
+        case let .stopFeedbackNotFound(block: block):
             return "Block \(block.name) does not have a stop feedback"
 
-        case .unexpectedFeedback(feedback: let feedback):
+        case let .unexpectedFeedback(feedback: feedback):
             return "Unexpected feedback \(feedback.name) detected"
 
-        case .noTransition(fromBlock: let fromBlock, toBlock: let toBlock):
+        case let .noTransition(fromBlock: fromBlock, toBlock: toBlock):
             return "No transition found from block \(fromBlock) to block \(toBlock)"
-        case .lastTransitionToBlock(transition: let transition, blockId: let blockId):
+        case let .lastTransitionToBlock(transition: transition, blockId: blockId):
             return "The last transition \(transition) should be to block \(blockId)"
-        case .cannotReserveBlock(block: let block, train: let train, reserved: let reserved):
+        case let .cannotReserveBlock(block: block, train: train, reserved: reserved):
             return "Cannot reserve block \(block.name) for train \(train.name) because the block is already reserved for \(reserved)"
-        case .cannotReserveAllElements(train: let train):
+        case let .cannotReserveAllElements(train: train):
             return "Cannot reserve all the elements that train \(train.name) occupies"
-        case .cannotChangeRouteWhileTrainIsRunning(train: let train, route: let route):
+        case let .cannotChangeRouteWhileTrainIsRunning(train: train, route: route):
             return "Cannot change route \(route.name) when train \(train.name) is running"
 
-        case .socketIdNotFound(socket: let socket):
+        case let .socketIdNotFound(socket: socket):
             return "There is no socket defined for \(socket)"
-        case .invalidSocket(socket: let socket):
+        case let .invalidSocket(socket: socket):
             return "Socket \(socket) must have either its block or turnout defined"
 
-        case .trainNotAssignedToABlock(train: let train):
+        case let .trainNotAssignedToABlock(train: train):
             return "Train \(train.name) does not have any assigned block (train.blockId is nil)"
-        case .trainNotFoundInBlock(blockId: let blockId):
+        case let .trainNotFoundInBlock(blockId: blockId):
             return "Block \(blockId) does not have any train assigned to it (TrainInstance is nil)"
-        case .trainInBlockDoesNotMatch(trainId: let trainId, blockId: let blockId, blockTrainId: let blockTrainId):
+        case let .trainInBlockDoesNotMatch(trainId: trainId, blockId: blockId, blockTrainId: blockTrainId):
             return "Block \(blockId) has another train (\(blockTrainId)) than \(trainId) assigned to it"
-        case .trainNotFoundInRoute(train: let train, route: let route):
+        case let .trainNotFoundInRoute(train: train, route: route):
             return "Train \(train.name) not found in route \(route.name)"
-        case .trainNotAssignedToARoute(train: let train):
+        case let .trainNotAssignedToARoute(train: train):
             return "Train \(train.name) has no associated route"
-            
-        case .headWagonNotFound(train: let train):
+
+        case let .headWagonNotFound(train: train):
             return "No head wagon found for train \(train.name)"
-        case .invalidHeadWagonConfiguration(train: let train):
+        case let .invalidHeadWagonConfiguration(train: train):
             return "It is an error to ask for the head wagon when the locomotive is not pushing its wagons: \(train)"
 
-        case .routeNotFound(routeId: let routeId):
+        case let .routeNotFound(routeId: routeId):
             return "Route \(routeId) not found"
-        case .noPossibleRoute(train: let train):
+        case let .noPossibleRoute(train: train):
             return "No automatic route found for \(train.name)"
-        case .routeIsNotAutomatic(route: let route):
+        case let .routeIsNotAutomatic(route: route):
             return "The route \(route.name) is not automatic"
 
         case .alwaysOneAndOnlyOneTransition:
             return "There must always be only one and only one transition"
-            
-        case .destinationBlockMismatch(currentBlock: let currentBlock, destination: let destination):
+
+        case let .destinationBlockMismatch(currentBlock: currentBlock, destination: destination):
             return "The destination block \(destination.blockId) does not match the current block \(currentBlock.id) (\(currentBlock.name))"
-            
-        case .blockAlreadyReserved(block: let block):
+
+        case let .blockAlreadyReserved(block: block):
             return "Block \(block.name) is already reserved for \(String(describing: block.reservation))"
-        case .turnoutAlreadyReserved(turnout: let turnout):
+        case let .turnoutAlreadyReserved(turnout: turnout):
             return "Turnout \(turnout.name) is already reserved for \(String(describing: turnout.reserved))"
-        case .transitionAlreadyReserved(transition: let transition):
+        case let .transitionAlreadyReserved(transition: transition):
             return "Transition \(transition.id) is already reserved for \(String(describing: transition.reserved))"
-            
-        case .invalidPartIndex(index: let index, block: let block):
+
+        case let .invalidPartIndex(index: index, block: block):
             return "Invalid part index \(index) in \(block.name)"
-        case .invalidTransition(transition: let transition):
+        case let .invalidTransition(transition: transition):
             return "Invalid transition \(transition)"
-        case .shapeNotFoundForSocket(socket: let socket):
+        case let .shapeNotFoundForSocket(socket: socket):
             return "Unable to find a shape for socket \(socket)"
-            
-        case .locomotiveNotAssignedToTrain(train: let train):
+
+        case let .locomotiveNotAssignedToTrain(train: train):
             return "Train \(train.name) does not have a locomotive assigned to it"
         }
     }

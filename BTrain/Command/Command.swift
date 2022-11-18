@@ -20,33 +20,33 @@ enum Command {
         case high
         case normal
     }
-    
+
     case go(priority: Priority = .high, descriptor: CommandDescriptor? = nil)
     case stop(priority: Priority = .high, descriptor: CommandDescriptor? = nil)
     case emergencyStop(address: UInt32, decoderType: DecoderType?, priority: Priority = .high, descriptor: CommandDescriptor? = nil)
-    
+
     case speed(address: UInt32, decoderType: DecoderType?, value: SpeedValue, priority: Priority = .normal, descriptor: CommandDescriptor? = nil)
-    
+
     enum Direction {
         case forward
         case backward
         case unchanged
         case unknown
     }
-    
+
     case direction(address: UInt32, decoderType: DecoderType?, direction: Direction, priority: Priority = .normal, descriptor: CommandDescriptor? = nil)
-    
+
     case queryDirection(address: UInt32, decoderType: DecoderType?, priority: Priority = .normal, descriptor: CommandDescriptor? = nil)
 
     case turnout(address: CommandTurnoutAddress, state: UInt8, power: UInt8, priority: Priority = .normal, descriptor: CommandDescriptor? = nil)
-    
+
     case feedback(deviceID: UInt16, contactID: UInt16, oldValue: UInt8, newValue: UInt8, time: UInt32, priority: Priority = .normal, descriptor: CommandDescriptor? = nil)
-    
+
     // Asks the Digital Control System to retrieve the locomotives description.
     // This command uses the completion block of the execute() method to notify when
     // the locomotives have all been fetched
     case locomotives(priority: Priority = .normal, descriptor: CommandDescriptor? = nil)
-    
+
     // Unknown command. Use the descriptor to find out more about its description
     // and potential hex values for debugging.
     case unknown(command: UInt8, priority: Priority = .normal, descriptor: CommandDescriptor? = nil)
@@ -63,10 +63,10 @@ enum DecoderType: String, CaseIterable, Codable {
     case DCC
     case MFX
     case SX1
-    
+
     // Source: https://www.marklin-users.net/forum/posts/t27003-MM2-and-mfx-speed-steps
     var steps: UInt8 {
-        switch(self) {
+        switch self {
         case .MM:
             return 14
         case .MM2:
@@ -80,13 +80,11 @@ enum DecoderType: String, CaseIterable, Codable {
             return 31
         }
     }
-
 }
 
 extension UInt32 {
-    
     func actualAddress(for decoder: DecoderType?) -> UInt32 {
-        switch(decoder) {
+        switch decoder {
         case .MM:
             return 0x0000 + self
         case .MM2:
@@ -101,7 +99,6 @@ extension UInt32 {
             return self
         }
     }
-
 }
 
 enum CommandTurnoutProtocol: String, CaseIterable, Codable {
@@ -112,8 +109,8 @@ enum CommandTurnoutProtocol: String, CaseIterable, Codable {
 struct CommandTurnoutAddress: Codable, Hashable, Equatable {
     let address: UInt32
     let `protocol`: CommandTurnoutProtocol?
-    
-    init(_ address: UInt32, _ `protocol`: CommandTurnoutProtocol?) {
+
+    init(_ address: UInt32, _ protocol: CommandTurnoutProtocol?) {
         self.address = address
         self.protocol = `protocol`
     }

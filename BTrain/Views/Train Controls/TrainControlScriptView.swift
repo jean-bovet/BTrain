@@ -13,7 +13,6 @@
 import SwiftUI
 
 struct TrainControlScriptView: View {
-
     @ObservedObject var document: LayoutDocument
     @ObservedObject var layout: Layout
     @State private var selectedLayoutScript: Identifier<LayoutScript>?
@@ -21,38 +20,35 @@ struct TrainControlScriptView: View {
     var body: some View {
         HStack {
             Picker("Script:", selection: $selectedLayoutScript) {
-                ForEach(layout.layoutScripts.elements, id:\.self) { script in
+                ForEach(layout.layoutScripts.elements, id: \.self) { script in
                     Text(script.name).tag(script.id as Identifier<LayoutScript>?)
                 }
             }
             .disabled(document.layoutController.isRunning(scriptId: selectedLayoutScript))
             .labelsHidden()
             .fixedSize()
-            .onAppear() {
+            .onAppear {
                 selectedLayoutScript = layout.layoutScripts.elements.first?.id
             }
-            
+
             Spacer().fixedSpace()
-            
+
             Button("􀊄 Start") {
                 document.layoutController.schedule(scriptId: selectedLayoutScript!)
             }.disabled(selectedLayoutScript == nil || document.layoutController.isRunning(scriptId: selectedLayoutScript))
-            
+
             Spacer().fixedSpace()
-            
+
             Button("􀛷 Stop") {
                 try? document.layoutController.stop(scriptId: selectedLayoutScript!)
             }.disabled(selectedLayoutScript == nil || !document.layoutController.isRunning(scriptId: selectedLayoutScript))
-            
+
             Spacer()
         }.disabled(!document.power)
     }
-    
 }
 
-
 struct TrainControlScriptView_Previews: PreviewProvider {
-    
     static let doc: LayoutDocument = {
         let d = LayoutDocument(layout: LayoutLoop2().newLayout())
         let s = LayoutScript(uuid: "foo", name: "Demo Loop 1")

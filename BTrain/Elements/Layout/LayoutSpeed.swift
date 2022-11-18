@@ -16,9 +16,8 @@ import Foundation
 /// moves smoothly across the layout while ensuring a safe speed to allow to brake within
 /// the available braking distance.
 struct LayoutSpeed {
-    
     let layout: Layout
-    
+
     /// Returns true if the train can stop within the available lead distance, including any remaining distance
     /// in the current block, at the specified speed.
     ///
@@ -33,10 +32,10 @@ struct LayoutSpeed {
     func isBrakingDistanceRespected(train: Train, speed: SpeedKph) throws -> Bool {
         let distanceLeftInBlock = distanceLeftInCurrentBlock(train: train)
         let leadingDistance = distanceLeftInBlock + train.leading.settledDistance
-        
+
         // Compute the distance necessary to bring the train to a full stop
         let result = try distanceNeededToChangeSpeed(ofTrain: train, fromSpeed: speed, toSpeed: 0)
-        
+
         // The braking distance is respected if it is shorter or equal to the leading distance available.
         let respected = result.distance <= leadingDistance
         if respected {
@@ -46,7 +45,7 @@ struct LayoutSpeed {
         }
         return respected
     }
-    
+
     /// Returns the maximum speed allowed for the train, given the occupied and leading items.
     ///
     /// The following rules are applied:
@@ -64,10 +63,10 @@ struct LayoutSpeed {
         maximumSpeedAllowed = min(maximumSpeedAllowed, try settledLeadMaximumSpeed(train: train))
 
         BTLogger.router.debug("\(train, privacy: .public): maximum allowed speed is \(maximumSpeedAllowed)kph")
-        
+
         return maximumSpeedAllowed
     }
-    
+
     /// Returns the maximum speed allowed in the blocks (and turnouts) occupied by the train.
     /// This takes into account speed limits for turnout branches and more.
     /// - Parameter train: the train
@@ -82,7 +81,7 @@ struct LayoutSpeed {
         }
         return maximumSpeedAllowed
     }
-    
+
     /// Returns the maximum speed allowed by the available distance to the first restricted speed limit lead item.
     ///
     /// This is done by computing the distance of the lead items (blocks and turnouts) until one item is found to have
@@ -101,21 +100,21 @@ struct LayoutSpeed {
         for item in train.leading.items {
             let distance: Double
             switch item {
-            case .block(let block):
+            case let .block(block):
                 speed = block.maximumSpeedAllowed(speed: speed)
                 distance = block.length ?? 0
 
-            case .turnout(let turnout):
+            case let .turnout(turnout):
                 speed = turnout.maximumSpeedAllowed(speed: speed)
                 distance = turnout.length ?? 0
             }
-            
+
             if speed < LayoutFactory.DefaultMaximumSpeed {
                 // We stop as soon as a speed restriction is found.
                 // The distance we have accumulated so far is going to
                 // be used below to compute the maximum speed.
                 let maxSpeed = try maximumSpeedToBrake(train: train, toSpeed: speed, withDistance: unrestrictedLeadingDistance)
-                
+
                 // The resulting speed cannot be greater than the actual speed value,
                 // because the actual speed value is already limited by the block or turnout specifications.
                 return min(speed, maxSpeed)
@@ -126,7 +125,7 @@ struct LayoutSpeed {
 
         return speed
     }
-    
+
     /// Returns the maximum speed allowed to safely change the speed of the train to the specified target speed given the distance available.
     ///
     /// Note that the resulting speed can be slower than the default braking speed if necessary.
@@ -145,13 +144,13 @@ struct LayoutSpeed {
                 return maxSpeed
             }
         }
-           
+
         guard let lastMaxSpeed = maxSpeeds.last else {
             return 0
         }
 
-        var maxSpeed = lastMaxSpeed/2
-        while brakingDistance.distance > distance && maxSpeed > 0 {
+        var maxSpeed = lastMaxSpeed / 2
+        while brakingDistance.distance > distance, maxSpeed > 0 {
             brakingDistance = try distanceNeededToChangeSpeed(ofTrain: train, fromSpeed: maxSpeed, toSpeed: speed)
             if brakingDistance.distance <= distance {
                 return maxSpeed
@@ -162,7 +161,7 @@ struct LayoutSpeed {
 
         return maxSpeed
     }
-    
+
     /// Returns the maximum speed allowed by the available lead settled distance, including the distance left
     /// in the current block.
     ///
@@ -173,7 +172,7 @@ struct LayoutSpeed {
         let settledDistance = distanceLeftInBlock + train.leading.settledDistance
         return try maximumSpeedToBrake(train: train, toSpeed: 0, withDistance: settledDistance)
     }
-    
+
     /// Returns the distance left in the current block
     /// - Parameter train: the train
     /// - Returns: the distance left
@@ -187,14 +186,14 @@ struct LayoutSpeed {
 
         return distanceLeftInBlock
     }
-    
+
     struct DistanceChangeResult {
         /// The distance in cm
         let distance: Double
         /// The duration in seconds
         let duration: TimeInterval
     }
-    
+
     /// Returns the distance needed to change the speed from one speed to another speed.
     ///
     /// The computation uses the duration it takes to brake the train from one speed to another
@@ -209,24 +208,24 @@ struct LayoutSpeed {
         guard let loc = train.locomotive else {
             throw LayoutError.locomotiveNotAssignedToTrain(train: train)
         }
-        
+
         // Compute the duration it will take to change the speed of the train
         var delaySeconds = LayoutSpeed.durationToChange(speed: loc.speed, fromSpeed: fromSpeed, toSpeed: toSpeed)
         guard delaySeconds > 0 else {
             return DistanceChangeResult(distance: 0, duration: 0)
         }
-        
+
         // If we are stopping the train, we need to take into account the time it takes to effectively stop it
         if toSpeed == 0 {
             delaySeconds += loc.speed.stopSettleDelay
         }
-        
+
         // Compute the distance it will take to change the speed given the duration and current speed
         let distanceH0cm: DistanceCm = LayoutSpeed.distance(atSpeed: fromSpeed, forDuration: delaySeconds)
-        
+
         return DistanceChangeResult(distance: distanceH0cm, duration: delaySeconds)
     }
-    
+
     /// Returns the duration, in seconds, that it takes to change the speed from one value to another.
     ///
     /// - Parameters:
@@ -238,18 +237,18 @@ struct LayoutSpeed {
         let fromSteps = speed.steps(for: fromSpeed).value
         let toSteps = speed.steps(for: toSpeed).value
         let steps = fromSteps - toSteps
-        
+
         guard steps != 0 else {
             return 0
         }
 
         let stepSize = speed.accelerationStepSize ?? LocomotiveSpeedManager.DefaultStepSize
         let stepDelay: TimeInterval = Double(speed.accelerationStepDelay ?? LocomotiveSpeedManager.DefaultStepDelay) / 1000.0
-        
+
         let duration: TimeInterval = Double(steps) / Double(stepSize) * stepDelay
         return duration
     }
-    
+
     /// Returns the distance, in cm, it takes for a locomotive to move at the specified speed for the specified duration.
     ///
     /// - Parameters:
@@ -258,10 +257,10 @@ struct LayoutSpeed {
     /// - Returns: the distance, in cm.
     static func distance(atSpeed speedKph: SpeedKph, forDuration duration: TimeInterval) -> DistanceCm {
         let distanceKm = Double(speedKph) * (duration / 3600.0)
-        let distanceH0cm = (distanceKm * 1000*100) / 87.0
+        let distanceH0cm = (distanceKm * 1000 * 100) / 87.0
         return distanceH0cm
     }
-    
+
     /// Returns the speed needed to move the specified distance with a specific duration.
     ///
     /// - Parameters:
@@ -270,16 +269,15 @@ struct LayoutSpeed {
     /// - Returns: the speed, in Kph.
     static func speedToMove(distance: DistanceCm, forDuration: TimeInterval) -> SpeedKph {
         let durationInHour = forDuration / (60 * 60)
-        
+
         // H0 is 1:87 (1cm in prototype = 0.0115cm in the layout)
-        let modelDistanceKm = distance / 100000
+        let modelDistanceKm = distance / 100_000
         let realDistanceKm = modelDistanceKm * 87
         let speedInKph = realDistanceKm / durationInHour
-        
+
         let speed = SpeedKph(min(Double(UInt16.max), speedInKph))
         return speed
-    }    
-
+    }
 }
 
 extension Block {

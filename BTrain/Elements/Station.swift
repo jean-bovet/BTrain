@@ -16,32 +16,31 @@ import Foundation
 ///
 /// The station will pick a block given specific behaviors (ie random, round-robin) for the given train.
 final class Station: Element, ObservableObject {
-    
     let id: Identifier<Station>
-    
+
     var name: String
-    
+
     @Published var elements: [StationElement]
-    
+
     init(id: Identifier<Station>, name: String, elements: [StationElement]) {
         self.id = id
         self.name = name
         self.elements = elements
     }
-    
+
     func contains(blockId: Identifier<Block>) -> Bool {
         elements.contains { element in
             element.blockId == blockId
         }
     }
-    
-    func validBlock(blockId: Identifier<Block>, train: Train, layout: Layout) -> Bool {
+
+    func validBlock(blockId: Identifier<Block>, train _: Train, layout _: Layout) -> Bool {
         elements.contains { element in
             element.blockId == blockId
         }
     }
 
-    func blockWith(train: Train, layout: Layout) -> StationElement? {
+    func blockWith(train: Train, layout _: Layout) -> StationElement? {
         elements.first(where: { element in
             element.blockId == train.blockId
         })
@@ -52,15 +51,13 @@ final class Station: Element, ObservableObject {
         var blockId: Identifier<Block>?
         var direction: Direction?
     }
-    
 }
 
 extension Station: Codable {
-    
     enum CodingKeys: CodingKey {
         case id, name, elements
     }
-    
+
     convenience init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         let id = try container.decode(Identifier<Station>.self, forKey: CodingKeys.id)
@@ -69,12 +66,11 @@ extension Station: Codable {
 
         self.init(id: id, name: name, elements: elements)
     }
-    
+
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(id, forKey: CodingKeys.id)
         try container.encode(name, forKey: CodingKeys.name)
         try container.encode(elements, forKey: CodingKeys.elements)
     }
-    
 }

@@ -13,10 +13,9 @@
 import SwiftUI
 
 struct FeedbackView: View {
-    
     let label: String
     @Binding var state: Bool
-    
+
     var body: some View {
         Text(label)
             .bold()

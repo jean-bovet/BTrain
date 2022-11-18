@@ -22,7 +22,7 @@ import Foundation
 /// - Feedback: each block has at least one feedback to help determine if a train is located in that block.
 /// Ideally two feedbacks are used to determine when the train enters or exists the block with more precision.
 /// The feedbacks indexes go from 0 to n following the block natural direction./
-///```
+/// ```
 ///                  Feedback                       Block Direction
 ///  p                  │                                  │
 ///  r     Socket       │                  Train           │
@@ -40,11 +40,11 @@ import Foundation
 ///
 ///       ─────────────────────────────────────────────────────────▶
 ///                              block natural direction
-///```
+/// ```
 /// In terms of geometry, the block needs the following measurements:
 /// - Block length
 /// - Distance of each feedback from the start of the block
-///```
+/// ```
 ///      │◀──────────────────Block Length───────────────▶│
 ///      │                                               │
 ///      │     ██            ██            ██            │  F
@@ -58,18 +58,17 @@ import Foundation
 ///      │ ──────Distance────▶│
 /// ```
 final class Block: Element, ObservableObject {
-    
     /// The category of the block
     enum Category: String, Codable, CaseIterable {
         /// A station block where the train stops
         case station
-        
+
         /// A free section of track
         case free
-        
+
         /// A siding (a block that ends at one end) in the previous direction
         case sidingPrevious
-        
+
         /// A siding (a block that ends at one end) in the next direction
         case sidingNext
     }
@@ -83,13 +82,13 @@ final class Block: Element, ObservableObject {
     /// or in need of repair and we don't want to have a train
     /// stopping or running through it.
     @Published var enabled = true
-    
+
     /// The name of the block
     @Published var name: String
-    
+
     /// The category of the block
     @Published var category: Category = .free
-    
+
     /// Length of the block (in cm)
     @Published var length: Double?
 
@@ -100,7 +99,7 @@ final class Block: Element, ObservableObject {
 
     /// The center of the block in the switchboard
     var center: CGPoint = .zero
-    
+
     /// Rotation angle of the block, in radian of the block in the switchboard
     var rotationAngle: CGFloat = 0
 
@@ -109,10 +108,10 @@ final class Block: Element, ObservableObject {
     /// Note that a reserved block does not necessarily have
     /// a train in it: this is indicated by the ``train`` property.
     @Published var reservation: Reservation?
-    
+
     /// Returns the current train (and its direction of travel) inside this block
     @Published var trainInstance: TrainInstance?
-    
+
     /// Returns true if this block contains the locomotive
     var blockContainsLocomotive: Bool {
         guard let trainInstance = trainInstance else {
@@ -127,54 +126,54 @@ final class Block: Element, ObservableObject {
             return trainInstance.parts.values.contains(.locomotive)
         }
     }
-    
+
     /// A structure identifying each feedback inside this block
     struct BlockFeedback: Identifiable, Hashable, Codable {
         /// Unique identifier for this block feedback
         let id: String
-        
+
         /// The feedback identifier this block feedback refers to
         var feedbackId: Identifier<Feedback>
-        
+
         /// Distance, in cm, of the feedback from the start of the block
         var distance: Double?
     }
-    
+
     /// Array of feedbacks in this block
     @Published var feedbacks = [BlockFeedback]()
 
     /// The optional feedback designated as the entry feedback in the direction next
     @Published var entryFeedbackNext: Identifier<Feedback>?
-    
+
     /// The optional feedback designated as the braking feedback in the direction next
     @Published var brakeFeedbackNext: Identifier<Feedback>?
-    
+
     /// The optional feedback designated as the stop feedback in the direction next
     @Published var stopFeedbackNext: Identifier<Feedback>?
 
     /// The optional feedback designated as the entry feedback in the direction previous
     @Published var entryFeedbackPrevious: Identifier<Feedback>?
-    
+
     /// The optional feedback designated as the braking feedback in the direction previous
     @Published var brakeFeedbackPrevious: Identifier<Feedback>?
-    
+
     /// The optional feedback designated as the stop feedback in the direction previous
     @Published var stopFeedbackPrevious: Identifier<Feedback>?
-    
+
     /// Optional block-specific braking speed.
     ///
     /// If nil, the default braking speed is used
     @Published var brakingSpeed: SpeedKph?
-    
+
     /// The possible speed limits
     enum SpeedLimit: String, Codable, CaseIterable {
         /// Unlimited speed - the block does not put any speed constraints
         case unlimited
-        
+
         /// Limited speed - the block has a limit on the possible speed value
         case limited
     }
-    
+
     /// Speed limit for this block, defaults to unlimited
     @Published var speedLimit: SpeedLimit = .unlimited
 
@@ -182,23 +181,20 @@ final class Block: Element, ObservableObject {
         self.id = id
         self.name = name
     }
-    
+
     convenience init(name: String = UUID().uuidString) {
         self.init(id: Identifier<Block>(uuid: name), name: name)
     }
-        
 }
 
 extension Block: CustomStringConvertible {
-
     var description: String {
         "\(name) (\(id))"
     }
 }
 
 extension Block: Restorable {
-    
-    func restore(layout: Layout) {
+    func restore(layout _: Layout) {
         if trainInstance == nil {
             // Do not restore the reservation if the train does not belong to this block.
             // We do not want the user to see reservation upon opening a new document because
@@ -206,11 +202,9 @@ extension Block: Restorable {
             reservation = nil
         }
     }
-
 }
 
 extension Block: Codable {
-    
     enum CodingKeys: CodingKey {
         case id, enabled, name, type, length, waitingTime, reserved, train, feedbacks,
              entryFeedbackNext, brakeFeedbackNext, stopFeedbackNext,
@@ -226,29 +220,29 @@ extension Block: Codable {
 
         self.init(id: id, name: name)
 
-        self.category = try container.decode(Category.self, forKey: CodingKeys.type)
-        self.center = try container.decode(CGPoint.self, forKey: CodingKeys.center)
-        self.rotationAngle = try container.decode(Double.self, forKey: CodingKeys.angle)
-        self.waitingTime = try container.decode(TimeInterval.self, forKey: CodingKeys.waitingTime)
-        self.length = try container.decodeIfPresent(Double.self, forKey: CodingKeys.length)
+        category = try container.decode(Category.self, forKey: CodingKeys.type)
+        center = try container.decode(CGPoint.self, forKey: CodingKeys.center)
+        rotationAngle = try container.decode(Double.self, forKey: CodingKeys.angle)
+        waitingTime = try container.decode(TimeInterval.self, forKey: CodingKeys.waitingTime)
+        length = try container.decodeIfPresent(Double.self, forKey: CodingKeys.length)
 
-        self.enabled = try container.decode(Bool.self, forKey: CodingKeys.enabled)
-        self.reservation = try container.decodeIfPresent(Reservation.self, forKey: CodingKeys.reserved)
-        self.trainInstance = try container.decodeIfPresent(TrainInstance.self, forKey: CodingKeys.train)
-        self.feedbacks = try container.decode([BlockFeedback].self, forKey: CodingKeys.feedbacks)
-        
-        self.entryFeedbackNext = try container.decodeIfPresent(Identifier<Feedback>.self, forKey: CodingKeys.entryFeedbackNext)
-        self.brakeFeedbackNext = try container.decodeIfPresent(Identifier<Feedback>.self, forKey: CodingKeys.brakeFeedbackNext)
-        self.stopFeedbackNext = try container.decodeIfPresent(Identifier<Feedback>.self, forKey: CodingKeys.stopFeedbackNext)
-        
-        self.entryFeedbackPrevious = try container.decodeIfPresent(Identifier<Feedback>.self, forKey: CodingKeys.entryFeedbackPrevious)
-        self.brakeFeedbackPrevious = try container.decodeIfPresent(Identifier<Feedback>.self, forKey: CodingKeys.brakeFeedbackPrevious)
-        self.stopFeedbackPrevious = try container.decodeIfPresent(Identifier<Feedback>.self, forKey: CodingKeys.stopFeedbackPrevious)
-        
-        self.brakingSpeed = try container.decodeIfPresent(SpeedKph.self, forKey: CodingKeys.brakingSpeed)
-        self.speedLimit = try container.decode(SpeedLimit.self, forKey: CodingKeys.speedLimit)
+        enabled = try container.decode(Bool.self, forKey: CodingKeys.enabled)
+        reservation = try container.decodeIfPresent(Reservation.self, forKey: CodingKeys.reserved)
+        trainInstance = try container.decodeIfPresent(TrainInstance.self, forKey: CodingKeys.train)
+        feedbacks = try container.decode([BlockFeedback].self, forKey: CodingKeys.feedbacks)
+
+        entryFeedbackNext = try container.decodeIfPresent(Identifier<Feedback>.self, forKey: CodingKeys.entryFeedbackNext)
+        brakeFeedbackNext = try container.decodeIfPresent(Identifier<Feedback>.self, forKey: CodingKeys.brakeFeedbackNext)
+        stopFeedbackNext = try container.decodeIfPresent(Identifier<Feedback>.self, forKey: CodingKeys.stopFeedbackNext)
+
+        entryFeedbackPrevious = try container.decodeIfPresent(Identifier<Feedback>.self, forKey: CodingKeys.entryFeedbackPrevious)
+        brakeFeedbackPrevious = try container.decodeIfPresent(Identifier<Feedback>.self, forKey: CodingKeys.brakeFeedbackPrevious)
+        stopFeedbackPrevious = try container.decodeIfPresent(Identifier<Feedback>.self, forKey: CodingKeys.stopFeedbackPrevious)
+
+        brakingSpeed = try container.decodeIfPresent(SpeedKph.self, forKey: CodingKeys.brakingSpeed)
+        speedLimit = try container.decode(SpeedLimit.self, forKey: CodingKeys.speedLimit)
     }
-    
+
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(id, forKey: CodingKeys.id)
@@ -275,12 +269,11 @@ extension Block: Codable {
         try container.encode(center, forKey: CodingKeys.center)
         try container.encode(rotationAngle, forKey: CodingKeys.angle)
     }
-
 }
 
 extension Block.Category: CustomStringConvertible {
     var description: String {
-        switch(self) {
+        switch self {
         case .station:
             return "Station"
         case .free:

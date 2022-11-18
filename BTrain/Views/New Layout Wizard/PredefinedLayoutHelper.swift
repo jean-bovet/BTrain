@@ -13,16 +13,15 @@
 import Foundation
 
 final class PredefinedLayoutHelper: ObservableObject {
-    
     var predefinedDocument: LayoutDocument?
-    
+
     func load() throws {
         guard let file = Bundle.main.url(forResource: "Predefined", withExtension: "btrain") else {
             throw CocoaError(.fileNoSuchFile)
         }
 
         let fw = try FileWrapper(url: file, options: [])
-        
+
         predefinedDocument = LayoutDocument(layout: try fw.layout())
         predefinedDocument!.locomotiveIconManager.setIcons(try fw.locomotiveIcons())
     }
@@ -31,25 +30,25 @@ final class PredefinedLayoutHelper: ObservableObject {
         guard let predefinedDocument = predefinedDocument else {
             fatalError("Unable to create new layout because the predefined document is not defined!")
         }
-        
+
         document.apply(LayoutFactory.createLayout(layoutId))
-        
+
         document.layout.trains.elements.removeAll()
         document.layout.locomotives.elements.removeAll()
-        
+
         for trainId in trains {
             if let train = predefinedDocument.layout.trains[trainId] {
                 train.enabled = true
                 train.wagonsLength = 0
                 train.blockId = nil
                 document.layout.trains.add(train)
-                
+
                 if let loc = predefinedDocument.layout.locomotives[train.locomotive?.id] {
                     loc.enabled = true
                     loc.length = 20
                     train.locomotive = loc
                     document.layout.locomotives.add(loc)
-                    
+
                     if let fileWrapper = predefinedDocument.locomotiveIconManager.fileWrapper(for: loc.id) {
                         document.locomotiveIconManager.setIcon(fileWrapper, locId: loc.id)
                     }
@@ -58,4 +57,3 @@ final class PredefinedLayoutHelper: ObservableObject {
         }
     }
 }
-

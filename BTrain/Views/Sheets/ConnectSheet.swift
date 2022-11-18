@@ -13,30 +13,29 @@
 import SwiftUI
 
 struct ConnectSheet: View {
-    
     @ObservedObject var document: LayoutDocument
     @ObservedObject var onConnectTasks: LayoutOnConnectTasks
-    
+
     @Environment(\.presentationMode) var presentationMode
-    
+
     enum ConnectionType {
         case centralStation
         case simulator
     }
-    
+
     @State private var type = ConnectionType.centralStation
-    
+
     // Used to activate all the turnouts when connecting to the Digital Controller
     // in order to ensure that all turnouts are physically matching the layout model.
     @AppStorage("activateTurnouts") private var activateTurnouts = true
-    
+
     @AppStorage("digitalControllerAddress") private var address = "192.168.86.24"
     @AppStorage("digitalControllerPort") private var port = "15731"
 
     @State private var msg = ""
 
     @State private var connecting = false
-        
+
     func didConnect(withError error: Error?) {
         if let error = error {
             connecting.toggle()
@@ -48,7 +47,7 @@ struct ConnectSheet: View {
             }
         }
     }
-    
+
     var body: some View {
         VStack(alignment: .leading) {
             Form {
@@ -60,11 +59,11 @@ struct ConnectSheet: View {
                 Group {
                     TextField("Address:", text: $address)
                         .frame(minWidth: 250)
-                    
+
                     TextField("Port:", text: $port)
                         .frame(minWidth: 200)
                 }.disabled(type == .simulator)
-                                
+
                 VStack(alignment: .leading) {
                     Toggle("Activate Turnouts", isOn: $activateTurnouts)
                     if let percentage = onConnectTasks.activateTurnoutPercentage {
@@ -83,15 +82,15 @@ struct ConnectSheet: View {
                         .padding()
                 }
             }
-            
+
             HStack {
                 Button("Cancel") {
-                    document.interface.disconnect { }
+                    document.interface.disconnect {}
                     presentationMode.wrappedValue.dismiss()
                 }.keyboardShortcut(.cancelAction)
 
                 Spacer()
-                
+
                 Button("Connect") {
                     connecting.toggle()
                     if type == .centralStation {
@@ -108,13 +107,12 @@ struct ConnectSheet: View {
                 .disabled(connecting)
             }.padding()
         }
-    }    
+    }
 }
 
 struct ConnectView_Previews: PreviewProvider {
-    
     static let doc = LayoutDocument(layout: Layout())
-    
+
     static var previews: some View {
         ConnectSheet(document: doc, onConnectTasks: doc.onConnectTasks)
     }

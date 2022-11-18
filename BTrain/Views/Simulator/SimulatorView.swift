@@ -13,11 +13,10 @@
 import SwiftUI
 
 struct SimulatorView: View {
-    
     @ObservedObject var simulator: MarklinCommandSimulator
-    
+
     @State private var trainForward = true
-    
+
     var body: some View {
         VStack(alignment: .leading) {
             HStack {
@@ -33,7 +32,7 @@ struct SimulatorView: View {
             Divider()
             ScrollView {
                 VStack {
-                    ForEach(simulator.locomotives, id:\.self) { train in
+                    ForEach(simulator.locomotives, id: \.self) { train in
                         SimulatorTrainControlView(simulator: simulator, simLoc: train)
                     }
                 }.disabled(!simulator.enabled)
@@ -45,10 +44,8 @@ struct SimulatorView: View {
                         Text("Slow")
                         Slider(
                             value: $simulator.refreshSpeed,
-                            in: 0...Double(3.5)
-                        ) {
-                        } onEditingChanged: { editing in
-
+                            in: 0 ... Double(3.5)
+                        ) {} onEditingChanged: { _ in
                         }
                         Text("Fast")
                     }
@@ -60,10 +57,8 @@ struct SimulatorView: View {
                         Text("Slow")
                         Slider(
                             value: $simulator.turnoutSpeedInverted,
-                            in: 0...Double(MarklinCommandSimulator.MaxTurnoutSpeedValue)
-                        ) {
-                        } onEditingChanged: { editing in
-
+                            in: 0 ... Double(MarklinCommandSimulator.MaxTurnoutSpeedValue)
+                        ) {} onEditingChanged: { _ in
                         }
                         Text("Fast")
                     }
@@ -75,9 +70,8 @@ struct SimulatorView: View {
 }
 
 extension MarklinCommandSimulator {
-    
     static let MaxTurnoutSpeedValue = 2.0
-    
+
     var turnoutSpeedInverted: TimeInterval {
         get {
             MarklinCommandSimulator.MaxTurnoutSpeedValue - turnoutSpeed
@@ -89,7 +83,6 @@ extension MarklinCommandSimulator {
 }
 
 struct SimulatorView_Previews: PreviewProvider {
-    
     static let simulator: MarklinCommandSimulator = {
         let layout = LayoutLoop1().newLayout()
         layout.trains[0].blockId = layout.blocks[0].id

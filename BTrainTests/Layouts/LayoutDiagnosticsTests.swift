@@ -10,11 +10,10 @@
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-import XCTest
 @testable import BTrain
+import XCTest
 
 class LayoutDiagnosticsTests: XCTestCase {
-
     func testValidateLayout() throws {
         let layout = LayoutComplexLoop().newLayout()
         let diag = LayoutDiagnostic(layout: layout)
@@ -27,25 +26,25 @@ class LayoutDiagnosticsTests: XCTestCase {
         let diag = LayoutDiagnostic(layout: layout)
         let errors = try diag.check(.skipLengths)
         XCTAssertEqual(errors.count, 9)
-        
+
         let turnout = layout.turnouts[0]
         XCTAssertEqual(errors[0], LayoutDiagnostic.DiagnosticError.turnoutMissingTransition(turnout: turnout, socket: turnout.socketName(turnout.socket0.socketId!)))
     }
-    
+
     func testTurnoutDuplicateAddress() throws {
         let layout = LayoutComplexLoop().newLayout()
         let diag = LayoutDiagnostic(layout: layout)
         var errors = [LayoutDiagnostic.DiagnosticError]()
         diag.checkForDuplicateTurnouts(&errors)
         XCTAssertEqual(errors.count, 0)
-        
+
         let t0 = layout.turnouts[0]
         let t1 = layout.turnouts[1]
 
         t0.address = t1.address
         diag.checkForDuplicateTurnouts(&errors)
         XCTAssertEqual(errors.count, 1)
-        
+
         t0.category = .threeWay
         t0.address2 = t1.address2
         diag.checkForDuplicateTurnouts(&errors)
@@ -58,7 +57,7 @@ class LayoutDiagnosticsTests: XCTestCase {
         var errors = [LayoutDiagnostic.DiagnosticError]()
         diag.checkForDuplicateLocomotives(&errors)
         XCTAssertEqual(errors.count, 0)
-        
+
         let t0 = layout.locomotives[0]
         let t1 = layout.locomotives[1]
 
@@ -74,5 +73,4 @@ class LayoutDiagnosticsTests: XCTestCase {
         diag.checkRoutes(&errors)
         XCTAssertEqual(errors.count, 0)
     }
-
 }

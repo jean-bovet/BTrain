@@ -13,7 +13,6 @@
 import SwiftUI
 
 struct LocDetailsDecoderSectionView: View {
-    
     @ObservedObject var loc: Locomotive
 
     var body: some View {
@@ -23,7 +22,7 @@ struct LocDetailsDecoderSectionView: View {
             Form {
                 UndoProvider($loc.decoder) { value in
                     Picker("Type:", selection: value) {
-                        ForEach(DecoderType.allCases, id:\.self) { proto in
+                        ForEach(DecoderType.allCases, id: \.self) { proto in
                             Text(proto.rawValue).tag(proto as DecoderType)
                         }
                     }.fixedSize()
@@ -38,7 +37,6 @@ struct LocDetailsDecoderSectionView: View {
 }
 
 struct LocDetailsGeometrySectionView: View {
-    
     @ObservedObject var loc: Locomotive
 
     var body: some View {
@@ -49,18 +47,17 @@ struct LocDetailsGeometrySectionView: View {
                 UndoProvider($loc.length) { value in
                     TextField("Locomotive:", value: value, format: .number)
                         .unitStyle("cm")
-                }                
+                }
             }.padding([.leading])
         }
     }
 }
 
 struct LocDetailsSpeedSectionView: View {
-    
     let document: LayoutDocument
 
     @ObservedObject var loc: Locomotive
-    
+
     @State private var speedExpanded = false
     @State private var showSpeedMeasureSheet = false
 
@@ -133,7 +130,6 @@ struct LocDetailsSpeedSectionView: View {
 }
 
 struct LocomotiveDetailsIconSectionView: View {
-    
     @ObservedObject var loc: Locomotive
     @ObservedObject var locomotiveIconManager: LocomotiveIconManager
 
@@ -148,7 +144,7 @@ struct LocomotiveDetailsIconSectionView: View {
                         Text("Drag an Image")
                     }
                 }
-                
+
                 if locomotiveIconManager.icon(for: loc.id) != nil {
                     Button("Remove") {
                         locomotiveIconManager.removeIconFor(loc: loc)
@@ -160,7 +156,6 @@ struct LocomotiveDetailsIconSectionView: View {
 }
 
 struct LocomotiveDetailsView: View {
-    
     let document: LayoutDocument
     @ObservedObject var loc: Locomotive
 
@@ -175,7 +170,6 @@ struct LocomotiveDetailsView: View {
 }
 
 struct LocomotiveDetailsView_Previews: PreviewProvider {
-    
     static let doc = LayoutDocument(layout: LayoutLoop1().newLayout())
 
     static var previews: some View {

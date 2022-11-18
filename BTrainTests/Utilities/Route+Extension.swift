@@ -15,43 +15,40 @@ import Foundation
 @testable import BTrain
 
 extension RouteItem {
-    
     var stepBlockId: Identifier<Block>? {
-        if case .block(let stepBlock) = self {
+        if case let .block(stepBlock) = self {
             return stepBlock.blockId
         } else {
             return nil
         }
     }
-    
+
     var stepTurnoutId: Identifier<Turnout>? {
-        if case .turnout(let stepTurnout) = self {
+        if case let .turnout(stepTurnout) = self {
             return stepTurnout.turnoutId
         } else {
             return nil
         }
     }
-        
 }
 
 extension Array where Element == RouteItem {
-    
     func toStrings(_ layout: Layout, useNameInsteadOfId: Bool = true) -> [String] {
-        self.map { step in
+        map { step in
             switch step {
-            case .block(let stepBlock):
+            case let .block(stepBlock):
                 if let block = layout.blocks[stepBlock.blockId] {
                     return "\(useNameInsteadOfId ? block.name : block.id.uuid):\(stepBlock.direction)"
                 } else {
                     return "\(stepBlock.blockId.uuid):\(stepBlock.direction)"
                 }
-            case .turnout(let stepTurnout):
+            case let .turnout(stepTurnout):
                 if let turnout = layout.turnouts[stepTurnout.turnoutId] {
                     return "\(useNameInsteadOfId ? turnout.name : turnout.id.uuid):(\(stepTurnout.entrySocket.socketId!)>\(stepTurnout.exitSocket.socketId!))"
                 } else {
                     return "\(stepTurnout.turnoutId.uuid):(\(stepTurnout.entrySocket.socketId!)>\(stepTurnout.exitSocket.socketId!))"
                 }
-            case .station(let stepStation):
+            case let .station(stepStation):
                 if let station = layout.stations[stepStation.stationId] {
                     return "\(useNameInsteadOfId ? station.name : station.id.uuid)"
                 } else {
@@ -60,20 +57,17 @@ extension Array where Element == RouteItem {
             }
         }
     }
-
 }
 
 extension Array where Element == ResolvedRouteItem {
-    
     func toStrings(useNameInsteadOfId: Bool = true) -> [String] {
-        self.map { step in
+        map { step in
             switch step {
-            case .block(let stepBlock):
+            case let .block(stepBlock):
                 return "\(useNameInsteadOfId ? stepBlock.block.name : stepBlock.block.id.uuid):\(stepBlock.direction)"
-            case .turnout(let stepTurnout):
+            case let .turnout(stepTurnout):
                 return "\(useNameInsteadOfId ? stepTurnout.turnout.name : stepTurnout.turnout.id.uuid):(\(stepTurnout.entrySocketId)>\(stepTurnout.exitSocketId))"
             }
         }
     }
-
 }

@@ -15,17 +15,16 @@ import Foundation
 // A socket identifies the "side" of an element. Two sockets
 // are linked together with a transition.
 struct Socket: Codable, Equatable, CustomStringConvertible {
-    
     // The block this socket refers to, or nil if not a block
     let block: Identifier<Block>?
-    
+
     // The turnout this socket refers to, or nil if not a turnout
     let turnout: Identifier<Turnout>?
-    
+
     // The socket ID of the block or turnout it is referring to,
     // or nil if any socket of the turnout or block can be used.
     let socketId: Int?
-        
+
     var description: String {
         if let block = block {
             if let socketId = socketId {
@@ -69,9 +68,9 @@ struct Socket: Codable, Equatable, CustomStringConvertible {
             return contains(otherSocketId: other.socketId)
         } else {
             return false
-        }        
+        }
     }
-    
+
     func contains(otherSocketId: Int?) -> Bool {
         if let socketId = socketId {
             if let otherSocketId = otherSocketId {
@@ -86,4 +85,3 @@ struct Socket: Codable, Equatable, CustomStringConvertible {
         }
     }
 }
-    

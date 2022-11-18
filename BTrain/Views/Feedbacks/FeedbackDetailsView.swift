@@ -13,7 +13,6 @@
 import SwiftUI
 
 struct FeedbackDetailsView: View {
-    
     @ObservedObject var layout: Layout
 
     @ObservedObject var feedback: Feedback
@@ -24,12 +23,12 @@ struct FeedbackDetailsView: View {
                 TextField("Device ID", value: deviceID,
                           format: .number)
             }
-            
+
             UndoProvider($feedback.contactID) { contactID in
                 TextField("Contact ID", value: contactID,
                           format: .number)
             }
-            
+
             FeedbackView(label: "", state: $feedback.detected)
                 .frame(maxWidth: 50)
         }.padding()
@@ -37,9 +36,8 @@ struct FeedbackDetailsView: View {
 }
 
 struct FeedbackDetailsView_Previews: PreviewProvider {
-    
     static let doc = LayoutDocument(layout: Layout())
-    
+
     static var previews: some View {
         FeedbackDetailsView(layout: doc.layout, feedback: Feedback(id: .init(uuid: "foo")))
     }

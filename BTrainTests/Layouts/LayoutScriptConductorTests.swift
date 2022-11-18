@@ -10,18 +10,17 @@
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-import XCTest
 @testable import BTrain
+import XCTest
 
 final class LayoutScriptConductorTests: XCTestCase {
-
     func testScheduleEmptyScript() throws {
         let layout = Layout()
         let conductor = LayoutScriptConductor(layout: layout)
-        
+
         let controller = MockLayoutController(layout: layout)
         conductor.layoutControlling = controller
-        
+
         XCTAssertEqual(controller.startedCount, 0)
 
         let script = LayoutScript(name: "Test")
@@ -31,17 +30,17 @@ final class LayoutScriptConductorTests: XCTestCase {
         XCTAssertEqual(controller.startedCount, 0)
 
         try conductor.tick()
-        
+
         XCTAssertEqual(controller.startedCount, 0)
     }
 
     func testScheduleScriptWithInvalidCommand() throws {
         let layout = Layout()
         let conductor = LayoutScriptConductor(layout: layout)
-        
+
         let controller = MockLayoutController(layout: layout)
         conductor.layoutControlling = controller
-        
+
         XCTAssertEqual(controller.startedCount, 0)
 
         let script = LayoutScript(name: "Test")
@@ -57,20 +56,20 @@ final class LayoutScriptConductorTests: XCTestCase {
     func testScriptWithSingleCommand() throws {
         let layout = LayoutLoop1().newLayout()
         let conductor = LayoutScriptConductor(layout: layout)
-        
+
         let controller = MockLayoutController(layout: layout)
         conductor.layoutControlling = controller
-        
+
         XCTAssertEqual(controller.startedCount, 0)
         XCTAssertTrue(layout.layoutScripts.elements.isEmpty)
-        
+
         // Note: RouteScripts have the same UUID as their Route counterpart so they can update the Route whenever they are updated.
         let routeScript = simpleRouteScript(withUUID: layout.routes[0].id.uuid)
         layout.routeScripts.add(routeScript)
-        
+
         let layoutScript = layoutScriptWithSingleCommand(train: layout.trains[0].id, routeScript: layout.routeScripts[0].id)
         layout.layoutScripts.add(layoutScript)
-        
+
         // Schedule to start and will stop by indicating that the train has finished the route
         // for the script command.
         conductor.schedule(layoutScript.id)
@@ -86,7 +85,7 @@ final class LayoutScriptConductorTests: XCTestCase {
         try conductor.tick()
         XCTAssertEqual(controller.startedCount, 1)
         XCTAssertNil(conductor.currentScript)
-        
+
         // Schedule to start again and will stop explicitly the script instead of waiting
         // for the train to finish the route
         conductor.schedule(layoutScript.id)
@@ -106,20 +105,20 @@ final class LayoutScriptConductorTests: XCTestCase {
     func testScriptWithChildren() throws {
         let layout = LayoutLoop1().newLayout()
         let conductor = LayoutScriptConductor(layout: layout)
-        
+
         let controller = MockLayoutController(layout: layout)
         conductor.layoutControlling = controller
-        
+
         XCTAssertEqual(controller.startedCount, 0)
         XCTAssertTrue(layout.layoutScripts.elements.isEmpty)
-        
+
         // Note: RouteScripts have the same UUID as their Route counterpart so they can update the Route whenever they are updated.
         let routeScript = simpleRouteScript(withUUID: layout.routes[0].id.uuid)
         layout.routeScripts.add(routeScript)
-        
+
         let layoutScript = layoutScriptWithChildCommand(train: layout.trains[0].id, routeScript: layout.routeScripts[0].id)
         layout.layoutScripts.add(layoutScript)
-        
+
         // Schedule to start and will stop by indicating that the train has finished the route
         // for the script command.
         conductor.schedule(layoutScript.id)
@@ -127,44 +126,44 @@ final class LayoutScriptConductorTests: XCTestCase {
 
         try conductor.tick()
         XCTAssertEqual(controller.startedCount, 1)
-        
+
         try conductor.tick()
         XCTAssertEqual(controller.startedCount, 1)
 
         layout.trains[0].scheduling = .unmanaged
-        
+
         // Now the child command will start executing
         try conductor.tick()
         XCTAssertEqual(controller.startedCount, 2)
         XCTAssertNotNil(conductor.currentScript)
-                
+
         layout.trains[0].scheduling = .unmanaged
 
         try conductor.tick()
         XCTAssertEqual(controller.startedCount, 2)
         XCTAssertNil(conductor.currentScript)
     }
-    
+
     func testScriptWithIdenticalCommands() throws {
         let layout = LayoutLoop1().newLayout()
         let conductor = LayoutScriptConductor(layout: layout)
-        
+
         let controller = LayoutController(layout: layout, switchboard: nil, interface: MockCommandInterface())
         conductor.layoutControlling = controller
-        
+
         XCTAssertTrue(layout.layoutScripts.elements.isEmpty)
-        
+
         let route = layout.routes[0]
         let train = layout.trains[0]
         try layout.setTrainToBlock(train.id, route.partialSteps[0].stepBlockId!, direction: .next)
-        
+
         // Note: RouteScripts have the same UUID as their Route counterpart so they can update the Route whenever they are updated.
         let routeScript = simpleRouteScript(withUUID: route.id.uuid)
         layout.routeScripts.add(routeScript)
-        
+
         let layoutScript = layoutScriptTwoSiblingIdenticalCommand(train: train.id, routeScript: layout.routeScripts[0].id)
         layout.layoutScripts.add(layoutScript)
-        
+
         // Schedule to start the script which will schedule for execution all the commands at the same level.
         // Because the two commands use the same train, the second command will have to wait for the first train
         // to finish before start - otherwise there will be an exception because one train cannot be started
@@ -177,17 +176,16 @@ final class LayoutScriptConductorTests: XCTestCase {
 
         // Indicate that the train has stopped
         train.scheduling = .unmanaged
-        
+
         // Now the second command will start executing
         try conductor.tick()
         XCTAssertNotNil(conductor.currentScript)
-                
+
         train.scheduling = .unmanaged
 
         try conductor.tick()
         XCTAssertNil(conductor.currentScript)
     }
-
 
     private func simpleRouteScript(withUUID uuid: String) -> RouteScript {
         let script = RouteScript(uuid: uuid)
@@ -195,7 +193,7 @@ final class LayoutScriptConductorTests: XCTestCase {
         script.commands.append(command)
         return script
     }
-    
+
     private func layoutScriptWithSingleCommand(train: Identifier<Train>, routeScript: Identifier<RouteScript>) -> LayoutScript {
         let script = LayoutScript(name: "Test")
         var command = LayoutScriptCommand(action: .run)
@@ -210,19 +208,19 @@ final class LayoutScriptConductorTests: XCTestCase {
         var command = LayoutScriptCommand(action: .run)
         command.trainId = train
         command.routeScriptId = routeScript
-        
+
         var child = LayoutScriptCommand(action: .run)
         child.trainId = train
         child.routeScriptId = routeScript
         command.children.append(child)
-        
+
         script.commands.append(command)
         return script
     }
 
     private func layoutScriptTwoSiblingIdenticalCommand(train: Identifier<Train>, routeScript: Identifier<RouteScript>) -> LayoutScript {
         let script = LayoutScript(name: "Test")
-        
+
         var command = LayoutScriptCommand(action: .run)
         command.trainId = train
         command.routeScriptId = routeScript
@@ -237,23 +235,19 @@ final class LayoutScriptConductorTests: XCTestCase {
     }
 
     final class MockLayoutController: LayoutControlling {
-        
         let layout: Layout
         var startedCount = 0
-        
+
         internal init(layout: Layout, startedCount: Int = 0) {
             self.layout = layout
             self.startedCount = startedCount
         }
 
-        func start(routeID: BTrain.Identifier<BTrain.Route>, trainID: BTrain.Identifier<BTrain.Train>) throws {
+        func start(routeID _: BTrain.Identifier<BTrain.Route>, trainID: BTrain.Identifier<BTrain.Train>) throws {
             startedCount += 1
             layout.trains[trainID]!.scheduling = .managed
         }
-        
-        func stop(train: BTrain.Train) {
 
-        }
-        
+        func stop(train _: BTrain.Train) {}
     }
 }

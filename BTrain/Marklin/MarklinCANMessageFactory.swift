@@ -13,8 +13,7 @@
 import Foundation
 
 struct MarklinCANMessageFactory {
-    
-    static let hash: UInt16 = 0xbf46
+    static let hash: UInt16 = 0xBF46
 
     public static func go() -> MarklinCANMessage {
         let message = MarklinCANMessage(prio: 0,
@@ -29,11 +28,10 @@ struct MarklinCANMessageFactory {
                                         byte4: 0x01, // ON
                                         byte5: 0x00,
                                         byte6: 0x00,
-                                        byte7: 0x00
-        )
+                                        byte7: 0x00)
         return message
     }
-    
+
     public static func stop() -> MarklinCANMessage {
         let message = MarklinCANMessage(prio: 0,
                                         command: 0x00,
@@ -47,8 +45,7 @@ struct MarklinCANMessageFactory {
                                         byte4: 0x00, // OFF
                                         byte5: 0x00,
                                         byte6: 0x00,
-                                        byte7: 0x00
-        )
+                                        byte7: 0x00)
         return message
     }
 
@@ -65,10 +62,8 @@ struct MarklinCANMessageFactory {
                                         byte4: 0x03, // Sub-command
                                         byte5: 0x00,
                                         byte6: 0x00,
-                                        byte7: 0x00
-        )
+                                        byte7: 0x00)
         return message
-
     }
 
     public static func speed(addr: UInt32, speed: UInt16) -> MarklinCANMessage {
@@ -88,14 +83,14 @@ struct MarklinCANMessageFactory {
         )
         return message
     }
-    
+
     enum Direction {
         case nochange
         case forward
         case backward
         case invert
     }
-    
+
     // 00 0a bf 46 05 00 00 40 09 01 00 00 00 // forward
     // 00 0a bf 46 05 00 00 40 09 02 00 00 00 // backward
     public static func direction(addr: UInt32, direction: Direction) -> MarklinCANMessage {
@@ -122,8 +117,7 @@ struct MarklinCANMessageFactory {
                                         byte4: byte4,
                                         byte5: 0x00,
                                         byte6: 0x00,
-                                        byte7: 0x00
-        )
+                                        byte7: 0x00)
         return message
     }
 
@@ -141,8 +135,7 @@ struct MarklinCANMessageFactory {
                                         byte4: 0x00,
                                         byte5: 0x00,
                                         byte6: 0x00,
-                                        byte7: 0x00
-        )
+                                        byte7: 0x00)
         return message
     }
 
@@ -159,11 +152,10 @@ struct MarklinCANMessageFactory {
                                         byte4: state & 0xFF,
                                         byte5: power & 0xFF,
                                         byte6: 0x00,
-                                        byte7: 0x00
-        )
+                                        byte7: 0x00)
         return message
     }
-    
+
     public static func feedback(deviceID: UInt16, contactID: UInt16, oldValue: UInt8, newValue: UInt8, time: UInt16) -> MarklinCANMessage {
         let message = MarklinCANMessage(prio: 0,
                                         command: 0x11,
@@ -177,19 +169,18 @@ struct MarklinCANMessageFactory {
                                         byte4: oldValue & 0xFF,
                                         byte5: newValue & 0xFF,
                                         byte6: UInt8((time >> 8) & 0xFF),
-                                        byte7: UInt8((time >> 0) & 0xFF)
-        )
+                                        byte7: UInt8((time >> 0) & 0xFF))
         return message
     }
 
     /*
-     
+
      0000   00 1f b2 05 63 e5 50 ed 3c 12 33 23 08 00 45 00   ....c.P.<.3#..E.
      0010   00 41 00 00 40 00 40 06 0d 16 c0 a8 56 20 c0 a8   .A..@.@.....V ..
      0020   56 30 d9 8b 3d 73 e4 89 71 bb ec 11 54 a1 80 18   V0..=s..q...T...
      0030   08 02 dd e7 00 00 01 01 08 0a 6c d6 42 45 00 01   ..........l.BE..
      0040   5b aa 00 40 bf 46 08 6c 6f 6b 73 00 00 00 00      [..@.F.loks....
-     
+
      */
     public static func locomotives() -> MarklinCANMessage {
         let message = MarklinCANMessage(prio: 0,
@@ -204,8 +195,7 @@ struct MarklinCANMessageFactory {
                                         byte4: 0,
                                         byte5: 0,
                                         byte6: 0,
-                                        byte7: 0
-        )
+                                        byte7: 0)
         return message
     }
 
@@ -222,8 +212,7 @@ struct MarklinCANMessageFactory {
                                         byte4: 0,
                                         byte5: 0,
                                         byte6: 0,
-                                        byte7: 0
-        )
+                                        byte7: 0)
         return message
     }
 
@@ -243,15 +232,12 @@ struct MarklinCANMessageFactory {
                                         byte4: bytes.safeValue(at: 4) ?? 0,
                                         byte5: bytes.safeValue(at: 5) ?? 0,
                                         byte6: bytes.safeValue(at: 6) ?? 0,
-                                        byte7: bytes.safeValue(at: 7) ?? 0
-        )
+                                        byte7: bytes.safeValue(at: 7) ?? 0)
         return message
     }
-
 }
 
 extension Array where Element == UInt8 {
-    
     func safeValue(at index: Int) -> Element? {
         if index < count {
             return self[index]

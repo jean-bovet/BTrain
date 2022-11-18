@@ -13,43 +13,39 @@
 import SwiftUI
 
 struct BlockShapeView: View {
-    
     let layout: Layout
     let category: Block.Category
     let shapeContext = ShapeContext()
 
     let viewSize = CGSize(width: 104, height: 34)
-    
+
     var block: Block {
         let b = Block(name: "")
         b.category = category
-        b.center = .init(x: viewSize.width/2, y: viewSize.height/2)
+        b.center = .init(x: viewSize.width / 2, y: viewSize.height / 2)
         return b
     }
-    
+
     var shape: BlockShape {
         let shape = BlockShape(layout: layout, block: block, shapeContext: shapeContext)
         return shape
     }
-    
+
     var body: some View {
-        Canvas { context, size in
+        Canvas { context, _ in
             context.withCGContext { context in
                 shape.draw(ctx: context)
             }
         }.frame(width: viewSize.width, height: viewSize.height)
     }
-    
 }
 
-
 struct BlockShapeView_Previews: PreviewProvider {
-    
     static let layout = LayoutLoop1().newLayout()
-    
+
     static var previews: some View {
         VStack {
-            ForEach(Block.Category.allCases, id:\.self) { category in
+            ForEach(Block.Category.allCases, id: \.self) { category in
                 BlockShapeView(layout: layout, category: category)
             }
         }

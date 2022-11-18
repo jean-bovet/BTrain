@@ -10,23 +10,21 @@
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-import Foundation
 import CoreGraphics
+import Foundation
 
 protocol Shape: AnyObject {
-    
     var identifier: String { get }
-        
+
     var visible: Bool { get }
-    
+
     var selected: Bool { get set }
-    
+
     var bounds: CGRect { get }
-    
+
     func draw(ctx: CGContext)
-    
+
     func inside(_ point: CGPoint) -> Bool
-        
 }
 
 protocol ActionableShape: Shape {
@@ -38,11 +36,10 @@ protocol DraggableShape: Shape {
 }
 
 protocol RotableShape: Shape {
-    
     var rotationCenter: CGPoint { get }
 
     var rotationAngle: CGFloat { get set }
-    
+
     var rotationPoint: CGPoint { get }
 
     var rotationHandle: CGPath { get }

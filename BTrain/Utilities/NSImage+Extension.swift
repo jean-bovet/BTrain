@@ -13,7 +13,6 @@
 import AppKit
 
 extension NSImage {
-    
     convenience init(color: NSColor, size: NSSize) {
         self.init(size: size)
         lockFocus()
@@ -31,12 +30,11 @@ extension NSImage {
         guard let cgImage = cgImage(forProposedRect: nil, context: nil, hints: nil) else {
             return nil
         }
-        
+
         let bitmapRep = NSBitmapImageRep(cgImage: cgImage)
         guard let data = bitmapRep.representation(using: .png, properties: [:]) else {
             return nil
         }
         return data
     }
-    
 }

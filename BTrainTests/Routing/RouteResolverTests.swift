@@ -10,16 +10,15 @@
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-import XCTest
 @testable import BTrain
+import XCTest
 
 class RouteResolverTests: XCTestCase {
-
     func testResolveSimpleRoute() throws {
         let layout = LayoutPointToPoint().newLayout()
         let route = layout.routes[0]
         let train = layout.trains[0]
-        
+
         try route.completePartialSteps(layout: layout, train: train)
         XCTAssertEqual(route.steps.toStrings(layout), ["A:next", "B:next", "C:next", "D:next", "E:next"])
 
@@ -27,10 +26,10 @@ class RouteResolverTests: XCTestCase {
         let resolvedSteps = try resolver.resolve(unresolvedPath: route.steps).get().randomElement()!
         XCTAssertEqual(resolvedSteps.toStrings(), ["A:next", "AB:(0>1)", "B:next", "C:next", "D:next", "DE:(1>0)", "E:next"])
     }
-    
+
     func testResolveRouteWithMissingTurnouts() throws {
         let layout = LayoutLoopWithStations().newLayout().removeTrains()
-        
+
         let train = layout.trains[0]
         train.turnoutsToAvoid = []
 
@@ -38,7 +37,7 @@ class RouteResolverTests: XCTestCase {
         let b1 = layout.block(named: "b1")
         let route = layout.newRoute(id: "s1-n1", [(s1.uuid, .next), (b1.uuid, .next)])
         XCTAssertEqual(route.partialSteps.toStrings(layout), ["s1:next", "b1:next"])
-        
+
         try route.completePartialSteps(layout: layout, train: train)
         XCTAssertEqual(route.steps.toStrings(layout), ["s1:next", "b1:next"])
 
@@ -49,7 +48,7 @@ class RouteResolverTests: XCTestCase {
 
     func testResolveRouteWithMissingBlocks() throws {
         let layout = LayoutLoopWithStations().newLayout().removeTrains()
-        
+
         let train = layout.trains[0]
         train.turnoutsToAvoid = []
 
@@ -65,18 +64,18 @@ class RouteResolverTests: XCTestCase {
         let resolvedSteps = try resolver.resolve(unresolvedPath: route.steps).get().randomElement()!
         XCTAssertEqual(resolvedSteps.toStrings(), ["s1:next", "ts2:(1>0)", "t1:(0>1)", "t2:(0>1)", "b1:next", "t4:(1>0)", "tn1:(0>1)", "n1:next"])
     }
-    
+
     func testResolveAvoidBlocks() throws {
         let layout = LayoutLoopWithStations().newLayout().removeTrains()
-        
+
         let train = layout.trains[0]
         train.turnoutsToAvoid = []
-        
+
         let s1 = layout.block(named: "s1")
         let n1 = layout.block(named: "n1")
         let route = layout.newRoute(id: "s1-n1", [(s1.uuid, .next), (n1.uuid, .next)])
         XCTAssertEqual(route.partialSteps.toStrings(layout), ["s1:next", "n1:next"])
-        
+
         let b1 = layout.block(named: "b1")
         train.blocksToAvoid = [.init(b1.id)]
 
@@ -90,20 +89,20 @@ class RouteResolverTests: XCTestCase {
 
     func testResolveAvoidTurnouts() throws {
         let layout = LayoutLoopWithStations().newLayout().removeTrains()
-        
+
         let train = layout.trains[0]
         train.turnoutsToAvoid = []
-        
+
         let s1 = layout.block(named: "s1")
         let n1 = layout.block(named: "n1")
         let route = layout.newRoute(id: "s1-n1", [(s1.uuid, .next), (n1.uuid, .next)])
         XCTAssertEqual(route.partialSteps.toStrings(layout), ["s1:next", "n1:next"])
 
         let resolver = RouteResolver(layout: layout, train: train)
-        
+
         let t2 = layout.turnout(named: "t2")
         train.turnoutsToAvoid = [.init(t2.id)]
-        
+
         try route.completePartialSteps(layout: layout, train: train)
         XCTAssertEqual(route.steps.toStrings(layout), ["s1:next", "b2:next", "b3:next", "n1:next"])
 
@@ -114,12 +113,12 @@ class RouteResolverTests: XCTestCase {
     func testResolveRoute() throws {
         let layout = LayoutLoop2().newLayout()
         let train = layout.trains[0]
-        
+
         let b3 = layout.block("b3")
         b3.reservation = .init("foo", .next)
-        
+
         let route = layout.newRoute(id: "route-1", [("b1", .next), ("b2", .next), ("b3", .next), ("b4", .next), ("b1", .next)])
-        
+
         try route.completePartialSteps(layout: layout, train: train)
         XCTAssertEqual(route.steps.toStrings(layout), ["b1:next", "b2:next", "b3:next", "b4:next", "b1:next"])
 

@@ -13,17 +13,16 @@
 import SwiftUI
 
 struct ConfigurationSheet<Content: View>: View {
-    
     @Environment(\.presentationMode) var presentationMode
 
     let title: String
     let content: Content
-    
+
     init(title: String, @ViewBuilder content: () -> Content) {
         self.title = title
         self.content = content()
     }
-    
+
     var header: some View {
         HStack {
             Text(title)
@@ -34,14 +33,14 @@ struct ConfigurationSheet<Content: View>: View {
         .padding()
         .background(.yellow)
     }
-    
+
     var footer: some View {
         VStack(spacing: 0) {
             Divider()
-            
+
             HStack {
                 Spacer()
-                
+
                 Button("OK") {
                     presentationMode.wrappedValue.dismiss()
                 }
@@ -49,13 +48,13 @@ struct ConfigurationSheet<Content: View>: View {
             }.padding()
         }
     }
-    
+
     var body: some View {
         VStack(spacing: 0) {
             header
-            
+
             content
-            
+
             footer
                 .padding([.top])
         }

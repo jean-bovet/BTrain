@@ -16,44 +16,41 @@ import Foundation
 // a train is detected on the train. It is for example
 // associated with a reed feedback in the actual layout.
 final class Feedback: Element, ObservableObject {
-    
     let id: Identifier<Feedback>
-        
+
     @Published var name = ""
-    
+
     @Published var deviceID: UInt16 = 0
-    
+
     @Published var contactID: UInt16 = 0
 
     @Published var detected = false
-    
+
     init(id: Identifier<Feedback>, deviceID: UInt16 = 0, contactID: UInt16 = 0) {
         self.id = id
-        self.name = id.uuid
+        name = id.uuid
         self.deviceID = deviceID
         self.contactID = contactID
     }
-    
+
     convenience init(_ uuid: String, deviceID: UInt16 = 0, contactID: UInt16 = 0) {
         self.init(id: Identifier(uuid: uuid), deviceID: deviceID, contactID: contactID)
     }
-
 }
 
 extension Feedback: Codable {
-    
     enum CodingKeys: CodingKey {
-      case id, name, deviceID, contactID
+        case id, name, deviceID, contactID
     }
 
     convenience init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         self.init(id: try container.decode(Identifier<Feedback>.self, forKey: CodingKeys.id))
-        self.name = try container.decode(String.self, forKey: CodingKeys.name)
-        self.deviceID = try container.decode(UInt16.self, forKey: CodingKeys.deviceID)
-        self.contactID = try container.decode(UInt16.self, forKey: CodingKeys.contactID)
+        name = try container.decode(String.self, forKey: CodingKeys.name)
+        deviceID = try container.decode(UInt16.self, forKey: CodingKeys.deviceID)
+        contactID = try container.decode(UInt16.self, forKey: CodingKeys.contactID)
     }
-    
+
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(id, forKey: CodingKeys.id)
@@ -61,15 +58,12 @@ extension Feedback: Codable {
         try container.encode(deviceID, forKey: CodingKeys.deviceID)
         try container.encode(contactID, forKey: CodingKeys.contactID)
     }
-
 }
 
-extension Array where Element : Feedback {
-
+extension Array where Element: Feedback {
     func find(deviceID: UInt16, contactID: UInt16) -> Element? {
-        self.first { feedback in
+        first { feedback in
             feedback.deviceID == deviceID && feedback.contactID == contactID
         }
     }
-    
 }

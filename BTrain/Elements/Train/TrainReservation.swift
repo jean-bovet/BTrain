@@ -18,43 +18,43 @@ class TrainReservation {
         case block(Block)
         case turnout(Turnout)
     }
-    
+
     /// Array of reservation items
     /// This array is updated by the ``LayoutReservation`` class each time the reserved
     /// blocks or turnouts are updated.
     internal var items = [Item]()
-    
+
     /// Returns true if there are no blocks nor turnout reserved
     var isEmpty: Bool {
         items.isEmpty
     }
-    
+
     /// Array of reserved blocks.
     var blocks: [Block] {
         items.compactMap { item in
-            if case .block(let block) = item {
+            if case let .block(block) = item {
                 return block
             } else {
                 return nil
             }
         }
     }
-    
+
     /// Array of reserved turnouts.
     var turnouts: [Turnout] {
         items.compactMap { item in
-            if case .turnout(let turnout) = item {
+            if case let .turnout(turnout) = item {
                 return turnout
             } else {
                 return nil
             }
         }
     }
-    
+
     func append(_ block: Block) {
         items.append(.block(block))
     }
-    
+
     func append(_ turnout: Turnout) {
         items.append(.turnout(turnout))
     }
@@ -62,15 +62,12 @@ class TrainReservation {
     func clear() {
         items.removeAll()
     }
-
 }
 
 /// This class keeps track of the occupied reserved blocks or turnouts for a specific train.
 ///
 /// An occupied block or turnout is one that contains a portion of the train, either the locomotive or a wagon.
-final class TrainOccupiedReservation: TrainReservation {
-    
-}
+final class TrainOccupiedReservation: TrainReservation {}
 
 /// This class keeps track of the leading reservation items assigned to this train.
 ///
@@ -78,7 +75,6 @@ final class TrainOccupiedReservation: TrainReservation {
 /// the train moves only when there are reserved blocks ahead and when the reserved
 /// turnouts have settled (that is, the turnout state has changed in the physical layout).
 final class TrainLeadingReservation: TrainReservation {
-    
     /// Returns true if there are reserved blocks (and turnouts) **and** they are settled.
     ///
     /// Note: *settled* means the turnout actual state is equal to the expected state, in other word,
@@ -87,10 +83,10 @@ final class TrainLeadingReservation: TrainReservation {
         if blocks.isEmpty {
             return false
         }
-        
+
         return emptyOrSettled
     }
-    
+
     /// Returns true if there are no leading blocks or if there are blocks (and turnouts) **and** they are settled.
     ///
     /// Note: *settled* means the turnout actual state is equal to the expected state, in other word,
@@ -99,7 +95,7 @@ final class TrainLeadingReservation: TrainReservation {
         if blocks.isEmpty {
             return true
         }
-        
+
         for turnout in turnouts {
             if !turnout.settled {
                 return false
@@ -108,13 +104,13 @@ final class TrainLeadingReservation: TrainReservation {
 
         return true
     }
-    
+
     /// Returns true if the reserved blocks (and turnouts) are still settling.
     var settling: Bool {
         if blocks.isEmpty {
             return false
         }
-        
+
         for turnout in turnouts {
             if !turnout.settled {
                 return true
@@ -123,7 +119,7 @@ final class TrainLeadingReservation: TrainReservation {
 
         return false
     }
-    
+
     /// Returns the distance that has been settled. In other words, returns the distance
     /// that contains only consecutive elements (blocks and turnouts) that have settled.
     ///
@@ -144,20 +140,20 @@ final class TrainLeadingReservation: TrainReservation {
             return false
         }
     }
-    
+
     private func computeSettledDistance() -> Double {
         var distance = 0.0
         for item in items {
             switch item {
-            case .block(let block):
+            case let .block(block):
                 if let blockLength = block.length {
                     distance += blockLength
                 }
-            case .turnout(let turnout):
+            case let .turnout(turnout):
                 if !turnout.settled {
                     return distance
                 }
-                
+
                 if let turnoutLength = turnout.length {
                     distance += turnoutLength
                 }
@@ -165,5 +161,4 @@ final class TrainLeadingReservation: TrainReservation {
         }
         return distance
     }
-    
 }

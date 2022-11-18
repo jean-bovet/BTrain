@@ -13,9 +13,7 @@
 import Foundation
 
 extension CGSize {
-        
     func scaledBy(value: CGFloat) -> CGSize {
-        CGSize(width: self.width * value, height: self.height * value)
+        CGSize(width: width * value, height: height * value)
     }
-
 }

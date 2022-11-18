@@ -14,26 +14,25 @@ import Foundation
 
 /// Discover locomotives from the Digital Controller and populate the layout with them.
 final class LocomotiveDiscovery {
-
     let interface: CommandInterface
     let layout: Layout
     let locomotiveIconManager: LocomotiveIconManager
 
     private var callbackUUID: UUID?
-    
+
     init(interface: CommandInterface, layout: Layout, locomotiveIconManager: LocomotiveIconManager) {
         self.interface = interface
         self.layout = layout
         self.locomotiveIconManager = locomotiveIconManager
     }
-    
+
     deinit {
         unregisterCallback()
     }
-    
+
     func discover(merge: Bool, completion: CompletionBlock? = nil) {
         unregisterCallback()
-        
+
         callbackUUID = interface.callbacks.register(forLocomotivesQuery: { [weak self] locomotives in
             DispatchQueue.main.async {
                 self?.unregisterCallback()
@@ -44,13 +43,13 @@ final class LocomotiveDiscovery {
 
         interface.execute(command: .locomotives(), completion: nil)
     }
-        
+
     private func unregisterCallback() {
         if let callbackUUID = callbackUUID {
             interface.callbacks.unregister(uuid: callbackUUID)
         }
     }
-    
+
     private func process(locomotives: [CommandLocomotive], merge: Bool) {
         var newLocs = [Locomotive]()
         for cmdLoc in locomotives {
@@ -69,7 +68,7 @@ final class LocomotiveDiscovery {
                 newLocs.append(loc)
             }
         }
-        
+
         if merge {
             layout.locomotives.elements.append(contentsOf: newLocs)
         } else {
@@ -77,7 +76,7 @@ final class LocomotiveDiscovery {
             layout.locomotives.elements = newLocs
         }
     }
-    
+
     private func mergeLocomotive(_ locomotive: CommandLocomotive, with loc: Locomotive) {
         if let name = locomotive.name {
             loc.name = name
@@ -93,5 +92,4 @@ final class LocomotiveDiscovery {
             try! locomotiveIconManager.setIcon(icon, locId: loc.id)
         }
     }
-
 }

@@ -13,12 +13,11 @@
 import SwiftUI
 
 struct DirectionPicker: View {
-    
     @Binding var direction: Direction?
 
     var body: some View {
         Picker("Direction:", selection: $direction) {
-            ForEach(Direction.allCases, id:\.self) { direction in
+            ForEach(Direction.allCases, id: \.self) { direction in
                 Text(direction.description).tag(direction as Direction?)
             }
         }

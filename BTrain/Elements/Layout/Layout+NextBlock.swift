@@ -13,19 +13,18 @@
 import Foundation
 
 extension Layout {
-    
     /// The feedback that is indicating a specific train is entering a block.
     struct EntryFeedback {
         /// The block the train is entering when the ``feedback`` is triggered
         let block: Block
-        
+
         /// The feedback that will be triggered by the train entering ``block``
         let feedback: Feedback
-        
+
         /// The direction of travel of the train entering ``block``, relative to ``block``.
         let direction: Direction
     }
-    
+
     /// Returns a structure describing the feedback that will be triggered by the train is entering a new block.
     ///
     /// - Parameter train: the train
@@ -38,7 +37,7 @@ extension Layout {
         guard let loc = train.locomotive else {
             return nil
         }
-        
+
         let nextBlock: Block
 
         if train.scheduling == .unmanaged {
@@ -58,7 +57,7 @@ extension Layout {
                 }
                 nextBlock = nb
             }
-            
+
             // Strict route strategy requires the train to be at the end of the block
             // before moving to the next block.
             if strictRouteFeedbackStrategy {
@@ -67,12 +66,12 @@ extension Layout {
                 }
             }
         }
-        
+
         // Find out which feedback is going to be used to detect the train entering
         // the `nextBlock` block.
         return try entryFeedback(from: currentBlock, to: nextBlock)
     }
-    
+
     /// Returns the feedback used to detect when a train enters a block.
     ///
     /// - Parameters:
@@ -88,15 +87,15 @@ extension Layout {
         // by the reservation of the block, if available. Otherwise,
         // the algorithm will try both directions.
         let nextDirection = nextBlock.reservation?.direction
-        
+
         let transitions = try transitions(from: LayoutVector(block: fromBlock, direction: direction),
                                           to: LayoutVector(block: nextBlock, direction: nextDirection))
-        
+
         // Note: grab the last transition which is the one that leads to `nextBlock`.
         guard let lastTransition = transitions.last else {
             throw LayoutError.noTransition(fromBlock: fromBlock, toBlock: nextBlock)
         }
-        
+
         // Determine if the train is moving in the "natural" direction
         // inside the next block, that is, entering from the "previous" side
         // (and exiting in the "next" side). This will help determine
@@ -104,17 +103,16 @@ extension Layout {
         guard let blockId = lastTransition.b.block, blockId == nextBlock.id else {
             throw LayoutError.lastTransitionToBlock(transition: lastTransition.id, blockId: nextBlock.id)
         }
-        
+
         let nextBlockDirectionOfTravel: Direction = lastTransition.b.socketId == Block.previousSocket ? .next : .previous
 
         // Now return the appropriate feedback depending on the direction
         // of travel of the train into the next block.
         let entryFeedbackId = nextBlock.entryFeedback(for: nextBlockDirectionOfTravel)
-        if let entryFeedback = self.feedbacks[entryFeedbackId] {
+        if let entryFeedback = feedbacks[entryFeedbackId] {
             return .init(block: nextBlock, feedback: entryFeedback, direction: nextBlockDirectionOfTravel)
         } else {
             return nil
         }
     }
-
 }

@@ -10,11 +10,10 @@
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-import XCTest
 @testable import BTrain
+import XCTest
 
 final class LayoutElementContainerTests: XCTestCase {
-
     func testFunctions() throws {
         let layout = Layout()
         let b1 = Block(name: "b1")
@@ -24,22 +23,22 @@ final class LayoutElementContainerTests: XCTestCase {
         XCTAssertEqual(layout.blocks.elements.count, 1)
         XCTAssertEqual(layout.blocks[0], b1)
         XCTAssertEqual(layout.blocks[b1.id], b1)
-        
+
         layout.blocks.remove(b1.id)
         XCTAssertEqual(layout.blocks.elements.count, 0)
-        
+
         layout.blocks[b1.id] = b1
         XCTAssertEqual(layout.blocks.elements.count, 1)
-        
+
         layout.blocks[0] = b2
         XCTAssertEqual(layout.blocks.elements.count, 1)
         XCTAssertEqual(layout.blocks[0], b2)
         XCTAssertEqual(layout.blocks[b2.id], b2)
-        
+
         XCTAssertNil(layout.blocks[b1.id])
         XCTAssertNil(layout.blocks[nil])
     }
-    
+
     func testCodable() throws {
         let layout = Layout()
         let b1 = Block(name: "b1")
@@ -53,12 +52,11 @@ final class LayoutElementContainerTests: XCTestCase {
 
         let decoder = JSONDecoder()
         let newContainer = try decoder.decode(LayoutElementContainer<Block>.self, from: data)
-        
+
         XCTAssertEqual(layout.blocks.elements, newContainer.elements)
 
         layout.blocks.elements.removeAll()
-        
+
         XCTAssertEqual(newContainer.elements.count, 2)
     }
-
 }

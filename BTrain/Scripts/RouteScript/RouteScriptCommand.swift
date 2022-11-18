@@ -13,9 +13,8 @@
 import Foundation
 
 struct RouteScriptCommand: ScriptCommand, Identifiable, Hashable {
-    
     let id: UUID
-    
+
     enum Action: String, CaseIterable, Codable {
         case start = "Start"
         case move = "Move"
@@ -23,22 +22,22 @@ struct RouteScriptCommand: ScriptCommand, Identifiable, Hashable {
     }
 
     var action: Action = .move
-    
+
     var children = [RouteScriptCommand]()
     var repeatCount = 0
     var waitDuration = 0
-    
+
     enum MoveDestinationType: String, CaseIterable, Codable {
         case block
         case station
     }
 
     var destinationType = MoveDestinationType.block
-    
+
     var blockId: Identifier<Block>?
     var direction: Direction?
     var stationId: Identifier<Station>?
-    
+
     init(id: UUID = UUID(), action: Action) {
         self.id = id
         self.action = action
@@ -46,25 +45,24 @@ struct RouteScriptCommand: ScriptCommand, Identifiable, Hashable {
 }
 
 extension RouteScriptCommand: Codable {
-    
     enum CodingKeys: CodingKey {
         case id, action, children, repeatCount, waitDuration, destinationType, blockId, direction, stationId
     }
-    
+
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        self.id = try container.decode(UUID.self, forKey: CodingKeys.id)
-        self.action = try container.decode(Action.self, forKey: CodingKeys.action)
-        self.children = try container.decode([RouteScriptCommand].self, forKey: CodingKeys.children)
-        self.repeatCount = try container.decode(Int.self, forKey: CodingKeys.repeatCount)
-        self.waitDuration = try container.decode(Int.self, forKey: CodingKeys.waitDuration)
+        id = try container.decode(UUID.self, forKey: CodingKeys.id)
+        action = try container.decode(Action.self, forKey: CodingKeys.action)
+        children = try container.decode([RouteScriptCommand].self, forKey: CodingKeys.children)
+        repeatCount = try container.decode(Int.self, forKey: CodingKeys.repeatCount)
+        waitDuration = try container.decode(Int.self, forKey: CodingKeys.waitDuration)
 
-        self.destinationType = try container.decode(MoveDestinationType.self, forKey: CodingKeys.destinationType)
-        self.blockId = try container.decodeIfPresent(Identifier<Block>.self, forKey: CodingKeys.blockId)
-        self.direction = try container.decodeIfPresent(Direction.self, forKey: CodingKeys.direction)
-        self.stationId = try container.decodeIfPresent(Identifier<Station>.self, forKey: CodingKeys.stationId)
+        destinationType = try container.decode(MoveDestinationType.self, forKey: CodingKeys.destinationType)
+        blockId = try container.decodeIfPresent(Identifier<Block>.self, forKey: CodingKeys.blockId)
+        direction = try container.decodeIfPresent(Direction.self, forKey: CodingKeys.direction)
+        stationId = try container.decodeIfPresent(Identifier<Station>.self, forKey: CodingKeys.stationId)
     }
-    
+
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(id, forKey: CodingKeys.id)

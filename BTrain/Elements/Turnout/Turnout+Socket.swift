@@ -41,7 +41,6 @@ import Foundation
 //                   ╲
 //                    ╲ 2
 extension Turnout {
-    
     var socket0: Socket {
         Socket.turnout(id, socketId: 0)
     }
@@ -60,18 +59,18 @@ extension Turnout {
     }
 
     var allSockets: [Socket] {
-        switch(category) {
+        switch category {
         case .singleLeft, .singleRight:
             return [socket0, socket1, socket2]
         case .threeWay, .doubleSlip, .doubleSlip2:
             return [socket0, socket1, socket2, socket3]
         }
     }
-    
+
     func socketName(_ socketId: Int) -> String {
-        switch(category) {
+        switch category {
         case .singleLeft:
-            switch(socketId) {
+            switch socketId {
             case 0:
                 return "straight (enter)"
             case 1:
@@ -82,7 +81,7 @@ extension Turnout {
                 return ""
             }
         case .singleRight:
-            switch(socketId) {
+            switch socketId {
             case 0:
                 return "straight (enter)"
             case 1:
@@ -94,7 +93,7 @@ extension Turnout {
             }
 
         case .threeWay:
-            switch(socketId) {
+            switch socketId {
             case 0:
                 return "straight (enter)"
             case 1:
@@ -108,7 +107,7 @@ extension Turnout {
             }
 
         case .doubleSlip:
-            switch(socketId) {
+            switch socketId {
             case 0:
                 return "branch01 (enter)"
             case 1:
@@ -120,9 +119,9 @@ extension Turnout {
             default:
                 return ""
             }
-            
+
         case .doubleSlip2:
-            switch(socketId) {
+            switch socketId {
             case 0:
                 return "branch01 (enter)"
             case 1:
@@ -136,18 +135,18 @@ extension Turnout {
             }
         }
     }
-    
+
     func socket(_ socketId: Int) -> Socket {
         precondition(socketId <= 3, "Invalid socketId \(socketId)")
         return Socket.turnout(id, socketId: socketId)
     }
-    
+
     // Returns all the sockets reachable from the specified socketId
     // Depending on the type of turnout, certain sockets are reachable.
     func sockets(from socketId: Int) -> [Int] {
-        switch(category) {
+        switch category {
         case .singleLeft, .singleRight:
-            switch(socketId) {
+            switch socketId {
             case 0:
                 return [1, 2]
             case 1, 2:
@@ -157,7 +156,7 @@ extension Turnout {
             }
 
         case .doubleSlip:
-            switch(socketId) {
+            switch socketId {
             case 0:
                 return [1, 3]
             case 1:
@@ -171,7 +170,7 @@ extension Turnout {
             }
 
         case .doubleSlip2:
-            switch(socketId) {
+            switch socketId {
             case 0:
                 return [1, 3]
             case 1:
@@ -185,7 +184,7 @@ extension Turnout {
             }
 
         case .threeWay:
-            switch(socketId) {
+            switch socketId {
             case 0:
                 return [1, 2, 3]
             case 1, 2, 3:
@@ -193,10 +192,9 @@ extension Turnout {
             default:
                 return []
             }
-
         }
     }
-    
+
     /// Returns the sockets that participate in the specific turnout state and turnout category.
     /// - Parameters:
     ///   - state: the turnout state
@@ -213,7 +211,7 @@ extension Turnout {
             default:
                 return []
             }
-            
+
         case .singleRight:
             switch state {
             case .branchRight:
@@ -259,8 +257,6 @@ extension Turnout {
             default:
                 return []
             }
-
         }
     }
-    
 }

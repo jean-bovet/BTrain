@@ -13,29 +13,28 @@
 import Foundation
 
 extension LayoutController {
-    
     func dumpAll() {
         var text = "*******************************************"
         text += "\nEnabled Trains:"
-        for train in layout.trains.elements.filter({$0.enabled}) {
-            text += "\n "+LayoutController.attributesFor(train: train, layout: layout)
+        for train in layout.trains.elements.filter({ $0.enabled }) {
+            text += "\n " + LayoutController.attributesFor(train: train, layout: layout)
         }
         text += "\nInteresting Blocks:"
-        for block in layout.blocks.elements.filter({$0.enabled && ($0.reservation != nil || $0.trainInstance != nil)}) {
-            text += "\n "+LayoutController.attributesFor(block: block, layout: layout)
+        for block in layout.blocks.elements.filter({ $0.enabled && ($0.reservation != nil || $0.trainInstance != nil) }) {
+            text += "\n " + LayoutController.attributesFor(block: block, layout: layout)
         }
         text += "\nRoutes:"
         for route in layout.routes {
-            text += "\n "+LayoutController.attributesFor(route: route, layout: layout)
+            text += "\n " + LayoutController.attributesFor(route: route, layout: layout)
         }
         text += "*******************************************"
         BTLogger.router.error("\(text, privacy: .public)")
     }
-    
-    static func attributesFor(route: Route, layout: Layout) -> String {
+
+    static func attributesFor(route: Route, layout _: Layout) -> String {
         var info = "\(route.name)-[\(route.id)]"
-        switch(route.mode) {
-        case .automaticOnce(destination: let destination):
+        switch route.mode {
+        case let .automaticOnce(destination: destination):
             info += " (automatic once to \(destination.blockId), direction \(String(describing: destination.direction))"
         case .automatic:
             info += " (automatic endless mode)"
@@ -48,7 +47,7 @@ extension LayoutController {
         }
         return info
     }
-    
+
     static func attributesFor(train: Train, layout: Layout) -> String {
         var info = "\(train)"
         if let route = layout.route(for: train.routeId, trainId: train.id) {
@@ -89,5 +88,4 @@ extension LayoutController {
         }
         return info
     }
-
 }

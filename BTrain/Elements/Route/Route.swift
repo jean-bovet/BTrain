@@ -18,15 +18,14 @@ import Foundation
 // situations where a train can go to a block using more than
 // one route (but one route can lead the train to be stuck,
 // which we don't want to happen).
-//┌──────────────────────────────────────────────────────┐
-//│                                                      │
-//│  ┌─────────┐         ┌─────────┐        ┌─────────┐  │
-//└─▶│ Block 1 │────────▶│ Block 2 │───────▶│ Block 3 │──┘
+// ┌──────────────────────────────────────────────────────┐
+// │                                                      │
+// │  ┌─────────┐         ┌─────────┐        ┌─────────┐  │
+// └─▶│ Block 1 │────────▶│ Block 2 │───────▶│ Block 3 │──┘
 //   └─────────┘         └─────────┘        └─────────┘
 final class Route: Element, ObservableObject {
-        
     let id: Identifier<Route>
-    
+
     /// Mode of the route. There are 3 possible modes:
     /// - fixed: the route is created ahead of time by the user and does not change
     /// - automatic: the route is automatically created by BTrain and is updated as the train moves. The train stops only when the user explicitly requests it.
@@ -34,18 +33,18 @@ final class Route: Element, ObservableObject {
     enum Mode: Equatable, Codable {
         // Fixed route specified by the user
         case fixed
-                
+
         // Run the automatic route as long as the user does not explicitly stop the train
         case automatic
-        
+
         // Run once the automatic route until it reaches the specified block.
         // The automatic route will try to pick the shortest route.
         case automaticOnce(destination: Destination)
     }
-    
+
     /// The mode of the route
     var mode = Mode.automatic
-    
+
     /// Returns true if the route is automatic.
     ///
     /// An automatic route is automatically updated as the train moves in the layout, depending
@@ -61,7 +60,7 @@ final class Route: Element, ObservableObject {
 
     // User-facing name of the route
     @Published var name = ""
-            
+
     /// The list of partial and unresolved route item as entered by the user.
     ///
     /// That list does not necessary contains all the blocks of a route, which is why
@@ -82,10 +81,10 @@ final class Route: Element, ObservableObject {
 
     /// The last message about the status of the route, or nil if there is no problem with the route.
     @Published var lastMessage: String?
-    
+
     var blockSteps: [RouteItemBlock] {
         steps.compactMap {
-            if case .block(let stepBlock) = $0 {
+            if case let .block(stepBlock) = $0 {
                 return stepBlock
             } else {
                 return nil
@@ -96,23 +95,22 @@ final class Route: Element, ObservableObject {
     var lastStepIndex: Int {
         steps.count - 1
     }
-    
+
     convenience init(uuid: String = UUID().uuidString, mode: Route.Mode = .fixed) {
         self.init(id: Identifier(uuid: uuid), mode: mode)
     }
-    
+
     init(id: Identifier<Route>, mode: Route.Mode = .fixed) {
         self.id = id
         self.mode = mode
     }
-    
+
     static func automaticRouteId(for trainId: Identifier<Train>) -> Identifier<Route> {
         Identifier<Route>(uuid: "automatic-\(trainId)")
     }
 }
 
 extension Route: Codable {
-    
     enum CodingKeys: CodingKey {
         case id, name, steps, stepsv2, items, automatic, mode
     }
@@ -130,16 +128,16 @@ extension Route: Codable {
             mode = .fixed
         }
         self.init(id: id, mode: mode)
-        self.name = try container.decode(String.self, forKey: CodingKeys.name)
+        name = try container.decode(String.self, forKey: CodingKeys.name)
         if container.contains(CodingKeys.steps) {
-            self.partialSteps = try container.decode([RouteStep_v1].self, forKey: CodingKeys.steps).toRouteSteps
+            partialSteps = try container.decode([RouteStep_v1].self, forKey: CodingKeys.steps).toRouteSteps
         } else if container.contains(CodingKeys.stepsv2) {
-            self.partialSteps = try container.decode([RouteItem].self, forKey: CodingKeys.stepsv2)
+            partialSteps = try container.decode([RouteItem].self, forKey: CodingKeys.stepsv2)
         } else if container.contains(CodingKeys.items) {
-            self.partialSteps = try container.decode([RouteItem].self, forKey: CodingKeys.items)
+            partialSteps = try container.decode([RouteItem].self, forKey: CodingKeys.items)
         }
     }
-    
+
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(id, forKey: CodingKeys.id)
@@ -147,5 +145,4 @@ extension Route: Codable {
         try container.encode(partialSteps, forKey: CodingKeys.items)
         try container.encode(mode, forKey: CodingKeys.mode)
     }
-
 }

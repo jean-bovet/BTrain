@@ -13,12 +13,11 @@
 import Foundation
 
 final class RouteScript: Element, ObservableObject {
-        
     let id: Identifier<RouteScript>
-    
+
     @Published var name: String
     @Published var commands: [RouteScriptCommand] = []
-        
+
     internal convenience init(uuid: String = UUID().uuidString, name: String = "") {
         self.init(id: Identifier<RouteScript>(uuid: uuid), name: name)
     }
@@ -26,27 +25,25 @@ final class RouteScript: Element, ObservableObject {
     internal init(id: Identifier<RouteScript>, name: String = "") {
         self.id = id
         self.name = name
-        self.commands = [.init(action: .start)]
+        commands = [.init(action: .start)]
     }
-
 }
 
 extension RouteScript: Codable {
-    
     enum CodingKeys: CodingKey {
         case id, name, commands
     }
-    
+
     convenience init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         let id = try container.decode(Identifier<RouteScript>.self, forKey: CodingKeys.id)
         let name = try container.decode(String.self, forKey: CodingKeys.name)
-        
+
         self.init(id: id, name: name)
-        
-        self.commands = try container.decode([RouteScriptCommand].self, forKey: CodingKeys.commands)
+
+        commands = try container.decode([RouteScriptCommand].self, forKey: CodingKeys.commands)
     }
-    
+
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(id, forKey: CodingKeys.id)

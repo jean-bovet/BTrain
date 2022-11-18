@@ -16,11 +16,10 @@ extension View {
     func unitStyle(_ unit: String) -> some View {
         modifier(UnitViewModifier(text: unit))
     }
-    
+
     func unitMenu(_ value: Binding<Double?>) -> some View {
         modifier(UnitMenuViewModifier(value: value))
     }
-
 }
 
 struct UnitViewModifier: ViewModifier {

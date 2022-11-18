@@ -10,11 +10,10 @@
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-import XCTest
 @testable import BTrain
+import XCTest
 
 class LayoutEventStateMachineTests: XCTestCase {
-
     var train: MockTrainController!
     let lsm = LayoutEventStateMachine()
 
@@ -22,30 +21,30 @@ class LayoutEventStateMachineTests: XCTestCase {
         super.setUp()
         train = MockTrainController(route: Route(uuid: "fixed-test", mode: .fixed))
     }
-    
+
     func testLayoutEventFeedback() throws {
         let f1 = Feedback("f1")
-        
-        train.onUpdatePosition = { f in return f == f1 }
+
+        train.onUpdatePosition = { f in f == f1 }
         XCTAssertEqual(try lsm.handle(layoutEvent: .feedback(f1), train: train), nil)
 
         train.mode = .managed
 
-        train.onUpdatePosition = { f in return f == f1 }
+        train.onUpdatePosition = { f in f == f1 }
         XCTAssertEqual(try lsm.handle(layoutEvent: .feedback(f1), train: train), nil)
 
         train.state = .running
-        
-        train.onUpdatePosition = { f in return f == f1 }
+
+        train.onUpdatePosition = { f in f == f1 }
         XCTAssertEqual(try lsm.handle(layoutEvent: .feedback(f1), train: train), .position(train))
-        
-        train.onUpdatePosition = { f in return false }
+
+        train.onUpdatePosition = { _ in false }
         XCTAssertEqual(try lsm.handle(layoutEvent: .feedback(f1), train: train), nil)
     }
-    
+
     func testLayoutEventSpeed() throws {
         XCTAssertEqual(train.speed, 0)
-        
+
         let anotherTrain = MockTrainController(route: train.route)
         XCTAssertEqual(try lsm.handle(layoutEvent: .speed(anotherTrain, 10), train: train), nil)
         XCTAssertEqual(train.speed, 0)
@@ -57,33 +56,32 @@ class LayoutEventStateMachineTests: XCTestCase {
     func testLayoutEventTurnout() throws {
         let t1 = Turnout(name: "t1")
         train.state = .running
-        
+
         XCTAssertEqual(train.adjustSpeedCount, 0)
 
-        train.onUpdateReservedBlocksSettledLength = { t in
-            return false
+        train.onUpdateReservedBlocksSettledLength = { _ in
+            false
         }
         XCTAssertEqual(try lsm.handle(layoutEvent: .turnout(t1), train: train), nil)
         XCTAssertEqual(train.adjustSpeedCount, 0)
-        
+
         train.onUpdateReservedBlocksSettledLength = { t in
-            return t == t1
+            t == t1
         }
         XCTAssertEqual(train.adjustSpeedCount, 0)
         XCTAssertEqual(try lsm.handle(layoutEvent: .turnout(t1), train: train), .reservedBlocksSettledLengthChanged(train))
         XCTAssertEqual(train.adjustSpeedCount, 0)
     }
-    
+
     func testLayoutEventDirection() throws {
         let anotherTrain = MockTrainController(route: train.route)
-        anotherTrain.onUpdateReservedBlocks = { return true }
+        anotherTrain.onUpdateReservedBlocks = { true }
         XCTAssertEqual(try lsm.handle(layoutEvent: .direction(anotherTrain), train: train), nil)
 
-        train.onUpdateReservedBlocks = { return true }
+        train.onUpdateReservedBlocks = { true }
         XCTAssertEqual(try lsm.handle(layoutEvent: .direction(train), train: train), .reservedBlocksChanged(train))
-        
-        train.onUpdateReservedBlocks = { return false }
+
+        train.onUpdateReservedBlocks = { false }
         XCTAssertEqual(try lsm.handle(layoutEvent: .direction(train), train: train), nil)
     }
-
 }

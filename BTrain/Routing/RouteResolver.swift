@@ -24,18 +24,18 @@ import Foundation
 final class RouteResolver {
     let layout: Layout
     let train: Train
-    
+
     init(layout: Layout, train: Train) {
         self.layout = layout
         self.train = train
     }
-     
+
     /// An array of resolved paths
     typealias ResolvedRoutes = [[ResolvedRouteItem]]
-    
+
     /// Contains one or more resolved path or an error indicating why the path could not be resolved
-    typealias ResolverResult = Result<ResolvedRoutes,PathFinderResolver.ResolverError>
-    
+    typealias ResolverResult = Result<ResolvedRoutes, PathFinderResolver.ResolverError>
+
     /// This function takes an array of steps and returns a resolved array of steps.
     ///
     /// - Parameters:
@@ -43,17 +43,18 @@ final class RouteResolver {
     ///   - verbose: true to enable debug output during resolution
     /// - Returns: the result of the resolving algorithm
     func resolve(unresolvedPath: [Resolvable],
-                 verbose: Bool = SettingsKeys.bool(forKey: SettingsKeys.logRoutingResolutionSteps)) throws -> ResolverResult {
+                 verbose: Bool = SettingsKeys.bool(forKey: SettingsKeys.logRoutingResolutionSteps)) throws -> ResolverResult
+    {
         let settings = PathFinder.Settings(verbose: verbose,
                                            random: false,
                                            overflow: layout.pathFinderOverflowLimit)
-        
+
         let result = try resolve(unresolvedPath: unresolvedPath, settings: settings, relaxed: false)
         switch result {
-        case .success(let resolvedPaths):
+        case let .success(resolvedPaths):
             return .success(resolvedPaths)
-            
-        case .failure(_):
+
+        case .failure:
             // If we are not able to resolve the route using the standard constraints, it means there are no path available
             // that satisfies the constraints; for example, a fixed route has a disabled block that makes it impossible to resolve.
             // Let's try again to resolve the route using the basic constraints at the graph-level - this means, all layout-specific
@@ -61,7 +62,7 @@ final class RouteResolver {
             return try resolve(unresolvedPath: unresolvedPath, settings: settings, relaxed: true)
         }
     }
-    
+
     private func resolve(unresolvedPath: [Resolvable], settings: PathFinder.Settings, relaxed: Bool) throws -> ResolverResult {
         let constraints = PathFinder.Constraints(layout: layout,
                                                  train: train,
@@ -71,12 +72,11 @@ final class RouteResolver {
         let pf = PathFinder(constraints: constraints, settings: settings)
         let result = try pf.resolve(graph: layout, unresolvedPath)
         switch result {
-        case .success(let resolvedPaths):
+        case let .success(resolvedPaths):
             return .success(resolvedPaths.map { $0.elements.toResolvedRouteItems })
-            
-        case .failure(let error):
+
+        case let .failure(error):
             return .failure(error)
         }
     }
-    
 }

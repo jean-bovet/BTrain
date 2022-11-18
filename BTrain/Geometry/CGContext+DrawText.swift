@@ -17,9 +17,9 @@ enum VTextAlignment {
     case center
     case top
     case bottom
-    
+
     var inverse: VTextAlignment {
-        switch(self) {
+        switch self {
         case .center:
             return .center
         case .top:
@@ -35,7 +35,7 @@ enum HTextAlignment {
     case left
     case right
     var inverse: HTextAlignment {
-        switch(self) {
+        switch self {
         case .center:
             return .center
         case .left:
@@ -47,12 +47,11 @@ enum HTextAlignment {
 }
 
 extension CGContext {
-        
     func prepareText(text: String, color: CGColor, fontSize: CGFloat) -> (CTLine, CGRect) {
         let font = CTFontCreateWithName(NSFont.systemFont(ofSize: NSFont.systemFontSize).fontName as CFString, fontSize, nil)
 
         let attributes = [NSAttributedString.Key.font: font,
-                          NSAttributedString.Key.foregroundColor: color] as [NSAttributedString.Key : Any]
+                          NSAttributedString.Key.foregroundColor: color] as [NSAttributedString.Key: Any]
 
         // Text
         let attributedString = NSAttributedString(string: text,
@@ -64,7 +63,7 @@ extension CGContext {
 
         return (line, stringRect)
     }
-    
+
     @discardableResult
     func drawText(at location: CGPoint,
                   vAlignment: VTextAlignment = .center,
@@ -72,10 +71,10 @@ extension CGContext {
                   rotation: CGFloat = 0,
                   flip: Bool = true,
                   text: String, color: CGColor, fontSize: CGFloat,
-                  borderColor: CGColor? = nil, backgroundColor: CGColor? = nil) -> CGSize {
-
+                  borderColor: CGColor? = nil, backgroundColor: CGColor? = nil) -> CGSize
+    {
         let (line, stringRect) = prepareText(text: text, color: color, fontSize: fontSize)
-        
+
         // Apply rotation angle
         translateBy(x: location.x, y: location.y)
         rotate(by: rotation)
@@ -91,39 +90,38 @@ extension CGContext {
         }
 
         var p = location
-        
-        switch(vAlignment) {
+
+        switch vAlignment {
         case .center:
-            p.y = p.y + stringRect.height/2
+            p.y = p.y + stringRect.height / 2
         case .top:
             p.y = p.y - stringRect.height
         case .bottom:
             p.y = p.y + 0
         }
 
-        switch(hAlignment) {
+        switch hAlignment {
         case .center:
-            p.x = p.x - stringRect.width/2
+            p.x = p.x - stringRect.width / 2
         case .left:
             p.x = p.x + 0
         case .right:
             p.x = p.x - stringRect.width
         }
-                
+
         if let borderColor = borderColor, let backgroundColor = backgroundColor {
             let sr = CGRect(x: p.x, y: p.y - stringRect.height, width: stringRect.width + 2, height: stringRect.height).insetBy(dx: -3, dy: -3)
 
             setFillColor(backgroundColor)
             fill(sr)
-            
+
             setStrokeColor(borderColor)
             stroke(sr)
         }
-        
+
         textPosition = p
         CTLineDraw(line, self)
-                
+
         return stringRect.size
     }
-    
 }

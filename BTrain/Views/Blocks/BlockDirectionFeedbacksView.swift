@@ -13,14 +13,13 @@
 import SwiftUI
 
 struct BlockFeedbackDirectionView: View {
-    
     let label: String
     let layout: Layout
-    
+
     let defaultFeedback: Identifier<Feedback>?
-    
+
     @Binding var feedback: Identifier<Feedback>?
-    
+
     @ObservedObject var block: Block
 
     var body: some View {
@@ -32,7 +31,7 @@ struct BlockFeedbackDirectionView: View {
                     } else {
                         Text("No Feedback").tag(nil as Identifier<Feedback>?)
                     }
-                    ForEach(block.feedbacks, id:\.self) { bf in
+                    ForEach(block.feedbacks, id: \.self) { bf in
                         if let candidate = layout.feedbacks[bf.feedbackId] {
                             Text(candidate.name).tag(candidate.id as Identifier<Feedback>?)
                         }
@@ -45,7 +44,6 @@ struct BlockFeedbackDirectionView: View {
 }
 
 struct BlockDirectionFeedbacksView: View {
-    
     let layout: Layout
     let direction: Direction
     @ObservedObject var block: Block
@@ -78,7 +76,6 @@ struct BlockDirectionFeedbacksView: View {
 }
 
 struct BlockDirectionFeedbacksView_Previews: PreviewProvider {
-    
     static let layout = LayoutLoop2().newLayout()
 
     static var previews: some View {

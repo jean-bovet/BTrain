@@ -13,30 +13,29 @@
 import SwiftUI
 
 struct RouteStepBlockView: View {
-    
     let layout: Layout
     @Binding var stepBlock: RouteItemBlock
-    
+
     var body: some View {
         HStack {
             UndoProvider($stepBlock.blockId) { blockId in
                 Picker("Block:", selection: blockId) {
-                    ForEach(layout.blocks.elements, id:\.self) { block in
+                    ForEach(layout.blocks.elements, id: \.self) { block in
                         Text("\(block.name) — \(block.category.description)").tag(block.id as Identifier<Block>)
                     }
                 }
             }
-            
+
             UndoProvider($stepBlock.direction) { direction in
                 Picker("Direction:", selection: direction) {
-                    ForEach(Direction.allCases, id:\.self) { direction in
+                    ForEach(Direction.allCases, id: \.self) { direction in
                         Text(direction.description).tag(direction as Direction?)
                     }
                 }
                 .fixedSize()
             }
-            
-            if let block = layout.blocks[stepBlock.blockId]  {
+
+            if let block = layout.blocks[stepBlock.blockId] {
                 Text("Waiting Time:")
                 TextField("", value: $stepBlock.waitingTime, format: .number)
                     .disabled(block.category != .station)
@@ -48,7 +47,6 @@ struct RouteStepBlockView: View {
 }
 
 struct RouteStepBlockView_Previews: PreviewProvider {
-    
     static let layout = LayoutLoop2().newLayout()
 
     static var previews: some View {

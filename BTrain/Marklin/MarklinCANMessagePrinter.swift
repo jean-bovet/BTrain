@@ -13,7 +13,6 @@
 import Foundation
 
 struct MarklinCANMessagePrinter {
-
     static func debugDescription(msg: MarklinCANMessage) -> String? {
         if let description = MarklinCANMessagePrinter.description(message: msg) {
             return "\(description), data: \(msg.data as NSData)"
@@ -21,13 +20,13 @@ struct MarklinCANMessagePrinter {
             return nil
         }
     }
-    
+
     static func description(message: MarklinCANMessage) -> String? {
         let cmd = Command.from(message: message)
-        switch(cmd) {
+        switch cmd {
         case .go(priority: _, descriptor: let descriptor):
             return descriptor?.description
-            
+
         case .stop(priority: _, descriptor: let descriptor):
             return descriptor?.description
 
@@ -54,7 +53,7 @@ struct MarklinCANMessagePrinter {
 
         case .unknown(command: _, priority: _, descriptor: let descriptor):
             let mc = MarklinCommand.from(message: message)
-            switch(mc) {
+            switch mc {
             case .configDataStream(length: _, data: _, descriptor: let descriptor):
                 return descriptor?.description
 
@@ -67,5 +66,4 @@ struct MarklinCANMessagePrinter {
             }
         }
     }
-    
 }

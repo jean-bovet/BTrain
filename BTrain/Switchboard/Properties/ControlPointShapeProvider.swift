@@ -13,12 +13,11 @@
 import Foundation
 
 extension ShapeProvider {
-     
     func updateControlPointShapes(visible: Bool) {
         assignControlPoints()
         createControlPointShapes(visible: visible)
     }
-    
+
     private func assignControlPoints() {
         for linkShape in linkShapes {
             // Note: link that are being created by the user can have no transition associated with it until the
@@ -26,28 +25,28 @@ extension ShapeProvider {
             guard let transition = linkShape.transition else {
                 continue
             }
-            let controlPoints = layout.controlPoints.filter({ $0.transitionId == transition.id })
+            let controlPoints = layout.controlPoints.filter { $0.transitionId == transition.id }
             if controlPoints.count == 2 {
                 linkShape.controlPoint1 = controlPoints[0]
                 linkShape.controlPoint2 = controlPoints[1]
             }
         }
     }
-    
+
     func toggleControlPoints(_ shape: LinkShape) {
         guard let transition = shape.transition else {
             return
         }
-        
+
         removeControlPointShapes()
-        
-        let existingControlPoints = layout.controlPoints.filter({$0.transitionId == transition.id})
+
+        let existingControlPoints = layout.controlPoints.filter { $0.transitionId == transition.id }
         if existingControlPoints.isEmpty {
             addControlPoint(transition: transition, shape: shape, position: shape.ctrlPoint1)
             addControlPoint(transition: transition, shape: shape, position: shape.ctrlPoint2)
         } else {
             layout.controlPoints.removeAll { $0.transitionId == transition.id }
-            for linkShape in linkShapes.filter({$0.transition?.id == transition.id}) {
+            for linkShape in linkShapes.filter({ $0.transition?.id == transition.id }) {
                 linkShape.controlPoint1 = nil
                 linkShape.controlPoint2 = nil
             }
@@ -57,7 +56,7 @@ extension ShapeProvider {
         updateControlPointShapes(visible: true)
     }
 
-    private func addControlPoint(transition: Transition, shape: LinkShape, position: CGPoint) {
+    private func addControlPoint(transition: Transition, shape _: LinkShape, position: CGPoint) {
         let id = LayoutIdentity.newIdentity(layout.controlPoints, prefix: .controlPoint)
         let controlPoint = ControlPoint(id: id, transitionId: transition.id, position: position)
         layout.controlPoints.append(controlPoint)
@@ -73,28 +72,27 @@ extension ShapeProvider {
             }
         }
     }
-    
+
     private func createControlPointShape(controlPoint: ControlPoint, visible: Bool) {
         let controlPointShape = ControlPointShape(controlPoint: controlPoint, shapeContext: context)
         controlPointShape.controlPoint.position = controlPoint.position
         controlPointShape.visible = visible
         append(controlPointShape)
     }
-    
+
     private var controlPointShapes: [ControlPointShape] {
         shapes.compactMap { $0 as? ControlPointShape }
     }
-    
+
     func showControlPointShapes() {
         for shape in controlPointShapes {
             shape.visible = true
         }
     }
-    
+
     func hideControlPointShapes() {
         for shape in controlPointShapes {
             shape.visible = false
         }
     }
-    
 }

@@ -19,14 +19,13 @@ struct Vector2D {
     let y: Double
 }
 
-infix operator • : MultiplicationPrecedence
+infix operator •: MultiplicationPrecedence
 
 extension Vector2D {
-    
     static func • (left: Vector2D, right: Vector2D) -> Double {
         left.x * right.x + left.y * right.y
     }
-    
+
     var magnitude: Double {
         sqrt(x * x + y * y)
     }
@@ -38,9 +37,8 @@ extension Vector2D {
     func angle(to vector: Vector2D) -> Double {
         acos(normalized • vector.normalized)
     }
-    
+
     static func cross(left: Vector2D, right: Vector2D) -> Double {
         left.x * right.y - left.y * right.x
     }
-
 }

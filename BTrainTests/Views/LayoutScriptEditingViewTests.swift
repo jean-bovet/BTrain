@@ -15,17 +15,16 @@ import XCTest
 @testable import BTrain
 import ViewInspector
 
-extension LayoutScriptEditingView: Inspectable { }
+extension LayoutScriptEditingView: Inspectable {}
 
 final class LayoutScriptEditingViewTests: XCTestCase {
-
     func testAddNewScript() throws {
         let doc = LayoutDocument(layout: Layout())
         let layout = doc.layout
         let sut = LayoutScriptEditingView(doc: doc, layout: layout)
-        
+
         XCTAssertEqual(layout.layoutScripts.elements.count, 0)
-        
+
         let addButton = try sut.inspect().find(button: "+")
         try addButton.tap()
 
@@ -38,5 +37,4 @@ final class LayoutScriptEditingViewTests: XCTestCase {
         let duplicateButton = try sut.inspect().find(button: "􀐅")
         XCTAssertTrue(duplicateButton.isDisabled())
     }
-
 }

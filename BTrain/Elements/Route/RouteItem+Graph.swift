@@ -13,19 +13,18 @@
 import Foundation
 
 extension Array where Element == GraphPathElement {
-    
     var toBlockSteps: [RouteItem] {
-        self.toSteps.compactMap { step in
-            if case .block(_) = step {
+        toSteps.compactMap { step in
+            if case .block = step {
                 return step
             } else {
                 return nil
             }
         }
     }
-    
+
     var toSteps: [RouteItem] {
-        self.compactMap { element in
+        compactMap { element in
             if let block = element.node as? Block {
                 let direction: Direction
                 if let entrySocket = element.entrySocket {
@@ -49,9 +48,9 @@ extension Array where Element == GraphPathElement {
             }
         }
     }
-    
+
     var toResolvedRouteItems: [ResolvedRouteItem] {
-        self.compactMap { element in
+        compactMap { element in
             if let block = element.node as? Block {
                 let direction: Direction
                 if let entrySocket = element.entrySocket {
@@ -79,5 +78,4 @@ extension Array where Element == GraphPathElement {
             }
         }
     }
-
 }

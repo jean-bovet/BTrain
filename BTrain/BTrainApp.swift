@@ -14,16 +14,15 @@ import SwiftUI
 
 @main
 struct BTrainApp: App {
-    
     @Environment(\.openURL) var openURL
-    
+
     /// Returns a new document instance
     var newDocument: LayoutDocument {
         let doc = LayoutDocument(layout: Layout(uuid: UUID().uuidString))
         doc.newDocument = true
         return doc
     }
-    
+
     var body: some Scene {
         DocumentGroup {
             newDocument
@@ -39,11 +38,10 @@ struct BTrainApp: App {
                 }
             }
         }
-#if os(macOS)
-        Settings {
-            SettingsView()
-        }
-#endif
+        #if os(macOS)
+            Settings {
+                SettingsView()
+            }
+        #endif
     }
-    
 }

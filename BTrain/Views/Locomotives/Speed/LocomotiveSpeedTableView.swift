@@ -13,7 +13,6 @@
 import SwiftUI
 
 struct LocomotiveSpeedTableView: View {
-    
     @Binding var selection: Set<LocomotiveSpeed.SpeedTableEntry.ID>
     @Binding var currentSpeedEntry: LocomotiveSpeed.SpeedTableEntry?
 
@@ -48,7 +47,7 @@ struct LocomotiveSpeedTableView: View {
                     trainSpeed.interpolateSpeedTable()
                 }
                 .help("Interpolate Missing Speed Values")
- 
+
                 Button("􀈂") {
                     exportTable()
                 }
@@ -60,7 +59,7 @@ struct LocomotiveSpeedTableView: View {
                 .help("Import Table")
 
                 Spacer()
-                
+
                 Button("􀈑") {
                     selection.forEach { index in
                         trainSpeed.speedTable[Int(index)].speed = nil
@@ -71,7 +70,7 @@ struct LocomotiveSpeedTableView: View {
             }
         }
     }
-        
+
     private func exportTable() {
         let savePanel = NSSavePanel()
         savePanel.allowedContentTypes = [.json]
@@ -88,7 +87,7 @@ struct LocomotiveSpeedTableView: View {
             }
         }
     }
-    
+
     private func importTable() {
         let openPanel = NSOpenPanel()
         openPanel.allowedContentTypes = [.json]
@@ -107,12 +106,11 @@ struct LocomotiveSpeedTableView: View {
 }
 
 struct LocomotiveSpeedTableView_Previews: PreviewProvider {
-    
     static let doc = LayoutDocument(layout: LayoutComplex().newLayout())
 
     static var previews: some View {
         LocomotiveSpeedTableView(selection: .constant([]),
-                             currentSpeedEntry: .constant(nil),
-                             trainSpeed: doc.layout.locomotives[0].speed)
+                                 currentSpeedEntry: .constant(nil),
+                                 trainSpeed: doc.layout.locomotives[0].speed)
     }
 }

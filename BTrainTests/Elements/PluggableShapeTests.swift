@@ -10,18 +10,17 @@
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-import XCTest
 @testable import BTrain
+import XCTest
 
 class PluggableShapeTests: XCTestCase {
-
     func testPlugs() {
         var plugs = [ConnectorPlug]()
-        
+
         let p1 = ConnectorPlug(id: 0)
-        
+
         plugs.append(p1)
-        
+
         let p2 = ConnectorPlug(id: 0)
         p2.freePoint = .init(x: 20, y: 10)
 

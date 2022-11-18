@@ -15,22 +15,22 @@ import Network
 
 @available(macOS 10.14, *)
 final class ServerConnection {
-    //The TCP maximum package size is 64K 65536
+    // The TCP maximum package size is 64K 65536
     let MTU = 65536
-    
+
     private static var nextID: Int = 0
     let connection: NWConnection
     let id: Int
-        
+
     init(nwConnection: NWConnection) {
         connection = nwConnection
         id = ServerConnection.nextID
         ServerConnection.nextID += 1
     }
-    
-    var didStopCallback: ((Error?) -> Void)? = nil
-    var receiveMessageCallback: ((Command) -> Void)? = nil
-    
+
+    var didStopCallback: ((Error?) -> Void)?
+    var receiveMessageCallback: ((Command) -> Void)?
+
     func start() {
         BTLogger.network.debug("connection \(self.id) will start")
         connection.stateUpdateHandler = { [weak self] state in
@@ -39,31 +39,31 @@ final class ServerConnection {
         setupReceive()
         connection.start(queue: .main)
     }
-    
+
     private func stateDidChange(to state: NWConnection.State) {
         switch state {
-        case .waiting(let error):
+        case let .waiting(error):
             connectionDidFail(error: error)
         case .ready:
             BTLogger.network.debug("connection \(self.id) ready")
-        case .failed(let error):
+        case let .failed(error):
             connectionDidFail(error: error)
         default:
             break
         }
     }
 
-    private func getHost() ->  NWEndpoint.Host? {
+    private func getHost() -> NWEndpoint.Host? {
         switch connection.endpoint {
-        case .hostPort(let host , _):
+        case let .hostPort(host, _):
             return host
         default:
             return nil
         }
     }
-    
+
     private func setupReceive() {
-        connection.receive(minimumIncompleteLength: 1, maximumLength: MTU) { [weak self] (data, _, isComplete, error) in
+        connection.receive(minimumIncompleteLength: 1, maximumLength: MTU) { [weak self] data, _, isComplete, error in
             guard let sSelf = self else {
                 return
             }
@@ -90,34 +90,34 @@ final class ServerConnection {
         if let description = MarklinCANMessagePrinter.debugDescription(msg: msg) {
             BTLogger.network.debug("[Server] > \(description) - \(self.id)")
         }
-        
-        connection.send(content: data, completion: .contentProcessed( { [weak self] error in
+
+        connection.send(content: data, completion: .contentProcessed { [weak self] error in
             DispatchQueue.main.async {
                 if let error = error {
                     self?.connectionDidFail(error: error)
                     return
                 }
-                                
+
                 completion?()
             }
-        }))
+        })
     }
-    
+
     func stop() {
         BTLogger.network.debug("[Server] \(self.id) will stop")
         stop(error: nil)
     }
-        
+
     private func connectionDidFail(error: Error) {
         BTLogger.network.error("[Server] \(self.id) did fail, error: \(error.localizedDescription)")
         stop(error: error)
     }
-    
+
     private func connectionDidEnd() {
         BTLogger.network.debug("[Server] \(self.id) did end")
         stop(error: nil)
     }
-    
+
     private func stop(error: Error?) {
         connection.stateUpdateHandler = nil
         connection.cancel()
@@ -126,5 +126,4 @@ final class ServerConnection {
             didStopCallback(error)
         }
     }
-    
 }

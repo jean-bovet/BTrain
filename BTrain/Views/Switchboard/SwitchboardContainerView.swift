@@ -13,7 +13,6 @@
 import SwiftUI
 
 struct SwitchboardContainerView: View {
-    
     @ObservedObject var layout: Layout
 
     let layoutController: LayoutController
@@ -21,11 +20,11 @@ struct SwitchboardContainerView: View {
     @ObservedObject var document: LayoutDocument
 
     @ObservedObject var switchboard: SwitchBoard
-    
+
     @ObservedObject var state: SwitchBoard.State
-    
+
     @AppStorage("switchboardWhiteBackground") var whiteBackground = false
-        
+
     /// Background color of the switchboard, which can be white if the appropriate developer flag
     /// is turned on in order to to proper screenshots.
     var backgroundColor: Color {
@@ -35,7 +34,7 @@ struct SwitchboardContainerView: View {
             return Color(NSColor.windowBackgroundColor)
         }
     }
-    
+
     var body: some View {
         VStack(spacing: 0) {
             if state.editing {
@@ -55,7 +54,7 @@ struct SwitchboardContainerView: View {
                     if switchboard.isEmpty && !state.editing {
                         VStack {
                             Text("No Elements")
-                            
+
                             HStack {
                                 Button("􀈊 Edit Layout") {
                                     state.editing.toggle()
@@ -72,18 +71,16 @@ struct SwitchboardContainerView: View {
                 .padding()
         }
     }
-        
 }
 
 struct OverviewSwitchboardView_Previews: PreviewProvider {
-    
     static let doc: LayoutDocument = {
         let doc = LayoutDocument(layout: LayoutLoop2().newLayout())
         doc.showSwitchboardViewSettings = true
         doc.layout.runtimeError = "Unexpected feedback"
         return doc
     }()
-    
+
     static var previews: some View {
         SwitchboardContainerView(layout: doc.layout,
                                  layoutController: doc.layoutController,

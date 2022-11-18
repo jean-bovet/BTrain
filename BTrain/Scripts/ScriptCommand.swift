@@ -19,7 +19,6 @@ protocol ScriptCommand<C> {
 }
 
 extension Array where Element: ScriptCommand<Element> {
-    
     func commandWith(uuid: String) -> Element? {
         for command in self {
             if command.id.uuidString == uuid {
@@ -31,7 +30,7 @@ extension Array where Element: ScriptCommand<Element> {
         }
         return nil
     }
-    
+
     mutating func remove(source: Element) {
         for (index, command) in enumerated() {
             if command.id == source.id {
@@ -83,5 +82,4 @@ extension Array where Element: ScriptCommand<Element> {
         }
         return false
     }
-        
 }

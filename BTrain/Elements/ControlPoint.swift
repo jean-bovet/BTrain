@@ -16,15 +16,14 @@ import Foundation
 /// that are automatically computed based on the source and target of the transition. However, if the user wants
 /// to customize these control points of the Bezier curve, two ``ControlPoint`` are created for each transitions.
 final class ControlPoint: Element, Codable {
-    
     let id: Identifier<ControlPoint>
-    
+
     /// The identifier of the transition this control point refers to.
     let transitionId: Identifier<Transition>
-    
+
     /// The position of the control point
     var position: CGPoint
-    
+
     internal init(id: Identifier<ControlPoint>, transitionId: Identifier<Transition>, position: CGPoint) {
         self.id = id
         self.transitionId = transitionId
@@ -32,7 +31,7 @@ final class ControlPoint: Element, Codable {
     }
 
     enum CodingKeys: CodingKey {
-      case id, transitionId, position
+        case id, transitionId, position
     }
 
     convenience init(from decoder: Decoder) throws {
@@ -42,12 +41,11 @@ final class ControlPoint: Element, Codable {
         let position = try container.decode(CGPoint.self, forKey: CodingKeys.position)
         self.init(id: id, transitionId: transitionId, position: position)
     }
-    
+
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(id, forKey: CodingKeys.id)
         try container.encode(transitionId, forKey: CodingKeys.transitionId)
         try container.encode(position, forKey: CodingKeys.position)
     }
-
 }

@@ -15,20 +15,18 @@ import XCTest
 @testable import BTrain
 
 class GraphElementTests: XCTestCase {
-
     // Ensure that two elements with the same "uuid" but different type,
     // one block and one turnout, have different uuid in the Graph.
     func testElementIdentifiers() throws {
         let blockA = Identifier<Block>(uuid: "1")
         let turnoutA = Identifier<Turnout>(uuid: "1")
-        
+
         let layout = Layout()
         layout.blocks.add(Block(id: blockA, name: "A"))
         layout.turnouts.add(Turnout(id: turnoutA, name: "A"))
-        
+
         let blockIdentifier = layout.blocks[0].identifier
         let turnoutIdentifier = layout.turnouts[0].identifier
         XCTAssertNotEqual(blockIdentifier.uuid, turnoutIdentifier.uuid)
     }
-
 }

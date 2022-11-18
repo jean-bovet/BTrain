@@ -15,10 +15,9 @@ import XCTest
 @testable import BTrain
 import ViewInspector
 
-extension SettingsView: Inspectable { }
+extension SettingsView: Inspectable {}
 
 class SettingsViewTests: XCTestCase {
-
     func testSettings() throws {
         let sut = SettingsView()
         let t0 = try sut.inspect().tabView(0)
@@ -29,5 +28,4 @@ class SettingsViewTests: XCTestCase {
         XCTAssertEqual(try t0.form(3).tabItem().label(0).title().text(0).string(), "Logging")
         XCTAssertEqual(try t0.form(4).tabItem().label(0).title().text(0).string(), "Advanced")
     }
-
 }

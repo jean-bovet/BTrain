@@ -13,12 +13,11 @@
 import Foundation
 
 struct LayoutStateMachine {
-    
     func handle(layoutEvent: StateMachine.LayoutEvent?, trainEvent: StateMachine.TrainEvent?, trains: [TrainControlling]) {
-        var events: [StateMachine.TrainEvent]? = nil
+        var events: [StateMachine.TrainEvent]?
         handle(layoutEvent: layoutEvent, trainEvent: trainEvent, trains: trains, handledTrainEvents: &events)
     }
-    
+
     func handle(layoutEvent: StateMachine.LayoutEvent?, trainEvent: StateMachine.TrainEvent?, trains: [TrainControlling], handledTrainEvents: inout [StateMachine.TrainEvent]?) {
         var trainEvents = [StateMachine.TrainEvent]()
         if let layoutEvent = layoutEvent {
@@ -27,13 +26,13 @@ struct LayoutStateMachine {
                 trainEvents.append(contentsOf: resultingTrainEvents)
             }
         }
-        
+
         if let trainEvent = trainEvent {
             trainEvents.append(trainEvent)
         }
-        
+
         handledTrainEvents?.append(contentsOf: trainEvents)
-        
+
         while trainEvents.count > 0 {
             let nextTrainEvent = trainEvents.removeFirst()
             for train in trains {

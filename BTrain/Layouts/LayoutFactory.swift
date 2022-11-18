@@ -17,17 +17,12 @@ protocol LayoutCreating {
     func newLayout() -> Layout
 }
 
-final class LayoutFactory {
+enum LayoutFactory {
+    static let DefaultMaximumSpeed: SpeedKph = .init(SettingsKeys.integer(forKey: SettingsKeys.maximumSpeed, 120))
 
-    static let DefaultMaximumSpeed: SpeedKph = {
-        SpeedKph(SettingsKeys.integer(forKey: SettingsKeys.maximumSpeed, 120))
-    }()
-    static let DefaultLimitedSpeed: SpeedKph = {
-        SpeedKph(SettingsKeys.integer(forKey: SettingsKeys.limitedSpeed, 71))
-    }()
-    static let DefaultBrakingSpeed: SpeedKph = {
-        SpeedKph(SettingsKeys.integer(forKey: SettingsKeys.brakingSpeed, 30))
-    }()
+    static let DefaultLimitedSpeed: SpeedKph = .init(SettingsKeys.integer(forKey: SettingsKeys.limitedSpeed, 71))
+
+    static let DefaultBrakingSpeed: SpeedKph = .init(SettingsKeys.integer(forKey: SettingsKeys.brakingSpeed, 30))
 
     static let GlobalLayouts: [LayoutCreating] = [
         LayoutBlankCreator(),
@@ -39,26 +34,23 @@ final class LayoutFactory {
         LayoutLoop2(),
         LayoutComplexLoop(),
         LayoutLoopWithStation(),
-        LayoutComplex()
+        LayoutComplex(),
     ]
 
-    static let GlobalLayoutIDs: [Identifier<Layout>] = {
-        GlobalLayouts.map {
-            type(of: $0).id
-        }
-    }()
-        
+    static let GlobalLayoutIDs: [Identifier<Layout>] = GlobalLayouts.map {
+        type(of: $0).id
+    }
+
     static func createLayout(_ id: Identifier<Layout>) -> Layout {
         GlobalLayouts.filter {
-                    type(of: $0).id == id
-                }
-                .first!.newLayout()
+            type(of: $0).id == id
+        }
+        .first!.newLayout()
     }
-    
+
     static func layoutFromBundle(named: String) -> Layout {
         let file = Bundle.main.url(forResource: named, withExtension: "btrain", subdirectory: "Layouts")!
         let fw = try! FileWrapper(url: file)
         return try! fw.layout()
     }
-
 }

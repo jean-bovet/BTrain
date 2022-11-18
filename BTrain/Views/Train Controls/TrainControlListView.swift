@@ -13,16 +13,15 @@
 import SwiftUI
 
 struct TrainControlListView: View {
-    
     // Note: necessary to have the layout as a separate property in order for SwiftUI to detect changes
     @ObservedObject var layout: Layout
     @ObservedObject var document: LayoutDocument
-    
+
     /// True to display only running trains
     @State private var filterRunningTrains = false
-    
+
     @Binding var pinnedTrainIds: Set<Identifier<Train>>
-    
+
     var filteredTrain: [Train] {
         layout.trains.elements.filter { train in
             if filterRunningTrains {
@@ -38,13 +37,13 @@ struct TrainControlListView: View {
             pinnedTrainIds.contains(train.id)
         }
     }
-    
+
     var trains: [Train] {
         filteredTrain.filter { train in
             !pinnedTrainIds.contains(train.id)
         }
     }
-    
+
     var body: some View {
         if layout.trains.elements.isEmpty {
             VStack {
@@ -66,7 +65,7 @@ struct TrainControlListView: View {
                 }.padding()
                 List {
                     if pinnedTrains.count > 0 {
-                        ForEach(pinnedTrains, id:\.self) { train in
+                        ForEach(pinnedTrains, id: \.self) { train in
                             TrainControlContainerView(document: document, train: train, pinnedTrainIds: $pinnedTrainIds)
                             if train.id != pinnedTrains.last?.id {
                                 Divider()
@@ -76,7 +75,7 @@ struct TrainControlListView: View {
                             .frame(height: 2)
                             .overlay(.pink)
                     }
-                    ForEach(trains, id:\.self) { train in
+                    ForEach(trains, id: \.self) { train in
                         TrainControlContainerView(document: document, train: train, pinnedTrainIds: $pinnedTrainIds)
                         if train.id != trains.last?.id {
                             Divider()
@@ -89,7 +88,6 @@ struct TrainControlListView: View {
 }
 
 struct TrainControlListView_Previews: PreviewProvider {
-    
     static let doc = LayoutDocument(layout: LayoutLoop2().newLayout())
     static let emptyDoc = LayoutDocument(layout: Layout())
 

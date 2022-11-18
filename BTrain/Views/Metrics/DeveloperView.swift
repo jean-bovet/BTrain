@@ -13,13 +13,12 @@
 import SwiftUI
 
 struct DeveloperView: View {
-    
     let doc: LayoutDocument
-    
+
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
 
     @State private var refresh = false
-    
+
     var body: some View {
         Table {
             TableColumn("Key") { metric in
@@ -39,9 +38,8 @@ struct DeveloperView: View {
 }
 
 struct DeveloperView_Previews: PreviewProvider {
-    
     static let doc = LayoutDocument(layout: LayoutYard().newLayout())
-    
+
     static var previews: some View {
         DeveloperView(doc: doc)
     }

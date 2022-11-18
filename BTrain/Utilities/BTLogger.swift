@@ -17,22 +17,21 @@ import OSLog
 ///
 /// The underlying implementation uses the unified [OS logging system](https://developer.apple.com/documentation/os/logging).
 final class BTLogger {
-    
     enum Category: String {
         case network
         case router
         case speed
         case reservation
     }
-    
+
     /// Returns a new logger instance
     /// - Parameter category: the category of the logger
     /// - Returns: the logger instance
-    static private func newLogger(category: Category) -> Logger {
+    private static func newLogger(category: Category) -> Logger {
         isLoggerEnabled(category: category) ? Logger(subsystem: "ch.arizona-software.BTrain", category: category.rawValue) : Logger(OSLog.disabled)
     }
 
-    static private func isLoggerEnabled(category: Category) -> Bool {
+    private static func isLoggerEnabled(category: Category) -> Bool {
         switch category {
         case .network:
             return SettingsKeys.bool(forKey: SettingsKeys.logCategoryNetwork)
@@ -44,13 +43,13 @@ final class BTLogger {
             return SettingsKeys.bool(forKey: SettingsKeys.logCategoryReservation)
         }
     }
-    
+
     /// The network logger instance
     static var network = newLogger(category: .network)
-        
+
     /// The router logger instance
     static var router = newLogger(category: .router)
-    
+
     /// The speed logger instance
     static var speed = newLogger(category: .speed)
 
@@ -64,17 +63,16 @@ final class BTLogger {
         speed = newLogger(category: .speed)
         reservation = newLogger(category: .reservation)
     }
-    
+
     static func error(_ msg: String) {
         NSLog("⛔️ \(msg)")
     }
-    
+
     static func debug(_ msg: String) {
         NSLog("\(msg)")
     }
-    
+
     static func warning(_ msg: String) {
         NSLog("⚠️ \(msg)")
     }
-
 }

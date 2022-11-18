@@ -13,21 +13,20 @@
 import Foundation
 
 final class LayoutDiagnostic: ObservableObject {
-
     struct Options: OptionSet {
         let rawValue: Int
 
-        static let lengths   = Options(rawValue: 1 << 0)
+        static let lengths = Options(rawValue: 1 << 0)
         static let duplicate = Options(rawValue: 1 << 1)
-        static let orphaned  = Options(rawValue: 1 << 2)
-        static let routes  = Options(rawValue: 1 << 3)
+        static let orphaned = Options(rawValue: 1 << 2)
+        static let routes = Options(rawValue: 1 << 3)
 
         static let skipLengths: Options = [.duplicate, .orphaned]
         static let all: Options = [.lengths, .duplicate, .orphaned, .routes]
     }
 
     let layout: Layout
-        
+
     @Published var hasErrors = false
     @Published var errorCount = 0
 
@@ -44,10 +43,10 @@ final class LayoutDiagnostic: ObservableObject {
             hasErrors = true
         }
     }
-    
+
     func check(_ options: Options = Options.all) throws -> [DiagnosticError] {
         var errors = [DiagnosticError]()
-                
+
         if options.contains(.duplicate) {
             checkForDuplicateFeedbacks(&errors)
             checkForDuplicateTurnouts(&errors)
@@ -55,27 +54,27 @@ final class LayoutDiagnostic: ObservableObject {
             checkForDuplicateLocomotives(&errors)
             try checkForDuplicateBlocks(&errors)
         }
-        
+
         if options.contains(.orphaned) {
             try checkForOrphanedElements(&errors)
         }
-        
+
         if options.contains(.lengths) {
             checkForLengthAndDistance(&errors)
         }
-        
+
         if options.contains(.routes) {
             checkRoutes(&errors)
         }
-        
+
         errorCount = errors.count
         hasErrors = errorCount > 0
-        
+
         return errors
     }
-    
+
     func checkForDuplicateBlocks(_ errors: inout [DiagnosticError]) throws {
-        let enabledBlocks = layout.blocks.elements.filter({$0.enabled})
+        let enabledBlocks = layout.blocks.elements.filter { $0.enabled }
         var ids = Set<Identifier<Block>>()
         for block in enabledBlocks {
             if ids.contains(block.id) {
@@ -139,8 +138,8 @@ final class LayoutDiagnostic: ObservableObject {
     }
 
     func checkForDuplicateTurnouts(_ errors: inout [DiagnosticError]) {
-        let enabledTurnouts = layout.turnouts.elements.filter({ $0.enabled })
-        
+        let enabledTurnouts = layout.turnouts.elements.filter { $0.enabled }
+
         var ids = Set<Identifier<Turnout>>()
         for turnout in enabledTurnouts {
             if ids.contains(turnout.id) {
@@ -149,7 +148,7 @@ final class LayoutDiagnostic: ObservableObject {
                 ids.insert(turnout.id)
             }
         }
-        
+
         var names = Set<String>()
         for turnout in enabledTurnouts {
             if names.contains(turnout.name) {
@@ -172,7 +171,7 @@ final class LayoutDiagnostic: ObservableObject {
             }
             addresses.insert(turnout.address2)
         }
-        
+
         for turnout in enabledTurnouts {
             if turnout.doubleAddress {
                 if turnout.address == turnout.address2 {
@@ -181,10 +180,10 @@ final class LayoutDiagnostic: ObservableObject {
             }
         }
     }
-    
+
     func checkForDuplicateTrains(_ errors: inout [DiagnosticError]) {
-        let enabledTrains = layout.trains.elements.filter({$0.enabled})
-        
+        let enabledTrains = layout.trains.elements.filter { $0.enabled }
+
         var ids = Set<Identifier<Train>>()
         for train in enabledTrains {
             if ids.contains(train.id) {
@@ -193,7 +192,7 @@ final class LayoutDiagnostic: ObservableObject {
                 ids.insert(train.id)
             }
         }
-        
+
         var names = Set<String>()
         for train in enabledTrains {
             if names.contains(train.name) {
@@ -202,7 +201,7 @@ final class LayoutDiagnostic: ObservableObject {
                 names.insert(train.name)
             }
         }
-        
+
         var locIds = Set<Identifier<Locomotive>>()
         for train in enabledTrains {
             guard let loc = train.locomotive else {
@@ -217,7 +216,7 @@ final class LayoutDiagnostic: ObservableObject {
     }
 
     func checkForDuplicateLocomotives(_ errors: inout [DiagnosticError]) {
-        let enabledLocs = layout.locomotives.elements.filter({$0.enabled})
+        let enabledLocs = layout.locomotives.elements.filter { $0.enabled }
         var ids = Set<Identifier<Locomotive>>()
         for loc in enabledLocs {
             if ids.contains(loc.id) {
@@ -226,7 +225,7 @@ final class LayoutDiagnostic: ObservableObject {
                 ids.insert(loc.id)
             }
         }
-        
+
         var names = Set<String>()
         for loc in enabledLocs {
             if names.contains(loc.name) {
@@ -261,7 +260,7 @@ final class LayoutDiagnostic: ObservableObject {
                 }
             }
         }
-        
+
         for block in layout.blocks.elements {
             for socket in block.allSockets {
                 if try layout.transition(from: socket) == nil {
@@ -275,7 +274,7 @@ final class LayoutDiagnostic: ObservableObject {
                 }
             }
         }
-        
+
         for transition in layout.transitions.elements {
             for socket in [transition.a, transition.b] {
                 if try layout.transition(from: socket) == nil {
@@ -283,7 +282,7 @@ final class LayoutDiagnostic: ObservableObject {
                 }
             }
         }
-        
+
         var feedbacks = Set<Identifier<Feedback>>()
         for feedback in layout.feedbacks.elements {
             feedbacks.insert(feedback.id)
@@ -298,21 +297,21 @@ final class LayoutDiagnostic: ObservableObject {
                 errors.append(DiagnosticError.unusedFeedback(feedback: fb))
             }
         }
-        
+
         for train in layout.trains.elements {
             if train.locomotive == nil {
                 errors.append(DiagnosticError.trainLocomotiveUndefined(train: train))
             }
         }
     }
-    
+
     func checkForLengthAndDistance(_ errors: inout [DiagnosticError]) {
-        for block in layout.blocks.elements.filter({$0.enabled}) {
+        for block in layout.blocks.elements.filter({ $0.enabled }) {
             guard let bl = block.length else {
                 errors.append(DiagnosticError.blockMissingLength(block: block))
                 continue
             }
-            
+
             for bf in block.feedbacks {
                 if let distance = bf.distance {
                     if distance < 0 || distance > bl {
@@ -323,24 +322,24 @@ final class LayoutDiagnostic: ObservableObject {
                 }
             }
         }
-        
-        for turnout in layout.turnouts.elements.filter({$0.enabled}) {
+
+        for turnout in layout.turnouts.elements.filter({ $0.enabled }) {
             if turnout.length == nil {
                 errors.append(DiagnosticError.turnoutMissingLength(turnout: turnout))
             }
         }
-        for loc in layout.locomotives.elements.filter({$0.enabled}) {
+        for loc in layout.locomotives.elements.filter({ $0.enabled }) {
             if loc.length == nil {
                 errors.append(DiagnosticError.locMissingLength(loc: loc))
             }
         }
-        for train in layout.trains.elements.filter({$0.enabled}) {
+        for train in layout.trains.elements.filter({ $0.enabled }) {
             if train.wagonsLength == nil {
                 errors.append(DiagnosticError.trainMissingLength(train: train))
             }
         }
     }
-    
+
     func checkRoutes(_ errors: inout [DiagnosticError]) {
         var resolverErrors = [PathFinderResolver.ResolverError]()
         for route in layout.routes.filter({ $0.automatic == false }) {
@@ -348,7 +347,7 @@ final class LayoutDiagnostic: ObservableObject {
             checkRoute(route: route, &errors, resolverErrors: &resolverErrors, resolverPaths: &resolvedRoutes)
         }
     }
-    
+
     func checkRoute(route: Route, _ errors: inout [DiagnosticError], resolverErrors: inout [PathFinderResolver.ResolverError], resolverPaths: inout RouteResolver.ResolvedRoutes) {
         let train = Train(id: Identifier<Train>(uuid: UUID().uuidString), name: "")
         let resolver = RouteResolver(layout: layout, train: train)
@@ -356,10 +355,10 @@ final class LayoutDiagnostic: ObservableObject {
             try route.completePartialSteps(layout: layout, train: train)
             let result = try resolver.resolve(unresolvedPath: route.steps)
             switch result {
-            case .success(let resolvedPaths):
+            case let .success(resolvedPaths):
                 resolverPaths = resolvedPaths
-                
-            case .failure(let resolverError):
+
+            case let .failure(resolverError):
                 resolverErrors.append(resolverError)
                 errors.append(DiagnosticError.invalidRoute(route: route, error: "No path found"))
             }
@@ -367,13 +366,13 @@ final class LayoutDiagnostic: ObservableObject {
             errors.append(DiagnosticError.invalidRoute(route: route, error: error.localizedDescription))
         }
     }
-    
+
     func repair() {
         // Remove any transitions that are looping back to the same socket
         layout.transitions.elements.removeAll { transition in
             transition.a == transition.b
         }
-        
+
         // Remove any train that do not exist anymore
         for block in layout.blocks.elements {
             if let trainId = block.trainInstance?.trainId {

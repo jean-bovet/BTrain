@@ -10,20 +10,19 @@
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-import XCTest
-import ViewInspector
 import SwiftUI
+import ViewInspector
+import XCTest
 
 @testable import BTrain
 
-extension Canvas: Inspectable { }
-extension SwitchboardEditControlsView: Inspectable { }
-extension NewBlockSheet: Inspectable { }
-extension NewTurnoutSheet: Inspectable { }
-extension SwitchboardSettingsView: Inspectable { }
+extension Canvas: Inspectable {}
+extension SwitchboardEditControlsView: Inspectable {}
+extension NewBlockSheet: Inspectable {}
+extension NewTurnoutSheet: Inspectable {}
+extension SwitchboardSettingsView: Inspectable {}
 
 class SwitchBoardViewTests: XCTestCase {
-
     func testSwitchboardView() throws {
         let layout = LayoutLoop1().newLayout()
         let context = ShapeContext()
@@ -31,9 +30,9 @@ class SwitchBoardViewTests: XCTestCase {
         let switchboard = SwitchBoard(layout: layout, provider: provider, context: context)
         let coordinator = LayoutController(layout: layout, switchboard: switchboard, interface: MarklinInterface())
         let v = SwitchBoardView(switchboard: switchboard, containerSize: switchboard.idealSize, state: switchboard.state, layout: layout, layoutController: coordinator, gestureEnabled: true)
-        
+
         let canvas = try v.inspect().view(Canvas<SwitchBoardView>.self)
-        
+
         let gesture = try canvas.gesture(DragGesture.self)
         try gesture.callOnChanged(value: DragGesture.Value(time: Date(), location: .zero, startLocation: .zero, velocity: .zero))
         try gesture.callOnEnded(value: DragGesture.Value(time: Date(), location: .zero, startLocation: .zero, velocity: .zero))
@@ -43,22 +42,22 @@ class SwitchBoardViewTests: XCTestCase {
         let layout = LayoutLoop1().newLayout()
         let doc = LayoutDocument(layout: layout)
         let state = doc.switchboard.state
-        
+
         let sut = SwitchboardContainerView(layout: layout, layoutController: doc.layoutController, document: doc, switchboard: doc.switchboard, state: state)
-        
+
         state.editing = false
-        
+
         XCTAssertThrowsError(_ = try sut.inspect().find(button: "􀅼 Block"))
 
         state.editing = true
-        
+
         _ = try sut.inspect().find(button: "􀅼 Block")
     }
-    
+
     func testNewBlockSheet() throws {
         let layout = Layout()
         let sut = NewBlockSheet(layout: layout)
-        
+
         _ = try sut.inspect().find(text: "Name:")
         _ = try sut.inspect().find(button: "Cancel")
         _ = try sut.inspect().find(button: "OK")
@@ -67,7 +66,7 @@ class SwitchBoardViewTests: XCTestCase {
     func testNewTurnoutSheet() throws {
         let layout = Layout()
         let sut = NewTurnoutSheet(layout: layout)
-        
+
         _ = try sut.inspect().find(text: "Name:")
         _ = try sut.inspect().find(button: "Cancel")
         _ = try sut.inspect().find(button: "OK")

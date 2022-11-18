@@ -13,10 +13,9 @@
 import SwiftUI
 
 struct StationPicker: View {
-    
     let layout: Layout
     @Binding var stationId: Identifier<Station>?
-    
+
     var sortedStationIds: [Identifier<Station>] {
         layout.stations.elements.sorted {
             $0.name < $1.name
@@ -24,11 +23,11 @@ struct StationPicker: View {
             $0.id
         }
     }
-    
+
     var body: some View {
         Picker("Station", selection: $stationId) {
             Text("").tag(nil as Identifier<Station>?)
-            ForEach(sortedStationIds, id:\.self) { stationId in
+            ForEach(sortedStationIds, id: \.self) { stationId in
                 if let station = layout.stations[stationId] {
                     Text(station.name).tag(stationId as Identifier<Station>?)
                 } else {
@@ -40,7 +39,6 @@ struct StationPicker: View {
 }
 
 struct StationPicker_Previews: PreviewProvider {
-    
     static let doc = LayoutDocument(layout: LayoutComplex().newLayout())
 
     static var previews: some View {

@@ -13,10 +13,9 @@
 import SwiftUI
 
 struct TrainEditingView: View {
-    
     @ObservedObject var document: LayoutDocument
     @ObservedObject var layout: Layout
-    
+
     var body: some View {
         LayoutElementsEditingView(layout: layout, new: {
             layout.newTrain()
@@ -50,13 +49,11 @@ struct TrainEditingView: View {
             }
         }
     }
-
 }
 
 struct TrainListView_Previews: PreviewProvider {
-    
     static let doc = LayoutDocument(layout: LayoutLoop2().newLayout())
-    
+
     static var previews: some View {
         ConfigurationSheet(title: "Trains") {
             TrainEditingView(document: doc, layout: doc.layout)

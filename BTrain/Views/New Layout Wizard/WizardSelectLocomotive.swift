@@ -13,7 +13,6 @@
 import SwiftUI
 
 struct WizardSelectLocomotive: View {
-    
     let document: LayoutDocument
     @Binding var selectedTrains: Set<Identifier<Train>>
 
@@ -36,14 +35,14 @@ struct WizardSelectLocomotive: View {
                 .padding()
             ScrollView(.horizontal) {
                 LazyHStack {
-                    ForEach(document.layout.trains.elements, id:\.self) { train in
+                    ForEach(document.layout.trains.elements, id: \.self) { train in
                         ZStack {
                             Rectangle()
                                 .frame(width: previewSize.width, height: previewSize.height)
                                 .cornerRadius(5)
                                 .foregroundColor(backgroundColor)
                                 .shadow(radius: 5)
-                            
+
                             if let loc = train.locomotive {
                                 VStack {
                                     LocomotiveIconView(locomotiveIconManager: document.locomotiveIconManager, loc: loc, size: .large, hideIfNotDefined: true)
@@ -76,17 +75,15 @@ struct WizardSelectLocomotive: View {
             }
         }
     }
-    
 }
 
 struct WizardSelectLocomotive_Previews: PreviewProvider {
-    
     static let helper: PredefinedLayoutHelper = {
-       let h = PredefinedLayoutHelper()
+        let h = PredefinedLayoutHelper()
         try? h.load()
         return h
     }()
-    
+
     static var previews: some View {
         WizardSelectLocomotive(document: helper.predefinedDocument!, selectedTrains: .constant([]))
     }

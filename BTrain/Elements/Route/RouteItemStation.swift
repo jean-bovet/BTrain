@@ -13,19 +13,17 @@
 import Foundation
 
 struct RouteItemStation: Equatable, Codable {
-    
-    static func ==(lhs: RouteItemStation, rhs: RouteItemStation) -> Bool {
+    static func == (lhs: RouteItemStation, rhs: RouteItemStation) -> Bool {
         lhs.id == rhs.id
     }
 
     var id = UUID().uuidString
 
     var stationId: Identifier<Station>
-    
+
     // TODO: waiting time as well?
-    
+
     var description: String {
         "\(stationId)"
     }
-        
 }

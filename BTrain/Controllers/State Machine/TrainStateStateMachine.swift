@@ -14,10 +14,9 @@ import Foundation
 
 /// State machine that handles only the state transition of the train
 struct TrainStateStateMachine {
-    
     func handleTrainState(train: TrainControlling) throws -> Bool {
         let originalState = train.state
-        
+
         if train.mode == .stopImmediatelyManaged {
             train.state = .stopped
             try train.stopImmediately()
@@ -33,14 +32,14 @@ struct TrainStateStateMachine {
                 try handleStoppedState(train: train)
             }
         }
-        
+
         let stateChanged = originalState != train.state
-        if train.state == .stopped && (stateChanged || train.mode == .stopManaged) {
+        if train.state == .stopped, stateChanged || train.mode == .stopManaged {
             trainDidStop(train: train)
         }
         return stateChanged
     }
-    
+
     private func handleRunningState(train: TrainControlling) throws {
         if train.mode == .unmanaged {
             if train.speed == 0 {
@@ -56,7 +55,7 @@ struct TrainStateStateMachine {
             }
         }
     }
-    
+
     private func handleBrakingState(train: TrainControlling) throws {
         if try train.shouldStopInBlock() {
             if train.stopFeedbackActivated {
@@ -76,7 +75,7 @@ struct TrainStateStateMachine {
             train.state = .running
         }
     }
-    
+
     private func handleStoppedState(train: TrainControlling) throws {
         if train.mode == .managed || train.mode == .finishManaged {
             if try !train.shouldStopInBlock() {
@@ -88,11 +87,9 @@ struct TrainStateStateMachine {
             }
         }
     }
-    
 }
 
 extension TrainStateStateMachine {
-    
     /// When the train stops, we need to take care of the status of the train
     /// because depending on the route mode (fixed, automatic or automaticOnce),
     /// we need to re-schedule the train, stop it or simply do nothing.
@@ -101,14 +98,15 @@ extension TrainStateStateMachine {
         guard train.mode != .unmanaged else {
             return
         }
-        
+
         let reachedStationOrDestination = train.atStationOrDestination
 
         switch train.route.mode {
         case .fixed:
             if (reachedStationOrDestination && train.mode == .finishManaged)
                 || train.mode == .stopManaged || train.mode == .stopImmediatelyManaged
-                || train.atEndOfRoute {
+                || train.atEndOfRoute
+            {
                 train.mode = .unmanaged
             } else if reachedStationOrDestination {
                 train.reschedule()
@@ -116,7 +114,8 @@ extension TrainStateStateMachine {
 
         case .automatic:
             if (reachedStationOrDestination && train.mode == .finishManaged)
-                || train.mode == .stopManaged || train.mode == .stopImmediatelyManaged {
+                || train.mode == .stopManaged || train.mode == .stopImmediatelyManaged
+            {
                 train.mode = .unmanaged
             } else if reachedStationOrDestination {
                 train.reschedule()
@@ -128,5 +127,4 @@ extension TrainStateStateMachine {
             }
         }
     }
-    
 }

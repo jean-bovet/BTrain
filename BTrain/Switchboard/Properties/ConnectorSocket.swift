@@ -10,29 +10,28 @@
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-import Foundation
 import CoreGraphics
+import Foundation
 
 struct ConnectorSocket {
     let id: Int
     let center: CGPoint
-    
+
     // Used to help shape the Bezier path connecting to this connector
     let controlPoint: CGPoint
-    
+
     // The point that defines the line between the center of the connector and the direction it points to,
     // which is used in the computation of intersection in order to display a nice link between two elements.
     // If a line intersection cannot be computed, the `controlPoint` is used instead.
     let linePoint: CGPoint
-    
+
     let shape: CGPath
-    
+
     static func create(id: Int, center: CGPoint, controlPoint: CGPoint, linePoint: CGPoint) -> ConnectorSocket {
         let size = 10.0
-        let shape = CGPath(ellipseIn: CGRect(x: center.x-size/2, y: center.y-size/2, width: size, height: size), transform: nil)
+        let shape = CGPath(ellipseIn: CGRect(x: center.x - size / 2, y: center.y - size / 2, width: size, height: size), transform: nil)
         return ConnectorSocket(id: id, center: center, controlPoint: controlPoint, linePoint: linePoint, shape: shape)
     }
-
 }
 
 struct ConnectorSocketInstance {

@@ -10,31 +10,30 @@
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-import Foundation
 @testable import BTrain
+import Foundation
 
 final class LayoutRouteParser {
-    
     let layout: LayoutParser.ParsedLayout
-        
+
     final class ParsedRoute {
         var routeId: Identifier<Route>!
         var resolvedSteps = [ResolvedRouteItem]()
     }
-    
+
     let route = ParsedRoute()
-            
+
     let sp: LayoutStringParser
-    
+
     enum ParserError: Error {
         case parserError(message: String)
     }
-    
-    init(ls: String, id: String, layout: LayoutParser.ParsedLayout) {
-        self.sp = LayoutStringParser(ls: ls)
+
+    init(ls: String, id _: String, layout: LayoutParser.ParsedLayout) {
+        sp = LayoutStringParser(ls: ls)
         self.layout = layout
     }
-    
+
     func parseRouteName() throws {
         let routeName = sp.matchString(":")
         guard !routeName.isEmpty else {
@@ -43,11 +42,11 @@ final class LayoutRouteParser {
         route.routeId = Identifier<Route>(uuid: routeName)
         sp.eat(":")
     }
-    
+
     func parse() throws {
         try parseRouteName()
-        
-        while (sp.more) {
+
+        while sp.more {
             if sp.matches("!{") {
                 try parseBlock(category: .station, direction: .previous)
             } else if sp.matches("{") {
@@ -66,31 +65,31 @@ final class LayoutRouteParser {
                 throw ParserError.parserError(message: "Unexpected character '\(sp.c)' found while parsing block definition")
             }
         }
-        
+
         addTransitions()
     }
-        
+
     func addTransitions() {
-        for index in 0..<route.resolvedSteps.count {
+        for index in 0 ..< route.resolvedSteps.count {
             if index + 1 == route.resolvedSteps.count {
                 // We have reached the last step, there is no transitions out of it
                 continue
             }
 
             let step = route.resolvedSteps[index]
-            let nextStep = route.resolvedSteps[index+1]
+            let nextStep = route.resolvedSteps[index + 1]
 
             layout.link(from: step.exitSocket,
                         to: nextStep.entrySocket)
         }
     }
-            
+
     func parseBlock(category: Block.Category, direction: Direction) throws {
         let block: Block
         let newBlock: Bool
-        
+
         let blockHeader = try parseBlockHeader(type: category, direction: direction)
-        
+
         // Parse the optional digit that indicates a reference to an existing block
         // Example: { ≏ ≏ } [[ ≏ 🟢🚂 ≏ ]] [[ ≏ ≏ ]] {b0 ≏ ≏ }
         if let blockName = blockHeader.blockName {
@@ -114,7 +113,7 @@ final class LayoutRouteParser {
             block.reservation = blockHeader.reserved
             newBlock = true
         }
-                    
+
         if direction == .previous {
             let index = sp.index
             let numberOfFeedbacks = try parseNumberOfFeedbacks(block: block, newBlock: newBlock, type: category)
@@ -123,11 +122,11 @@ final class LayoutRouteParser {
         } else {
             try parseBlockContent(block: block, newBlock: newBlock, type: category, numberOfFeedbacks: nil)
         }
-        
+
         layout.blocks.insert(block)
         route.resolvedSteps.append(.block(.init(block: block, direction: direction)))
     }
- 
+
     enum BlockContentType {
         case stoppedLoc
         case brakingLoc
@@ -135,20 +134,20 @@ final class LayoutRouteParser {
         case runningLimitedLoc
 
         case wagon
-        
+
         case endStation(reserved: Bool)
         case endFreeOrSidingPrevious(reserved: Bool)
         case endFreeOrSidingNext(reserved: Bool)
-        
+
         case feedback(detected: Bool)
     }
-    
+
     typealias BlockContentCallback = (BlockContentType) -> Void
-    
+
     func parseNumberOfFeedbacks(block: Block, newBlock: Bool, type: Block.Category) throws -> Int {
         var currentFeedbackIndex = 0
         try parseBlockContent(block: block, newBlock: newBlock, type: type) { contentType in
-            switch(contentType) {
+            switch contentType {
             case .stoppedLoc, .runningLoc, .runningLimitedLoc, .wagon:
                 _ = parseUUID()
             case .brakingLoc:
@@ -166,7 +165,7 @@ final class LayoutRouteParser {
         }
         return currentFeedbackIndex
     }
-    
+
     func parseBlockContent(block: Block, newBlock: Bool, type: Block.Category, numberOfFeedbacks: Int?) throws {
         var currentFeedbackIndex = 0
         try parseBlockContent(block: block, newBlock: newBlock, type: type) { contentType in
@@ -179,44 +178,44 @@ final class LayoutRouteParser {
                 feedbackIndex = currentFeedbackIndex
                 position = currentFeedbackIndex
             }
-            
-            switch(contentType) {
+
+            switch contentType {
             case .stoppedLoc:
                 parseTrain(position: position, block: block, speed: 0)
-                
+
             case .brakingLoc:
                 parseTrain(position: position, block: block, speed: parseTrainSpeed())
-                
+
             case .runningLoc:
                 parseTrain(position: position, block: block, speed: LayoutFactory.DefaultMaximumSpeed)
-                
+
             case .runningLimitedLoc:
                 parseTrain(position: position, block: block, speed: LayoutFactory.DefaultLimitedSpeed)
-                
+
             case .wagon:
                 parseWagon(position: position, block: block)
 
-            case .endStation(reserved: let reserved):
+            case let .endStation(reserved: reserved):
                 assert(type == .station, "Expected end of station block \(reserved)")
-                
-            case .endFreeOrSidingPrevious(reserved: let reserved):
+
+            case let .endFreeOrSidingPrevious(reserved: reserved):
                 assert(type == .free || type == .sidingPrevious, "Expected end of .free or .sidingPrevious track block \(reserved)")
 
-            case .endFreeOrSidingNext(reserved: let reserved):
+            case let .endFreeOrSidingNext(reserved: reserved):
                 assert(type == .free, "Expected end of .free (but soon to be .sidingNext) track block \(reserved)")
                 block.category = .sidingNext // Change to sidingNext here because that's only when we know if it is one!
-                
-            case .feedback(detected: let detected):
+
+            case let .feedback(detected: detected):
                 assert(feedbackIndex >= 0, "Invalid feedback index \(feedbackIndex)")
                 parseFeedback(detected: detected, newBlock: newBlock, block: block, feedbackIndex: feedbackIndex, reverseOrder: numberOfFeedbacks != nil)
                 currentFeedbackIndex += 1
             }
         }
     }
-    
-    func parseBlockContent(block: Block, newBlock: Bool, type: Block.Category, callback: BlockContentCallback) throws {
+
+    func parseBlockContent(block _: Block, newBlock _: Bool, type _: Block.Category, callback: BlockContentCallback) throws {
         var parsingBlock = true
-        while (sp.more && parsingBlock) {
+        while sp.more, parsingBlock {
             if sp.matches("🔴🚂") {
                 callback(.stoppedLoc)
             } else if sp.matches("🟡") {
@@ -256,12 +255,12 @@ final class LayoutRouteParser {
             }
         }
     }
-    
+
     struct BlockHeader {
         var blockName: String?
         var reserved: Reservation?
     }
-    
+
     func parseBlockHeader(type: Block.Category, direction: Direction) throws -> BlockHeader {
         var header = BlockHeader()
 
@@ -273,8 +272,8 @@ final class LayoutRouteParser {
                 throw ParserError.parserError(message: "Unexpected train number reservation")
             }
         }
-        
-        var reserved  = false
+
+        var reserved = false
         if sp.matches("[") {
             reserved = true
             assert(type == .free || type == .sidingPrevious, "Invalid reserved block definition")
@@ -290,7 +289,7 @@ final class LayoutRouteParser {
                 throw ParserError.parserError(message: "A reserved block must have a reservation train number specified!")
             }
         }
-        
+
         let blockName = sp.matchString()
         if blockName.isEmpty {
             throw ParserError.parserError(message: "Expecting a block name")
@@ -310,7 +309,7 @@ final class LayoutRouteParser {
         }
         return uuid
     }
-    
+
     func parseTrainSpeed() -> SpeedKph {
         let speed: SpeedKph
         if let specifiedSpeed = sp.matchesInteger() {
@@ -321,10 +320,10 @@ final class LayoutRouteParser {
         _ = sp.matches("🚂")
         return speed
     }
-    
+
     func parseTrain(position: Int, block: Block, speed: UInt16) {
         let uuid = parseUUID()
-        
+
         if let train = layout.trains.first(where: { $0.id.uuid == uuid }) {
             let loc = train.locomotive!
             assert(loc.speed.requestedKph == speed, "Mismatching speed definition for train \(uuid)")
@@ -336,7 +335,7 @@ final class LayoutRouteParser {
         } else {
             let loc = Locomotive(uuid: uuid)
             loc.speed = .init(kph: speed, decoderType: .MFX)
-            
+
             let train = Train(uuid: uuid)
             train.locomotive = loc
             train.position = position
@@ -349,17 +348,17 @@ final class LayoutRouteParser {
             layout.trains.insert(train)
         }
     }
-        
+
     func parseWagon(position: Int, block: Block) {
         let uuid = parseUUID()
 
         if block.trainInstance == nil {
             block.trainInstance = TrainInstance(Identifier<Train>(uuid: uuid), .next)
         }
-                        
+
         block.trainInstance?.parts[position] = .wagon
     }
-        
+
     func parseFeedback(detected: Bool, newBlock: Bool, block: Block, feedbackIndex: Int, reverseOrder: Bool) {
         if newBlock {
             let f = Feedback("f\(block.id.uuid)\(feedbackIndex)")
@@ -378,7 +377,7 @@ final class LayoutRouteParser {
             f.detected = detected
         }
     }
-    
+
     // <t0(0,1),s>
     // <t0,0>
     // <t0>
@@ -395,7 +394,7 @@ final class LayoutRouteParser {
                 throw ParserError.parserError(message: "Unexpected turnout identifier")
             }
         }
-        
+
         let turnoutName = sp.matchString(["{", "(", ",", ">"])
         guard !turnoutName.isEmpty else {
             throw ParserError.parserError(message: "Turnout must have its name specified")
@@ -406,14 +405,14 @@ final class LayoutRouteParser {
         var toSocket = 1
         var state = Turnout.State.straight
         var type = Turnout.Category.singleRight
-        
+
         // See if the type is defined
         if sp.matches("{") {
             let typeString = sp.matchString(["}"])
             guard !typeString.isEmpty else {
                 throw ParserError.parserError(message: "Turnout type must be specified within { }")
             }
-            switch(typeString) {
+            switch typeString {
             case "sl":
                 type = .singleLeft
             case "sr":
@@ -429,7 +428,7 @@ final class LayoutRouteParser {
             }
             assert(sp.matches("}"), "Expecting closing '}' after type definition")
         }
-        
+
         // See if the socket definition is specified
         if sp.matches("(") {
             fromSocket = Int(String(sp.eat()))!
@@ -466,7 +465,7 @@ final class LayoutRouteParser {
         if reservedTrainNumber != nil {
             assert(sp.matches(">"), "Expecting closing reserved turnout character")
         }
-        
+
         let turnout: Turnout
         let turnoutId = Identifier<Turnout>(uuid: turnoutName)
         if let existingTurnout = layout.turnouts.first(where: { $0.id == turnoutId }) {
@@ -482,8 +481,7 @@ final class LayoutRouteParser {
             }
             layout.turnouts.insert(turnout)
         }
-        
+
         route.resolvedSteps.append(.turnout(.init(turnout: turnout, entrySocketId: fromSocket, exitSocketId: toSocket)))
     }
-
 }

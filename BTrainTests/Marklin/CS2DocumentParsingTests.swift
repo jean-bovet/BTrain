@@ -10,13 +10,12 @@
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-import XCTest
 @testable import BTrain
+import XCTest
 
 class CS2DocumentParsingTests: XCTestCase {
-
     func testParseLocomotive() throws {
-        guard let url = Bundle(for: type(of: self )).url(forResource: "Locomotives", withExtension: "cs2") else {
+        guard let url = Bundle(for: type(of: self)).url(forResource: "Locomotives", withExtension: "cs2") else {
             XCTFail("Unable to find the Locomotives.cs2 file")
             return
         }
@@ -25,14 +24,14 @@ class CS2DocumentParsingTests: XCTestCase {
             XCTFail("Unable to parse the locomotives")
             return
         }
-        
+
         XCTAssertEqual(locs.count, 11)
-        
+
         assert(loc: locs[0], uid: 0x4006, name: "460 106-8 SBB", address: 0x6, type: "mfx")
-        assert(loc: locs[2], uid: 0x2e, name: "BLS", address: 0x2e, type: "mm_prg")
-        
+        assert(loc: locs[2], uid: 0x2E, name: "BLS", address: 0x2E, type: "mm_prg")
+
         assert(loc: locs[0].commandLocomotive, uid: 0x4006, name: "460 106-8 SBB", address: 0x6, type: .MFX)
-        assert(loc: locs[2].commandLocomotive, uid: 0x2e, name: "BLS", address: 0x2e, type: .MM)
+        assert(loc: locs[2].commandLocomotive, uid: 0x2E, name: "BLS", address: 0x2E, type: .MM)
     }
 
     func assert(loc: LocomotivesDocumentParser.LocomotiveInfo, uid: UInt32, name: String, address: UInt32, type: String) {
@@ -41,7 +40,7 @@ class CS2DocumentParsingTests: XCTestCase {
         XCTAssertEqual(loc.address, address)
         XCTAssertEqual(loc.type, type)
     }
-    
+
     func assert(loc: CommandLocomotive, uid: UInt32, name: String, address: UInt32, type: DecoderType) {
         XCTAssertEqual(loc.uid, uid)
         XCTAssertEqual(loc.name, name)

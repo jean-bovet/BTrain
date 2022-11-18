@@ -13,21 +13,20 @@
 import SwiftUI
 
 struct NewBlockSheet: View {
-    
     let layout: Layout
-    
+
     @Environment(\.presentationMode) var presentationMode
 
     @State private var name = ""
-    
+
     @State private var category = Block.Category.free
-    
+
     var body: some View {
         VStack {
             Form {
                 TextField("Name:", text: $name)
                 Picker("Type:", selection: $category) {
-                    ForEach(Block.Category.allCases, id:\.self) { category in
+                    ForEach(Block.Category.allCases, id: \.self) { category in
                         HStack {
                             Text(category.description)
                             Spacer()
@@ -35,7 +34,6 @@ struct NewBlockSheet: View {
                         }
                     }
                 }.pickerStyle(.inline)
-                
             }
             HStack {
                 Spacer()
@@ -43,9 +41,9 @@ struct NewBlockSheet: View {
                     presentationMode.wrappedValue.dismiss()
                 }
                 .keyboardShortcut(.cancelAction)
-                
+
                 Spacer().fixedSpace()
-                
+
                 Button("OK") {
                     layout.newBlock(name: name, category: category)
                     presentationMode.wrappedValue.dismiss()
@@ -56,7 +54,6 @@ struct NewBlockSheet: View {
 }
 
 struct NewBlockSheet_Previews: PreviewProvider {
-    
     static var previews: some View {
         NewBlockSheet(layout: LayoutLoop2().newLayout())
     }

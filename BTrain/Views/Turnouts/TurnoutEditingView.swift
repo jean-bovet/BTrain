@@ -13,7 +13,6 @@
 import SwiftUI
 
 struct TurnoutEditingView: View {
-    
     let doc: LayoutDocument
     @ObservedObject var layout: Layout
 
@@ -47,9 +46,8 @@ struct TurnoutEditingView: View {
 }
 
 struct TurnoutEditingView_Previews: PreviewProvider {
-
     static let doc = LayoutDocument(layout: LayoutLoop2().newLayout())
-    
+
     static var previews: some View {
         ConfigurationSheet(title: "Turnouts") {
             TurnoutEditingView(doc: doc, layout: doc.layout)

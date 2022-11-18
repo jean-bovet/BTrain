@@ -13,22 +13,21 @@
 import SwiftUI
 
 struct RouteView: View {
-    
     @Environment(\.undoManager) var undoManager
 
     @ObservedObject var layout: Layout
-        
+
     @ObservedObject var route: Route
 
     @State private var selection: String?
     @State private var routeError: RouteValidationView.RouteError?
 
     @State private var showAddRouteElementSheet = false
-        
+
     func stepBlockBinding(_ routeItem: Binding<RouteItem>) -> Binding<RouteItemBlock> {
         Binding<RouteItemBlock>(
             get: {
-                if case .block(let stepBlock) = routeItem.wrappedValue {
+                if case let .block(stepBlock) = routeItem.wrappedValue {
                     return stepBlock
                 } else {
                     fatalError()
@@ -39,11 +38,11 @@ struct RouteView: View {
             }
         )
     }
-    
+
     func stepStationBinding(_ routeItem: Binding<RouteItem>) -> Binding<RouteItemStation> {
         Binding<RouteItemStation>(
             get: {
-                if case .station(let stepStation) = routeItem.wrappedValue {
+                if case let .station(stepStation) = routeItem.wrappedValue {
                     return stepStation
                 } else {
                     fatalError()
@@ -55,7 +54,7 @@ struct RouteView: View {
         )
     }
 
-    func stepError(_ step: RouteItem, _ index: Int?) -> Bool {
+    func stepError(_: RouteItem, _ index: Int?) -> Bool {
         guard let index = index else {
             return false
         }
@@ -66,26 +65,26 @@ struct RouteView: View {
 
         for error in routeError.resolverErrors {
             switch error {
-            case .cannotResolvedSegment(let at, _, _):
+            case let .cannotResolvedSegment(at, _, _):
                 if at == index {
                     return true
                 }
 
-            case .cannotResolvePath(_, let to):
+            case let .cannotResolvePath(_, to):
                 if to == index {
                     return true
                 }
-                
-            case .cannotResolveElement(_, let at):
+
+            case let .cannotResolveElement(_, at):
                 if at == index {
                     return true
-                }                
+                }
             }
         }
-        
+
         return false
     }
-    
+
     var body: some View {
         VStack {
             List($route.partialSteps, selection: $selection) { step in
@@ -97,24 +96,24 @@ struct RouteView: View {
                         Text("􀇾").foregroundColor(.red)
                     }
                     switch unwrappedStep {
-                    case .block(_):
+                    case .block:
                         RouteStepBlockView(layout: layout, stepBlock: stepBlockBinding(step))
                     case .turnout, .station:
                         RouteStepStationView(layout: layout, stepStation: stepStationBinding(step))
                     }
                 }
             }.listStyle(.inset(alternatesRowBackgrounds: true))
-            
+
             HStack {
                 RouteValidationView(layout: layout, route: route, routeError: $routeError)
                 Spacer()
             }
-            
+
             HStack {
                 Text("\(route.partialSteps.count) steps")
-                
+
                 Spacer()
-                
+
                 Button("+") {
                     showAddRouteElementSheet.toggle()
                 }
@@ -129,9 +128,9 @@ struct RouteView: View {
                         })
                     }
                 }.disabled(selection == nil)
-                
+
                 Spacer().fixedSpace()
-                
+
                 MoveUpButtonView(selection: $selection, elements: $route.partialSteps)
                 MoveDownButtonView(selection: $selection, elements: $route.partialSteps)
             }
@@ -141,13 +140,11 @@ struct RouteView: View {
                 .padding()
         }
     }
-    
 }
 
 struct RouteView_Previews: PreviewProvider {
-    
     static let layout = LayoutLoop2().newLayout()
-    
+
     static var previews: some View {
         RouteView(layout: layout, route: layout.routes[0])
     }

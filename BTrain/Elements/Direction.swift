@@ -16,13 +16,13 @@ import Foundation
 enum Direction: String, Codable, CaseIterable {
     // The train is traveling from the side "next" to "previous"
     case previous
-    
+
     // The train is traveling from the side "previous" to "next",
     // which we call the natural direction of traveling
     case next
-    
+
     var opposite: Direction {
-        switch(self) {
+        switch self {
         case .next:
             return .previous
         case .previous:
@@ -32,9 +32,8 @@ enum Direction: String, Codable, CaseIterable {
 }
 
 extension Direction: CustomStringConvertible {
-
     var description: String {
-        switch(self) {
+        switch self {
         case .previous:
             return "previous"
         case .next:

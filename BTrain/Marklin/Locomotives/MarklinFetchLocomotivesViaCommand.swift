@@ -17,14 +17,13 @@ import Gzip
 /// Note: it is recommended to use the new ``MarklinFetchLocomotives`` class which
 /// uses HTTP directly to fetch the locomotive definitions as well as their associated icons.
 final class MarklinFetchLocomotivesViaCommand {
-    
     enum Status {
         case unknown
         case error
         case processing
         case completed(loc: [LocomotivesDocumentParser.LocomotiveInfo])
     }
-        
+
     private var configDataLength = 0
     private var configData = [UInt8]()
 
@@ -32,21 +31,21 @@ final class MarklinFetchLocomotivesViaCommand {
         guard case .configDataStream(length: let length, data: let data, descriptor: _) = cmd else {
             return .unknown
         }
-        
+
         if let length = length {
-            BTLogger.debug(("Length is \(length)"))
+            BTLogger.debug("Length is \(length)")
             configDataLength = Int(length)
             configData.removeAll()
             return .processing
         } else if configDataLength > 0 {
             configData.append(contentsOf: data)
             BTLogger.debug("Received \(configData.count) so far")
-            
-            if configData.count >= configDataLength && configDataLength >= 4 {
+
+            if configData.count >= configDataLength, configDataLength >= 4 {
                 // Remove the first 4 bytes which is probably the CRC value
                 // but is not part of the gzip data itself.
-                let actualData = configData[4..<configDataLength]
-                
+                let actualData = configData[4 ..< configDataLength]
+
                 do {
                     let data = Data(actualData)
                     // Note: the data cannot be uncompressed using the Apple's decompression API
@@ -71,7 +70,7 @@ final class MarklinFetchLocomotivesViaCommand {
             return .unknown
         }
     }
-    
+
     private func parse(data: Data) -> [LocomotivesDocumentParser.LocomotiveInfo]? {
         let text = String(decoding: data, as: UTF8.self)
         let parser = LocomotivesDocumentParser(text: text)

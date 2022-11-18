@@ -13,14 +13,13 @@
 import SwiftUI
 
 struct TrainControlLocationView: View {
-    
     let controller: LayoutController
-    
+
     @ObservedObject var doc: LayoutDocument
     @ObservedObject var layout: Layout
-        
+
     @ObservedObject var train: Train
-        
+
     @State private var setTrainLocationSheet = false
     @State private var moveTrainLocationSheet = false
     @State private var removeTrainSheet = false
@@ -31,19 +30,19 @@ struct TrainControlLocationView: View {
                 HStack {
                     Text("Location:")
                         .font(Font.body.weight(.medium))
-                    
+
                     if let blockId = train.blockId, let block = layout.blocks[blockId] {
                         Text("\(block.name)")
-                        
+
                         Spacer()
-                        
+
                         Group {
                             Button("􀅄") {
                                 setTrainLocationSheet.toggle()
                             }
                             .help("Set Location")
                             .buttonStyle(.borderless)
-                            
+
                             Button("􀅂") {
                                 moveTrainLocationSheet.toggle()
                             }
@@ -82,10 +81,9 @@ struct TrainControlLocationView: View {
 }
 
 struct TrainControlLocationView_Previews: PreviewProvider {
-    
     static let doc = LayoutDocument(layout: LayoutLoop2().newLayout())
     static let doc2: LayoutDocument = {
-       let doc = LayoutDocument(layout: LayoutLoop2().newLayout())
+        let doc = LayoutDocument(layout: LayoutLoop2().newLayout())
         doc.layout.trains[0].blockId = doc.layout.blocks[0].id
         return doc
     }()

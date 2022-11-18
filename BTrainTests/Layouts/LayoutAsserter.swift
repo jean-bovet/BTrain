@@ -16,21 +16,20 @@ import XCTest
 @testable import BTrain
 
 final class LayoutAsserter {
-    
     weak var layout: Layout!
     weak var layoutController: LayoutController!
-    
+
     var assertBlockParts = false
-    
+
     init(layout: Layout, layoutController: LayoutController) {
         self.layout = layout
         self.layoutController = layoutController
     }
-    
+
     func assert(_ strings: [String], trains: [Train], drainAll: Bool = true, expectRuntimeError: Bool = false) throws {
         let expectedLayout = try LayoutFactory.layoutFrom(strings)
         let expectedTrains = Array(expectedLayout.trains)
-        
+
         // First apply all the feedbacks
         var detectedFeedbacks = [Feedback]()
         for route in layout.routes {
@@ -39,7 +38,7 @@ final class LayoutAsserter {
                 detectedFeedbacks.append(contentsOf: feedbacks)
             }
         }
-        
+
         for feedback in detectedFeedbacks {
             layoutController.runControllers(.feedbackTriggered(feedback))
         }
@@ -63,38 +62,38 @@ final class LayoutAsserter {
             guard let expectedRoute = expectedLayout.routes[route.id] else {
                 continue
             }
-            
+
             // Only assert the routes that are specified in the expectation.
             // Some tests focus on a sub-set of the routes actually defined in the layout
             guard let train = trains.first(where: { $0.routeId == route.id }) else {
                 continue
             }
-            
+
             // Resolve the route
             let resolver = RouteResolver(layout: layout, train: train)
             let actualSteps = try resolver.resolve(unresolvedPath: route.steps, verbose: false).get().randomElement()!
-            
+
             let producer = LayoutASCIIProducer(layout: layout)
             _ = try! producer.stringFrom(route: route, trainId: train.id)
-            
+
             try assert(routeName: route.description, actualSteps: actualSteps, expectedSteps: expectedRoute.resolvedSteps,
                        trains: trains, expectedTrains: expectedTrains,
                        expectedLayout: expectedLayout)
 
             assertedAtLeastOneRoute = true
         }
-        
+
         XCTAssertTrue(assertedAtLeastOneRoute, "At least one route should have been asserted!")
     }
-    
+
     private func applyFeedbacks(expectedSteps: [ResolvedRouteItem], expectedLayout: LayoutParser.ParsedLayout) -> [Feedback] {
         var detectedFeedbacks = [Feedback]()
         for expectedStep in expectedSteps {
             switch expectedStep {
-            case .block(let resolvedRouteItemBlock):
+            case let .block(resolvedRouteItemBlock):
                 let expectedBlock = resolvedRouteItemBlock.block
                 for (index, expectedBlockFeedback) in expectedBlock.feedbacks.enumerated() {
-                    let expectedFeedback = expectedLayout.feedbacks.first(where: { $0.id == expectedBlockFeedback.feedbackId})!
+                    let expectedFeedback = expectedLayout.feedbacks.first(where: { $0.id == expectedBlockFeedback.feedbackId })!
                     // The expectedFeedbackId is only valid for the expectedLayout because
                     // the ASCII representation does not allow to specify an ID for the feedback,
                     // which means they will have random UUID. It is best to use the index
@@ -108,34 +107,34 @@ final class LayoutAsserter {
                     }
                 }
 
-            case .turnout(_):
+            case .turnout:
                 break
             }
         }
         return detectedFeedbacks
     }
-    
-    private func assert(routeName: String, actualSteps: [ResolvedRouteItem], expectedSteps: [ResolvedRouteItem], trains: [Train], expectedTrains: [Train], expectedLayout: LayoutParser.ParsedLayout) throws {
+
+    private func assert(routeName: String, actualSteps: [ResolvedRouteItem], expectedSteps: [ResolvedRouteItem], trains _: [Train], expectedTrains: [Train], expectedLayout: LayoutParser.ParsedLayout) throws {
         for (index, expectedTrain) in expectedTrains.enumerated() {
             let train = layout.trains[expectedTrain.id]!
             XCTAssertEqual(train.id, expectedTrain.id, "Unexpected train mismatch at index \(index), route \(routeName)")
             XCTAssertEqual(train.position, expectedTrain.position, "Mismatching train position for train \(expectedTrain.id), route \(routeName)")
             XCTAssertEqual(train.speed!.requestedKph, expectedTrain.speed!.requestedKph, accuracy: 1, "Mismatching train speed for train \(expectedTrain.id), route \(routeName)")
         }
-                
+
         guard actualSteps.count == expectedSteps.count else {
             XCTFail("Mismatching number of steps for route \(routeName): expecting \(expectedSteps.count) but got \(actualSteps.count)")
             return
         }
-        
+
         var previousStep: ResolvedRouteItem?
-        for index in 0..<actualSteps.count {
+        for index in 0 ..< actualSteps.count {
             let step = actualSteps[index]
             let expectedStep = expectedSteps[index]
-            
+
             switch step {
-            case .block(let stepBlock):
-                guard case .block(let expectedStepBlock) = expectedStep else {
+            case let .block(stepBlock):
+                guard case let .block(expectedStepBlock) = expectedStep else {
                     XCTFail("Expected step should be a block \(expectedStep)")
                     return
                 }
@@ -143,8 +142,8 @@ final class LayoutAsserter {
                 XCTAssertEqual(namedId(step.entrySocket), expectedStep.entrySocket, "Step entrySocket mismatch at block \(stepBlock.blockId)")
                 XCTAssertEqual(namedId(step.exitSocket), expectedStep.exitSocket, "Step exitSocket mismatch at block \(stepBlock.blockId)")
                 assertBlockAt(index: index, routeName: routeName, step: stepBlock, expectedStep: expectedStepBlock, expectedLayout: expectedLayout)
-            case .turnout(let stepTurnout):
-                guard case .turnout(let expectedStepTurnout) = expectedStep else {
+            case let .turnout(stepTurnout):
+                guard case let .turnout(expectedStepTurnout) = expectedStep else {
                     XCTFail("Expected step should be a turnout \(expectedStep)")
                     return
                 }
@@ -153,7 +152,7 @@ final class LayoutAsserter {
                 XCTAssertEqual(namedId(step.exitSocket), expectedStep.exitSocket, "Step exitSocket mismatch at turnout \(stepTurnout.turnout.id)")
                 assertTurnoutAt(index: index, routeName: routeName, step: stepTurnout, expectedStep: expectedStepTurnout, expectedLayout: expectedLayout)
             }
-            
+
             // Check that the transitions between two elements that are reserved are also reserved
             // Take extra care to not assert a transition between two blocks that are reserved
             // for the same train but that are not actually linked - see diagram:
@@ -178,11 +177,11 @@ final class LayoutAsserter {
                 var fromElementName: String
                 var toElementName: String
                 switch previousStep {
-                case .block(let resolvedRouteItemBlock):
+                case let .block(resolvedRouteItemBlock):
                     reserved = resolvedRouteItemBlock.block.reservation?.trainId
                     fromElementName = resolvedRouteItemBlock.block.name
 
-                case .turnout(let resolvedRouteItemTurnout):
+                case let .turnout(resolvedRouteItemTurnout):
                     reserved = resolvedRouteItemTurnout.turnout.reserved?.train
                     fromElementName = resolvedRouteItemTurnout.turnout.name
                     // Check that the actual exitSocket is one that the state of the turnout allows, otherwise
@@ -190,16 +189,15 @@ final class LayoutAsserter {
                     if resolvedRouteItemTurnout.turnout.socketId(fromSocketId: resolvedRouteItemTurnout.exitSocketId, withState: resolvedRouteItemTurnout.turnout.actualState) == nil {
                         reserved = nil
                     }
-
                 }
-                
+
                 switch step {
-                case .block(let resolvedRouteItemBlock):
+                case let .block(resolvedRouteItemBlock):
                     toElementName = resolvedRouteItemBlock.block.name
                     if reserved != resolvedRouteItemBlock.block.reservation?.trainId {
                         reserved = nil
                     }
-                case .turnout(let resolvedRouteItemTurnout):
+                case let .turnout(resolvedRouteItemTurnout):
                     let turnout = resolvedRouteItemTurnout.turnout
                     toElementName = turnout.name
                     if reserved != turnout.reserved?.train {
@@ -223,18 +221,17 @@ final class LayoutAsserter {
                         XCTAssertEqual(reserved, transition.reserved, "Transition should have a reservation between \(fromElementName) and \(toElementName)")
                     }
                 }
-
             }
-            
+
             previousStep = step
         }
     }
-    
+
     private func assertBlockAt(index: Int, routeName: String, step: ResolvedRouteItemBlock, expectedStep: ResolvedRouteItemBlock, expectedLayout: LayoutParser.ParsedLayout) {
         XCTAssertEqual(step.direction, expectedStep.direction, "Step direction mismatch at index \(index)")
 
         let block = layout.blocks[step.blockId]!
-        let expectedBlock = expectedLayout.blocks.first(where: { $0.id == expectedStep.blockId})!
+        let expectedBlock = expectedLayout.blocks.first(where: { $0.id == expectedStep.blockId })!
         XCTAssertEqual(block.category, expectedBlock.category, "Block category mismatch for block \(block)")
 
         if expectedBlock.reservation == nil {
@@ -246,20 +243,20 @@ final class LayoutAsserter {
             // in a later phase of the route).
             XCTAssertEqual(block.reservation?.trainId, expectedBlock.reservation?.trainId, "Mismatching reserved block \(block) at index \(index), route \(routeName)")
         }
-        
+
         if let expectedTrain = expectedBlock.trainInstance {
             XCTAssertEqual(block.trainInstance?.trainId, expectedTrain.trainId, "Unexpected train mismatch in block \(block.name) at index \(index)")
         } else {
             XCTAssertNil(block.trainInstance, "Block \(block) should not contain train \(block.trainInstance!)")
         }
-        
+
         // Assert the parts of the block reserved for the train and its wagon
         if let train = block.trainInstance, let expectedTrain = expectedBlock.trainInstance, assertBlockParts {
             XCTAssertEqual(train.parts, expectedTrain.parts, "Unexpected train parts mismatch in block \(block) at index \(index), route \(routeName)")
         }
     }
-    
-    private func assertTurnoutAt(index: Int, routeName: String, step: ResolvedRouteItemTurnout, expectedStep: ResolvedRouteItemTurnout, expectedLayout: LayoutParser.ParsedLayout) {
+
+    private func assertTurnoutAt(index: Int, routeName: String, step: ResolvedRouteItemTurnout, expectedStep: ResolvedRouteItemTurnout, expectedLayout _: LayoutParser.ParsedLayout) {
         let turnout = step.turnout
         let expectedTurnout = expectedStep.turnout
         XCTAssertEqual(namedId(turnout.id), expectedTurnout.id, "Mismatching turnout ID at index \(index), route \(routeName)")
@@ -271,7 +268,6 @@ final class LayoutAsserter {
 // This extension converts an identifier to another one that uses the name of the element as the uuid.
 // Note: this is because in the unit tests, the assertion is done using the easier to remember name instead of uuid.
 extension LayoutAsserter {
-    
     private func namedId(_ blockId: Identifier<Block>?) -> Identifier<Block>? {
         if let block = layout.blocks[blockId] {
             return .init(uuid: block.name)
@@ -295,5 +291,4 @@ extension LayoutAsserter {
 
         return .init(block: namedId(socket.block), turnout: namedId(socket.turnout), socketId: socket.socketId)
     }
-
 }

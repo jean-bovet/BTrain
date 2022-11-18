@@ -17,30 +17,30 @@ import Network
 class Server {
     let port: NWEndpoint.Port
     let listener: NWListener
-    
-    var didAcceptConnection: ((ServerConnection) -> Void)? = nil
-    
+
+    var didAcceptConnection: ((ServerConnection) -> Void)?
+
     /// Internal callback block that will be invoked when the listener has been cancelled
-    private var didCancelListener: (()->Void)? = nil
-    
+    private var didCancelListener: (() -> Void)?
+
     /// Map of connections with their IDs as keys
     private var connectionsByID: [Int: ServerConnection] = [:]
-    
+
     var connections: [ServerConnection] {
         connectionsByID.map {
             $0.value
         }
     }
-    
+
     init(port: UInt16) {
         self.port = NWEndpoint.Port(rawValue: port)!
         listener = try! NWListener(using: .tcp, on: self.port)
     }
-    
+
     deinit {
-        stop { }
+        stop {}
     }
-    
+
     func start() throws {
         BTLogger.network.debug("Server starting at port \(self.port.debugDescription)...")
 
@@ -48,16 +48,16 @@ class Server {
             self?.stateDidChange(to: state)
         }
         listener.newConnectionHandler = { [weak self] connection in
-            self?.didAccept(nwConnection: connection)            
+            self?.didAccept(nwConnection: connection)
         }
         listener.start(queue: .main)
     }
-    
+
     func stateDidChange(to newState: NWListener.State) {
         switch newState {
         case .ready:
             BTLogger.network.debug("Server ready.")
-        case .failed(let error):
+        case let .failed(error):
             BTLogger.network.error("Server failure, error: \(error.localizedDescription)")
         case .cancelled:
             BTLogger.network.debug("Server listener has been cancelled.")
@@ -67,10 +67,10 @@ class Server {
             break
         }
     }
-        
+
     private func didAccept(nwConnection: NWConnection) {
         let connection = ServerConnection(nwConnection: nwConnection)
-        self.connectionsByID[connection.id] = connection
+        connectionsByID[connection.id] = connection
         connection.didStopCallback = { [weak self] _ in
             self?.connectionDidStop(connection)
         }
@@ -78,12 +78,12 @@ class Server {
         didAcceptConnection?(connection)
         BTLogger.network.debug("server did open connection \(connection.id)")
     }
-    
+
     private func connectionDidStop(_ connection: ServerConnection) {
-        self.connectionsByID.removeValue(forKey: connection.id)
+        connectionsByID.removeValue(forKey: connection.id)
         BTLogger.network.debug("server did close connection \(connection.id)")
     }
-    
+
     func stop(_ completion: @escaping CompletionBlock) {
         listener.newConnectionHandler = nil
         if listener.state != .cancelled {
@@ -95,11 +95,10 @@ class Server {
         } else {
             completion()
         }
-        for connection in self.connectionsByID.values {
+        for connection in connectionsByID.values {
             connection.didStopCallback = nil
             connection.stop()
         }
         connectionsByID.removeAll()
     }
 }
-

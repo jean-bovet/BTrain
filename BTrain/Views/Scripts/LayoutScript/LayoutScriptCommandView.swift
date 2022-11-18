@@ -13,10 +13,9 @@
 import SwiftUI
 
 struct LayoutScriptCommandView: View {
-
     let doc: LayoutDocument
     let layout: Layout
-    
+
     @ObservedObject var script: LayoutScript
     @Binding var command: LayoutScriptCommand
     @Binding var invalidCommandIds: Set<UUID>
@@ -34,20 +33,20 @@ struct LayoutScriptCommandView: View {
             TrainPicker(doc: doc, selectedTrain: $command.trainId)
                 .labelsHidden()
                 .fixedSize()
-            
+
             Text("with route")
             Picker("Route:", selection: $command.routeScriptId) {
-                ForEach(layout.routeScripts.elements, id:\.self) { item in
+                ForEach(layout.routeScripts.elements, id: \.self) { item in
                     Text(item.name).tag(item.id as Identifier<RouteScript>?)
                 }
             }
             .labelsHidden()
             .fixedSize()
-            
+
             Button("􀁌") {
                 script.commands.insert(source: LayoutScriptCommand(action: .run), after: command)
             }.buttonStyle(.borderless)
-            
+
             Button("􀁎") {
                 script.commands.remove(source: command)
             }.buttonStyle(.borderless)
@@ -58,16 +57,17 @@ struct LayoutScriptCommandView: View {
 struct LayoutScriptCommandView_Previews: PreviewProvider {
     static let doc = LayoutDocument(layout: LayoutComplex().newLayout())
     static let script = LayoutScript()
-    
+
     static let run = LayoutScriptCommand(action: .run)
-    
+
     static let commands = [run]
-    
+
     static var previews: some View {
         VStack(alignment: .leading) {
-            ForEach(commands, id:\.self) { command in
+            ForEach(commands, id: \.self) { command in
                 LayoutScriptCommandView(doc: doc, layout: doc.layout, script: script, command: .constant(command), invalidCommandIds: .constant([]))
                     .fixedSize()
             }
         }
-    }}
+    }
+}

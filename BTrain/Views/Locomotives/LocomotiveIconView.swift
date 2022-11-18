@@ -14,27 +14,26 @@ import SwiftUI
 import UniformTypeIdentifiers
 
 struct LocomotiveIconView: View, DropDelegate {
-        
     @ObservedObject var locomotiveIconManager: LocomotiveIconManager
     @ObservedObject var loc: Locomotive
-    
+
     let size: Size
     let hideIfNotDefined: Bool
-    
+
     enum Size {
         case large
         case medium
     }
-    
+
     var iconWidth: Double {
-        switch(size) {
+        switch size {
         case .large:
             return 200
         case .medium:
             return 100
         }
     }
-    
+
     var iconHeight: Double {
         iconWidth / 2
     }
@@ -45,7 +44,7 @@ struct LocomotiveIconView: View, DropDelegate {
                 Image(nsImage: image)
                     .resizable()
                     .aspectRatio(contentMode: .fit)
-                .frame(width: iconWidth, height: iconHeight)
+                    .frame(width: iconWidth, height: iconHeight)
             } else if hideIfNotDefined {
                 Rectangle()
                     .background(.clear)
@@ -59,10 +58,10 @@ struct LocomotiveIconView: View, DropDelegate {
             }
         }.onDrop(of: [.fileURL], delegate: self)
     }
-    
+
     func performDrop(info: DropInfo) -> Bool {
         if let item = info.itemProviders(for: [.fileURL]).first {
-            item.loadItem(forTypeIdentifier: UTType.fileURL.identifier, options: nil) { (urlData, error) in
+            item.loadItem(forTypeIdentifier: UTType.fileURL.identifier, options: nil) { urlData, error in
                 DispatchQueue.main.async {
                     if let urlData = urlData as? Data {
                         let url = NSURL(absoluteURLWithDataRepresentation: urlData, relativeTo: nil) as URL
@@ -75,13 +74,12 @@ struct LocomotiveIconView: View, DropDelegate {
                     }
                 }
             }
-            
+
             return true
         } else {
             return false
         }
     }
-
 }
 
 struct LocomotiveIconView_Previews: PreviewProvider {

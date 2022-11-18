@@ -13,16 +13,15 @@
 import SwiftUI
 
 struct CS3ReceivedMessageView: View {
-    
     @ObservedObject var mi: MarklinInterface
-    
+
     @State private var selectedMessage: MarklinCANMessage.ID? = nil
 
     @State private var showKnownMessages = true
     @State private var showUnknownMessages = true
 
     var messages: [MarklinCANMessage] {
-        return mi.messages.filter { message in
+        mi.messages.filter { message in
             let knownMessage = MarklinInterface.isKnownMessage(msg: message)
             return showKnownMessages && knownMessage || showUnknownMessages && !knownMessage
         }
@@ -80,16 +79,12 @@ struct CS3ReceivedMessageView: View {
 }
 
 extension MarklinCANMessage: Identifiable {
-    
     var id: Data {
         data
     }
-    
-    
 }
 
 struct CS3ReceivedMessageView_Previews: PreviewProvider {
-    
     static let doc: LayoutDocument = {
         let doc = LayoutDocument(layout: LayoutComplex().newLayout())
         let loc = doc.layout.locomotives[0]
@@ -99,7 +94,7 @@ struct CS3ReceivedMessageView_Previews: PreviewProvider {
         }
         return doc
     }()
-    
+
     static var previews: some View {
         CS3ReceivedMessageView(mi: doc.interface as! MarklinInterface)
     }

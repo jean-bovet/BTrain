@@ -13,7 +13,6 @@
 import Foundation
 
 extension Layout {
-    
     @discardableResult
     func newTurnout(name: String, category: Turnout.Category) -> Turnout {
         let turnout = Turnout(id: LayoutIdentity.newIdentity(turnouts.elements, prefix: .turnout), name: name)
@@ -36,14 +35,13 @@ extension Layout {
         turnouts.add(turnout)
         return nt
     }
-    
+
     func remove(turnoutID: Identifier<Turnout>) {
         turnouts.remove(turnoutID)
-        
+
         transitions.elements.removeAll { transition in
             transition.a.turnout == turnoutID ||
-                    transition.b.turnout == turnoutID
+                transition.b.turnout == turnoutID
         }
     }
-    
 }

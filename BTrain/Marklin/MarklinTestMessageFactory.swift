@@ -13,9 +13,8 @@
 import Foundation
 
 final class MarklinTestMessageFactory {
-
-    static let feedback1ByteArray: [UInt8] = [ 0x00, 0x22, 0xbf, 0x46, 0x08, 0x00, 0x01, 0x00, 0x0e, 0x00, 0x01, 0xff, 0xff ]
-    static let feedback2ByteArray: [UInt8] = [ 0x00, 0x22, 0xbf, 0x46, 0x08, 0x00, 0x01, 0x00, 0x10, 0x01, 0x00, 0x0b, 0x5e ]
+    static let feedback1ByteArray: [UInt8] = [0x00, 0x22, 0xBF, 0x46, 0x08, 0x00, 0x01, 0x00, 0x0E, 0x00, 0x01, 0xFF, 0xFF]
+    static let feedback2ByteArray: [UInt8] = [0x00, 0x22, 0xBF, 0x46, 0x08, 0x00, 0x01, 0x00, 0x10, 0x01, 0x00, 0x0B, 0x5E]
 
     static func feedback1() -> Command {
         let msg = MarklinCANMessage.decode(from: feedback1ByteArray)
@@ -28,11 +27,11 @@ final class MarklinTestMessageFactory {
     }
 
     static func feedbackRandom() -> Command {
-        let byteArray: [UInt8] = [ 0x00, 0x23, 0x93, 0x70, 0x08,
-                                   0x00, UInt8.random(in: 0..<0x02),
-                                   0x00, UInt8.random(in: 1..<0x08),
-                                   0x00, Bool.random() ? 0x01 : 0x00,
-                                   UInt8.random(in: 0..<0xFF), UInt8.random(in: 1..<0xFF) ]
+        let byteArray: [UInt8] = [0x00, 0x23, 0x93, 0x70, 0x08,
+                                  0x00, UInt8.random(in: 0 ..< 0x02),
+                                  0x00, UInt8.random(in: 1 ..< 0x08),
+                                  0x00, Bool.random() ? 0x01 : 0x00,
+                                  UInt8.random(in: 0 ..< 0xFF), UInt8.random(in: 1 ..< 0xFF)]
         let msg = MarklinCANMessage.decode(from: byteArray)
         return Command.from(message: msg)
     }

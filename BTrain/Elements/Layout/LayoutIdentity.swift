@@ -14,7 +14,6 @@ import Foundation
 import OrderedCollections
 
 struct LayoutIdentity {
-    
     enum LayoutIdentityPrefix: String {
         case block
         case station
@@ -27,7 +26,7 @@ struct LayoutIdentity {
         case route
         case routeScript
         case layoutScript
-        
+
         var prefix: String {
             switch self {
             case .block:
@@ -55,7 +54,7 @@ struct LayoutIdentity {
             }
         }
     }
-    
+
     static func newIdentity<T>(_ elements: OrderedDictionary<Identifier<T>, T>, prefix: LayoutIdentityPrefix) -> Identifier<T> {
         var index = 1
         var id = Identifier<T>(uuid: "\(prefix.prefix)\(index)")
@@ -65,8 +64,8 @@ struct LayoutIdentity {
         }
         return id
     }
-    
-    static func newIdentity<T:ElementUUID>(_ elements: [T], prefix: LayoutIdentityPrefix) -> Identifier<T> {
+
+    static func newIdentity<T: ElementUUID>(_ elements: [T], prefix: LayoutIdentityPrefix) -> Identifier<T> {
         var index = 1
         var id = Identifier<T>(uuid: "\(prefix.prefix)\(index)")
         while elements.first(where: { $0.uuid == id.uuid }) != nil {
@@ -75,5 +74,4 @@ struct LayoutIdentity {
         }
         return id
     }
-    
 }

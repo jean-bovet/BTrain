@@ -14,7 +14,6 @@ import Foundation
 
 // This class defines a turnout in the layout.
 final class Turnout: Element, ObservableObject {
-
     // The various types of turnouts that are supported
     enum Category: String, Codable, CaseIterable {
         case singleLeft
@@ -29,7 +28,7 @@ final class Turnout: Element, ObservableObject {
         var id: String {
             rawValue
         }
-        
+
         case straight
         case branch // Used for Double Slip with 2 states (straight and branch)
         case branchLeft
@@ -42,7 +41,7 @@ final class Turnout: Element, ObservableObject {
     }
 
     let id: Identifier<Turnout>
-                
+
     // True if the turnout is enabled and ready to participate
     // in the routing. False to have the turnout ignored
     // by any routing, which is useful when a turnout is in need of repair
@@ -50,7 +49,7 @@ final class Turnout: Element, ObservableObject {
     @Published var enabled = true
 
     @Published var name = ""
-    
+
     @Published var category: Category = .singleLeft {
         didSet {
             requestedState = Turnout.defaultState(for: category)
@@ -64,14 +63,14 @@ final class Turnout: Element, ObservableObject {
 
     // Length of the turnout (in cm)
     @Published var length: DistanceCm?
-            
+
     /// The state of the turnout that has been requested.
     ///
     /// It takes some time for the turnout to actually change in the physical layout. Once
     /// the Digital Controller sends the acknowledgment that the turnout has changed,
     /// the ``actualState`` will be updated to match the ``requestedState``.
     @Published var requestedState: State = .straight
-        
+
     /// The most up-to-date state from the physical layout.
     ///
     /// It might differ from ``requestedState`` if the turnout hasn't physically yet changed.
@@ -80,12 +79,12 @@ final class Turnout: Element, ObservableObject {
             actualStateReceived = true
         }
     }
-    
+
     /// True if the actual state was received from the Digital Controller.
     /// This flag is set to true everyone time the actual state from the Digital Controller is received.
     /// The flag is cleared each time the LayoutController sends the requested state to the Digital Controller.
     var actualStateReceived = false
-    
+
     /// Returns true if the turnout has settled.
     ///
     /// A turnout is settled when its actual state is the same as the requested state. In reality,
@@ -93,19 +92,19 @@ final class Turnout: Element, ObservableObject {
     /// a turnout does not settled immediately.
     var settled: Bool {
         requestedState == actualState &&
-        actualStateReceived
+            actualStateReceived
     }
-    
+
     struct Reservation: Codable, CustomStringConvertible {
         let train: Identifier<Train>
-        
+
         struct Sockets: Codable {
             let fromSocketId: Int
             let toSocketId: Int
         }
-        
+
         let sockets: Sockets?
-        
+
         var description: String {
             if let sockets = sockets {
                 return "\(train):\(sockets.fromSocketId)-\(sockets.toSocketId)"
@@ -120,14 +119,14 @@ final class Turnout: Element, ObservableObject {
         case limited
     }
 
-    typealias StateSpeedLimits = [State:SpeedLimit]
-    
+    typealias StateSpeedLimits = [State: SpeedLimit]
+
     // A dictionary of speed limit for each state of the turnout
     @Published var stateSpeedLimit = StateSpeedLimits()
-    
+
     // Contains the reservation for the specified train
     var reserved: Reservation?
-    
+
     // The identifier of the train located in this turnout
     var train: Identifier<Train>?
 
@@ -136,18 +135,18 @@ final class Turnout: Element, ObservableObject {
 
     var doubleAddress: Bool {
         category == .doubleSlip2 ||
-                category == .threeWay
+            category == .threeWay
     }
-    
+
     init(id: Identifier<Turnout>, name: String = "") {
         self.id = id
         self.name = name
     }
-    
+
     convenience init(name: String = UUID().uuidString) {
         self.init(id: Identifier<Turnout>(uuid: name), name: name)
     }
-            
+
     func updateStateSpeedLimits() {
         let previous = stateSpeedLimit
         stateSpeedLimit.removeAll()
@@ -155,7 +154,7 @@ final class Turnout: Element, ObservableObject {
             stateSpeedLimit[state] = previous[state] ?? defaultStateSpeedLimit(state)
         }
     }
-    
+
     func defaultStateSpeedLimit(_ state: State) -> SpeedLimit {
         switch state {
         case .straight:
@@ -181,8 +180,7 @@ final class Turnout: Element, ObservableObject {
 }
 
 extension Turnout: Restorable {
-    
-    func restore(layout: Layout) {
+    func restore(layout _: Layout) {
         if train == nil {
             // Do not restore the reservation if the train does not belong to this turnout.
             // We do not want the user to see reservation upon opening a new document because
@@ -191,13 +189,11 @@ extension Turnout: Restorable {
         }
         updateStateSpeedLimits()
     }
-
 }
 
 extension Turnout: Codable {
-    
     enum CodingKeys: CodingKey {
-      case id, enabled, type, name, address, address2, length, state, stateSpeedLimit, reserved, train, center, angle
+        case id, enabled, type, name, address, address2, length, state, stateSpeedLimit, reserved, train, center, angle
     }
 
     convenience init(from decoder: Decoder) throws {
@@ -205,23 +201,23 @@ extension Turnout: Codable {
         let id = try container.decode(Identifier<Turnout>.self, forKey: CodingKeys.id)
 
         self.init(id: id)
-        self.enabled = try container.decode(Bool.self, forKey: CodingKeys.enabled)
-        self.name = try container.decode(String.self, forKey: CodingKeys.name)
-        self.category = try container.decode(Category.self, forKey: CodingKeys.type)
-        self.address = try container.decode(CommandTurnoutAddress.self, forKey: CodingKeys.address)
+        enabled = try container.decode(Bool.self, forKey: CodingKeys.enabled)
+        name = try container.decode(String.self, forKey: CodingKeys.name)
+        category = try container.decode(Category.self, forKey: CodingKeys.type)
+        address = try container.decode(CommandTurnoutAddress.self, forKey: CodingKeys.address)
         if let address2 = try container.decodeIfPresent(CommandTurnoutAddress.self, forKey: CodingKeys.address2) {
             self.address2 = address2
         }
-        self.center = try container.decode(CGPoint.self, forKey: CodingKeys.center)
-        self.rotationAngle = try container.decode(Double.self, forKey: CodingKeys.angle)
-        self.length = try container.decodeIfPresent(Double.self, forKey: CodingKeys.length)
-        self.requestedState = try container.decode(State.self, forKey: CodingKeys.state)
-        self.actualState = self.requestedState
-        self.reserved = try container.decodeIfPresent(Turnout.Reservation.self, forKey: CodingKeys.reserved)
-        self.train = try container.decodeIfPresent(Identifier<Train>.self, forKey: CodingKeys.train)
-        self.stateSpeedLimit = try container.decode(StateSpeedLimits.self, forKey: CodingKeys.stateSpeedLimit)
+        center = try container.decode(CGPoint.self, forKey: CodingKeys.center)
+        rotationAngle = try container.decode(Double.self, forKey: CodingKeys.angle)
+        length = try container.decodeIfPresent(Double.self, forKey: CodingKeys.length)
+        requestedState = try container.decode(State.self, forKey: CodingKeys.state)
+        actualState = requestedState
+        reserved = try container.decodeIfPresent(Turnout.Reservation.self, forKey: CodingKeys.reserved)
+        train = try container.decodeIfPresent(Identifier<Train>.self, forKey: CodingKeys.train)
+        stateSpeedLimit = try container.decode(StateSpeedLimits.self, forKey: CodingKeys.stateSpeedLimit)
     }
-    
+
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(id, forKey: CodingKeys.id)
@@ -239,12 +235,11 @@ extension Turnout: Codable {
         try container.encode(center, forKey: CodingKeys.center)
         try container.encode(rotationAngle, forKey: CodingKeys.angle)
     }
-    
 }
 
-extension Turnout.Category: CustomStringConvertible {    
+extension Turnout.Category: CustomStringConvertible {
     var description: String {
-        switch(self) {
+        switch self {
         case .singleLeft:
             return "Turnout Left"
         case .singleRight:
@@ -261,7 +256,7 @@ extension Turnout.Category: CustomStringConvertible {
 
 extension Turnout.State: CustomStringConvertible {
     var description: String {
-        switch(self) {
+        switch self {
         case .straight:
             return "Straight"
         case .branch:
@@ -285,19 +280,16 @@ extension Turnout.State: CustomStringConvertible {
 }
 
 extension Turnout: CustomStringConvertible {
-    
     var description: String {
         "\(name) (\(id))"
     }
 }
 
-extension Array where Element : Turnout {
-
+extension Array where Element: Turnout {
     func find(address: CommandTurnoutAddress) -> Element? {
-        self.first { turnout in
+        first { turnout in
             turnout.address.actualAddress == address.actualAddress ||
-                    turnout.address2.actualAddress == address.actualAddress
+                turnout.address2.actualAddress == address.actualAddress
         }
     }
-    
 }

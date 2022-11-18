@@ -13,12 +13,11 @@
 import SwiftUI
 
 struct RouteScriptCommandView: View {
-
     let layout: Layout
     @ObservedObject var script: RouteScript
     @Binding var command: RouteScriptCommand
     @Binding var commandErrorIds: [String]
-    
+
     var body: some View {
         HStack {
             if command.action != .start {
@@ -28,17 +27,17 @@ struct RouteScriptCommandView: View {
                 Text("􀇿")
                     .foregroundColor(.red)
             }
-            
+
             if command.action != .start {
                 Picker("Command", selection: $command.action) {
-                    ForEach(RouteScriptCommand.Action.allCases.filter({$0 != .start}), id: \.self) {
+                    ForEach(RouteScriptCommand.Action.allCases.filter { $0 != .start }, id: \.self) {
                         Text($0.rawValue).tag($0 as RouteScriptCommand.Action?)
                     }
                 }
                 .labelsHidden()
                 .fixedSize()
             }
-            
+
             switch command.action {
             case .start:
                 Text("Start in")
@@ -75,20 +74,20 @@ struct RouteScriptCommandView: View {
                     StationPicker(layout: layout, stationId: $command.stationId)
                         .fixedSize()
                 }
-                
+
                 if layout.blocks[command.blockId]?.category == .station {
-                    Stepper("and wait \(command.waitDuration) seconds", value: $command.waitDuration, in: 0...100, step: 10)
+                    Stepper("and wait \(command.waitDuration) seconds", value: $command.waitDuration, in: 0 ... 100, step: 10)
                         .fixedSize()
                 }
             case .loop:
-                Stepper("\(command.repeatCount) times", value: $command.repeatCount, in: 1...10)
+                Stepper("\(command.repeatCount) times", value: $command.repeatCount, in: 1 ... 10)
                     .fixedSize()
             }
-            
+
             Button("􀁌") {
                 script.commands.insert(source: RouteScriptCommand(action: .move), after: command)
             }.buttonStyle(.borderless)
-            
+
             if command.action != .start {
                 Button("􀁎") {
                     script.commands.remove(source: command)
@@ -99,22 +98,21 @@ struct RouteScriptCommandView: View {
 }
 
 struct ScriptCommandView_Previews: PreviewProvider {
-    
     static let doc = LayoutDocument(layout: LayoutComplex().newLayout())
     static let script = RouteScript()
-    
+
     static let start = RouteScriptCommand(action: .start)
-    
+
     static let moveToFreeBlock = {
         var cmd = RouteScriptCommand(action: .move)
-        cmd.blockId = doc.layout.blocks.elements.first(where: {$0.category == .free})!.id
+        cmd.blockId = doc.layout.blocks.elements.first(where: { $0.category == .free })!.id
         cmd.direction = .next
         return cmd
     }()
-    
+
     static let moveToStationBlock = {
         var cmd = RouteScriptCommand(action: .move)
-        cmd.blockId = doc.layout.blocks.elements.first(where: {$0.category == .station})!.id
+        cmd.blockId = doc.layout.blocks.elements.first(where: { $0.category == .station })!.id
         cmd.direction = .next
         return cmd
     }()
@@ -127,10 +125,10 @@ struct ScriptCommandView_Previews: PreviewProvider {
     }()
 
     static let commands = [start, moveToFreeBlock, moveToStationBlock, loop]
-    
+
     static var previews: some View {
         VStack(alignment: .leading) {
-            ForEach(commands, id:\.self) { command in
+            ForEach(commands, id: \.self) { command in
                 RouteScriptCommandView(layout: doc.layout, script: script, command: .constant(command), commandErrorIds: .constant([]))
                     .fixedSize()
             }

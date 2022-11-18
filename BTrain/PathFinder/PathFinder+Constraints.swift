@@ -13,10 +13,8 @@
 import Foundation
 
 extension PathFinder {
-    
     /// The constraints to apply to the path finder algorithm
     struct Constraints {
-        
         /// Behavior of the algorithm when it finds a block that is reserved for another train
         enum ReservedBlockBehavior {
             /// Avoid all the reserved block. In other words, only choose blocks that are not reserved.
@@ -37,19 +35,19 @@ extension PathFinder {
             /// Ignore all the reserved blocks. In other words, choose blocks even if they are reserved for another train.
             case ignoreReserved
         }
-        
+
         let layout: Layout
         let train: Train
         let reservedBlockBehavior: ReservedBlockBehavior
-        
+
         /// True if the path find algorithm should stop if the first block encountered during the search
         /// is not the destination block as specified by the ``to`` parameter. This is used for performance
         /// optimization when searching a path between two blocks.
         let stopAtFirstBlock: Bool
-        
+
         /// True if the constraints should be relaxed (that is, not applied), false otherwise.
         let relaxed: Bool
-        
+
         /// Returns true if the `node` should be included in the path.
         ///
         /// If false, the algorithm backtracks to the previous node and finds
@@ -61,10 +59,10 @@ extension PathFinder {
         ///   - to: the optional destination element
         /// - Returns: true if `node` should be included in the path, false otherwise.
         func shouldInclude(node: GraphNode, currentPath: GraphPath, to: GraphPathElement?) -> Bool {
-            if let to = to, node is Block && to.node is Block && node.identifier.uuid != to.node.identifier.uuid, stopAtFirstBlock {
+            if let to = to, node is Block, to.node is Block, node.identifier.uuid != to.node.identifier.uuid, stopAtFirstBlock {
                 return false
             }
-            
+
             if relaxed {
                 return true
             }
@@ -73,12 +71,12 @@ extension PathFinder {
                 guard block.enabled else {
                     return false
                 }
-                                
+
                 if let reserved = block.reservation, reserved.trainId != train.id {
                     switch reservedBlockBehavior {
                     case .avoidReserved:
                         return false
-                        
+
                     case .avoidFirstReservedBlock:
                         // Count how many blocks there is in the current path, ignoring the first block.
                         if currentPath.numberOfBlocksIgnoringStartingBlock == 0 {
@@ -86,52 +84,50 @@ extension PathFinder {
                             // in which case we need to avoid it because it is reserved.
                             return false
                         }
-                        break
 
                     case .ignoreReserved:
                         break
                     }
                 }
-                
+
                 if train.blocksToAvoid.contains(where: { $0.blockId == block.id }) {
                     return false
                 }
-                
+
                 return true
             }
-            
+
             if let turnout = layout.turnout(node) {
                 guard turnout.enabled else {
                     return false
                 }
-                
+
                 if let reserved = turnout.reserved, reserved.train != train.id {
                     switch reservedBlockBehavior {
                     case .avoidReserved:
                         return false
-                                                
+
                     case .avoidFirstReservedBlock:
                         // Count how many blocks there is in the current path, ignoring the first block.
                         if currentPath.numberOfBlocksIgnoringStartingBlock == 0 {
                             return false
                         }
-                        break
 
                     case .ignoreReserved:
                         break
                     }
                 }
-                
+
                 if train.turnoutsToAvoid.contains(where: { $0.turnoutId == turnout.id }) {
                     return false
                 }
-                
+
                 return true
             }
-            
+
             return true
         }
-        
+
         /// Returns true if the specified node is the destination node of the path.
         /// - Parameters:
         ///   - node: the node to evaluate
@@ -152,11 +148,10 @@ extension PathFinder {
 }
 
 extension GraphPath {
-    
     var numberOfBlocksIgnoringStartingBlock: Int {
         elements
             .dropFirst() // Remove the starting block
-            .filter({ $0.node is Block }) // Filter out any element that is not a block
+            .filter { $0.node is Block } // Filter out any element that is not a block
             .count // Count the number of blocks
     }
 }

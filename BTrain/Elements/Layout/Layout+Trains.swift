@@ -19,13 +19,12 @@ enum Position {
 }
 
 extension Layout {
-    
     @discardableResult
     func newTrain() -> Train {
         let id = LayoutIdentity.newIdentity(trains.elements, prefix: .train)
         return trains.add(Train(id: id, name: id.uuid))
     }
-        
+
     @discardableResult
     func duplicate(train: Train) -> Train {
         let nt = Train(name: "\(train.name) copy")
@@ -42,12 +41,12 @@ extension Layout {
         try? remove(trainId: trainId)
         trains.remove(trainId)
     }
-     
+
     // Returns the new position of the train given the specified feedback. This is used
     // to follow the train within a block when feedbacks are activated when the locomotive moves.
     //      ╲       ██            ██            ██
     //       ╲      ██            ██            ██
-    //────────■─────██────────────██────────────██────────────▶
+    // ───────■─────██────────────██────────────██────────────▶
     //       ╱   0  ██     1      ██     2      ██     3
     //      ╱       ██            ██            ██     ▲
     //              0             1             2      │
@@ -59,15 +58,15 @@ extension Layout {
     func newPosition(forTrain train: Train, enabledFeedbackIndex: Int, direction: Direction) -> Int {
         let strict = strictRouteFeedbackStrategy
 
-        switch(direction) {
+        switch direction {
         case .previous:
             let delta = train.position - enabledFeedbackIndex
-            if strict && delta == 1 {
+            if strict, delta == 1 {
                 // this is the feedback in front of the train, it means
                 // the train has moved past this feedback
                 return train.position - delta
             }
-            if !strict && delta > 0 {
+            if !strict, delta > 0 {
                 // A feedback in front of the train has been activated.
                 // When not in strict mode, we update the position of the train.
                 return train.position - delta
@@ -75,25 +74,25 @@ extension Layout {
 
         case .next:
             let delta = enabledFeedbackIndex - train.position
-            if strict && delta == 0 {
+            if strict, delta == 0 {
                 // this is the feedback in front of the train, it means
                 // the train has moved past this feedback
                 return train.position + 1
             }
-            if !strict && delta >= 0 {
+            if !strict, delta >= 0 {
                 // A feedback in front of the train has been activated.
                 // When not in strict mode, we update the position of the train.
                 return train.position + delta + 1
             }
         }
-        
+
         return train.position
     }
-            
+
     func hasTrainReachedStationOrDestination(_ route: Route?, _ train: Train, _ block: Block) -> Bool {
         if let route = route {
             switch route.mode {
-            case .automaticOnce(let destination):
+            case let .automaticOnce(destination):
                 if !destination.hasReached(block: block) {
                     return false
                 }
@@ -116,7 +115,7 @@ extension Layout {
 
         return true
     }
-    
+
     /// Sets a train to a specific block.
     ///
     /// - Parameters:
@@ -130,26 +129,26 @@ extension Layout {
         guard let train = trains[trainId] else {
             throw LayoutError.trainNotFound(trainId: trainId)
         }
-        
-        guard let toBlock = self.blocks[toBlockId] else {
+
+        guard let toBlock = blocks[toBlockId] else {
             throw LayoutError.blockNotFound(blockId: toBlockId)
         }
 
         guard toBlock.trainInstance == nil || toBlock.trainInstance?.trainId == trainId else {
             throw LayoutError.blockNotEmpty(blockId: toBlockId)
         }
-                
+
         guard toBlock.reservation == nil || toBlock.reservation?.trainId == train.id else {
             throw LayoutError.cannotReserveBlock(block: toBlock, train: train, reserved: toBlock.reservation!)
         }
-        
+
         // Determine the position of the train
-        switch(position) {
+        switch position {
         case .start:
             train.position = direction == .next ? 0 : toBlock.feedbacks.count
         case .end:
             train.position = direction == .next ? toBlock.feedbacks.count : 0
-        case .custom(value: let value):
+        case let .custom(value: value):
             train.position = value
         }
 
@@ -159,7 +158,7 @@ extension Layout {
 
         // Assign the block to the train
         train.blockId = toBlock.id
-        
+
         // Update the route index if specified
         if let routeIndex = routeIndex {
             train.routeStepIndex = routeIndex
@@ -167,11 +166,11 @@ extension Layout {
     }
 
     func free(fromBlock: Identifier<Block>, toBlockNotIncluded: Identifier<Block>, direction: Direction) throws {
-        guard let b1 = self.blocks[fromBlock] else {
+        guard let b1 = blocks[fromBlock] else {
             throw LayoutError.blockNotFound(blockId: fromBlock)
         }
 
-        guard let b2 = self.blocks[toBlockNotIncluded] else {
+        guard let b2 = blocks[toBlockNotIncluded] else {
             throw LayoutError.blockNotFound(blockId: toBlockNotIncluded)
         }
 
@@ -189,17 +188,17 @@ extension Layout {
         } else {
             BTLogger.debug("No transition found between \(b1) and \(b2), direction \(direction)")
         }
-        
+
         try free(block: b1.id)
     }
-    
+
     func free(block: Identifier<Block>) throws {
-        guard let b1 = self.blocks[block] else {
+        guard let b1 = blocks[block] else {
             throw LayoutError.blockNotFound(blockId: block)
         }
 
         BTLogger.debug("Freeing block \(b1.name)")
-        
+
         b1.reservation = nil
         if let blockTrain = b1.trainInstance {
             guard let train = trains[blockTrain.trainId] else {
@@ -212,13 +211,13 @@ extension Layout {
             b1.trainInstance = nil
         }
     }
-    
+
     // Remove the train from the layout (but not from the list of train)
     func remove(trainId: Identifier<Train>) throws {
         guard let train = trains[trainId] else {
             throw LayoutError.trainNotFound(trainId: trainId)
         }
-        
+
         // Remove the train from the blocks
         blocks.elements
             .filter { $0.reservation?.trainId == train.id }
@@ -228,30 +227,30 @@ extension Layout {
             }
         turnouts.elements.filter { $0.reserved?.train == train.id }.forEach { $0.reserved = nil; $0.train = nil }
         transitions.elements.filter { $0.reserved == train.id }.forEach { $0.reserved = nil; $0.train = nil }
-        
+
         train.blockId = nil
     }
 
     func block(for train: Train, step: RouteItem) -> (Identifier<Block>, Direction)? {
         switch step {
-        case .block(let stepBlock):
+        case let .block(stepBlock):
             return (stepBlock.blockId, stepBlock.direction)
 
-        case .station(let stepStation):
+        case let .station(stepStation):
             guard let station = stations[stepStation.stationId] else {
                 return nil
             }
             guard let item = station.blockWith(train: train, layout: self) else {
                 return nil
             }
-            
+
             guard let bid = item.blockId, let bd = item.direction else {
                 return nil
             }
-            
+
             return (bid, bd)
-            
-        case .turnout(_):
+
+        case .turnout:
             return nil
         }
     }

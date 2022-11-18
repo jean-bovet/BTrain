@@ -15,18 +15,17 @@ import Network
 
 @available(macOS 10.14, *)
 class ClientConnection {
-    
     let nwConnection: NWConnection
     let queue = DispatchQueue(label: "Client connection Q")
-    
+
     init(nwConnection: NWConnection) {
         self.nwConnection = nwConnection
     }
-    
-    var didSucceedCallback: (() -> Void)? = nil
-    var didReceiveCallback: ((MarklinCANMessage) -> Void)? = nil
-    var didFailCallback: ((Error) -> Void)? = nil
-    var didStopCallback: (() -> Void)? = nil
+
+    var didSucceedCallback: (() -> Void)?
+    var didReceiveCallback: ((MarklinCANMessage) -> Void)?
+    var didFailCallback: ((Error) -> Void)?
+    var didStopCallback: (() -> Void)?
 
     func start() {
         nwConnection.stateUpdateHandler = { [weak self] state in
@@ -35,17 +34,17 @@ class ClientConnection {
         setupReceive()
         nwConnection.start(queue: queue)
     }
-    
+
     private func stateDidChange(to state: NWConnection.State) {
         switch state {
-        case .waiting(let error):
+        case let .waiting(error):
             connectionDidFail(error: error)
         case .ready:
             didSucceedCallback?()
-        case .failed(let error):
+        case let .failed(error):
             connectionDidFail(error: error)
         case .cancelled:
-            if let didStopCallback = self.didStopCallback {
+            if let didStopCallback = didStopCallback {
                 self.didStopCallback = nil
                 didStopCallback()
             }
@@ -53,17 +52,17 @@ class ClientConnection {
             break
         }
     }
-    
+
     private func setupReceive() {
-        nwConnection.receive(minimumIncompleteLength: 1, maximumLength: 65536) { [weak self] (data, _, isComplete, error) in
+        nwConnection.receive(minimumIncompleteLength: 1, maximumLength: 65536) { [weak self] data, _, isComplete, error in
             if let data = data, !data.isEmpty {
                 // Read each CAN message, one by one. Each CAN message is 13 bytes.
                 // Sometimes more than one message is received in a single data.
                 let numberOfPackets = data.count / MarklinCANMessage.messageLength
-                for packet in 0..<numberOfPackets {
+                for packet in 0 ..< numberOfPackets {
                     let start = packet * MarklinCANMessage.messageLength
                     let end = (packet + 1) * MarklinCANMessage.messageLength
-                    let slice = data[start..<end]
+                    let slice = data[start ..< end]
 
                     let msg = MarklinCANMessage.decode(from: [UInt8](slice))
                     if let description = MarklinCANMessagePrinter.debugDescription(msg: msg) {
@@ -85,9 +84,9 @@ class ClientConnection {
             }
         }
     }
-        
+
     let dataQueue = ScheduledMessageQueue(name: "Client")
-    
+
     func send(data: Data, priority: Bool, onCompletion: @escaping () -> Void) {
         dataQueue.schedule(priority: priority) { completion in
             guard self.nwConnection.state == .ready else {
@@ -96,13 +95,13 @@ class ClientConnection {
                 onCompletion()
                 return
             }
-            
+
             let msg = MarklinCANMessage.decode(from: [UInt8](data))
             if let description = MarklinCANMessagePrinter.debugDescription(msg: msg) {
                 BTLogger.network.debug("[Client] > \(description)")
             }
 
-            self.nwConnection.send(content: data, completion: .contentProcessed( { error in
+            self.nwConnection.send(content: data, completion: .contentProcessed { error in
                 DispatchQueue.main.async {
                     if let error = error {
                         if case let NWError.posix(code) = error, code == .ECANCELED {
@@ -116,7 +115,7 @@ class ClientConnection {
                     completion()
                     onCompletion()
                 }
-            }))
+            })
         }
     }
 
@@ -124,16 +123,15 @@ class ClientConnection {
         BTLogger.network.debug("[Client] will stop")
         nwConnection.cancel()
     }
-    
+
     private func connectionDidFail(error: Error) {
         BTLogger.network.error("[Client] did fail, error: \(error.localizedDescription)")
         didFailCallback?(error)
         stop()
     }
-    
+
     private func connectionDidEnd() {
         BTLogger.network.debug("[Client] did end")
         stop()
     }
-    
 }

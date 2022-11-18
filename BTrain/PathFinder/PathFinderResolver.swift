@@ -20,20 +20,19 @@ import Foundation
 /// For example, a user can build a route with a starting and ending station and only one block,
 /// leaving all the other blocks unspecified. The role of this algorithm is to find these unspecified blocks
 struct PathFinderResolver {
-    
     /// The settings
     let settings: PathFinder.Settings
-    
+
     /// The constraints
     let constraints: PathFinder.Constraints
-    
+
     /// Error from the path resolver indicating between which path elements an error occurred
     enum ResolverError: Error {
         case cannotResolvedSegment(at: Int, from: GraphPathElement, to: GraphPathElement)
         case cannotResolveElement(_ element: Resolvable, at: Int)
         case cannotResolvePath(from: Int, to: Int)
     }
-        
+
     /// Returns a resolved path given an unresolved path and the specified constraints.
     ///
     /// For example:
@@ -57,12 +56,12 @@ struct PathFinderResolver {
                                             resolvedPathSoFar: GraphPath([]))
         return result
     }
-    
+
     private func resolveRecursively(graph: Graph, unresolvedPathIndex: Int, unresolvedPath: [Resolvable], resolvedPathSoFar: GraphPath) throws -> Result<[GraphPath], ResolverError> {
         guard let unresolvedElement = unresolvedPath.first else {
             return .success([resolvedPathSoFar])
         }
-        
+
         // Resolve the first unresolved element of the unresolved path. Note that
         // there can be more than one resolved elements. For example, if a block step
         // does not have its direction specified, 2 resolved elements are returned,
@@ -74,12 +73,12 @@ struct PathFinderResolver {
         // Contains the last error that occurred during the resolving process. Because more than
         // one error can happen in the tree of search, the last one is returned to the user.
         var resolverError: ResolverError?
-        
+
         // An array of all possible resolved paths. Note that because each time an element is resolved
         // it can result in more than one resolved element, this means that there can be more than one
         // resolved path at the end of the search.
         var resolvedPaths = [GraphPath]()
-        
+
         // For each resolved elements, resolve the segment between the previous element and this one,
         // then recursively continue the search for each resolved element.
         for resolvedElement in resolvedElements {
@@ -89,26 +88,26 @@ struct PathFinderResolver {
                                             from: resolvedPathSoFar.elements.last,
                                             to: resolvedElement)
             switch result {
-            case .success(let resolvedSegment):
+            case let .success(resolvedSegment):
                 // If the segment was resolved, recursively continue the resolving process
                 // using the next unresolved path element and the resolved path found so far.
                 let result = try resolveRecursively(graph: graph,
                                                     unresolvedPathIndex: unresolvedPathIndex + 1,
                                                     unresolvedPath: Array(unresolvedPath.dropFirst()),
-                                                    resolvedPathSoFar: resolvedPathSoFar+resolvedSegment)
+                                                    resolvedPathSoFar: resolvedPathSoFar + resolvedSegment)
                 switch result {
-                case .success(let paths):
+                case let .success(paths):
                     for rp in paths {
                         resolvedPaths.append(rp)
                     }
-                case .failure(let error):
+                case let .failure(error):
                     resolverError = error
                 }
-            case .failure(let error):
+            case let .failure(error):
                 resolverError = error
             }
         }
-        
+
         if resolvedPaths.isEmpty {
             if let resolverError = resolverError {
                 return .failure(resolverError)
@@ -119,8 +118,8 @@ struct PathFinderResolver {
             return .success(resolvedPaths)
         }
     }
-            
-    private func resolveSegment(graph: Graph, unresolvedPathIndex: Int, from: GraphPathElement?, to: GraphPathElement) throws -> Result<GraphPath,ResolverError> {
+
+    private func resolveSegment(graph: Graph, unresolvedPathIndex: Int, from: GraphPathElement?, to: GraphPathElement) throws -> Result<GraphPath, ResolverError> {
         guard let from = from else {
             return .success(GraphPath(to))
         }
@@ -132,7 +131,7 @@ struct PathFinderResolver {
             return .success(p)
         }
     }
-    
+
     private func resolveSegment(graph: Graph, from: GraphPathElement, to: GraphPathElement) throws -> GraphPath {
         // Use the shortest path finder algorithm to find the shortest path between the two elements without any restrictions (that is,
         // any number of turnouts and blocks can be situated in the path between the two elements).
@@ -144,18 +143,16 @@ struct PathFinderResolver {
             return GraphPath.empty()
         }
     }
-    
 }
 
 extension PathFinderResolver.ResolverError: LocalizedError {
-    
     var errorDescription: String? {
         switch self {
-        case .cannotResolvedSegment(let index, let from, let to):
+        case let .cannotResolvedSegment(index, from, to):
             return "Cannot resolve segment from \(from) to \(to) at index \(index)"
-        case .cannotResolveElement(let element, let index):
+        case let .cannotResolveElement(element, index):
             return "Cannot resolve element \(element) at index \(index)"
-        case .cannotResolvePath(let from, let to):
+        case let .cannotResolvePath(from, to):
             return "Cannot resolve path from \(from) to \(to)"
         }
     }

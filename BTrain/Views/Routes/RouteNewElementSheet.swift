@@ -13,10 +13,9 @@
 import SwiftUI
 
 struct RouteNewElementSheet: View {
-    
     let layout: Layout
     let route: Route
-    
+
     @Environment(\.presentationMode) var presentationMode
     @Environment(\.undoManager) var undoManager
 
@@ -24,9 +23,9 @@ struct RouteNewElementSheet: View {
         case block
         case station
     }
-    
+
     @State private var elementType: ElementType = .block
-    
+
     var body: some View {
         VStack(alignment: .leading) {
             Picker("Element:", selection: $elementType) {
@@ -37,31 +36,31 @@ struct RouteNewElementSheet: View {
                     Text("Station").tag(ElementType.station)
                 }
             }
-            
+
             HStack {
                 Button("Cancel") {
                     presentationMode.wrappedValue.dismiss()
                 }.keyboardShortcut(.cancelAction)
 
                 Spacer()
-                
+
                 Button("Add") {
                     switch elementType {
                     case .block:
                         let step = RouteItemBlock(layout.blocks[0].id, .next)
                         route.partialSteps.append(.block(step))
-                        
+
                         undoManager?.registerUndo(withTarget: route, handler: { route in
                             route.partialSteps.removeAll { s in
                                 s.id == step.id
                             }
                         })
-                        
+
                     case .station:
                         if let station = layout.stations.elements.first {
                             let step = RouteItemStation(stationId: station.id)
                             route.partialSteps.append(.station(step))
-                            
+
                             undoManager?.registerUndo(withTarget: route, handler: { route in
                                 route.partialSteps.removeAll { s in
                                     s.id == step.id
@@ -69,7 +68,7 @@ struct RouteNewElementSheet: View {
                             })
                         }
                     }
-                    
+
                     presentationMode.wrappedValue.dismiss()
                 }
                 .keyboardShortcut(.defaultAction)
@@ -79,9 +78,8 @@ struct RouteNewElementSheet: View {
 }
 
 struct RouteNewElementSheet_Previews: PreviewProvider {
-    
     static let layout = LayoutLoopWithStations().newLayout()
-    
+
     static var previews: some View {
         RouteNewElementSheet(layout: layout, route: layout.routes[0])
     }

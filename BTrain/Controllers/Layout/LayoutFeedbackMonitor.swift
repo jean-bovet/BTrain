@@ -15,15 +15,14 @@ import Foundation
 // This class monitors all the layout feedback and optionally detects
 // any unexpected feedbacks in order to stop all the trains to avoid collisions.
 final class LayoutFeedbackMonitor {
-    
     let layout: Layout
-    
+
     var expectedFeedbacks = Set<Identifier<Feedback>>()
-    
+
     init(layout: Layout) {
         self.layout = layout
     }
-    
+
     // Update the set of expected feedbacks for the specified trains
     func update(with trains: [Train]) throws {
         expectedFeedbacks.removeAll()
@@ -32,24 +31,24 @@ final class LayoutFeedbackMonitor {
             try updateExpectedFeedbacks(train: train)
         }
     }
-    
+
     private func updateExpectedFeedbacks(train: Train) throws {
         guard let currentBlock = layout.currentBlock(train: train) else {
             return
         }
-        
+
         // Gather all feedbacks in the current block
         for feedback in currentBlock.feedbacks {
             expectedFeedbacks.insert(feedback.feedbackId)
         }
-        
+
         // Gather the potential feedback that will be triggered when the train
         // enter the next block in the layout.
         if let entryFeedback = try layout.entryFeedback(for: train) {
             expectedFeedbacks.insert(entryFeedback.feedback.id)
         }
     }
-    
+
     // Detect any unexpected feedback and throw an exception if that is the case.
     // It is up to the caller to handle that exception in the appropriate manner.
     func handleUnexpectedFeedbacks() throws {
@@ -60,5 +59,4 @@ final class LayoutFeedbackMonitor {
             }
         }
     }
-    
 }

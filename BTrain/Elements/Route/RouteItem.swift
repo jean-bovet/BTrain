@@ -19,44 +19,41 @@ import Foundation
 ///
 /// See [this blog](https://paul-samuels.com/blog/2019/01/02/swift-heterogeneous-codable-array/)
 enum RouteItem: Identifiable, Equatable {
-    
     static func == (lhs: RouteItem, rhs: RouteItem) -> Bool {
         switch (lhs, rhs) {
-        case (.block(let b1), .block(let b2)):
+        case let (.block(b1), .block(b2)):
             return b1.id == b2.id
-        case (.turnout(let b1), .turnout(let b2)):
+        case let (.turnout(b1), .turnout(b2)):
             return b1.id == b2.id
-        case (.station(let b1), .station(let b2)):
+        case let (.station(b1), .station(b2)):
             return b1.id == b2.id
         default:
             return false
         }
     }
-    
+
     case block(RouteItemBlock)
     case turnout(RouteItemTurnout)
     case station(RouteItemStation)
 
     var id: String {
         switch self {
-        case .block(let block): return block.id
-        case .turnout(let turnout): return turnout.id
-        case .station(let station): return station.id
+        case let .block(block): return block.id
+        case let .turnout(turnout): return turnout.id
+        case let .station(station): return station.id
         }
     }
-    
+
     var description: String {
         switch self {
-        case .block(let block): return block.description
-        case .turnout(let turnout): return turnout.description
-        case .station(let station): return station.description
+        case let .block(block): return block.description
+        case let .turnout(turnout): return turnout.description
+        case let .station(station): return station.description
         }
     }
-    
 }
 
 extension RouteItem: Codable {
-    
     var unassociated: Unassociated {
         switch self {
         case .block: return .block
@@ -80,14 +77,14 @@ extension RouteItem: Codable {
         var container = encoder.container(keyedBy: CodingKeys.self)
 
         switch self {
-        case .block(let block): try container.encode(block, forKey: .attributes)
-        case .turnout(let turnout): try container.encode(turnout, forKey: .attributes)
-        case .station(let station): try container.encode(station, forKey: .attributes)
+        case let .block(block): try container.encode(block, forKey: .attributes)
+        case let .turnout(turnout): try container.encode(turnout, forKey: .attributes)
+        case let .station(station): try container.encode(station, forKey: .attributes)
         }
 
         try container.encode(unassociated.rawValue, forKey: .type)
     }
-    
+
     enum Unassociated: String {
         case block
         case turnout

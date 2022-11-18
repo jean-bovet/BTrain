@@ -16,7 +16,7 @@ struct TransitionGraphElementIdentifier: GraphElementIdentifier {
     let uuid: String
     let transitionId: Identifier<Transition>
     init(_ transitionId: Identifier<Transition>) {
-        self.uuid = "tr" + transitionId.uuid
+        uuid = "tr" + transitionId.uuid
         self.transitionId = transitionId
     }
 }
@@ -29,7 +29,7 @@ extension ITransition {
     var identifier: GraphElementIdentifier {
         TransitionGraphElementIdentifier(id)
     }
-    
+
     var fromNode: GraphElementIdentifier {
         if let block = a.block {
             return BlockGraphElementIdentifier(block)
@@ -40,11 +40,11 @@ extension ITransition {
             return InvalidElementIdentifier()
         }
     }
-    
+
     var fromNodeSocket: SocketId? {
         a.socketId
     }
-    
+
     var toNode: GraphElementIdentifier {
         if let block = b.block {
             return BlockGraphElementIdentifier(block)
@@ -55,9 +55,8 @@ extension ITransition {
             return InvalidElementIdentifier()
         }
     }
-    
+
     var toNodeSocket: SocketId? {
         b.socketId
     }
-    
 }

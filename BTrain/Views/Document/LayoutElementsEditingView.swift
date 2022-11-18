@@ -13,7 +13,6 @@
 import SwiftUI
 
 extension LayoutElementsEditingView where More == EmptyView {
-    
     init(layout: Layout,
          new: @escaping () -> E,
          delete: @escaping (E) -> Void,
@@ -21,14 +20,13 @@ extension LayoutElementsEditingView where More == EmptyView {
          sort: @escaping CompletionBlock,
          elementContainer: Binding<LayoutElementContainer<E>>,
          @ViewBuilder row: @escaping RowViewBuilder,
-         @ViewBuilder editor: @escaping (E) -> Editor) {
+         @ViewBuilder editor: @escaping (E) -> Editor)
+    {
         self.init(layout: layout, new: new, delete: delete, duplicate: duplicate, sort: sort, elementContainer: elementContainer, more: { EmptyView() }, row: row, editor: editor)
     }
-
 }
 
 struct LayoutElementsEditingView<E: LayoutElement, More: View, Row: View, Editor: View>: View {
-    
     typealias RowViewBuilder = (Binding<E>) -> Row
     typealias MoreViewBuilder = () -> More
 
@@ -39,7 +37,7 @@ struct LayoutElementsEditingView<E: LayoutElement, More: View, Row: View, Editor
     let more: MoreViewBuilder
     let row: RowViewBuilder
     let editor: (E) -> Editor
-        
+
     init(layout: Layout,
          new: @escaping () -> E,
          delete: @escaping (E) -> Void,
@@ -48,7 +46,8 @@ struct LayoutElementsEditingView<E: LayoutElement, More: View, Row: View, Editor
          elementContainer: Binding<LayoutElementContainer<E>>,
          @ViewBuilder more: @escaping MoreViewBuilder,
          @ViewBuilder row: @escaping RowViewBuilder,
-         @ViewBuilder editor: @escaping (E) -> Editor) {
+         @ViewBuilder editor: @escaping (E) -> Editor)
+    {
         self.layout = layout
         self.new = new
         self.delete = delete
@@ -59,10 +58,10 @@ struct LayoutElementsEditingView<E: LayoutElement, More: View, Row: View, Editor
         self.editor = editor
         _elementContainer = elementContainer
     }
-    
+
     @ObservedObject var layout: Layout
     @Binding var elementContainer: LayoutElementContainer<E>
-    
+
     @State private var selection: Identifier<E.ItemType>?
 
     @Environment(\.undoManager) var undoManager
@@ -78,14 +77,13 @@ struct LayoutElementsEditingView<E: LayoutElement, More: View, Row: View, Editor
             return "\(count) Elements"
         }
     }
-        
+
     struct ListOfElements: View {
-        
         let row: RowViewBuilder
 
         @Binding var selection: Identifier<E.ItemType>?
         @Binding var elements: [E]
-        
+
         var body: some View {
             List(selection: $selection) {
                 ForEach($elements) { element in
@@ -94,49 +92,49 @@ struct LayoutElementsEditingView<E: LayoutElement, More: View, Row: View, Editor
             }.listStyle(.inset(alternatesRowBackgrounds: true))
         }
     }
-    
+
     var scriptList: some View {
         VStack(alignment: .leading) {
             ListOfElements(row: row, selection: $selection, elements: $elementContainer.elements)
-            
+
             HStack {
                 Text(statusLabel)
                     .fixedSize()
-                
+
                 Spacer().fixedSpace()
 
                 Button("+") {
                     let element = elementContainer.add(new())
                     selection = element.id
-                    undoManager?.registerUndo(withTarget: layout, handler: { layout in
+                    undoManager?.registerUndo(withTarget: layout, handler: { _ in
                         delete(element)
                     })
                 }
                 Button("-") {
                     let script = elementContainer[selection]!
                     delete(script)
-                    undoManager?.registerUndo(withTarget: layout, handler: { layout in
+                    undoManager?.registerUndo(withTarget: layout, handler: { _ in
                         elementContainer.add(script)
                     })
                 }.disabled(selection == nil)
-                
+
                 Spacer().fixedSpace()
 
                 Button("􀐅") {
                     if let selection = selection, let element = elementContainer[selection] {
                         let newElement = elementContainer.add(duplicate(element))
-                        undoManager?.registerUndo(withTarget: layout, handler: { layout in
+                        undoManager?.registerUndo(withTarget: layout, handler: { _ in
                             elementContainer.remove(newElement.id)
                         })
                     }
                 }.disabled(selection == nil)
 
                 Spacer().fixedSpace()
-                
+
                 Button("􀄬") {
                     sort()
                 }
-                
+
                 if let view = more(), !(view is EmptyView) {
                     Spacer().fixedSpace()
                     view
@@ -149,7 +147,7 @@ struct LayoutElementsEditingView<E: LayoutElement, More: View, Row: View, Editor
             }
         }
     }
-    
+
     var body: some View {
         HStack(alignment: .top) {
             scriptList

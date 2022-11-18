@@ -13,7 +13,5 @@
 import Foundation
 
 protocol Simulator {
-    
     func setFeedback(feedback: Feedback, value: UInt8)
-    
 }

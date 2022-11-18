@@ -16,13 +16,12 @@ import XCTest
 @testable import BTrain
 
 extension Layout {
-    
     func newRoute(id: String, _ steps: [(String, Direction)]) -> Route {
-        newRoute(Identifier<Route>(uuid: id), name: id, steps.map({ step in
+        newRoute(Identifier<Route>(uuid: id), name: id, steps.map { step in
             .block(RouteItemBlock(Identifier<Block>(uuid: step.0), step.1))
-        }))
+        })
     }
-    
+
     func route(named name: String) -> Route {
         routes.first {
             $0.name == name
@@ -32,7 +31,7 @@ extension Layout {
     func block(_ uuid: String) -> Block {
         blocks[Identifier<Block>(uuid: uuid)]!
     }
-    
+
     func block(named name: String) -> Block {
         blocks.elements.first {
             $0.name == name
@@ -52,13 +51,13 @@ extension Layout {
     func train(_ uuid: String) -> Train {
         trains[Identifier<Train>(uuid: uuid)]!
     }
-    
+
     func removeTrainGeometry() -> Layout {
         trains.elements.forEach { $0.wagonsLength = nil }
         locomotives.elements.forEach { $0.length = nil }
         return self
     }
-    
+
     func removeTurnoutGeometry() -> Layout {
         turnouts.elements.forEach { $0.length = nil }
         return self
@@ -73,7 +72,7 @@ extension Layout {
         }
         return self
     }
-    
+
     @discardableResult
     func removeTrains() -> Layout {
         trains.elements.forEach {
@@ -83,13 +82,13 @@ extension Layout {
     }
 
     func reserve(_ block: String, with train: String, direction: Direction) {
-        self.blocks[Identifier<Block>(uuid: block)]?.reservation = Reservation(trainId: Identifier<Train>(uuid: train), direction: direction)
+        blocks[Identifier<Block>(uuid: block)]?.reservation = Reservation(trainId: Identifier<Train>(uuid: train), direction: direction)
     }
 
     func free(_ block: String) {
-        self.blocks[Identifier<Block>(uuid: block)]?.reservation = nil
+        blocks[Identifier<Block>(uuid: block)]?.reservation = nil
     }
-        
+
     func bestPath(from: String, fromDirection: Direction = .next, toReachBlock toBlockName: String? = nil, toDirection: Direction? = nil, reservedBlockBehavior: PathFinder.Constraints.ReservedBlockBehavior, shortestPath: Bool = true) throws -> GraphPath? {
         setTrain(train: trains[0], toBlockNamed: from, direction: fromDirection)
         let toBlock = (toBlockName != nil) ? block(named: toBlockName!) : nil
@@ -98,8 +97,8 @@ extension Layout {
 
     func assertShortPath(_ from: (String, Direction), _ to: (String, Direction), _ expectedPath: [String]) throws {
         // Note: it is important to remove all the trains from the layout to avoid unexpected reserved blocks!
-        let layout = self.removeTrains()
-        
+        let layout = removeTrains()
+
         // Let's use a brand new train
         let train = Train(id: Identifier<Train>(uuid: "foo"), name: "foo")
         train.locomotive = layout.locomotives[0]
@@ -114,19 +113,16 @@ extension Layout {
 
     private func setTrain(train: Train, toBlockNamed blockName: String, direction: Direction = .next) {
         let block = block(named: blockName)
-        
+
         train.blockId = block.id
         block.trainInstance = .init(train.id, direction)
     }
-    
 }
 
 extension Array where Element == Block {
-    
     func toStrings(useNameInsteadOfId: Bool = true) -> [String] {
-        self.map { block in
+        map { block in
             "\(useNameInsteadOfId ? block.name : block.id.uuid)"
         }
     }
-
 }

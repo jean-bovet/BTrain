@@ -23,15 +23,14 @@ import Foundation
 //    ▼          Transition         ▼
 //    ○─────────────────────────────○
 protocol ITransition: AnyObject, GraphEdge {
-    
     var id: Identifier<Transition> { get }
-        
+
     // Socket to the first element
     var a: Socket { get set }
-    
+
     // Socket to the second element
     var b: Socket { get set }
-            
+
     // Contains the train that has reserved this transition,
     // or nil if no train has reserved it.
     var reserved: Identifier<Train>? { get set }
@@ -41,18 +40,16 @@ protocol ITransition: AnyObject, GraphEdge {
 
     // Returns the inverse of this transition
     var reverse: ITransition { get }
-
 }
 
 // The concrete implementation of a transition
 final class Transition: Element, ITransition, CustomStringConvertible {
-
     let id: Identifier<Transition>
-        
+
     var a: Socket
-    
+
     var b: Socket
-            
+
     var reserved: Identifier<Train>?
 
     var train: Identifier<Train>?
@@ -60,17 +57,17 @@ final class Transition: Element, ITransition, CustomStringConvertible {
     var reverse: ITransition {
         TransitionInverse(transition: self)
     }
-    
+
     var description: String {
         "\(a) -> \(b)"
     }
-    
+
     required init(id: Identifier<Transition>, a: Socket, b: Socket) {
         self.id = id
         self.a = a
         self.b = b
     }
-    
+
     convenience init(id: String, a: Socket, b: Socket) {
         self.init(id: Identifier(uuid: id), a: a, b: b)
     }
@@ -79,9 +76,8 @@ final class Transition: Element, ITransition, CustomStringConvertible {
     // A transition is considered the same if it links the same two elements.
     func same(as t: Transition) -> Bool {
         a.contains(other: t.a) && b.contains(other: t.b) ||
-        a.contains(other: t.b) && b.contains(other: t.a)
+            a.contains(other: t.b) && b.contains(other: t.a)
     }
-    
 }
 
 // Because a transition is represented by two sockets, `a` and `b`, the code must
@@ -91,18 +87,18 @@ final class Transition: Element, ITransition, CustomStringConvertible {
 //        Socket A        Socket B
 //           │               │
 //           │               │
-//┌─────────┐▼               ▼┌─────────┐
-//│ Block 1 │○───────────────○│ Block 2 │
-//└─────────┘                 └─────────┘
+// ┌─────────┐▼               ▼┌─────────┐
+// │ Block 1 │○───────────────○│ Block 2 │
+// └─────────┘                 └─────────┘
 //
 //
 // 2)
 //        Socket B        Socket A
 //           │               │
 //           │               │
-//┌─────────┐▼               ▼┌─────────┐
-//│ Block 1 │○───────────────○│ Block 2 │
-//└─────────┘                 └─────────┘
+// ┌─────────┐▼               ▼┌─────────┐
+// │ Block 1 │○───────────────○│ Block 2 │
+// └─────────┘                 └─────────┘
 //
 // In practice, this means testing both ordering in this way:
 // if transition.a == block1.nextSocket && transition.b = block2.previousSocket
@@ -113,7 +109,6 @@ final class Transition: Element, ITransition, CustomStringConvertible {
 // be simplified to only use one set of sockets:
 // if transition.a == block1.nextSocket && transition.b = block2.previousSocket
 final class TransitionInverse: ITransition, CustomStringConvertible {
-    
     let transition: ITransition
 
     var description: String {
@@ -127,7 +122,7 @@ final class TransitionInverse: ITransition, CustomStringConvertible {
     init(transition: ITransition) {
         self.transition = transition
     }
-        
+
     var a: Socket {
         get {
             transition.b
@@ -136,7 +131,7 @@ final class TransitionInverse: ITransition, CustomStringConvertible {
             transition.b = newValue
         }
     }
-    
+
     var b: Socket {
         get {
             transition.a
@@ -170,8 +165,7 @@ final class TransitionInverse: ITransition, CustomStringConvertible {
 }
 
 extension Transition: Restorable {
-    
-    func restore(layout: Layout) {
+    func restore(layout _: Layout) {
         if train == nil {
             // Do not restore the reservation if the train does not belong to this transition.
             // We do not want the user to see reservation upon opening a new document because
@@ -179,13 +173,11 @@ extension Transition: Restorable {
             reserved = nil
         }
     }
-
 }
 
 extension Transition: Codable {
-    
     enum CodingKeys: CodingKey {
-      case id, from, to, reserved, train
+        case id, from, to, reserved, train
     }
 
     convenience init(from decoder: Decoder) throws {
@@ -194,10 +186,10 @@ extension Transition: Codable {
         let a = try container.decode(Socket.self, forKey: CodingKeys.from)
         let b = try container.decode(Socket.self, forKey: CodingKeys.to)
         self.init(id: id, a: a, b: b)
-        self.reserved = try container.decodeIfPresent(Identifier<Train>.self, forKey: CodingKeys.reserved)
-        self.train = try container.decodeIfPresent(Identifier<Train>.self, forKey: CodingKeys.train)
+        reserved = try container.decodeIfPresent(Identifier<Train>.self, forKey: CodingKeys.reserved)
+        train = try container.decodeIfPresent(Identifier<Train>.self, forKey: CodingKeys.train)
     }
-    
+
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(id, forKey: CodingKeys.id)
@@ -206,5 +198,4 @@ extension Transition: Codable {
         try container.encode(reserved, forKey: CodingKeys.reserved)
         try container.encode(train, forKey: CodingKeys.train)
     }
-    
 }

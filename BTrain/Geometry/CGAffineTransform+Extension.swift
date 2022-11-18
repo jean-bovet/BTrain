@@ -13,7 +13,6 @@
 import Foundation
 
 extension CGAffineTransform {
-    
     func rotation(by angle: CGFloat, around center: CGPoint) -> CGAffineTransform {
         let translateTransform = CGAffineTransform(translationX: center.x, y: center.y)
         let rotationTransform = CGAffineTransform(rotationAngle: angle)

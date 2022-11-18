@@ -20,7 +20,7 @@ final class Package {
     let layout: Layout
     let asserter: LayoutAsserter
     let layoutController: LayoutController
-    
+
     var trains = [Train]()
     var locomotives = [Locomotive]()
     var routes = [Route]()
@@ -32,16 +32,16 @@ final class Package {
     var loc: Locomotive {
         locomotives[0]
     }
-    
+
     var route: Route {
         routes[0]
     }
-    
+
     init(layout: Layout) {
         self.layout = layout
-        self.layoutController = LayoutController(layout: layout, switchboard: nil, interface: digitalController)
-        self.asserter = LayoutAsserter(layout: layout, layoutController: layoutController)
-        
+        layoutController = LayoutController(layout: layout, switchboard: nil, interface: digitalController)
+        asserter = LayoutAsserter(layout: layout, layoutController: layoutController)
+
         layout.automaticRouteRandom = false
         layout.detectUnexpectedFeedback = true
         layout.strictRouteFeedbackStrategy = true
@@ -51,26 +51,26 @@ final class Package {
         let routeId = Route.automaticRouteId(for: .init(uuid: trainID))
         try prepare(routeID: routeId.uuid, trainID: trainID, fromBlockId: fromBlockId, position: position, direction: direction)
     }
-    
+
     func prepare(routeID: String, trainID: String, fromBlockId: String, position: Position = .start, direction: Direction = .next) throws {
         let train = layout.trains[Identifier<Train>(uuid: trainID)]!
         let route = layout.route(for: .init(uuid: routeID), trainId: .init(uuid: trainID))!
         let loc = train.locomotive!
-        
+
         train.routeId = route.id
         try layoutController.setTrainToBlock(train, Identifier<Block>(uuid: fromBlockId), position: position, direction: direction)
-        
+
         XCTAssertEqual(loc.speed.requestedKph, 0)
         XCTAssertEqual(train.scheduling, .unmanaged)
         XCTAssertEqual(train.state, .stopped)
-        
+
         try route.completePartialSteps(layout: layout, train: train)
-        
+
         trains.append(train)
         locomotives.append(loc)
         routes.append(route)
     }
-    
+
     func start(destination: Destination? = nil, expectedState: Train.State = .running, routeSteps: [String]? = nil) throws {
         try start(routeID: route.id.uuid, trainID: train.id.uuid, destination: destination, expectedState: expectedState, routeSteps: routeSteps)
     }
@@ -86,11 +86,11 @@ final class Package {
         BTTestCase.wait(for: {
             train.state == expectedState
         }, timeout: 2.0)
-        
+
         XCTAssertEqual(train.state, expectedState)
         XCTAssertEqual(train.scheduling, .managed)
     }
-    
+
     func finish() {
         layoutController.finish(train: train)
     }
@@ -102,7 +102,7 @@ final class Package {
             XCTAssertEqual(train.scheduling, .unmanaged)
         }
     }
-    
+
     func toggle(_ feedback: String, drainAll: Bool = true) {
         let f = layout.feedbacks[Identifier<Feedback>(uuid: feedback)]!
         f.detected.toggle()
@@ -126,15 +126,15 @@ final class Package {
             try assertLeadingBlocks(leadingBlocks)
         }
     }
-    
+
     func assert2(_ r1: String, _ r2: String) throws {
         try asserter.assert([r1, r2], trains: trains)
     }
-    
+
     func assertLeadingBlocks(_ blockNames: [String]) throws {
         XCTAssertEqual(train.leading.blocks.toStrings(), blockNames)
     }
-    
+
     func printASCII() throws {
         let producer = LayoutASCIIProducer(layout: layout)
         print(try producer.stringFrom(route: route, trainId: train.id, useBlockName: true, useTurnoutName: true))

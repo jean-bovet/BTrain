@@ -17,7 +17,7 @@ import Foundation
 final class TrainInstance: Codable, Equatable, CustomStringConvertible {
     // Reference to the actual train this instance is representing
     let trainId: Identifier<Train>
-    
+
     // Direction of travel of the train within the block
     let direction: Direction
 
@@ -25,13 +25,13 @@ final class TrainInstance: Codable, Equatable, CustomStringConvertible {
         case locomotive
         case wagon
     }
-    
-    typealias TrainPartMap = [Int:TrainPart]
-    
+
+    typealias TrainPartMap = [Int: TrainPart]
+
     // A map of train part that occupies the block,
     // identified by their feedback index
     var parts = TrainPartMap()
-    
+
     var description: String {
         "TrainInstance(\(trainId), \(direction.rawValue))"
     }
@@ -39,9 +39,9 @@ final class TrainInstance: Codable, Equatable, CustomStringConvertible {
     static func == (lhs: TrainInstance, rhs: TrainInstance) -> Bool {
         lhs.trainId == rhs.trainId && lhs.direction == rhs.direction
     }
-    
+
     enum CodingKeys: CodingKey {
-      case trainId, direction, parts
+        case trainId, direction, parts
     }
 
     init(_ trainId: Identifier<Train>, _ direction: Direction, _ parts: TrainPartMap? = nil) {
@@ -49,7 +49,7 @@ final class TrainInstance: Codable, Equatable, CustomStringConvertible {
         self.direction = direction
         self.parts = parts ?? TrainPartMap()
     }
-    
+
     convenience init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         let trainId = try container.decode(Identifier<Train>.self, forKey: CodingKeys.trainId)
@@ -57,7 +57,7 @@ final class TrainInstance: Codable, Equatable, CustomStringConvertible {
         let parts = try container.decodeIfPresent(TrainPartMap.self, forKey: CodingKeys.parts)
         self.init(trainId, direction, parts)
     }
-    
+
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(trainId, forKey: CodingKeys.trainId)

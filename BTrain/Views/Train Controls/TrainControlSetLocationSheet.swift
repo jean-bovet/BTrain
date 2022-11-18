@@ -15,17 +15,17 @@ import SwiftUI
 struct TrainControlSetLocationSheet: View {
     let layout: Layout
     let controller: LayoutController
-                    
+
     @ObservedObject var train: Train
-    
+
     @State private var blockId: Identifier<Block>? = nil
-    
+
     @State private var direction: Direction = .next
-            
+
     @State private var errorStatus: String?
 
     @Environment(\.presentationMode) var presentationMode
-        
+
     var selectedBlockName: String {
         if let block = layout.blocks[blockId] {
             return block.name
@@ -33,7 +33,7 @@ struct TrainControlSetLocationSheet: View {
             return "?"
         }
     }
-        
+
     var body: some View {
         VStack {
             HStack {
@@ -41,12 +41,12 @@ struct TrainControlSetLocationSheet: View {
                     .fixedSize()
 
                 BlockPicker(layout: layout, blockId: $blockId)
-                .onAppear {
-                    blockId = train.blockId
-                }
+                    .onAppear {
+                        blockId = train.blockId
+                    }
 
                 Picker("with direction", selection: $direction) {
-                    ForEach(Direction.allCases, id:\.self) { direction in
+                    ForEach(Direction.allCases, id: \.self) { direction in
                         Text(direction.description).tag(direction)
                     }
                 }
@@ -55,20 +55,20 @@ struct TrainControlSetLocationSheet: View {
 
                 Spacer()
             }
-                        
+
             if let errorStatus = errorStatus {
                 Text(errorStatus)
                     .foregroundColor(.red)
                     .fixedSize()
             }
-            
+
             HStack {
                 Spacer()
-                
+
                 Button("Cancel") {
                     self.presentationMode.wrappedValue.dismiss()
                 }.keyboardShortcut(.cancelAction)
-                
+
                 Button("Set") {
                     do {
                         if let selectedBlock = blockId {
@@ -86,15 +86,12 @@ struct TrainControlSetLocationSheet: View {
             }.padding([.top])
         }
     }
-    
 }
 
 struct TrainControlSetLocationSheet_Previews: PreviewProvider {
-    
     static let doc = LayoutDocument(layout: LayoutLoop2().newLayout())
-    
+
     static var previews: some View {
         TrainControlSetLocationSheet(layout: doc.layout, controller: doc.layoutController, train: doc.layout.trains[0])
     }
-    
 }

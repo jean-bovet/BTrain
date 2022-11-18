@@ -10,8 +10,8 @@
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-import Foundation
 @testable import BTrain
+import Foundation
 
 // n: = Route number at the beginning of the string
 // {  = station block
@@ -39,7 +39,6 @@ import Foundation
 // { ≏ ≏ } [r0[ ≏ ≏ 🟢🚂 ]] [[ ≏ ≏ ]] [ ≏ ≏ ] {b0 ≏ ≏ }
 // { ≏ ≏ } <t0:0:1:0> [[r0b0 ≏ ≏ 🟢🚂 ]] <t1:0:1:0> [[ ≏ ≏ ]] [ ≏ ≏ ] <t0:1:0:1> !{b0 ≏ ≏ }
 final class LayoutParser {
-            
     let routeStrings: [String]
 
     final class ParsedLayout {
@@ -48,43 +47,40 @@ final class LayoutParser {
         var trains = Set<Train>()
         var feedbacks = Set<Feedback>()
         var transitions = Set<Transition>()
-        var routes = [Identifier<Route>:LayoutRouteParser.ParsedRoute]()
+        var routes = [Identifier<Route>: LayoutRouteParser.ParsedRoute]()
 
         func link(from: Socket, to: Socket) {
             transitions.insert(Transition(id: Identifier<Transition>(uuid: "\(transitions.count)"), a: from, b: to))
         }
     }
-    
+
     var parsedLayout = ParsedLayout()
 
     convenience init(routeString: String) {
         self.init([routeString])
     }
-    
+
     init(_ routeStrings: [String]) {
         self.routeStrings = routeStrings
     }
-    
+
     func parse() throws {
         for (index, rs) in routeStrings.enumerated() {
             let parser = LayoutRouteParser(ls: rs, id: String(index), layout: parsedLayout)
-            try parser.parse()            
+            try parser.parse()
             parsedLayout.routes[parser.route.routeId] = parser.route
         }
     }
-    
 }
 
 extension LayoutFactory {
-    
     static func layoutFrom(_ routeString: String) throws -> LayoutParser.ParsedLayout {
         try layoutFrom([routeString])
     }
-    
+
     static func layoutFrom(_ routeStrings: [String]) throws -> LayoutParser.ParsedLayout {
         let parser = LayoutParser(routeStrings)
         try parser.parse()
         return parser.parsedLayout
     }
-
 }

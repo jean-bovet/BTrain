@@ -15,10 +15,9 @@ import XCTest
 @testable import BTrain
 import ViewInspector
 
-extension SwitchboardRuntimeErrorView: Inspectable { }
+extension SwitchboardRuntimeErrorView: Inspectable {}
 
 class OverviewViewTests: RootViewTests {
-
     func testMainView() throws {
         let doc = newDocument()
         let sut = DocumentView(document: doc)
@@ -26,7 +25,7 @@ class OverviewViewTests: RootViewTests {
         XCTAssertThrowsError(try sut.inspect().hStack().vStack(0).view(SimulatorView.self, 1))
         XCTAssertNoThrow(try sut.inspect().hStack().view(SwitchboardContainerView.self, 1))
     }
-    
+
     func testOverviewSwitchboardView() throws {
         let doc = newDocument()
         let sut = SwitchboardContainerView(layout: doc.layout, layoutController: doc.layoutController, document: doc, switchboard: doc.switchboard, state: doc.switchboard.state)
@@ -40,14 +39,14 @@ class OverviewViewTests: RootViewTests {
         doc.showSwitchboardViewSettings = true
         XCTAssertNoThrow(try sut.inspect().find(SwitchboardSettingsView.self))
         XCTAssertNoThrow(try sut.inspect().find(SwitchBoardView.self))
-        
+
         doc.showSwitchboardViewSettings = true
         doc.switchboard.state.editing = true
         XCTAssertThrowsError(try sut.inspect().find(SwitchboardSettingsView.self))
         XCTAssertNoThrow(try sut.inspect().find(SwitchboardEditControlsView.self))
         XCTAssertNoThrow(try sut.inspect().find(SwitchBoardView.self))
     }
-    
+
     func testLayoutRuntimeError() throws {
         let text = "Unknown feedback detected!"
         let doc = newDocument()

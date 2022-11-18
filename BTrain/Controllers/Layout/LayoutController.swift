@@ -10,8 +10,8 @@
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-import Foundation
 import Combine
+import Foundation
 import OrderedCollections
 
 /// Abstraction of the LayoutController
@@ -22,27 +22,27 @@ protocol LayoutControlling: AnyObject {
 
 /**
  Manages the operation of all the trains in the layout.
- 
+
  When BTrain manages a train, it must ensure the train starts, stops
  and brakes appropriately to avoid collision with other trains and respect
  the constraints of the layout while following the indication of the route
  assigned to the train. BTrain does this by responding to events from the layout,
  such as ``LayoutControllerEvent/feedbackTriggered`` when a feedback is triggered
  in the layout indicating a train is passing over the feedback.
- 
+
  There are two kinds of routes:
- 
+
  *Manual Route*
- 
+
  A manual route is created manually by the user and does not change when the train is running. This controller ensures the train follows the manual route
  and stops the train if the block(s) ahead cannot be reserved. The train is restarted when the block(s) ahead can be reserved again.
- 
+
  *Automatic Route*
- 
+
  An automatic route is created and managed automatically by BTrain:
  - An automatic route is created each time a train starts
  - An automatic route is updated when the train moves into a new block and the block(s) ahead cannot be reserved
- 
+
  An automatic route is created using the following rules:
  - If there is a destination defined (ie the user as specified to which block the train should move to), the automatic route is created using the shortest path algorithm.
  - If there are no destination specified, BTrain finds a random route from the train position until a station block is found. During the search, block or turnout that
@@ -50,125 +50,122 @@ protocol LayoutControlling: AnyObject {
  will change as the trains move in the layout.
  */
 final class LayoutController: ObservableObject, LayoutControlling {
-
     /// True to enable the control of the layout, false otherwise. For example, the locomotive speed measurement
     /// is turning the layout controller off in order to freely move a locomotive between feedbacks without having
     /// to take into account any unexpected feedback being triggered.
     var enabled = true
-    
+
     // The layout being managed
     let layout: Layout
-    
+
     /// The observer that keeps us informed of any change in the layout
     let layoutObserver: LayoutObserver
-    
+
     /// A helper class that monitors feedbacks
     let feedbackMonitor: LayoutFeedbackMonitor
-        
+
     /// The interface to the Digital Controller
     var interface: CommandInterface
-        
+
     /// The switchboard state, used to refresh the switchboard
     /// when certain events happen in the layout controller
     let switchboard: SwitchBoard?
-    
+
     /// The layout script conductor
     let conductor: LayoutScriptConductor
-    
-    lazy var reservation: LayoutReservation = {
-        LayoutReservation(layout: layout, executor: self, verbose: SettingsKeys.bool(forKey: SettingsKeys.logReservation))
-    }()
-    
+
+    lazy var reservation: LayoutReservation = .init(layout: layout, executor: self, verbose: SettingsKeys.bool(forKey: SettingsKeys.logReservation))
+
     /// Describes a feedback in the layout
     struct FeedbackAttributes {
         let deviceID: UInt16
         let contactID: UInt16
     }
-    
+
     /// Contains the last detected feedback in the layout. This feedback does not necessarily belongs
     /// to the list of feedbacks declared in the layout. For example, a new feedback added to the physical
     /// layout will be detected but might not have been added, yet, to the list of feedbacks by the user.
     @Published var lastDetectedFeedback: FeedbackAttributes?
-    
+
     /// A map of locomotive to an instance of the speed manager for that locomotive
-    private var speedManagers = [Identifier<Locomotive>:LocomotiveSpeedManager]()
+    private var speedManagers = [Identifier<Locomotive>: LocomotiveSpeedManager]()
 
     /// The turnout manager class that handles the turnout change towards the Digital Controller
     private var turnoutManager: LayoutTurnoutManager
-    
+
     let debugger: LayoutControllerDebugger
-    
+
     #if DEBUG
-    static var memoryLeakCounter = 0
+        static var memoryLeakCounter = 0
     #endif
-    
+
     init(layout: Layout, switchboard: SwitchBoard?, interface: CommandInterface) {
         self.layout = layout
-        self.layoutObserver = LayoutObserver(layout: layout)
-        self.feedbackMonitor = LayoutFeedbackMonitor(layout: layout)
+        layoutObserver = LayoutObserver(layout: layout)
+        feedbackMonitor = LayoutFeedbackMonitor(layout: layout)
         self.switchboard = switchboard
         self.interface = interface
-        self.conductor = LayoutScriptConductor(layout: layout)
-        self.turnoutManager = LayoutTurnoutManager(interface: interface)
-        self.debugger = LayoutControllerDebugger(layout: layout)
-        
+        conductor = LayoutScriptConductor(layout: layout)
+        turnoutManager = LayoutTurnoutManager(interface: interface)
+        debugger = LayoutControllerDebugger(layout: layout)
+
         registerForFeedbackChange()
         registerForDirectionChange()
         registerForTurnoutChange()
         registerForTrainChange()
-        
-        self.conductor.layoutControlling = self
-        
+
+        conductor.layoutControlling = self
+
         #if DEBUG
-        LayoutController.memoryLeakCounter += 1
+            LayoutController.memoryLeakCounter += 1
         #endif
     }
-    
+
     #if DEBUG
-    deinit {
-        LayoutController.memoryLeakCounter -= 1
-    }
+        deinit {
+            LayoutController.memoryLeakCounter -= 1
+        }
     #endif
-        
+
     /// Run each train controller on the specified train event
     /// - Parameter event: the train event
     func runControllers(_ event: LayoutControllerEvent) {
         run(event)
         redrawSwitchboard()
     }
-            
+
     private func run(_ event: LayoutControllerEvent) {
         guard enabled else {
             return
         }
-        
+
         if let runtimeError = layout.runtimeError {
             BTLogger.router.error("⚙ Cannot evaluate the layout because there is a runtime error: \(runtimeError, privacy: .public)")
             return
         }
         BTLogger.router.debug("⚙ Evaluating the layout for '\(event, privacy: .public)'")
-                
+
         // Run each controller one by one, using
         // the sorted keys to ensure they always
         // run in the same order.
         do {
             // Update and detect any unexpected feedbacks
             try updateExpectedFeedbacks()
-            
+
             // Purge any invalid restart timers
             purgeRestartTimers()
-            
+
             // Invoke the layout state machine which will process the train event
             let lsm = LayoutStateMachine()
             var events: [StateMachine.TrainEvent]? = []
             try lsm.handle(layoutEvent: event.layoutEvent(layoutController: self),
                            trainEvent: event.trainEvent(layoutController: self),
-                           trains: layout.trains.elements.compactMap({ train in trainController(forTrain: train) }),
+                           trains: layout.trains.elements.compactMap { train in trainController(forTrain: train) },
                            handledTrainEvents: &events)
             #if DEBUG
-            if let events = events {
-                BTLogger.debug("Handled events: \(events)")
-            }
+                if let events = events {
+                    BTLogger.debug("Handled events: \(events)")
+                }
             #endif
 
             // Update and detect any unexpected feedbacks
@@ -177,7 +174,7 @@ final class LayoutController: ObservableObject, LayoutControlling {
             // might have moved and hence the expected feedbacks
             // should be updated promptly to reflect the new state.
             try updateExpectedFeedbacks()
-            
+
             // Update and run any layout scripts
             try conductor.tick()
         } catch {
@@ -190,12 +187,12 @@ final class LayoutController: ObservableObject, LayoutControlling {
 
         debugger.record(layoutController: self)
     }
-        
+
     func trainController(forTrain train: Train) -> TrainController? {
         guard let currentBlock = layout.currentBlock(train: train) else {
             return nil
         }
-        
+
         guard let trainInstance = currentBlock.trainInstance else {
             return nil
         }
@@ -203,7 +200,7 @@ final class LayoutController: ObservableObject, LayoutControlling {
         guard let route = layout.route(for: train.routeId, trainId: train.id) else {
             return nil
         }
-        
+
         return TrainController(train: train, route: route, layout: layout, currentBlock: currentBlock, trainInstance: trainInstance, layoutController: self, reservation: reservation)
     }
 
@@ -216,16 +213,16 @@ final class LayoutController: ObservableObject, LayoutControlling {
             switchboard?.context.expectedFeedbackIds = feedbackMonitor.expectedFeedbacks
             do {
                 try feedbackMonitor.handleUnexpectedFeedbacks()
-            } catch LayoutError.unexpectedFeedback(let feedback) {
+            } catch let LayoutError.unexpectedFeedback(feedback) {
                 switchboard?.context.unexpectedFeedbackIds = [feedback.id]
                 throw LayoutError.unexpectedFeedback(feedback: feedback)
             }
         }
     }
-    
+
     private func haltAll() {
         stopAll(includingManualTrains: true)
-        
+
         // Send the command to zero the speed of each train
         // because the run() method won't run until the runtimeError
         // is cleared by the user. We want to make sure the train don't
@@ -234,17 +231,17 @@ final class LayoutController: ObservableObject, LayoutControlling {
             try? setTrainSpeed(train, 0)
             train.scheduling = .unmanaged
         }
-        
+
         // Stop the Digital Controller to ensure nothing moves further
-        stop { }
+        stop {}
 
         // Invalidate every restart timer
         pausedTrainTimers.forEach { $0.value.invalidate() }
-        pausedTrainTimers.removeAll()        
+        pausedTrainTimers.removeAll()
     }
-    
+
     // MARK: Commands
-    
+
     func go(onCompletion: @escaping CompletionBlock) {
         interface.execute(command: .go(), completion: onCompletion)
     }
@@ -252,7 +249,7 @@ final class LayoutController: ObservableObject, LayoutControlling {
     func stop(onCompletion: @escaping CompletionBlock) {
         interface.execute(command: .stop(), completion: onCompletion)
     }
-        
+
     func startAll() {
         for train in layout.trainsThatCanBeStarted() {
             do {
@@ -262,7 +259,7 @@ final class LayoutController: ObservableObject, LayoutControlling {
             }
         }
     }
-        
+
     /// Stops the specified train as soon as possible.
     ///
     /// The first call to this method stops the train as soon as possible, when
@@ -296,20 +293,20 @@ final class LayoutController: ObservableObject, LayoutControlling {
         train.scheduling = .finishManaged
         runControllers(.schedulingChanged(train))
     }
-    
+
     func finishAll() {
         for train in layout.trainsThatCanBeFinished() {
             finish(train: train)
         }
     }
-    
+
     func remove(train: Train) throws {
         try layout.remove(trainId: train.id)
         runControllers(.trainPositionChanged(train))
     }
-    
+
     // MARK: Layout Scripts
-    
+
     func schedule(scriptId: Identifier<LayoutScript>) {
         conductor.schedule(scriptId)
         runControllers(.scriptScheduled)
@@ -322,14 +319,14 @@ final class LayoutController: ObservableObject, LayoutControlling {
     func isRunning(scriptId: Identifier<LayoutScript>?) -> Bool {
         conductor.currentScript?.id == scriptId && scriptId != nil
     }
-    
+
     // MARK: Paused Train Management
-    
+
     // A map that contains all trains that are currently paused
     // and need to be restarted at a later time. Each train
     // has an associated timer that fires when it is time to
     // restart the train
-    var pausedTrainTimers = [Identifier<Train>:Timer]()
+    var pausedTrainTimers = [Identifier<Train>: Timer]()
 
     /// Request to restart the train after a specific amount of time specified by the route and block.
     /// - Parameter train: the train to restart after some amount of time
@@ -337,7 +334,7 @@ final class LayoutController: ObservableObject, LayoutControlling {
         guard train.timeUntilAutomaticRestart > 0 else {
             return
         }
-        
+
         // Start a timer that will restart the train with a new automatic route
         // Note: the timer fires every second to update the remaining time until it reaches 0.
         let timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true, block: { [weak self] timer in
@@ -357,29 +354,28 @@ final class LayoutController: ObservableObject, LayoutControlling {
 
     func purgeRestartTimers() {
         // Remove any expired timer
-        pausedTrainTimers = pausedTrainTimers.filter({$0.value.isValid})
+        pausedTrainTimers = pausedTrainTimers.filter { $0.value.isValid }
     }
-    
+
     func restartTimerFired(_ train: Train) {
         train.timeUntilAutomaticRestart = 0
         runControllers(.restartTimerExpired(train))
     }
-    
+
     func redrawSwitchboard() {
         switchboard?.state.triggerRedraw.toggle()
     }
 }
 
 extension LayoutController {
-    
     func registerForTrainChange() {
         layoutObserver.registerForTrainChange { [weak self] trains in
             self?.updateSpeedManagers(with: trains)
         }
-        
+
         updateSpeedManagers(with: layout.trains.elements)
     }
-    
+
     func speedManager(for loc: Locomotive, train: Train) -> LocomotiveSpeedManager {
         if let speedManager = speedManagers[loc.id] {
             return speedManager
@@ -391,9 +387,9 @@ extension LayoutController {
             return speedManager
         }
     }
-    
+
     func updateSpeedManagers(with trains: [Train]) {
-        var existingSpeedManagers = [Identifier<Locomotive>:LocomotiveSpeedManager]()
+        var existingSpeedManagers = [Identifier<Locomotive>: LocomotiveSpeedManager]()
         for train in trains {
             if let loc = train.locomotive {
                 existingSpeedManagers[loc.id] = speedManager(for: loc, train: train)
@@ -403,16 +399,14 @@ extension LayoutController {
         // Remove controllers that don't belong to an existing train
         speedManagers = existingSpeedManagers
     }
-    
 }
 
 extension LayoutController {
-    
     func prepare(routeID: Identifier<Route>, trainID: Identifier<Train>, destination: Destination? = nil) throws {
         guard let route = layout.route(for: routeID, trainId: trainID) else {
             throw LayoutError.routeNotFound(routeId: routeID)
         }
-        
+
         guard let train = layout.trains[trainID] else {
             throw LayoutError.trainNotFound(trainId: trainID)
         }
@@ -435,7 +429,7 @@ extension LayoutController {
             } else {
                 route.mode = .automatic
             }
-            
+
             // Reset the route - the route will be automatically updated by
             // the TrainController when the train is started.
             train.routeStepIndex = 0
@@ -449,11 +443,11 @@ extension LayoutController {
                 guard let (blockId, direction) = layout.block(for: train, step: step) else {
                     continue
                 }
-                
+
                 guard train.blockId == blockId else {
                     continue
                 }
-                
+
                 guard let block = layout.blocks[train.blockId] else {
                     continue
                 }
@@ -461,7 +455,7 @@ extension LayoutController {
                 guard let trainInstance = block.trainInstance else {
                     continue
                 }
-                
+
                 // Check that the train direction matches as well.
                 if trainInstance.direction == direction {
                     train.routeStepIndex = index
@@ -469,13 +463,13 @@ extension LayoutController {
                     break
                 }
             }
-            
+
             guard train.routeStepIndex >= 0 else {
                 throw LayoutError.trainNotFoundInRoute(train: train, route: route)
             }
         }
     }
-    
+
     func start(routeID: Identifier<Route>, trainID: Identifier<Train>) throws {
         try start(routeID: routeID, trainID: trainID, destination: nil)
     }
@@ -486,11 +480,11 @@ extension LayoutController {
         }
 
         try prepare(routeID: routeID, trainID: trainID, destination: destination)
-        
+
         train.scheduling = .managed
         runControllers(.schedulingChanged(train))
     }
-    
+
     /// Send a turnout state command
     ///
     /// - Parameters:
@@ -504,7 +498,7 @@ extension LayoutController {
         turnout.actualStateReceived = false
         turnoutManager.sendTurnoutState(turnout: turnout, completion: completion)
     }
-        
+
     func setTrainSpeed(_ train: Train, _ speed: SpeedKph, acceleration: LocomotiveSpeedAcceleration.Acceleration? = nil, completion: CompletionCancelBlock? = nil) throws {
         guard let loc = train.locomotive else {
             throw LayoutError.locomotiveNotAssignedToTrain(train: train)
@@ -532,7 +526,7 @@ extension LayoutController {
             completion?()
             return
         }
-        
+
         BTLogger.router.debug("\(loc, privacy: .public): change train direction to \(forward ? "forward" : "backward")")
         let command: Command
         if forward {
@@ -542,7 +536,7 @@ extension LayoutController {
         }
         interface.execute(command: command, completion: completion)
     }
-    
+
     /// Set the position of a train within the current block
     ///
     /// - Parameters:
@@ -551,18 +545,18 @@ extension LayoutController {
     ///   - removeLeadingBlocks: true to remove the leading blocks (by default), false to keep the leading blocks
     func setTrainPosition(_ train: Train, _ position: Int, removeLeadingBlocks: Bool = true) throws {
         train.position = position
-        
+
         if removeLeadingBlocks {
             try reservation.removeLeadingBlocks(train: train)
         }
     }
-    
+
     // Toggle the direction of the train within the block itself
     func toggleTrainDirectionInBlock(_ train: Train) throws {
         guard let blockId = train.blockId else {
             throw LayoutError.trainNotAssignedToABlock(train: train)
         }
-        
+
         guard let block = layout.blocks[blockId] else {
             throw LayoutError.blockNotFound(blockId: blockId)
         }
@@ -579,7 +573,7 @@ extension LayoutController {
 
         try reservation.removeLeadingBlocks(train: train)
     }
-        
+
     /// Sets a train to a specific block.
     ///
     /// - Parameters:
@@ -599,17 +593,13 @@ extension LayoutController {
 }
 
 extension LayoutController: MetricsProvider {
-    
     var metrics: [Metric] {
         turnoutManager.metrics + interface.metrics + [.init(id: "Speed Changes", value: String(LocomotiveSpeedManager.globalRequestUUID))]
     }
-
 }
 
 extension LayoutTurnoutManager: MetricsProvider {
-    
     var metrics: [Metric] {
         [.init(id: turnoutQueue.name, value: String(turnoutQueue.scheduledCount))]
     }
-
 }

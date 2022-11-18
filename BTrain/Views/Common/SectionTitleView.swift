@@ -13,9 +13,8 @@
 import SwiftUI
 
 struct SectionTitleView: View {
-    
     let label: String
-    
+
     var body: some View {
         HStack {
             Text(label).bold()

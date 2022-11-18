@@ -13,7 +13,6 @@
 import SwiftUI
 
 struct CS3CommandSpeedView: View {
-
     let doc: LayoutDocument
     @Binding var command: Command?
 
@@ -25,14 +24,14 @@ struct CS3CommandSpeedView: View {
             LocPicker(doc: doc, selectedLoc: $selectedLoc)
             TextField("Value:", value: $speedValue, format: .number)
         }
-        .onChange(of: selectedLoc) { newValue in
+        .onChange(of: selectedLoc) { _ in
             command = createCommand()
         }
-        .onChange(of: speedValue) { newValue in
+        .onChange(of: speedValue) { _ in
             command = createCommand()
         }
     }
-    
+
     private func createCommand() -> Command? {
         guard let locId = selectedLoc else {
             return nil
@@ -41,8 +40,7 @@ struct CS3CommandSpeedView: View {
         guard let loc = doc.layout.locomotives[locId] else {
             return nil
         }
-        
+
         return .speed(address: loc.address, decoderType: loc.decoder, value: SpeedValue(value: speedValue))
     }
-
 }

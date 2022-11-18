@@ -10,32 +10,31 @@
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-import Foundation
 import AppKit
+import Foundation
 
 /// Implementation of the ephemeral draggable shape for a train. It uses an image of the train being dragged.
 final class EphemeralDraggedTrainShape: EphemeralDraggableShape {
-
     let trainId: Identifier<Train>
 
     let image: NSImage
-    
+
     var center: CGPoint
-    
+
     var identifier = UUID().uuidString
-    
+
     var visible: Bool = true
-    
+
     var selected: Bool = false
-    
+
     var bounds: CGRect {
         .init(origin: CGPoint(x: center.x - image.size.width / 2, y: center.y - image.size.height / 2), size: image.size)
     }
-    
+
     var dragInfo: EphemeralDragInfo? {
         SwitchBoardTrainDragInfo(trainId: trainId, shape: self)
     }
-    
+
     init(trainId: Identifier<Train>, image: NSImage, center: CGPoint) {
         self.trainId = trainId
         self.image = image
@@ -49,23 +48,22 @@ final class EphemeralDraggedTrainShape: EphemeralDraggableShape {
 
         ctx.draw(cgImage, in: bounds)
     }
-    
+
     func inside(_ point: CGPoint) -> Bool {
         bounds.contains(point)
     }
-    
+
     func droppableShape(_ shapes: [Shape], at location: CGPoint) -> Shape? {
         shapes.first { shape in
             guard shape.inside(location) else {
                 return false
             }
-            
+
             guard let blockShape = shape as? BlockShape else {
                 return false
             }
-                        
+
             return blockShape.block.reservation == nil && blockShape.block.trainInstance == nil && blockShape.block.enabled
         }
     }
-
 }

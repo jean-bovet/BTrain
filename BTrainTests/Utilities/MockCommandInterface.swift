@@ -10,61 +10,56 @@
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-import Foundation
 @testable import BTrain
+import Foundation
 
 final class MockCommandInterface: CommandInterface {
-    
     var callbacks = CommandInterfaceCallbacks()
-    
+
     var speedValues = [UInt16]()
     var turnoutCommands = [Command]()
-    
+
     var metrics: [Metric] {
         []
     }
-    
+
     var running = true
-    
+
     func pause() {
         running = false
     }
-    
+
     func resume() {
         running = true
         executePendingCommands()
     }
-    
-    func connect(server: String, port: UInt16, onReady: @escaping () -> Void, onError: @escaping (Error) -> Void, onStop: @escaping () -> Void) {
-        
-    }
-    
-    func disconnect(_ completion: @escaping CompletionBlock) {
-        
-    }
-    
+
+    func connect(server _: String, port _: UInt16, onReady _: @escaping () -> Void, onError _: @escaping (Error) -> Void, onStop _: @escaping () -> Void) {}
+
+    func disconnect(_: @escaping CompletionBlock) {}
+
     var pendingCommands = [(Command, CompletionBlock?)]()
-    
+
     func execute(command: Command, completion: CompletionBlock?) {
         if !running {
             pendingCommands.append((command, completion))
             return
         }
-        
+
         pendingCommands.append((command, completion))
 
         DispatchQueue.main.async {
             self.executePendingCommands()
         }
     }
-    
+
     private func executePendingCommands() {
-        for (command, completion) in self.pendingCommands {
-            self.executeImmediate(command: command, onCompletion: completion)
+        for (command, completion) in pendingCommands {
+            executeImmediate(command: command, onCompletion: completion)
         }
-        self.pendingCommands.removeAll()
+        pendingCommands.removeAll()
     }
-    
+
     private func executeImmediate(command: Command, onCompletion: CompletionBlock?) {
         // First the completion of sending the command needs to happen
         onCompletion?()
@@ -77,27 +72,27 @@ final class MockCommandInterface: CommandInterface {
 //            break
 //        case .emergencyStop(let address, let decoderType, let priority, let descriptor):
 //            break
-        case .speed(let address, let decoderType, let value, _, _):
+        case let .speed(address, decoderType, value, _, _):
             speedValues.append(value.value)
             for speedChangeCallback in callbacks.speedChanges.all {
                 speedChangeCallback(address, decoderType, value, true)
             }
-            
-        case .direction(let address, let decoderType, let direction, _, _):
+
+        case let .direction(address, decoderType, direction, _, _):
             for directionChangeCallback in callbacks.directionChanges.all {
                 directionChangeCallback(address, decoderType, direction)
             }
 
-            //        case .queryDirection(let address, let decoderType, let priority, let descriptor):
+        //        case .queryDirection(let address, let decoderType, let priority, let descriptor):
 //            break
-        case .turnout(let address, let state, let power, _, _):
+        case let .turnout(address, state, power, _, _):
             if power == 1 {
                 turnoutCommands.append(command)
             }
             for turnoutChangeCallback in callbacks.turnoutChanges.all {
-                turnoutChangeCallback(address, state, power, true /*ack*/)
+                turnoutChangeCallback(address, state, power, true /* ack */ )
             }
-            
+
 //        case .feedback(let deviceID, let contactID, let oldValue, let newValue, let time, let priority, let descriptor):
 //            break
 //        case .locomotives(let priority, let descriptor):
@@ -108,13 +103,12 @@ final class MockCommandInterface: CommandInterface {
             break
         }
     }
-    
-    func speedValue(for steps: SpeedStep, decoder: DecoderType) -> SpeedValue {
+
+    func speedValue(for steps: SpeedStep, decoder _: DecoderType) -> SpeedValue {
         .init(value: steps.value)
     }
-    
-    func speedSteps(for value: SpeedValue, decoder: DecoderType) -> SpeedStep {
+
+    func speedSteps(for value: SpeedValue, decoder _: DecoderType) -> SpeedStep {
         .init(value: value.value)
     }
-            
 }

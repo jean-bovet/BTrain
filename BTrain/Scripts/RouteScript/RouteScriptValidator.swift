@@ -13,18 +13,17 @@
 import Foundation
 
 struct RouteScriptValidator {
-    
     enum VerifyStatus {
         case none
         case failure
         case success
     }
-    
+
     var verifyStatus: VerifyStatus {
         if generatedRouteError != nil {
             return .failure
         }
-        
+
         switch resolvedRouteResult {
         case .success:
             return .success
@@ -34,36 +33,36 @@ struct RouteScriptValidator {
             return .none
         }
     }
-    
+
     var resolvedRouteDescription: String {
         guard let resolvedRouteResult = resolvedRouteResult else {
             return ""
         }
         switch resolvedRouteResult {
-        case .failure(let error):
+        case let .failure(error):
             return error.localizedDescription
-        case .success(let resolvedRouteItems):
+        case let .success(resolvedRouteItems):
             return resolvedRouteItems?.toBlockNames().joined(separator: "→") ?? "Empty Route"
         }
     }
-    
+
     var errorSummary: String? {
         if let error = generatedRouteError {
             return error.localizedDescription
-        } else if case .failure(let error) = resolvedRouteResult {
+        } else if case let .failure(error) = resolvedRouteResult {
             return error.localizedDescription
         } else {
             return nil
         }
     }
-        
+
     private var generatedRoute: Route?
     private var generatedRouteError: Error?
-  
+
     private var resolvedRouteResult: Result<[ResolvedRouteItem]?, Error>?
 
     var commandErrorIds = [String]()
-        
+
     func generatedRouteDescription(layout: Layout) -> String {
         if let error = generatedRouteError {
             return error.localizedDescription
@@ -73,26 +72,26 @@ struct RouteScriptValidator {
             return ""
         }
     }
-        
+
     mutating func validate(script: RouteScript, layout: Layout) {
         resolvedRouteResult = nil
         generatedRouteError = nil
         commandErrorIds.removeAll()
-        
+
         do {
             generatedRoute = try script.toRoute()
         } catch let error as ScriptError {
             generatedRouteError = error
             switch error {
-            case .undefinedBlock(let command):
+            case let .undefinedBlock(command):
                 commandErrorIds.append(command.id.uuidString)
 
-            case .undefinedDirection(command: let command):
+            case let .undefinedDirection(command: command):
                 commandErrorIds.append(command.id.uuidString)
 
-            case .undefinedStation(let command):
+            case let .undefinedStation(command):
                 commandErrorIds.append(command.id.uuidString)
-                
+
             case .missingStartCommand:
                 script.commands.insert(RouteScriptCommand(action: .start), at: 0)
             }
@@ -105,7 +104,7 @@ struct RouteScriptValidator {
         guard let generatedRoute = generatedRoute else {
             return
         }
-        
+
         let diag = LayoutDiagnostic(layout: layout)
         var errors = [LayoutDiagnostic.DiagnosticError]()
         var resolverError = [PathFinderResolver.ResolverError]()
@@ -113,7 +112,7 @@ struct RouteScriptValidator {
         diag.checkRoute(route: generatedRoute, &errors, resolverErrors: &resolverError, resolverPaths: &resolvedRoutes)
         if let resolverError = resolverError.first {
             switch resolverError {
-            case .cannotResolvedSegment(_, let from, let to):
+            case let .cannotResolvedSegment(_, from, to):
                 if let id = from.sourceIdentifier {
                     commandErrorIds.append(id)
                 }

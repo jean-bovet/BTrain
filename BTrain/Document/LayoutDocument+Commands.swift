@@ -13,25 +13,24 @@
 import Foundation
 
 extension LayoutDocument {
-    
     func enable(onCompletion: @escaping () -> Void) {
         layoutController.go(onCompletion: onCompletion)
     }
-    
+
     func disable(onCompletion: @escaping () -> Void) {
         layoutController.stop(onCompletion: onCompletion)
     }
-    
+
     func start(train: Identifier<Train>, withRoute route: Identifier<Route>, destination: Destination?) throws {
         // Note: the simulator holds a reference to the layout and will automatically simulate any
         // enabled route associated with a train.
         try layoutController.start(routeID: route, trainID: train, destination: destination)
     }
-    
+
     func startAll() {
         layoutController.startAll()
     }
-    
+
     func stop(train: Train) {
         layoutController.stop(train: train)
     }
@@ -60,7 +59,7 @@ extension LayoutDocument {
             }
         }
     }
-    
+
     func connect(address: String, port: UInt16, completed: ((Error?) -> Void)? = nil) {
         interface.connect(server: address, port: port) { [weak self] in
             DispatchQueue.main.async {
@@ -78,7 +77,7 @@ extension LayoutDocument {
             }
         }
     }
-    
+
     func disconnect(_ completion: @escaping CompletionBlock) {
         simulator.stop {
             self.interface.disconnect {
@@ -86,5 +85,4 @@ extension LayoutDocument {
             }
         }
     }
-
 }

@@ -10,32 +10,30 @@
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-import XCTest
 @testable import BTrain
+import XCTest
 
 class PointToLoopLayoutTests: XCTestCase {
-
     func testAutomaticRoute() throws {
         let layout = LayoutFactory.layoutFromBundle(named: "Point to Loop")
-        
+
         let train = layout.trains[0]
         let blockA = layout.block(named: "A")
-        
+
         try layout.setTrainToBlock(train.id, blockA.id, position: .end, direction: .next)
-        
+
         XCTAssertEqual(train.speed!.requestedKph, 0)
 
         layout.automaticRouteRandom = false
-                
+
         // Verify the a path can be found starting in block "A"
         let constraints = PathFinder.Constraints(layout: layout, train: train, reservedBlockBehavior: .avoidReserved, stopAtFirstBlock: false, relaxed: false)
         let pf = PathFinder(constraints: constraints, settings: .init(verbose: true, random: false, overflow: 30))
         let path = pf.path(graph: layout, from: .starting(blockA, Block.nextSocket), to: nil)!
         XCTAssertEqual(path.toStrings, ["A:1", "0:T1:1", "0:B:1", "0:C:1", "0:D:1", "2:T1:0", "1:A"])
-        
+
         let unresolvedPath = path.elements.map { $0 }
         let resolved = try pf.resolve(graph: layout, unresolvedPath).get().randomElement()!
         XCTAssertEqual(resolved.toStrings, ["A:1", "0:T1:1", "0:B:1", "0:C:1", "0:D:1", "2:T1:0", "1:A"])
     }
-
 }

@@ -10,12 +10,11 @@
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-import Foundation
 import CoreGraphics
+import Foundation
 
 /// Displays a text label
 struct BlockShape_TextLabel: BlockShapeLabel {
-            
     let ctx: CGContext
     let text: String
     let shapeContext: ShapeContext
@@ -30,16 +29,16 @@ struct BlockShape_TextLabel: BlockShapeLabel {
         self.borderColor = borderColor
         self.shapeContext = shapeContext
         self.hidden = hidden
-        
+
         let (_, textRect) = ctx.prepareText(text: text, color: shapeContext.color, fontSize: shapeContext.fontSize)
-        self.size = textRect.size
+        size = textRect.size
     }
-    
-    func draw(at anchor: CGPoint, rotation: CGFloat, rotationCenter: CGPoint) -> BlockShapeLabelPath? {
+
+    func draw(at anchor: CGPoint, rotation: CGFloat, rotationCenter _: CGPoint) -> BlockShapeLabelPath? {
         guard !hidden else {
             return nil
         }
-        
+
         ctx.with {
             ctx.drawText(at: anchor, vAlignment: .center, hAlignment: .left, rotation: rotation,
                          text: text, color: shapeContext.color, fontSize: shapeContext.fontSize, borderColor: borderColor, backgroundColor: shapeContext.backgroundLabelColor)
@@ -52,12 +51,10 @@ struct BlockShape_TextLabel: BlockShapeLabel {
             .scaledBy(x: 1.0, y: -1.0)
             .translatedBy(x: -anchor.x, y: -anchor.y)
 
-        transform = transform.translatedBy(x: 0, y: -size.height/2)
+        transform = transform.translatedBy(x: 0, y: -size.height / 2)
 
         let r = CGRect(x: anchor.x, y: anchor.y, width: size.width, height: size.height)
         return BlockShapeLabelPath(path: CGPath(rect: r, transform: nil),
                                    transform: transform)
     }
-    
 }
-

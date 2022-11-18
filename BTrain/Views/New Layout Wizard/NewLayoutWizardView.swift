@@ -13,15 +13,14 @@
 import SwiftUI
 
 struct NewLayoutWizardView: View {
-    
     @ObservedObject var document: LayoutDocument
 
     @StateObject var helper = PredefinedLayoutHelper()
-    
+
     @Environment(\.presentationMode) var presentationMode
 
     @State private var errorString: String?
-    
+
     @State private var selectedLayout = LayoutBlankCreator.id
     @State private var selectedTrains = Set<Identifier<Train>>()
 
@@ -29,9 +28,9 @@ struct NewLayoutWizardView: View {
         case selectLayout
         case selectLocomotive
     }
-    
+
     @State private var wizardStage: Stage = .selectLayout
-    
+
     var nextButtonEnabled: Bool {
         switch wizardStage {
         case .selectLayout:
@@ -40,7 +39,7 @@ struct NewLayoutWizardView: View {
             return !selectedTrains.isEmpty
         }
     }
-    
+
     var nextButtonTitle: String {
         switch wizardStage {
         case .selectLayout:
@@ -49,7 +48,7 @@ struct NewLayoutWizardView: View {
             return "Done"
         }
     }
-    
+
     var body: some View {
         VStack {
             switch wizardStage {
@@ -66,7 +65,7 @@ struct NewLayoutWizardView: View {
                     wizardStage = .selectLayout
                 }
                 .disabled(wizardStage == .selectLayout)
-                
+
                 Button(nextButtonTitle) {
                     switch wizardStage {
                     case .selectLayout:

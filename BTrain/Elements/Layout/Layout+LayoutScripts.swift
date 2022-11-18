@@ -13,7 +13,6 @@
 import Foundation
 
 extension Layout {
-    
     @discardableResult
     func newLayoutScript() -> LayoutScript {
         let script = LayoutScript(id: LayoutIdentity.newIdentity(layoutScripts.elements, prefix: .layoutScript), name: "New Script")
@@ -26,5 +25,4 @@ extension Layout {
         newScript.commands = script.commands
         return layoutScripts.add(newScript)
     }
-
 }

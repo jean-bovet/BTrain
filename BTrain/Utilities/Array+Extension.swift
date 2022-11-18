@@ -13,10 +13,9 @@
 import Foundation
 
 extension Array {
-    
     // Returns the element at index or nil if there is no element
     func element(at index: Index) -> Element? {
-        if index >= 0 && index < count {
+        if index >= 0, index < count {
             return self[index]
         } else {
             return nil
@@ -27,11 +26,10 @@ extension Array {
     // from the end of the array, or nil if there is no element
     func element(fromEndAt index: Index) -> Element? {
         let reverseIndex = count - 1 - index
-        if reverseIndex >= 0 && reverseIndex < count {
+        if reverseIndex >= 0, reverseIndex < count {
             return self[reverseIndex]
         } else {
             return nil
         }
     }
-    
 }

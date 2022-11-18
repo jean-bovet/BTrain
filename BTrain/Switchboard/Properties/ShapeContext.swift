@@ -10,33 +10,32 @@
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-import Foundation
 import AppKit
+import Foundation
 
 /// This is the context class being passed down all the elements being rendered in the switchboard.
 final class ShapeContext {
-            
     var simulator: Simulator?
 
     var locomotiveIconManager: LocomotiveIconManager?
-    
+
     // https://nshipster.com/dark-mode/
     var darkMode = false
-    
+
     var editing = false
     var showBlockName = false
     var showStationName = false
     var showTurnoutName = false
     var showTrainIcon = true
-    
+
     var fontSize: CGFloat = 12.0
-    
+
     /// Scale of the rendering of the switchboard
     var scale: CGFloat = 1.0
-    
+
     /// The set of expected feedback IDs
     var expectedFeedbackIds: Set<Identifier<Feedback>>?
-    
+
     /// The set of unexpected feedback IDs
     var unexpectedFeedbackIds: Set<Identifier<Feedback>>?
 
@@ -67,7 +66,7 @@ final class ShapeContext {
             return NSColor.lightGray.cgColor.copy(alpha: 0.5)!
         }
     }
-    
+
     var backgroundLabelColor: CGColor {
         if darkMode {
             return NSColor.darkGray.cgColor
@@ -112,8 +111,7 @@ final class ShapeContext {
         self.simulator = simulator
         self.locomotiveIconManager = locomotiveIconManager
     }
-    
-    
+
     /// Returns the color of the path given the reservation status and the presence of a train
     /// - Parameters:
     ///   - reserved: true if the element is reserved
@@ -130,9 +128,9 @@ final class ShapeContext {
             return color
         }
     }
-    
+
     func trainColor(_ train: Train) -> CGColor {
-        switch(train.state) {
+        switch train.state {
         case .running:
             return NSColor.systemGreen.cgColor
         case .braking:

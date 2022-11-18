@@ -20,6 +20,7 @@ struct SpeedValue: Equatable, CustomStringConvertible {
     var description: String {
         "\(value)"
     }
+
     static let zero = SpeedValue(value: 0)
 }
 
@@ -29,6 +30,7 @@ struct SpeedStep: Equatable, Codable, CustomStringConvertible {
     var description: String {
         "\(value) steps"
     }
+
     static let zero = SpeedStep(value: 0)
 }
 

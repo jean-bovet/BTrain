@@ -13,13 +13,12 @@
 import SwiftUI
 
 struct RouteScriptEditorView: View {
-    
     let layout: Layout
     @ObservedObject var script: RouteScript
-    
+
     @State private var showResultsSummary = false
     @State private var validator = RouteScriptValidator()
-    
+
     var body: some View {
         VStack {
             if script.commands.isEmpty {
@@ -47,23 +46,23 @@ struct RouteScriptEditorView: View {
                     Button("Verify") {
                         validator.validate(script: script, layout: layout)
                     }
-                    
+
                     switch validator.verifyStatus {
                     case .none:
                         Spacer()
-                        
+
                     case .failure:
                         Text("􀇾")
                         if let errorSummary = validator.errorSummary {
                             Text(errorSummary)
                         }
                         Spacer()
-                        
+
                     case .success:
                         Text("􀁢")
-                        
+
                         Spacer()
-                        
+
                         Button("View Resulting Route") {
                             showResultsSummary.toggle()
                         }
@@ -94,11 +93,9 @@ struct RouteScriptEditorView: View {
             }
         }
     }
-    
 }
 
 struct RouteScriptEditorView_Previews: PreviewProvider {
-        
     static let layout = {
         let layout = Layout()
         let s = RouteScript(name: "Boucle")

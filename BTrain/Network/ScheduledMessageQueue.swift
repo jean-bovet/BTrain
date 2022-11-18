@@ -15,7 +15,6 @@ import Foundation
 // This class ensures that every scheduled execution
 // of a block is performed serially, every x ms.
 final class ScheduledMessageQueue {
-
     typealias ExecutionBlock = (@escaping CompletionBlock) -> Void
 
     struct ScheduledBlock {
@@ -24,20 +23,20 @@ final class ScheduledMessageQueue {
     }
 
     private var scheduledQueue = [ScheduledBlock]()
-    
+
     private var enabled = true
     private var executing = false
-    
+
     // Default delay of 50ms between commands
     static let DefaultDelay = 50.0 / 1000.0
-    
+
     var scheduledCount: Int {
         scheduledQueue.count
     }
-    
+
     let delay: TimeInterval
     let name: String
-    
+
     init(delay: TimeInterval = ScheduledMessageQueue.DefaultDelay * BaseTimeFactor, name: String) {
         self.delay = delay
         self.name = name
@@ -45,24 +44,24 @@ final class ScheduledMessageQueue {
             scheduleSendData()
         }
     }
-    
+
     func enable() {
         BTLogger.debug("􀐫 [\(name)] enable")
         executing = false
         enabled = true
     }
-    
+
     func disable() {
         BTLogger.debug("􀐫 [\(name)] disable")
         enabled = false
         scheduledQueue.removeAll()
     }
-    
+
     func schedule(priority: Bool = false, block: @escaping ExecutionBlock) {
         guard enabled else {
             return
         }
-        
+
         let scheduledBlock = ScheduledBlock(priority: priority, block: block)
         if scheduledBlock.priority {
             scheduledQueue.insert(scheduledBlock, at: 0)
@@ -71,7 +70,7 @@ final class ScheduledMessageQueue {
         }
         printStats()
     }
-        
+
     private func execute(scheduledBlock: ScheduledBlock) -> Bool {
         guard enabled else {
             return false
@@ -87,12 +86,12 @@ final class ScheduledMessageQueue {
                 self.printStats()
             }
         }
-        
+
         return true
     }
-    
+
     private func scheduleSendData() {
-        Timer.scheduledTimer(withTimeInterval: delay, repeats: true) { [weak self] timer in
+        Timer.scheduledTimer(withTimeInterval: delay, repeats: true) { [weak self] _ in
             guard let sSelf = self else {
                 return
             }
@@ -105,7 +104,7 @@ final class ScheduledMessageQueue {
             }
         }
     }
-    
+
     private func printStats() {
         BTLogger.debug("􀐫 [\(name)] \(scheduledQueue.count) scheduled")
     }

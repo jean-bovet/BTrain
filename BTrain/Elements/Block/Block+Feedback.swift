@@ -13,15 +13,14 @@
 import Foundation
 
 extension Block {
-    
     func assign(_ feedbackIds: [Identifier<Feedback>]) {
         feedbacks = feedbackIds.map { BlockFeedback(id: UUID().uuidString, feedbackId: $0) }
     }
-    
+
     func remove(_ feedback: BlockFeedback) {
         feedbacks.removeAll(where: { $0.id == feedback.id })
     }
-    
+
     func add(_ feedbackId: Identifier<Feedback>, at index: Int? = nil) {
         let bf = BlockFeedback(id: UUID().uuidString, feedbackId: feedbackId)
         if let index = index {
@@ -30,30 +29,30 @@ extension Block {
             feedbacks.append(bf)
         }
     }
-    
+
     func remove(feedbackId: Identifier<Feedback>) {
         feedbacks.removeAll(where: { $0.feedbackId == feedbackId })
     }
-    
+
     func autoFillFeedbacks() {
         entryFeedbackNext = defaultEntryFeedback(for: .next)
         brakeFeedbackNext = defaultBrakeFeedback(for: .next)
         stopFeedbackNext = defaultStopFeedback(for: .next)
-        
+
         entryFeedbackPrevious = defaultEntryFeedback(for: .previous)
         brakeFeedbackPrevious = defaultBrakeFeedback(for: .previous)
         stopFeedbackPrevious = defaultStopFeedback(for: .previous)
     }
 
     func defaultEntryFeedback(for direction: Direction) -> Identifier<Feedback>? {
-        switch(direction) {
+        switch direction {
         case .next:
             return feedbacks.first?.feedbackId
         case .previous:
             return feedbacks.last?.feedbackId
         }
     }
-    
+
     // [ f1 ]
     // [ f1 f2 ]
     // [ f1 f2 f3 ]
@@ -66,8 +65,8 @@ extension Block {
         } else {
             defaultBrakeFeedbackIndex = 0
         }
-        
-        switch(direction) {
+
+        switch direction {
         case .next:
             return feedbacks.element(at: defaultBrakeFeedbackIndex)?.feedbackId ?? defaultEntryFeedback(for: .next)
         case .previous:
@@ -76,7 +75,7 @@ extension Block {
     }
 
     func defaultStopFeedback(for direction: Direction) -> Identifier<Feedback>? {
-        switch(direction) {
+        switch direction {
         case .next:
             return feedbacks.last?.feedbackId ?? defaultBrakeFeedback(for: .next)
         case .previous:
@@ -85,7 +84,7 @@ extension Block {
     }
 
     func entryFeedback(for direction: Direction) -> Identifier<Feedback>? {
-        switch(direction) {
+        switch direction {
         case .next:
             return entryFeedbackNext ?? defaultEntryFeedback(for: .next)
         case .previous:
@@ -94,7 +93,7 @@ extension Block {
     }
 
     func brakeFeedback(for direction: Direction) -> Identifier<Feedback>? {
-        switch(direction) {
+        switch direction {
         case .next:
             return brakeFeedbackNext ?? defaultBrakeFeedback(for: .next)
         case .previous:
@@ -103,7 +102,7 @@ extension Block {
     }
 
     func stopFeedback(for direction: Direction) -> Identifier<Feedback>? {
-        switch(direction) {
+        switch direction {
         case .next:
             return stopFeedbackNext ?? defaultStopFeedback(for: .next)
         case .previous:
@@ -115,12 +114,11 @@ extension Block {
         guard let index = feedbacks.firstIndex(where: { $0.feedbackId == forFeedback }) else {
             return nil
         }
-        switch(direction) {
+        switch direction {
         case .next:
             return index + 1
         case .previous:
             return index
         }
     }
-    
 }

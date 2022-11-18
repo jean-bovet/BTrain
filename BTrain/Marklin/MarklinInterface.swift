@@ -14,9 +14,8 @@ import Foundation
 
 /// Implementation of the CommandInterface for the Marklin Central Station 3
 final class MarklinInterface: CommandInterface, ObservableObject {
-    
     var callbacks = CommandInterfaceCallbacks()
-            
+
     var client: Client?
 
     let locomotiveConfig = MarklinFetchLocomotivesViaCommand()
@@ -24,10 +23,10 @@ final class MarklinInterface: CommandInterface, ObservableObject {
 
     typealias CompletionBlock = () -> Void
     private var disconnectCompletionBlocks: CompletionBlock?
-    
+
     /// True if CAN messages should be collected. The ``messages`` will be populated as the message arrive.
     @Published var collectMessages = false
-    
+
     /// Public array of messages that the interface received from the CS3. Used mainly
     /// for debugging purpose.
     @Published var messages = [MarklinCANMessage]()
@@ -37,7 +36,7 @@ final class MarklinInterface: CommandInterface, ObservableObject {
     /// This map is used to invoke the completion block for each command based on the acknowledgement from the Central Station.
     /// Note that the CAN message should be a in a raw format, meaning it should hold values that are constant between the command and its acknowledgement.
     /// For example, the hash field should be left out because it will change between the command and the corresponding acknowledgement.
-    private var completionBlocks = [MarklinCANMessage:[CompletionBlock]]()
+    private var completionBlocks = [MarklinCANMessage: [CompletionBlock]]()
 
     func connect(server: String, port: UInt16, onReady: @escaping () -> Void, onError: @escaping (Error) -> Void, onStop: @escaping () -> Void) {
         client = Client(address: server, port: port)
@@ -64,9 +63,9 @@ final class MarklinInterface: CommandInterface, ObservableObject {
         completionBlocks.removeAll()
         client?.stop()
     }
-        
+
     func execute(command: Command, completion: CompletionBlock? = nil) {
-        if case .locomotives(_, _) = command, let server = client?.address {
+        if case .locomotives = command, let server = client?.address {
             locomotivesFetcher.fetchLocomotives(server: server) { [weak self] locomotives in
                 if let locomotives = locomotives {
                     self?.callbacks.locomotivesQueries.all.forEach { $0(locomotives) }
@@ -78,11 +77,11 @@ final class MarklinInterface: CommandInterface, ObservableObject {
                 completion?()
                 return
             }
-                            
+
             send(message: message, priority: priority, completion: completion)
         }
     }
-    
+
     // Maximum value of the speed parameters that can be specified in the CAN message.
     static let maxCANSpeedValue = 1000
 
@@ -91,12 +90,12 @@ final class MarklinInterface: CommandInterface, ObservableObject {
         let value = ceil(v)
         return SpeedValue(value: min(UInt16(MarklinInterface.maxCANSpeedValue), UInt16(value)))
     }
-    
+
     func speedSteps(for value: SpeedValue, decoder: DecoderType) -> SpeedStep {
         guard value.value > 0 else {
             return .zero
         }
-        
+
         let adjustedValue = min(value.value, UInt16(MarklinInterface.maxCANSpeedValue))
         let v = Double(adjustedValue) / Double(MarklinInterface.maxCANSpeedValue) * Double(decoder.steps)
         let roundedSteps = round(v)
@@ -116,7 +115,7 @@ final class MarklinInterface: CommandInterface, ObservableObject {
             completionBlocks[message.raw] = nil
         }
     }
-    
+
     func onMessage(msg: MarklinCANMessage) {
         if collectMessages {
             messages.append(msg)
@@ -127,54 +126,54 @@ final class MarklinInterface: CommandInterface, ObservableObject {
             handleCommand(msg)
         }
     }
-    
+
     static func isKnownMessage(msg: MarklinCANMessage) -> Bool {
         if MarklinCommand.from(message: msg) != nil {
             return true
         } else {
             let cmd = Command.from(message: msg)
-            if case .unknown = cmd {                
+            if case .unknown = cmd {
                 return false
             } else {
                 return true
             }
         }
     }
-    
+
     private func handleCommand(_ msg: MarklinCANMessage) {
         if let cmd = MarklinCommand.from(message: msg) {
             // Handle any Marklin-specific command first
-            switch(cmd) {
+            switch cmd {
             case .configDataStream(length: _, data: _, descriptor: _):
                 let status = locomotiveConfig.process(cmd)
-                if case .completed(let locomotives) = status {
+                if case let .completed(locomotives) = status {
                     let locomotives = locomotives.map { $0.commandLocomotive }
                     self.callbacks.locomotivesQueries.all.forEach { $0(locomotives) }
                 }
             }
             return
         }
-        
+
         let cmd = Command.from(message: msg)
         switch cmd {
-        case .emergencyStop(let address, let decoderType, _, _):
+        case let .emergencyStop(address, decoderType, _, _):
             // Execute a command to query the direction of the locomotive at this particular address
             // The response from this command is going to be processed below in the case .direction
             execute(command: .queryDirection(address: address, decoderType: decoderType))
 
-        case .speed(let address, let decoderType, let value, _, _):
+        case let .speed(address, decoderType, value, _, _):
             callbacks.speedChanges.all.forEach { $0(address, decoderType, value, msg.isAck) }
 
         default:
             break
         }
     }
-    
+
     private func handleAcknowledgment(_ msg: MarklinCANMessage) {
         if let cmd = MarklinCommand.from(message: msg) {
             // Handle any Marklin-specific command first
-            switch(cmd) {
-            case .configDataStream(_, _, _):
+            switch cmd {
+            case .configDataStream:
                 break // ignore ack for this command
             }
             return
@@ -183,45 +182,45 @@ final class MarklinInterface: CommandInterface, ObservableObject {
         // Handle generic command
         let cmd = Command.from(message: msg)
         switch cmd {
-        case .go(_, _):
+        case .go:
             triggerCompletionBlock(for: msg)
             callbacks.stateChanges.all.forEach { $0(true) }
-            
-        case .stop(_, _):
+
+        case .stop:
             triggerCompletionBlock(for: msg)
             callbacks.stateChanges.all.forEach { $0(false) }
 
-        case .speed(let address, let decoderType, let value, _, _):
+        case let .speed(address, decoderType, value, _, _):
             triggerCompletionBlock(for: msg)
             callbacks.speedChanges.all.forEach { $0(address, decoderType, value, msg.isAck) }
 
-        case .direction(let address, let decoderType, let direction, _, _):
+        case let .direction(address, decoderType, direction, _, _):
             triggerCompletionBlock(for: msg)
             callbacks.directionChanges.all.forEach { $0(address, decoderType, direction) }
-            
-        case .turnout(let address, let state, let power, _, _):
+
+        case let .turnout(address, state, power, _, _):
             triggerCompletionBlock(for: msg)
             callbacks.turnoutChanges.all.forEach { $0(address, state, power, msg.isAck) }
 
-        case .feedback(let deviceID, let contactID, _, let newValue, _, _, _):
+        case let .feedback(deviceID, contactID, _, newValue, _, _, _):
             triggerCompletionBlock(for: msg)
             callbacks.feedbackChanges.all.forEach { $0(deviceID, contactID, newValue) }
 
-        case .locomotives(_, _):
+        case .locomotives:
             triggerCompletionBlock(for: msg)
 
         default:
             break
         }
     }
-    
+
     private func send(message: MarklinCANMessage, priority: Command.Priority, completion: CompletionBlock?) {
         guard let client = client else {
             BTLogger.error("Cannot send message to Digital Controller because the client is nil!")
             completion?()
             return
         }
-        
+
         if let completion = completion {
             completionBlocks[message.raw] = (completionBlocks[message.raw] ?? []) + [completion]
         }
@@ -230,7 +229,6 @@ final class MarklinInterface: CommandInterface, ObservableObject {
             // no-op as we don't care about when the message is done being sent down the wire
         }
     }
-        
 }
 
 extension MarklinInterface: MetricsProvider {
@@ -240,18 +238,16 @@ extension MarklinInterface: MetricsProvider {
         } else {
             return []
         }
-    }        
+    }
 }
 
 extension LocomotivesDocumentParser.LocomotiveInfo {
-    
     var commandLocomotive: CommandLocomotive {
         CommandLocomotive(uid: uid, name: name, address: address, maxSpeed: vmax, decoderType: type?.locomotiveDecoderType ?? .MFX, icon: nil)
     }
 }
 
 extension MarklinCS3.Lok {
-    
     var decoderType: DecoderType? {
         switch dectyp {
         case "mfx+", "mfx":
@@ -262,17 +258,15 @@ extension MarklinCS3.Lok {
             return nil
         }
     }
-    
+
     func toCommand(icon: Data?) -> CommandLocomotive {
         CommandLocomotive(uid: uid.valueFromHex, name: name, address: address, maxSpeed: tachomax, decoderType: decoderType, icon: icon)
     }
-
 }
 
 extension String {
-    
     var locomotiveDecoderType: DecoderType {
-        switch(self) {
+        switch self {
         case "mfx":
             return .MFX
         case "mm_prg":

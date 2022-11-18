@@ -19,54 +19,53 @@ import Foundation
 enum ResolvedRouteItem: CustomStringConvertible {
     /// A resolved item describing a block
     case block(ResolvedRouteItemBlock)
-    
+
     /// A resolved item describing a turnout
     case turnout(ResolvedRouteItemTurnout)
-    
+
     var entrySocket: Socket {
         switch self {
-        case .block(let resolvedRouteItemBlock):
+        case let .block(resolvedRouteItemBlock):
             return Socket.block(resolvedRouteItemBlock.block.id, socketId: resolvedRouteItemBlock.entrySocketId)
-        case .turnout(let resolvedRouteItemTurnout):
+        case let .turnout(resolvedRouteItemTurnout):
             return Socket.turnout(resolvedRouteItemTurnout.turnout.id, socketId: resolvedRouteItemTurnout.entrySocketId)
         }
     }
-    
+
     var exitSocket: Socket {
         switch self {
-        case .block(let resolvedRouteItemBlock):
+        case let .block(resolvedRouteItemBlock):
             return Socket.block(resolvedRouteItemBlock.block.id, socketId: resolvedRouteItemBlock.exitSocketId)
-        case .turnout(let resolvedRouteItemTurnout):
+        case let .turnout(resolvedRouteItemTurnout):
             return Socket.turnout(resolvedRouteItemTurnout.turnout.id, socketId: resolvedRouteItemTurnout.exitSocketId)
         }
     }
-    
+
     var description: String {
         switch self {
-        case .block(let block):
+        case let .block(block):
             return block.description
-        case .turnout(let turnout):
+        case let .turnout(turnout):
             return turnout.description
         }
     }
 }
 
 struct ResolvedRouteItemBlock: CustomStringConvertible {
-    
     let block: Block
     let entrySocketId: SocketId
     let exitSocketId: SocketId
-    
+
     var blockId: Identifier<Block> {
         block.id
     }
-    
+
     var direction: Direction {
         exitSocketId == Block.nextSocket ? .next : .previous
     }
-    
+
     var description: String {
-        return "\(blockId):\(direction)"
+        "\(blockId):\(direction)"
     }
 
     init(block: Block, direction: Direction) {
@@ -80,17 +79,14 @@ struct ResolvedRouteItemBlock: CustomStringConvertible {
             exitSocketId = Block.nextSocket
         }
     }
-
 }
 
 struct ResolvedRouteItemTurnout: CustomStringConvertible {
-    
     let turnout: Turnout
     let entrySocketId: SocketId
     let exitSocketId: SocketId
-    
+
     var description: String {
         "\(turnout.id):(\(entrySocketId)>\(exitSocketId))"
     }
-
 }

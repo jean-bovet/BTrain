@@ -10,39 +10,38 @@
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-import XCTest
 @testable import BTrain
+import XCTest
 
 class SwitchboardRenderingTests: XCTestCase {
-
     var nsContext: NSGraphicsContext!
-    
+
     override func setUp() {
-        nsContext = NSGraphicsContext(attributes: [.destination:NSGraphicsContext.RepresentationFormatName.pdf])!
+        nsContext = NSGraphicsContext(attributes: [.destination: NSGraphicsContext.RepresentationFormatName.pdf])!
     }
-    
+
     func testDrawBoard() {
         let layout = LayoutLoop1().newLayout()
         let context = ShapeContext()
         let provider = ShapeProvider(layout: layout, context: context)
         provider.updateShapes()
-        
+
         provider.blockShapes[0].selected = true
-        
+
         let renderer = SwitchBoardRenderer(provider: provider, shapeContext: context)
         renderer.draw(context: nsContext.cgContext)
     }
-    
-    func testDrawText() {              
+
+    func testDrawText() {
         nsContext.cgContext.drawText(at: .zero, text: "Hello", color: .black, fontSize: 12.0)
     }
 
     func testTrainColorAutomaticMode() {
         let context = ShapeContext()
         let t = Train()
-                
+
         t.scheduling = .managed
-        
+
         t.state = .running
         XCTAssertEqual(context.trainColor(t), NSColor.systemGreen.cgColor)
         t.state = .braking
@@ -52,13 +51,13 @@ class SwitchboardRenderingTests: XCTestCase {
         t.state = .stopped
         XCTAssertEqual(context.trainColor(t), NSColor.systemRed.cgColor)
     }
-    
+
     func testTrainColorManualMode() {
         let context = ShapeContext()
         let t = Train()
-                        
+
         t.scheduling = .unmanaged
-        
+
         t.state = .running
         XCTAssertEqual(context.trainColor(t), NSColor.systemGreen.cgColor)
         t.state = .braking
@@ -68,5 +67,4 @@ class SwitchboardRenderingTests: XCTestCase {
         t.state = .stopped
         XCTAssertEqual(context.trainColor(t), NSColor.systemRed.cgColor)
     }
-    
 }

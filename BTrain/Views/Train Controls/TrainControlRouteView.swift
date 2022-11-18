@@ -13,39 +13,38 @@
 import SwiftUI
 
 struct TrainControlRouteView: View {
-    
     @ObservedObject var document: LayoutDocument
 
     @ObservedObject var train: Train
-                
+
     @Binding var trainRuntimeError: String?
-    
+
     var layout: Layout {
         document.layout
     }
-    
+
     var selectedRouteDescription: String {
-        layout.routeDescription(for: train)        
+        layout.routeDescription(for: train)
     }
-    
+
     var automaticRouteId: Identifier<Route> {
         Route.automaticRouteId(for: train.id)
     }
-    
+
     var body: some View {
         VStack(alignment: .leading) {
             HStack {
                 Picker("Route:", selection: $train.routeId) {
                     Text("Automatic").tag(automaticRouteId as Identifier<Route>)
-                    ForEach(layout.fixedRoutes, id:\.self) { item in
+                    ForEach(layout.fixedRoutes, id: \.self) { item in
                         Text(item.name).tag(item.id as Identifier<Route>)
                     }
-                }.onChange(of: train.routeId) { newValue in
+                }.onChange(of: train.routeId) { _ in
                     updateRoute()
                 }.disabled(train.scheduling != .unmanaged)
-                                    
+
                 Spacer()
-                
+
                 if let route = layout.route(for: train.routeId, trainId: train.id) {
                     HStack {
                         if train.scheduling == .unmanaged {
@@ -62,7 +61,7 @@ struct TrainControlRouteView: View {
                                 route.lastMessage = nil
                                 document.stop(train: train)
                             }
-                            
+
                             Button("Finish") {
                                 route.lastMessage = nil
                                 document.finish(train: train)
@@ -83,18 +82,17 @@ struct TrainControlRouteView: View {
                         .fixedSize(horizontal: false, vertical: true)
                 }.frame(maxHeight: 120)
             }
-        }.onAppear() {
+        }.onAppear {
             updateRoute()
         }
     }
-    
+
     func updateRoute() {
         try? document.layoutController.prepare(routeID: train.routeId, trainID: train.id)
     }
 }
 
 struct TrainControlRouteView_Previews: PreviewProvider {
-    
     static let doc = LayoutDocument(layout: LayoutLoop1().newLayout())
 
     static var previews: some View {

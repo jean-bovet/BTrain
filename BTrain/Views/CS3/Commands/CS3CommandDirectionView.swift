@@ -13,30 +13,28 @@
 import SwiftUI
 
 struct CS3CommandDirectionView: View {
-
     let doc: LayoutDocument
     let query: Bool
     @Binding var command: Command?
 
     @State private var selectedLoc: Identifier<Locomotive>?
-    
+
     var body: some View {
         LocPicker(doc: doc, selectedLoc: $selectedLoc)
-            .onChange(of: selectedLoc) { newValue in
+            .onChange(of: selectedLoc) { _ in
                 command = command(locId: selectedLoc)
             }
     }
-    
+
     private func command(locId: Identifier<Locomotive>?) -> Command? {
         guard let loc = doc.layout.locomotives[locId] else {
             return nil
         }
-        
+
         if query {
             return .queryDirection(address: loc.address, decoderType: loc.decoder, descriptor: nil)
         } else {
             return .direction(address: loc.address, decoderType: loc.decoder, direction: .forward, priority: .normal, descriptor: nil)
         }
     }
-
 }

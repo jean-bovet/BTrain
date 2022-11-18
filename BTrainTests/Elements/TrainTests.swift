@@ -17,7 +17,6 @@ import XCTest
 @testable import BTrain
 
 class TrainTests: XCTestCase {
-    
     func testCodable() throws {
         let t1 = Train(uuid: "1")
         t1.name = "Rail 2000"
@@ -25,13 +24,13 @@ class TrainTests: XCTestCase {
         t1.position = 7
         t1.blockId = Identifier<Block>(uuid: "111")
         t1.routeId = Identifier<Route>(uuid: "1212")
-        
+
         let encoder = JSONEncoder()
         let data = try encoder.encode(t1)
 
         let decoder = JSONDecoder()
         let t2 = try decoder.decode(Train.self, from: data)
-        
+
         XCTAssertEqual(t1.id, t2.id)
         XCTAssertEqual(t1.name, t2.name)
         XCTAssertEqual(t1.routeStepIndex, t2.routeStepIndex)
@@ -39,5 +38,4 @@ class TrainTests: XCTestCase {
         XCTAssertEqual(t1.blockId, t2.blockId)
         XCTAssertEqual(t1.routeId, t2.routeId)
     }
-    
 }

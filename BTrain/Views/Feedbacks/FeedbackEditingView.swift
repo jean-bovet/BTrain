@@ -13,25 +13,24 @@
 import SwiftUI
 
 struct FeedbackEditingView: View {
-    
     @ObservedObject var doc: LayoutDocument
     @ObservedObject var layout: Layout
     @ObservedObject var layoutController: LayoutController
-    
+
     @State private var showAddNewFeedback = false
-    
+
     struct NewFeedback: Equatable {
         let name: String
         let deviceID: UInt16
         let contactID: UInt16
-        
+
         static func empty() -> NewFeedback {
             NewFeedback(name: "", deviceID: 0, contactID: 0)
         }
     }
-    
+
     @State private var newFeedback = NewFeedback.empty()
-    
+
     @Environment(\.undoManager) var undoManager
 
     var body: some View {
@@ -71,7 +70,7 @@ struct FeedbackEditingView: View {
                 .padding()
         }
     }
-    
+
     func addNewFeedback(name: String = "", deviceID: UInt16 = 0, contactID: UInt16 = 0) {
         let feedback = layout.newFeedback()
         feedback.name = name
@@ -84,9 +83,8 @@ struct FeedbackEditingView: View {
 }
 
 struct FeedbackEditingView_Previews: PreviewProvider {
-    
     static let doc = LayoutDocument(layout: LayoutLoop2().newLayout())
-    
+
     static var previews: some View {
         ConfigurationSheet(title: "Feedbacks") {
             FeedbackEditingView(doc: doc, layout: doc.layout, layoutController: doc.layoutController)

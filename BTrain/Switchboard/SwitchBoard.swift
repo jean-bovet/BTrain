@@ -14,7 +14,6 @@ import Foundation
 import SwiftUI
 
 final class SwitchBoard: ObservableObject {
-
     final class State: ObservableObject {
         @Published var selectedShape: Shape?
         @Published var ephemeralDraggableShape: EphemeralDraggableShape?
@@ -29,7 +28,7 @@ final class SwitchBoard: ObservableObject {
         @Published var triggerRedraw: Bool = false // Used to trigger a redraw of the switchboard
 
         @AppStorage("zoomToFit") var zoomToFit: Bool = false
-        
+
         struct TrainDragInfo {
             let trainId: Identifier<Train>
             let blockId: Identifier<Block>
@@ -38,7 +37,7 @@ final class SwitchBoard: ObservableObject {
         @Published var trainDragInfo: TrainDragInfo?
         @Published var trainDroppedInBlockAction: Bool = false
     }
-        
+
     let layout: Layout
     let provider: ShapeProvider
     let context: ShapeContext
@@ -47,32 +46,32 @@ final class SwitchBoard: ObservableObject {
     let state: State
 
     @Published var idealSize: CGSize = .zero
-    
+
     var isEmpty: Bool {
-        provider.shapes.filter({ $0.visible }).isEmpty
+        provider.shapes.filter { $0.visible }.isEmpty
     }
-            
+
     init(layout: Layout, provider: ShapeProvider, context: ShapeContext) {
         self.layout = layout
         self.provider = provider
         self.context = context
-        
+
         let renderer = SwitchBoardRenderer(provider: provider, shapeContext: context)
         let state = State()
-        self.drag = SwitchBoardDragOperation(layout: layout, state: state, provider: provider, renderer: renderer)
+        drag = SwitchBoardDragOperation(layout: layout, state: state, provider: provider, renderer: renderer)
         self.renderer = renderer
-        
+
         self.state = state
-        self.idealSize = fittedRect().size
+        idealSize = fittedRect().size
     }
-    
+
     func update() {
         provider.updateShapes()
         idealSize = fittedRect().size
     }
-    
+
     let margin = 40.0
-    
+
     func fittedRect() -> CGRect {
         if let firstShape = provider.shapes.first {
             var rect = firstShape.bounds
@@ -92,23 +91,23 @@ final class SwitchBoard: ObservableObject {
             return 1
         }
     }
-    
+
     static let GridSize = 10.0
-    
+
     func fitSize() {
         let r = fittedRect()
 
         // Offset all the shapes so they are in the center of the fitted rectangle
-        let offsetX = sign(r.minX)*floor(abs(r.minX) / SwitchBoard.GridSize) * SwitchBoard.GridSize
-        let offsetY = sign(r.minY)*floor(abs(r.minY) / SwitchBoard.GridSize) * SwitchBoard.GridSize
+        let offsetX = sign(r.minX) * floor(abs(r.minX) / SwitchBoard.GridSize) * SwitchBoard.GridSize
+        let offsetY = sign(r.minY) * floor(abs(r.minY) / SwitchBoard.GridSize) * SwitchBoard.GridSize
 
         for shape in provider.draggableShapes {
             shape.center = .init(x: shape.center.x - offsetX, y: shape.center.y - offsetY)
         }
-        
+
         idealSize = r.size
     }
-    
+
     func remove(_ shape: Shape) {
         state.selectedShape = nil
         if let block = shape as? BlockShape {
@@ -126,16 +125,16 @@ final class SwitchBoard: ObservableObject {
             provider.remove(link)
         }
     }
-    
+
     func toggleControlPoints(_ shape: LinkShape) {
         provider.toggleControlPoints(shape)
         fitSize()
     }
-    
+
     func startEditing() {
         provider.showControlPointShapes()
     }
-    
+
     func doneEditing() {
         provider.shapes.forEach { $0.selected = false }
         provider.hideControlPointShapes()

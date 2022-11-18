@@ -13,7 +13,6 @@
 import SwiftUI
 
 struct RouteScriptEditingView: View {
-    
     @ObservedObject var layout: Layout
 
     var body: some View {
@@ -35,11 +34,9 @@ struct RouteScriptEditingView: View {
             RouteScriptEditorView(layout: layout, script: script)
         }
     }
-
 }
 
 struct RouteScriptEditingView_Previews: PreviewProvider {
-        
     static var previews: some View {
         Group {
             ConfigurationSheet(title: "Routes") {

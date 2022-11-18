@@ -86,22 +86,22 @@ import Foundation
 final class Train: Element, ObservableObject {
     // Unique identifier of the train
     let id: Identifier<Train>
-    
+
     // A train that is enabled will show up in the switchboard
     @Published var enabled = true
-    
+
     // Name of the train
     @Published var name = ""
-        
+
     /// The locomotive assigned to this train or nil of no locomotive is assigned
     @Published var locomotive: Locomotive?
-    
+
     // Length of the wagons (in cm)
     @Published var wagonsLength: DistanceCm?
 
     // The route this train is associated with
     @Published var routeId: Identifier<Route>
-    
+
     // Keeping track of the route index when the train starts,
     // to avoid stopping it immediately if it is still starting
     // in the first block of the route.
@@ -109,12 +109,12 @@ final class Train: Element, ObservableObject {
 
     // Index of the current route step that the train is located in.
     @Published var routeStepIndex = 0
-        
+
     // The maximum number of blocks that should be reserved ahead of the train.
     // The actual number of blocks might be smaller if a block cannot be reserved.
     // The default is 2.
     @Published var maxNumberOfLeadingReservedBlocks = 2
-    
+
     /// Available only at runtime (never persisted), this variable keeps track of the leading reservation,
     /// blocks or turnouts, that are assigned to this train.
     let leading = TrainLeadingReservation()
@@ -122,17 +122,17 @@ final class Train: Element, ObservableObject {
     /// Available only at runtime (never persisted), this variable keeps track of the blocks and turnouts
     /// occupied by this train.
     let occupied = TrainOccupiedReservation()
-    
+
     /// Schedule state of the train
     enum Schedule {
         /// The train is monitored by BTrain but not managed. This mode is used when the user wants to drive the train on its own via
         /// the digital controller. In this mode, BTrain will monitor the movement of the train to detect its location on the layout and
         /// stop it in case of collision.
         case unmanaged
-        
+
         /// The train is managed by BTrain. This mode is used when BTrain is driving the train using either a fixed or automatic route.
         case managed
-        
+
         /// Request to stop the train as soon as possible and go to unmanaged mode
         case stopManaged
 
@@ -142,41 +142,41 @@ final class Train: Element, ObservableObject {
         /// Request to stop the train at the next station and go to unmanaged mode
         case finishManaged
     }
-    
+
     // The state of the schedule
     @Published var scheduling: Schedule = .unmanaged
-    
+
     enum State {
         case running
         case braking
         case stopping
         case stopped
     }
-    
+
     // The state of the train
     @Published var state: State = .stopped
-            
+
     // The block where the locomotive is located
     @Published var blockId: Identifier<Block>?
-    
+
     // Position of the train inside the current block,
     // represented by an index that identifies after
     // which feedback the train is located.
     // block   : [  f1   f2   f3  ]
     // position:   0   1    2    3
     @Published var position = 0
-    
+
     struct BlockItem: Identifiable, Codable, Hashable {
         let id: String
-        
+
         var blockId: Identifier<Block>?
-        
+
         init(_ blockId: Identifier<Block>?) {
-            self.id = UUID().uuidString
+            id = UUID().uuidString
             self.blockId = blockId
         }
     }
-    
+
     // List of blocks to avoid. For example, specific blocks
     // should be avoided for Intercity train because their
     // radius is too small and causes derailing.
@@ -184,11 +184,11 @@ final class Train: Element, ObservableObject {
 
     struct TurnoutItem: Identifiable, Codable, Hashable {
         let id: String
-        
+
         var turnoutId: Identifier<Turnout>
-        
+
         init(_ turnoutId: Identifier<Turnout>) {
-            self.id = UUID().uuidString
+            id = UUID().uuidString
             self.turnoutId = turnoutId
         }
     }
@@ -219,31 +219,29 @@ final class Train: Element, ObservableObject {
         text += ")"
         return text
     }
-        
+
     convenience init(uuid: String = UUID().uuidString, name: String = "", wagonsLength: Double? = nil, maxSpeed: SpeedKph? = nil, maxNumberOfLeadingReservedBlocks: Int? = nil) {
         self.init(id: Identifier(uuid: uuid), name: name, wagonsLength: wagonsLength, maxSpeed: maxSpeed, maxNumberOfLeadingReservedBlocks: maxNumberOfLeadingReservedBlocks)
     }
-    
-    init(id: Identifier<Train>, name: String, wagonsLength: Double? = nil, maxSpeed: SpeedKph? = nil, maxNumberOfLeadingReservedBlocks: Int? = nil) {
+
+    init(id: Identifier<Train>, name: String, wagonsLength: Double? = nil, maxSpeed _: SpeedKph? = nil, maxNumberOfLeadingReservedBlocks: Int? = nil) {
         self.id = id
-        self.routeId = Route.automaticRouteId(for: id)
+        routeId = Route.automaticRouteId(for: id)
         self.name = name
         self.wagonsLength = wagonsLength
         self.maxNumberOfLeadingReservedBlocks = maxNumberOfLeadingReservedBlocks ?? self.maxNumberOfLeadingReservedBlocks
     }
-    
+
     /// This variable is serialized instead of ``locomotive`` in order to avoid duplication in the JSON graph.
     /// When deserializing a locomotive, this variable is going to be used to restore the actual ``locomotive`` from the layout.
     private var locomotiveId: Identifier<Locomotive>?
-
 }
 
 extension Train {
-    
     var speed: LocomotiveSpeed? {
         locomotive?.speed
     }
-    
+
     var length: Double? {
         let ll = locomotive?.length ?? 0
         let wl = wagonsLength ?? 0
@@ -256,16 +254,13 @@ extension Train {
 }
 
 extension Train: Restorable {
-    
     func restore(layout: Layout) {
         assert(locomotive == nil)
         locomotive = layout.locomotives[locomotiveId]
     }
-
 }
 
 extension Train: Codable {
-    
     enum CodingKeys: CodingKey {
         case id, enabled, name, locomotive, wagonsLength, route, routeIndex, block, position, maxLeadingBlocks, blocksToAvoid, turnoutsToAvoid
     }
@@ -276,18 +271,18 @@ extension Train: Codable {
         let name = try container.decode(String.self, forKey: CodingKeys.name)
 
         self.init(id: id, name: name)
-        
-        self.locomotiveId = try container.decodeIfPresent(Identifier<Locomotive>.self, forKey: CodingKeys.locomotive)
 
-        self.enabled = try container.decodeIfPresent(Bool.self, forKey: CodingKeys.enabled) ?? true
-        self.wagonsLength = try container.decodeIfPresent(Double.self, forKey: CodingKeys.wagonsLength)
-        self.routeId = try container.decodeIfPresent(Identifier<Route>.self, forKey: CodingKeys.route) ?? Route.automaticRouteId(for: id)
-        self.routeStepIndex = try container.decode(Int.self, forKey: CodingKeys.routeIndex)
-        self.blockId = try container.decodeIfPresent(Identifier<Block>.self, forKey: CodingKeys.block)
-        self.position = try container.decode(Int.self, forKey: CodingKeys.position)
-        self.maxNumberOfLeadingReservedBlocks = try container.decodeIfPresent(Int.self, forKey: CodingKeys.maxLeadingBlocks) ?? 1
-        self.blocksToAvoid = try container.decodeIfPresent([BlockItem].self, forKey: CodingKeys.blocksToAvoid) ?? []
-        self.turnoutsToAvoid = try container.decodeIfPresent([TurnoutItem].self, forKey: CodingKeys.turnoutsToAvoid) ?? []
+        locomotiveId = try container.decodeIfPresent(Identifier<Locomotive>.self, forKey: CodingKeys.locomotive)
+
+        enabled = try container.decodeIfPresent(Bool.self, forKey: CodingKeys.enabled) ?? true
+        wagonsLength = try container.decodeIfPresent(Double.self, forKey: CodingKeys.wagonsLength)
+        routeId = try container.decodeIfPresent(Identifier<Route>.self, forKey: CodingKeys.route) ?? Route.automaticRouteId(for: id)
+        routeStepIndex = try container.decode(Int.self, forKey: CodingKeys.routeIndex)
+        blockId = try container.decodeIfPresent(Identifier<Block>.self, forKey: CodingKeys.block)
+        position = try container.decode(Int.self, forKey: CodingKeys.position)
+        maxNumberOfLeadingReservedBlocks = try container.decodeIfPresent(Int.self, forKey: CodingKeys.maxLeadingBlocks) ?? 1
+        blocksToAvoid = try container.decodeIfPresent([BlockItem].self, forKey: CodingKeys.blocksToAvoid) ?? []
+        turnoutsToAvoid = try container.decodeIfPresent([TurnoutItem].self, forKey: CodingKeys.turnoutsToAvoid) ?? []
     }
 
     func encode(to encoder: Encoder) throws {
@@ -305,5 +300,4 @@ extension Train: Codable {
         try container.encode(blocksToAvoid, forKey: CodingKeys.blocksToAvoid)
         try container.encode(turnoutsToAvoid, forKey: CodingKeys.turnoutsToAvoid)
     }
-
 }

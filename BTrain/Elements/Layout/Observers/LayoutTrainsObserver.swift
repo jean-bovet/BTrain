@@ -10,12 +10,11 @@
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-import Foundation
 import Combine
+import Foundation
 
 /// Abstract base class for any sub-class that needs to observe a particular train attribute
 class LayoutTrainsObserver {
-    
     let layout: Layout
 
     typealias TrainChangeCallback = (Train) -> Void
@@ -23,22 +22,22 @@ class LayoutTrainsObserver {
 
     private var trainsCancellable: AnyCancellable?
     private var cancellables = [AnyCancellable]()
-    
+
     init(layout: Layout) {
         self.layout = layout
-        
-        trainsCancellable = layout.$trains.sink(receiveValue: { [weak self] trains in
+
+        trainsCancellable = layout.$trains.sink(receiveValue: { [weak self] _ in
             self?.registerForTrainsChange()
         })
     }
-    
+
     func registerForChange(_ callback: @escaping TrainChangeCallback) {
         trainCallbacks.append(callback)
         for train in layout.trains.elements {
             callback(train)
         }
     }
-    
+
     private func registerForTrainsChange() {
         cancellables.removeAll()
         for train in layout.trains.elements {
@@ -49,12 +48,10 @@ class LayoutTrainsObserver {
     }
 
     internal func trainChanged(_ train: Train) {
-        trainCallbacks.forEach({$0(train)})
+        trainCallbacks.forEach { $0(train) }
     }
-    
-    internal func registerForTrainChange(_ train: Train) -> AnyCancellable? {
+
+    internal func registerForTrainChange(_: Train) -> AnyCancellable? {
         nil
     }
-
 }
-

@@ -15,91 +15,81 @@ final class LayoutBlankCreator: LayoutCreating {
     static var id: Identifier<Layout> {
         Identifier<Layout>(uuid: "Empty Layout")
     }
-    
+
     func newLayout() -> Layout {
         Layout(id: LayoutBlankCreator.id)
     }
-    
 }
 
-//┌─────────┐           ┌──────┐   ┌──────┐  ┌──────┐            ┌──────┐
-//│    A    │──▶  AB  ─▶│  B   │──▶│  C   │─▶│  D   │──▶  DE  ──▶│  E   │
-//└─────────┘           └──────┘   └──────┘  └──────┘            └──────┘
+// ┌─────────┐           ┌──────┐   ┌──────┐  ┌──────┐            ┌──────┐
+// │    A    │──▶  AB  ─▶│  B   │──▶│  C   │─▶│  D   │──▶  DE  ──▶│  E   │
+// └─────────┘           └──────┘   └──────┘  └──────┘            └──────┘
 //                 │                                       ▲
 //                 │    ┌──────┐   ┌──────┐  ┌──────┐      │
 //                 └───▶│  B2  │──▶│ !C2  │─▶│  D2  │──────┘
 //                      └──────┘   └──────┘  └──────┘
 final class LayoutPointToPoint: LayoutCreating {
-    
     static let id = Identifier<Layout>(uuid: "Point to Point")
-    
+
     func newLayout() -> Layout {
         LayoutFactory.layoutFromBundle(named: LayoutPointToPoint.id.uuid)
     }
 }
 
 final class LayoutPointToLoop: LayoutCreating {
-    
     static let id = Identifier<Layout>(uuid: "Point to Loop")
-    
+
     func newLayout() -> Layout {
         LayoutFactory.layoutFromBundle(named: LayoutPointToLoop.id.uuid)
     }
-    
 }
 
 final class LayoutLoopToLoop: LayoutCreating {
-    
     static let id = Identifier<Layout>(uuid: "Loop to Loop")
-    
+
     func newLayout() -> Layout {
         LayoutFactory.layoutFromBundle(named: LayoutLoopToLoop.id.uuid)
     }
-    
 }
 
 //   ┌─────────┐                              ┌─────────┐
-//┌──│ Block 2 │◀────┐         ┌─────────────▶│ Block 4 │──┐
-//│  └─────────┘     │         │              └─────────┘  │
-//│                  │         │                           │
-//│                  │                                     │
-//│                  └─────Turnout12◀───┐                  │
-//│                                     │                  │
-//│                            ▲        │                  │
-//│  ┌─────────┐               │        │     ┌─────────┐  │
-//└─▶│ Block 3 │───────────────┘        └─────│ Block 1 │◀─┘
+// ┌──│ Block 2 │◀────┐         ┌─────────────▶│ Block 4 │──┐
+// │  └─────────┘     │         │              └─────────┘  │
+// │                  │         │                           │
+// │                  │                                     │
+// │                  └─────Turnout12◀───┐                  │
+// │                                     │                  │
+// │                            ▲        │                  │
+// │  ┌─────────┐               │        │     ┌─────────┐  │
+// └─▶│ Block 3 │───────────────┘        └─────│ Block 1 │◀─┘
 //   └─────────┘                              └─────────┘
 final class LayoutFigure8: LayoutCreating {
-    
     static let id = Identifier<Layout>(uuid: "Figure 8")
-    
+
     func newLayout() -> Layout {
         LayoutFactory.layoutFromBundle(named: LayoutFigure8.id.uuid)
     }
-    
 }
 
 //                 ┌─────────┐
-//┌────────────────│ Block 2 │◀────────────────────┐
-//│                └─────────┘                     │
-//│                                                │
-//│                                                │
-//│                ┌─────────┐
-//│       ┌───────▶│ Block 3 │────────────────▶Turnout12
-//│       │        └─────────┘
-//│       │                                        ▲
-//│       │                                        │
-//│                                 ┌─────────┐    │
-//└─▶Turnout21 ────────────────────▶│ Block 1 │────┘
+// ┌────────────────│ Block 2 │◀────────────────────┐
+// │                └─────────┘                     │
+// │                                                │
+// │                                                │
+// │                ┌─────────┐
+// │       ┌───────▶│ Block 3 │────────────────▶Turnout12
+// │       │        └─────────┘
+// │       │                                        ▲
+// │       │                                        │
+// │                                 ┌─────────┐    │
+// └─▶Turnout21 ────────────────────▶│ Block 1 │────┘
 //                                  └─────────┘
 final class LayoutLoop1: LayoutCreating {
-
     static let id = Identifier<Layout>(uuid: "Loop 1")
-        
+
     func newLayout() -> Layout {
         LayoutFactory.layoutFromBundle(named: LayoutLoop1.id.uuid)
     }
-        
 }
 
 //                            ┌─────────┐
@@ -107,9 +97,9 @@ final class LayoutLoop1: LayoutCreating {
 //     │                      └─────────┘                           │
 //     │         ▲                                                  │
 //     │         │                                                  │
-//┌─────────┐    │                                                  ▼
-//│ Block 1 │    │             ┌─────────┐                     ┌─────────┐
-//└─────────┘    └─────────────│ Block 5 │◀──────────────┐     │ Block 3 │
+// ┌─────────┐    │                                                  ▼
+// │ Block 1 │    │             ┌─────────┐                     ┌─────────┐
+// └─────────┘    └─────────────│ Block 5 │◀──────────────┐     │ Block 3 │
 //     ▲                       └─────────┘               │     └─────────┘
 //     │                                                 │          │
 //     │                                                 │          │
@@ -119,13 +109,11 @@ final class LayoutLoop1: LayoutCreating {
 //     └───────────────────────│ Block 4 │◀─────────   t345   ◀─────┘
 //                             └─────────┘
 final class LayoutLoop2: LayoutCreating {
-    
     static let id = Identifier<Layout>(uuid: "Loop 2")
-    
+
     func newLayout() -> Layout {
         LayoutFactory.layoutFromBundle(named: LayoutLoop2.id.uuid)
     }
-    
 }
 
 //    ┌─────────┐                      ┌─────────┐             ┌─────────┐
@@ -141,9 +129,8 @@ final class LayoutLoop2: LayoutCreating {
 //    │   b5    │◀─────────────────────────────────────────────│   b4    │
 //    └─────────┘                                              └─────────┘
 final class LayoutLoopWithStation: LayoutCreating {
-    
     static let id = Identifier<Layout>(uuid: "Loop with Station")
-    
+
     func newLayout() -> Layout {
         LayoutFactory.layoutFromBundle(named: LayoutLoopWithStation.id.uuid)
     }
@@ -153,9 +140,8 @@ final class LayoutLoopWithStation: LayoutCreating {
 /// - Station N: n1, n2
 /// - Station S: s1, s2
 final class LayoutLoopWithStations: LayoutCreating {
-    
     static let id = Identifier<Layout>(uuid: "Loop with Stations")
-    
+
     func newLayout() -> Layout {
         LayoutFactory.layoutFromBundle(named: LayoutLoopWithStations.id.uuid)
     }
@@ -163,13 +149,11 @@ final class LayoutLoopWithStations: LayoutCreating {
 
 /// A layout that has a yard
 final class LayoutYard: LayoutCreating {
-
     static let id = Identifier<Layout>(uuid: "Yard")
-        
+
     func newLayout() -> Layout {
         LayoutFactory.layoutFromBundle(named: LayoutYard.id.uuid)
     }
-        
 }
 
 //              t3               ┌─────────┐              t4
@@ -177,9 +161,9 @@ final class LayoutYard: LayoutCreating {
 //     │          \              └─────────┘                   /           │
 //     │           ▲                                           │           │
 //     │           │                                           │           ▼
-//┌─────────┐      │             ┌─────────┐                   │      ┌─────────┐
-//│ Block 1 │      └─────────────│ Block 5 │◀──────────────┐   │      │ Block 3 │
-//└─────────┘                    └─────────┘               │   │      └─────────┘
+// ┌─────────┐      │             ┌─────────┐                   │      ┌─────────┐
+// │ Block 1 │      └─────────────│ Block 5 │◀──────────────┐   │      │ Block 3 │
+// └─────────┘                    └─────────┘               │   │      └─────────┘
 //     ▲                                                   │   │           │
 //     │                         ┌─────────┐               │   │           │
 //     │            ┌────────────│ Block 6 │◀──────────────┼───┘           │
@@ -198,9 +182,8 @@ final class LayoutYard: LayoutCreating {
 //     └───────── –––– ◀─────────│   S2    │◀──────––––––––––◀─────────────┘
 //                               └─────────┘
 final class LayoutComplexLoop: LayoutCreating {
-    
     static let id = Identifier<Layout>(uuid: "Complex Loop")
-    
+
     func newLayoutWithLengths(_ l: Layout) -> Layout {
         l.locomotives.elements.forEach {
             $0.length = 20
@@ -210,7 +193,7 @@ final class LayoutComplexLoop: LayoutCreating {
         }
         l.blocks.elements.forEach { block in
             block.length = 60
-            let fbDistanceIncrement = 60.0 / Double(block.feedbacks.count+1)
+            let fbDistanceIncrement = 60.0 / Double(block.feedbacks.count + 1)
             var fbDistance = fbDistanceIncrement
             for index in block.feedbacks.indices {
                 block.feedbacks[index].distance = fbDistance
@@ -219,44 +202,38 @@ final class LayoutComplexLoop: LayoutCreating {
         }
         return l
     }
-    
+
     func newLayout() -> Layout {
         LayoutFactory.layoutFromBundle(named: LayoutComplexLoop.id.uuid)
     }
-    
 }
 
 // This layout represents an actual physical layout used for real-world testing
 final class LayoutComplex: LayoutCreating {
-    
     static let id = Identifier<Layout>(uuid: "Complex Layout")
 
     func newLayout() -> Layout {
         LayoutFactory.layoutFromBundle(named: LayoutComplex.id.uuid)
     }
-    
 }
 
 // This layout represents an actual physical layout with hidden station used for real-world testing
 final class LayoutComplexWithHiddenStation: LayoutCreating {
-    
     static let id = Identifier<Layout>(uuid: "Complex Layout with Hidden Station")
 
     func newLayout() -> Layout {
         LayoutFactory.layoutFromBundle(named: LayoutComplexWithHiddenStation.id.uuid)
     }
-    
 }
 
 // This layout contains two blocks and one turnout that are
 // not linked together. It is used for unit tests and functional testing
-//┌─────────┐                              ┌─────────┐
-//│ Block 1 │           Turnout12          │ Block 2 │
-//└─────────┘                              └─────────┘
+// ┌─────────┐                              ┌─────────┐
+// │ Block 1 │           Turnout12          │ Block 2 │
+// └─────────┘                              └─────────┘
 final class LayoutIncomplete: LayoutCreating {
-    
     static let id = Identifier<Layout>(uuid: "Incomplete Layout")
-    
+
     func newLayout() -> Layout {
         let l = Layout(uuid: LayoutIncomplete.id.uuid)
         l.name = LayoutIncomplete.id.uuid
@@ -279,7 +256,7 @@ final class LayoutIncomplete: LayoutCreating {
         // Turnouts
         let t = l.newTurnout(name: "0", category: .singleRight)
         t.center = CGPoint(x: 200, y: 100)
-        
+
         // Train
         l.newTrain()
         l.newTrain()
@@ -287,8 +264,7 @@ final class LayoutIncomplete: LayoutCreating {
         // Routes
         _ = l.newRoute(Identifier<Route>(uuid: "0"), name: "Simple Route",
                        [.block(RouteItemBlock(b1, .next)), .block(RouteItemBlock(b2, .next))])
-        
+
         return l
     }
-    
 }

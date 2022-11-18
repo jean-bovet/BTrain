@@ -13,9 +13,8 @@
 import SwiftUI
 
 struct CenteredLabelView: View {
-    
     let label: String
-    
+
     var body: some View {
         CenteredCustomView {
             Text(label).padding()

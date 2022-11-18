@@ -14,35 +14,34 @@ import AppKit
 import GraphicsRenderer
 
 extension BlockShape: EphemeralDragProvider {
-    
     func draggableShape(at location: CGPoint) -> EphemeralDraggableShape? {
         guard inside(location) || insideLabels(location) else {
             return nil
         }
-        
-        guard let train = train, train.scheduling == .unmanaged && block.blockContainsLocomotive else {
+
+        guard let train = train, train.scheduling == .unmanaged, block.blockContainsLocomotive else {
             return nil
         }
-        
+
         let imageSize = CGSize(width: bounds.width * 4, height: bounds.height * 4)
         let image: NSImage = ImageRenderer(size: imageSize).image { context in
             let center = self.center
-            self.center = .init(x: imageSize.width/2, y: imageSize.height/2)
-            
+            self.center = .init(x: imageSize.width / 2, y: imageSize.height / 2)
+
             let ctx = context.cgContext
             ctx.with {
                 drawTrainParts(ctx: ctx, lineBetweenParts: true)
             }
-            
+
             ctx.with {
                 drawLabels(ctx: ctx, forceHideBlockName: true)
             }
-            
+
             self.center = center
         }
         return EphemeralDraggedTrainShape(trainId: train.id, image: image, center: center)
     }
-    
+
     private func insideLabels(_ location: CGPoint) -> Bool {
         for path in labelPaths {
             if path.inside(location) {
@@ -51,5 +50,4 @@ extension BlockShape: EphemeralDragProvider {
         }
         return false
     }
-    
 }

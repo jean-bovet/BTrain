@@ -13,13 +13,12 @@
 import SwiftUI
 
 struct RouteScriptLineView: View {
-    
     let layout: Layout
-    
+
     @ObservedObject var script: RouteScript
     @Binding var command: RouteScriptCommand
     @Binding var commandErrorIds: [String]
-    
+
     var body: some View {
         DragAndDropLineView(lineUUID: command.id.uuidString, dragAllowed: command.action != .start, dragInsideAllowed: command.action == .loop) {
             RouteScriptCommandView(layout: layout, script: script, command: $command, commandErrorIds: $commandErrorIds)
@@ -30,7 +29,7 @@ struct RouteScriptLineView: View {
             guard let targetCommand = script.commands.commandWith(uuid: targetUUID) else {
                 return
             }
-            
+
             script.commands.remove(source: sourceCommand)
             switch position {
             case .before:
@@ -42,14 +41,12 @@ struct RouteScriptLineView: View {
             }
         }
     }
-    
 }
 
 struct ScriptLineView_Previews: PreviewProvider {
-    
     static let doc = LayoutDocument(layout: LayoutComplex().newLayout())
     static let command = RouteScriptCommand(action: .move)
-    
+
     static var previews: some View {
         VStack(alignment: .leading) {
             RouteScriptLineView(layout: doc.layout, script: RouteScript(), command: .constant(command), commandErrorIds: .constant([]))

@@ -15,7 +15,6 @@ import XCTest
 @testable import BTrain
 
 class LocomotiveSpeedManagerTests: BTTestCase {
-    
     override var speedChangeRequestCeiling: Int? {
         10
     }
@@ -24,13 +23,13 @@ class LocomotiveSpeedManagerTests: BTTestCase {
         let loc = Locomotive(id: .init(uuid: "1"), name: "CFF", address: 0)
         loc.speed.accelerationProfile = .linear
         let ic = LocomotiveSpeedManager(loc: loc, interface: MockCommandInterface())
-        
+
         assertChangeSpeed(loc: loc, from: 0, to: 20, [2, 4, 6, 8, 10, 12, 14, 15, 18, 19, 20], ic)
         assertChangeSpeed(loc: loc, from: 20, to: 13, [18, 16, 14, 13], ic)
         assertChangeSpeed(loc: loc, from: 13, to: 14, [14], ic)
         assertChangeSpeed(loc: loc, from: 14, to: 13, [13], ic)
         assertChangeSpeed(loc: loc, from: 13, to: 0, [11, 9, 7, 5, 3, 1, 0], ic)
-        
+
         // Simulate a change in the actual speed by the Digital Controller.
         // This means the TrainInertiaController needs to take that into account.
         loc.speed.actualSteps = SpeedStep(value: 10)
@@ -41,13 +40,13 @@ class LocomotiveSpeedManagerTests: BTTestCase {
         let loc = Locomotive(id: .init(uuid: "1"), name: "CFF", address: 0)
         loc.speed.accelerationProfile = .bezier
         let ic = LocomotiveSpeedManager(loc: loc, interface: MockCommandInterface())
-        
+
         assertChangeSpeed(loc: loc, from: 0, to: 40, [0, 1, 2, 4, 6, 8, 11, 14, 17, 19, 22, 25, 28, 31, 33, 35, 37, 38, 39, 40], ic)
         assertChangeSpeed(loc: loc, from: 40, to: 13, [39, 38, 36, 34, 32, 29, 26, 23, 20, 18, 16, 14, 13], ic)
         assertChangeSpeed(loc: loc, from: 13, to: 14, [14], ic)
         assertChangeSpeed(loc: loc, from: 14, to: 13, [13], ic)
         assertChangeSpeed(loc: loc, from: 13, to: 0, [12, 10, 7, 5, 2, 0], ic)
-        
+
         // Simulate a change in the actual speed by the Digital Controller.
         // This means the TrainInertiaController needs to take that into account.
         loc.speed.actualSteps = SpeedStep(value: 10)
@@ -65,7 +64,7 @@ class LocomotiveSpeedManagerTests: BTTestCase {
         assertChangeSpeed(loc: t, from: 14, to: 13, [13], ic)
         assertChangeSpeed(loc: t, from: 13, to: 0, [0], ic)
     }
-    
+
     func testSpeedChangeWhenActualAndRequestSpeedsAreIdentical() {
         let t = Locomotive()
         let mi = MockCommandInterface()
@@ -80,7 +79,7 @@ class LocomotiveSpeedManagerTests: BTTestCase {
                 expectation.fulfill()
             }
         }
-        
+
         wait(for: [expectation], timeout: 2.0)
     }
 
@@ -97,7 +96,7 @@ class LocomotiveSpeedManagerTests: BTTestCase {
                 e1.fulfill()
             }
         }
-        
+
         wait(for: {
             t.speed.actualSteps.value >= 50
         }, timeout: 5.0)
@@ -175,13 +174,13 @@ class LocomotiveSpeedManagerTests: BTTestCase {
         let t = Locomotive()
         let mi = MockCommandInterface()
         _ = LocomotiveSpeedManager(loc: t, interface: mi)
-        
+
         t.speed.requestedSteps = SpeedStep(value: 0)
         t.speed.actualSteps = t.speed.requestedSteps
 
         mi.callbacks.speedChanges.all[0](t.address, t.decoder, SpeedValue(value: 100), false)
         XCTAssertEqual(t.speed.requestedKph, 158)
-        
+
         mi.callbacks.speedChanges.all[0](t.address, t.decoder, SpeedValue(value: 100), true)
         XCTAssertEqual(t.speed.requestedKph, 158)
         XCTAssertEqual(t.speed.actualKph, 158)
@@ -215,7 +214,7 @@ class LocomotiveSpeedManagerTests: BTTestCase {
         wait(for: [expectation], timeout: 2.0)
         XCTAssertEqual(t.speed.requestedSteps, SpeedStep(value: 100))
     }
-    
+
     /// Ensure an in-progress speed change that gets cancelled is properly handled.
     /// We need to ensure that the completed parameter reflects the cancellation.
     func testSpeedChangeCancelPreviousSpeedChange() throws {
@@ -227,16 +226,16 @@ class LocomotiveSpeedManagerTests: BTTestCase {
 
         // Send a request to change the speed
         t.speed.requestedSteps = SpeedStep(value: 50)
-        
+
         let cancelledSpeed50 = expectation(description: "Cancelled 50")
         ic.changeSpeed { completed in
             if !completed {
                 cancelledSpeed50.fulfill()
             }
         }
-                
+
         XCTAssertEqual(ic.commandQueue[0].requestedSteps.value, 50)
-        
+
         // Wait until we have some speed set for the train (20 or above)
         wait(for: {
             t.speed.actualSteps.value >= 20
@@ -244,7 +243,7 @@ class LocomotiveSpeedManagerTests: BTTestCase {
 
         mi.pause()
         waitForPendingCommand(mi)
-                        
+
         t.speed.requestedSteps = SpeedStep(value: 10)
         let cancelledSpeed10 = expectation(description: "Cancelled 10")
         ic.changeSpeed { completed in
@@ -254,7 +253,7 @@ class LocomotiveSpeedManagerTests: BTTestCase {
         }
 
         XCTAssertEqual(ic.commandQueue[0].requestedSteps.value, 50)
-        
+
         t.speed.requestedSteps = SpeedStep(value: 0)
         let completedSpeed0 = expectation(description: "Completed 0")
         ic.changeSpeed { completed in
@@ -266,14 +265,14 @@ class LocomotiveSpeedManagerTests: BTTestCase {
         XCTAssertEqual(ic.commandQueue[0].requestedSteps.value, 50)
 
         mi.resume()
-        
+
         XCTAssertEqual(ic.commandQueue[0].requestedSteps.value, 0)
 
         wait(for: [cancelledSpeed50, cancelledSpeed10, completedSpeed0], timeout: 5.0, enforceOrder: true)
-        
+
         XCTAssertEqual(0, t.speed.actualSteps.value)
     }
-    
+
     /// Ensure that the timer used during the settling of the stop of a locomotive is correctly
     /// cancelled when a new speed change is requested. We want to avoid that timer from
     /// firing with a "completed" status while is has been cancelled.
@@ -291,7 +290,7 @@ class LocomotiveSpeedManagerTests: BTTestCase {
 
         // Send a request to change the speed
         t.speed.requestedSteps = SpeedStep(value: 0)
-        
+
         let cancelledChange = expectation(description: "Cancelled")
         ic.changeSpeed { completed in
             XCTAssertFalse(completed)
@@ -299,11 +298,11 @@ class LocomotiveSpeedManagerTests: BTTestCase {
                 cancelledChange.fulfill()
             }
         }
-        
+
         wait(for: {
             t.speed.actualSteps.value <= 20
         }, timeout: 5.0)
-        
+
         t.speed.requestedSteps = SpeedStep(value: 10)
         let completedChangeTo10 = expectation(description: "Completed")
         ic.changeSpeed { completed in
@@ -318,7 +317,7 @@ class LocomotiveSpeedManagerTests: BTTestCase {
         wait(for: [completedChangeTo10], timeout: 5.0)
         XCTAssertEqual(t.speed.actualSteps.value, 10)
     }
-        
+
     /// Ensure that scheduling a speed change while the stop settle timer is running works
     func testSpeedChangeStopSettleDelayWhileSchedulingNewSpeedChange() throws {
         let t = Locomotive(id: .init(uuid: "1"), name: "CFF", address: 0)
@@ -336,7 +335,7 @@ class LocomotiveSpeedManagerTests: BTTestCase {
 
         // Send a request to change the speed to 0
         t.speed.requestedSteps = SpeedStep(value: 0)
-        
+
         let changeSpeedTo0 = expectation(description: "speed0")
         ic.changeSpeed { completed in
             // Note: the command as completed even though the settled delay timer hasn't finished for it.
@@ -344,14 +343,14 @@ class LocomotiveSpeedManagerTests: BTTestCase {
                 changeSpeedTo0.fulfill()
             }
         }
-                
+
         // Pause the settled delay timer
         settledDelayTimer.pause()
-        
+
         wait(for: {
             t.speed.actualSteps.value == 0
         }, timeout: 5.0)
-        
+
         // Schedule a speed change request (while the settled delay timer is still
         // running - in our case here, we simulate that by having it paused).
         t.speed.requestedSteps = SpeedStep(value: 10)
@@ -373,18 +372,18 @@ class LocomotiveSpeedManagerTests: BTTestCase {
     func testSpeedChangeCancelPreviousCompletionBlock() throws {
         let layout = LayoutYard().newLayout().removeTrainGeometry()
         let p = Package(layout: layout)
-        
+
         let t = layout.trains[0]
         let block = layout.blocks[0]
-        
+
         try p.prepare(trainID: t.id.uuid, fromBlockId: block.id.uuid)
         try p.start(routeID: t.routeId.uuid, trainID: t.id.uuid)
-        
+
         // Ask the layout to stop the train
         p.layoutController.stop(train: t)
 
         XCTAssertEqual(t.scheduling, .stopManaged)
-        
+
         p.toggle("A.1")
 
         wait(for: {
@@ -396,22 +395,22 @@ class LocomotiveSpeedManagerTests: BTTestCase {
         wait(for: {
             t.state == .stopping
         }, timeout: 1.0)
-        
+
         // Ask to restart the train before it has a chance to fully stop
         t.scheduling = .managed
         p.layoutController.runControllers(.schedulingChanged(t))
-                
+
         p.layoutController.stop(train: t)
         p.layoutController.waitUntilSettled()
     }
-    
+
     func testMultipleIdenticalSpeedRequests() {
         let t = Locomotive(id: .init(uuid: "1"), name: "CFF", address: 0)
         t.speed.accelerationProfile = .bezier
-        
+
         let mi = MockCommandInterface()
         let ic = LocomotiveSpeedManager(loc: t, interface: mi)
-                
+
         t.speed.requestedKph = 80
         mi.pause()
         let e1 = expectation(description: "e1")
@@ -436,7 +435,7 @@ class LocomotiveSpeedManagerTests: BTTestCase {
             XCTAssertTrue(completed)
             e3.fulfill()
         }
-        
+
         mi.resume()
 
         wait(for: [e1, e2, e3], timeout: 1.0, enforceOrder: true)
@@ -445,12 +444,12 @@ class LocomotiveSpeedManagerTests: BTTestCase {
     func testIdenticalRequestToCancelledProcessingCommand() {
         let t = Locomotive(id: .init(uuid: "1"), name: "CFF", address: 0)
         t.speed.accelerationProfile = .bezier
-        
+
         let mi = MockCommandInterface()
         let ic = LocomotiveSpeedManager(loc: t, interface: mi)
-        
+
         let previousRequestUUID = LocomotiveSpeedManager.globalRequestUUID
-        
+
         t.speed.requestedKph = 80
         mi.pause()
         let e1 = expectation(description: "Completion e1")
@@ -469,7 +468,7 @@ class LocomotiveSpeedManagerTests: BTTestCase {
             XCTAssertTrue(completed)
             e2.fulfill()
         }
-        
+
         t.speed.requestedKph = 80
         let e3 = expectation(description: "Completion e3")
         ic.changeSpeed { completed in
@@ -478,7 +477,7 @@ class LocomotiveSpeedManagerTests: BTTestCase {
         }
 
         XCTAssertEqual(LocomotiveSpeedManager.globalRequestUUID - previousRequestUUID, 3)
-        
+
         mi.resume()
 
         wait(for: [e1, e2, e3], timeout: 1.0, enforceOrder: true)
@@ -492,14 +491,14 @@ class LocomotiveSpeedManagerTests: BTTestCase {
         cmd.speedValues.removeAll()
 
         loc.speed.requestedSteps = SpeedStep(value: steps)
-        
+
         let expectation = expectation(description: "Completed")
         ic.changeSpeed { _ in
             expectation.fulfill()
         }
 
         wait(for: [expectation], timeout: 3.0)
-        
+
         XCTAssertEqual(loc.speed.requestedSteps.value, steps)
         XCTAssertEqual(loc.speed.actualSteps.value, steps)
 
@@ -508,7 +507,7 @@ class LocomotiveSpeedManagerTests: BTTestCase {
         XCTAssertEqual(cmd.speedValues, expectedSteps)
         cmd.speedValues.removeAll()
     }
-    
+
     private func waitForPendingCommand(_ mi: MockCommandInterface) {
         wait(for: {
             mi.pendingCommands.count > 0
@@ -518,31 +517,29 @@ class LocomotiveSpeedManagerTests: BTTestCase {
 
 /// A settled timer implementation that can be paused and resumed, to simulate the timer taking some time
 final class MockStopSettledDelayTimer: LocomotiveStopSettledDelayTimer {
-    
     typealias SettledBlock = (Bool) -> Void
-    
+
     var paused = false
     var blocks = [(Bool, SettledBlock)]()
-    
-    func schedule(loc: Locomotive, completed: Bool, completion: @escaping SettledBlock) {
+
+    func schedule(loc _: Locomotive, completed: Bool, completion: @escaping SettledBlock) {
         if paused {
             blocks.append((completed, completion))
         } else {
             completion(completed)
         }
     }
-    
+
     func cancel() {
         blocks.removeAll()
     }
-    
+
     func pause() {
         paused = true
     }
-    
+
     func resume() {
         paused = false
         blocks.forEach { $1($0) }
     }
 }
-

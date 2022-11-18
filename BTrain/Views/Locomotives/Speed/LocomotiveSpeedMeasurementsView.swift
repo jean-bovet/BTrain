@@ -13,25 +13,24 @@
 import SwiftUI
 
 struct LocomotiveSpeedMeasurementsView: View {
-    
     let document: LayoutDocument
     let layout: Layout
     let loc: Locomotive
-    
+
     @AppStorage("speedMeasureFeedbackA") private var feedbackA: String?
     @AppStorage("speedMeasureFeedbackB") private var feedbackB: String?
     @AppStorage("speedMeasureFeedbackC") private var feedbackC: String?
 
     @AppStorage("speedMeasureDistanceAB") private var distanceAB: Double = 0
     @AppStorage("speedMeasureDistanceBC") private var distanceBC: Double = 0
-        
+
     @Environment(\.presentationMode) var presentationMode
 
     @State private var selectedSpeedEntries = Set<LocomotiveSpeed.SpeedTableEntry.ID>()
     @State private var currentSpeedEntry: LocomotiveSpeed.SpeedTableEntry?
-    
+
     @State private var running = false
-        
+
     var validationError: String? {
         if selectedSpeedEntries.isEmpty {
             return "􀇿 One or more steps must be selected"
@@ -45,7 +44,7 @@ struct LocomotiveSpeedMeasurementsView: View {
             return nil
         }
     }
-    
+
     var body: some View {
         VStack(alignment: .leading) {
             HStack(spacing: 10) {
@@ -56,23 +55,23 @@ struct LocomotiveSpeedMeasurementsView: View {
             .frame(minHeight: 200)
 
             Divider()
-            
+
             HStack {
                 TrainSpeedMeasureFeedbackView(document: document, layout: layout, label: "Feedback A", feedbackUUID: $feedbackA)
-                
+
                 TrainSpeedMeasureDistanceView(distance: $distanceAB)
-                
+
                 TrainSpeedMeasureFeedbackView(document: document, layout: layout, label: "Feedback B", feedbackUUID: $feedbackB)
 
                 TrainSpeedMeasureDistanceView(distance: $distanceBC)
-                
+
                 TrainSpeedMeasureFeedbackView(document: document, layout: layout, label: "Feedback C", feedbackUUID: $feedbackC)
             }
             .disabled(running)
             .padding([.leading, .trailing])
 
             Divider()
-            
+
             if let validationError = validationError {
                 HStack {
                     Text(validationError)
@@ -85,18 +84,18 @@ struct LocomotiveSpeedMeasurementsView: View {
             } else {
                 if let loc = loc, let feedbackA = feedbackA, let feedbackB = feedbackB, let feedbackC = feedbackC {
                     LocomotiveSpeedMeasureControlsView(document: document, loc: loc,
-                                                  speedEntries: $selectedSpeedEntries,
-                                                  feedbackA: feedbackA,
-                                                  feedbackB: feedbackB,
-                                                  feedbackC: feedbackC,
-                                                  distanceAB: $distanceAB,
-                                                  distanceBC: $distanceBC,
-                                                  running: $running,
-                                                  currentSpeedEntry: $currentSpeedEntry)
+                                                       speedEntries: $selectedSpeedEntries,
+                                                       feedbackA: feedbackA,
+                                                       feedbackB: feedbackB,
+                                                       feedbackC: feedbackC,
+                                                       distanceAB: $distanceAB,
+                                                       distanceBC: $distanceBC,
+                                                       running: $running,
+                                                       currentSpeedEntry: $currentSpeedEntry)
                         .padding([.leading, .trailing])
                 }
             }
-            
+
             Divider()
 
             HStack {
@@ -108,29 +107,28 @@ struct LocomotiveSpeedMeasurementsView: View {
             }
         }
     }
-    
+
     func updateSelectedSteps() {
         selectedSpeedEntries.removeAll()
-        
+
         var steps: Set<LocomotiveSpeed.SpeedTableEntry.ID> = [loc.speed.speedTable[1].id]
         var index = 10
         while index < loc.speed.speedTable.count {
             steps.insert(loc.speed.speedTable[index].id)
             index += 10
         }
-        steps.insert(loc.speed.speedTable[loc.speed.speedTable.count-1].id)
+        steps.insert(loc.speed.speedTable[loc.speed.speedTable.count - 1].id)
         selectedSpeedEntries = steps
     }
 }
 
 struct TrainSpeedMeasureFeedbackView: View {
-
     let document: LayoutDocument
     let layout: Layout
     let label: String
-    
+
     @Binding var feedbackUUID: String?
-    
+
     var feedback: Feedback? {
         if let feedbackUUID = feedbackUUID, let feedback = layout.feedbacks[Identifier<Feedback>(uuid: feedbackUUID)] {
             return feedback
@@ -138,12 +136,12 @@ struct TrainSpeedMeasureFeedbackView: View {
             return nil
         }
     }
-    
+
     var body: some View {
         VStack {
             Text(label)
             Picker(label, selection: $feedbackUUID) {
-                ForEach(layout.feedbacks.elements, id:\.self) { feedback in
+                ForEach(layout.feedbacks.elements, id: \.self) { feedback in
                     Text(feedback.name).tag(feedback.id.uuid as String?)
                 }
             }
@@ -153,7 +151,6 @@ struct TrainSpeedMeasureFeedbackView: View {
 }
 
 struct TrainSpeedMeasureDistanceView: View {
-
     @Binding var distance: Double
 
     var body: some View {
@@ -169,7 +166,6 @@ struct TrainSpeedMeasureDistanceView: View {
 }
 
 struct TrainSpeedMeasureWizardView_Previews: PreviewProvider {
-    
     static let doc = LayoutDocument(layout: LayoutComplex().newLayout())
 
     static var previews: some View {

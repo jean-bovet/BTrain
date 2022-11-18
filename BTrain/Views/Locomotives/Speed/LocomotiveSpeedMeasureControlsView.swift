@@ -13,7 +13,6 @@
 import SwiftUI
 
 struct LocomotiveSpeedMeasureControlsView: View {
-    
     let document: LayoutDocument
     let loc: Locomotive
     @Binding var speedEntries: Set<LocomotiveSpeed.SpeedTableEntry.ID>
@@ -25,22 +24,22 @@ struct LocomotiveSpeedMeasureControlsView: View {
 
     @Binding var running: Bool
     @Binding var currentSpeedEntry: LocomotiveSpeed.SpeedTableEntry?
-    
+
     @State private var progressInfo: String?
     @State private var progressValue: Double?
-    
+
     var feedbackAName: String {
         feedbackName(feedbackID: feedbackA, defaultName: "A")
     }
-    
+
     var feedbackBName: String {
         feedbackName(feedbackID: feedbackB, defaultName: "B")
     }
-    
+
     var feedbackCName: String {
         feedbackName(feedbackID: feedbackC, defaultName: "C")
     }
-    
+
     var body: some View {
         HStack {
             if let progressInfo = progressInfo {
@@ -48,9 +47,9 @@ struct LocomotiveSpeedMeasureControlsView: View {
             } else {
                 Text("􀁟 Position locomotive \"\(loc.name)\" before feedback \(feedbackAName) with its travel direction towards \(feedbackAName) 􀄫 \(feedbackBName) 􀄫 \(feedbackCName).")
             }
-            
+
             Spacer()
-            
+
             if running {
                 if let progressValue = progressValue {
                     ProgressView(value: progressValue)
@@ -66,7 +65,7 @@ struct LocomotiveSpeedMeasureControlsView: View {
             }
         }
     }
-    
+
     private func feedbackName(feedbackID: String, defaultName: String) -> String {
         if let name = document.layout.feedbacks[.init(uuid: feedbackID)]?.name {
             return name
@@ -77,8 +76,8 @@ struct LocomotiveSpeedMeasureControlsView: View {
 
     private func measure() {
         document.measurement = LocomotiveSpeedMeasurement(layout: document.layout, executor: document.layoutController, interface: document.interface, loc: loc, speedEntries: speedEntries,
-                                                feedbackA: Identifier<Feedback>(uuid: feedbackA), feedbackB: Identifier<Feedback>(uuid: feedbackB), feedbackC: Identifier<Feedback>(uuid: feedbackC),
-                                                distanceAB: distanceAB, distanceBC: distanceBC)
+                                                          feedbackA: Identifier<Feedback>(uuid: feedbackA), feedbackB: Identifier<Feedback>(uuid: feedbackB), feedbackC: Identifier<Feedback>(uuid: feedbackC),
+                                                          distanceAB: distanceAB, distanceBC: distanceBC)
         document.measurement?.start { info in
             if info.step == .done {
                 self.done()
@@ -94,7 +93,7 @@ struct LocomotiveSpeedMeasureControlsView: View {
         document.measurement?.cancel()
         done()
     }
-    
+
     private func done() {
         progressInfo = nil
         running = false
@@ -103,14 +102,13 @@ struct LocomotiveSpeedMeasureControlsView: View {
 }
 
 struct LocomotiveSpeedMeasureControlsView_Previews: PreviewProvider {
-    
     static let doc = LayoutDocument(layout: LayoutComplex().newLayout())
     static let measurement = LocomotiveSpeedMeasurement(layout: doc.layout, executor: doc.layoutController, interface: doc.interface, loc: doc.layout.locomotives[0], speedEntries: [10],
-                                                   feedbackA: Identifier<Feedback>(uuid: "OL1.1"), feedbackB: Identifier<Feedback>(uuid: "OL1.1"), feedbackC: Identifier<Feedback>(uuid: "OL1.1"),
-                                                   distanceAB: 10, distanceBC: 20)
+                                                        feedbackA: Identifier<Feedback>(uuid: "OL1.1"), feedbackB: Identifier<Feedback>(uuid: "OL1.1"), feedbackC: Identifier<Feedback>(uuid: "OL1.1"),
+                                                        distanceAB: 10, distanceBC: 20)
     static var previews: some View {
         LocomotiveSpeedMeasureControlsView(document: doc, loc: doc.layout.locomotives[0], speedEntries: .constant([]),
-                                      feedbackA: "a", feedbackB: "b", feedbackC: "c", distanceAB: .constant(0), distanceBC: .constant(0),
-                                      running: .constant(false), currentSpeedEntry: .constant(nil))
+                                           feedbackA: "a", feedbackB: "b", feedbackC: "c", distanceAB: .constant(0), distanceBC: .constant(0),
+                                           running: .constant(false), currentSpeedEntry: .constant(nil))
     }
 }

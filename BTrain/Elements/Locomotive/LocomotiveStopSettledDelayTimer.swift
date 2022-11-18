@@ -22,24 +22,22 @@ import Foundation
 /// locomotive has stopped so this extra wait time can be configured in the UX, per locomotive, and
 /// adjusted by the user depending on the locomotive speed inertia behavior.
 protocol LocomotiveStopSettledDelayTimer {
-    
     /// Schedules the timer for the specified locomotive
     /// - Parameters:
     ///   - loc: the locomotive to wait to come to a full stop
     ///   - completed: true if the speed command has completed, false if it has been cancelled
     ///   - completion: the completion block to invoke when the timer fires
     func schedule(loc: Locomotive, completed: Bool, completion: @escaping (Bool) -> Void)
-    
+
     /// Cancels the timer
     func cancel()
-    
 }
 
 /// Default implementation of the settled timer
 final class DefaultLocomotiveStopSettledDelayTimer: LocomotiveStopSettledDelayTimer {
     var timer: Timer?
     var block: ((Bool) -> Void)?
-    
+
     func schedule(loc: Locomotive, completed: Bool, completion: @escaping (Bool) -> Void) {
         assert(block == nil)
         assert(timer == nil)
@@ -47,13 +45,13 @@ final class DefaultLocomotiveStopSettledDelayTimer: LocomotiveStopSettledDelayTi
         block = { completed in
             completion(completed)
         }
-        timer = Timer.scheduledTimer(withTimeInterval: loc.speed.stopSettleDelay * BaseTimeFactor, repeats: false) { timer in
+        timer = Timer.scheduledTimer(withTimeInterval: loc.speed.stopSettleDelay * BaseTimeFactor, repeats: false) { _ in
             self.block?(completed)
             self.block = nil
             self.timer = nil
         }
     }
-    
+
     func cancel() {
         if let block = block {
             block(false)

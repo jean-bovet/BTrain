@@ -16,27 +16,25 @@ struct TurnoutGraphElementIdentifier: GraphElementIdentifier {
     let uuid: String
     let turnoutId: Identifier<Turnout>
     init(_ turnoutId: Identifier<Turnout>) {
-        self.uuid = "t" + turnoutId.uuid
+        uuid = "t" + turnoutId.uuid
         self.turnoutId = turnoutId
     }
 }
 
 extension Turnout: GraphNode {
-    
     var identifier: GraphElementIdentifier {
         TurnoutGraphElementIdentifier(id)
     }
-        
+
     func weight() -> Double {
         length ?? 0
     }
-    
+
     func sockets() -> [SocketId] {
         allSockets.compactMap { $0.socketId }
     }
-    
+
     func reachableSockets(from socket: SocketId) -> [SocketId] {
         sockets(from: socket)
     }
-
 }

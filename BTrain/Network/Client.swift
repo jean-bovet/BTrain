@@ -15,7 +15,6 @@ import Network
 
 @available(macOS 10.14, *)
 final class Client {
-    
     typealias OnReadyBlock = () -> Void
     typealias OnDataBlock = (MarklinCANMessage) -> Void
     typealias OnErrorBlock = (Error) -> Void
@@ -25,22 +24,22 @@ final class Client {
     let address: String
     let host: NWEndpoint.Host
     let port: NWEndpoint.Port
-        
+
     init(address: String, port: UInt16) {
         self.address = address
-        self.host = NWEndpoint.Host(address)
+        host = NWEndpoint.Host(address)
         self.port = NWEndpoint.Port(rawValue: port)!
-        let nwConnection = NWConnection(host: self.host, port: self.port, using: .tcp)
+        let nwConnection = NWConnection(host: host, port: self.port, using: .tcp)
         connection = ClientConnection(nwConnection: nwConnection)
     }
-    
+
     deinit {
         stop()
     }
-    
+
     func start(onReady: @escaping OnReadyBlock, onData: @escaping OnDataBlock, onError: @escaping OnErrorBlock, onStop: @escaping OnStopBlock) {
         NSLog("Client started \(host) \(port)")
-        
+
         connection.didSucceedCallback = {
             onReady()
         }
@@ -50,18 +49,17 @@ final class Client {
         connection.didFailCallback = { error in
             onError(error)
         }
-        connection.didStopCallback = { () -> Void in
+        connection.didStopCallback = { () in
             onStop()
         }
         connection.start()
     }
-    
+
     func stop() {
         connection.stop()
     }
-    
+
     func send(data: Data, priority: Bool, onCompletion: @escaping () -> Void) {
         connection.send(data: data, priority: priority, onCompletion: onCompletion)
     }
-        
 }

@@ -15,31 +15,31 @@ import Foundation
 // A path consists of an array of elements.
 struct GraphPath: Equatable {
     let elements: [GraphPathElement]
-        
+
     var count: Int {
         elements.count
     }
-     
+
     var isEmpty: Bool {
         count == 0
     }
-    
+
     var toStrings: [String] {
         elements.map { $0.description }
     }
-    
+
     static func empty() -> GraphPath {
         .init([])
     }
-    
+
     init(_ elements: [GraphPathElement]) {
         self.elements = elements
     }
-    
+
     init(_ element: GraphPathElement) {
         self.init([element])
     }
-    
+
     init(_ elements: ArraySlice<GraphPathElement>) {
         self.init(Array(elements))
     }
@@ -47,17 +47,16 @@ struct GraphPath: Equatable {
     func contains(_ element: GraphPathElement) -> Bool {
         elements.contains(element)
     }
-        
-    static func +(lhs: GraphPath, rhs: GraphPath) -> GraphPath {
+
+    static func + (lhs: GraphPath, rhs: GraphPath) -> GraphPath {
         GraphPath(lhs.elements + rhs.elements)
     }
-    
-    static func +(lhs: GraphPath, rhs: GraphPathElement) -> GraphPath {
+
+    static func + (lhs: GraphPath, rhs: GraphPathElement) -> GraphPath {
         GraphPath(lhs.elements + [rhs])
     }
 
     static func == (lhs: GraphPath, rhs: GraphPath) -> Bool {
         lhs.elements == rhs.elements
     }
-
 }

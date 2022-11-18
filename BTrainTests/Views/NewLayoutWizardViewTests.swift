@@ -15,11 +15,10 @@ import XCTest
 @testable import BTrain
 import ViewInspector
 
-extension WizardSelectLayout: Inspectable { }
-extension WizardSelectLocomotive: Inspectable { }
+extension WizardSelectLayout: Inspectable {}
+extension WizardSelectLocomotive: Inspectable {}
 
 class NewLayoutWizardViewTests: RootViewTests {
-
     func testNewLayoutWizardView() throws {
         let doc = newDocument()
         let sut = NewLayoutWizardView(document: doc)
@@ -32,13 +31,13 @@ class NewLayoutWizardViewTests: RootViewTests {
         let sut = WizardSelectLayout(selectedLayout: .constant(doc.layout.id))
         _ = try sut.inspect().find(text: "Select a Layout:")
     }
-    
+
     func testWizardSelectLocomotive() throws {
         let doc = newDocument()
         let sut = WizardSelectLocomotive(document: doc, selectedTrains: .constant([doc.layout.trains[0].id]))
         _ = try sut.inspect().find(text: "Select one ore more locomotive:")
     }
-    
+
     func testHelper() throws {
         let doc = newDocument()
         let helper = PredefinedLayoutHelper()

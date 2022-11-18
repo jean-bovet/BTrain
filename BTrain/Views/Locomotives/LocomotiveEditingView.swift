@@ -13,12 +13,11 @@
 import SwiftUI
 
 struct LocomotiveEditingView: View {
-    
     @ObservedObject var document: LayoutDocument
     @ObservedObject var layout: Layout
 
     @State private var discoverLocomotiveConfirmation = false
-    
+
     var body: some View {
         LayoutElementsEditingView(layout: layout, new: {
             layout.newLocomotive()
@@ -58,7 +57,7 @@ struct LocomotiveEditingView: View {
             }
         }
         .alert("Are you sure you want to change the current list of locomotives with the locomotives definition from the Central Station?", isPresented: $discoverLocomotiveConfirmation) {
-            Button("Cancel", role: .cancel) { }
+            Button("Cancel", role: .cancel) {}
             Button("Download & Merge") {
                 document.locomotiveDiscovery.discover(merge: true)
             }
@@ -70,9 +69,8 @@ struct LocomotiveEditingView: View {
 }
 
 struct LocomotiveEditingView_Previews: PreviewProvider {
-    
     static let doc = LayoutDocument(layout: LayoutLoop2().newLayout())
-    
+
     static var previews: some View {
         ConfigurationSheet(title: "Locomotives") {
             LocomotiveEditingView(document: doc, layout: doc.layout)

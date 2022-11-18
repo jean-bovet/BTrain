@@ -13,11 +13,10 @@
 import SwiftUI
 
 struct StationEditingView: View {
-        
     @ObservedObject var layout: Layout
-    
+
     @State private var selection: Identifier<Station>? = nil
-    
+
     var body: some View {
         LayoutElementsEditingView(layout: layout, new: {
             Station(id: LayoutIdentity.newIdentity(layout.stations.elements, prefix: .station), name: "New Station", elements: [])

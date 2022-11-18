@@ -15,24 +15,23 @@ import XCTest
 @testable import BTrain
 
 class LayoutErrorTests: XCTestCase {
-    
     lazy var layout: Layout = {
-        let layout =  LayoutIncomplete().newLayout()
+        let layout = LayoutIncomplete().newLayout()
         return layout
     }()
-    
+
     var train0: Train {
         layout.trains[0]
     }
-    
+
     var train1: Train {
         layout.trains[1]
     }
-    
+
     var b1: Block {
         layout.blocks[0]
     }
-    
+
     var b2: Block {
         layout.blocks[1]
     }
@@ -40,7 +39,7 @@ class LayoutErrorTests: XCTestCase {
     var turnout: Turnout {
         layout.turnouts[0]
     }
-    
+
     func testMissingBlock() {
         let unknownBlock = Identifier<Block>(uuid: "foo")
         do {
@@ -50,7 +49,7 @@ class LayoutErrorTests: XCTestCase {
             XCTAssertEqual(error.localizedDescription, "Block foo not found")
         }
     }
-  
+
     func testMissingTrain() {
         do {
             try layout.remove(trainId: Identifier<Train>(uuid: "foo"))
@@ -100,13 +99,13 @@ class LayoutErrorTests: XCTestCase {
             XCTAssertEqual(error.localizedDescription, "Cannot reserve block 1 for train lw1 because the block is already reserved for Reservation(train=lw2, direction=next)")
         }
     }
-    
+
     func testAlwaysOneTransition() {
         do {
             layout.link(from: b1.next, to: turnout.socket0)
             layout.link(from: turnout.socket1, to: b2.previous)
             layout.transitions[1].b = .init(block: b1.id, turnout: nil, socketId: nil)
-            _  = try layout.transition(from: b1.next)
+            _ = try layout.transition(from: b1.next)
             XCTFail("Must throw an exception")
         } catch {
             XCTAssertEqual(error.localizedDescription, "There must always be only one and only one transition")
@@ -122,5 +121,4 @@ class LayoutErrorTests: XCTestCase {
             XCTAssertEqual(error.localizedDescription, "Route foo not found")
         }
     }
-
 }

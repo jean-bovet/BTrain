@@ -13,46 +13,45 @@
 import Foundation
 
 final class LocomotiveSpeedAcceleration {
-    
     let fromSteps: Int
     let toSteps: Int
 
     let timeIncrement: TimeInterval
     let stepIncrement: Int
-    
+
     enum Acceleration: Int, Codable, CaseIterable, CustomStringConvertible {
         case none
         case linear
         case bezier
-        
+
         var description: String {
             switch self {
             case .none:
                 return "Immediate"
-                
+
             case .linear:
                 return "Linear"
-                
+
             case .bezier:
                 return "Ease In & Out"
             }
         }
     }
-    
+
     let acceleration: Acceleration
-    
+
     var totalDuration: TimeInterval {
         ceil(abs(Double(toSteps) - Double(fromSteps)) / Double(stepIncrement)) * timeIncrement
     }
-    
+
     init(fromSteps: Int, toSteps: Int, timeIncrement: TimeInterval, stepIncrement: Int, type: Acceleration) {
         self.fromSteps = fromSteps
         self.toSteps = toSteps
         self.timeIncrement = timeIncrement
         self.stepIncrement = stepIncrement
-        self.acceleration = type
+        acceleration = type
     }
-    
+
     func stepValue(at time: TimeInterval) -> Int {
         switch acceleration {
         case .none:
@@ -63,10 +62,9 @@ final class LocomotiveSpeedAcceleration {
             return Int(bezier(for: max(0, min(1, time / totalDuration)), p0: Double(fromSteps), p1: Double(fromSteps), p2: Double(toSteps), p3: Double(toSteps)))
         }
     }
-    
+
     // https://en.wikipedia.org/wiki/Bézier_curve
     private func bezier(for t: Double, p0: Double, p1: Double, p2: Double, p3: Double) -> Double {
-        pow(1-t, 3) * p0 + 3 * pow(1-t, 2) * t * p1 + 3 * (1-t) * pow(t, 2) * p2 + pow(t, 3) * p3
+        pow(1 - t, 3) * p0 + 3 * pow(1 - t, 2) * t * p1 + 3 * (1 - t) * pow(t, 2) * p2 + pow(t, 3) * p3
     }
-    
 }

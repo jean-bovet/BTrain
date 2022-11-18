@@ -37,7 +37,6 @@ extension Int {
 }
 
 extension String {
-    
     var valueFromHex: UInt32? {
         guard starts(with: "0x") else {
             return nil

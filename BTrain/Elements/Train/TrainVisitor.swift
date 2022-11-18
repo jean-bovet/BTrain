@@ -15,15 +15,14 @@ import Foundation
 // This class provides an easy way to visit all the elements (transitions, turnouts and blocks)
 // that a train occupies, including the individual parts of each block.
 final class TrainVisitor {
-    
     struct BlockAttributes {
         // True if this block is the one containing the locomotive
         // (the head block of the train).
         let headBlock: Bool
-                
+
         // Direction of travel of the train inside the block
         var trainDirection: Direction
-        
+
         // An array of all the positions that are occupied by the train.
         // Each position starts at 0 up to the number of feedback + 1 and
         // is always in the natural direction of the block.
@@ -31,19 +30,19 @@ final class TrainVisitor {
         // going to be the position of the locomotive
         var positions = [Int]()
     }
-    
+
     typealias TransitionCallbackBlock = (ITransition) throws -> Void
     typealias TurnoutCallbackBlock = (ElementVisitor.TurnoutInfo) throws -> Void
     typealias BlockCallbackBlock = (Block, BlockAttributes) throws -> Void
 
     let layout: Layout
     let visitor: ElementVisitor
-    
+
     init(layout: Layout) {
         self.layout = layout
-        self.visitor = ElementVisitor(layout: layout)
+        visitor = ElementVisitor(layout: layout)
     }
-    
+
     /// Visit all the elements that a train occupies - transitions, turnouts and blocks.
     ///
     /// - Parameters:
@@ -55,32 +54,33 @@ final class TrainVisitor {
     func visit(train: Train,
                transitionCallback: TransitionCallbackBlock,
                turnoutCallback: TurnoutCallbackBlock,
-               blockCallback: BlockCallbackBlock) throws -> Bool {
+               blockCallback: BlockCallbackBlock) throws -> Bool
+    {
         guard let locomotiveBlockId = train.blockId else {
             throw LayoutError.trainNotAssignedToABlock(train: train)
         }
-        
+
         guard let locomotiveBlock = layout.blocks[locomotiveBlockId] else {
             throw LayoutError.blockNotFound(blockId: locomotiveBlockId)
         }
-                
+
         guard let trainInstance = locomotiveBlock.trainInstance else {
             throw LayoutError.trainNotFoundInBlock(blockId: locomotiveBlockId)
         }
-        
+
         guard let trainLength = train.length else {
             // If the train length is not defined, we invoke once the callback for the entire block
             try blockCallback(locomotiveBlock, BlockAttributes(headBlock: true, trainDirection: trainInstance.direction))
             return true
         }
-                        
+
         // Keep track of the remaining train length that needs to have reserved blocks
         var remainingTrainLength = trainLength
 
         // Note: the direction in which we visit the blocks is always in the opposite direction
         // of the train. This will change when we support moving backwards with the train
         let direction = trainInstance.direction.opposite
-        
+
         try visitor.visit(fromBlockId: locomotiveBlock.id, direction: direction, callback: { info in
             if let transition = info.transition {
                 // Transition is just a virtual connection between two elements, no physical length exists.
@@ -105,11 +105,11 @@ final class TrainVisitor {
                 return .stop
             }
         })
-        
+
         // Returns true if all the train length has been visited
         return remainingTrainLength <= 0
     }
-    
+
     /// Visit all the parts of a block. A block part is a portion of a block between two feedbacks or the beginning/end of
     /// the block and a feedback.
     /// - Parameters:
@@ -122,13 +122,13 @@ final class TrainVisitor {
     /// - Returns: the remaining train length after visiting this block
     private func visitBlockParts(trainPosition: Int, remainingTrainLength: Double, block: Block, headBlock: Bool, direction: Direction, blockCallback: BlockCallbackBlock) throws -> Double {
         var currentRemainingTrainLength = remainingTrainLength
-        
+
         // [ 0 | 1 | 2 ]
         //   =   =>
         //   <   <   <   (direction previous)
         //      <=   =
         //   >   >   >   (direction next)
-                
+
         // Determine the starting position where to begin filling out parts of the block
         var position: Int
         if headBlock {
@@ -136,7 +136,7 @@ final class TrainVisitor {
         } else {
             position = direction == .previous ? block.feedbacks.count : 0
         }
-        
+
         let increment = direction == .previous ? -1 : 1
 
         // Note: the train direction is always the opposite of the direction of visit
@@ -153,9 +153,9 @@ final class TrainVisitor {
             } else {
                 currentRemainingTrainLength -= allPartsLength[position]!
             }
-            
+
             position += increment
-            while ((increment < 0 && position >= 0) || (increment > 0 && position < block.feedbacks.count + 1)) && currentRemainingTrainLength > 0 {
+            while (increment < 0 && position >= 0) || (increment > 0 && position < block.feedbacks.count + 1), currentRemainingTrainLength > 0 {
                 bv.positions.append(position)
                 currentRemainingTrainLength -= allPartsLength[position]!
                 position += increment
@@ -163,14 +163,14 @@ final class TrainVisitor {
         } else if let length = block.length {
             // If the parts length are not available, let's use the block full length
             position += increment
-            while ((increment < 0 && position >= 0) || (increment > 0 && position < block.feedbacks.count + 1)) {
+            while (increment < 0 && position >= 0) || (increment > 0 && position < block.feedbacks.count + 1) {
                 bv.positions.append(position)
                 position += increment
             }
 
             currentRemainingTrainLength -= length
         }
-                
+
         try blockCallback(block, bv)
 
         return currentRemainingTrainLength

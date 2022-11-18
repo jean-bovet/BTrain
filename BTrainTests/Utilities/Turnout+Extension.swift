@@ -15,12 +15,11 @@ import Foundation
 @testable import BTrain
 
 extension Turnout {
-    
     func setState(_ state: State) {
         requestedState = state
         actualState = state
     }
-    
+
     static func singleLeft() -> Turnout {
         let t1 = Turnout(name: "1")
         t1.category = .singleLeft
@@ -28,7 +27,7 @@ extension Turnout {
         t1.requestedState = .straight
         return t1
     }
-    
+
     static func singleRight() -> Turnout {
         let t1 = Turnout(name: "1")
         t1.category = .singleRight
@@ -63,6 +62,4 @@ extension Turnout {
         t1.requestedState = .straight
         return t1
     }
-
 }
-

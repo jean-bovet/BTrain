@@ -16,22 +16,21 @@ let SideListFixedWidth = 400.0
 
 // This is the main application view. It knows how to switch between views and how to respond to most of the commands.
 struct DocumentView: View {
-
     @ObservedObject var document: LayoutDocument
 
     @State private var showNewWizard = false
     @State private var connectAlertShowing = false
     @State private var showDiagnosticsSheet = false
     @State private var repairLayoutTrigger = false
-    
+
     @AppStorage("showSimulator") var showSimulator: Bool = false
     @AppStorage(SettingsKeys.autoConnectSimulator) private var autoConnectSimulator = false
     @AppStorage(SettingsKeys.autoEnableSimulator) private var autoEnableSimulator = false
-    
+
     var idealSheetWidth: CGFloat {
         (NSApp.keyWindow?.contentView?.bounds.width ?? 500) * 0.75
     }
-    
+
     var idealSheetHeight: CGFloat {
         (NSApp.keyWindow?.contentView?.bounds.height ?? 400) * 0.75
     }
@@ -50,14 +49,14 @@ struct DocumentView: View {
                 }
             }
             .frame(width: 500)
-            
+
             SwitchboardContainerView(layout: document.layout,
                                      layoutController: document.layoutController,
                                      document: document,
                                      switchboard: document.switchboard,
                                      state: document.switchboard.state)
         }
-        .onChange(of: document.triggerLayoutDiagnostic, perform: { v in
+        .onChange(of: document.triggerLayoutDiagnostic, perform: { _ in
             if document.triggerLayoutDiagnostic {
                 showDiagnosticsSheet = true
                 document.triggerLayoutDiagnostic = false
@@ -87,7 +86,7 @@ struct DocumentView: View {
                 .frame(idealWidth: idealSheetWidth, idealHeight: idealSheetHeight)
         }
     }
-    
+
     var displaySheetView: some View {
         ConfigurationSheet(title: document.displaySheetType.label) {
             switch document.displaySheetType {

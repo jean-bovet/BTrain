@@ -13,18 +13,17 @@
 import SwiftUI
 
 struct CS3SendMessageView: View {
-    
     enum CS3Command {
         case setDirection
         case queryDirection
         case speed
     }
-    
+
     let doc: LayoutDocument
-    
+
     @State private var selection: CS3Command = .queryDirection
     @State private var cs3Command: Command? = nil
-    
+
     @State private var priority: UInt8 = 0
     @State private var command: UInt8 = 0
     @State private var resp: UInt8 = 0
@@ -47,28 +46,28 @@ struct CS3SendMessageView: View {
                     Text("Query Direction").tag(CS3Command.queryDirection)
                     Text("Speed").tag(CS3Command.speed)
                 }
-                
+
                 switch selection {
                 case .setDirection:
                     CS3CommandDirectionView(doc: doc, query: false, command: $cs3Command)
-                    
+
                 case .queryDirection:
                     CS3CommandDirectionView(doc: doc, query: true, command: $cs3Command)
-                    
+
                 case .speed:
                     CS3CommandSpeedView(doc: doc, command: $cs3Command)
                 }
             }
-            
+
             Divider()
-            
+
             Form {
                 TextField("Prio:", value: $priority, format: .number).unitStyle(priority.toHex())
                 TextField("Command:", value: $command, format: .number).unitStyle(command.toHex())
                 TextField("Resp:", value: $resp, format: .number).unitStyle(resp.toHex())
                 TextField("Hash:", value: $hash, format: .number).unitStyle(hash.toHex())
                 TextField("DLC:", value: $dlc, format: .number).unitStyle(dlc.toHex())
-                
+
                 GroupBox("Bytes") {
                     HStack {
                         TextField("0:", value: $byte0, format: .number).unitStyle(byte0.toHex())
@@ -76,7 +75,7 @@ struct CS3SendMessageView: View {
                         TextField("2:", value: $byte2, format: .number).unitStyle(byte2.toHex())
                         TextField("3:", value: $byte3, format: .number).unitStyle(byte3.toHex())
                     }
-                    
+
                     HStack {
                         TextField("4:", value: $byte4, format: .number).unitStyle(byte4.toHex())
                         TextField("5:", value: $byte5, format: .number).unitStyle(byte5.toHex())
@@ -85,19 +84,19 @@ struct CS3SendMessageView: View {
                     }
                 }
             }
-            
+
             Button("Send") {
                 if let command = cs3Command {
                     doc.interface.execute(command: command, completion: nil)
                 }
             }
-        }.onChange(of: selection) { newValue in
+        }.onChange(of: selection) { _ in
             updateFields()
-        }.onAppear() {
+        }.onAppear {
             updateFields()
         }
     }
-        
+
     private func updateFields() {
         guard let command = cs3Command else {
             return
@@ -106,8 +105,8 @@ struct CS3SendMessageView: View {
         guard let (cm, _) = MarklinCANMessage.from(command: command) else {
             return
         }
-        
-        self.priority = cm.prio
+
+        priority = cm.prio
         self.command = cm.command
         resp = cm.resp
         hash = cm.hash
@@ -124,9 +123,8 @@ struct CS3SendMessageView: View {
 }
 
 struct CS3SendMessageView_Previews: PreviewProvider {
-    
     static let doc = LayoutDocument(layout: LayoutComplex().newLayout())
-    
+
     static var previews: some View {
         CS3SendMessageView(doc: doc)
     }

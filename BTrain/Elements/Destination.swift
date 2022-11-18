@@ -16,26 +16,26 @@ import Foundation
 struct Destination: Equatable, Codable {
     // The block to reach
     let blockId: Identifier<Block>
-        
+
     // An optional direction of travel within that block.
     // If not specified, the natural direction of the block is used.
     let direction: Direction?
-    
+
     init(_ blockId: Identifier<Block>) {
         self.blockId = blockId
-        self.direction = nil
+        direction = nil
     }
-    
+
     init(_ blockId: Identifier<Block>, direction: Direction) {
         self.blockId = blockId
         self.direction = direction
     }
-    
+
     func hasReached(block: Block) -> Bool {
         guard block.id == blockId else {
             return false
         }
-        
+
         if let direction = direction {
             return direction == block.trainInstance?.direction
         } else {

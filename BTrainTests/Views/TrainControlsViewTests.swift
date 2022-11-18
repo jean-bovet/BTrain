@@ -10,38 +10,37 @@
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-import XCTest
 import SwiftUI
 import ViewInspector
+import XCTest
 
 @testable import BTrain
 
-extension TrainControlActionsView: Inspectable { }
-extension TrainControlSetLocationSheet: Inspectable { }
-extension TrainControlStateView: Inspectable { }
+extension TrainControlActionsView: Inspectable {}
+extension TrainControlSetLocationSheet: Inspectable {}
+extension TrainControlStateView: Inspectable {}
 
-extension SpeedSlider: Inspectable { }
-extension CustomSlider: Inspectable { }
+extension SpeedSlider: Inspectable {}
+extension CustomSlider: Inspectable {}
 
 class TrainControlsViewTests: RootViewTests {
-
     func testControlList() throws {
         let doc = newDocument()
         doc.layout.trains[0].blockId = doc.layout.blocks[0].id
-        
+
         let sut = TrainControlListView(layout: doc.layout, document: doc, pinnedTrainIds: .constant([]))
-        
+
         let trainView = try sut.inspect().find(TrainControlContainerView.self)
-        
+
         // Train Location
         let trainLocationView = try trainView.vStack().hStack(0).vStack(0).view(TrainControlLocationView.self, 1)
-        
+
         let locationText = try trainLocationView.vStack().hStack(0).hStack(0).text(0)
         XCTAssertEqual(try locationText.string(), "Location:")
-                
+
         // Train Controls
         let trainControlSpeedView = try trainView.find(TrainControlSpeedView.self)
-                        
+
         _ = try trainControlSpeedView.find(text: "0")
         doc.layout.locomotives[0].speed.requestedKph = 79
         _ = try trainControlSpeedView.find(text: "79")
@@ -51,13 +50,13 @@ class TrainControlsViewTests: RootViewTests {
         let picker = try trainRouteView.find(ViewType.Picker.self)
         XCTAssertEqual(try picker.text(0).string(), "Automatic")
     }
-    
+
     func testRouteActions() throws {
         let layout = LayoutLoop1().newLayout()
         let doc = LayoutDocument(layout: layout)
         doc.connected = true
         let train = layout.trains[0]
-        
+
         let sut = TrainControlRouteView(document: doc, train: train, trainRuntimeError: .constant(nil))
 
         train.scheduling = .unmanaged
@@ -82,7 +81,7 @@ class TrainControlsViewTests: RootViewTests {
         let sut = TrainControlActionsView(document: doc, layout: doc.layout, filterRunningTrains: .constant(true))
         _ = try sut.inspect().find(button: "􀊋 Start All")
     }
-    
+
     func testSetLocationSheet() throws {
         let doc = newDocument()
         let sut = TrainControlSetLocationSheet(layout: doc.layout, controller: doc.layoutController, train: doc.layout.trains[0])

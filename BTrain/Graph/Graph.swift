@@ -17,10 +17,8 @@ typealias SocketId = Int
 
 // The identifier for an element in the graph (node or edge)
 protocol GraphElementIdentifier {
-    
     // Returns the unique identifier
     var uuid: String { get }
-    
 }
 
 // Defines a generic graph consisting of nodes and edges.
@@ -28,7 +26,7 @@ protocol GraphElementIdentifier {
 protocol Graph {
     // Returns the edge that starts at `from` node from the specified `socketId`.
     func edge(from: GraphNode, socketId: SocketId) -> GraphEdge?
-    
+
     // Returns the node corresponding to the identifier by `for`
     func node(for: GraphElementIdentifier) -> GraphNode?
 }
@@ -39,18 +37,18 @@ protocol Graph {
 protocol GraphNode {
     /// The unique identifier of the node
     var identifier: GraphElementIdentifier { get }
-    
+
     /// The name of the node
     var name: String { get }
-    
+
     /// Returns the weight of the node given the specified constraints
     /// - Returns: the weight of the node
     func weight() -> Double
-    
+
     /// Returns all the available sockets for the node given the specified constraints
     /// - Returns: the available sockets
     func sockets() -> [SocketId]
-        
+
     /// Returns all the sockets reachable from a specific socket, given the specified constraints.
     ///
     /// In other words, given a specific edge entering the node and constraints,
@@ -65,10 +63,10 @@ protocol GraphNode {
 protocol GraphEdge {
     // The unique identifier of the edge
     var identifier: GraphElementIdentifier { get }
-    
+
     var fromNode: GraphElementIdentifier { get }
     var fromNodeSocket: SocketId? { get }
-    
+
     var toNode: GraphElementIdentifier { get }
     var toNodeSocket: SocketId? { get }
 }

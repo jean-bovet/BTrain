@@ -10,35 +10,34 @@
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-import XCTest
 import ViewInspector
+import XCTest
 
 @testable import BTrain
 
-extension DocumentView: Inspectable { }
-extension SwitchboardContainerView: Inspectable { }
-extension BlockEditingView: Inspectable { }
-extension TurnoutEditingView: Inspectable { }
-extension FeedbackEditingView: Inspectable { }
-extension TrainControlListView: Inspectable { }
-extension SwitchBoardView: Inspectable { }
-extension FeedbackView: Inspectable { }
-extension LayoutElementsEditingView: Inspectable { }
-extension LayoutElementsEditingView.ListOfElements: Inspectable { }
-extension TrainEditingView: Inspectable { }
-extension TrainDetailsView: Inspectable { }
-extension TrainControlContainerView: Inspectable { }
-extension TrainControlSpeedView: Inspectable { }
-extension TrainControlLocationView: Inspectable { }
-extension TrainControlRouteView: Inspectable { }
-extension UndoProvider: Inspectable { }
+extension DocumentView: Inspectable {}
+extension SwitchboardContainerView: Inspectable {}
+extension BlockEditingView: Inspectable {}
+extension TurnoutEditingView: Inspectable {}
+extension FeedbackEditingView: Inspectable {}
+extension TrainControlListView: Inspectable {}
+extension SwitchBoardView: Inspectable {}
+extension FeedbackView: Inspectable {}
+extension LayoutElementsEditingView: Inspectable {}
+extension LayoutElementsEditingView.ListOfElements: Inspectable {}
+extension TrainEditingView: Inspectable {}
+extension TrainDetailsView: Inspectable {}
+extension TrainControlContainerView: Inspectable {}
+extension TrainControlSpeedView: Inspectable {}
+extension TrainControlLocationView: Inspectable {}
+extension TrainControlRouteView: Inspectable {}
+extension UndoProvider: Inspectable {}
 
 class RootViewTests: BTTestCase {
-    
     func newLayout() -> Layout {
         newDocument().layout
     }
-    
+
     func newDocument() -> LayoutDocument {
         LayoutDocument(layout: LayoutLoop2().newLayout())
     }

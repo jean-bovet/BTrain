@@ -13,26 +13,25 @@
 import SwiftUI
 
 struct StationElementView: View {
-    
     let layout: Layout
     @Binding var element: Station.StationElement
-    
+
     var body: some View {
         HStack {
             UndoProvider($element.blockId) { blockId in
                 BlockPicker(layout: layout, blockId: blockId)
             }
-            
+
             UndoProvider($element.direction) { direction in
                 DirectionPicker(direction: direction)
             }
         }
-    }}
+    }
+}
 
 struct StationElementView_Previews: PreviewProvider {
-    
     static let layout = LayoutLoop1().newLayout()
-    
+
     static var previews: some View {
         StationElementView(layout: layout, element: .constant(.init(blockId: layout.blocks[0].id, direction: .next)))
     }

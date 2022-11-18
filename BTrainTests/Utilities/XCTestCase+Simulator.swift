@@ -10,18 +10,17 @@
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-import XCTest
 @testable import BTrain
+import XCTest
 
 extension XCTestCase {
-    
     func connectToSimulator(doc: LayoutDocument, enable: Bool = true) {
         let c = expectation(description: "connect")
         doc.simulator.turnoutSpeed = 0
-        doc.connectToSimulator(enable: false) { error in
+        doc.connectToSimulator(enable: false) { _ in
             c.fulfill()
         }
-        
+
         waitForExpectations(timeout: 0.5, handler: nil)
 
         if enable {
@@ -29,7 +28,7 @@ extension XCTestCase {
             doc.enable {
                 e.fulfill()
             }
-            
+
             waitForExpectations(timeout: 0.5, handler: nil)
         }
     }
@@ -40,7 +39,7 @@ extension XCTestCase {
             doc.disable {
                 d.fulfill()
             }
-            
+
             waitForExpectations(timeout: 0.5, handler: nil)
         }
 
@@ -48,7 +47,7 @@ extension XCTestCase {
         doc.disconnect {
             e.fulfill()
         }
-        
+
         waitForExpectations(timeout: 0.5, handler: nil)
     }
 
@@ -58,10 +57,10 @@ extension XCTestCase {
         doc.layoutController.go {
             goCommand.fulfill()
         }
-        
+
         wait(for: [goCommand], timeout: 0.5)
     }
-    
+
     func stop(doc: LayoutDocument) {
         let stopCommand = expectation(description: "stop")
         doc.layoutController.stop {

@@ -10,18 +10,17 @@
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-import XCTest
-import ViewInspector
 import SwiftUI
+import ViewInspector
+import XCTest
 
 @testable import BTrain
 
-extension NewLayoutWizardView: Inspectable { }
-extension ConnectSheet: Inspectable { }
-extension DiagnosticsSheet: Inspectable { }
+extension NewLayoutWizardView: Inspectable {}
+extension ConnectSheet: Inspectable {}
+extension DiagnosticsSheet: Inspectable {}
 
 class DocumentViewTests: RootViewTests {
-        
     @Binding var connectAlertShowing: Bool = true
 
     func testToolbarContent() {
@@ -44,5 +43,4 @@ class DocumentViewTests: RootViewTests {
         XCTAssertNoThrow(try sut.inspect().find(button: "OK"))
         XCTAssertNoThrow(try sut.inspect().find(text: "The layout is correct!"))
     }
-
 }

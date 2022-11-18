@@ -14,23 +14,22 @@ import Foundation
 
 /// Defines a single speed change command
 final class LocomotiveSpeedCommand {
-    
     /// The unique identifier of this command
     let requestUUID: Int
-    
+
     /// The requested speed
     let requestedKph: SpeedKph
-            
+
     /// The requested steps
     let requestedSteps: SpeedStep
-    
+
     /// The requested acceleration
     let acceleration: LocomotiveSpeedAcceleration.Acceleration
 
     /// An array of speed step that need to be sent to the Digital Controller
     /// in order to change the speed of the locomotive according to the acceleration profile.
     var steps: [SpeedStep]
-            
+
     /// A list of completion blocks to invoke after this speed command has completed
     var completionBlocks = [CompletionCancelBlock]()
 
@@ -38,16 +37,16 @@ final class LocomotiveSpeedCommand {
     enum Status: CustomStringConvertible {
         /// The speed change has not yet been executed
         case pending
-        
+
         /// The speed change has been cancelled
         case cancelled
-        
+
         /// The speed change has completed
         case finished
-        
+
         /// The speed change is in progress
         case working
-        
+
         var description: String {
             switch self {
             case .pending:
@@ -61,10 +60,10 @@ final class LocomotiveSpeedCommand {
             }
         }
     }
-    
+
     /// The status of this command
     var status: Status = .pending
-    
+
     /// True if the command is being processed by the Digital Controller.
     var isProcessedByDigitalController = false
 
@@ -72,7 +71,7 @@ final class LocomotiveSpeedCommand {
     /// the time it is executed until it has finished all its commands, including
     /// the stop settled timer if applicable.
     var running = false
-    
+
     init(requestUUID: Int, requestedKph: SpeedKph, requestedSteps: SpeedStep, acceleration: LocomotiveSpeedAcceleration.Acceleration, steps: [SpeedStep], completion: CompletionCancelBlock?) {
         self.requestUUID = requestUUID
         self.requestedKph = requestedKph
@@ -84,4 +83,3 @@ final class LocomotiveSpeedCommand {
         }
     }
 }
-    

@@ -13,16 +13,15 @@
 import SwiftUI
 
 struct BlockFeedbacksView: View {
-    
     let layout: Layout
     @ObservedObject var block: Block
-    
+
     var body: some View {
         VStack {
             BlockAllFeedbacksView(layout: layout, block: block)
 
             Spacer().frame(height: 20)
-            
+
             VStack {
                 GroupBox("Previous Direction") {
                     BlockDirectionFeedbacksView(layout: layout, direction: .previous, block: block)
@@ -38,7 +37,6 @@ struct BlockFeedbacksView: View {
 }
 
 struct BlockFeedbacksView_Previews: PreviewProvider {
-    
     static let layout = LayoutLoop2().newLayout()
 
     static var previews: some View {

@@ -15,25 +15,24 @@ import OrderedCollections
 
 /// Manages the various callbacks for a CommandInterface
 final class CommandInterfaceCallbacks {
-    
     final class CallbackRegistrar<T> {
         // Note: very important to keep the order in which the callback are registered because
         // this has many implications: for example, the layout controller is expecting to be
         // the first one to process changes from the layout before other components.
         private var callbacks = OrderedDictionary<UUID, T>()
-        
+
         /// Returns an array of all the registered callbacks
         var all: [T] {
             Array(callbacks.values)
         }
-        
+
         @discardableResult
         func register(_ callback: T) -> UUID {
             let uuid = UUID()
             callbacks[uuid] = callback
             return uuid
         }
-        
+
         func unregister(_ id: UUID) {
             callbacks.removeValue(forKey: id)
         }
@@ -52,13 +51,13 @@ final class CommandInterfaceCallbacks {
     var directionChanges = CallbackRegistrar<DirectionChangeCallback>()
     var turnoutChanges = CallbackRegistrar<TurnoutChangeCallback>()
     var locomotivesQueries = CallbackRegistrar<QueryLocomotiveCallback>()
-    
+
     /// Register a callback that will be invoked for each feedback event
     /// - Parameter forFeedbackChange: the callback block
     /// - Returns: the unique ID that can be used to unregister the callback
     @discardableResult
     func register(forFeedbackChange callback: @escaping FeedbackChangeCallback) -> UUID {
-        return feedbackChanges.register(callback)
+        feedbackChanges.register(callback)
     }
 
     /// Register a callback that will be invoked for each speed event
@@ -66,7 +65,7 @@ final class CommandInterfaceCallbacks {
     /// - Returns: the unique ID that can be used to unregister the callback
     @discardableResult
     func register(forSpeedChange callback: @escaping SpeedChangeCallback) -> UUID {
-        return speedChanges.register(callback)
+        speedChanges.register(callback)
     }
 
     /// Register a callback that will be invoked for each direction event
@@ -74,7 +73,7 @@ final class CommandInterfaceCallbacks {
     /// - Returns: the unique ID that can be used to unregister the callback
     @discardableResult
     func register(forDirectionChange callback: @escaping DirectionChangeCallback) -> UUID {
-        return directionChanges.register(callback)
+        directionChanges.register(callback)
     }
 
     /// Register a callback that will be invoked for each turnout event
@@ -82,7 +81,7 @@ final class CommandInterfaceCallbacks {
     /// - Returns: the unique ID that can be used to unregister the callback
     @discardableResult
     func register(forTurnoutChange callback: @escaping TurnoutChangeCallback) -> UUID {
-        return turnoutChanges.register(callback)
+        turnoutChanges.register(callback)
     }
 
     /// Register a callback that will be invoked for each query locomotive event
@@ -90,7 +89,7 @@ final class CommandInterfaceCallbacks {
     /// - Returns: the unique ID that can be used to unregister the callback
     @discardableResult
     func register(forLocomotivesQuery callback: @escaping QueryLocomotiveCallback) -> UUID {
-        return locomotivesQueries.register(callback)
+        locomotivesQueries.register(callback)
     }
 
     /// Unregisters a specified callback

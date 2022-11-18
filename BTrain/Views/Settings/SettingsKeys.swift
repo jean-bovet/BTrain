@@ -13,7 +13,6 @@
 import Foundation
 
 struct SettingsKeys {
-    
     static let autoConnectSimulator = "autoConnectSimulator"
     static let autoEnableSimulator = "autoEnableSimulator"
     static let fontSize = "fontSize"
@@ -33,7 +32,7 @@ struct SettingsKeys {
     static let logRoutingResolutionSteps = "logRoutingResolutionSteps"
     static let logReservation = "logReservation"
     static let logUnknownMessages = "logUnknownMessages"
-    
+
     static let logCategoryNetwork = "logCategoryNetwork"
     static let logCategoryRouter = "logCategoryRouter"
     static let logCategorySpeed = "logCategorySpeed"
@@ -42,7 +41,7 @@ struct SettingsKeys {
     static func bool(forKey key: String) -> Bool {
         UserDefaults.standard.bool(forKey: key)
     }
-    
+
     static func integer(forKey key: String, _ defaultValue: Int) -> Int {
         if UserDefaults.standard.value(forKey: key) == nil {
             UserDefaults.standard.set(defaultValue, forKey: key)
@@ -50,4 +49,3 @@ struct SettingsKeys {
         return UserDefaults.standard.integer(forKey: key)
     }
 }
-

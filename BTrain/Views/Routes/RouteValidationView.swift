@@ -13,26 +13,25 @@
 import SwiftUI
 
 struct RouteValidationView: View {
-    
     struct RouteError {
         let resolverErrors: [PathFinderResolver.ResolverError]
         let valid: Bool
     }
-    
+
     let layout: Layout
     let route: Route
-    
+
     @Binding var routeError: RouteError?
     @State private var resolvedRouteItems: [ResolvedRouteItem]?
-    
+
     var resolvedRouteDescription: String {
         guard let resolvedRouteItems = resolvedRouteItems else {
             return ""
         }
-        
+
         return resolvedRouteItems.toBlockNames().joined(separator: "→")
     }
-    
+
     var body: some View {
         VStack(alignment: .leading) {
             HStack {
@@ -52,7 +51,7 @@ struct RouteValidationView: View {
             }
         }
     }
-    
+
     func validateRoute() {
         let diag = LayoutDiagnostic(layout: layout)
         var errors = [LayoutDiagnostic.DiagnosticError]()
@@ -66,28 +65,24 @@ struct RouteValidationView: View {
             routeError = .init(resolverErrors: resolverError, valid: false)
         }
     }
-
 }
 
 extension Array where Element == ResolvedRouteItem {
-    
     func toBlockNames() -> [String] {
-        self.compactMap { step in
+        compactMap { step in
             switch step {
-            case .block(let stepBlock):
+            case let .block(stepBlock):
                 return stepBlock.block.name
-            case .turnout(_):
+            case .turnout:
                 return nil
             }
         }
     }
-
 }
 
 struct RouteValidationView_Previews: PreviewProvider {
-    
     static let doc = LayoutDocument(layout: LayoutComplexLoop().newLayout())
-    
+
     static var previews: some View {
         RouteValidationView(layout: doc.layout, route: doc.layout.routes[0], routeError: .constant(nil))
     }

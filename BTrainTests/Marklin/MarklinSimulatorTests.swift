@@ -10,30 +10,29 @@
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-import XCTest
 @testable import BTrain
+import XCTest
 
 /// This class tests the command sent by the simulator to BTrain, simulating commands made by the user on the Central Station 3
 class MarklinSimulatorTests: XCTestCase {
-
     func testFeedbackCommand() {
         let doc = LayoutDocument(layout: Layout())
-        
+
         connectToSimulator(doc: doc)
         defer {
             disconnectFromSimulator(doc: doc)
         }
 
         let e = expectation(description: "callback")
-        _ = doc.interface.callbacks.register(forFeedbackChange: { deviceId, contactId, value in
+        _ = doc.interface.callbacks.register(forFeedbackChange: { _, _, _ in
             e.fulfill()
         })
-        
+
         doc.simulator.triggerFeedback(feedback: Feedback("foo", deviceID: 1, contactID: 2))
-        
+
         waitForExpectations(timeout: 1.0)
     }
-    
+
     func testDirectionChange() {
         let doc = LayoutDocument(layout: LayoutLoop1().newLayout())
         // We must set the train in the layout for the direction to be
@@ -41,41 +40,41 @@ class MarklinSimulatorTests: XCTestCase {
         let train = doc.layout.trains[0]
         train.blockId = doc.layout.blocks.elements.first?.id
         XCTAssertTrue(train.locomotive!.directionForward)
-        
+
         connectToSimulator(doc: doc)
         defer {
             disconnectFromSimulator(doc: doc)
         }
 
         let e = expectation(description: "callback")
-        _ = doc.interface.callbacks.register(forDirectionChange: { address, decoderType, direction in
+        _ = doc.interface.callbacks.register(forDirectionChange: { _, _, direction in
             XCTAssertFalse(direction == .forward)
             e.fulfill()
         })
-        
+
         doc.simulator.setTrainDirection(train: doc.simulator.locomotives[0], directionForward: false)
-        
+
         waitForExpectations(timeout: 1.0)
-        
+
         XCTAssertFalse(train.locomotive!.directionForward)
     }
 
     func testTurnoutChange() {
         let doc = LayoutDocument(layout: Layout())
-        
+
         connectToSimulator(doc: doc)
         defer {
             disconnectFromSimulator(doc: doc)
         }
 
         let e = expectation(description: "callback")
-        _ = doc.interface.callbacks.register(forTurnoutChange: { address, state, power, acknowledgement in
+        _ = doc.interface.callbacks.register(forTurnoutChange: { _, state, _, _ in
             XCTAssertEqual(2, state)
             e.fulfill()
         })
-        
+
         doc.simulator.turnoutChanged(address: .init(7, .DCC), state: 2, power: 1)
-        
+
         waitForExpectations(timeout: 1.0)
     }
 
@@ -84,7 +83,7 @@ class MarklinSimulatorTests: XCTestCase {
         let train = doc.layout.trains[0]
         train.blockId = doc.layout.blocks.elements.first?.id
         train.speed!.actualKph = 70
-        
+
         connectToSimulator(doc: doc)
         defer {
             disconnectFromSimulator(doc: doc)
@@ -93,7 +92,7 @@ class MarklinSimulatorTests: XCTestCase {
         let e = expectation(description: "callback")
         let directCommand = expectation(description: "directCommand")
         let acknowledgement = expectation(description: "acknowledgement")
-        _ = doc.interface.callbacks.register(forSpeedChange: { address, decoderType, value, ack in
+        _ = doc.interface.callbacks.register(forSpeedChange: { _, _, value, ack in
             if ack {
                 acknowledgement.fulfill()
                 XCTAssertEqual(358, value.value)
@@ -102,20 +101,20 @@ class MarklinSimulatorTests: XCTestCase {
                 directCommand.fulfill()
             }
         })
-        
+
         doc.simulator.setTrainSpeed(train: doc.simulator.locomotives[0])
-        
+
         wait(for: [directCommand, acknowledgement, e], timeout: 1.0, enforceOrder: true)
     }
 
     func testMultipleInstances() {
         let doc = LayoutDocument(layout: Layout())
-        
+
         XCTAssertFalse(MarklinCS3Server.shared.running)
-        
+
         let s1 = MarklinCommandSimulator(layout: doc.layout, interface: doc.interface)
         let s2 = MarklinCommandSimulator(layout: doc.layout, interface: doc.interface)
-        
+
         s1.start()
         XCTAssertTrue(s1.started)
         XCTAssertTrue(MarklinCS3Server.shared.running)
@@ -123,13 +122,13 @@ class MarklinSimulatorTests: XCTestCase {
         s2.start()
         XCTAssertTrue(s2.started)
         XCTAssertTrue(MarklinCS3Server.shared.running)
-        
+
         let e1 = expectation(description: "stop-s1")
         s1.stop {
             e1.fulfill()
         }
         waitForExpectations(timeout: 1.0)
-        
+
         XCTAssertFalse(s1.started)
         XCTAssertTrue(MarklinCS3Server.shared.running)
 
@@ -138,7 +137,7 @@ class MarklinSimulatorTests: XCTestCase {
             e2.fulfill()
         }
         waitForExpectations(timeout: 1.0)
-        
+
         XCTAssertFalse(s2.started)
         XCTAssertFalse(MarklinCS3Server.shared.running)
     }
