@@ -89,7 +89,7 @@ struct DocumentView: View {
     }
     
     var displaySheetView: some View {
-        ConfigurationSheet(title: document.displaySheetType.rawValue) {
+        ConfigurationSheet(title: document.displaySheetType.label) {
             switch document.displaySheetType {
             case .layoutScripts:
                 LayoutScriptEditingView(doc: document, layout: document.layout)

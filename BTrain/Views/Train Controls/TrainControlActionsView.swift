@@ -29,13 +29,13 @@ struct TrainControlActionsView: View {
 
             Button("􀛷 Stop All") {
                 document.stopAll()
-            }.disabled(!document.trainsThatCanBeStopped)
+            }.disabled(!document.trainsThatCanBeStopped || !document.power)
             
             Spacer().fixedSpace()
 
             Button("􀊆 Finish All") {
                 document.finishAll()
-            }.disabled(!document.trainsThatCanBeFinished)
+            }.disabled(!document.trainsThatCanBeFinished || !document.power)
             
             Spacer()
 

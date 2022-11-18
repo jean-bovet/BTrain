@@ -47,6 +47,7 @@ struct RouteScriptEditorView: View {
                     Button("Verify") {
                         validator.validate(script: script, layout: layout)
                     }
+                    
                     switch validator.verifyStatus {
                     case .none:
                         Spacer()

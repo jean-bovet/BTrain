@@ -46,8 +46,8 @@ extension LayoutScriptCommand: Codable {
         self.action = try container.decode(Action.self, forKey: CodingKeys.action)
         self.children = try container.decode([LayoutScriptCommand].self, forKey: CodingKeys.children)
         
-        self.trainId = try container.decode(Identifier<Train>.self, forKey: CodingKeys.train)
-        self.routeScriptId = try container.decode(Identifier<RouteScript>.self, forKey: CodingKeys.route)
+        self.trainId = try container.decodeIfPresent(Identifier<Train>.self, forKey: CodingKeys.train)
+        self.routeScriptId = try container.decodeIfPresent(Identifier<RouteScript>.self, forKey: CodingKeys.route)
     }
     
     func encode(to encoder: Encoder) throws {

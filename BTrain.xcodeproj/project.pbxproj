@@ -1112,6 +1112,7 @@
 			children = (
 				A7F779E2272E20F500E73275 /* TrainControlListView.swift */,
 				A7CA5EBE2795D05A00171398 /* TrainControlActionsView.swift */,
+				A700B21E292741AF001CC33E /* TrainControlScriptView.swift */,
 				A747967E291EA869001DF7FA /* TrainControlHeaderView.swift */,
 				A7F779F72732407E00E73275 /* TrainControlContainerView.swift */,
 				A76507E7275AD1FE0079C71A /* TrainControlLocationView.swift */,
@@ -1121,7 +1122,6 @@
 				A76FD43728FD07A000E1A295 /* TrainControlMoveSheet.swift */,
 				A76FD43928FD07AA00E1A295 /* TrainControlRemoveSheet.swift */,
 				A744D13427659330005C2F37 /* TrainControlRouteView.swift */,
-				A700B21E292741AF001CC33E /* TrainControlScriptView.swift */,
 			);
 			path = "Train Controls";
 			sourceTree = "<group>";
