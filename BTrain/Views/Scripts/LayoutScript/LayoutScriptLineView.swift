@@ -19,10 +19,11 @@ struct LayoutScriptLineView: View {
     
     @ObservedObject var script: LayoutScript
     @Binding var command: LayoutScriptCommand
-    
+    @Binding var invalidCommandIds: Set<UUID>
+
     var body: some View {
         DragAndDropLineView(lineUUID: command.id.uuidString, dragInsideAllowed: true) {
-            LayoutScriptCommandView(doc: doc, layout: layout, script: script, command: $command)
+            LayoutScriptCommandView(doc: doc, layout: layout, script: script, command: $command, invalidCommandIds: $invalidCommandIds)
         } onMove: { sourceUUID, targetUUID, position in
             guard let sourceCommand = script.commands.commandWith(uuid: sourceUUID) else {
                 return
@@ -52,7 +53,7 @@ struct LayoutScriptLineView_Previews: PreviewProvider {
     
     static var previews: some View {
         VStack(alignment: .leading) {
-            LayoutScriptLineView(doc: doc, layout: layout, script: LayoutScript(), command: .constant(command))
+            LayoutScriptLineView(doc: doc, layout: layout, script: LayoutScript(), command: .constant(command), invalidCommandIds: .constant([]))
         }
     }
 }

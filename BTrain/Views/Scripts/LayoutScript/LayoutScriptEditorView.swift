@@ -17,7 +17,8 @@ struct LayoutScriptEditorView: View {
     let doc: LayoutDocument
     let layout: Layout
     @ObservedObject var script: LayoutScript
-        
+    @State private var invalidCommandIds = Set<UUID>()
+    
     var body: some View {
         VStack {
             if script.commands.isEmpty {
@@ -30,23 +31,44 @@ struct LayoutScriptEditorView: View {
             } else {
                 List {
                     ForEach($script.commands, id: \.self) { command in
-                        LayoutScriptLineView(doc: doc, layout: layout, script: script, command: command)
+                        LayoutScriptLineView(doc: doc, layout: layout, script: script, command: command, invalidCommandIds: $invalidCommandIds)
                         if let children = command.children {
                             ForEach(children, id: \.self) { command in
                                 HStack {
                                     Spacer().fixedSpace()
                                     Text("􀄵")
-                                    LayoutScriptLineView(doc: doc, layout: layout, script: script, command: command)
+                                    LayoutScriptLineView(doc: doc, layout: layout, script: script, command: command, invalidCommandIds: $invalidCommandIds)
                                 }
                             }
                         }
                     }
                 }
-                // TODO: Add verify button to validate that all referenced RouteScript are also valid
+                
+                HStack {
+                    Button("Verify") {
+                        verify()
+                    }
+                    Spacer()
+                }
             }
         }
     }    
     
+    func verify() {
+        invalidCommandIds.removeAll()
+        
+        for command in script.commands {
+            guard let routeScript = layout.routeScripts[command.routeScriptId] else {
+                return
+            }
+
+            var validator = RouteScriptValidator()
+            validator.validate(script: routeScript, layout: layout)
+            if validator.verifyStatus == .failure {
+                invalidCommandIds.insert(command.id)
+            }
+        }
+    }
 }
 
 struct LayoutScriptEditorView_Previews: PreviewProvider {

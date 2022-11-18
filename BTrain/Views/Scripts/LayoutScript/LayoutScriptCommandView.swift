@@ -19,10 +19,16 @@ struct LayoutScriptCommandView: View {
     
     @ObservedObject var script: LayoutScript
     @Binding var command: LayoutScriptCommand
-    
+    @Binding var invalidCommandIds: Set<UUID>
+
     var body: some View {
         HStack {
             Text("􀌃")
+
+            if invalidCommandIds.contains(command.id) {
+                Text("􀇿")
+                    .foregroundColor(.red)
+            }
 
             Text("Run train")
             TrainPicker(doc: doc, selectedTrain: $command.trainId)
@@ -60,7 +66,7 @@ struct LayoutScriptCommandView_Previews: PreviewProvider {
     static var previews: some View {
         VStack(alignment: .leading) {
             ForEach(commands, id:\.self) { command in
-                LayoutScriptCommandView(doc: doc, layout: doc.layout, script: script, command: .constant(command))
+                LayoutScriptCommandView(doc: doc, layout: doc.layout, script: script, command: .constant(command), invalidCommandIds: .constant([]))
                     .fixedSize()
             }
         }
