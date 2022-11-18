@@ -81,7 +81,7 @@ final class LayoutDocument: ObservableObject {
             case .routeScripts:
                 return "Routes"
             case .routes:
-                return "Routes (Raw)"
+                return "Routes (Developer)"
             case .trains:
                 return "Trains"
             case .locomotives:

@@ -142,8 +142,8 @@ extension Layout {
                 return "\(stepStation.stationId)"
             }
             
-        case .turnout(_):
-            return nil
+        case .turnout(let stepTurnout):
+            return description(of: stepTurnout.turnoutId)
         }
     }
     
@@ -152,6 +152,14 @@ extension Layout {
             return "\(block.name)"
         } else {
             return "\(blockId)"
+        }
+    }
+    
+    func description(of turnoutId: Identifier<Turnout>) -> String {
+        if let turnout = turnouts[turnoutId] {
+            return "\(turnout.name)"
+        } else {
+            return "\(turnoutId)"
         }
     }
     
