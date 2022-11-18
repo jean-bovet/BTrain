@@ -114,14 +114,14 @@ class GraphTests: XCTestCase {
         let layout = LayoutLoopWithStation().newLayout()
         
         // Without block reserved, the straightforward path from s1 to s2 is s1-b1-s2
-        var p = try layout.bestPath(from: "s1", toReachBlock: "s2", withDirection: .next, reservedBlockBehavior: .avoidReserved)!
+        var p = try layout.bestPath(from: "s1", toReachBlock: "s2", toDirection: .next, reservedBlockBehavior: .avoidReserved)!
         XCTAssertEqual(p.toStrings, ["0:s1:1", "0:t1:1", "0:t2:1", "0:b1:1", "1:t4:0", "0:s2:1"])
         
         // Reserve b1 so the algorithm needs to find the alternate route s1-b3-s2
         let b1 = layout.block(named: "b1")
         b1.reservation = .init("foo", .next)
                 
-        p = try layout.bestPath(from: "s1", toReachBlock: "s2", withDirection: .next, reservedBlockBehavior: .avoidReserved)!
+        p = try layout.bestPath(from: "s1", toReachBlock: "s2", toDirection: .next, reservedBlockBehavior: .avoidReserved)!
         XCTAssertEqual(p.toStrings, ["0:s1:1", "0:t1:1", "0:t2:2", "2:t3:0", "0:b3:1", "2:t4:0", "0:s2:1"])
     }
 

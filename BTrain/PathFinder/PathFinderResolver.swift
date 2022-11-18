@@ -134,42 +134,17 @@ struct PathFinderResolver {
     }
     
     private func resolveSegment(graph: Graph, from: GraphPathElement, to: GraphPathElement) throws -> GraphPath {
-        // Performance Optimization:
-        // If both `from` and `to` are separated only by turnouts,
-        // we can more quickly find the missing turnouts by using the standard path finder
-        // algorithm (instead of the shorted path algorithm which is going to analyze the entire
-        // graph which takes time).
-        var path = fastResolve(graph: graph, from: from, to: to)
-        if path.isEmpty {
-            // If the optimization above did not work, use the shortest path finder algorithm
-            // to find the shortest path between the two elements without any restrictions (that is,
-            // any number of turnouts and blocks can be situated in the path between the two elements).
-            path = try resolve(graph: graph, from: from, to: to)
-        }
-        return path
-    }
-    
-    private func fastResolve(graph: Graph, from: GraphPathElement, to: GraphPathElement) -> GraphPath {
-        let pfc = PathFinder.Constraints(layout: constraints.layout,
-                                         train: constraints.train,
-                                         reservedBlockBehavior: constraints.reservedBlockBehavior,
-                                         stopAtFirstBlock: true,
-                                         relaxed: constraints.relaxed)
-        let pf = PathFinder(constraints: pfc, settings: settings)
-        if let p = pf.path(graph: graph, from: from, to: to) {
-            return GraphPath(p.elements.dropFirst())
-        } else {
-            return GraphPath.empty()
-        }
-    }
-    
-    private func resolve(graph: Graph, from: GraphPathElement, to: GraphPathElement) throws -> GraphPath {        
+        // Use the shortest path finder algorithm to find the shortest path between the two elements without any restrictions (that is,
+        // any number of turnouts and blocks can be situated in the path between the two elements).
+        // Note: we cannot optimize if `from` and `to` are only separated by turnouts because even for turnouts, we need to find
+        // the sortest path considering each turnout length.
         if let p = try ShortestPathFinder.shortestPath(graph: graph, from: from, to: to, constraints: constraints, verbose: settings.verbose) {
             return GraphPath(p.elements.dropFirst())
         } else {
             return GraphPath.empty()
         }
     }
+    
 }
 
 extension PathFinderResolver.ResolverError: LocalizedError {

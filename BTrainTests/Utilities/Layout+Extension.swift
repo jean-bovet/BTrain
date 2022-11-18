@@ -90,8 +90,8 @@ extension Layout {
         self.blocks[Identifier<Block>(uuid: block)]?.reservation = nil
     }
         
-    func bestPath(from: String, toReachBlock toBlockName: String? = nil, withDirection toDirection: Direction? = nil, reservedBlockBehavior: PathFinder.Constraints.ReservedBlockBehavior, shortestPath: Bool = true) throws -> GraphPath? {
-        setTrain(train: trains[0], toBlockNamed: from)
+    func bestPath(from: String, fromDirection: Direction = .next, toReachBlock toBlockName: String? = nil, toDirection: Direction? = nil, reservedBlockBehavior: PathFinder.Constraints.ReservedBlockBehavior, shortestPath: Bool = true) throws -> GraphPath? {
+        setTrain(train: trains[0], toBlockNamed: from, direction: fromDirection)
         let toBlock = (toBlockName != nil) ? block(named: toBlockName!) : nil
         return try bestPath(ofTrain: trains[0], toReachBlock: toBlock, withDirection: toDirection, reservedBlockBehavior: reservedBlockBehavior, shortestPath: shortestPath)
     }

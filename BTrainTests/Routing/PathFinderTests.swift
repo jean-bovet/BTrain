@@ -109,20 +109,20 @@ class PathFinderTests: BTTestCase {
         train.blocksToAvoid = []
         train.turnoutsToAvoid = []
         
-        guard let path = try layout.bestPath(from: "NE1", toReachBlock: "LCF1", withDirection: .next, reservedBlockBehavior: .avoidReserved, shortestPath: false) else {
+        guard let path = try layout.bestPath(from: "NE1", toReachBlock: "LCF1", toDirection: .next, reservedBlockBehavior: .avoidReserved, shortestPath: false) else {
             XCTFail("Unable to find path from NE1 to LCF1")
             return
         }
         XCTAssertEqual(path.elements.toBlockSteps.toStrings(layout), ["NE1:next", "OL1:next", "OL2:next", "OL3:next", "NE4:next", "IL1:next", "IL2:next", "IL3:next", "S:next", "IL1:previous", "IL4:previous", "IL3:previous", "IL2:previous", "OL1:previous", "NE3:previous", "M1:next", "M2U:next", "LCF1:next"])
 
         // Now find out the shortest path
-        let shortestPath = try layout.bestPath(from: "NE1", toReachBlock: "LCF1", withDirection: .next, reservedBlockBehavior: .avoidReserved, shortestPath: true)!
+        let shortestPath = try layout.bestPath(from: "NE1", toReachBlock: "LCF1", toDirection: .next, reservedBlockBehavior: .avoidReserved, shortestPath: true)!
 
         XCTAssertTrue(shortestPath.elements.toBlockSteps.count < path.elements.toBlockSteps.count)
         XCTAssertEqual(shortestPath.elements.toBlockSteps.toStrings(layout), ["NE1:next", "IL1:next", "IL2:next", "IL3:next", "S:next", "IL1:previous", "NE4:previous", "M1:next", "M2U:next", "LCF1:next"])
 
         self.measure {
-            let path = try? layout.bestPath(from: "NE1", toReachBlock: "LCF1", withDirection: .next, reservedBlockBehavior: .avoidReserved, shortestPath: true)
+            let path = try? layout.bestPath(from: "NE1", toReachBlock: "LCF1", toDirection: .next, reservedBlockBehavior: .avoidReserved, shortestPath: true)
             XCTAssertNotNil(path)
         }
     }
@@ -132,8 +132,17 @@ class PathFinderTests: BTTestCase {
         
         layout.reserve("s1", with: "1", direction: .next)
         
-        let path = try layout.bestPath(from: "s1", toReachBlock: "s2", withDirection: .next, reservedBlockBehavior: .avoidReserved, shortestPath: true)!
+        let path = try layout.bestPath(from: "s1", toReachBlock: "s2", toDirection: .next, reservedBlockBehavior: .avoidReserved, shortestPath: true)!
         XCTAssertEqual(path.elements.toBlockSteps.toStrings(layout), ["s1:next", "b1:next", "b2:next", "b3:next", "s2:next"])
     }
  
+    func testPathBetweenTwoBlocksWithMultipleTurnouts() throws {
+        let layout = LayoutComplexWithHiddenStation().newLayout()
+        
+        let path = try layout.bestPath(from: "S3", fromDirection: .previous, toReachBlock: "IL_3", toDirection: .next, reservedBlockBehavior: .avoidReserved)!
+        XCTAssertEqual(path.elements.toBlockSteps.toStrings(layout), ["S3:previous", "IL_3:next"])
+        
+        // Note: ensure the path goes via the turnouts T15-T18-T17 and not via T15-T13-T17 which is a longer initiative.
+        XCTAssertEqual(path.elements.toSteps.toStrings(layout), ["S3:previous", "T15:(3>2)", "T18:(0>1)", "T17:(2>0)", "T12:(2>0)", "IL_3:next"])
+    }
 }
