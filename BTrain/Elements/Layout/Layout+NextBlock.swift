@@ -34,10 +34,6 @@ extension Layout {
             return nil
         }
 
-        guard let loc = train.locomotive else {
-            return nil
-        }
-
         let nextBlock: Block
 
         if train.scheduling == .unmanaged {
@@ -46,17 +42,12 @@ extension Layout {
             }
             nextBlock = nb
         } else {
-            if loc.directionForward {
-                guard let nb = train.leading.blocks.first else {
-                    return nil
-                }
-                nextBlock = nb
-            } else {
-                guard let nb = train.occupied.blocks.dropFirst().first else {
-                    return nil
-                }
-                nextBlock = nb
+            // Regardless of the direction of traveling of the train, we always rely on the
+            // first leading block to be the one that the train will enter next.
+            guard let nb = train.leading.blocks.first else {
+                return nil
             }
+            nextBlock = nb
 
             // Strict route strategy requires the train to be at the end of the block
             // before moving to the next block.
