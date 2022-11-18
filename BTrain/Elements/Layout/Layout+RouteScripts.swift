@@ -12,6 +12,10 @@
 
 import Foundation
 
+extension NSNotification.Name {
+    static let onRoutesUpdated = Notification.Name("onRoutesUpdated")
+}
+
 extension Layout {
     @discardableResult
     func newRouteScript() -> RouteScript {
@@ -40,5 +44,6 @@ extension Layout {
                 }
             }
         }
+        NotificationCenter.default.post(name: .onRoutesUpdated, object: nil)
     }
 }

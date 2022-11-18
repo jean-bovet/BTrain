@@ -84,7 +84,9 @@ struct TrainControlRouteView: View {
             }
         }.onAppear {
             updateRoute()
-        }
+        }.onReceive(NotificationCenter.default.publisher(for: .onRoutesUpdated), perform: { _ in
+            updateRoute()
+        })
     }
 
     func updateRoute() {
