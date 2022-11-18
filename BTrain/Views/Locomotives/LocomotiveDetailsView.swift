@@ -36,17 +36,25 @@ struct LocDetailsDecoderSectionView: View {
     }
 }
 
-struct LocDetailsGeometrySectionView: View {
+struct LocDetailsAttributesSectionView: View {
     @ObservedObject var loc: Locomotive
 
     var body: some View {
         VStack {
-            SectionTitleView(label: "Geometry")
+            SectionTitleView(label: "Attributes")
 
             Form {
                 UndoProvider($loc.length) { value in
-                    TextField("Locomotive:", value: value, format: .number)
+                    TextField("Length:", value: value, format: .number)
                         .unitStyle("cm")
+                }
+                
+                UndoProvider($loc.allowedDirections) { value in
+                    Picker("Direction:", selection: value) {
+                        ForEach(Locomotive.AllowedDirection.allCases, id: \.self) { direction in
+                            Text(direction.rawValue.capitalized).tag(direction as Locomotive.AllowedDirection)
+                        }
+                    }.fixedSize()
                 }
             }.padding([.leading])
         }
@@ -162,7 +170,7 @@ struct LocomotiveDetailsView: View {
     var body: some View {
         VStack(alignment: .leading) {
             LocDetailsDecoderSectionView(loc: loc)
-            LocDetailsGeometrySectionView(loc: loc)
+            LocDetailsAttributesSectionView(loc: loc)
             LocDetailsSpeedSectionView(document: document, loc: loc)
             LocomotiveDetailsIconSectionView(loc: loc, locomotiveIconManager: document.locomotiveIconManager)
         }

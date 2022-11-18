@@ -40,11 +40,16 @@ final class Locomotive: Element, ObservableObject {
     @Published var speed = LocomotiveSpeed(kph: 0, decoderType: .MFX)
 
     /// Direction of travel of the locomotive
-    /// Note: backward direction is not yet supported
     @Published var directionForward = true
 
-    /// True if the locomotive can move in the backward direction
-    @Published var canMoveBackwards = false
+    enum AllowedDirection: String, Codable, CaseIterable {
+        case forward
+        case backward
+        case any
+    }
+    
+    /// Direction(s) the locomotive is allowed to move
+    @Published var allowedDirections = AllowedDirection.forward
 
     convenience init(uuid: String = UUID().uuidString, name: String = "", address: UInt32 = 0, decoder: DecoderType = .MFX,
                      locomotiveLength: Double? = nil, maxSpeed: SpeedKph? = nil)
@@ -66,7 +71,7 @@ final class Locomotive: Element, ObservableObject {
 
 extension Locomotive: Codable {
     enum CodingKeys: CodingKey {
-        case id, enabled, name, address, lenght, speed, decoder, direction
+        case id, enabled, name, address, lenght, speed, decoder, direction, allowedDirections
     }
 
     convenience init(from decoder: Decoder) throws {
@@ -82,6 +87,7 @@ extension Locomotive: Codable {
         length = try container.decodeIfPresent(Double.self, forKey: CodingKeys.lenght)
         speed = try container.decode(LocomotiveSpeed.self, forKey: CodingKeys.speed)
         directionForward = try container.decodeIfPresent(Bool.self, forKey: CodingKeys.direction) ?? true
+        allowedDirections = try container.decodeIfPresent(AllowedDirection.self, forKey: CodingKeys.allowedDirections) ?? .forward
     }
 
     func encode(to encoder: Encoder) throws {
@@ -94,6 +100,7 @@ extension Locomotive: Codable {
         try container.encode(speed, forKey: CodingKeys.speed)
         try container.encode(decoder, forKey: CodingKeys.decoder)
         try container.encode(directionForward, forKey: CodingKeys.direction)
+        try container.encode(allowedDirections, forKey: CodingKeys.allowedDirections)
     }
 }
 

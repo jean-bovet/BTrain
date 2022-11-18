@@ -46,9 +46,12 @@ extension Layout {
         }
 
         let fromDirections: [Direction]
-        if loc.canMoveBackwards {
+        switch loc.allowedDirections {
+        case .any:
             fromDirections = [.previous, .next]
-        } else {
+        case .backward:
+            fromDirections = [trainInstance.direction.opposite]
+        case .forward:
             fromDirections = [trainInstance.direction]
         }
 
