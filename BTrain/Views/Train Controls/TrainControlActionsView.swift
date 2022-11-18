@@ -68,7 +68,7 @@ struct TrainControlActionsView: View {
             Spacer().fixedSpace()
             
             Button("􀛷 Stop") {
-                document.layoutController.stop(scriptId: selectedLayoutScript!)
+                try? document.layoutController.stop(scriptId: selectedLayoutScript!)
             }.disabled(selectedLayoutScript == nil)
 
             Spacer()

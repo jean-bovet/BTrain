@@ -315,8 +315,8 @@ final class LayoutController: ObservableObject, LayoutControlling {
         runControllers(.scriptScheduled)
     }
 
-    func stop(scriptId: Identifier<LayoutScript>) {
-        conductor.stop(scriptId)
+    func stop(scriptId: Identifier<LayoutScript>) throws {
+        try conductor.stop(scriptId)
     }
 
     // MARK: Paused Train Management

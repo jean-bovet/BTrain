@@ -51,9 +51,7 @@ final class LayoutScriptConductorTests: XCTestCase {
 
         XCTAssertEqual(controller.startedCount, 0)
 
-        try conductor.tick()
-        
-        XCTAssertEqual(controller.startedCount, 0)
+        XCTAssertThrowsError(try conductor.tick())
     }
 
     func testScriptWithSingleCommand() throws {
@@ -96,7 +94,10 @@ final class LayoutScriptConductorTests: XCTestCase {
         try conductor.tick()
         XCTAssertEqual(controller.startedCount, 2)
 
-        conductor.stop(layoutScript.id)
+        // Cannot stop a script that is not currently running
+        XCTAssertThrowsError(try conductor.stop(.init(uuid: "foo")))
+
+        try conductor.stop(layoutScript.id)
         try conductor.tick()
         XCTAssertEqual(controller.startedCount, 2)
         XCTAssertNil(conductor.currentScript)
@@ -144,14 +145,14 @@ final class LayoutScriptConductorTests: XCTestCase {
         XCTAssertNil(conductor.currentScript)
     }
 
-    func simpleRouteScript(withUUID uuid: String) -> RouteScript {
+    private func simpleRouteScript(withUUID uuid: String) -> RouteScript {
         let script = RouteScript(uuid: uuid)
         let command = RouteScriptCommand(action: .start)
         script.commands.append(command)
         return script
     }
     
-    func layoutScriptWithSingleCommand(train: Identifier<Train>, routeScript: Identifier<RouteScript>) -> LayoutScript {
+    private func layoutScriptWithSingleCommand(train: Identifier<Train>, routeScript: Identifier<RouteScript>) -> LayoutScript {
         let script = LayoutScript(name: "Test")
         var command = LayoutScriptCommand(action: .run)
         command.trainId = train
@@ -160,7 +161,7 @@ final class LayoutScriptConductorTests: XCTestCase {
         return script
     }
 
-    func layoutScriptWithChildCommand(train: Identifier<Train>, routeScript: Identifier<RouteScript>) -> LayoutScript {
+    private func layoutScriptWithChildCommand(train: Identifier<Train>, routeScript: Identifier<RouteScript>) -> LayoutScript {
         let script = LayoutScript(name: "Test")
         var command = LayoutScriptCommand(action: .run)
         command.trainId = train

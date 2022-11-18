@@ -11,7 +11,6 @@
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 import Foundation
-import Combine
 
 /// This class manages and executs layout scripts, which are script that orchestrate one or more
 /// routes and trains together.
@@ -59,10 +58,9 @@ final class LayoutScriptConductor {
         }
     }
     
-    func stop(_ scriptId: Identifier<LayoutScript>) {
+    func stop(_ scriptId: Identifier<LayoutScript>) throws {
         guard scriptId == currentScript?.id else {
-            // TODO: throw
-            return
+            throw LayoutScriptError.cannotStopNonRunningScript(scriptId: scriptId)
         }
         
         for command in runningCommands {
@@ -87,9 +85,12 @@ final class LayoutScriptConductor {
     }
     
     private func handle(command: CurrentCommand) throws {
-        guard let train = layout.trains[command.command.trainId] else {
-            // TODO: throw
-            return
+        guard let trainId = command.command.trainId else {
+            throw LayoutScriptError.trainMissingFromCommand(command: command.command.id)
+        }
+        
+        guard let train = layout.trains[trainId] else {
+            throw LayoutScriptError.trainNotFoundInLayout(trainId: trainId)
         }
 
         if train.scheduling == .unmanaged && command.started {
@@ -116,28 +117,24 @@ final class LayoutScriptConductor {
     
     private func start(command: CurrentCommand) throws {
         guard let train = command.command.trainId else {
-            // TODO: throw
-            return
+            throw LayoutScriptError.trainMissingFromCommand(command: command.command.id)
         }
         
         guard let script = command.command.routeScriptId else {
-            // TODO: throw
-            return
+            throw LayoutScriptError.routeScriptMissingFromCommand(command: command.command.id)
         }
         
         command.started = true
         try start(trainId: train, routeScriptId: script)
     }
     
-    private func start(trainId: Identifier<Train>?, routeScriptId: Identifier<RouteScript>?) throws {
-        guard let route = layout.routes.first(where: {$0.id.uuid == routeScriptId?.uuid}) else {
-            // TODO: throw
-            return
+    private func start(trainId: Identifier<Train>, routeScriptId: Identifier<RouteScript>) throws {
+        guard let route = layout.routes.first(where: {$0.id.uuid == routeScriptId.uuid}) else {
+            throw LayoutScriptError.routeNotFoundInLayout(routeId: routeScriptId.uuid)
         }
         
         guard let train = layout.trains[trainId] else {
-            // TODO: throw
-            return
+            throw LayoutScriptError.trainNotFoundInLayout(trainId: trainId)
         }
         
         try layoutControlling?.start(routeID: route.id, trainID: train.id)
