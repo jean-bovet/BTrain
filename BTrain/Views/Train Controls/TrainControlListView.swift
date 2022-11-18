@@ -55,8 +55,15 @@ struct TrainControlListView: View {
             }
         } else {
             VStack(spacing: 0) {
-                TrainControlActionsView(document: document, layout: layout, filterRunningTrains: $filterRunningTrains)
-                    .padding()
+                VStack(alignment: .leading, spacing: 0) {
+                    if layout.layoutScripts.elements.count > 0 {
+                        TrainControlScriptView(document: document, layout: layout)
+                            .padding([.bottom])
+                        Divider()
+                            .padding([.bottom])
+                    }
+                    TrainControlActionsView(document: document, layout: layout, filterRunningTrains: $filterRunningTrains)
+                }.padding()
                 List {
                     if pinnedTrains.count > 0 {
                         ForEach(pinnedTrains, id:\.self) { train in

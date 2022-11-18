@@ -319,6 +319,10 @@ final class LayoutController: ObservableObject, LayoutControlling {
         try conductor.stop(scriptId)
     }
 
+    func isRunning(scriptId: Identifier<LayoutScript>?) -> Bool {
+        conductor.currentScript?.id == scriptId && scriptId != nil
+    }
+    
     // MARK: Paused Train Management
     
     // A map that contains all trains that are currently paused

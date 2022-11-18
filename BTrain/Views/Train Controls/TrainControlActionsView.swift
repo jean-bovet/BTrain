@@ -18,9 +18,8 @@ struct TrainControlActionsView: View {
     @ObservedObject var layout: Layout
     
     @Binding var filterRunningTrains: Bool
-    @State private var selectedLayoutScript: Identifier<LayoutScript>?
-
-    var trainActions: some View {
+        
+    var body: some View {
         HStack {
             Button("􀊋 Start All") {
                 document.startAll()
@@ -45,66 +44,13 @@ struct TrainControlActionsView: View {
             }.buttonStyle(.borderless)
         }
     }
-        
-    var layoutScriptActions: some View {
-        HStack {
-            Picker("Script:", selection: $selectedLayoutScript) {
-                ForEach(layout.layoutScripts.elements, id:\.self) { script in
-                    Text(script.name).tag(script.id as Identifier<LayoutScript>?)
-                }
-            }
-            .labelsHidden()
-            .fixedSize()
-            .onAppear() {
-                selectedLayoutScript = layout.layoutScripts.elements.first?.id
-            }
-
-            Spacer().fixedSpace()
-
-            Button("􀊄 Start") {
-                document.layoutController.schedule(scriptId: selectedLayoutScript!)
-            }.disabled(selectedLayoutScript == nil)
-
-            Spacer().fixedSpace()
-            
-            Button("􀛷 Stop") {
-                try? document.layoutController.stop(scriptId: selectedLayoutScript!)
-            }.disabled(selectedLayoutScript == nil)
-
-            Spacer()
-        }.disabled(!document.power)
-    }
-    
-    var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            if layout.layoutScripts.elements.count > 0 {
-                layoutScriptActions
-                    .padding([.bottom])
-                Divider()
-                    .padding([.bottom])
-            }
-            trainActions
-        }
-    }
 }
 
 struct TrainControlActionsView_Previews: PreviewProvider {
 
-    static let doc: LayoutDocument = {
-        let d = LayoutDocument(layout: LayoutLoop2().newLayout())
-        let s = LayoutScript(uuid: "foo", name: "Demo Loop 1")
-        d.layout.layoutScripts.add(s)
-        return d
-    }()
-
-    static let docEmpty = LayoutDocument(layout: LayoutLoop2().newLayout())
+    static let doc = LayoutDocument(layout: LayoutLoop2().newLayout())
 
     static var previews: some View {
-        Group {
-            TrainControlActionsView(document: doc, layout: doc.layout, filterRunningTrains: .constant(true))
-        }.previewDisplayName("With Script")
-        Group {
-            TrainControlActionsView(document: docEmpty, layout: docEmpty.layout, filterRunningTrains: .constant(true))
-        }.previewDisplayName("No Script")
+        TrainControlActionsView(document: doc, layout: doc.layout, filterRunningTrains: .constant(true))
     }
 }

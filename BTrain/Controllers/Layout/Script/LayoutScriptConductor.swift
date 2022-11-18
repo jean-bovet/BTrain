@@ -87,6 +87,7 @@ final class LayoutScriptConductor {
             }
         }
         
+        commandQueue.removeAll()
         currentScript = nil
     }
     

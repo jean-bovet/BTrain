@@ -16,6 +16,7 @@
 		A700B218292697F1001CC33E /* MainMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = A700B217292697F1001CC33E /* MainMenu.swift */; };
 		A700B21A29270932001CC33E /* LayoutScriptConductorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A700B21929270932001CC33E /* LayoutScriptConductorTests.swift */; };
 		A700B21D29271368001CC33E /* LayoutScriptError.swift in Sources */ = {isa = PBXBuildFile; fileRef = A700B21C29271368001CC33E /* LayoutScriptError.swift */; };
+		A700B21F292741AF001CC33E /* TrainControlScriptView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A700B21E292741AF001CC33E /* TrainControlScriptView.swift */; };
 		A7012C8328344A1C003AC687 /* DeveloperView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7012C8228344A1C003AC687 /* DeveloperView.swift */; };
 		A7012C8528344AC0003AC687 /* DeveloperMetrics.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7012C8428344AC0003AC687 /* DeveloperMetrics.swift */; };
 		A7012C8E2839BDC4003AC687 /* MockCommandInterface.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7012C8D2839BDC4003AC687 /* MockCommandInterface.swift */; };
@@ -406,6 +407,7 @@
 		A700B217292697F1001CC33E /* MainMenu.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainMenu.swift; sourceTree = "<group>"; };
 		A700B21929270932001CC33E /* LayoutScriptConductorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutScriptConductorTests.swift; sourceTree = "<group>"; };
 		A700B21C29271368001CC33E /* LayoutScriptError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutScriptError.swift; sourceTree = "<group>"; };
+		A700B21E292741AF001CC33E /* TrainControlScriptView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainControlScriptView.swift; sourceTree = "<group>"; };
 		A7012C8228344A1C003AC687 /* DeveloperView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeveloperView.swift; sourceTree = "<group>"; };
 		A7012C8428344AC0003AC687 /* DeveloperMetrics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeveloperMetrics.swift; sourceTree = "<group>"; };
 		A7012C8D2839BDC4003AC687 /* MockCommandInterface.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockCommandInterface.swift; sourceTree = "<group>"; };
@@ -1119,6 +1121,7 @@
 				A76FD43728FD07A000E1A295 /* TrainControlMoveSheet.swift */,
 				A76FD43928FD07AA00E1A295 /* TrainControlRemoveSheet.swift */,
 				A744D13427659330005C2F37 /* TrainControlRouteView.swift */,
+				A700B21E292741AF001CC33E /* TrainControlScriptView.swift */,
 			);
 			path = "Train Controls";
 			sourceTree = "<group>";
@@ -2025,6 +2028,7 @@
 				A7B06AF4272783F600BDD88C /* MarklinCANMessageFactory.swift in Sources */,
 				A7218083275F0BFC00831998 /* Turnout+Socket.swift in Sources */,
 				A7A7D68C2920B120008FA648 /* RouteScript+Route.swift in Sources */,
+				A700B21F292741AF001CC33E /* TrainControlScriptView.swift in Sources */,
 				A745C16A282F2199006D16B0 /* TrainReservation.swift in Sources */,
 				A74F3816281A5E0E0013FD23 /* RouteNewElementSheet.swift in Sources */,
 				A78B996D2800BABB0021EFE4 /* GraphPath.swift in Sources */,
