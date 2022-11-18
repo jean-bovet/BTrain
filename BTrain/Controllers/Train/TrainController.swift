@@ -63,7 +63,7 @@ final class TrainController: TrainControlling, CustomStringConvertible {
             return false
         }
 
-        return isFeedbackTriggered(layout: layout, train: train, feedbackId: brakeFeedback)
+        return isFeedbackTriggered(layout: layout, feedbackId: brakeFeedback)
     }
 
     var stopFeedbackActivated: Bool {
@@ -71,7 +71,7 @@ final class TrainController: TrainControlling, CustomStringConvertible {
             return false
         }
 
-        return isFeedbackTriggered(layout: layout, train: train, feedbackId: stopFeedback)
+        return isFeedbackTriggered(layout: layout, feedbackId: stopFeedback)
     }
 
     var startedRouteIndex: Int {
@@ -228,7 +228,7 @@ final class TrainController: TrainControlling, CustomStringConvertible {
 
     // MARK: - -
 
-    private func isFeedbackTriggered(layout: Layout, train _: Train, feedbackId: Identifier<Feedback>) -> Bool {
+    private func isFeedbackTriggered(layout: Layout, feedbackId: Identifier<Feedback>) -> Bool {
         for bf in currentBlock.feedbacks {
             guard let f = layout.feedbacks[bf.feedbackId] else {
                 continue
