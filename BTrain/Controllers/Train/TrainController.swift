@@ -270,6 +270,7 @@ final class TrainController: TrainControlling, CustomStringConvertible {
     }
 
     func moveInsideBlock() throws -> Bool {
+        // TODO: consider all the feedbacks of all the blocks where the train is located in, including the feedback in the front block
         // Iterate over all the feedbacks of the block and react to those who are triggered (aka detected)
         for (index, feedback) in currentBlock.feedbacks.enumerated() {
             guard let f = layout.feedbacks[feedback.feedbackId], f.detected else {

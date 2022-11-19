@@ -164,6 +164,7 @@ final class Train: Element, ObservableObject {
     // which feedback the train is located.
     // block   : [  f1   f2   f3  ]
     // position:   0   1    2    3
+    // TODO: position is really where the magnet is located (under the locomotive or the last wagon to allow the train to move backwards)
     @Published var position = 0
 
     struct BlockItem: Identifiable, Codable, Hashable {
