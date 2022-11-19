@@ -25,10 +25,12 @@ extension Layout {
         let direction: Direction
     }
 
-    /// Returns a structure describing the feedback that will be triggered by the train is entering a new block.
+    /// Returns the entry feedback that is expected to be triggered when the train enters the next block.
+    ///
+    /// The next block is computed by taking into account the direction of travel of the train and the ``strictRouteFeedbackStrategy`` settings.
     ///
     /// - Parameter train: the train
-    /// - Returns: a structure describing the entry feedback and its associated parameters
+    /// - Returns: the entry feedback or nil if no valid entry feedback is found
     func entryFeedback(for train: Train) throws -> EntryFeedback? {
         guard let currentBlock = currentBlock(train: train) else {
             return nil

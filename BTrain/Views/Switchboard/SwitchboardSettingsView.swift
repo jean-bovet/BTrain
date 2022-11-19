@@ -29,7 +29,7 @@ struct SwitchboardSettingsView: View {
                 .disabled(showBlockName)
             Toggle("Turnout Name", isOn: $showTurnoutName)
             Toggle("Train Icon", isOn: $showTrainIcon)
-            if document.simulator.enabled {
+            if document.simulator.started && document.connected {
                 Toggle("Simulator", isOn: $showSimulator)
             }
 

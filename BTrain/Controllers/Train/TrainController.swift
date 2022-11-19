@@ -110,7 +110,6 @@ final class TrainController: TrainControlling, CustomStringConvertible {
 
         switch routeItem {
         case .block(let routeItemBlock):
-            // TODO: take into account train that cannot change direction
             return routeItemBlock.direction != directionInBlock
             
         case .turnout:

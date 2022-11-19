@@ -88,7 +88,8 @@ extension Block {
         return results
     }
 
-    /// Returns the distance left in the block given the train current position
+    /// Returns the distance left in the block given the train current position and its direction of travel.
+    /// 
     /// - Parameter train: The train
     /// - Returns: the distance, if available, that remains in the block
     func distanceLeftInBlock(train: Train) -> Double? {
@@ -96,11 +97,25 @@ extension Block {
             return nil
         }
 
+        guard let directionForward = train.directionForward else {
+            return nil
+        }
+        
         guard let length = length else {
             return nil
         }
 
-        switch ti.direction {
+        // Note:
+        // - When the train moves forward, the direction of the train inside the block is taken into account.
+        // Block:    [ f1 f2 f3 ]
+        // Position:  0  1  2  3
+        // Direction: ------>
+        // - When the train moves backwards, the opposite direction of the train inside the block is taken into account
+        // Block:    [ f1 f2 f3 ]
+        // Position:  0  1  2  3
+        // Direction: ------<
+        let direction = directionForward ? ti.direction : ti.direction.opposite
+        switch direction {
         case .next:
             let p = train.position
             if p < feedbacks.count {

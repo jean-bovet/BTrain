@@ -183,6 +183,8 @@ class BlockTests: XCTestCase {
         block.feedbacks[2].distance = 90
 
         let t = Train(id: .init(uuid: "t1"), name: "SBB")
+        t.locomotive = Locomotive(name: "loc1")
+        t.locomotive?.directionForward = true
         block.trainInstance = .init(t.id, .next)
 
         // Block:    [ f1 f2 f3 ]
@@ -211,4 +213,45 @@ class BlockTests: XCTestCase {
         t.position = 0
         XCTAssertEqual(block.distanceLeftInBlock(train: t), 0)
     }
+    
+    func testDistanceRemainingInBlockTravelingBackwards() {
+        let block = Block(name: "b1")
+        block.length = 100
+        block.assign([f1, f2, f3])
+        block.feedbacks[0].distance = 10
+        block.feedbacks[1].distance = 50
+        block.feedbacks[2].distance = 90
+
+        let t = Train(id: .init(uuid: "t1"), name: "SBB")
+        t.locomotive = Locomotive(name: "loc1")
+        t.locomotive?.directionForward = false
+        block.trainInstance = .init(t.id, .next)
+
+        // Block:    [ f1 f2 f3 ]
+        // Position:  0  1  2  3
+        // Direction: ------<
+        t.position = 0
+        XCTAssertEqual(block.distanceLeftInBlock(train: t), 0)
+        t.position = 1
+        XCTAssertEqual(block.distanceLeftInBlock(train: t), 10)
+        t.position = 2
+        XCTAssertEqual(block.distanceLeftInBlock(train: t), 50)
+        t.position = 3
+        XCTAssertEqual(block.distanceLeftInBlock(train: t), 90)
+
+        block.trainInstance = .init(t.id, .previous)
+
+        // Block:    [ f1 f2 f3 ]
+        // Position:  0  1  2  3
+        // Direction:     >-----
+        t.position = 3
+        XCTAssertEqual(block.distanceLeftInBlock(train: t), 0)
+        t.position = 2
+        XCTAssertEqual(block.distanceLeftInBlock(train: t), 10)
+        t.position = 1
+        XCTAssertEqual(block.distanceLeftInBlock(train: t), 50)
+        t.position = 0
+        XCTAssertEqual(block.distanceLeftInBlock(train: t), 90)
+    }
+
 }
