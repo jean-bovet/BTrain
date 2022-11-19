@@ -105,6 +105,7 @@ struct TrainLocation: CustomStringConvertible {
         let detectedPosition = feedbackIndex.trainPosition
 
         if trainMovesForward {
+            // Train: [back] [front] >>>>
             if currentLocation.back == nil && currentLocation.front == nil {
                 newLocation.back = detectedPosition
                 newLocation.front = detectedPosition
@@ -134,7 +135,35 @@ struct TrainLocation: CustomStringConvertible {
                 fatalError()
             }
         } else {
-            fatalError("Not yet implemented")
+            // Train: [front] [back] >>>>
+            if currentLocation.back == nil && currentLocation.front == nil {
+                newLocation.back = detectedPosition
+                newLocation.front = detectedPosition
+            } else if let back = currentLocation.back, let front = currentLocation.front {
+                if back == front {
+                    if detectedPosition > back {
+                        // We still don't know exactly where the train is
+                        newLocation.back = detectedPosition
+                        newLocation.front = detectedPosition
+                    } else {
+                        // Now we know where the back is, and by definition the front
+                        newLocation.front = detectedPosition
+                    }
+                } else if back > front {
+                    if detectedPosition > back {
+                        newLocation.back = detectedPosition
+                    } else {
+                        newLocation.front = detectedPosition
+                    }
+                } else {
+                    // Invalid - the back position cannot be after the front position when the
+                    // train moves forward in the direction of the block
+                    fatalError()
+                }
+            } else {
+                // Invalid - both front and back must either be defined or not be defined
+                fatalError()
+            }
         }
 
         return newLocation

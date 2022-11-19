@@ -19,51 +19,53 @@ final class TrainPositionsTests: XCTestCase {
     typealias TLF = TrainLocation.FeedbackPosition
     typealias TP = TrainPosition
 
+    // MARK: - Train Forward -
+
     func testMoveForwardSameBlock() {
         var location = TrainLocation()
         
-        // Block (>>): [ p0 f0 p1 f1 p2 f2 p3 ]
-        // Train (>>):           ??
+        // Block (􁉆): [ p0 f0 p1 f1 p2 f2 p3 ]
+        // Train (􀼯􀼮):           ??
         assertLocation(location, back: nil, front: nil)
 
-        // Block (>>): [ p0 |f0| p1 f1 p2 f2 p3 ]
-        // Train (>>):           bf
+        // Block (􁉆): [ p0 |f0| p1 f1 p2 f2 p3 ]
+        // Train (􀼯􀼮):        bf
         location = assertFeedback(forward: true, location: location, feedback: TLF(block: 0, index: 0), back: TrainPosition(block: 0, index: 1), front: TrainPosition(block: 0, index: 1))
 
-        // Block (>>): [ p0 f0 p1 |f1| p2 f2 p3 ]
-        // Train (>>):                 bf
+        // Block (􁉆): [ p0 f0 p1 |f1| p2 f2 p3 ]
+        // Train (􀼯􀼮):              bf
         location = assertFeedback(forward: true, location: location, feedback: TLF(block: 0, index: 1), back: TrainPosition(block: 0, index: 2), front: TrainPosition(block: 0, index: 2))
 
-        // Block (>>): [ p0 |f0| p1 f1 p2 f2 p3 ]
-        // Train (>>):           b     f
+        // Block (􁉆): [ p0 |f0| p1 f1 p2 f2 p3 ]
+        // Train (􀼯􀼮):        b     f
         location = assertFeedback(forward: true, location: location, feedback: TLF(block: 0, index: 0), back: TrainPosition(block: 0, index: 1), front: TrainPosition(block: 0, index: 2))
 
-        // Block (>>): [ p0 f0 p1 f1 p2 |f2| p3 ]
-        // Train (>>):         b             f
+        // Block (􁉆): [ p0 f0 p1 f1 p2 |f2| p3 ]
+        // Train (􀼯􀼮):      b             f
         location = assertFeedback(forward: true, location: location, feedback: TLF(block: 0, index: 2), back: TrainPosition(block: 0, index: 1), front: TrainPosition(block: 0, index: 3))
     }
 
     func testMoveForwardSameBlockPrevious() {
         var location = TrainLocation()
         
-        // Block (<<): [ p3 f2 p2 f1 p1 f0 p0 ]
-        // Train (>>):           ??
+        // Block (􁉈): [ p3 f2 p2 f1 p1 f0 p0 ]
+        // Train (􀼯􀼮):           ??
         assertLocation(location, back: nil, front: nil)
 
-        // Block (<<): [ p3 |f2| p2 f1 p1 f0 p0 ]
-        // Train (>>):           bf
+        // Block (􁉈): [ p3 |f2| p2 f1 p1 f0 p0 ]
+        // Train (􀼯􀼮):        bf
         location = assertFeedback(forward: true, location: location, feedback: TLF(block: 0, index: 2, direction: .previous), back: TP(block: 0, index: 2, direction: .previous), front: TP(block: 0, index: 2, direction: .previous))
 
-        // Block (<<): [ p3 f2 p2 |f1| p1 f0 p0 ]
-        // Train (>>):                 bf
+        // Block (􁉈): [ p3 f2 p2 |f1| p1 f0 p0 ]
+        // Train (􀼯􀼮):              bf
         location = assertFeedback(forward: true, location: location, feedback: TLF(block: 0, index: 1, direction: .previous), back: TP(block: 0, index: 1, direction: .previous), front: TP(block: 0, index: 1, direction: .previous))
         
-        // Block (<<): [ p3 |f2| p2 f1 p1 f0 p0 ]
-        // Train (>>):           b     f
+        // Block (􁉈): [ p3 |f2| p2 f1 p1 f0 p0 ]
+        // Train (􀼯􀼮):        b     f
         location = assertFeedback(forward: true, location: location, feedback: TLF(block: 0, index: 2, direction: .previous), back: TP(block: 0, index: 2, direction: .previous), front: TP(block: 0, index: 1, direction: .previous))
 
-        // Block (<<): [ p3 f2 p2 f1 p1 |f0| p0 ]
-        // Train (>>):         b             f
+        // Block (􁉈): [ p3 f2 p2 f1 p1 |f0| p0 ]
+        // Train (􀼯􀼮):      b             f
         location = assertFeedback(forward: true, location: location, feedback: TLF(block: 0, index: 0, direction: .previous), back: TP(block: 0, index: 2, direction: .previous), front: TP(block: 0, index: 0, direction: .previous))
     }
 
@@ -95,6 +97,86 @@ final class TrainPositionsTests: XCTestCase {
         location = assertFeedback(forward: true, location: location, feedback: TLF(block: 1, index: 3, direction: .previous), back: TrainPosition(block: 1, index: 3, direction: .previous), front: TrainPosition(block: 1, index: 3, direction: .previous))
     }
 
+    // MARK: - Train Backward -
+    
+    func testMoveBackwardSameBlock() {
+        var location = TrainLocation()
+        
+        // Block (􁉆): [ p0 f0 p1 f1 p2 f2 p3 ]
+        // Train (􀼮􀼯):           ??
+        assertLocation(location, back: nil, front: nil)
+
+        // Block (􁉆): [ p0 |f0| p1 f1 p2 f2 p3 ]
+        // Train (􀼮􀼯):        fb
+        location = assertFeedback(forward: false, location: location, feedback: TLF(block: 0, index: 0), back: TrainPosition(block: 0, index: 1), front: TrainPosition(block: 0, index: 1))
+
+        // Block (􁉆): [ p0 f0 p1 |f1| p2 f2 p3 ]
+        // Train (􀼮􀼯):              fb
+        location = assertFeedback(forward: false, location: location, feedback: TLF(block: 0, index: 1), back: TrainPosition(block: 0, index: 2), front: TrainPosition(block: 0, index: 2))
+
+        // Block (􁉆): [ p0 |f0| p1 f1 p2 f2 p3 ]
+        // Train (􀼮􀼯):        f     b
+        location = assertFeedback(forward: false, location: location, feedback: TLF(block: 0, index: 0), back: TrainPosition(block: 0, index: 2), front: TrainPosition(block: 0, index: 1))
+
+        // Block (􁉆): [ p0 f0 p1 f1 p2 |f2| p3 ]
+        // Train (􀼮􀼯):      f             b
+        location = assertFeedback(forward: false, location: location, feedback: TLF(block: 0, index: 2), back: TrainPosition(block: 0, index: 3), front: TrainPosition(block: 0, index: 1))
+    }
+
+    func testMoveBackwardSameBlockPrevious() {
+        var location = TrainLocation()
+        
+        // Block (􁉈): [ p3 f2 p2 f1 p1 f0 p0 ]
+        // Train (􀼮􀼯):           ??
+        assertLocation(location, back: nil, front: nil)
+
+        // Block (􁉈): [ p3 |f2| p2 f1 p1 f0 p0 ]
+        // Train (􀼮􀼯):        fb
+        location = assertFeedback(forward: false, location: location, feedback: TLF(block: 0, index: 2, direction: .previous), back: TP(block: 0, index: 2, direction: .previous), front: TP(block: 0, index: 2, direction: .previous))
+
+        // Block (􁉈): [ p3 f2 p2 |f1| p1 f0 p0 ]
+        // Train (􀼮􀼯):              fb
+        location = assertFeedback(forward: false, location: location, feedback: TLF(block: 0, index: 1, direction: .previous), back: TP(block: 0, index: 1, direction: .previous), front: TP(block: 0, index: 1, direction: .previous))
+        
+        // Block (􁉈): [ p3 |f2| p2 f1 p1 f0 p0 ]
+        // Train (􀼮􀼯):        f     b
+        location = assertFeedback(forward: false, location: location, feedback: TLF(block: 0, index: 2, direction: .previous), back: TP(block: 0, index: 1, direction: .previous), front: TP(block: 0, index: 2, direction: .previous))
+
+        // Block (􁉈): [ p3 f2 p2 f1 p1 |f0| p0 ]
+        // Train (􀼮􀼯):      f             b
+        location = assertFeedback(forward: false, location: location, feedback: TLF(block: 0, index: 0, direction: .previous), back: TP(block: 0, index: 0, direction: .previous), front: TP(block: 0, index: 2, direction: .previous))
+    }
+
+    func testMoveBackwardNextBlock() {
+        var location = TrainLocation()
+        assertLocation(location, back: nil, front: nil)
+
+        location = assertFeedback(forward: false, location: location, feedback: TLF(block: 0, index: 1), back: TrainPosition(block: 0, index: 2), front: TrainPosition(block: 0, index: 2))
+        location = assertFeedback(forward: false, location: location, feedback: TLF(block: 0, index: 2), back: TrainPosition(block: 0, index: 3), front: TrainPosition(block: 0, index: 3))
+        location = assertFeedback(forward: false, location: location, feedback: TLF(block: 0, index: 1), back: TrainPosition(block: 0, index: 3), front: TrainPosition(block: 0, index: 2))
+        location = assertFeedback(forward: false, location: location, feedback: TLF(block: 0, index: 3), back: TrainPosition(block: 0, index: 4), front: TrainPosition(block: 0, index: 2))
+        
+        // Next block feedback is triggered
+        location = assertFeedback(forward: false, location: location, feedback: TLF(block: 1, index: 0), back: TrainPosition(block: 1, index: 1), front: TrainPosition(block: 0, index: 2))
+        location = assertFeedback(forward: false, location: location, feedback: TLF(block: 1, index: 0), back: TrainPosition(block: 1, index: 1), front: TrainPosition(block: 1, index: 1))
+    }
+    
+    func testMoveBackwardNextBlockPreviousDirection() {
+        var location = TrainLocation()
+        assertLocation(location, back: nil, front: nil)
+
+        location = assertFeedback(forward: false, location: location, feedback: TLF(block: 0, index: 1), back: TrainPosition(block: 0, index: 2), front: TrainPosition(block: 0, index: 2))
+        location = assertFeedback(forward: false, location: location, feedback: TLF(block: 0, index: 2), back: TrainPosition(block: 0, index: 3), front: TrainPosition(block: 0, index: 3))
+        location = assertFeedback(forward: false, location: location, feedback: TLF(block: 0, index: 1), back: TrainPosition(block: 0, index: 3), front: TrainPosition(block: 0, index: 2))
+        location = assertFeedback(forward: false, location: location, feedback: TLF(block: 0, index: 3), back: TrainPosition(block: 0, index: 4), front: TrainPosition(block: 0, index: 2))
+        
+        // Next block feedback is triggered
+        location = assertFeedback(forward: false, location: location, feedback: TLF(block: 1, index: 3, direction: .previous), back: TrainPosition(block: 1, index: 3, direction: .previous), front: TrainPosition(block: 0, index: 2))
+        location = assertFeedback(forward: false, location: location, feedback: TLF(block: 1, index: 3, direction: .previous), back: TrainPosition(block: 1, index: 3, direction: .previous), front: TrainPosition(block: 1, index: 3, direction: .previous))
+    }
+
+    // MARK: - Helper -
+    
     private func assertFeedback(forward: Bool, location currentLocation: TrainLocation, feedback feedbackIndex: TLF, back: TrainPosition?, front: TrainPosition?) -> TrainLocation {
         let newLocation = TrainLocation.newLocationWith(trainMovesForward: forward, currentLocation: currentLocation, feedbackIndex: feedbackIndex)
         
