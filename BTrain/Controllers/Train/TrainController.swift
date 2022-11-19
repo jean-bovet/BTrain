@@ -185,7 +185,7 @@ final class TrainController: TrainControlling, CustomStringConvertible {
                 return
             }
 
-            BTLogger.router.debug("\(self.train, privacy: .public): generating a new route at \(self.currentBlock.name, privacy: .public) because the leading blocks could not be reserved for \(self.route.steps.debugDescription, privacy: .public)")
+            BTLogger.router.debug("\(self.train, privacy: .public): generating a new route at \(self.currentBlock.name, privacy: .public) because the leading blocks could not be reserved for route steps \(self.route.steps.debugDescription, privacy: .public), occupied blocks \(self.train.occupied.blocks, privacy: .public)")
 
             // Update the automatic route
             if try updateAutomaticRoute(for: train, layout: layout) {

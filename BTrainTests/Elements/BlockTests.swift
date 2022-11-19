@@ -227,31 +227,31 @@ class BlockTests: XCTestCase {
         t.locomotive?.directionForward = false
         block.trainInstance = .init(t.id, .next)
 
-        // Block:    [ f1 f2 f3 ]
+        // Block:    [ f1 f2 f3 ] >>>
         // Position:  0  1  2  3
-        // Direction: ------<
+        // Direction: >------
         t.position = 0
-        XCTAssertEqual(block.distanceLeftInBlock(train: t), 0)
-        t.position = 1
-        XCTAssertEqual(block.distanceLeftInBlock(train: t), 10)
-        t.position = 2
-        XCTAssertEqual(block.distanceLeftInBlock(train: t), 50)
-        t.position = 3
         XCTAssertEqual(block.distanceLeftInBlock(train: t), 90)
+        t.position = 1
+        XCTAssertEqual(block.distanceLeftInBlock(train: t), 50)
+        t.position = 2
+        XCTAssertEqual(block.distanceLeftInBlock(train: t), 10)
+        t.position = 3
+        XCTAssertEqual(block.distanceLeftInBlock(train: t), 0)
 
         block.trainInstance = .init(t.id, .previous)
 
         // Block:    [ f1 f2 f3 ]
         // Position:  0  1  2  3
-        // Direction:     >-----
+        // Direction:     ----->
         t.position = 3
-        XCTAssertEqual(block.distanceLeftInBlock(train: t), 0)
-        t.position = 2
-        XCTAssertEqual(block.distanceLeftInBlock(train: t), 10)
-        t.position = 1
-        XCTAssertEqual(block.distanceLeftInBlock(train: t), 50)
-        t.position = 0
         XCTAssertEqual(block.distanceLeftInBlock(train: t), 90)
+        t.position = 2
+        XCTAssertEqual(block.distanceLeftInBlock(train: t), 50)
+        t.position = 1
+        XCTAssertEqual(block.distanceLeftInBlock(train: t), 10)
+        t.position = 0
+        XCTAssertEqual(block.distanceLeftInBlock(train: t), 0)
     }
 
 }
