@@ -101,19 +101,15 @@ struct SwitchBoardView: View {
 }
 
 struct SwitchBoardView_Previews: PreviewProvider {
-    static let doc = LayoutDocument(layout: generateLayout())
+    static let doc = {
+        let doc = LayoutDocument(layout: LayoutLoop2().newLayout())
+        let lt = doc.layout
 
-    static func generateLayout() -> Layout {
-        let lt = LayoutLoop2().newLayout()
+        try! doc.layoutController.setTrainToBlock(lt.trains[0], lt.blocks[0].id, position: .end, direction: .next)
+        try! doc.layoutController.setTrainToBlock(lt.trains[1], lt.blocks[2].id, position: .end, direction: .next)
 
-        try! doc.layoutController.setTrainPosition(lt.trains[0], 1)
-        try! doc.layoutController.setTrainPosition(lt.trains[1], 2)
-
-        try! doc.layoutController.setTrainToBlock(lt.trains[0], lt.blocks[0].id, direction: .next)
-        try! doc.layoutController.setTrainToBlock(lt.trains[1], lt.blocks[2].id, direction: .next)
-
-        return lt
-    }
+        return doc
+    }()
 
     static var previews: some View {
         SwitchBoardView(switchboard: doc.switchboard, containerSize: .init(width: 800, height: 600),

@@ -286,7 +286,7 @@ final class TrainController: TrainControlling, CustomStringConvertible {
             // Note: do not remove the leading blocks as this will be taken care below by the `reserveLeadingBlocks` method.
             // This is important because the reserveLeadingBlocks method needs to remember the previously reserved turnouts
             // in order to avoid re-activating them each time unnecessarily.
-            try layoutController.setTrainPosition(train, position, removeLeadingBlocks: false)
+            train.position = position
 
             BTLogger.router.debug("\(self.train, privacy: .public): moved to position \(self.train.position) in \(self.currentBlock.name, privacy: .public), direction \(self.trainInstance.direction)")
 

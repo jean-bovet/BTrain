@@ -537,20 +537,6 @@ extension LayoutController {
         interface.execute(command: command, completion: completion)
     }
 
-    /// Set the position of a train within the current block
-    ///
-    /// - Parameters:
-    ///   - train: the train
-    ///   - position: the position of the train within its block
-    ///   - removeLeadingBlocks: true to remove the leading blocks (by default), false to keep the leading blocks
-    func setTrainPosition(_ train: Train, _ position: Int, removeLeadingBlocks: Bool = true) throws {
-        train.position = position
-
-        if removeLeadingBlocks {
-            try reservation.removeLeadingBlocks(train: train)
-        }
-    }
-
     // Toggle the direction of the train within the block itself
     func toggleTrainDirectionInBlock(_ train: Train) throws {
         guard let blockId = train.blockId else {
