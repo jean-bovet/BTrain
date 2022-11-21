@@ -74,9 +74,11 @@ final class TrainVisitor {
             return true
         }
 
-        guard let trainDirectionForward = train.directionForward else {
+        guard let locomotive = train.locomotive else {
             throw LayoutError.locomotiveNotAssignedToTrain(train: train)
         }
+        
+        let trainDirectionForward = locomotive.directionForward
         
         // Keep track of the remaining train length that needs to have reserved blocks
         var remainingTrainLength = trainLength
@@ -130,7 +132,7 @@ final class TrainVisitor {
     ///   - direction: the direction in which this block is visited
     ///   - blockCallback: callback invoked for each part that is being visited
     /// - Returns: the remaining train length after visiting this block
-    private func visitBlockParts(trainPosition: Int, remainingTrainLength: Double, block: Block, headBlock: Bool, trainForward: Bool, direction: Direction, blockCallback: BlockCallbackBlock) throws -> Double {
+    private func visitBlockParts(trainPosition: TrainLocation, remainingTrainLength: Double, block: Block, headBlock: Bool, trainForward: Bool, direction: Direction, blockCallback: BlockCallbackBlock) throws -> Double {
         var currentRemainingTrainLength = remainingTrainLength
 
         // [ 0 | 1 | 2 ]
@@ -142,11 +144,12 @@ final class TrainVisitor {
         // Determine the starting position where to begin filling out parts of the block
         var position: Int
         if headBlock {
-            position = trainPosition
+            position = trainPosition.front?.index ?? 0
         } else {
             position = direction == .previous ? block.feedbacks.count : 0
         }
 
+        // TODO: trainPosition.back can be in a different block!!!!
         let increment = direction == .previous ? -1 : 1
 
         // See comment earlier in this file but:

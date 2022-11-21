@@ -20,7 +20,10 @@ extension Layout {
 
         /// The feedback that will be triggered by the train entering ``block``
         let feedback: Feedback
-
+        
+        /// The index of the feedback inside ``block``
+        let index: Int
+        
         /// The direction of travel of the train entering ``block``, relative to ``block``.
         let direction: Direction
     }
@@ -105,8 +108,14 @@ extension Layout {
         // Now return the appropriate feedback depending on the direction
         // of travel of the train into the next block.
         let entryFeedbackId = nextBlock.entryFeedback(for: nextBlockDirectionOfTravel)
+
+        // Determine the index of the feedback within the next block
+        guard let index = nextBlock.feedbacks.firstIndex(where: { $0.feedbackId == entryFeedbackId }) else {
+            return nil
+        }
+        
         if let entryFeedback = feedbacks[entryFeedbackId] {
-            return .init(block: nextBlock, feedback: entryFeedback, direction: nextBlockDirectionOfTravel)
+            return Layout.EntryFeedback(block: nextBlock, feedback: entryFeedback, index: index, direction: nextBlockDirectionOfTravel)
         } else {
             return nil
         }

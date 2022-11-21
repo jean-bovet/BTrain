@@ -29,7 +29,7 @@ class SimulatorViewTests: RootViewTests {
         t1.blockId = doc.layout.blocks.elements[0].id
         doc.layout.blocks[0].trainInstance = .init(t1.id, .next)
 
-        XCTAssertTrue(t1.directionForward!)
+        XCTAssertTrue(t1.directionForward)
         XCTAssertEqual(t1.speed!.requestedKph, 0)
 
         connectToSimulator(doc: doc)
@@ -69,7 +69,7 @@ class SimulatorViewTests: RootViewTests {
             t1.directionForward == false
         }, timeout: 0.1)
 
-        XCTAssertFalse(t1.directionForward!)
+        XCTAssertFalse(t1.directionForward)
         wait(for: simulatorTrain1, directionForward: false)
 
         try trainToggleButton.tap()
@@ -77,7 +77,7 @@ class SimulatorViewTests: RootViewTests {
             t1.directionForward == true
         }, timeout: 0.1)
 
-        XCTAssertTrue(t1.directionForward!)
+        XCTAssertTrue(t1.directionForward)
         wait(for: simulatorTrain1, directionForward: true)
 
         // Change the speed of the first train and see if it is reflected in the train list

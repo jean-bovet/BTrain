@@ -113,6 +113,7 @@
 		A73E0829276BF554005F9D64 /* TrainControlSetLocationSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A73E0828276BF554005F9D64 /* TrainControlSetLocationSheet.swift */; };
 		A73EFD34292967440052C407 /* TrainPositionsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A73EFD33292967440052C407 /* TrainPositionsTests.swift */; };
 		A73EFD36292967D70052C407 /* TrainLocation.swift in Sources */ = {isa = PBXBuildFile; fileRef = A73EFD35292967D70052C407 /* TrainLocation.swift */; };
+		A73EFD38292AD6650052C407 /* TrainLocationHelperTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A73EFD37292AD6650052C407 /* TrainLocationHelperTests.swift */; };
 		A744D13327659208005C2F37 /* TrainControlSpeedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A744D13227659208005C2F37 /* TrainControlSpeedView.swift */; };
 		A744D13527659330005C2F37 /* TrainControlRouteView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A744D13427659330005C2F37 /* TrainControlRouteView.swift */; };
 		A744D1372765C5A3005C2F37 /* LayoutError.swift in Sources */ = {isa = PBXBuildFile; fileRef = A744D1362765C5A3005C2F37 /* LayoutError.swift */; };
@@ -508,6 +509,7 @@
 		A73E0828276BF554005F9D64 /* TrainControlSetLocationSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainControlSetLocationSheet.swift; sourceTree = "<group>"; };
 		A73EFD33292967440052C407 /* TrainPositionsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainPositionsTests.swift; sourceTree = "<group>"; };
 		A73EFD35292967D70052C407 /* TrainLocation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainLocation.swift; sourceTree = "<group>"; };
+		A73EFD37292AD6650052C407 /* TrainLocationHelperTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainLocationHelperTests.swift; sourceTree = "<group>"; };
 		A744D13227659208005C2F37 /* TrainControlSpeedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainControlSpeedView.swift; sourceTree = "<group>"; };
 		A744D13427659330005C2F37 /* TrainControlRouteView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainControlRouteView.swift; sourceTree = "<group>"; };
 		A744D1362765C5A3005C2F37 /* LayoutError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutError.swift; sourceTree = "<group>"; };
@@ -1196,6 +1198,7 @@
 				A73E0826276BAED3005F9D64 /* SwitchboardRenderingTests.swift */,
 				A719FEB22802305900D5FBE1 /* GraphElementTests.swift */,
 				A73EFD33292967440052C407 /* TrainPositionsTests.swift */,
+				A73EFD37292AD6650052C407 /* TrainLocationHelperTests.swift */,
 			);
 			path = Elements;
 			sourceTree = "<group>";
@@ -2343,6 +2346,7 @@
 				A73E0803276AB757005F9D64 /* TurnoutViewTests.swift in Sources */,
 				A76C1C63288051D400A22509 /* LayoutDiagnosticsTests.swift in Sources */,
 				A73AFE982726594800E1ED21 /* CANMessageTests.swift in Sources */,
+				A73EFD38292AD6650052C407 /* TrainLocationHelperTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

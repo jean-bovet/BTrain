@@ -42,53 +42,6 @@ extension Layout {
         trains.remove(trainId)
     }
 
-    // Returns the new position of the train given the specified feedback. This is used
-    // to follow the train within a block when feedbacks are activated when the locomotive moves.
-    //      ╲       ██            ██            ██
-    //       ╲      ██            ██            ██
-    // ───────■─────██────────────██────────────██────────────▶
-    //       ╱   0  ██     1      ██     2      ██     3
-    //      ╱       ██            ██            ██     ▲
-    //              0             1             2      │
-    //                            ▲                    │
-    //                            │                    │
-    //                            │                    │
-    //
-    //                     Feedback Index       Train Position
-    func newPosition(forTrain train: Train, enabledFeedbackIndex: Int, direction: Direction) -> Int {
-        let strict = strictRouteFeedbackStrategy
-
-        switch direction {
-        case .previous:
-            let delta = train.position - enabledFeedbackIndex
-            if strict, delta == 1 {
-                // this is the feedback in front of the train, it means
-                // the train has moved past this feedback
-                return train.position - delta
-            }
-            if !strict, delta > 0 {
-                // A feedback in front of the train has been activated.
-                // When not in strict mode, we update the position of the train.
-                return train.position - delta
-            }
-
-        case .next:
-            let delta = enabledFeedbackIndex - train.position
-            if strict, delta == 0 {
-                // this is the feedback in front of the train, it means
-                // the train has moved past this feedback
-                return train.position + 1
-            }
-            if !strict, delta >= 0 {
-                // A feedback in front of the train has been activated.
-                // When not in strict mode, we update the position of the train.
-                return train.position + delta + 1
-            }
-        }
-
-        return train.position
-    }
-
     func hasTrainReachedStationOrDestination(_ route: Route?, _ train: Train, _ block: Block) -> Bool {
         if let route = route {
             switch route.mode {
@@ -124,8 +77,7 @@ extension Layout {
     ///   - position: the position in the block in which to put the train
     ///   - direction: the direction in the block in which to put the train
     ///   - routeIndex: optional index in the route
-    ///   - removeLeadingBlocks: true to remove the leading blocks (by default), false to keep the leading blocks
-    func setTrainToBlock(_ trainId: Identifier<Train>, _ toBlockId: Identifier<Block>, position: Position = .start, direction: Direction, routeIndex: Int? = nil) throws {
+    func setTrainToBlock(_ trainId: Identifier<Train>, _ toBlockId: Identifier<Block>, position: TrainLocation? = nil, direction: Direction, routeIndex: Int? = nil) throws {
         guard let train = trains[trainId] else {
             throw LayoutError.trainNotFound(trainId: trainId)
         }
@@ -142,16 +94,26 @@ extension Layout {
             throw LayoutError.cannotReserveBlock(block: toBlock, train: train, reserved: toBlock.reservation!)
         }
 
-        // Determine the position of the train
-        switch position {
-        case .start:
-            train.position = direction == .next ? 0 : toBlock.feedbacks.count
-        case .end:
-            train.position = direction == .next ? toBlock.feedbacks.count : 0
-        case let .custom(value: value):
-            train.position = value
+        if let position = position {
+            train.position = position
+        } else {
+            if direction == .next {
+                // Block -> [ 0 1 2 ]
+                // Train ->       bf
+                // Block -> [ 0 1 2 ]
+                // Train >-       bf
+                train.position.front = .init(block: 0, index: toBlock.feedbacks.count+1)
+                train.position.back = train.position.front
+            } else {
+                // Block -> [ 2 1 0 ]
+                // Train ->       bf
+                // Block -> [ 2 1 0 ]
+                // Train >-       bf
+                train.position.front = .init(block: 0, index: 0)
+                train.position.back = train.position.front
+            }
         }
-
+        
         // Reserve the block
         toBlock.reservation = .init(trainId: train.id, direction: direction)
         toBlock.trainInstance = TrainInstance(trainId, direction)

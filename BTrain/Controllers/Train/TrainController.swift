@@ -140,7 +140,7 @@ final class TrainController: TrainControlling, CustomStringConvertible {
     }
 
     func updatePosition(with _: Feedback) throws -> Bool {
-        if try moveInsideBlock() {
+        if moveInsideBlock() {
             return true
         } else if try moveToNextBlock() {
             return true
@@ -269,52 +269,37 @@ final class TrainController: TrainControlling, CustomStringConvertible {
         return false
     }
 
-    func moveInsideBlock() throws -> Bool {
-        // TODO: consider all the feedbacks of all the blocks where the train is located in, including the feedback in the front block
-        // Iterate over all the feedbacks of the block and react to those who are triggered (aka detected)
-        for (index, feedback) in currentBlock.feedbacks.enumerated() {
-            guard let f = layout.feedbacks[feedback.feedbackId], f.detected else {
-                continue
-            }
-
-            let position = layout.newPosition(forTrain: train, enabledFeedbackIndex: index, direction: trainInstance.direction)
-
-            guard train.position != position else {
-                continue
-            }
-
-            // Note: do not remove the leading blocks as this will be taken care below by the `reserveLeadingBlocks` method.
-            // This is important because the reserveLeadingBlocks method needs to remember the previously reserved turnouts
-            // in order to avoid re-activating them each time unnecessarily.
-            train.position = position
-
-            BTLogger.router.debug("\(self.train, privacy: .public): moved to position \(self.train.position) in \(self.currentBlock.name, privacy: .public), direction \(self.trainInstance.direction)")
-
-            return true
+    func moveInsideBlock() -> Bool {
+        let currentLocation = train.position
+        
+        // Note: do not remove the leading blocks as this will be taken care below by the `reserveLeadingBlocks` method.
+        // This is important because the reserveLeadingBlocks method needs to remember the previously reserved turnouts
+        // in order to avoid re-activating them each time unnecessarily.
+        for feedback in TrainLocationHelper.allActiveFeedbackPositions(train: train, layout: layout) {
+            train.position = TrainLocation.newLocationWith(trainMovesForward: train.directionForward, currentLocation: train.position, feedbackIndex: feedback)
+            BTLogger.router.debug("\(self.train, privacy: .public): updated location \(self.train.position) in \(self.currentBlock.name, privacy: .public), direction \(self.trainInstance.direction)")
         }
-
-        return false
+        
+        return train.position != currentLocation
     }
-
+        
     func moveToNextBlock() throws -> Bool {
         // Find out what is the entry feedback for the next block
         let entryFeedback = try layout.entryFeedback(for: train)
-
         guard let entryFeedback = entryFeedback, entryFeedback.feedback.detected else {
-            // The entry feedback is not yet detected, nothing more to do
             return false
         }
-
-        guard let position = entryFeedback.block.indexOfTrain(forFeedback: entryFeedback.feedback.id, direction: entryFeedback.direction) else {
-            throw LayoutError.feedbackNotFound(feedbackId: entryFeedback.feedback.id)
-        }
-
-        BTLogger.router.debug("\(self.train, privacy: .public): enters block \(entryFeedback.block, privacy: .public) at position \(position), direction \(entryFeedback.direction)")
+        
+        let nextBlockIndex = train.occupied.blocks.count + 1
+        let feedbackPosition = TrainLocation.FeedbackPosition(block: nextBlockIndex, index: entryFeedback.index, direction: entryFeedback.direction)
+        let newPosition = TrainLocation.newLocationWith(trainMovesForward: train.directionForward, currentLocation: train.position, feedbackIndex: feedbackPosition)
+        
+        BTLogger.router.debug("\(self.train, privacy: .public): enters block \(entryFeedback.block, privacy: .public) at position \(feedbackPosition.index), direction \(entryFeedback.direction)")
 
         // Note: do not remove the leading blocks as this will be taken care below by the `reserveLeadingBlocks` method.
         // This is important because the reserveLeadingBlocks method needs to remember the previously reserved turnouts
         // in order to avoid re-activating them each time unnecessarily.
-        try layoutController.setTrainToBlock(train, entryFeedback.block.id, position: .custom(value: position), direction: entryFeedback.direction, routeIndex: train.routeStepIndex + 1, removeLeadingBlocks: false)
+        try layoutController.setTrainToBlock(train, entryFeedback.block.id, position: newPosition, direction: entryFeedback.direction, routeIndex: train.routeStepIndex + 1, removeLeadingBlocks: false)
 
         guard let newBlock = layout.blocks[entryFeedback.block.id] else {
             throw LayoutError.blockNotFound(blockId: entryFeedback.block.id)

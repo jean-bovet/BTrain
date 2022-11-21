@@ -60,7 +60,7 @@ class TrainLengthTests: XCTestCase {
         let l1 = t1.locomotive!
 
         t1.blockId = b1.id
-        t1.position = 2
+//        t1.position = 2 TODO: position
         b1.trainInstance = .init(t1.id, .next)
 
         l1.length = 100 + 40 + 100

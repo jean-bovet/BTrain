@@ -217,7 +217,7 @@ final class LayoutASCIIProducer {
             return nil
         }
 
-        if trainInstance.parts.isEmpty, train.position == position {
+        if trainInstance.parts.isEmpty, train.position.front?.index == position {
             return stringFrom(train)
         } else if let part = trainInstance.parts[position] {
             switch part {

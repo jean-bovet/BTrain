@@ -105,8 +105,8 @@ struct SwitchBoardView_Previews: PreviewProvider {
         let doc = LayoutDocument(layout: LayoutLoop2().newLayout())
         let lt = doc.layout
 
-        try! doc.layoutController.setTrainToBlock(lt.trains[0], lt.blocks[0].id, position: .end, direction: .next)
-        try! doc.layoutController.setTrainToBlock(lt.trains[1], lt.blocks[2].id, position: .end, direction: .next)
+        try! doc.layoutController.setTrainToBlock(lt.trains[0], lt.blocks[0].id, direction: .next)
+        try! doc.layoutController.setTrainToBlock(lt.trains[1], lt.blocks[2].id, direction: .next)
 
         return doc
     }()

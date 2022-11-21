@@ -570,7 +570,7 @@ extension LayoutController {
     ///   - direction: the direction in the block in which to put the train
     ///   - routeIndex: optional index in the route
     ///   - removeLeadingBlocks: true to remove the leading blocks (by default), false to keep the leading blocks
-    func setTrainToBlock(_ train: Train, _ toBlockId: Identifier<Block>, position: Position = .start, direction: Direction, routeIndex: Int? = nil, removeLeadingBlocks: Bool = true) throws {
+    func setTrainToBlock(_ train: Train, _ toBlockId: Identifier<Block>, position: TrainLocation? = nil, direction: Direction, routeIndex: Int? = nil, removeLeadingBlocks: Bool = true) throws {
         try layout.setTrainToBlock(train.id, toBlockId, position: position, direction: direction, routeIndex: routeIndex)
         if removeLeadingBlocks {
             try reservation.removeLeadingBlocks(train: train)

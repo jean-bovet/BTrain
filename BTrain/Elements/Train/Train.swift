@@ -159,13 +159,12 @@ final class Train: Element, ObservableObject {
     // The block where the locomotive is located
     @Published var blockId: Identifier<Block>?
 
-    // Position of the train inside the current block,
-    // represented by an index that identifies after
-    // which feedback the train is located.
-    // block   : [  f1   f2   f3  ]
-    // position:   0   1    2    3
-    // TODO: position is really where the magnet is located (under the locomotive or the last wagon to allow the train to move backwards)
-    @Published var position = 0
+    // Location of the train inside the current block.
+    // The location is composed of a front position and
+    // a back position. If the train only has one magnet to detect
+    // its position, both front and back position will be the same.
+    // TODO: do we gain to have a way to always return the front() and back() regardless of the direction of the locomotive?
+    @Published var position = TrainLocation()
 
     struct BlockItem: Identifiable, Codable, Hashable {
         let id: String
@@ -210,9 +209,7 @@ final class Train: Element, ObservableObject {
         if let blockId = blockId {
             text += ", \(blockId)"
         }
-        if let directionForward = directionForward {
-            text += ", \(directionForward ? "f" : "b")"
-        }
+        text += ", \(directionForward ? "f" : "b")"
         if let speed = speed {
             text += ", r=\(speed.requestedKph)kph"
             text += ", a=\(speed.actualKph)kph"
@@ -236,6 +233,7 @@ final class Train: Element, ObservableObject {
     /// This variable is serialized instead of ``locomotive`` in order to avoid duplication in the JSON graph.
     /// When deserializing a locomotive, this variable is going to be used to restore the actual ``locomotive`` from the layout.
     private var locomotiveId: Identifier<Locomotive>?
+    
 }
 
 extension Train {
@@ -249,8 +247,9 @@ extension Train {
         return ll + wl
     }
 
-    var directionForward: Bool? {
-        locomotive?.directionForward
+    var directionForward: Bool {
+        assert(locomotive != nil)
+        return locomotive?.directionForward ?? true
     }
 }
 
@@ -280,7 +279,11 @@ extension Train: Codable {
         routeId = try container.decodeIfPresent(Identifier<Route>.self, forKey: CodingKeys.route) ?? Route.automaticRouteId(for: id)
         routeStepIndex = try container.decode(Int.self, forKey: CodingKeys.routeIndex)
         blockId = try container.decodeIfPresent(Identifier<Block>.self, forKey: CodingKeys.block)
-        position = try container.decode(Int.self, forKey: CodingKeys.position)
+        if (try? container.decode(Int.self, forKey: CodingKeys.position)) != nil {
+            self.position = TrainLocation()
+        } else {
+            position = try container.decode(TrainLocation.self, forKey: CodingKeys.position)
+        }
         maxNumberOfLeadingReservedBlocks = try container.decodeIfPresent(Int.self, forKey: CodingKeys.maxLeadingBlocks) ?? 1
         blocksToAvoid = try container.decodeIfPresent([BlockItem].self, forKey: CodingKeys.blocksToAvoid) ?? []
         turnoutsToAvoid = try container.decodeIfPresent([TurnoutItem].self, forKey: CodingKeys.turnoutsToAvoid) ?? []

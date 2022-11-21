@@ -81,17 +81,9 @@ extension Layout {
     }
 
     func atEndOfBlock(train: Train) throws -> Bool {
-        if let currentBlock = currentBlock(train: train) {
-            guard let ti = currentBlock.trainInstance else {
-                throw LayoutError.trainNotFoundInBlock(blockId: currentBlock.id)
-            }
-            if ti.direction == .next {
-                return train.position == currentBlock.feedbacks.count
-            } else {
-                return train.position == 0
-            }
-        } else {
+        guard let currentBlock = currentBlock(train: train) else {
             return false
         }
+        return try TrainLocationHelper.atEndOfBlock(block: currentBlock, train: train)
     }
 }

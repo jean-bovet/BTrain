@@ -30,7 +30,7 @@ struct LayoutSpeed {
     ///   - speed: the speed to evaluate
     /// - Returns: true if the train can stop with the available leading distance, false otherwise
     func isBrakingDistanceRespected(train: Train, speed: SpeedKph) throws -> Bool {
-        let distanceLeftInBlock = distanceLeftInCurrentBlock(train: train)
+        let distanceLeftInBlock = TrainLocationHelper.distanceLeftInLastBlock(train: train)
         let leadingDistance = distanceLeftInBlock + train.leading.settledDistance
 
         // Compute the distance necessary to bring the train to a full stop
@@ -94,7 +94,7 @@ struct LayoutSpeed {
     /// - Parameter train: the train
     /// - Returns: the maximum speed
     private func unrestrictedLeadMaximumSpeed(train: Train) throws -> SpeedKph {
-        let distanceLeftInBlock = distanceLeftInCurrentBlock(train: train)
+        let distanceLeftInBlock = TrainLocationHelper.distanceLeftInLastBlock(train: train)
         var unrestrictedLeadingDistance = distanceLeftInBlock
         var speed = LayoutFactory.DefaultMaximumSpeed
         for item in train.leading.items {
@@ -168,23 +168,9 @@ struct LayoutSpeed {
     /// - Parameter train: the train
     /// - Returns: the maximum speed
     private func settledLeadMaximumSpeed(train: Train) throws -> SpeedKph {
-        let distanceLeftInBlock = distanceLeftInCurrentBlock(train: train)
+        let distanceLeftInBlock = TrainLocationHelper.distanceLeftInLastBlock(train: train)
         let settledDistance = distanceLeftInBlock + train.leading.settledDistance
         return try maximumSpeedToBrake(train: train, toSpeed: 0, withDistance: settledDistance)
-    }
-
-    /// Returns the distance left in the current block
-    /// - Parameter train: the train
-    /// - Returns: the distance left
-    private func distanceLeftInCurrentBlock(train: Train) -> Double {
-        guard let currentBlock = layout.currentBlock(train: train) else {
-            return 0
-        }
-        guard let distanceLeftInBlock = currentBlock.distanceLeftInBlock(train: train) else {
-            return 0
-        }
-
-        return distanceLeftInBlock
     }
 
     struct DistanceChangeResult {

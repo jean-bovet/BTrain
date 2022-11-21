@@ -58,7 +58,8 @@ final class Package {
         let loc = train.locomotive!
 
         train.routeId = route.id
-        try layoutController.setTrainToBlock(train, Identifier<Block>(uuid: fromBlockId), position: position, direction: direction)
+        // TODO: position handling with start
+        try layoutController.setTrainToBlock(train, Identifier<Block>(uuid: fromBlockId), position: nil, direction: direction)
 
         XCTAssertEqual(loc.speed.requestedKph, 0)
         XCTAssertEqual(train.scheduling, .unmanaged)

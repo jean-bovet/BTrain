@@ -21,6 +21,7 @@ final class TrainPositionsTests: XCTestCase {
 
     // MARK: - Train Forward -
 
+    // TODO: also test when a train spans more than one block (occupied.blocks.count > 1)
     func testMoveForwardSameBlock() {
         var location = TrainLocation()
         
