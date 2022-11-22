@@ -102,14 +102,14 @@ extension Layout {
                 // Train ->       bf
                 // Block -> [ 0 1 2 ]
                 // Train >-       bf
-                train.position.front = .init(block: 0, index: toBlock.feedbacks.count+1)
+                train.position.front = .init(blockIndex: 0, index: toBlock.feedbacks.count+1)
                 train.position.back = train.position.front
             } else {
                 // Block -> [ 2 1 0 ]
                 // Train ->       bf
                 // Block -> [ 2 1 0 ]
                 // Train >-       bf
-                train.position.front = .init(block: 0, index: 0)
+                train.position.front = .init(blockIndex: 0, index: 0)
                 train.position.back = train.position.front
             }
         }

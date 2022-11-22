@@ -291,7 +291,7 @@ final class TrainController: TrainControlling, CustomStringConvertible {
         }
         
         let nextBlockIndex = train.occupied.blocks.count + 1
-        let feedbackPosition = TrainLocation.FeedbackPosition(block: nextBlockIndex, index: entryFeedback.index, direction: entryFeedback.direction)
+        let feedbackPosition = TrainLocation.FeedbackPosition(blockIndex: nextBlockIndex, index: entryFeedback.index, direction: entryFeedback.direction)
         let newPosition = TrainLocation.newLocationWith(trainMovesForward: train.directionForward, currentLocation: train.position, feedbackIndex: feedbackPosition)
         
         BTLogger.router.debug("\(self.train, privacy: .public): enters block \(entryFeedback.block, privacy: .public) at position \(feedbackPosition.index), direction \(entryFeedback.direction)")

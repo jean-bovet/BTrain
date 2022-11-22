@@ -92,7 +92,7 @@ struct TrainPosition: Equatable, Codable, CustomStringConvertible {
     
     /// The index of the block in which that position is located.
     /// Note: the index is increasing in the direction of travel of the train
-    var block: Int
+    var blockIndex: Int
     
     /// The index of the position within the block.
     /// Note: the index is increasing in the natural direction of the block (.next)
@@ -106,9 +106,9 @@ struct TrainPosition: Equatable, Codable, CustomStringConvertible {
     }
 
     static func >(lhs: TrainPosition, rhs: TrainPosition) -> Bool {
-        if lhs.block > rhs.block {
+        if lhs.blockIndex > rhs.blockIndex {
             return true
-        } else if lhs.block < rhs.block {
+        } else if lhs.blockIndex < rhs.blockIndex {
             return false
         } else {
             // Same block. Now the direction matters to compare
@@ -121,9 +121,9 @@ struct TrainPosition: Equatable, Codable, CustomStringConvertible {
     }
 
     static func <(lhs: TrainPosition, rhs: TrainPosition) -> Bool {
-        if lhs.block < rhs.block {
+        if lhs.blockIndex < rhs.blockIndex {
             return true
-        } else if lhs.block > rhs.block {
+        } else if lhs.blockIndex > rhs.blockIndex {
             return false
         } else {
             // Same block. Now the direction matters to compare
@@ -164,17 +164,17 @@ struct TrainLocation: Equatable, Codable, CustomStringConvertible {
     }
     
     struct FeedbackPosition {
-        let block: Int
+        let blockIndex: Int
         let index: Int
         var direction: Direction = .next
         
         var trainPosition: TrainPosition {
             switch direction {
             case .previous:
-                return TrainPosition(block: block, index: index, direction: direction)
+                return TrainPosition(blockIndex: blockIndex, index: index, direction: direction)
 
             case .next:
-                return TrainPosition(block: block, index: index + 1, direction: direction)
+                return TrainPosition(blockIndex: blockIndex, index: index + 1, direction: direction)
             }
         }
     }
@@ -273,7 +273,7 @@ struct TrainLocationHelper {
                     continue
                 }
                 
-                positions.append(TrainLocation.FeedbackPosition(block: blockIndex, index: feedbackIndex, direction: trainInstance.direction))
+                positions.append(TrainLocation.FeedbackPosition(blockIndex: blockIndex, index: feedbackIndex, direction: trainInstance.direction))
             }
         }
         
@@ -312,10 +312,6 @@ struct TrainLocationHelper {
     /// - Parameter train: the train
     /// - Returns: the distance left
     static func distanceLeftInLastBlock(train: Train) -> Double {
-        guard let length = train.length else {
-            return 0
-        }
-
         if train.directionForward {
             // Direction of train is forward.
             // Block: [ 0 1 2 3 ]
@@ -326,6 +322,10 @@ struct TrainLocationHelper {
             }
             
             guard let ti = block.trainInstance else {
+                return 0
+            }
+
+            guard let length = block.length else {
                 return 0
             }
 
@@ -363,6 +363,10 @@ struct TrainLocationHelper {
             }
             
             guard let ti = block.trainInstance else {
+                return 0
+            }
+
+            guard let length = block.length else {
                 return 0
             }
 
