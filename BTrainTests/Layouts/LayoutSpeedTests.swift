@@ -143,22 +143,22 @@ final class LayoutSpeedTests: XCTestCase {
     }
 
     func testEdgeCases() throws {
-        // TODO: position
-//        XCTAssertEqual(train.leading.settledDistance, 0)
-//        XCTAssertEqual(try controller.layoutSpeed.maximumSpeedAllowed(train: train), LayoutFactory.DefaultLimitedSpeed)
-//
-//        s1.length = 200
-//        s1.feedbacks[1].distance = 130
-//        try layout.setTrainToBlock(train.id, s1.id, position: .custom(value: 1), direction: .next)
-//        XCTAssertEqual(train.leading.settledDistance, 0)
-//        XCTAssertEqual(s1.distanceLeftInBlock(train: train), 70)
-//        XCTAssertEqual(try controller.layoutSpeed.maximumSpeedAllowed(train: train), LayoutFactory.DefaultBrakingSpeed)
-//
-//        s1.length = 0
-//        try layout.setTrainToBlock(train.id, s1.id, position: .end, direction: .next)
-//        XCTAssertEqual(train.leading.settledDistance, 0)
-//        XCTAssertEqual(s1.distanceLeftInBlock(train: train), 0)
-//        XCTAssertEqual(try controller.layoutSpeed.maximumSpeedAllowed(train: train), 0)
+        try doc.layoutController.setTrainToBlock(train, s1.id, position: TrainLocation.both(blockIndex: 0, index: 0), direction: .next)
+        XCTAssertEqual(train.leading.settledDistance, 0)
+        XCTAssertEqual(try controller.layoutSpeed.maximumSpeedAllowed(train: train), LayoutFactory.DefaultLimitedSpeed)
+
+        s1.length = 200
+        s1.feedbacks[1].distance = 130
+        try doc.layoutController.setTrainToBlock(train, s1.id, position: TrainLocation.both(blockIndex: 0, index: 1), direction: .next)
+        XCTAssertEqual(train.leading.settledDistance, 0)
+        XCTAssertEqual(TrainLocationHelper.distanceLeftInLastBlock(train: train), 70)
+        XCTAssertEqual(try controller.layoutSpeed.maximumSpeedAllowed(train: train), LayoutFactory.DefaultBrakingSpeed)
+
+        s1.length = 0
+        try doc.layoutController.setTrainToBlock(train, s1.id, position: TrainLocation.both(blockIndex: 1, index: s1.feedbacks.count+1), direction: .next)
+        XCTAssertEqual(train.leading.settledDistance, 0)
+        XCTAssertEqual(TrainLocationHelper.distanceLeftInLastBlock(train: train), 0)
+        XCTAssertEqual(try controller.layoutSpeed.maximumSpeedAllowed(train: train), 0)
     }
 
     func testComputation() {

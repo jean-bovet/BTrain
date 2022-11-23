@@ -163,6 +163,11 @@ struct TrainLocation: Equatable, Codable, CustomStringConvertible {
         }
     }
     
+    static func both(blockIndex: Int, index: Int) -> TrainLocation {
+        TrainLocation(front: .init(blockIndex: blockIndex, index: index),
+                      back: .init(blockIndex: blockIndex, index: index))
+    }
+    
     struct FeedbackPosition {
         let blockIndex: Int
         let index: Int
