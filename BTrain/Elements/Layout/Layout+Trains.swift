@@ -12,12 +12,6 @@
 
 import Foundation
 
-enum Position {
-    case start
-    case end
-    case custom(value: Int)
-}
-
 extension Layout {
     @discardableResult
     func newTrain() -> Train {

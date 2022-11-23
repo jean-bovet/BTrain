@@ -163,7 +163,6 @@ final class Train: Element, ObservableObject {
     // The location is composed of a front position and
     // a back position. If the train only has one magnet to detect
     // its position, both front and back position will be the same.
-    // TODO: do we gain to have a way to always return the front() and back() regardless of the direction of the locomotive?
     @Published var position = TrainLocation()
 
     struct BlockItem: Identifiable, Codable, Hashable {

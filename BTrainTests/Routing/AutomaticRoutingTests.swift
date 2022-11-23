@@ -69,7 +69,7 @@ class AutomaticRoutingTests: BTTestCase {
         let s1 = layout.block(named: "s1")
 
         // The route will choose "s2" as the arrival block
-        var p = try setup(layout: layout, fromBlockId: s1.id, destination: nil, position: .custom(value: 1), routeSteps: ["s1:next", "b1:next", "s2:next"])
+        var p = try setup(layout: layout, fromBlockId: s1.id, destination: nil, position: .custom(index: 1), routeSteps: ["s1:next", "b1:next", "s2:next"])
 
         try p.assert("automatic-0: {r0{s1 💺0 ≏ 🔵🚂0 ≏ }} <r0<t1{sr}(0,1),s>> <r0<t2{sr}(0,1),s>> [r0[b1 ≏ ≏ ]] <t4{sl}(1,0),s> {s2 ≏ ≏ }")
 
@@ -579,11 +579,11 @@ class AutomaticRoutingTests: BTTestCase {
 
     // MARK: - - Utility
 
-    private func setup(layout: Layout, fromBlockId: Identifier<Block>, destination: Destination?, position: Position = .start, direction: Direction = .next, expectedState: Train.State = .running, routeSteps: [String]) throws -> Package {
+    private func setup(layout: Layout, fromBlockId: Identifier<Block>, destination: Destination?, position: Package.Position = .start, direction: Direction = .next, expectedState: Train.State = .running, routeSteps: [String]) throws -> Package {
         try setup(layout: layout, train: layout.trains[0], fromBlockId: fromBlockId, destination: destination, position: position, direction: direction, expectedState: expectedState, routeSteps: routeSteps)
     }
 
-    private func setup(layout: Layout, train: Train, fromBlockId: Identifier<Block>, destination: Destination?, position: Position = .start, direction: Direction = .next, expectedState: Train.State = .running, routeSteps: [String]) throws -> Package {
+    private func setup(layout: Layout, train: Train, fromBlockId: Identifier<Block>, destination: Destination?, position: Package.Position = .start, direction: Direction = .next, expectedState: Train.State = .running, routeSteps: [String]) throws -> Package {
         let p = Package(layout: layout)
         try p.prepare(trainID: train.uuid, fromBlockId: fromBlockId.uuid, position: position, direction: direction)
         try p.start(destination: destination, expectedState: expectedState, routeSteps: routeSteps)

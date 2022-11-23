@@ -54,13 +54,12 @@ class TrainLengthTests: XCTestCase {
 
         layout.turnouts[0].requestedState = .straight23
         layout.turnouts[0].actualState = .straight23
-//        layout.applyTurnoutState(turnout: layout.turnouts[0])
 
         let t1 = layout.trains[0]
         let l1 = t1.locomotive!
 
         t1.blockId = b1.id
-//        t1.position = 2 TODO: position
+        t1.position = TrainLocation.both(blockIndex: 0, index: 2)
         b1.trainInstance = .init(t1.id, .next)
 
         l1.length = 100 + 40 + 100

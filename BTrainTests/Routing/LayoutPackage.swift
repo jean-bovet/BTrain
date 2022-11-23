@@ -16,6 +16,13 @@ import XCTest
 
 /// Helper class that the unit test uses to prepare, start and stop a train in a layout.
 final class Package {
+
+    enum Position {
+        case start
+        case end
+        case custom(index: Int)
+    }
+    
     let digitalController = MockCommandInterface()
     let layout: Layout
     let asserter: LayoutAsserter
@@ -56,10 +63,19 @@ final class Package {
         let train = layout.trains[Identifier<Train>(uuid: trainID)]!
         let route = layout.route(for: .init(uuid: routeID), trainId: .init(uuid: trainID))!
         let loc = train.locomotive!
-
+        let block = layout.blocks[Identifier<Block>(uuid: fromBlockId)]!
+        
         train.routeId = route.id
-        // TODO: position handling with start
-        try layoutController.setTrainToBlock(train, Identifier<Block>(uuid: fromBlockId), position: nil, direction: direction)
+        let location: TrainLocation
+        switch position {
+        case .start:
+            location = TrainLocation.both(blockIndex: 0, index: 0)
+        case .end:
+            location = TrainLocation.both(blockIndex: 0, index: block.feedbacks.count+1)
+        case .custom(let index):
+            location = TrainLocation.both(blockIndex: 0, index: index)
+        }
+        try layoutController.setTrainToBlock(train, block.id, position: location, direction: direction)
 
         XCTAssertEqual(loc.speed.requestedKph, 0)
         XCTAssertEqual(train.scheduling, .unmanaged)

@@ -96,7 +96,7 @@ class UnmanagedTrainOperationTests: BTTestCase {
         train.locomotive!.length = 20
         train.wagonsLength = 40
 
-        let p = try setup(layout: layout, fromBlockId: "b1", position: .end)
+        let p = try setup(layout: layout, fromBlockId: "b1", positionAtEnd: true)
 
         connectToSimulator(doc: p.doc)
         defer {
@@ -154,8 +154,8 @@ class UnmanagedTrainOperationTests: BTTestCase {
             }
 
             XCTAssertEqual(block.trainInstance?.trainId, train.id)
-            // TODO: position
-//            XCTAssertEqual(train.position, position)
+            XCTAssertEqual(train.position.front?.index, position)
+            XCTAssertEqual(train.position.back?.index, position)
             XCTAssertEqual(loc.speed.actualKph, speed, accuracy: 1)
         }
 
@@ -195,16 +195,22 @@ class UnmanagedTrainOperationTests: BTTestCase {
         }
     }
 
-    private func setup(layout: Layout, fromBlockId: String, position: Position = .start, direction: Direction = .next) throws -> Package {
+    private func setup(layout: Layout, fromBlockId: String, positionAtEnd: Bool = false, direction: Direction = .next) throws -> Package {
         layout.detectUnexpectedFeedback = true
         layout.strictRouteFeedbackStrategy = true
 
         let train = layout.trains[0]
         let loc = train.locomotive!
         let doc = LayoutDocument(layout: layout)
-
-        // TODO: position
-//        try doc.layoutController.setTrainToBlock(train, Identifier<Block>(uuid: fromBlockId), position: position, direction: direction)
+        let block = layout.blocks[Identifier<Block>(uuid: fromBlockId)]!
+        
+        let location: TrainLocation
+        if positionAtEnd {
+            location = TrainLocation.both(blockIndex: 0, index: block.feedbacks.count)
+        } else {
+            location = TrainLocation.both(blockIndex: 0, index: 0)
+        }
+        try doc.layoutController.setTrainToBlock(train, block.id, position: location, direction: direction)
 
         XCTAssertEqual(loc.speed.requestedKph, 0)
         XCTAssertEqual(train.scheduling, .unmanaged)
