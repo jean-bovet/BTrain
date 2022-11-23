@@ -69,11 +69,11 @@ final class Package {
         let location: TrainLocation
         switch position {
         case .start:
-            location = TrainLocation.both(blockIndex: 0, index: 0)
+            location = TrainLocation.both(blockId: block.id, index: 0)
         case .end:
-            location = TrainLocation.both(blockIndex: 0, index: block.feedbacks.count+1)
+            location = TrainLocation.both(blockId: block.id, index: block.feedbacks.count)
         case .custom(let index):
-            location = TrainLocation.both(blockIndex: 0, index: index)
+            location = TrainLocation.both(blockId: block.id, index: index)
         }
         try layoutController.setTrainToBlock(train, block.id, position: location, direction: direction)
 

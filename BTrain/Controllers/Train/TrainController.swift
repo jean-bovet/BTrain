@@ -140,7 +140,7 @@ final class TrainController: TrainControlling, CustomStringConvertible {
     }
 
     func updatePosition(with _: Feedback) throws -> Bool {
-        if moveInsideBlock() {
+        if try moveInsideBlock() {
             return true
         } else if try moveToNextBlock() {
             return true
@@ -269,14 +269,14 @@ final class TrainController: TrainControlling, CustomStringConvertible {
         return false
     }
 
-    func moveInsideBlock() -> Bool {
+    func moveInsideBlock() throws -> Bool {
         let currentLocation = train.position
         
         // Note: do not remove the leading blocks as this will be taken care below by the `reserveLeadingBlocks` method.
         // This is important because the reserveLeadingBlocks method needs to remember the previously reserved turnouts
         // in order to avoid re-activating them each time unnecessarily.
         for feedback in TrainLocationHelper.allActiveFeedbackPositions(train: train, layout: layout) {
-            train.position = TrainLocation.newLocationWith(trainMovesForward: train.directionForward, currentLocation: train.position, feedbackIndex: feedback)
+            train.position = try TrainLocation.newLocationWith(trainMovesForward: train.directionForward, currentLocation: train.position, feedbackIndex: feedback, reservation: train.reservation)
             BTLogger.router.debug("\(self.train, privacy: .public): updated location \(self.train.position) in \(self.currentBlock.name, privacy: .public), direction \(self.trainInstance.direction)")
         }
         
@@ -290,9 +290,8 @@ final class TrainController: TrainControlling, CustomStringConvertible {
             return false
         }
         
-        let nextBlockIndex = train.occupied.blocks.count + 1
-        let feedbackPosition = TrainLocation.FeedbackPosition(blockIndex: nextBlockIndex, index: entryFeedback.index, direction: entryFeedback.direction)
-        let newPosition = TrainLocation.newLocationWith(trainMovesForward: train.directionForward, currentLocation: train.position, feedbackIndex: feedbackPosition)
+        let feedbackPosition = TrainLocation.FeedbackPosition(blockId: entryFeedback.block.id, index: entryFeedback.index, direction: entryFeedback.direction)
+        let newPosition = try TrainLocation.newLocationWith(trainMovesForward: train.directionForward, currentLocation: train.position, feedbackIndex: feedbackPosition, reservation: train.reservation)
         
         BTLogger.router.debug("\(self.train, privacy: .public): enters block \(entryFeedback.block, privacy: .public) at position \(feedbackPosition.index), direction \(entryFeedback.direction)")
 

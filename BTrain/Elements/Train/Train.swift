@@ -115,14 +115,19 @@ final class Train: Element, ObservableObject {
     // The default is 2.
     @Published var maxNumberOfLeadingReservedBlocks = 2
 
-    /// Available only at runtime (never persisted), this variable keeps track of the leading reservation,
-    /// blocks or turnouts, that are assigned to this train.
-    let leading = TrainLeadingReservation()
+    struct Reservation {
+        /// Available only at runtime (never persisted), this variable keeps track of the leading reservation,
+        /// blocks or turnouts, that are assigned to this train.
+        let leading = TrainLeadingReservation()
 
-    /// Available only at runtime (never persisted), this variable keeps track of the blocks and turnouts
-    /// occupied by this train.
-    let occupied = TrainOccupiedReservation()
-
+        /// Available only at runtime (never persisted), this variable keeps track of the blocks and turnouts
+        /// occupied by this train.
+        let occupied = TrainOccupiedReservation()
+    }
+    
+    /// The block reservation, available at runtime only (never persisted).
+    let reservation = Reservation()
+    
     /// Schedule state of the train
     enum Schedule {
         /// The train is monitored by BTrain but not managed. This mode is used when the user wants to drive the train on its own via
@@ -250,6 +255,15 @@ extension Train {
         assert(locomotive != nil)
         return locomotive?.directionForward ?? true
     }
+    
+    var leading: TrainLeadingReservation {
+        reservation.leading
+    }
+    
+    var occupied: TrainOccupiedReservation {
+        reservation.occupied
+    }
+
 }
 
 extension Train: Restorable {

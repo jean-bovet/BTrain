@@ -90,9 +90,13 @@ import Foundation
 /// Note: the direction of travel of the train is used to determine if a position is before (or after) another position in the same block.
 struct TrainPosition: Equatable, Codable, CustomStringConvertible {
     
+    enum TrainPositionError: Error {
+        case occupiedBlockNotFound(blockId: Identifier<Block>)
+    }
+    
     /// The index of the block in which that position is located.
     /// Note: the index is increasing in the direction of travel of the train
-    var blockIndex: Int
+    var blockId: Identifier<Block>
     
     /// The index of the position within the block.
     /// Note: the index is increasing in the natural direction of the block (.next)
@@ -102,41 +106,69 @@ struct TrainPosition: Equatable, Codable, CustomStringConvertible {
     var direction: Direction = .next
     
     var description: String {
-        "\(index)\(direction)"
+        "\(blockId.uuid):\(index):\(direction)"
     }
 
-    static func >(lhs: TrainPosition, rhs: TrainPosition) -> Bool {
-        if lhs.blockIndex > rhs.blockIndex {
+    func isAfter(_ other: TrainPosition, reservation: Train.Reservation) throws -> Bool {
+        guard let blockIndex = reservation.blockIndex(for: blockId) else {
+            throw TrainPositionError.occupiedBlockNotFound(blockId: blockId)
+        }
+        guard let otherBlockIndex = reservation.blockIndex(for: other.blockId) else {
+            throw TrainPositionError.occupiedBlockNotFound(blockId: other.blockId)
+        }
+
+        if blockIndex > otherBlockIndex {
             return true
-        } else if lhs.blockIndex < rhs.blockIndex {
+        } else if blockIndex < otherBlockIndex {
             return false
         } else {
             // Same block. Now the direction matters to compare
-            if lhs.direction == .next {
-                return lhs.index > rhs.index
+            if direction == .next {
+                return index > other.index
             } else {
-                return lhs.index < rhs.index
+                return index < other.index
             }
         }
     }
 
-    static func <(lhs: TrainPosition, rhs: TrainPosition) -> Bool {
-        if lhs.blockIndex < rhs.blockIndex {
+    func isBefore(_ other: TrainPosition, reservation: Train.Reservation) throws -> Bool {
+        guard let blockIndex = reservation.blockIndex(for: blockId) else {
+            throw TrainPositionError.occupiedBlockNotFound(blockId: blockId)
+        }
+        guard let otherBlockIndex = reservation.blockIndex(for: other.blockId) else {
+            throw TrainPositionError.occupiedBlockNotFound(blockId: other.blockId)
+        }
+
+        if blockIndex < otherBlockIndex {
             return true
-        } else if lhs.blockIndex > rhs.blockIndex {
+        } else if blockIndex > otherBlockIndex {
             return false
         } else {
             // Same block. Now the direction matters to compare
-            if lhs.direction == .next {
-                return lhs.index < rhs.index
+            if direction == .next {
+                return index < other.index
             } else {
-                return lhs.index > rhs.index
+                return index > other.index
             }
         }
     }
     
 }
 
+extension Train.Reservation {
+    
+    // [O1] [O2] [L1] [L2]
+    func blockIndex(for blockId: Identifier<Block>) -> Int? {
+        if let blockIndex = occupied.blocks.firstIndex(where: {$0.id == blockId}) {
+            return blockIndex
+        }
+        if let blockIndex = leading.blocks.firstIndex(where: {$0.id == blockId}) {
+            return blockIndex + occupied.blocks.count
+        }
+        return nil
+    }
+
+}
 /// The train location consists of two positions: a front position and a back position.
 ///
 /// Notes:
@@ -163,28 +195,28 @@ struct TrainLocation: Equatable, Codable, CustomStringConvertible {
         }
     }
     
-    static func both(blockIndex: Int, index: Int) -> TrainLocation {
-        TrainLocation(front: .init(blockIndex: blockIndex, index: index),
-                      back: .init(blockIndex: blockIndex, index: index))
+    static func both(blockId: Identifier<Block>, index: Int) -> TrainLocation {
+        TrainLocation(front: .init(blockId: blockId, index: index),
+                      back: .init(blockId: blockId, index: index))
     }
     
     struct FeedbackPosition {
-        let blockIndex: Int
+        let blockId: Identifier<Block>
         let index: Int
         var direction: Direction = .next
         
         var trainPosition: TrainPosition {
             switch direction {
             case .previous:
-                return TrainPosition(blockIndex: blockIndex, index: index, direction: direction)
+                return TrainPosition(blockId: blockId, index: index, direction: direction)
 
             case .next:
-                return TrainPosition(blockIndex: blockIndex, index: index + 1, direction: direction)
+                return TrainPosition(blockId: blockId, index: index + 1, direction: direction)
             }
         }
     }
-    
-    static func newLocationWith(trainMovesForward: Bool, currentLocation: TrainLocation, feedbackIndex: FeedbackPosition) -> TrainLocation {
+        
+    static func newLocationWith(trainMovesForward: Bool, currentLocation: TrainLocation, feedbackIndex: FeedbackPosition, reservation: Train.Reservation) throws -> TrainLocation {
 //        let strict = strictRouteFeedbackStrategy // TODO
 
         var newLocation = currentLocation
@@ -197,7 +229,7 @@ struct TrainLocation: Equatable, Codable, CustomStringConvertible {
                 newLocation.front = detectedPosition
             } else if let back = currentLocation.back, let front = currentLocation.front {
                 if back == front {
-                    if detectedPosition > front {
+                    if try detectedPosition.isAfter(front, reservation: reservation) {
                         // We still don't know exactly where the train is
                         newLocation.back = detectedPosition
                         newLocation.front = detectedPosition
@@ -205,8 +237,8 @@ struct TrainLocation: Equatable, Codable, CustomStringConvertible {
                         // Now we know where the back is, and by definition the front
                         newLocation.back = detectedPosition
                     }
-                } else if back < front {
-                    if detectedPosition > front {
+                } else if try back.isBefore(front, reservation: reservation) {
+                    if try detectedPosition.isAfter(front, reservation: reservation) {
                         newLocation.front = detectedPosition
                     } else {
                         newLocation.back = detectedPosition
@@ -214,10 +246,12 @@ struct TrainLocation: Equatable, Codable, CustomStringConvertible {
                 } else {
                     // Invalid - the back position cannot be after the front position when the
                     // train moves forward in the direction of the block
+                    // TODO: throw
                     fatalError()
                 }
             } else {
                 // Invalid - both front and back must either be defined or not be defined
+                // TODO: throw
                 fatalError()
             }
         } else {
@@ -227,7 +261,7 @@ struct TrainLocation: Equatable, Codable, CustomStringConvertible {
                 newLocation.front = detectedPosition
             } else if let back = currentLocation.back, let front = currentLocation.front {
                 if back == front {
-                    if detectedPosition > back {
+                    if try detectedPosition.isAfter(back, reservation: reservation) {
                         // We still don't know exactly where the train is
                         newLocation.back = detectedPosition
                         newLocation.front = detectedPosition
@@ -235,19 +269,21 @@ struct TrainLocation: Equatable, Codable, CustomStringConvertible {
                         // Now we know where the back is, and by definition the front
                         newLocation.front = detectedPosition
                     }
-                } else if back > front {
-                    if detectedPosition > back {
+                } else if try back.isAfter(front, reservation: reservation) {
+                    if try detectedPosition.isAfter(back, reservation: reservation) {
                         newLocation.back = detectedPosition
                     } else {
                         newLocation.front = detectedPosition
                     }
                 } else {
-                    // Invalid - the back position cannot be after the front position when the
-                    // train moves forward in the direction of the block
+                    // Invalid - the back position cannot be before the front position when the
+                    // train moves backwards in the direction of the block
+                    // TODO: throw
                     fatalError()
                 }
             } else {
                 // Invalid - both front and back must either be defined or not be defined
+                // TODO: throw
                 fatalError()
             }
         }
@@ -272,13 +308,13 @@ struct TrainLocationHelper {
         
         var positions = [TrainLocation.FeedbackPosition]()
                 
-        for (blockIndex, block) in train.occupied.blocks.enumerated() {
+        for block in train.occupied.blocks {
             for (feedbackIndex, feedback) in block.feedbacks.enumerated() {
                 guard let f = layout.feedbacks[feedback.feedbackId], f.detected else {
                     continue
                 }
                 
-                positions.append(TrainLocation.FeedbackPosition(blockIndex: blockIndex, index: feedbackIndex, direction: trainInstance.direction))
+                positions.append(TrainLocation.FeedbackPosition(blockId: block.id, index: feedbackIndex, direction: trainInstance.direction))
             }
         }
         
@@ -296,9 +332,9 @@ struct TrainLocationHelper {
         }
         if ti.direction == .next {
             if train.directionForward {
-                return train.position.front?.index == block.feedbacks.count + 1
+                return train.position.front?.index == block.feedbacks.count
             } else {
-                return train.position.back?.index == block.feedbacks.count + 1
+                return train.position.back?.index == block.feedbacks.count
             }
         } else {
             if train.directionForward {
