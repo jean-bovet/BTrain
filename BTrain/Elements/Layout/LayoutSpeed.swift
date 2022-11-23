@@ -71,7 +71,7 @@ struct LayoutSpeed {
     /// This takes into account speed limits for turnout branches and more.
     /// - Parameter train: the train
     /// - Returns: the maximum allowed speed
-    private func occupiedBlocksMaximumSpeed(train: Train) -> SpeedKph {
+    func occupiedBlocksMaximumSpeed(train: Train) -> SpeedKph {
         var maximumSpeedAllowed: SpeedKph = LayoutFactory.DefaultMaximumSpeed
         for block in train.occupied.blocks {
             maximumSpeedAllowed = block.maximumSpeedAllowed(speed: maximumSpeedAllowed)
@@ -93,7 +93,7 @@ struct LayoutSpeed {
     /// brake within the block it is currently moving in.
     /// - Parameter train: the train
     /// - Returns: the maximum speed
-    private func unrestrictedLeadMaximumSpeed(train: Train) throws -> SpeedKph {
+    func unrestrictedLeadMaximumSpeed(train: Train) throws -> SpeedKph {
         let distanceLeftInBlock = TrainLocationHelper.distanceLeftInLastBlock(train: train)
         var unrestrictedLeadingDistance = distanceLeftInBlock
         var speed = LayoutFactory.DefaultMaximumSpeed
@@ -167,7 +167,7 @@ struct LayoutSpeed {
     ///
     /// - Parameter train: the train
     /// - Returns: the maximum speed
-    private func settledLeadMaximumSpeed(train: Train) throws -> SpeedKph {
+    func settledLeadMaximumSpeed(train: Train) throws -> SpeedKph {
         let distanceLeftInBlock = TrainLocationHelper.distanceLeftInLastBlock(train: train)
         let settledDistance = distanceLeftInBlock + train.leading.settledDistance
         return try maximumSpeedToBrake(train: train, toSpeed: 0, withDistance: settledDistance)

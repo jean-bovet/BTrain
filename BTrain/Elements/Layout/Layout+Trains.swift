@@ -96,7 +96,7 @@ extension Layout {
                 // Train ->       bf
                 // Block -> [ 0 1 2 ]
                 // Train >-       bf
-                train.position.front = .init(blockId: toBlockId, index: toBlock.feedbacks.count+1)
+                train.position.front = .init(blockId: toBlockId, index: toBlock.feedbacks.count)
                 train.position.back = train.position.front
             } else {
                 // Block -> [ 2 1 0 ]
