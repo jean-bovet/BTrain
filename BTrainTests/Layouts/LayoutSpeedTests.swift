@@ -79,16 +79,17 @@ final class LayoutSpeedTests: XCTestCase {
         train.leading.append(b3)
 
         train.leading.updateSettledDistance()
-
         XCTAssertEqual(train.leading.settledDistance, 130)
+        
+        try layout.setTrainToBlock(train.id, s1.id, position: TrainLocation.both(blockIndex: 0, index: 0), direction: .next)
+
         XCTAssertEqual(try layoutSpeed.maximumSpeedAllowed(train: train), LayoutFactory.DefaultMaximumSpeed)
 
         train.leading.clear()
         train.leading.append(t1)
         train.leading.append(b2)
 
-        // TODO: position
-//        try layout.setTrainToBlock(train.id, s1.id, position: .custom(value: 1), direction: .next)
+        try layout.setTrainToBlock(train.id, s1.id, position: TrainLocation.both(blockIndex: 0, index: 1), direction: .next)
 
         t1.requestedState = .branchRight
         train.leading.updateSettledDistance()
