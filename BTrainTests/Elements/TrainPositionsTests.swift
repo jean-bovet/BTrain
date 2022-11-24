@@ -416,7 +416,7 @@ final class TrainPositionsTests: XCTestCase {
     }
 
     private func assertFeedback(forward: Bool, location currentLocation: TrainLocation, detectedPosition: TrainPosition, direction: Direction, back: TrainPosition?, front: TrainPosition?, reservation: Train.Reservation) throws -> TrainLocation {
-        let newLocation = try TrainLocation.newLocationWith(trainMovesForward: forward, currentLocation: currentLocation, detectedPosition: detectedPosition, direction: direction, reservation: reservation)
+        let newLocation = try Train.newLocationWith(trainMovesForward: forward, currentLocation: currentLocation, detectedPosition: detectedPosition, direction: direction, reservation: reservation)
         
         assertLocation(newLocation, back: back, front: front)
 

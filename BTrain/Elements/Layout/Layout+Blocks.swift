@@ -84,6 +84,6 @@ extension Layout {
         guard let currentBlock = currentBlock(train: train) else {
             return false
         }
-        return try TrainLocationHelper.atEndOfBlock(block: currentBlock, train: train)
+        return try Train.atEndOfBlock(block: currentBlock, train: train)
     }
 }

@@ -77,7 +77,7 @@ final class TrainLocationHelperTests: XCTestCase {
     }
 
     private func assertFeedbacks(_ layout: Layout, _ train: Train, feedbackCount: Int) {
-        let feedbacks = TrainLocationHelper.allActiveFeedbackPositions(train: train, layout: layout)
+        let feedbacks = Train.allActiveFeedbackPositions(train: train, layout: layout)
         XCTAssertEqual(feedbacks.count, feedbackCount)
     }
 
@@ -111,7 +111,7 @@ final class TrainLocationHelperTests: XCTestCase {
     
     private func assertEndOfBlock(occupiedCount: Int, atEndOfBlock: Bool, block: Block, train: Train) {
         XCTAssertEqual(train.occupied.blocks.count, occupiedCount)
-        XCTAssertEqual(try TrainLocationHelper.atEndOfBlock(block: block, train: train), atEndOfBlock)
+        XCTAssertEqual(try Train.atEndOfBlock(block: block, train: train), atEndOfBlock)
     }
     
     // MARK: -
@@ -189,7 +189,7 @@ final class TrainLocationHelperTests: XCTestCase {
 
     private func assertRemainingDistance(_ train: Train, front: (Identifier<Block>, Int), back: (Identifier<Block>, Int), distance: Double) {
         train.position = .init(front:.init(blockId: front.0, index: front.1), back:.init(blockId: back.0, index: back.1))
-        XCTAssertEqual(TrainLocationHelper.distanceLeftInLastBlock(train: train), distance)
+        XCTAssertEqual(Train.distanceLeftInLastBlock(train: train), distance)
     }
     
 }
