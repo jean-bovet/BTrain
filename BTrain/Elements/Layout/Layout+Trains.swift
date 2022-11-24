@@ -96,15 +96,13 @@ extension Layout {
                 // Train ->       bf
                 // Block -> [ 0 1 2 ]
                 // Train >-       bf
-                train.position.front = .init(blockId: toBlockId, index: toBlock.feedbacks.count)
-                train.position.back = train.position.front
+                train.position = .both(blockId: toBlockId, index: toBlock.feedbacks.count)
             } else {
                 // Block -> [ 2 1 0 ]
                 // Train ->       bf
                 // Block -> [ 2 1 0 ]
                 // Train >-       bf
-                train.position.front = .init(blockId: toBlockId, index: 0)
-                train.position.back = train.position.front
+                train.position = .both(blockId: toBlockId, index: 0)
             }
         }
         

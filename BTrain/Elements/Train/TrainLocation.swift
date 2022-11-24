@@ -157,7 +157,6 @@ struct TrainPosition: Equatable, Codable, CustomStringConvertible {
 
 extension Train.Reservation {
     
-    // [O1] [O2] [L1] [L2]
     func blockIndex(for blockId: Identifier<Block>) -> Int? {
         if let blockIndex = occupied.blocks.firstIndex(where: {$0.id == blockId}) {
             return blockIndex
@@ -195,9 +194,9 @@ struct TrainLocation: Equatable, Codable, CustomStringConvertible {
         }
     }
     
-    static func both(blockId: Identifier<Block>, index: Int) -> TrainLocation {
-        TrainLocation(front: .init(blockId: blockId, index: index),
-                      back: .init(blockId: blockId, index: index))
+    static func both(blockId: Identifier<Block>, index: Int, direction: Direction = .next) -> TrainLocation {
+        TrainLocation(front: .init(blockId: blockId, index: index, direction: direction),
+                      back: .init(blockId: blockId, index: index, direction: direction))
     }
     
     struct FeedbackPosition {

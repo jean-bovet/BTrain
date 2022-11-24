@@ -40,7 +40,8 @@ import Foundation
 // { ≏ ≏ } <t0:0:1:0> [[r0b0 ≏ ≏ 🟢🚂 ]] <t1:0:1:0> [[ ≏ ≏ ]] [ ≏ ≏ ] <t0:1:0:1> !{b0 ≏ ≏ }
 final class LayoutParser {
     let routeStrings: [String]
-
+    let resolver: BlockResolver
+    
     final class ParsedLayout {
         var blocks = Set<Block>()
         var turnouts = Set<Turnout>()
@@ -56,17 +57,18 @@ final class LayoutParser {
 
     var parsedLayout = ParsedLayout()
 
-    convenience init(routeString: String) {
-        self.init([routeString])
+    convenience init(routeString: String, resolver: BlockResolver) {
+        self.init([routeString], resolver: resolver)
     }
 
-    init(_ routeStrings: [String]) {
+    init(_ routeStrings: [String], resolver: BlockResolver) {
         self.routeStrings = routeStrings
+        self.resolver = resolver
     }
 
     func parse() throws {
         for (index, rs) in routeStrings.enumerated() {
-            let parser = LayoutRouteParser(ls: rs, id: String(index), layout: parsedLayout)
+            let parser = LayoutRouteParser(ls: rs, id: String(index), layout: parsedLayout, resolver: resolver)
             try parser.parse()
             parsedLayout.routes[parser.route.routeId] = parser.route
         }
@@ -74,12 +76,12 @@ final class LayoutParser {
 }
 
 extension LayoutFactory {
-    static func layoutFrom(_ routeString: String) throws -> LayoutParser.ParsedLayout {
-        try layoutFrom([routeString])
+    static func layoutFrom(_ routeString: String, resolver: BlockResolver) throws -> LayoutParser.ParsedLayout {
+        try layoutFrom([routeString], resolver: resolver)
     }
 
-    static func layoutFrom(_ routeStrings: [String]) throws -> LayoutParser.ParsedLayout {
-        let parser = LayoutParser(routeStrings)
+    static func layoutFrom(_ routeStrings: [String], resolver: BlockResolver) throws -> LayoutParser.ParsedLayout {
+        let parser = LayoutParser(routeStrings, resolver: resolver)
         try parser.parse()
         return parser.parsedLayout
     }

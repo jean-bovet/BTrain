@@ -69,11 +69,11 @@ final class Package {
         let location: TrainLocation
         switch position {
         case .start:
-            location = TrainLocation.both(blockId: block.id, index: 0)
+            location = TrainLocation.both(blockId: block.id, index: 0, direction: direction)
         case .end:
-            location = TrainLocation.both(blockId: block.id, index: block.feedbacks.count)
+            location = TrainLocation.both(blockId: block.id, index: block.feedbacks.count, direction: direction)
         case .custom(let index):
-            location = TrainLocation.both(blockId: block.id, index: index)
+            location = TrainLocation.both(blockId: block.id, index: index, direction: direction)
         }
         try layoutController.setTrainToBlock(train, block.id, position: location, direction: direction)
 
@@ -138,14 +138,14 @@ final class Package {
         // Drain all events when the interface is running. If the interface is on pause,
         // do not drain because the drain will never exits as the interface never executes.
         let drainAll = digitalController.running
-        try asserter.assert([r1], trains: trains, drainAll: drainAll, expectRuntimeError: expectRuntimeError)
+        try asserter.assert([r1], trains: trains, resolver: layout, drainAll: drainAll, expectRuntimeError: expectRuntimeError)
         if let leadingBlocks = leadingBlocks {
             try assertLeadingBlocks(leadingBlocks)
         }
     }
 
     func assert2(_ r1: String, _ r2: String) throws {
-        try asserter.assert([r1, r2], trains: trains)
+        try asserter.assert([r1, r2], trains: trains, resolver: layout)
     }
 
     func assertLeadingBlocks(_ blockNames: [String]) throws {
@@ -156,4 +156,8 @@ final class Package {
         let producer = LayoutASCIIProducer(layout: layout)
         print(try producer.stringFrom(route: route, trainId: train.id, useBlockName: true, useTurnoutName: true))
     }
+}
+
+extension Layout: BlockResolver {
+    
 }

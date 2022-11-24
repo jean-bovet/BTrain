@@ -206,9 +206,9 @@ class UnmanagedTrainOperationTests: BTTestCase {
         
         let location: TrainLocation
         if positionAtEnd {
-            location = TrainLocation.both(blockIndex: 0, index: block.feedbacks.count)
+            location = TrainLocation.both(blockId: block.id, index: block.feedbacks.count)
         } else {
-            location = TrainLocation.both(blockIndex: 0, index: 0)
+            location = TrainLocation.both(blockId: block.id, index: 0)
         }
         try doc.layoutController.setTrainToBlock(train, block.id, position: location, direction: direction)
 

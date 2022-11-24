@@ -13,6 +13,13 @@
 @testable import BTrain
 import Foundation
 
+protocol BlockResolver {
+    
+    func block(named: String) -> Block
+    
+    func turnout(named: String) -> Turnout
+}
+
 final class LayoutRouteParser {
     let layout: LayoutParser.ParsedLayout
 
@@ -25,13 +32,16 @@ final class LayoutRouteParser {
 
     let sp: LayoutStringParser
 
+    let resolver: BlockResolver
+    
     enum ParserError: Error {
         case parserError(message: String)
     }
 
-    init(ls: String, id _: String, layout: LayoutParser.ParsedLayout) {
+    init(ls: String, id _: String, layout: LayoutParser.ParsedLayout, resolver: BlockResolver) {
         sp = LayoutStringParser(ls: ls)
         self.layout = layout
+        self.resolver = resolver
     }
 
     func parseRouteName() throws {
@@ -93,7 +103,7 @@ final class LayoutRouteParser {
         // Parse the optional digit that indicates a reference to an existing block
         // Example: { ≏ ≏ } [[ ≏ 🟢🚂 ≏ ]] [[ ≏ ≏ ]] {b0 ≏ ≏ }
         if let blockName = blockHeader.blockName {
-            let blockID = Identifier<Block>(uuid: blockName)
+            let blockID = resolver.block(named: blockName).id
             if let existingBlock = layout.blocks.first(where: { $0.id == blockID }) {
                 block = existingBlock
                 assert(block.category == category, "The existing block \(blockID) does not match the type defined in the ASCII representation")
@@ -118,9 +128,9 @@ final class LayoutRouteParser {
             let index = sp.index
             let numberOfFeedbacks = try parseNumberOfFeedbacks(block: block, newBlock: newBlock, type: category)
             sp.index = index
-            try parseBlockContent(block: block, newBlock: newBlock, type: category, numberOfFeedbacks: numberOfFeedbacks)
+            try parseBlockContent(block: block, newBlock: newBlock, type: category, numberOfFeedbacks: numberOfFeedbacks, direction: direction)
         } else {
-            try parseBlockContent(block: block, newBlock: newBlock, type: category, numberOfFeedbacks: nil)
+            try parseBlockContent(block: block, newBlock: newBlock, type: category, numberOfFeedbacks: nil, direction: direction)
         }
 
         layout.blocks.insert(block)
@@ -166,7 +176,7 @@ final class LayoutRouteParser {
         return currentFeedbackIndex
     }
 
-    func parseBlockContent(block: Block, newBlock: Bool, type: Block.Category, numberOfFeedbacks: Int?) throws {
+    func parseBlockContent(block: Block, newBlock: Bool, type: Block.Category, numberOfFeedbacks: Int?, direction: Direction) throws {
         var currentFeedbackIndex = 0
         try parseBlockContent(block: block, newBlock: newBlock, type: type) { contentType in
             let feedbackIndex: Int
@@ -181,16 +191,16 @@ final class LayoutRouteParser {
 
             switch contentType {
             case .stoppedLoc:
-                parseTrain(position: position, block: block, speed: 0)
+                parseTrain(position: position, block: block, speed: 0, direction: direction)
 
             case .brakingLoc:
-                parseTrain(position: position, block: block, speed: parseTrainSpeed())
+                parseTrain(position: position, block: block, speed: parseTrainSpeed(), direction: direction)
 
             case .runningLoc:
-                parseTrain(position: position, block: block, speed: LayoutFactory.DefaultMaximumSpeed)
+                parseTrain(position: position, block: block, speed: LayoutFactory.DefaultMaximumSpeed, direction: direction)
 
             case .runningLimitedLoc:
-                parseTrain(position: position, block: block, speed: LayoutFactory.DefaultLimitedSpeed)
+                parseTrain(position: position, block: block, speed: LayoutFactory.DefaultLimitedSpeed, direction: direction)
 
             case .wagon:
                 parseWagon(position: position, block: block)
@@ -321,7 +331,7 @@ final class LayoutRouteParser {
         return speed
     }
 
-    func parseTrain(position: Int, block: Block, speed: UInt16) {
+    func parseTrain(position: Int, block: Block, speed: UInt16, direction: Direction) {
         let uuid = parseUUID()
 
         if let train = layout.trains.first(where: { $0.id.uuid == uuid }) {
@@ -338,7 +348,7 @@ final class LayoutRouteParser {
 
             let train = Train(uuid: uuid)
             train.locomotive = loc
-            train.position = TrainLocation.both(blockIndex: 0, index: position)
+            train.position = TrainLocation.both(blockId: block.id, index: position, direction: direction)
             train.routeStepIndex = route.resolvedSteps.count
             train.routeId = route.routeId
             if block.trainInstance == nil {
@@ -466,14 +476,14 @@ final class LayoutRouteParser {
             assert(sp.matches(">"), "Expecting closing reserved turnout character")
         }
 
+        let turnoutId = resolver.turnout(named: turnoutName).id
         let turnout: Turnout
-        let turnoutId = Identifier<Turnout>(uuid: turnoutName)
         if let existingTurnout = layout.turnouts.first(where: { $0.id == turnoutId }) {
             assert(existingTurnout.actualState == state, "Mismatching turnout state for turnout \(turnoutName)")
             assert(existingTurnout.reserved?.train.uuid == reservedTrainNumber, "Mismatching turnout reservation for turnout \(turnoutName)")
             turnout = existingTurnout
         } else {
-            turnout = Turnout(id: Identifier<Turnout>(uuid: turnoutName))
+            turnout = Turnout(id: turnoutId)
             turnout.category = type
             turnout.actualState = state
             if let reservedTrainNumber = reservedTrainNumber {
