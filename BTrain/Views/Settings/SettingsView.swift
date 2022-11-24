@@ -28,7 +28,6 @@ struct SettingsView: View {
     @AppStorage(SettingsKeys.automaticRouteRandom) private var automaticRouteRandom = true
     @AppStorage(SettingsKeys.shortestRouteEnabled) private var shortestRouteEnabled = false
     @AppStorage(SettingsKeys.detectUnexpectedFeedback) var detectUnexpectedFeedback = true
-    @AppStorage(SettingsKeys.strictRouteFeedbackStrategy) var strictRouteFeedbackStrategy = false
 
     @AppStorage(SettingsKeys.debugMode) private var showDebugControls = false
     @AppStorage(SettingsKeys.recordDiagnosticLogs) private var recordDiagnosticLogs = false
@@ -78,7 +77,6 @@ struct SettingsView: View {
                 Toggle("Find the Shortest Possible Route", isOn: $shortestRouteEnabled)
                 Toggle("Generate Automatic Route at Random", isOn: $automaticRouteRandom)
                 Toggle("Detect Unexpected Feedbacks", isOn: $detectUnexpectedFeedback)
-                Toggle("Strict Route Feedback Detection", isOn: $strictRouteFeedbackStrategy)
             }
             .tabItem {
                 Label("Routing", systemImage: "point.topleft.down.curvedto.point.filled.bottomright.up")

@@ -193,13 +193,13 @@ struct TrainLocation: Equatable, Codable, CustomStringConvertible {
     
     var description: String {
         if let front = front, let back = back {
-            return "\(front)-\(back)"
+            return ">\(back)-\(front)>"
         } else if let front = front {
-            return "\(front)-?"
+            return ">?-\(front)>"
         } else if let back = back {
-            return "?-\(back)"
+            return ">\(back)-?>"
         } else {
-            return "?-?"
+            return ">?-?>"
         }
     }
     
@@ -225,8 +225,6 @@ struct TrainLocation: Equatable, Codable, CustomStringConvertible {
     }
         
     static func newLocationWith(trainMovesForward: Bool, currentLocation: TrainLocation, detectedPosition: TrainPosition, direction: Direction, reservation: Train.Reservation) throws -> TrainLocation {
-//        let strict = strictRouteFeedbackStrategy // TODO
-
         var newLocation = currentLocation
 
         if trainMovesForward {

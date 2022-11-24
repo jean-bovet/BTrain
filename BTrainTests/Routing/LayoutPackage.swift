@@ -51,7 +51,6 @@ final class Package {
 
         layout.automaticRouteRandom = false
         layout.detectUnexpectedFeedback = true
-        layout.strictRouteFeedbackStrategy = true
     }
 
     func prepare(trainID: String, fromBlockId: String, position: Position = .start, direction: Direction = .next) throws {

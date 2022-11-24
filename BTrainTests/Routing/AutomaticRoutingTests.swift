@@ -336,7 +336,6 @@ class AutomaticRoutingTests: BTTestCase {
 
         let p = try setup(layout: layout, train: train, fromBlockId: ne4.id, destination: nil, position: .end, direction: .previous, routeSteps: ["NE4:previous", "M1:next", "M2U:next", "LCF1:next"])
 
-        layout.strictRouteFeedbackStrategy = false
         XCTAssertTrue(train.timeUntilAutomaticRestart == 0)
 
         try p.assert("automatic-16405: !{r16405{NE4 🟢🚂16405 ≏ ≏ }} <r16405<C.1{tw}(1,0),s>> <r16405<M.1{sl}(0,1),s>> [r16405[M1 ≏ ≏ ≏ ]] <Z.1{sr}(0,1),s> [M2U ≏ ] <Z.2{sl}(1,0),s> <Z.4{sl}(0,1),l> {LCF1 ≏ ≏ }")
@@ -570,7 +569,6 @@ class AutomaticRoutingTests: BTTestCase {
         t1.locomotive?.allowedDirections = .any
 
         let p = try setup(layout: layout, fromBlockId: s1.id, destination: .init(s2.id, direction: .next), position: .end, direction: .previous, routeSteps: ["s1:next", "b1:next", "s2:next"])
-        p.layout.strictRouteFeedbackStrategy = false
         
         try p.assert("automatic-0: {r0{s1 ≏ 💺0 ≏ 🔵🚂0 }} <r0<t1{sr}(0,1),s>> <r0<t2{sr}(0,1),s>> [r0[b1 ≏ ≏ ]] <t4{sl}(1,0),s> {s2 ≏ ≏ }", ["b1"])
         try p.assert("automatic-0: {s1 ≏ ≏ } <t1{sr}(0,1),s> <t2{sr}(0,1),s> [r0[b1 💺0 ≡ 🔵🚂0 ≏ ]] <r0<t4{sl}(1,0),s>> {r0{s2 ≏ ≏ }}", ["s2"])

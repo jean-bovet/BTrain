@@ -197,7 +197,6 @@ class UnmanagedTrainOperationTests: BTTestCase {
 
     private func setup(layout: Layout, fromBlockId: String, positionAtEnd: Bool = false, direction: Direction = .next) throws -> Package {
         layout.detectUnexpectedFeedback = true
-        layout.strictRouteFeedbackStrategy = true
 
         let train = layout.trains[0]
         let loc = train.locomotive!

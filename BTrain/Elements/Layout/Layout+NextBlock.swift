@@ -30,7 +30,7 @@ extension Layout {
 
     /// Returns the entry feedback that is expected to be triggered when the train enters the next block.
     ///
-    /// The next block is computed by taking into account the direction of travel of the train and the ``strictRouteFeedbackStrategy`` settings.
+    /// The next block is computed by taking into account the direction of travel of the train.
     ///
     /// - Parameter train: the train
     /// - Returns: the entry feedback or nil if no valid entry feedback is found
@@ -53,14 +53,6 @@ extension Layout {
                 return nil
             }
             nextBlock = nb
-
-            // Strict route strategy requires the train to be at the end of the block
-            // before moving to the next block.
-            if strictRouteFeedbackStrategy {
-                if try atEndOfBlock(train: train) == false {
-                    return nil
-                }
-            }
         }
 
         // Find out which feedback is going to be used to detect the train entering

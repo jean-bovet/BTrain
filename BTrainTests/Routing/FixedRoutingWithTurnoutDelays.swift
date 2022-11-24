@@ -80,7 +80,6 @@ class FixedRoutingWithTurnoutDelays: BTTestCase {
         let p = Package(layout: layout)
         try p.prepare(routeID: "r1", trainID: "1", fromBlockId: "b1", position: .end)
 
-        p.layout.strictRouteFeedbackStrategy = false
         p.train.maxNumberOfLeadingReservedBlocks = 2
 
         try p.assert("r1: {r1{b1 ≏ ≏ 🔴🚂1 }} <t0> [b2 ≏ ≏ ] [b3 ≏ ≏ ] <t1,r> [b4 ≏ ≏] {r1{b1 ≏ ≏ }}")
