@@ -176,6 +176,7 @@ extension Train.Reservation {
         return nil
     }
 }
+
 /// The train location consists of two positions: a front position and a back position.
 ///
 /// Notes:

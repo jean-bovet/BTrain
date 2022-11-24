@@ -128,9 +128,9 @@ final class LayoutRouteParser {
             let index = sp.index
             let numberOfFeedbacks = try parseNumberOfFeedbacks(block: block, newBlock: newBlock, type: category)
             sp.index = index
-            try parseBlockContent(block: block, newBlock: newBlock, type: category, numberOfFeedbacks: numberOfFeedbacks, direction: direction)
+            try parseBlockContent(block: block, newBlock: newBlock, type: category, numberOfFeedbacks: numberOfFeedbacks)
         } else {
-            try parseBlockContent(block: block, newBlock: newBlock, type: category, numberOfFeedbacks: nil, direction: direction)
+            try parseBlockContent(block: block, newBlock: newBlock, type: category, numberOfFeedbacks: nil)
         }
 
         layout.blocks.insert(block)
@@ -176,7 +176,7 @@ final class LayoutRouteParser {
         return currentFeedbackIndex
     }
 
-    func parseBlockContent(block: Block, newBlock: Bool, type: Block.Category, numberOfFeedbacks: Int?, direction: Direction) throws {
+    func parseBlockContent(block: Block, newBlock: Bool, type: Block.Category, numberOfFeedbacks: Int?) throws {
         var currentFeedbackIndex = 0
         try parseBlockContent(block: block, newBlock: newBlock, type: type) { contentType in
             let feedbackIndex: Int
@@ -191,16 +191,16 @@ final class LayoutRouteParser {
 
             switch contentType {
             case .stoppedLoc:
-                parseTrain(position: position, block: block, speed: 0, direction: direction)
+                parseTrain(position: position, block: block, speed: 0)
 
             case .brakingLoc:
-                parseTrain(position: position, block: block, speed: parseTrainSpeed(), direction: direction)
+                parseTrain(position: position, block: block, speed: parseTrainSpeed())
 
             case .runningLoc:
-                parseTrain(position: position, block: block, speed: LayoutFactory.DefaultMaximumSpeed, direction: direction)
+                parseTrain(position: position, block: block, speed: LayoutFactory.DefaultMaximumSpeed)
 
             case .runningLimitedLoc:
-                parseTrain(position: position, block: block, speed: LayoutFactory.DefaultLimitedSpeed, direction: direction)
+                parseTrain(position: position, block: block, speed: LayoutFactory.DefaultLimitedSpeed)
 
             case .wagon:
                 parseWagon(position: position, block: block)
@@ -331,7 +331,7 @@ final class LayoutRouteParser {
         return speed
     }
 
-    func parseTrain(position: Int, block: Block, speed: UInt16, direction: Direction) {
+    func parseTrain(position: Int, block: Block, speed: UInt16) {
         let uuid = parseUUID()
 
         if let train = layout.trains.first(where: { $0.id.uuid == uuid }) {
