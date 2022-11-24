@@ -94,18 +94,18 @@ final class TrainLocationHelperTests: XCTestCase {
         try doc.layoutController.setTrainToBlock(train, blockB.id, direction: .next)
         assertEndOfBlock(occupiedCount: 1, atEndOfBlock: true, block: blockB, train: train)
 
-        try doc.layoutController.setTrainToBlock(train, blockB.id, position: TrainLocation(front: .init(blockId: blockB.id, index: blockB.feedbacks.count+1), back: nil), direction: .next)
+        try doc.layoutController.setTrainToBlock(train, blockB.id, position: TrainLocation(front: .init(blockId: blockB.id, index: blockB.feedbacks.count), back: nil), direction: .next)
         assertEndOfBlock(occupiedCount: 1, atEndOfBlock: true, block: blockB, train: train)
 
-        try doc.layoutController.setTrainToBlock(train, blockB.id, position: TrainLocation(front: .init(blockId: blockB.id, index: blockB.feedbacks.count), back: nil), direction: .next)
+        try doc.layoutController.setTrainToBlock(train, blockB.id, position: TrainLocation(front: .init(blockId: blockB.id, index: blockB.feedbacks.count-1), back: nil), direction: .next)
         assertEndOfBlock(occupiedCount: 1, atEndOfBlock: false, block: blockB, train: train)
 
         train.locomotive!.directionForward = false
         
-        try doc.layoutController.setTrainToBlock(train, blockB.id, position: TrainLocation(front: .init(blockId: blockB.id, index: 0), back: .init(blockId: blockB.id, index: blockB.feedbacks.count+1)), direction: .next)
+        try doc.layoutController.setTrainToBlock(train, blockB.id, position: TrainLocation(front: .init(blockId: blockB.id, index: 0), back: .init(blockId: blockB.id, index: blockB.feedbacks.count)), direction: .next)
         assertEndOfBlock(occupiedCount: 1, atEndOfBlock: true, block: blockB, train: train)
 
-        try doc.layoutController.setTrainToBlock(train, blockB.id, position: TrainLocation(front: .init(blockId: blockB.id, index: 0), back: .init(blockId: blockB.id, index: blockB.feedbacks.count)), direction: .next)
+        try doc.layoutController.setTrainToBlock(train, blockB.id, position: TrainLocation(front: .init(blockId: blockB.id, index: 0), back: .init(blockId: blockB.id, index: blockB.feedbacks.count-1)), direction: .next)
         assertEndOfBlock(occupiedCount: 1, atEndOfBlock: false, block: blockB, train: train)
     }
     
