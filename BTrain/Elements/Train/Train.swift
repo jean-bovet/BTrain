@@ -116,17 +116,21 @@ final class Train: Element, ObservableObject {
     @Published var maxNumberOfLeadingReservedBlocks = 2
 
     struct Reservation {
-        /// Available only at runtime (never persisted), this variable keeps track of the leading reservation,
-        /// blocks or turnouts, that are assigned to this train.
+        /// Keeps track of the leading reservation, blocks or turnouts, that are assigned to this train.
         let leading = TrainLeadingReservation()
 
-        /// Available only at runtime (never persisted), this variable keeps track of the blocks and turnouts
-        /// occupied by this train.
+        /// Keeps track of the blocks and turnouts occupied by this train.
         let occupied = TrainOccupiedReservation()
+        
+        /// Specify the next block in which the train will enter, given its position and direction of travel.
+        /// Note: during automated routing (automatic or fixed), this variable correspond to the first
+        /// leading block. During manual operation, the leading blocks are empty but this variable is used
+        /// to properly move the train to the next block.
+        var nextBlock: Block?
     }
     
     /// The block reservation, available at runtime only (never persisted).
-    let reservation = Reservation()
+    var reservation = Reservation()
     
     /// Schedule state of the train
     enum Schedule {

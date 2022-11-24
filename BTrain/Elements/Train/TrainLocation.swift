@@ -163,6 +163,9 @@ extension Train.Reservation {
         if let blockIndex = leading.blocks.firstIndex(where: {$0.id == blockId}) {
             return blockIndex + occupied.blocks.count
         }
+        if let nextBlock = nextBlock, nextBlock.id == blockId {
+            return occupied.blocks.count
+        }
         return nil
     }
 
