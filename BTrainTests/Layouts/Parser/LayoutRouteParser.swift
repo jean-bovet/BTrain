@@ -348,7 +348,7 @@ final class LayoutRouteParser {
 
             let train = Train(uuid: uuid)
             train.locomotive = loc
-            train.position = TrainLocation.both(blockId: block.id, index: position, direction: direction)
+            train.position = TrainLocation.both(blockId: block.id, index: position)
             train.routeStepIndex = route.resolvedSteps.count
             train.routeId = route.routeId
             if block.trainInstance == nil {

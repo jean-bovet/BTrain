@@ -101,12 +101,9 @@ struct TrainPosition: Equatable, Codable, CustomStringConvertible {
     /// The index of the position within the block.
     /// Note: the index is increasing in the natural direction of the block (.next)
     var index: Int
-        
-    /// The direction of travel of the train within the block. The natural direction is .next
-    var direction: Direction = .next
-    
+            
     var description: String {
-        "\(blockId.uuid):\(index):\(direction)"
+        "\(blockId.uuid):\(index)"
     }
 
     func isAfter(_ other: TrainPosition, reservation: Train.Reservation) throws -> Bool {
@@ -123,6 +120,7 @@ struct TrainPosition: Equatable, Codable, CustomStringConvertible {
             return false
         } else {
             // Same block. Now the direction matters to compare
+            let direction = reservation.directionInBlock(for: blockId)
             if direction == .next {
                 return index > other.index
             } else {
@@ -145,6 +143,7 @@ struct TrainPosition: Equatable, Codable, CustomStringConvertible {
             return false
         } else {
             // Same block. Now the direction matters to compare
+            let direction = reservation.directionInBlock(for: blockId)
             if direction == .next {
                 return index < other.index
             } else {
@@ -167,6 +166,15 @@ extension Train.Reservation {
         return nil
     }
 
+    func directionInBlock(for blockId: Identifier<Block>) -> Direction? {
+        if let block = occupied.blocks.first(where: {$0.id == blockId}) {
+            return block.trainInstance!.direction
+        }
+        if let block = leading.blocks.first(where: {$0.id == blockId}) {
+            return block.trainInstance!.direction
+        }
+        return nil
+    }
 }
 /// The train location consists of two positions: a front position and a back position.
 ///
@@ -194,32 +202,31 @@ struct TrainLocation: Equatable, Codable, CustomStringConvertible {
         }
     }
     
-    static func both(blockId: Identifier<Block>, index: Int, direction: Direction = .next) -> TrainLocation {
-        TrainLocation(front: .init(blockId: blockId, index: index, direction: direction),
-                      back: .init(blockId: blockId, index: index, direction: direction))
+    static func both(blockId: Identifier<Block>, index: Int) -> TrainLocation {
+        TrainLocation(front: .init(blockId: blockId, index: index),
+                      back: .init(blockId: blockId, index: index))
     }
     
     struct FeedbackPosition {
+        
         let blockId: Identifier<Block>
         let index: Int
-        var direction: Direction = .next
         
-        var trainPosition: TrainPosition {
+        func trainPosition(direction: Direction) -> TrainPosition {
             switch direction {
             case .previous:
-                return TrainPosition(blockId: blockId, index: index, direction: direction)
+                return TrainPosition(blockId: blockId, index: index)
 
             case .next:
-                return TrainPosition(blockId: blockId, index: index + 1, direction: direction)
+                return TrainPosition(blockId: blockId, index: index + 1)
             }
         }
     }
         
-    static func newLocationWith(trainMovesForward: Bool, currentLocation: TrainLocation, feedbackIndex: FeedbackPosition, reservation: Train.Reservation) throws -> TrainLocation {
+    static func newLocationWith(trainMovesForward: Bool, currentLocation: TrainLocation, detectedPosition: TrainPosition, direction: Direction, reservation: Train.Reservation) throws -> TrainLocation {
 //        let strict = strictRouteFeedbackStrategy // TODO
 
         var newLocation = currentLocation
-        let detectedPosition = feedbackIndex.trainPosition
 
         if trainMovesForward {
             // Train: [back] [front] >>>>
@@ -301,10 +308,6 @@ struct TrainLocationHelper {
     ///
     /// - Returns: array of detected feedback and their position
     static func allActiveFeedbackPositions(train: Train, layout: Layout) -> [TrainLocation.FeedbackPosition] {
-        guard let trainInstance = train.occupied.blocks.first?.trainInstance else {
-            return []
-        }
-        
         var positions = [TrainLocation.FeedbackPosition]()
                 
         for block in train.occupied.blocks {
@@ -313,7 +316,7 @@ struct TrainLocationHelper {
                     continue
                 }
                 
-                positions.append(TrainLocation.FeedbackPosition(blockId: block.id, index: feedbackIndex, direction: trainInstance.direction))
+                positions.append(TrainLocation.FeedbackPosition(blockId: block.id, index: feedbackIndex))
             }
         }
         
