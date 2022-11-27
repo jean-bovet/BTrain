@@ -44,7 +44,9 @@ extension Train {
                         newLocation.back = newLocation.front
                     }
                 } else {
-                    newLocation.back = detectedPosition
+                    if allowedDirection != .forward {
+                        newLocation.back = detectedPosition
+                    }
                 }
             } else {
                 // Invalid - both front and back must either be defined or not be defined

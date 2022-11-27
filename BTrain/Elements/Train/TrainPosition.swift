@@ -48,7 +48,6 @@ struct TrainPosition: Equatable, Codable, CustomStringConvertible {
     ///   - reservation: the reservation of the train
     /// - Returns: true if this position is after ``other``, false otherwise
     func isAfter(_ other: TrainPosition, reservation: Train.Reservation) throws -> Bool {
-        // TODO: clarify what `direction` is and if needed
         guard let blockIndex = reservation.blockIndex(for: blockId) else {
             throw TrainPositionError.occupiedBlockNotFound(blockId: blockId)
         }

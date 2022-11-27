@@ -77,9 +77,7 @@ final class TrainVisitor {
                 
         // Keep track of the remaining train length that needs to have reserved blocks
         var remainingTrainLength = trainLength
-    
-        let trainDirectionForward = locomotive.directionForward // TODO: used?
-        
+            
         // Always visit the train in the opposite direction of travel (by definition)
         let directionOfVisit = trainInstance.direction.opposite
 
@@ -97,7 +95,7 @@ final class TrainVisitor {
                                                            remainingTrainLength: remainingTrainLength,
                                                            block: blockInfo.block,
                                                            frontBlock: info.index == 0,
-                                                           trainForward: trainDirectionForward,
+                                                           trainForward: locomotive.directionForward,
                                                            directionOfVisit: blockInfo.direction,
                                                            blockCallback: blockCallback)
             }
@@ -130,10 +128,16 @@ final class TrainVisitor {
         // Determine the starting position where to begin filling out parts of the block
         var position: Int
         if frontBlock {
+            // This is the front block, which is the block at the front of the train
+            // in the direction of travel of the train.
             if trainForward {
+                // Moving forward: the front block is where the locomotive is located,
+                // so use the front position index.
                 position = trainPosition.front?.index ?? 0
             } else {
-                position = trainPosition.back?.index ?? 0
+                // Moving backward: the front block is where the last wagon is located,
+                // so use the back position index.
+                position = trainPosition.back?.index ?? block.feedbacks.count
             }
         } else {
             position = directionOfVisit == .previous ? block.feedbacks.count : 0

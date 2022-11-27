@@ -449,10 +449,11 @@ class FixedRoutingTests: BTTestCase {
 
         // Train position should be updated although the feedback is not next to the train but a bit further.
         try p.assert("r1: {r1{b1 ≏ ≡ 🟢🚂1 }} <r1<t0>> [r1[b2 ≏ ≏ ]] <t1(0,2)> [b3 ≏ ≏ ] <r1<t0(2,0)>> !{r1{b1 🟢🚂1 ≡ ≏ }}")
-        // TODO: The following is failing because the feedback is changing the back position to be
-        // ">b1:1-b1:2>" which is expected. However, how do we represent that in ASCII? Maybe the problem
-        // is that we would need to have a wagon behind the locomotive for this to actually happen.
-//        try p.assert("r1: {r1{b1 ≡ ≏ 🟢🚂1 }} <r1<t0>> [r1[b2 ≏ ≏ ]] <t1(0,2)> [b3 ≏ ≏ ] <r1<t0(2,0)>> !{r1{b1 🟢🚂1 ≏ ≡ }}")
+        
+        // A feedback behind the train (in the same block) is triggered. Because the train has an allowedDirection of .forward,
+        // that feedback is simply ignored (we could throw an exception in the future if we wanted to). Note that if the train
+        // was allowed to move in any direction, the back position would be updated by that feedback.
+        try p.assert("r1: {r1{b1 ≡ ≏ 🟢🚂1 }} <r1<t0>> [r1[b2 ≏ ≏ ]] <t1(0,2)> [b3 ≏ ≏ ] <r1<t0(2,0)>> !{r1{b1 🟢🚂1 ≏ ≡ }}")
     }
 
     //                            ┌─────────┐
