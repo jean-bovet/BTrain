@@ -34,7 +34,6 @@ final class TrainPositionsTests: XCTestCase {
     
     // MARK: - Train Forward -
 
-    // TODO: also test when a train spans more than one block (occupied.blocks.count > 1)
     func testMoveForwardSameBlock() throws {
         var location = TrainLocation()
         
@@ -77,106 +76,6 @@ final class TrainPositionsTests: XCTestCase {
                                       feedback: (block.id, 2),
                                       back: (block.id, 1),
                                       front: (block.id, 3),
-                                      reservation: reservation)
-    }
-
-    func testMoveForwardSameBlocksNextNext() throws {
-        var location = TrainLocation()
-        
-        // Train (􀼯􀼮):           ??
-        assertLocation(location, back: nil, front: nil)
-
-        let reservation = Train.Reservation()
-        let b1 = Block(name: "b1")
-        b1.trainInstance = TrainInstance(.init(uuid: "t1"), .next)
-        let b2 = Block(name: "b2")
-        b2.trainInstance = TrainInstance(.init(uuid: "t1"), .next)
-        
-        // Reserved blocks are always ordered starting with the front of the train
-        // (in the direction of travel of the train)
-        reservation.occupied.append(b2)
-        reservation.occupied.append(b1)
-
-        // Blocks (􁉆􁉆): b1[ p0 f0 p1 f1 p2 f2 p3 ] b2[ p0 |f0| p1 f1 p2 f2 p3 ]
-        // Train (􀼯􀼮):                                        bf
-        location = try assertFeedback(forward: true, location: location,
-                                      feedback: (b2.id, 0),
-                                      back: (b2.id, 1),
-                                      front: (b2.id, 1),
-                                      reservation: reservation)
-
-        // Block (􁉆􁉆): b1[ p0 f0 p1 |f1| p2 f2 p3 ] b2[ p0 f0 p1 f1 p2 f2 p3 ]
-        // Train (􀼯􀼮):                  b                    f
-        location = try assertFeedback(forward: true, location: location,
-                                      feedback: (b1.id, 1),
-                                      back: (b1.id, 2),
-                                      front: (b2.id, 1),
-                                      reservation: reservation)
-
-        // Block (􁉆􁉆): b1[ p0 f0 p1 f1 p2 f2 p3 ] b2[ p0 f0 p1 f1 p2 |f2| p3 ]
-        // Train (􀼯􀼮):                b                                  f
-        location = try assertFeedback(forward: true, location: location,
-                                      feedback: (b2.id, 2),
-                                      back: (b1.id, 2),
-                                      front: (b2.id, 3),
-                                      reservation: reservation)
-
-        // Block (􁉆􁉆): b1[ p0 f0 p1 f1 p2 f2 p3 ] b2[ p0 |f0| p1 f1 p2 f2 p3 ]
-        // Train (􀼯􀼮):                                       b           f
-        location = try assertFeedback(forward: true, location: location,
-                                      feedback: (b2.id, 0),
-                                      back: (b2.id, 1),
-                                      front: (b2.id, 3),
-                                      reservation: reservation)
-    }
-
-    func testMoveForwardSameBlocksNextPrevious() throws {
-        var location = TrainLocation()
-        
-        // Train (􀼯􀼮):           ??
-        assertLocation(location, back: nil, front: nil)
-
-        let reservation = Train.Reservation()
-        let b1 = Block(name: "b1")
-        b1.trainInstance = TrainInstance(.init(uuid: "t1"), .next)
-        let b2 = Block(name: "b2")
-        b2.trainInstance = TrainInstance(.init(uuid: "t1"), .previous)
-        
-        // Reserved blocks are always ordered starting with the front of the train
-        // (in the direction of travel of the train)
-        reservation.occupied.append(b2)
-        reservation.occupied.append(b1)
-
-        // Blocks (􁉆􁉈): b1[ p0 f0 p1 f1 p2 f2 p3 ] b2[ p3 |f2| p2 f1 p1 f0 p0 ]
-        // Train (􀼯􀼮):                                        bf
-        location = try assertFeedback(forward: true, location: location,
-                                      feedback: (b2.id, 2),
-                                      back: (b2.id, 2),
-                                      front: (b2.id, 2),
-                                      reservation: reservation)
-
-        // Blocks (􁉆􁉈): b1[ p0 f0 p1 |f1| p2 f2 p3 ] b2[ p3 f2 p2 f1 p1 f0 p0 ]
-        // Train (􀼯􀼮):                   b                    f
-        location = try assertFeedback(forward: true, location: location,
-                                      feedback: (b1.id, 1),
-                                      back: (b1.id, 2),
-                                      front: (b2.id, 2),
-                                      reservation: reservation)
-
-        // Blocks (􁉆􁉈): b1[ p0 f0 p1 f1 p2 f2 p3 ] b2[ p3 f2 p2 f1 p1 |f0| p0 ]
-        // Train (􀼯􀼮):                 b                                  f
-        location = try assertFeedback(forward: true, location: location,
-                                      feedback: (b2.id, 0),
-                                      back: (b1.id, 2),
-                                      front: (b2.id, 0),
-                                      reservation: reservation)
-
-        // Blocks (􁉆􁉈): b1[ p0 f0 p1 f1 p2 f2 p3 ] b2[ p3 |f2| p2 f1 p1 f0 p0 ]
-        // Train (􀼯􀼮):                                        b           f
-        location = try assertFeedback(forward: true, location: location,
-                                      feedback: (b2.id, 2),
-                                      back: (b2.id, 2),
-                                      front: (b2.id, 0),
                                       reservation: reservation)
     }
 
@@ -311,6 +210,162 @@ final class TrainPositionsTests: XCTestCase {
                                       reservation: p.reservation)
     }
 
+    // MARK: - Multi-block occupation
+    
+    func testMoveForwardSameBlocksNextNext() throws {
+        let reservation = Train.Reservation()
+        let b1 = Block(name: "b1")
+        b1.trainInstance = TrainInstance(.init(uuid: "t1"), .next)
+        let b2 = Block(name: "b2")
+        b2.trainInstance = TrainInstance(.init(uuid: "t1"), .next)
+        
+        // Reserved blocks are always ordered starting with the front of the train
+        // (in the direction of travel of the train)
+        reservation.occupied.append(b2)
+        reservation.occupied.append(b1)
+
+        var lines = [LineAssertion]()
+
+        // Blocks (􁉆􁉆): b1[ p0 f0 p1 f1 p2 f2 p3 ] b2[ p0 |f0| p1 f1 p2 f2 p3 ]
+        // Train (􀼯􀼮):                                        bf
+        lines.append(LineAssertion(feedback: (b2.id, 0), back: (b2.id, 1), front: (b2.id, 1)))
+
+        // Block (􁉆􁉆): b1[ p0 f0 p1 |f1| p2 f2 p3 ] b2[ p0 f0 p1 f1 p2 f2 p3 ]
+        // Train (􀼯􀼮):                  b                    f
+        lines.append(LineAssertion(feedback: (b1.id, 1), back: (b1.id, 2), front: (b2.id, 1)))
+
+        // Block (􁉆􁉆): b1[ p0 f0 p1 f1 p2 f2 p3 ] b2[ p0 f0 p1 f1 p2 |f2| p3 ]
+        // Train (􀼯􀼮):                b                                  f
+        lines.append(LineAssertion(feedback: (b2.id, 2), back: (b1.id, 2), front: (b2.id, 3)))
+
+        // Block (􁉆􁉆): b1[ p0 f0 p1 f1 p2 f2 p3 ] b2[ p0 |f0| p1 f1 p2 f2 p3 ]
+        // Train (􀼯􀼮):                                       b           f
+        lines.append(LineAssertion(feedback: (b2.id, 0), back: (b2.id, 1), front: (b2.id, 3)))
+        
+        try assertLines(lines: lines, reservation: reservation)
+    }
+
+    func testMoveForwardSameBlocksNextPrevious() throws {
+        let reservation = Train.Reservation()
+        let b1 = Block(name: "b1")
+        b1.trainInstance = TrainInstance(.init(uuid: "t1"), .next)
+        let b2 = Block(name: "b2")
+        b2.trainInstance = TrainInstance(.init(uuid: "t1"), .previous)
+        
+        // Reserved blocks are always ordered starting with the front of the train
+        // (in the direction of travel of the train)
+        reservation.occupied.append(b2)
+        reservation.occupied.append(b1)
+
+        var lines = [LineAssertion]()
+
+        // Blocks (􁉆􁉈): b1[ p0 f0 p1 f1 p2 f2 p3 ] b2[ p3 |f2| p2 f1 p1 f0 p0 ]
+        // Train (􀼯􀼮):                                        bf
+        lines.append(LineAssertion(feedback: (b2.id, 2), back: (b2.id, 2), front: (b2.id, 2)))
+
+        // Blocks (􁉆􁉈): b1[ p0 f0 p1 |f1| p2 f2 p3 ] b2[ p3 f2 p2 f1 p1 f0 p0 ]
+        // Train (􀼯􀼮):                   b                    f
+        lines.append(LineAssertion(feedback: (b1.id, 1), back: (b1.id, 2), front: (b2.id, 2)))
+
+        // Blocks (􁉆􁉈): b1[ p0 f0 p1 f1 p2 f2 p3 ] b2[ p3 f2 p2 f1 p1 |f0| p0 ]
+        // Train (􀼯􀼮):                 b                                  f
+        lines.append(LineAssertion(feedback: (b2.id, 0), back: (b1.id, 2), front: (b2.id, 0)))
+
+        // Blocks (􁉆􁉈): b1[ p0 f0 p1 f1 p2 f2 p3 ] b2[ p3 |f2| p2 f1 p1 f0 p0 ]
+        // Train (􀼯􀼮):                                        b           f
+        lines.append(LineAssertion(feedback: (b2.id, 2), back: (b2.id, 2), front: (b2.id, 0)))
+                
+        try assertLines(lines: lines, reservation: reservation)
+    }
+
+    func testMoveForwardSameBlocksPreviousNext() throws {
+        let reservation = Train.Reservation()
+        let b1 = Block(name: "b1")
+        b1.trainInstance = TrainInstance(.init(uuid: "t1"), .previous)
+        let b2 = Block(name: "b2")
+        b2.trainInstance = TrainInstance(.init(uuid: "t1"), .next)
+        
+        // Reserved blocks are always ordered starting with the front of the train
+        // (in the direction of travel of the train)
+        reservation.occupied.append(b2)
+        reservation.occupied.append(b1)
+
+        var lines = [LineAssertion]()
+
+        // Blocks (􁉈􁉆): b1[ p3 f2 p2 f1 p1 f0 p0 ] b2[ p0 |f0| p1 f1 p2 f2 p3 ]
+        // Train (􀼯􀼮):                                        bf
+        lines.append(LineAssertion(feedback: (b2.id, 0), back: (b2.id, 1), front: (b2.id, 1)))
+
+        // Blocks (􁉈􁉆): b1[ p3 f2 p2 |f1| p1 f0 p0 ] b2[ p0 f0 p1 f1 p2 f2 p3 ]
+        // Train (􀼯􀼮):                   b                    f
+        lines.append(LineAssertion(feedback: (b1.id, 1), back: (b1.id, 1), front: (b2.id, 1)))
+
+        // Blocks (􁉈􁉆): b1[ p3 f2 p2 f1 p1 f0 p0 ] b2[ p0 f0 p1 |f1| p2 f2 p3 ]
+        // Train (􀼯􀼮):                 b                            f
+        lines.append(LineAssertion(feedback: (b2.id, 1), back: (b1.id, 1), front: (b2.id, 2)))
+
+        // Blocks (􁉈􁉆): b1[ p3 f2 p2 f1 p1 f0 p0 ] b2[ p0 |f0| p1 f1 p2 f2 p3 ]
+        // Train (􀼯􀼮):                                        b     f
+        lines.append(LineAssertion(feedback: (b2.id, 0), back: (b2.id, 1), front: (b2.id, 2)))
+                
+        try assertLines(lines: lines, reservation: reservation)
+    }
+
+    func testMoveForwardSameBlocksPreviousPrevious() throws {
+        let reservation = Train.Reservation()
+        let b1 = Block(name: "b1")
+        b1.trainInstance = TrainInstance(.init(uuid: "t1"), .previous)
+        let b2 = Block(name: "b2")
+        b2.trainInstance = TrainInstance(.init(uuid: "t1"), .previous)
+        
+        // Reserved blocks are always ordered starting with the front of the train
+        // (in the direction of travel of the train)
+        reservation.occupied.append(b2)
+        reservation.occupied.append(b1)
+
+        var lines = [LineAssertion]()
+
+        // Blocks (􁉈􁉆): b1[ p3 f2 p2 f1 p1 f0 p0 ] b2[ p3 |f2| p2 f1 p1 f0 p0 ]
+        // Train (􀼯􀼮):                                        bf
+        lines.append(LineAssertion(feedback: (b2.id, 2), back: (b2.id, 2), front: (b2.id, 2)))
+
+        // Blocks (􁉈􁉆): b1[ p3 f2 p2 |f1| p1 f0 p0 ] b2[ p3 f2 p2 f1 p1 f0 p0 ]
+        // Train (􀼯􀼮):                   b                    f
+        lines.append(LineAssertion(feedback: (b1.id, 1), back: (b1.id, 1), front: (b2.id, 2)))
+
+        // Blocks (􁉈􁉆): b1[ p3 f2 p2 f1 p1 f0 p0 ] b2[ p3 f2 p2 |f1| p1 f0 p0 ]
+        // Train (􀼯􀼮):                 b                            f
+        lines.append(LineAssertion(feedback: (b2.id, 1), back: (b1.id, 1), front: (b2.id, 1)))
+
+        // Blocks (􁉈􁉆): b1[ p3 f2 p2 f1 p1 f0 p0 ] b2[ p3 |f2| p2 f1 p1 f0 p0 ]
+        // Train (􀼯􀼮):                                        b     f
+        lines.append(LineAssertion(feedback: (b2.id, 2), back: (b2.id, 2), front: (b2.id, 1)))
+                
+        try assertLines(lines: lines, reservation: reservation)
+    }
+
+    struct LineAssertion {
+        let feedback: (Identifier<Block>, Int)
+        let back: (Identifier<Block>, Int)
+        let front: (Identifier<Block>, Int)
+    }
+        
+    private func assertLines(lines: [LineAssertion], reservation: Train.Reservation) throws {
+        var location = TrainLocation()
+        
+        // Train (􀼯􀼮):           ??
+        assertLocation(location, back: nil, front: nil)
+
+        for line in lines {
+            location = try assertFeedback(forward: true,
+                                          location: location,
+                                          feedback: line.feedback,
+                                          back: line.back,
+                                          front: line.front,
+                                          reservation: reservation)
+        }
+    }
+    
     // MARK: - Train Backward -
 
     func testMoveBackwardSameBlock() throws {
