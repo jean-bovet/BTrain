@@ -49,8 +49,6 @@ extension Layout {
         switch loc.allowedDirections {
         case .any:
             fromDirections = [.previous, .next]
-        case .backward:
-            fromDirections = [trainInstance.direction.opposite]
         case .forward:
             fromDirections = [trainInstance.direction]
         }

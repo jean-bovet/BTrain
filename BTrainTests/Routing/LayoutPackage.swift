@@ -157,6 +157,13 @@ final class Package {
     }
 }
 
-extension Layout: BlockResolver {
+extension Layout: LayoutParserResolver {
+    func blockId(forBlockName: String) -> BTrain.Identifier<BTrain.Block> {
+        block(named: forBlockName).id
+    }
+    
+    func turnoutId(forTurnoutName: String) -> BTrain.Identifier<BTrain.Turnout> {
+        turnout(named: forTurnoutName).id
+    }
     
 }

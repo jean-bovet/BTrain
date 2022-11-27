@@ -568,8 +568,8 @@ class AutomaticRoutingTests: BTTestCase {
         t1.locomotive?.length = 20
         t1.wagonsLength = s1.length! - 20
         
-        t1.locomotive?.directionForward = true
-        t1.locomotive?.allowedDirections = .any
+        t1.locomotive!.directionForward = true
+        t1.locomotive!.allowedDirections = .any
 
         XCTAssertTrue(t1.directionForward)
         
@@ -581,12 +581,12 @@ class AutomaticRoutingTests: BTTestCase {
         XCTAssertFalse(t1.directionForward)
         XCTAssertEqual(s1.trainInstance?.direction, .next)
 
-        try p.assert("automatic-0: {r0{s1 🔵🚂0 ≏ 💺0 ≏ 💺0 }} <r0<t1{sr}(0,1),s>> <r0<t2{sr}(0,1),s>> [r0[b1 ≏ ≏ ]] <t4{sl}(1,0),s> {s2 ≏ ≏ }", ["b1"])
+        try p.assert("automatic-0: {r0{s1 🔵🚂⟷0 ≏ 💺0 ≏ 💺0 }} <r0<t1{sr}(0,1),s>> <r0<t2{sr}(0,1),s>> [r0[b1 ≏ ≏ ]] <t4{sl}(1,0),s> {s2 ≏ ≏ }", ["b1"])
 
-        try p.assert("automatic-0: {r0{s1 ≡ 🔵🚂0 ≏ 💺0 }} <r0<t1{sr}(0,1),s>> <r0<t2{sr}(0,1),s>> [r0[b1 💺0 ≡ 💺0 ≏ ]] <r0<t4{sl}(1,0),s>> {r0{s2 ≏ ≏ }}", ["s2"])
+        try p.assert("automatic-0: {r0{s1 ≡ 🔵🚂⟷0 ≏ 💺0 }} <r0<t1{sr}(0,1),s>> <r0<t2{sr}(0,1),s>> [r0[b1 💺0 ≡ 💺0 ≏ ]] <r0<t4{sl}(1,0),s>> {r0{s2 ≏ ≏ }}", ["s2"])
 
-        try p.assert("automatic-0: {s1 ≏ ≏ } <t1{sr}(0,1),s> <t2{sr}(0,1),s> [r0[b1 ≡ 🟡🚂0 ≏ 💺0 ]] <r0<t4{sl}(1,0),s>> {r0{s2 💺0 ≡ 💺0 ≏ }}", [])
-        try p.assert("automatic-0: {s1 ≏ ≏ } <t1{sr}(0,1),s> <t2{sr}(0,1),s> [r0[b1 ≏ 🔴🚂0 ≏ 💺0 ]] <r0<t4{sl}(1,0),s>> {r0{s2 💺0 ≏ 💺0 ≡ 💺0 }}", [])
+        try p.assert("automatic-0: {s1 ≏ ≏ } <t1{sr}(0,1),s> <t2{sr}(0,1),s> [r0[b1 ≡ 🟡🚂⟷0 ≏ 💺0 ]] <r0<t4{sl}(1,0),s>> {r0{s2 💺0 ≡ 💺0 ≏ }}", [])
+        try p.assert("automatic-0: {s1 ≏ ≏ } <t1{sr}(0,1),s> <t2{sr}(0,1),s> [r0[b1 ≏ 🔴🚂⟷0 ≏ 💺0 ]] <r0<t4{sl}(1,0),s>> {r0{s2 💺0 ≏ 💺0 ≡ 💺0 }}", [])
         try p.printASCII()
 
 //        try p.assert("automatic-0: {r0{s1 ≏ 🔵🚂0 ≏ 💺0 }} <r0<t1{sr}(0,1),s>> <r0<t2{sr}(0,1),s>> [r0[b1 💺0 ≡ 💺0 ≏ ]] <r0<t4{sl}(1,0),s>> {r0{s2 ≏ ≏ }}", ["s2"])

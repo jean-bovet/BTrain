@@ -26,7 +26,7 @@ final class LayoutAsserter {
         self.layoutController = layoutController
     }
 
-    func assert(_ strings: [String], trains: [Train], resolver: BlockResolver, drainAll: Bool = true, expectRuntimeError: Bool = false) throws {
+    func assert(_ strings: [String], trains: [Train], resolver: LayoutParserResolver, drainAll: Bool = true, expectRuntimeError: Bool = false) throws {
         let expectedLayout = try LayoutFactory.layoutFrom(strings, resolver: resolver)
         let expectedTrains = Array(expectedLayout.trains)
 

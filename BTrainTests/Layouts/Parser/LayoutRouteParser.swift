@@ -13,13 +13,6 @@
 @testable import BTrain
 import Foundation
 
-protocol BlockResolver {
-    
-    func block(named: String) -> Block
-    
-    func turnout(named: String) -> Turnout
-}
-
 final class LayoutRouteParser {
     let layout: LayoutParser.ParsedLayout
 
@@ -32,13 +25,13 @@ final class LayoutRouteParser {
 
     let sp: LayoutStringParser
 
-    let resolver: BlockResolver
+    let resolver: LayoutParserResolver
     
     enum ParserError: Error {
         case parserError(message: String)
     }
 
-    init(ls: String, id _: String, layout: LayoutParser.ParsedLayout, resolver: BlockResolver) {
+    init(ls: String, id _: String, layout: LayoutParser.ParsedLayout, resolver: LayoutParserResolver) {
         sp = LayoutStringParser(ls: ls)
         self.layout = layout
         self.resolver = resolver
@@ -103,7 +96,7 @@ final class LayoutRouteParser {
         // Parse the optional digit that indicates a reference to an existing block
         // Example: { ≏ ≏ } [[ ≏ 🟢🚂 ≏ ]] [[ ≏ ≏ ]] {b0 ≏ ≏ }
         if let blockName = blockHeader.blockName {
-            let blockID = resolver.block(named: blockName).id
+            let blockID = resolver.blockId(forBlockName: blockName)
             if let existingBlock = layout.blocks.first(where: { $0.id == blockID }) {
                 block = existingBlock
                 assert(block.category == category, "The existing block \(blockID) does not match the type defined in the ASCII representation")
@@ -332,6 +325,12 @@ final class LayoutRouteParser {
     }
 
     func parseTrain(position: Int, block: Block, speed: UInt16) {
+        let allowedDirection: Locomotive.AllowedDirection
+        if sp.matches("⟷") {
+            allowedDirection = .any
+        } else {
+            allowedDirection = .forward
+        }
         let uuid = parseUUID()
 
         if let train = layout.trains.first(where: { $0.id.uuid == uuid }) {
@@ -345,7 +344,8 @@ final class LayoutRouteParser {
         } else {
             let loc = Locomotive(uuid: uuid)
             loc.speed = .init(kph: speed, decoderType: .MFX)
-
+            loc.allowedDirections = allowedDirection
+            
             let train = Train(uuid: uuid)
             train.locomotive = loc
             train.position = TrainLocation.both(blockId: block.id, index: position)
@@ -366,7 +366,7 @@ final class LayoutRouteParser {
             block.trainInstance = TrainInstance(Identifier<Train>(uuid: uuid), .next)
         }
 
-        if let train = layout.trains.first(where: { $0.id.uuid == uuid }) {
+        if let train = layout.trains.first(where: { $0.id.uuid == uuid }), train.allowedDirections == .any {
             train.position.back = .init(blockId: block.id, index: position)
         }
         
@@ -480,7 +480,7 @@ final class LayoutRouteParser {
             assert(sp.matches(">"), "Expecting closing reserved turnout character")
         }
 
-        let turnoutId = resolver.turnout(named: turnoutName).id
+        let turnoutId = resolver.turnoutId(forTurnoutName: turnoutName)
         let turnout: Turnout
         if let existingTurnout = layout.turnouts.first(where: { $0.id == turnoutId }) {
             assert(existingTurnout.actualState == state, "Mismatching turnout state for turnout \(turnoutName)")

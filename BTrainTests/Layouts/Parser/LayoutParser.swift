@@ -40,7 +40,7 @@ import Foundation
 // { ≏ ≏ } <t0:0:1:0> [[r0b0 ≏ ≏ 🟢🚂 ]] <t1:0:1:0> [[ ≏ ≏ ]] [ ≏ ≏ ] <t0:1:0:1> !{b0 ≏ ≏ }
 final class LayoutParser {
     let routeStrings: [String]
-    let resolver: BlockResolver
+    let resolver: LayoutParserResolver
     
     final class ParsedLayout {
         var blocks = Set<Block>()
@@ -57,11 +57,11 @@ final class LayoutParser {
 
     var parsedLayout = ParsedLayout()
 
-    convenience init(routeString: String, resolver: BlockResolver) {
+    convenience init(routeString: String, resolver: LayoutParserResolver) {
         self.init([routeString], resolver: resolver)
     }
 
-    init(_ routeStrings: [String], resolver: BlockResolver) {
+    init(_ routeStrings: [String], resolver: LayoutParserResolver) {
         self.routeStrings = routeStrings
         self.resolver = resolver
     }
@@ -76,11 +76,11 @@ final class LayoutParser {
 }
 
 extension LayoutFactory {
-    static func layoutFrom(_ routeString: String, resolver: BlockResolver) throws -> LayoutParser.ParsedLayout {
+    static func layoutFrom(_ routeString: String, resolver: LayoutParserResolver) throws -> LayoutParser.ParsedLayout {
         try layoutFrom([routeString], resolver: resolver)
     }
 
-    static func layoutFrom(_ routeStrings: [String], resolver: BlockResolver) throws -> LayoutParser.ParsedLayout {
+    static func layoutFrom(_ routeStrings: [String], resolver: LayoutParserResolver) throws -> LayoutParser.ParsedLayout {
         let parser = LayoutParser(routeStrings, resolver: resolver)
         try parser.parse()
         return parser.parsedLayout
