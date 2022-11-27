@@ -53,19 +53,19 @@ final class Package {
         layout.detectUnexpectedFeedback = true
     }
 
-    func prepare(trainID: String, fromBlockId: String, position: Position = .start, direction: Direction = .next) throws {
+    func prepare(trainID: String, fromBlockId: String, position: Position? = .start, direction: Direction = .next) throws {
         let routeId = Route.automaticRouteId(for: .init(uuid: trainID))
         try prepare(routeID: routeId.uuid, trainID: trainID, fromBlockId: fromBlockId, position: position, direction: direction)
     }
 
-    func prepare(routeID: String, trainID: String, fromBlockId: String, position: Position = .start, direction: Direction = .next) throws {
+    func prepare(routeID: String, trainID: String, fromBlockId: String, position: Position? = .start, direction: Direction = .next) throws {
         let train = layout.trains[Identifier<Train>(uuid: trainID)]!
         let route = layout.route(for: .init(uuid: routeID), trainId: .init(uuid: trainID))!
         let loc = train.locomotive!
         let block = layout.blocks[Identifier<Block>(uuid: fromBlockId)]!
         
         train.routeId = route.id
-        let location: TrainLocation
+        let location: TrainLocation?
         switch position {
         case .start:
             location = TrainLocation.both(blockId: block.id, index: 0)
@@ -73,6 +73,8 @@ final class Package {
             location = TrainLocation.both(blockId: block.id, index: block.feedbacks.count)
         case .custom(let index):
             location = TrainLocation.both(blockId: block.id, index: index)
+        case .none:
+            location = nil
         }
         try layoutController.setTrainToBlock(train, block.id, position: location, direction: direction)
 

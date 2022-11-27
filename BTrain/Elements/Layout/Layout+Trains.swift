@@ -92,17 +92,19 @@ extension Layout {
             train.position = position
         } else {
             if direction == .next {
-                // Block -> [ 0 1 2 ]
-                // Train ->       bf
-                // Block -> [ 0 1 2 ]
-                // Train >-       bf
-                train.position = .both(blockId: toBlockId, index: toBlock.feedbacks.count)
+                if train.allowedDirections == .forward {
+                    train.position = .both(blockId: toBlockId, index: toBlock.feedbacks.count)
+                } else {
+                    train.position.front = .init(blockId: toBlockId, index: toBlock.feedbacks.count)
+                    train.position.back = .init(blockId: toBlockId, index: 0)
+                }
             } else {
-                // Block -> [ 2 1 0 ]
-                // Train ->       bf
-                // Block -> [ 2 1 0 ]
-                // Train >-       bf
-                train.position = .both(blockId: toBlockId, index: 0)
+                if train.allowedDirections == .forward {
+                    train.position = .both(blockId: toBlockId, index: 0)
+                } else {
+                    train.position.front = .init(blockId: toBlockId, index: 0)
+                    train.position.back = .init(blockId: toBlockId, index: toBlock.feedbacks.count)
+                }
             }
         }
         

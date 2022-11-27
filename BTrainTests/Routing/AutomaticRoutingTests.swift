@@ -573,11 +573,9 @@ class AutomaticRoutingTests: BTTestCase {
 
         XCTAssertTrue(t1.directionForward)
         
-        let p = try setup(layout: layout, fromBlockId: s1.id, destination: .init(s2.id, direction: .next), position: .start, direction: .previous, routeSteps: ["s1:next", "b1:next", "s2:next"])
-
-        // TODO: integrate that into setup
-        t1.position.back = .init(blockId: s1.id, index: 2)
+        let p = try setup(layout: layout, fromBlockId: s1.id, destination: .init(s2.id, direction: .next), position: nil, direction: .previous, routeSteps: ["s1:next", "b1:next", "s2:next"])
         
+        // The route requires the train to move backward
         XCTAssertFalse(t1.directionForward)
         XCTAssertEqual(s1.trainInstance?.direction, .next)
 
@@ -587,7 +585,6 @@ class AutomaticRoutingTests: BTTestCase {
 
         try p.assert("automatic-0: {s1 ≏ ≏ } <t1{sr}(0,1),s> <t2{sr}(0,1),s> [r0[b1 ≡ 🟡🚂⟷0 ≏ 💺0 ]] <r0<t4{sl}(1,0),s>> {r0{s2 💺0 ≡ 💺0 ≏ }}", [])
         try p.assert("automatic-0: {s1 ≏ ≏ } <t1{sr}(0,1),s> <t2{sr}(0,1),s> [r0[b1 ≏ 🔴🚂⟷0 ≏ 💺0 ]] <r0<t4{sl}(1,0),s>> {r0{s2 💺0 ≏ 💺0 ≡ 💺0 }}", [])
-        try p.printASCII()
 
 //        try p.assert("automatic-0: {r0{s1 ≏ 🔵🚂0 ≏ 💺0 }} <r0<t1{sr}(0,1),s>> <r0<t2{sr}(0,1),s>> [r0[b1 💺0 ≡ 💺0 ≏ ]] <r0<t4{sl}(1,0),s>> {r0{s2 ≏ ≏ }}", ["s2"])
 //        print("** \(t1.position)")
@@ -596,11 +593,11 @@ class AutomaticRoutingTests: BTTestCase {
 
     // MARK: - - Utility
 
-    private func setup(layout: Layout, fromBlockId: Identifier<Block>, destination: Destination?, position: Package.Position = .start, direction: Direction = .next, expectedState: Train.State = .running, routeSteps: [String]) throws -> Package {
+    private func setup(layout: Layout, fromBlockId: Identifier<Block>, destination: Destination?, position: Package.Position? = .start, direction: Direction = .next, expectedState: Train.State = .running, routeSteps: [String]) throws -> Package {
         try setup(layout: layout, train: layout.trains[0], fromBlockId: fromBlockId, destination: destination, position: position, direction: direction, expectedState: expectedState, routeSteps: routeSteps)
     }
 
-    private func setup(layout: Layout, train: Train, fromBlockId: Identifier<Block>, destination: Destination?, position: Package.Position = .start, direction: Direction = .next, expectedState: Train.State = .running, routeSteps: [String]) throws -> Package {
+    private func setup(layout: Layout, train: Train, fromBlockId: Identifier<Block>, destination: Destination?, position: Package.Position? = .start, direction: Direction = .next, expectedState: Train.State = .running, routeSteps: [String]) throws -> Package {
         let p = Package(layout: layout)
         try p.prepare(trainID: train.uuid, fromBlockId: fromBlockId.uuid, position: position, direction: direction)
         try p.start(destination: destination, expectedState: expectedState, routeSteps: routeSteps)

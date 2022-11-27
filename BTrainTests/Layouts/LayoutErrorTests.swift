@@ -40,6 +40,10 @@ class LayoutErrorTests: XCTestCase {
         layout.turnouts[0]
     }
 
+    override func setUp() {
+        train0.locomotive = Locomotive()
+    }
+    
     func testMissingBlock() {
         let unknownBlock = Identifier<Block>(uuid: "foo")
         do {
