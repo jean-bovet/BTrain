@@ -240,7 +240,7 @@ final class LayoutReservation {
                 guard transition.reserved == nil || (transition.reserved == train.id && transition.train == train.id) else {
                     throw LayoutError.transitionAlreadyReserved(transition: transition)
                 }
-                debug("Reserving transition \(transition) for \(train)")
+                debug("Reserving transition \(transition) for \(train.description(layout))")
                 transition.reserved = train.id
             }
             transitions.removeAll()
@@ -348,18 +348,27 @@ final class LayoutReservation {
             turnout.train = train.id
             train.occupied.append(turnout)
         } blockCallback: { block, attributes in
-            guard block.reservation == nil || attributes.headBlock else {
+            guard block.reservation == nil || attributes.frontBlock else {
                 throw LayoutError.blockAlreadyReserved(block: block)
             }
 
             let trainInstance = TrainInstance(train.id, attributes.trainDirection)
             block.trainInstance = trainInstance
 
+            // Assign the type of part to each position
             for (index, position) in attributes.positions.enumerated() {
-                if index == 0 {
-                    trainInstance.parts[position] = attributes.headBlock ? .locomotive : .wagon
+                trainInstance.parts[position] = .wagon
+                
+                if train.directionForward {
+                    if attributes.frontBlock && index == 0 {
+                        // When moving forward, the locomotive is always located in the front block
+                        trainInstance.parts[position] = .locomotive
+                    }
                 } else {
-                    trainInstance.parts[position] = .wagon
+                    if attributes.backBlock && index == attributes.positions.count - 1 {
+                        // When moving backward, the locomotive is always located in the last block
+                        trainInstance.parts[position] = .locomotive
+                    }
                 }
             }
 

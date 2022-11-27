@@ -14,35 +14,37 @@ import Foundation
 
 extension Train {
     
-    static func newLocationWith(trainMovesForward: Bool, currentLocation: TrainLocation, detectedPosition: TrainPosition, direction: Direction, reservation: Train.Reservation) throws -> TrainLocation {
+    static func newLocationWith(trainMovesForward: Bool, allowedDirection: Locomotive.AllowedDirection, currentLocation: TrainLocation, detectedPosition: TrainPosition, direction: Direction, reservation: Train.Reservation) throws -> TrainLocation {
         var newLocation = currentLocation
         
         if trainMovesForward {
-            // Train: [back] [front] >>>>
+            //         Block Natural Direction: ────────▶  ────────▶                    ────────▶  ◀────────
+            //        Train Direction In Block: ─ ─ ─ ─ ▶  ─ ─ ─ ─ ▶                    ─ ─ ─ ─ ▶  ─ ─ ─ ─ ▶
+            //                                 ┌─────────┐┌─────────┐┌ ─ ─ ─ ─ ┐       ┌─────────┐┌─────────┐┌ ─ ─ ─ ─ ┐
+            //                                 │   b1    ││   b2    │   lead           │   b1    ││   b2    │   lead
+            //                                 └─────────┘└─────────┘└ ─ ─ ─ ─ ┘       └─────────┘└─────────┘└ ─ ─ ─ ─ ┘
+            //                 Block Positions:  0  1  2    0  1  2                      0  1  2    2  1  0
+            //
+            //       Train (direction forward):   ■■■■■■■■■■■■■▶                          ■■■■■■■■■■■■■▶
+            //               Occupied: [b2, b1]   b            f                          b            f
+            //
+            //       Train (direction forward):   ◀■■■■■■■■■■■■■                          ◀■■■■■■■■■■■■■
+            //               Occupied: [b1, b2]   f            b                          f            b
             if currentLocation.back == nil && currentLocation.front == nil {
                 newLocation.back = detectedPosition
                 newLocation.front = detectedPosition
             } else if let back = currentLocation.back, let front = currentLocation.front {
-                if back == front {
-                    if try detectedPosition.isAfter(front, reservation: reservation) {
-                        // We still don't know exactly where the train is
-                        newLocation.back = detectedPosition
-                        newLocation.front = detectedPosition
-                    } else {
-                        // Now we know where the back is, and by definition the front
-                        newLocation.back = detectedPosition
-                    }
-                } else if try back.isBefore(front, reservation: reservation) {
-                    if try detectedPosition.isAfter(front, reservation: reservation) {
-                        newLocation.front = detectedPosition
-                    } else {
-                        newLocation.back = detectedPosition
-                    }
-                } else {
-                    // Invalid - the back position cannot be after the front position when the
-                    // train moves forward in the direction of the block
+                guard try back.isBeforeOrEqual(front, reservation: reservation, direction: direction) else {
                     // TODO: throw
                     fatalError()
+                }
+                if try detectedPosition.isAfter(front, reservation: reservation, direction: direction) {
+                    newLocation.front = detectedPosition
+                    if allowedDirection == .forward {
+                        newLocation.back = newLocation.front
+                    }
+                } else {
+                    newLocation.back = detectedPosition
                 }
             } else {
                 // Invalid - both front and back must either be defined or not be defined
@@ -50,31 +52,32 @@ extension Train {
                 fatalError()
             }
         } else {
-            // Train: [front] [back] >>>>
+            //         Block Natural Direction: ────────▶  ────────▶                    ────────▶  ◀────────
+            //        Train Direction In Block: ─ ─ ─ ─ ▶  ─ ─ ─ ─ ▶                    ─ ─ ─ ─ ▶  ─ ─ ─ ─ ▶
+            //                                 ┌─────────┐┌─────────┐┌ ─ ─ ─ ─ ┐       ┌─────────┐┌─────────┐┌ ─ ─ ─ ─ ┐
+            //                                 │   b1    ││   b2    │   lead           │   b1    ││   b2    │   lead
+            //                                 └─────────┘└─────────┘└ ─ ─ ─ ─ ┘       └─────────┘└─────────┘└ ─ ─ ─ ─ ┘
+            //                 Block Positions:  0  1  2    0  1  2                      0  1  2    2  1  0
+            //
+            //      Train (direction backward):   ▶■■■■■■■■■■■■■                          ▶■■■■■■■■■■■■■
+            //               Occupied: [b2, b1]   f            b                          f            b
+            //
+            //      Train (direction backward):   ■■■■■■■■■■■■■◀                          ■■■■■■■■■■■■■◀
+            //               Occupied: [b1, b2]   b            f                          b            f
             if currentLocation.back == nil && currentLocation.front == nil {
                 newLocation.back = detectedPosition
                 newLocation.front = detectedPosition
             } else if let back = currentLocation.back, let front = currentLocation.front {
-                if back == front {
-                    if try detectedPosition.isAfter(back, reservation: reservation) {
-                        // We still don't know exactly where the train is
-                        newLocation.back = detectedPosition
-                        newLocation.front = detectedPosition
-                    } else {
-                        // Now we know where the back is, and by definition the front
-                        newLocation.front = detectedPosition
-                    }
-                } else if try back.isAfter(front, reservation: reservation) {
-                    if try detectedPosition.isAfter(back, reservation: reservation) {
-                        newLocation.back = detectedPosition
-                    } else {
-                        newLocation.front = detectedPosition
-                    }
-                } else {
-                    // Invalid - the back position cannot be before the front position when the
-                    // train moves backwards in the direction of the block
-                    // TODO: throw
+                // Invalid - the back position cannot be before the front position when the
+                // train moves backwards in the direction of the block
+                // TODO: throw
+                guard try back.isAfterOrEqual(front, reservation: reservation, direction: direction) else {
                     fatalError()
+                }
+                if try detectedPosition.isAfter(back, reservation: reservation, direction: direction) {
+                    newLocation.back = detectedPosition
+                } else {
+                    newLocation.front = detectedPosition
                 }
             } else {
                 // Invalid - both front and back must either be defined or not be defined

@@ -34,7 +34,22 @@ struct TrainPosition: Equatable, Codable, CustomStringConvertible {
         "\(blockId.uuid):\(index)"
     }
 
-    func isAfter(_ other: TrainPosition, reservation: Train.Reservation) throws -> Bool {
+    func isAfterOrEqual(_ other: TrainPosition, reservation: Train.Reservation, direction: Direction) throws -> Bool {
+        if self == other {
+            return true
+        } else {
+            return try isAfter(other, reservation: reservation, direction: direction)
+        }
+    }
+    
+    /// Returns true if the location is after ``other``, in the direction of travel of the train.
+    /// - Parameters:
+    ///   - other: the other location
+    ///   - reservation: the reservation of the train
+    ///   - direction: the direction?
+    /// - Returns: true if this position is after ``other``, false otherwise
+    func isAfter(_ other: TrainPosition, reservation: Train.Reservation, direction: Direction?) throws -> Bool {
+        // TODO: clarify what `direction` is and if needed
         guard let blockIndex = reservation.blockIndex(for: blockId) else {
             throw TrainPositionError.occupiedBlockNotFound(blockId: blockId)
         }
@@ -43,12 +58,15 @@ struct TrainPosition: Equatable, Codable, CustomStringConvertible {
         }
 
         if blockIndex > otherBlockIndex {
-            return true
-        } else if blockIndex < otherBlockIndex {
             return false
+        } else if blockIndex < otherBlockIndex {
+            return true
         } else {
             // Same block. Now the direction matters to compare
-            let direction = reservation.directionInBlock(for: blockId)
+            guard let direction = reservation.directionInBlock(for: blockId) ?? direction else {
+                // TODO: throw
+                fatalError()
+            }
             if direction == .next {
                 return index > other.index
             } else {
@@ -57,26 +75,19 @@ struct TrainPosition: Equatable, Codable, CustomStringConvertible {
         }
     }
 
-    func isBefore(_ other: TrainPosition, reservation: Train.Reservation) throws -> Bool {
-        guard let blockIndex = reservation.blockIndex(for: blockId) else {
-            throw TrainPositionError.occupiedBlockNotFound(blockId: blockId)
-        }
-        guard let otherBlockIndex = reservation.blockIndex(for: other.blockId) else {
-            throw TrainPositionError.occupiedBlockNotFound(blockId: other.blockId)
-        }
-
-        if blockIndex < otherBlockIndex {
+    func isBeforeOrEqual(_ other: TrainPosition, reservation: Train.Reservation, direction: Direction) throws -> Bool {
+        if self == other {
             return true
-        } else if blockIndex > otherBlockIndex {
+        } else {
+            return try isBefore(other, reservation: reservation, direction: direction)
+        }
+    }
+    
+    func isBefore(_ other: TrainPosition, reservation: Train.Reservation, direction: Direction) throws -> Bool {
+        if self == other {
             return false
         } else {
-            // Same block. Now the direction matters to compare
-            let direction = reservation.directionInBlock(for: blockId)
-            if direction == .next {
-                return index < other.index
-            } else {
-                return index > other.index
-            }
+            return try !isAfter(other, reservation: reservation, direction: direction)
         }
     }
     
@@ -90,20 +101,18 @@ extension Train.Reservation {
             return blockIndex
         }
         if let blockIndex = leading.blocks.firstIndex(where: {$0.id == blockId}) {
-            return blockIndex + occupied.blocks.count
+            return -1-blockIndex
         }
         if let nextBlock = nextBlock, nextBlock.id == blockId {
-            return occupied.blocks.count
+            return -1
         }
         return nil
     }
 
     func directionInBlock(for blockId: Identifier<Block>) -> Direction? {
         if let block = occupied.blocks.first(where: {$0.id == blockId}) {
-            return block.trainInstance!.direction
-        }
-        if let block = leading.blocks.first(where: {$0.id == blockId}) {
-            return block.trainInstance!.direction
+            // TODO: throw if trainInstance is nil because this should not happen
+            return block.trainInstance?.direction
         }
         return nil
     }

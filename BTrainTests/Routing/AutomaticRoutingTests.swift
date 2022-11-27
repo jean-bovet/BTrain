@@ -546,7 +546,7 @@ class AutomaticRoutingTests: BTTestCase {
     
     
     /// Test that a locomotive that does not support going backward will not move when a route that requires
-    /// it to go backward is setup. The route path finder will fail to find a path for the train and the train won't move.
+    /// it to go backward is chosen. The route path finder will fail to find a path for the train and the train won't move.
     func testBackwardRouteWithLocomotiveThatDontGoBackward() throws {
         let layout = LayoutLoopWithStation().newLayout()
         let s1 = layout.block(named: "s1")
@@ -565,14 +565,33 @@ class AutomaticRoutingTests: BTTestCase {
         let s2 = layout.block(named: "s2")
 
         let t1 = layout.trains[0]
+        t1.locomotive?.length = 20
+        t1.wagonsLength = s1.length! - 20
+        
         t1.locomotive?.directionForward = true
         t1.locomotive?.allowedDirections = .any
 
-        let p = try setup(layout: layout, fromBlockId: s1.id, destination: .init(s2.id, direction: .next), position: .end, direction: .previous, routeSteps: ["s1:next", "b1:next", "s2:next"])
+        XCTAssertTrue(t1.directionForward)
         
-        try p.assert("automatic-0: {r0{s1 ≏ 💺0 ≏ 🔵🚂0 }} <r0<t1{sr}(0,1),s>> <r0<t2{sr}(0,1),s>> [r0[b1 ≏ ≏ ]] <t4{sl}(1,0),s> {s2 ≏ ≏ }", ["b1"])
-        try p.assert("automatic-0: {s1 ≏ ≏ } <t1{sr}(0,1),s> <t2{sr}(0,1),s> [r0[b1 💺0 ≡ 🔵🚂0 ≏ ]] <r0<t4{sl}(1,0),s>> {r0{s2 ≏ ≏ }}", ["s2"])
-        try p.assert("automatic-0: {s1 ≏ ≏ } <t1{sr}(0,1),s> <t2{sr}(0,1),s> [b1 ≏ ≏ ] <t4{sl}(1,0),s> {r0{s2 💺0 ≡ 🟡🚂0 ≏ }}", [])
+        let p = try setup(layout: layout, fromBlockId: s1.id, destination: .init(s2.id, direction: .next), position: .start, direction: .previous, routeSteps: ["s1:next", "b1:next", "s2:next"])
+
+        // TODO: integrate that into setup
+        t1.position.back = .init(blockId: s1.id, index: 2)
+        
+        XCTAssertFalse(t1.directionForward)
+        XCTAssertEqual(s1.trainInstance?.direction, .next)
+
+        try p.assert("automatic-0: {r0{s1 🔵🚂0 ≏ 💺0 ≏ 💺0 }} <r0<t1{sr}(0,1),s>> <r0<t2{sr}(0,1),s>> [r0[b1 ≏ ≏ ]] <t4{sl}(1,0),s> {s2 ≏ ≏ }", ["b1"])
+
+        try p.assert("automatic-0: {r0{s1 ≡ 🔵🚂0 ≏ 💺0 }} <r0<t1{sr}(0,1),s>> <r0<t2{sr}(0,1),s>> [r0[b1 💺0 ≡ 💺0 ≏ ]] <r0<t4{sl}(1,0),s>> {r0{s2 ≏ ≏ }}", ["s2"])
+
+        try p.assert("automatic-0: {s1 ≏ ≏ } <t1{sr}(0,1),s> <t2{sr}(0,1),s> [r0[b1 ≡ 🟡🚂0 ≏ 💺0 ]] <r0<t4{sl}(1,0),s>> {r0{s2 💺0 ≡ 💺0 ≏ }}", [])
+        try p.assert("automatic-0: {s1 ≏ ≏ } <t1{sr}(0,1),s> <t2{sr}(0,1),s> [r0[b1 ≏ 🔴🚂0 ≏ 💺0 ]] <r0<t4{sl}(1,0),s>> {r0{s2 💺0 ≏ 💺0 ≡ 💺0 }}", [])
+        try p.printASCII()
+
+//        try p.assert("automatic-0: {r0{s1 ≏ 🔵🚂0 ≏ 💺0 }} <r0<t1{sr}(0,1),s>> <r0<t2{sr}(0,1),s>> [r0[b1 💺0 ≡ 💺0 ≏ ]] <r0<t4{sl}(1,0),s>> {r0{s2 ≏ ≏ }}", ["s2"])
+//        print("** \(t1.position)")
+// TODO: interesting! because the feedback was not triggered, the front position has not yet moved. But the length of the train indicates that it has moved to position index 1!
     }
 
     // MARK: - - Utility

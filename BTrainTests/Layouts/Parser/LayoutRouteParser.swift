@@ -366,6 +366,10 @@ final class LayoutRouteParser {
             block.trainInstance = TrainInstance(Identifier<Train>(uuid: uuid), .next)
         }
 
+        if let train = layout.trains.first(where: { $0.id.uuid == uuid }) {
+            train.position.back = .init(blockId: block.id, index: position)
+        }
+        
         block.trainInstance?.parts[position] = .wagon
     }
 

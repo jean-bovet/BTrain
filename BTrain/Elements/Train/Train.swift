@@ -211,12 +211,17 @@ final class Train: Element, ObservableObject {
     // when running the layout.
     var timeUntilAutomaticRestart: TimeInterval = 0
 
-    var description: String {
+    func description(_ layout: Layout?) -> String {
         var text = "Train '\(name)' (id=\(id), \(state)"
         text += ", \(scheduling)"
         if let blockId = blockId {
-            text += ", \(blockId)"
+            if let name = layout?.blocks[blockId]?.name {
+                text += ", \(name)"
+            } else {
+                text += ", \(blockId)"
+            }
         }
+        text += ", \(position)"
         if locomotive != nil {
             text += ", \(directionForward ? "f" : "b")"
         } else {
@@ -228,6 +233,10 @@ final class Train: Element, ObservableObject {
         }
         text += ")"
         return text
+    }
+    
+    var description: String {
+        description(nil)
     }
 
     convenience init(uuid: String = UUID().uuidString, name: String = "", wagonsLength: Double? = nil, maxSpeed: SpeedKph? = nil, maxNumberOfLeadingReservedBlocks: Int? = nil) {
@@ -263,7 +272,12 @@ extension Train {
         assert(locomotive != nil)
         return locomotive?.directionForward ?? true
     }
-    
+
+    var allowedDirections: Locomotive.AllowedDirection {
+        assert(locomotive != nil)
+        return locomotive?.allowedDirections ?? .forward
+    }
+
     var leading: TrainLeadingReservation {
         reservation.leading
     }
@@ -271,7 +285,22 @@ extension Train {
     var occupied: TrainOccupiedReservation {
         reservation.occupied
     }
+    
+}
 
+// TODO: move somewhere else
+extension Layout {
+    /// Returns the block at the front of the train.
+    ///
+    /// The front of the train is the part of the train that is located
+    /// at the front of the train in the direction of travel of the train.
+    func frontBlock(train: Train) -> Block? {
+        if let block = train.occupied.blocks.first {
+            return block
+        } else {
+            return blocks[train.blockId]
+        }
+    }
 }
 
 extension Train: Restorable {

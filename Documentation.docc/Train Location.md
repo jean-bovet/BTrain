@@ -87,6 +87,30 @@ of block C. The front position is (Block A, index 0) and back position is (Block
     └─────────┘   └─────────┘   └─────────┘
       A             B            C        
 
+TBD describe the train direction.
+
+         Block Natural Direction: ────────▶  ────────▶                    ────────▶  ◀────────            
+                                 ┌─────────┐┌─────────┐┌ ─ ─ ─ ─ ┐       ┌─────────┐┌─────────┐┌ ─ ─ ─ ─ ┐
+                                 │   b1    ││   b2    │   lead           │   b1    ││   b2    │   lead    
+                                 └─────────┘└─────────┘└ ─ ─ ─ ─ ┘       └─────────┘└─────────┘└ ─ ─ ─ ─ ┘
+                 Block Positions:  0  1  2    0  1  2                      0  1  2    2  1  0             
+                                                                                                          
+      Train (direction backward):   ▶■■■■■■■■■■■■■                          ▶■■■■■■■■■■■■■                
+               Occupied: [b2, b1]   f            b                          f            b                
+        Train Direction In Block: ─ ─ ─ ─ ▶  ─ ─ ─ ─ ▶                    ─ ─ ─ ─ ▶  ─ ─ ─ ─ ▶            
+                                                                                                          
+      Train (direction backward):   ■■■■■■■■■■■■■◀                          ■■■■■■■■■■■■■◀                
+               Occupied: [b1, b2]   b            f                          b            f                
+        Train Direction In Block: ◀ ─ ─ ─ ─  ◀ ─ ─ ─ ─                    ◀ ─ ─ ─ ─  ◀ ─ ─ ─ ─            
+                                                                                                          
+       Train (direction forward):   ■■■■■■■■■■■■■▶                          ■■■■■■■■■■■■■▶                
+               Occupied: [b2, b1]   b            f                          b            f                
+        Train Direction In Block: ─ ─ ─ ─ ▶  ─ ─ ─ ─ ▶                    ─ ─ ─ ─ ▶  ─ ─ ─ ─ ▶            
+                                                                                                          
+       Train (direction forward):   ◀■■■■■■■■■■■■■                          ◀■■■■■■■■■■■■■                
+               Occupied: [b1, b2]   f            b                          f            b                
+        Train Direction In Block: ◀ ─ ─ ─ ─  ◀ ─ ─ ─ ─                    ◀ ─ ─ ─ ─  ◀ ─ ─ ─ ─            
+
 ## Topics
 
 ### <!--@START_MENU_TOKEN@-->Group<!--@END_MENU_TOKEN@-->

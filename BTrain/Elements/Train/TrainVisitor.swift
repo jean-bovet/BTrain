@@ -16,12 +16,12 @@ import Foundation
 // that a train occupies, including the individual parts of each block.
 final class TrainVisitor {
     struct BlockAttributes {
-        // True if this block is the one containing the locomotive
-        // (the head block of the train).
-        let headBlock: Bool
+        // True if this is the block at the front of the train (in the direction of travel)
+        let frontBlock: Bool
+        var backBlock: Bool
 
         // Direction of travel of the train inside the block
-        var trainDirection: Direction
+        let trainDirection: Direction
 
         // An array of all the positions that are occupied by the train.
         // Each position starts at 0 up to the number of feedback + 1 and
@@ -43,7 +43,8 @@ final class TrainVisitor {
         visitor = ElementVisitor(layout: layout)
     }
 
-    /// Visit all the elements that a train occupies - transitions, turnouts and blocks.
+    /// Visit all the elements that a train occupies - transitions, turnouts and blocks - starting
+    /// with the front block (the block at the front of the train in its direction of travel) and going backwards.
     ///
     /// - Parameters:
     ///   - train: the train
@@ -56,42 +57,33 @@ final class TrainVisitor {
                turnoutCallback: TurnoutCallbackBlock,
                blockCallback: BlockCallbackBlock) throws -> Bool
     {
-        guard let locomotiveBlockId = train.blockId else {
+        guard let frontBlock = layout.frontBlock(train: train) else {
             throw LayoutError.trainNotAssignedToABlock(train: train)
         }
 
-        guard let locomotiveBlock = layout.blocks[locomotiveBlockId] else {
-            throw LayoutError.blockNotFound(blockId: locomotiveBlockId)
-        }
-
-        guard let trainInstance = locomotiveBlock.trainInstance else {
-            throw LayoutError.trainNotFoundInBlock(blockId: locomotiveBlockId)
+        guard let trainInstance = frontBlock.trainInstance else {
+            throw LayoutError.trainNotFoundInBlock(blockId: frontBlock.id)
         }
 
         guard let trainLength = train.length else {
             // If the train length is not defined, we invoke once the callback for the entire block
-            try blockCallback(locomotiveBlock, BlockAttributes(headBlock: true, trainDirection: trainInstance.direction))
+            try blockCallback(frontBlock, BlockAttributes(frontBlock: true, backBlock: true, trainDirection: trainInstance.direction))
             return true
         }
 
         guard let locomotive = train.locomotive else {
             throw LayoutError.locomotiveNotAssignedToTrain(train: train)
         }
-        
-        let trainDirectionForward = locomotive.directionForward
-        
+                
         // Keep track of the remaining train length that needs to have reserved blocks
         var remainingTrainLength = trainLength
+    
+        let trainDirectionForward = locomotive.directionForward // TODO: used?
+        
+        // Always visit the train in the opposite direction of travel (by definition)
+        let directionOfVisit = trainInstance.direction.opposite
 
-        // If the train moves forward, the direction of the visit should be the opposite direction of the train
-        // instance in the block because the locomotive is at the front and the wagons behind it (the wagons should be
-        // visited using the opposite traveling direction as the train).
-        // If the train moves backward, the direction of the visit should be the same as the direction of the train instance
-        // in the block because the locomotive is at the back of the train and the wagons in front of it (the wagons
-        // should be visited using the same traveling direction as the train).
-        let direction = trainDirectionForward ? trainInstance.direction.opposite : trainInstance.direction
-
-        try visitor.visit(fromBlockId: locomotiveBlock.id, direction: direction, callback: { info in
+        try visitor.visit(fromBlockId: frontBlock.id, direction: directionOfVisit, callback: { info in
             if let transition = info.transition {
                 // Transition is just a virtual connection between two elements, no physical length exists.
                 try transitionCallback(transition)
@@ -104,9 +96,9 @@ final class TrainVisitor {
                 remainingTrainLength = try visitBlockParts(trainPosition: train.position,
                                                            remainingTrainLength: remainingTrainLength,
                                                            block: blockInfo.block,
-                                                           headBlock: info.index == 0,
+                                                           frontBlock: info.index == 0,
                                                            trainForward: trainDirectionForward,
-                                                           direction: blockInfo.direction,
+                                                           directionOfVisit: blockInfo.direction,
                                                            blockCallback: blockCallback)
             }
 
@@ -129,38 +121,32 @@ final class TrainVisitor {
     ///   - block: the block to visit
     ///   - headBlock: true if this block is the head block, where the locomotive is located
     ///   - trainForward: true if the train is moving forward, false if moving backward
-    ///   - direction: the direction in which this block is visited
+    ///   - directionOfVisit: the direction in which this block is visited
     ///   - blockCallback: callback invoked for each part that is being visited
     /// - Returns: the remaining train length after visiting this block
-    private func visitBlockParts(trainPosition: TrainLocation, remainingTrainLength: Double, block: Block, headBlock: Bool, trainForward: Bool, direction: Direction, blockCallback: BlockCallbackBlock) throws -> Double {
+    private func visitBlockParts(trainPosition: TrainLocation, remainingTrainLength: Double, block: Block, frontBlock: Bool, trainForward: Bool, directionOfVisit: Direction, blockCallback: BlockCallbackBlock) throws -> Double {
         var currentRemainingTrainLength = remainingTrainLength
-
-        // [ 0 | 1 | 2 ]
-        //   =   =>
-        //   <   <   <   (direction previous)
-        //      <=   =
-        //   >   >   >   (direction next)
 
         // Determine the starting position where to begin filling out parts of the block
         var position: Int
-        if headBlock {
-            position = trainPosition.front?.index ?? 0
+        if frontBlock {
+            if trainForward {
+                position = trainPosition.front?.index ?? 0
+            } else {
+                position = trainPosition.back?.index ?? 0
+            }
         } else {
-            position = direction == .previous ? block.feedbacks.count : 0
+            position = directionOfVisit == .previous ? block.feedbacks.count : 0
         }
 
-        // TODO: trainPosition.back can be in a different block!!!!
-        let increment = direction == .previous ? -1 : 1
+        let increment = directionOfVisit == .previous ? -1 : 1
 
-        // See comment earlier in this file but:
-        // - When the train moves forward, the direction of each visited parts (wagons or locomotive) is done in the reverse direction.
-        // - When the train moves backward, the direction of each visited parts (wagons or locomotive) is done in the direction.
-        var bv = BlockAttributes(headBlock: headBlock, trainDirection: trainForward ? direction.opposite : direction)
+        var bv = BlockAttributes(frontBlock: frontBlock, backBlock: frontBlock, trainDirection: directionOfVisit.opposite)
         bv.positions.append(position)
 
         // Gather all the part length to ensure they are all defined.
         if let allPartsLength = try block.allPartsLength() {
-            if headBlock {
+            if frontBlock {
                 // Don't take into consideration the length of that part
                 // because the locomotive could be at the beginning of the part.
                 // This will get more precise once we manage the distance
@@ -185,7 +171,10 @@ final class TrainVisitor {
 
             currentRemainingTrainLength -= length
         }
-
+        
+        // The back block is detected when there are no more remaining train length
+        bv.backBlock = currentRemainingTrainLength <= 0
+        
         try blockCallback(block, bv)
 
         return currentRemainingTrainLength

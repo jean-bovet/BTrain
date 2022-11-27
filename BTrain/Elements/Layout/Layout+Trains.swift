@@ -36,6 +36,7 @@ extension Layout {
         trains.remove(trainId)
     }
 
+    // TODO: remove block and use occupied instead
     func hasTrainReachedStationOrDestination(_ route: Route?, _ train: Train, _ block: Block) -> Bool {
         if let route = route {
             switch route.mode {
@@ -56,6 +57,7 @@ extension Layout {
 
         // Check that the train is not in the first block of the route in which case
         // it should not stop at all, otherwise a train will never leave its station
+        // TODO: when moving backwards, we need to take the back of the train into consideration, not the front
         guard train.routeStepIndex != train.startRouteIndex || train.startRouteIndex == nil else {
             return false
         }

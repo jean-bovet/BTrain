@@ -189,11 +189,11 @@ final class LayoutController: ObservableObject, LayoutControlling {
     }
 
     func trainController(forTrain train: Train) -> TrainController? {
-        guard let currentBlock = layout.currentBlock(train: train) else {
+        guard let frontBlock = layout.frontBlock(train: train) else {
             return nil
         }
-
-        guard let trainInstance = currentBlock.trainInstance else {
+        
+        guard let trainInstance = frontBlock.trainInstance else {
             return nil
         }
 
@@ -201,7 +201,7 @@ final class LayoutController: ObservableObject, LayoutControlling {
             return nil
         }
 
-        return TrainController(train: train, route: route, layout: layout, currentBlock: currentBlock, trainInstance: trainInstance, layoutController: self, reservation: reservation)
+        return TrainController(train: train, route: route, layout: layout, frontBlock: frontBlock, frontBlockTrainInstance: trainInstance, layoutController: self, reservation: reservation)
     }
 
     private func updateExpectedFeedbacks() throws {

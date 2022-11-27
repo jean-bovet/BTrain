@@ -16,6 +16,22 @@ import XCTest
 
 final class TrainPositionsTests: XCTestCase {
 
+    // MARK: - Individual Functions -
+    
+    func testIsAfterFunction() throws {
+        let p = Package()
+        XCTAssertEqual(p.reservation.occupied.blocks, [p.b1])
+        XCTAssertEqual(p.reservation.leading.blocks, [p.b2])
+
+        let nextBlockPosition = TrainPosition(blockId: p.b2.id, index: 1)
+        let currentBlockPosition = TrainPosition(blockId: p.b1.id, index: 1)
+        XCTAssertTrue(try nextBlockPosition.isAfter(currentBlockPosition, reservation: p.reservation, direction: .next))
+        
+        p.moveToNextBlock(with: .next)
+        XCTAssertEqual(p.reservation.occupied.blocks, [p.b2, p.b1])
+        XCTAssertEqual(p.reservation.leading.blocks, [])
+    }
+    
     // MARK: - Train Forward -
 
     // TODO: also test when a train spans more than one block (occupied.blocks.count > 1)
@@ -40,10 +56,10 @@ final class TrainPositionsTests: XCTestCase {
                                       reservation: reservation)
 
         // Block (􁉆): [ p0 f0 p1 |f1| p2 f2 p3 ]
-        // Train (􀼯􀼮):              bf
+        // Train (􀼯􀼮):      b       f
         location = try assertFeedback(forward: true, location: location,
                                       feedback: (block.id, 1),
-                                      back: (block.id, 2),
+                                      back: (block.id, 1),
                                       front: (block.id, 2),
                                       reservation: reservation)
 
@@ -86,10 +102,10 @@ final class TrainPositionsTests: XCTestCase {
                                       reservation: reservation)
 
         // Block (􁉈): [ p3 f2 p2 |f1| p1 f0 p0 ]
-        // Train (􀼯􀼮):              bf
+        // Train (􀼯􀼮):      b       f
         location = try assertFeedback(forward: true, location: location,
                                       feedback: (block.id, 1),
-                                      back: (block.id, 1),
+                                      back: (block.id, 2),
                                       front: (block.id, 1),
                                       reservation: reservation)
 
@@ -114,94 +130,86 @@ final class TrainPositionsTests: XCTestCase {
         var location = TrainLocation()
         assertLocation(location, back: nil, front: nil)
 
-        let reservation = Train.Reservation()
-        let block = Block()
-        block.trainInstance = TrainInstance(.init(uuid: "t1"), .next)
-        reservation.occupied.append(block)
-        let nextBlock = Block()
-        reservation.leading.append(nextBlock)
+        let p = Package()
 
         location = try assertFeedback(forward: true, location: location,
-                                      feedback: (block.id, 1),
-                                      back: (block.id, 2),
-                                      front: (block.id, 2),
-                                      reservation: reservation)
+                                      feedback: (p.b1.id, 1),
+                                      back: (p.b1.id, 2),
+                                      front: (p.b1.id, 2),
+                                      reservation: p.reservation)
         location = try assertFeedback(forward: true, location: location,
-                                      feedback: (block.id, 2),
-                                      back: (block.id, 3),
-                                      front: (block.id, 3),
-                                      reservation: reservation)
+                                      feedback: (p.b1.id, 2),
+                                      back: (p.b1.id, 2),
+                                      front: (p.b1.id, 3),
+                                      reservation: p.reservation)
         location = try assertFeedback(forward: true, location: location,
-                                      feedback: (block.id, 1),
-                                      back: (block.id, 2),
-                                      front: (block.id, 3),
-                                      reservation: reservation)
+                                      feedback: (p.b1.id, 1),
+                                      back: (p.b1.id, 2),
+                                      front: (p.b1.id, 3),
+                                      reservation: p.reservation)
         location = try assertFeedback(forward: true, location: location,
-                                      feedback: (block.id, 3),
-                                      back: (block.id, 2),
-                                      front: (block.id, 4),
-                                      reservation: reservation)
+                                      feedback: (p.b1.id, 3),
+                                      back: (p.b1.id, 2),
+                                      front: (p.b1.id, 4),
+                                      reservation: p.reservation)
 
         // Next block feedback is triggered
-        nextBlock.trainInstance = TrainInstance(.init(uuid: "t1"), .next)
-
         location = try assertFeedback(forward: true, location: location,
-                                      feedback: (nextBlock.id, 0),
-                                      back: (block.id, 2),
-                                      front: (nextBlock.id, 1),
-                                      reservation: reservation)
+                                      feedback: (p.b2.id, 0),
+                                      back: (p.b1.id, 2),
+                                      front: (p.b2.id, 1),
+                                      reservation: p.reservation,
+                                      nextBlockTrainDirection: .next)
+        
+        p.moveToNextBlock(with: .next)
+        
         location = try assertFeedback(forward: true, location: location,
-                                      feedback: (nextBlock.id, 0),
-                                      back: (nextBlock.id, 1),
-                                      front: (nextBlock.id, 1),
-                                      reservation: reservation)
+                                      feedback: (p.b2.id, 0),
+                                      back: (p.b2.id, 1),
+                                      front: (p.b2.id, 1),
+                                      reservation: p.reservation)
     }
     
     func testMoveForwardNextBlockPreviousDirection() throws {
         var location = TrainLocation()
         assertLocation(location, back: nil, front: nil)
 
-        let reservation = Train.Reservation()
-        let block = Block()
-        block.trainInstance = TrainInstance(.init(uuid: "t1"), .next)
-        reservation.occupied.append(block)
-        let nextBlock = Block()
-        reservation.leading.append(nextBlock)
+        let p = Package()
 
         location = try assertFeedback(forward: true, location: location,
-                                      feedback: (block.id, 1),
-                                      back: (block.id, 2),
-                                      front: (block.id, 2),
-                                      reservation: reservation)
+                                      feedback: (p.b1.id, 1),
+                                      back: (p.b1.id, 2),
+                                      front: (p.b1.id, 2),
+                                      reservation: p.reservation)
         location = try assertFeedback(forward: true, location: location,
-                                      feedback: (block.id, 2),
-                                      back: (block.id, 3),
-                                      front: (block.id, 3),
-                                      reservation: reservation)
+                                      feedback: (p.b1.id, 2),
+                                      back: (p.b1.id, 2),
+                                      front: (p.b1.id, 3),
+                                      reservation: p.reservation)
         location = try assertFeedback(forward: true, location: location,
-                                      feedback: (block.id, 1),
-                                      back: (block.id, 2),
-                                      front: (block.id, 3),
-                                      reservation: reservation)
+                                      feedback: (p.b1.id, 1),
+                                      back: (p.b1.id, 2),
+                                      front: (p.b1.id, 3),
+                                      reservation: p.reservation)
         location = try assertFeedback(forward: true, location: location,
-                                      feedback: (block.id, 3),
-                                      back: (block.id, 2),
-                                      front: (block.id, 4),
-                                      reservation: reservation)
+                                      feedback: (p.b1.id, 3),
+                                      back: (p.b1.id, 2),
+                                      front: (p.b1.id, 4),
+                                      reservation: p.reservation)
 
         // Next block feedback is triggered
-        nextBlock.trainInstance = TrainInstance(.init(uuid: "t1"), .previous)
-
         location = try assertFeedback(forward: true, location: location,
-                                      feedback: (nextBlock.id, 3),
-                                      back: (block.id, 2),
-                                      front: (nextBlock.id, 3),
-                                      reservation: reservation)
+                                      feedback: (p.b2.id, 3),
+                                      back: (p.b1.id, 2),
+                                      front: (p.b2.id, 3),
+                                      reservation: p.reservation,
+                                      nextBlockTrainDirection: .previous)
+        p.moveToNextBlock(with: .previous)
         location = try assertFeedback(forward: true, location: location,
-                                      feedback: (nextBlock.id, 3),
-                                      back: (nextBlock.id, 3),
-                                      front: (nextBlock.id, 3),
-                                      reservation: reservation)
+                                      feedback: (p.b2.id, 3),
+                                      back: (p.b2.id, 3),
+                                      front: (p.b2.id, 3),
+                                      reservation: p.reservation)
     }
 
     // MARK: - Train Backward -
@@ -227,11 +235,11 @@ final class TrainPositionsTests: XCTestCase {
                                       reservation: reservation)
 
         // Block (􁉆): [ p0 f0 p1 |f1| p2 f2 p3 ]
-        // Train (􀼮􀼯):              fb
+        // Train (􀼮􀼯):      f       b
         location = try assertFeedback(forward: false, location: location,
                                       feedback: (block.id, 1),
                                       back: (block.id, 2),
-                                      front: (block.id, 2),
+                                      front: (block.id, 1),
                                       reservation: reservation)
 
         // Block (􁉆): [ p0 |f0| p1 f1 p2 f2 p3 ]
@@ -272,11 +280,11 @@ final class TrainPositionsTests: XCTestCase {
                                       reservation: reservation)
 
         // Block (􁉈): [ p3 f2 p2 |f1| p1 f0 p0 ]
-        // Train (􀼮􀼯):              fb
+        // Train (􀼮􀼯):      f       b
         location = try assertFeedback(forward: false, location: location,
                                       feedback: (block.id, 1),
                                       back: (block.id, 1),
-                                      front: (block.id, 1),
+                                      front: (block.id, 2),
                                       reservation: reservation)
 
         // Block (􁉈): [ p3 |f2| p2 f1 p1 f0 p0 ]
@@ -300,100 +308,115 @@ final class TrainPositionsTests: XCTestCase {
         var location = TrainLocation()
         assertLocation(location, back: nil, front: nil)
 
-        let reservation = Train.Reservation()
-        let block = Block()
-        block.trainInstance = TrainInstance(.init(uuid: "t1"), .next)
-        reservation.occupied.append(block)
-        let nextBlock = Block()
-        reservation.leading.append(nextBlock)
+        let p = Package()
 
         location = try assertFeedback(forward: false, location: location,
-                                      feedback: (block.id, 1),
-                                      back: (block.id, 2),
-                                      front: (block.id, 2),
-                                      reservation: reservation)
+                                      feedback: (p.b1.id, 1),
+                                      back: (p.b1.id, 2),
+                                      front: (p.b1.id, 2),
+                                      reservation: p.reservation)
         location = try assertFeedback(forward: false, location: location,
-                                      feedback: (block.id, 2),
-                                      back: (block.id, 3),
-                                      front: (block.id, 3),
-                                      reservation: reservation)
+                                      feedback: (p.b1.id, 2),
+                                      back: (p.b1.id, 3),
+                                      front: (p.b1.id, 2),
+                                      reservation: p.reservation)
         location = try assertFeedback(forward: false, location: location,
-                                      feedback: (block.id, 1),
-                                      back: (block.id, 3),
-                                      front: (block.id, 2),
-                                      reservation: reservation)
+                                      feedback: (p.b1.id, 1),
+                                      back: (p.b1.id, 3),
+                                      front: (p.b1.id, 2),
+                                      reservation: p.reservation)
         location = try assertFeedback(forward: false, location: location,
-                                      feedback: (block.id, 3),
-                                      back: (block.id, 4),
-                                      front: (block.id, 2),
-                                      reservation: reservation)
+                                      feedback: (p.b1.id, 3),
+                                      back: (p.b1.id, 4),
+                                      front: (p.b1.id, 2),
+                                      reservation: p.reservation)
         
         // Next block feedback is triggered
-        nextBlock.trainInstance = TrainInstance(.init(uuid: "t1"), .next)
+        location = try assertFeedback(forward: false, location: location,
+                                      feedback: (p.b2.id, 0),
+                                      back: (p.b2.id, 1),
+                                      front: (p.b1.id, 2),
+                                      reservation: p.reservation,
+                                      nextBlockTrainDirection: .next)
+        
+        p.moveToNextBlock(with: .next)
 
         location = try assertFeedback(forward: false, location: location,
-                                      feedback: (nextBlock.id, 0),
-                                      back: (nextBlock.id, 1),
-                                      front: (block.id, 2),
-                                      reservation: reservation)
-        location = try assertFeedback(forward: false, location: location,
-                                      feedback: (nextBlock.id, 0),
-                                      back: (nextBlock.id, 1),
-                                      front: (nextBlock.id, 1),
-                                      reservation: reservation)
+                                      feedback: (p.b2.id, 0),
+                                      back: (p.b2.id, 1),
+                                      front: (p.b2.id, 1),
+                                      reservation: p.reservation)
     }
     
     func testMoveBackwardNextBlockPreviousDirection() throws {
         var location = TrainLocation()
         assertLocation(location, back: nil, front: nil)
 
-        let reservation = Train.Reservation()
-        let block = Block()
-        block.trainInstance = TrainInstance(.init(uuid: "t1"), .next)
-        reservation.occupied.append(block)
-        let nextBlock = Block()
-        reservation.leading.append(nextBlock)
+        let p = Package()
 
         location = try assertFeedback(forward: false, location: location,
-                                      feedback: (block.id, 1),
-                                      back: (block.id, 2),
-                                      front: (block.id, 2),
-                                      reservation: reservation)
+                                      feedback: (p.b1.id, 1),
+                                      back: (p.b1.id, 2),
+                                      front: (p.b1.id, 2),
+                                      reservation: p.reservation)
         location = try assertFeedback(forward: false, location: location,
-                                      feedback: (block.id, 2),
-                                      back: (block.id, 3),
-                                      front: (block.id, 3),
-                                      reservation: reservation)
+                                      feedback: (p.b1.id, 2),
+                                      back: (p.b1.id, 3),
+                                      front: (p.b1.id, 2),
+                                      reservation: p.reservation)
         location = try assertFeedback(forward: false, location: location,
-                                      feedback: (block.id, 1),
-                                      back: (block.id, 3),
-                                      front: (block.id, 2),
-                                      reservation: reservation)
+                                      feedback: (p.b1.id, 1),
+                                      back: (p.b1.id, 3),
+                                      front: (p.b1.id, 2),
+                                      reservation: p.reservation)
         location = try assertFeedback(forward: false, location: location,
-                                      feedback: (block.id, 3),
-                                      back: (block.id, 4),
-                                      front: (block.id, 2),
-                                      reservation: reservation)
+                                      feedback: (p.b1.id, 3),
+                                      back: (p.b1.id, 4),
+                                      front: (p.b1.id, 2),
+                                      reservation: p.reservation)
         
         // Next block feedback is triggered
-        nextBlock.trainInstance = TrainInstance(.init(uuid: "t1"), .previous)
-
         location = try assertFeedback(forward: false, location: location,
-                                      feedback: (nextBlock.id, 3),
-                                      back: (nextBlock.id, 3),
-                                      front: (block.id, 2),
-                                      reservation: reservation)
+                                      feedback: (p.b2.id, 3),
+                                      back: (p.b2.id, 3),
+                                      front: (p.b1.id, 2),
+                                      reservation: p.reservation,
+                                      nextBlockTrainDirection: .previous)
+        
+        p.moveToNextBlock(with: .previous)
+        
         location = try assertFeedback(forward: false, location: location,
-                                      feedback: (nextBlock.id, 3),
-                                      back: (nextBlock.id, 3),
-                                      front: (nextBlock.id, 3),
-                                      reservation: reservation)
+                                      feedback: (p.b2.id, 3),
+                                      back: (p.b2.id, 3),
+                                      front: (p.b2.id, 3),
+                                      reservation: p.reservation)
     }
 
     // MARK: - Helper -
 
-    private func assertFeedback(forward: Bool, location currentLocation: TrainLocation, feedback: (Identifier<Block>, Int), back: (Identifier<Block>, Int)?, front: (Identifier<Block>, Int)?, reservation: Train.Reservation) throws -> TrainLocation {
-        let direction = reservation.directionInBlock(for: feedback.0)!
+    struct Package {
+        
+        let reservation = Train.Reservation()
+        let b1 = Block(name: "b1")
+        let b2 = Block(name: "b2")
+        
+        init() {
+            b1.trainInstance = TrainInstance(.init(uuid: "t1"), .next)
+            reservation.occupied.append(b1)
+            reservation.leading.append(b2)
+        }
+        
+        func moveToNextBlock(with direction: Direction) {
+            b2.trainInstance = TrainInstance(.init(uuid: "t1"), direction)
+            reservation.occupied.clear()
+            reservation.leading.clear()
+            reservation.occupied.append(b2)
+            reservation.occupied.append(b1)
+        }
+    }
+    
+    private func assertFeedback(forward: Bool, location currentLocation: TrainLocation, feedback: (Identifier<Block>, Int), back: (Identifier<Block>, Int)?, front: (Identifier<Block>, Int)?, reservation: Train.Reservation, nextBlockTrainDirection: Direction? = nil) throws -> TrainLocation {
+        let direction = reservation.directionInBlock(for: feedback.0) ?? nextBlockTrainDirection!
         let detectedPosition: TrainPosition
         if direction == .next {
             detectedPosition = TrainPosition(blockId: feedback.0, index: feedback.1+1)
@@ -416,7 +439,7 @@ final class TrainPositionsTests: XCTestCase {
     }
 
     private func assertFeedback(forward: Bool, location currentLocation: TrainLocation, detectedPosition: TrainPosition, direction: Direction, back: TrainPosition?, front: TrainPosition?, reservation: Train.Reservation) throws -> TrainLocation {
-        let newLocation = try Train.newLocationWith(trainMovesForward: forward, currentLocation: currentLocation, detectedPosition: detectedPosition, direction: direction, reservation: reservation)
+        let newLocation = try Train.newLocationWith(trainMovesForward: forward, allowedDirection: .any, currentLocation: currentLocation, detectedPosition: detectedPosition, direction: direction, reservation: reservation)
         
         assertLocation(newLocation, back: back, front: front)
 
@@ -424,7 +447,7 @@ final class TrainPositionsTests: XCTestCase {
     }
     
     private func assertLocation(_ location: TrainLocation, back: TrainPosition?, front: TrainPosition?) {
-        XCTAssertEqual(location.back, back)
-        XCTAssertEqual(location.front, front)
+        XCTAssertEqual(location.back, back, "Back position mismatch")
+        XCTAssertEqual(location.front, front, "Front position mismatch")
     }
 }

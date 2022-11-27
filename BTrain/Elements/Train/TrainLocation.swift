@@ -28,13 +28,13 @@ struct TrainLocation: Equatable, Codable, CustomStringConvertible {
     
     var description: String {
         if let front = front, let back = back {
-            return ">\(back)-\(front)>"
+            return "􀼯\(back)-\(front)􀼮"
         } else if let front = front {
-            return ">?-\(front)>"
+            return "􀼯?-\(front)􀼮"
         } else if let back = back {
-            return ">\(back)-?>"
+            return "􀼯\(back)-?􀼮"
         } else {
-            return ">?-?>"
+            return "􀼯?-?􀼮"
         }
     }
     
