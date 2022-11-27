@@ -34,11 +34,11 @@ struct TrainPosition: Equatable, Codable, CustomStringConvertible {
         "\(blockId.uuid):\(index)"
     }
 
-    func isAfterOrEqual(_ other: TrainPosition, reservation: Train.Reservation, direction: Direction) throws -> Bool {
+    func isAfterOrEqual(_ other: TrainPosition, reservation: Train.Reservation) throws -> Bool {
         if self == other {
             return true
         } else {
-            return try isAfter(other, reservation: reservation, direction: direction)
+            return try isAfter(other, reservation: reservation)
         }
     }
     
@@ -46,9 +46,8 @@ struct TrainPosition: Equatable, Codable, CustomStringConvertible {
     /// - Parameters:
     ///   - other: the other location
     ///   - reservation: the reservation of the train
-    ///   - direction: the direction?
     /// - Returns: true if this position is after ``other``, false otherwise
-    func isAfter(_ other: TrainPosition, reservation: Train.Reservation, direction: Direction?) throws -> Bool {
+    func isAfter(_ other: TrainPosition, reservation: Train.Reservation) throws -> Bool {
         // TODO: clarify what `direction` is and if needed
         guard let blockIndex = reservation.blockIndex(for: blockId) else {
             throw TrainPositionError.occupiedBlockNotFound(blockId: blockId)
@@ -63,7 +62,7 @@ struct TrainPosition: Equatable, Codable, CustomStringConvertible {
             return true
         } else {
             // Same block. Now the direction matters to compare
-            guard let direction = reservation.directionInBlock(for: blockId) ?? direction else {
+            guard let direction = reservation.directionInBlock(for: blockId) else {
                 // TODO: throw
                 fatalError()
             }
@@ -75,19 +74,19 @@ struct TrainPosition: Equatable, Codable, CustomStringConvertible {
         }
     }
 
-    func isBeforeOrEqual(_ other: TrainPosition, reservation: Train.Reservation, direction: Direction) throws -> Bool {
+    func isBeforeOrEqual(_ other: TrainPosition, reservation: Train.Reservation) throws -> Bool {
         if self == other {
             return true
         } else {
-            return try isBefore(other, reservation: reservation, direction: direction)
+            return try isBefore(other, reservation: reservation)
         }
     }
     
-    func isBefore(_ other: TrainPosition, reservation: Train.Reservation, direction: Direction) throws -> Bool {
+    func isBefore(_ other: TrainPosition, reservation: Train.Reservation) throws -> Bool {
         if self == other {
             return false
         } else {
-            return try !isAfter(other, reservation: reservation, direction: direction)
+            return try !isAfter(other, reservation: reservation)
         }
     }
     

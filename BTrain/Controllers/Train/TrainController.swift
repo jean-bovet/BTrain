@@ -290,7 +290,6 @@ final class TrainController: TrainControlling, CustomStringConvertible {
                                                        allowedDirection: train.allowedDirections,
                                                        currentLocation: train.position,
                                                        detectedPosition: detectedPosition,
-                                                       direction: frontBlockTrainInstance.direction,
                                                        reservation: train.reservation)
             BTLogger.router.debug("\(self.train, privacy: .public): updated location \(self.train.position) in \(self.frontBlock.name, privacy: .public), direction \(self.frontBlockTrainInstance.direction)")
         }
@@ -312,7 +311,6 @@ final class TrainController: TrainControlling, CustomStringConvertible {
                                                     allowedDirection: train.allowedDirections,
                                                     currentLocation: train.position,
                                                     detectedPosition: detectedPosition,
-                                                    direction: entryFeedback.direction,
                                                     reservation: train.reservation)
         
         BTLogger.router.debug("\(self.train.description(self.layout), privacy: .public): enters block \(entryFeedback.block, privacy: .public) at position \(feedbackPosition.index), direction \(entryFeedback.direction)")

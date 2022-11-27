@@ -25,7 +25,7 @@ final class TrainPositionsTests: XCTestCase {
 
         let nextBlockPosition = TrainPosition(blockId: p.b2.id, index: 1)
         let currentBlockPosition = TrainPosition(blockId: p.b1.id, index: 1)
-        XCTAssertTrue(try nextBlockPosition.isAfter(currentBlockPosition, reservation: p.reservation, direction: .next))
+        XCTAssertTrue(try nextBlockPosition.isAfter(currentBlockPosition, reservation: p.reservation))
         
         p.moveToNextBlock(with: .next)
         XCTAssertEqual(p.reservation.occupied.blocks, [p.b2, p.b1])
@@ -435,11 +435,11 @@ final class TrainPositionsTests: XCTestCase {
         } else {
             frontPosition = nil
         }
-        return try assertFeedback(forward: forward, location: currentLocation, detectedPosition: detectedPosition, direction: direction, back: backPosition, front: frontPosition, reservation: reservation)
+        return try assertFeedback(forward: forward, location: currentLocation, detectedPosition: detectedPosition, back: backPosition, front: frontPosition, reservation: reservation)
     }
 
-    private func assertFeedback(forward: Bool, location currentLocation: TrainLocation, detectedPosition: TrainPosition, direction: Direction, back: TrainPosition?, front: TrainPosition?, reservation: Train.Reservation) throws -> TrainLocation {
-        let newLocation = try Train.newLocationWith(trainMovesForward: forward, allowedDirection: .any, currentLocation: currentLocation, detectedPosition: detectedPosition, direction: direction, reservation: reservation)
+    private func assertFeedback(forward: Bool, location currentLocation: TrainLocation, detectedPosition: TrainPosition, back: TrainPosition?, front: TrainPosition?, reservation: Train.Reservation) throws -> TrainLocation {
+        let newLocation = try Train.newLocationWith(trainMovesForward: forward, allowedDirection: .any, currentLocation: currentLocation, detectedPosition: detectedPosition, reservation: reservation)
         
         assertLocation(newLocation, back: back, front: front)
 

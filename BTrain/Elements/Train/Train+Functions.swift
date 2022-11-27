@@ -14,7 +14,7 @@ import Foundation
 
 extension Train {
     
-    static func newLocationWith(trainMovesForward: Bool, allowedDirection: Locomotive.AllowedDirection, currentLocation: TrainLocation, detectedPosition: TrainPosition, direction: Direction, reservation: Train.Reservation) throws -> TrainLocation {
+    static func newLocationWith(trainMovesForward: Bool, allowedDirection: Locomotive.AllowedDirection, currentLocation: TrainLocation, detectedPosition: TrainPosition, reservation: Train.Reservation) throws -> TrainLocation {
         var newLocation = currentLocation
         
         if trainMovesForward {
@@ -34,11 +34,11 @@ extension Train {
                 newLocation.back = detectedPosition
                 newLocation.front = detectedPosition
             } else if let back = currentLocation.back, let front = currentLocation.front {
-                guard try back.isBeforeOrEqual(front, reservation: reservation, direction: direction) else {
+                guard try back.isBeforeOrEqual(front, reservation: reservation) else {
                     // TODO: throw
                     fatalError()
                 }
-                if try detectedPosition.isAfter(front, reservation: reservation, direction: direction) {
+                if try detectedPosition.isAfter(front, reservation: reservation) {
                     newLocation.front = detectedPosition
                     if allowedDirection == .forward {
                         newLocation.back = newLocation.front
@@ -71,10 +71,10 @@ extension Train {
                 // Invalid - the back position cannot be before the front position when the
                 // train moves backwards in the direction of the block
                 // TODO: throw
-                guard try back.isAfterOrEqual(front, reservation: reservation, direction: direction) else {
+                guard try back.isAfterOrEqual(front, reservation: reservation) else {
                     fatalError()
                 }
-                if try detectedPosition.isAfter(back, reservation: reservation, direction: direction) {
+                if try detectedPosition.isAfter(back, reservation: reservation) {
                     newLocation.back = detectedPosition
                 } else {
                     newLocation.front = detectedPosition
