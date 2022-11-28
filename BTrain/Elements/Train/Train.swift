@@ -288,7 +288,7 @@ extension Train {
     
 }
 
-// TODO: move somewhere else
+// TODO: move somewhere else - maybe group all these functions together
 extension Layout {
     /// Returns the block at the front of the train.
     ///

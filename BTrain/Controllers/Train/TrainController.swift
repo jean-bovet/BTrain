@@ -279,14 +279,13 @@ final class TrainController: TrainControlling, CustomStringConvertible {
         // This is important because the reserveLeadingBlocks method needs to remember the previously reserved turnouts
         // in order to avoid re-activating them each time unnecessarily.
         for feedback in Train.allActiveFeedbackPositions(train: train, layout: layout) {
-            guard let direction = train.reservation.directionInBlock(for: feedback.blockId) else {
+            guard let direction = try train.reservation.directionInBlock(for: feedback.blockId) else {
                 // Note: this should not happen because all the feedback are in occupied block
                 // which, by definition, have a train (and a direction) in them.
-                // TODO: throw
-                fatalError()
+                throw LayoutError.directionNotFound(blockId: feedback.blockId)
             }
             let detectedPosition = feedback.trainPosition(direction: direction)
-            train.position = try Train.newLocationWith(trainMovesForward: train.directionForward,
+            train.position = try train.newLocationWith(trainMovesForward: train.directionForward,
                                                        allowedDirection: train.allowedDirections,
                                                        currentLocation: train.position,
                                                        detectedPosition: detectedPosition,
@@ -307,7 +306,7 @@ final class TrainController: TrainControlling, CustomStringConvertible {
         let feedbackPosition = FeedbackPosition(blockId: entryFeedback.block.id, index: entryFeedback.index)
         let detectedPosition = feedbackPosition.trainPosition(direction: entryFeedback.direction)
 
-        let newPosition = try Train.newLocationWith(trainMovesForward: train.directionForward,
+        let newPosition = try train.newLocationWith(trainMovesForward: train.directionForward,
                                                     allowedDirection: train.allowedDirections,
                                                     currentLocation: train.position,
                                                     detectedPosition: detectedPosition,

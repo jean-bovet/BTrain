@@ -31,8 +31,12 @@ enum LayoutError: Error {
     case turnoutNotFound(turnoutId: Identifier<Turnout>)
     case feedbackNotFound(feedbackId: Identifier<Feedback>)
     case socketIdNotFound(socket: Socket)
+    case directionNotFound(blockId: Identifier<Block>)
 
     case invalidSocket(socket: Socket)
+    case invalidBackAfterFrontPosition(train: Train)
+    case invalidBackBeforeFrontPosition(train: Train)
+    case invalidBackAndFrontPosition(train: Train)
 
     case brakeFeedbackNotFound(block: Block)
     case stopFeedbackNotFound(block: Block)
@@ -108,8 +112,18 @@ extension LayoutError: LocalizedError {
 
         case let .socketIdNotFound(socket: socket):
             return "There is no socket defined for \(socket)"
+        case let .directionNotFound(blockId: blockId):
+            return "Direction not found in occupied block \(blockId)"
+            
         case let .invalidSocket(socket: socket):
             return "Socket \(socket) must have either its block or turnout defined"
+
+        case let .invalidBackAndFrontPosition(train: train):
+            return "Invalid back and front position for \(train.name): \(train.position)"
+        case let .invalidBackAfterFrontPosition(train: train):
+            return "The back position cannot be after the front position for \(train.name): \(train.position)"
+        case let .invalidBackBeforeFrontPosition(train: train):
+            return "The back position cannot be before the front position for \(train.name): \(train.position)"
 
         case let .trainNotAssignedToABlock(train: train):
             return "Train \(train.name) does not have any assigned block (train.blockId is nil)"

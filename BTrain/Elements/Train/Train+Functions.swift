@@ -14,7 +14,7 @@ import Foundation
 
 extension Train {
     
-    static func newLocationWith(trainMovesForward: Bool, allowedDirection: Locomotive.AllowedDirection, currentLocation: TrainLocation, detectedPosition: TrainPosition, reservation: Train.Reservation) throws -> TrainLocation {
+    func newLocationWith(trainMovesForward: Bool, allowedDirection: Locomotive.AllowedDirection, currentLocation: TrainLocation, detectedPosition: TrainPosition, reservation: Train.Reservation) throws -> TrainLocation {
         var newLocation = currentLocation
         
         if trainMovesForward {
@@ -35,8 +35,7 @@ extension Train {
                 newLocation.front = detectedPosition
             } else if let back = currentLocation.back, let front = currentLocation.front {
                 guard try back.isBeforeOrEqual(front, reservation: reservation) else {
-                    // TODO: throw
-                    fatalError()
+                    throw LayoutError.invalidBackAfterFrontPosition(train: self)
                 }
                 if try detectedPosition.isAfter(front, reservation: reservation) {
                     newLocation.front = detectedPosition
@@ -50,8 +49,7 @@ extension Train {
                 }
             } else {
                 // Invalid - both front and back must either be defined or not be defined
-                // TODO: throw
-                fatalError()
+                throw LayoutError.invalidBackAndFrontPosition(train: self)
             }
         } else {
             //         Block Natural Direction: ────────▶  ────────▶                    ────────▶  ◀────────
@@ -72,9 +70,8 @@ extension Train {
             } else if let back = currentLocation.back, let front = currentLocation.front {
                 // Invalid - the back position cannot be before the front position when the
                 // train moves backwards in the direction of the block
-                // TODO: throw
                 guard try back.isAfterOrEqual(front, reservation: reservation) else {
-                    fatalError()
+                    throw LayoutError.invalidBackBeforeFrontPosition(train: self)
                 }
                 if try detectedPosition.isAfter(back, reservation: reservation) {
                     newLocation.back = detectedPosition
@@ -83,8 +80,7 @@ extension Train {
                 }
             } else {
                 // Invalid - both front and back must either be defined or not be defined
-                // TODO: throw
-                fatalError()
+                throw LayoutError.invalidBackAndFrontPosition(train: self)
             }
         }
 

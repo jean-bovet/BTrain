@@ -570,7 +570,7 @@ final class TrainPositionsTests: XCTestCase {
     }
     
     private func assertFeedback(forward: Bool, location currentLocation: TrainLocation, feedback: (Identifier<Block>, Int), back: (Identifier<Block>, Int)?, front: (Identifier<Block>, Int)?, reservation: Train.Reservation, nextBlockTrainDirection: Direction? = nil) throws -> TrainLocation {
-        let direction = reservation.directionInBlock(for: feedback.0) ?? nextBlockTrainDirection!
+        let direction = try reservation.directionInBlock(for: feedback.0) ?? nextBlockTrainDirection!
         let detectedPosition: TrainPosition
         if direction == .next {
             detectedPosition = TrainPosition(blockId: feedback.0, index: feedback.1+1)
@@ -593,7 +593,7 @@ final class TrainPositionsTests: XCTestCase {
     }
 
     private func assertFeedback(forward: Bool, location currentLocation: TrainLocation, detectedPosition: TrainPosition, back: TrainPosition?, front: TrainPosition?, reservation: Train.Reservation) throws -> TrainLocation {
-        let newLocation = try Train.newLocationWith(trainMovesForward: forward, allowedDirection: .any, currentLocation: currentLocation, detectedPosition: detectedPosition, reservation: reservation)
+        let newLocation = try Train().newLocationWith(trainMovesForward: forward, allowedDirection: .any, currentLocation: currentLocation, detectedPosition: detectedPosition, reservation: reservation)
         
         assertLocation(newLocation, back: back, front: front)
 

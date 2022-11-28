@@ -61,9 +61,8 @@ struct TrainPosition: Equatable, Codable, CustomStringConvertible {
             return true
         } else {
             // Same block. Now the direction matters to compare
-            guard let direction = reservation.directionInBlock(for: blockId) else {
-                // TODO: throw
-                fatalError()
+            guard let direction = try reservation.directionInBlock(for: blockId) else {
+                throw LayoutError.directionNotFound(blockId: blockId)
             }
             if direction == .next {
                 return index > other.index
@@ -107,10 +106,13 @@ extension Train.Reservation {
         return nil
     }
 
-    func directionInBlock(for blockId: Identifier<Block>) -> Direction? {
+    func directionInBlock(for blockId: Identifier<Block>) throws -> Direction? {
         if let block = occupied.blocks.first(where: {$0.id == blockId}) {
-            // TODO: throw if trainInstance is nil because this should not happen
-            return block.trainInstance?.direction
+            if let ti = block.trainInstance {
+                return ti.direction
+            } else {
+                throw LayoutError.trainNotFoundInBlock(blockId: blockId)
+            }
         }
         return nil
     }
