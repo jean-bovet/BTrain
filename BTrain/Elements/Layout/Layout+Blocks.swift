@@ -72,6 +72,7 @@ extension Layout {
         }
     }
 
+    // TODO: where is this one used - check if using frontBlock is more appropriate
     func currentBlock(train: Train) -> Block? {
         if let blockId = train.blockId {
             return blocks[blockId]
@@ -80,10 +81,11 @@ extension Layout {
         }
     }
 
+    // TODO: is that the right way to use the currentBlock?
     func atEndOfBlock(train: Train) throws -> Bool {
         guard let currentBlock = currentBlock(train: train) else {
             return false
         }
-        return try Train.atEndOfBlock(block: currentBlock, train: train)
+        return try train.atEndOfBlock(block: currentBlock)
     }
 }

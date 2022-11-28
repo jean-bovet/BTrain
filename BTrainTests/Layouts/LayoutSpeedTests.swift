@@ -160,13 +160,13 @@ final class LayoutSpeedTests: XCTestCase {
         s1.feedbacks[1].distance = 130
         try doc.layoutController.setTrainToBlock(train, s1.id, position: TrainLocation.both(blockId: s1.id, index: 1), direction: .next)
         XCTAssertEqual(train.leading.settledDistance, 0)
-        XCTAssertEqual(Train.distanceLeftInLastBlock(train: train), 70)
+        XCTAssertEqual(train.distanceLeftInLastBlock(), 70)
         XCTAssertEqual(try controller.layoutSpeed.maximumSpeedAllowed(train: train), LayoutFactory.DefaultBrakingSpeed)
 
         s1.length = 0
         try doc.layoutController.setTrainToBlock(train, s1.id, position: TrainLocation.both(blockId: s2.id, index: s1.feedbacks.count+1), direction: .next)
         XCTAssertEqual(train.leading.settledDistance, 0)
-        XCTAssertEqual(Train.distanceLeftInLastBlock(train: train), 0)
+        XCTAssertEqual(train.distanceLeftInLastBlock(), 0)
         XCTAssertEqual(try controller.layoutSpeed.maximumSpeedAllowed(train: train), 0)
     }
 

@@ -99,7 +99,7 @@ final class TrainController: TrainControlling, CustomStringConvertible {
     }
 
     var atStationOrDestination: Bool {
-        layout.hasTrainReachedStationOrDestination(route, train, frontBlock)
+        train.hasReachedStationOrDestination(route, frontBlock)
     }
 
     var shouldChangeDirection: Bool {
@@ -184,7 +184,7 @@ final class TrainController: TrainControlling, CustomStringConvertible {
                 return
             }
 
-            if layout.hasTrainReachedStationOrDestination(route, train, frontBlock) {
+            if train.hasReachedStationOrDestination(route, frontBlock) {
                 return
             }
 
@@ -278,18 +278,17 @@ final class TrainController: TrainControlling, CustomStringConvertible {
         // Note: do not remove the leading blocks as this will be taken care below by the `reserveLeadingBlocks` method.
         // This is important because the reserveLeadingBlocks method needs to remember the previously reserved turnouts
         // in order to avoid re-activating them each time unnecessarily.
-        for feedback in Train.allActiveFeedbackPositions(train: train, layout: layout) {
+        for feedback in layout.allActiveFeedbackPositions(train: train) {
             guard let direction = try train.reservation.directionInBlock(for: feedback.blockId) else {
                 // Note: this should not happen because all the feedback are in occupied block
                 // which, by definition, have a train (and a direction) in them.
                 throw LayoutError.directionNotFound(blockId: feedback.blockId)
             }
             let detectedPosition = feedback.trainPosition(direction: direction)
-            train.position = try train.newLocationWith(trainMovesForward: train.directionForward,
-                                                       allowedDirection: train.allowedDirections,
-                                                       currentLocation: train.position,
-                                                       detectedPosition: detectedPosition,
-                                                       reservation: train.reservation)
+            train.position = try train.position.newLocationWith(trainMovesForward: train.directionForward,
+                                                                allowedDirection: train.allowedDirections,
+                                                                detectedPosition: detectedPosition,
+                                                                reservation: train.reservation)
             BTLogger.router.debug("\(self.train, privacy: .public): updated location \(self.train.position) in \(self.frontBlock.name, privacy: .public), direction \(self.frontBlockTrainInstance.direction)")
         }
         
@@ -306,11 +305,10 @@ final class TrainController: TrainControlling, CustomStringConvertible {
         let feedbackPosition = FeedbackPosition(blockId: entryFeedback.block.id, index: entryFeedback.index)
         let detectedPosition = feedbackPosition.trainPosition(direction: entryFeedback.direction)
 
-        let newPosition = try train.newLocationWith(trainMovesForward: train.directionForward,
-                                                    allowedDirection: train.allowedDirections,
-                                                    currentLocation: train.position,
-                                                    detectedPosition: detectedPosition,
-                                                    reservation: train.reservation)
+        let newPosition = try train.position.newLocationWith(trainMovesForward: train.directionForward,
+                                                             allowedDirection: train.allowedDirections,
+                                                             detectedPosition: detectedPosition,
+                                                             reservation: train.reservation)
         
         BTLogger.router.debug("\(self.train.description(self.layout), privacy: .public): enters block \(entryFeedback.block, privacy: .public) at position \(feedbackPosition.index), direction \(entryFeedback.direction)")
 

@@ -34,9 +34,9 @@ enum LayoutError: Error {
     case directionNotFound(blockId: Identifier<Block>)
 
     case invalidSocket(socket: Socket)
-    case invalidBackAfterFrontPosition(train: Train)
-    case invalidBackBeforeFrontPosition(train: Train)
-    case invalidBackAndFrontPosition(train: Train)
+    case invalidBackAfterFrontPosition(position: TrainLocation)
+    case invalidBackBeforeFrontPosition(position: TrainLocation)
+    case invalidBackAndFrontPosition(position: TrainLocation)
 
     case brakeFeedbackNotFound(block: Block)
     case stopFeedbackNotFound(block: Block)
@@ -118,12 +118,12 @@ extension LayoutError: LocalizedError {
         case let .invalidSocket(socket: socket):
             return "Socket \(socket) must have either its block or turnout defined"
 
-        case let .invalidBackAndFrontPosition(train: train):
-            return "Invalid back and front position for \(train.name): \(train.position)"
-        case let .invalidBackAfterFrontPosition(train: train):
-            return "The back position cannot be after the front position for \(train.name): \(train.position)"
-        case let .invalidBackBeforeFrontPosition(train: train):
-            return "The back position cannot be before the front position for \(train.name): \(train.position)"
+        case let .invalidBackAndFrontPosition(position: position):
+            return "Invalid back and front position: \(position)"
+        case let .invalidBackAfterFrontPosition(position: position):
+            return "The back position cannot be after the front position: \(position)"
+        case let .invalidBackBeforeFrontPosition(position: position):
+            return "The back position cannot be before the front position: \(position)"
 
         case let .trainNotAssignedToABlock(train: train):
             return "Train \(train.name) does not have any assigned block (train.blockId is nil)"

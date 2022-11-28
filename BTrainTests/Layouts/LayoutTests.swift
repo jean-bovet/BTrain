@@ -75,6 +75,7 @@ class LayoutTests: BTTestCase {
         let interface = MockCommandInterface()
         let doc = LayoutDocument(layout: LayoutFigure8().newLayout(), interface: interface)
         let train1 = doc.layout.trains[0]
+        train1.locomotive?.allowedDirections = .any
         let block1 = doc.layout.blocks[0]
 
         try doc.layout.setTrainToBlock(train1.id, block1.id, direction: .next)

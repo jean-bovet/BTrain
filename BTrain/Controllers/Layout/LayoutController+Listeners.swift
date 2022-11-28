@@ -58,7 +58,7 @@ extension LayoutController {
 
                 if directionChanged {
                     if let train = layout.trains[loc.id] {
-                        try toggleTrainDirectionInBlock(train)
+                        try toggleTrainDirection(train)
                         runControllers(.directionChanged(train))
                     }
                 }

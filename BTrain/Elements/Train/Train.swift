@@ -165,7 +165,11 @@ final class Train: Element, ObservableObject {
     // The state of the train
     @Published var state: State = .stopped
 
-    // The block where the locomotive is located
+    /// The block where the front of the train is located.
+    ///
+    /// The "front of the train" is the part of the train that is in the direction of travel of the train:
+    /// - If the train moves forward, it is the block where the locomotive is located
+    /// - If the train moves backward, it is the block where the last wagon is located
     @Published var blockId: Identifier<Block>?
 
     // Location of the train inside the current block.
@@ -286,21 +290,6 @@ extension Train {
         reservation.occupied
     }
     
-}
-
-// TODO: move somewhere else - maybe group all these functions together
-extension Layout {
-    /// Returns the block at the front of the train.
-    ///
-    /// The front of the train is the part of the train that is located
-    /// at the front of the train in the direction of travel of the train.
-    func frontBlock(train: Train) -> Block? {
-        if let block = train.occupied.blocks.first {
-            return block
-        } else {
-            return blocks[train.blockId]
-        }
-    }
 }
 
 extension Train: Restorable {

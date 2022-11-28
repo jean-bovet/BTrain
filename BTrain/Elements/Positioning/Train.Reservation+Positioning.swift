@@ -12,23 +12,30 @@
 
 import Foundation
 
-// A structure that defines a destination in the layout
-struct Destination: Equatable, Codable {
-    // The block to reach
-    let blockId: Identifier<Block>
-
-    // An optional direction of travel within that block.
-    // If not specified, the natural direction of the block is used.
-    let direction: Direction?
-
-    init(_ blockId: Identifier<Block>) {
-        self.blockId = blockId
-        direction = nil
+extension Train.Reservation {
+    
+    // TODO: documentation
+    func blockIndex(for blockId: Identifier<Block>) -> Int? {
+        if let blockIndex = occupied.blocks.firstIndex(where: {$0.id == blockId}) {
+            return blockIndex
+        }
+        if let blockIndex = leading.blocks.firstIndex(where: {$0.id == blockId}) {
+            return -1-blockIndex
+        }
+        if let nextBlock = nextBlock, nextBlock.id == blockId {
+            return -1
+        }
+        return nil
     }
 
-    init(_ blockId: Identifier<Block>, direction: Direction) {
-        self.blockId = blockId
-        self.direction = direction
+    func directionInBlock(for blockId: Identifier<Block>) throws -> Direction? {
+        if let block = occupied.blocks.first(where: {$0.id == blockId}) {
+            if let ti = block.trainInstance {
+                return ti.direction
+            } else {
+                throw LayoutError.trainNotFoundInBlock(blockId: blockId)
+            }
+        }
+        return nil
     }
-
 }

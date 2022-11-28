@@ -257,7 +257,7 @@ final class LayoutReservation {
         // stop the train is detected. That way, the train stops
         // without reserving any block ahead and upon restarting,
         // it will reserve what it needs in front of it.
-        guard !layout.hasTrainReachedStationOrDestination(route, train, block) else {
+        guard !train.hasReachedStationOrDestination(route, block) else {
             return false
         }
 

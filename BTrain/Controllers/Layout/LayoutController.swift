@@ -189,7 +189,7 @@ final class LayoutController: ObservableObject, LayoutControlling {
     }
 
     func trainController(forTrain train: Train) -> TrainController? {
-        guard let frontBlock = layout.frontBlock(train: train) else {
+        guard let frontBlock = layout.blocks[train.blockId] else {
             return nil
         }
         
@@ -536,9 +536,12 @@ extension LayoutController {
         }
         interface.execute(command: command, completion: completion)
     }
-
-    // Toggle the direction of the train within the block itself
-    func toggleTrainDirectionInBlock(_ train: Train) throws {
+    
+    /// Toggles the direction of the train.
+    ///
+    /// An exception is thrown if the train does not allow for its direction to be changed.
+    /// - Parameter train: the train
+    func toggleTrainDirection(_ train: Train) throws {
         guard let blockId = train.blockId else {
             throw LayoutError.trainNotAssignedToABlock(train: train)
         }
@@ -555,7 +558,38 @@ extension LayoutController {
             throw LayoutError.trainInBlockDoesNotMatch(trainId: train.id, blockId: blockId, blockTrainId: ti.trainId)
         }
 
-        block.trainInstance = TrainInstance(train.id, ti.direction.opposite)
+        if train.allowedDirections == .forward && !train.directionForward {
+            // TODO: throw
+            fatalError()
+        }
+        
+        // The blockId of the train must be assigned to the opposite side of the train
+        // because blockId represents the block in which the front of the train, in the direction
+        // of travel, is located.
+        let newBlockId: Identifier<Block>
+        if train.directionForward {
+            if let front = train.position.front {
+                newBlockId = front.blockId
+            } else {
+                BTLogger.warning("Train \(train) does not have its front position defined: using the current block \(block) for its new position after toggling its direction")
+                newBlockId = blockId
+            }
+        } else {
+            if let back = train.position.back {
+                newBlockId = back.blockId
+            } else {
+                BTLogger.warning("Train \(train) does not have its back position defined: using the current block \(block) for its new position after toggling its direction")
+                newBlockId = blockId
+            }
+        }
+
+        guard let newBlock = layout.blocks[newBlockId] else {
+            throw LayoutError.blockNotFound(blockId: newBlockId)
+        }
+        
+        block.trainInstance = nil
+        newBlock.trainInstance = TrainInstance(train.id, ti.direction.opposite)
+        train.blockId = newBlockId
 
         try reservation.removeLeadingBlocks(train: train)
     }

@@ -57,7 +57,7 @@ final class TrainVisitor {
                turnoutCallback: TurnoutCallbackBlock,
                blockCallback: BlockCallbackBlock) throws -> Bool
     {
-        guard let frontBlock = layout.frontBlock(train: train) else {
+        guard let frontBlock = layout.blocks[train.blockId] else {
             throw LayoutError.trainNotAssignedToABlock(train: train)
         }
 
@@ -128,8 +128,6 @@ final class TrainVisitor {
         // Determine the starting position where to begin filling out parts of the block
         var position: Int
         if frontBlock {
-            // This is the front block, which is the block at the front of the train
-            // in the direction of travel of the train.
             if trainForward {
                 // Moving forward: the front block is where the locomotive is located,
                 // so use the front position index.
