@@ -26,7 +26,7 @@ class UnmanagedTrainOperationTests: BTTestCase {
 
         p.setTrainSpeed(LayoutFactory.DefaultMaximumSpeed)
 
-        try p.assertTrain(inBlock: "b1", position: 0, speed: LayoutFactory.DefaultMaximumSpeed)
+        try p.assertTrain(inBlock: "b1", position: 2, speed: LayoutFactory.DefaultMaximumSpeed)
 
         try p.triggerFeedback("f21")
 
@@ -203,13 +203,7 @@ class UnmanagedTrainOperationTests: BTTestCase {
         let doc = LayoutDocument(layout: layout)
         let block = layout.blocks[Identifier<Block>(uuid: fromBlockId)]!
         
-        let location: TrainLocation
-        if positionAtEnd {
-            location = TrainLocation.both(blockId: block.id, index: block.feedbacks.count)
-        } else {
-            location = TrainLocation.both(blockId: block.id, index: 0)
-        }
-        try doc.layoutController.setTrainToBlock(train, block.id, position: location, direction: direction)
+        try doc.layoutController.setupTrainToBlock(train.id, block.id, naturalDirectionInBlock: direction)
 
         XCTAssertEqual(loc.speed.requestedKph, 0)
         XCTAssertEqual(train.scheduling, .unmanaged)

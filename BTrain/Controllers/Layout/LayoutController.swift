@@ -593,21 +593,58 @@ extension LayoutController {
 
         try reservation.removeLeadingBlocks(train: train)
     }
-
-    /// Sets a train to a specific block.
+    
+    /// Setup the train in a block. This method places the train for the first time in the specified block, filling the block with the train
+    /// by respecting the specified natural direction of the train in the block.
     ///
     /// - Parameters:
-    ///   - train: the train
-    ///   - toBlockId: the block in which to put the train
-    ///   - position: the position in the block in which to put the train
-    ///   - direction: the direction in the block in which to put the train
-    ///   - removeLeadingBlocks: true to remove the leading blocks (by default), false to keep the leading blocks
-    func setTrainToBlock(_ train: Train, _ toBlockId: Identifier<Block>, position: TrainLocation? = nil, direction: Direction, removeLeadingBlocks: Bool = true) throws {
-        try layout.setTrainToBlock(train.id, toBlockId, position: position, direction: direction)
-        if removeLeadingBlocks {
-            try reservation.removeLeadingBlocks(train: train)
+    ///   - trainId: the train
+    ///   - toBlockId: the block
+    ///   - naturalDirectionInBlock: the natural direction of the train
+    func setupTrainToBlock(_ trainId: Identifier<Train>, _ toBlockId: Identifier<Block>, naturalDirectionInBlock: Direction) throws {
+        guard let train = layout.trains[trainId] else {
+            throw LayoutError.trainNotFound(trainId: trainId)
         }
+        
+        guard let toBlock = layout.blocks[toBlockId] else {
+            throw LayoutError.blockNotFound(blockId: toBlockId)
+        }
+        
+        guard toBlock.trainInstance == nil || toBlock.trainInstance?.trainId == trainId else {
+            throw LayoutError.blockNotEmpty(blockId: toBlockId)
+        }
+        
+        guard toBlock.reservation == nil || toBlock.reservation?.trainId == train.id else {
+            throw LayoutError.cannotReserveBlock(block: toBlock, train: train, reserved: toBlock.reservation!)
+        }
+        
+        if naturalDirectionInBlock == .next {
+            if train.allowedDirections == .forward {
+                train.position = .both(blockId: toBlockId, index: toBlock.feedbacks.count)
+            } else {
+                train.position = .block(blockId: toBlockId, front: toBlock.feedbacks.count, back: 0)
+            }
+        } else {
+            if train.allowedDirections == .forward {
+                train.position = .both(blockId: toBlockId, index: 0)
+            } else {
+                train.position = .block(blockId: toBlockId, front: 0, back: toBlock.feedbacks.count)
+            }
+        }
+        
+        let directionInBlock: Direction
+        if train.directionForward {
+            directionInBlock = naturalDirectionInBlock
+        } else {
+            directionInBlock = naturalDirectionInBlock.opposite
+        }
+
+        try layout.setTrainToBlock(trainId, toBlockId, position: train.position, directionOfTravelInBlock: directionInBlock)
+        
+        try reservation.removeLeadingBlocks(train: train)
     }
+    
+
 }
 
 extension LayoutController: MetricsProvider {

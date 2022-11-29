@@ -31,7 +31,7 @@ final class TrainLocationHelperTests: XCTestCase {
         train.wagonsLength = 0
         let blockB = layout.block(named: "B")
 
-        try doc.layoutController.setTrainToBlock(train, blockB.id, direction: .next)
+        try doc.layoutController.setupTrainToBlock(train.id, blockB.id, naturalDirectionInBlock: .next)
         XCTAssertEqual(train.occupied.blocks.count, 1)
         
         assertFeedbacks(layout, train, feedbackCount: 0)
@@ -60,7 +60,7 @@ final class TrainLocationHelperTests: XCTestCase {
         
         train.wagonsLength = blockB.length!
         
-        try doc.layoutController.setTrainToBlock(train, blockB.id, direction: .next)
+        try doc.layoutController.setupTrainToBlock(train.id, blockB.id, naturalDirectionInBlock: .next)
         XCTAssertEqual(train.occupied.blocks.count, 2)
 
         assertFeedbacks(layout, train, feedbackCount: 0)
@@ -107,7 +107,7 @@ final class TrainLocationHelperTests: XCTestCase {
                                 _ position: TrainLocation) throws {
         train.locomotive?.allowedDirections = allowedDirection
         train.locomotive?.directionForward = directionForward
-        try doc.layoutController.setTrainToBlock(train, block.id, direction: directionInBlock)
+        try doc.layoutController.setupTrainToBlock(train.id, block.id, naturalDirectionInBlock: directionInBlock)
         XCTAssertEqual(train.position, position)
         XCTAssertEqual(train.occupied.blocks.count, 1)
     }
@@ -171,26 +171,22 @@ final class TrainLocationHelperTests: XCTestCase {
         train.wagonsLength = 0
         let blockB = layout.block(named: "B")
 
-        try doc.layoutController.setTrainToBlock(train, blockB.id, direction: .next)
+        try doc.layoutController.setupTrainToBlock(train.id, blockB.id, naturalDirectionInBlock: .next)
         assertEndOfBlock(occupiedCount: 1, atEndOfBlock: true, block: blockB, train: train)
 
-        try doc.layoutController.setTrainToBlock(train, blockB.id, position: TrainLocation(front: .init(blockId: blockB.id, index: blockB.feedbacks.count), back: nil), direction: .next)
+        try doc.layout.setTrainToBlock(train.id, blockB.id, position: TrainLocation(front: .init(blockId: blockB.id, index: blockB.feedbacks.count), back: nil), directionOfTravelInBlock: .next)
         assertEndOfBlock(occupiedCount: 1, atEndOfBlock: true, block: blockB, train: train)
 
-        try doc.layoutController.setTrainToBlock(train, blockB.id, position: TrainLocation(front: .init(blockId: blockB.id, index: blockB.feedbacks.count-1), back: nil), direction: .next)
+        try doc.layout.setTrainToBlock(train.id, blockB.id, position: TrainLocation(front: .init(blockId: blockB.id, index: blockB.feedbacks.count-1), back: nil), directionOfTravelInBlock: .next)
         assertEndOfBlock(occupiedCount: 1, atEndOfBlock: false, block: blockB, train: train)
 
         train.locomotive!.allowedDirections = .any
         train.locomotive!.directionForward = false
         
-        // TODO: we cannot use this line because direction in this case means the direction of travel of the train
-        // and not the direction of layout of the train inside the block
-//        try doc.layoutController.setTrainToBlock(train, blockB.id, position: .block(blockId: blockB.id, front: blockB.feedbacks.count, back: 0), direction: .next)
-        try doc.layoutController.setTrainToBlock(train, blockB.id, position: nil, direction: .next)
+        try doc.layoutController.setupTrainToBlock(train.id, blockB.id, naturalDirectionInBlock: .next)
         assertEndOfBlock(occupiedCount: 1, atEndOfBlock: true, block: blockB, train: train)
 
-        train.position.back?.index = 1
-//        try doc.layoutController.setTrainToBlock(train, blockB.id, position: .block(blockId: blockB.id, front: blockB.feedbacks.count, back: 1), direction: .next)
+        try doc.layout.setTrainToBlock(train.id, blockB.id, position: .block(blockId: blockB.id, front: blockB.feedbacks.count, back: 1), directionOfTravelInBlock: .next)
         assertEndOfBlock(occupiedCount: 1, atEndOfBlock: false, block: blockB, train: train)
     }
     

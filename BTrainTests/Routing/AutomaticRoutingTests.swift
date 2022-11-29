@@ -377,7 +377,7 @@ class AutomaticRoutingTests: BTTestCase {
         try p.assert("automatic-0: {r0{s2 ≡ 🔴🚂0 }} <t1(1,0),s> <t2(1,0),s> [b1 ≏ ] <t3> [b2 ≏ ] <t4(1,0)> [b3 ≏ ≏ ≏ ] <t5> <t6> {r0{s2 ≡ 🔴🚂0 }}")
 
         // Let's add a train in the next block b1 that will prevent the train in s2 from immediately restarting
-        try layout.setTrainToBlock(layout.trains[1].id, Identifier<Block>(uuid: "b1"), direction: .next)
+        try p.layoutController.setupTrainToBlock(layout.trains[1].id, Identifier<Block>(uuid: "b1"), naturalDirectionInBlock: .next)
         p.layoutController.runControllers(.trainPositionChanged(layout.trains[1]))
 
         // Wait until the train route has been updated (which happens when it restarts)
@@ -448,7 +448,7 @@ class AutomaticRoutingTests: BTTestCase {
         try p.assert("automatic-0: {r0{s2 🔵🚂0 ≏ }} <r0<t1(1,0),s>> <r0<t2(1,0),s>> [r0[b1 ≏ ]] <t3> [b2 ≏ ] <t4(1,0)> [b3 ≏ ≏ ≏ ]")
 
         // Let's add a train in the block b2
-        try layout.setTrainToBlock(layout.trains[1].id, Identifier<Block>(uuid: "b2"), direction: .next)
+        try p.layoutController.setupTrainToBlock(layout.trains[1].id, Identifier<Block>(uuid: "b2"), naturalDirectionInBlock: .next)
 
         try p.assert("automatic-0: {r0{s2 ≡ 🔵🚂0 }} <r0<t1(1,0),s>> <r0<t2(1,0),s>> [r0[b1 ≏ ]] <t3> [r1[b2 ≏ 🔴🚂1 ]] <t4(1,0)> [b3 ≏ ≏ ≏ ]")
         try p.assert("automatic-0: {r0{s2 ≏ 🔵🚂0 }} <r0<t1(1,0),s>> <r0<t2(1,0),s>> [r0[b1 ≏ ]] <t3> [r1[b2 ≏ 🔴🚂1 ]] <t4(1,0)> [b3 ≏ ≏ ≏ ]")
@@ -558,7 +558,7 @@ class AutomaticRoutingTests: BTTestCase {
 
         _ = try setup(layout: layout, fromBlockId: s1.id, destination: .init(s2.id, direction: .next), position: .end, direction: .previous, expectedState: .stopped, routeSteps: [])
     }
-
+    
     func testBackwardRoute() throws {
         let layout = LayoutLoopWithStation().newLayout()
         let s1 = layout.block(named: "s1")
@@ -571,7 +571,7 @@ class AutomaticRoutingTests: BTTestCase {
         t1.locomotive!.directionForward = false
         t1.locomotive!.allowedDirections = .any
         
-        let p = try setup(layout: layout, fromBlockId: s1.id, destination: .init(s2.id, direction: .next), position: nil, direction: .previous, routeSteps: ["s1:next", "b1:next", "s2:next"])
+        let p = try setup(layout: layout, fromBlockId: s1.id, destination: .init(s2.id, direction: .next), position: .automatic, direction: .previous, routeSteps: ["s1:next", "b1:next", "s2:next"])
         
         // The route requires the train to move backward
         XCTAssertFalse(t1.directionForward)
@@ -590,6 +590,9 @@ class AutomaticRoutingTests: BTTestCase {
         try p.assert("automatic-0: {r0{s1 ≏ 🔵🚂⟷0 ≏ 💺0 }} <r0<t1{sr}(0,1),s>> <r0<t2{sr}(0,1),s>> [r0[b1 💺0 ≡ 💺0 ≏ ]] <r0<t4{sl}(1,0),s>> {r0{s2 ≏ ≏ }}", ["s2"])
 
         try p.assert("automatic-0: {s1 ≏ ≏ } <t1{sr}(0,1),s> <t2{sr}(0,1),s> [r0[b1 ≡ 🟡🚂⟷0 ≏ 💺0 ]] <r0<t4{sl}(1,0),s>> {r0{s2 💺0 ≡ 💺0 ≏ }}", [])
+        // TODO: this line fails because the front position is still in b1 (no feedback was activated
+        // to make it move but the occupied algorithm has decided that the front of the train should be
+        // in s2 already). Think about what to do about this use case....
         try p.assert("automatic-0: {s1 ≏ ≏ } <t1{sr}(0,1),s> <t2{sr}(0,1),s> [b1 ≏ ≏ ] <t4{sl}(1,0),s> {r0{s2 ≏ 🔴🚂⟷0 ≡ 💺0 }}", [])
         try p.printASCII()
         
@@ -613,7 +616,7 @@ class AutomaticRoutingTests: BTTestCase {
 
         XCTAssertTrue(t1.directionForward)
         
-        let p = try setup(layout: layout, fromBlockId: s1.id, destination: .init(s2.id, direction: .next), position: nil, direction: .previous, routeSteps: ["s1:next", "b1:next", "s2:next"])
+        let p = try setup(layout: layout, fromBlockId: s1.id, destination: .init(s2.id, direction: .next), position: .automatic, direction: .previous, routeSteps: ["s1:next", "b1:next", "s2:next"])
         
         // The route requires the train to move backward
         XCTAssertFalse(t1.directionForward)
@@ -633,11 +636,11 @@ class AutomaticRoutingTests: BTTestCase {
 
     // MARK: - - Utility
 
-    private func setup(layout: Layout, fromBlockId: Identifier<Block>, destination: Destination?, position: Package.Position? = .start, direction: Direction = .next, expectedState: Train.State = .running, routeSteps: [String]) throws -> Package {
+    private func setup(layout: Layout, fromBlockId: Identifier<Block>, destination: Destination?, position: Package.Position = .start, direction: Direction = .next, expectedState: Train.State = .running, routeSteps: [String]) throws -> Package {
         try setup(layout: layout, train: layout.trains[0], fromBlockId: fromBlockId, destination: destination, position: position, direction: direction, expectedState: expectedState, routeSteps: routeSteps)
     }
 
-    private func setup(layout: Layout, train: Train, fromBlockId: Identifier<Block>, destination: Destination?, position: Package.Position? = .start, direction: Direction = .next, expectedState: Train.State = .running, routeSteps: [String]) throws -> Package {
+    private func setup(layout: Layout, train: Train, fromBlockId: Identifier<Block>, destination: Destination?, position: Package.Position = .start, direction: Direction = .next, expectedState: Train.State = .running, routeSteps: [String]) throws -> Package {
         let p = Package(layout: layout)
         try p.prepare(trainID: train.uuid, fromBlockId: fromBlockId.uuid, position: position, direction: direction)
         try p.start(destination: destination, expectedState: expectedState, routeSteps: routeSteps)

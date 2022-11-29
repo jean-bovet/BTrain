@@ -76,8 +76,8 @@ class LayoutErrorTests: XCTestCase {
 
     func testBlockNotEmpty() {
         do {
-            try layout.setTrainToBlock(train0.id, b1.id, direction: .next)
-            try layout.setTrainToBlock(train1.id, b1.id, direction: .next)
+            try layout.setTrainToBlock(train0.id, b1.id, position: .block(blockId: b1.id, front: 2, back: 0), directionOfTravelInBlock: .next)
+            try layout.setTrainToBlock(train1.id, b1.id, position: .block(blockId: b1.id, front: 2, back: 0), directionOfTravelInBlock: .next)
             XCTFail("Must throw an exception")
         } catch {
             XCTAssertEqual(error.localizedDescription, "Block b1 is not empty")
@@ -87,7 +87,7 @@ class LayoutErrorTests: XCTestCase {
     func testCannotReserveBlock() {
         do {
             b1.reservation = Reservation(trainId: train1.id, direction: .next)
-            try layout.setTrainToBlock(train0.id, b1.id, direction: .next)
+            try layout.setTrainToBlock(train0.id, b1.id, position: .block(blockId: b1.id, front: 2, back: 0), directionOfTravelInBlock: .next)
             XCTFail("Must throw an exception")
         } catch {
             XCTAssertEqual(error.localizedDescription, "Cannot reserve block 1 for train lw1 because the block is already reserved for Reservation(train=lw2, direction=next)")

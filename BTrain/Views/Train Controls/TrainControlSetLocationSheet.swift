@@ -72,7 +72,7 @@ struct TrainControlSetLocationSheet: View {
                 Button("Set") {
                     do {
                         if let selectedBlock = blockId {
-                            try controller.setTrainToBlock(train, selectedBlock, direction: direction)
+                            try controller.setupTrainToBlock(train.id, selectedBlock, naturalDirectionInBlock: direction)
                             controller.redrawSwitchboard()
                         }
                         errorStatus = nil

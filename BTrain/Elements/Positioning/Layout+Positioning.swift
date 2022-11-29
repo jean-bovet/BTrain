@@ -15,15 +15,14 @@ import Foundation
 // TODO: continue to group all these functions together
 extension Layout {
     
-    /// Sets a train to a specific block.
+    /// Sets the train into the specified block, at the specified position and direction of travel in the block.
     ///
     /// - Parameters:
     ///   - trainId: the train
-    ///   - toBlockId: the block in which to put the train
-    ///   - position: the position in the block in which to put the train
-    ///   - direction: the direction in the block in which to put the train
-    //TODO: move routeIndex outside of it and have the caller update it
-    func setTrainToBlock(_ trainId: Identifier<Train>, _ toBlockId: Identifier<Block>, position: TrainLocation? = nil, direction: Direction) throws {
+    ///   - toBlockId: the block
+    ///   - position: the position
+    ///   - directionOfTravelInBlock: the direction of travel
+    func setTrainToBlock(_ trainId: Identifier<Train>, _ toBlockId: Identifier<Block>, position: TrainLocation, directionOfTravelInBlock: Direction) throws {
         guard let train = trains[trainId] else {
             throw LayoutError.trainNotFound(trainId: trainId)
         }
@@ -40,44 +39,14 @@ extension Layout {
             throw LayoutError.cannotReserveBlock(block: toBlock, train: train, reserved: toBlock.reservation!)
         }
         
-        let directionInBlock: Direction
-        if let position = position {
-            train.position = position
-            // When the position is specified, `direction` is the direction of travel inside the block.
-            directionInBlock = direction
-        } else {
-            if direction == .next {
-                if train.allowedDirections == .forward {
-                    train.position = .both(blockId: toBlockId, index: toBlock.feedbacks.count)
-                } else {
-                    train.position = .block(blockId: toBlockId, front: toBlock.feedbacks.count, back: 0)
-                }
-            } else {
-                if train.allowedDirections == .forward {
-                    train.position = .both(blockId: toBlockId, index: 0)
-                } else {
-                    train.position = .block(blockId: toBlockId, front: 0, back: toBlock.feedbacks.count)
-                }
-            }
-            
-            // When the position is not specified, `direction` is the direction in which the train is
-            // positioned within the block, with the locomotive in that direction of travel.
-            // This scenario here happens only when the user sets the train on the switchboard. When
-            // the train moves from block to block, the position is specified.
-            // TODO: can we simplify that by having a different method parameter? Either the (position, directionOfTravel) or directionOfLayoutInBlock is specified.
-            if train.directionForward {
-                directionInBlock = direction
-            } else {
-                directionInBlock = direction.opposite
-            }
-        }
+        train.position = position
         
         // Reserve the block
-        toBlock.reservation = Reservation(trainId: train.id, direction: directionInBlock)
-        toBlock.trainInstance = TrainInstance(trainId, directionInBlock)
+        toBlock.reservation = Reservation(trainId: train.id, direction: directionOfTravelInBlock)
+        toBlock.trainInstance = TrainInstance(trainId, directionOfTravelInBlock)
         
         // Assign the block to the train
-        train.blockId = toBlock.id        
+        train.blockId = toBlock.id
     }
     
     /// Returns all the feedbacks that are currently detected in any of the occupied blocks by the train.

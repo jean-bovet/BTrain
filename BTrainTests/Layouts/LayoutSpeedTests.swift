@@ -35,7 +35,7 @@ final class LayoutSpeedTests: XCTestCase {
     lazy var t4 = layout.turnout(named: "t4")
 
     override func setUp() async throws {
-        try layout.setTrainToBlock(train.id, s1.id, direction: .next)
+        try doc.layoutController.setupTrainToBlock(train.id, s1.id, naturalDirectionInBlock: .next)
     }
 
     // MARK: - Occupied Blocks
@@ -85,7 +85,7 @@ final class LayoutSpeedTests: XCTestCase {
         train.leading.updateSettledDistance()
         XCTAssertEqual(train.leading.settledDistance, 130)
         
-        try layout.setTrainToBlock(train.id, s1.id, position: TrainLocation.both(blockId: s1.id, index: 0), direction: .next)
+        try layout.setTrainToBlock(train.id, s1.id, position: TrainLocation.both(blockId: s1.id, index: 0), directionOfTravelInBlock: .next)
 
         XCTAssertEqual(try layoutSpeed.unrestrictedLeadMaximumSpeed(train: train), LayoutFactory.DefaultMaximumSpeed)
         XCTAssertEqual(try layoutSpeed.settledLeadMaximumSpeed(train: train), LayoutFactory.DefaultMaximumSpeed)
@@ -94,7 +94,7 @@ final class LayoutSpeedTests: XCTestCase {
         train.leading.append(t1)
         train.leading.append(b2)
 
-        try layout.setTrainToBlock(train.id, s1.id, position: TrainLocation.both(blockId: b2.id, index: 1), direction: .next)
+        try layout.setTrainToBlock(train.id, s1.id, position: TrainLocation.both(blockId: b2.id, index: 1), directionOfTravelInBlock: .next)
 
         t1.requestedState = .branchRight
         train.leading.updateSettledDistance()
@@ -152,19 +152,19 @@ final class LayoutSpeedTests: XCTestCase {
     // MARK: - Maximum Speed Allowed
     
     func testEdgeCases() throws {
-        try doc.layoutController.setTrainToBlock(train, s1.id, position: TrainLocation.both(blockId: s1.id, index: 0), direction: .next)
+        try layout.setTrainToBlock(train.id, s1.id, position: TrainLocation.both(blockId: s1.id, index: 0), directionOfTravelInBlock: .next)
         XCTAssertEqual(train.leading.settledDistance, 0)
         XCTAssertEqual(try controller.layoutSpeed.maximumSpeedAllowed(train: train), LayoutFactory.DefaultLimitedSpeed)
 
         s1.length = 200
         s1.feedbacks[1].distance = 130
-        try doc.layoutController.setTrainToBlock(train, s1.id, position: TrainLocation.both(blockId: s1.id, index: 1), direction: .next)
+        try layout.setTrainToBlock(train.id, s1.id, position: TrainLocation.both(blockId: s1.id, index: 1), directionOfTravelInBlock: .next)
         XCTAssertEqual(train.leading.settledDistance, 0)
         XCTAssertEqual(train.distanceLeftInLastBlock(), 70)
         XCTAssertEqual(try controller.layoutSpeed.maximumSpeedAllowed(train: train), LayoutFactory.DefaultBrakingSpeed)
 
         s1.length = 0
-        try doc.layoutController.setTrainToBlock(train, s1.id, position: TrainLocation.both(blockId: s2.id, index: s1.feedbacks.count+1), direction: .next)
+        try layout.setTrainToBlock(train.id, s1.id, position: TrainLocation.both(blockId: s2.id, index: s1.feedbacks.count+1), directionOfTravelInBlock: .next)
         XCTAssertEqual(train.leading.settledDistance, 0)
         XCTAssertEqual(train.distanceLeftInLastBlock(), 0)
         XCTAssertEqual(try controller.layoutSpeed.maximumSpeedAllowed(train: train), 0)

@@ -312,11 +312,11 @@ final class TrainController: TrainControlling, CustomStringConvertible {
         
         BTLogger.router.debug("\(self.train.description(self.layout), privacy: .public): enters block \(entryFeedback.block, privacy: .public) at position \(feedbackPosition.index), direction \(entryFeedback.direction)")
 
-        // Note: do not remove the leading blocks as this will be taken care below by the `reserveLeadingBlocks` method.
-        // This is important because the reserveLeadingBlocks method needs to remember the previously reserved turnouts
-        // in order to avoid re-activating them each time unnecessarily.
-        try layoutController.setTrainToBlock(train, entryFeedback.block.id, position: newPosition, direction: entryFeedback.direction, removeLeadingBlocks: false)
+        // Set the train position. Note that the occupied and leading blocks will be updated
+        // later on by the state machine in response to the change in position of the train.
+        try layout.setTrainToBlock(train.id, entryFeedback.block.id, position: newPosition, directionOfTravelInBlock: entryFeedback.direction)
 
+        // Update the current route step index
         train.routeStepIndex = train.routeStepIndex + 1
 
         guard let newBlock = layout.blocks[entryFeedback.block.id] else {
