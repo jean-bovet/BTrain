@@ -203,7 +203,7 @@ class UnmanagedTrainOperationTests: BTTestCase {
         let doc = LayoutDocument(layout: layout)
         let block = layout.blocks[Identifier<Block>(uuid: fromBlockId)]!
         
-        try doc.layoutController.setupTrainToBlock(train.id, block.id, naturalDirectionInBlock: direction)
+        try doc.layoutController.setupTrainToBlock(train, block.id, naturalDirectionInBlock: direction)
 
         XCTAssertEqual(loc.speed.requestedKph, 0)
         XCTAssertEqual(train.scheduling, .unmanaged)

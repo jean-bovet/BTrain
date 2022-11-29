@@ -377,7 +377,7 @@ class AutomaticRoutingTests: BTTestCase {
         try p.assert("automatic-0: {r0{s2 ≡ 🔴🚂0 }} <t1(1,0),s> <t2(1,0),s> [b1 ≏ ] <t3> [b2 ≏ ] <t4(1,0)> [b3 ≏ ≏ ≏ ] <t5> <t6> {r0{s2 ≡ 🔴🚂0 }}")
 
         // Let's add a train in the next block b1 that will prevent the train in s2 from immediately restarting
-        try p.layoutController.setupTrainToBlock(layout.trains[1].id, Identifier<Block>(uuid: "b1"), naturalDirectionInBlock: .next)
+        try p.layoutController.setupTrainToBlock(layout.trains[1], Identifier<Block>(uuid: "b1"), naturalDirectionInBlock: .next)
         p.layoutController.runControllers(.trainPositionChanged(layout.trains[1]))
 
         // Wait until the train route has been updated (which happens when it restarts)
@@ -448,7 +448,7 @@ class AutomaticRoutingTests: BTTestCase {
         try p.assert("automatic-0: {r0{s2 🔵🚂0 ≏ }} <r0<t1(1,0),s>> <r0<t2(1,0),s>> [r0[b1 ≏ ]] <t3> [b2 ≏ ] <t4(1,0)> [b3 ≏ ≏ ≏ ]")
 
         // Let's add a train in the block b2
-        try p.layoutController.setupTrainToBlock(layout.trains[1].id, Identifier<Block>(uuid: "b2"), naturalDirectionInBlock: .next)
+        try p.layoutController.setupTrainToBlock(layout.trains[1], Identifier<Block>(uuid: "b2"), naturalDirectionInBlock: .next)
 
         try p.assert("automatic-0: {r0{s2 ≡ 🔵🚂0 }} <r0<t1(1,0),s>> <r0<t2(1,0),s>> [r0[b1 ≏ ]] <t3> [r1[b2 ≏ 🔴🚂1 ]] <t4(1,0)> [b3 ≏ ≏ ≏ ]")
         try p.assert("automatic-0: {r0{s2 ≏ 🔵🚂0 }} <r0<t1(1,0),s>> <r0<t2(1,0),s>> [r0[b1 ≏ ]] <t3> [r1[b2 ≏ 🔴🚂1 ]] <t4(1,0)> [b3 ≏ ≏ ≏ ]")

@@ -81,9 +81,9 @@ final class Package {
         }
         
         if case .automatic = position {
-            try layoutController.setupTrainToBlock(train.id, block.id, naturalDirectionInBlock: direction)
+            try layoutController.setupTrainToBlock(train, block.id, naturalDirectionInBlock: direction)
         } else {
-            try layout.setTrainToBlock(train.id, block.id, position: location, directionOfTravelInBlock: direction)
+            try layout.setTrainToBlock(train, block.id, position: location, directionOfTravelInBlock: direction)
             try layoutController.reservation.removeLeadingBlocks(train: train)
         }
         

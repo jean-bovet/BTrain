@@ -155,7 +155,7 @@ final class LayoutScriptConductorTests: XCTestCase {
 
         let route = layout.routes[0]
         let train = layout.trains[0]
-        try controller.setupTrainToBlock(train.id, route.partialSteps[0].stepBlockId!, naturalDirectionInBlock: .next)
+        try controller.setupTrainToBlock(train, route.partialSteps[0].stepBlockId!, naturalDirectionInBlock: .next)
 
         // Note: RouteScripts have the same UUID as their Route counterpart so they can update the Route whenever they are updated.
         let routeScript = simpleRouteScript(withUUID: route.id.uuid)

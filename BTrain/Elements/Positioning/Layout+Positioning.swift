@@ -18,20 +18,16 @@ extension Layout {
     /// Sets the train into the specified block, at the specified position and direction of travel in the block.
     ///
     /// - Parameters:
-    ///   - trainId: the train
+    ///   - train: the train
     ///   - toBlockId: the block
     ///   - position: the position
     ///   - directionOfTravelInBlock: the direction of travel
-    func setTrainToBlock(_ trainId: Identifier<Train>, _ toBlockId: Identifier<Block>, position: TrainLocation, directionOfTravelInBlock: Direction) throws {
-        guard let train = trains[trainId] else {
-            throw LayoutError.trainNotFound(trainId: trainId)
-        }
-        
+    func setTrainToBlock(_ train: Train, _ toBlockId: Identifier<Block>, position: TrainLocation, directionOfTravelInBlock: Direction) throws {
         guard let toBlock = blocks[toBlockId] else {
             throw LayoutError.blockNotFound(blockId: toBlockId)
         }
         
-        guard toBlock.trainInstance == nil || toBlock.trainInstance?.trainId == trainId else {
+        guard toBlock.trainInstance == nil || toBlock.trainInstance?.trainId == train.id else {
             throw LayoutError.blockNotEmpty(blockId: toBlockId)
         }
         
@@ -43,7 +39,7 @@ extension Layout {
         
         // Reserve the block
         toBlock.reservation = Reservation(trainId: train.id, direction: directionOfTravelInBlock)
-        toBlock.trainInstance = TrainInstance(trainId, directionOfTravelInBlock)
+        toBlock.trainInstance = TrainInstance(train.id, directionOfTravelInBlock)
         
         // Assign the block to the train
         train.blockId = toBlock.id

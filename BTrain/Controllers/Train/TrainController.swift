@@ -314,7 +314,7 @@ final class TrainController: TrainControlling, CustomStringConvertible {
 
         // Set the train position. Note that the occupied and leading blocks will be updated
         // later on by the state machine in response to the change in position of the train.
-        try layout.setTrainToBlock(train.id, entryFeedback.block.id, position: newPosition, directionOfTravelInBlock: entryFeedback.direction)
+        try layout.setTrainToBlock(train, entryFeedback.block.id, position: newPosition, directionOfTravelInBlock: entryFeedback.direction)
 
         // Update the current route step index
         train.routeStepIndex = train.routeStepIndex + 1

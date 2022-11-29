@@ -598,19 +598,15 @@ extension LayoutController {
     /// by respecting the specified natural direction of the train in the block.
     ///
     /// - Parameters:
-    ///   - trainId: the train
+    ///   - train: the train
     ///   - toBlockId: the block
     ///   - naturalDirectionInBlock: the natural direction of the train
-    func setupTrainToBlock(_ trainId: Identifier<Train>, _ toBlockId: Identifier<Block>, naturalDirectionInBlock: Direction) throws {
-        guard let train = layout.trains[trainId] else {
-            throw LayoutError.trainNotFound(trainId: trainId)
-        }
-        
+    func setupTrainToBlock(_ train: Train, _ toBlockId: Identifier<Block>, naturalDirectionInBlock: Direction) throws {
         guard let toBlock = layout.blocks[toBlockId] else {
             throw LayoutError.blockNotFound(blockId: toBlockId)
         }
         
-        guard toBlock.trainInstance == nil || toBlock.trainInstance?.trainId == trainId else {
+        guard toBlock.trainInstance == nil || toBlock.trainInstance?.trainId == train.id else {
             throw LayoutError.blockNotEmpty(blockId: toBlockId)
         }
         
@@ -639,7 +635,7 @@ extension LayoutController {
             directionInBlock = naturalDirectionInBlock.opposite
         }
 
-        try layout.setTrainToBlock(trainId, toBlockId, position: train.position, directionOfTravelInBlock: directionInBlock)
+        try layout.setTrainToBlock(train, toBlockId, position: train.position, directionOfTravelInBlock: directionInBlock)
         
         try reservation.removeLeadingBlocks(train: train)
     }

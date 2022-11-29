@@ -20,7 +20,7 @@ class PointToLoopLayoutTests: XCTestCase {
         let train = layout.trains[0]
         let blockA = layout.block(named: "A")
 
-        try layout.setTrainToBlock(train.id, blockA.id, position: .block(blockId: blockA.id, front: 2, back: 0), directionOfTravelInBlock: .next)
+        try layout.setTrainToBlock(train, blockA.id, position: .block(blockId: blockA.id, front: 2, back: 0), directionOfTravelInBlock: .next)
 
         XCTAssertEqual(train.speed!.requestedKph, 0)
 
