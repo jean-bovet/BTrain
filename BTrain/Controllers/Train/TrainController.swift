@@ -315,7 +315,9 @@ final class TrainController: TrainControlling, CustomStringConvertible {
         // Note: do not remove the leading blocks as this will be taken care below by the `reserveLeadingBlocks` method.
         // This is important because the reserveLeadingBlocks method needs to remember the previously reserved turnouts
         // in order to avoid re-activating them each time unnecessarily.
-        try layoutController.setTrainToBlock(train, entryFeedback.block.id, position: newPosition, direction: entryFeedback.direction, routeIndex: train.routeStepIndex + 1, removeLeadingBlocks: false)
+        try layoutController.setTrainToBlock(train, entryFeedback.block.id, position: newPosition, direction: entryFeedback.direction, removeLeadingBlocks: false)
+
+        train.routeStepIndex = train.routeStepIndex + 1
 
         guard let newBlock = layout.blocks[entryFeedback.block.id] else {
             throw LayoutError.blockNotFound(blockId: entryFeedback.block.id)

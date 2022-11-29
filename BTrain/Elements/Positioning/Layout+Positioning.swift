@@ -22,9 +22,8 @@ extension Layout {
     ///   - toBlockId: the block in which to put the train
     ///   - position: the position in the block in which to put the train
     ///   - direction: the direction in the block in which to put the train
-    ///   - routeIndex: optional index in the route
     //TODO: move routeIndex outside of it and have the caller update it
-    func setTrainToBlock(_ trainId: Identifier<Train>, _ toBlockId: Identifier<Block>, position: TrainLocation? = nil, direction: Direction, routeIndex: Int? = nil) throws {
+    func setTrainToBlock(_ trainId: Identifier<Train>, _ toBlockId: Identifier<Block>, position: TrainLocation? = nil, direction: Direction) throws {
         guard let train = trains[trainId] else {
             throw LayoutError.trainNotFound(trainId: trainId)
         }
@@ -78,12 +77,7 @@ extension Layout {
         toBlock.trainInstance = TrainInstance(trainId, directionInBlock)
         
         // Assign the block to the train
-        train.blockId = toBlock.id
-        
-        // Update the route index if specified
-        if let routeIndex = routeIndex {
-            train.routeStepIndex = routeIndex
-        }
+        train.blockId = toBlock.id        
     }
     
     /// Returns all the feedbacks that are currently detected in any of the occupied blocks by the train.

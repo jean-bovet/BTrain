@@ -597,15 +597,13 @@ extension LayoutController {
     /// Sets a train to a specific block.
     ///
     /// - Parameters:
-    ///   - trainId: the train
-    ///   - train:
+    ///   - train: the train
     ///   - toBlockId: the block in which to put the train
     ///   - position: the position in the block in which to put the train
     ///   - direction: the direction in the block in which to put the train
-    ///   - routeIndex: optional index in the route
     ///   - removeLeadingBlocks: true to remove the leading blocks (by default), false to keep the leading blocks
-    func setTrainToBlock(_ train: Train, _ toBlockId: Identifier<Block>, position: TrainLocation? = nil, direction: Direction, routeIndex: Int? = nil, removeLeadingBlocks: Bool = true) throws {
-        try layout.setTrainToBlock(train.id, toBlockId, position: position, direction: direction, routeIndex: routeIndex)
+    func setTrainToBlock(_ train: Train, _ toBlockId: Identifier<Block>, position: TrainLocation? = nil, direction: Direction, removeLeadingBlocks: Bool = true) throws {
+        try layout.setTrainToBlock(train.id, toBlockId, position: position, direction: direction)
         if removeLeadingBlocks {
             try reservation.removeLeadingBlocks(train: train)
         }
