@@ -596,7 +596,11 @@ class AutomaticRoutingTests: BTTestCase {
 
         try p.assert("automatic-0: !{r0{s2 ≏ 􀼯0 ≏ 􀼯0 }} <r0<t4{sl}(0,1),s>> ![r0[b1 􀼯0 ≡ 🔵􀼮0 ≏ ]] <r0<t2{sr}(1,0),s>> <r0<t1{sr}(1,0),s>> !{r0{s1 ≏ ≏ }}", ["s1"])
 
-        // TODO: trigger feedback in the back (inside the train to ensure it is properly ignored)
+        // Trigger a feedback near the back of the train, this feedback should be ignored (because it is
+        // behind the front position of the train) and it won't be un-expected because it is located in
+        // a block where the train is located (and because the train can move in any direction, it can
+        // have a magnet at the rear of the train).
+        try p.assert("automatic-0: !{r0{s2 ≏ 􀼯0 ≡ 􀼯0 }} <r0<t4{sl}(0,1),s>> ![r0[b1 􀼯0 ≏ 🔵􀼮0 ≏ ]] <r0<t2{sr}(1,0),s>> <r0<t1{sr}(1,0),s>> !{r0{s1 ≏ ≏ }}", ["s1"])
         
         try p.assert("automatic-0: !{s2 ≏ ≏ } <t4{sl}(0,1),s> ![r0[b1 ≏ ≏ 􀼯0 ]] <r0<t2{sr}(1,0),s>> <r0<t1{sr}(1,0),s>> !{r0{s1 􀼯0 ≡ 🟡􀼮0 ≏ }}", [])
 
