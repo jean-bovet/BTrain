@@ -118,7 +118,13 @@ final class LayoutAsserter {
         for (index, expectedTrain) in expectedTrains.enumerated() {
             let train = layout.trains[expectedTrain.id]!
             XCTAssertEqual(train.id, expectedTrain.id, "Unexpected train mismatch at index \(index), route \(routeName)")
-            XCTAssertEqual(train.position, expectedTrain.position, "Mismatching train position for train \(expectedTrain.id), route \(routeName)")
+            if train.directionForward {
+                XCTAssertEqual(train.position.front, expectedTrain.position.front, "Mismatching train front position for train \(expectedTrain.id), route \(routeName)")
+                XCTAssertNil(train.position.back, "When moving forward, the train should not have a defined back position")
+            } else {
+                XCTAssertEqual(train.position.back, expectedTrain.position.back, "Mismatching train back position for train \(expectedTrain.id), route \(routeName)")
+                XCTAssertNil(train.position.front, "When moving backward, the train should not have a defined front position")
+            }
             XCTAssertEqual(train.speed!.requestedKph, expectedTrain.speed!.requestedKph, accuracy: 1, "Mismatching train speed for train \(expectedTrain.id), route \(routeName)")
         }
 

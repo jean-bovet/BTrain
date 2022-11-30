@@ -559,6 +559,9 @@ class AutomaticRoutingTests: BTTestCase {
         _ = try setup(layout: layout, fromBlockId: s1.id, destination: .init(s2.id, direction: .next), position: .end, direction: .previous, expectedState: .stopped, routeSteps: [])
     }
     
+    // TODO: rename 💺 to 􀼯
+    // TODO: rename 🚂 to 􀼮
+
     func testBackwardRoute() throws {
         let layout = LayoutLoopWithStation().newLayout()
         let s1 = layout.block(named: "s1")
@@ -577,28 +580,30 @@ class AutomaticRoutingTests: BTTestCase {
         XCTAssertFalse(t1.directionForward)
         XCTAssertEqual(s1.trainInstance?.direction, .next)
 
-        try p.assert("automatic-0: {r0{s1 🔵🚂⟷0 ≏ 💺0 ≏ 💺0 }} <r0<t1{sr}(0,1),s>> <r0<t2{sr}(0,1),s>> [r0[b1 ≏ ≏ ]] <t4{sl}(1,0),s> {s2 ≏ ≏ }", ["b1"])
-
-        XCTAssertEqual(t1.reservation.occupied.blocks.count, 1)
-        XCTAssertEqual(t1.reservation.leading.blocks[0].name, "b1")
-        
+        try p.assert("automatic-0: {r0{s1 ≏ 🔵🚂⟷0 ≏ 💺0 }} <r0<t1{sr}(0,1),s>> <r0<t2{sr}(0,1),s>> [r0[b1 ≏ ≏ ]] <t4{sl}(1,0),s> {s2 ≏ ≏ }", ["b1"])
+                
         try p.assert("automatic-0: {r0{s1 ≡ 🔵🚂⟷0 ≏ 💺0 }} <r0<t1{sr}(0,1),s>> <r0<t2{sr}(0,1),s>> [r0[b1 ≏ ≏ ]] <t4{sl}(1,0),s> {s2 ≏ ≏ }", ["b1"])
 
-        XCTAssertEqual(t1.reservation.occupied.blocks.count, 1)
-        XCTAssertEqual(t1.reservation.leading.blocks[0].name, "b1")
+        try p.assert("automatic-0: {r0{s1 ≏ ≏ 🔵🚂⟷0 }} <r0<t1{sr}(0,1),s>> <r0<t2{sr}(0,1),s>> [r0[b1 💺0 ≡ 💺0 ≏ ]] <r0<t4{sl}(1,0),s>> {r0{s2 ≏ ≏ }}", ["s2"])
 
-        try p.assert("automatic-0: {r0{s1 ≏ 🔵🚂⟷0 ≏ 💺0 }} <r0<t1{sr}(0,1),s>> <r0<t2{sr}(0,1),s>> [r0[b1 💺0 ≡ 💺0 ≏ ]] <r0<t4{sl}(1,0),s>> {r0{s2 ≏ ≏ }}", ["s2"])
-
-        try p.assert("automatic-0: {s1 ≏ ≏ } <t1{sr}(0,1),s> <t2{sr}(0,1),s> [r0[b1 ≡ 🟡🚂⟷0 ≏ 💺0 ]] <r0<t4{sl}(1,0),s>> {r0{s2 💺0 ≡ 💺0 ≏ }}", [])
-        // TODO: this line fails because the front position is still in b1 (no feedback was activated
-        // to make it move but the occupied algorithm has decided that the front of the train should be
-        // in s2 already). Think about what to do about this use case....
-        try p.assert("automatic-0: {s1 ≏ ≏ } <t1{sr}(0,1),s> <t2{sr}(0,1),s> [b1 ≏ ≏ ] <t4{sl}(1,0),s> {r0{s2 ≏ 🔴🚂⟷0 ≡ 💺0 }}", [])
-        try p.printASCII()
+        try p.assert("automatic-0: {r0{s1 ≏ ≏ 🔵🚂⟷0 }} <r0<t1{sr}(0,1),s>> <r0<t2{sr}(0,1),s>> [r0[b1 💺0 ≡ 💺0 ≏ ]] <r0<t4{sl}(1,0),s>> {r0{s2 ≏ ≏ }}", ["s2"])
         
-//        try p.assert("automatic-0: {r0{s1 ≏ 🔵🚂0 ≏ 💺0 }} <r0<t1{sr}(0,1),s>> <r0<t2{sr}(0,1),s>> [r0[b1 💺0 ≡ 💺0 ≏ ]] <r0<t4{sl}(1,0),s>> {r0{s2 ≏ ≏ }}", ["s2"])
-//        print("** \(t1.position)")
-// TODO: interesting! because the feedback was not triggered, the front position has not yet moved. But the length of the train indicates that it has moved to position index 1!
+        try p.assert("automatic-0: {s1 ≏ ≏ } <t1{sr}(0,1),s> <t2{sr}(0,1),s> [r0[b1 ≏ 🟡🚂⟷0 ≏ 💺0 ]] <r0<t4{sl}(1,0),s>> {r0{s2 💺0 ≡ 💺0 ≏ }}", [])
+
+        try p.assert("automatic-0: {s1 ≏ ≏ } <t1{sr}(0,1),s> <t2{sr}(0,1),s> [b1 ≏ ≏ ] <t4{sl}(1,0),s> {r0{s2 ≏ 🔴🚂⟷0 ≡ 💺0 }}", [])
+        
+        // Start the train to go back to s1, by reversing its direction
+        try p.start(destination: Destination(s1.id, direction: .previous), expectedState: .running, routeSteps: ["s2:previous", "b1:previous", "s1:previous"])
+        
+        try p.assert("automatic-0: !{r0{s2 ≏ 💺0 ≡ 🔵🚂0 }} <r0<t4{sl}(0,1),s>> ![r0[b1 ≏ ≏ ]] <t2{sr}(1,0),s> <t1{sr}(1,0),s> !{s1 ≏ ≏ }", ["b1"])
+
+        try p.assert("automatic-0: !{r0{s2 ≏ 💺0 ≏ 💺0 }} <r0<t4{sl}(0,1),s>> ![r0[b1 💺0 ≡ 🔵🚂0 ≏ ]] <r0<t2{sr}(1,0),s>> <r0<t1{sr}(1,0),s>> !{r0{s1 ≏ ≏ }}", ["s1"])
+
+        // TODO: trigger feedback in the back (inside the train to ensure it is properly ignored)
+        
+        try p.assert("automatic-0: !{s2 ≏ ≏ } <t4{sl}(0,1),s> ![r0[b1 💺0 ≏ 💺0 ≏ ]] <r0<t2{sr}(1,0),s>> <r0<t1{sr}(1,0),s>> !{r0{s1 💺0 ≡ 🟡🚂0 ≏ }}", [])
+
+        try p.assert("automatic-0: !{s2 ≏ ≏ } <t4{sl}(0,1),s> ![b1 ≏ ≏ ] <t2{sr}(1,0),s> <t1{sr}(1,0),s> !{r0{s1 ≏ 💺0 ≡ 🔴🚂0 }}", [])
     }
 
     // TODO: re-enable

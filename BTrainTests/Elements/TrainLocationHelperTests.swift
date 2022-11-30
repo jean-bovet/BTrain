@@ -129,36 +129,36 @@ final class TrainLocationHelperTests: XCTestCase {
         
         // Block: [ ---> ]
         // Train: ------->
-        //              bf
-        try assert(doc, train, blockA, .forward, true, .next, .both(blockId: blockA.id, index: lastIndex))
+        //               f
+        try assert(doc, train, blockA, .forward, true, .next, .front(blockId: blockA.id, index: lastIndex))
 
         // Block: [ ---> ]
         // Train: <------>
-        //        bf
-        try assert(doc, train, blockA, .forward, true, .previous, .both(blockId: blockA.id, index: 0))
+        //        f
+        try assert(doc, train, blockA, .forward, true, .previous, .front(blockId: blockA.id, index: 0))
 
         // TODO: what do we do when train moves backward while it cannot? This will happen in manual driving of the train
 //        try assert(doc, train, blockA, .forward, false, .previous, .both(blockId: blockA.id, index: 0))
 
         // Block: [ ---> ]
         // Train: ------->
-        //        b      f
-        try assert(doc, train, blockA, .any, true, .next, .block(blockId: blockA.id, front: lastIndex, back: 0))
+        //               f
+        try assert(doc, train, blockA, .any, true, .next, .front(blockId: blockA.id, index: lastIndex))
         
         // Block: [ ---> ]
         // Train: -------<
-        //        b      f
-        try assert(doc, train, blockA, .any, false, .next, .block(blockId: blockA.id, front: lastIndex, back: 0))
+        //        b
+        try assert(doc, train, blockA, .any, false, .next, .back(blockId: blockA.id, index: 0))
 
         // Block: [ ---> ]
         // Train: <-------
-        //        f      b
-        try assert(doc, train, blockA, .any, true, .previous, .block(blockId: blockA.id, front: 0, back: lastIndex))
+        //        f
+        try assert(doc, train, blockA, .any, true, .previous, .front(blockId: blockA.id, index: 0))
         
         // Block: [ ---> ]
         // Train: >-------
-        //        f      b
-        try assert(doc, train, blockA, .any, false, .previous, .block(blockId: blockA.id, front: 0, back: lastIndex))
+        //               b
+        try assert(doc, train, blockA, .any, false, .previous, .back(blockId: blockA.id, index: lastIndex))
     }
     
     // MARK: -

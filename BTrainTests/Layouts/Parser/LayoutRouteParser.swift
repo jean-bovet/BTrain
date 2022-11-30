@@ -27,6 +27,9 @@ final class LayoutRouteParser {
 
     let resolver: LayoutParserResolver
     
+    /// Temporary variable holding the train being parsed. It is created when a wagon is first encountered
+    private var parsedTrain: Train?
+
     enum ParserError: Error {
         case parserError(message: String)
     }
@@ -346,9 +349,17 @@ final class LayoutRouteParser {
             loc.speed = .init(kph: speed, decoderType: .MFX)
             loc.allowedDirections = allowedDirection
             
-            let train = Train(uuid: uuid)
+            let train: Train
+            if let parsedTrain = parsedTrain {
+                train = parsedTrain
+                train.position.front = .init(blockId: block.id, index: position)
+                self.parsedTrain = nil
+            } else {
+                train = Train(uuid: uuid)
+                train.position = TrainLocation.both(blockId: block.id, index: position)
+            }
+            
             train.locomotive = loc
-            train.position = TrainLocation.both(blockId: block.id, index: position)
             train.routeStepIndex = route.resolvedSteps.count
             train.routeId = route.routeId
             if block.trainInstance == nil {
@@ -358,16 +369,22 @@ final class LayoutRouteParser {
             layout.trains.insert(train)
         }
     }
-
+        
     func parseWagon(position: Int, block: Block) {
         let uuid = parseUUID()
 
         if block.trainInstance == nil {
             block.trainInstance = TrainInstance(Identifier<Train>(uuid: uuid), .next)
         }
-
-        if let train = layout.trains.first(where: { $0.id.uuid == uuid }), train.allowedDirections == .any {
+        if let train = layout.trains.first(where: { $0.id.uuid == uuid }) {
             train.position.back = .init(blockId: block.id, index: position)
+        } else {
+            // If a wagon is first detected, the train might not yet be created.
+            // Create the train and remembers the back position of it.
+            if parsedTrain == nil {
+                parsedTrain = Train(uuid: uuid)
+                parsedTrain?.position.back = .init(blockId: block.id, index: position)
+            }
         }
         
         block.trainInstance?.parts[position] = .wagon

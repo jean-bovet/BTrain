@@ -375,7 +375,15 @@ final class LayoutReservation {
             block.reservation = .init(trainId: train.id, direction: attributes.trainDirection)
             train.occupied.append(block)
         }
-        if !result {
+        if result {
+            if train.directionForward {
+                // Moving forward, the back position is ignored
+                train.position.back = nil
+            } else {
+                // Moving backward, the front position is ignored
+                train.position.front = nil
+            }
+        } else {
             throw LayoutError.cannotReserveAllElements(train: train)
         }
     }

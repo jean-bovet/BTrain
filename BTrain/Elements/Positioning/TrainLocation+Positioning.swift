@@ -30,26 +30,13 @@ extension TrainLocation {
             //
             //       Train (direction forward):   ◀■■■■■■■■■■■■■                          ◀■■■■■■■■■■■■■
             //               Occupied: [b1, b2]   f            b                          f            b
-            if back == nil && front == nil {
-                newLocation.back = detectedPosition
+            newLocation.back = nil
+            if front == nil {
                 newLocation.front = detectedPosition
-            } else if let back = back, let front = front {
-                guard try back.isBeforeOrEqual(front, reservation: reservation) else {
-                    throw LayoutError.invalidBackAfterFrontPosition(position: self)
-                }
+            } else if let front = front {
                 if try detectedPosition.isAfter(front, reservation: reservation) {
                     newLocation.front = detectedPosition
-                    if allowedDirection == .forward {
-                        newLocation.back = newLocation.front
-                    }
-                } else {
-                    if allowedDirection != .forward {
-                        newLocation.back = detectedPosition
-                    }
                 }
-            } else {
-                // Invalid - both front and back must either be defined or not be defined
-                throw LayoutError.invalidBackAndFrontPosition(position: self)
             }
         } else {
             //         Block Natural Direction: ────────▶  ────────▶                    ────────▶  ◀────────
@@ -64,23 +51,13 @@ extension TrainLocation {
             //
             //      Train (direction backward):   ■■■■■■■■■■■■■◀                          ■■■■■■■■■■■■■◀
             //               Occupied: [b1, b2]   b            f                          b            f
-            if back == nil && front == nil {
+            newLocation.front = nil
+            if back == nil {
                 newLocation.back = detectedPosition
-                newLocation.front = detectedPosition
-            } else if let back = back, let front = front {
-                // Invalid - the back position cannot be before the front position when the
-                // train moves backwards in the direction of the block
-                guard try back.isAfterOrEqual(front, reservation: reservation) else {
-                    throw LayoutError.invalidBackBeforeFrontPosition(position: self)
-                }
+            } else if let back = back {
                 if try detectedPosition.isAfter(back, reservation: reservation) {
                     newLocation.back = detectedPosition
-                } else {
-                    newLocation.front = detectedPosition
                 }
-            } else {
-                // Invalid - both front and back must either be defined or not be defined
-                throw LayoutError.invalidBackAndFrontPosition(position: self)
             }
         }
 
