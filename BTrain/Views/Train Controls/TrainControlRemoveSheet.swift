@@ -61,7 +61,7 @@ struct TrainControlRemoveSheet: View {
             }.padding([.top])
         }
         .onAppear {
-            blockId = train.blockId
+            blockId = train.block?.id
         }
     }
 }

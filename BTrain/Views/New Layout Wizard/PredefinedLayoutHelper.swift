@@ -40,7 +40,7 @@ final class PredefinedLayoutHelper: ObservableObject {
             if let train = predefinedDocument.layout.trains[trainId] {
                 train.enabled = true
                 train.wagonsLength = 0
-                train.blockId = nil
+                train.block = nil
                 document.layout.trains.add(train)
 
                 if let loc = predefinedDocument.layout.locomotives[train.locomotive?.id] {

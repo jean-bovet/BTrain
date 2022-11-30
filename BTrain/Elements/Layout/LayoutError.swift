@@ -126,7 +126,7 @@ extension LayoutError: LocalizedError {
             return "The back position cannot be before the front position: \(position)"
 
         case let .trainNotAssignedToABlock(train: train):
-            return "Train \(train.name) does not have any assigned block (train.blockId is nil)"
+            return "Train \(train.name) does not have any assigned block (train.block is nil)"
         case let .trainNotFoundInBlock(blockId: blockId):
             return "Block \(blockId) does not have any train assigned to it (TrainInstance is nil)"
         case let .trainInBlockDoesNotMatch(trainId: trainId, blockId: blockId, blockTrainId: blockTrainId):

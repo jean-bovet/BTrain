@@ -189,7 +189,7 @@ final class LayoutController: ObservableObject, LayoutControlling {
     }
 
     func trainController(forTrain train: Train) -> TrainController? {
-        guard let frontBlock = layout.blocks[train.blockId] else {
+        guard let frontBlock = train.block else {
             return nil
         }
         
@@ -444,11 +444,11 @@ extension LayoutController {
                     continue
                 }
 
-                guard train.blockId == blockId else {
+                guard train.block?.id == blockId else {
                     continue
                 }
 
-                guard let block = layout.blocks[train.blockId] else {
+                guard let block = train.block else {
                     continue
                 }
 
@@ -542,11 +542,11 @@ extension LayoutController {
     /// An exception is thrown if the train does not allow for its direction to be changed.
     /// - Parameter train: the train
     func toggleTrainDirection(_ train: Train) throws {
-        guard let blockId = train.blockId else {
+        guard let blockId = train.block?.id else {
             throw LayoutError.trainNotAssignedToABlock(train: train)
         }
 
-        guard let block = layout.blocks[blockId] else {
+        guard let block = train.block else {
             throw LayoutError.blockNotFound(blockId: blockId)
         }
 
@@ -574,7 +574,7 @@ extension LayoutController {
             block.trainInstance = nil
             tailBlock.trainInstance = TrainInstance(train.id, ti.direction.opposite)
             train.position = newPosition
-            train.blockId = tailBlock.id
+            train.block = tailBlock
         } else {
             block.trainInstance = TrainInstance(train.id, ti.direction.opposite)
             BTLogger.warning("Unable to properly set the train position after toggling locomotive direction: \(train)")

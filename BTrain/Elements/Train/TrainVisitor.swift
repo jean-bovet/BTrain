@@ -57,7 +57,7 @@ final class TrainVisitor {
                turnoutCallback: TurnoutCallbackBlock,
                blockCallback: BlockCallbackBlock) throws -> Bool
     {
-        guard let frontBlock = layout.blocks[train.blockId] else {
+        guard let frontBlock = train.block else {
             throw LayoutError.trainNotAssignedToABlock(train: train)
         }
 

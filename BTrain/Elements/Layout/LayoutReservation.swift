@@ -398,7 +398,7 @@ final class LayoutReservation {
             .filter { $0.reservation?.trainId == train.id }
             .forEach { block in
                 // Only free a block if the block is not the one the train is located on or
-                if block.id != train.blockId {
+                if block.id != train.block?.id {
                     block.reservation = nil
                     block.trainInstance = nil
                 }

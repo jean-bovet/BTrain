@@ -31,7 +31,7 @@ struct TrainControlLocationView: View {
                     Text("Location:")
                         .font(Font.body.weight(.medium))
 
-                    if let blockId = train.blockId, let block = layout.blocks[blockId] {
+                    if let block = train.block {
                         Text("\(block.name)")
 
                         Spacer()
@@ -84,7 +84,7 @@ struct TrainControlLocationView_Previews: PreviewProvider {
     static let doc = LayoutDocument(layout: LayoutLoop2().newLayout())
     static let doc2: LayoutDocument = {
         let doc = LayoutDocument(layout: LayoutLoop2().newLayout())
-        doc.layout.trains[0].blockId = doc.layout.blocks[0].id
+        doc.layout.trains[0].block = doc.layout.blocks[0]
         return doc
     }()
 

@@ -89,7 +89,7 @@ class SwitchboardTests: XCTestCase {
         train.locomotive = Locomotive()
         
         try controller.setupTrainToBlock(train, b1.block.id, naturalDirectionInBlock: .next)
-        XCTAssertEqual(train.blockId, b1.block.id)
+        XCTAssertEqual(train.block, b1.block)
         XCTAssertEqual(train.position, TrainLocation.front(blockId: b1.block.id, index: b1.block.feedbacks.count))
 
         let c = b1.trainCellPath(at: 0).boundingBox.center
@@ -113,7 +113,7 @@ class SwitchboardTests: XCTestCase {
         let train = layout.trains[0]
         train.locomotive = Locomotive()
         try controller.setupTrainToBlock(train, b1.block.id, naturalDirectionInBlock: .next)
-        XCTAssertEqual(train.blockId, b1.block.id)
+        XCTAssertEqual(train.block, b1.block)
 
         let c = b1.trainCellPath(at: 0).boundingBox.center
         let c2 = b2.trainCellPath(at: 0).boundingBox.center
@@ -128,6 +128,6 @@ class SwitchboardTests: XCTestCase {
         }
         try? controller.setupTrainToBlock(layout.trains[dragInfo.trainId]!, dragInfo.blockId, naturalDirectionInBlock: Direction.next)
 
-        XCTAssertEqual(train.blockId, b2.block.id)
+        XCTAssertEqual(train.block, b2.block)
     }
 }

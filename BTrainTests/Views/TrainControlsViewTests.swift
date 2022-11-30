@@ -26,7 +26,7 @@ extension CustomSlider: Inspectable {}
 class TrainControlsViewTests: RootViewTests {
     func testControlList() throws {
         let doc = newDocument()
-        doc.layout.trains[0].blockId = doc.layout.blocks[0].id
+        doc.layout.trains[0].block = doc.layout.blocks[0]
 
         let sut = TrainControlListView(layout: doc.layout, document: doc, pinnedTrainIds: .constant([]))
 

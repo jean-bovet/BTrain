@@ -110,7 +110,7 @@ final class Layout: Element, ObservableObject {
 
     func trainsThatCanBeStarted() -> [Train] {
         trains.elements.filter { train in
-            train.enabled && train.blockId != nil && train.scheduling == .unmanaged
+            train.enabled && train.block != nil && train.scheduling == .unmanaged
         }
     }
 

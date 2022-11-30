@@ -42,7 +42,7 @@ extension Layout {
         toBlock.trainInstance = TrainInstance(train.id, directionOfTravelInBlock)
         
         // Assign the block to the train
-        train.blockId = toBlock.id
+        train.block = toBlock
     }
     
     /// Returns all the feedbacks that are currently detected in any of the occupied blocks by the train.
@@ -76,7 +76,7 @@ extension Layout {
         if let tailBlock = train.occupied.blocks.last {
             return tailBlock
         } else {
-            return blocks[train.blockId]
+            return train.block
         }
     }
     

@@ -55,8 +55,8 @@ extension Layout {
         blocks.remove(blockID)
 
         trains.elements.forEach { train in
-            if train.blockId == blockID {
-                train.blockId = nil
+            if train.block?.id == blockID {
+                train.block = nil
             }
         }
     }
@@ -74,7 +74,7 @@ extension Layout {
 
     // TODO: is that the right way to use the currentBlock?
     func atEndOfBlock(train: Train) throws -> Bool {
-        guard let currentBlock = blocks[train.blockId] else {
+        guard let currentBlock = train.block else {
             return false
         }
         return try train.atEndOfBlock(block: currentBlock)

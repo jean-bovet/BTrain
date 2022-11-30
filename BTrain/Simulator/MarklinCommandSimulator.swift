@@ -103,7 +103,7 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
 
         cancellables.removeAll()
         for train in layout.trains.elements {
-            let cancellable = train.$blockId
+            let cancellable = train.$block
                 .removeDuplicates()
                 .receive(on: RunLoop.main)
                 .sink { [weak self] _ in
@@ -124,7 +124,7 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
         })
 
         // Update existing locomotives, add new ones
-        for train in layout.trains.elements.filter({ $0.blockId != nil }) {
+        for train in layout.trains.elements.filter({ $0.block != nil }) {
             guard let loc = train.locomotive else {
                 continue
             }
@@ -377,7 +377,7 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
             return
         }
 
-        guard let block = layout.blocks[train.blockId] else {
+        guard let block = train.block else {
             return
         }
 

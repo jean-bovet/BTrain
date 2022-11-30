@@ -76,8 +76,8 @@ extension Layout {
                 throw LayoutError.trainNotFound(trainId: blockTrain.trainId)
             }
             // Remove the block assignment from the train if the train is located in the block
-            if train.blockId == b1.id {
-                train.blockId = nil
+            if train.block?.id == b1.id {
+                train.block = nil
             }
             b1.trainInstance = nil
         }
@@ -99,7 +99,7 @@ extension Layout {
         turnouts.elements.filter { $0.reserved?.train == train.id }.forEach { $0.reserved = nil; $0.train = nil }
         transitions.elements.filter { $0.reserved == train.id }.forEach { $0.reserved = nil; $0.train = nil }
 
-        train.blockId = nil
+        train.block = nil
     }
 
     func block(for train: Train, step: RouteItem) -> (Identifier<Block>, Direction)? {

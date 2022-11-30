@@ -27,7 +27,7 @@ class SimulatorViewTests: RootViewTests {
         let t1 = trains[0]
         t1.locomotive?.allowedDirections = .any
         t1.speed!.accelerationProfile = .none
-        t1.blockId = doc.layout.blocks.elements[0].id
+        t1.block = doc.layout.blocks.elements[0]
         doc.layout.blocks[0].trainInstance = .init(t1.id, .next)
 
         XCTAssertTrue(t1.directionForward)

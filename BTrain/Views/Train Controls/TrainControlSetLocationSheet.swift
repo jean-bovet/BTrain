@@ -42,7 +42,7 @@ struct TrainControlSetLocationSheet: View {
 
                 BlockPicker(layout: layout, blockId: $blockId)
                     .onAppear {
-                        blockId = train.blockId
+                        blockId = train.block?.id
                     }
 
                 Picker("with direction", selection: $direction) {

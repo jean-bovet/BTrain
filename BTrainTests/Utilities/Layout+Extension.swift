@@ -114,7 +114,7 @@ extension Layout {
     private func setTrain(train: Train, toBlockNamed blockName: String, direction: Direction = .next) {
         let block = block(named: blockName)
 
-        train.blockId = block.id
+        train.block = block
         block.trainInstance = .init(train.id, direction)
     }
 }

@@ -26,7 +26,7 @@ class LayoutTests: BTTestCase {
         layout.link(from: b2.next, to: b1.previous)
 
         try layout.setTrainToBlock(t1, b1.id, position: .block(blockId: b1.id, front: 2, back: 0), directionOfTravelInBlock: .next)
-        XCTAssertEqual(t1.blockId, b1.id)
+        XCTAssertEqual(t1.block?.id, b1.id)
         XCTAssertEqual(layout.transitions.elements.count, 2)
 
         let b11 = layout.blocks[b1.id]
@@ -34,7 +34,7 @@ class LayoutTests: BTTestCase {
 
         layout.remove(blockID: b1.id)
         XCTAssertNil(layout.blocks[b1.id])
-        XCTAssertNil(t1.blockId)
+        XCTAssertNil(t1.block)
         XCTAssertEqual(layout.transitions.elements.count, 0)
     }
 

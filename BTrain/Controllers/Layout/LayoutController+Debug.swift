@@ -55,7 +55,7 @@ extension LayoutController {
         } else {
             info += ": no route assigned"
         }
-        if let cb = layout.blocks[train.blockId] {
+        if let cb = train.block {
             info += ", block \(cb.name) at position \(train.position)"
         }
         if let loc = train.locomotive {

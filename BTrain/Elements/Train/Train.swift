@@ -164,13 +164,20 @@ final class Train: Element, ObservableObject {
 
     // The state of the train
     @Published var state: State = .stopped
-
+    
+    /// Internal block id used for persistence only
+    private var blockId: Identifier<Block>?
+    
     /// The block where the front of the train is located.
     ///
     /// The "front of the train" is the part of the train that is in the direction of travel of the train:
     /// - If the train moves forward, it is the block where the locomotive is located
     /// - If the train moves backward, it is the block where the last wagon is located
-    @Published var blockId: Identifier<Block>?
+    @Published var block: Block? {
+        didSet {
+            blockId = block?.id
+        }
+    }
 
     // Location of the train inside the current block.
     // The location is composed of a front position and
@@ -296,6 +303,10 @@ extension Train: Restorable {
     func restore(layout: Layout) {
         assert(locomotive == nil)
         locomotive = layout.locomotives[locomotiveId]
+        
+        assert(block == nil)
+        block = layout.blocks[blockId]
+        assert(block?.id == blockId)
     }
 }
 
