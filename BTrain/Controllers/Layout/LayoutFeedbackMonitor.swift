@@ -34,7 +34,7 @@ final class LayoutFeedbackMonitor {
 
     private func updateExpectedFeedbacks(train: Train) throws {
         var blocks = train.occupied.blocks
-        if let currentBlock = layout.currentBlock(train: train), blocks.isEmpty {
+        if let currentBlock = layout.blocks[train.blockId], blocks.isEmpty {
             blocks.append(currentBlock)
         }
         

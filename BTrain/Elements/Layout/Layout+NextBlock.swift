@@ -35,7 +35,7 @@ extension Layout {
     /// - Parameter train: the train
     /// - Returns: the entry feedback or nil if no valid entry feedback is found
     func entryFeedback(for train: Train) throws -> EntryFeedback? {
-        guard let currentBlock = currentBlock(train: train) else {
+        guard let currentBlock = blocks[train.blockId] else {
             return nil
         }
 

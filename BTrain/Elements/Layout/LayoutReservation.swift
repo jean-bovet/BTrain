@@ -126,6 +126,7 @@ final class LayoutReservation {
     /// Removes the reservation for the leading blocks of the specified train but keep the occupied blocks intact (that the train actually occupies).
     ///
     /// - Parameter train: the train
+    //TODO: can't we just rely on the lead blocks of the train to remove them? Instead of removing all the elements?
     @discardableResult
     func removeLeadingBlocks(train: Train) throws -> Bool {
         let previousLeadingItems = train.leading.items

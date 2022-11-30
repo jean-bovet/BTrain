@@ -377,7 +377,7 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
             return
         }
 
-        guard let block = layout.currentBlock(train: train) else {
+        guard let block = layout.blocks[train.blockId] else {
             return
         }
 
