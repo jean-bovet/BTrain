@@ -562,36 +562,60 @@ extension LayoutController {
             // TODO: throw
             fatalError()
         }
-        
-        // The blockId of the train must be assigned to the opposite side of the train
-        // because blockId represents the block in which the front of the train, in the direction
-        // of travel, is located.
-        let newBlockId: Identifier<Block>
-        if train.directionForward {
-            if let front = train.position.front {
-                newBlockId = front.blockId
-            } else {
-                BTLogger.warning("Train \(train) does not have its front position defined: using the current block \(block) for its new position after toggling its direction")
-                newBlockId = blockId
-            }
+                
+        // Assign the new position of the train which is the same as the previous
+        // position of the tail of the train.
+        let newPosition: TrainLocation?
+        if let tailBlock = train.occupied.blocks.last {
+            newPosition = trainPosition(for: tailBlock, train: train)
         } else {
-            if let back = train.position.back {
-                newBlockId = back.blockId
-            } else {
-                BTLogger.warning("Train \(train) does not have its back position defined: using the current block \(block) for its new position after toggling its direction")
-                newBlockId = blockId
-            }
-        }
-
-        guard let newBlock = layout.blocks[newBlockId] else {
-            throw LayoutError.blockNotFound(blockId: newBlockId)
+            newPosition = trainPosition(for: block, train: train)
         }
         
-        block.trainInstance = nil
-        newBlock.trainInstance = TrainInstance(train.id, ti.direction.opposite)
-        train.blockId = newBlockId
+        if let newPosition = newPosition,
+           let tailBlockId = newPosition.back?.blockId ?? newPosition.front?.blockId,
+            let tailBlock = layout.blocks[tailBlockId] {
+            block.trainInstance = nil
+            tailBlock.trainInstance = TrainInstance(train.id, ti.direction.opposite)
+            train.blockId = tailBlock.id
+        } else {
+            block.trainInstance = TrainInstance(train.id, ti.direction.opposite)
+            BTLogger.warning("Unable to properly set the train position after toggling locomotive direction: \(train)")
+        }
 
         try reservation.removeLeadingBlocks(train: train)
+    }
+    
+    func trainPosition(for tailBlock: Block, train: Train) -> TrainLocation? {
+        guard let tailInstance = tailBlock.trainInstance else {
+            return nil
+        }
+        
+        if train.directionForward {
+            // This means the train was moving backward before the toggle happen
+            if tailInstance.direction == .next {
+                if let tailIndex = tailInstance.parts.keys.sorted().first {
+                    return .front(blockId: tailBlock.id, index: tailIndex)
+                }
+            } else {
+                if let tailIndex = tailInstance.parts.keys.sorted().last {
+                    return .front(blockId: tailBlock.id, index: tailIndex)
+                }
+            }
+        } else {
+            // This means the train was moving forward before the toggle happen
+            if tailInstance.direction == .next {
+                if let tailIndex = tailInstance.parts.keys.sorted().first {
+                    return .back(blockId: tailBlock.id, index: tailIndex)
+                }
+            } else {
+                if let tailIndex = tailInstance.parts.keys.sorted().last {
+                    return .back(blockId: tailBlock.id, index: tailIndex)
+                }
+            }
+        }
+        
+        return nil
     }
     
     /// Setup the train in a block. This method places the train for the first time in the specified block, filling the block with the train
