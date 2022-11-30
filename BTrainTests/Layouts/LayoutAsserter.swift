@@ -19,8 +19,6 @@ final class LayoutAsserter {
     weak var layout: Layout!
     weak var layoutController: LayoutController!
 
-    var assertBlockParts = false
-
     init(layout: Layout, layoutController: LayoutController) {
         self.layout = layout
         self.layoutController = layoutController
@@ -257,7 +255,7 @@ final class LayoutAsserter {
         }
 
         // Assert the parts of the block reserved for the train and its wagon
-        if let train = block.trainInstance, let expectedTrain = expectedBlock.trainInstance, assertBlockParts {
+        if let train = block.trainInstance, let expectedTrain = expectedBlock.trainInstance {
             XCTAssertEqual(train.parts, expectedTrain.parts, "Unexpected train parts mismatch in block \(block) at index \(index), route \(routeName)")
         }
     }

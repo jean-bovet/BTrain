@@ -36,15 +36,15 @@ class LayoutYardRoutingTests: BTTestCase {
 
         XCTAssertEqual(p.digitalController.turnoutCommands.count, 0)
 
-        try p.assert("1: {r0{A ≡ 🔵🚂0 ≏ }} [r0[B ≏ ≏ ]] <r0<T1(0,2),r>> <r0<T2>> <r0<T3>> [r0[Z ≏ ≏ ]] <T4(1,0)> <T5(1,0)> <T6(2,0),s> [D ≏ ≏ ] {E ≏ ≏ }")
+        try p.assert("1: {r0{A 💺0 ≡ 🔵🚂0 ≏ }} [r0[B ≏ ≏ ]] <r0<T1(0,2),r>> <r0<T2>> <r0<T3>> [r0[Z ≏ ≏ ]] <T4(1,0)> <T5(1,0)> <T6(2,0),s> [D ≏ ≏ ] {E ≏ ≏ }")
 
         XCTAssertEqual(p.digitalController.turnoutCommands.count, 0)
 
-        try p.assert("1: {r0{A ≏ ≡ 🔵🚂0 }} [r0[B ≏ ≏ ]] <r0<T1(0,2),r>> <r0<T2>> <r0<T3>> [r0[Z ≏ ≏ ]] <T4(1,0)> <T5(1,0)> <T6(2,0),s> [D ≏ ≏ ] {E ≏ ≏ }")
+        try p.assert("1: {r0{A ≏ 💺0 ≡ 🔵🚂0 }} [r0[B ≏ ≏ ]] <r0<T1(0,2),r>> <r0<T2>> <r0<T3>> [r0[Z ≏ ≏ ]] <T4(1,0)> <T5(1,0)> <T6(2,0),s> [D ≏ ≏ ] {E ≏ ≏ }")
 
         XCTAssertEqual(p.digitalController.turnoutCommands.count, 0)
 
-        try p.assert("1: {A ≏ ≏ } [r0[B ≡ 🔵🚂0 ≏ ]] <r0<T1(0,2),r>> <r0<T2>> <r0<T3>> [r0[Z ≏ ≏ ]] <r0<T4(1,0)>> <r0<T5(1,0)>> <r0<T6(2,0),l>> [r0[D ≏ ≏ ]] {E ≏ ≏ }")
+        try p.assert("1: {A ≏ ≏ } [r0[B 💺0 ≡ 🔵🚂0 ≏ ]] <r0<T1(0,2),r>> <r0<T2>> <r0<T3>> [r0[Z ≏ ≏ ]] <r0<T4(1,0)>> <r0<T5(1,0)>> <r0<T6(2,0),l>> [r0[D ≏ ≏ ]] {E ≏ ≏ }")
         XCTAssertEqual(p.digitalController.turnoutCommands.count, 3)
 
         try p.printASCII()
