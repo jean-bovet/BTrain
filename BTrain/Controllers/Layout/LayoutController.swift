@@ -565,18 +565,15 @@ extension LayoutController {
                 
         // Assign the new position of the train which is the same as the previous
         // position of the tail of the train.
-        let newPosition: TrainLocation?
-        if let tailBlock = train.occupied.blocks.last {
-            newPosition = trainPosition(for: tailBlock, train: train)
-        } else {
-            newPosition = trainPosition(for: block, train: train)
-        }
+        let newPosition = layout.trainPosition(train: train)
         
+        // TODO: unit test this by having a separate method
         if let newPosition = newPosition,
            let tailBlockId = newPosition.back?.blockId ?? newPosition.front?.blockId,
             let tailBlock = layout.blocks[tailBlockId] {
             block.trainInstance = nil
             tailBlock.trainInstance = TrainInstance(train.id, ti.direction.opposite)
+            train.position = newPosition
             train.blockId = tailBlock.id
         } else {
             block.trainInstance = TrainInstance(train.id, ti.direction.opposite)
@@ -584,38 +581,6 @@ extension LayoutController {
         }
 
         try reservation.removeLeadingBlocks(train: train)
-    }
-    
-    func trainPosition(for tailBlock: Block, train: Train) -> TrainLocation? {
-        guard let tailInstance = tailBlock.trainInstance else {
-            return nil
-        }
-        
-        if train.directionForward {
-            // This means the train was moving backward before the toggle happen
-            if tailInstance.direction == .next {
-                if let tailIndex = tailInstance.parts.keys.sorted().first {
-                    return .front(blockId: tailBlock.id, index: tailIndex)
-                }
-            } else {
-                if let tailIndex = tailInstance.parts.keys.sorted().last {
-                    return .front(blockId: tailBlock.id, index: tailIndex)
-                }
-            }
-        } else {
-            // This means the train was moving forward before the toggle happen
-            if tailInstance.direction == .next {
-                if let tailIndex = tailInstance.parts.keys.sorted().first {
-                    return .back(blockId: tailBlock.id, index: tailIndex)
-                }
-            } else {
-                if let tailIndex = tailInstance.parts.keys.sorted().last {
-                    return .back(blockId: tailBlock.id, index: tailIndex)
-                }
-            }
-        }
-        
-        return nil
     }
     
     /// Setup the train in a block. This method places the train for the first time in the specified block, filling the block with the train

@@ -81,7 +81,47 @@ final class TrainLocationHelperTests: XCTestCase {
         XCTAssertEqual(feedbacks.count, feedbackCount)
     }
 
-    // MARK: -
+    // MARK: - Toggling -
+    
+    // ┌─────────┐           ┌──────┐   ┌──────┐  ┌──────┐            ┌──────┐
+    // │    A    │──▶  AB  ─▶│  B   │──▶│  C   │─▶│  D   │──▶  DE  ──▶│  E   │
+    // └─────────┘           └──────┘   └──────┘  └──────┘            └──────┘
+    //                 │                                       ▲
+    //                 │    ┌──────┐   ┌──────┐  ┌──────┐      │
+    //                 └───▶│  B2  │──▶│ !C2  │─▶│  D2  │──────┘
+    //                      └──────┘   └──────┘  └──────┘
+
+    func testToggleDirection() throws {
+        let doc = LayoutDocument(layout: LayoutPointToPoint().newLayout())
+        let layout = doc.layout
+        let train = layout.trains[0]
+        let blockA = layout.block(named: "A")
+        let blockB = layout.block(named: "B")
+
+        train.locomotive?.allowedDirections = .any
+        
+        try doc.layoutController.setupTrainToBlock(train, blockA.id, naturalDirectionInBlock: .next)
+        
+        XCTAssertTrue(train.directionForward)
+        XCTAssertEqual(train.position, .front(blockId: blockA.id, index: blockA.feedbacks.count))
+        
+        // Toggle > backward
+        train.locomotive?.directionForward.toggle()
+        try doc.layoutController.toggleTrainDirection(train)
+        
+        XCTAssertFalse(train.directionForward)
+        XCTAssertEqual(train.position, .back(blockId: blockA.id, index: 1))
+
+        // Toggle > forward
+        train.locomotive?.directionForward.toggle()
+        try doc.layoutController.toggleTrainDirection(train)
+
+        XCTAssertTrue(train.directionForward)
+        // TODO: because of the imprecise nature of our positioninng, the train is starting to "move" to the next block which is incorrect.
+        XCTAssertEqual(train.position, .front(blockId: blockB.id, index: blockB.feedbacks.count))
+    }
+    
+    // MARK: - Setup Train
     
     // ┌─────────┐           ┌──────┐   ┌──────┐  ┌──────┐            ┌──────┐
     // │    A    │──▶  AB  ─▶│  B   │──▶│  C   │─▶│  D   │──▶  DE  ──▶│  E   │
@@ -161,7 +201,7 @@ final class TrainLocationHelperTests: XCTestCase {
         try assert(doc, train, blockA, .any, false, .previous, .back(blockId: blockA.id, index: lastIndex))
     }
     
-    // MARK: -
+    // MARK: - End of Block
     
     func testEndOfBlock() throws {
         let doc = LayoutDocument(layout: LayoutPointToPoint().newLayout())
