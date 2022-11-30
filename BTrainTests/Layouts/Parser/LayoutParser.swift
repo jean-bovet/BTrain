@@ -27,17 +27,17 @@ import Foundation
 // <t0{sl}(0,1),s> = turnout <t<id>{type}(fromSocket,toSocket),state> where:
 //    - type is optional and will default to straight right. Type can be "sl", "sr", "tw", "ds" and "ds2"
 //    - state can be: s, l, r, s01, s23, b21, b03
-// 🚂 = train
-// 💺 = wagon (used to indicate occupation of the train in the various parts of the block (only when train and block length are defined)
-// 🔴🚂 = train stopped
-// 🟡🚂 = train braking
-// 🟠🚂 = train stopping
-// 🟠🚂 = train stopping
-// 🟢🚂 = train running at full speed
-// 🔵🚂 = train running at limited speed
+// 􀼮 = train
+// 􀼯 = wagon (used to indicate occupation of the train in the various parts of the block (only when train and block length are defined)
+// 🔴􀼮 = train stopped
+// 🟡􀼮 = train braking
+// 🟠􀼮 = train stopping
+// 🟠􀼮 = train stopping
+// 🟢􀼮 = train running at full speed
+// 🔵􀼮 = train running at limited speed
 // For example:
-// { ≏ ≏ } [r0[ ≏ ≏ 🟢🚂 ]] [[ ≏ ≏ ]] [ ≏ ≏ ] {b0 ≏ ≏ }
-// { ≏ ≏ } <t0:0:1:0> [[r0b0 ≏ ≏ 🟢🚂 ]] <t1:0:1:0> [[ ≏ ≏ ]] [ ≏ ≏ ] <t0:1:0:1> !{b0 ≏ ≏ }
+// { ≏ ≏ } [r0[ ≏ ≏ 🟢􀼮 ]] [[ ≏ ≏ ]] [ ≏ ≏ ] {b0 ≏ ≏ }
+// { ≏ ≏ } <t0:0:1:0> [[r0b0 ≏ ≏ 🟢􀼮 ]] <t1:0:1:0> [[ ≏ ≏ ]] [ ≏ ≏ ] <t0:1:0:1> !{b0 ≏ ≏ }
 final class LayoutParser {
     let routeStrings: [String]
     let resolver: LayoutParserResolver

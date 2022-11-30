@@ -97,7 +97,7 @@ final class LayoutRouteParser {
         let blockHeader = try parseBlockHeader(type: category, direction: direction)
 
         // Parse the optional digit that indicates a reference to an existing block
-        // Example: { ≏ ≏ } [[ ≏ 🟢🚂 ≏ ]] [[ ≏ ≏ ]] {b0 ≏ ≏ }
+        // Example: { ≏ ≏ } [[ ≏ 🟢􀼮 ≏ ]] [[ ≏ ≏ ]] {b0 ≏ ≏ }
         if let blockName = blockHeader.blockName {
             let blockID = resolver.blockId(forBlockName: blockName)
             if let existingBlock = layout.blocks.first(where: { $0.id == blockID }) {
@@ -222,13 +222,13 @@ final class LayoutRouteParser {
     func parseBlockContent(block _: Block, newBlock _: Bool, type _: Block.Category, callback: BlockContentCallback) throws {
         var parsingBlock = true
         while sp.more, parsingBlock {
-            if sp.matches("🔴🚂") {
+            if sp.matches("🔴􀼮") {
                 callback(.stoppedLoc)
             } else if sp.matches("🟡") {
                 callback(.brakingLoc)
-            } else if sp.matches("🟢🚂") {
+            } else if sp.matches("🟢􀼮") {
                 callback(.runningLoc)
-            } else if sp.matches("🔵🚂") {
+            } else if sp.matches("🔵􀼮") {
                 callback(.runningLimitedLoc)
             } else if sp.matches("}}") {
                 callback(.endStation(reserved: true))
@@ -254,7 +254,7 @@ final class LayoutRouteParser {
                 callback(.feedback(detected: true))
             } else if sp.matches(" ") {
                 // ignore white space
-            } else if sp.matches("💺") {
+            } else if sp.matches("􀼯") {
                 callback(.wagon)
             } else {
                 throw ParserError.parserError(message: "Unknown character '\(sp.c)'")
@@ -323,7 +323,7 @@ final class LayoutRouteParser {
         } else {
             speed = LayoutFactory.DefaultBrakingSpeed
         }
-        _ = sp.matches("🚂")
+        _ = sp.matches("􀼮")
         return speed
     }
 
