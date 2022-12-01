@@ -38,24 +38,14 @@ struct TrainLocation: Equatable, Codable, CustomStringConvertible {
         }
     }
     
-    static func both(blockId: Identifier<Block>, index: Int) -> TrainLocation {
-        TrainLocation(front: .init(blockId: blockId, index: index),
-                      back: .init(blockId: blockId, index: index))
-    }
-
-    static func front(blockId: Identifier<Block>, index: Int) -> TrainLocation {
-        TrainLocation(front: .init(blockId: blockId, index: index),
+    static func front(blockId: Identifier<Block>, index: Int, distance: Double) -> TrainLocation {
+        TrainLocation(front: .init(blockId: blockId, index: index, distance: distance),
                       back: nil)
     }
 
-    static func back(blockId: Identifier<Block>, index: Int) -> TrainLocation {
+    static func back(blockId: Identifier<Block>, index: Int, distance: Double) -> TrainLocation {
         TrainLocation(front: nil,
-                      back: .init(blockId: blockId, index: index))
-    }
-
-    static func block(blockId: Identifier<Block>, front: Int, back: Int) -> TrainLocation {
-        TrainLocation(front: .init(blockId: blockId, index: front),
-                      back: .init(blockId: blockId, index: back))
+                      back: .init(blockId: blockId, index: index, distance: distance))
     }
 
 }

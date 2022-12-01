@@ -541,6 +541,7 @@ extension LayoutController {
     ///
     /// An exception is thrown if the train does not allow for its direction to be changed.
     /// - Parameter train: the train
+    // TODO: unit test for this. Also include the toggling itself inside that method.
     func toggleTrainDirection(_ train: Train) throws {
         guard let blockId = train.block?.id else {
             throw LayoutError.trainNotAssignedToABlock(train: train)
@@ -562,24 +563,27 @@ extension LayoutController {
             // TODO: throw
             fatalError()
         }
-                
-        // Assign the new position of the train which is the same as the previous
-        // position of the tail of the train.
-        let newPosition = layout.trainPosition(train: train)
-        
-        // TODO: unit test this by having a separate method
-        if let newPosition = newPosition,
-           let tailBlockId = newPosition.back?.blockId ?? newPosition.front?.blockId,
-            let tailBlock = layout.blocks[tailBlockId] {
-            block.trainInstance = nil
-            tailBlock.trainInstance = TrainInstance(train.id, ti.direction.opposite)
-            train.position = newPosition
-            train.block = tailBlock
-        } else {
-            block.trainInstance = TrainInstance(train.id, ti.direction.opposite)
-            BTLogger.warning("Unable to properly set the train position after toggling locomotive direction: \(train)")
-        }
+                        
+        block.trainInstance = nil
 
+        if train.directionForward {
+            // The train was moving backward and toggled to move forward
+            if let newBlock = layout.blocks[train.position.front?.blockId] {
+                train.block = newBlock
+                newBlock.trainInstance = TrainInstance(train.id, ti.direction.opposite)
+            } else {
+                fatalError()
+            }
+        } else {
+            // The train was moving forward and toggled to move backward
+            if let newBlock = layout.blocks[train.position.back?.blockId] {
+                train.block = newBlock
+                newBlock.trainInstance = TrainInstance(train.id, ti.direction.opposite)
+            } else {
+                fatalError()
+            }
+        }
+        
         try reservation.removeLeadingBlocks(train: train)
     }
     
@@ -604,17 +608,11 @@ extension LayoutController {
         }
         
         if naturalDirectionInBlock == .next {
-            if train.allowedDirections == .forward {
-                train.position = .both(blockId: toBlockId, index: toBlock.feedbacks.count)
-            } else {
-                train.position = .block(blockId: toBlockId, front: toBlock.feedbacks.count, back: 0)
-            }
+            train.position = .init(front: .init(blockId: toBlockId, index: toBlock.feedbacks.count, distance: toBlock.feedbacks.last?.distance ?? 0),
+                                   back: .init(blockId: toBlockId, index: 0, distance: 0))
         } else {
-            if train.allowedDirections == .forward {
-                train.position = .both(blockId: toBlockId, index: 0)
-            } else {
-                train.position = .block(blockId: toBlockId, front: 0, back: toBlock.feedbacks.count)
-            }
+            train.position = .init(front: .init(blockId: toBlockId, index: 0, distance: 0),
+                                   back: .init(blockId: toBlockId, index: toBlock.feedbacks.count, distance: toBlock.feedbacks.last?.distance ?? 0))
         }
         
         let directionInBlock: Direction

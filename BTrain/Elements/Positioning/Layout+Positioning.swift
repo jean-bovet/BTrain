@@ -60,60 +60,12 @@ extension Layout {
                     continue
                 }
                 
-                positions.append(FeedbackPosition(blockId: block.id, index: feedbackIndex))
+                // TODO: throw if feedback distance is not set
+                positions.append(FeedbackPosition(blockId: block.id, index: feedbackIndex, distance: feedback.distance ?? 0))
             }
         }
         
         return positions
     }
-    
-    /// Returns the block at the end of the train (from its direction of travel).
-    ///
-    /// This function relies on the occupied block to be properly set.
-    /// - Parameter train: the train
-    /// - Returns: the tail block of the train or nil if not found
-    func tailBlock(train: Train) -> Block? {
-        if let tailBlock = train.occupied.blocks.last {
-            return tailBlock
-        } else {
-            return train.block
-        }
-    }
-    
-    func trainPosition(train: Train) -> TrainLocation? {
-        guard let tailBlock = tailBlock(train: train) else {
-            return nil
-        }
-
-        guard let tailInstance = tailBlock.trainInstance else {
-            return nil
-        }
-        
-        if train.directionForward {
-            // This means the train was moving backward before the toggle happened
-            if tailInstance.direction == .next {
-                if let tailIndex = tailInstance.parts.keys.sorted().first {
-                    return .front(blockId: tailBlock.id, index: tailIndex)
-                }
-            } else {
-                if let tailIndex = tailInstance.parts.keys.sorted().last {
-                    return .front(blockId: tailBlock.id, index: tailIndex)
-                }
-            }
-        } else {
-            // This means the train was moving forward before the toggle happened
-            if tailInstance.direction == .next {
-                if let tailIndex = tailInstance.parts.keys.sorted().first {
-                    return .back(blockId: tailBlock.id, index: tailIndex)
-                }
-            } else {
-                if let tailIndex = tailInstance.parts.keys.sorted().last {
-                    return .back(blockId: tailBlock.id, index: tailIndex)
-                }
-            }
-        }
-        
-        return nil
-    }
-    
+            
 }

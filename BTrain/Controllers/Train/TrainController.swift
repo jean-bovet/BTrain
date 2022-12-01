@@ -302,7 +302,13 @@ final class TrainController: TrainControlling, CustomStringConvertible {
             return false
         }
         
-        let feedbackPosition = FeedbackPosition(blockId: entryFeedback.block.id, index: entryFeedback.index)
+        guard let blockFeedback = frontBlock.feedbacks.first(where: { $0.feedbackId == entryFeedback.feedback.id }) else {
+            // TODO: throw
+            fatalError()
+        }
+        
+        // TODO: throw if distance not specified
+        let feedbackPosition = FeedbackPosition(blockId: entryFeedback.block.id, index: entryFeedback.index, distance: blockFeedback.distance ?? 0)
         let detectedPosition = feedbackPosition.trainPosition(direction: entryFeedback.direction)
 
         let newPosition = try train.position.newLocationWith(trainMovesForward: train.directionForward,

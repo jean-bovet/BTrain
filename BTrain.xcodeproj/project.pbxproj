@@ -394,6 +394,7 @@
 		A7F779F6273214AF00E73275 /* TrainEditingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7F779F5273214AF00E73275 /* TrainEditingView.swift */; };
 		A7F779F82732407E00E73275 /* TrainControlContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7F779F72732407E00E73275 /* TrainControlContainerView.swift */; };
 		A7F779FA2734A8C500E73275 /* Element.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7F779F92734A8C500E73275 /* Element.swift */; };
+		A7FA9C54293859F500093CEE /* TrainVisitorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7FA9C53293859F500093CEE /* TrainVisitorTests.swift */; };
 		A7FBC8B6276E8BB6009D49C3 /* PathFinderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7FBC8B5276E8BB6009D49C3 /* PathFinderTests.swift */; };
 		A7FFE05B27E63C40002B4A4A /* BlockSpeedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7FFE05A27E63C40002B4A4A /* BlockSpeedView.swift */; };
 /* End PBXBuildFile section */
@@ -798,6 +799,7 @@
 		A7F779F92734A8C500E73275 /* Element.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Element.swift; sourceTree = "<group>"; };
 		A7F779FB2734D53B00E73275 /* LayoutStringParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutStringParser.swift; sourceTree = "<group>"; };
 		A7F779FD2734D55100E73275 /* LayoutRouteParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutRouteParser.swift; sourceTree = "<group>"; };
+		A7FA9C53293859F500093CEE /* TrainVisitorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainVisitorTests.swift; sourceTree = "<group>"; };
 		A7FBC8B5276E8BB6009D49C3 /* PathFinderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PathFinderTests.swift; sourceTree = "<group>"; };
 		A7FFE05A27E63C40002B4A4A /* BlockSpeedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockSpeedView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -1218,6 +1220,7 @@
 				A719FEB22802305900D5FBE1 /* GraphElementTests.swift */,
 				A73EFD33292967440052C407 /* TrainPositionsTests.swift */,
 				A73EFD37292AD6650052C407 /* TrainLocationHelperTests.swift */,
+				A7FA9C53293859F500093CEE /* TrainVisitorTests.swift */,
 			);
 			path = Elements;
 			sourceTree = "<group>";
@@ -2345,6 +2348,7 @@
 				A78B996427FD56D80021EFE4 /* GraphTests.swift in Sources */,
 				A768B1952856A42500B6497F /* LayoutEventStateMachineTests.swift in Sources */,
 				A794065928087C1800F6A427 /* LayoutParser.swift in Sources */,
+				A7FA9C54293859F500093CEE /* TrainVisitorTests.swift in Sources */,
 				A7145F8E27F91D0A00BF5F61 /* View+Snapshot.swift in Sources */,
 				A7FBC8B6276E8BB6009D49C3 /* PathFinderTests.swift in Sources */,
 				A73E0816276B0BC0005F9D64 /* FixedRoutingTests.swift in Sources */,

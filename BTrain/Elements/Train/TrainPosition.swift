@@ -29,9 +29,12 @@ struct TrainPosition: Equatable, Codable, CustomStringConvertible {
     /// The index of the position within the block.
     /// Note: the index is increasing in the natural direction of the block (.next)
     var index: Int
-            
+    
+    /// Distance, in cm, from the beginning of the block in the direction of travel of the train
+    var distance: Double
+    
     var description: String {
-        "\(blockId.uuid):\(index)"
+        "\(blockId.uuid):\(index):\(distance)"
     }
 
 }

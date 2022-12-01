@@ -355,28 +355,10 @@ final class LayoutReservation {
 
             let trainInstance = TrainInstance(train.id, attributes.trainDirection)
             block.trainInstance = trainInstance
-
-            // Assign the type of part to each position
-            for (index, position) in attributes.positions.enumerated() {
-                trainInstance.parts[position] = .wagon
-                
-                if train.directionForward {
-                    if attributes.frontBlock && index == 0 {
-                        // When moving forward, the locomotive is always located in the front block
-                        trainInstance.parts[position] = .locomotive
-                    }
-                } else {
-                    if attributes.backBlock && index == attributes.positions.count - 1 {
-                        // When moving backward, the locomotive is always located in the last block
-                        trainInstance.parts[position] = .locomotive
-                    }
-                }
-            }
-
             block.reservation = .init(trainId: train.id, direction: attributes.trainDirection)
             train.occupied.append(block)
         }
-        if result {
+        if result.remainingTrainLength == 0 {
             if train.directionForward {
                 // Moving forward, the back position is ignored
                 train.position.back = nil

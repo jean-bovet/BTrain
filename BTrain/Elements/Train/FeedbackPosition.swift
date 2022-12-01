@@ -16,14 +16,15 @@ struct FeedbackPosition {
     
     let blockId: Identifier<Block>
     let index: Int
+    let distance: Double
     
     func trainPosition(direction: Direction) -> TrainPosition {
         switch direction {
         case .previous:
-            return TrainPosition(blockId: blockId, index: index)
+            return TrainPosition(blockId: blockId, index: index, distance: distance)
 
         case .next:
-            return TrainPosition(blockId: blockId, index: index + 1)
+            return TrainPosition(blockId: blockId, index: index + 1, distance: distance)
         }
     }
 }
