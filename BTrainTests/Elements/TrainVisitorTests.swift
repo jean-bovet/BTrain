@@ -23,29 +23,35 @@ final class TrainVisitorTests: XCTestCase {
         let block = Block()
         block.length = 100
                 
-        let front = TrainPosition(blockId: block.id, index: 2, distance: 80)
-        let back = TrainPosition(blockId: block.id, index: 1, distance: 20)
-        let position = TrainLocation(front: front, back: back)
+        var position: TrainLocation
+        position = .front(blockId: block.id, index: 2, distance: 80)
                 
         // [      >
         //  ---->
         //  b   f
-        XCTAssertEqual(tv.occupiedLengthOfTrainInBlock(block: block, trainPosition: position, directionOfVisit: .previous, trainForward: true), 60)
+        //  <---- (visit)
+        XCTAssertEqual(tv.occupiedLengthOfTrainInBlock(block: block, trainPosition: position, frontBlock: true, directionOfVisit: .previous, trainForward: true), 80)
         
         // <      ]
         //  ---->
         //  b   f
-        XCTAssertEqual(tv.occupiedLengthOfTrainInBlock(block: block, trainPosition: position, directionOfVisit: .next, trainForward: true), 60)
+        //  <---- (visit)
+        XCTAssertEqual(tv.occupiedLengthOfTrainInBlock(block: block, trainPosition: position, frontBlock: true, directionOfVisit: .next, trainForward: true), 20)
         
-        // [      >
-        //  ----<
-        //  b   f
-        XCTAssertEqual(tv.occupiedLengthOfTrainInBlock(block: block, trainPosition: position, directionOfVisit: .previous, trainForward: false), 60)
-        
+        // Note: now test with the train runnings backward. In that case, the back position is used instead of the front
+        position = .back(blockId: block.id, index: 2, distance: 20)
+
         // <      ]
         //  ----<
         //  b   f
-        XCTAssertEqual(tv.occupiedLengthOfTrainInBlock(block: block, trainPosition: position, directionOfVisit: .next, trainForward: false), 60)
+        //  -----> (visit)
+        XCTAssertEqual(tv.occupiedLengthOfTrainInBlock(block: block, trainPosition: position, frontBlock: true, directionOfVisit: .previous, trainForward: false), 20)
+        
+        // [      >
+        //  ----< (train)
+        //  b   f
+        //  -----> (visit)
+        XCTAssertEqual(tv.occupiedLengthOfTrainInBlock(block: block, trainPosition: position, frontBlock: true, directionOfVisit: .next, trainForward: false), 80)
     }
 
     func testOccupationFrontBlockOnly() {
@@ -65,25 +71,17 @@ final class TrainVisitorTests: XCTestCase {
         //    [      >
         //  ---->
         //  b   f
-        XCTAssertEqual(tv.occupiedLengthOfTrainInBlock(block: ba, trainPosition: position, directionOfVisit: .previous, trainForward: true), 80)
+        //  <---- (visit)
+        XCTAssertEqual(tv.occupiedLengthOfTrainInBlock(block: ba, trainPosition: position, frontBlock: true, directionOfVisit: .previous, trainForward: true), 80)
         
         //    <      ]
         //  ---->
         //  b   f
-        XCTAssertEqual(tv.occupiedLengthOfTrainInBlock(block: ba, trainPosition: position, directionOfVisit: .next, trainForward: true), 20)
-        
-        //    <      ]
-        //  ----<
-        //  b   f
-        XCTAssertEqual(tv.occupiedLengthOfTrainInBlock(block: ba, trainPosition: position, directionOfVisit: .previous, trainForward: false), 20)
-        
-        //   [      >
-        // ----<
-        // b   f
-        XCTAssertEqual(tv.occupiedLengthOfTrainInBlock(block: ba, trainPosition: position, directionOfVisit: .next, trainForward: false), 80)
+        //  -----> (visit)
+        XCTAssertEqual(tv.occupiedLengthOfTrainInBlock(block: ba, trainPosition: position, frontBlock: true, directionOfVisit: .next, trainForward: true), 20)
     }
 
-    func testOccupationBackBlockOnly() {
+    func testOccupationNonFrontBlock() {
         let layout = Layout()
         let tv = TrainVisitor(layout: layout)
         
@@ -96,55 +94,13 @@ final class TrainVisitorTests: XCTestCase {
         let front = TrainPosition(blockId: ba.id, index: 2, distance: 80)
         let back = TrainPosition(blockId: bb.id, index: 1, distance: 20)
         let position = TrainLocation(front: front, back: back)
-                
-        // [    >
-        //    ---->
-        //    b   f
-        XCTAssertEqual(tv.occupiedLengthOfTrainInBlock(block: bb, trainPosition: position, directionOfVisit: .previous, trainForward: true), 80)
-        
-        // <   ]
-        //   ---->
-        //   b   f
-        XCTAssertEqual(tv.occupiedLengthOfTrainInBlock(block: bb, trainPosition: position, directionOfVisit: .next, trainForward: true), 20)
-        
-        // <      ]
-        //     ----<
-        //     b   f
-        XCTAssertEqual(tv.occupiedLengthOfTrainInBlock(block: bb, trainPosition: position, directionOfVisit: .previous, trainForward: false), 20)
-        
-        // [    >
-        //    ----<
-        //    b   f
-        XCTAssertEqual(tv.occupiedLengthOfTrainInBlock(block: bb, trainPosition: position, directionOfVisit: .next, trainForward: false), 80)
-    }
-
-    func testOccupationMiddleBlock() {
-        // Block that is not the front not the back
-        
-        let layout = Layout()
-        let tv = TrainVisitor(layout: layout)
-        
-        let ba = Block()
-        ba.length = 100
-        
-        let bb = Block()
-        bb.length = 100
-
-        let bc = Block()
-        bc.length = 100
-
-        let front = TrainPosition(blockId: ba.id, index: 2, distance: 80)
-        let back = TrainPosition(blockId: bc.id, index: 1, distance: 20)
-        let position = TrainLocation(front: front, back: back)
-
-        //   [   >
-        // --------->
-        // b        f
-        XCTAssertEqual(tv.occupiedLengthOfTrainInBlock(block: bb, trainPosition: position, directionOfVisit: .previous, trainForward: true), 100)
-        XCTAssertEqual(tv.occupiedLengthOfTrainInBlock(block: bb, trainPosition: position, directionOfVisit: .previous, trainForward: false), 100)
-        XCTAssertEqual(tv.occupiedLengthOfTrainInBlock(block: bb, trainPosition: position, directionOfVisit: .next, trainForward: true), 100)
-        XCTAssertEqual(tv.occupiedLengthOfTrainInBlock(block: bb, trainPosition: position, directionOfVisit: .next, trainForward: false), 100)
-
+                        
+        // Note: doesn't matter where the train is located, if it is not the front block, the entire length of the block will be used because this method does not
+        // take into account the length of the train (remaining).
+        XCTAssertEqual(tv.occupiedLengthOfTrainInBlock(block: ba, trainPosition: position, frontBlock: false, directionOfVisit: .previous, trainForward: true), 100)
+        XCTAssertEqual(tv.occupiedLengthOfTrainInBlock(block: ba, trainPosition: position, frontBlock: false, directionOfVisit: .next, trainForward: true), 100)
+        XCTAssertEqual(tv.occupiedLengthOfTrainInBlock(block: ba, trainPosition: position, frontBlock: false, directionOfVisit: .previous, trainForward: false), 100)
+        XCTAssertEqual(tv.occupiedLengthOfTrainInBlock(block: ba, trainPosition: position, frontBlock: false, directionOfVisit: .next, trainForward: false), 100)
     }
 
     // MARK: Visit
@@ -163,33 +119,41 @@ final class TrainVisitorTests: XCTestCase {
         train.locomotive = loc
         train.block = block
         
+        // [        ]>
+        //   ----->
+        //   b    f
         train.locomotive?.directionForward = true
         block.trainInstance = .init(train.id, .next)
-        train.position = .init(front: .init(blockId: block.id, index: 2, distance: 80),
-                               back: .init(blockId: block.id, index: 0, distance: 20))
+        train.position = .front(blockId: block.id, index: 2, distance: 80)
         
-        try assert(tv, train: train, remainingTrainLength: 0, blocks: [block])
+        try assert(tv, train: train, remainingTrainLength: -20, blocks: [block])
         
+        // [        ]>
+        //   >-----
+        //   f    b
         train.locomotive?.directionForward = false
         block.trainInstance = .init(train.id, .next)
-        train.position = .init(front: .init(blockId: block.id, index: 2, distance: 80),
-                               back: .init(blockId: block.id, index: 0, distance: 20))
+        train.position = .back(blockId: block.id, index: 2, distance: 80)
+
+        try assert(tv, train: train, remainingTrainLength: -20, blocks: [block])
         
-        try assert(tv, train: train, remainingTrainLength: 0, blocks: [block])
-        
+        // [        ]>
+        //   <-----
+        //   f
         train.locomotive?.directionForward = true
         block.trainInstance = .init(train.id, .previous)
-        train.position = .init(front: .init(blockId: block.id, index: 0, distance: 20),
-                               back: .init(blockId: block.id, index: 2, distance: 80))
-        
-        try assert(tv, train: train, remainingTrainLength: 0, blocks: [block])
-        
+        train.position = .front(blockId: block.id, index: 2, distance: 20)
+
+        try assert(tv, train: train, remainingTrainLength: -20, blocks: [block])
+
+        // [        ]>
+        //   -----<
+        //   b    f
         train.locomotive?.directionForward = false
         block.trainInstance = .init(train.id, .previous)
-        train.position = .init(front: .init(blockId: block.id, index: 0, distance: 20),
-                               back: .init(blockId: block.id, index: 2, distance: 80))
-        
-        try assert(tv, train: train, remainingTrainLength: 0, blocks: [block])
+        train.position = .back(blockId: block.id, index: 2, distance: 20)
+
+        try assert(tv, train: train, remainingTrainLength: -20, blocks: [block])
     }
     
     /// Test visiting a train that spans two blocks
@@ -222,18 +186,14 @@ final class TrainVisitorTests: XCTestCase {
         bb.trainInstance = .init(train.id, .next)
         train.block = bb
 
-        train.position = .init(front: .init(blockId: bb.id, index: 1, distance: 20),
-                               back: .init(blockId: ba.id, index: 2, distance: 80))
+        train.position = .front(blockId: bb.id, index: 0, distance: 20)
+        try assert(tv, train: train, remainingTrainLength: -60, blocks: [bb, ba])
         
-        try assert(tv, train: train, remainingTrainLength: 20, blocks: [bb, ba])
-        
-        train.position = .init(front: .init(blockId: bb.id, index: 1, distance: 20),
-                               back: .init(blockId: ba.id, index: 2, distance: 60))
-        
-        try assert(tv, train: train, remainingTrainLength: 0, blocks: [bb, ba])
+        train.position = .front(blockId: bb.id, index: 0, distance: 40)
+        try assert(tv, train: train, remainingTrainLength: -80, blocks: [bb, ba])
 
         // ba[  ]>   bb[   ]>
-        //     ----------<
+        //     ----------< (train and direction of travel)
         //     b         f
         //     ----------> (direction of visit/occupation filling)
         
@@ -242,15 +202,14 @@ final class TrainVisitorTests: XCTestCase {
         bb.trainInstance = .init(train.id, .previous)
         train.block = ba
 
-        train.position = .init(front: .init(blockId: bb.id, index: 1, distance: 20),
-                               back: .init(blockId: ba.id, index: 2, distance: 80))
+        train.position = .back(blockId: ba.id, index: 0, distance: 80)
+        try assert(tv, train: train, remainingTrainLength: -60, blocks: [ba, bb])
         
-        try assert(tv, train: train, remainingTrainLength: 20, blocks: [ba, bb])
-        
-        train.position = .init(front: .init(blockId: bb.id, index: 1, distance: 20),
-                               back: .init(blockId: ba.id, index: 2, distance: 60))
-        
-        try assert(tv, train: train, remainingTrainLength: 0, blocks: [ba, bb])
+        train.position = .back(blockId: ba.id, index: 0, distance: 60)
+        try assert(tv, train: train, remainingTrainLength: -80, blocks: [ba, bb])
+
+        train.position = .back(blockId: ba.id, index: 0, distance: 40)
+        try assert(tv, train: train, remainingTrainLength: 0, blocks: [ba])
 
         // ba<[  ]   bb<[   ]
         //      ---------->
@@ -265,15 +224,14 @@ final class TrainVisitorTests: XCTestCase {
         bb.trainInstance = .init(train.id, .previous)
         train.block = bb
 
-        train.position = .init(front: .init(blockId: bb.id, index: 1, distance: 80),
-                               back: .init(blockId: ba.id, index: 2, distance: 20))
+        train.position = .front(blockId: bb.id, index: 0, distance: 20)
+        try assert(tv, train: train, remainingTrainLength: -20, blocks: [bb])
         
-        try assert(tv, train: train, remainingTrainLength: 20, blocks: [bb, ba])
-        
-        train.position = .init(front: .init(blockId: bb.id, index: 1, distance: 80),
-                               back: .init(blockId: ba.id, index: 2, distance: 40))
+        train.position = .front(blockId: bb.id, index: 0, distance: 40)
+        try assert(tv, train: train, remainingTrainLength: 0, blocks: [bb])
 
-        try assert(tv, train: train, remainingTrainLength: 0, blocks: [bb, ba])
+        train.position = .front(blockId: bb.id, index: 0, distance: 60)
+        try assert(tv, train: train, remainingTrainLength: -80, blocks: [bb, ba])
 
         // ba<[  ]   bb<[   ]
         //      ----------<
@@ -285,15 +243,14 @@ final class TrainVisitorTests: XCTestCase {
         bb.trainInstance = .init(train.id, .next)
         train.block = ba
 
-        train.position = .init(front: .init(blockId: bb.id, index: 1, distance: 80),
-                               back: .init(blockId: ba.id, index: 2, distance: 20))
-        
-        try assert(tv, train: train, remainingTrainLength: 20, blocks: [ba, bb])
-        
-        train.position = .init(front: .init(blockId: bb.id, index: 1, distance: 80),
-                               back: .init(blockId: ba.id, index: 2, distance: 40))
+        train.position = .back(blockId: ba.id, index: 0, distance: 20)
+        try assert(tv, train: train, remainingTrainLength: -60, blocks: [ba, bb])
 
-        try assert(tv, train: train, remainingTrainLength: 0, blocks: [ba, bb])
+        train.position = .back(blockId: ba.id, index: 0, distance: 40)
+        try assert(tv, train: train, remainingTrainLength: -80, blocks: [ba, bb])
+
+        train.position = .back(blockId: ba.id, index: 0, distance: 60)
+        try assert(tv, train: train, remainingTrainLength: 0, blocks: [ba])
     }
 
     /// Test visiting a train that spans three blocks
@@ -332,16 +289,15 @@ final class TrainVisitorTests: XCTestCase {
         bc.trainInstance = .init(train.id, .next)
         train.block = bc
 
-        train.position = .init(front: .init(blockId: bc.id, index: 1, distance: 20),
-                               back: .init(blockId: ba.id, index: 2, distance: 80))
-        
-        try assert(tv, train: train, remainingTrainLength: 20, blocks: [bc, bb, ba])
-        
-        train.position = .init(front: .init(blockId: bc.id, index: 1, distance: 20),
-                               back: .init(blockId: ba.id, index: 2, distance: 60))
-        
-        try assert(tv, train: train, remainingTrainLength: 0, blocks: [bc, bb, ba])
-        
+        train.position = .front(blockId: bc.id, index: 1, distance: 20)
+        try assert(tv, train: train, remainingTrainLength: -60, blocks: [bc, bb, ba])
+
+        train.position = .front(blockId: bc.id, index: 1, distance: 40)
+        try assert(tv, train: train, remainingTrainLength: -80, blocks: [bc, bb, ba])
+
+        train.position = .front(blockId: bc.id, index: 1, distance: 60)
+        try assert(tv, train: train, remainingTrainLength: 0, blocks: [bc, bb])
+
         // ba[  ]>   bb[   ]>  bc[   ]>
         //     --------------------<
         //     b                   f
@@ -353,15 +309,14 @@ final class TrainVisitorTests: XCTestCase {
         bc.trainInstance = .init(train.id, .previous)
         train.block = ba
 
-        train.position = .init(front: .init(blockId: bc.id, index: 1, distance: 20),
-                               back: .init(blockId: ba.id, index: 2, distance: 80))
+        train.position = .back(blockId: ba.id, index: 1, distance: 80)
+        try assert(tv, train: train, remainingTrainLength: -60, blocks: [ba, bb, bc])
         
-        try assert(tv, train: train, remainingTrainLength: 20, blocks: [ba, bb, bc])
-        
-        train.position = .init(front: .init(blockId: bc.id, index: 1, distance: 20),
-                               back: .init(blockId: ba.id, index: 2, distance: 60))
-        
-        try assert(tv, train: train, remainingTrainLength: 0, blocks: [ba, bb, bc])
+        train.position = .back(blockId: ba.id, index: 1, distance: 60)
+        try assert(tv, train: train, remainingTrainLength: -80, blocks: [ba, bb, bc])
+
+        train.position = .back(blockId: ba.id, index: 1, distance: 40)
+        try assert(tv, train: train, remainingTrainLength: 0, blocks: [ba, bb])
 
         // ba<[  ]   bb<[   ]  bc<[    ]
         //      ------------------->
@@ -378,15 +333,11 @@ final class TrainVisitorTests: XCTestCase {
         bc.trainInstance = .init(train.id, .previous)
         train.block = bc
 
-        train.position = .init(front: .init(blockId: bc.id, index: 1, distance: 80),
-                               back: .init(blockId: ba.id, index: 2, distance: 20))
+        train.position = .front(blockId: bc.id, index: 1, distance: 80)
+        try assert(tv, train: train, remainingTrainLength: -60, blocks: [bc, bb, ba])
         
-        try assert(tv, train: train, remainingTrainLength: 20, blocks: [bc, bb, ba])
-        
-        train.position = .init(front: .init(blockId: bc.id, index: 1, distance: 80),
-                               back: .init(blockId: ba.id, index: 2, distance: 40))
-
-        try assert(tv, train: train, remainingTrainLength: 0, blocks: [bc, bb, ba])
+        train.position = .front(blockId: bc.id, index: 1, distance: 40)
+        try assert(tv, train: train, remainingTrainLength: 0, blocks: [bc, bb])
 
         // ba<[  ]   bb<[   ]   bc<[   ]
         //      --------------------<
@@ -399,15 +350,11 @@ final class TrainVisitorTests: XCTestCase {
         bc.trainInstance = .init(train.id, .next)
         train.block = ba
 
-        train.position = .init(front: .init(blockId: bc.id, index: 1, distance: 80),
-                               back: .init(blockId: ba.id, index: 2, distance: 20))
+        train.position = .back(blockId: ba.id, index: 1, distance: 80)
+        try assert(tv, train: train, remainingTrainLength: -20, blocks: [ba, bb])
         
-        try assert(tv, train: train, remainingTrainLength: 20, blocks: [ba, bb, bc])
-        
-        train.position = .init(front: .init(blockId: bc.id, index: 1, distance: 80),
-                               back: .init(blockId: ba.id, index: 2, distance: 40))
-
-        try assert(tv, train: train, remainingTrainLength: 0, blocks: [ba, bb, bc])
+        train.position = .back(blockId: ba.id, index: 1, distance: 60)
+        try assert(tv, train: train, remainingTrainLength: 0, blocks: [ba, bb])
         
         // ba<[  ]   bb<[   ]  bc>[    ]
         //      ------------------->
@@ -424,15 +371,11 @@ final class TrainVisitorTests: XCTestCase {
         bc.trainInstance = .init(train.id, .next)
         train.block = bc
 
-        train.position = .init(front: .init(blockId: bc.id, index: 1, distance: 20),
-                               back: .init(blockId: ba.id, index: 2, distance: 20))
+        train.position = .front(blockId: bc.id, index: 1, distance: 80)
+        try assert(tv, train: train, remainingTrainLength: -20, blocks: [bc, bb])
         
-        try assert(tv, train: train, remainingTrainLength: 20, blocks: [bc, bb, ba])
-        
-        train.position = .init(front: .init(blockId: bc.id, index: 1, distance: 20),
-                               back: .init(blockId: ba.id, index: 2, distance: 40))
-
-        try assert(tv, train: train, remainingTrainLength: 0, blocks: [bc, bb, ba])
+        train.position = .front(blockId: bc.id, index: 1, distance: 40)
+        try assert(tv, train: train, remainingTrainLength: -80, blocks: [bc, bb, ba])
     }
     
     private func assert(_ tv: TrainVisitor, train: Train, remainingTrainLength: Double, blocks: [Block]) throws {

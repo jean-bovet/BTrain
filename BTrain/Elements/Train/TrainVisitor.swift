@@ -102,6 +102,11 @@ final class TrainVisitor {
                                                            trainForward: locomotive.directionForward,
                                                            directionOfVisit: blockInfo.direction,
                                                            blockCallback: blockCallback)
+                
+                if remainingTrainLength <= 0 {
+                    // Update back position of the train
+                    train.position.back = backPosition(in: blockInfo.block, with: remainingTrainLength, directionOfVisit: directionOfVisit, directionForward: locomotive.directionForward)
+                }
             }
 
             if remainingTrainLength > 0 {
@@ -112,18 +117,60 @@ final class TrainVisitor {
         })
 
         result.remainingTrainLength = remainingTrainLength
-//         Returns true if all the train length has been visited
-//        return remainingTrainLength <= 0
         return result
     }
 
+    // TODO: static and move to common Positioning files?
+    func backPosition(in block: Block, with remainingTrainLength: Double, directionOfVisit: Direction, directionForward: Bool) -> TrainPosition {
+        //      [      ]
+        // <-------{ d } where d = remainingTrainLength
+        // if d == 0, the train occupies all of the last block
+        // if d > 0, the train occupies some portion of the last block
+        let d = abs(remainingTrainLength)
+
+        let index: Int?
+        let distance: Double
+        let blockLength = block.length ?? 0
+        if directionOfVisit == .next {
+            if directionForward {
+                // <[   ]
+                //  {d}------> (train)
+                //     <------ (visit)
+                distance = blockLength - d
+                index = block.feedbacks.indexOfFeedback(withDistance: distance)
+            } else {
+                //        [   ]>
+                //   ------< (train)
+                //   ------> (visit)
+                distance = blockLength - d
+                index = block.feedbacks.indexOfFeedback(withDistance: distance)
+            }
+        } else {
+            if directionForward {
+                // [   ]>
+                // {d}------> (train)
+                //    <------ (visit)
+                distance = d
+                index = block.feedbacks.indexOfFeedback(withDistance: distance)
+            } else {
+                //        [   ]<
+                //   ------<{d} (train)
+                //   ------>    (visit)
+                distance = d
+                index = block.feedbacks.indexOfFeedback(withDistance: distance)
+            }
+        }
+        // TODO: throw when index is nil?
+        return .init(blockId: block.id, index: index ?? 0, distance: distance)
+    }
+    
     /// Visit all the parts of a block. A block part is a portion of a block between two feedbacks or the beginning/end of
     /// the block and a feedback.
     /// - Parameters:
     ///   - trainPosition: the position of the train, valid only if headBlock is true
     ///   - remainingTrainLength: the remaining train length available to visit the block
     ///   - block: the block to visit
-    ///   - headBlock: true if this block is the head block, where the locomotive is located
+    ///   - frontBlock: true if this block is the front block, that is the first block
     ///   - trainForward: true if the train is moving forward, false if moving backward
     ///   - directionOfVisit: the direction in which this block is visited
     ///   - blockCallback: callback invoked for each part that is being visited
@@ -136,7 +183,7 @@ final class TrainVisitor {
                                  directionOfVisit: Direction,
                                  blockCallback: BlockCallbackBlock) throws -> Double {
         var bv = BlockAttributes(frontBlock: frontBlock, backBlock: frontBlock, trainDirection: directionOfVisit.opposite)
-        let occupiedLength = occupiedLengthOfTrainInBlock(block: block, trainPosition: trainPosition, directionOfVisit: directionOfVisit, trainForward: trainForward)
+        let occupiedLength = occupiedLengthOfTrainInBlock(block: block, trainPosition: trainPosition, frontBlock: frontBlock, directionOfVisit: directionOfVisit, trainForward: trainForward)
         let currentRemainingTrainLength = remainingTrainLength - occupiedLength
         
         // The back block is detected when there are no more remaining train length
@@ -147,50 +194,23 @@ final class TrainVisitor {
         return currentRemainingTrainLength
     }
         
-    /// Returns the length of the portion of the block occupied by the train
-    /// - Parameters:
-    ///   - block: the block
-    ///   - trainPosition: the train position
-    ///   - directionOfVisit: the direction of visit, which is always in the opposite direction of the travel direction of the train
-    ///   - trainForward: true if the train moves forward, false if the train moves backward
-    /// - Returns: the length of occupation, in cm
-    func occupiedLengthOfTrainInBlock(block: Block, trainPosition: TrainLocation, directionOfVisit: Direction, trainForward: Bool) -> Double {
+    // TODO: static and move to common Positioning files?
+    func occupiedLengthOfTrainInBlock(block: Block, trainPosition: TrainLocation, frontBlock: Bool, directionOfVisit: Direction, trainForward: Bool) -> Double {
         let blockLength = block.length ?? 0 // TODO: throw if block.length is not defined?
-        let frontDistance = trainPosition.front?.distance ?? 0
-        let backDistance = trainPosition.back?.distance ?? 0
-
-        let frontBlock = block.id == trainPosition.front?.blockId
-        let backBlock = block.id == trainPosition.back?.blockId
         
         // directionOfVisit: always in the opposite direction of travel of the train
         let lengthOfTrainInBlock: Double
-        if frontBlock && backBlock {
-            if directionOfVisit == .next {
-                if trainForward {
-                    // [           >
-                    //   <-------|
-                    //   f       b
-                    lengthOfTrainInBlock = backDistance - frontDistance
-                } else {
-                    // [            >
-                    //   |-------<
-                    //   b       f
-                    lengthOfTrainInBlock = frontDistance - backDistance
-                }
+        if frontBlock {
+            let frontDistance = (trainForward ? trainPosition.front?.distance : trainPosition.back?.distance) ?? 0
+            
+            
+            // TODO: throw
+            if trainForward {
+                assert(trainPosition.front?.blockId == block.id)
             } else {
-                if trainForward {
-                    // <           ]
-                    //   <-------|
-                    //   f       b
-                    lengthOfTrainInBlock = frontDistance - backDistance
-                } else {
-                    //  <          ]
-                    //   |-------<
-                    //   b       f
-                    lengthOfTrainInBlock = backDistance - frontDistance
-                }
+                assert(trainPosition.back?.blockId == block.id)
             }
-        } else if frontBlock {
+            
             if directionOfVisit == .next {
                 if trainForward {
                     // [     >
@@ -198,10 +218,10 @@ final class TrainVisitor {
                     //   f       b
                     lengthOfTrainInBlock = blockLength - frontDistance
                 } else {
-                    //         [     >
+                    // [     >
                     //   |-------<
                     //   b       f
-                    lengthOfTrainInBlock = frontDistance
+                    lengthOfTrainInBlock = blockLength - frontDistance
                 }
             } else {
                 if trainForward {
@@ -210,43 +230,32 @@ final class TrainVisitor {
                     //   f       b
                     lengthOfTrainInBlock = frontDistance
                 } else {
-                    //         <     ]
-                    //   |-------<
-                    //   b       f
-                    lengthOfTrainInBlock = blockLength - frontDistance
-                }
-            }
-        } else if backBlock {
-            if directionOfVisit == .next {
-                if trainForward {
-                    //        [     >
-                    //   <-------|
-                    //   f       b
-                    lengthOfTrainInBlock = backDistance
-                } else {
-                    // [     >
-                    //   |-------<
-                    //   b       f
-                    lengthOfTrainInBlock = blockLength - backDistance
-                }
-            } else {
-                if trainForward {
-                    //        <     ]
-                    //   <-------|
-                    //   f       b
-                    lengthOfTrainInBlock = blockLength - backDistance
-                } else {
                     // <     ]
                     //   |-------<
                     //   b       f
-                    lengthOfTrainInBlock = backDistance
+                    lengthOfTrainInBlock = frontDistance
                 }
             }
         } else {
-            // Full block is used by train
+            // Either the entire block is used by the the train or the block
+            // is only partially used by the remaining of the train.
             lengthOfTrainInBlock = blockLength
         }
         
         return abs(lengthOfTrainInBlock)
     }
+
+}
+
+extension Array where Element == Block.BlockFeedback {
+    
+    func indexOfFeedback(withDistance distance: Double) -> Int? {
+        for (findex, feedback) in self.enumerated() {
+            if let fd = feedback.distance, fd >= distance {
+                return findex
+            }
+        }
+        return nil
+    }
+
 }

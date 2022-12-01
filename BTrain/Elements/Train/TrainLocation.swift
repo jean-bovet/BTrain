@@ -48,4 +48,9 @@ struct TrainLocation: Equatable, Codable, CustomStringConvertible {
                       back: .init(blockId: blockId, index: index, distance: distance))
     }
 
+    static func both(blockId: Identifier<Block>, frontIndex: Int, frontDistance: Double, backIndex: Int, backDistance: Double) -> TrainLocation {
+        TrainLocation(front: .init(blockId: blockId, index: frontIndex, distance: frontDistance),
+                      back: .init(blockId: blockId, index: backIndex, distance: backDistance))
+    }
+
 }
