@@ -12,6 +12,7 @@
 
 import Foundation
 
+// TODO: verify coverage is 100%
 extension Train {
     
     func hasReachedStationOrDestination(_ route: Route?, _ block: Block) -> Bool {

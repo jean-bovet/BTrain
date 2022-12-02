@@ -539,7 +539,11 @@ extension LayoutController {
     
     /// Toggles the direction of the train.
     ///
-    /// An exception is thrown if the train does not allow for its direction to be changed.
+    /// Note: even if a train does not allow for a backward direction (as set in allowedDirections),
+    /// we do not enforce this here because in a real layout, a train can always be manually
+    /// changed to run backwards. allowedDirections is only used in automatic routing
+    /// to avoid moving the train backwards when it should not.
+
     /// - Parameter train: the train
     // TODO: unit test for this. Also include the toggling itself inside that method.
     func toggleTrainDirection(_ train: Train) throws {
@@ -557,11 +561,6 @@ extension LayoutController {
 
         guard ti.trainId == train.id else {
             throw LayoutError.trainInBlockDoesNotMatch(trainId: train.id, blockId: blockId, blockTrainId: ti.trainId)
-        }
-
-        if train.allowedDirections == .forward && !train.directionForward {
-            // TODO: throw
-            fatalError()
         }
                         
         block.trainInstance = nil

@@ -25,7 +25,6 @@ class SimulatorViewTests: RootViewTests {
         XCTAssertFalse(trains.elements.isEmpty)
 
         let t1 = trains[0]
-        t1.locomotive?.allowedDirections = .any
         t1.speed!.accelerationProfile = .none
         let b1 = doc.layout.blocks[0]
 

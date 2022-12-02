@@ -12,6 +12,7 @@
 
 import Foundation
 
+// TODO: revisit this if we can use a function instead?
 let distanceDelta = 0.001
 
 struct FeedbackPosition {

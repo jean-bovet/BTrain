@@ -14,7 +14,7 @@ import Foundation
 
 extension TrainLocation {
 
-    func newLocationWith(trainMovesForward: Bool, allowedDirection: Locomotive.AllowedDirection, detectedPosition: TrainPosition, reservation: Train.Reservation) throws -> TrainLocation {
+    func newLocationWith(trainMovesForward: Bool, detectedPosition: TrainPosition, reservation: Train.Reservation) throws -> TrainLocation {
         var newLocation = self
         
         if trainMovesForward {

@@ -96,8 +96,6 @@ final class TrainLocationHelperTests: XCTestCase {
         let layout = doc.layout
         let train = layout.trains[0]
         let blockA = layout.block(named: "A")
-
-        train.locomotive?.allowedDirections = .any
         
         try doc.layoutController.setupTrainToBlock(train, blockA.id, naturalDirectionInBlock: .next)
         
@@ -155,7 +153,6 @@ final class TrainLocationHelperTests: XCTestCase {
                                 _ directionForward: Bool,
                                 _ directionInBlock: Direction,
                                 _ position: TrainLocation) throws {
-        train.locomotive?.allowedDirections = allowedDirection
         train.locomotive?.directionForward = directionForward
         try doc.layoutController.setupTrainToBlock(train, block.id, naturalDirectionInBlock: directionInBlock)
         XCTAssertEqual(train.position, position)
@@ -256,7 +253,6 @@ final class TrainLocationHelperTests: XCTestCase {
         try doc.layout.setTrainToBlock(train, blockB.id, position: TrainLocation(front: .init(blockId: blockB.id, index: blockB.feedbacks.count-1, distance: 0), back: nil), directionOfTravelInBlock: .next)
         assertEndOfBlock(occupiedCount: 1, atEndOfBlock: false, block: blockB, train: train)
 
-        train.locomotive!.allowedDirections = .any
         train.locomotive!.directionForward = false
   
         // TODO:

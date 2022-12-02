@@ -12,16 +12,9 @@
 
 import Foundation
 
+// TODO: verify coverage is 100%
 extension TrainPosition {
-    
-    func isAfterOrEqual(_ other: TrainPosition, reservation: Train.Reservation) throws -> Bool {
-        if self == other {
-            return true
-        } else {
-            return try isAfter(other, reservation: reservation)
-        }
-    }
-    
+        
     /// Returns true if the location is after ``other``, in the direction of travel of the train.
     /// - Parameters:
     ///   - other: the other location
@@ -49,22 +42,6 @@ extension TrainPosition {
             } else {
                 return distance < other.distance
             }
-        }
-    }
-
-    func isBeforeOrEqual(_ other: TrainPosition, reservation: Train.Reservation) throws -> Bool {
-        if self == other {
-            return true
-        } else {
-            return try isBefore(other, reservation: reservation)
-        }
-    }
-    
-    func isBefore(_ other: TrainPosition, reservation: Train.Reservation) throws -> Bool {
-        if self == other {
-            return false
-        } else {
-            return try !isAfter(other, reservation: reservation)
         }
     }
     

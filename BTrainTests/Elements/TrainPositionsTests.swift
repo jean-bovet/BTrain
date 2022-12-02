@@ -550,7 +550,7 @@ final class TrainPositionsTests: XCTestCase {
             frontPosition = nil
         }
         
-        let newLocation = try currentLocation.newLocationWith(trainMovesForward: true, allowedDirection: .any, detectedPosition: detectedPosition, reservation: reservation)
+        let newLocation = try currentLocation.newLocationWith(trainMovesForward: true, detectedPosition: detectedPosition, reservation: reservation)
         
         assertLocation(newLocation, back: nil, front: frontPosition)
 
@@ -571,7 +571,7 @@ final class TrainPositionsTests: XCTestCase {
         } else {
             backPosition = nil
         }
-        let newLocation = try currentLocation.newLocationWith(trainMovesForward: false, allowedDirection: .any, detectedPosition: detectedPosition, reservation: reservation)
+        let newLocation = try currentLocation.newLocationWith(trainMovesForward: false, detectedPosition: detectedPosition, reservation: reservation)
         
         assertLocation(newLocation, back: backPosition, front: nil)
 

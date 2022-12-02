@@ -13,6 +13,7 @@
 import Foundation
 
 // TODO: continue to group all these functions together
+// TODO: verify coverage is 100%
 extension Layout {
     
     /// Sets the train into the specified block, at the specified position and direction of travel in the block.
