@@ -149,7 +149,6 @@ final class TrainLocationHelperTests: XCTestCase {
     private func assert(_ doc: LayoutDocument,
                                 _ train: Train,
                                 _ block: Block,
-                                _ allowedDirection: Locomotive.AllowedDirection,
                                 _ directionForward: Bool,
                                 _ directionInBlock: Direction,
                                 _ position: TrainLocation) throws {
@@ -177,61 +176,37 @@ final class TrainLocationHelperTests: XCTestCase {
         // Block: [ ---> ]
         // Train: ------->
         //               f
-        try assert(doc, train, blockA, .forward, true, .next, .both(blockId: blockA.id,
-                                                                    frontIndex: lastIndex,
-                                                                    frontDistance: 180+distanceDelta,
-                                                                    backIndex: 1,
-                                                                    backDistance: 180-120+distanceDelta))
-
+        try assert(doc, train, blockA, true, .next, .both(blockId: blockA.id,
+                                                          frontIndex: lastIndex,
+                                                          frontDistance: 180+distanceDelta,
+                                                          backIndex: 1,
+                                                          backDistance: 180-120+distanceDelta))
+        
         // Block: [ ---> ]
         // Train: <------
         //        f
-        try assert(doc, train, blockA, .forward, true, .previous, .both(blockId: blockA.id,
-                                                                        frontIndex: 0,
-                                                                        frontDistance: 20+distanceDelta,
-                                                                        backIndex: lastIndex-1,
-                                                                        backDistance: 20+120+distanceDelta))
-
-        // TODO: what do we do when train moves backward while it cannot? This will happen in manual driving of the train
-//        try assert(doc, train, blockA, .forward, false, .previous, .both(blockId: blockA.id, index: 0))
-
-        // Block: [ ---> ]
-        // Train: ------->
-        //               f
-        try assert(doc, train, blockA, .any, true, .next, .both(blockId: blockA.id,
-                                                                frontIndex: lastIndex,
-                                                                frontDistance: 180+distanceDelta,
-                                                                backIndex: 1,
-                                                                backDistance: 180-120+distanceDelta))
-        
+        try assert(doc, train, blockA, true, .previous, .both(blockId: blockA.id,
+                                                              frontIndex: 0,
+                                                              frontDistance: 20+distanceDelta,
+                                                              backIndex: lastIndex-1,
+                                                              backDistance: 20+120+distanceDelta))
+                
         // Block: [ ---> ]
         // Train: -------<
         //        b      f
-        try assert(doc, train, blockA, .any, false, .next, .both(blockId: blockA.id,
-                                                                 frontIndex: lastIndex,
-                                                                 frontDistance: 180+distanceDelta,
-                                                                 backIndex: 1,
-                                                                 backDistance: 180-120+distanceDelta))
-
-        // Block: [ ---> ]
-        // Train: <-------
-        //        f
-        try assert(doc, train, blockA, .any, true, .previous, .both(blockId: blockA.id,
-                                                                    frontIndex: 0,
-                                                                    frontDistance: 20+distanceDelta,
-                                                                    backIndex: lastIndex-1,
-                                                                    backDistance: 20+120+distanceDelta))
-        
+        try assert(doc, train, blockA, false, .next, .both(blockId: blockA.id,
+                                                           frontIndex: lastIndex,
+                                                           frontDistance: 180+distanceDelta,
+                                                           backIndex: 1,
+                                                           backDistance: 180-120+distanceDelta))
         // Block: [ ---> ]
         // Train: >-------
-        //               b
-        // TODO: why frontIndex is 1 and not 0 as the other ones? Probably because 20 is on the feedback itself,
-        // so sometimes the index is picked up before or after the feedback?
-        try assert(doc, train, blockA, .any, false, .previous, .both(blockId: blockA.id,
-                                                                     frontIndex: 1,
-                                                                     frontDistance: 20+distanceDelta,
-                                                                     backIndex: lastIndex-1,
-                                                                     backDistance: 20+120+distanceDelta))
+        //        f      b
+        try assert(doc, train, blockA, false, .previous, .both(blockId: blockA.id,
+                                                               frontIndex: 1,
+                                                               frontDistance: 20+distanceDelta,
+                                                               backIndex: lastIndex-1,
+                                                               backDistance: 20+120+distanceDelta))
     }
     
     // MARK: - End of Block

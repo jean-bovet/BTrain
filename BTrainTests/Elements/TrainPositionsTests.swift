@@ -257,7 +257,6 @@ final class TrainPositionsTests: XCTestCase {
 
         // Blocks (􁉆􁉈): b1[ p0 f0 p1 f1 p2 f2 p3 ] b2[ p3 f2 p2 f1 p1 |f0| p0 ]
         // Train (􀼯􀼮):                 b                                  f
-        //TODO: why is back not asserted?
         lines.append(LineForwardAssertion(feedback: (b2.id, 0, 10), front: (b2.id, 0, 10)))
 
         // Blocks (􁉆􁉈): b1[ p0 f0 p1 f1 p2 f2 p3 ] b2[ p3 |f2| p2 f1 p1 f0 p0 ]

@@ -137,7 +137,7 @@ final class TrainVisitor {
         // if d > 0, the train occupies some portion of the last block
         let d = abs(remainingTrainLength)
 
-        let index: Int?
+        let index: Int
         let distance: Double
         let blockLength = block.length ?? 0
         if directionOfVisit == .next {
@@ -169,8 +169,7 @@ final class TrainVisitor {
                 index = block.feedbacks.indexOfFeedback(withDistance: distance, directionOfVisit: directionOfVisit)
             }
         }
-        // TODO: throw when index is nil?
-        return .init(blockId: block.id, index: index ?? 0, distance: distance)
+        return .init(blockId: block.id, index: index, distance: distance)
     }
     
     /// Visit all the parts of a block. A block part is a portion of a block between two feedbacks or the beginning/end of
@@ -270,7 +269,7 @@ extension Array where Element == Block.BlockFeedback {
     ///   - distance: the distance
     ///   - directionOfVisit: the direction of visit of the block
     /// - Returns: the feedback index
-    func indexOfFeedback(withDistance distance: Double, directionOfVisit: Direction) -> Int? {
+    func indexOfFeedback(withDistance distance: Double, directionOfVisit: Direction) -> Int {
         //TODO: using directionOfVisit?
         for (findex, feedback) in enumerated() {
             if let fd = feedback.distance, distance <= fd {
