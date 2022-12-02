@@ -36,5 +36,18 @@ struct TrainPosition: Equatable, Codable, CustomStringConvertible {
     var description: String {
         "\(blockId.uuid):\(index):\(distance)"
     }
+    
+    /// When comparing to position, the distance is only compared up to a thousandth because with
+    /// double operations, there will be rouding errors.
+    /// - Parameters:
+    ///   - lhs: The left-hand side position
+    ///   - rhs: The right-hand side position
+    /// - Returns: true if both positions are equal
+    static func ==(lhs: TrainPosition, rhs: TrainPosition) -> Bool {
+        let delta = fabs(lhs.distance.distance(to: rhs.distance))
+        return lhs.blockId == rhs.blockId
+        && lhs.index == rhs.index
+        && delta < 0.0001
+    }
 
 }
