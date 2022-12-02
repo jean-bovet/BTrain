@@ -85,7 +85,6 @@ class TransitionsTests: BTTestCase {
         XCTAssertTrue(t1.same(as: t1c))
     }
 
-    // TODO: test failing
     func testReserveBehavior() throws {
         let p = Package(layout: LayoutComplex().newLayout().removeTrains())
 
