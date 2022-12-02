@@ -333,7 +333,7 @@ final class LayoutReservation {
     // the specified train with all its length, taking into account the length of each block.
     func occupyBlocksWith(train: Train) throws {
         let trainVisitor = TrainVisitor(layout: layout)
-        let result = try trainVisitor.visit(train: train) { transition in
+        let remainingTrainLength = try trainVisitor.visit(train: train) { transition in
             guard transition.reserved == nil else {
                 throw LayoutError.transitionAlreadyReserved(transition: transition)
             }
@@ -358,7 +358,7 @@ final class LayoutReservation {
             block.reservation = .init(trainId: train.id, direction: attributes.trainDirection)
             train.occupied.append(block)
         }
-        if result.remainingTrainLength > 0 {
+        if remainingTrainLength > 0 {
             throw LayoutError.cannotReserveAllElements(train: train)
         }
     }

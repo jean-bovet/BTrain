@@ -379,24 +379,19 @@ final class TrainVisitorTests: XCTestCase {
     }
     
     private func assert(_ tv: TrainVisitor, train: Train, remainingTrainLength: Double, blocks: [Block]) throws {
-        let result = try tv.visit(train: train) { _ in
+        var blocks = [Block]()
+
+        let remainingTrainLength = try tv.visit(train: train) { _ in
             
         } turnoutCallback: { turnoutInfo in
-            
+
         } blockCallback: { block, blockAttributes in
+            blocks.append(block)
         }
 
-        XCTAssertEqual(result.remainingTrainLength, remainingTrainLength, "Remaining train length mismatch")
-        XCTAssertEqual(result.blocks.toBlockNames, blocks.toBlockNames, "Visited blocks mismatch")
+        XCTAssertEqual(remainingTrainLength, remainingTrainLength, "Remaining train length mismatch")
+        XCTAssertEqual(blocks.toBlockNames, blocks.toBlockNames, "Visited blocks mismatch")
     }
-}
-
-extension Array where Element == ElementVisitor.BlockInfo {
-    
-    var toBlockNames: [String] {
-        self.map { $0.block.name }
-    }
-    
 }
 
 extension Array where Element == Block {

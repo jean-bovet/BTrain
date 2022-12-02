@@ -36,13 +36,6 @@ final class TrainVisitor {
         visitor = ElementVisitor(layout: layout)
     }
 
-    struct VisitResult {
-        var transitions = [ITransition]()
-        var turnouts = [ElementVisitor.TurnoutInfo]()
-        var blocks = [ElementVisitor.BlockInfo]()
-        var remainingTrainLength = 0.0
-    }
-    
     /// Visit all the elements that a train occupies - transitions, turnouts and blocks - starting
     /// with the front block (the block at the front of the train in its direction of travel) and going backwards.
     ///
@@ -55,7 +48,7 @@ final class TrainVisitor {
     func visit(train: Train,
                transitionCallback: TransitionCallbackBlock,
                turnoutCallback: TurnoutCallbackBlock,
-               blockCallback: BlockCallbackBlock) throws -> VisitResult
+               blockCallback: BlockCallbackBlock) throws -> Double
     {
         guard let frontBlock = train.block else {
             throw LayoutError.trainNotAssignedToABlock(train: train)
@@ -68,7 +61,7 @@ final class TrainVisitor {
         guard let trainLength = train.length else {
             // If the train length is not defined, we invoke once the callback for the entire block
             try blockCallback(frontBlock, BlockAttributes(frontBlock: true, backBlock: true, trainDirection: trainInstance.direction))
-            return VisitResult()
+            return 0
         }
 
         guard let locomotive = train.locomotive else {
@@ -81,20 +74,16 @@ final class TrainVisitor {
         // Always visit the train in the opposite direction of travel (by definition)
         let directionOfVisit = trainInstance.direction.opposite
 
-        var result = VisitResult()
         try visitor.visit(fromBlockId: frontBlock.id, direction: directionOfVisit, callback: { info in
             if let transition = info.transition {
                 // Transition is just a virtual connection between two elements, no physical length exists.
-                result.transitions.append(transition)
                 try transitionCallback(transition)
             } else if let turnoutInfo = info.turnout {
-                result.turnouts.append(turnoutInfo)
                 if let length = turnoutInfo.turnout.length {
                     remainingTrainLength -= length
                 }
                 try turnoutCallback(turnoutInfo)
             } else if let blockInfo = info.block {
-                result.blocks.append(blockInfo)
                 remainingTrainLength = try visitBlockParts(trainPosition: train.position,
                                                            remainingTrainLength: remainingTrainLength,
                                                            block: blockInfo.block,
@@ -125,8 +114,7 @@ final class TrainVisitor {
             }
         })
 
-        result.remainingTrainLength = remainingTrainLength
-        return result
+        return remainingTrainLength
     }
 
     // TODO: static and move to common Positioning files?
