@@ -456,10 +456,10 @@ class AutomaticRoutingTests: BTTestCase {
         // Move from s2 to b1, the route is also updated because b2 is occupied
         try p.assert("automatic-0: [r0[b1 ≡ 🔵􀼮0 ]] <r0<t3{sr}(0,2),r>> ![r0[b5 ≏ ]] <t7{sr}(2,0),s> <t5{sr}(2,0),s> ![b3 ≏ ≏ ≏ ]")
 
-        try p.assert("automatic-0: [b1 ≏ ] <t3(0,2),r> ![r0[b5 ≡ 🔵􀼮0 ]] <r0<t7(2,0),r>> <r0<t5(2,0),r>> ![r0[b3 ≏ ≏ ≏ ]]")
-        try p.assert("automatic-0: [b1 ≏ ] <t3(0,2),r> ![b5 ≏ ] <t7(2,0),r> <t5(2,0),r> ![r0[b3 ≡ 🟡􀼮0 ≏ ≏ ]]")
-        try p.assert("automatic-0: [b1 ≏ ] <t3(0,2),r> ![b5 ≏ ] <t7(2,0),r> <t5(2,0),r> ![r0[b3 ≏ ≡ 🟡􀼮0 ≏ ]]")
-        try p.assert("automatic-0: [b1 ≏ ] <t3(0,2),r> ![b5 ≏ ] <t7(2,0),r> <t5(2,0),r> ![r0[b3 ≏ ≏ ≡ 🔴􀼮0 ]]")
+        try p.assert("automatic-0: [b1 ≏ ] <t3(0,2),r> ![r0[b5 ≡ 🔵!􀼮0 ]] <r0<t7(2,0),r>> <r0<t5(2,0),r>> ![r0[b3 ≏ ≏ ≏ ]]")
+        try p.assert("automatic-0: [b1 ≏ ] <t3(0,2),r> ![b5 ≏ ] <t7(2,0),r> <t5(2,0),r> ![r0[b3 ≡ 🟡!􀼮0 ≏ ≏ ]]")
+        try p.assert("automatic-0: [b1 ≏ ] <t3(0,2),r> ![b5 ≏ ] <t7(2,0),r> <t5(2,0),r> ![r0[b3 ≏ ≡ 🟡!􀼮0 ≏ ]]")
+        try p.assert("automatic-0: [b1 ≏ ] <t3(0,2),r> ![b5 ≏ ] <t7(2,0),r> <t5(2,0),r> ![r0[b3 ≏ ≏ ≡ 🔴!􀼮0 ]]")
 
         XCTAssertEqual(p.train.scheduling, .unmanaged)
     }
@@ -592,19 +592,19 @@ class AutomaticRoutingTests: BTTestCase {
         // Start the train to go back to s1, by reversing its direction
         try p.start(destination: Destination(s1.id, direction: .previous), expectedState: .running, routeSteps: ["s2:previous", "b1:previous", "s1:previous"])
         
-        try p.assert("automatic-0: !{r0{s2 ≏ 􀼯0 ≡ 🔵􀼮0 }} <r0<t4{sl}(0,1),s>> ![r0[b1 ≏ ≏ ]] <t2{sr}(1,0),s> <t1{sr}(1,0),s> !{s1 ≏ ≏ }", ["b1"])
+        try p.assert("automatic-0: !{r0{s2 ≏ 􀼯0 ≡ 🔵!􀼮0 }} <r0<t4{sl}(0,1),s>> ![r0[b1 ≏ ≏ ]] <t2{sr}(1,0),s> <t1{sr}(1,0),s> !{s1 ≏ ≏ }", ["b1"])
 
-        try p.assert("automatic-0: !{r0{s2 ≏ 􀼯0 ≏ 􀼯0 }} <r0<t4{sl}(0,1),s>> ![r0[b1 􀼯0 ≡ 🔵􀼮0 ≏ ]] <r0<t2{sr}(1,0),s>> <r0<t1{sr}(1,0),s>> !{r0{s1 ≏ ≏ }}", ["s1"])
+        try p.assert("automatic-0: !{r0{s2 ≏ 􀼯0 ≏ 􀼯0 }} <r0<t4{sl}(0,1),s>> ![r0[b1 􀼯0 ≡ 🔵!􀼮0 ≏ ]] <r0<t2{sr}(1,0),s>> <r0<t1{sr}(1,0),s>> !{r0{s1 ≏ ≏ }}", ["s1"])
 
         // Trigger a feedback near the back of the train, this feedback should be ignored (because it is
         // behind the front position of the train) and it won't be un-expected because it is located in
         // a block where the train is located (and because the train can move in any direction, it can
         // have a magnet at the rear of the train).
-        try p.assert("automatic-0: !{r0{s2 ≏ 􀼯0 ≡ 􀼯0 }} <r0<t4{sl}(0,1),s>> ![r0[b1 􀼯0 ≏ 🔵􀼮0 ≏ ]] <r0<t2{sr}(1,0),s>> <r0<t1{sr}(1,0),s>> !{r0{s1 ≏ ≏ }}", ["s1"])
+        try p.assert("automatic-0: !{r0{s2 ≏ 􀼯0 ≡ 􀼯0 }} <r0<t4{sl}(0,1),s>> ![r0[b1 􀼯0 ≏ 🔵!􀼮0 ≏ ]] <r0<t2{sr}(1,0),s>> <r0<t1{sr}(1,0),s>> !{r0{s1 ≏ ≏ }}", ["s1"])
         
-        try p.assert("automatic-0: !{s2 ≏ ≏ } <t4{sl}(0,1),s> ![r0[b1 ≏ ≏ 􀼯0 ]] <r0<t2{sr}(1,0),s>> <r0<t1{sr}(1,0),s>> !{r0{s1 􀼯0 ≡ 🟡􀼮0 ≏ }}", [])
+        try p.assert("automatic-0: !{s2 ≏ ≏ } <t4{sl}(0,1),s> ![r0[b1 ≏ ≏ 􀼯0 ]] <r0<t2{sr}(1,0),s>> <r0<t1{sr}(1,0),s>> !{r0{s1 􀼯0 ≡ 🟡!􀼮0 ≏ }}", [])
 
-        try p.assert("automatic-0: !{s2 ≏ ≏ } <t4{sl}(0,1),s> ![b1 ≏ ≏ ] <t2{sr}(1,0),s> <t1{sr}(1,0),s> !{r0{s1 ≏ 􀼯0 ≡ 🔴􀼮0 }}", [])
+        try p.assert("automatic-0: !{s2 ≏ ≏ } <t4{sl}(0,1),s> ![b1 ≏ ≏ ] <t2{sr}(1,0),s> <t1{sr}(1,0),s> !{r0{s1 ≏ 􀼯0 ≡ 🔴!􀼮0 }}", [])
     }
 
     // TODO: re-enable
