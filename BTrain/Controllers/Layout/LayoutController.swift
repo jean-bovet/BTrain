@@ -607,24 +607,30 @@ extension LayoutController {
             throw LayoutError.cannotReserveBlock(block: toBlock, train: train, reserved: toBlock.reservation!)
         }
         
+        // Note: we set only the front position because the back position will be computed automatically
+        // when the occupied blocks are filled (see TrainVisitor).
         if naturalDirectionInBlock == .next {
-            train.position = .init(front: .init(blockId: toBlockId, index: toBlock.feedbacks.count, distance: toBlock.feedbacks.last?.distance ?? 0),
-                                   back: .init(blockId: toBlockId, index: 0, distance: 0))
+            train.position = .front(blockId: toBlockId, index: toBlock.feedbacks.count, distance: toBlock.feedbacks.last?.distance ?? 0)
         } else {
-            train.position = .init(front: .init(blockId: toBlockId, index: 0, distance: 0),
-                                   back: .init(blockId: toBlockId, index: toBlock.feedbacks.count, distance: toBlock.feedbacks.last?.distance ?? 0))
+            train.position = .front(blockId: toBlockId, index: 0, distance: toBlock.feedbacks.first?.distance ?? 0)
         }
         
-        let directionInBlock: Direction
-        if train.directionForward {
-            directionInBlock = naturalDirectionInBlock
-        } else {
-            directionInBlock = naturalDirectionInBlock.opposite
+        // If the train is moving backwards, always setup the train as if it was moving
+        // forward and then toggle its direction. This is because the front position is always
+        // at the front of the train when moving forward and the back position is determined
+        // after visiting the blocks that the train occupies.
+        let previousDirectionForward = train.directionForward
+        if !train.directionForward {
+            train.locomotive?.directionForward = true
         }
-
-        try layout.setTrainToBlock(train, toBlockId, position: train.position, directionOfTravelInBlock: directionInBlock)
+        try layout.setTrainToBlock(train, toBlockId, position: train.position, directionOfTravelInBlock: naturalDirectionInBlock)
         
         try reservation.removeLeadingBlocks(train: train)
+
+        if previousDirectionForward == false {
+            train.locomotive?.directionForward = false
+            try toggleTrainDirection(train)
+        }
     }
     
 

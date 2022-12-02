@@ -105,7 +105,15 @@ final class TrainVisitor {
                 
                 if remainingTrainLength <= 0 {
                     // Update back position of the train
-                    train.position.back = backPosition(in: blockInfo.block, with: remainingTrainLength, directionOfVisit: directionOfVisit, directionForward: locomotive.directionForward)
+                    let pos = backPosition(in: blockInfo.block, with: remainingTrainLength, directionOfVisit: directionOfVisit, directionForward: locomotive.directionForward)
+                    // Note: when moving backward, `pos` is the position of the trail of the train in
+                    // the direction of travel. And because the front and back positions are always the same
+                    // regardless of the direction of travel, we need to update either one.
+                    if locomotive.directionForward {
+                        train.position.back = pos
+                    } else {
+                        train.position.front = pos
+                    }
                 }
             }
 
@@ -250,12 +258,12 @@ final class TrainVisitor {
 extension Array where Element == Block.BlockFeedback {
     
     func indexOfFeedback(withDistance distance: Double) -> Int? {
-        for (findex, feedback) in self.enumerated() {
-            if let fd = feedback.distance, fd >= distance {
-                return findex
+        for (findex, feedback) in self.enumerated().reversed() {
+            if let fd = feedback.distance, distance >= fd {
+                return findex + 1
             }
         }
-        return nil
+        return 0
     }
 
 }
