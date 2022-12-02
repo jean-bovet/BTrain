@@ -70,13 +70,13 @@ final class Package {
         // TODO: do we still need to specify the position like that or could we let the layout setup the position automatically?
         switch position {
         case .start:
-            location = .front(blockId: block.id, index: 0, distance: 0)
+            location = .front(blockId: block.id, index: 0, distance: 0 + distanceDelta)
         case .end:
-            location = .front(blockId: block.id, index: block.feedbacks.count, distance: block.feedbacks.last?.distance ?? 0)
+            location = .front(blockId: block.id, index: block.feedbacks.count, distance: (block.feedbacks.last?.distance ?? 0) + distanceDelta)
         case .custom(let index):
-            location = .front(blockId: block.id, index: index, distance: block.feedbacks[index-1].distance ?? 0)
+            location = .front(blockId: block.id, index: index, distance: (block.feedbacks[index-1].distance ?? 0) + distanceDelta)
         case .automatic:
-            location = .front(blockId: block.id, index: 0, distance: 0)
+            location = .front(blockId: block.id, index: 0, distance: 0 + distanceDelta)
             break
         }
         
@@ -178,12 +178,42 @@ extension Layout: LayoutParserResolver {
         turnout(named: forTurnoutName).id
     }
     
-    func distance(forFeedbackAtPosition index: Int, blockId: BTrain.Identifier<BTrain.Block>) -> Double {
+    /// Returns the distance of the train in the specified block, given its direction of travel within the block and the feedback index.
+    /// - Parameters:
+    ///   - index: the feedback index that was triggered
+    ///   - blockId: the block ID
+    ///   - directionInBlock: the direction of travel of the train inside the block
+    /// - Returns: the distance where the train is located
+    func distance(forFeedbackAtPosition index: Int, blockId: BTrain.Identifier<BTrain.Block>, directionInBlock: Direction) -> Double {
         let block = blocks[blockId]!
         if index < 1 {
-            return 0
+            if directionInBlock == .next {
+                // Block:    [   f0    f1   ]>
+                // Distance: |->
+                // Train:  ---->
+                return 0 + distanceDelta
+            } else {
+                // Block:    [    f0    f1   ]>
+                // Distance: |-->
+                // Train:        <------
+                return block.feedbacks[index].distance! - distanceDelta
+            }
         } else {
-            return block.feedbacks[index-1].distance!
+            if directionInBlock == .next {
+                // Block:    [   f0    f1   ]>
+                // Distance: |----->
+                // Train:  -------->
+                return block.feedbacks[index-1].distance! + distanceDelta
+            } else {
+                // Block:    [    f0     f1   ]>
+                // Distance: |--------->
+                // Train:               <------
+                if index < block.feedbacks.count {
+                    return block.feedbacks[index].distance! - distanceDelta
+                } else {
+                    return block.feedbacks[index-1].distance! + distanceDelta
+                }
+            }
         }
     }
 

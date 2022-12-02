@@ -124,9 +124,9 @@ final class LayoutRouteParser {
             let index = sp.index
             let numberOfFeedbacks = try parseNumberOfFeedbacks(block: block, newBlock: newBlock, type: category)
             sp.index = index
-            try parseBlockContent(block: block, newBlock: newBlock, type: category, numberOfFeedbacks: numberOfFeedbacks)
+            try parseBlockContent(block: block, directionInBlock: direction, newBlock: newBlock, type: category, numberOfFeedbacks: numberOfFeedbacks)
         } else {
-            try parseBlockContent(block: block, newBlock: newBlock, type: category, numberOfFeedbacks: nil)
+            try parseBlockContent(block: block, directionInBlock: direction, newBlock: newBlock, type: category, numberOfFeedbacks: nil)
         }
 
         layout.blocks.insert(block)
@@ -172,7 +172,7 @@ final class LayoutRouteParser {
         return currentFeedbackIndex
     }
 
-    func parseBlockContent(block: Block, newBlock: Bool, type: Block.Category, numberOfFeedbacks: Int?) throws {
+    func parseBlockContent(block: Block, directionInBlock: Direction, newBlock: Bool, type: Block.Category, numberOfFeedbacks: Int?) throws {
         var currentFeedbackIndex = 0
         try parseBlockContent(block: block, newBlock: newBlock, type: type) { contentType in
             let feedbackIndex: Int
@@ -187,19 +187,19 @@ final class LayoutRouteParser {
 
             switch contentType {
             case .stoppedLoc:
-                parseTrain(position: position, block: block, speed: 0)
+                parseTrain(position: position, block: block, directionInBlock: directionInBlock, speed: 0)
 
             case .brakingLoc:
-                parseTrain(position: position, block: block, speed: parseTrainSpeed())
+                parseTrain(position: position, block: block, directionInBlock: directionInBlock, speed: parseTrainSpeed())
 
             case .runningLoc:
-                parseTrain(position: position, block: block, speed: LayoutFactory.DefaultMaximumSpeed)
+                parseTrain(position: position, block: block, directionInBlock: directionInBlock, speed: LayoutFactory.DefaultMaximumSpeed)
 
             case .runningLimitedLoc:
-                parseTrain(position: position, block: block, speed: LayoutFactory.DefaultLimitedSpeed)
+                parseTrain(position: position, block: block, directionInBlock: directionInBlock, speed: LayoutFactory.DefaultLimitedSpeed)
 
             case .wagon:
-                parseWagon(position: position, block: block)
+                parseWagon(position: position, block: block, directionInBlock: directionInBlock)
 
             case let .endStation(reserved: reserved):
                 assert(type == .station, "Expected end of station block \(reserved)")
@@ -327,7 +327,7 @@ final class LayoutRouteParser {
         return speed
     }
 
-    func parseTrain(position: Int, block: Block, speed: UInt16) {
+    func parseTrain(position: Int, block: Block, directionInBlock: Direction, speed: UInt16) {
         let allowedDirection: Locomotive.AllowedDirection
         if sp.matches("⟷") {
             allowedDirection = .any
@@ -350,7 +350,7 @@ final class LayoutRouteParser {
             loc.allowedDirections = allowedDirection
             
             let train: Train
-            let distance = resolver.distance(forFeedbackAtPosition: position, blockId: block.id)
+            let distance = resolver.distance(forFeedbackAtPosition: position, blockId: block.id, directionInBlock: directionInBlock)
             if let parsedTrain = parsedTrain {
                 train = parsedTrain
                 train.position.front = .init(blockId: block.id, index: position, distance: distance)
@@ -371,21 +371,21 @@ final class LayoutRouteParser {
         }
     }
         
-    func parseWagon(position: Int, block: Block) {
+    func parseWagon(position: Int, block: Block, directionInBlock: Direction) {
         let uuid = parseUUID()
 
         if block.trainInstance == nil {
             block.trainInstance = TrainInstance(Identifier<Train>(uuid: uuid), .next)
         }
         if let train = layout.trains.first(where: { $0.id.uuid == uuid }) {
-            let distance = resolver.distance(forFeedbackAtPosition: position, blockId: block.id)
+            let distance = resolver.distance(forFeedbackAtPosition: position, blockId: block.id, directionInBlock: directionInBlock)
             train.position.back = .init(blockId: block.id, index: position, distance: distance)
         } else {
             // If a wagon is first detected, the train might not yet be created.
             // Create the train and remembers the back position of it.
             if parsedTrain == nil {
                 parsedTrain = Train(uuid: uuid)
-                let distance = resolver.distance(forFeedbackAtPosition: position, blockId: block.id)
+                let distance = resolver.distance(forFeedbackAtPosition: position, blockId: block.id, directionInBlock: directionInBlock)
                 parsedTrain?.position.back = .init(blockId: block.id, index: position, distance: distance)
             }
         }

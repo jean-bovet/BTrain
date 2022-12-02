@@ -103,6 +103,7 @@ final class TrainVisitor {
                                                            directionOfVisit: blockInfo.direction,
                                                            blockCallback: blockCallback)
                 
+                // Note: if the train length end up in a turnout, its back (or front) position won't be updated and left to be nil
                 if remainingTrainLength <= 0 {
                     // Update back position of the train
                     let pos = backPosition(in: blockInfo.block, with: remainingTrainLength, directionOfVisit: directionOfVisit, directionForward: locomotive.directionForward)
@@ -145,13 +146,13 @@ final class TrainVisitor {
                 //  {d}------> (train)
                 //     <------ (visit)
                 distance = blockLength - d
-                index = block.feedbacks.indexOfFeedback(withDistance: distance)
+                index = block.feedbacks.indexOfFeedback(withDistance: distance, directionOfVisit: directionOfVisit)
             } else {
                 //        [   ]>
                 //   ------< (train)
                 //   ------> (visit)
                 distance = blockLength - d
-                index = block.feedbacks.indexOfFeedback(withDistance: distance)
+                index = block.feedbacks.indexOfFeedback(withDistance: distance, directionOfVisit: directionOfVisit)
             }
         } else {
             if directionForward {
@@ -159,13 +160,13 @@ final class TrainVisitor {
                 // {d}------> (train)
                 //    <------ (visit)
                 distance = d
-                index = block.feedbacks.indexOfFeedback(withDistance: distance)
+                index = block.feedbacks.indexOfFeedback(withDistance: distance, directionOfVisit: directionOfVisit)
             } else {
                 //        [   ]<
                 //   ------<{d} (train)
                 //   ------>    (visit)
                 distance = d
-                index = block.feedbacks.indexOfFeedback(withDistance: distance)
+                index = block.feedbacks.indexOfFeedback(withDistance: distance, directionOfVisit: directionOfVisit)
             }
         }
         // TODO: throw when index is nil?
@@ -257,13 +258,26 @@ final class TrainVisitor {
 
 extension Array where Element == Block.BlockFeedback {
     
-    func indexOfFeedback(withDistance distance: Double) -> Int? {
-        for (findex, feedback) in self.enumerated().reversed() {
-            if let fd = feedback.distance, distance >= fd {
-                return findex + 1
+    /// Returns the index of the feedback that corresponds to the specified distance.
+    ///
+    ///     Block:    [   f0   f1   f2   ]>
+    ///     Distance: |------>
+    ///     Index:      0    1    2    3
+    ///     Train:           <----------------
+    ///     Visit:           ---------------->
+    ///     
+    /// - Parameters:
+    ///   - distance: the distance
+    ///   - directionOfVisit: the direction of visit of the block
+    /// - Returns: the feedback index
+    func indexOfFeedback(withDistance distance: Double, directionOfVisit: Direction) -> Int? {
+        //TODO: using directionOfVisit?
+        for (findex, feedback) in enumerated() {
+            if let fd = feedback.distance, distance <= fd {
+                return findex
             }
         }
-        return 0
+        return count
     }
 
 }

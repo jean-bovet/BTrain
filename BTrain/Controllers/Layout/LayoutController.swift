@@ -610,9 +610,10 @@ extension LayoutController {
         // Note: we set only the front position because the back position will be computed automatically
         // when the occupied blocks are filled (see TrainVisitor).
         if naturalDirectionInBlock == .next {
-            train.position = .front(blockId: toBlockId, index: toBlock.feedbacks.count, distance: toBlock.feedbacks.last?.distance ?? 0)
+            train.position = .front(blockId: toBlockId, index: toBlock.feedbacks.count, distance: (toBlock.feedbacks.last?.distance ?? 0) + distanceDelta)
         } else {
-            train.position = .front(blockId: toBlockId, index: 0, distance: toBlock.feedbacks.first?.distance ?? 0)
+            // TODO: refactor all the lines that uses + distanceDelta
+            train.position = .front(blockId: toBlockId, index: 0, distance: (toBlock.feedbacks.first?.distance ?? 0) + distanceDelta)
         }
         
         // If the train is moving backwards, always setup the train as if it was moving

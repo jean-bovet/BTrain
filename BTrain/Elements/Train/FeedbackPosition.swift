@@ -12,6 +12,8 @@
 
 import Foundation
 
+let distanceDelta = 0.001
+
 struct FeedbackPosition {
     
     let blockId: Identifier<Block>
@@ -21,10 +23,10 @@ struct FeedbackPosition {
     func trainPosition(direction: Direction) -> TrainPosition {
         switch direction {
         case .previous:
-            return TrainPosition(blockId: blockId, index: index, distance: distance)
+            return TrainPosition(blockId: blockId, index: index, distance: distance - distanceDelta)
 
         case .next:
-            return TrainPosition(blockId: blockId, index: index + 1, distance: distance)
+            return TrainPosition(blockId: blockId, index: index + 1, distance: distance + distanceDelta)
         }
     }
 }
