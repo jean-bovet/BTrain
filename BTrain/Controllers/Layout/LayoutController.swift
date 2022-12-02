@@ -572,6 +572,7 @@ extension LayoutController {
                 train.block = newBlock
                 newBlock.trainInstance = TrainInstance(train.id, ti.direction.opposite)
             } else {
+                // TODO: throw
                 fatalError()
             }
         } else {
@@ -580,6 +581,7 @@ extension LayoutController {
                 train.block = newBlock
                 newBlock.trainInstance = TrainInstance(train.id, ti.direction.opposite)
             } else {
+                // TODO: throw
                 fatalError()
             }
         }
