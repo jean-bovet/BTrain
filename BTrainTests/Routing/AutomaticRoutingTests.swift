@@ -607,39 +607,6 @@ class AutomaticRoutingTests: BTTestCase {
         try p.assert("automatic-0: !{s2 ≏ ≏ } <t4{sl}(0,1),s> ![b1 ≏ ≏ ] <t2{sr}(1,0),s> <t1{sr}(1,0),s> !{r0{s1 ≏ 􀼰0 ≡ 🔴!􀼮0 }}", [])
     }
 
-    // TODO: re-enable
-    func disabled__testBackwardRouteWithChangeInDirection() throws {
-        let layout = LayoutLoopWithStation().newLayout()
-        let s1 = layout.block(named: "s1")
-        let s2 = layout.block(named: "s2")
-
-        let t1 = layout.trains[0]
-        t1.locomotive?.length = 20
-        t1.wagonsLength = s1.length! - 60
-        
-        t1.locomotive!.directionForward = true
-        t1.locomotive!.allowedDirections = .any
-
-        XCTAssertTrue(t1.directionForward)
-        
-        let p = try setup(layout: layout, fromBlockId: s1.id, destination: .init(s2.id, direction: .next), position: .automatic, direction: .previous, routeSteps: ["s1:next", "b1:next", "s2:next"])
-        
-        // The route requires the train to move backward
-        XCTAssertFalse(t1.directionForward)
-        XCTAssertEqual(s1.trainInstance?.direction, .next)
-
-        try p.assert("automatic-0: {r0{s1 🔵􀼮⟷0 ≏ 􀼯0 ≏ 􀼯0 }} <r0<t1{sr}(0,1),s>> <r0<t2{sr}(0,1),s>> [r0[b1 ≏ ≏ ]] <t4{sl}(1,0),s> {s2 ≏ ≏ }", ["b1"])
-
-//        try p.assert("automatic-0: {r0{s1 ≡ 🔵􀼮⟷0 ≏ 􀼯0 }} <r0<t1{sr}(0,1),s>> <r0<t2{sr}(0,1),s>> [r0[b1 􀼯0 ≡ 􀼯0 ≏ ]] <r0<t4{sl}(1,0),s>> {r0{s2 ≏ ≏ }}", ["s2"])
-
-//        try p.assert("automatic-0: {s1 ≏ ≏ } <t1{sr}(0,1),s> <t2{sr}(0,1),s> [r0[b1 ≡ 🟡􀼮⟷0 ≏ 􀼯0 ]] <r0<t4{sl}(1,0),s>> {r0{s2 􀼯0 ≡ 􀼯0 ≏ }}", [])
-//        try p.assert("automatic-0: {s1 ≏ ≏ } <t1{sr}(0,1),s> <t2{sr}(0,1),s> [r0[b1 ≏ 🔴􀼮⟷0 ≏ 􀼯0 ]] <r0<t4{sl}(1,0),s>> {r0{s2 􀼯0 ≏ 􀼯0 ≡ 􀼯0 }}", [])
-
-//        try p.assert("automatic-0: {r0{s1 ≏ 🔵􀼮0 ≏ 􀼯0 }} <r0<t1{sr}(0,1),s>> <r0<t2{sr}(0,1),s>> [r0[b1 􀼯0 ≡ 􀼯0 ≏ ]] <r0<t4{sl}(1,0),s>> {r0{s2 ≏ ≏ }}", ["s2"])
-//        print("** \(t1.position)")
-// TODO: interesting! because the feedback was not triggered, the front position has not yet moved. But the length of the train indicates that it has moved to position index 1!
-    }
-
     // MARK: - - Utility
 
     private func setup(layout: Layout, fromBlockId: Identifier<Block>, destination: Destination?, position: Package.Position = .start, direction: Direction = .next, expectedState: Train.State = .running, routeSteps: [String]) throws -> Package {
