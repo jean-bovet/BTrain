@@ -220,6 +220,7 @@ final class LayoutASCIIProducer {
         if trainInstance.parts.isEmpty, train.position.front?.index == position {
             return stringFrom(train)
         } else if let part = trainInstance.parts[position] {
+            // TODO: remove parts and fix how we generate an ASCII route with the back position
             switch part {
             case .locomotive:
                 return stringFrom(train)
