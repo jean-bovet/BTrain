@@ -45,9 +45,9 @@ extension TrainPosition {
                 throw LayoutError.directionNotFound(blockId: blockId)
             }
             if direction == .next {
-                return index > other.index
+                return distance > other.distance
             } else {
-                return index < other.index
+                return distance < other.distance
             }
         }
     }
