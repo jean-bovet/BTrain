@@ -350,13 +350,14 @@ final class LayoutRouteParser {
             loc.allowedDirections = allowedDirection
             
             let train: Train
+            let distance = resolver.distance(forFeedbackAtPosition: position, blockId: block.id)
             if let parsedTrain = parsedTrain {
                 train = parsedTrain
-                train.position.front = .init(blockId: block.id, index: position)
+                train.position.front = .init(blockId: block.id, index: position, distance: distance)
                 self.parsedTrain = nil
             } else {
                 train = Train(uuid: uuid)
-                train.position = TrainLocation.both(blockId: block.id, index: position)
+                train.position = .both(blockId: block.id, frontIndex: position, frontDistance: distance, backIndex: position, backDistance: distance)
             }
             
             train.locomotive = loc
@@ -377,13 +378,15 @@ final class LayoutRouteParser {
             block.trainInstance = TrainInstance(Identifier<Train>(uuid: uuid), .next)
         }
         if let train = layout.trains.first(where: { $0.id.uuid == uuid }) {
-            train.position.back = .init(blockId: block.id, index: position)
+            let distance = resolver.distance(forFeedbackAtPosition: position, blockId: block.id)
+            train.position.back = .init(blockId: block.id, index: position, distance: distance)
         } else {
             // If a wagon is first detected, the train might not yet be created.
             // Create the train and remembers the back position of it.
             if parsedTrain == nil {
                 parsedTrain = Train(uuid: uuid)
-                parsedTrain?.position.back = .init(blockId: block.id, index: position)
+                let distance = resolver.distance(forFeedbackAtPosition: position, blockId: block.id)
+                parsedTrain?.position.back = .init(blockId: block.id, index: position, distance: distance)
             }
         }
         

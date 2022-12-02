@@ -24,8 +24,8 @@ class TrainTests: XCTestCase {
         let t1 = Train(uuid: "1")
         t1.name = "Rail 2000"
         t1.routeStepIndex = 1
-        t1.position.front = .init(blockId: Identifier<Block>(uuid: "1"), index: 1)
-        t1.position.back = .init(blockId: Identifier<Block>(uuid: "2"), index: 2)
+        t1.position.front = .init(blockId: Identifier<Block>(uuid: "1"), index: 1, distance: 10)
+        t1.position.back = .init(blockId: Identifier<Block>(uuid: "2"), index: 2, distance: 20)
         t1.block = layout.blocks[0]
         t1.routeId = Identifier<Route>(uuid: "1212")
 

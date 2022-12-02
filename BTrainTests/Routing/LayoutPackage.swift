@@ -66,17 +66,17 @@ final class Package {
         let block = layout.blocks[Identifier<Block>(uuid: fromBlockId)]!
         
         train.routeId = route.id
-        let location: TrainLocation        
+        let location: TrainLocation
         // TODO: do we still need to specify the position like that or could we let the layout setup the position automatically?
         switch position {
         case .start:
-            location = TrainLocation.both(blockId: block.id, index: 0)
+            location = .front(blockId: block.id, index: 0, distance: 0)
         case .end:
-            location = TrainLocation.both(blockId: block.id, index: block.feedbacks.count)
+            location = .front(blockId: block.id, index: block.feedbacks.count, distance: block.feedbacks.last?.distance ?? 0)
         case .custom(let index):
-            location = TrainLocation.both(blockId: block.id, index: index)
+            location = .front(blockId: block.id, index: index, distance: block.feedbacks[index-1].distance ?? 0)
         case .automatic:
-            location = TrainLocation.both(blockId: block.id, index: 0)
+            location = .front(blockId: block.id, index: 0, distance: 0)
             break
         }
         
@@ -169,6 +169,7 @@ final class Package {
 }
 
 extension Layout: LayoutParserResolver {
+    
     func blockId(forBlockName: String) -> BTrain.Identifier<BTrain.Block> {
         block(named: forBlockName).id
     }
@@ -177,4 +178,13 @@ extension Layout: LayoutParserResolver {
         turnout(named: forTurnoutName).id
     }
     
+    func distance(forFeedbackAtPosition index: Int, blockId: BTrain.Identifier<BTrain.Block>) -> Double {
+        let block = blocks[blockId]!
+        if index < 1 {
+            return 0
+        } else {
+            return block.feedbacks[index-1].distance!
+        }
+    }
+
 }

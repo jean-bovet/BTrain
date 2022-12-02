@@ -25,7 +25,7 @@ class LayoutTests: BTTestCase {
         layout.link(from: b1.next, to: b2.previous)
         layout.link(from: b2.next, to: b1.previous)
 
-        try layout.setTrainToBlock(t1, b1.id, position: .block(blockId: b1.id, front: 2, back: 0), directionOfTravelInBlock: .next)
+        try layout.setTrainToBlock(t1, b1.id, position: .both(blockId: b1.id, frontIndex: 2, frontDistance: 20, backIndex: 0, backDistance: 0), directionOfTravelInBlock: .next)
         XCTAssertEqual(t1.block?.id, b1.id)
         XCTAssertEqual(layout.transitions.elements.count, 2)
 
@@ -91,7 +91,7 @@ class LayoutTests: BTTestCase {
 
         // Set the train inside a block with a specific direction which
         // is opposite of the train direction itself
-        try doc.layout.setTrainToBlock(train1, block1.id, position: .block(blockId: block1.id, front: 1, back: 0), directionOfTravelInBlock: .next)
+        try doc.layout.setTrainToBlock(train1, block1.id, position: .both(blockId: block1.id, frontIndex: 1, frontDistance: 10, backIndex: 0, backDistance: 0), directionOfTravelInBlock: .next)
         XCTAssertEqual(block1.trainInstance!.direction, .next)
         XCTAssertEqual(train1.directionForward, false)
 

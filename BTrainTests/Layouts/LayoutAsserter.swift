@@ -116,12 +116,17 @@ final class LayoutAsserter {
         for (index, expectedTrain) in expectedTrains.enumerated() {
             let train = layout.trains[expectedTrain.id]!
             XCTAssertEqual(train.id, expectedTrain.id, "Unexpected train mismatch at index \(index), route \(routeName)")
+
             if train.directionForward {
                 XCTAssertEqual(train.position.front, expectedTrain.position.front, "Mismatching train front position for train \(expectedTrain.id), route \(routeName)")
-                XCTAssertNil(train.position.back, "When moving forward, the train should not have a defined back position")
+                // Note: the back position distance cannot be asserted accurately because the ASCII representation does not allow (yet) to specify the distance between feedback,
+                // which is usually where the position ends up after the algorithm computes the exact location from the front position and the length of the train.
+                XCTAssertEqual(train.position.back?.index, expectedTrain.position.back?.index, "Mismatching train back position index for train \(expectedTrain.id), route \(routeName)")
             } else {
                 XCTAssertEqual(train.position.back, expectedTrain.position.back, "Mismatching train back position for train \(expectedTrain.id), route \(routeName)")
-                XCTAssertNil(train.position.front, "When moving backward, the train should not have a defined front position")
+                // Note: the front position distance cannot be asserted accurately because the ASCII representation does not allow (yet) to specify the distance between feedback,
+                // which is usually where the position ends up after the algorithm computes the exact location from the front position and the length of the train.
+                XCTAssertEqual(train.position.front?.index, expectedTrain.position.front?.index, "Mismatching train front position index for train \(expectedTrain.id), route \(routeName)")
             }
             XCTAssertEqual(train.speed!.requestedKph, expectedTrain.speed!.requestedKph, accuracy: 1, "Mismatching train speed for train \(expectedTrain.id), route \(routeName)")
         }
@@ -255,9 +260,10 @@ final class LayoutAsserter {
         }
 
         // Assert the parts of the block reserved for the train and its wagon
-        if let train = block.trainInstance, let expectedTrain = expectedBlock.trainInstance {
-            XCTAssertEqual(train.parts, expectedTrain.parts, "Unexpected train parts mismatch in block \(block) at index \(index), route \(routeName)")
-        }
+        // TODO: finish to remove the parts
+//        if let train = block.trainInstance, let expectedTrain = expectedBlock.trainInstance {
+//            XCTAssertEqual(train.parts, expectedTrain.parts, "Unexpected train parts mismatch in block \(block) at index \(index), route \(routeName)")
+//        }
     }
 
     private func assertTurnoutAt(index: Int, routeName: String, step: ResolvedRouteItemTurnout, expectedStep: ResolvedRouteItemTurnout, expectedLayout _: LayoutParser.ParsedLayout) {

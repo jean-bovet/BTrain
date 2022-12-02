@@ -22,5 +22,6 @@ protocol LayoutParserResolver {
     
     func turnoutId(forTurnoutName: String) -> Identifier<Turnout>
     
+    func distance(forFeedbackAtPosition index: Int, blockId: Identifier<Block>) -> Double
 }
 

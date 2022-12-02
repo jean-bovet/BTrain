@@ -302,7 +302,7 @@ final class TrainController: TrainControlling, CustomStringConvertible {
             return false
         }
         
-        guard let blockFeedback = frontBlock.feedbacks.first(where: { $0.feedbackId == entryFeedback.feedback.id }) else {
+        guard let blockFeedback = entryFeedback.block.feedbacks.first(where: { $0.feedbackId == entryFeedback.feedback.id }) else {
             // TODO: throw
             fatalError()
         }

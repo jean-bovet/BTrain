@@ -13,7 +13,6 @@
 @testable import BTrain
 import XCTest
 
-// Using "Layout B"
 //    ┌─────────┐                              ┌─────────┐
 // ┌──│ Block 2 │◀────┐         ┌─────────────▶│ Block 4 │──┐
 // │  └─────────┘     │         │              └─────────┘  │
