@@ -121,9 +121,10 @@ final class LayoutAsserter {
                 XCTAssertEqual(train.position.front, expectedTrain.position.front, "Mismatching train front position for train \(expectedTrain.id), route \(routeName)")
                 // Note: the back position distance cannot be asserted accurately because the ASCII representation does not allow (yet) to specify the distance between feedback,
                 // which is usually where the position ends up after the algorithm computes the exact location from the front position and the length of the train.
-                if let backIndex = train.position.back?.index {
+                if let back = train.position.back {
                     // Note: if the back position is not specified, it means it ended up in a turnout which is not yet handled (so nil is assigned to the position)
-                    XCTAssertEqual(backIndex, expectedTrain.position.back?.index, "Mismatching train back position index for train \(expectedTrain.id), route \(routeName)")
+                    XCTAssertEqual(back.blockId, expectedTrain.position.back?.blockId, "Mismatching train back position blockId for train \(expectedTrain.id), route \(routeName)")
+                    XCTAssertEqual(back.index, expectedTrain.position.back?.index, "Mismatching train back position index for train \(expectedTrain.id), route \(routeName)")
                 }
             } else {
                 XCTAssertEqual(train.position.back, expectedTrain.position.back, "Mismatching train back position for train \(expectedTrain.id), route \(routeName)")

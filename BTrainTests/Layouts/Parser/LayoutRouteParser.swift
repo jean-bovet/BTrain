@@ -135,7 +135,7 @@ final class LayoutRouteParser {
 
     enum BlockContentType {
         case locomotive(attributes: TrainAttributes)
-        case wagon(uuid: String)
+        case wagon(uuid: String, last: Bool)
 
         case endStation(reserved: Bool)
         case endFreeOrSidingPrevious(reserved: Bool)
@@ -184,8 +184,8 @@ final class LayoutRouteParser {
             case .locomotive(let attributes):
                 createTrain(position: position, block: block, directionInBlock: directionInBlock, attributes: attributes)
 
-            case .wagon(let uuid):
-                parseWagon(position: position, block: block, directionInBlock: directionInBlock, uuid: uuid)
+            case .wagon(let uuid, let last):
+                parseWagon(position: position, block: block, directionInBlock: directionInBlock, uuid: uuid, last: last)
 
             case let .endStation(reserved: reserved):
                 assert(type == .station, "Expected end of station block \(reserved)")
@@ -235,7 +235,9 @@ final class LayoutRouteParser {
             } else if sp.matches(" ") {
                 // ignore white space
             } else if sp.matches("􀼯") {
-                callback(.wagon(uuid: parseUUID()))
+                callback(.wagon(uuid: parseUUID(), last: false))
+            } else if sp.matches("􀼰") {
+                callback(.wagon(uuid: parseUUID(), last: true))
             } else {
                 throw ParserError.parserError(message: "Unknown character '\(sp.c)'")
             }
@@ -385,20 +387,24 @@ final class LayoutRouteParser {
         }
     }
         
-    func parseWagon(position: Int, block: Block, directionInBlock: Direction, uuid: String) {
+    func parseWagon(position: Int, block: Block, directionInBlock: Direction, uuid: String, last: Bool) {
         if block.trainInstance == nil {
             block.trainInstance = TrainInstance(Identifier<Train>(uuid: uuid), .next)
         }
         if let train = layout.trains.first(where: { $0.id.uuid == uuid }) {
-            let distance = resolver.distance(forFeedbackAtPosition: position, blockId: block.id, directionInBlock: directionInBlock)
-            train.position.back = .init(blockId: block.id, index: position, distance: distance)
+            if last {
+                let distance = resolver.distance(forFeedbackAtPosition: position, blockId: block.id, directionInBlock: directionInBlock)
+                train.position.back = .init(blockId: block.id, index: position, distance: distance)
+            }
         } else {
             // If a wagon is first detected, the train might not yet be created.
             // Create the train and remembers the back position of it.
             if parsedTrain == nil {
                 parsedTrain = Train(uuid: uuid)
-                let distance = resolver.distance(forFeedbackAtPosition: position, blockId: block.id, directionInBlock: directionInBlock)
-                parsedTrain?.position.back = .init(blockId: block.id, index: position, distance: distance)
+                if last {
+                    let distance = resolver.distance(forFeedbackAtPosition: position, blockId: block.id, directionInBlock: directionInBlock)
+                    parsedTrain?.position.back = .init(blockId: block.id, index: position, distance: distance)
+                }
             }
         }
         
