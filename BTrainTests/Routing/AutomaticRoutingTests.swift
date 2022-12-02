@@ -24,13 +24,13 @@ class AutomaticRoutingTests: BTTestCase {
 
         let p = try setup(layout: layout, fromBlockId: s1.id, destination: nil, position: .end, routeSteps: ["s1:next", "b1:next", "b2:next", "b3:next", "s2:next"])
 
-        try p.assert("automatic-0: {r0{s1 􀼯0 ≏ 🔵􀼮0 }} <r0<t1(2,0),l>> <r0<t2(1,0),s>> [r0[b1 ≏ ]] <t3> [b2 ≏ ] <t4(1,0)> [b3 ≏ ≏ ≏ ] <t5> <t6> {s2 ≏ }", ["b1"])
+        try p.assert("automatic-0: {r0{s1 􀼰0 ≏ 🔵􀼮0 }} <r0<t1(2,0),l>> <r0<t2(1,0),s>> [r0[b1 ≏ ]] <t3> [b2 ≏ ] <t4(1,0)> [b3 ≏ ≏ ≏ ] <t5> <t6> {s2 ≏ }", ["b1"])
 
         // Let's put another train in b2 and b5, resulting in no possible path forward
         layout.reserve("b2", with: "1", direction: .next)
         layout.reserve("b5", with: "1", direction: .next)
 
-        try p.assert("automatic-0: {r0{s1 􀼯0 ≏ 🔵􀼮0 }} <r0<t1(2,0),l>> <r0<t2(1,0),s>> [r0[b1 ≏ ]] <t3> [r1[b2 ≏ ]] <t4(1,0)> [b3 ≏ ≏ ≏ ] <t5> <t6> {s2 ≏ }", ["b1"])
+        try p.assert("automatic-0: {r0{s1 􀼰0 ≏ 🔵􀼮0 }} <r0<t1(2,0),l>> <r0<t2(1,0),s>> [r0[b1 ≏ ]] <t3> [r1[b2 ≏ ]] <t4(1,0)> [b3 ≏ ≏ ≏ ] <t5> <t6> {s2 ≏ }", ["b1"])
 
         // Move s1 -> b1
         p.toggle("fb1")
@@ -47,18 +47,18 @@ class AutomaticRoutingTests: BTTestCase {
         p.layoutController.runControllers(.trainPositionChanged(p.train))
 
         // Train restarts with a new route
-        try p.assert("automatic-0: [r0[b1 􀼯0 ≏ 🔵􀼮0 ]] <r0<t3>> [r0[b2 ≏ ]] <t4(1,0)> [b3 ≏ ≏ ≏ ] <t5> <t6> {s2 ≏ }", ["b2"])
+        try p.assert("automatic-0: [r0[b1 􀼰0 ≏ 🔵􀼮0 ]] <r0<t3>> [r0[b2 ≏ ]] <t4(1,0)> [b3 ≏ ≏ ≏ ] <t5> <t6> {s2 ≏ }", ["b2"])
 
         // Move b1 -> b2
-        try p.assert("automatic-0: [b1 ≏ ] <t3> [r0[b2 􀼯0 ≡ 🔵􀼮0 ]] <r0<t4(1,0)>> [r0[b3 ≏ ≏ ≏ ]] <t5> <t6> {s2 ≏ }", ["b3"])
+        try p.assert("automatic-0: [b1 ≏ ] <t3> [r0[b2 􀼰0 ≡ 🔵􀼮0 ]] <r0<t4(1,0)>> [r0[b3 ≏ ≏ ≏ ]] <t5> <t6> {s2 ≏ }", ["b3"])
 
         // Move b2 -> b3
-        try p.assert("automatic-0: [b1 ≏ ] <t3> [b2 ≏ ] <t4(1,0)> [r0[b3 􀼯0 ≡ 🔵􀼮0 ≏ ≏ ]] <r0<t5>> <r0<t6>> {r0{s2 ≏ }}", ["s2"])
-        try p.assert("automatic-0: [b1 ≏ ] <t3> [b2 ≏ ] <t4(1,0)> [r0[b3 ≏ 􀼯0 ≡ 🔵􀼮0 ≏ ]] <r0<t5>> <r0<t6>> {r0{s2 ≏ }}", ["s2"])
-        try p.assert("automatic-0: [b1 ≏ ] <t3> [b2 ≏ ] <t4(1,0)> [r0[b3 ≏ ≏ 􀼯0 ≡ 🔵􀼮0 ]] <r0<t5>> <r0<t6>> {r0{s2 ≏ }}", ["s2"])
+        try p.assert("automatic-0: [b1 ≏ ] <t3> [b2 ≏ ] <t4(1,0)> [r0[b3 􀼰0 ≡ 🔵􀼮0 ≏ ≏ ]] <r0<t5>> <r0<t6>> {r0{s2 ≏ }}", ["s2"])
+        try p.assert("automatic-0: [b1 ≏ ] <t3> [b2 ≏ ] <t4(1,0)> [r0[b3 ≏ 􀼰0 ≡ 🔵􀼮0 ≏ ]] <r0<t5>> <r0<t6>> {r0{s2 ≏ }}", ["s2"])
+        try p.assert("automatic-0: [b1 ≏ ] <t3> [b2 ≏ ] <t4(1,0)> [r0[b3 ≏ ≏ 􀼰0 ≡ 🔵􀼮0 ]] <r0<t5>> <r0<t6>> {r0{s2 ≏ }}", ["s2"])
 
         // Move b3 -> s2
-        try p.assert("automatic-0: [b1 ≏ ] <t3> [b2 ≏ ] <t4(1,0)> [b3 ≏ ≏ ≏ ] <t5> <t6> {r0{s2 􀼯0 ≡ 🔴􀼮0 }}", [])
+        try p.assert("automatic-0: [b1 ≏ ] <t3> [b2 ≏ ] <t4(1,0)> [b3 ≏ ≏ ≏ ] <t5> <t6> {r0{s2 􀼰0 ≡ 🔴􀼮0 }}", [])
 
         // The train is still running because the route is .endless
         XCTAssertEqual(p.train.scheduling, .managed)
@@ -71,19 +71,19 @@ class AutomaticRoutingTests: BTTestCase {
         // The route will choose "s2" as the arrival block
         var p = try setup(layout: layout, fromBlockId: s1.id, destination: nil, position: .custom(index: 1), routeSteps: ["s1:next", "b1:next", "s2:next"])
 
-        try p.assert("automatic-0: {r0{s1 􀼯0 ≏ 🔵􀼮0 ≏ }} <r0<t1{sr}(0,1),s>> <r0<t2{sr}(0,1),s>> [r0[b1 ≏ ≏ ]] <t4{sl}(1,0),s> {s2 ≏ ≏ }")
+        try p.assert("automatic-0: {r0{s1 􀼰0 ≏ 🔵􀼮0 ≏ }} <r0<t1{sr}(0,1),s>> <r0<t2{sr}(0,1),s>> [r0[b1 ≏ ≏ ]] <t4{sl}(1,0),s> {s2 ≏ ≏ }")
 
         p.stop()
 
         // Note: the train the stops only after triggering the stop feedback of the block.
-        try p.assert("automatic-0: {r0{s1 ≏ 􀼯0 ≡ 🔴􀼮0 }} <t1{sr}(0,1),s> <t2{sr}(0,1),s> [b1 ≏ ≏ ] <t4{sl}(1,0),s> {s2 ≏ ≏ }")
+        try p.assert("automatic-0: {r0{s1 ≏ 􀼰0 ≡ 🔴􀼮0 }} <t1{sr}(0,1),s> <t2{sr}(0,1),s> [b1 ≏ ≏ ] <t4{sl}(1,0),s> {s2 ≏ ≏ }")
 
         // Let's artificially reserve turnout t2. This should cause the automatic route to be re-evaluated to find an alternate path
         layout.turnout(named: "t2").reserved = .init(train: .init(uuid: "7"), sockets: .init(fromSocketId: 0, toSocketId: 1))
 
         p = try setup(layout: layout, fromBlockId: s1.id, destination: nil, position: .end, routeSteps: ["s1:next", "b2:next", "b3:next", "s2:next"])
 
-        try p.assert("automatic-0: {r0{s1 ≏ 􀼯0 ≏ 🔵􀼮0 }} <r0<t1{sr}(0,2),r>> [r0[b2 ≏ ≏ ]] <t3{sr}(1,0),s> [b3 ≏ ≏ ] <t4{sl}(2,0),s> {s2 ≏ ≏ }")
+        try p.assert("automatic-0: {r0{s1 ≏ 􀼰0 ≏ 🔵􀼮0 }} <r0<t1{sr}(0,2),r>> [r0[b2 ≏ ≏ ]] <t3{sr}(1,0),s> [b3 ≏ ≏ ] <t4{sl}(2,0),s> {s2 ≏ ≏ }")
     }
 
     func testUpdateAutomaticRouteWithBlockToAvoid() throws {
@@ -169,17 +169,17 @@ class AutomaticRoutingTests: BTTestCase {
 
         let p = try setup(layout: layout, fromBlockId: s1.id, destination: nil, position: .end, routeSteps: ["s1:next", "b1:next", "b2:next", "b3:next", "s2:next"])
 
-        try p.assert("automatic-0: {r0{s1 􀼯0 ≏ 🔵􀼮0 }} <r0<t1(2,0),l>> <r0<t2(1,0),s>> [r0[b1 ≏ ]] <t3> [b2 ≏ ] <t4(1,0)> [b3 ≏ ≏ ] <t5> <t6> {s2 ≏ }")
-        try p.assert("automatic-0: {s1 ≏ } <t1(2,0),l> <t2(1,0),s> [r0[b1 􀼯0 ≡ 🔵􀼮0 ]] <r0<t3>> [r0[b2 ≏ ]] <t4(1,0)> [b3 ≏ ≏ ] <t5> <t6> {s2 ≏ }")
-        try p.assert("automatic-0: {s1 ≏ } <t1(2,0),l> <t2(1,0),s> [b1 ≏ ] <t3> [r0[b2 􀼯0 ≡ 🔵􀼮0 ]] <r0<t4(1,0)>> [r0[b3 ≏ ≏ ]] <t5> <t6> {s2 ≏ }")
+        try p.assert("automatic-0: {r0{s1 􀼰0 ≏ 🔵􀼮0 }} <r0<t1(2,0),l>> <r0<t2(1,0),s>> [r0[b1 ≏ ]] <t3> [b2 ≏ ] <t4(1,0)> [b3 ≏ ≏ ] <t5> <t6> {s2 ≏ }")
+        try p.assert("automatic-0: {s1 ≏ } <t1(2,0),l> <t2(1,0),s> [r0[b1 􀼰0 ≡ 🔵􀼮0 ]] <r0<t3>> [r0[b2 ≏ ]] <t4(1,0)> [b3 ≏ ≏ ] <t5> <t6> {s2 ≏ }")
+        try p.assert("automatic-0: {s1 ≏ } <t1(2,0),l> <t2(1,0),s> [b1 ≏ ] <t3> [r0[b2 􀼰0 ≡ 🔵􀼮0 ]] <r0<t4(1,0)>> [r0[b3 ≏ ≏ ]] <t5> <t6> {s2 ≏ }")
 
         p.finish()
         XCTAssertEqual(p.train.scheduling, .finishManaged)
 
-        try p.assert("automatic-0: {s1 ≏ } <t1(2,0),l> <t2(1,0),s> [b1 ≏ ] <t3> [b2 ≏ ] <t4(1,0)> [r0[b3 􀼯0 ≡ 🔵􀼮0 ≏ ≏ ]] <r0<t5>> <r0<t6>> {r0{s2 ≏ }}")
-        try p.assert("automatic-0: {s1 ≏ } <t1(2,0),l> <t2(1,0),s> [b1 ≏ ] <t3> [b2 ≏ ] <t4(1,0)> [r0[b3 ≏ 􀼯0 ≡ 🔵􀼮0 ≏ ]] <r0<t5>> <r0<t6>> {r0{s2 ≏ }}")
-        try p.assert("automatic-0: {s1 ≏ } <t1(2,0),l> <t2(1,0),s> [b1 ≏ ] <t3> [b2 ≏ ] <t4(1,0)> [r0[b3 ≏ ≏ 􀼯0 ≡ 🔵􀼮0 ]] <r0<t5>> <r0<t6>> {r0{s2 ≏ }}")
-        try p.assert("automatic-0: {s1 ≏ } <t1(2,0),l> <t2(1,0),s> [b1 ≏ ] <t3> [b2 ≏ ] <t4(1,0)> [b3 ≏ ≏ ≏ ] <t5> <t6> {r0{s2 􀼯0 ≡ 🔴􀼮0 }}")
+        try p.assert("automatic-0: {s1 ≏ } <t1(2,0),l> <t2(1,0),s> [b1 ≏ ] <t3> [b2 ≏ ] <t4(1,0)> [r0[b3 􀼰0 ≡ 🔵􀼮0 ≏ ≏ ]] <r0<t5>> <r0<t6>> {r0{s2 ≏ }}")
+        try p.assert("automatic-0: {s1 ≏ } <t1(2,0),l> <t2(1,0),s> [b1 ≏ ] <t3> [b2 ≏ ] <t4(1,0)> [r0[b3 ≏ 􀼰0 ≡ 🔵􀼮0 ≏ ]] <r0<t5>> <r0<t6>> {r0{s2 ≏ }}")
+        try p.assert("automatic-0: {s1 ≏ } <t1(2,0),l> <t2(1,0),s> [b1 ≏ ] <t3> [b2 ≏ ] <t4(1,0)> [r0[b3 ≏ ≏ 􀼰0 ≡ 🔵􀼮0 ]] <r0<t5>> <r0<t6>> {r0{s2 ≏ }}")
+        try p.assert("automatic-0: {s1 ≏ } <t1(2,0),l> <t2(1,0),s> [b1 ≏ ] <t3> [b2 ≏ ] <t4(1,0)> [b3 ≏ ≏ ≏ ] <t5> <t6> {r0{s2 􀼰0 ≡ 🔴􀼮0 }}")
 
         XCTAssertEqual(p.train.scheduling, .unmanaged)
     }
@@ -190,7 +190,7 @@ class AutomaticRoutingTests: BTTestCase {
 
         let p = try setup(layout: layout, fromBlockId: s1.id, destination: nil, position: .end, routeSteps: ["s1:next", "b1:next", "b2:next", "b3:next", "s2:next"])
 
-        try p.assert("automatic-0: {r0{s1 􀼯0 ≏ 🔵􀼮0 }} <r0<t1(2,0),l>> <r0<t2(1,0),s>> [r0[b1 ≏ ]] <t3> [b2 ≏ ] <t4(1,0)> [b3 ≏ ≏ ] <t5> <t6> {s2 ≏ }")
+        try p.assert("automatic-0: {r0{s1 􀼰0 ≏ 🔵􀼮0 }} <r0<t1(2,0),l>> <r0<t2(1,0),s>> [r0[b1 ≏ ]] <t3> [b2 ≏ ] <t4(1,0)> [b3 ≏ ≏ ] <t5> <t6> {s2 ≏ }")
 
         // Let's put another train in b2 and b5
         layout.reserve("b2", with: "1", direction: .next)
@@ -200,7 +200,7 @@ class AutomaticRoutingTests: BTTestCase {
         p.finish()
         XCTAssertEqual(p.train.scheduling, .finishManaged)
 
-        try p.assert("automatic-0: {r0{s1 􀼯0 ≏ 🔵􀼮0 }} <r0<t1(2,0),l>> <r0<t2(1,0),s>> [r0[b1 ≏ ]] <t3> [r1[b2 ≏ ]] <t4(1,0)> [b3 ≏ ≏ ] <t5> <t6> {s2 ≏ }")
+        try p.assert("automatic-0: {r0{s1 􀼰0 ≏ 🔵􀼮0 }} <r0<t1(2,0),l>> <r0<t2(1,0),s>> [r0[b1 ≏ ]] <t3> [r1[b2 ≏ ]] <t4(1,0)> [b3 ≏ ≏ ] <t5> <t6> {s2 ≏ }")
 
         // Move s1 -> b1
         p.toggle("fb1")
@@ -215,18 +215,18 @@ class AutomaticRoutingTests: BTTestCase {
 
         // Train restarts with a new route
         try p.printASCII()
-        try p.assert("automatic-0: [r0[b1 􀼯0 ≏ 🔵􀼮0 ]] <r0<t3>> [r0[b2 ≏ ]] <t4(1,0)> [b3 ≏ ≏ ≏ ] <t5> <t6> {s2 ≏ }", ["b2"])
+        try p.assert("automatic-0: [r0[b1 􀼰0 ≏ 🔵􀼮0 ]] <r0<t3>> [r0[b2 ≏ ]] <t4(1,0)> [b3 ≏ ≏ ≏ ] <t5> <t6> {s2 ≏ }", ["b2"])
 
         // Move b1 -> b2
-        try p.assert("automatic-0: [b1 ≏ ] <t3> [r0[b2 􀼯0 ≡ 🔵􀼮0 ]] <r0<t4(1,0)>> [r0[b3 ≏ ≏ ≏ ]] <t5> <t6> {s2 ≏ }", ["b3"])
+        try p.assert("automatic-0: [b1 ≏ ] <t3> [r0[b2 􀼰0 ≡ 🔵􀼮0 ]] <r0<t4(1,0)>> [r0[b3 ≏ ≏ ≏ ]] <t5> <t6> {s2 ≏ }", ["b3"])
 
         // Move b2 -> b3
-        try p.assert("automatic-0: [b1 ≏ ] <t3> [b2 ≏ ] <t4(1,0)> [r0[b3 􀼯0 ≡ 🔵􀼮0 ≏ ≏ ]] <r0<t5>> <r0<t6>> {r0{s2 ≏ }}", ["s2"])
-        try p.assert("automatic-0: [b1 ≏ ] <t3> [b2 ≏ ] <t4(1,0)> [r0[b3 ≏ 􀼯0 ≡ 🔵􀼮0 ≏ ]] <r0<t5>> <r0<t6>> {r0{s2 ≏ }}", ["s2"])
-        try p.assert("automatic-0: [b1 ≏ ] <t3> [b2 ≏ ] <t4(1,0)> [r0[b3 ≏ ≏ 􀼯0 ≡ 🔵􀼮0 ]] <r0<t5>> <r0<t6>> {r0{s2 ≏ }}", ["s2"])
+        try p.assert("automatic-0: [b1 ≏ ] <t3> [b2 ≏ ] <t4(1,0)> [r0[b3 􀼰0 ≡ 🔵􀼮0 ≏ ≏ ]] <r0<t5>> <r0<t6>> {r0{s2 ≏ }}", ["s2"])
+        try p.assert("automatic-0: [b1 ≏ ] <t3> [b2 ≏ ] <t4(1,0)> [r0[b3 ≏ 􀼰0 ≡ 🔵􀼮0 ≏ ]] <r0<t5>> <r0<t6>> {r0{s2 ≏ }}", ["s2"])
+        try p.assert("automatic-0: [b1 ≏ ] <t3> [b2 ≏ ] <t4(1,0)> [r0[b3 ≏ ≏ 􀼰0 ≡ 🔵􀼮0 ]] <r0<t5>> <r0<t6>> {r0{s2 ≏ }}", ["s2"])
 
         // Move b3 -> s2
-        try p.assert("automatic-0: [b1 ≏ ] <t3> [b2 ≏ ] <t4(1,0)> [b3 ≏ ≏ ≏ ] <t5> <t6> {r0{s2 􀼯0 ≡ 🔴􀼮0 }}", [])
+        try p.assert("automatic-0: [b1 ≏ ] <t3> [b2 ≏ ] <t4(1,0)> [b3 ≏ ≏ ≏ ] <t5> <t6> {r0{s2 􀼰0 ≡ 🔴􀼮0 }}", [])
 
         // The train has stopped because it has been asked to finish the route
         XCTAssertEqual(p.train.scheduling, .unmanaged)
@@ -241,13 +241,13 @@ class AutomaticRoutingTests: BTTestCase {
         // Duplicate this test with leading blocks to 2 to see how the speed changes
 //        p.train.maxNumberOfLeadingReservedBlocks = 2
 
-        try p.assert("automatic-0: {r0{s2 􀼯0 ≏ 🔵􀼮0 }} <r0<t1(1,0),s>> <r0<t2(1,0),s>> [r0[b1 ≏ ]] <t3> [b2 ≏ ] <t4(1,0)> [b3 ≏ ≏ ] <t5> <t6> {r0{s2 􀼯0 ≏ 🔵􀼮0 }}")
-        try p.assert("automatic-0: {s2 ≏ } <t1(1,0),s> <t2(1,0),s> [r0[b1 􀼯0 ≡ 🔵􀼮0 ]] <r0<t3>> [r0[b2 ≏ ]] <t4(1,0)> [b3 ≏ ≏ ] <t5> <t6> {s2 ≏ }")
-        try p.assert("automatic-0: {s2 ≏ } <t1(1,0),s> <t2(1,0),s> [b1 ≏ ] <t3> [r0[b2 􀼯0 ≡ 🔵􀼮0 ]] <r0<t4(1,0)>> [r0[b3 ≏ ≏ ]] <t5> <t6> {s2 ≏ }")
-        try p.assert("automatic-0: {r0{s2 ≏ }} <t1(1,0),s> <t2(1,0),s> [b1 ≏ ] <t3> [b2 ≏ ] <t4(1,0)> [r0[b3 􀼯0 ≡ 🔵􀼮0 ≏ ≏ ]] <r0<t5>> <r0<t6>> {r0{s2 ≏ }}")
-        try p.assert("automatic-0: {r0{s2 ≏ }} <t1(1,0),s> <t2(1,0),s> [b1 ≏ ] <t3> [b2 ≏ ] <t4(1,0)> [r0[b3 ≏ 􀼯0 ≡ 🔵􀼮0 ≏ ]] <r0<t5>> <r0<t6>> {r0{s2 ≏ }}")
-        try p.assert("automatic-0: {r0{s2 ≏ }} <t1(1,0),s> <t2(1,0),s> [b1 ≏ ] <t3> [b2 ≏ ] <t4(1,0)> [r0[b3 ≏ ≏ 􀼯0 ≡ 🔵􀼮0 ]] <r0<t5>> <r0<t6>> {r0{s2 ≏ }}")
-        try p.assert("automatic-0: {r0{s2 􀼯0 ≡ 🔴􀼮0 }} <t1(1,0),s> <t2(1,0),s> [b1 ≏ ] <t3> [b2 ≏ ] <t4(1,0)> [b3 ≏ ≏ ≏ ] <t5> <t6> {r0{s2 􀼯0 ≡ 🔴􀼮0 }}")
+        try p.assert("automatic-0: {r0{s2 􀼰0 ≏ 🔵􀼮0 }} <r0<t1(1,0),s>> <r0<t2(1,0),s>> [r0[b1 ≏ ]] <t3> [b2 ≏ ] <t4(1,0)> [b3 ≏ ≏ ] <t5> <t6> {r0{s2 􀼰0 ≏ 🔵􀼮0 }}")
+        try p.assert("automatic-0: {s2 ≏ } <t1(1,0),s> <t2(1,0),s> [r0[b1 􀼰0 ≡ 🔵􀼮0 ]] <r0<t3>> [r0[b2 ≏ ]] <t4(1,0)> [b3 ≏ ≏ ] <t5> <t6> {s2 ≏ }")
+        try p.assert("automatic-0: {s2 ≏ } <t1(1,0),s> <t2(1,0),s> [b1 ≏ ] <t3> [r0[b2 􀼰0 ≡ 🔵􀼮0 ]] <r0<t4(1,0)>> [r0[b3 ≏ ≏ ]] <t5> <t6> {s2 ≏ }")
+        try p.assert("automatic-0: {r0{s2 ≏ }} <t1(1,0),s> <t2(1,0),s> [b1 ≏ ] <t3> [b2 ≏ ] <t4(1,0)> [r0[b3 􀼰0 ≡ 🔵􀼮0 ≏ ≏ ]] <r0<t5>> <r0<t6>> {r0{s2 ≏ }}")
+        try p.assert("automatic-0: {r0{s2 ≏ }} <t1(1,0),s> <t2(1,0),s> [b1 ≏ ] <t3> [b2 ≏ ] <t4(1,0)> [r0[b3 ≏ 􀼰0 ≡ 🔵􀼮0 ≏ ]] <r0<t5>> <r0<t6>> {r0{s2 ≏ }}")
+        try p.assert("automatic-0: {r0{s2 ≏ }} <t1(1,0),s> <t2(1,0),s> [b1 ≏ ] <t3> [b2 ≏ ] <t4(1,0)> [r0[b3 ≏ ≏ 􀼰0 ≡ 🔵􀼮0 ]] <r0<t5>> <r0<t6>> {r0{s2 ≏ }}")
+        try p.assert("automatic-0: {r0{s2 􀼰0 ≡ 🔴􀼮0 }} <t1(1,0),s> <t2(1,0),s> [b1 ≏ ] <t3> [b2 ≏ ] <t4(1,0)> [b3 ≏ ≏ ≏ ] <t5> <t6> {r0{s2 􀼰0 ≡ 🔴􀼮0 }}")
 
         // Artificially set the restart time to 0 which will make the train restart again
         p.layoutController.restartTimerFired(layout.trains[0])
@@ -259,8 +259,8 @@ class AutomaticRoutingTests: BTTestCase {
         XCTAssertEqual(p.route.steps.toStrings(layout), ["s2:next", "b1:next", "b2:next", "b3:next", "s2:next"])
 
         // Assert that the train has restarted and is moving in the correct direction
-        try p.assert("automatic-0: {r0{s2 􀼯0 ≏ 🔵􀼮0 }} <r0<t1(1,0),s>> <r0<t2(1,0),s>> [r0[b1 ≏ ]] <t3> [b2 ≏ ] <t4(1,0)> [b3 ≏ ≏ ≏ ] <t5> <t6> {r0{s2 ≏ 🔵􀼮0 }}")
-        try p.assert("automatic-0: {s2 ≏ } <t1(1,0),s> <t2(1,0),s> [r0[b1 􀼯0 ≡ 🔵􀼮0 ]] <r0<t3>> [r0[b2 ≏ ]] <t4(1,0)> [b3 ≏ ≏ ≏ ] <t5> <t6> {s2 ≏ }")
+        try p.assert("automatic-0: {r0{s2 􀼰0 ≏ 🔵􀼮0 }} <r0<t1(1,0),s>> <r0<t2(1,0),s>> [r0[b1 ≏ ]] <t3> [b2 ≏ ] <t4(1,0)> [b3 ≏ ≏ ≏ ] <t5> <t6> {r0{s2 􀼰0 ≏ 🔵􀼮0 }}")
+        try p.assert("automatic-0: {s2 ≏ } <t1(1,0),s> <t2(1,0),s> [r0[b1 􀼰0 ≡ 🔵􀼮0 ]] <r0<t3>> [r0[b2 ≏ ]] <t4(1,0)> [b3 ≏ ≏ ≏ ] <t5> <t6> {s2 ≏ }")
     }
 
     func testAutomaticRouteStationRestartFinishing() throws {
@@ -269,13 +269,13 @@ class AutomaticRoutingTests: BTTestCase {
 
         let p = try setup(layout: layout, fromBlockId: s2.id, destination: nil, position: .end, routeSteps: ["s2:next", "b1:next", "b2:next", "b3:next", "s2:next"])
 
-        try p.assert("automatic-0: {r0{s2 􀼯0 ≏ 🔵􀼮0 }} <r0<t1(1,0),s>> <r0<t2(1,0),s>> [r0[b1 ≏ ]] <t3> [b2 ≏ ] <t4(1,0)> [b3 ≏ ≏ ] <t5> <t6> {r0{s2 􀼯0 ≏ 🔵􀼮0 }}")
-        try p.assert("automatic-0: {s2 ≏ } <t1(1,0),s> <t2(1,0),s> [r0[b1 􀼯0 ≡ 🔵􀼮0 ]] <r0<t3>> [r0[b2 ≏ ]] <t4(1,0)> [b3 ≏ ≏ ] <t5> <t6> {s2 ≏ }")
-        try p.assert("automatic-0: {s2 ≏ } <t1(1,0),s> <t2(1,0),s> [b1 ≏ ] <t3> [r0[b2 􀼯0 ≡ 🔵􀼮0 ]] <r0<t4(1,0)>> [r0[b3 ≏ ≏ ]] <t5> <t6> {s2 ≏ }")
-        try p.assert("automatic-0: {r0{s2 ≏ }} <t1(1,0),s> <t2(1,0),s> [b1 ≏ ] <t3> [b2 ≏ ] <t4(1,0)> [r0[b3 􀼯0 ≡ 🔵􀼮0 ≏ ≏ ]] <r0<t5>> <r0<t6>> {r0{s2 ≏ }}")
-        try p.assert("automatic-0: {r0{s2 ≏ }} <t1(1,0),s> <t2(1,0),s> [b1 ≏ ] <t3> [b2 ≏ ] <t4(1,0)> [r0[b3 ≏ 􀼯0 ≡ 🔵􀼮0 ≏ ]] <r0<t5>> <r0<t6>> {r0{s2 ≏ }}")
-        try p.assert("automatic-0: {r0{s2 ≏ }} <t1(1,0),s> <t2(1,0),s> [b1 ≏ ] <t3> [b2 ≏ ] <t4(1,0)> [r0[b3 ≏ ≏ 􀼯0 ≡ 🔵􀼮0 ]] <r0<t5>> <r0<t6>> {r0{s2 ≏ }}")
-        try p.assert("automatic-0: {r0{s2 􀼯0 ≡ 🔴􀼮0 }} <t1(1,0),s> <t2(1,0),s> [b1 ≏ ] <t3> [b2 ≏ ] <t4(1,0)> [b3 ≏ ≏ ≏ ] <t5> <t6> {r0{s2 􀼯0 ≡ 🔴􀼮0 }}")
+        try p.assert("automatic-0: {r0{s2 􀼰0 ≏ 🔵􀼮0 }} <r0<t1(1,0),s>> <r0<t2(1,0),s>> [r0[b1 ≏ ]] <t3> [b2 ≏ ] <t4(1,0)> [b3 ≏ ≏ ] <t5> <t6> {r0{s2 􀼰0 ≏ 🔵􀼮0 }}")
+        try p.assert("automatic-0: {s2 ≏ } <t1(1,0),s> <t2(1,0),s> [r0[b1 􀼰0 ≡ 🔵􀼮0 ]] <r0<t3>> [r0[b2 ≏ ]] <t4(1,0)> [b3 ≏ ≏ ] <t5> <t6> {s2 ≏ }")
+        try p.assert("automatic-0: {s2 ≏ } <t1(1,0),s> <t2(1,0),s> [b1 ≏ ] <t3> [r0[b2 􀼰0 ≡ 🔵􀼮0 ]] <r0<t4(1,0)>> [r0[b3 ≏ ≏ ]] <t5> <t6> {s2 ≏ }")
+        try p.assert("automatic-0: {r0{s2 ≏ }} <t1(1,0),s> <t2(1,0),s> [b1 ≏ ] <t3> [b2 ≏ ] <t4(1,0)> [r0[b3 􀼰0 ≡ 🔵􀼮0 ≏ ≏ ]] <r0<t5>> <r0<t6>> {r0{s2 ≏ }}")
+        try p.assert("automatic-0: {r0{s2 ≏ }} <t1(1,0),s> <t2(1,0),s> [b1 ≏ ] <t3> [b2 ≏ ] <t4(1,0)> [r0[b3 ≏ 􀼰0 ≡ 🔵􀼮0 ≏ ]] <r0<t5>> <r0<t6>> {r0{s2 ≏ }}")
+        try p.assert("automatic-0: {r0{s2 ≏ }} <t1(1,0),s> <t2(1,0),s> [b1 ≏ ] <t3> [b2 ≏ ] <t4(1,0)> [r0[b3 ≏ ≏ 􀼰0 ≡ 🔵􀼮0 ]] <r0<t5>> <r0<t6>> {r0{s2 ≏ }}")
+        try p.assert("automatic-0: {r0{s2 􀼰0 ≡ 🔴􀼮0 }} <t1(1,0),s> <t2(1,0),s> [b1 ≏ ] <t3> [b2 ≏ ] <t4(1,0)> [b3 ≏ ≏ ≏ ] <t5> <t6> {r0{s2 􀼰0 ≡ 🔴􀼮0 }}")
 
         // Simulate the user tapping on the "Finish" button while the timer counts down
         p.finish()
@@ -289,7 +289,7 @@ class AutomaticRoutingTests: BTTestCase {
 
         // Make sure the route hasn't changed
         XCTAssertEqual(p.route.steps.toStrings(layout), ["s2:next", "b1:next", "b2:next", "b3:next", "s2:next"])
-        try p.assert("automatic-0: {r0{s2 􀼯0 ≡ 🔴􀼮0 }} <t1(1,0),s> <t2(1,0),s> [b1 ≏ ] <t3> [b2 ≏ ] <t4(1,0)> [b3 ≏ ≏ ≏ ] <t5> <t6> {r0{s2 􀼯0 ≡ 🔴􀼮0 }}")
+        try p.assert("automatic-0: {r0{s2 􀼰0 ≡ 🔴􀼮0 }} <t1(1,0),s> <t2(1,0),s> [b1 ≏ ] <t3> [b2 ≏ ] <t4(1,0)> [b3 ≏ ≏ ≏ ] <t5> <t6> {r0{s2 􀼰0 ≡ 🔴􀼮0 }}")
     }
 
     /// Same as ``testAutomaticRouteStationRestartFinishing`` but with a station block with 2 feedbacks (s2) that simulates
@@ -301,11 +301,11 @@ class AutomaticRoutingTests: BTTestCase {
         // The route will choose "s2" as the arrival block
         let p = try setup(layout: layout, fromBlockId: s1.id, destination: nil, position: .end, routeSteps: ["s1:next", "b1:next", "s2:next"])
 
-        try p.assert("automatic-0: {r0{s1 ≏ 􀼯0 ≏ 🔵􀼮0 }} <r0<t1{sr}(0,1),s>> <r0<t2{sr}(0,1),s>> [r0[b1 ≏ ≏ ]] <t4{sl}(1,0),s> {s2 ≏ ≏ }")
-        try p.assert("automatic-0: {s1 ≏ ≏ } <t1{sr}(0,1),s> <t2{sr}(0,1),s> [r0[b1 􀼯0 ≡ 🔵􀼮0 ≏ ]] <r0<t4{sl}(1,0),s>> {r0{s2 ≏ ≏ }}")
-        try p.assert("automatic-0: {s1 ≏ ≏ } <t1{sr}(0,1),s> <t2{sr}(0,1),s> [r0[b1 ≏ 􀼯0 ≡ 🔵􀼮0 ]] <r0<t4{sl}(1,0),s>> {r0{s2 ≏ ≏ }}")
-        try p.assert("automatic-0: {s1 ≏ ≏ } <t1{sr}(0,1),s> <t2{sr}(0,1),s> [b1 ≏ ≏ ] <t4{sl}(1,0),s> {r0{s2 􀼯0 ≡ 🟡􀼮0 ≏ }}")
-        try p.assert("automatic-0: {s1 ≏ ≏ } <t1{sr}(0,1),s> <t2{sr}(0,1),s> [b1 ≏ ≏ ] <t4{sl}(1,0),s> {r0{s2 ≏ 􀼯0 ≡ 🔴􀼮0 }}")
+        try p.assert("automatic-0: {r0{s1 ≏ 􀼰0 ≏ 🔵􀼮0 }} <r0<t1{sr}(0,1),s>> <r0<t2{sr}(0,1),s>> [r0[b1 ≏ ≏ ]] <t4{sl}(1,0),s> {s2 ≏ ≏ }")
+        try p.assert("automatic-0: {s1 ≏ ≏ } <t1{sr}(0,1),s> <t2{sr}(0,1),s> [r0[b1 􀼰0 ≡ 🔵􀼮0 ≏ ]] <r0<t4{sl}(1,0),s>> {r0{s2 ≏ ≏ }}")
+        try p.assert("automatic-0: {s1 ≏ ≏ } <t1{sr}(0,1),s> <t2{sr}(0,1),s> [r0[b1 ≏ 􀼰0 ≡ 🔵􀼮0 ]] <r0<t4{sl}(1,0),s>> {r0{s2 ≏ ≏ }}")
+        try p.assert("automatic-0: {s1 ≏ ≏ } <t1{sr}(0,1),s> <t2{sr}(0,1),s> [b1 ≏ ≏ ] <t4{sl}(1,0),s> {r0{s2 􀼰0 ≡ 🟡􀼮0 ≏ }}")
+        try p.assert("automatic-0: {s1 ≏ ≏ } <t1{sr}(0,1),s> <t2{sr}(0,1),s> [b1 ≏ ≏ ] <t4{sl}(1,0),s> {r0{s2 ≏ 􀼰0 ≡ 🔴􀼮0 }}")
 
         // Simulate the user tapping on the "Finish" button while the timer counts down
         p.finish()
@@ -320,7 +320,7 @@ class AutomaticRoutingTests: BTTestCase {
         // Make sure the route hasn't changed
         XCTAssertEqual(p.route.steps.toStrings(layout), ["s1:next", "b1:next", "s2:next"])
 
-        try p.assert("automatic-0: {s1 ≏ ≏ } <t1{sr}(0,1),s> <t2{sr}(0,1),s> [b1 ≏ ≏ ] <t4{sl}(1,0),s> {r0{s2 ≏ 􀼯0 ≡ 🔴􀼮0 }}")
+        try p.assert("automatic-0: {s1 ≏ ≏ } <t1{sr}(0,1),s> <t2{sr}(0,1),s> [b1 ≏ ≏ ] <t4{sl}(1,0),s> {r0{s2 ≏ 􀼰0 ≡ 🔴􀼮0 }}")
     }
 
     func testAutomaticRouteStationRestartWhenStoppingInPreviousBlock() throws {
@@ -368,13 +368,13 @@ class AutomaticRoutingTests: BTTestCase {
 
         let p = try setup(layout: layout, fromBlockId: s2.id, destination: nil, position: .end, routeSteps: ["s2:next", "b1:next", "b2:next", "b3:next", "s2:next"])
 
-        try p.assert("automatic-0: {r0{s2 􀼯0 ≏ 🔵􀼮0 }} <r0<t1(1,0),s>> <r0<t2(1,0),s>> [r0[b1 ≏ ]] <t3> [b2 ≏ ] <t4(1,0)> [b3 ≏ ≏ ] <t5> <t6> {r0{s2 􀼯0 ≏ 🔵􀼮0 }}")
-        try p.assert("automatic-0: {s2 ≏ } <t1(1,0),s> <t2(1,0),s> [r0[b1 􀼯0 ≡ 🔵􀼮0 ]] <r0<t3>> [r0[b2 ≏ ]] <t4(1,0)> [b3 ≏ ≏ ] <t5> <t6> {s2 ≏ }")
-        try p.assert("automatic-0: {s2 ≏ } <t1(1,0),s> <t2(1,0),s> [b1 ≏ ] <t3> [r0[b2 􀼯0 ≡ 🔵􀼮0 ]] <r0<t4(1,0)>> [r0[b3 ≏ ≏ ]] <t5> <t6> {s2 ≏ }")
-        try p.assert("automatic-0: {r0{s2 ≏ }} <t1(1,0),s> <t2(1,0),s> [b1 ≏ ] <t3> [b2 ≏ ] <t4(1,0)> [r0[b3 􀼯0 ≡ 🔵􀼮0 ≏ ≏ ]] <r0<t5>> <r0<t6>> {r0{s2 ≏ }}")
-        try p.assert("automatic-0: {r0{s2 ≏ }} <t1(1,0),s> <t2(1,0),s> [b1 ≏ ] <t3> [b2 ≏ ] <t4(1,0)> [r0[b3 ≏ 􀼯0 ≡ 🔵􀼮0 ≏ ]] <r0<t5>> <r0<t6>> {r0{s2 ≏ }}")
-        try p.assert("automatic-0: {r0{s2 ≏ }} <t1(1,0),s> <t2(1,0),s> [b1 ≏ ] <t3> [b2 ≏ ] <t4(1,0)> [r0[b3 ≏ ≏ 􀼯0 ≡ 🔵􀼮0 ]] <r0<t5>> <r0<t6>> {r0{s2 ≏ }}")
-        try p.assert("automatic-0: {r0{s2 􀼯0 ≡ 🔴􀼮0 }} <t1(1,0),s> <t2(1,0),s> [b1 ≏ ] <t3> [b2 ≏ ] <t4(1,0)> [b3 ≏ ≏ ≏ ] <t5> <t6> {r0{s2 􀼯0 ≡ 🔴􀼮0 }}")
+        try p.assert("automatic-0: {r0{s2 􀼰0 ≏ 🔵􀼮0 }} <r0<t1(1,0),s>> <r0<t2(1,0),s>> [r0[b1 ≏ ]] <t3> [b2 ≏ ] <t4(1,0)> [b3 ≏ ≏ ] <t5> <t6> {r0{s2 􀼰0 ≏ 🔵􀼮0 }}")
+        try p.assert("automatic-0: {s2 ≏ } <t1(1,0),s> <t2(1,0),s> [r0[b1 􀼰0 ≡ 🔵􀼮0 ]] <r0<t3>> [r0[b2 ≏ ]] <t4(1,0)> [b3 ≏ ≏ ] <t5> <t6> {s2 ≏ }")
+        try p.assert("automatic-0: {s2 ≏ } <t1(1,0),s> <t2(1,0),s> [b1 ≏ ] <t3> [r0[b2 􀼰0 ≡ 🔵􀼮0 ]] <r0<t4(1,0)>> [r0[b3 ≏ ≏ ]] <t5> <t6> {s2 ≏ }")
+        try p.assert("automatic-0: {r0{s2 ≏ }} <t1(1,0),s> <t2(1,0),s> [b1 ≏ ] <t3> [b2 ≏ ] <t4(1,0)> [r0[b3 􀼰0 ≡ 🔵􀼮0 ≏ ≏ ]] <r0<t5>> <r0<t6>> {r0{s2 ≏ }}")
+        try p.assert("automatic-0: {r0{s2 ≏ }} <t1(1,0),s> <t2(1,0),s> [b1 ≏ ] <t3> [b2 ≏ ] <t4(1,0)> [r0[b3 ≏ 􀼰0 ≡ 🔵􀼮0 ≏ ]] <r0<t5>> <r0<t6>> {r0{s2 ≏ }}")
+        try p.assert("automatic-0: {r0{s2 ≏ }} <t1(1,0),s> <t2(1,0),s> [b1 ≏ ] <t3> [b2 ≏ ] <t4(1,0)> [r0[b3 ≏ ≏ 􀼰0 ≡ 🔵􀼮0 ]] <r0<t5>> <r0<t6>> {r0{s2 ≏ }}")
+        try p.assert("automatic-0: {r0{s2 􀼰0 ≡ 🔴􀼮0 }} <t1(1,0),s> <t2(1,0),s> [b1 ≏ ] <t3> [b2 ≏ ] <t4(1,0)> [b3 ≏ ≏ ≏ ] <t5> <t6> {r0{s2 􀼰0 ≡ 🔴􀼮0 }}")
 
         // Let's add a train in the next block b1 that will prevent the train in s2 from immediately restarting
         try p.layoutController.setupTrainToBlock(layout.trains[1], Identifier<Block>(uuid: "b1"), naturalDirectionInBlock: .next)
@@ -394,8 +394,8 @@ class AutomaticRoutingTests: BTTestCase {
         XCTAssertEqual(p.route.steps.toStrings(layout), ["s2:next", "b1:next", "b2:next", "b3:next", "s2:next"])
 
         // Assert that the train has restarted and is moving in the correct direction
-        try p.assert("automatic-0: {r0{s2 􀼯0 ≏ 🔵􀼮0 }} <r0<t1(1,0),s>> <r0<t2(1,0),s>> [r0[b1 ≏ ]] <t3> [b2 ≏ ] <t4(1,0)> [b3 ≏ ≏ ] <t5> <t6> {r0{s2 􀼯0 ≏ 🔵􀼮0 }}")
-        try p.assert("automatic-0: {s2 ≏ } <t1(1,0),s> <t2(1,0),s> [r0[b1 􀼯0 ≡ 🔵􀼮0 ]] <r0<t3>> [r0[b2 ≏ ]] <t4(1,0)> [b3 ≏ ≏ ] <t5> <t6> {s2 ≏ }")
+        try p.assert("automatic-0: {r0{s2 􀼰0 ≏ 🔵􀼮0 }} <r0<t1(1,0),s>> <r0<t2(1,0),s>> [r0[b1 ≏ ]] <t3> [b2 ≏ ] <t4(1,0)> [b3 ≏ ≏ ] <t5> <t6> {r0{s2 􀼰0 ≏ 🔵􀼮0 }}")
+        try p.assert("automatic-0: {s2 ≏ } <t1(1,0),s> <t2(1,0),s> [r0[b1 􀼰0 ≡ 🔵􀼮0 ]] <r0<t3>> [r0[b2 ≏ ]] <t4(1,0)> [b3 ≏ ≏ ] <t5> <t6> {s2 ≏ }")
     }
 
     func testAutomaticRouteModeOnce() throws {
@@ -407,12 +407,12 @@ class AutomaticRoutingTests: BTTestCase {
         let p = try setup(layout: layout, fromBlockId: s2.id, destination: Destination(b3.id), routeSteps: ["s2:next", "b1:next", "b2:next", "b3:next"])
 
         try p.assert("automatic-0: {r0{s2 🔵􀼮0 ≏ }} <r0<t1(1,0),s>> <r0<t2(1,0),s>> [r0[b1 ≏ ]] <t3> [b2 ≏ ] <t4(1,0)> [b3 ≏ ≏ ≏ ]")
-        try p.assert("automatic-0: {r0{s2 􀼯0 ≡ 🔵􀼮0 }} <r0<t1(1,0),s>> <r0<t2(1,0),s>> [r0[b1 ≏ ]] <t3> [b2 ≏ ] <t4(1,0)> [b3 ≏ ≏ ≏ ]")
-        try p.assert("automatic-0: {s2 ≏ } <t1(1,0),s> <t2(1,0),s> [r0[b1 􀼯0 ≡ 🔵􀼮0 ]] <r0<t3>> [r0[b2 ≏ ]] <t4(1,0)> [b3 ≏ ≏ ≏ ]")
-        try p.assert("automatic-0: {s2 ≏ } <t1(1,0),s> <t2(1,0),s> [b1 ≏ ] <t3> [r0[b2 􀼯0 ≡ 🔵􀼮0 ]] <r0<t4(1,0)>> [r0[b3 ≏ ≏ ≏ ]]")
-        try p.assert("automatic-0: {s2 ≏ } <t1(1,0),s> <t2(1,0),s> [b1 ≏ ] <t3> [b2 ≏ ] <t4(1,0)> [r0[b3 􀼯0 ≡ 🟡􀼮0 ≏ ≏ ]]")
-        try p.assert("automatic-0: {s2 ≏ } <t1(1,0),s> <t2(1,0),s> [b1 ≏ ] <t3> [b2 ≏ ] <t4(1,0)> [r0[b3 ≏ 􀼯0 ≡ 🟡􀼮0 ≏ ]]")
-        try p.assert("automatic-0: {s2 ≏ } <t1(1,0),s> <t2(1,0),s> [b1 ≏ ] <t3> [b2 ≏ ] <t4(1,0)> [r0[b3 ≏ ≏ 􀼯0 ≡ 🔴􀼮0 ]]")
+        try p.assert("automatic-0: {r0{s2 􀼰0 ≡ 🔵􀼮0 }} <r0<t1(1,0),s>> <r0<t2(1,0),s>> [r0[b1 ≏ ]] <t3> [b2 ≏ ] <t4(1,0)> [b3 ≏ ≏ ≏ ]")
+        try p.assert("automatic-0: {s2 ≏ } <t1(1,0),s> <t2(1,0),s> [r0[b1 􀼰0 ≡ 🔵􀼮0 ]] <r0<t3>> [r0[b2 ≏ ]] <t4(1,0)> [b3 ≏ ≏ ≏ ]")
+        try p.assert("automatic-0: {s2 ≏ } <t1(1,0),s> <t2(1,0),s> [b1 ≏ ] <t3> [r0[b2 􀼰0 ≡ 🔵􀼮0 ]] <r0<t4(1,0)>> [r0[b3 ≏ ≏ ≏ ]]")
+        try p.assert("automatic-0: {s2 ≏ } <t1(1,0),s> <t2(1,0),s> [b1 ≏ ] <t3> [b2 ≏ ] <t4(1,0)> [r0[b3 􀼰0 ≡ 🟡􀼮0 ≏ ≏ ]]")
+        try p.assert("automatic-0: {s2 ≏ } <t1(1,0),s> <t2(1,0),s> [b1 ≏ ] <t3> [b2 ≏ ] <t4(1,0)> [r0[b3 ≏ 􀼰0 ≡ 🟡􀼮0 ≏ ]]")
+        try p.assert("automatic-0: {s2 ≏ } <t1(1,0),s> <t2(1,0),s> [b1 ≏ ] <t3> [b2 ≏ ] <t4(1,0)> [r0[b3 ≏ ≏ 􀼰0 ≡ 🔴􀼮0 ]]")
 
         XCTAssertEqual(p.train.scheduling, .unmanaged)
     }
@@ -428,12 +428,12 @@ class AutomaticRoutingTests: BTTestCase {
         let p = try setup(layout: layout, fromBlockId: s2.id, destination: Destination(b3.id, direction: .next), routeSteps: ["s2:next", "b1:next", "b2:next", "b3:next"])
 
         try p.assert("automatic-0: {r0{s2 🔵􀼮0 ≏ }} <r0<t1(1,0),s>> <r0<t2(1,0),s>> [r0[b1 ≏ ]] <t3> [b2 ≏ ] <t4(1,0)> [b3 ≏ ≏ ≏ ]")
-        try p.assert("automatic-0: {r0{s2 􀼯0 ≡ 🔵􀼮0 }} <r0<t1(1,0),s>> <r0<t2(1,0),s>> [r0[b1 ≏ ]] <t3> [b2 ≏ ] <t4(1,0)> [b3 ≏ ≏ ≏ ]")
-        try p.assert("automatic-0: {s2 ≏ } <t1(1,0),s> <t2(1,0),s> [r0[b1 􀼯0 ≡ 🔵􀼮0 ]] <r0<t3>> [r0[b2 ≏ ]] <t4(1,0)> [b3 ≏ ≏ ≏ ]")
-        try p.assert("automatic-0: {s2 ≏ } <t1(1,0),s> <t2(1,0),s> [b1 ≏ ] <t3> [r0[b2 􀼯0 ≡ 🔵􀼮0 ]] <r0<t4(1,0)>> [r0[b3 ≏ ≏ ≏ ]]")
-        try p.assert("automatic-0: {s2 ≏ } <t1(1,0),s> <t2(1,0),s> [b1 ≏ ] <t3> [b2 ≏ ] <t4(1,0)> [r0[b3 􀼯0 ≡ 🟡􀼮0 ≏ ≏ ]]")
-        try p.assert("automatic-0: {s2 ≏ } <t1(1,0),s> <t2(1,0),s> [b1 ≏ ] <t3> [b2 ≏ ] <t4(1,0)> [r0[b3 ≏ 􀼯0 ≡ 🟡􀼮0 ≏ ]]")
-        try p.assert("automatic-0: {s2 ≏ } <t1(1,0),s> <t2(1,0),s> [b1 ≏ ] <t3> [b2 ≏ ] <t4(1,0)> [r0[b3 ≏ ≏ 􀼯0 ≡ 🔴􀼮0 ]]")
+        try p.assert("automatic-0: {r0{s2 􀼰0 ≡ 🔵􀼮0 }} <r0<t1(1,0),s>> <r0<t2(1,0),s>> [r0[b1 ≏ ]] <t3> [b2 ≏ ] <t4(1,0)> [b3 ≏ ≏ ≏ ]")
+        try p.assert("automatic-0: {s2 ≏ } <t1(1,0),s> <t2(1,0),s> [r0[b1 􀼰0 ≡ 🔵􀼮0 ]] <r0<t3>> [r0[b2 ≏ ]] <t4(1,0)> [b3 ≏ ≏ ≏ ]")
+        try p.assert("automatic-0: {s2 ≏ } <t1(1,0),s> <t2(1,0),s> [b1 ≏ ] <t3> [r0[b2 􀼰0 ≡ 🔵􀼮0 ]] <r0<t4(1,0)>> [r0[b3 ≏ ≏ ≏ ]]")
+        try p.assert("automatic-0: {s2 ≏ } <t1(1,0),s> <t2(1,0),s> [b1 ≏ ] <t3> [b2 ≏ ] <t4(1,0)> [r0[b3 􀼰0 ≡ 🟡􀼮0 ≏ ≏ ]]")
+        try p.assert("automatic-0: {s2 ≏ } <t1(1,0),s> <t2(1,0),s> [b1 ≏ ] <t3> [b2 ≏ ] <t4(1,0)> [r0[b3 ≏ 􀼰0 ≡ 🟡􀼮0 ≏ ]]")
+        try p.assert("automatic-0: {s2 ≏ } <t1(1,0),s> <t2(1,0),s> [b1 ≏ ] <t3> [b2 ≏ ] <t4(1,0)> [r0[b3 ≏ ≏ 􀼰0 ≡ 🔴􀼮0 ]]")
 
         XCTAssertEqual(p.train.scheduling, .unmanaged)
     }
@@ -473,9 +473,9 @@ class AutomaticRoutingTests: BTTestCase {
         let p = try setup(layout: layout, fromBlockId: s2.id, destination: Destination(b3.id), routeSteps: ["s2:next", "b1:next", "b2:next", "b3:next"])
 
         try p.assert("automatic-0: {r0{s2 🔵􀼮0 ≏ }} <r0<t1(1,0),s>> <r0<t2(1,0),s>> [r0[b1 ≏ ]] <t3> [b2 ≏ ] <t4(1,0)> [b3 ≏ ≏ ≏ ]")
-        try p.assert("automatic-0: {r0{s2 􀼯0 ≡ 🔵􀼮0 }} <r0<t1(1,0),s>> <r0<t2(1,0),s>> [r0[b1 ≏ ]] <t3> [b2 ≏ ] <t4(1,0)> [b3 ≏ ≏ ≏ ]")
-        try p.assert("automatic-0: {s2 ≏ } <t1(1,0),s> <t2(1,0),s> [r0[b1 􀼯0 ≡ 🔵􀼮0 ]] <r0<t3>> [r0[b2 ≏ ]] <t4(1,0)> [b3 ≏ ≏ ≏ ]")
-        try p.assert("automatic-0: {s2 ≏ } <t1(1,0),s> <t2(1,0),s> [b1 ≏ ] <t3> [r0[b2 􀼯0 ≡ 🔵􀼮0 ]] <r0<t4(1,0)>> [r0[b3 ≏ ≏ ≏ ]]")
+        try p.assert("automatic-0: {r0{s2 􀼰0 ≡ 🔵􀼮0 }} <r0<t1(1,0),s>> <r0<t2(1,0),s>> [r0[b1 ≏ ]] <t3> [b2 ≏ ] <t4(1,0)> [b3 ≏ ≏ ≏ ]")
+        try p.assert("automatic-0: {s2 ≏ } <t1(1,0),s> <t2(1,0),s> [r0[b1 􀼰0 ≡ 🔵􀼮0 ]] <r0<t3>> [r0[b2 ≏ ]] <t4(1,0)> [b3 ≏ ≏ ≏ ]")
+        try p.assert("automatic-0: {s2 ≏ } <t1(1,0),s> <t2(1,0),s> [b1 ≏ ] <t3> [r0[b2 􀼰0 ≡ 🔵􀼮0 ]] <r0<t4(1,0)>> [r0[b3 ≏ ≏ ≏ ]]")
 
         p.stop()
 
@@ -495,17 +495,17 @@ class AutomaticRoutingTests: BTTestCase {
         let p = try setup(layout: layout, fromBlockId: s2.id, destination: Destination(b3.id), routeSteps: ["s2:next", "b1:next", "b2:next", "b3:next"])
 
         try p.assert("automatic-0: {r0{s2 🔵􀼮0 ≏ }} <r0<t1(1,0),s>> <r0<t2(1,0),s>> [r0[b1 ≏ ]] <t3> [b2 ≏ ] <t4(1,0)> [b3 ≏ ≏ ≏ ]")
-        try p.assert("automatic-0: {r0{s2 􀼯0 ≡ 🔵􀼮0 }} <r0<t1(1,0),s>> <r0<t2(1,0),s>> [r0[b1 ≏ ]] <t3> [b2 ≏ ] <t4(1,0)> [b3 ≏ ≏ ≏ ]")
-        try p.assert("automatic-0: {s2 ≏ } <t1(1,0),s> <t2(1,0),s> [r0[b1 􀼯0 ≡ 🔵􀼮0 ]] <r0<t3>> [r0[b2 ≏ ]] <t4(1,0)> [b3 ≏ ≏ ≏ ]")
-        try p.assert("automatic-0: {s2 ≏ } <t1(1,0),s> <t2(1,0),s> [b1 ≏ ] <t3> [r0[b2 􀼯0 ≡ 🔵􀼮0 ]] <r0<t4(1,0)>> [r0[b3 ≏ ≏ ≏ ]]")
+        try p.assert("automatic-0: {r0{s2 􀼰0 ≡ 🔵􀼮0 }} <r0<t1(1,0),s>> <r0<t2(1,0),s>> [r0[b1 ≏ ]] <t3> [b2 ≏ ] <t4(1,0)> [b3 ≏ ≏ ≏ ]")
+        try p.assert("automatic-0: {s2 ≏ } <t1(1,0),s> <t2(1,0),s> [r0[b1 􀼰0 ≡ 🔵􀼮0 ]] <r0<t3>> [r0[b2 ≏ ]] <t4(1,0)> [b3 ≏ ≏ ≏ ]")
+        try p.assert("automatic-0: {s2 ≏ } <t1(1,0),s> <t2(1,0),s> [b1 ≏ ] <t3> [r0[b2 􀼰0 ≡ 🔵􀼮0 ]] <r0<t4(1,0)>> [r0[b3 ≏ ≏ ≏ ]]")
 
         p.finish()
 
         XCTAssertEqual(p.train.scheduling, .finishManaged)
 
-        try p.assert("automatic-0: {s2 ≏ } <t1(1,0),s> <t2(1,0),s> [b1 ≏ ] <t3> [b2 ≏ ] <t4(1,0)> [r0[b3 􀼯0 ≡ 🟡􀼮0 ≏ ≏ ]]")
-        try p.assert("automatic-0: {s2 ≏ } <t1(1,0),s> <t2(1,0),s> [b1 ≏ ] <t3> [b2 ≏ ] <t4(1,0)> [r0[b3 ≏ 􀼯0 ≡ 🟡􀼮0 ≏ ]]")
-        try p.assert("automatic-0: {s2 ≏ } <t1(1,0),s> <t2(1,0),s> [b1 ≏ ] <t3> [b2 ≏ ] <t4(1,0)> [r0[b3 ≏ ≏ 􀼯0 ≡ 🔴􀼮0 ]]")
+        try p.assert("automatic-0: {s2 ≏ } <t1(1,0),s> <t2(1,0),s> [b1 ≏ ] <t3> [b2 ≏ ] <t4(1,0)> [r0[b3 􀼰0 ≡ 🟡􀼮0 ≏ ≏ ]]")
+        try p.assert("automatic-0: {s2 ≏ } <t1(1,0),s> <t2(1,0),s> [b1 ≏ ] <t3> [b2 ≏ ] <t4(1,0)> [r0[b3 ≏ 􀼰0 ≡ 🟡􀼮0 ≏ ]]")
+        try p.assert("automatic-0: {s2 ≏ } <t1(1,0),s> <t2(1,0),s> [b1 ≏ ] <t3> [b2 ≏ ] <t4(1,0)> [r0[b3 ≏ ≏ 􀼰0 ≡ 🔴􀼮0 ]]")
 
         XCTAssertEqual(p.train.scheduling, .unmanaged)
     }
@@ -516,14 +516,14 @@ class AutomaticRoutingTests: BTTestCase {
 
         let p = try setup(layout: layout, fromBlockId: s1.id, destination: nil, position: .end, routeSteps: ["s1:next", "b1:next", "b2:next", "b3:next", "s2:next"])
 
-        try p.assert("automatic-0: {r0{s1 􀼯0 ≏ 🔵􀼮0 }} <r0<t1(2,0),l>> <r0<t2(1,0),s>> [r0[b1 ≏ ]] <t3> [b2 ≏ ] <t4(1,0)> [b3 ≏ ≏ ] <t5> <t6> {s2 ≏ }")
-        try p.assert("automatic-0: {s1 ≏ } <t1(2,0),l> <t2(1,0),s> [r0[b1 􀼯0 ≡ 🔵􀼮0 ]] <r0<t3>> [r0[b2 ≏ ]] <t4(1,0)> [b3 ≏ ≏ ] <t5> <t6> {s2 ≏ }")
-        try p.assert("automatic-0: {s1 ≏ } <t1(2,0),l> <t2(1,0),s> [b1 ≏ ] <t3> [r0[b2 􀼯0 ≡ 🔵􀼮0 ]] <r0<t4(1,0)>> [r0[b3 ≏ ≏ ]] <t5> <t6> {s2 ≏ }")
+        try p.assert("automatic-0: {r0{s1 􀼰0 ≏ 🔵􀼮0 }} <r0<t1(2,0),l>> <r0<t2(1,0),s>> [r0[b1 ≏ ]] <t3> [b2 ≏ ] <t4(1,0)> [b3 ≏ ≏ ] <t5> <t6> {s2 ≏ }")
+        try p.assert("automatic-0: {s1 ≏ } <t1(2,0),l> <t2(1,0),s> [r0[b1 􀼰0 ≡ 🔵􀼮0 ]] <r0<t3>> [r0[b2 ≏ ]] <t4(1,0)> [b3 ≏ ≏ ] <t5> <t6> {s2 ≏ }")
+        try p.assert("automatic-0: {s1 ≏ } <t1(2,0),l> <t2(1,0),s> [b1 ≏ ] <t3> [r0[b2 􀼰0 ≡ 🔵􀼮0 ]] <r0<t4(1,0)>> [r0[b3 ≏ ≏ ]] <t5> <t6> {s2 ≏ }")
 
         // Trigger an unexpected feedback so the LayoutController does an emergency stop
-        try p.assert("automatic-0: {s1 ≡ } <t1(2,0),l> <t2(1,0),s> [b1 ≏ ] <t3> [r0[b2 􀼯0 ≏ 🔴􀼮0 ]] <r0<t4(1,0)>> [r0[b3 ≏ ≏ ]] <t5> <t6> {s2 ≏ }", expectRuntimeError: true)
-        try p.assert("automatic-0: {s1 ≡ } <t1(2,0),l> <t2(1,0),s> [b1 ≏ ] <t3> [r0[b2 􀼯0 ≏ 🔴􀼮0 ]] <r0<t4(1,0)>> [r0[b3 ≏ ≏ ]] <t5> <t6> {s2 ≏ }", expectRuntimeError: true)
-        try p.assert("automatic-0: {s1 ≡ } <t1(2,0),l> <t2(1,0),s> [b1 ≏ ] <t3> [r0[b2 􀼯0 ≏ 🔴􀼮0 ]] <r0<t4(1,0)>> [r0[b3 ≏ ≏ ]] <t5> <t6> {s2 ≏ }", expectRuntimeError: true)
+        try p.assert("automatic-0: {s1 ≡ } <t1(2,0),l> <t2(1,0),s> [b1 ≏ ] <t3> [r0[b2 􀼰0 ≏ 🔴􀼮0 ]] <r0<t4(1,0)>> [r0[b3 ≏ ≏ ]] <t5> <t6> {s2 ≏ }", expectRuntimeError: true)
+        try p.assert("automatic-0: {s1 ≡ } <t1(2,0),l> <t2(1,0),s> [b1 ≏ ] <t3> [r0[b2 􀼰0 ≏ 🔴􀼮0 ]] <r0<t4(1,0)>> [r0[b3 ≏ ≏ ]] <t5> <t6> {s2 ≏ }", expectRuntimeError: true)
+        try p.assert("automatic-0: {s1 ≡ } <t1(2,0),l> <t2(1,0),s> [b1 ≏ ] <t3> [r0[b2 􀼰0 ≏ 🔴􀼮0 ]] <r0<t4(1,0)>> [r0[b3 ≏ ≏ ]] <t5> <t6> {s2 ≏ }", expectRuntimeError: true)
 
         // The train must be in stopped state
         XCTAssertEqual(p.train.scheduling, .unmanaged)
@@ -577,34 +577,34 @@ class AutomaticRoutingTests: BTTestCase {
         XCTAssertFalse(t1.directionForward)
         XCTAssertEqual(s1.trainInstance?.direction, .next)
 
-        try p.assert("automatic-0: {r0{s1 ≏ 🔵􀼮⟷0 ≏ 􀼯0 }} <r0<t1{sr}(0,1),s>> <r0<t2{sr}(0,1),s>> [r0[b1 ≏ ≏ ]] <t4{sl}(1,0),s> {s2 ≏ ≏ }", ["b1"])
+        try p.assert("automatic-0: {r0{s1 ≏ 🔵􀼮⟷0 ≏ 􀼰0 }} <r0<t1{sr}(0,1),s>> <r0<t2{sr}(0,1),s>> [r0[b1 ≏ ≏ ]] <t4{sl}(1,0),s> {s2 ≏ ≏ }", ["b1"])
                 
-        try p.assert("automatic-0: {r0{s1 ≡ 🔵􀼮⟷0 ≏ 􀼯0 }} <r0<t1{sr}(0,1),s>> <r0<t2{sr}(0,1),s>> [r0[b1 ≏ ≏ ]] <t4{sl}(1,0),s> {s2 ≏ ≏ }", ["b1"])
+        try p.assert("automatic-0: {r0{s1 ≡ 🔵􀼮⟷0 ≏ 􀼰0 }} <r0<t1{sr}(0,1),s>> <r0<t2{sr}(0,1),s>> [r0[b1 ≏ ≏ ]] <t4{sl}(1,0),s> {s2 ≏ ≏ }", ["b1"])
 
-        try p.assert("automatic-0: {r0{s1 ≏ ≏ 🔵􀼮⟷0 }} <r0<t1{sr}(0,1),s>> <r0<t2{sr}(0,1),s>> [r0[b1 􀼯0 ≡ 􀼯0 ≏ ]] <r0<t4{sl}(1,0),s>> {r0{s2 ≏ ≏ }}", ["s2"])
+        try p.assert("automatic-0: {r0{s1 ≏ ≏ 🔵􀼮⟷0 }} <r0<t1{sr}(0,1),s>> <r0<t2{sr}(0,1),s>> [r0[b1 􀼯0 ≡ 􀼰0 ≏ ]] <r0<t4{sl}(1,0),s>> {r0{s2 ≏ ≏ }}", ["s2"])
 
-        try p.assert("automatic-0: {r0{s1 ≏ ≏ 🔵􀼮⟷0 }} <r0<t1{sr}(0,1),s>> <r0<t2{sr}(0,1),s>> [r0[b1 􀼯0 ≡ 􀼯0 ≏ ]] <r0<t4{sl}(1,0),s>> {r0{s2 ≏ ≏ }}", ["s2"])
+        try p.assert("automatic-0: {r0{s1 ≏ ≏ 🔵􀼮⟷0 }} <r0<t1{sr}(0,1),s>> <r0<t2{sr}(0,1),s>> [r0[b1 􀼯0 ≡ 􀼰0 ≏ ]] <r0<t4{sl}(1,0),s>> {r0{s2 ≏ ≏ }}", ["s2"])
         
-        try p.assert("automatic-0: {s1 ≏ ≏ } <t1{sr}(0,1),s> <t2{sr}(0,1),s> [r0[b1 ≏ 🟡􀼮⟷0 ≏ 􀼯0 ]] <r0<t4{sl}(1,0),s>> {r0{s2 􀼯0 ≡ 􀼯0 ≏ }}", [])
+        try p.assert("automatic-0: {s1 ≏ ≏ } <t1{sr}(0,1),s> <t2{sr}(0,1),s> [r0[b1 ≏ 🟡􀼮⟷0 ≏ 􀼯0 ]] <r0<t4{sl}(1,0),s>> {r0{s2 􀼯0 ≡ 􀼰0 ≏ }}", [])
 
-        try p.assert("automatic-0: {s1 ≏ ≏ } <t1{sr}(0,1),s> <t2{sr}(0,1),s> [b1 ≏ ≏ ] <t4{sl}(1,0),s> {r0{s2 ≏ 🔴􀼮⟷0 ≡ 􀼯0 }}", [])
+        try p.assert("automatic-0: {s1 ≏ ≏ } <t1{sr}(0,1),s> <t2{sr}(0,1),s> [b1 ≏ ≏ ] <t4{sl}(1,0),s> {r0{s2 ≏ 🔴􀼮⟷0 ≡ 􀼰0 }}", [])
         
         // Start the train to go back to s1, by reversing its direction
         try p.start(destination: Destination(s1.id, direction: .previous), expectedState: .running, routeSteps: ["s2:previous", "b1:previous", "s1:previous"])
         
-        try p.assert("automatic-0: !{r0{s2 ≏ 􀼯0 ≡ 🔵!􀼮0 }} <r0<t4{sl}(0,1),s>> ![r0[b1 ≏ ≏ ]] <t2{sr}(1,0),s> <t1{sr}(1,0),s> !{s1 ≏ ≏ }", ["b1"])
+        try p.assert("automatic-0: !{r0{s2 ≏ 􀼰0 ≡ 🔵!􀼮0 }} <r0<t4{sl}(0,1),s>> ![r0[b1 ≏ ≏ ]] <t2{sr}(1,0),s> <t1{sr}(1,0),s> !{s1 ≏ ≏ }", ["b1"])
 
-        try p.assert("automatic-0: !{r0{s2 ≏ 􀼯0 ≏ 􀼯0 }} <r0<t4{sl}(0,1),s>> ![r0[b1 􀼯0 ≡ 🔵!􀼮0 ≏ ]] <r0<t2{sr}(1,0),s>> <r0<t1{sr}(1,0),s>> !{r0{s1 ≏ ≏ }}", ["s1"])
+        try p.assert("automatic-0: !{r0{s2 ≏ 􀼰0 ≏ 􀼯0 }} <r0<t4{sl}(0,1),s>> ![r0[b1 􀼯0 ≡ 🔵!􀼮0 ≏ ]] <r0<t2{sr}(1,0),s>> <r0<t1{sr}(1,0),s>> !{r0{s1 ≏ ≏ }}", ["s1"])
 
         // Trigger a feedback near the back of the train, this feedback should be ignored (because it is
         // behind the front position of the train) and it won't be un-expected because it is located in
         // a block where the train is located (and because the train can move in any direction, it can
         // have a magnet at the rear of the train).
-        try p.assert("automatic-0: !{r0{s2 ≏ 􀼯0 ≡ 􀼯0 }} <r0<t4{sl}(0,1),s>> ![r0[b1 􀼯0 ≏ 🔵!􀼮0 ≏ ]] <r0<t2{sr}(1,0),s>> <r0<t1{sr}(1,0),s>> !{r0{s1 ≏ ≏ }}", ["s1"])
+        try p.assert("automatic-0: !{r0{s2 ≏ 􀼰0 ≡ 􀼯0 }} <r0<t4{sl}(0,1),s>> ![r0[b1 􀼯0 ≏ 🔵!􀼮0 ≏ ]] <r0<t2{sr}(1,0),s>> <r0<t1{sr}(1,0),s>> !{r0{s1 ≏ ≏ }}", ["s1"])
         
-        try p.assert("automatic-0: !{s2 ≏ ≏ } <t4{sl}(0,1),s> ![r0[b1 ≏ ≏ 􀼯0 ]] <r0<t2{sr}(1,0),s>> <r0<t1{sr}(1,0),s>> !{r0{s1 􀼯0 ≡ 🟡!􀼮0 ≏ }}", [])
+        try p.assert("automatic-0: !{s2 ≏ ≏ } <t4{sl}(0,1),s> ![r0[b1 ≏ ≏ 􀼰0 ]] <r0<t2{sr}(1,0),s>> <r0<t1{sr}(1,0),s>> !{r0{s1 􀼯0 ≡ 🟡!􀼮0 ≏ }}", [])
 
-        try p.assert("automatic-0: !{s2 ≏ ≏ } <t4{sl}(0,1),s> ![b1 ≏ ≏ ] <t2{sr}(1,0),s> <t1{sr}(1,0),s> !{r0{s1 ≏ 􀼯0 ≡ 🔴!􀼮0 }}", [])
+        try p.assert("automatic-0: !{s2 ≏ ≏ } <t4{sl}(0,1),s> ![b1 ≏ ≏ ] <t2{sr}(1,0),s> <t1{sr}(1,0),s> !{r0{s1 ≏ 􀼰0 ≡ 🔴!􀼮0 }}", [])
     }
 
     // TODO: re-enable
