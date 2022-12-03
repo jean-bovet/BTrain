@@ -12,8 +12,6 @@
 
 import Foundation
 
-// TODO: continue to group all these functions together
-// TODO: verify coverage is 100%
 extension Layout {
     
     /// Sets the train into the specified block, at the specified position and direction of travel in the block.
@@ -52,7 +50,7 @@ extension Layout {
     /// we need to take into consideration all the feedback triggers within all the occupied blocks.
     ///
     /// - Returns: array of detected feedback and their position
-    func allActiveFeedbackPositions(train: Train) -> [FeedbackPosition] {
+    func allActiveFeedbackPositions(train: Train) throws -> [FeedbackPosition] {
         var positions = [FeedbackPosition]()
                 
         for block in train.occupied.blocks {
@@ -61,8 +59,11 @@ extension Layout {
                     continue
                 }
                 
-                // TODO: throw if feedback distance is not set
-                positions.append(FeedbackPosition(blockId: block.id, index: feedbackIndex, distance: feedback.distance ?? 0))
+                guard let fd = feedback.distance else {
+                    throw LayoutError.feedbackDistanceNotSet(feedback: feedback)
+                }
+                
+                positions.append(FeedbackPosition(blockId: block.id, index: feedbackIndex, distance: fd))
             }
         }
         

@@ -278,7 +278,7 @@ final class TrainController: TrainControlling, CustomStringConvertible {
         // Note: do not remove the leading blocks as this will be taken care below by the `reserveLeadingBlocks` method.
         // This is important because the reserveLeadingBlocks method needs to remember the previously reserved turnouts
         // in order to avoid re-activating them each time unnecessarily.
-        for feedback in layout.allActiveFeedbackPositions(train: train) {
+        for feedback in try layout.allActiveFeedbackPositions(train: train) {
             guard let direction = try train.reservation.directionInBlock(for: feedback.blockId) else {
                 // Note: this should not happen because all the feedback are in occupied block
                 // which, by definition, have a train (and a direction) in them.
@@ -302,12 +302,14 @@ final class TrainController: TrainControlling, CustomStringConvertible {
         }
         
         guard let blockFeedback = entryFeedback.block.feedbacks.first(where: { $0.feedbackId == entryFeedback.feedback.id }) else {
-            // TODO: throw
-            fatalError()
+            throw LayoutError.feedbackNotFoundInBlock(feedbackId: entryFeedback.feedback.id, block: entryFeedback.block)
         }
         
-        // TODO: throw if distance not specified
-        let feedbackPosition = FeedbackPosition(blockId: entryFeedback.block.id, index: entryFeedback.index, distance: blockFeedback.distance ?? 0)
+        guard let fdistance = blockFeedback.distance else {
+            throw LayoutError.feedbackDistanceNotSet(feedback: blockFeedback)
+        }
+        
+        let feedbackPosition = FeedbackPosition(blockId: entryFeedback.block.id, index: entryFeedback.index, distance: fdistance)
         let detectedPosition = feedbackPosition.trainPosition(direction: entryFeedback.direction)
 
         let newPosition = try train.position.newLocationWith(trainMovesForward: train.directionForward,

@@ -29,14 +29,17 @@ enum LayoutError: Error {
     case blockNotFoundInStation(stationId: Identifier<Station>)
     case stationNotFound(stationId: Identifier<Station>)
     case turnoutNotFound(turnoutId: Identifier<Turnout>)
-    case feedbackNotFound(feedbackId: Identifier<Feedback>)
-    case socketIdNotFound(socket: Socket)
     case directionNotFound(blockId: Identifier<Block>)
 
+    case socketIdNotFound(socket: Socket)
     case invalidSocket(socket: Socket)
-    case invalidBackAfterFrontPosition(position: TrainLocation)
-    case invalidBackBeforeFrontPosition(position: TrainLocation)
-    case invalidBackAndFrontPosition(position: TrainLocation)
+
+    case feedbackNotFound(feedbackId: Identifier<Feedback>)
+    case feedbackNotFoundInBlock(feedbackId: Identifier<Feedback>, block: Block)
+    case feedbackDistanceNotSet(feedback: Block.BlockFeedback)
+
+    case frontPositionBlockNotSpecified(position: TrainLocation)
+    case backPositionBlockNotSpecified(position: TrainLocation)
 
     case brakeFeedbackNotFound(block: Block)
     case stopFeedbackNotFound(block: Block)
@@ -83,12 +86,18 @@ extension LayoutError: LocalizedError {
             return "Station \(stationId) not found"
         case let .turnoutNotFound(turnoutId: turnoutId):
             return "Turnout \(turnoutId) not found"
-        case let .feedbackNotFound(feedbackId: feedbackId):
-            return "Feedback \(feedbackId) not found"
         case let .blockNotEmpty(blockId: blockId):
             return "Block \(blockId) is not empty"
         case let .blockNotReservedForTrain(block: block, train: train):
             return "Block \(block.name) did not get reserved for train \(train)"
+
+        case let .feedbackNotFound(feedbackId: feedbackId):
+            return "Feedback \(feedbackId) not found"
+        case .feedbackNotFoundInBlock(feedbackId: let feedbackId, block: let block):
+            return "Feedback \(feedbackId) not found in block \(block.name)"
+
+        case .feedbackDistanceNotSet(feedback: let feedback):
+            return "Feedback \(feedback.feedbackId) distance not set"
 
         case let .brakeFeedbackNotFound(block: block):
             return "Block \(block.name) does not have a brake feedback"
@@ -118,12 +127,10 @@ extension LayoutError: LocalizedError {
         case let .invalidSocket(socket: socket):
             return "Socket \(socket) must have either its block or turnout defined"
 
-        case let .invalidBackAndFrontPosition(position: position):
-            return "Invalid back and front position: \(position)"
-        case let .invalidBackAfterFrontPosition(position: position):
-            return "The back position cannot be after the front position: \(position)"
-        case let .invalidBackBeforeFrontPosition(position: position):
-            return "The back position cannot be before the front position: \(position)"
+        case let .frontPositionBlockNotSpecified(position: position):
+            return "Front position not specified: \(position)"
+        case let .backPositionBlockNotSpecified(position: position):
+            return "Back position not specified: \(position)"
 
         case let .trainNotAssignedToABlock(train: train):
             return "Train \(train.name) does not have any assigned block (train.block is nil)"

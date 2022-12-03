@@ -30,7 +30,7 @@ struct LayoutSpeed {
     ///   - speed: the speed to evaluate
     /// - Returns: true if the train can stop with the available leading distance, false otherwise
     func isBrakingDistanceRespected(train: Train, speed: SpeedKph) throws -> Bool {
-        let distanceLeftInBlock = train.distanceLeftInLastBlock()
+        let distanceLeftInBlock = train.distanceLeftInFrontBlock()
         let leadingDistance = distanceLeftInBlock + train.leading.settledDistance
 
         // Compute the distance necessary to bring the train to a full stop
@@ -94,7 +94,7 @@ struct LayoutSpeed {
     /// - Parameter train: the train
     /// - Returns: the maximum speed
     func unrestrictedLeadMaximumSpeed(train: Train) throws -> SpeedKph {
-        let distanceLeftInBlock = train.distanceLeftInLastBlock()
+        let distanceLeftInBlock = train.distanceLeftInFrontBlock()
         var unrestrictedLeadingDistance = distanceLeftInBlock
         var speed = LayoutFactory.DefaultMaximumSpeed
         for item in train.leading.items {
@@ -168,7 +168,7 @@ struct LayoutSpeed {
     /// - Parameter train: the train
     /// - Returns: the maximum speed
     func settledLeadMaximumSpeed(train: Train) throws -> SpeedKph {
-        let distanceLeftInBlock = train.distanceLeftInLastBlock()
+        let distanceLeftInBlock = train.distanceLeftInFrontBlock()
         let settledDistance = distanceLeftInBlock + train.leading.settledDistance
         return try maximumSpeedToBrake(train: train, toSpeed: 0, withDistance: settledDistance)
     }

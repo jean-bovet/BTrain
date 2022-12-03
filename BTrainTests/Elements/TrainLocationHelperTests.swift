@@ -34,13 +34,13 @@ final class TrainLocationHelperTests: XCTestCase {
         try doc.layoutController.setupTrainToBlock(train, blockB.id, naturalDirectionInBlock: .next)
         XCTAssertEqual(train.occupied.blocks.count, 1)
         
-        assertFeedbacks(layout, train, feedbackCount: 0)
+        try assertFeedbacks(layout, train, feedbackCount: 0)
         
         layout.toggle(blockB.feedbacks[0])
-        assertFeedbacks(layout, train, feedbackCount: 1)
+        try assertFeedbacks(layout, train, feedbackCount: 1)
 
         layout.toggle(blockB.feedbacks[1])
-        assertFeedbacks(layout, train, feedbackCount: 2)
+        try assertFeedbacks(layout, train, feedbackCount: 2)
     }
     
     // ┌─────────┐           ┌──────┐   ┌──────┐  ┌──────┐            ┌──────┐
@@ -63,21 +63,21 @@ final class TrainLocationHelperTests: XCTestCase {
         try doc.layoutController.setupTrainToBlock(train, blockB.id, naturalDirectionInBlock: .next)
         XCTAssertEqual(train.occupied.blocks.count, 2)
 
-        assertFeedbacks(layout, train, feedbackCount: 0)
+        try assertFeedbacks(layout, train, feedbackCount: 0)
 
         layout.toggle(blockB.feedbacks[0])
-        assertFeedbacks(layout, train, feedbackCount: 1)
+        try assertFeedbacks(layout, train, feedbackCount: 1)
 
         layout.toggle(blockA.feedbacks[1])
-        assertFeedbacks(layout, train, feedbackCount: 2)
+        try assertFeedbacks(layout, train, feedbackCount: 2)
 
         // Activating a feedback in a block that is not occupied should not be taken into account
         layout.toggle(blockC.feedbacks[0])
-        assertFeedbacks(layout, train, feedbackCount: 2)
+        try assertFeedbacks(layout, train, feedbackCount: 2)
     }
 
-    private func assertFeedbacks(_ layout: Layout, _ train: Train, feedbackCount: Int) {
-        let feedbacks = layout.allActiveFeedbackPositions(train: train)
+    private func assertFeedbacks(_ layout: Layout, _ train: Train, feedbackCount: Int) throws {
+        let feedbacks = try layout.allActiveFeedbackPositions(train: train)
         XCTAssertEqual(feedbacks.count, feedbackCount)
     }
 
@@ -329,7 +329,7 @@ final class TrainLocationHelperTests: XCTestCase {
 
     private func assertRemainingDistance(_ train: Train, front: (Identifier<Block>, Int), back: (Identifier<Block>, Int), distance: Double) {
         train.position = .init(front:.init(blockId: front.0, index: front.1, distance: 0), back:.init(blockId: back.0, index: back.1, distance: 0))
-        XCTAssertEqual(train.distanceLeftInLastBlock(), distance)
+        XCTAssertEqual(train.distanceLeftInFrontBlock(), distance)
     }
     
 }

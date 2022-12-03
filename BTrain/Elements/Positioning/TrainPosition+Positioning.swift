@@ -12,7 +12,6 @@
 
 import Foundation
 
-// TODO: verify coverage is 100%
 extension TrainPosition {
         
     /// Returns true if the location is after ``other``, in the direction of travel of the train.

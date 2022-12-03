@@ -567,22 +567,26 @@ extension LayoutController {
 
         if train.directionForward {
             // The train was moving backward and toggled to move forward
-            if let newBlock = layout.blocks[train.position.front?.blockId] {
-                train.block = newBlock
-                newBlock.trainInstance = TrainInstance(train.id, ti.direction.opposite)
-            } else {
-                // TODO: throw
-                fatalError()
+            guard let frontBlockId = train.position.front?.blockId else {
+                throw LayoutError.frontPositionBlockNotSpecified(position: train.position)
             }
+            guard let newBlock = layout.blocks[frontBlockId] else {
+                throw LayoutError.blockNotFound(blockId: frontBlockId)
+            }
+            
+            train.block = newBlock
+            newBlock.trainInstance = TrainInstance(train.id, ti.direction.opposite)
         } else {
             // The train was moving forward and toggled to move backward
-            if let newBlock = layout.blocks[train.position.back?.blockId] {
-                train.block = newBlock
-                newBlock.trainInstance = TrainInstance(train.id, ti.direction.opposite)
-            } else {
-                // TODO: throw
-                fatalError()
+            guard let backBlockId = train.position.back?.blockId else {
+                throw LayoutError.backPositionBlockNotSpecified(position: train.position)
             }
+            guard let newBlock = layout.blocks[backBlockId] else {
+                throw LayoutError.blockNotFound(blockId: backBlockId)
+            }
+
+            train.block = newBlock
+            newBlock.trainInstance = TrainInstance(train.id, ti.direction.opposite)
         }
         
         try reservation.removeLeadingBlocks(train: train)

@@ -12,7 +12,6 @@
 
 import Foundation
 
-// TODO: verify coverage is 100%
 extension Train {
     
     func hasReachedStationOrDestination(_ route: Route?, _ block: Block) -> Bool {
@@ -78,20 +77,19 @@ extension Train {
         }
     }
     
-    /// Returns the distance left in the last block in the direction of travel of the train.
+    /// Returns the distance left in the front block in the direction of travel of the train.
     ///
     /// If the train moves forward, the block will be the one where the locomotive is located.
     /// If the train moves backward, the block will be the last occupied one, where the last wagon is located.
     ///
     /// - Parameter train: the train
     /// - Returns: the distance left
-    func distanceLeftInLastBlock() -> Double {        
+    func distanceLeftInFrontBlock() -> Double {        
         if directionForward {
             // Direction of train is forward.
             // Block: [ 0 1 2 3 ]
             // Train:  ----->
             //         b    f
-            // TODO: use frontBlock instead?
             guard let block = occupied.blocks.first else {
                 return 0
             }
@@ -133,7 +131,6 @@ extension Train {
             // Block: [ 0 1 2 3 ]
             // Train:  >-----
             //         f    b
-            // TODO: use frontBlock instead?
             guard let block = occupied.blocks.last else {
                 return 0
             }

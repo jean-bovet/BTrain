@@ -5,6 +5,8 @@ This article discusses how a train location is determined and updated.
 ## Overview
 
 Definitions:
+- Front Position: the position of the front of the train, relative to the direction of travel of the train.
+- Back Position: the position of the back of the train, relative to the direction of travel of the train.
 - A block contains one or more feedback identified by an index starting at 0 and growing
   in the natural direction of the block (see Feedback Index in the diagram below).
 - A position within the block is identified by an index, growing in the natural direction

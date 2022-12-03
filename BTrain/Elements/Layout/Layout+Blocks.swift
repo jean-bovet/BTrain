@@ -72,7 +72,6 @@ extension Layout {
         }
     }
 
-    // TODO: is that the right way to use the currentBlock?
     func atEndOfBlock(train: Train) throws -> Bool {
         guard let currentBlock = train.block else {
             return false

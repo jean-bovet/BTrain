@@ -195,7 +195,6 @@ final class TrainSpreader {
             }
         } else if bv.frontBlock {
             // Note: front block as in the block in the front of the train in its direction of travel
-            // TODO: frontBlock is what, the front of the train when moving forward?
             if directionOfVisit == .next {
                 if trainForward {
                     // Block: [ 0 1 2 3 ]>
@@ -210,9 +209,8 @@ final class TrainSpreader {
                     // Visit:        ------->
                     // Train:        -------<
                     //               b      f
-                    // TODO: backIndex should be specified! Unit test all that as well
-                    let frontIndex = train.position.front?.index ?? block.feedbacks.count
-                    let backIndex = 0
+                    let frontIndex = block.feedbacks.count
+                    let backIndex = train.position.back?.index ?? 0
                     fill(block: block, fromIndex: backIndex, toIndex: frontIndex, locomotiveIndex: frontIndex)
                 }
             } else {
