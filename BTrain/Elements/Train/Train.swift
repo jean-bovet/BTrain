@@ -221,16 +221,14 @@ final class Train: Element, ObservableObject {
     // Note: we don't need to store this property because it is used only
     // when running the layout.
     var timeUntilAutomaticRestart: TimeInterval = 0
-
-    func description(_ layout: Layout?) -> String {
+    
+    var description: String {
         var text = "Train '\(name)' (id=\(id), \(state)"
         text += ", \(scheduling)"
-        if let blockId = blockId {
-            if let name = layout?.blocks[blockId]?.name {
-                text += ", \(name)"
-            } else {
-                text += ", \(blockId)"
-            }
+        if let block = block {
+            text += ", \(block.name)"
+        } else if let blockId = blockId {
+            text += ", \(blockId)"
         }
         text += ", \(position)"
         if locomotive != nil {
@@ -244,10 +242,6 @@ final class Train: Element, ObservableObject {
         }
         text += ")"
         return text
-    }
-    
-    var description: String {
-        description(nil)
     }
 
     convenience init(uuid: String = UUID().uuidString, name: String = "", wagonsLength: Double? = nil, maxSpeed: SpeedKph? = nil, maxNumberOfLeadingReservedBlocks: Int? = nil) {
