@@ -13,9 +13,22 @@
 @testable import BTrain
 import XCTest
 
+//                  ┌─────────┐
+// ┌────────────────│ Block 2 │◀────────────────────┐
+// │                └─────────┘                     │
+// │                                                │
+// │                                                │
+// │                ┌─────────┐
+// │       ┌───────▶│ Block 3 │────────────────▶Turnout12
+// │       │        └─────────┘
+// │       │                                        ▲
+// │       │                                        │
+// │                                 ┌─────────┐    │
+// └─▶Turnout21 ────────────────────▶│ Block 1 │────┘
+//                                   └─────────┘
 class UnmanagedTrainOperationTests: BTTestCase {
     // b1 > b2 > b1
-    func testFollowManualOperation() throws {
+    func testFollowTrainForward() throws {
         let layout = LayoutLoop1().newLayout()
         let p = try setup(layout: layout, fromBlockId: "b1")
 
@@ -54,49 +67,10 @@ class UnmanagedTrainOperationTests: BTTestCase {
         try p.assertTrain(inBlock: "b1", position: 2, speed: LayoutFactory.DefaultMaximumSpeed)
     }
 
-    //                 ┌─────────┐
-    // ┌────────────────│ Block 2 │◀────────────────────┐
-    // │                └─────────┘                     │
-    // │                                                │
-    // │                                                │
-    // │                ┌─────────┐
-    // │       ┌───────▶│ Block 3 │────────────────▶Turnout12
-    // │       │        └─────────┘
-    // │       │                                        ▲
-    // │       │                                        │
-    // │                                 ┌─────────┐    │
-    // └─▶Turnout21 ────────────────────▶│ Block 1 │────┘
-    //                                  └─────────┘
-    // b1 > b2 > b3 > !b1
-    // TODO: semi-automatic mode
-    func disabled_testPullingLongTrain() throws {
+    // !b1 > !b2 > !b1
+    func testFollowTrainBackward() throws {
         let layout = LayoutLoop1().newLayout()
-
-        layout.turnouts[1].setState(.branchLeft)
-
-        layout.turnouts.elements.forEach { $0.length = nil }
-
-        let b1 = layout.blocks[0]
-        let b2 = layout.blocks[1]
-        let b3 = layout.blocks[2]
-
-        b1.length = 100
-        b1.feedbacks[0].distance = 20
-        b1.feedbacks[1].distance = 80
-
-        b2.length = 20
-        b2.feedbacks[0].distance = 5
-        b2.feedbacks[1].distance = 15
-
-        b3.length = 20
-        b3.feedbacks[0].distance = 5
-        b3.feedbacks[1].distance = 15
-
-        let train = layout.trains[0]
-        train.locomotive!.length = 20
-        train.wagonsLength = 40
-
-        let p = try setup(layout: layout, fromBlockId: "b1", positionAtEnd: true)
+        let p = try setup(layout: layout, fromBlockId: "b1")
 
         connectToSimulator(doc: p.doc)
         defer {
@@ -104,36 +78,34 @@ class UnmanagedTrainOperationTests: BTTestCase {
         }
 
         p.setTrainSpeed(LayoutFactory.DefaultMaximumSpeed)
-
-        try p.assertTrain(inBlock: "b1", position: 2, speed: LayoutFactory.DefaultMaximumSpeed)
-
-        try p.triggerFeedback("f21")
+        try p.toggleDirection()
 
         try p.assertTrain(inBlock: "b1", position: 1, speed: LayoutFactory.DefaultMaximumSpeed)
-        try p.assertTrain(inBlock: "b2", position: 1, speed: LayoutFactory.DefaultMaximumSpeed)
 
-        try p.triggerFeedback("f21", false)
         try p.triggerFeedback("f22")
 
-        try p.assertTrain(inBlock: "b1", position: 2, speed: LayoutFactory.DefaultMaximumSpeed)
-        try p.assertTrain(inBlock: "b2", position: 2, speed: LayoutFactory.DefaultMaximumSpeed)
+        try p.assertTrain(notInBlock: "b1")
+        try p.assertTrain(inBlock: "b2", position: 1, speed: LayoutFactory.DefaultMaximumSpeed)
 
         try p.triggerFeedback("f22", false)
-        try p.triggerFeedback("f31")
+        try p.triggerFeedback("f21")
 
+        try p.assertTrain(notInBlock: "b1")
+        try p.assertTrain(inBlock: "b2", position: 0, speed: LayoutFactory.DefaultMaximumSpeed)
+
+        try p.triggerFeedback("f21", false)
+        try p.triggerFeedback("f12")
+
+        try p.assertTrain(notInBlock: "b2")
         try p.assertTrain(inBlock: "b1", position: 1, speed: LayoutFactory.DefaultMaximumSpeed)
-        try p.assertTrain(inBlock: "b2", position: 1, speed: LayoutFactory.DefaultMaximumSpeed)
-        try p.assertTrain(inBlock: "b3", position: 1, speed: LayoutFactory.DefaultMaximumSpeed)
 
-        try p.triggerFeedback("f31", false)
-        try p.triggerFeedback("f32")
+        try p.triggerFeedback("f12", false)
+        try p.triggerFeedback("f11")
 
-        // Train stops because its tail is still in the block b1
-        p.layoutController.waitUntilSettled()
+        p.doc.layoutController.waitUntilSettled()
 
-        try p.assertTrain(inBlock: "b1", position: 2, speed: 0)
-        try p.assertTrain(inBlock: "b2", position: 2, speed: 0)
-        try p.assertTrain(inBlock: "b3", position: 2, speed: 0)
+        try p.assertTrain(notInBlock: "b2")
+        try p.assertTrain(inBlock: "b1", position: 0, speed: LayoutFactory.DefaultMaximumSpeed)
     }
 
     // MARK: - - Utility
@@ -180,6 +152,11 @@ class UnmanagedTrainOperationTests: BTTestCase {
             waitForSpeed(speed)
         }
 
+        func toggleDirection() throws {
+            train.locomotive!.directionForward.toggle()
+            try doc.layoutController.toggleTrainDirection(train)
+        }
+        
         func waitForSpeed(_ speed: SpeedKph) {
             let steps = loc.speed.steps(for: speed)
             BTTestCase.wait(for: {
