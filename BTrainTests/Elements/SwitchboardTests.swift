@@ -87,6 +87,7 @@ class SwitchboardTests: XCTestCase {
         let b1 = provider.blockShapes[0]
         let train = layout.trains[0]
         train.locomotive = Locomotive()
+        b1.block.length = 100
         b1.block.feedbacks.append(.init(id: "f1", feedbackId: .init(uuid: "f1"), distance: 10))
         
         try controller.setupTrainToBlock(train, b1.block.id, naturalDirectionInBlock: .next)
@@ -110,9 +111,11 @@ class SwitchboardTests: XCTestCase {
 
         let b1 = provider.blockShapes[0]
         b1.block.feedbacks.append(.init(id: "f1", feedbackId: .init(uuid: "f1"), distance: 10))
+        b1.block.length = 100
 
         let b2 = provider.blockShapes[1]
         b2.block.feedbacks.append(.init(id: "ff", feedbackId: .init(uuid: "f2"), distance: 10))
+        b2.block.length = 100
 
         let train = layout.trains[0]
         train.locomotive = Locomotive()

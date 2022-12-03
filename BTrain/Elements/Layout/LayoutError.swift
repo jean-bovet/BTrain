@@ -38,6 +38,12 @@ enum LayoutError: Error {
     case blockContainsNoFeedback(block: Block)
     case feedbackDistanceNotSet(feedback: Block.BlockFeedback)
 
+    case frontPositionNotSpecified(position: TrainLocation)
+    case backPositionNotSpecified(position: TrainLocation)
+    
+    case frontPositionBlockIdMismatch(expected: Identifier<Block>, got: Identifier<Block>)
+    case backPositionBlockIdMismatch(expected: Identifier<Block>, got: Identifier<Block>)
+
     case frontPositionBlockNotSpecified(position: TrainLocation)
     case backPositionBlockNotSpecified(position: TrainLocation)
 
@@ -46,6 +52,7 @@ enum LayoutError: Error {
 
     case blockNotEmpty(blockId: Identifier<Block>)
     case blockNotReservedForTrain(block: Block, train: Identifier<Train>)
+    case blockLengthNotDefined(block: Block)
 
     case blockAlreadyReserved(block: Block)
     case turnoutAlreadyReserved(turnout: Turnout)
@@ -97,6 +104,8 @@ extension LayoutError: LocalizedError {
             return "Feedback \(feedbackId) not found in block \(block.name)"
         case .blockContainsNoFeedback(block: let block):
             return "Block \(block.name) contains no feedback"
+        case .blockLengthNotDefined(block: let block):
+            return "Block \(block.name) does not have its length defined"
 
         case .feedbackDistanceNotSet(feedback: let feedback):
             return "Feedback \(feedback.feedbackId) distance not set"
@@ -130,9 +139,19 @@ extension LayoutError: LocalizedError {
             return "Socket \(socket) must have either its block or turnout defined"
 
         case let .frontPositionBlockNotSpecified(position: position):
-            return "Front position not specified: \(position)"
+            return "Front position block not specified: \(position)"
         case let .backPositionBlockNotSpecified(position: position):
-            return "Back position not specified: \(position)"
+            return "Back position block not specified: \(position)"
+            
+        case .frontPositionNotSpecified(position: let position):
+            return "Front position not specified: \(position)"
+        case .backPositionNotSpecified(position: let position):
+            return "Back position block not specified: \(position)"
+
+        case .frontPositionBlockIdMismatch(expected: let expected, got: let got):
+            return "Front position block mismatch: expected \(expected) but got \(got)"
+        case .backPositionBlockIdMismatch(expected: let expected, got: let got):
+            return "Back position block mismatch: expected \(expected) but got \(got)"
 
         case let .trainNotAssignedToABlock(train: train):
             return "Train \(train.name) does not have any assigned block (train.block is nil)"

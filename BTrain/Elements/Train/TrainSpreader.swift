@@ -112,11 +112,11 @@ final class TrainSpreader {
         let directionOfVisit = blockInfo.direction
         
         // Compute the length that the train occupies in the block
-        let occupiedLength = occupiedLengthOfTrainInBlock(block: blockInfo.block,
-                                                          trainPosition: train.position,
-                                                          frontBlock: frontBlock,
-                                                          directionOfVisit: directionOfVisit,
-                                                          trainForward: locomotive.directionForward)
+        let occupiedLength = try occupiedLengthOfTrainInBlock(block: blockInfo.block,
+                                                              trainPosition: train.position,
+                                                              frontBlock: frontBlock,
+                                                              directionOfVisit: directionOfVisit,
+                                                              trainForward: locomotive.directionForward)
         
         // Substract it from the remaining train length
         remainingTrainLength -= occupiedLength
@@ -131,7 +131,10 @@ final class TrainSpreader {
         // If there are no more train length to parse, it means we have reached the "tail" of the train.
         if remainingTrainLength <= 0 {
             // Compute the position of the "tail" of the train. The remaining train length now represents the space left in the block
-            let pos = tailPositionIn(block: blockInfo.block, spaceLeftInBlock: abs(remainingTrainLength), directionOfVisit: directionOfVisit, directionForward: locomotive.directionForward)
+            let pos = try tailPositionIn(block: blockInfo.block,
+                                         spaceLeftInBlock: abs(remainingTrainLength),
+                                         directionOfVisit: directionOfVisit,
+                                         directionForward: locomotive.directionForward)
             
             // Note: when moving backward, `pos` is the position of the trail of the train in
             // the direction of travel. And because the front and back positions are always the same
@@ -301,7 +304,11 @@ final class TrainSpreader {
     ///   - directionOfVisit: the direction of visit in the block
     ///   - directionForward: true if the train is moving forwards, false otherwise
     /// - Returns: the train position
-    private func tailPositionIn(block: Block, spaceLeftInBlock: Double, directionOfVisit: Direction, directionForward: Bool) -> TrainPosition {
+    private func tailPositionIn(block: Block, spaceLeftInBlock: Double, directionOfVisit: Direction, directionForward: Bool) throws -> TrainPosition {
+        guard let blockLength = block.length else {
+            throw LayoutError.blockLengthNotDefined(block: block)
+        }
+
         //      [      ]
         // <-------{ d } where d = remainingTrainLength
         // if d == 0, the train occupies all of the last block
@@ -310,7 +317,6 @@ final class TrainSpreader {
 
         let index: Int
         let distance: Double
-        let blockLength = block.length ?? 0
         if directionOfVisit == .next {
             if directionForward {
                 // <[   ]
@@ -344,20 +350,35 @@ final class TrainSpreader {
     }
             
     // TODO: static and move to common Positioning files?
-    func occupiedLengthOfTrainInBlock(block: Block, trainPosition: TrainLocation, frontBlock: Bool, directionOfVisit: Direction, trainForward: Bool) -> Double {
-        let blockLength = block.length ?? 0 // TODO: throw if block.length is not defined?
+    func occupiedLengthOfTrainInBlock(block: Block, trainPosition: TrainLocation, frontBlock: Bool, directionOfVisit: Direction, trainForward: Bool) throws -> Double {
+        guard let blockLength = block.length else {
+            throw LayoutError.blockLengthNotDefined(block: block)
+        }
         
         // directionOfVisit: always in the opposite direction of travel of the train
         let lengthOfTrainInBlock: Double
         if frontBlock {
-            let frontDistance = (trainForward ? trainPosition.front?.distance : trainPosition.back?.distance) ?? 0
-            
-            
-            // TODO: throw
+            let frontDistance: Double
             if trainForward {
-                assert(trainPosition.front?.blockId == block.id)
+                guard let front = trainPosition.front else {
+                    throw LayoutError.frontPositionNotSpecified(position: trainPosition)
+                }
+
+                guard front.blockId == block.id else {
+                    throw LayoutError.frontPositionBlockIdMismatch(expected: front.blockId, got: block.id)
+                }
+                
+                frontDistance = front.distance
             } else {
-                assert(trainPosition.back?.blockId == block.id)
+                guard let back = trainPosition.back else {
+                    throw LayoutError.backPositionNotSpecified(position: trainPosition)
+                }
+
+                guard back.blockId == block.id else {
+                    throw LayoutError.backPositionBlockIdMismatch(expected: back.blockId, got: block.id)
+                }
+                
+                frontDistance = back.distance
             }
             
             if directionOfVisit == .next {
