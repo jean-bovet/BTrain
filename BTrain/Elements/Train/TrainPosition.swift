@@ -34,7 +34,7 @@ struct TrainPosition: Equatable, Codable, CustomStringConvertible {
     var distance: Double
     
     var description: String {
-        "\(blockId.uuid):\(index):\(distance)"
+        "\(blockId.uuid):\(index):\(String(format: "%.3f", distance))"
     }
     
     /// When comparing to position, the distance is only compared up to a thousandth because with

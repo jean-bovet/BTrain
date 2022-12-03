@@ -187,13 +187,14 @@ final class TrainLocationHelperTests: XCTestCase {
         //        f
         try assert(doc, train, blockA, true, .previous, .both(blockId: blockA.id,
                                                               frontIndex: 0,
-                                                              frontDistance: 20+distanceDelta,
+                                                              frontDistance: 20-distanceDelta,
                                                               backIndex: lastIndex-1,
-                                                              backDistance: 20+120+distanceDelta))
+                                                              backDistance: 20+120-distanceDelta))
                 
         // Block: [ ---> ]
         // Train: -------<
         //        b      f
+        // Note: the train is setup first with its directionForward=true, and then it is toggled
         try assert(doc, train, blockA, false, .next, .both(blockId: blockA.id,
                                                            frontIndex: lastIndex,
                                                            frontDistance: 180+distanceDelta,
@@ -202,11 +203,12 @@ final class TrainLocationHelperTests: XCTestCase {
         // Block: [ ---> ]
         // Train: >-------
         //        f      b
+        // Note: the train is setup first with its directionForward=true, and then it is toggled
         try assert(doc, train, blockA, false, .previous, .both(blockId: blockA.id,
-                                                               frontIndex: 1,
-                                                               frontDistance: 20+distanceDelta,
+                                                               frontIndex: 0,
+                                                               frontDistance: 20-distanceDelta,
                                                                backIndex: lastIndex-1,
-                                                               backDistance: 20+120+distanceDelta))
+                                                               backDistance: 20+120-distanceDelta))
     }
     
     // MARK: - End of Block

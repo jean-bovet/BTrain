@@ -264,10 +264,9 @@ final class LayoutAsserter {
         }
 
         // Assert the parts of the block reserved for the train and its wagon
-        // TODO: finish to remove the parts
-//        if let train = block.trainInstance, let expectedTrain = expectedBlock.trainInstance {
-//            XCTAssertEqual(train.parts, expectedTrain.parts, "Unexpected train parts mismatch in block \(block) at index \(index), route \(routeName)")
-//        }
+        if let train = block.trainInstance, let expectedTrain = expectedBlock.trainInstance {
+            XCTAssertEqual(train.parts, expectedTrain.parts, "Unexpected train parts mismatch in block \(block) at index \(index), route \(routeName)")
+        }
     }
 
     private func assertTurnoutAt(index: Int, routeName: String, step: ResolvedRouteItemTurnout, expectedStep: ResolvedRouteItemTurnout, expectedLayout _: LayoutParser.ParsedLayout) {

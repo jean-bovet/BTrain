@@ -577,21 +577,21 @@ class AutomaticRoutingTests: BTTestCase {
         XCTAssertFalse(t1.directionForward)
         XCTAssertEqual(s1.trainInstance?.direction, .next)
 
-        try p.assert("automatic-0: {r0{s1 ≏ 🔵􀼮⟷0 ≏ 􀼰0 }} <r0<t1{sr}(0,1),s>> <r0<t2{sr}(0,1),s>> [r0[b1 ≏ ≏ ]] <t4{sl}(1,0),s> {s2 ≏ ≏ }", ["b1"])
+        try p.assert("automatic-0: {r0{s1 🔵􀼮⟷0 ≏ 􀼰0 ≏ }} <r0<t1{sr}(0,1),s>> <r0<t2{sr}(0,1),s>> [r0[b1 ≏ ≏ ]] <t4{sl}(1,0),s> {s2 ≏ ≏ }", ["b1"])
                 
-        try p.assert("automatic-0: {r0{s1 ≡ 🔵􀼮⟷0 ≏ 􀼰0 }} <r0<t1{sr}(0,1),s>> <r0<t2{sr}(0,1),s>> [r0[b1 ≏ ≏ ]] <t4{sl}(1,0),s> {s2 ≏ ≏ }", ["b1"])
+        try p.assert("automatic-0: {r0{s1 ≏ 🔵􀼮⟷0 ≡ 􀼰0 }} <r0<t1{sr}(0,1),s>> <r0<t2{sr}(0,1),s>> [r0[b1 ≏ ≏ ]] <t4{sl}(1,0),s> {s2 ≏ ≏ }", ["b1"])
 
         try p.assert("automatic-0: {r0{s1 ≏ ≏ 🔵􀼮⟷0 }} <r0<t1{sr}(0,1),s>> <r0<t2{sr}(0,1),s>> [r0[b1 􀼯0 ≡ 􀼰0 ≏ ]] <r0<t4{sl}(1,0),s>> {r0{s2 ≏ ≏ }}", ["s2"])
 
         try p.assert("automatic-0: {r0{s1 ≏ ≏ 🔵􀼮⟷0 }} <r0<t1{sr}(0,1),s>> <r0<t2{sr}(0,1),s>> [r0[b1 􀼯0 ≡ 􀼰0 ≏ ]] <r0<t4{sl}(1,0),s>> {r0{s2 ≏ ≏ }}", ["s2"])
-        
+
         try p.assert("automatic-0: {s1 ≏ ≏ } <t1{sr}(0,1),s> <t2{sr}(0,1),s> [r0[b1 ≏ 🟡􀼮⟷0 ≏ 􀼯0 ]] <r0<t4{sl}(1,0),s>> {r0{s2 􀼯0 ≡ 􀼰0 ≏ }}", [])
 
         try p.assert("automatic-0: {s1 ≏ ≏ } <t1{sr}(0,1),s> <t2{sr}(0,1),s> [b1 ≏ ≏ ] <t4{sl}(1,0),s> {r0{s2 ≏ 🔴􀼮⟷0 ≡ 􀼰0 }}", [])
-        
+
         // Start the train to go back to s1, by reversing its direction
         try p.start(destination: Destination(s1.id, direction: .previous), expectedState: .running, routeSteps: ["s2:previous", "b1:previous", "s1:previous"])
-        
+
         try p.assert("automatic-0: !{r0{s2 ≏ 􀼰0 ≡ 🔵!􀼮0 }} <r0<t4{sl}(0,1),s>> ![r0[b1 ≏ ≏ ]] <t2{sr}(1,0),s> <t1{sr}(1,0),s> !{s1 ≏ ≏ }", ["b1"])
 
         try p.assert("automatic-0: !{r0{s2 ≏ 􀼰0 ≏ 􀼯0 }} <r0<t4{sl}(0,1),s>> ![r0[b1 􀼯0 ≡ 🔵!􀼮0 ≏ ]] <r0<t2{sr}(1,0),s>> <r0<t1{sr}(1,0),s>> !{r0{s1 ≏ ≏ }}", ["s1"])
@@ -601,7 +601,7 @@ class AutomaticRoutingTests: BTTestCase {
         // a block where the train is located (and because the train can move in any direction, it can
         // have a magnet at the rear of the train).
         try p.assert("automatic-0: !{r0{s2 ≏ 􀼰0 ≡ 􀼯0 }} <r0<t4{sl}(0,1),s>> ![r0[b1 􀼯0 ≏ 🔵!􀼮0 ≏ ]] <r0<t2{sr}(1,0),s>> <r0<t1{sr}(1,0),s>> !{r0{s1 ≏ ≏ }}", ["s1"])
-        
+
         try p.assert("automatic-0: !{s2 ≏ ≏ } <t4{sl}(0,1),s> ![r0[b1 ≏ ≏ 􀼰0 ]] <r0<t2{sr}(1,0),s>> <r0<t1{sr}(1,0),s>> !{r0{s1 􀼯0 ≡ 🟡!􀼮0 ≏ }}", [])
 
         try p.assert("automatic-0: !{s2 ≏ ≏ } <t4{sl}(0,1),s> ![b1 ≏ ≏ ] <t2{sr}(1,0),s> <t1{sr}(1,0),s> !{r0{s1 ≏ 􀼰0 ≡ 🔴!􀼮0 }}", [])
