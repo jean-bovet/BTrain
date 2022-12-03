@@ -33,12 +33,12 @@ class MarklinSimulatorTests: XCTestCase {
         waitForExpectations(timeout: 1.0)
     }
 
-    func testDirectionChange() {
+    func testDirectionChange() throws {
         let doc = LayoutDocument(layout: LayoutLoop1().newLayout())
         // We must set the train in the layout for the direction to be
         // properly emitted from the simulator
         let train = doc.layout.trains[0]
-        train.block = doc.layout.blocks.elements.first
+        try doc.layoutController.setupTrainToBlock(train, doc.layout.blocks.elements.first!.id, naturalDirectionInBlock: .next)
         XCTAssertTrue(train.locomotive!.directionForward)
 
         connectToSimulator(doc: doc)

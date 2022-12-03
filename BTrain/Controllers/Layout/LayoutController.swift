@@ -545,7 +545,6 @@ extension LayoutController {
     /// to avoid moving the train backwards when it should not.
 
     /// - Parameter train: the train
-    // TODO: unit test for this. Also include the toggling itself inside that method.
     func toggleTrainDirection(_ train: Train) throws {
         guard let blockId = train.block?.id else {
             throw LayoutError.trainNotAssignedToABlock(train: train)
@@ -558,26 +557,14 @@ extension LayoutController {
         guard let ti = block.trainInstance else {
             throw LayoutError.trainNotFoundInBlock(blockId: blockId)
         }
-
-        guard ti.trainId == train.id else {
-            throw LayoutError.trainInBlockDoesNotMatch(trainId: train.id, blockId: blockId, blockTrainId: ti.trainId)
-        }
-                        
+                     
+        let loc = try train.locomotiveOrThrow()
+        
         block.trainInstance = nil
 
         if train.directionForward {
-            // The train was moving backward and toggled to move forward
-            guard let frontBlockId = train.position.front?.blockId else {
-                throw LayoutError.frontPositionBlockNotSpecified(position: train.position)
-            }
-            guard let newBlock = layout.blocks[frontBlockId] else {
-                throw LayoutError.blockNotFound(blockId: frontBlockId)
-            }
+            loc.directionForward = false
             
-            train.block = newBlock
-            newBlock.trainInstance = TrainInstance(train.id, ti.direction.opposite)
-        } else {
-            // The train was moving forward and toggled to move backward
             guard let backBlockId = train.position.back?.blockId else {
                 throw LayoutError.backPositionBlockNotSpecified(position: train.position)
             }
@@ -587,8 +574,22 @@ extension LayoutController {
 
             train.block = newBlock
             newBlock.trainInstance = TrainInstance(train.id, ti.direction.opposite)
+        } else {
+            loc.directionForward = true
+
+            guard let frontBlockId = train.position.front?.blockId else {
+                throw LayoutError.frontPositionBlockNotSpecified(position: train.position)
+            }
+            guard let newBlock = layout.blocks[frontBlockId] else {
+                throw LayoutError.blockNotFound(blockId: frontBlockId)
+            }
+            
+            train.block = newBlock
+            newBlock.trainInstance = TrainInstance(train.id, ti.direction.opposite)
         }
         
+        // The method below will spread again the train, starting with the "front" block
+        // of the train which has been updated here with "newBlock".
         try reservation.removeLeadingBlocks(train: train)
     }
     
@@ -634,7 +635,6 @@ extension LayoutController {
         try reservation.removeLeadingBlocks(train: train)
 
         if previousDirectionForward == false {
-            train.locomotive?.directionForward = false
             try toggleTrainDirection(train)
         }
     }

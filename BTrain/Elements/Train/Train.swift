@@ -291,6 +291,13 @@ extension Train {
         reservation.occupied
     }
     
+    func locomotiveOrThrow() throws -> Locomotive {
+        if let loc = locomotive {
+            return loc
+        } else {
+            throw LayoutError.locomotiveNotAssignedToTrain(train: self)
+        }
+    }
 }
 
 extension Train: Restorable {

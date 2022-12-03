@@ -107,7 +107,6 @@ final class TrainLocationHelperTests: XCTestCase {
                                              backDistance: blockA.feedbacks.last!.distance!-train.length!+distanceDelta))
         
         // Toggle > backward
-        train.locomotive?.directionForward.toggle()
         try doc.layoutController.toggleTrainDirection(train)
         
         XCTAssertFalse(train.directionForward)
@@ -118,7 +117,6 @@ final class TrainLocationHelperTests: XCTestCase {
                                              backDistance: blockA.feedbacks.last!.distance!-train.length!+distanceDelta))
 
         // Toggle > forward
-        train.locomotive?.directionForward.toggle()
         try doc.layoutController.toggleTrainDirection(train)
 
         XCTAssertTrue(train.directionForward)

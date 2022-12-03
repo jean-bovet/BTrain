@@ -34,39 +34,42 @@ extension LayoutController {
     }
 
     func directionDidChange(address: UInt32, decoder: DecoderType?, direction: Command.Direction) {
-        do {
-            if let loc = layout.locomotives.elements.find(address: address, decoder: decoder) {
-                BTLogger.debug("Direction changed to \(direction) for \(loc.name)")
-                var directionChanged = false
-                switch direction {
-                case .unchanged:
-                    BTLogger.debug("Direction \(direction) for \(address.toHex())")
+        guard let loc = layout.locomotives.elements.find(address: address, decoder: decoder) else {
+            BTLogger.error("Unknown address \(address.toHex()) for change in direction event")
+            return
+        }
 
-                case .forward:
-                    if loc.directionForward == false {
-                        loc.directionForward = true
-                        directionChanged = true
-                    }
-                case .backward:
-                    if loc.directionForward {
-                        loc.directionForward = false
-                        directionChanged = true
-                    }
-                case .unknown:
-                    BTLogger.error("Unknown direction \(direction) for \(address.toHex())")
-                }
-
-                if directionChanged {
-                    if let train = layout.trains[loc.id] {
-                        try toggleTrainDirection(train)
-                        runControllers(.directionChanged(train))
-                    }
-                }
-            } else {
-                BTLogger.error("Unknown address \(address.toHex()) for change in direction event")
+        BTLogger.debug("Direction changed to \(direction) for \(loc.name)")
+        var directionChanged = false
+        switch direction {
+        case .unchanged:
+            BTLogger.debug("Direction \(direction) for \(address.toHex())")
+            
+        case .forward:
+            if loc.directionForward == false {
+                directionChanged = true
             }
-        } catch {
-            BTLogger.error("Error handling a direction change: \(error.localizedDescription)")
+        case .backward:
+            if loc.directionForward {
+                directionChanged = true
+            }
+        case .unknown:
+            BTLogger.error("Unknown direction \(direction) for \(address.toHex())")
+        }
+        
+        if directionChanged {
+            if let train = layout.trains[loc.id] {
+                do {
+                    try toggleTrainDirection(train)
+                } catch {
+                    BTLogger.error("Error handling a direction change: \(error.localizedDescription)")
+                }
+
+                runControllers(.directionChanged(train))
+            } else {
+                // If no train is associated with the locomotive, change the direction of the locomotive itself
+                loc.directionForward.toggle()
+            }
         }
     }
 

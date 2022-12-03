@@ -153,7 +153,6 @@ class UnmanagedTrainOperationTests: BTTestCase {
         }
 
         func toggleDirection() throws {
-            train.locomotive!.directionForward.toggle()
             try doc.layoutController.toggleTrainDirection(train)
         }
         

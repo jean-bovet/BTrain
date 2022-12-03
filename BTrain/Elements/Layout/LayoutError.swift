@@ -16,7 +16,6 @@ enum LayoutError: Error {
     case trainNotFound(trainId: Identifier<Train>)
     case trainNotAssignedToABlock(train: Train)
     case trainNotFoundInBlock(blockId: Identifier<Block>)
-    case trainInBlockDoesNotMatch(trainId: Identifier<Train>, blockId: Identifier<Block>, blockTrainId: Identifier<Train>)
     case trainNotFoundInRoute(train: Train, route: Route)
     case trainNotAssignedToARoute(train: Train)
 
@@ -136,8 +135,6 @@ extension LayoutError: LocalizedError {
             return "Train \(train.name) does not have any assigned block (train.block is nil)"
         case let .trainNotFoundInBlock(blockId: blockId):
             return "Block \(blockId) does not have any train assigned to it (TrainInstance is nil)"
-        case let .trainInBlockDoesNotMatch(trainId: trainId, blockId: blockId, blockTrainId: blockTrainId):
-            return "Block \(blockId) has another train (\(blockTrainId)) than \(trainId) assigned to it"
         case let .trainNotFoundInRoute(train: train, route: route):
             return "Train \(train.name) not found in route \(route.name)"
         case let .trainNotAssignedToARoute(train: train):
