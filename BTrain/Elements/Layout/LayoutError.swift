@@ -35,6 +35,7 @@ enum LayoutError: Error {
 
     case feedbackNotFound(feedbackId: Identifier<Feedback>)
     case feedbackNotFoundInBlock(feedbackId: Identifier<Feedback>, block: Block)
+    case blockContainsNoFeedback(block: Block)
     case feedbackDistanceNotSet(feedback: Block.BlockFeedback)
 
     case frontPositionBlockNotSpecified(position: TrainLocation)
@@ -94,6 +95,8 @@ extension LayoutError: LocalizedError {
             return "Feedback \(feedbackId) not found"
         case .feedbackNotFoundInBlock(feedbackId: let feedbackId, block: let block):
             return "Feedback \(feedbackId) not found in block \(block.name)"
+        case .blockContainsNoFeedback(block: let block):
+            return "Block \(block.name) contains no feedback"
 
         case .feedbackDistanceNotSet(feedback: let feedback):
             return "Feedback \(feedback.feedbackId) distance not set"

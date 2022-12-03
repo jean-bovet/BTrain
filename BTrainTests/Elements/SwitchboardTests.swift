@@ -87,10 +87,11 @@ class SwitchboardTests: XCTestCase {
         let b1 = provider.blockShapes[0]
         let train = layout.trains[0]
         train.locomotive = Locomotive()
+        b1.block.feedbacks.append(.init(id: "f1", feedbackId: .init(uuid: "f1"), distance: 10))
         
         try controller.setupTrainToBlock(train, b1.block.id, naturalDirectionInBlock: .next)
         XCTAssertEqual(train.block, b1.block)
-        XCTAssertEqual(train.position, TrainLocation.both(blockId: b1.block.id, frontIndex: b1.block.feedbacks.count, frontDistance: 0+distanceDelta, backIndex: b1.block.feedbacks.count, backDistance: 0+distanceDelta))
+        XCTAssertEqual(train.position, TrainLocation.both(blockId: b1.block.id, frontIndex: b1.block.feedbacks.count, frontDistance: 10+distanceDelta, backIndex: b1.block.feedbacks.count, backDistance: 10+distanceDelta))
 
         let c = b1.trainCellPath(at: 0).boundingBox.center
         let c2 = b1.trainCellPath(at: 1).boundingBox.center
@@ -108,7 +109,10 @@ class SwitchboardTests: XCTestCase {
         state.editing = false
 
         let b1 = provider.blockShapes[0]
+        b1.block.feedbacks.append(.init(id: "f1", feedbackId: .init(uuid: "f1"), distance: 10))
+
         let b2 = provider.blockShapes[1]
+        b2.block.feedbacks.append(.init(id: "ff", feedbackId: .init(uuid: "f2"), distance: 10))
 
         let train = layout.trains[0]
         train.locomotive = Locomotive()
@@ -126,7 +130,7 @@ class SwitchboardTests: XCTestCase {
             XCTFail("Info should not be nil")
             return
         }
-        try? controller.setupTrainToBlock(layout.trains[dragInfo.trainId]!, dragInfo.blockId, naturalDirectionInBlock: Direction.next)
+        try controller.setupTrainToBlock(layout.trains[dragInfo.trainId]!, dragInfo.blockId, naturalDirectionInBlock: Direction.next)
 
         XCTAssertEqual(train.block, b2.block)
     }
