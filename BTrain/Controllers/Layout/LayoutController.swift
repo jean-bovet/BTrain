@@ -622,16 +622,15 @@ extension LayoutController {
             guard let fd = blockFeedback.distance else {
                 throw LayoutError.feedbackDistanceNotSet(feedback: blockFeedback)
             }
-            train.position = .front(blockId: toBlockId, index: toBlock.feedbacks.count, distance: fd + distanceDelta)
+            train.position = .front(blockId: toBlockId, index: toBlock.feedbacks.count, distance: fd.after)
         } else {
-            // TODO: refactor all the lines that uses + distanceDelta
             guard let blockFeedback = toBlock.feedbacks.first else {
                 throw LayoutError.blockContainsNoFeedback(block: toBlock)
             }
             guard let fd = blockFeedback.distance else {
                 throw LayoutError.feedbackDistanceNotSet(feedback: blockFeedback)
             }
-            train.position = .front(blockId: toBlockId, index: 0, distance: fd - distanceDelta)
+            train.position = .front(blockId: toBlockId, index: 0, distance: fd.before)
         }
         
         // If the train is moving backwards, always setup the train as if it was moving

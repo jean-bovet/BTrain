@@ -102,9 +102,9 @@ final class TrainLocationHelperTests: XCTestCase {
         XCTAssertTrue(train.directionForward)
         XCTAssertEqual(train.position, .both(blockId: blockA.id,
                                              frontIndex: blockA.feedbacks.count,
-                                             frontDistance: blockA.feedbacks.last!.distance!+distanceDelta,
+                                             frontDistance: blockA.feedbacks.last!.distance!.after,
                                              backIndex: 1,
-                                             backDistance: blockA.feedbacks.last!.distance!-train.length!+distanceDelta))
+                                             backDistance: (blockA.feedbacks.last!.distance!-train.length!).after))
         
         // Toggle > backward
         try doc.layoutController.toggleTrainDirection(train)
@@ -112,9 +112,9 @@ final class TrainLocationHelperTests: XCTestCase {
         XCTAssertFalse(train.directionForward)
         XCTAssertEqual(train.position, .both(blockId: blockA.id,
                                              frontIndex: blockA.feedbacks.count,
-                                             frontDistance: blockA.feedbacks.last!.distance!+distanceDelta,
+                                             frontDistance: blockA.feedbacks.last!.distance!.after,
                                              backIndex: 1,
-                                             backDistance: blockA.feedbacks.last!.distance!-train.length!+distanceDelta))
+                                             backDistance: (blockA.feedbacks.last!.distance!-train.length!).after))
 
         // Toggle > forward
         try doc.layoutController.toggleTrainDirection(train)
@@ -122,9 +122,9 @@ final class TrainLocationHelperTests: XCTestCase {
         XCTAssertTrue(train.directionForward)
         XCTAssertEqual(train.position, .both(blockId: blockA.id,
                                              frontIndex: blockA.feedbacks.count,
-                                             frontDistance: blockA.feedbacks.last!.distance!+distanceDelta,
+                                             frontDistance: blockA.feedbacks.last!.distance!.after,
                                              backIndex: 1,
-                                             backDistance: blockA.feedbacks.last!.distance!-train.length!+distanceDelta))
+                                             backDistance: (blockA.feedbacks.last!.distance!-train.length!).after))
     }
     
     // MARK: - Setup Train
@@ -176,18 +176,18 @@ final class TrainLocationHelperTests: XCTestCase {
         //               f
         try assert(doc, train, blockA, true, .next, .both(blockId: blockA.id,
                                                           frontIndex: lastIndex,
-                                                          frontDistance: 180+distanceDelta,
+                                                          frontDistance: 180.after,
                                                           backIndex: 1,
-                                                          backDistance: 180-120+distanceDelta))
+                                                          backDistance: (180-120).after))
         
         // Block: [ ---> ]
         // Train: <------
         //        f
         try assert(doc, train, blockA, true, .previous, .both(blockId: blockA.id,
                                                               frontIndex: 0,
-                                                              frontDistance: 20-distanceDelta,
+                                                              frontDistance: 20.before,
                                                               backIndex: lastIndex-1,
-                                                              backDistance: 20+120-distanceDelta))
+                                                              backDistance: (20+120).before))
                 
         // Block: [ ---> ]
         // Train: -------<
@@ -195,18 +195,18 @@ final class TrainLocationHelperTests: XCTestCase {
         // Note: the train is setup first with its directionForward=true, and then it is toggled
         try assert(doc, train, blockA, false, .next, .both(blockId: blockA.id,
                                                            frontIndex: lastIndex,
-                                                           frontDistance: 180+distanceDelta,
+                                                           frontDistance: 180.after,
                                                            backIndex: 1,
-                                                           backDistance: 180-120+distanceDelta))
+                                                           backDistance: (180-120).after))
         // Block: [ ---> ]
         // Train: >-------
         //        f      b
         // Note: the train is setup first with its directionForward=true, and then it is toggled
         try assert(doc, train, blockA, false, .previous, .both(blockId: blockA.id,
                                                                frontIndex: 0,
-                                                               frontDistance: 20-distanceDelta,
+                                                               frontDistance: 20.before,
                                                                backIndex: lastIndex-1,
-                                                               backDistance: 20+120-distanceDelta))
+                                                               backDistance: (20+120).before))
     }
     
     // MARK: - End of Block

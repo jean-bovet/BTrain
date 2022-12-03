@@ -70,13 +70,13 @@ final class Package {
         // TODO: do we still need to specify the position like that or could we let the layout setup the position automatically?
         switch position {
         case .start:
-            location = .front(blockId: block.id, index: 0, distance: 0 + distanceDelta)
+            location = .front(blockId: block.id, index: 0, distance: 0.after)
         case .end:
-            location = .front(blockId: block.id, index: block.feedbacks.count, distance: (block.feedbacks.last?.distance ?? 0) + distanceDelta)
+            location = .front(blockId: block.id, index: block.feedbacks.count, distance: (block.feedbacks.last?.distance ?? 0).after)
         case .custom(let index):
-            location = .front(blockId: block.id, index: index, distance: (block.feedbacks[index-1].distance ?? 0) + distanceDelta)
+            location = .front(blockId: block.id, index: index, distance: (block.feedbacks[index-1].distance ?? 0).after)
         case .automatic:
-            location = .front(blockId: block.id, index: 0, distance: 0 + distanceDelta)
+            location = .front(blockId: block.id, index: 0, distance: 0.after)
             break
         }
         
@@ -191,27 +191,27 @@ extension Layout: LayoutParserResolver {
                 // Block:    [   f0    f1   ]>
                 // Distance: |->
                 // Train:  ---->
-                return 0 + distanceDelta
+                return 0.after
             } else {
                 // Block:    [    f0    f1   ]>
                 // Distance: |-->
                 // Train:        <------
-                return block.feedbacks[index].distance! - distanceDelta
+                return block.feedbacks[index].distance!.before
             }
         } else {
             if directionInBlock == .next {
                 // Block:    [   f0    f1   ]>
                 // Distance: |----->
                 // Train:  -------->
-                return block.feedbacks[index-1].distance! + distanceDelta
+                return block.feedbacks[index-1].distance!.after
             } else {
                 // Block:    [    f0     f1   ]>
                 // Distance: |--------->
                 // Train:               <------
                 if index < block.feedbacks.count {
-                    return block.feedbacks[index].distance! - distanceDelta
+                    return block.feedbacks[index].distance!.before
                 } else {
-                    return block.feedbacks[index-1].distance! + distanceDelta
+                    return block.feedbacks[index-1].distance!.after
                 }
             }
         }

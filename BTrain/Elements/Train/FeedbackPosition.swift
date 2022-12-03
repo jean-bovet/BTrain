@@ -12,8 +12,26 @@
 
 import Foundation
 
-// TODO: revisit this if we can use a function instead?
-let distanceDelta = 0.001
+extension Double {
+    
+    /// Distance used to shift the position of the train after it was detected by a feedback to either after
+    /// or before the feedback, depending on the direction of travel of the train within the block. This is to
+    /// ensure there are no ambiguities when converting a distance to a position index within the block.
+    /// Otherwise, if the distance is exactly on top of a feedback, we don't know which position index to
+    /// pick for the train: after or before the feedback?
+    private static let distanceDelta = 0.001
+    
+    /// Returns the distance right after this one
+    var after: Double {
+        self + Double.distanceDelta
+    }
+
+    /// Returns the distance right before this one
+    var before: Double {
+        self - Double.distanceDelta
+    }
+
+}
 
 struct FeedbackPosition {
     
@@ -24,10 +42,10 @@ struct FeedbackPosition {
     func trainPosition(direction: Direction) -> TrainPosition {
         switch direction {
         case .previous:
-            return TrainPosition(blockId: blockId, index: index, distance: distance - distanceDelta)
+            return TrainPosition(blockId: blockId, index: index, distance: distance.before)
 
         case .next:
-            return TrainPosition(blockId: blockId, index: index + 1, distance: distance + distanceDelta)
+            return TrainPosition(blockId: blockId, index: index + 1, distance: distance.after)
         }
     }
 }
