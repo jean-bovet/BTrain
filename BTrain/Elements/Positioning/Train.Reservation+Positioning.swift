@@ -14,7 +14,17 @@ import Foundation
 
 extension Train.Reservation {
     
-    // TODO: documentation
+    /// Returns the index of the block corresponding to the block ID.
+    ///
+    /// The index refers to the block located in the occupied and leading blocks together.
+    /// It is used to determine if a block is ahead or behind of another when computing
+    /// the position of the train after a feedback has detected the train.
+    ///
+    ///     Train:  --------------------->
+    ///     Blocks: [occupied2][occupied1][leading1][leading(n+1)]
+    ///     Index:     1           0         -1         -2
+    /// - Parameter blockId: the block id
+    /// - Returns: the index of the block id
     func blockIndex(for blockId: Identifier<Block>) -> Int? {
         if let blockIndex = occupied.blocks.firstIndex(where: {$0.id == blockId}) {
             return blockIndex
@@ -22,6 +32,12 @@ extension Train.Reservation {
         if let blockIndex = leading.blocks.firstIndex(where: {$0.id == blockId}) {
             return -1-blockIndex
         }
+        
+        // Note: during manual operation, because no leading blocks are reserved,
+        // `nextBlock` contains the block in which the train will enter.
+        // Train:  --------------------->
+        // Blocks: [occupied2][occupied1][nextBlock]
+        // Index:     1           0         -1
         if let nextBlock = nextBlock, nextBlock.id == blockId {
             return -1
         }

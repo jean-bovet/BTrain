@@ -18,6 +18,7 @@ import Foundation
 /// - Each of these positions correspond to a magnet that triggers a feedback in the layout.
 /// - A train that only moves forward needs only one magnet at the front of the train.
 /// - A train that moves forward and backward needs a magnet at the front and the back of the train
+// TODO: rename to TrainPositions?
 struct TrainLocation: Equatable, Codable, CustomStringConvertible {
     
     /// The position at the front of the train (where the locomotive is located)
