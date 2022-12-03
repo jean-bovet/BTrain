@@ -315,7 +315,6 @@ final class TrainSpreader {
         // if d > 0, the train occupies some portion of the last block
         let d = abs(spaceLeftInBlock)
 
-        let index: Int
         let distance: Double
         if directionOfVisit == .next {
             if directionForward {
@@ -323,13 +322,11 @@ final class TrainSpreader {
                 //  {d}------> (train)
                 //     <------ (visit)
                 distance = blockLength - d
-                index = block.feedbacks.indexOfFeedback(withDistance: distance, directionOfVisit: directionOfVisit)
             } else {
                 //        [   ]>
                 //   ------< (train)
                 //   ------> (visit)
                 distance = blockLength - d
-                index = block.feedbacks.indexOfFeedback(withDistance: distance, directionOfVisit: directionOfVisit)
             }
         } else {
             if directionForward {
@@ -337,15 +334,14 @@ final class TrainSpreader {
                 // {d}------> (train)
                 //    <------ (visit)
                 distance = d
-                index = block.feedbacks.indexOfFeedback(withDistance: distance, directionOfVisit: directionOfVisit)
             } else {
                 //        [   ]<
                 //   ------<{d} (train)
                 //   ------>    (visit)
                 distance = d
-                index = block.feedbacks.indexOfFeedback(withDistance: distance, directionOfVisit: directionOfVisit)
             }
         }
+        let index = block.feedbacks.indexOfFeedback(withDistance: distance)
         return .init(blockId: block.id, index: index, distance: distance)
     }
             
@@ -429,10 +425,8 @@ extension Array where Element == Block.BlockFeedback {
     ///     
     /// - Parameters:
     ///   - distance: the distance
-    ///   - directionOfVisit: the direction of visit of the block
     /// - Returns: the feedback index
-    func indexOfFeedback(withDistance distance: Double, directionOfVisit: Direction) -> Int {
-        //TODO: using directionOfVisit?
+    func indexOfFeedback(withDistance distance: Double) -> Int {
         for (findex, feedback) in enumerated() {
             if let fd = feedback.distance, distance <= fd {
                 return findex
