@@ -278,11 +278,6 @@ extension Train {
         return locomotive?.directionForward ?? true
     }
 
-    var allowedDirections: Locomotive.AllowedDirection {
-        assert(locomotive != nil)
-        return locomotive?.allowedDirections ?? .forward
-    }
-
     var leading: TrainLeadingReservation {
         reservation.leading
     }

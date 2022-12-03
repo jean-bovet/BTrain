@@ -553,8 +553,8 @@ class AutomaticRoutingTests: BTTestCase {
         let s2 = layout.block(named: "s2")
 
         let t1 = layout.trains[0]
-        t1.locomotive?.directionForward = true
-        t1.locomotive?.allowedDirections = .forward
+        t1.locomotive!.directionForward = true
+        t1.locomotive!.allowedDirections = .forward
 
         _ = try setup(layout: layout, fromBlockId: s1.id, destination: .init(s2.id, direction: .next), position: .end, direction: .previous, expectedState: .stopped, routeSteps: [])
     }
@@ -565,7 +565,7 @@ class AutomaticRoutingTests: BTTestCase {
         let s2 = layout.block(named: "s2")
 
         let t1 = layout.trains[0]
-        t1.locomotive?.length = 20
+        t1.locomotive!.length = 20
         t1.wagonsLength = s1.length! - 60
         
         t1.locomotive!.directionForward = false

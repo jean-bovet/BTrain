@@ -628,7 +628,7 @@ extension LayoutController {
         // after visiting the blocks that the train occupies.
         let previousDirectionForward = train.directionForward
         if !train.directionForward {
-            train.locomotive?.directionForward = true
+            try train.locomotiveOrThrow().directionForward = true
         }
         try layout.setTrainToBlock(train, toBlockId, position: train.position, directionOfTravelInBlock: naturalDirectionInBlock)
         

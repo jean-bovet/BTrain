@@ -238,7 +238,8 @@ final class TrainController: TrainControlling, CustomStringConvertible {
 
         if let desiredKph = desiredKph {
             let requestedKph = min(desiredKph, try layoutSpeed.maximumSpeedAllowed(train: train))
-            if requestedKph != train.locomotive?.speed.requestedKph {
+            let loc = try train.locomotiveOrThrow()
+            if requestedKph != loc.speed.requestedKph {
                 BTLogger.speed.debug("\(self.train, privacy: .public): controller adjusts speed to \(requestedKph)")
                 try layoutController.setTrainSpeed(train, requestedKph)
             }

@@ -122,7 +122,7 @@ final class TrainSpreaderTests: XCTestCase {
         // [        ]>
         //   ----->
         //   b    f
-        train.locomotive?.directionForward = true
+        train.locomotive!.directionForward = true
         block.trainInstance = .init(train.id, .next)
         train.position = .front(blockId: block.id, index: 2, distance: 80)
         
@@ -131,7 +131,7 @@ final class TrainSpreaderTests: XCTestCase {
         // [        ]>
         //   >-----
         //   f    b
-        train.locomotive?.directionForward = false
+        train.locomotive!.directionForward = false
         block.trainInstance = .init(train.id, .next)
         train.position = .back(blockId: block.id, index: 2, distance: 80)
 
@@ -140,7 +140,7 @@ final class TrainSpreaderTests: XCTestCase {
         // [        ]>
         //   <-----
         //   f
-        train.locomotive?.directionForward = true
+        train.locomotive!.directionForward = true
         block.trainInstance = .init(train.id, .previous)
         train.position = .front(blockId: block.id, index: 2, distance: 20)
 
@@ -149,7 +149,7 @@ final class TrainSpreaderTests: XCTestCase {
         // [        ]>
         //   -----<
         //   b    f
-        train.locomotive?.directionForward = false
+        train.locomotive!.directionForward = false
         block.trainInstance = .init(train.id, .previous)
         train.position = .back(blockId: block.id, index: 2, distance: 20)
 
@@ -181,7 +181,7 @@ final class TrainSpreaderTests: XCTestCase {
         //     b         f
         //     <---------- (direction of visit/occupation filling)
 
-        train.locomotive?.directionForward = true
+        train.locomotive!.directionForward = true
         ba.trainInstance = .init(train.id, .next)
         bb.trainInstance = .init(train.id, .next)
         train.block = bb
@@ -197,7 +197,7 @@ final class TrainSpreaderTests: XCTestCase {
         //     b         f
         //     ----------> (direction of visit/occupation filling)
         
-        train.locomotive?.directionForward = false
+        train.locomotive!.directionForward = false
         ba.trainInstance = .init(train.id, .previous)
         bb.trainInstance = .init(train.id, .previous)
         train.block = ba
@@ -219,7 +219,7 @@ final class TrainSpreaderTests: XCTestCase {
         layout.transitions.elements.removeAll()
         layout.link(from: ba.previous, to: bb.next)
 
-        train.locomotive?.directionForward = true
+        train.locomotive!.directionForward = true
         ba.trainInstance = .init(train.id, .previous)
         bb.trainInstance = .init(train.id, .previous)
         train.block = bb
@@ -238,7 +238,7 @@ final class TrainSpreaderTests: XCTestCase {
         //      b         f
         //      ----------> (direction of visit/occupation filling)
 
-        train.locomotive?.directionForward = false
+        train.locomotive!.directionForward = false
         ba.trainInstance = .init(train.id, .next)
         bb.trainInstance = .init(train.id, .next)
         train.block = ba
@@ -283,7 +283,7 @@ final class TrainSpreaderTests: XCTestCase {
         //     b                  f
         //     <------------------- (direction of visit/occupation filling)
 
-        train.locomotive?.directionForward = true
+        train.locomotive!.directionForward = true
         ba.trainInstance = .init(train.id, .next)
         bb.trainInstance = .init(train.id, .next)
         bc.trainInstance = .init(train.id, .next)
@@ -303,7 +303,7 @@ final class TrainSpreaderTests: XCTestCase {
         //     b                   f
         //     --------------------> (direction of visit/occupation filling)
         
-        train.locomotive?.directionForward = false
+        train.locomotive!.directionForward = false
         ba.trainInstance = .init(train.id, .previous)
         bb.trainInstance = .init(train.id, .previous)
         bc.trainInstance = .init(train.id, .previous)
@@ -327,7 +327,7 @@ final class TrainSpreaderTests: XCTestCase {
         layout.link(from: ba.previous, to: bb.next)
         layout.link(from: bb.previous, to: bc.next)
 
-        train.locomotive?.directionForward = true
+        train.locomotive!.directionForward = true
         ba.trainInstance = .init(train.id, .previous)
         bb.trainInstance = .init(train.id, .previous)
         bc.trainInstance = .init(train.id, .previous)
@@ -344,7 +344,7 @@ final class TrainSpreaderTests: XCTestCase {
         //      b                   f
         //      --------------------> (direction of visit/occupation filling)
 
-        train.locomotive?.directionForward = false
+        train.locomotive!.directionForward = false
         ba.trainInstance = .init(train.id, .next)
         bb.trainInstance = .init(train.id, .next)
         bc.trainInstance = .init(train.id, .next)
@@ -365,7 +365,7 @@ final class TrainSpreaderTests: XCTestCase {
         layout.link(from: ba.previous, to: bb.next)
         layout.link(from: bb.previous, to: bc.previous)
 
-        train.locomotive?.directionForward = true
+        train.locomotive!.directionForward = true
         ba.trainInstance = .init(train.id, .previous)
         bb.trainInstance = .init(train.id, .previous)
         bc.trainInstance = .init(train.id, .next)

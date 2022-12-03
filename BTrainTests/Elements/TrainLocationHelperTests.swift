@@ -27,7 +27,7 @@ final class TrainLocationHelperTests: XCTestCase {
         let doc = LayoutDocument(layout: LayoutPointToPoint().newLayout())
         let layout = doc.layout
         let train = layout.trains[0]
-        train.locomotive?.length = 20
+        train.locomotive!.length = 20
         train.wagonsLength = 0
         let blockB = layout.block(named: "B")
 
@@ -150,7 +150,7 @@ final class TrainLocationHelperTests: XCTestCase {
                                 _ directionForward: Bool,
                                 _ directionInBlock: Direction,
                                 _ position: TrainLocation) throws {
-        train.locomotive?.directionForward = directionForward
+        train.locomotive!.directionForward = directionForward
         try doc.layoutController.setupTrainToBlock(train, block.id, naturalDirectionInBlock: directionInBlock)
         XCTAssertEqual(train.position, position)
         XCTAssertEqual(train.occupied.blocks.count, 1)
@@ -215,7 +215,7 @@ final class TrainLocationHelperTests: XCTestCase {
         let doc = LayoutDocument(layout: LayoutPointToPoint().newLayout())
         let layout = doc.layout
         let train = layout.trains[0]
-        train.locomotive?.length = 20
+        train.locomotive!.length = 20
         train.wagonsLength = 0
         // Block B (length=100): [ b.1  b.2  ]>
         // Positions:             0   1    2
@@ -268,7 +268,7 @@ final class TrainLocationHelperTests: XCTestCase {
 
         let t = Train(id: .init(uuid: "t1"), name: "SBB")
         t.locomotive = Locomotive(name: "loc1")
-        t.locomotive?.directionForward = true
+        t.locomotive!.directionForward = true
         
         block.trainInstance = .init(t.id, .next)
         t.occupied.append(block)
@@ -301,7 +301,7 @@ final class TrainLocationHelperTests: XCTestCase {
 
         let t = Train(id: .init(uuid: "t1"), name: "SBB")
         t.locomotive = Locomotive(name: "loc1")
-        t.locomotive?.directionForward = false
+        t.locomotive!.directionForward = false
         
         block.trainInstance = .init(t.id, .next)
         t.occupied.append(block)
