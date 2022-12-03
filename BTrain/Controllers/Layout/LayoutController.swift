@@ -591,6 +591,7 @@ extension LayoutController {
         // The method below will spread again the train, starting with the "front" block
         // of the train which has been updated here with "newBlock".
         try reservation.removeLeadingBlocks(train: train)
+        try reservation.occupyBlocksWith(train: train)
     }
     
     /// Setup the train in a block. This method places the train for the first time in the specified block, filling the block with the train
@@ -643,7 +644,8 @@ extension LayoutController {
         }
         try layout.setTrainToBlock(train, toBlockId, position: train.position, directionOfTravelInBlock: naturalDirectionInBlock)
         
-        try reservation.removeLeadingBlocks(train: train)
+        try reservation.freeElements(train: train)
+        try reservation.occupyBlocksWith(train: train)
 
         if previousDirectionForward == false {
             try toggleTrainDirection(train)

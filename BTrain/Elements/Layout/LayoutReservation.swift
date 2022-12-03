@@ -123,22 +123,26 @@ final class LayoutReservation {
         }
     }
 
-    /// Removes the reservation for the leading blocks of the specified train but keep the occupied blocks intact (that the train actually occupies).
+    /// Removes the reservation for the leading blocks of the specified train but keep the occupied blocks intact.
     ///
     /// - Parameter train: the train
-    //TODO: can't we just rely on the lead blocks of the train to remove them? Instead of removing all the elements?
     @discardableResult
     func removeLeadingBlocks(train: Train) throws -> Bool {
-        let previousLeadingItems = train.leading.items
+        guard !train.leading.items.isEmpty else {
+            return false
+        }
 
-        // Remove the train from all the elements
-        try freeElements(train: train)
-
-        // Reserve and set the train and its wagon(s) using the necessary number of
-        // elements (turnouts and blocks)
-        try occupyBlocksWith(train: train)
-
-        return previousLeadingItems != train.leading.items
+        for item in train.leading.items {
+            switch item {
+            case .block(let block):
+                assert(block.trainInstance == nil)
+                block.reservation = nil
+            case .turnout(let turnout):
+                turnout.reserved = nil
+            }
+        }
+        
+        return true
     }
 
     private func reserveLeadingBlocks(train: Train, reservedTurnouts: Set<TurnoutActivation>) throws -> Bool {
@@ -332,8 +336,11 @@ final class LayoutReservation {
     // This method reserves and occupies all the necessary blocks (and parts of the block) to fit
     // the specified train with all its length, taking into account the length of each block.
     func occupyBlocksWith(train: Train) throws {
-        let trainVisitor = TrainSpreader(layout: layout)
-        let remainingTrainLength = try trainVisitor.spread(train: train) { transition in
+        let occupation = train.occupied
+        occupation.clear()
+
+        let spreader = TrainSpreader(layout: layout)
+        let remainingTrainLength = try spreader.spread(train: train) { transition in
             guard transition.reserved == nil else {
                 throw LayoutError.transitionAlreadyReserved(transition: transition)
             }
@@ -347,7 +354,7 @@ final class LayoutReservation {
             }
             turnout.reserved = .init(train: train.id, sockets: turnoutInfo.sockets)
             turnout.train = train.id
-            train.occupied.append(turnout)
+            occupation.append(turnout)
         } blockCallback: { block, attributes in
             guard block.reservation == nil || attributes.frontBlock else {
                 throw LayoutError.blockAlreadyReserved(block: block)
@@ -356,7 +363,7 @@ final class LayoutReservation {
             let trainInstance = TrainInstance(train.id, attributes.trainDirection)
             block.trainInstance = trainInstance
             block.reservation = .init(trainId: train.id, direction: attributes.trainDirection)
-            train.occupied.append(block)
+            occupation.append(block)
         }
         if remainingTrainLength > 0 {
             throw LayoutError.cannotReserveAllElements(train: train)

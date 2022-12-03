@@ -173,7 +173,7 @@ final class TrainController: TrainControlling, CustomStringConvertible {
         return previousLeadingItems != train.leading.items || previousOccupiedItems != train.occupied.items
     }
 
-    func reserveLeadingBlocks() throws {
+    private func reserveLeadingBlocks() throws {
         switch route.mode {
         case .fixed:
             _ = try reservation.updateReservedBlocks(train: train)

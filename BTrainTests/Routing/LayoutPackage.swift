@@ -84,7 +84,8 @@ final class Package {
             try layoutController.setupTrainToBlock(train, block.id, naturalDirectionInBlock: direction)
         } else {
             try layout.setTrainToBlock(train, block.id, position: location, directionOfTravelInBlock: direction)
-            try layoutController.reservation.removeLeadingBlocks(train: train)
+            try layoutController.reservation.freeElements(train: train)
+            try layoutController.reservation.occupyBlocksWith(train: train)
         }
         
         XCTAssertEqual(loc.speed.requestedKph, 0)
