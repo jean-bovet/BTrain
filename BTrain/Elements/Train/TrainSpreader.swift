@@ -413,7 +413,6 @@ final class TrainSpreader {
         } else {
             // Either the entire block is used by the the train or the block
             // is only partially used by the remaining of the train.
-            // TODO: should we return the true length of the back block instead? And have the calling function determine that there is length left?
             lengthOfTrainInBlock = blockLength
         }
         
