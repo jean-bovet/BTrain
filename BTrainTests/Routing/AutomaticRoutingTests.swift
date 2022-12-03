@@ -577,8 +577,14 @@ class AutomaticRoutingTests: BTTestCase {
         XCTAssertFalse(t1.directionForward)
         XCTAssertEqual(s1.trainInstance?.direction, .next)
 
-        try p.assert("automatic-0: {r0{s1 🔵􀼮⟷0 ≏ 􀼰0 ≏ }} <r0<t1{sr}(0,1),s>> <r0<t2{sr}(0,1),s>> [r0[b1 ≏ ≏ ]] <t4{sl}(1,0),s> {s2 ≏ ≏ }", ["b1"])
+        // Note: we have to specify the distance of the back position (where the wagon in "front" of the train is located), because the ASCII representation
+        // cannot take into account that in this state, the train has been setup in the block using its forward direction and then it was toggled inside the block
+        // to finally be in the direction backward. This toggle is causing the back position to be not tied to a feedback position (it is computed using the front
+        // position and the length of the train) which is why we need to specify the distance manually.
+        try p.assert("automatic-0: {r0{s1 🔵􀼮⟷0 ≏ 􀼰{79.999}0 ≏ }} <r0<t1{sr}(0,1),s>> <r0<t2{sr}(0,1),s>> [r0[b1 ≏ ≏ ]] <t4{sl}(1,0),s> {s2 ≏ ≏ }", ["b1"])
                 
+        // Note: once a feedback is detected "in front" of the train, then the back position will be again aligned with a feedback position and the ASCII representation
+        // will be able to represent it correctly.
         try p.assert("automatic-0: {r0{s1 ≏ 🔵􀼮⟷0 ≡ 􀼰0 }} <r0<t1{sr}(0,1),s>> <r0<t2{sr}(0,1),s>> [r0[b1 ≏ ≏ ]] <t4{sl}(1,0),s> {s2 ≏ ≏ }", ["b1"])
 
         try p.assert("automatic-0: {r0{s1 ≏ ≏ 🔵􀼮⟷0 }} <r0<t1{sr}(0,1),s>> <r0<t2{sr}(0,1),s>> [r0[b1 􀼯0 ≡ 􀼰0 ≏ ]] <r0<t4{sl}(1,0),s>> {r0{s2 ≏ ≏ }}", ["s2"])
