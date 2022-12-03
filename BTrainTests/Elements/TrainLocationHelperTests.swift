@@ -219,6 +219,9 @@ final class TrainLocationHelperTests: XCTestCase {
         let train = layout.trains[0]
         train.locomotive?.length = 20
         train.wagonsLength = 0
+        // Block B (length=100): [ b.1  b.2  ]>
+        // Positions:             0   1    2
+        // Feedbacks:              20   80
         let blockB = layout.block(named: "B")
 
         try doc.layoutController.setupTrainToBlock(train, blockB.id, naturalDirectionInBlock: .next)
@@ -232,12 +235,18 @@ final class TrainLocationHelperTests: XCTestCase {
 
         train.locomotive!.directionForward = false
   
-        // TODO:
-//        try doc.layoutController.setupTrainToBlock(train, blockB.id, naturalDirectionInBlock: .next)
-//        assertEndOfBlock(occupiedCount: 1, atEndOfBlock: true, block: blockB, train: train)
-//
-//        try doc.layout.setTrainToBlock(train, blockB.id, position: .both(blockId: blockB.id, frontIndex: blockB.feedbacks.count, frontDistance: 0, backIndex: 1, backDistance: 0), directionOfTravelInBlock: .next)
+        // Not at the end of the block because the train is too short and spans only position 2 and 1 (because the train
+        // is setup first as moving forward before being toggle backward).
+        try doc.layoutController.setupTrainToBlock(train, blockB.id, naturalDirectionInBlock: .next)
         assertEndOfBlock(occupiedCount: 1, atEndOfBlock: false, block: blockB, train: train)
+
+        try doc.layout.setTrainToBlock(train, blockB.id, position: .both(blockId: blockB.id, frontIndex: blockB.feedbacks.count, frontDistance: 0, backIndex: 1, backDistance: 0), directionOfTravelInBlock: .next)
+        assertEndOfBlock(occupiedCount: 1, atEndOfBlock: false, block: blockB, train: train)
+        
+        // Now let's set a longer length to the train so it fills the entire block
+        train.wagonsLength = 60
+        try doc.layoutController.setupTrainToBlock(train, blockB.id, naturalDirectionInBlock: .next)
+        assertEndOfBlock(occupiedCount: 1, atEndOfBlock: true, block: blockB, train: train)
     }
     
     private func assertEndOfBlock(occupiedCount: Int, atEndOfBlock: Bool, block: Block, train: Train) {
