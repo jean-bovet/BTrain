@@ -353,7 +353,7 @@ final class LayoutRouteParser {
         if let train = layout.trains.first(where: { $0.id.uuid == attributes.uuid }) {
             let loc = train.locomotive!
             assert(loc.speed.requestedKph == attributes.speed, "Mismatching speed definition for train \(attributes.uuid)")
-            assert(train.position.front?.index == position, "Mismatching position definition for train \(attributes.uuid)")
+            assert(train.positions.front?.index == position, "Mismatching position definition for train \(attributes.uuid)")
             if block.trainInstance == nil {
                 block.trainInstance = TrainInstance(train.id, .next)
             }
@@ -367,11 +367,11 @@ final class LayoutRouteParser {
             let distance = resolver.distance(forFeedbackAtPosition: position, blockId: block.id, directionInBlock: attributes.direction)
             if let parsedTrain = parsedTrain {
                 train = parsedTrain
-                train.position.front = .init(blockId: block.id, index: position, distance: distance)
+                train.positions.front = .init(blockId: block.id, index: position, distance: distance)
                 self.parsedTrain = nil
             } else {
                 train = Train(uuid: attributes.uuid)
-                train.position = .both(blockId: block.id, frontIndex: position, frontDistance: distance, backIndex: position, backDistance: distance)
+                train.positions = .both(blockId: block.id, frontIndex: position, frontDistance: distance, backIndex: position, backDistance: distance)
             }
             
             train.locomotive = loc
@@ -424,7 +424,7 @@ final class LayoutRouteParser {
         if let train = layout.trains.first(where: { $0.id.uuid == attributes.uuid }) {
             if attributes.last {
                 let distance = attributes.distance ?? resolver.distance(forFeedbackAtPosition: position, blockId: block.id, directionInBlock: directionInBlock)
-                train.position.back = .init(blockId: block.id, index: position, distance: distance)
+                train.positions.back = .init(blockId: block.id, index: position, distance: distance)
             }
         } else {
             // If a wagon is first detected, the train might not yet be created.
@@ -433,7 +433,7 @@ final class LayoutRouteParser {
                 parsedTrain = Train(uuid: attributes.uuid)
                 if attributes.last {
                     let distance = attributes.distance ?? resolver.distance(forFeedbackAtPosition: position, blockId: block.id, directionInBlock: directionInBlock)
-                    parsedTrain?.position.back = .init(blockId: block.id, index: position, distance: distance)
+                    parsedTrain?.positions.back = .init(blockId: block.id, index: position, distance: distance)
                 }
             }
         }

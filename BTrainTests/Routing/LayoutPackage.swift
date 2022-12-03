@@ -66,7 +66,7 @@ final class Package {
         let block = layout.blocks[Identifier<Block>(uuid: fromBlockId)]!
         
         train.routeId = route.id
-        let location: TrainLocation
+        let location: TrainPositions
         // TODO: do we still need to specify the position like that or could we let the layout setup the position automatically?
         switch position {
         case .start:
@@ -83,7 +83,7 @@ final class Package {
         if case .automatic = position {
             try layoutController.setupTrainToBlock(train, block.id, naturalDirectionInBlock: direction)
         } else {
-            try layout.setTrainToBlock(train, block.id, position: location, directionOfTravelInBlock: direction)
+            try layout.setTrainToBlock(train, block.id, positions: location, directionOfTravelInBlock: direction)
             try layoutController.reservation.freeElements(train: train)
             try layoutController.reservation.occupyBlocksWith(train: train)
         }

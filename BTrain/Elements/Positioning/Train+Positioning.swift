@@ -64,15 +64,15 @@ extension Train {
         }
         if ti.direction == .next {
             if directionForward {
-                return position.front?.index == block.feedbacks.count
+                return positions.front?.index == block.feedbacks.count
             } else {
-                return position.back?.index == block.feedbacks.count
+                return positions.back?.index == block.feedbacks.count
             }
         } else {
             if directionForward {
-                return position.front?.index == 0
+                return positions.front?.index == 0
             } else {
-                return position.back?.index == 0
+                return positions.back?.index == 0
             }
         }
     }
@@ -102,7 +102,7 @@ extension Train {
                 return 0
             }
             
-            guard let frontIndex = position.front?.index else {
+            guard let frontIndex = positions.front?.index else {
                 return 0
             }
             
@@ -143,7 +143,7 @@ extension Train {
                 return 0
             }
             
-            guard let backIndex = position.back?.index else {
+            guard let backIndex = positions.back?.index else {
                 return 0
             }
             

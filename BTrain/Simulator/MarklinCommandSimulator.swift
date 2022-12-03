@@ -401,22 +401,22 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
             let feedback: Block.BlockFeedback
             if naturalDirection {
                 if train.directionForward {
-                    let position = train.position.front?.index ?? block.feedbacks.count
+                    let position = train.positions.front?.index ?? block.feedbacks.count
                     feedback = block.feedbacks[position]
                 } else {
-                    let position = train.position.back?.index ?? block.feedbacks.count
+                    let position = train.positions.back?.index ?? block.feedbacks.count
                     feedback = block.feedbacks[position]
                 }
             } else {
                 if train.directionForward {
                     // Block: [ 3 2 1 ]
                     // Train:  b   f
-                    let position = train.position.front?.index ?? 1
+                    let position = train.positions.front?.index ?? 1
                     feedback = block.feedbacks[position - 1]
                 } else {
                     // Block: [ 3 2 1 ]
                     // Train:  f   b
-                    let position = train.position.back?.index ?? 1
+                    let position = train.positions.back?.index ?? 1
                     feedback = block.feedbacks[position - 1]
                 }
             }

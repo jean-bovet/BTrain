@@ -38,14 +38,14 @@ enum LayoutError: Error {
     case blockContainsNoFeedback(block: Block)
     case feedbackDistanceNotSet(feedback: Block.BlockFeedback)
 
-    case frontPositionNotSpecified(position: TrainLocation)
-    case backPositionNotSpecified(position: TrainLocation)
+    case frontPositionNotSpecified(position: TrainPositions)
+    case backPositionNotSpecified(position: TrainPositions)
     
     case frontPositionBlockIdMismatch(expected: Identifier<Block>, got: Identifier<Block>)
     case backPositionBlockIdMismatch(expected: Identifier<Block>, got: Identifier<Block>)
 
-    case frontPositionBlockNotSpecified(position: TrainLocation)
-    case backPositionBlockNotSpecified(position: TrainLocation)
+    case frontPositionBlockNotSpecified(position: TrainPositions)
+    case backPositionBlockNotSpecified(position: TrainPositions)
 
     case brakeFeedbackNotFound(block: Block)
     case stopFeedbackNotFound(block: Block)

@@ -179,11 +179,8 @@ final class Train: Element, ObservableObject {
         }
     }
 
-    // Location of the train inside the current block.
-    // The location is composed of a front position and
-    // a back position. If the train only has one magnet to detect
-    // its position, both front and back position will be the same.
-    @Published var position = TrainLocation()
+    // The positions of the train.
+    @Published var positions = TrainPositions()
 
     struct BlockItem: Identifiable, Codable, Hashable {
         let id: String
@@ -230,7 +227,7 @@ final class Train: Element, ObservableObject {
         } else if let blockId = blockId {
             text += ", \(blockId)"
         }
-        text += ", \(position)"
+        text += ", \(positions)"
         if locomotive != nil {
             text += ", \(directionForward ? "f" : "b")"
         } else {
@@ -325,10 +322,11 @@ extension Train: Codable {
         routeId = try container.decodeIfPresent(Identifier<Route>.self, forKey: CodingKeys.route) ?? Route.automaticRouteId(for: id)
         routeStepIndex = try container.decode(Int.self, forKey: CodingKeys.routeIndex)
         blockId = try container.decodeIfPresent(Identifier<Block>.self, forKey: CodingKeys.block)
+        // TODO: import and remove
         if (try? container.decode(Int.self, forKey: CodingKeys.position)) != nil {
-            self.position = TrainLocation()
+            self.positions = TrainPositions()
         } else {
-            position = try container.decode(TrainLocation.self, forKey: CodingKeys.position)
+            positions = try container.decode(TrainPositions.self, forKey: CodingKeys.position)
         }
         maxNumberOfLeadingReservedBlocks = try container.decodeIfPresent(Int.self, forKey: CodingKeys.maxLeadingBlocks) ?? 1
         blocksToAvoid = try container.decodeIfPresent([BlockItem].self, forKey: CodingKeys.blocksToAvoid) ?? []
@@ -345,7 +343,7 @@ extension Train: Codable {
         try container.encode(routeId, forKey: CodingKeys.route)
         try container.encode(routeStepIndex, forKey: CodingKeys.routeIndex)
         try container.encode(blockId, forKey: CodingKeys.block)
-        try container.encode(position, forKey: CodingKeys.position)
+        try container.encode(positions, forKey: CodingKeys.position)
         try container.encode(maxNumberOfLeadingReservedBlocks, forKey: CodingKeys.maxLeadingBlocks)
         try container.encode(blocksToAvoid, forKey: CodingKeys.blocksToAvoid)
         try container.encode(turnoutsToAvoid, forKey: CodingKeys.turnoutsToAvoid)

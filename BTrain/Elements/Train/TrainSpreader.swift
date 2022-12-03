@@ -113,7 +113,7 @@ final class TrainSpreader {
         
         // Compute the length that the train occupies in the block
         let occupiedLength = try occupiedLengthOfTrainInBlock(block: blockInfo.block,
-                                                              trainPosition: train.position,
+                                                              positions: train.positions,
                                                               frontBlock: frontBlock,
                                                               directionOfSpread: directionOfSpread,
                                                               trainForward: locomotive.directionForward)
@@ -140,9 +140,9 @@ final class TrainSpreader {
             // the direction of travel. And because the front and back positions are always the same
             // regardless of the direction of travel, we need to update either one.
             if locomotive.directionForward {
-                train.position.back = pos
+                train.positions.back = pos
             } else {
-                train.position.front = pos
+                train.positions.front = pos
             }
         }
         
@@ -165,16 +165,16 @@ final class TrainSpreader {
                     // Visit:  ------->
                     // Train:  <-------
                     //         f      b
-                    let frontIndex = train.position.front?.index ?? 0
-                    let backIndex = train.position.back?.index ?? block.feedbacks.count
+                    let frontIndex = train.positions.front?.index ?? 0
+                    let backIndex = train.positions.back?.index ?? block.feedbacks.count
                     fill(block: block, fromIndex: frontIndex, toIndex: backIndex, locomotiveIndex: frontIndex)
                 } else {
                     // Block: [ 0 1 2 3 ]>
                     // Visit:  ------->
                     // Train:  -------<
                     //         b      f
-                    let frontIndex = train.position.front?.index ?? block.feedbacks.count
-                    let backIndex = train.position.back?.index ?? 0
+                    let frontIndex = train.positions.front?.index ?? block.feedbacks.count
+                    let backIndex = train.positions.back?.index ?? 0
                     fill(block: block, fromIndex: backIndex, toIndex: frontIndex, locomotiveIndex: frontIndex)
                 }
             } else {
@@ -183,16 +183,16 @@ final class TrainSpreader {
                     // Visit:  <-------
                     // Train:  ------->
                     //         b      f
-                    let frontIndex = train.position.front?.index ?? block.feedbacks.count
-                    let backIndex = train.position.back?.index ?? 0
+                    let frontIndex = train.positions.front?.index ?? block.feedbacks.count
+                    let backIndex = train.positions.back?.index ?? 0
                     fill(block: block, fromIndex: backIndex, toIndex: frontIndex, locomotiveIndex: frontIndex)
                 } else {
                     // Block: [ 0 1 2 3 ]>
                     // Visit:  <-------
                     // Train:  >-------
                     //         f      b
-                    let frontIndex = train.position.front?.index ?? 0
-                    let backIndex = train.position.back?.index ?? block.feedbacks.count
+                    let frontIndex = train.positions.front?.index ?? 0
+                    let backIndex = train.positions.back?.index ?? block.feedbacks.count
                     fill(block: block, fromIndex: frontIndex, toIndex: backIndex, locomotiveIndex: frontIndex)
                 }
             }
@@ -204,7 +204,7 @@ final class TrainSpreader {
                     // Visit:       ------->
                     // Train:       <-------
                     //              f      b
-                    let frontIndex = train.position.front?.index ?? 0
+                    let frontIndex = train.positions.front?.index ?? 0
                     let backIndex = block.feedbacks.count
                     fill(block: block, fromIndex: frontIndex, toIndex: backIndex, locomotiveIndex: frontIndex)
                 } else {
@@ -213,7 +213,7 @@ final class TrainSpreader {
                     // Train:        -------<
                     //               b      f
                     let frontIndex = block.feedbacks.count
-                    let backIndex = train.position.back?.index ?? 0
+                    let backIndex = train.positions.back?.index ?? 0
                     fill(block: block, fromIndex: backIndex, toIndex: frontIndex, locomotiveIndex: frontIndex)
                 }
             } else {
@@ -222,7 +222,7 @@ final class TrainSpreader {
                     // Visit:  <-------
                     // Train:  ------->
                     //         b      f
-                    let frontIndex = train.position.front?.index ?? block.feedbacks.count
+                    let frontIndex = train.positions.front?.index ?? block.feedbacks.count
                     let backIndex = 0
                     fill(block: block, fromIndex: backIndex, toIndex: frontIndex, locomotiveIndex: frontIndex)
                 } else {
@@ -231,7 +231,7 @@ final class TrainSpreader {
                     // Train: >-------
                     //        f      b
                     let frontIndex = 0
-                    let backIndex = train.position.back?.index ?? block.feedbacks.count
+                    let backIndex = train.positions.back?.index ?? block.feedbacks.count
                     fill(block: block, fromIndex: frontIndex, toIndex: backIndex)
                 }
             }
@@ -244,7 +244,7 @@ final class TrainSpreader {
                     // Train:  <-------
                     //         f      b
                     let frontIndex = 0
-                    let backIndex = train.position.back?.index ?? block.feedbacks.count
+                    let backIndex = train.positions.back?.index ?? block.feedbacks.count
                     fill(block: block, fromIndex: frontIndex, toIndex: backIndex)
                 } else {
                     // Block:  [ 0 1 2 3 ]>
@@ -252,7 +252,7 @@ final class TrainSpreader {
                     // Train:        -------<
                     //               b      f
                     let frontIndex = block.feedbacks.count
-                    let backIndex = train.position.back?.index ?? 0
+                    let backIndex = train.positions.back?.index ?? 0
                     fill(block: block, fromIndex: backIndex, toIndex: frontIndex)
                 }
             } else {
@@ -262,14 +262,14 @@ final class TrainSpreader {
                     // Train:      ------->
                     //             b      f
                     let frontIndex = block.feedbacks.count
-                    let backIndex = train.position.back?.index ?? 0
+                    let backIndex = train.positions.back?.index ?? 0
                     fill(block: block, fromIndex: backIndex, toIndex: frontIndex)
                 } else {
                     // Block:  [ 0 1 2 3 ]>
                     // Visit:       <-------
                     // Train:       >-------
                     //              f      b
-                    let frontIndex = train.position.front?.index ?? 0
+                    let frontIndex = train.positions.front?.index ?? 0
                     let backIndex = block.feedbacks.count
                     fill(block: block, fromIndex: frontIndex, toIndex: backIndex, locomotiveIndex: frontIndex)
                 }
@@ -349,12 +349,12 @@ final class TrainSpreader {
     ///
     /// - Parameters:
     ///   - block: the block
-    ///   - trainPosition: the train position
+    ///   - positions: the train positions
     ///   - frontBlock: true if the block is the front block
     ///   - directionOfSpread: the direction of the spread in the block
     ///   - trainForward: true if the train moves forward, false if it moves backward
     /// - Returns: the occupied length of the train in the block
-    func occupiedLengthOfTrainInBlock(block: Block, trainPosition: TrainLocation, frontBlock: Bool, directionOfSpread: Direction, trainForward: Bool) throws -> Double {
+    func occupiedLengthOfTrainInBlock(block: Block, positions: TrainPositions, frontBlock: Bool, directionOfSpread: Direction, trainForward: Bool) throws -> Double {
         guard let blockLength = block.length else {
             throw LayoutError.blockLengthNotDefined(block: block)
         }
@@ -364,8 +364,8 @@ final class TrainSpreader {
         if frontBlock {
             let frontDistance: Double
             if trainForward {
-                guard let front = trainPosition.front else {
-                    throw LayoutError.frontPositionNotSpecified(position: trainPosition)
+                guard let front = positions.front else {
+                    throw LayoutError.frontPositionNotSpecified(position: positions)
                 }
 
                 guard front.blockId == block.id else {
@@ -374,8 +374,8 @@ final class TrainSpreader {
                 
                 frontDistance = front.distance
             } else {
-                guard let back = trainPosition.back else {
-                    throw LayoutError.backPositionNotSpecified(position: trainPosition)
+                guard let back = positions.back else {
+                    throw LayoutError.backPositionNotSpecified(position: positions)
                 }
 
                 guard back.blockId == block.id else {

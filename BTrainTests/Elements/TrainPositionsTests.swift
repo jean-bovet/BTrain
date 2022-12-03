@@ -43,7 +43,7 @@ final class TrainPositionsTests: XCTestCase {
     // MARK: - Train Forward -
 
     func testMoveForwardSameBlock() throws {
-        var location = TrainLocation()
+        var location = TrainPositions()
         
         // Block (􁉆): [ p0 f0 p1 f1 p2 f2 p3 ]
         // Train (􀼯􀼮):           ??
@@ -84,7 +84,7 @@ final class TrainPositionsTests: XCTestCase {
     }
 
     func testMoveForwardSameBlockPrevious() throws {
-        var location = TrainLocation()
+        var location = TrainPositions()
         
         // Block (􁉈): [ p3 f2 p2 f1 p1 f0 p0 ]
         // Train (􀼯􀼮):           ??
@@ -125,7 +125,7 @@ final class TrainPositionsTests: XCTestCase {
     }
 
     func testMoveForwardNextBlock() throws {
-        var location = TrainLocation()
+        var location = TrainPositions()
         assertLocation(location, back: nil, front: nil)
 
         let p = Package()
@@ -163,7 +163,7 @@ final class TrainPositionsTests: XCTestCase {
     }
 
     func testMoveForwardNextBlockPreviousDirection() throws {
-        var location = TrainLocation()
+        var location = TrainPositions()
         assertLocation(location, back: nil, front: nil)
 
         let p = Package()
@@ -338,7 +338,7 @@ final class TrainPositionsTests: XCTestCase {
     }
         
     private func assertLines(lines: [LineForwardAssertion], reservation: Train.Reservation) throws {
-        var location = TrainLocation()
+        var location = TrainPositions()
         
         // Train (􀼯􀼮):           ??
         assertLocation(location, back: nil, front: nil)
@@ -354,7 +354,7 @@ final class TrainPositionsTests: XCTestCase {
     // MARK: - Train Backward -
 
     func testMoveBackwardSameBlock() throws {
-        var location = TrainLocation()
+        var location = TrainPositions()
         
         // Block (􁉆): [ p0 f0 p1 f1 p2 f2 p3 ]
         // Train (􀼮􀼯):           ??
@@ -395,7 +395,7 @@ final class TrainPositionsTests: XCTestCase {
     }
 
     func testMoveBackwardSameBlockPrevious() throws {
-        var location = TrainLocation()
+        var location = TrainPositions()
         
         // Block (􁉈): [ p3 f2 p2 f1 p1 f0 p0 ]
         // Train (􀼮􀼯):           ??
@@ -436,7 +436,7 @@ final class TrainPositionsTests: XCTestCase {
     }
 
     func testMoveBackwardNextBlock() throws {
-        var location = TrainLocation()
+        var location = TrainPositions()
         assertLocation(location, back: nil, front: nil)
 
         let p = Package()
@@ -474,7 +474,7 @@ final class TrainPositionsTests: XCTestCase {
     }
 
     func testMoveBackwardNextBlockPreviousDirection() throws {
-        var location = TrainLocation()
+        var location = TrainPositions()
         assertLocation(location, back: nil, front: nil)
 
         let p = Package()
@@ -534,7 +534,7 @@ final class TrainPositionsTests: XCTestCase {
         }
     }
     
-    private func assertForward(location currentLocation: TrainLocation, feedback: (Identifier<Block>, Int, Double), front: (Identifier<Block>, Int, Double)?, reservation: Train.Reservation, nextBlockTrainDirection: Direction? = nil) throws -> TrainLocation {
+    private func assertForward(location currentPositions: TrainPositions, feedback: (Identifier<Block>, Int, Double), front: (Identifier<Block>, Int, Double)?, reservation: Train.Reservation, nextBlockTrainDirection: Direction? = nil) throws -> TrainPositions {
         let direction = try reservation.directionInBlock(for: feedback.0) ?? nextBlockTrainDirection!
         let detectedPosition: TrainPosition
         if direction == .next {
@@ -549,14 +549,14 @@ final class TrainPositionsTests: XCTestCase {
             frontPosition = nil
         }
         
-        let newLocation = try currentLocation.newLocationWith(trainMovesForward: true, detectedPosition: detectedPosition, reservation: reservation)
+        let newLocation = try currentPositions.newPositionsWith(trainMovesForward: true, detectedPosition: detectedPosition, reservation: reservation)
         
         assertLocation(newLocation, back: nil, front: frontPosition)
 
         return newLocation
     }
     
-    private func assertBackward(location currentLocation: TrainLocation, feedback: (Identifier<Block>, Int, Double), back: (Identifier<Block>, Int, Double)?, reservation: Train.Reservation, nextBlockTrainDirection: Direction? = nil) throws -> TrainLocation {
+    private func assertBackward(location currentPositions: TrainPositions, feedback: (Identifier<Block>, Int, Double), back: (Identifier<Block>, Int, Double)?, reservation: Train.Reservation, nextBlockTrainDirection: Direction? = nil) throws -> TrainPositions {
         let direction = try reservation.directionInBlock(for: feedback.0) ?? nextBlockTrainDirection!
         let detectedPosition: TrainPosition
         if direction == .next {
@@ -570,14 +570,14 @@ final class TrainPositionsTests: XCTestCase {
         } else {
             backPosition = nil
         }
-        let newLocation = try currentLocation.newLocationWith(trainMovesForward: false, detectedPosition: detectedPosition, reservation: reservation)
+        let newLocation = try currentPositions.newPositionsWith(trainMovesForward: false, detectedPosition: detectedPosition, reservation: reservation)
         
         assertLocation(newLocation, back: backPosition, front: nil)
 
         return newLocation
     }
     
-    private func assertLocation(_ location: TrainLocation, back: TrainPosition?, front: TrainPosition?) {
+    private func assertLocation(_ location: TrainPositions, back: TrainPosition?, front: TrainPosition?) {
         XCTAssertEqual(location.back, back, "Back position mismatch")
         XCTAssertEqual(location.front, front, "Front position mismatch")
     }

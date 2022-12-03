@@ -19,9 +19,9 @@ extension Layout {
     /// - Parameters:
     ///   - train: the train
     ///   - toBlockId: the block
-    ///   - position: the position
+    ///   - positions: the position
     ///   - directionOfTravelInBlock: the direction of travel
-    func setTrainToBlock(_ train: Train, _ toBlockId: Identifier<Block>, position: TrainLocation, directionOfTravelInBlock: Direction) throws {
+    func setTrainToBlock(_ train: Train, _ toBlockId: Identifier<Block>, positions: TrainPositions, directionOfTravelInBlock: Direction) throws {
         guard let toBlock = blocks[toBlockId] else {
             throw LayoutError.blockNotFound(blockId: toBlockId)
         }
@@ -34,7 +34,7 @@ extension Layout {
             throw LayoutError.cannotReserveBlock(block: toBlock, train: train, reserved: toBlock.reservation!)
         }
         
-        train.position = position
+        train.positions = positions
         
         // Reserve the block
         toBlock.reservation = Reservation(trainId: train.id, direction: directionOfTravelInBlock)

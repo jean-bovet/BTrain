@@ -12,9 +12,9 @@
 
 import Foundation
 
-extension TrainLocation {
+extension TrainPositions {
 
-    func newLocationWith(trainMovesForward: Bool, detectedPosition: TrainPosition, reservation: Train.Reservation) throws -> TrainLocation {
+    func newPositionsWith(trainMovesForward: Bool, detectedPosition: TrainPosition, reservation: Train.Reservation) throws -> TrainPositions {
         var newLocation = self
         
         if trainMovesForward {

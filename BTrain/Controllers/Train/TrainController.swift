@@ -274,7 +274,7 @@ final class TrainController: TrainControlling, CustomStringConvertible {
     }
 
     func moveInsideBlocks() throws -> Bool {
-        let currentLocation = train.position
+        let currentPositions = train.positions
                 
         // Note: do not remove the leading blocks as this will be taken care below by the `reserveLeadingBlocks` method.
         // This is important because the reserveLeadingBlocks method needs to remember the previously reserved turnouts
@@ -286,13 +286,13 @@ final class TrainController: TrainControlling, CustomStringConvertible {
                 throw LayoutError.directionNotFound(blockId: feedback.blockId)
             }
             let detectedPosition = feedback.trainPosition(direction: direction)
-            train.position = try train.position.newLocationWith(trainMovesForward: train.directionForward,
-                                                                detectedPosition: detectedPosition,
-                                                                reservation: train.reservation)
-            BTLogger.router.debug("\(self.train, privacy: .public): updated location \(self.train.position) in \(self.frontBlock.name, privacy: .public), direction \(self.frontBlockTrainInstance.direction)")
+            train.positions = try train.positions.newPositionsWith(trainMovesForward: train.directionForward,
+                                                                   detectedPosition: detectedPosition,
+                                                                   reservation: train.reservation)
+            BTLogger.router.debug("\(self.train, privacy: .public): updated location \(self.train.positions) in \(self.frontBlock.name, privacy: .public), direction \(self.frontBlockTrainInstance.direction)")
         }
         
-        return train.position != currentLocation
+        return train.positions != currentPositions
     }
         
     func moveToNextBlock() throws -> Bool {
@@ -313,15 +313,15 @@ final class TrainController: TrainControlling, CustomStringConvertible {
         let feedbackPosition = FeedbackPosition(blockId: entryFeedback.block.id, index: entryFeedback.index, distance: fdistance)
         let detectedPosition = feedbackPosition.trainPosition(direction: entryFeedback.direction)
 
-        let newPosition = try train.position.newLocationWith(trainMovesForward: train.directionForward,
-                                                             detectedPosition: detectedPosition,
-                                                             reservation: train.reservation)
+        let newPositions = try train.positions.newPositionsWith(trainMovesForward: train.directionForward,
+                                                                detectedPosition: detectedPosition,
+                                                                reservation: train.reservation)
         
         BTLogger.router.debug("\(self.train, privacy: .public): enters block \(entryFeedback.block, privacy: .public) at position \(feedbackPosition.index), direction \(entryFeedback.direction)")
 
         // Set the train position. Note that the occupied and leading blocks will be updated
         // later on by the state machine in response to the change in position of the train.
-        try layout.setTrainToBlock(train, entryFeedback.block.id, position: newPosition, directionOfTravelInBlock: entryFeedback.direction)
+        try layout.setTrainToBlock(train, entryFeedback.block.id, positions: newPositions, directionOfTravelInBlock: entryFeedback.direction)
 
         // Update the current route step index
         train.routeStepIndex = train.routeStepIndex + 1

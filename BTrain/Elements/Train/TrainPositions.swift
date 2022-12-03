@@ -12,14 +12,13 @@
 
 import Foundation
                                          
-/// The train location consists of two positions: a front position and a back position.
+/// The train positions: a front position and a back position.
 ///
 /// Notes:
 /// - Each of these positions correspond to a magnet that triggers a feedback in the layout.
 /// - A train that only moves forward needs only one magnet at the front of the train.
 /// - A train that moves forward and backward needs a magnet at the front and the back of the train
-// TODO: rename to TrainPositions?
-struct TrainLocation: Equatable, Codable, CustomStringConvertible {
+struct TrainPositions: Equatable, Codable, CustomStringConvertible {
     
     /// The position at the front of the train (where the locomotive is located)
     var front: TrainPosition?
@@ -39,18 +38,18 @@ struct TrainLocation: Equatable, Codable, CustomStringConvertible {
         }
     }
     
-    static func front(blockId: Identifier<Block>, index: Int, distance: Double) -> TrainLocation {
-        TrainLocation(front: .init(blockId: blockId, index: index, distance: distance),
+    static func front(blockId: Identifier<Block>, index: Int, distance: Double) -> TrainPositions {
+        TrainPositions(front: .init(blockId: blockId, index: index, distance: distance),
                       back: nil)
     }
 
-    static func back(blockId: Identifier<Block>, index: Int, distance: Double) -> TrainLocation {
-        TrainLocation(front: nil,
+    static func back(blockId: Identifier<Block>, index: Int, distance: Double) -> TrainPositions {
+        TrainPositions(front: nil,
                       back: .init(blockId: blockId, index: index, distance: distance))
     }
 
-    static func both(blockId: Identifier<Block>, frontIndex: Int, frontDistance: Double, backIndex: Int, backDistance: Double) -> TrainLocation {
-        TrainLocation(front: .init(blockId: blockId, index: frontIndex, distance: frontDistance),
+    static func both(blockId: Identifier<Block>, frontIndex: Int, frontDistance: Double, backIndex: Int, backDistance: Double) -> TrainPositions {
+        TrainPositions(front: .init(blockId: blockId, index: frontIndex, distance: frontDistance),
                       back: .init(blockId: blockId, index: backIndex, distance: backDistance))
     }
 

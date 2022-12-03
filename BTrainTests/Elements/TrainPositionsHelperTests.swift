@@ -14,7 +14,7 @@ import XCTest
 
 @testable import BTrain
 
-final class TrainLocationHelperTests: XCTestCase {
+final class TrainPositionsHelperTests: XCTestCase {
 
     // ┌─────────┐           ┌──────┐   ┌──────┐  ┌──────┐            ┌──────┐
     // │    A    │──▶  AB  ─▶│  B   │──▶│  C   │─▶│  D   │──▶  DE  ──▶│  E   │
@@ -100,7 +100,7 @@ final class TrainLocationHelperTests: XCTestCase {
         try doc.layoutController.setupTrainToBlock(train, blockA.id, naturalDirectionInBlock: .next)
         
         XCTAssertTrue(train.directionForward)
-        XCTAssertEqual(train.position, .both(blockId: blockA.id,
+        XCTAssertEqual(train.positions, .both(blockId: blockA.id,
                                              frontIndex: blockA.feedbacks.count,
                                              frontDistance: blockA.feedbacks.last!.distance!.after,
                                              backIndex: 1,
@@ -110,7 +110,7 @@ final class TrainLocationHelperTests: XCTestCase {
         try doc.layoutController.toggleTrainDirection(train)
         
         XCTAssertFalse(train.directionForward)
-        XCTAssertEqual(train.position, .both(blockId: blockA.id,
+        XCTAssertEqual(train.positions, .both(blockId: blockA.id,
                                              frontIndex: blockA.feedbacks.count,
                                              frontDistance: blockA.feedbacks.last!.distance!.after,
                                              backIndex: 1,
@@ -120,7 +120,7 @@ final class TrainLocationHelperTests: XCTestCase {
         try doc.layoutController.toggleTrainDirection(train)
 
         XCTAssertTrue(train.directionForward)
-        XCTAssertEqual(train.position, .both(blockId: blockA.id,
+        XCTAssertEqual(train.positions, .both(blockId: blockA.id,
                                              frontIndex: blockA.feedbacks.count,
                                              frontDistance: blockA.feedbacks.last!.distance!.after,
                                              backIndex: 1,
@@ -141,7 +141,7 @@ final class TrainLocationHelperTests: XCTestCase {
         let allowedDirection: Locomotive.AllowedDirection
         let directionForward: Bool
         let directionInBlock: Direction
-        let position: TrainLocation
+        let position: TrainPositions
     }
     
     private func assert(_ doc: LayoutDocument,
@@ -149,10 +149,10 @@ final class TrainLocationHelperTests: XCTestCase {
                                 _ block: Block,
                                 _ directionForward: Bool,
                                 _ directionInBlock: Direction,
-                                _ position: TrainLocation) throws {
+                                _ position: TrainPositions) throws {
         train.locomotive!.directionForward = directionForward
         try doc.layoutController.setupTrainToBlock(train, block.id, naturalDirectionInBlock: directionInBlock)
-        XCTAssertEqual(train.position, position)
+        XCTAssertEqual(train.positions, position)
         XCTAssertEqual(train.occupied.blocks.count, 1)
     }
     
@@ -225,10 +225,10 @@ final class TrainLocationHelperTests: XCTestCase {
         try doc.layoutController.setupTrainToBlock(train, blockB.id, naturalDirectionInBlock: .next)
         assertEndOfBlock(occupiedCount: 1, atEndOfBlock: true, block: blockB, train: train)
 
-        try doc.layout.setTrainToBlock(train, blockB.id, position: TrainLocation(front: .init(blockId: blockB.id, index: blockB.feedbacks.count, distance: 0), back: nil), directionOfTravelInBlock: .next)
+        try doc.layout.setTrainToBlock(train, blockB.id, positions: TrainPositions(front: .init(blockId: blockB.id, index: blockB.feedbacks.count, distance: 0), back: nil), directionOfTravelInBlock: .next)
         assertEndOfBlock(occupiedCount: 1, atEndOfBlock: true, block: blockB, train: train)
 
-        try doc.layout.setTrainToBlock(train, blockB.id, position: TrainLocation(front: .init(blockId: blockB.id, index: blockB.feedbacks.count-1, distance: 0), back: nil), directionOfTravelInBlock: .next)
+        try doc.layout.setTrainToBlock(train, blockB.id, positions: TrainPositions(front: .init(blockId: blockB.id, index: blockB.feedbacks.count-1, distance: 0), back: nil), directionOfTravelInBlock: .next)
         assertEndOfBlock(occupiedCount: 1, atEndOfBlock: false, block: blockB, train: train)
 
         train.locomotive!.directionForward = false
@@ -238,7 +238,7 @@ final class TrainLocationHelperTests: XCTestCase {
         try doc.layoutController.setupTrainToBlock(train, blockB.id, naturalDirectionInBlock: .next)
         assertEndOfBlock(occupiedCount: 1, atEndOfBlock: false, block: blockB, train: train)
 
-        try doc.layout.setTrainToBlock(train, blockB.id, position: .both(blockId: blockB.id, frontIndex: blockB.feedbacks.count, frontDistance: 0, backIndex: 1, backDistance: 0), directionOfTravelInBlock: .next)
+        try doc.layout.setTrainToBlock(train, blockB.id, positions: .both(blockId: blockB.id, frontIndex: blockB.feedbacks.count, frontDistance: 0, backIndex: 1, backDistance: 0), directionOfTravelInBlock: .next)
         assertEndOfBlock(occupiedCount: 1, atEndOfBlock: false, block: blockB, train: train)
         
         // Now let's set a longer length to the train so it fills the entire block
@@ -326,7 +326,7 @@ final class TrainLocationHelperTests: XCTestCase {
     }
 
     private func assertRemainingDistance(_ train: Train, front: (Identifier<Block>, Int), back: (Identifier<Block>, Int), distance: Double) {
-        train.position = .init(front:.init(blockId: front.0, index: front.1, distance: 0), back:.init(blockId: back.0, index: back.1, distance: 0))
+        train.positions = .init(front:.init(blockId: front.0, index: front.1, distance: 0), back:.init(blockId: back.0, index: back.1, distance: 0))
         XCTAssertEqual(train.distanceLeftInFrontBlock(), distance)
     }
     
