@@ -30,13 +30,13 @@ final class TrainSpreaderTests: XCTestCase {
         //  ---->
         //  b   f
         //  <---- (visit)
-        XCTAssertEqual(try tv.occupiedLengthOfTrainInBlock(block: block, trainPosition: position, frontBlock: true, directionOfVisit: .previous, trainForward: true), 80)
+        XCTAssertEqual(try tv.occupiedLengthOfTrainInBlock(block: block, trainPosition: position, frontBlock: true, directionOfSpread: .previous, trainForward: true), 80)
         
         // <      ]
         //  ---->
         //  b   f
         //  <---- (visit)
-        XCTAssertEqual(try tv.occupiedLengthOfTrainInBlock(block: block, trainPosition: position, frontBlock: true, directionOfVisit: .next, trainForward: true), 20)
+        XCTAssertEqual(try tv.occupiedLengthOfTrainInBlock(block: block, trainPosition: position, frontBlock: true, directionOfSpread: .next, trainForward: true), 20)
         
         // Note: now test with the train runnings backward. In that case, the back position is used instead of the front
         position = .back(blockId: block.id, index: 2, distance: 20)
@@ -45,13 +45,13 @@ final class TrainSpreaderTests: XCTestCase {
         //  ----<
         //  b   f
         //  -----> (visit)
-        XCTAssertEqual(try tv.occupiedLengthOfTrainInBlock(block: block, trainPosition: position, frontBlock: true, directionOfVisit: .previous, trainForward: false), 20)
+        XCTAssertEqual(try tv.occupiedLengthOfTrainInBlock(block: block, trainPosition: position, frontBlock: true, directionOfSpread: .previous, trainForward: false), 20)
         
         // [      >
         //  ----< (train)
         //  b   f
         //  -----> (visit)
-        XCTAssertEqual(try tv.occupiedLengthOfTrainInBlock(block: block, trainPosition: position, frontBlock: true, directionOfVisit: .next, trainForward: false), 80)
+        XCTAssertEqual(try tv.occupiedLengthOfTrainInBlock(block: block, trainPosition: position, frontBlock: true, directionOfSpread: .next, trainForward: false), 80)
     }
 
     func testOccupationFrontBlockOnly() throws {
@@ -72,13 +72,13 @@ final class TrainSpreaderTests: XCTestCase {
         //  ---->
         //  b   f
         //  <---- (visit)
-        XCTAssertEqual(try tv.occupiedLengthOfTrainInBlock(block: ba, trainPosition: position, frontBlock: true, directionOfVisit: .previous, trainForward: true), 80)
+        XCTAssertEqual(try tv.occupiedLengthOfTrainInBlock(block: ba, trainPosition: position, frontBlock: true, directionOfSpread: .previous, trainForward: true), 80)
         
         //    <      ]
         //  ---->
         //  b   f
         //  -----> (visit)
-        XCTAssertEqual(try tv.occupiedLengthOfTrainInBlock(block: ba, trainPosition: position, frontBlock: true, directionOfVisit: .next, trainForward: true), 20)
+        XCTAssertEqual(try tv.occupiedLengthOfTrainInBlock(block: ba, trainPosition: position, frontBlock: true, directionOfSpread: .next, trainForward: true), 20)
     }
 
     func testOccupationNonFrontBlock() throws {
@@ -97,10 +97,10 @@ final class TrainSpreaderTests: XCTestCase {
                         
         // Note: doesn't matter where the train is located, if it is not the front block, the entire length of the block will be used because this method does not
         // take into account the length of the train (remaining).
-        XCTAssertEqual(try tv.occupiedLengthOfTrainInBlock(block: ba, trainPosition: position, frontBlock: false, directionOfVisit: .previous, trainForward: true), 100)
-        XCTAssertEqual(try tv.occupiedLengthOfTrainInBlock(block: ba, trainPosition: position, frontBlock: false, directionOfVisit: .next, trainForward: true), 100)
-        XCTAssertEqual(try tv.occupiedLengthOfTrainInBlock(block: ba, trainPosition: position, frontBlock: false, directionOfVisit: .previous, trainForward: false), 100)
-        XCTAssertEqual(try tv.occupiedLengthOfTrainInBlock(block: ba, trainPosition: position, frontBlock: false, directionOfVisit: .next, trainForward: false), 100)
+        XCTAssertEqual(try tv.occupiedLengthOfTrainInBlock(block: ba, trainPosition: position, frontBlock: false, directionOfSpread: .previous, trainForward: true), 100)
+        XCTAssertEqual(try tv.occupiedLengthOfTrainInBlock(block: ba, trainPosition: position, frontBlock: false, directionOfSpread: .next, trainForward: true), 100)
+        XCTAssertEqual(try tv.occupiedLengthOfTrainInBlock(block: ba, trainPosition: position, frontBlock: false, directionOfSpread: .previous, trainForward: false), 100)
+        XCTAssertEqual(try tv.occupiedLengthOfTrainInBlock(block: ba, trainPosition: position, frontBlock: false, directionOfSpread: .next, trainForward: false), 100)
     }
 
     // MARK: Spreading

@@ -109,13 +109,13 @@ final class TrainSpreader {
         
         // The direction of visit for each block can change, depending on the block orientation. Always
         // rely on the direction parameter from the block information.
-        let directionOfVisit = blockInfo.direction
+        let directionOfSpread = blockInfo.direction
         
         // Compute the length that the train occupies in the block
         let occupiedLength = try occupiedLengthOfTrainInBlock(block: blockInfo.block,
                                                               trainPosition: train.position,
                                                               frontBlock: frontBlock,
-                                                              directionOfVisit: directionOfVisit,
+                                                              directionOfSpread: directionOfSpread,
                                                               trainForward: locomotive.directionForward)
         
         // Substract it from the remaining train length
@@ -123,7 +123,7 @@ final class TrainSpreader {
 
         // Create the block attributes.
         // Note: the back block is detected when there are no more remaining train length
-        let bv = BlockAttributes(frontBlock: frontBlock, backBlock: remainingTrainLength <= 0, trainDirection: directionOfVisit.opposite)
+        let bv = BlockAttributes(frontBlock: frontBlock, backBlock: remainingTrainLength <= 0, trainDirection: directionOfSpread.opposite)
         
         // Invoke callback
         try blockCallback(blockInfo.block, bv)
@@ -133,7 +133,7 @@ final class TrainSpreader {
             // Compute the position of the "tail" of the train. The remaining train length now represents the space left in the block
             let pos = try tailPositionIn(block: blockInfo.block,
                                          spaceLeftInBlock: abs(remainingTrainLength),
-                                         directionOfVisit: directionOfVisit,
+                                         directionOfSpread: directionOfSpread,
                                          directionForward: locomotive.directionForward)
             
             // Note: when moving backward, `pos` is the position of the trail of the train in
@@ -147,19 +147,19 @@ final class TrainSpreader {
         }
         
         // Update the parts of the train
-        fillParts(train: train, trainForward: train.directionForward, directionOfVisit: directionOfVisit, block: blockInfo.block, bv: bv)
+        fillParts(train: train, trainForward: train.directionForward, directionOfSpread: directionOfSpread, block: blockInfo.block, bv: bv)
     }
     
     /// Fill out the parts of the train in the given block
     /// - Parameters:
     ///   - train: the train
     ///   - trainForward: true if the train moves forward, false otherwise
-    ///   - directionOfVisit: the direction of visit in the block
+    ///   - directionOfSpread: the direction of visit in the block
     ///   - block: the block
     ///   - bv: the block attributes
-    private func fillParts(train: Train, trainForward: Bool, directionOfVisit: Direction, block: Block, bv: BlockAttributes) {
+    private func fillParts(train: Train, trainForward: Bool, directionOfSpread: Direction, block: Block, bv: BlockAttributes) {
         if bv.frontBlock && bv.backBlock {
-            if directionOfVisit == .next {
+            if directionOfSpread == .next {
                 if trainForward {
                     // Block: [ 0 1 2 3 ]>
                     // Visit:  ------->
@@ -198,7 +198,7 @@ final class TrainSpreader {
             }
         } else if bv.frontBlock {
             // Note: front block as in the block in the front of the train in its direction of travel
-            if directionOfVisit == .next {
+            if directionOfSpread == .next {
                 if trainForward {
                     // Block: [ 0 1 2 3 ]>
                     // Visit:       ------->
@@ -237,7 +237,7 @@ final class TrainSpreader {
             }
         } else if bv.backBlock {
             // back block as in the last block of the train in the direction of travel
-            if directionOfVisit == .next {
+            if directionOfSpread == .next {
                 if trainForward {
                     // Block:     [ 0 1 2 3 ]>
                     // Visit:  ------->
@@ -301,10 +301,10 @@ final class TrainSpreader {
     /// - Parameters:
     ///   - block: the block
     ///   - spaceLeftInBlock: the space left in the block
-    ///   - directionOfVisit: the direction of visit in the block
+    ///   - directionOfSpread: the direction of visit in the block
     ///   - directionForward: true if the train is moving forwards, false otherwise
     /// - Returns: the train position
-    private func tailPositionIn(block: Block, spaceLeftInBlock: Double, directionOfVisit: Direction, directionForward: Bool) throws -> TrainPosition {
+    private func tailPositionIn(block: Block, spaceLeftInBlock: Double, directionOfSpread: Direction, directionForward: Bool) throws -> TrainPosition {
         guard let blockLength = block.length else {
             throw LayoutError.blockLengthNotDefined(block: block)
         }
@@ -316,7 +316,7 @@ final class TrainSpreader {
         let d = abs(spaceLeftInBlock)
 
         let distance: Double
-        if directionOfVisit == .next {
+        if directionOfSpread == .next {
             if directionForward {
                 // <[   ]
                 //  {d}------> (train)
@@ -344,9 +344,17 @@ final class TrainSpreader {
         let index = block.feedbacks.indexOfFeedback(withDistance: distance)
         return .init(blockId: block.id, index: index, distance: distance)
     }
-            
-    // TODO: static and move to common Positioning files?
-    func occupiedLengthOfTrainInBlock(block: Block, trainPosition: TrainLocation, frontBlock: Bool, directionOfVisit: Direction, trainForward: Bool) throws -> Double {
+    
+    /// Computes and returns the length that the train occupies in the block.
+    ///
+    /// - Parameters:
+    ///   - block: the block
+    ///   - trainPosition: the train position
+    ///   - frontBlock: true if the block is the front block
+    ///   - directionOfSpread: the direction of the spread in the block
+    ///   - trainForward: true if the train moves forward, false if it moves backward
+    /// - Returns: the occupied length of the train in the block
+    func occupiedLengthOfTrainInBlock(block: Block, trainPosition: TrainLocation, frontBlock: Bool, directionOfSpread: Direction, trainForward: Bool) throws -> Double {
         guard let blockLength = block.length else {
             throw LayoutError.blockLengthNotDefined(block: block)
         }
@@ -377,7 +385,7 @@ final class TrainSpreader {
                 frontDistance = back.distance
             }
             
-            if directionOfVisit == .next {
+            if directionOfSpread == .next {
                 if trainForward {
                     // [     >
                     //   <-------|
@@ -405,6 +413,7 @@ final class TrainSpreader {
         } else {
             // Either the entire block is used by the the train or the block
             // is only partially used by the remaining of the train.
+            // TODO: should we return the true length of the back block instead? And have the calling function determine that there is length left?
             lengthOfTrainInBlock = blockLength
         }
         
