@@ -12,13 +12,13 @@ import XCTest
 
 @testable import BTrain
 
-final class TrainVisitorTests: XCTestCase {
+final class TrainSpreaderTests: XCTestCase {
     
     // MARK: Occupation
     
     func testOccupationSingleBlock() {
         let layout = Layout()
-        let tv = TrainVisitor(layout: layout)
+        let tv = TrainSpreader(layout: layout)
         
         let block = Block()
         block.length = 100
@@ -56,7 +56,7 @@ final class TrainVisitorTests: XCTestCase {
 
     func testOccupationFrontBlockOnly() {
         let layout = Layout()
-        let tv = TrainVisitor(layout: layout)
+        let tv = TrainSpreader(layout: layout)
         
         let ba = Block()
         ba.length = 100
@@ -83,7 +83,7 @@ final class TrainVisitorTests: XCTestCase {
 
     func testOccupationNonFrontBlock() {
         let layout = Layout()
-        let tv = TrainVisitor(layout: layout)
+        let tv = TrainSpreader(layout: layout)
         
         let ba = Block()
         ba.length = 100
@@ -103,11 +103,11 @@ final class TrainVisitorTests: XCTestCase {
         XCTAssertEqual(tv.occupiedLengthOfTrainInBlock(block: ba, trainPosition: position, frontBlock: false, directionOfVisit: .next, trainForward: false), 100)
     }
 
-    // MARK: Visit
+    // MARK: Spreading
     
-    func testVisitSingleBlock() throws {        
+    func testSpreadSingleBlock() throws {
         let layout = Layout()
-        let tv = TrainVisitor(layout: layout)
+        let tv = TrainSpreader(layout: layout)
         
         let block = Block()
         block.length = 100
@@ -156,10 +156,10 @@ final class TrainVisitorTests: XCTestCase {
         try assert(tv, train: train, remainingTrainLength: -20, blocks: [block])
     }
     
-    /// Test visiting a train that spans two blocks
-    func testVisitSpanningTwoBlocks() throws {
+    /// Test spreading a train that spans two blocks
+    func testSpreadSpanningTwoBlocks() throws {
         let layout = Layout()
-        let tv = TrainVisitor(layout: layout)
+        let tv = TrainSpreader(layout: layout)
         
         let ba = Block(name: "A")
         ba.length = 100
@@ -253,10 +253,10 @@ final class TrainVisitorTests: XCTestCase {
         try assert(tv, train: train, remainingTrainLength: 0, blocks: [ba])
     }
 
-    /// Test visiting a train that spans three blocks
-    func testVisitSpanningThreeBlocks() throws {
+    /// Test spreading a train that spans three blocks
+    func testSpreadSpanningThreeBlocks() throws {
         let layout = Layout()
-        let tv = TrainVisitor(layout: layout)
+        let tv = TrainSpreader(layout: layout)
         
         let ba = Block(name: "A")
         ba.length = 100
@@ -378,10 +378,10 @@ final class TrainVisitorTests: XCTestCase {
         try assert(tv, train: train, remainingTrainLength: -80, blocks: [bc, bb, ba])
     }
     
-    private func assert(_ tv: TrainVisitor, train: Train, remainingTrainLength: Double, blocks: [Block]) throws {
+    private func assert(_ tv: TrainSpreader, train: Train, remainingTrainLength: Double, blocks: [Block]) throws {
         var blocks = [Block]()
 
-        let remainingTrainLength = try tv.visit(train: train) { _ in
+        let remainingTrainLength = try tv.spread(train: train) { _ in
             
         } turnoutCallback: { turnoutInfo in
 

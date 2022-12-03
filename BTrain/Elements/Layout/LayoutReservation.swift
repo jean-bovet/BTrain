@@ -332,8 +332,8 @@ final class LayoutReservation {
     // This method reserves and occupies all the necessary blocks (and parts of the block) to fit
     // the specified train with all its length, taking into account the length of each block.
     func occupyBlocksWith(train: Train) throws {
-        let trainVisitor = TrainVisitor(layout: layout)
-        let remainingTrainLength = try trainVisitor.visit(train: train) { transition in
+        let trainVisitor = TrainSpreader(layout: layout)
+        let remainingTrainLength = try trainVisitor.spread(train: train) { transition in
             guard transition.reserved == nil else {
                 throw LayoutError.transitionAlreadyReserved(transition: transition)
             }
