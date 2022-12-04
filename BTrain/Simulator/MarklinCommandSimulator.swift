@@ -383,52 +383,73 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
 
         BTLogger.debug("[Simulator] Simulating route \(route.name) for \(train.name), requested speed \(loc.speed.requestedKph) kph, actual speed \(loc.speed.actualKph) kph")
 
-        if let entryFeedback = try layout.entryFeedback(for: train) {
-            // Ensure all the feedbacks of the current block is turned off, otherwise there will be
-            // an unexpected feedback error in the layout. This happens when there is less than 250ms
-            // between the time the feedback was triggered (because the feedback gets reset after 250ms)
-            for bf in block.feedbacks {
-                if let feedback = layout.feedbacks[bf.feedbackId] {
-                    setFeedback(feedback: feedback, value: 0)
-                }
-            }
-
-            BTLogger.debug("[Simulator] Trigger feedback \(entryFeedback.feedback.name) to move train \(train.name) to next block \(entryFeedback.block.name)")
-            triggerFeedback(feedback: entryFeedback.feedback)
-        } else if try layout.atEndOfBlock(train: train) == false {
-            // TODO: unit tests
-            let naturalDirection = block.trainInstance?.direction == .next
-            let feedback: Block.BlockFeedback
-            if naturalDirection {
-                if train.directionForward {
-                    let position = train.positions.front?.index ?? block.feedbacks.count
-                    feedback = block.feedbacks[position]
-                } else {
-                    let position = train.positions.back?.index ?? block.feedbacks.count
-                    feedback = block.feedbacks[position]
-                }
-            } else {
-                if train.directionForward {
-                    // Block: [ 3 2 1 ]
-                    // Train:  b   f
-                    let position = train.positions.front?.index ?? 1
-                    feedback = block.feedbacks[position - 1]
-                } else {
-                    // Block: [ 3 2 1 ]
-                    // Train:  f   b
-                    let position = train.positions.back?.index ?? 1
-                    feedback = block.feedbacks[position - 1]
-                }
-            }
-            if let feedback = layout.feedbacks[feedback.feedbackId] {
-                BTLogger.debug("[Simulator] Trigger feedback \(feedback.name) to move train \(train.name) within \(block.name)")
-                triggerFeedback(feedback: feedback)
-            }
-        } else {
-            BTLogger.debug("[Simulator] Nothing to process for route \(route)")
+        if try moveTrainInsideBlock(train: train, block: block, layout: layout) {
+            return
         }
+
+        if try moveTrainToNextBlock(train: train, block: block, layout: layout) {
+            return
+        }
+
+        BTLogger.debug("[Simulator] Nothing to process for route \(route)")
     }
 
+    func moveTrainInsideBlock(train: Train, block: Block, layout: Layout) throws -> Bool {
+        guard try layout.atEndOfBlock(train: train) == false else {
+            return false
+        }
+        
+        // TODO: unit tests
+        let naturalDirection = block.trainInstance?.direction == .next
+        let feedback: Block.BlockFeedback
+        if naturalDirection {
+            if train.directionForward {
+                let position = train.positions.front?.index ?? block.feedbacks.count
+                feedback = block.feedbacks[position]
+            } else {
+                let position = train.positions.back?.index ?? block.feedbacks.count
+                feedback = block.feedbacks[position]
+            }
+        } else {
+            if train.directionForward {
+                // Block: [ 3 2 1 ]
+                // Train:  b   f
+                let position = train.positions.front?.index ?? 1
+                feedback = block.feedbacks[position - 1]
+            } else {
+                // Block: [ 3 2 1 ]
+                // Train:  f   b
+                let position = train.positions.back?.index ?? 1
+                feedback = block.feedbacks[position - 1]
+            }
+        }
+        if let feedback = layout.feedbacks[feedback.feedbackId] {
+            BTLogger.debug("[Simulator] Trigger feedback \(feedback.name) to move train \(train.name) within \(block.name)")
+            triggerFeedback(feedback: feedback)
+        }
+        
+        return true
+    }
+    
+    func moveTrainToNextBlock(train: Train, block: Block, layout: Layout) throws -> Bool {
+        guard let entryFeedback = try layout.entryFeedback(for: train) else {
+            return false
+        }
+        // Ensure all the feedbacks of the current block is turned off, otherwise there will be
+        // an unexpected feedback error in the layout. This happens when there is less than 250ms
+        // between the time the feedback was triggered (because the feedback gets reset after 250ms)
+        for bf in block.feedbacks {
+            if let feedback = layout.feedbacks[bf.feedbackId] {
+                setFeedback(feedback: feedback, value: 0)
+            }
+        }
+        
+        BTLogger.debug("[Simulator] Trigger feedback \(entryFeedback.feedback.name) to move train \(train.name) to next block \(entryFeedback.block.name)")
+        triggerFeedback(feedback: entryFeedback.feedback)
+        
+        return true
+    }
+    
     func triggerFeedback(feedback: Feedback) {
         setFeedback(feedback: feedback, value: 1)
         Timer.scheduledTimer(withTimeInterval: 0.25 * BaseTimeFactor, repeats: false) { _ in
