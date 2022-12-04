@@ -164,7 +164,7 @@ final class TrainController: TrainControlling, CustomStringConvertible {
         let previousOccupiedItems = train.occupied.items
 
         if mode == .unmanaged {
-            try reservation.freeElements(train: train)
+            reservation.removeOccupation(train: train) // TODO: unit test this behavior
             try reservation.occupyBlocksWith(train: train)
         } else {
             try reserveLeadingBlocks()
@@ -211,8 +211,8 @@ final class TrainController: TrainControlling, CustomStringConvertible {
         }
     }
 
-    func removeReservedBlocks() throws -> Bool {
-        try reservation.removeLeadingBlocks(train: train)
+    func removeReservedBlocks() -> Bool {
+        reservation.removeLeadingReservation(train: train)
     }
 
     func adjustSpeed(stateChanged: Bool) throws {

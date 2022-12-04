@@ -590,7 +590,7 @@ extension LayoutController {
         
         // The method below will spread again the train, starting with the "front" block
         // of the train which has been updated here with "newBlock".
-        try reservation.removeLeadingBlocks(train: train)
+        reservation.removeLeadingReservation(train: train)
         try reservation.occupyBlocksWith(train: train)
     }
     

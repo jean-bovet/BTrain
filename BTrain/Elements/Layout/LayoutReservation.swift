@@ -102,8 +102,8 @@ final class LayoutReservation {
         let reservedTurnouts = Set<TurnoutActivation>(train.leading.turnouts.map { TurnoutActivation(turnout: $0) })
 
         // Remove the train from all the elements
-        // TODO: cannot do it differently with train.reservation instead?
-        try freeElements(train: train)
+        removeOccupation(train: train)
+        removeLeadingReservation(train: train)
 
         // Reserve and set the train and its wagon(s) using the necessary number of
         // elements (turnouts and blocks)
@@ -124,11 +124,11 @@ final class LayoutReservation {
         }
     }
 
-    /// Removes the reservation for the leading blocks of the specified train but keep the occupied blocks intact.
+    /// Removes the reservation for the leading blocks only.
     ///
     /// - Parameter train: the train
     @discardableResult
-    func removeLeadingBlocks(train: Train) throws -> Bool {
+    func removeLeadingReservation(train: Train) -> Bool {
         guard !train.leading.items.isEmpty else {
             return false
         }
@@ -136,7 +136,7 @@ final class LayoutReservation {
         for item in train.leading.items {
             switch item {
             case .block(let block):
-                assert(block.trainInstance == nil)
+                assert(block.trainInstance == nil || block == train.block)
                 block.reservation = nil
             case .turnout(let turnout):
                 assert(turnout.train == nil)
@@ -148,6 +148,38 @@ final class LayoutReservation {
         }
         
         train.leading.clear()
+
+        return true
+    }
+    
+    /// Removes the reservation and train from the occupied blocks
+    /// - Parameters:
+    ///   - train: the train
+    ///   - removeFrontBlock: true if the front block of the train should be left untouched
+    /// - Returns: true if any elements were freed, false otherwise
+    @discardableResult
+    func removeOccupation(train: Train, removeFrontBlock: Bool = false) -> Bool {
+        guard !train.occupied.items.isEmpty else {
+            return false
+        }
+
+        for item in train.occupied.items {
+            switch item {
+            case .block(let block):
+                if block != train.block || removeFrontBlock {
+                    block.trainInstance = nil
+                    block.reservation = nil
+                }
+            case .turnout(let turnout):
+                turnout.train = nil
+                turnout.reserved = nil
+            case .transition(let transition):
+                transition.train = nil
+                transition.reserved = nil
+            }
+        }
+        
+        train.occupied.clear()
 
         return true
     }

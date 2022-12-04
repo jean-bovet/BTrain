@@ -24,7 +24,7 @@ final class LayoutReservationTests: XCTestCase {
         
         XCTAssertTrue(train.leading.items.isEmpty)
 
-        try r.removeLeadingBlocks(train: train)
+        r.removeLeadingReservation(train: train)
         XCTAssertTrue(train.leading.items.isEmpty)
 
         train.leading.append(layout.blocks[0])
@@ -33,7 +33,7 @@ final class LayoutReservationTests: XCTestCase {
         
         XCTAssertEqual(train.leading.items.count, 3)
         
-        try r.removeLeadingBlocks(train: train)
+        r.removeLeadingReservation(train: train)
         XCTAssertTrue(train.leading.items.isEmpty)
     }
     
@@ -65,21 +65,31 @@ final class LayoutReservationTests: XCTestCase {
         try route.completePartialSteps(layout: layout, train: train)
         XCTAssertEqual(route.steps.toStrings(layout), ["A:next", "B:next", "C:next", "D:next", "E:next"])
         
-        let result = try r.updateReservedBlocks(train: train)
-        XCTAssertEqual(result, .success)
+        XCTAssertEqual(try r.updateReservedBlocks(train: train), .success)
         
         XCTAssertEqual(train.occupied.items.count, 1)
         XCTAssertEqual(train.occupied.blocks.toBlockNames, ["A"])
         XCTAssertEqual(train.leading.items.count, 4)
         XCTAssertEqual(train.leading.blocks.toBlockNames, ["B"])
         
-        let result2 = try r.updateReservedBlocks(train: train)
-        XCTAssertEqual(result2, .successAndUnchanged)
+        XCTAssertEqual(try r.updateReservedBlocks(train: train), .successAndUnchanged)
 
-        let result3 = try r.removeLeadingBlocks(train: train)
-        XCTAssertTrue(result3)
+        XCTAssertTrue(r.removeLeadingReservation(train: train))
         
         XCTAssertEqual(train.occupied.items.count, 1)
         XCTAssertTrue(train.leading.items.isEmpty)
+        
+        XCTAssertTrue(r.removeOccupation(train: train))
+
+        XCTAssertTrue(train.occupied.items.isEmpty)
+        XCTAssertTrue(train.leading.items.isEmpty)
+        
+        XCTAssertFalse(r.removeOccupation(train: train))
+        
+        XCTAssertNotNil(train.block?.trainInstance)
+        
+        train.occupied.append(train.block!)
+        XCTAssertTrue(r.removeOccupation(train: train, removeFrontBlock: true))
+        XCTAssertNil(train.block?.trainInstance)
     }
 }
