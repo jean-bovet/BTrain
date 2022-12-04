@@ -84,88 +84,78 @@ extension Train {
     ///
     /// - Parameter train: the train
     /// - Returns: the distance left
-    func distanceLeftInFrontBlock() -> Double {        
+    func distanceLeftInFrontBlock() -> Double {
+        // Note: use `train.block` and not `train.occupied.blocks.last` because
+        // when a train enters a new block, there is a period of time where
+        // the occupied blocks are not yet updated (between two loop cycle of the state machine).
+        guard let block = block else {
+            return 0
+        }
+        
+        guard let ti = block.trainInstance else {
+            return 0
+        }
+        
+        guard let length = block.length else {
+            return 0
+        }
+        
+        let feedbackIndex: Int
         if directionForward {
             // Direction of train is forward.
-            // Block: [ 0 1 2 3 ]
+            // Block:    [ | | | ]>
+            // Feedbacks:  0 1 2
+            // Index:     0 1 2 3
             // Train:  ----->
             //         b    f
-            guard let block = occupied.blocks.first else {
-                return 0
-            }
-            
-            guard let ti = block.trainInstance else {
-                return 0
-            }
-            
-            guard let length = block.length else {
-                return 0
-            }
-            
             guard let frontIndex = positions.front?.index else {
                 return 0
             }
-            
-            switch ti.direction {
-            case .next:
-                if frontIndex < block.feedbacks.count {
-                    if let feedbackDistance = block.feedbacks[frontIndex].distance {
-                        return length - feedbackDistance
-                    } else {
-                        return 0
-                    }
-                } else {
-                    return 0
-                }
-                
-            case .previous:
-                let p = frontIndex - 1
-                if p >= 0, p < block.feedbacks.count {
-                    return block.feedbacks[p].distance ?? 0
-                } else {
-                    return 0
-                }
+
+            if ti.direction == .next {
+                feedbackIndex = frontIndex
+            } else {
+                feedbackIndex = frontIndex - 1
             }
         } else {
             // Direction of train is backward.
-            // Block: [ 0 1 2 3 ]
+            // Block:    [ | | | ]>
+            // Feedbacks:  0 1 2
+            // Index:     0 1 2 3
             // Train:  >-----
             //         f    b
-            guard let block = occupied.blocks.last else {
-                return 0
-            }
-            
-            guard let ti = block.trainInstance else {
-                return 0
-            }
-            
-            guard let length = block.length else {
-                return 0
-            }
-            
             guard let backIndex = positions.back?.index else {
                 return 0
             }
             
-            switch ti.direction {
-            case .next:
-                if backIndex < block.feedbacks.count {
-                    if let feedbackDistance = block.feedbacks[backIndex].distance {
-                        return length - feedbackDistance
-                    } else {
-                        return 0
-                    }
+            if ti.direction == .next {
+                feedbackIndex = backIndex
+            } else {
+                feedbackIndex = backIndex - 1
+            }
+        }
+        
+        switch ti.direction {
+        case .next:
+            if feedbackIndex < 0 {
+                return length
+            } else if feedbackIndex < block.feedbacks.count {
+                if let feedbackDistance = block.feedbacks[feedbackIndex].distance {
+                    return length - feedbackDistance
                 } else {
                     return 0
                 }
-                
-            case .previous:
-                let p = backIndex - 1
-                if p >= 0, p < block.feedbacks.count {
-                    return block.feedbacks[p].distance ?? 0
-                } else {
-                    return 0
-                }
+            } else {
+                return 0
+            }
+            
+        case .previous:
+            if feedbackIndex < 0 {
+                return 0
+            } else if feedbackIndex < block.feedbacks.count {
+                return block.feedbacks[feedbackIndex].distance ?? 0
+            } else {
+                return length
             }
         }
     }

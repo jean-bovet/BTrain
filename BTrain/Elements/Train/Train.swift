@@ -220,7 +220,7 @@ final class Train: Element, ObservableObject {
     var timeUntilAutomaticRestart: TimeInterval = 0
     
     var description: String {
-        var text = "Train '\(name)' (id=\(id), \(state)"
+        var text = "Train '\(name)' (\(id), \(state)"
         text += ", \(scheduling)"
         if let block = block {
             text += ", \(block.name)"

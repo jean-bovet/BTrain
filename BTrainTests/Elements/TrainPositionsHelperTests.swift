@@ -269,11 +269,10 @@ final class TrainPositionsHelperTests: XCTestCase {
         let t = Train(id: .init(uuid: "t1"), name: "SBB")
         t.locomotive = Locomotive(name: "loc1")
         t.locomotive!.directionForward = true
-        
+        t.block = block
         block.trainInstance = .init(t.id, .next)
-        t.occupied.append(block)
         
-        // Block:    [ f1 f2 f3 ]
+        // Block:    [ f1 f2 f3 ]>
         // Position:  0  1  2  3
         // Direction: ------>
         assertRemainingDistance(t, front: (block.id,0), back: (block.id,0), distance: 90)
@@ -281,7 +280,7 @@ final class TrainPositionsHelperTests: XCTestCase {
         assertRemainingDistance(t, front: (block.id,2), back: (block.id,0), distance: 10)
         assertRemainingDistance(t, front: (block.id,3), back: (block.id,0), distance: 0)
         
-        // Block:    [ f1 f2 f3 ]
+        // Block:    [ f1 f2 f3 ]>
         // Position:  0  1  2  3
         // Direction:     <-----
         block.trainInstance = .init(t.id, .previous)
@@ -302,9 +301,8 @@ final class TrainPositionsHelperTests: XCTestCase {
         let t = Train(id: .init(uuid: "t1"), name: "SBB")
         t.locomotive = Locomotive(name: "loc1")
         t.locomotive!.directionForward = false
-        
+        t.block = block
         block.trainInstance = .init(t.id, .next)
-        t.occupied.append(block)
 
         // Block:    [ f1 f2 f3 ] >>>
         // Position:  0  1  2  3
