@@ -17,6 +17,8 @@ class TrainReservation {
     enum Item: Equatable {
         case block(Block)
         case turnout(Turnout)
+        // TODO: need to add a transition as well to ensure it is removed from the layout
+//        case transition(ITransition)
     }
 
     /// Array of reservation items

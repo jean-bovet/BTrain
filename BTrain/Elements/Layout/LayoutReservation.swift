@@ -138,10 +138,13 @@ final class LayoutReservation {
                 assert(block.trainInstance == nil)
                 block.reservation = nil
             case .turnout(let turnout):
+                assert(turnout.train == nil)
                 turnout.reserved = nil
             }
         }
         
+        train.leading.clear()
+
         return true
     }
 
@@ -346,6 +349,8 @@ final class LayoutReservation {
             }
             transition.reserved = train.id
             transition.train = train.id
+            // TODO: include transition
+//            occupation.append(transition)
         } turnoutCallback: { turnoutInfo in
             let turnout = turnoutInfo.turnout
 
