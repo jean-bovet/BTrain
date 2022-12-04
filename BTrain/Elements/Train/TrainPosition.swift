@@ -33,6 +33,7 @@ struct TrainPosition: Equatable, Codable, CustomStringConvertible {
     /// Distance, in cm, from the beginning of the block in the direction of travel of the train
     var distance: Double
     
+    // TODO: improve debugging with name of block
     var description: String {
         "\(blockId.uuid):\(index):\(String(format: "%.3f", distance))"
     }

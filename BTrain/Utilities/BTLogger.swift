@@ -56,7 +56,7 @@ final class BTLogger {
     /// The reservation logger instance
     static var reservation = newLogger(category: .reservation)
 
-    /// Re-created the network logger using the latest settings
+    /// Re-create the network logger using the latest settings
     static func updateLoggerInstances() {
         network = newLogger(category: .network)
         router = newLogger(category: .router)

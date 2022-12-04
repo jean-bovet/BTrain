@@ -364,4 +364,8 @@ final class TrainController: TrainControlling, CustomStringConvertible {
             return frontBlock.waitingTime
         }
     }
+    
+    func logDebug(_ message: String) {
+        BTLogger.router.debug("\(self.train, privacy: .public): \(message, privacy: .public)")
+    }
 }
