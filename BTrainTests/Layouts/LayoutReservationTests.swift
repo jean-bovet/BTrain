@@ -37,6 +37,49 @@ final class LayoutReservationTests: XCTestCase {
         XCTAssertTrue(train.leading.items.isEmpty)
     }
     
-    // TODO: add test that occupies the blocks with a train and then remove leading blocks
+    // ┌─────────┐           ┌──────┐   ┌──────┐  ┌──────┐            ┌──────┐
+    // │    A    │──▶  AB  ─▶│  B   │──▶│  C   │─▶│  D   │──▶  DE  ──▶│  E   │
+    // └─────────┘           └──────┘   └──────┘  └──────┘            └──────┘
+    //                 │                                       ▲
+    //                 │    ┌──────┐   ┌──────┐  ┌──────┐      │
+    //                 └───▶│  B2  │──▶│ !C2  │─▶│  D2  │──────┘
+    //                      └──────┘   └──────┘  └──────┘
+    func testUpdateReservedBlocks() throws {
+        let layout = LayoutPointToPoint().newLayout()
+        let r = LayoutReservation(layout: layout, executor: nil, verbose: false)
+        
+        let train = layout.trains[0]
+        let blockA = layout.block(named: "A")
+        let route = layout.route(named: "ABCDE")
+        
+        train.block = blockA
+        train.positions = .both(blockId: blockA.id, frontIndex: blockA.feedbacks.count, frontDistance: blockA.feedbacks.last!.distance!.after, backIndex: 0, backDistance: 0.after)
+        train.routeStepIndex = 0
+        train.startRouteIndex = 0
+        blockA.trainInstance = .init(train.id, .next)
+        train.routeId = route.id
 
+        XCTAssertTrue(train.occupied.items.isEmpty)
+        XCTAssertTrue(train.leading.items.isEmpty)
+
+        try route.completePartialSteps(layout: layout, train: train)
+        XCTAssertEqual(route.steps.toStrings(layout), ["A:next", "B:next", "C:next", "D:next", "E:next"])
+        
+        let result = try r.updateReservedBlocks(train: train)
+        XCTAssertEqual(result, .success)
+        
+        XCTAssertEqual(train.occupied.items.count, 1)
+        XCTAssertEqual(train.occupied.blocks.toBlockNames, ["A"])
+        XCTAssertEqual(train.leading.items.count, 4)
+        XCTAssertEqual(train.leading.blocks.toBlockNames, ["B"])
+        
+        let result2 = try r.updateReservedBlocks(train: train)
+        XCTAssertEqual(result2, .successAndUnchanged)
+
+        let result3 = try r.removeLeadingBlocks(train: train)
+        XCTAssertTrue(result3)
+        
+        XCTAssertEqual(train.occupied.items.count, 1)
+        XCTAssertTrue(train.leading.items.isEmpty)
+    }
 }

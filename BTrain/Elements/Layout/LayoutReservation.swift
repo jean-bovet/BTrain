@@ -102,6 +102,7 @@ final class LayoutReservation {
         let reservedTurnouts = Set<TurnoutActivation>(train.leading.turnouts.map { TurnoutActivation(turnout: $0) })
 
         // Remove the train from all the elements
+        // TODO: cannot do it differently with train.reservation instead?
         try freeElements(train: train)
 
         // Reserve and set the train and its wagon(s) using the necessary number of
