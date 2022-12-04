@@ -66,28 +66,22 @@ final class Package {
         let block = layout.blocks[Identifier<Block>(uuid: fromBlockId)]!
         
         train.routeId = route.id
-        let location: TrainPositions
-        // TODO: do we still need to specify the position like that or could we let the layout setup the position automatically?
         switch position {
         case .start:
-            location = .front(blockId: block.id, index: 0, distance: 0.after)
+            let location = TrainPositions.front(blockId: block.id, index: 0, distance: 0.after)
+            try setTrainInBlock(train: train, block: block, positions: location, direction: direction)
         case .end:
-            location = .front(blockId: block.id, index: block.feedbacks.count, distance: (block.feedbacks.last?.distance ?? 0).after)
+            let distance = block.feedbacks.last!.distance!
+            let location = TrainPositions.front(blockId: block.id, index: block.feedbacks.count, distance: distance.after)
+            try setTrainInBlock(train: train, block: block, positions: location, direction: direction)
         case .custom(let index):
-            location = .front(blockId: block.id, index: index, distance: (block.feedbacks[index-1].distance ?? 0).after)
+            let distance = block.feedbacks[index-1].distance!
+            let location = TrainPositions.front(blockId: block.id, index: index, distance: direction == .next ? distance.after : distance.before)
+            try setTrainInBlock(train: train, block: block, positions: location, direction: direction)
         case .automatic:
-            location = .front(blockId: block.id, index: 0, distance: 0.after)
-            break
-        }
-        
-        if case .automatic = position {
             try layoutController.setupTrainToBlock(train, block.id, naturalDirectionInBlock: direction)
-        } else {
-            try layout.setTrainToBlock(train, block.id, positions: location, directionOfTravelInBlock: direction)
-            try layoutController.reservation.freeElements(train: train)
-            try layoutController.reservation.occupyBlocksWith(train: train)
         }
-        
+                
         XCTAssertEqual(loc.speed.requestedKph, 0)
         XCTAssertEqual(train.scheduling, .unmanaged)
         XCTAssertEqual(train.state, .stopped)
@@ -99,6 +93,12 @@ final class Package {
         routes.append(route)
     }
 
+    func setTrainInBlock(train: Train, block: Block, positions: TrainPositions, direction: Direction) throws {
+        try layout.setTrainToBlock(train, block.id, positions: positions, directionOfTravelInBlock: direction)
+        try layoutController.reservation.freeElements(train: train)
+        try layoutController.reservation.occupyBlocksWith(train: train)
+    }
+    
     func start(destination: Destination? = nil, expectedState: Train.State = .running, routeSteps: [String]? = nil) throws {
         try start(routeID: route.id.uuid, trainID: train.id.uuid, destination: destination, expectedState: expectedState, routeSteps: routeSteps)
     }
