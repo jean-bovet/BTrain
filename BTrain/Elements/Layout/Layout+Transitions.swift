@@ -32,7 +32,7 @@ extension Layout {
         transitions.elements.removeAll(where: { $0.id == transitionID })
     }
 
-    func transitions(from fromBlock: Identifier<Block>, to nextBlock: Identifier<Block>, direction: Direction) throws -> [ITransition] {
+    func transitions(from fromBlock: Identifier<Block>, to nextBlock: Identifier<Block>, direction: Direction) throws -> [Transition] {
         guard let b1 = blocks[fromBlock] else {
             throw LayoutError.blockNotFound(blockId: fromBlock)
         }
@@ -42,20 +42,18 @@ extension Layout {
         return try transitions(from: LayoutVector(block: b1, direction: direction), to: LayoutVector(block: b2, direction: nil))
     }
 
-    func transitions(from fromBlock: LayoutVector, to nextBlock: LayoutVector) throws -> [ITransition] {
+    func transitions(from fromBlock: LayoutVector, to nextBlock: LayoutVector) throws -> [Transition] {
         try transitions(from: fromBlock.exitSocket, to: nextBlock.entrySocket)
     }
 
     // Returns the transition from the specified socket. There is either no transition
     // or a single transition out of a socket.
     // An exception is thrown if more than one transition is found because this is an error.
-    func transition(from: Socket) throws -> ITransition? {
-        let candidates: [ITransition] = transitions.elements.compactMap { transition in
+    func transition(from: Socket) throws -> Transition? {
+        let candidates: [Transition] = transitions.elements.compactMap { transition in
             if transition.a.contains(other: from) {
                 return transition
             } else if transition.b.contains(other: from) {
-                // Returns the reverse of the transition so the code below
-                // always assume from=a and to=b
                 return transition.reverse
             } else {
                 return nil
@@ -81,7 +79,7 @@ extension Layout {
     // ┌─────────┐                     ┌─────────┐
     // │ Block 1 │────▶  Turnout  ────▶│ Block 2 │
     // └─────────┘                     └─────────┘
-    func transitions(from: Socket, to: Socket) throws -> [ITransition] {
+    func transitions(from: Socket, to: Socket) throws -> [Transition] {
         // Find out all the transitions (candidates) that start or end with the "from" socket.
         // For example, a transition between a block and a turnout can be represented by:
         // ┌─────────┐

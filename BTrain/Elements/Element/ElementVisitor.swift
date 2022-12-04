@@ -35,7 +35,7 @@ final class ElementVisitor {
     }
 
     struct ElementInfo {
-        let transition: ITransition?
+        let transition: Transition?
         let turnout: TurnoutInfo?
         let block: BlockInfo?
 
@@ -46,7 +46,7 @@ final class ElementVisitor {
             .init(transition: nil, turnout: nil, block: .init(block: block, direction: direction), index: index)
         }
 
-        static func transition(_ transition: ITransition, index: Int) -> ElementInfo {
+        static func transition(_ transition: Transition, index: Int) -> ElementInfo {
             .init(transition: transition, turnout: nil, block: nil, index: index)
         }
 

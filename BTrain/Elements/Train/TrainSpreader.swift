@@ -26,7 +26,7 @@ final class TrainSpreader {
         let trainDirection: Direction
     }
 
-    typealias TransitionCallbackBlock = (ITransition) throws -> Void
+    typealias TransitionCallbackBlock = (Transition) throws -> Void
     typealias TurnoutCallbackBlock = (ElementVisitor.TurnoutInfo) throws -> Void
     typealias BlockCallbackBlock = (Block, BlockAttributes) throws -> Void
 

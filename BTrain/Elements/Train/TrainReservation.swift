@@ -17,8 +17,7 @@ class TrainReservation {
     enum Item: Equatable {
         case block(Block)
         case turnout(Turnout)
-        // TODO: need to add a transition as well to ensure it is removed from the layout
-//        case transition(ITransition)
+        case transition(Transition)
     }
 
     /// Array of reservation items
@@ -59,6 +58,10 @@ class TrainReservation {
 
     func append(_ turnout: Turnout) {
         items.append(.turnout(turnout))
+    }
+
+    func append(_ transition: Transition) {
+        items.append(.transition(transition))
     }
 
     func clear() {
@@ -159,6 +162,8 @@ final class TrainLeadingReservation: TrainReservation {
                 if let turnoutLength = turnout.length {
                     distance += turnoutLength
                 }
+            case .transition:
+                break
             }
         }
         return distance

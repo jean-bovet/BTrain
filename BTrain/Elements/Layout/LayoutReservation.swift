@@ -71,7 +71,7 @@ final class LayoutReservation {
         }
     }
 
-    init(layout: Layout, executor: LayoutController, verbose: Bool) {
+    init(layout: Layout, executor: LayoutController?, verbose: Bool) {
         self.layout = layout
         self.executor = executor
         self.verbose = verbose
@@ -140,6 +140,9 @@ final class LayoutReservation {
             case .turnout(let turnout):
                 assert(turnout.train == nil)
                 turnout.reserved = nil
+            case .transition(let transition):
+                assert(transition.train == nil)
+                transition.reserved = nil
             }
         }
         
@@ -192,7 +195,7 @@ final class LayoutReservation {
         // the turnouts between two blocks only when we can guarantee that the destination block
         // can be indeed reserved - otherwise we end up with a bunch of turnouts that are reserved
         // but lead to a non-reserved block.
-        var transitions = [ITransition]()
+        var transitions = [Transition]()
 
         // Remember the previous step so we can determine the transitions between two elements.
         var previousStep: ResolvedRouteItem?
@@ -224,7 +227,7 @@ final class LayoutReservation {
         return numberOfLeadingBlocksReserved > 0
     }
 
-    private func reserveBlock(block: Block, direction: Direction, train: Train, route: Route, reservedTurnouts: Set<TurnoutActivation>, numberOfLeadingBlocksReserved: inout Int, turnouts: inout [TurnoutReservation], transitions: inout [ITransition]) throws -> Bool {
+    private func reserveBlock(block: Block, direction: Direction, train: Train, route: Route, reservedTurnouts: Set<TurnoutActivation>, numberOfLeadingBlocksReserved: inout Int, turnouts: inout [TurnoutReservation], transitions: inout [Transition]) throws -> Bool {
         if block.isOccupied(by: train.id) {
             // The block is already reserved and contains a portion of the train
             // Note: we are not incrementing `numberOfLeadingBlocksReserved` because
@@ -250,6 +253,7 @@ final class LayoutReservation {
                 }
                 debug("Reserving transition \(transition) for \(train)")
                 transition.reserved = train.id
+                train.leading.append(transition)
             }
             transitions.removeAll()
 
@@ -326,7 +330,7 @@ final class LayoutReservation {
         return true
     }
 
-    private func rememberTransitions(from previousStep: ResolvedRouteItem?, to step: ResolvedRouteItem, transitions: inout [ITransition]) throws {
+    private func rememberTransitions(from previousStep: ResolvedRouteItem?, to step: ResolvedRouteItem, transitions: inout [Transition]) throws {
         guard let previousStep = previousStep else {
             return
         }
@@ -349,15 +353,14 @@ final class LayoutReservation {
             }
             transition.reserved = train.id
             transition.train = train.id
-            // TODO: include transition
-//            occupation.append(transition)
+            occupation.append(transition)
         } turnoutCallback: { turnoutInfo in
             let turnout = turnoutInfo.turnout
 
             guard turnout.reserved == nil else {
                 throw LayoutError.turnoutAlreadyReserved(turnout: turnout)
             }
-            turnout.reserved = .init(train: train.id, sockets: turnoutInfo.sockets)
+            turnout.reserved = Turnout.Reservation(train: train.id, sockets: turnoutInfo.sockets)
             turnout.train = train.id
             occupation.append(turnout)
         } blockCallback: { block, attributes in
@@ -367,7 +370,7 @@ final class LayoutReservation {
 
             let trainInstance = TrainInstance(train.id, attributes.trainDirection)
             block.trainInstance = trainInstance
-            block.reservation = .init(trainId: train.id, direction: attributes.trainDirection)
+            block.reservation = Reservation(trainId: train.id, direction: attributes.trainDirection)
             occupation.append(block)
         }
         if remainingTrainLength > 0 {

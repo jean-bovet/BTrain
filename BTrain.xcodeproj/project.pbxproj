@@ -306,6 +306,7 @@
 		A795A03D27B87CCE00AE90EB /* LocomotiveDiscovery.swift in Sources */ = {isa = PBXBuildFile; fileRef = A795A03C27B87CCE00AE90EB /* LocomotiveDiscovery.swift */; };
 		A795A03F27B9CB0200AE90EB /* LocomotiveSpeedMeasurement.swift in Sources */ = {isa = PBXBuildFile; fileRef = A795A03E27B9CB0200AE90EB /* LocomotiveSpeedMeasurement.swift */; };
 		A795A04127BC832200AE90EB /* SettingsKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = A795A04027BC832200AE90EB /* SettingsKeys.swift */; };
+		A7966079293C7EEF00F689A2 /* LayoutReservationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7966078293C7EEF00F689A2 /* LayoutReservationTests.swift */; };
 		A796FA2E2775642B00FA41BA /* LayoutAsserter.swift in Sources */ = {isa = PBXBuildFile; fileRef = A796FA2D2775642B00FA41BA /* LayoutAsserter.swift */; };
 		A797E522291C9B9000E0E511 /* LocomotiveEditingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A797E521291C9B9000E0E511 /* LocomotiveEditingView.swift */; };
 		A797E525291C9E0C00E0E511 /* LocomotiveViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A797E524291C9E0C00E0E511 /* LocomotiveViewTests.swift */; };
@@ -706,6 +707,7 @@
 		A795A03C27B87CCE00AE90EB /* LocomotiveDiscovery.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocomotiveDiscovery.swift; sourceTree = "<group>"; };
 		A795A03E27B9CB0200AE90EB /* LocomotiveSpeedMeasurement.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocomotiveSpeedMeasurement.swift; sourceTree = "<group>"; };
 		A795A04027BC832200AE90EB /* SettingsKeys.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsKeys.swift; sourceTree = "<group>"; };
+		A7966078293C7EEF00F689A2 /* LayoutReservationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutReservationTests.swift; sourceTree = "<group>"; };
 		A796FA2D2775642B00FA41BA /* LayoutAsserter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutAsserter.swift; sourceTree = "<group>"; };
 		A797E521291C9B9000E0E511 /* LocomotiveEditingView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocomotiveEditingView.swift; sourceTree = "<group>"; };
 		A797E524291C9E0C00E0E511 /* LocomotiveViewTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocomotiveViewTests.swift; sourceTree = "<group>"; };
@@ -1192,6 +1194,7 @@
 				A774B8E42801FA6F00E8043C /* PointToLoopLayoutTests.swift */,
 				A796FA2D2775642B00FA41BA /* LayoutAsserter.swift */,
 				A7582965279380C000AA0649 /* LayoutTests.swift */,
+				A7966078293C7EEF00F689A2 /* LayoutReservationTests.swift */,
 				A744FDA6290B44D100852283 /* LayoutSpeedTests.swift */,
 				A73E080C276ABB5C005F9D64 /* LayoutErrorTests.swift */,
 				A792DEFE278508B0004B0439 /* LayoutCreatorTests.swift */,
@@ -2334,6 +2337,7 @@
 				A73E07F027697127005F9D64 /* FeedbackViewTests.swift in Sources */,
 				A73E080F276ACC79005F9D64 /* ScheduledMessageQueueTests.swift in Sources */,
 				A700B1D82925EDB5001CC33E /* LayoutElementContainerTests.swift in Sources */,
+				A7966079293C7EEF00F689A2 /* LayoutReservationTests.swift in Sources */,
 				A744FDA7290B44D100852283 /* LayoutSpeedTests.swift in Sources */,
 				A763F18F27BE01C300B3499A /* XCTestCase+Extension.swift in Sources */,
 				A797E525291C9E0C00E0E511 /* LocomotiveViewTests.swift in Sources */,

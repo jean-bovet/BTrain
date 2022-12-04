@@ -56,14 +56,14 @@ enum LayoutError: Error {
 
     case blockAlreadyReserved(block: Block)
     case turnoutAlreadyReserved(turnout: Turnout)
-    case transitionAlreadyReserved(transition: ITransition)
+    case transitionAlreadyReserved(transition: Transition)
 
     case unexpectedFeedback(feedback: Feedback)
 
     case noTransition(fromBlock: Block, toBlock: Block)
     case lastTransitionToBlock(transition: Identifier<Transition>, blockId: Identifier<Block>)
     case alwaysOneAndOnlyOneTransition
-    case invalidTransition(transition: ITransition)
+    case invalidTransition(transition: Transition)
 
     case cannotReserveBlock(block: Block, train: Train, reserved: Reservation)
     case cannotReserveAllElements(train: Train)
