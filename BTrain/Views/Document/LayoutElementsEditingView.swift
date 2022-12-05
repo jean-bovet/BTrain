@@ -66,15 +66,19 @@ struct LayoutElementsEditingView<E: LayoutElement, More: View, Row: View, Editor
 
     @Environment(\.undoManager) var undoManager
 
+    var elementName: String {
+        "\(E.ItemType.self)".lowercased()
+    }
+    
     var statusLabel: String {
         let count = elementContainer.elements.count
         switch count {
         case 0:
-            return "No Element"
+            return "No \(elementName)"
         case 1:
-            return "One Element"
+            return "One \(elementName)"
         default:
-            return "\(count) Elements"
+            return "\(count) \(elementName)s"
         }
     }
 
