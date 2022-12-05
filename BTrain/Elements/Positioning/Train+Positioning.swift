@@ -64,15 +64,15 @@ extension Train {
         }
         if ti.direction == .next {
             if directionForward {
-                return positions.front?.index == block.feedbacks.count
+                return positions.head?.index == block.feedbacks.count
             } else {
-                return positions.back?.index == block.feedbacks.count
+                return positions.tail?.index == block.feedbacks.count
             }
         } else {
             if directionForward {
-                return positions.front?.index == 0
+                return positions.head?.index == 0
             } else {
-                return positions.back?.index == 0
+                return positions.tail?.index == 0
             }
         }
     }
@@ -107,15 +107,15 @@ extension Train {
             // Feedbacks:  0 1 2
             // Index:     0 1 2 3
             // Train:  ----->
-            //         b    f
-            guard let frontIndex = positions.front?.index else {
+            //         t    h
+            guard let headIndex = positions.head?.index else {
                 return 0
             }
 
             if ti.direction == .next {
-                feedbackIndex = frontIndex
+                feedbackIndex = headIndex
             } else {
-                feedbackIndex = frontIndex - 1
+                feedbackIndex = headIndex - 1
             }
         } else {
             // Direction of train is backward.
@@ -123,15 +123,15 @@ extension Train {
             // Feedbacks:  0 1 2
             // Index:     0 1 2 3
             // Train:  >-----
-            //         f    b
-            guard let backIndex = positions.back?.index else {
+            //         h    t
+            guard let tailIndex = positions.tail?.index else {
                 return 0
             }
             
             if ti.direction == .next {
-                feedbackIndex = backIndex
+                feedbackIndex = tailIndex
             } else {
-                feedbackIndex = backIndex - 1
+                feedbackIndex = tailIndex - 1
             }
         }
         

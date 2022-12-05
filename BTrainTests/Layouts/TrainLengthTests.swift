@@ -59,7 +59,7 @@ class TrainLengthTests: XCTestCase {
 
         l1.length = 20
         t1.block = b1
-        t1.positions = .front(blockId: b1.id, index: 2, distance: 85)
+        t1.positions = .head(blockId: b1.id, index: 2, distance: 85)
         b1.trainInstance = .init(t1.id, .next)
 
         l1.length = 100 + 40 + 100
@@ -70,7 +70,7 @@ class TrainLengthTests: XCTestCase {
         assert(b2, t1)
 
         l1.length = 100 + 40 + 60
-        t1.positions = .front(blockId: b1.id, index: 2, distance: 85)
+        t1.positions = .head(blockId: b1.id, index: 2, distance: 85)
         try reservation.freeElements(train: t1)
         try reservation.occupyBlocksWith(train: t1)
         assert(b1, t1)
@@ -79,7 +79,7 @@ class TrainLengthTests: XCTestCase {
         assert(b2,  nil)
 
         l1.length = 80
-        t1.positions = .front(blockId: b1.id, index: 2, distance: 85)
+        t1.positions = .head(blockId: b1.id, index: 2, distance: 85)
         try reservation.freeElements(train: t1)
         try reservation.occupyBlocksWith(train: t1)
         assert(b1, t1)
@@ -88,7 +88,7 @@ class TrainLengthTests: XCTestCase {
         assert(b2, nil)
 
         l1.length = 80
-        t1.positions = .front(blockId: b1.id, index: 2, distance: 70)
+        t1.positions = .head(blockId: b1.id, index: 2, distance: 70)
         try reservation.freeElements(train: t1)
         try reservation.occupyBlocksWith(train: t1)
         assert(b1, t1)

@@ -68,15 +68,15 @@ final class Package {
         train.routeId = route.id
         switch position {
         case .start:
-            let location = TrainPositions.front(blockId: block.id, index: 0, distance: 0.after)
+            let location = TrainPositions.head(blockId: block.id, index: 0, distance: 0.after)
             try setTrainInBlock(train: train, block: block, positions: location, direction: direction)
         case .end:
             let distance = block.feedbacks.last!.distance!
-            let location = TrainPositions.front(blockId: block.id, index: block.feedbacks.count, distance: distance.after)
+            let location = TrainPositions.head(blockId: block.id, index: block.feedbacks.count, distance: distance.after)
             try setTrainInBlock(train: train, block: block, positions: location, direction: direction)
         case .custom(let index):
             let distance = block.feedbacks[index-1].distance!
-            let location = TrainPositions.front(blockId: block.id, index: index, distance: direction == .next ? distance.after : distance.before)
+            let location = TrainPositions.head(blockId: block.id, index: index, distance: direction == .next ? distance.after : distance.before)
             try setTrainInBlock(train: train, block: block, positions: location, direction: direction)
         case .automatic:
             try layoutController.setupTrainToBlock(train, block.id, naturalDirectionInBlock: direction)

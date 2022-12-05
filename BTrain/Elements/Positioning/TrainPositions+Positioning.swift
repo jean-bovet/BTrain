@@ -30,13 +30,13 @@ extension TrainPositions {
             //
             //       Train (direction forward):   ◀■■■■■■■■■■■■■                          ◀■■■■■■■■■■■■■
             //               Occupied: [b1, b2]   f            b                          f            b
-            newLocation.back = nil
-            if front == nil {
-                newLocation.front = detectedPosition
-            } else if let front = front {
-                if try detectedPosition.isAfter(front, reservation: reservation) {
-                    newLocation.front = detectedPosition
+            newLocation.tail = nil
+            if let head = head {
+                if try detectedPosition.isAfter(head, reservation: reservation) {
+                    newLocation.head = detectedPosition
                 }
+            } else {
+                newLocation.head = detectedPosition
             }
         } else {
             //         Block Natural Direction: ────────▶  ────────▶                    ────────▶  ◀────────
@@ -51,13 +51,13 @@ extension TrainPositions {
             //
             //      Train (direction backward):   ■■■■■■■■■■■■■◀                          ■■■■■■■■■■■■■◀
             //               Occupied: [b1, b2]   b            f                          b            f
-            newLocation.front = nil
-            if back == nil {
-                newLocation.back = detectedPosition
-            } else if let back = back {
-                if try detectedPosition.isAfter(back, reservation: reservation) {
-                    newLocation.back = detectedPosition
+            newLocation.head = nil
+            if let tail = tail {
+                if try detectedPosition.isAfter(tail, reservation: reservation) {
+                    newLocation.tail = detectedPosition
                 }
+            } else {
+                newLocation.tail = detectedPosition
             }
         }
 

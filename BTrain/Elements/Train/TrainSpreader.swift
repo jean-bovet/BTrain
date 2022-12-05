@@ -118,7 +118,7 @@ final class TrainSpreader {
                                                               directionOfSpread: directionOfSpread,
                                                               trainForward: locomotive.directionForward)
         
-        // Substract it from the remaining train length
+        // Subtract it from the remaining train length
         remainingTrainLength -= occupiedLength
 
         // Create the block attributes.
@@ -130,19 +130,19 @@ final class TrainSpreader {
 
         // If there are no more train length to parse, it means we have reached the "tail" of the train.
         if remainingTrainLength <= 0 {
-            // Compute the position of the "tail" of the train. The remaining train length now represents the space left in the block
-            let pos = try tailPositionIn(block: blockInfo.block,
+            // Compute the position of the back of the train, in the direction of travel of the train.
+            // Note: the remaining train length represents the space left in the block.
+            let pos = try backPositionIn(block: blockInfo.block,
                                          spaceLeftInBlock: abs(remainingTrainLength),
                                          directionOfSpread: directionOfSpread,
                                          directionForward: locomotive.directionForward)
             
-            // Note: when moving backward, `pos` is the position of the trail of the train in
-            // the direction of travel. And because the front and back positions are always the same
-            // regardless of the direction of travel, we need to update either one.
             if locomotive.directionForward {
-                train.positions.back = pos
+                // Moving forward, the back position is the tail
+                train.positions.tail = pos
             } else {
-                train.positions.front = pos
+                // Moving backward, the back position is the head
+                train.positions.head = pos
             }
         }
         
@@ -164,36 +164,36 @@ final class TrainSpreader {
                     // Block: [ 0 1 2 3 ]>
                     // Visit:  ------->
                     // Train:  <-------
-                    //         f      b
-                    let frontIndex = train.positions.front?.index ?? 0
-                    let backIndex = train.positions.back?.index ?? block.feedbacks.count
-                    fill(block: block, fromIndex: frontIndex, toIndex: backIndex, locomotiveIndex: frontIndex)
+                    //         h      t
+                    let headIndex = train.positions.head?.index ?? 0
+                    let tailIndex = train.positions.tail?.index ?? block.feedbacks.count
+                    fill(block: block, fromIndex: headIndex, toIndex: tailIndex, locomotiveIndex: headIndex)
                 } else {
                     // Block: [ 0 1 2 3 ]>
                     // Visit:  ------->
                     // Train:  -------<
-                    //         b      f
-                    let frontIndex = train.positions.front?.index ?? block.feedbacks.count
-                    let backIndex = train.positions.back?.index ?? 0
-                    fill(block: block, fromIndex: backIndex, toIndex: frontIndex, locomotiveIndex: frontIndex)
+                    //         t      h
+                    let tailIndex = train.positions.tail?.index ?? 0
+                    let headIndex = train.positions.head?.index ?? block.feedbacks.count
+                    fill(block: block, fromIndex: tailIndex, toIndex: headIndex, locomotiveIndex: headIndex)
                 }
             } else {
                 if trainForward {
                     // Block: [ 0 1 2 3 ]>
                     // Visit:  <-------
                     // Train:  ------->
-                    //         b      f
-                    let frontIndex = train.positions.front?.index ?? block.feedbacks.count
-                    let backIndex = train.positions.back?.index ?? 0
-                    fill(block: block, fromIndex: backIndex, toIndex: frontIndex, locomotiveIndex: frontIndex)
+                    //         t      h
+                    let tailIndex = train.positions.tail?.index ?? 0
+                    let headIndex = train.positions.head?.index ?? block.feedbacks.count
+                    fill(block: block, fromIndex: tailIndex, toIndex: headIndex, locomotiveIndex: headIndex)
                 } else {
                     // Block: [ 0 1 2 3 ]>
                     // Visit:  <-------
                     // Train:  >-------
-                    //         f      b
-                    let frontIndex = train.positions.front?.index ?? 0
-                    let backIndex = train.positions.back?.index ?? block.feedbacks.count
-                    fill(block: block, fromIndex: frontIndex, toIndex: backIndex, locomotiveIndex: frontIndex)
+                    //         h      t
+                    let headIndex = train.positions.head?.index ?? 0
+                    let tailIndex = train.positions.tail?.index ?? block.feedbacks.count
+                    fill(block: block, fromIndex: headIndex, toIndex: tailIndex, locomotiveIndex: headIndex)
                 }
             }
         } else if bv.frontBlock {
@@ -203,36 +203,36 @@ final class TrainSpreader {
                     // Block: [ 0 1 2 3 ]>
                     // Visit:       ------->
                     // Train:       <-------
-                    //              f      b
-                    let frontIndex = train.positions.front?.index ?? 0
-                    let backIndex = block.feedbacks.count
-                    fill(block: block, fromIndex: frontIndex, toIndex: backIndex, locomotiveIndex: frontIndex)
+                    //              h      t
+                    let headIndex = train.positions.head?.index ?? 0
+                    let tailIndex = block.feedbacks.count
+                    fill(block: block, fromIndex: headIndex, toIndex: tailIndex, locomotiveIndex: headIndex)
                 } else {
                     // Block:  [ 0 1 2 3 ]>
                     // Visit:        ------->
                     // Train:        -------<
-                    //               b      f
-                    let frontIndex = block.feedbacks.count
-                    let backIndex = train.positions.back?.index ?? 0
-                    fill(block: block, fromIndex: backIndex, toIndex: frontIndex, locomotiveIndex: frontIndex)
+                    //               t      h
+                    let tailIndex = train.positions.tail?.index ?? 0
+                    let headIndex = block.feedbacks.count
+                    fill(block: block, fromIndex: tailIndex, toIndex: headIndex, locomotiveIndex: headIndex)
                 }
             } else {
                 if trainForward {
                     // Block:     [ 0 1 2 3 ]>
                     // Visit:  <-------
                     // Train:  ------->
-                    //         b      f
-                    let frontIndex = train.positions.front?.index ?? block.feedbacks.count
-                    let backIndex = 0
-                    fill(block: block, fromIndex: backIndex, toIndex: frontIndex, locomotiveIndex: frontIndex)
+                    //         t      h
+                    let tailIndex = 0
+                    let headIndex = train.positions.head?.index ?? block.feedbacks.count
+                    fill(block: block, fromIndex: tailIndex, toIndex: headIndex, locomotiveIndex: headIndex)
                 } else {
                     // Block:     [ 0 1 2 3 ]>
                     // Visit: <-------
                     // Train: >-------
-                    //        f      b
-                    let frontIndex = 0
-                    let backIndex = train.positions.back?.index ?? block.feedbacks.count
-                    fill(block: block, fromIndex: frontIndex, toIndex: backIndex)
+                    //        h      t
+                    let headIndex = 0
+                    let tailIndex = train.positions.tail?.index ?? block.feedbacks.count
+                    fill(block: block, fromIndex: headIndex, toIndex: tailIndex)
                 }
             }
         } else if bv.backBlock {
@@ -242,36 +242,36 @@ final class TrainSpreader {
                     // Block:     [ 0 1 2 3 ]>
                     // Visit:  ------->
                     // Train:  <-------
-                    //         f      b
-                    let frontIndex = 0
-                    let backIndex = train.positions.back?.index ?? block.feedbacks.count
-                    fill(block: block, fromIndex: frontIndex, toIndex: backIndex)
+                    //         h      t
+                    let headIndex = 0
+                    let tailIndex = train.positions.tail?.index ?? block.feedbacks.count
+                    fill(block: block, fromIndex: headIndex, toIndex: tailIndex)
                 } else {
                     // Block:  [ 0 1 2 3 ]>
                     // Visit:        ------->
                     // Train:        -------<
-                    //               b      f
-                    let frontIndex = block.feedbacks.count
-                    let backIndex = train.positions.back?.index ?? 0
-                    fill(block: block, fromIndex: backIndex, toIndex: frontIndex)
+                    //               t      h
+                    let tailIndex = train.positions.tail?.index ?? 0
+                    let headIndex = block.feedbacks.count
+                    fill(block: block, fromIndex: tailIndex, toIndex: headIndex)
                 }
             } else {
                 if trainForward {
                     // Block: [ 0 1 2 3 ]>
                     // Visit:      <-------
                     // Train:      ------->
-                    //             b      f
-                    let frontIndex = block.feedbacks.count
-                    let backIndex = train.positions.back?.index ?? 0
-                    fill(block: block, fromIndex: backIndex, toIndex: frontIndex)
+                    //             t      h
+                    let tailIndex = train.positions.tail?.index ?? 0
+                    let headIndex = block.feedbacks.count
+                    fill(block: block, fromIndex: tailIndex, toIndex: headIndex)
                 } else {
                     // Block:  [ 0 1 2 3 ]>
                     // Visit:       <-------
                     // Train:       >-------
-                    //              f      b
-                    let frontIndex = train.positions.front?.index ?? 0
-                    let backIndex = block.feedbacks.count
-                    fill(block: block, fromIndex: frontIndex, toIndex: backIndex, locomotiveIndex: frontIndex)
+                    //              h      t
+                    let headIndex = train.positions.head?.index ?? 0
+                    let tailIndex = block.feedbacks.count
+                    fill(block: block, fromIndex: headIndex, toIndex: tailIndex, locomotiveIndex: headIndex)
                 }
             }
         } else {
@@ -304,7 +304,7 @@ final class TrainSpreader {
     ///   - directionOfSpread: the direction of visit in the block
     ///   - directionForward: true if the train is moving forwards, false otherwise
     /// - Returns: the train position
-    private func tailPositionIn(block: Block, spaceLeftInBlock: Double, directionOfSpread: Direction, directionForward: Bool) throws -> TrainPosition {
+    private func backPositionIn(block: Block, spaceLeftInBlock: Double, directionOfSpread: Direction, directionForward: Bool) throws -> TrainPosition {
         guard let blockLength = block.length else {
             throw LayoutError.blockLengthNotDefined(block: block)
         }
@@ -364,49 +364,49 @@ final class TrainSpreader {
         if frontBlock {
             let frontDistance: Double
             if trainForward {
-                guard let front = positions.front else {
+                guard let head = positions.head else {
                     throw LayoutError.frontPositionNotSpecified(position: positions)
                 }
 
-                guard front.blockId == block.id else {
-                    throw LayoutError.frontPositionBlockIdMismatch(expected: front.blockId, got: block.id)
+                guard head.blockId == block.id else {
+                    throw LayoutError.frontPositionBlockIdMismatch(expected: head.blockId, got: block.id)
                 }
                 
-                frontDistance = front.distance
+                frontDistance = head.distance
             } else {
-                guard let back = positions.back else {
+                guard let tail = positions.tail else {
                     throw LayoutError.backPositionNotSpecified(position: positions)
                 }
 
-                guard back.blockId == block.id else {
-                    throw LayoutError.backPositionBlockIdMismatch(expected: back.blockId, got: block.id)
+                guard tail.blockId == block.id else {
+                    throw LayoutError.backPositionBlockIdMismatch(expected: tail.blockId, got: block.id)
                 }
                 
-                frontDistance = back.distance
+                frontDistance = tail.distance
             }
             
             if directionOfSpread == .next {
                 if trainForward {
                     // [     >
                     //   <-------|
-                    //   f       b
+                    //   h       t
                     lengthOfTrainInBlock = blockLength - frontDistance
                 } else {
                     // [     >
                     //   |-------<
-                    //   b       f
+                    //   t       h
                     lengthOfTrainInBlock = blockLength - frontDistance
                 }
             } else {
                 if trainForward {
                     // <     ]
                     //   <-------|
-                    //   f       b
+                    //   h       t
                     lengthOfTrainInBlock = frontDistance
                 } else {
                     // <     ]
                     //   |-------<
-                    //   b       f
+                    //   t       h
                     lengthOfTrainInBlock = frontDistance
                 }
             }

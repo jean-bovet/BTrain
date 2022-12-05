@@ -118,19 +118,19 @@ final class LayoutAsserter {
             XCTAssertEqual(train.id, expectedTrain.id, "Unexpected train mismatch at index \(index), route \(routeName)")
 
             if train.directionForward {
-                XCTAssertEqual(train.positions.front, expectedTrain.positions.front, "Mismatching train front position for train \(expectedTrain.id), route \(routeName)")
+                XCTAssertEqual(train.positions.head, expectedTrain.positions.head, "Mismatching train head position for train \(expectedTrain.id), route \(routeName)")
                 // Note: the back position distance cannot be asserted accurately because the ASCII representation does not allow (yet) to specify the distance between feedback,
                 // which is usually where the position ends up after the algorithm computes the exact location from the front position and the length of the train.
-                if let back = train.positions.back {
+                if let tail = train.positions.tail {
                     // Note: if the back position is not specified, it means it ended up in a turnout which is not yet handled (so nil is assigned to the position)
-                    XCTAssertEqual(back.blockId, expectedTrain.positions.back?.blockId, "Mismatching train back position blockId for train \(expectedTrain.id), route \(routeName)")
-                    XCTAssertEqual(back.index, expectedTrain.positions.back?.index, "Mismatching train back position index for train \(expectedTrain.id), route \(routeName)")
+                    XCTAssertEqual(tail.blockId, expectedTrain.positions.tail?.blockId, "Mismatching train tail position blockId for train \(expectedTrain.id), route \(routeName)")
+                    XCTAssertEqual(tail.index, expectedTrain.positions.tail?.index, "Mismatching train tail position index for train \(expectedTrain.id), route \(routeName)")
                 }
             } else {
-                XCTAssertEqual(train.positions.back, expectedTrain.positions.back, "Mismatching train back position for train \(expectedTrain.id), route \(routeName)")
+                XCTAssertEqual(train.positions.tail, expectedTrain.positions.tail, "Mismatching train tail position for train \(expectedTrain.id), route \(routeName)")
                 // Note: the front position distance cannot be asserted accurately because the ASCII representation does not allow (yet) to specify the distance between feedback,
                 // which is usually where the position ends up after the algorithm computes the exact location from the front position and the length of the train.
-                XCTAssertEqual(train.positions.front?.index, expectedTrain.positions.front?.index, "Mismatching train front position index for train \(expectedTrain.id), route \(routeName)")
+                XCTAssertEqual(train.positions.head?.index, expectedTrain.positions.head?.index, "Mismatching train head position index for train \(expectedTrain.id), route \(routeName)")
             }
             XCTAssertEqual(train.speed!.requestedKph, expectedTrain.speed!.requestedKph, accuracy: 1, "Mismatching train speed for train \(expectedTrain.id), route \(routeName)")
         }

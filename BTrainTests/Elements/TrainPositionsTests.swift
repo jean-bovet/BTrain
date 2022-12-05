@@ -47,7 +47,7 @@ final class TrainPositionsTests: XCTestCase {
         
         // Block (􁉆): [ p0 f0 p1 f1 p2 f2 p3 ]
         // Train (􀼯􀼮):           ??
-        assertLocation(location, back: nil, front: nil)
+        assertLocation(location, tail: nil, head: nil)
 
         let reservation = Train.Reservation()
         let block = Block(name: "b")
@@ -55,31 +55,31 @@ final class TrainPositionsTests: XCTestCase {
         reservation.occupied.append(block)
         
         // Block (􁉆): [ p0 |f0| p1 f1 p2 f2 p3 ]
-        // Train (􀼯􀼮):        bf
+        // Train (􀼯􀼮):        th
         location = try assertForward(location: location,
                                      feedback: (block.id, 0, 10),
-                                     front: (block.id, 1, 10),
+                                     head: (block.id, 1, 10),
                                      reservation: reservation)
         
         // Block (􁉆): [ p0 f0 p1 |f1| p2 f2 p3 ]
-        // Train (􀼯􀼮):      b       f
+        // Train (􀼯􀼮):      t       h
         location = try assertForward(location: location,
                                      feedback: (block.id, 1, 20),
-                                     front: (block.id, 2, 20),
+                                     head: (block.id, 2, 20),
                                      reservation: reservation)
         
         // Block (􁉆): [ p0 |f0| p1 f1 p2 f2 p3 ]
-        // Train (􀼯􀼮):        b     f
+        // Train (􀼯􀼮):        t     h
         location = try assertForward(location: location,
                                      feedback: (block.id, 0, 10),
-                                     front: (block.id, 2, 20),
+                                     head: (block.id, 2, 20),
                                      reservation: reservation)
         
         // Block (􁉆): [ p0 f0 p1 f1 p2 |f2| p3 ]
-        // Train (􀼯􀼮):      b             f
+        // Train (􀼯􀼮):      t             h
         location = try assertForward(location: location,
                                      feedback: (block.id, 2, 30),
-                                     front: (block.id, 3, 30),
+                                     head: (block.id, 3, 30),
                                      reservation: reservation)
     }
 
@@ -88,7 +88,7 @@ final class TrainPositionsTests: XCTestCase {
         
         // Block (􁉈): [ p3 f2 p2 f1 p1 f0 p0 ]
         // Train (􀼯􀼮):           ??
-        assertLocation(location, back: nil, front: nil)
+        assertLocation(location, tail: nil, head: nil)
 
         let reservation = Train.Reservation()
         let block = Block()
@@ -96,61 +96,61 @@ final class TrainPositionsTests: XCTestCase {
         reservation.occupied.append(block)
 
         // Block (􁉈): [ p3 |f2| p2 f1 p1 f0 p0 ]
-        // Train (􀼯􀼮):        bf
+        // Train (􀼯􀼮):        th
         location = try assertForward(location: location,
                                      feedback: (block.id, 2, 30),
-                                     front: (block.id, 2, 30),
+                                     head: (block.id, 2, 30),
                                      reservation: reservation)
         
         // Block (􁉈): [ p3 f2 p2 |f1| p1 f0 p0 ]
-        // Train (􀼯􀼮):      b       f
+        // Train (􀼯􀼮):      t       h
         location = try assertForward(location: location,
                                      feedback: (block.id, 1, 20),
-                                     front: (block.id, 1, 20),
+                                     head: (block.id, 1, 20),
                                      reservation: reservation)
         
         // Block (􁉈): [ p3 |f2| p2 f1 p1 f0 p0 ]
-        // Train (􀼯􀼮):        b     f
+        // Train (􀼯􀼮):        t     h
         location = try assertForward(location: location,
                                      feedback: (block.id, 2, 30),
-                                     front: (block.id, 1, 20),
+                                     head: (block.id, 1, 20),
                                      reservation: reservation)
         
         // Block (􁉈): [ p3 f2 p2 f1 p1 |f0| p0 ]
-        // Train (􀼯􀼮):      b             f
+        // Train (􀼯􀼮):      t             h
         location = try assertForward(location: location,
                                      feedback: (block.id, 0, 10),
-                                     front: (block.id, 0, 10),
+                                     head: (block.id, 0, 10),
                                      reservation: reservation)
     }
 
     func testMoveForwardNextBlock() throws {
         var location = TrainPositions()
-        assertLocation(location, back: nil, front: nil)
+        assertLocation(location, tail: nil, head: nil)
 
         let p = Package()
 
         location = try assertForward(location: location,
                                      feedback: (p.b1.id, 1, 20),
-                                     front: (p.b1.id, 2, 20),
+                                     head: (p.b1.id, 2, 20),
                                      reservation: p.reservation)
         location = try assertForward(location: location,
                                      feedback: (p.b1.id, 2, 30),
-                                     front: (p.b1.id, 3, 30),
+                                     head: (p.b1.id, 3, 30),
                                      reservation: p.reservation)
         location = try assertForward(location: location,
                                      feedback: (p.b1.id, 1, 20),
-                                     front: (p.b1.id, 3, 30),
+                                     head: (p.b1.id, 3, 30),
                                      reservation: p.reservation)
         location = try assertForward(location: location,
                                      feedback: (p.b1.id, 3, 40),
-                                     front: (p.b1.id, 4, 40),
+                                     head: (p.b1.id, 4, 40),
                                      reservation: p.reservation)
         
         // Next block feedback is triggered
         location = try assertForward(location: location,
                                      feedback: (p.b2.id, 0, 10),
-                                     front: (p.b2.id, 1, 10),
+                                     head: (p.b2.id, 1, 10),
                                      reservation: p.reservation,
                                      nextBlockTrainDirection: .next)
         
@@ -158,43 +158,43 @@ final class TrainPositionsTests: XCTestCase {
         
         location = try assertForward(location: location,
                                      feedback: (p.b2.id, 0, 10),
-                                     front: (p.b2.id, 1, 10),
+                                     head: (p.b2.id, 1, 10),
                                      reservation: p.reservation)
     }
 
     func testMoveForwardNextBlockPreviousDirection() throws {
         var location = TrainPositions()
-        assertLocation(location, back: nil, front: nil)
+        assertLocation(location, tail: nil, head: nil)
 
         let p = Package()
 
         location = try assertForward(location: location,
                                      feedback: (p.b1.id, 1, 10),
-                                     front: (p.b1.id, 2, 10),
+                                     head: (p.b1.id, 2, 10),
                                      reservation: p.reservation)
         location = try assertForward(location: location,
                                      feedback: (p.b1.id, 2, 20),
-                                     front: (p.b1.id, 3, 20),
+                                     head: (p.b1.id, 3, 20),
                                      reservation: p.reservation)
         location = try assertForward(location: location,
                                      feedback: (p.b1.id, 1, 10),
-                                     front: (p.b1.id, 3, 20),
+                                     head: (p.b1.id, 3, 20),
                                      reservation: p.reservation)
         location = try assertForward(location: location,
                                      feedback: (p.b1.id, 3, 30),
-                                     front: (p.b1.id, 4, 30),
+                                     head: (p.b1.id, 4, 30),
                                      reservation: p.reservation)
         
         // Next block feedback is triggered
         location = try assertForward(location: location,
                                      feedback: (p.b2.id, 3, 30),
-                                     front: (p.b2.id, 3, 30),
+                                     head: (p.b2.id, 3, 30),
                                      reservation: p.reservation,
                                      nextBlockTrainDirection: .previous)
         p.moveToNextBlock(with: .previous)
         location = try assertForward(location: location,
                                      feedback: (p.b2.id, 3, 30),
-                                     front: (p.b2.id, 3, 30),
+                                     head: (p.b2.id, 3, 30),
                                      reservation: p.reservation)
     }
 
@@ -215,20 +215,20 @@ final class TrainPositionsTests: XCTestCase {
         var lines = [LineForwardAssertion]()
 
         // Blocks (􁉆􁉆): b1[ p0 f0 p1 f1 p2 f2 p3 ] b2[ p0 |f0| p1 f1 p2 f2 p3 ]
-        // Train (􀼯􀼮):                                        bf
-        lines.append(LineForwardAssertion(feedback: (b2.id, 0, 10), front: (b2.id, 1, 10)))
+        // Train (􀼯􀼮):                                        th
+        lines.append(LineForwardAssertion(feedback: (b2.id, 0, 10), head: (b2.id, 1, 10)))
 
         // Block (􁉆􁉆): b1[ p0 f0 p1 |f1| p2 f2 p3 ] b2[ p0 f0 p1 f1 p2 f2 p3 ]
-        // Train (􀼯􀼮):                  b                    f
-        lines.append(LineForwardAssertion(feedback: (b1.id, 1, 20), front: (b2.id, 1, 10)))
+        // Train (􀼯􀼮):                  t                    h
+        lines.append(LineForwardAssertion(feedback: (b1.id, 1, 20), head: (b2.id, 1, 10)))
 
         // Block (􁉆􁉆): b1[ p0 f0 p1 f1 p2 f2 p3 ] b2[ p0 f0 p1 f1 p2 |f2| p3 ]
-        // Train (􀼯􀼮):                b                                  f
-        lines.append(LineForwardAssertion(feedback: (b2.id, 2, 30), front: (b2.id, 3, 30)))
+        // Train (􀼯􀼮):                t                                  h
+        lines.append(LineForwardAssertion(feedback: (b2.id, 2, 30), head: (b2.id, 3, 30)))
 
         // Block (􁉆􁉆): b1[ p0 f0 p1 f1 p2 f2 p3 ] b2[ p0 |f0| p1 f1 p2 f2 p3 ]
-        // Train (􀼯􀼮):                                       b           f
-        lines.append(LineForwardAssertion(feedback: (b2.id, 0, 10), front: (b2.id, 3, 30)))
+        // Train (􀼯􀼮):                                       t           h
+        lines.append(LineForwardAssertion(feedback: (b2.id, 0, 10), head: (b2.id, 3, 30)))
         
         try assertLines(lines: lines, reservation: reservation)
     }
@@ -248,20 +248,20 @@ final class TrainPositionsTests: XCTestCase {
         var lines = [LineForwardAssertion]()
 
         // Blocks (􁉆􁉈): b1[ p0 f0 p1 f1 p2 f2 p3 ] b2[ p3 |f2| p2 f1 p1 f0 p0 ]
-        // Train (􀼯􀼮):                                        bf
-        lines.append(LineForwardAssertion(feedback: (b2.id, 2, 30), front: (b2.id, 2, 30)))
+        // Train (􀼯􀼮):                                        th
+        lines.append(LineForwardAssertion(feedback: (b2.id, 2, 30), head: (b2.id, 2, 30)))
 
         // Blocks (􁉆􁉈): b1[ p0 f0 p1 |f1| p2 f2 p3 ] b2[ p3 f2 p2 f1 p1 f0 p0 ]
-        // Train (􀼯􀼮):                   b                    f
-        lines.append(LineForwardAssertion(feedback: (b1.id, 1, 20), front: (b2.id, 2, 30)))
+        // Train (􀼯􀼮):                   t                    h
+        lines.append(LineForwardAssertion(feedback: (b1.id, 1, 20), head: (b2.id, 2, 30)))
 
         // Blocks (􁉆􁉈): b1[ p0 f0 p1 f1 p2 f2 p3 ] b2[ p3 f2 p2 f1 p1 |f0| p0 ]
-        // Train (􀼯􀼮):                 b                                  f
-        lines.append(LineForwardAssertion(feedback: (b2.id, 0, 10), front: (b2.id, 0, 10)))
+        // Train (􀼯􀼮):                 t                                  h
+        lines.append(LineForwardAssertion(feedback: (b2.id, 0, 10), head: (b2.id, 0, 10)))
 
         // Blocks (􁉆􁉈): b1[ p0 f0 p1 f1 p2 f2 p3 ] b2[ p3 |f2| p2 f1 p1 f0 p0 ]
-        // Train (􀼯􀼮):                                        b           f
-        lines.append(LineForwardAssertion(feedback: (b2.id, 2, 20), front: (b2.id, 0, 10)))
+        // Train (􀼯􀼮):                                        t           h
+        lines.append(LineForwardAssertion(feedback: (b2.id, 2, 20), head: (b2.id, 0, 10)))
                 
         try assertLines(lines: lines, reservation: reservation)
     }
@@ -281,20 +281,20 @@ final class TrainPositionsTests: XCTestCase {
         var lines = [LineForwardAssertion]()
 
         // Blocks (􁉈􁉆): b1[ p3 f2 p2 f1 p1 f0 p0 ] b2[ p0 |f0| p1 f1 p2 f2 p3 ]
-        // Train (􀼯􀼮):                                        bf
-        lines.append(LineForwardAssertion(feedback: (b2.id, 0, 10), front: (b2.id, 1, 10)))
+        // Train (􀼯􀼮):                                        th
+        lines.append(LineForwardAssertion(feedback: (b2.id, 0, 10), head: (b2.id, 1, 10)))
 
         // Blocks (􁉈􁉆): b1[ p3 f2 p2 |f1| p1 f0 p0 ] b2[ p0 f0 p1 f1 p2 f2 p3 ]
-        // Train (􀼯􀼮):                   b                    f
-        lines.append(LineForwardAssertion(feedback: (b1.id, 1, 20), front: (b2.id, 1, 10)))
+        // Train (􀼯􀼮):                   t                    h
+        lines.append(LineForwardAssertion(feedback: (b1.id, 1, 20), head: (b2.id, 1, 10)))
 
         // Blocks (􁉈􁉆): b1[ p3 f2 p2 f1 p1 f0 p0 ] b2[ p0 f0 p1 |f1| p2 f2 p3 ]
-        // Train (􀼯􀼮):                 b                            f
-        lines.append(LineForwardAssertion(feedback: (b2.id, 1, 20), front: (b2.id, 2, 20)))
+        // Train (􀼯􀼮):                 t                            h
+        lines.append(LineForwardAssertion(feedback: (b2.id, 1, 20), head: (b2.id, 2, 20)))
 
         // Blocks (􁉈􁉆): b1[ p3 f2 p2 f1 p1 f0 p0 ] b2[ p0 |f0| p1 f1 p2 f2 p3 ]
-        // Train (􀼯􀼮):                                        b     f
-        lines.append(LineForwardAssertion(feedback: (b2.id, 0, 10), front: (b2.id, 2, 20)))
+        // Train (􀼯􀼮):                                        t     h
+        lines.append(LineForwardAssertion(feedback: (b2.id, 0, 10), head: (b2.id, 2, 20)))
                 
         try assertLines(lines: lines, reservation: reservation)
     }
@@ -314,39 +314,39 @@ final class TrainPositionsTests: XCTestCase {
         var lines = [LineForwardAssertion]()
 
         // Blocks (􁉈􁉆): b1[ p3 f2 p2 f1 p1 f0 p0 ] b2[ p3 |f2| p2 f1 p1 f0 p0 ]
-        // Train (􀼯􀼮):                                        bf
-        lines.append(LineForwardAssertion(feedback: (b2.id, 2, 20), front: (b2.id, 2, 20)))
+        // Train (􀼯􀼮):                                        th
+        lines.append(LineForwardAssertion(feedback: (b2.id, 2, 20), head: (b2.id, 2, 20)))
 
         // Blocks (􁉈􁉆): b1[ p3 f2 p2 |f1| p1 f0 p0 ] b2[ p3 f2 p2 f1 p1 f0 p0 ]
-        // Train (􀼯􀼮):                   b                    f
-        lines.append(LineForwardAssertion(feedback: (b1.id, 1, 10), front: (b2.id, 2, 20)))
+        // Train (􀼯􀼮):                   t                    h
+        lines.append(LineForwardAssertion(feedback: (b1.id, 1, 10), head: (b2.id, 2, 20)))
 
         // Blocks (􁉈􁉆): b1[ p3 f2 p2 f1 p1 f0 p0 ] b2[ p3 f2 p2 |f1| p1 f0 p0 ]
-        // Train (􀼯􀼮):                 b                            f
-        lines.append(LineForwardAssertion(feedback: (b2.id, 1, 10), front: (b2.id, 1, 10)))
+        // Train (􀼯􀼮):                 t                            h
+        lines.append(LineForwardAssertion(feedback: (b2.id, 1, 10), head: (b2.id, 1, 10)))
 
         // Blocks (􁉈􁉆): b1[ p3 f2 p2 f1 p1 f0 p0 ] b2[ p3 |f2| p2 f1 p1 f0 p0 ]
-        // Train (􀼯􀼮):                                        b     f
-        lines.append(LineForwardAssertion(feedback: (b2.id, 2, 20), front: (b2.id, 1, 10)))
+        // Train (􀼯􀼮):                                        t     h
+        lines.append(LineForwardAssertion(feedback: (b2.id, 2, 20), head: (b2.id, 1, 10)))
                 
         try assertLines(lines: lines, reservation: reservation)
     }
 
     struct LineForwardAssertion {
         let feedback: (Identifier<Block>, Int, Double)
-        let front: (Identifier<Block>, Int, Double)
+        let head: (Identifier<Block>, Int, Double)
     }
         
     private func assertLines(lines: [LineForwardAssertion], reservation: Train.Reservation) throws {
         var location = TrainPositions()
         
         // Train (􀼯􀼮):           ??
-        assertLocation(location, back: nil, front: nil)
+        assertLocation(location, tail: nil, head: nil)
 
         for line in lines {
             location = try assertForward(location: location,
                                          feedback: line.feedback,
-                                         front: line.front,
+                                         head: line.head,
                                          reservation: reservation)
         }
     }
@@ -358,7 +358,7 @@ final class TrainPositionsTests: XCTestCase {
         
         // Block (􁉆): [ p0 f0 p1 f1 p2 f2 p3 ]
         // Train (􀼮􀼯):           ??
-        assertLocation(location, back: nil, front: nil)
+        assertLocation(location, tail: nil, head: nil)
 
         let reservation = Train.Reservation()
         let block = Block()
@@ -366,31 +366,31 @@ final class TrainPositionsTests: XCTestCase {
         reservation.occupied.append(block)
 
         // Block (􁉆): [ p0 |f0| p1 f1 p2 f2 p3 ]
-        // Train (􀼮􀼯):        fb
+        // Train (􀼮􀼯):        ht
         location = try assertBackward(location: location,
                                       feedback: (block.id, 0, 10),
-                                      back: (block.id, 1, 10),
+                                      tail: (block.id, 1, 10),
                                       reservation: reservation)
 
         // Block (􁉆): [ p0 f0 p1 |f1| p2 f2 p3 ]
-        // Train (􀼮􀼯):      f       b
+        // Train (􀼮􀼯):      h       t
         location = try assertBackward(location: location,
                                       feedback: (block.id, 1, 20),
-                                      back: (block.id, 2, 20),
+                                      tail: (block.id, 2, 20),
                                       reservation: reservation)
 
         // Block (􁉆): [ p0 |f0| p1 f1 p2 f2 p3 ]
-        // Train (􀼮􀼯):        f     b
+        // Train (􀼮􀼯):        h     t
         location = try assertBackward(location: location,
                                       feedback: (block.id, 0, 10),
-                                      back: (block.id, 2, 20),
+                                      tail: (block.id, 2, 20),
                                       reservation: reservation)
 
         // Block (􁉆): [ p0 f0 p1 f1 p2 |f2| p3 ]
-        // Train (􀼮􀼯):      f             b
+        // Train (􀼮􀼯):      h             t
         location = try assertBackward(location: location,
                                       feedback: (block.id, 2, 30),
-                                      back: (block.id, 3, 30),
+                                      tail: (block.id, 3, 30),
                                       reservation: reservation)
     }
 
@@ -399,7 +399,7 @@ final class TrainPositionsTests: XCTestCase {
         
         // Block (􁉈): [ p3 f2 p2 f1 p1 f0 p0 ]
         // Train (􀼮􀼯):           ??
-        assertLocation(location, back: nil, front: nil)
+        assertLocation(location, tail: nil, head: nil)
 
         let reservation = Train.Reservation()
         let block = Block()
@@ -407,61 +407,61 @@ final class TrainPositionsTests: XCTestCase {
         reservation.occupied.append(block)
 
         // Block (􁉈): [ p3 |f2| p2 f1 p1 f0 p0 ]
-        // Train (􀼮􀼯):        fb
+        // Train (􀼮􀼯):        ht
         location = try assertBackward(location: location,
                                       feedback: (block.id, 2, 30),
-                                      back: (block.id, 2, 30),
+                                      tail: (block.id, 2, 30),
                                       reservation: reservation)
 
         // Block (􁉈): [ p3 f2 p2 |f1| p1 f0 p0 ]
-        // Train (􀼮􀼯):      f       b
+        // Train (􀼮􀼯):      h       t
         location = try assertBackward(location: location,
                                       feedback: (block.id, 1, 20),
-                                      back: (block.id, 1, 20),
+                                      tail: (block.id, 1, 20),
                                       reservation: reservation)
 
         // Block (􁉈): [ p3 |f2| p2 f1 p1 f0 p0 ]
-        // Train (􀼮􀼯):        f     b
+        // Train (􀼮􀼯):        h     t
         location = try assertBackward(location: location,
                                       feedback: (block.id, 2, 30),
-                                      back: (block.id, 1, 20),
+                                      tail: (block.id, 1, 20),
                                       reservation: reservation)
 
         // Block (􁉈): [ p3 f2 p2 f1 p1 |f0| p0 ]
-        // Train (􀼮􀼯):      f             b
+        // Train (􀼮􀼯):      h             t
         location = try assertBackward(location: location,
                                       feedback: (block.id, 0, 10),
-                                      back: (block.id, 0, 10),
+                                      tail: (block.id, 0, 10),
                                       reservation: reservation)
     }
 
     func testMoveBackwardNextBlock() throws {
         var location = TrainPositions()
-        assertLocation(location, back: nil, front: nil)
+        assertLocation(location, tail: nil, head: nil)
 
         let p = Package()
 
         location = try assertBackward(location: location,
                                       feedback: (p.b1.id, 1, 20),
-                                      back: (p.b1.id, 2, 20),
+                                      tail: (p.b1.id, 2, 20),
                                       reservation: p.reservation)
         location = try assertBackward(location: location,
                                       feedback: (p.b1.id, 2, 30),
-                                      back: (p.b1.id, 3, 30),
+                                      tail: (p.b1.id, 3, 30),
                                       reservation: p.reservation)
         location = try assertBackward(location: location,
                                       feedback: (p.b1.id, 1, 20),
-                                      back: (p.b1.id, 3, 30),
+                                      tail: (p.b1.id, 3, 30),
                                       reservation: p.reservation)
         location = try assertBackward(location: location,
                                       feedback: (p.b1.id, 3, 40),
-                                      back: (p.b1.id, 4, 40),
+                                      tail: (p.b1.id, 4, 40),
                                       reservation: p.reservation)
         
         // Next block feedback is triggered
         location = try assertBackward(location: location,
                                       feedback: (p.b2.id, 0, 10),
-                                      back: (p.b2.id, 1, 10),
+                                      tail: (p.b2.id, 1, 10),
                                       reservation: p.reservation,
                                       nextBlockTrainDirection: .next)
         
@@ -469,37 +469,37 @@ final class TrainPositionsTests: XCTestCase {
 
         location = try assertBackward(location: location,
                                       feedback: (p.b2.id, 0, 10),
-                                      back: (p.b2.id, 1, 10),
+                                      tail: (p.b2.id, 1, 10),
                                       reservation: p.reservation)
     }
 
     func testMoveBackwardNextBlockPreviousDirection() throws {
         var location = TrainPositions()
-        assertLocation(location, back: nil, front: nil)
+        assertLocation(location, tail: nil, head: nil)
 
         let p = Package()
 
         location = try assertBackward(location: location,
                                       feedback: (p.b1.id, 1, 20),
-                                      back: (p.b1.id, 2, 20),
+                                      tail: (p.b1.id, 2, 20),
                                       reservation: p.reservation)
         location = try assertBackward(location: location,
                                       feedback: (p.b1.id, 2, 30),
-                                      back: (p.b1.id, 3, 30),
+                                      tail: (p.b1.id, 3, 30),
                                       reservation: p.reservation)
         location = try assertBackward(location: location,
                                       feedback: (p.b1.id, 1, 20),
-                                      back: (p.b1.id, 3, 30),
+                                      tail: (p.b1.id, 3, 30),
                                       reservation: p.reservation)
         location = try assertBackward(location: location,
                                       feedback: (p.b1.id, 3, 40),
-                                      back: (p.b1.id, 4, 40),
+                                      tail: (p.b1.id, 4, 40),
                                       reservation: p.reservation)
         
         // Next block feedback is triggered
         location = try assertBackward(location: location,
                                       feedback: (p.b2.id, 3, 40),
-                                      back: (p.b2.id, 3, 40),
+                                      tail: (p.b2.id, 3, 40),
                                       reservation: p.reservation,
                                       nextBlockTrainDirection: .previous)
         
@@ -507,7 +507,7 @@ final class TrainPositionsTests: XCTestCase {
         
         location = try assertBackward(location: location,
                                       feedback: (p.b2.id, 3, 40),
-                                      back: (p.b2.id, 3, 40),
+                                      tail: (p.b2.id, 3, 40),
                                       reservation: p.reservation)
     }
     
@@ -534,7 +534,7 @@ final class TrainPositionsTests: XCTestCase {
         }
     }
     
-    private func assertForward(location currentPositions: TrainPositions, feedback: (Identifier<Block>, Int, Double), front: (Identifier<Block>, Int, Double)?, reservation: Train.Reservation, nextBlockTrainDirection: Direction? = nil) throws -> TrainPositions {
+    private func assertForward(location currentPositions: TrainPositions, feedback: (Identifier<Block>, Int, Double), head: (Identifier<Block>, Int, Double)?, reservation: Train.Reservation, nextBlockTrainDirection: Direction? = nil) throws -> TrainPositions {
         let direction = try reservation.directionInBlock(for: feedback.0) ?? nextBlockTrainDirection!
         let detectedPosition: TrainPosition
         if direction == .next {
@@ -542,21 +542,21 @@ final class TrainPositionsTests: XCTestCase {
         } else {
             detectedPosition = TrainPosition(blockId: feedback.0, index: feedback.1, distance: feedback.2)
         }
-        let frontPosition: TrainPosition?
-        if let front = front {
-            frontPosition = TrainPosition(blockId: front.0, index: front.1, distance: front.2)
+        let headPosition: TrainPosition?
+        if let head = head {
+            headPosition = TrainPosition(blockId: head.0, index: head.1, distance: head.2)
         } else {
-            frontPosition = nil
+            headPosition = nil
         }
         
         let newLocation = try currentPositions.newPositionsWith(trainMovesForward: true, detectedPosition: detectedPosition, reservation: reservation)
         
-        assertLocation(newLocation, back: nil, front: frontPosition)
+        assertLocation(newLocation, tail: nil, head: headPosition)
 
         return newLocation
     }
     
-    private func assertBackward(location currentPositions: TrainPositions, feedback: (Identifier<Block>, Int, Double), back: (Identifier<Block>, Int, Double)?, reservation: Train.Reservation, nextBlockTrainDirection: Direction? = nil) throws -> TrainPositions {
+    private func assertBackward(location currentPositions: TrainPositions, feedback: (Identifier<Block>, Int, Double), tail: (Identifier<Block>, Int, Double)?, reservation: Train.Reservation, nextBlockTrainDirection: Direction? = nil) throws -> TrainPositions {
         let direction = try reservation.directionInBlock(for: feedback.0) ?? nextBlockTrainDirection!
         let detectedPosition: TrainPosition
         if direction == .next {
@@ -564,22 +564,22 @@ final class TrainPositionsTests: XCTestCase {
         } else {
             detectedPosition = TrainPosition(blockId: feedback.0, index: feedback.1, distance: feedback.2)
         }
-        let backPosition: TrainPosition?
-        if let back = back {
-            backPosition = TrainPosition(blockId: back.0, index: back.1, distance: back.2)
+        let tailPosition: TrainPosition?
+        if let tail = tail {
+            tailPosition = TrainPosition(blockId: tail.0, index: tail.1, distance: tail.2)
         } else {
-            backPosition = nil
+            tailPosition = nil
         }
         let newLocation = try currentPositions.newPositionsWith(trainMovesForward: false, detectedPosition: detectedPosition, reservation: reservation)
         
-        assertLocation(newLocation, back: backPosition, front: nil)
+        assertLocation(newLocation, tail: tailPosition, head: nil)
 
         return newLocation
     }
     
-    private func assertLocation(_ location: TrainPositions, back: TrainPosition?, front: TrainPosition?) {
-        XCTAssertEqual(location.back, back, "Back position mismatch")
-        XCTAssertEqual(location.front, front, "Front position mismatch")
+    private func assertLocation(_ location: TrainPositions, tail: TrainPosition?, head: TrainPosition?) {
+        XCTAssertEqual(location.tail, tail, "Tail position mismatch")
+        XCTAssertEqual(location.head, head, "Head position mismatch")
     }
  
 }

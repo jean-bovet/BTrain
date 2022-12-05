@@ -543,11 +543,11 @@ extension LayoutController {
         if train.directionForward {
             loc.directionForward = false
             
-            guard let backBlockId = train.positions.back?.blockId else {
+            guard let tailBlockId = train.positions.tail?.blockId else {
                 throw LayoutError.backPositionBlockNotSpecified(position: train.positions)
             }
-            guard let newBlock = layout.blocks[backBlockId] else {
-                throw LayoutError.blockNotFound(blockId: backBlockId)
+            guard let newBlock = layout.blocks[tailBlockId] else {
+                throw LayoutError.blockNotFound(blockId: tailBlockId)
             }
 
             train.block = newBlock
@@ -555,11 +555,11 @@ extension LayoutController {
         } else {
             loc.directionForward = true
 
-            guard let frontBlockId = train.positions.front?.blockId else {
+            guard let headBlockId = train.positions.head?.blockId else {
                 throw LayoutError.frontPositionBlockNotSpecified(position: train.positions)
             }
-            guard let newBlock = layout.blocks[frontBlockId] else {
-                throw LayoutError.blockNotFound(blockId: frontBlockId)
+            guard let newBlock = layout.blocks[headBlockId] else {
+                throw LayoutError.blockNotFound(blockId: headBlockId)
             }
             
             train.block = newBlock
@@ -601,7 +601,7 @@ extension LayoutController {
             guard let fd = blockFeedback.distance else {
                 throw LayoutError.feedbackDistanceNotSet(feedback: blockFeedback)
             }
-            train.positions = .front(blockId: toBlockId, index: toBlock.feedbacks.count, distance: fd.after)
+            train.positions = .head(blockId: toBlockId, index: toBlock.feedbacks.count, distance: fd.after)
         } else {
             guard let blockFeedback = toBlock.feedbacks.first else {
                 throw LayoutError.blockContainsNoFeedback(block: toBlock)
@@ -609,7 +609,7 @@ extension LayoutController {
             guard let fd = blockFeedback.distance else {
                 throw LayoutError.feedbackDistanceNotSet(feedback: blockFeedback)
             }
-            train.positions = .front(blockId: toBlockId, index: 0, distance: fd.before)
+            train.positions = .head(blockId: toBlockId, index: 0, distance: fd.before)
         }
         
         // If the train is moving backwards, always setup the train as if it was moving

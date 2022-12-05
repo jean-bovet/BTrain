@@ -92,7 +92,7 @@ class SwitchboardTests: XCTestCase {
         
         try controller.setupTrainToBlock(train, b1.block.id, naturalDirectionInBlock: .next)
         XCTAssertEqual(train.block, b1.block)
-        XCTAssertEqual(train.positions, TrainPositions.both(blockId: b1.block.id, frontIndex: b1.block.feedbacks.count, frontDistance: 10.after, backIndex: b1.block.feedbacks.count, backDistance: 10.after))
+        XCTAssertEqual(train.positions, TrainPositions.both(blockId: b1.block.id, headIndex: b1.block.feedbacks.count, headDistance: 10.after, tailIndex: b1.block.feedbacks.count, tailDistance: 10.after))
 
         let c = b1.trainCellPath(at: 0).boundingBox.center
         let c2 = b1.trainCellPath(at: 1).boundingBox.center

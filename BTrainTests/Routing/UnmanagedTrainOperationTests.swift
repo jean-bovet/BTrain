@@ -127,9 +127,9 @@ class UnmanagedTrainOperationTests: BTTestCase {
 
             XCTAssertEqual(block.trainInstance?.trainId, train.id)
             if train.directionForward {
-                XCTAssertEqual(train.positions.front?.index, position, "Front position mismatch")
+                XCTAssertEqual(train.positions.head?.index, position, "Head position mismatch")
             } else {
-                XCTAssertEqual(train.positions.back?.index, position, "Back position mismatch")
+                XCTAssertEqual(train.positions.tail?.index, position, "Tail position mismatch")
             }
             XCTAssertEqual(loc.speed.actualKph, speed, accuracy: 1)
         }

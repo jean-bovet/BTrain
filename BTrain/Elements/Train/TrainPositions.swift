@@ -20,37 +20,35 @@ import Foundation
 /// - A train that moves forward and backward needs a magnet at the front and the back of the train
 struct TrainPositions: Equatable, Codable, CustomStringConvertible {
     
-    /// The position at the front of the train (where the locomotive is located)
-    var front: TrainPosition?
+    /// The position at the head of the train (where the locomotive is located)
+    var head: TrainPosition?
     
-    /// The position at the back of the train (where the last wagon is located)
-    var back: TrainPosition?
+    /// The position at the tail of the train (where the last car is located)
+    var tail: TrainPosition?
     
     var description: String {
-        if let front = front, let back = back {
-            return "􀼯\(back)-\(front)􀼮"
-        } else if let front = front {
-            return "􀼯?-\(front)􀼮"
-        } else if let back = back {
-            return "􀼯\(back)-?􀼮"
+        if let head = head, let tail = tail {
+            return "􀼯\(tail)-\(head)􀼮"
+        } else if let head = head {
+            return "􀼯?-\(head)􀼮"
+        } else if let tail = tail {
+            return "􀼯\(tail)-?􀼮"
         } else {
             return "􀼯?-?􀼮"
         }
     }
     
-    static func front(blockId: Identifier<Block>, index: Int, distance: Double) -> TrainPositions {
-        TrainPositions(front: .init(blockId: blockId, index: index, distance: distance),
-                      back: nil)
+    static func head(blockId: Identifier<Block>, index: Int, distance: Double) -> TrainPositions {
+        TrainPositions(head: .init(blockId: blockId, index: index, distance: distance), tail: nil)
     }
 
-    static func back(blockId: Identifier<Block>, index: Int, distance: Double) -> TrainPositions {
-        TrainPositions(front: nil,
-                      back: .init(blockId: blockId, index: index, distance: distance))
+    static func tail(blockId: Identifier<Block>, index: Int, distance: Double) -> TrainPositions {
+        TrainPositions(head: nil, tail: .init(blockId: blockId, index: index, distance: distance))
     }
 
-    static func both(blockId: Identifier<Block>, frontIndex: Int, frontDistance: Double, backIndex: Int, backDistance: Double) -> TrainPositions {
-        TrainPositions(front: .init(blockId: blockId, index: frontIndex, distance: frontDistance),
-                      back: .init(blockId: blockId, index: backIndex, distance: backDistance))
+    static func both(blockId: Identifier<Block>, headIndex: Int, headDistance: Double, tailIndex: Int, tailDistance: Double) -> TrainPositions {
+        TrainPositions(head: .init(blockId: blockId, index: headIndex, distance: headDistance),
+                       tail: .init(blockId: blockId, index: tailIndex, distance: tailDistance))
     }
 
 }
