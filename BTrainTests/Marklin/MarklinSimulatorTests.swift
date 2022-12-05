@@ -115,11 +115,15 @@ class MarklinSimulatorTests: XCTestCase {
         let s1 = MarklinCommandSimulator(layout: doc.layout, interface: doc.interface)
         let s2 = MarklinCommandSimulator(layout: doc.layout, interface: doc.interface)
 
-        s1.start()
+        // Use a different port than 8080 because it might already been used by the preview
+        // instance of BTrain running in Xcode
+        let port: UInt16 = 8081
+        
+        s1.start(port)
         XCTAssertTrue(s1.started)
         XCTAssertTrue(MarklinCS3Server.shared.running)
 
-        s2.start()
+        s2.start(port)
         XCTAssertTrue(s2.started)
         XCTAssertTrue(MarklinCS3Server.shared.running)
 

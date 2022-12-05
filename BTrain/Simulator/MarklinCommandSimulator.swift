@@ -139,8 +139,8 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
         objectWillChange.send()
     }
 
-    func start() {
-        try? cs3Server.start()
+    func start(_ port: UInt16 = 8080) {
+        try? cs3Server.start(port)
 
         server = Server(port: localPort)
         server!.didAcceptConnection = { [weak self] connection in

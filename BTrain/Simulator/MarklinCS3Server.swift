@@ -60,16 +60,24 @@ final class MarklinCS3Server {
     /// the http server when they reach 0.
     private var startRequests = 0
 
-    func start() throws {
+    func start(_ port: UInt16 = 8080) throws {
+        if startRequests < 0 {
+            startRequests = 0
+        }
         if startRequests == 0 {
-            try httpServer.start()
+            BTLogger.debug("Starting CS3 server on port \(port)")
+            try httpServer.start(port)
         }
         startRequests += 1
     }
 
     func stop() {
         startRequests -= 1
+        if startRequests < 0 {
+            startRequests = 0
+        }
         if startRequests == 0 {
+            BTLogger.debug("Stopping CS3 server")
             httpServer.stop()
         }
     }
