@@ -42,6 +42,7 @@ struct BlockPicker: View {
 
     var body: some View {
         Picker("Block", selection: $blockId) {
+            Text("").tag(nil as Direction?)
             ForEach(stationBlockIds, id: \.self) { blockId in
                 if let block = layout.blocks[blockId] {
                     Text(block.name).tag(blockId as Identifier<Block>?)

@@ -17,6 +17,7 @@ struct DirectionPicker: View {
 
     var body: some View {
         Picker("Direction:", selection: $direction) {
+            Text("").tag(nil as Direction?)
             ForEach(Direction.allCases, id: \.self) { direction in
                 Text(direction.description).tag(direction as Direction?)
             }
