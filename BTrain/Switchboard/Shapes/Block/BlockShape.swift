@@ -52,6 +52,14 @@ final class BlockShape: Shape, DraggableShape, ConnectableShape {
         path.boundingBox
     }
 
+    var boundsIncludingLabels: CGRect {
+        var r = bounds
+        for path in labelPaths {
+            r = r.union(path.path.boundingBox)
+        }
+        return r
+    }
+    
     weak var layout: Layout?
     let block: Block
 

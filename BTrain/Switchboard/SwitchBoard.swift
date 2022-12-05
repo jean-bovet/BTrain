@@ -22,6 +22,7 @@ final class SwitchBoard: ObservableObject {
 
         @AppStorage("showBlockName") var showBlockName: Bool = false
         @AppStorage("showStationName") var showStationName: Bool = false
+        @AppStorage("showStationBackground") var showStationBackground: Bool = false
         @AppStorage("showTurnoutName") var showTurnoutName: Bool = false
         @AppStorage("showTrainIcon") var showTrainIcon: Bool = false
 

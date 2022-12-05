@@ -25,6 +25,7 @@ final class ShapeContext {
     var editing = false
     var showBlockName = false
     var showStationName = false
+    var showStationBackground = false
     var showTurnoutName = false
     var showTrainIcon = true
 

@@ -17,6 +17,7 @@ struct SwitchboardSettingsView: View {
 
     @AppStorage("showBlockName") var showBlockName: Bool = false
     @AppStorage("showStationName") var showStationName: Bool = false
+    @AppStorage("showStationBackground") var showStationBackground: Bool = false
     @AppStorage("showTurnoutName") var showTurnoutName: Bool = false
     @AppStorage("showTrainIcon") var showTrainIcon: Bool = false
     @AppStorage("showSimulator") var showSimulator: Bool = false
@@ -24,10 +25,11 @@ struct SwitchboardSettingsView: View {
 
     var body: some View {
         HStack {
+            Toggle("Turnout Name", isOn: $showTurnoutName)
             Toggle("Block Name", isOn: $showBlockName)
             Toggle("Station Name", isOn: $showStationName)
                 .disabled(showBlockName)
-            Toggle("Turnout Name", isOn: $showTurnoutName)
+            Toggle("Station Background", isOn: $showStationBackground)
             Toggle("Train Icon", isOn: $showTrainIcon)
             if document.simulator.started && document.connected {
                 Toggle("Simulator", isOn: $showSimulator)

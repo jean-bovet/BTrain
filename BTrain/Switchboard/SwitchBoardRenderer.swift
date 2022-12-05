@@ -31,7 +31,13 @@ final class SwitchBoardRenderer {
     }
 
     func draw(context: CGContext) {
-        for shape in provider.shapes.filter({ $0.visible }) {
+        let visibleShapes = provider.shapes.filter({ $0.visible })
+        
+        if provider.context.showStationBackground {
+            drawStationsBackground(context: context, visibleShapes: visibleShapes)
+        }
+        
+        for shape in visibleShapes {
             context.with {
                 shape.draw(ctx: context)
             }
@@ -88,6 +94,31 @@ final class SwitchBoardRenderer {
         if let ephemeralDragShape = ephemeralDragInfo?.shape {
             context.with {
                 ephemeralDragShape.draw(ctx: context)
+            }
+        }
+    }
+    
+    private func drawStationsBackground(context: CGContext, visibleShapes: [Shape]) {
+        for station in provider.layout.stations.elements {
+            let blockIds = station.elements.compactMap { $0.blockId }
+
+            var bounds = CGRect.zero
+            for shape in visibleShapes {
+                if let blockShape = shape as? BlockShape, blockIds.contains(blockShape.block.id) {
+                    if bounds == .zero {
+                        bounds = blockShape.boundsIncludingLabels
+                    } else {
+                        bounds = bounds.union(blockShape.boundsIncludingLabels)
+                    }
+                }
+            }
+            if bounds != .zero {
+                bounds = bounds.insetBy(dx: -20, dy: -20)
+                context.with {
+                    context.setFillColor(shapeContext.backgroundStationBlockColor.copy(alpha: 0.2)!)
+                    context.addPath(.init(roundedRect: bounds, cornerWidth: 10, cornerHeight: 10, transform: nil))
+                    context.drawPath(using: .fill)
+                }
             }
         }
     }

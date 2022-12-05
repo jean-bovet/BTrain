@@ -42,6 +42,7 @@ struct SwitchBoardView: View {
     func draw(context: GraphicsContext, darkMode: Bool, coordinator _: LayoutController, layout _: Layout, state: SwitchBoard.State, scale: CGFloat) {
         switchboard.context.showBlockName = state.showBlockName
         switchboard.context.showStationName = state.showStationName
+        switchboard.context.showStationBackground = state.showStationBackground
         switchboard.context.showTurnoutName = state.showTurnoutName
         switchboard.context.showTrainIcon = state.showTrainIcon
         switchboard.context.fontSize = fontSize
