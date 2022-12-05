@@ -31,7 +31,7 @@ class LocomotiveViewTests: RootViewTests {
     func testStringValue() throws {
         let doc = newDocument()
         let sut = LocomotiveEditingView(document: doc, layout: doc.layout)
-        _ = try sut.inspect().find(text: "3 Elements")
+        _ = try sut.inspect().find(text: "3 locomotives")
     }
 
     func testSpeedGraphView() throws {

@@ -27,7 +27,7 @@ class TrainViewTests: RootViewTests {
     func testStringValue() throws {
         let doc = newDocument()
         let sut = TrainEditingView(document: doc, layout: doc.layout)
-        _ = try sut.inspect().find(text: "3 Elements")
+        _ = try sut.inspect().find(text: "3 trains")
     }
 
     func testDetailsView() throws {
