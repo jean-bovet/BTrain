@@ -197,7 +197,4 @@ extension Layout {
         }
     }
 
-    var defaultRouteDescription: String {
-        "􀼮→"
-    }
 }

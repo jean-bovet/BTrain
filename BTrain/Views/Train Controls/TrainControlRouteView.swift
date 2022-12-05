@@ -63,17 +63,8 @@ struct TrainControlRouteView: View {
                     .disabled(!document.connected)
                 }
             }
-            if selectedRouteDescription.isEmpty {
-                Text(layout.defaultRouteDescription)
-                    .lineLimit(4)
-                    .fixedSize(horizontal: false, vertical: true)
-                    .hidden()
-            } else {
-                ScrollView {
-                    Text(selectedRouteDescription)
-                        .fixedSize(horizontal: false, vertical: true)
-                }.frame(maxHeight: 120)
-            }
+            Text(selectedRouteDescription)
+                .lineLimit(2...)
         }.onAppear {
             updateRoute()
         }.onReceive(NotificationCenter.default.publisher(for: .onRoutesUpdated), perform: { _ in
