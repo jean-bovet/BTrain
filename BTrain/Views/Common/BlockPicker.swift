@@ -16,18 +16,41 @@ struct BlockPicker: View {
     let layout: Layout
     @Binding var blockId: Identifier<Block>?
 
-    var sortedBlockIds: [Identifier<Block>] {
-        layout.blocks.elements.sorted {
-            $0.name < $1.name
-        }.map {
-            $0.id
-        }
+    var stationBlockIds: [Identifier<Block>] {
+        layout.blocks.elements
+            .filter({
+                $0.category == .station
+            })
+            .sorted {
+                $0.name < $1.name
+            }.map {
+                $0.id
+            }
+    }
+
+    var blockIds: [Identifier<Block>] {
+        layout.blocks.elements
+            .filter({
+                $0.category != .station
+            })
+            .sorted {
+                $0.name < $1.name
+            }.map {
+                $0.id
+            }
     }
 
     var body: some View {
         Picker("Block", selection: $blockId) {
-            Text("").tag(nil as Identifier<Block>?)
-            ForEach(sortedBlockIds, id: \.self) { blockId in
+            ForEach(stationBlockIds, id: \.self) { blockId in
+                if let block = layout.blocks[blockId] {
+                    Text(block.name).tag(blockId as Identifier<Block>?)
+                } else {
+                    Text(blockId.uuid).tag(blockId as Identifier<Block>?)
+                }
+            }
+            Divider()
+            ForEach(blockIds, id: \.self) { blockId in
                 if let block = layout.blocks[blockId] {
                     Text(block.name).tag(blockId as Identifier<Block>?)
                 } else {

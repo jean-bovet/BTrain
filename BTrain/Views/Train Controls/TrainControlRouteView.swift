@@ -36,7 +36,7 @@ struct TrainControlRouteView: View {
             HStack {
                 Picker("Route:", selection: $train.routeId) {
                     Text("Automatic").tag(automaticRouteId as Identifier<Route>)
-                    ForEach(layout.fixedRoutes, id: \.self) { item in
+                    ForEach(layout.fixedRoutes.sorted(by: {$0.name < $1.name}), id: \.self) { item in
                         Text(item.name).tag(item.id as Identifier<Route>)
                     }
                 }.onChange(of: train.routeId) { _ in

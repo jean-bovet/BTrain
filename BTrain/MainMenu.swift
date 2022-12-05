@@ -54,7 +54,8 @@ struct CommandSelectedView: View {
         .if(viewType.shortcut != nil) {
             $0.keyboardShortcut(viewType.shortcut!, modifiers: [.command])
         }
-        .disabled(document?.power == true)
+        // TODO: re-enable this once we figure out how to make it work correctly
+//        .disabled(document?.power == true)
     }
 }
 
