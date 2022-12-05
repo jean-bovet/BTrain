@@ -969,7 +969,24 @@ class FixedRoutingTests: BTTestCase {
 
         try p.assert("r6: !{S3 ≏ ≏ ≏ } <T15{ds}(3,2),s> <T18{sr}(0,2),r> [L1 ≏ ≏ ] <T19{sl}(1,0),s> <T20{sl}(1,0),s> <r16390<T22{sr}(0,2),r>> [r16390[L3 􀼰16390 ≡ 🟡􀼮16390 ≏ ]] <T21{sr}(2,0),r> <r16390<T22{sr}(1,0),r>> <T20{sl}(0,1),s> <T19{sl}(0,1),s> ![L1 ≏ ≏ ] <T18{sr}(2,0),r> <T15{ds}(2,3),s> {S3 ≏ ≏ ≏ }")
     }
-
+    
+    /// Test that a train that can move in any direction can start in a route that has a starting block
+    /// that has different direction than the train located in that block.
+    func testRouteChangeDirection() throws {
+        let doc = LayoutDocument(layout: LayoutPointToPoint().newLayout())
+        let layout = doc.layout
+        let route = layout.route(named: "ABCDE")
+        let train = layout.trains[0]
+        let blockA = layout.block(named: "A")
+        try doc.layoutController.setupTrainToBlock(train, blockA.id, naturalDirectionInBlock: .previous)
+        
+        train.locomotive?.allowedDirections = .forward
+        XCTAssertThrowsError(try doc.start(train: train.id, withRoute: route.id, destination: nil))
+        
+        train.locomotive?.allowedDirections = .any
+        XCTAssertNoThrow(try doc.start(train: train.id, withRoute: route.id, destination: nil))
+    }
+    
     func testASCIIProducer() throws {
         let layout = LayoutLoop1().newLayout().removeTrainGeometry()
         let producer = LayoutASCIIProducer(layout: layout)

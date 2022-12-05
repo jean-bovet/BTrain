@@ -457,7 +457,8 @@ extension LayoutController {
                 }
 
                 // Check that the train direction matches as well.
-                if trainInstance.direction == direction {
+                // Note: the direction does not matter if the train can move in any direction
+                if trainInstance.direction == direction || train.locomotive?.allowedDirections == .any {
                     train.routeStepIndex = index
                     train.startRouteIndex = index
                     break
