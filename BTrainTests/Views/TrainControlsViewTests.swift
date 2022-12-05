@@ -22,6 +22,7 @@ extension TrainControlStateView: Inspectable {}
 
 extension SpeedSlider: Inspectable {}
 extension CustomSlider: Inspectable {}
+extension RoutePicker: Inspectable {}
 
 class TrainControlsViewTests: RootViewTests {
     func testControlList() throws {

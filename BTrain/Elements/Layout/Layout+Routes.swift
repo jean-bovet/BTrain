@@ -90,7 +90,41 @@ extension Layout {
             $0.name < $1.name
         }
     }
+    
+    /// Returns the index in the route where the train is currently located or nil
+    /// if the train is not located along the route.
+    ///
+    /// - Parameters:
+    ///   - train: the train to locate
+    ///   - route: the route
+    /// - Returns: the index of the train in the route
+    func routeIndexOfTrain(train: Train, route: Route) throws -> Int? {
+        for (index, step) in route.steps.enumerated() {
+            guard let (blockId, direction) = self.block(for: train, step: step) else {
+                continue
+            }
 
+            guard train.block?.id == blockId else {
+                continue
+            }
+
+            guard let block = train.block else {
+                continue
+            }
+
+            guard let trainInstance = block.trainInstance else {
+                continue
+            }
+
+            // Check that the train direction matches as well.
+            // Note: the direction does not matter if the train can move in any direction
+            if trainInstance.direction == direction || train.locomotive?.allowedDirections == .any {
+                return index
+            }
+        }
+        return nil
+    }
+    
     func routeDescription(for train: Train) -> String {
         var text = ""
         if let route = route(for: train.routeId, trainId: train.id),

@@ -437,35 +437,12 @@ extension LayoutController {
             route.steps.removeAll()
         } else {
             // Check to make sure the train is somewhere along the route
-            train.routeStepIndex = -1
             try route.completePartialSteps(layout: layout, train: train)
-            for (index, step) in route.steps.enumerated() {
-                guard let (blockId, direction) = layout.block(for: train, step: step) else {
-                    continue
-                }
-
-                guard train.block?.id == blockId else {
-                    continue
-                }
-
-                guard let block = train.block else {
-                    continue
-                }
-
-                guard let trainInstance = block.trainInstance else {
-                    continue
-                }
-
-                // Check that the train direction matches as well.
-                // Note: the direction does not matter if the train can move in any direction
-                if trainInstance.direction == direction || train.locomotive?.allowedDirections == .any {
-                    train.routeStepIndex = index
-                    train.startRouteIndex = index
-                    break
-                }
-            }
-
-            guard train.routeStepIndex >= 0 else {
+            if let index = try layout.routeIndexOfTrain(train: train, route: route) {
+                train.routeStepIndex = index
+                train.startRouteIndex = index
+            } else {
+                train.routeStepIndex = -1
                 throw LayoutError.trainNotFoundInRoute(train: train, route: route)
             }
         }

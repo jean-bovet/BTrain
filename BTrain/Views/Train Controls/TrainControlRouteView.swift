@@ -27,21 +27,13 @@ struct TrainControlRouteView: View {
         layout.routeDescription(for: train)
     }
 
-    var automaticRouteId: Identifier<Route> {
-        Route.automaticRouteId(for: train.id)
-    }
-
     var body: some View {
         VStack(alignment: .leading) {
             HStack {
-                Picker("Route:", selection: $train.routeId) {
-                    Text("Automatic").tag(automaticRouteId as Identifier<Route>)
-                    ForEach(layout.fixedRoutes.sorted(by: {$0.name < $1.name}), id: \.self) { item in
-                        Text(item.name).tag(item.id as Identifier<Route>)
-                    }
-                }.onChange(of: train.routeId) { _ in
-                    updateRoute()
-                }.disabled(train.scheduling != .unmanaged)
+                RoutePicker(layout: layout, train: train)
+                    .onChange(of: train.routeId) { _ in
+                        updateRoute()
+                    }.disabled(train.scheduling != .unmanaged)
 
                 Spacer()
 
