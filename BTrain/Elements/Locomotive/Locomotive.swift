@@ -44,8 +44,7 @@ final class Locomotive: Element, ObservableObject {
 
     enum AllowedDirection: String, Codable, CaseIterable {
         case forward
-        case backward
-        case any
+        case any // forward and backward
     }
     
     /// Direction(s) the locomotive is allowed to move

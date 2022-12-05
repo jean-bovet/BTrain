@@ -189,11 +189,11 @@ final class LayoutController: ObservableObject, LayoutControlling {
     }
 
     func trainController(forTrain train: Train) -> TrainController? {
-        guard let currentBlock = layout.currentBlock(train: train) else {
+        guard let frontBlock = train.block else {
             return nil
         }
-
-        guard let trainInstance = currentBlock.trainInstance else {
+        
+        guard let trainInstance = frontBlock.trainInstance else {
             return nil
         }
 
@@ -201,7 +201,7 @@ final class LayoutController: ObservableObject, LayoutControlling {
             return nil
         }
 
-        return TrainController(train: train, route: route, layout: layout, currentBlock: currentBlock, trainInstance: trainInstance, layoutController: self, reservation: reservation)
+        return TrainController(train: train, route: route, layout: layout, frontBlock: frontBlock, frontBlockTrainInstance: trainInstance, layoutController: self, reservation: reservation)
     }
 
     private func updateExpectedFeedbacks() throws {
@@ -444,11 +444,11 @@ extension LayoutController {
                     continue
                 }
 
-                guard train.blockId == blockId else {
+                guard train.block?.id == blockId else {
                     continue
                 }
 
-                guard let block = layout.blocks[train.blockId] else {
+                guard let block = train.block else {
                     continue
                 }
 
@@ -457,7 +457,8 @@ extension LayoutController {
                 }
 
                 // Check that the train direction matches as well.
-                if trainInstance.direction == direction {
+                // Note: the direction does not matter if the train can move in any direction
+                if trainInstance.direction == direction || train.locomotive?.allowedDirections == .any {
                     train.routeStepIndex = index
                     train.startRouteIndex = index
                     break
@@ -536,60 +537,123 @@ extension LayoutController {
         }
         interface.execute(command: command, completion: completion)
     }
-
-    /// Set the position of a train within the current block
+    
+    /// Toggles the direction of the train.
     ///
-    /// - Parameters:
-    ///   - train: the train
-    ///   - position: the position of the train within its block
-    ///   - removeLeadingBlocks: true to remove the leading blocks (by default), false to keep the leading blocks
-    func setTrainPosition(_ train: Train, _ position: Int, removeLeadingBlocks: Bool = true) throws {
-        train.position = position
+    /// Note: even if a train does not allow for a backward direction (as set in allowedDirections),
+    /// we do not enforce this here because in a real layout, a train can always be manually
+    /// changed to run backwards. allowedDirections is only used in automatic routing
+    /// to avoid moving the train backwards when it should not.
 
-        if removeLeadingBlocks {
-            try reservation.removeLeadingBlocks(train: train)
-        }
-    }
-
-    // Toggle the direction of the train within the block itself
-    func toggleTrainDirectionInBlock(_ train: Train) throws {
-        guard let blockId = train.blockId else {
+    /// - Parameter train: the train
+    func toggleTrainDirection(_ train: Train) throws {
+        guard let blockId = train.block?.id else {
             throw LayoutError.trainNotAssignedToABlock(train: train)
         }
 
-        guard let block = layout.blocks[blockId] else {
+        guard let block = train.block else {
             throw LayoutError.blockNotFound(blockId: blockId)
         }
 
         guard let ti = block.trainInstance else {
             throw LayoutError.trainNotFoundInBlock(blockId: blockId)
         }
+                     
+        let loc = try train.locomotiveOrThrow()
+        
+        block.trainInstance = nil
 
-        guard ti.trainId == train.id else {
-            throw LayoutError.trainInBlockDoesNotMatch(trainId: train.id, blockId: blockId, blockTrainId: ti.trainId)
+        if train.directionForward {
+            loc.directionForward = false
+            
+            guard let backBlockId = train.positions.back?.blockId else {
+                throw LayoutError.backPositionBlockNotSpecified(position: train.positions)
+            }
+            guard let newBlock = layout.blocks[backBlockId] else {
+                throw LayoutError.blockNotFound(blockId: backBlockId)
+            }
+
+            train.block = newBlock
+            newBlock.trainInstance = TrainInstance(train.id, ti.direction.opposite)
+        } else {
+            loc.directionForward = true
+
+            guard let frontBlockId = train.positions.front?.blockId else {
+                throw LayoutError.frontPositionBlockNotSpecified(position: train.positions)
+            }
+            guard let newBlock = layout.blocks[frontBlockId] else {
+                throw LayoutError.blockNotFound(blockId: frontBlockId)
+            }
+            
+            train.block = newBlock
+            newBlock.trainInstance = TrainInstance(train.id, ti.direction.opposite)
         }
-
-        block.trainInstance = TrainInstance(train.id, ti.direction.opposite)
-
-        try reservation.removeLeadingBlocks(train: train)
+        
+        // The method below will spread again the train, starting with the "front" block
+        // of the train which has been updated here with "newBlock".
+        reservation.removeLeadingReservation(train: train)
+        try reservation.occupyBlocksWith(train: train)
     }
-
-    /// Sets a train to a specific block.
+    
+    /// Setup the train in a block. This method places the train for the first time in the specified block, filling the block with the train
+    /// by respecting the specified natural direction of the train in the block.
     ///
     /// - Parameters:
-    ///   - trainId: the train
-    ///   - train:
-    ///   - toBlockId: the block in which to put the train
-    ///   - position: the position in the block in which to put the train
-    ///   - direction: the direction in the block in which to put the train
-    ///   - routeIndex: optional index in the route
-    ///   - removeLeadingBlocks: true to remove the leading blocks (by default), false to keep the leading blocks
-    func setTrainToBlock(_ train: Train, _ toBlockId: Identifier<Block>, position: Position = .start, direction: Direction, routeIndex: Int? = nil, removeLeadingBlocks: Bool = true) throws {
-        try layout.setTrainToBlock(train.id, toBlockId, position: position, direction: direction, routeIndex: routeIndex)
-        if removeLeadingBlocks {
-            try reservation.removeLeadingBlocks(train: train)
+    ///   - train: the train
+    ///   - toBlockId: the block
+    ///   - naturalDirectionInBlock: the natural direction of the train
+    func setupTrainToBlock(_ train: Train, _ toBlockId: Identifier<Block>, naturalDirectionInBlock: Direction) throws {
+        guard let toBlock = layout.blocks[toBlockId] else {
+            throw LayoutError.blockNotFound(blockId: toBlockId)
+        }
+        
+        guard toBlock.trainInstance == nil || toBlock.trainInstance?.trainId == train.id else {
+            throw LayoutError.blockNotEmpty(blockId: toBlockId)
+        }
+        
+        guard toBlock.reservation == nil || toBlock.reservation?.trainId == train.id else {
+            throw LayoutError.cannotReserveBlock(block: toBlock, train: train, reserved: toBlock.reservation!)
+        }
+        
+        // Note: we set only the front position because the back position will be computed automatically
+        // when the occupied blocks are filled (see TrainVisitor).
+        if naturalDirectionInBlock == .next {
+            guard let blockFeedback = toBlock.feedbacks.last else {
+                throw LayoutError.blockContainsNoFeedback(block: toBlock)
+            }
+            guard let fd = blockFeedback.distance else {
+                throw LayoutError.feedbackDistanceNotSet(feedback: blockFeedback)
+            }
+            train.positions = .front(blockId: toBlockId, index: toBlock.feedbacks.count, distance: fd.after)
+        } else {
+            guard let blockFeedback = toBlock.feedbacks.first else {
+                throw LayoutError.blockContainsNoFeedback(block: toBlock)
+            }
+            guard let fd = blockFeedback.distance else {
+                throw LayoutError.feedbackDistanceNotSet(feedback: blockFeedback)
+            }
+            train.positions = .front(blockId: toBlockId, index: 0, distance: fd.before)
+        }
+        
+        // If the train is moving backwards, always setup the train as if it was moving
+        // forward and then toggle its direction. This is because the front position is always
+        // at the front of the train when moving forward and the back position is determined
+        // after visiting the blocks that the train occupies.
+        let previousDirectionForward = train.directionForward
+        if !train.directionForward {
+            try train.locomotiveOrThrow().directionForward = true
+        }
+        try layout.setTrainToBlock(train, toBlockId, positions: train.positions, directionOfTravelInBlock: naturalDirectionInBlock)
+        
+        try reservation.freeElements(train: train)
+        try reservation.occupyBlocksWith(train: train)
+
+        if previousDirectionForward == false {
+            try toggleTrainDirection(train)
         }
     }
+    
+
 }
 
 extension LayoutController: MetricsProvider {

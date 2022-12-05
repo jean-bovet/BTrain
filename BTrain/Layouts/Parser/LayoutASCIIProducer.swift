@@ -217,14 +217,14 @@ final class LayoutASCIIProducer {
             return nil
         }
 
-        if trainInstance.parts.isEmpty, train.position == position {
+        if trainInstance.parts.isEmpty, train.positions.front?.index == position {
             return stringFrom(train)
         } else if let part = trainInstance.parts[position] {
             switch part {
             case .locomotive:
                 return stringFrom(train)
             case .wagon:
-                return "💺\(train.id)"
+                return "􀼯\(train.id)"
             }
         } else {
             return nil
@@ -234,13 +234,13 @@ final class LayoutASCIIProducer {
     func stringFrom(_ train: Train) -> String {
         switch train.state {
         case .running:
-            return "🟢🚂\(train.id)"
+            return "🟢􀼮\(train.id)"
         case .braking:
-            return "🟡🚂\(train.id)"
+            return "🟡􀼮\(train.id)"
         case .stopping:
-            return "🟠🚂\(train.id)"
+            return "🟠􀼮\(train.id)"
         case .stopped:
-            return "🔴🚂\(train.id)"
+            return "🔴􀼮\(train.id)"
         }
     }
 

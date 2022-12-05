@@ -23,21 +23,21 @@ class FixedRoutingWithStationsTests: BTTestCase {
         let p = Package(layout: layout)
         try p.prepare(routeID: "r1", trainID: "16390", fromBlockId: "1" /* s1 */, position: .end)
 
-        try p.assert("r1: {r16390{s1 ≏ 💺16390 ≏ 🔴🚂16390 }} <ts2(1,0),s> <t1(0,1),s> <t2(0,1),s> [b1 ≏ ≏ ] <t4(1,0)> <tn1(0,1)> {n1 ≏ ≏ }")
+        try p.assert("r1: {r16390{s1 ≏ 􀼰16390 ≏ 🔴􀼮16390 }} <ts2(1,0),s> <t1(0,1),s> <t2(0,1),s> [b1 ≏ ≏ ] <t4(1,0)> <tn1(0,1)> {n1 ≏ ≏ }")
 
         try p.start()
 
         XCTAssertEqual(p.train.scheduling, .managed)
 
-        try p.assert("r1: {r16390{s1 ≏ 💺16390 ≏ 🟢🚂16390 }} <r16390<ts2{sl}(1,0),s>> <r16390<t1{sr}(0,1),s>> <r16390<t2{sr}(0,1),s>> [r16390[b1 ≏ ≏ ]] <r16390<t4{sl}(1,0),s>> <r16390<tn1{sr}(0,1),s>> {r16390{n1 ≏ ≏ }}")
+        try p.assert("r1: {r16390{s1 ≏ 􀼰16390 ≏ 🟢􀼮16390 }} <r16390<ts2{sl}(1,0),s>> <r16390<t1{sr}(0,1),s>> <r16390<t2{sr}(0,1),s>> [r16390[b1 ≏ ≏ ]] <r16390<t4{sl}(1,0),s>> <r16390<tn1{sr}(0,1),s>> {r16390{n1 ≏ ≏ }}")
 
-        try p.assert("r1: {s1 ≏ ≏ } <ts2{sl}(1,0),s> <t1{sr}(0,1),s> <t2{sr}(0,1),s> [r16390[b1 💺16390 ≡ 🔵🚂16390 ≏ ]] <r16390<t4{sl}(1,0),s>> <r16390<tn1{sr}(0,1),s>> {r16390{n1 ≏ ≏ }}")
+        try p.assert("r1: {s1 ≏ ≏ } <ts2{sl}(1,0),s> <t1{sr}(0,1),s> <t2{sr}(0,1),s> [r16390[b1 􀼰16390 ≡ 🔵􀼮16390 ≏ ]] <r16390<t4{sl}(1,0),s>> <r16390<tn1{sr}(0,1),s>> {r16390{n1 ≏ ≏ }}")
 
-        try p.assert("r1: {s1 ≏ ≏ } <ts2{sl}(1,0),s> <t1{sr}(0,1),s> <t2{sr}(0,1),s> [r16390[b1 ≏ 💺16390 ≡ 🔵🚂16390 ]] <r16390<t4{sl}(1,0),s>> <r16390<tn1{sr}(0,1),s>> {r16390{n1 ≏ ≏ }}")
+        try p.assert("r1: {s1 ≏ ≏ } <ts2{sl}(1,0),s> <t1{sr}(0,1),s> <t2{sr}(0,1),s> [r16390[b1 ≏ 􀼰16390 ≡ 🔵􀼮16390 ]] <r16390<t4{sl}(1,0),s>> <r16390<tn1{sr}(0,1),s>> {r16390{n1 ≏ ≏ }}")
 
-        try p.assert("r1: {s1 ≏ ≏ } <ts2{sl}(1,0),s> <t1{sr}(0,1),s> <t2{sr}(0,1),s> [b1 ≏ ≏ ] <t4{sl}(1,0),s> <tn1{sr}(0,1),s> {r16390{n1 💺16390 ≡ 🟡🚂16390 ≏ }}")
+        try p.assert("r1: {s1 ≏ ≏ } <ts2{sl}(1,0),s> <t1{sr}(0,1),s> <t2{sr}(0,1),s> [b1 ≏ ≏ ] <t4{sl}(1,0),s> <tn1{sr}(0,1),s> {r16390{n1 􀼰16390 ≡ 🟡􀼮16390 ≏ }}")
 
-        try p.assert("r1: {s1 ≏ ≏ } <ts2{sl}(1,0),s> <t1{sr}(0,1),s> <t2{sr}(0,1),s> [b1 ≏ ≏ ] <t4{sl}(1,0),s> <tn1{sr}(0,1),s> {r16390{n1 ≏ 💺16390 ≡ 🔴🚂16390 }}")
+        try p.assert("r1: {s1 ≏ ≏ } <ts2{sl}(1,0),s> <t1{sr}(0,1),s> <t2{sr}(0,1),s> [b1 ≏ ≏ ] <t4{sl}(1,0),s> <tn1{sr}(0,1),s> {r16390{n1 ≏ 􀼰16390 ≡ 🔴􀼮16390 }}")
 
         XCTAssertEqual(p.train.scheduling, .unmanaged)
     }
@@ -51,25 +51,25 @@ class FixedRoutingWithStationsTests: BTTestCase {
         let p = Package(layout: layout)
         try p.prepare(routeID: "r1", trainID: "16390", fromBlockId: "1" /* s1 */, position: .end)
 
-        try p.assert("r1: {r16390{s1 ≏ 💺16390 ≏ 🔴🚂16390 }} <ts2(1,0),s> <t1(0,1),s> <t2(0,1),s> [b1 ≏ ≏ ] <t4(1,0)> <tn1(0,1)> {n1 ≏ ≏ }")
+        try p.assert("r1: {r16390{s1 ≏ 􀼰16390 ≏ 🔴􀼮16390 }} <ts2(1,0),s> <t1(0,1),s> <t2(0,1),s> [b1 ≏ ≏ ] <t4(1,0)> <tn1(0,1)> {n1 ≏ ≏ }")
 
         try p.start()
 
         XCTAssertEqual(p.train.scheduling, .managed)
 
-        try p.assert("r1: {r16390{s1 ≏ 💺16390 ≏ 🔵🚂16390 }} <r16390<ts2{sl}(1,0),s>> <r16390<t1{sr}(0,1),s>> <r16390<t2{sr}(0,1),s>> [r16390[b1 ≏ ≏ ]] <t4{sl}(1,0),s> <tn1{sr}(0,1),s> {n1 ≏ ≏ }")
+        try p.assert("r1: {r16390{s1 ≏ 􀼰16390 ≏ 🔵􀼮16390 }} <r16390<ts2{sl}(1,0),s>> <r16390<t1{sr}(0,1),s>> <r16390<t2{sr}(0,1),s>> [r16390[b1 ≏ ≏ ]] <t4{sl}(1,0),s> <tn1{sr}(0,1),s> {n1 ≏ ≏ }")
 
         // Simulate a train reserving block "n1", which means that the train 16390 route will need to be updated to pick up the other free block in the station, "n2"
         let n1 = layout.block(named: "n1")
         n1.reservation = .init("foo", .next)
 
-        try p.assert("r1: {s1 ≏ ≏ } <ts2{sl}(1,0),s> <t1{sr}(0,1),s> <t2{sr}(0,1),s> [r16390[b1 💺16390 ≡ 🔵🚂16390 ≏ ]] <r16390<t4{sl}(1,0),s>> <r16390<tn1{sr}(0,2),r>> {r16390{n2 ≏ ≏ }}")
+        try p.assert("r1: {s1 ≏ ≏ } <ts2{sl}(1,0),s> <t1{sr}(0,1),s> <t2{sr}(0,1),s> [r16390[b1 􀼰16390 ≡ 🔵􀼮16390 ≏ ]] <r16390<t4{sl}(1,0),s>> <r16390<tn1{sr}(0,2),r>> {r16390{n2 ≏ ≏ }}")
 
-        try p.assert("r1: {s1 ≏ ≏ } <ts2{sl}(1,0),s> <t1{sr}(0,1),s> <t2{sr}(0,1),s> [r16390[b1 ≏ 💺16390 ≡ 🔵🚂16390 ]] <r16390<t4{sl}(1,0),s>> <r16390<tn1{sr}(0,2),r>> {r16390{n2 ≏ ≏ }}")
+        try p.assert("r1: {s1 ≏ ≏ } <ts2{sl}(1,0),s> <t1{sr}(0,1),s> <t2{sr}(0,1),s> [r16390[b1 ≏ 􀼰16390 ≡ 🔵􀼮16390 ]] <r16390<t4{sl}(1,0),s>> <r16390<tn1{sr}(0,2),r>> {r16390{n2 ≏ ≏ }}")
 
-        try p.assert("r1: {s1 ≏ ≏ } <ts2{sl}(1,0),s> <t1{sr}(0,1),s> <t2{sr}(0,1),s> [b1 ≏ ≏ ] <t4{sl}(1,0),s> <tn1{sr}(0,2),r> {r16390{n2 💺16390 ≡ 🟡🚂16390 ≏ }}")
+        try p.assert("r1: {s1 ≏ ≏ } <ts2{sl}(1,0),s> <t1{sr}(0,1),s> <t2{sr}(0,1),s> [b1 ≏ ≏ ] <t4{sl}(1,0),s> <tn1{sr}(0,2),r> {r16390{n2 􀼰16390 ≡ 🟡􀼮16390 ≏ }}")
 
-        try p.assert("r1: {s1 ≏ ≏ } <ts2{sl}(1,0),s> <t1{sr}(0,1),s> <t2{sr}(0,1),s> [b1 ≏ ≏ ] <t4{sl}(1,0),s> <tn1{sr}(0,2),r> {r16390{n2 ≏ 💺16390 ≡ 🔴🚂16390 }}")
+        try p.assert("r1: {s1 ≏ ≏ } <ts2{sl}(1,0),s> <t1{sr}(0,1),s> <t2{sr}(0,1),s> [b1 ≏ ≏ ] <t4{sl}(1,0),s> <tn1{sr}(0,2),r> {r16390{n2 ≏ 􀼰16390 ≡ 🔴􀼮16390 }}")
 
         XCTAssertEqual(p.train.scheduling, .unmanaged)
     }
@@ -80,12 +80,12 @@ class FixedRoutingWithStationsTests: BTTestCase {
         let p = Package(layout: layout)
         try p.prepare(routeID: "r1", trainID: "16389", fromBlockId: "NE2", position: .end)
 
-        try p.assert("r1: {r16389{NE2 ≏ 💺16389 ≏ 🔴🚂16389 }} <B.4{sl}(1,0),s> <A.1{sl}(2,0),s> <A.34{ds2}(3,2),b03> <A.2{sr}(2,0),r> [IL1 ≏ ≏ ] <H.1{sl}(1,0),s> <D.2{ds2}(0,1),s01> [IL2 ≏ ≏ ≏ ] <E.3{sl}(0,2),l> <E.1{sl}(2,0),l> [OL3 ≏ ≏ ] <F.3{sr}(0,1),s> <F.1{sr}(0,2),r> <E.4{sr}(0,1),s> {r16389{NE2 ≏ 💺16389 ≏ 🔴🚂16389 }}")
+        try p.assert("r1: {r16389{NE2 ≏ 􀼰16389 ≏ 🔴􀼮16389 }} <B.4{sl}(1,0),s> <A.1{sl}(2,0),s> <A.34{ds2}(3,2),b03> <A.2{sr}(2,0),r> [IL1 ≏ ≏ ] <H.1{sl}(1,0),s> <D.2{ds2}(0,1),s01> [IL2 ≏ ≏ ≏ ] <E.3{sl}(0,2),l> <E.1{sl}(2,0),l> [OL3 ≏ ≏ ] <F.3{sr}(0,1),s> <F.1{sr}(0,2),r> <E.4{sr}(0,1),s> {r16389{NE2 ≏ 􀼰16389 ≏ 🔴􀼮16389 }}")
 
         try p.start()
 
         XCTAssertEqual(p.train.scheduling, .managed)
 
-        try p.assert("r1: {r16389{NE2 ≏ 💺16389 ≏ 🔵🚂16389 }} <r16389<B.4{sl}(1,0),s>> <r16389<A.1{sl}(2,0),l>> <r16389<A.34{ds2}(3,2),s23>> <r16389<A.2{sr}(2,0),r>> [r16389[IL1 ≏ ≏ ]] <r16389<H.1{sl}(1,0),s>> <r16389<D.2{ds2}(0,1),s01>> [r16389[IL2 ≏ ≏ ≏ ]] <E.3{sl}(0,2),l> <E.1{sl}(2,0),l> [OL3 ≏ ≏ ] <F.3{sr}(0,1),s> <F.1{sr}(0,2),r> <E.4{sr}(0,1),s> {r16389{NE2 ≏ 💺16389 ≏ 🔵🚂16389 }}")
+        try p.assert("r1: {r16389{NE2 ≏ 􀼰16389 ≏ 🔵􀼮16389 }} <r16389<B.4{sl}(1,0),s>> <r16389<A.1{sl}(2,0),l>> <r16389<A.34{ds2}(3,2),s23>> <r16389<A.2{sr}(2,0),r>> [r16389[IL1 ≏ ≏ ]] <r16389<H.1{sl}(1,0),s>> <r16389<D.2{ds2}(0,1),s01>> [r16389[IL2 ≏ ≏ ≏ ]] <E.3{sl}(0,2),l> <E.1{sl}(2,0),l> [OL3 ≏ ≏ ] <F.3{sr}(0,1),s> <F.1{sr}(0,2),r> <E.4{sr}(0,1),s> {r16389{NE2 ≏ 􀼰16389 ≏ 🔵􀼮16389 }}")
     }
 }

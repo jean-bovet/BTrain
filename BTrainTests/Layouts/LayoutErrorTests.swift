@@ -40,6 +40,10 @@ class LayoutErrorTests: XCTestCase {
         layout.turnouts[0]
     }
 
+    override func setUp() {
+        train0.locomotive = Locomotive()
+    }
+    
     func testMissingBlock() {
         let unknownBlock = Identifier<Block>(uuid: "foo")
         do {
@@ -67,26 +71,6 @@ class LayoutErrorTests: XCTestCase {
             XCTFail("Must throw an exception")
         } catch {
             XCTAssertEqual(error.localizedDescription, "Turnout t1 not found")
-        }
-    }
-
-    func testBlockNotEmpty() {
-        do {
-            try layout.setTrainToBlock(train0.id, b1.id, direction: .next)
-            try layout.setTrainToBlock(train1.id, b1.id, direction: .next)
-            XCTFail("Must throw an exception")
-        } catch {
-            XCTAssertEqual(error.localizedDescription, "Block b1 is not empty")
-        }
-    }
-
-    func testCannotReserveBlock() {
-        do {
-            b1.reservation = Reservation(trainId: train1.id, direction: .next)
-            try layout.setTrainToBlock(train0.id, b1.id, direction: .next)
-            XCTFail("Must throw an exception")
-        } catch {
-            XCTAssertEqual(error.localizedDescription, "Cannot reserve block 1 for train lw1 because the block is already reserved for Reservation(train=lw2, direction=next)")
         }
     }
 

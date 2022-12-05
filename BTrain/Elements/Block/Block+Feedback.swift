@@ -110,15 +110,4 @@ extension Block {
         }
     }
 
-    func indexOfTrain(forFeedback: Identifier<Feedback>, direction: Direction) -> Int? {
-        guard let index = feedbacks.firstIndex(where: { $0.feedbackId == forFeedback }) else {
-            return nil
-        }
-        switch direction {
-        case .next:
-            return index + 1
-        case .previous:
-            return index
-        }
-    }
 }

@@ -17,6 +17,7 @@ class TrainReservation {
     enum Item: Equatable {
         case block(Block)
         case turnout(Turnout)
+        case transition(Transition)
     }
 
     /// Array of reservation items
@@ -57,6 +58,10 @@ class TrainReservation {
 
     func append(_ turnout: Turnout) {
         items.append(.turnout(turnout))
+    }
+
+    func append(_ transition: Transition) {
+        items.append(.transition(transition))
     }
 
     func clear() {
@@ -157,6 +162,8 @@ final class TrainLeadingReservation: TrainReservation {
                 if let turnoutLength = turnout.length {
                     distance += turnoutLength
                 }
+            case .transition:
+                break
             }
         }
         return distance

@@ -100,7 +100,7 @@ extension RouteItemStation: Resolvable {
             guard let block = layout.blocks[element.blockId] else {
                 continue
             }
-            if block.id == train.blockId {
+            if block.id == train.block?.id {
                 return element
             }
         }

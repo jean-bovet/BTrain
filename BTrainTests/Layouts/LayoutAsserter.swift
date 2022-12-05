@@ -19,15 +19,13 @@ final class LayoutAsserter {
     weak var layout: Layout!
     weak var layoutController: LayoutController!
 
-    var assertBlockParts = false
-
     init(layout: Layout, layoutController: LayoutController) {
         self.layout = layout
         self.layoutController = layoutController
     }
 
-    func assert(_ strings: [String], trains: [Train], drainAll: Bool = true, expectRuntimeError: Bool = false) throws {
-        let expectedLayout = try LayoutFactory.layoutFrom(strings)
+    func assert(_ strings: [String], trains: [Train], resolver: LayoutParserResolver, drainAll: Bool = true, expectRuntimeError: Bool = false) throws {
+        let expectedLayout = try LayoutFactory.layoutFrom(strings, resolver: resolver)
         let expectedTrains = Array(expectedLayout.trains)
 
         // First apply all the feedbacks
@@ -118,7 +116,22 @@ final class LayoutAsserter {
         for (index, expectedTrain) in expectedTrains.enumerated() {
             let train = layout.trains[expectedTrain.id]!
             XCTAssertEqual(train.id, expectedTrain.id, "Unexpected train mismatch at index \(index), route \(routeName)")
-            XCTAssertEqual(train.position, expectedTrain.position, "Mismatching train position for train \(expectedTrain.id), route \(routeName)")
+
+            if train.directionForward {
+                XCTAssertEqual(train.positions.front, expectedTrain.positions.front, "Mismatching train front position for train \(expectedTrain.id), route \(routeName)")
+                // Note: the back position distance cannot be asserted accurately because the ASCII representation does not allow (yet) to specify the distance between feedback,
+                // which is usually where the position ends up after the algorithm computes the exact location from the front position and the length of the train.
+                if let back = train.positions.back {
+                    // Note: if the back position is not specified, it means it ended up in a turnout which is not yet handled (so nil is assigned to the position)
+                    XCTAssertEqual(back.blockId, expectedTrain.positions.back?.blockId, "Mismatching train back position blockId for train \(expectedTrain.id), route \(routeName)")
+                    XCTAssertEqual(back.index, expectedTrain.positions.back?.index, "Mismatching train back position index for train \(expectedTrain.id), route \(routeName)")
+                }
+            } else {
+                XCTAssertEqual(train.positions.back, expectedTrain.positions.back, "Mismatching train back position for train \(expectedTrain.id), route \(routeName)")
+                // Note: the front position distance cannot be asserted accurately because the ASCII representation does not allow (yet) to specify the distance between feedback,
+                // which is usually where the position ends up after the algorithm computes the exact location from the front position and the length of the train.
+                XCTAssertEqual(train.positions.front?.index, expectedTrain.positions.front?.index, "Mismatching train front position index for train \(expectedTrain.id), route \(routeName)")
+            }
             XCTAssertEqual(train.speed!.requestedKph, expectedTrain.speed!.requestedKph, accuracy: 1, "Mismatching train speed for train \(expectedTrain.id), route \(routeName)")
         }
 
@@ -138,18 +151,18 @@ final class LayoutAsserter {
                     XCTFail("Expected step should be a block \(expectedStep)")
                     return
                 }
-                XCTAssertEqual(namedId(stepBlock.blockId), expectedStepBlock.blockId, "Step blockId mismatch at index \(index)")
-                XCTAssertEqual(namedId(step.entrySocket), expectedStep.entrySocket, "Step entrySocket mismatch at block \(stepBlock.blockId)")
-                XCTAssertEqual(namedId(step.exitSocket), expectedStep.exitSocket, "Step exitSocket mismatch at block \(stepBlock.blockId)")
+                XCTAssertEqual(stepBlock.blockId, expectedStepBlock.blockId, "Step blockId mismatch at index \(index)")
+                XCTAssertEqual(step.entrySocket, expectedStep.entrySocket, "Step entrySocket mismatch at block \(stepBlock.blockId)")
+                XCTAssertEqual(step.exitSocket, expectedStep.exitSocket, "Step exitSocket mismatch at block \(stepBlock.blockId)")
                 assertBlockAt(index: index, routeName: routeName, step: stepBlock, expectedStep: expectedStepBlock, expectedLayout: expectedLayout)
             case let .turnout(stepTurnout):
                 guard case let .turnout(expectedStepTurnout) = expectedStep else {
                     XCTFail("Expected step should be a turnout \(expectedStep)")
                     return
                 }
-                XCTAssertEqual(namedId(stepTurnout.turnout.id), expectedStepTurnout.turnout.id, "Step turnoutId mismatch at index \(index)")
-                XCTAssertEqual(namedId(step.entrySocket), expectedStep.entrySocket, "Step entrySocket mismatch at turnout \(stepTurnout.turnout.id)")
-                XCTAssertEqual(namedId(step.exitSocket), expectedStep.exitSocket, "Step exitSocket mismatch at turnout \(stepTurnout.turnout.id)")
+                XCTAssertEqual(stepTurnout.turnout.id, expectedStepTurnout.turnout.id, "Step turnoutId mismatch at index \(index)")
+                XCTAssertEqual(step.entrySocket, expectedStep.entrySocket, "Step entrySocket mismatch at turnout \(stepTurnout.turnout.id)")
+                XCTAssertEqual(step.exitSocket, expectedStep.exitSocket, "Step exitSocket mismatch at turnout \(stepTurnout.turnout.id)")
                 assertTurnoutAt(index: index, routeName: routeName, step: stepTurnout, expectedStep: expectedStepTurnout, expectedLayout: expectedLayout)
             }
 
@@ -251,7 +264,7 @@ final class LayoutAsserter {
         }
 
         // Assert the parts of the block reserved for the train and its wagon
-        if let train = block.trainInstance, let expectedTrain = expectedBlock.trainInstance, assertBlockParts {
+        if let train = block.trainInstance, let expectedTrain = expectedBlock.trainInstance {
             XCTAssertEqual(train.parts, expectedTrain.parts, "Unexpected train parts mismatch in block \(block) at index \(index), route \(routeName)")
         }
     }
@@ -259,36 +272,8 @@ final class LayoutAsserter {
     private func assertTurnoutAt(index: Int, routeName: String, step: ResolvedRouteItemTurnout, expectedStep: ResolvedRouteItemTurnout, expectedLayout _: LayoutParser.ParsedLayout) {
         let turnout = step.turnout
         let expectedTurnout = expectedStep.turnout
-        XCTAssertEqual(namedId(turnout.id), expectedTurnout.id, "Mismatching turnout ID at index \(index), route \(routeName)")
+        XCTAssertEqual(turnout.id, expectedTurnout.id, "Mismatching turnout ID at index \(index), route \(routeName)")
         XCTAssertEqual(turnout.actualState, expectedTurnout.actualState, "Mismatching turnout state for \(turnout) at index \(index), route \(routeName)")
         XCTAssertEqual(turnout.reserved?.train, expectedTurnout.reserved?.train, "Mismatching turnout reservation for \(turnout) at index \(index), route \(routeName)")
-    }
-}
-
-// This extension converts an identifier to another one that uses the name of the element as the uuid.
-// Note: this is because in the unit tests, the assertion is done using the easier to remember name instead of uuid.
-extension LayoutAsserter {
-    private func namedId(_ blockId: Identifier<Block>?) -> Identifier<Block>? {
-        if let block = layout.blocks[blockId] {
-            return .init(uuid: block.name)
-        } else {
-            return blockId
-        }
-    }
-
-    private func namedId(_ turnoutId: Identifier<Turnout>?) -> Identifier<Turnout>? {
-        if let turnout = layout.turnouts[turnoutId] {
-            return .init(uuid: turnout.name)
-        } else {
-            return turnoutId
-        }
-    }
-
-    private func namedId(_ socket: Socket?) -> Socket? {
-        guard let socket = socket else {
-            return nil
-        }
-
-        return .init(block: namedId(socket.block), turnout: namedId(socket.turnout), socketId: socket.socketId)
     }
 }

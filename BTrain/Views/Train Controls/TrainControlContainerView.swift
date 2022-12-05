@@ -36,7 +36,7 @@ struct TrainControlContainerView: View {
                     LocomotiveIconView(locomotiveIconManager: document.locomotiveIconManager, loc: loc, size: .medium, hideIfNotDefined: true)
                 }
 
-                if train.blockId != nil {
+                if train.block != nil {
                     HStack {
                         TrainControlSpeedView(document: document, train: train, loc: loc, speed: loc.speed, trainRuntimeError: $trainRuntimeError)
                         Spacer()
@@ -61,13 +61,13 @@ struct TrainControlContainerView_Previews: PreviewProvider {
 
     static let doc2: LayoutDocument = {
         let layout = LayoutLoop1().newLayout()
-        layout.trains[0].blockId = layout.blocks[0].id
+        layout.trains[0].block = layout.blocks[0]
         return LayoutDocument(layout: layout)
     }()
 
     static let doc3: LayoutDocument = {
         let layout = LayoutLoop1().newLayout()
-        layout.trains[0].blockId = layout.blocks[0].id
+        layout.trains[0].block = layout.blocks[0]
         layout.trains[0].locomotive = nil
         return LayoutDocument(layout: layout)
     }()

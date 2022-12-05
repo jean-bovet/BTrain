@@ -160,4 +160,8 @@ final class MockTrainController: TrainControlling {
     func reschedule() {
         // no-op
     }
+    
+    func logDebug(_ message: String) {
+        // no-op
+    }
 }

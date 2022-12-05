@@ -20,19 +20,22 @@ extension Layout {
 
         /// The feedback that will be triggered by the train entering ``block``
         let feedback: Feedback
-
+        
+        /// The index of the feedback inside ``block``
+        let index: Int
+        
         /// The direction of travel of the train entering ``block``, relative to ``block``.
         let direction: Direction
     }
 
     /// Returns the entry feedback that is expected to be triggered when the train enters the next block.
     ///
-    /// The next block is computed by taking into account the direction of travel of the train and the ``strictRouteFeedbackStrategy`` settings.
+    /// The next block is computed by taking into account the direction of travel of the train.
     ///
     /// - Parameter train: the train
     /// - Returns: the entry feedback or nil if no valid entry feedback is found
     func entryFeedback(for train: Train) throws -> EntryFeedback? {
-        guard let currentBlock = currentBlock(train: train) else {
+        guard let currentBlock = train.block else {
             return nil
         }
 
@@ -50,14 +53,6 @@ extension Layout {
                 return nil
             }
             nextBlock = nb
-
-            // Strict route strategy requires the train to be at the end of the block
-            // before moving to the next block.
-            if strictRouteFeedbackStrategy {
-                if try atEndOfBlock(train: train) == false {
-                    return nil
-                }
-            }
         }
 
         // Find out which feedback is going to be used to detect the train entering
@@ -105,8 +100,14 @@ extension Layout {
         // Now return the appropriate feedback depending on the direction
         // of travel of the train into the next block.
         let entryFeedbackId = nextBlock.entryFeedback(for: nextBlockDirectionOfTravel)
+
+        // Determine the index of the feedback within the next block
+        guard let index = nextBlock.feedbacks.firstIndex(where: { $0.feedbackId == entryFeedbackId }) else {
+            return nil
+        }
+        
         if let entryFeedback = feedbacks[entryFeedbackId] {
-            return .init(block: nextBlock, feedback: entryFeedback, direction: nextBlockDirectionOfTravel)
+            return Layout.EntryFeedback(block: nextBlock, feedback: entryFeedback, index: index, direction: nextBlockDirectionOfTravel)
         } else {
             return nil
         }

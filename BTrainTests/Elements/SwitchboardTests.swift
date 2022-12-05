@@ -86,10 +86,13 @@ class SwitchboardTests: XCTestCase {
 
         let b1 = provider.blockShapes[0]
         let train = layout.trains[0]
-
-        try layout.setTrainToBlock(train.id, b1.block.id, direction: .next)
-        XCTAssertEqual(train.blockId, b1.block.id)
-        XCTAssertEqual(train.position, 0)
+        train.locomotive = Locomotive()
+        b1.block.length = 100
+        b1.block.feedbacks.append(.init(id: "f1", feedbackId: .init(uuid: "f1"), distance: 10))
+        
+        try controller.setupTrainToBlock(train, b1.block.id, naturalDirectionInBlock: .next)
+        XCTAssertEqual(train.block, b1.block)
+        XCTAssertEqual(train.positions, TrainPositions.both(blockId: b1.block.id, frontIndex: b1.block.feedbacks.count, frontDistance: 10.after, backIndex: b1.block.feedbacks.count, backDistance: 10.after))
 
         let c = b1.trainCellPath(at: 0).boundingBox.center
         let c2 = b1.trainCellPath(at: 1).boundingBox.center
@@ -107,11 +110,17 @@ class SwitchboardTests: XCTestCase {
         state.editing = false
 
         let b1 = provider.blockShapes[0]
+        b1.block.feedbacks.append(.init(id: "f1", feedbackId: .init(uuid: "f1"), distance: 10))
+        b1.block.length = 100
+
         let b2 = provider.blockShapes[1]
+        b2.block.feedbacks.append(.init(id: "ff", feedbackId: .init(uuid: "f2"), distance: 10))
+        b2.block.length = 100
 
         let train = layout.trains[0]
-        try layout.setTrainToBlock(train.id, b1.block.id, direction: .next)
-        XCTAssertEqual(train.blockId, b1.block.id)
+        train.locomotive = Locomotive()
+        try controller.setupTrainToBlock(train, b1.block.id, naturalDirectionInBlock: .next)
+        XCTAssertEqual(train.block, b1.block)
 
         let c = b1.trainCellPath(at: 0).boundingBox.center
         let c2 = b2.trainCellPath(at: 0).boundingBox.center
@@ -124,8 +133,8 @@ class SwitchboardTests: XCTestCase {
             XCTFail("Info should not be nil")
             return
         }
-        try? layout.setTrainToBlock(dragInfo.trainId, dragInfo.blockId, direction: Direction.next)
+        try controller.setupTrainToBlock(layout.trains[dragInfo.trainId]!, dragInfo.blockId, naturalDirectionInBlock: Direction.next)
 
-        XCTAssertEqual(train.blockId, b2.block.id)
+        XCTAssertEqual(train.block, b2.block)
     }
 }

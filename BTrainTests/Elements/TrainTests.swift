@@ -18,11 +18,15 @@ import XCTest
 
 class TrainTests: XCTestCase {
     func testCodable() throws {
+        let layout = Layout()
+        layout.blocks.add(Block(id: Identifier<Block>(uuid: "111")))
+        
         let t1 = Train(uuid: "1")
         t1.name = "Rail 2000"
         t1.routeStepIndex = 1
-        t1.position = 7
-        t1.blockId = Identifier<Block>(uuid: "111")
+        t1.positions.front = .init(blockId: Identifier<Block>(uuid: "1"), index: 1, distance: 10)
+        t1.positions.back = .init(blockId: Identifier<Block>(uuid: "2"), index: 2, distance: 20)
+        t1.block = layout.blocks[0]
         t1.routeId = Identifier<Route>(uuid: "1212")
 
         let encoder = JSONEncoder()
@@ -30,12 +34,13 @@ class TrainTests: XCTestCase {
 
         let decoder = JSONDecoder()
         let t2 = try decoder.decode(Train.self, from: data)
+        t2.restore(layout: layout)
 
         XCTAssertEqual(t1.id, t2.id)
         XCTAssertEqual(t1.name, t2.name)
         XCTAssertEqual(t1.routeStepIndex, t2.routeStepIndex)
-        XCTAssertEqual(t1.position, t2.position)
-        XCTAssertEqual(t1.blockId, t2.blockId)
+        XCTAssertEqual(t1.positions, t2.positions)
+        XCTAssertEqual(t1.block, t2.block)
         XCTAssertEqual(t1.routeId, t2.routeId)
     }
 }

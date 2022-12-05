@@ -27,20 +27,21 @@ import Foundation
 // <t0{sl}(0,1),s> = turnout <t<id>{type}(fromSocket,toSocket),state> where:
 //    - type is optional and will default to straight right. Type can be "sl", "sr", "tw", "ds" and "ds2"
 //    - state can be: s, l, r, s01, s23, b21, b03
-// 🚂 = train
-// 💺 = wagon (used to indicate occupation of the train in the various parts of the block (only when train and block length are defined)
-// 🔴🚂 = train stopped
-// 🟡🚂 = train braking
-// 🟠🚂 = train stopping
-// 🟠🚂 = train stopping
-// 🟢🚂 = train running at full speed
-// 🔵🚂 = train running at limited speed
+// 􀼮 = train
+// 􀼯 = wagon (used to indicate occupation of the train in the various parts of the block (only when train and block length are defined)
+// 🔴􀼮 = train stopped
+// 🟡􀼮 = train braking
+// 🟠􀼮 = train stopping
+// 🟠􀼮 = train stopping
+// 🟢􀼮 = train running at full speed
+// 🔵􀼮 = train running at limited speed
 // For example:
-// { ≏ ≏ } [r0[ ≏ ≏ 🟢🚂 ]] [[ ≏ ≏ ]] [ ≏ ≏ ] {b0 ≏ ≏ }
-// { ≏ ≏ } <t0:0:1:0> [[r0b0 ≏ ≏ 🟢🚂 ]] <t1:0:1:0> [[ ≏ ≏ ]] [ ≏ ≏ ] <t0:1:0:1> !{b0 ≏ ≏ }
+// { ≏ ≏ } [r0[ ≏ ≏ 🟢􀼮 ]] [[ ≏ ≏ ]] [ ≏ ≏ ] {b0 ≏ ≏ }
+// { ≏ ≏ } <t0:0:1:0> [[r0b0 ≏ ≏ 🟢􀼮 ]] <t1:0:1:0> [[ ≏ ≏ ]] [ ≏ ≏ ] <t0:1:0:1> !{b0 ≏ ≏ }
 final class LayoutParser {
     let routeStrings: [String]
-
+    let resolver: LayoutParserResolver
+    
     final class ParsedLayout {
         var blocks = Set<Block>()
         var turnouts = Set<Turnout>()
@@ -56,17 +57,18 @@ final class LayoutParser {
 
     var parsedLayout = ParsedLayout()
 
-    convenience init(routeString: String) {
-        self.init([routeString])
+    convenience init(routeString: String, resolver: LayoutParserResolver) {
+        self.init([routeString], resolver: resolver)
     }
 
-    init(_ routeStrings: [String]) {
+    init(_ routeStrings: [String], resolver: LayoutParserResolver) {
         self.routeStrings = routeStrings
+        self.resolver = resolver
     }
 
     func parse() throws {
         for (index, rs) in routeStrings.enumerated() {
-            let parser = LayoutRouteParser(ls: rs, id: String(index), layout: parsedLayout)
+            let parser = LayoutRouteParser(ls: rs, id: String(index), layout: parsedLayout, resolver: resolver)
             try parser.parse()
             parsedLayout.routes[parser.route.routeId] = parser.route
         }
@@ -74,12 +76,12 @@ final class LayoutParser {
 }
 
 extension LayoutFactory {
-    static func layoutFrom(_ routeString: String) throws -> LayoutParser.ParsedLayout {
-        try layoutFrom([routeString])
+    static func layoutFrom(_ routeString: String, resolver: LayoutParserResolver) throws -> LayoutParser.ParsedLayout {
+        try layoutFrom([routeString], resolver: resolver)
     }
 
-    static func layoutFrom(_ routeStrings: [String]) throws -> LayoutParser.ParsedLayout {
-        let parser = LayoutParser(routeStrings)
+    static func layoutFrom(_ routeStrings: [String], resolver: LayoutParserResolver) throws -> LayoutParser.ParsedLayout {
+        let parser = LayoutParser(routeStrings, resolver: resolver)
         try parser.parse()
         return parser.parsedLayout
     }

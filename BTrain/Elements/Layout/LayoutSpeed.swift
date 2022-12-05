@@ -30,7 +30,7 @@ struct LayoutSpeed {
     ///   - speed: the speed to evaluate
     /// - Returns: true if the train can stop with the available leading distance, false otherwise
     func isBrakingDistanceRespected(train: Train, speed: SpeedKph) throws -> Bool {
-        let distanceLeftInBlock = distanceLeftInCurrentBlock(train: train)
+        let distanceLeftInBlock = train.distanceLeftInFrontBlock()
         let leadingDistance = distanceLeftInBlock + train.leading.settledDistance
 
         // Compute the distance necessary to bring the train to a full stop
@@ -71,7 +71,7 @@ struct LayoutSpeed {
     /// This takes into account speed limits for turnout branches and more.
     /// - Parameter train: the train
     /// - Returns: the maximum allowed speed
-    private func occupiedBlocksMaximumSpeed(train: Train) -> SpeedKph {
+    func occupiedBlocksMaximumSpeed(train: Train) -> SpeedKph {
         var maximumSpeedAllowed: SpeedKph = LayoutFactory.DefaultMaximumSpeed
         for block in train.occupied.blocks {
             maximumSpeedAllowed = block.maximumSpeedAllowed(speed: maximumSpeedAllowed)
@@ -93,8 +93,8 @@ struct LayoutSpeed {
     /// brake within the block it is currently moving in.
     /// - Parameter train: the train
     /// - Returns: the maximum speed
-    private func unrestrictedLeadMaximumSpeed(train: Train) throws -> SpeedKph {
-        let distanceLeftInBlock = distanceLeftInCurrentBlock(train: train)
+    func unrestrictedLeadMaximumSpeed(train: Train) throws -> SpeedKph {
+        let distanceLeftInBlock = train.distanceLeftInFrontBlock()
         var unrestrictedLeadingDistance = distanceLeftInBlock
         var speed = LayoutFactory.DefaultMaximumSpeed
         for item in train.leading.items {
@@ -107,6 +107,9 @@ struct LayoutSpeed {
             case let .turnout(turnout):
                 speed = turnout.maximumSpeedAllowed(speed: speed)
                 distance = turnout.length ?? 0
+                
+            case .transition:
+                distance = 0
             }
 
             if speed < LayoutFactory.DefaultMaximumSpeed {
@@ -167,24 +170,10 @@ struct LayoutSpeed {
     ///
     /// - Parameter train: the train
     /// - Returns: the maximum speed
-    private func settledLeadMaximumSpeed(train: Train) throws -> SpeedKph {
-        let distanceLeftInBlock = distanceLeftInCurrentBlock(train: train)
+    func settledLeadMaximumSpeed(train: Train) throws -> SpeedKph {
+        let distanceLeftInBlock = train.distanceLeftInFrontBlock()
         let settledDistance = distanceLeftInBlock + train.leading.settledDistance
         return try maximumSpeedToBrake(train: train, toSpeed: 0, withDistance: settledDistance)
-    }
-
-    /// Returns the distance left in the current block
-    /// - Parameter train: the train
-    /// - Returns: the distance left
-    private func distanceLeftInCurrentBlock(train: Train) -> Double {
-        guard let currentBlock = layout.currentBlock(train: train) else {
-            return 0
-        }
-        guard let distanceLeftInBlock = currentBlock.distanceLeftInBlock(train: train) else {
-            return 0
-        }
-
-        return distanceLeftInBlock
     }
 
     struct DistanceChangeResult {

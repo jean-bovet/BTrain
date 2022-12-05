@@ -16,6 +16,14 @@ import XCTest
 
 /// Helper class that the unit test uses to prepare, start and stop a train in a layout.
 final class Package {
+
+    enum Position {
+        case start
+        case end
+        case automatic
+        case custom(index: Int)
+    }
+    
     let digitalController = MockCommandInterface()
     let layout: Layout
     let asserter: LayoutAsserter
@@ -44,7 +52,6 @@ final class Package {
 
         layout.automaticRouteRandom = false
         layout.detectUnexpectedFeedback = true
-        layout.strictRouteFeedbackStrategy = true
     }
 
     func prepare(trainID: String, fromBlockId: String, position: Position = .start, direction: Direction = .next) throws {
@@ -56,10 +63,25 @@ final class Package {
         let train = layout.trains[Identifier<Train>(uuid: trainID)]!
         let route = layout.route(for: .init(uuid: routeID), trainId: .init(uuid: trainID))!
         let loc = train.locomotive!
-
+        let block = layout.blocks[Identifier<Block>(uuid: fromBlockId)]!
+        
         train.routeId = route.id
-        try layoutController.setTrainToBlock(train, Identifier<Block>(uuid: fromBlockId), position: position, direction: direction)
-
+        switch position {
+        case .start:
+            let location = TrainPositions.front(blockId: block.id, index: 0, distance: 0.after)
+            try setTrainInBlock(train: train, block: block, positions: location, direction: direction)
+        case .end:
+            let distance = block.feedbacks.last!.distance!
+            let location = TrainPositions.front(blockId: block.id, index: block.feedbacks.count, distance: distance.after)
+            try setTrainInBlock(train: train, block: block, positions: location, direction: direction)
+        case .custom(let index):
+            let distance = block.feedbacks[index-1].distance!
+            let location = TrainPositions.front(blockId: block.id, index: index, distance: direction == .next ? distance.after : distance.before)
+            try setTrainInBlock(train: train, block: block, positions: location, direction: direction)
+        case .automatic:
+            try layoutController.setupTrainToBlock(train, block.id, naturalDirectionInBlock: direction)
+        }
+                
         XCTAssertEqual(loc.speed.requestedKph, 0)
         XCTAssertEqual(train.scheduling, .unmanaged)
         XCTAssertEqual(train.state, .stopped)
@@ -71,6 +93,12 @@ final class Package {
         routes.append(route)
     }
 
+    func setTrainInBlock(train: Train, block: Block, positions: TrainPositions, direction: Direction) throws {
+        try layout.setTrainToBlock(train, block.id, positions: positions, directionOfTravelInBlock: direction)
+        try layoutController.reservation.freeElements(train: train)
+        try layoutController.reservation.occupyBlocksWith(train: train)
+    }
+    
     func start(destination: Destination? = nil, expectedState: Train.State = .running, routeSteps: [String]? = nil) throws {
         try start(routeID: route.id.uuid, trainID: train.id.uuid, destination: destination, expectedState: expectedState, routeSteps: routeSteps)
     }
@@ -121,14 +149,14 @@ final class Package {
         // Drain all events when the interface is running. If the interface is on pause,
         // do not drain because the drain will never exits as the interface never executes.
         let drainAll = digitalController.running
-        try asserter.assert([r1], trains: trains, drainAll: drainAll, expectRuntimeError: expectRuntimeError)
+        try asserter.assert([r1], trains: trains, resolver: layout, drainAll: drainAll, expectRuntimeError: expectRuntimeError)
         if let leadingBlocks = leadingBlocks {
             try assertLeadingBlocks(leadingBlocks)
         }
     }
 
     func assert2(_ r1: String, _ r2: String) throws {
-        try asserter.assert([r1, r2], trains: trains)
+        try asserter.assert([r1, r2], trains: trains, resolver: layout)
     }
 
     func assertLeadingBlocks(_ blockNames: [String]) throws {
@@ -139,4 +167,55 @@ final class Package {
         let producer = LayoutASCIIProducer(layout: layout)
         print(try producer.stringFrom(route: route, trainId: train.id, useBlockName: true, useTurnoutName: true))
     }
+}
+
+extension Layout: LayoutParserResolver {
+    
+    func blockId(forBlockName: String) -> BTrain.Identifier<BTrain.Block> {
+        block(named: forBlockName).id
+    }
+    
+    func turnoutId(forTurnoutName: String) -> BTrain.Identifier<BTrain.Turnout> {
+        turnout(named: forTurnoutName).id
+    }
+    
+    /// Returns the distance of the train in the specified block, given its direction of travel within the block and the feedback index.
+    /// - Parameters:
+    ///   - index: the feedback index that was triggered
+    ///   - blockId: the block ID
+    ///   - directionInBlock: the direction of travel of the train inside the block
+    /// - Returns: the distance where the train is located
+    func distance(forFeedbackAtPosition index: Int, blockId: BTrain.Identifier<BTrain.Block>, directionInBlock: Direction) -> Double {
+        let block = blocks[blockId]!
+        if index < 1 {
+            if directionInBlock == .next {
+                // Block:    [   f0    f1   ]>
+                // Distance: |->
+                // Train:  ---->
+                return 0.after
+            } else {
+                // Block:    [    f0    f1   ]>
+                // Distance: |-->
+                // Train:        <------
+                return block.feedbacks[index].distance!.before
+            }
+        } else {
+            if directionInBlock == .next {
+                // Block:    [   f0    f1   ]>
+                // Distance: |----->
+                // Train:  -------->
+                return block.feedbacks[index-1].distance!.after
+            } else {
+                // Block:    [    f0     f1   ]>
+                // Distance: |--------->
+                // Train:               <------
+                if index < block.feedbacks.count {
+                    return block.feedbacks[index].distance!.before
+                } else {
+                    return block.feedbacks[index-1].distance!.after
+                }
+            }
+        }
+    }
+
 }

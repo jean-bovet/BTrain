@@ -108,4 +108,8 @@ protocol TrainControlling: AnyObject {
 
     /// Schedule a timer that will restart the train after a specific waiting period
     func reschedule()
+    
+    /// Logs the specified message in the debug console
+    /// - Parameter message: the message
+    func logDebug(_ message: String)
 }

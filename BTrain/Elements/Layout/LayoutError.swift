@@ -16,7 +16,6 @@ enum LayoutError: Error {
     case trainNotFound(trainId: Identifier<Train>)
     case trainNotAssignedToABlock(train: Train)
     case trainNotFoundInBlock(blockId: Identifier<Block>)
-    case trainInBlockDoesNotMatch(trainId: Identifier<Train>, blockId: Identifier<Block>, blockTrainId: Identifier<Train>)
     case trainNotFoundInRoute(train: Train, route: Route)
     case trainNotAssignedToARoute(train: Train)
 
@@ -29,27 +28,42 @@ enum LayoutError: Error {
     case blockNotFoundInStation(stationId: Identifier<Station>)
     case stationNotFound(stationId: Identifier<Station>)
     case turnoutNotFound(turnoutId: Identifier<Turnout>)
-    case feedbackNotFound(feedbackId: Identifier<Feedback>)
-    case socketIdNotFound(socket: Socket)
+    case directionNotFound(blockId: Identifier<Block>)
 
+    case socketIdNotFound(socket: Socket)
     case invalidSocket(socket: Socket)
+
+    case feedbackNotFound(feedbackId: Identifier<Feedback>)
+    case feedbackNotFoundInBlock(feedbackId: Identifier<Feedback>, block: Block)
+    case blockContainsNoFeedback(block: Block)
+    case feedbackDistanceNotSet(feedback: Block.BlockFeedback)
+
+    case frontPositionNotSpecified(position: TrainPositions)
+    case backPositionNotSpecified(position: TrainPositions)
+    
+    case frontPositionBlockIdMismatch(expected: Identifier<Block>, got: Identifier<Block>)
+    case backPositionBlockIdMismatch(expected: Identifier<Block>, got: Identifier<Block>)
+
+    case frontPositionBlockNotSpecified(position: TrainPositions)
+    case backPositionBlockNotSpecified(position: TrainPositions)
 
     case brakeFeedbackNotFound(block: Block)
     case stopFeedbackNotFound(block: Block)
 
     case blockNotEmpty(blockId: Identifier<Block>)
     case blockNotReservedForTrain(block: Block, train: Identifier<Train>)
+    case blockLengthNotDefined(block: Block)
 
     case blockAlreadyReserved(block: Block)
     case turnoutAlreadyReserved(turnout: Turnout)
-    case transitionAlreadyReserved(transition: ITransition)
+    case transitionAlreadyReserved(transition: Transition)
 
     case unexpectedFeedback(feedback: Feedback)
 
     case noTransition(fromBlock: Block, toBlock: Block)
     case lastTransitionToBlock(transition: Identifier<Transition>, blockId: Identifier<Block>)
     case alwaysOneAndOnlyOneTransition
-    case invalidTransition(transition: ITransition)
+    case invalidTransition(transition: Transition)
 
     case cannotReserveBlock(block: Block, train: Train, reserved: Reservation)
     case cannotReserveAllElements(train: Train)
@@ -79,12 +93,22 @@ extension LayoutError: LocalizedError {
             return "Station \(stationId) not found"
         case let .turnoutNotFound(turnoutId: turnoutId):
             return "Turnout \(turnoutId) not found"
-        case let .feedbackNotFound(feedbackId: feedbackId):
-            return "Feedback \(feedbackId) not found"
         case let .blockNotEmpty(blockId: blockId):
             return "Block \(blockId) is not empty"
         case let .blockNotReservedForTrain(block: block, train: train):
             return "Block \(block.name) did not get reserved for train \(train)"
+
+        case let .feedbackNotFound(feedbackId: feedbackId):
+            return "Feedback \(feedbackId) not found"
+        case .feedbackNotFoundInBlock(feedbackId: let feedbackId, block: let block):
+            return "Feedback \(feedbackId) not found in block \(block.name)"
+        case .blockContainsNoFeedback(block: let block):
+            return "Block \(block.name) contains no feedback"
+        case .blockLengthNotDefined(block: let block):
+            return "Block \(block.name) does not have its length defined"
+
+        case .feedbackDistanceNotSet(feedback: let feedback):
+            return "Feedback \(feedback.feedbackId) distance not set"
 
         case let .brakeFeedbackNotFound(block: block):
             return "Block \(block.name) does not have a brake feedback"
@@ -108,15 +132,31 @@ extension LayoutError: LocalizedError {
 
         case let .socketIdNotFound(socket: socket):
             return "There is no socket defined for \(socket)"
+        case let .directionNotFound(blockId: blockId):
+            return "Direction not found in occupied block \(blockId)"
+            
         case let .invalidSocket(socket: socket):
             return "Socket \(socket) must have either its block or turnout defined"
 
+        case let .frontPositionBlockNotSpecified(position: position):
+            return "Front position block not specified: \(position)"
+        case let .backPositionBlockNotSpecified(position: position):
+            return "Back position block not specified: \(position)"
+            
+        case .frontPositionNotSpecified(position: let position):
+            return "Front position not specified: \(position)"
+        case .backPositionNotSpecified(position: let position):
+            return "Back position block not specified: \(position)"
+
+        case .frontPositionBlockIdMismatch(expected: let expected, got: let got):
+            return "Front position block mismatch: expected \(expected) but got \(got)"
+        case .backPositionBlockIdMismatch(expected: let expected, got: let got):
+            return "Back position block mismatch: expected \(expected) but got \(got)"
+
         case let .trainNotAssignedToABlock(train: train):
-            return "Train \(train.name) does not have any assigned block (train.blockId is nil)"
+            return "Train \(train.name) does not have any assigned block (train.block is nil)"
         case let .trainNotFoundInBlock(blockId: blockId):
             return "Block \(blockId) does not have any train assigned to it (TrainInstance is nil)"
-        case let .trainInBlockDoesNotMatch(trainId: trainId, blockId: blockId, blockTrainId: blockTrainId):
-            return "Block \(blockId) has another train (\(blockTrainId)) than \(trainId) assigned to it"
         case let .trainNotFoundInRoute(train: train, route: route):
             return "Train \(train.name) not found in route \(route.name)"
         case let .trainNotAssignedToARoute(train: train):

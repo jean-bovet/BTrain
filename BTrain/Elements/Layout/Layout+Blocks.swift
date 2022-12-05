@@ -55,8 +55,8 @@ extension Layout {
         blocks.remove(blockID)
 
         trains.elements.forEach { train in
-            if train.blockId == blockID {
-                train.blockId = nil
+            if train.block?.id == blockID {
+                train.block = nil
             }
         }
     }
@@ -72,26 +72,10 @@ extension Layout {
         }
     }
 
-    func currentBlock(train: Train) -> Block? {
-        if let blockId = train.blockId {
-            return blocks[blockId]
-        } else {
-            return nil
-        }
-    }
-
     func atEndOfBlock(train: Train) throws -> Bool {
-        if let currentBlock = currentBlock(train: train) {
-            guard let ti = currentBlock.trainInstance else {
-                throw LayoutError.trainNotFoundInBlock(blockId: currentBlock.id)
-            }
-            if ti.direction == .next {
-                return train.position == currentBlock.feedbacks.count
-            } else {
-                return train.position == 0
-            }
-        } else {
+        guard let currentBlock = train.block else {
             return false
         }
+        return try train.atEndOfBlock(block: currentBlock)
     }
 }

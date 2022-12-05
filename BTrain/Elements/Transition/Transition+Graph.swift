@@ -25,7 +25,7 @@ struct InvalidElementIdentifier: GraphElementIdentifier {
     var uuid: String = UUID().uuidString
 }
 
-extension ITransition {
+extension Transition: GraphEdge {
     var identifier: GraphElementIdentifier {
         TransitionGraphElementIdentifier(id)
     }

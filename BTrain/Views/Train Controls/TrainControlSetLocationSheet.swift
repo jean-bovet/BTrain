@@ -42,7 +42,7 @@ struct TrainControlSetLocationSheet: View {
 
                 BlockPicker(layout: layout, blockId: $blockId)
                     .onAppear {
-                        blockId = train.blockId
+                        blockId = train.block?.id
                     }
 
                 Picker("with direction", selection: $direction) {
@@ -72,7 +72,7 @@ struct TrainControlSetLocationSheet: View {
                 Button("Set") {
                     do {
                         if let selectedBlock = blockId {
-                            try controller.setTrainToBlock(train, selectedBlock, position: .end, direction: direction)
+                            try controller.setupTrainToBlock(train, selectedBlock, naturalDirectionInBlock: direction)
                             controller.redrawSwitchboard()
                         }
                         errorStatus = nil

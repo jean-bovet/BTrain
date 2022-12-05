@@ -24,7 +24,6 @@ struct SettingsKeys {
     static let automaticRouteRandom = "automaticRouteRandom"
     static let shortestRouteEnabled = "shortestRouteEnabled"
     static let detectUnexpectedFeedback = "detectUnexpectedFeedback"
-    static let strictRouteFeedbackStrategy = "strictRouteFeedbackStrategy"
 
     static let debugMode = "debugMode"
     static let switchboardWhiteBackground = "switchboardWhiteBackground"

@@ -48,6 +48,15 @@ final class LayoutStringParser {
         return Int(intString)
     }
 
+    func matchesDouble() -> Double? {
+        var doubleString = ""
+        while Int(String(c)) != nil || c == "." {
+            doubleString += String(c)
+            eat()
+        }
+        return Double(doubleString)
+    }
+
     func matches(_ char: Character) -> Bool {
         if c == char {
             eat(char)

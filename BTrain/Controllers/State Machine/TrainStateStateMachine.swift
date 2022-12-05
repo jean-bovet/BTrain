@@ -47,10 +47,13 @@ struct TrainStateStateMachine {
             }
         } else {
             if try train.shouldStopInBlock() && train.brakeFeedbackActivated {
+                train.logDebug("brake feedback activated, braking.")
                 train.state = .braking
             } else if try train.shouldStopInBlock() && train.stopFeedbackActivated {
+                train.logDebug("stop feedback activated, stopping.")
                 train.state = .stopping
             } else if try train.shouldStopInBlockBecauseNotEnoughReservedBlocksLength() {
+                train.logDebug("stop in block because not enough reserved block length.")
                 train.state = .stopping
             }
         }
@@ -59,6 +62,7 @@ struct TrainStateStateMachine {
     private func handleBrakingState(train: TrainControlling) throws {
         if try train.shouldStopInBlock() {
             if train.stopFeedbackActivated {
+                train.logDebug("stop feedback activated, stopping.")
                 train.state = .stopping
             }
         } else {

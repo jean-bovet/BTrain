@@ -19,13 +19,14 @@ class LayoutTests: BTTestCase {
         let layout = Layout()
 
         let t1 = layout.trains.add(Train(uuid: "t1", name: "t1"))
+        t1.locomotive = Locomotive()
         let b1 = layout.newBlock(name: "b1", category: .free)
         let b2 = layout.newBlock(name: "b2", category: .free)
         layout.link(from: b1.next, to: b2.previous)
         layout.link(from: b2.next, to: b1.previous)
 
-        try layout.setTrainToBlock(t1.id, b1.id, direction: .next)
-        XCTAssertEqual(t1.blockId, b1.id)
+        try layout.setTrainToBlock(t1, b1.id, positions: .both(blockId: b1.id, frontIndex: 2, frontDistance: 20, backIndex: 0, backDistance: 0), directionOfTravelInBlock: .next)
+        XCTAssertEqual(t1.block?.id, b1.id)
         XCTAssertEqual(layout.transitions.elements.count, 2)
 
         let b11 = layout.blocks[b1.id]
@@ -33,7 +34,7 @@ class LayoutTests: BTTestCase {
 
         layout.remove(blockID: b1.id)
         XCTAssertNil(layout.blocks[b1.id])
-        XCTAssertNil(t1.blockId)
+        XCTAssertNil(t1.block)
         XCTAssertEqual(layout.transitions.elements.count, 0)
     }
 
@@ -76,7 +77,7 @@ class LayoutTests: BTTestCase {
         let train1 = doc.layout.trains[0]
         let block1 = doc.layout.blocks[0]
 
-        try doc.layout.setTrainToBlock(train1.id, block1.id, direction: .next)
+        try doc.layoutController.setupTrainToBlock(train1, block1.id, naturalDirectionInBlock: .next)
         XCTAssertEqual(train1.directionForward, true)
 
         // Change the train direction
@@ -89,7 +90,7 @@ class LayoutTests: BTTestCase {
 
         // Set the train inside a block with a specific direction which
         // is opposite of the train direction itself
-        try doc.layout.setTrainToBlock(train1.id, block1.id, direction: .next)
+        try doc.layout.setTrainToBlock(train1, block1.id, positions: .both(blockId: block1.id, frontIndex: 1, frontDistance: 10, backIndex: 0, backDistance: 0), directionOfTravelInBlock: .next)
         XCTAssertEqual(block1.trainInstance!.direction, .next)
         XCTAssertEqual(train1.directionForward, false)
 

@@ -55,8 +55,8 @@ extension LayoutController {
         } else {
             info += ": no route assigned"
         }
-        if let cb = layout.currentBlock(train: train) {
-            info += ", block \(cb.name) at position \(train.position)"
+        if let cb = train.block {
+            info += ", block \(cb.name) at position \(train.positions)"
         }
         if let loc = train.locomotive {
             info += ", speed \(loc.speed)"
@@ -78,7 +78,7 @@ extension LayoutController {
                 info += ", train \(train.name)"
             }
             if let t = layout.trains[trainInstance.trainId] {
-                info += " at position \(t.position)"
+                info += " at position \(t.positions)"
             }
             if trainInstance.direction == .next {
                 info += ", direction forward"

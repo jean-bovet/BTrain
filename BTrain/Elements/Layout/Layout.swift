@@ -81,21 +81,6 @@ final class Layout: Element, ObservableObject {
     /// True if unexpected feedback should be detected and the layout stopped.
     @AppStorage(SettingsKeys.detectUnexpectedFeedback) var detectUnexpectedFeedback = true
 
-    // Defines the route feedback strategy:
-    // If true, then:
-    // - The train position is updated only when the feedback in front of the train is detected
-    //   (within the current block). Any feedback behind the train inside the current block is ignored.
-    // - The train moves to the next block only when the train is located at the end of the
-    //   current block *and* the feedback in the next block is the first one in the direction
-    //   of travel of the train.
-    //
-    // If false, then:
-    // - The train position is updated when any feedback in front of the train is detected
-    //   (within the current block). Any feedback behind the train inside the current block is ignored.
-    // - The train moves to the next block when the feedback in the next block is the first one in the direction
-    //   of travel of the train. The train does not need to be at the end of the current block for this to happen.
-    @AppStorage(SettingsKeys.strictRouteFeedbackStrategy) var strictRouteFeedbackStrategy = false
-
     // Non-nil when a layout runtime error occurred
     @Published var runtimeError: String?
 
@@ -125,7 +110,7 @@ final class Layout: Element, ObservableObject {
 
     func trainsThatCanBeStarted() -> [Train] {
         trains.elements.filter { train in
-            train.enabled && train.blockId != nil && train.scheduling == .unmanaged
+            train.enabled && train.block != nil && train.scheduling == .unmanaged
         }
     }
 

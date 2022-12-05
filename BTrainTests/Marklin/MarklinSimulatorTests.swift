@@ -33,12 +33,12 @@ class MarklinSimulatorTests: XCTestCase {
         waitForExpectations(timeout: 1.0)
     }
 
-    func testDirectionChange() {
+    func testDirectionChange() throws {
         let doc = LayoutDocument(layout: LayoutLoop1().newLayout())
         // We must set the train in the layout for the direction to be
         // properly emitted from the simulator
         let train = doc.layout.trains[0]
-        train.blockId = doc.layout.blocks.elements.first?.id
+        try doc.layoutController.setupTrainToBlock(train, doc.layout.blocks.elements.first!.id, naturalDirectionInBlock: .next)
         XCTAssertTrue(train.locomotive!.directionForward)
 
         connectToSimulator(doc: doc)
@@ -81,7 +81,7 @@ class MarklinSimulatorTests: XCTestCase {
     func testSpeedChange() {
         let doc = LayoutDocument(layout: LayoutLoop1().newLayout())
         let train = doc.layout.trains[0]
-        train.blockId = doc.layout.blocks.elements.first?.id
+        train.block = doc.layout.blocks.elements.first
         train.speed!.actualKph = 70
 
         connectToSimulator(doc: doc)

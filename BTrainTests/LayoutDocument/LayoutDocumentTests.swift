@@ -57,8 +57,8 @@ class LayoutDocumentTests: XCTestCase {
 
         let train = layout.trains[0]
         let route = layout.routes[0]
-        train.blockId = route.partialSteps[0].stepBlockId
-        layout.blocks[train.blockId!]?.trainInstance = .init(train.id, .next)
+        let block = layout.blocks[route.partialSteps[0].stepBlockId]!
+        try doc.layoutController.setupTrainToBlock(train, block.id, naturalDirectionInBlock: .next)
 
         try doc.start(train: train.id, withRoute: route.id, destination: nil)
         doc.stop(train: train)
