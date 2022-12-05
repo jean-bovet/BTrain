@@ -146,7 +146,7 @@ extension LayoutError: LocalizedError {
         case .frontPositionNotSpecified(position: let position):
             return "Front position not specified: \(position)"
         case .backPositionNotSpecified(position: let position):
-            return "Back position block not specified: \(position)"
+            return "Back position not specified: \(position)"
 
         case .frontPositionBlockIdMismatch(expected: let expected, got: let got):
             return "Front position block mismatch: expected \(expected) but got \(got)"
