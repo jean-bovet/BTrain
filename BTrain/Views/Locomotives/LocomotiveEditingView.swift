@@ -17,6 +17,8 @@ struct LocomotiveEditingView: View {
     @ObservedObject var layout: Layout
 
     @State private var discoverLocomotiveConfirmation = false
+    @State private var discoverLocomotiveError: Error? = nil
+    @State private var discoverLocomotiveShowError = false
 
     var body: some View {
         LayoutElementsEditingView(layout: layout, new: {
@@ -56,15 +58,25 @@ struct LocomotiveEditingView: View {
                     .padding()
             }
         }
-        .alert("Are you sure you want to change the current list of locomotives with the locomotives definition from the Central Station?", isPresented: $discoverLocomotiveConfirmation) {
+        .alert("Are you sure you want to update the current list of locomotives with the locomotive definitions from the Central Station?", isPresented: $discoverLocomotiveConfirmation) {
             Button("Cancel", role: .cancel) {}
             Button("Download & Merge") {
-                document.locomotiveDiscovery.discover(merge: true)
+                discover(merge: true)
             }
             Button("Download & Replace", role: .destructive) {
-                document.locomotiveDiscovery.discover(merge: false)
+                discover(merge: false)
             }
         }
+        .alert("Error downloading the list of locomotives: \(discoverLocomotiveError?.localizedDescription ?? "")", isPresented: $discoverLocomotiveShowError) {
+            Button("OK") {}
+        }
+    }
+    
+    func discover(merge: Bool) {
+        document.locomotiveDiscovery.discover(merge: merge, onError: { error in
+            discoverLocomotiveError = error
+            discoverLocomotiveShowError.toggle()
+        })
     }
 }
 

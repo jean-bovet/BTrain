@@ -44,7 +44,7 @@ final class CommandInterfaceCallbacks {
     typealias DirectionChangeCallback = (_ address: UInt32, _ decoderType: DecoderType?, _ direction: Command.Direction) -> Void
     typealias FunctionChangeCallback = (_ address: UInt32, _ decoderType: DecoderType?, _ index: UInt8, _ value: UInt8) -> Void
     typealias TurnoutChangeCallback = (_ address: CommandTurnoutAddress, _ state: UInt8, _ power: UInt8, _ acknowledgment: Bool) -> Void
-    typealias QueryLocomotiveCallback = (_ locomotives: [CommandLocomotive]) -> Void
+    typealias QueryLocomotiveCallback = (_ locomotives: QueryLocomotivesResult) -> Void
 
     var stateChanges = CallbackRegistrar<StateChangeCallback>()
     var feedbackChanges = CallbackRegistrar<FeedbackChangeCallback>()

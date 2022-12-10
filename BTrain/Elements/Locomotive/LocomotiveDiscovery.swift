@@ -30,14 +30,19 @@ final class LocomotiveDiscovery {
         unregisterCallback()
     }
 
-    func discover(merge: Bool, completion: CompletionBlock? = nil) {
+    func discover(merge: Bool, completion: CompletionBlock? = nil, onError: ((Error) -> Void)? = nil) {
         unregisterCallback()
 
-        callbackUUID = interface.callbacks.register(forLocomotivesQuery: { [weak self] locomotives in
+        callbackUUID = interface.callbacks.register(forLocomotivesQuery: { [weak self] result in
             DispatchQueue.main.async {
                 self?.unregisterCallback()
-                self?.process(locomotives: locomotives, merge: merge)
-                completion?()
+                switch result {
+                case let .failure(error):
+                    onError?(error)
+                case let .success(locomotives):
+                    self?.process(locomotives: locomotives, merge: merge)
+                    completion?()
+                }
             }
         })
 

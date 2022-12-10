@@ -40,9 +40,11 @@ final class MarklinLocomotivesTests: XCTestCase {
 
         let expectation = expectation(description: "fetch")
         var locs: [CommandLocomotive]?
-        fetcher.fetchLocomotives(server: server) { locomotives in
-            locs = locomotives
-            expectation.fulfill()
+        fetcher.fetchLocomotives(server: server) { result in
+            if case let .success(locomotives) = result {
+                locs = locomotives
+                expectation.fulfill()
+            }
         }
         waitForExpectations(timeout: 1.0)
 

@@ -142,8 +142,13 @@ class CommandInterfaceTests: XCTestCase {
         connectToSimulator(doc: doc)
 
         let e = expectation(description: "callback")
-        doc.interface.callbacks.register { locomotives in
-            XCTAssertFalse(locomotives.isEmpty)
+        doc.interface.callbacks.register { result in
+            switch result {
+            case let .success(locomotives):
+                XCTAssertFalse(locomotives.isEmpty)
+            case .failure:
+                XCTFail()
+            }
             e.fulfill()
         }
 

@@ -38,12 +38,34 @@ final class MarklinInterface: CommandInterface, ObservableObject {
     private var completionBlocks = [MarklinCANMessage: [CompletionBlock]]()
 
     private let resources = MarklinInterfaceResources()
+    
+    /// Returns the URL of the CS3 server
+    private var serverURL: URL? {
+        guard let address = client?.address else {
+            return nil
+        }
+        let port: String
+        if address == "localhost" {
+            // When running with the simulator locally, we need to append the port.
+            port = ":8080"
+        } else {
+            // When running with a real CS3, do not use the port otherwise the CS3 won't respond correctly.
+            port = ""
+        }
         
+        return URL(string: "http://\(address)\(port)")
+    }
+    
     func connect(server: String, port: UInt16, onReady: @escaping () -> Void, onError: @escaping (Error) -> Void, onStop: @escaping () -> Void) {
         client = Client(address: server, port: port)
         if let client = client {
             client.start { [weak self] in
-                self?.resources.fetchResources(server: client.address) {
+                if let serverURL = self?.serverURL {
+                    self?.resources.fetchResources(server: serverURL) {
+                        onReady()
+                    }
+                } else {
+                    BTLogger.error("Unable to retrieve the server URL")
                     onReady()
                 }
             } onData: { [weak self] msg in
@@ -70,11 +92,9 @@ final class MarklinInterface: CommandInterface, ObservableObject {
     }
 
     func execute(command: Command, completion: CompletionBlock? = nil) {
-        if case .locomotives = command, let server = client?.address {
-            locomotivesFetcher.fetchLocomotives(server: server) { [weak self] locomotives in
-                if let locomotives = locomotives {
-                    self?.callbacks.locomotivesQueries.all.forEach { $0(locomotives) }
-                }
+        if case .locomotives = command, let serverURL = serverURL {
+            locomotivesFetcher.fetchLocomotives(server: serverURL) { [weak self] result in
+                self?.callbacks.locomotivesQueries.all.forEach { $0(result) }
                 completion?()
             }
         } else {

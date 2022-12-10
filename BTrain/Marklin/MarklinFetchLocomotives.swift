@@ -12,36 +12,25 @@
 
 import Foundation
 
+typealias QueryLocomotivesResult = Result<[CommandLocomotive], Error>
+
 /// Fetches the locomotive definitions and icons from the Central Station by using an HTTP request.
 /// See ``MarklinCS3`` for more information.
-struct MarklinFetchLocomotives {
-    /// Fetch the locomotive commands from the specified Central Station address
-    /// - Parameters:
-    ///   - server: the IP address of the Central Station
-    ///   - completion: an array of locomotive commands or nil
-    func fetchLocomotives(server: String, completion: @escaping ([CommandLocomotive]?) -> Void) {
-        guard let url = URL(string: "http://\(server):8080") else {
-            completion(nil)
-            return
-        }
-
-        fetchLocomotives(server: url, completion: completion)
-    }
-
+struct MarklinFetchLocomotives {    
     /// Fetch the locomotive commands from the specified Central Station URL
     /// - Parameters:
     ///   - server: the URL of the Central Station (can also be a local file for testing)
     ///   - completion: an array of locomotive commands or nil
-    func fetchLocomotives(server: URL, completion: @escaping ([CommandLocomotive]?) -> Void) {
+    func fetchLocomotives(server: URL, completion: @escaping (QueryLocomotivesResult) -> Void) {
         Task {
             let cs3 = MarklinCS3()
             do {
                 let loks = try await cs3.fetchLoks(server: server)
                 let cmdLoks = await convert(loks, url: server)
-                completion(cmdLoks)
+                completion(.success(cmdLoks))
             } catch {
                 BTLogger.error("Error fetching the locomotives: \(error)")
-                completion(nil)
+                completion(.failure(error))
             }
         }
     }

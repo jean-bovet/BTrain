@@ -37,24 +37,18 @@ final class MarklinInterfaceResources {
         return nil
     }
     
-    func fetchResources(server: String, _ completion: @escaping CompletionBlock) {
-        guard let url = URL(string: "http://\(server)") else {
-            completion()
-            return
-        }
-
+    func fetchResources(server: URL, _ completion: @escaping CompletionBlock) {
         Task {
             let cs3 = MarklinCS3()
             do {
-                self.functions = try await cs3.fetchFunctions(server: url)
-                self.svgSprites = try await cs3.fetchSvgSprites(server: url)
+                self.functions = try await cs3.fetchFunctions(server: server)
+                self.svgSprites = try await cs3.fetchSvgSprites(server: server)
                 completion()
             } catch {
                 BTLogger.error("Error fetching the functions: \(error)")
                 completion()
             }
         }
-
     }
     
 }
