@@ -38,7 +38,7 @@ final class MarklinInterfaceResources {
     }
     
     func fetchResources(server: String, _ completion: @escaping CompletionBlock) {
-        guard let url = URL(string: "http://\(server):8080") else {
+        guard let url = URL(string: "http://\(server)") else {
             completion()
             return
         }

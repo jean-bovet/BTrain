@@ -33,7 +33,7 @@ extension LayoutController {
         })
     }
 
-    func directionDidChange(address: UInt32, decoder: DecoderType?, direction: Command.Direction) {
+    private func directionDidChange(address: UInt32, decoder: DecoderType?, direction: Command.Direction) {
         guard let loc = layout.locomotives.elements.find(address: address, decoder: decoder) else {
             BTLogger.error("Unknown address \(address.toHex()) for change in direction event")
             return
@@ -73,6 +73,21 @@ extension LayoutController {
         }
     }
 
+    func registerForFunctionChange() {
+        interface.callbacks.register(forFunctionChange: { [weak self] address, decoder, index, value in
+            self?.functionDidChange(address: address, decoder: decoder, index: index, value: value)
+        })
+    }
+
+    private func functionDidChange(address: UInt32, decoder: DecoderType?, index: UInt8, value: UInt8) {
+        guard let loc = layout.locomotives.elements.find(address: address, decoder: decoder) else {
+            BTLogger.error("Unknown address \(address.toHex()) for change in function event")
+            return
+        }
+        
+        loc.functions.states[index] = value
+    }
+    
     func registerForTurnoutChange() {
         interface.callbacks.register(forTurnoutChange: { [weak self] address, state, power, acknowledgement in
             guard let layout = self?.layout else {

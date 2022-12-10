@@ -28,21 +28,33 @@ final class LayoutOnConnectTasks: ObservableObject {
     }
 
     func performOnConnectTasks(activateTurnouts: Bool, completion: @escaping CompletionBlock) {
-        queryLocomotivesDirection {
-            if activateTurnouts {
-                self.layoutController.go {
-                    self.applyTurnoutStateToDigitalController {
+        processLocomotivesFunctions {
+            queryLocomotivesDirection {
+                if activateTurnouts {
+                    self.layoutController.go {
+                        self.applyTurnoutStateToDigitalController {
+                            completion()
+                        }
+                    }
+                } else {
+                    self.layoutController.stop {
                         completion()
                     }
-                }
-            } else {
-                self.layoutController.stop {
-                    completion()
                 }
             }
         }
     }
 
+    private func processLocomotivesFunctions(completion: CompletionBlock) {
+        // Notify each locomotive functions that the function icon and name
+        // have changed so the UI is refreshed. This is because after connecting
+        // to the digital controller, the function definitions are retrieved again.
+        layout.locomotives.elements.forEach { loc in
+            loc.functions.objectWillChange.send()
+        }
+        completion()
+    }
+    
     private func queryLocomotivesDirection(completion: @escaping CompletionBlock) {
         let locomotives = layout.locomotives.elements.filter { $0.enabled }
         guard !locomotives.isEmpty else {

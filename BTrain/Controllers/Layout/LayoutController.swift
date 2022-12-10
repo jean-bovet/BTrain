@@ -111,6 +111,7 @@ final class LayoutController: ObservableObject, LayoutControlling {
 
         registerForFeedbackChange()
         registerForDirectionChange()
+        registerForFunctionChange()
         registerForTurnoutChange()
         registerForTrainChange()
 

@@ -196,6 +196,10 @@ final class MarklinInterface: CommandInterface, ObservableObject {
             triggerCompletionBlock(for: msg)
             callbacks.directionChanges.all.forEach { $0(address, decoderType, direction) }
 
+        case let .function(address, decoderType, index, value, _, _):
+            triggerCompletionBlock(for: msg)
+            callbacks.functionChanges.all.forEach { $0(address, decoderType, index, value) }
+
         case let .turnout(address, state, power, _, _):
             triggerCompletionBlock(for: msg)
             callbacks.turnoutChanges.all.forEach { $0(address, state, power, msg.isAck) }

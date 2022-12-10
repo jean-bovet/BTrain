@@ -179,6 +179,7 @@
 		A75F41B72940D63C003C709F /* MarklinFunctionsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A75F41B62940D63C003C709F /* MarklinFunctionsTests.swift */; };
 		A75F41B92943F984003C709F /* TrainControlFunctionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A75F41B82943F984003C709F /* TrainControlFunctionsView.swift */; };
 		A75F41BE2944E78F003C709F /* MarklinInterfaceResources.swift in Sources */ = {isa = PBXBuildFile; fileRef = A75F41BD2944E78F003C709F /* MarklinInterfaceResources.swift */; };
+		A75F41C0294509ED003C709F /* LocomotiveFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = A75F41BF294509ED003C709F /* LocomotiveFunctions.swift */; };
 		A763F18D27BDD82A00B3499A /* TrainSpeedMeasurementTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A763F18C27BDD82A00B3499A /* TrainSpeedMeasurementTests.swift */; };
 		A763F18F27BE01C300B3499A /* XCTestCase+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A763F18E27BE01C300B3499A /* XCTestCase+Extension.swift */; };
 		A763F19327BE26CF00B3499A /* LocomotiveSpeedMeasurementsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A763F19227BE26CF00B3499A /* LocomotiveSpeedMeasurementsView.swift */; };
@@ -587,6 +588,7 @@
 		A75F41B62940D63C003C709F /* MarklinFunctionsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarklinFunctionsTests.swift; sourceTree = "<group>"; };
 		A75F41B82943F984003C709F /* TrainControlFunctionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainControlFunctionsView.swift; sourceTree = "<group>"; };
 		A75F41BD2944E78F003C709F /* MarklinInterfaceResources.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarklinInterfaceResources.swift; sourceTree = "<group>"; };
+		A75F41BF294509ED003C709F /* LocomotiveFunctions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocomotiveFunctions.swift; sourceTree = "<group>"; };
 		A763F18C27BDD82A00B3499A /* TrainSpeedMeasurementTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainSpeedMeasurementTests.swift; sourceTree = "<group>"; };
 		A763F18E27BE01C300B3499A /* XCTestCase+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "XCTestCase+Extension.swift"; sourceTree = "<group>"; };
 		A763F19227BE26CF00B3499A /* LocomotiveSpeedMeasurementsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocomotiveSpeedMeasurementsView.swift; sourceTree = "<group>"; };
@@ -1683,6 +1685,7 @@
 			isa = PBXGroup;
 			children = (
 				A79CD0B8291B2E2F0079968D /* Locomotive.swift */,
+				A75F41BF294509ED003C709F /* LocomotiveFunctions.swift */,
 				A785C085278CFD7D002FD538 /* LocomotiveSpeed.swift */,
 				A7E1F74727D71C03009FB75F /* LocomotiveSpeedAcceleration.swift */,
 				A7DB7D4727C21D7C000893BA /* LocomotiveSpeedManager.swift */,
@@ -2258,6 +2261,7 @@
 				A77168032892B0E100A71657 /* Route+Resolver.swift in Sources */,
 				A700B1DA2925F393001CC33E /* RouteScriptValidator.swift in Sources */,
 				A763F19927BF185100B3499A /* LocomotiveSpeedMeasureControlsView.swift in Sources */,
+				A75F41C0294509ED003C709F /* LocomotiveFunctions.swift in Sources */,
 				A7012C8328344A1C003AC687 /* DeveloperView.swift in Sources */,
 				A744FD9E2909EBB800852283 /* Transition+Graph.swift in Sources */,
 				A7F779F82732407E00E73275 /* TrainControlContainerView.swift in Sources */,

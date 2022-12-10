@@ -18,6 +18,8 @@ struct TrainControlFunctionsView: View {
 
     let interface: CommandInterface
     
+    @ObservedObject var functions: LocomotiveFunctions
+    
     struct FunctionAttributes {
         let function: CommandLocomotiveFunction
         let name: String
@@ -26,7 +28,7 @@ struct TrainControlFunctionsView: View {
 
     var functionAttributes: [FunctionAttributes] {
         var attributes = [FunctionAttributes]()
-        for (index, function) in locomotive.functions.enumerated() {
+        for (index, function) in functions.definitions.enumerated() {
             let info = interface.attributes(about: function)
 
             let icon: NSImage?
@@ -71,13 +73,13 @@ struct TrainControlFunctionsView: View {
     }
     
     func functionState(function: CommandLocomotiveFunction) -> Bool {
-        locomotive.functionStates[function.nr] == 1
+        functions.states[function.nr] == 1
     }
     
     func toggleFunction(function: CommandLocomotiveFunction) {
         let state = functionState(function: function)
         let newState: UInt8 = state ? 0 : 1
-        locomotive.functionStates[function.nr] = newState
+        functions.states[function.nr] = newState
         interface.execute(command: .function(address: locomotive.address,
                                              decoderType: locomotive.decoder,
                                              index: function.nr,
@@ -92,12 +94,12 @@ struct TrainFunctionsView_Previews: PreviewProvider {
     static let locomotive = {
         var loc = Locomotive()
         for index in 0...20 {
-            loc.functions.append(CommandLocomotiveFunction(nr: UInt8(index), state: 0, type: UInt32(index)+1))
+            loc.functions.definitions.append(CommandLocomotiveFunction(nr: UInt8(index), state: 0, type: UInt32(index)+1))
         }
         return loc
     }()
     
     static var previews: some View {
-        TrainControlFunctionsView(locomotive: locomotive, interface: MarklinInterface())
+        TrainControlFunctionsView(locomotive: locomotive, interface: MarklinInterface(), functions: locomotive.functions)
     }
 }

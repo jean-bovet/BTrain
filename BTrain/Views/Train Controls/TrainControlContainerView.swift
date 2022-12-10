@@ -37,7 +37,7 @@ struct TrainControlContainerView: View {
                 }
 
                 if let locomotive = train.locomotive {
-                    TrainControlFunctionsView(locomotive: locomotive, interface: document.interface)
+                    TrainControlFunctionsView(locomotive: locomotive, interface: document.interface, functions: locomotive.functions)
                 }
                 
                 if train.block != nil {

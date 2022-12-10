@@ -42,6 +42,7 @@ final class CommandInterfaceCallbacks {
     typealias FeedbackChangeCallback = (_ deviceID: UInt16, _ contactID: UInt16, _ value: UInt8) -> Void
     typealias SpeedChangeCallback = (_ address: UInt32, _ decoderType: DecoderType?, _ value: SpeedValue, _ acknowledgment: Bool) -> Void
     typealias DirectionChangeCallback = (_ address: UInt32, _ decoderType: DecoderType?, _ direction: Command.Direction) -> Void
+    typealias FunctionChangeCallback = (_ address: UInt32, _ decoderType: DecoderType?, _ index: UInt8, _ value: UInt8) -> Void
     typealias TurnoutChangeCallback = (_ address: CommandTurnoutAddress, _ state: UInt8, _ power: UInt8, _ acknowledgment: Bool) -> Void
     typealias QueryLocomotiveCallback = (_ locomotives: [CommandLocomotive]) -> Void
 
@@ -49,6 +50,7 @@ final class CommandInterfaceCallbacks {
     var feedbackChanges = CallbackRegistrar<FeedbackChangeCallback>()
     var speedChanges = CallbackRegistrar<SpeedChangeCallback>()
     var directionChanges = CallbackRegistrar<DirectionChangeCallback>()
+    var functionChanges = CallbackRegistrar<FunctionChangeCallback>()
     var turnoutChanges = CallbackRegistrar<TurnoutChangeCallback>()
     var locomotivesQueries = CallbackRegistrar<QueryLocomotiveCallback>()
 
@@ -76,6 +78,14 @@ final class CommandInterfaceCallbacks {
         directionChanges.register(callback)
     }
 
+    /// Register a callback that will be invoked for each function change event
+    /// - Parameter forFunctionChange: the callback block
+    /// - Returns: the unique ID that can be used to unregister the callback
+    @discardableResult
+    func register(forFunctionChange callback: @escaping FunctionChangeCallback) -> UUID {
+        functionChanges.register(callback)
+    }
+
     /// Register a callback that will be invoked for each turnout event
     /// - Parameter forTurnoutChange: the callback block
     /// - Returns: the unique ID that can be used to unregister the callback
@@ -98,6 +108,7 @@ final class CommandInterfaceCallbacks {
         feedbackChanges.unregister(uuid)
         speedChanges.unregister(uuid)
         directionChanges.unregister(uuid)
+        functionChanges.unregister(uuid)
         turnoutChanges.unregister(uuid)
         locomotivesQueries.unregister(uuid)
     }

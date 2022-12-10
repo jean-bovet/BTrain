@@ -93,6 +93,13 @@ extension Command {
                 }
             }
         }
+        if cmd == 0x06 {
+            let address = UInt32(message.byte0) << 24 | UInt32(message.byte1) << 16 | UInt32(message.byte2) << 8 | UInt32(message.byte3) << 0
+            let index = message.byte4
+            let value = message.byte5
+            return .function(address: address, decoderType: nil, index: index, value: value,
+                          descriptor: CommandDescriptor(data: message.data, description: "\(cmd.toHex()) function f\(index)=\(value) for \(address.toHex()) - \(ack)"))
+        }
         if cmd == 0x0B {
             let address = UInt32(message.byte0) << 24 | UInt32(message.byte1) << 16 | UInt32(message.byte2) << 8 | UInt32(message.byte3) << 0
             let state: UInt8 = message.byte4

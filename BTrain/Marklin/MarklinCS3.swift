@@ -64,9 +64,7 @@ struct MarklinCS3 {
     /// - Returns: the array of locomotives
     func fetchLoks(server: URL) async throws -> [Lok] {
         let url = server.appending(path: API_LOKS)
-        let (data, _) = try await URLSession.shared.data(from: url)
-        let loks = try JSONDecoder().decode([Lok].self, from: data)
-        return loks
+        return try await fetch(url: url)
     }
 
     /// Fetches the icon for the specified locomotive
@@ -134,9 +132,7 @@ struct MarklinCS3 {
         } else {
             url = server.appending(path: API_FUNCTIONS)
         }
-        let (data, _) = try await URLSession.shared.data(from: url)
-        let functions = try JSONDecoder().decode(Functions.self, from: data)
-        return functions
+        return try await fetch(url: url)
     }
 
     typealias SvgSprites = [String:String]
@@ -145,10 +141,14 @@ struct MarklinCS3 {
     /// - Parameter server: the Central Station URL
     /// - Returns: the SVG sprites
     func fetchSvgSprites(server: URL) async throws -> SvgSprites {
-        let url = server.appending(path: API_FUNCTIONS_ICONS)
-        let (data, _) = try await URLSession.shared.data(from: url)
-        let functions = try JSONDecoder().decode(SvgSprites.self, from: data)
-        return functions
+        try await fetch(url: server.appending(path: API_FUNCTIONS_ICONS))
     }
 
+    private func fetch<E:Decodable>(url: URL) async throws -> E {
+        BTLogger.network.info("Fetching \(url)")
+        let (data, _) = try await URLSession.shared.data(from: url)
+        BTLogger.network.info("Got back \(data.count) bytes")
+        let functions = try JSONDecoder().decode(E.self, from: data)
+        return functions
+    }
 }

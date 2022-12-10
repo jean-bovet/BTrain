@@ -24,6 +24,7 @@ struct MenuCommands: Commands {
                         Divider()
                     }
                     CommandSelectedView(viewType: type)
+                        .disabled(power == true)
                 }
                 if document?.showDebugModeControls == true {
                     Divider()
@@ -45,7 +46,6 @@ struct MenuCommands: Commands {
 
 struct CommandSelectedView: View {
     @FocusedValue(\.document) var document
-    @FocusedBinding(\.power) var power
 
     let viewType: LayoutDocument.DisplaySheetType
 
@@ -56,7 +56,6 @@ struct CommandSelectedView: View {
         .if(viewType.shortcut != nil) {
             $0.keyboardShortcut(viewType.shortcut!, modifiers: [.command])
         }
-        .disabled(power == true)
     }
 }
 

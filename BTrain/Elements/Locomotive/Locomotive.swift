@@ -50,18 +50,7 @@ final class Locomotive: Element, ObservableObject {
     /// Direction(s) the locomotive is allowed to move
     @Published var allowedDirections = AllowedDirection.forward
     
-    /// The functions associated with this locomotive
-    @Published var functions = [CommandLocomotiveFunction]() {
-        didSet {
-            functionStates = functions.reduce(into: FunctionStates(), { partialResult, function in
-                partialResult[function.nr] = function.state
-            })
-        }
-    }
-
-    typealias FunctionStates = [UInt8:UInt8]
-    
-    @Published var functionStates = FunctionStates()
+    @Published var functions = LocomotiveFunctions()
     
     convenience init(uuid: String = UUID().uuidString, name: String = "", address: UInt32 = 0, decoder: DecoderType = .MFX,
                      locomotiveLength: Double? = nil, maxSpeed: SpeedKph? = nil)
@@ -100,7 +89,7 @@ extension Locomotive: Codable {
         speed = try container.decode(LocomotiveSpeed.self, forKey: CodingKeys.speed)
         directionForward = try container.decodeIfPresent(Bool.self, forKey: CodingKeys.direction) ?? true
         allowedDirections = try container.decodeIfPresent(AllowedDirection.self, forKey: CodingKeys.allowedDirections) ?? .forward
-        functions = try container.decodeIfPresent([CommandLocomotiveFunction].self, forKey: CodingKeys.functions) ?? []
+        functions = try container.decodeIfPresent(LocomotiveFunctions.self, forKey: CodingKeys.functions) ?? LocomotiveFunctions()
     }
 
     func encode(to encoder: Encoder) throws {

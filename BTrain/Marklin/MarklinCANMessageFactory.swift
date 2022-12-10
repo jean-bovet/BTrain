@@ -86,7 +86,7 @@ struct MarklinCANMessageFactory {
 
     public static func function(addr: UInt32, index: UInt8, value: UInt8) -> MarklinCANMessage {
         let message = MarklinCANMessage(prio: 0,
-                                        command: 0x0C,
+                                        command: 0x06,
                                         resp: 0,
                                         hash: hash,
                                         dlc: 0x06,

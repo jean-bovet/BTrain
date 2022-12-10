@@ -68,7 +68,13 @@ struct DocumentView: View {
                 showNewWizard.toggle()
             }
             if autoConnectSimulator {
-                document.connectToSimulator(enable: autoEnableSimulator)
+                document.connectToSimulator(enable: autoEnableSimulator) { error in
+                    if error == nil {
+                        document.onConnectTasks.performOnConnectTasks(activateTurnouts: false) {
+                            // no-op
+                        }
+                    }
+                }
             }
         }.toolbar {
             DocumentToolbarContent(document: document,

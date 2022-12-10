@@ -92,6 +92,6 @@ final class LocomotiveDiscovery {
             try! locomotiveIconManager.setIcon(icon, locId: loc.id)
         }
 
-        loc.functions = locomotive.functions
+        loc.functions.definitions = locomotive.functions
     }
 }
