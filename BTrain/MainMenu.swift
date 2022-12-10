@@ -14,7 +14,8 @@ import SwiftUI
 
 struct MenuCommands: Commands {
     @FocusedValue(\.document) var document
-
+    @FocusedBinding(\.power) var power
+    
     var body: some Commands {
         CommandGroup(after: CommandGroupPlacement.sidebar) {
             Group {
@@ -44,6 +45,7 @@ struct MenuCommands: Commands {
 
 struct CommandSelectedView: View {
     @FocusedValue(\.document) var document
+    @FocusedBinding(\.power) var power
 
     let viewType: LayoutDocument.DisplaySheetType
 
@@ -54,14 +56,16 @@ struct CommandSelectedView: View {
         .if(viewType.shortcut != nil) {
             $0.keyboardShortcut(viewType.shortcut!, modifiers: [.command])
         }
-        // TODO: re-enable this once we figure out how to make it work correctly
-//        .disabled(document?.power == true)
+        .disabled(power == true)
     }
 }
 
 struct DocumentFocusedValueKey: FocusedValueKey {
-    // TODO: bug? ideally should be observable but not sure how to achieve that
     typealias Value = LayoutDocument
+}
+
+struct DocumentPowerFocusedValueKey: FocusedValueKey {
+    typealias Value = Binding<Bool>
 }
 
 extension FocusedValues {
@@ -74,4 +78,15 @@ extension FocusedValues {
             self[DocumentFocusedValueKey.self] = newValue
         }
     }
+    
+    var power: DocumentPowerFocusedValueKey.Value? {
+        get {
+            self[DocumentPowerFocusedValueKey.self]
+        }
+
+        set {
+            self[DocumentPowerFocusedValueKey.self] = newValue
+        }
+    }
+
 }

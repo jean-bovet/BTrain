@@ -56,6 +56,7 @@ struct DocumentView: View {
                                      switchboard: document.switchboard,
                                      state: document.switchboard.state)
         }
+        .focusedSceneValue(\.power, $document.power)
         .onChange(of: document.triggerLayoutDiagnostic, perform: { _ in
             if document.triggerLayoutDiagnostic {
                 showDiagnosticsSheet = true
