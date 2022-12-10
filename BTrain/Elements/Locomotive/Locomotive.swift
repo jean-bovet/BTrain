@@ -51,8 +51,18 @@ final class Locomotive: Element, ObservableObject {
     @Published var allowedDirections = AllowedDirection.forward
     
     /// The functions associated with this locomotive
-    @Published var functions = [CommandLocomotiveFunction]()
+    @Published var functions = [CommandLocomotiveFunction]() {
+        didSet {
+            functionStates = functions.reduce(into: FunctionStates(), { partialResult, function in
+                partialResult[function.nr] = function.state
+            })
+        }
+    }
 
+    typealias FunctionStates = [UInt8:UInt8]
+    
+    @Published var functionStates = FunctionStates()
+    
     convenience init(uuid: String = UUID().uuidString, name: String = "", address: UInt32 = 0, decoder: DecoderType = .MFX,
                      locomotiveLength: Double? = nil, maxSpeed: SpeedKph? = nil)
     {

@@ -134,6 +134,9 @@ extension MarklinCANMessage {
         case .speed(address: let address, decoderType: let decoderType, value: let value, priority: let priority, descriptor: _):
             return (MarklinCANMessageFactory.speed(addr: address.actualAddress(for: decoderType), speed: value.value), priority)
 
+        case .function(address: let address, decoderType: let decoderType, index: let index, value: let value, priority: let priority, descriptor: _):
+            return (MarklinCANMessageFactory.function(addr: address.actualAddress(for: decoderType), index: index, value: value), priority)
+
         case let .direction(address: address, decoderType: decoderType, direction: direction, priority: priority, descriptor: descriptor):
             switch direction {
             case .unchanged:

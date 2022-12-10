@@ -48,8 +48,14 @@ struct CommandLocomotive {
 /// A locomotive function
 struct CommandLocomotiveFunction: Codable {
     
-    /// Identifier of the function
-    let identifier: UInt32
+    /// The index of the function in the locomotive decoder
+    let nr: UInt8
+    
+    /// The state of the function
+    let state: UInt8
+
+    /// The type of the function
+    let type: UInt32
 }
 
 /// The attributes of a specific locomotive function

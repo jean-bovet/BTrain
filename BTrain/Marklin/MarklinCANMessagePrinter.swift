@@ -36,6 +36,9 @@ struct MarklinCANMessagePrinter {
         case .speed(address: _, decoderType: _, value: _, priority: _, descriptor: let descriptor):
             return descriptor?.description
 
+        case .function(address: _, decoderType: _, index: _, value: _, priority: _, descriptor: let descriptor):
+            return descriptor?.description
+
         case .direction(address: _, decoderType: _, direction: _, priority: _, descriptor: let descriptor):
             return descriptor?.description
 

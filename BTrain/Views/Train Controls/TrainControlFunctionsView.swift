@@ -19,7 +19,7 @@ struct TrainControlFunctionsView: View {
     let interface: CommandInterface
     
     struct FunctionAttributes {
-        let index: Int
+        let function: CommandLocomotiveFunction
         let name: String
         let icon: NSImage?
     }
@@ -27,8 +27,7 @@ struct TrainControlFunctionsView: View {
     var functionAttributes: [FunctionAttributes] {
         var attributes = [FunctionAttributes]()
         for (index, function) in locomotive.functions.enumerated() {
-            let cmdFunc = CommandLocomotiveFunction(identifier: function.identifier)
-            let info = interface.attributes(about: cmdFunc)
+            let info = interface.attributes(about: function)
 
             let icon: NSImage?
             if let svg = info?.svgIcon, let data = svg.data(using: .utf8) {
@@ -43,16 +42,16 @@ struct TrainControlFunctionsView: View {
             } else {
                 name = "f\(index)"
             }
-            attributes.append(FunctionAttributes(index: index, name: name, icon: icon))
+            attributes.append(FunctionAttributes(function: function, name: name, icon: icon))
         }
         return attributes
     }
         
     var body: some View {
             HStack {
-                ForEach(functionAttributes, id: \.index) { fattrs in
+                ForEach(functionAttributes, id: \.function.nr) { fattrs in
                     Button {
-                    
+                        toggleFunction(function: fattrs.function)
                     } label: {
                         if let image = fattrs.icon {
                             Image(nsImage: image)
@@ -60,15 +59,31 @@ struct TrainControlFunctionsView: View {
                                 .renderingMode(.template)
                                 .frame(width: 20, height: 20)
                         } else {
-                            Text("f\(fattrs.index)")
+                            Text("f\(fattrs.function.nr)")
                         }
                     }
-//                    .foregroundColor(.yellow)
-                    .help("f\(fattrs.index): \(fattrs.name)")
+                    .if(functionState(function: fattrs.function), transform: { $0.foregroundColor(.yellow) })
+                    .help("f\(fattrs.function.nr): \(fattrs.name)")
                     .buttonStyle(.borderless)
                     .fixedSize()
                 }
             }
+    }
+    
+    func functionState(function: CommandLocomotiveFunction) -> Bool {
+        locomotive.functionStates[function.nr] == 1
+    }
+    
+    func toggleFunction(function: CommandLocomotiveFunction) {
+        let state = functionState(function: function)
+        let newState: UInt8 = state ? 0 : 1
+        locomotive.functionStates[function.nr] = newState
+        interface.execute(command: .function(address: locomotive.address,
+                                             decoderType: locomotive.decoder,
+                                             index: function.nr,
+                                             value: newState)) {
+            // no-op
+        }
     }
 }
 
@@ -77,7 +92,7 @@ struct TrainFunctionsView_Previews: PreviewProvider {
     static let locomotive = {
         var loc = Locomotive()
         for index in 0...20 {
-            loc.functions.append(CommandLocomotiveFunction(identifier: UInt32(index+1)))
+            loc.functions.append(CommandLocomotiveFunction(nr: UInt8(index), state: 0, type: UInt32(index)+1))
         }
         return loc
     }()

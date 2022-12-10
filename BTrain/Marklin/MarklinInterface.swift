@@ -262,7 +262,7 @@ extension MarklinCS3.Lok {
 
     func toCommand(icon: Data?) -> CommandLocomotive {
         let actualFunctions = funktionen.filter({$0.typ2 != 0})
-        let functions = actualFunctions.map { CommandLocomotiveFunction(identifier: $0.typ2 )}
+        let functions = actualFunctions.map { CommandLocomotiveFunction(nr: $0.nr, state: $0.state, type: $0.typ2)}
         return CommandLocomotive(uid: uid.valueFromHex, name: name, address: address, maxSpeed: tachomax, decoderType: decoderType, icon: icon, functions: functions)
     }
 }

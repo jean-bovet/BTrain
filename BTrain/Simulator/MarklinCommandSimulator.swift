@@ -222,6 +222,9 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
         case .queryDirection(address: let address, decoderType: let decoderType, priority: _, descriptor: _):
             provideDirection(address: address.actualAddress(for: decoderType))
 
+        case .function(address: _, decoderType: _, index: _, value: _, priority: _, descriptor: _):
+            break
+
         case .unknown(command: _):
             break
         }

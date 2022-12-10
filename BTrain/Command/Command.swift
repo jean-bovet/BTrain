@@ -27,6 +27,9 @@ enum Command {
 
     case speed(address: UInt32, decoderType: DecoderType?, value: SpeedValue, priority: Priority = .normal, descriptor: CommandDescriptor? = nil)
 
+    /// Set the function value for a specific locomotive and function
+    case function(address: UInt32, decoderType: DecoderType?, index: UInt8, value: UInt8, priority: Priority = .normal, descriptor: CommandDescriptor? = nil)
+    
     enum Direction {
         case forward
         case backward

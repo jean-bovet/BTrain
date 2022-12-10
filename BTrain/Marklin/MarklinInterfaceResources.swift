@@ -29,7 +29,7 @@ final class MarklinInterfaceResources {
                 guard let type = f.type else {
                     continue
                 }
-                if UInt32(type) == function.identifier {
+                if UInt32(type) == function.type {
                     return .init(name: f.kurztitel, svgIcon: svgSprites?["\(f.name).svg"])
                 }
             }

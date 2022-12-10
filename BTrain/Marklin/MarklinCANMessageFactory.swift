@@ -84,6 +84,24 @@ struct MarklinCANMessageFactory {
         return message
     }
 
+    public static func function(addr: UInt32, index: UInt8, value: UInt8) -> MarklinCANMessage {
+        let message = MarklinCANMessage(prio: 0,
+                                        command: 0x0C,
+                                        resp: 0,
+                                        hash: hash,
+                                        dlc: 0x06,
+                                        byte0: UInt8((addr >> 24) & 0xFF),
+                                        byte1: UInt8((addr >> 16) & 0xFF),
+                                        byte2: UInt8((addr >> 8) & 0xFF),
+                                        byte3: UInt8((addr >> 0) & 0xFF),
+                                        byte4: index,
+                                        byte5: value,
+                                        byte6: 0, // not used
+                                        byte7: 0 // not used
+        )
+        return message
+    }
+
     enum Direction {
         case nochange
         case forward

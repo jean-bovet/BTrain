@@ -54,6 +54,8 @@ struct MarklinCS3 {
            "icon": "fkticon_i_020"
          },
          */
+        let nr: UInt8
+        let state: UInt8
         let typ2: UInt32
     }
     
