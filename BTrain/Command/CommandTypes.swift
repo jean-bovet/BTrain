@@ -59,7 +59,8 @@ struct CommandLocomotiveFunction: Codable {
 }
 
 /// The attributes of a specific locomotive function
-struct CommandLocomotiveFunctionAttributes {
+struct CommandLocomotiveFunctionAttributes: Codable {
+    let type: UInt32
     let name: String
     let svgIcon: String?
 }

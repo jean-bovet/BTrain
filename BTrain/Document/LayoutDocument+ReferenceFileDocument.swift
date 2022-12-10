@@ -22,6 +22,7 @@ extension LayoutDocument: ReferenceFileDocument {
 
     static let layoutFileName = "layout.json"
     static let userInterfaceFileName = "userInterface.json"
+    static let locFunctionsFileName = "locFunctions.json"
 
     convenience init(configuration: ReadConfiguration) throws {
         try self.init(contentType: configuration.contentType, file: configuration.file)
@@ -41,6 +42,9 @@ extension LayoutDocument: ReferenceFileDocument {
             self.init(layout: try file.layout())
             locomotiveIconManager.setIcons(try file.locomotiveIcons())
             try file.userInterfaceSettings()?.apply(layoutDocument: self)
+            if let data = try file.locomotiveFunctionsCatalog() {
+                try locomotiveFunctionsCatalog.restore(data)
+            }
 
         default:
             throw CocoaError(.fileReadUnsupportedScheme)
@@ -90,6 +94,10 @@ extension LayoutDocument: ReferenceFileDocument {
             }
 
             wrapper.addFileWrapper(iconDirectory)
+
+            let locFunctionsJsonFile = FileWrapper(regularFileWithContents: try locomotiveFunctionsCatalog.encode())
+            locFunctionsJsonFile.preferredFilename = LayoutDocument.locFunctionsFileName
+            wrapper.addFileWrapper(locFunctionsJsonFile)
 
             let uxJsonFile = FileWrapper(regularFileWithContents: try UserInterfaceSettings(layoutDocument: self).encode())
             uxJsonFile.preferredFilename = LayoutDocument.userInterfaceFileName

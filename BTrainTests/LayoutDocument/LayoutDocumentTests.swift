@@ -76,7 +76,7 @@ class LayoutDocumentTests: XCTestCase {
 
     func testOnConnectTasks() throws {
         let doc = LayoutDocument(layout: LayoutLoop1().newLayout())
-        let t = LayoutOnConnectTasks(layout: doc.layout, layoutController: doc.layoutController, interface: doc.interface)
+        let t = LayoutOnConnectTasks(layout: doc.layout, layoutController: doc.layoutController, interface: doc.interface, locFuncCatalog: doc.locomotiveFunctionsCatalog)
 
         connectToSimulator(doc: doc)
         defer {

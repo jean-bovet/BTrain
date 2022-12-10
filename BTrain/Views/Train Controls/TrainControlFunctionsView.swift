@@ -18,8 +18,10 @@ struct TrainControlFunctionsView: View {
 
     let interface: CommandInterface
     
-    @ObservedObject var functions: LocomotiveFunctions
+    let catalog: LocomotiveFunctionsCatalog
     
+    @ObservedObject var functions: LocomotiveFunctions
+        
     struct FunctionAttributes {
         let function: CommandLocomotiveFunction
         let name: String
@@ -29,18 +31,11 @@ struct TrainControlFunctionsView: View {
     var functionAttributes: [FunctionAttributes] {
         var attributes = [FunctionAttributes]()
         for (index, function) in functions.definitions.enumerated() {
-            let info = interface.attributes(about: function)
+            let icon = catalog.image(for: function.type)
 
-            let icon: NSImage?
-            if let svg = info?.svgIcon, let data = svg.data(using: .utf8) {
-                icon = NSImage(data: data)
-            } else {
-                icon = nil
-            }
-            
             let name: String
-            if let info = info {
-                name = info.name
+            if let cname = catalog.name(for: function.type) {
+                name = cname
             } else {
                 name = "f\(index)"
             }
@@ -100,6 +95,6 @@ struct TrainFunctionsView_Previews: PreviewProvider {
     }()
     
     static var previews: some View {
-        TrainControlFunctionsView(locomotive: locomotive, interface: MarklinInterface(), functions: locomotive.functions)
+        TrainControlFunctionsView(locomotive: locomotive, interface: MarklinInterface(), catalog: LocomotiveFunctionsCatalog(), functions: locomotive.functions)
     }
 }

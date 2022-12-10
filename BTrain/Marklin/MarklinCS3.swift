@@ -113,11 +113,10 @@ struct MarklinCS3 {
         //      "typeCompatibility": "1",
         //      "nameCompatibility": "fkticon_a_001"
         //    },
-        let kurztitel: String // Licht
-        let name: String // fkticon_a_001
+        let kurztitel: String
+        let name: String
         let type: String?
-        let byte1: String?
-        let byte2: String?
+        let typeCompatibility: String?
     }
 
     /// Fetches all the functions

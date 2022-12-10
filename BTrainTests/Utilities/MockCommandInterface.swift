@@ -113,8 +113,8 @@ final class MockCommandInterface: CommandInterface {
         .init(value: value.value)
     }
     
-    func attributes(about function: BTrain.CommandLocomotiveFunction) -> BTrain.CommandLocomotiveFunctionAttributes? {
-        return nil
+    func locomotiveFunctions() -> [CommandLocomotiveFunctionAttributes] {
+        []
     }
 
 }

@@ -39,7 +39,10 @@ final class LayoutDocument: ObservableObject {
 
     /// The locomotive discovery class
     let locomotiveDiscovery: LocomotiveDiscovery
-
+    
+    /// The catalog of locomotive functions
+    let locomotiveFunctionsCatalog: LocomotiveFunctionsCatalog
+    
     /// True if the layout is connected to the Digital Controller, false otherwise
     @Published var connected = false {
         didSet {
@@ -181,10 +184,12 @@ final class LayoutDocument: ObservableObject {
         self.simulator = simulator
         layoutDiagnostics = LayoutDiagnostic(layout: layout)
         self.locomotiveIconManager = locomotiveIconManager
+        self.locomotiveFunctionsCatalog = LocomotiveFunctionsCatalog()
+        
         self.switchboard = switchboard
         self.layoutController = layoutController
 
-        onConnectTasks = LayoutOnConnectTasks(layout: layout, layoutController: layoutController, interface: interface)
+        onConnectTasks = LayoutOnConnectTasks(layout: layout, layoutController: layoutController, interface: interface, locFuncCatalog: locomotiveFunctionsCatalog)
 
         switchboard.provider.layoutController = layoutController
         switchboard.update()

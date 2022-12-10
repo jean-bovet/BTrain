@@ -16,15 +16,17 @@ final class LayoutOnConnectTasks: ObservableObject {
     let layout: Layout
     let layoutController: LayoutController
     let interface: CommandInterface
+    let locFuncCatalog: LocomotiveFunctionsCatalog
 
     // Property used to keep track of the progress when activating the turnouts
     // when connecting to the Digital Controller
     @Published var activateTurnoutPercentage: Double? = nil
 
-    init(layout: Layout, layoutController: LayoutController, interface: CommandInterface) {
+    init(layout: Layout, layoutController: LayoutController, interface: CommandInterface, locFuncCatalog: LocomotiveFunctionsCatalog) {
         self.layout = layout
         self.layoutController = layoutController
         self.interface = interface
+        self.locFuncCatalog = locFuncCatalog
     }
 
     func performOnConnectTasks(activateTurnouts: Bool, completion: @escaping CompletionBlock) {
@@ -46,6 +48,8 @@ final class LayoutOnConnectTasks: ObservableObject {
     }
 
     private func processLocomotivesFunctions(completion: CompletionBlock) {
+        locFuncCatalog.process(interface: interface)
+        
         // Notify each locomotive functions that the function icon and name
         // have changed so the UI is refreshed. This is because after connecting
         // to the digital controller, the function definitions are retrieved again.

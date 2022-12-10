@@ -54,6 +54,22 @@ extension FileWrapper {
         return items
     }
 
+    func locomotiveFunctionsCatalog() throws -> Data? {
+        guard let files = fileWrappers else {
+            throw CocoaError(.fileReadCorruptFile)
+        }
+
+        guard let layoutFile = files.first(where: { $0.value.filename == LayoutDocument.locFunctionsFileName }) else {
+            return nil
+        }
+
+        guard let data = layoutFile.value.regularFileContents else {
+            throw CocoaError(.fileReadCorruptFile)
+        }
+
+        return data
+    }
+
     func userInterfaceSettings() throws -> UserInterfaceSettings? {
         guard let files = fileWrappers else {
             throw CocoaError(.fileReadCorruptFile)

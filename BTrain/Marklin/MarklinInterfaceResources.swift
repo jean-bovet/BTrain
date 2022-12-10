@@ -19,24 +19,7 @@ final class MarklinInterfaceResources {
     
     /// This is the SVG definition of each icon referenced by each function.
     private var svgSprites: MarklinCS3.SvgSprites?
-        
-    func attributes(about function: CommandLocomotiveFunction) -> CommandLocomotiveFunctionAttributes? {
-        guard let functions = functions else {
-            return nil
-        }
-        for group in functions.gruppe {
-            for f in group.icon {
-                guard let type = f.type else {
-                    continue
-                }
-                if UInt32(type) == function.type {
-                    return .init(name: f.kurztitel, svgIcon: svgSprites?["\(f.name).svg"])
-                }
-            }
-        }
-        return nil
-    }
-    
+            
     func fetchResources(server: URL, _ completion: @escaping CompletionBlock) {
         Task {
             let cs3 = MarklinCS3()
@@ -51,4 +34,19 @@ final class MarklinInterfaceResources {
         }
     }
     
+    func locomotiveFunctions() -> [CommandLocomotiveFunctionAttributes] {
+        guard let functions = functions else {
+            return []
+        }
+        var all = [CommandLocomotiveFunctionAttributes]()
+        for group in functions.gruppe {
+            for f in group.icon {
+                if let type = f.typeCompatibility, let typeInt = UInt32(type) {
+                    let attributes = CommandLocomotiveFunctionAttributes(type: typeInt, name: f.kurztitel, svgIcon: svgSprites?["\(f.name).svg"])
+                    all.append(attributes)
+                }
+            }
+        }
+        return all
+    }
 }
