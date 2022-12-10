@@ -18,7 +18,6 @@ final class MarklinInterface: CommandInterface, ObservableObject {
 
     var client: Client?
 
-    let locomotiveConfig = MarklinFetchLocomotivesViaCommand()
     let locomotivesFetcher = MarklinFetchLocomotives()
 
     typealias CompletionBlock = () -> Void
@@ -148,11 +147,7 @@ final class MarklinInterface: CommandInterface, ObservableObject {
             // Handle any Marklin-specific command first
             switch cmd {
             case .configDataStream(length: _, data: _, descriptor: _):
-                let status = locomotiveConfig.process(cmd)
-                if case let .completed(locomotives) = status {
-                    let locomotives = locomotives.map { $0.commandLocomotive }
-                    self.callbacks.locomotivesQueries.all.forEach { $0(locomotives) }
-                }
+                break
             }
             return
         }
@@ -250,12 +245,6 @@ extension MarklinInterface: MetricsProvider {
         } else {
             return []
         }
-    }
-}
-
-extension LocomotivesDocumentParser.LocomotiveInfo {
-    var commandLocomotive: CommandLocomotive {
-        CommandLocomotive(uid: uid, name: name, address: address, maxSpeed: vmax, decoderType: type?.locomotiveDecoderType ?? .MFX, icon: nil, functions: [])
     }
 }
 
