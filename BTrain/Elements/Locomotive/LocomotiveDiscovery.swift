@@ -91,5 +91,7 @@ final class LocomotiveDiscovery {
         if let icon = locomotive.icon {
             try! locomotiveIconManager.setIcon(icon, locId: loc.id)
         }
+
+        loc.functions = locomotive.functions
     }
 }

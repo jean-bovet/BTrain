@@ -36,6 +36,10 @@ struct TrainControlContainerView: View {
                     LocomotiveIconView(locomotiveIconManager: document.locomotiveIconManager, loc: loc, size: .medium, hideIfNotDefined: true)
                 }
 
+                if let locomotive = train.locomotive {
+                    TrainFunctionsView(locomotive: locomotive, interface: document.interface)
+                }
+                
                 if train.block != nil {
                     HStack {
                         TrainControlSpeedView(document: document, train: train, loc: loc, speed: loc.speed, trainRuntimeError: $trainRuntimeError)

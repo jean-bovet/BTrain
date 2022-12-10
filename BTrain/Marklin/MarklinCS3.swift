@@ -20,6 +20,15 @@ struct MarklinCS3 {
     /// API to retrieve the locomotive icons
     let API_LOKS_ICON = "app/assets/lok"
 
+    /// API to retrieve the function definitions
+    let API_FUNCTIONS = "app/api/loks/functionIconGroups"
+    private let API_FUNCTIONS_FILE = "app/api/loks:/functionIconGroups"
+
+    /// API to retrieve the function icons
+    let API_FUNCTIONS_ICONS = "images/svgSprites/fcticons.json"
+
+    // MARK: - Locomotive
+    
     /// The definition of a locomotive
     struct Lok: Decodable {
         let name: String
@@ -28,8 +37,26 @@ struct MarklinCS3 {
         let dectyp: String // mfx+, mm, mfx
         let address: UInt32
         let icon: String
+        let funktionen: [LokFunktion]
     }
-
+    
+    /// The definition of a locomotive function
+    struct LokFunktion: Decodable {
+        /*
+         {
+           "nr": 9,
+           "typ": 20,
+           "fs": 0,
+           "typ2": 20,
+           "dauer": 0,
+           "state": 0,
+           "isMoment": false,
+           "icon": "fkticon_i_020"
+         },
+         */
+        let typ2: UInt32
+    }
+    
     /// Fetches all the locomotives
     /// - Parameter server: the Central Station IP address
     /// - Returns: the array of locomotives
@@ -63,4 +90,64 @@ struct MarklinCS3 {
             return nil
         }
     }
+    
+    // MARK: - Functions
+    
+    /// Definition of the group of function
+    struct Functions: Decodable {
+        let gruppe: [FunctionGroups]
+    }
+    
+    struct FunctionGroups: Decodable {
+        let name: String
+        let icon: [Function]
+    }
+    
+    struct Function: Decodable {
+        //    {
+        //      "byte1": "3",
+        //      "byte2": "3",
+        //      "kurztitel": "Licht",
+        //      "type": "1",
+        //      "name": "fkticon_a_001",
+        //      "typeCompatibility": "1",
+        //      "nameCompatibility": "fkticon_a_001"
+        //    },
+        let kurztitel: String // Licht
+        let name: String // fkticon_a_001
+        let type: String?
+        let byte1: String?
+        let byte2: String?
+    }
+
+    /// Fetches all the functions
+    /// - Parameter server: the Central Station URL
+    /// - Returns: the functions
+    func fetchFunctions(server: URL) async throws -> Functions {
+        let url: URL
+        if server.isFileURL {
+            // When used in unit test, the local file path must be slighlty different because
+            // of a naming conflict on the file system.
+            url = server.appending(path: API_FUNCTIONS_FILE)
+        } else {
+            url = server.appending(path: API_FUNCTIONS)
+        }
+        print(url)
+        let (data, _) = try await URLSession.shared.data(from: url)
+        let functions = try JSONDecoder().decode(Functions.self, from: data)
+        return functions
+    }
+
+    typealias SvgSprites = [String:String]
+    
+    /// Fetches all the SVG sprites defined in the CS3
+    /// - Parameter server: the Central Station URL
+    /// - Returns: the SVG sprites
+    func fetchSvgSprites(server: URL) async throws -> SvgSprites {
+        let url = server.appending(path: API_FUNCTIONS_ICONS)
+        let (data, _) = try await URLSession.shared.data(from: url)
+        let functions = try JSONDecoder().decode(SvgSprites.self, from: data)
+        return functions
+    }
+
 }

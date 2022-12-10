@@ -56,4 +56,9 @@ protocol CommandInterface: AnyObject, MetricsProvider {
     ///   - decoder: the decoder
     /// - Returns: the corresponding number of steps
     func speedSteps(for value: SpeedValue, decoder: DecoderType) -> SpeedStep
+    
+    /// Returns the attributes of a specific locomotive function
+    /// - Parameter function: the locomotive function
+    /// - Returns: the attributes associated with the locomotive function or nil if no attributes exist
+    func attributes(about function: CommandLocomotiveFunction) -> CommandLocomotiveFunctionAttributes?
 }

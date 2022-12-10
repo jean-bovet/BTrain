@@ -34,6 +34,7 @@ struct SpeedStep: Equatable, Codable, CustomStringConvertible {
     static let zero = SpeedStep(value: 0)
 }
 
+/// Definition of a locomotive
 struct CommandLocomotive {
     let uid: UInt32?
     let name: String?
@@ -41,4 +42,18 @@ struct CommandLocomotive {
     let maxSpeed: UInt32?
     let decoderType: DecoderType?
     let icon: Data?
+    let functions: [CommandLocomotiveFunction]
+}
+
+/// A locomotive function
+struct CommandLocomotiveFunction: Codable {
+    
+    /// Identifier of the function
+    let identifier: UInt32
+}
+
+/// The attributes of a specific locomotive function
+struct CommandLocomotiveFunctionAttributes {
+    let name: String
+    let svgIcon: String?
 }

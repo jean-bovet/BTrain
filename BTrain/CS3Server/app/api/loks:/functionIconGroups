@@ -1,0 +1,2235 @@
+{
+  "gruppe": [
+    {
+      "name": "Licht",
+      "icon": [
+        {
+          "kurztitel": "Ohne Funktion",
+          "name": "fkticon_a_000",
+          "nameCompatibility": "fkticon_a_000"
+        },
+        {
+          "byte1": "2",
+          "byte2": "2",
+          "kurztitel": "F0",
+          "type": "50",
+          "name": "fkticon_a_050",
+          "typeCompatibility": "59",
+          "nameCompatibility": "fkticon_a_059"
+        },
+        {
+          "byte1": "3",
+          "byte2": "3",
+          "kurztitel": "Licht",
+          "type": "1",
+          "name": "fkticon_a_001",
+          "typeCompatibility": "1",
+          "nameCompatibility": "fkticon_a_001"
+        },
+        {
+          "byte1": "3",
+          "byte2": "3",
+          "byte3": "1",
+          "kurztitel": "Licht Generator",
+          "type": "278",
+          "name": "fkticon_a_278",
+          "typeCompatibility": "1",
+          "nameCompatibility": "fkticon_a_001"
+        },
+        {
+          "byte1": "3",
+          "byte2": "3",
+          "byte3": "64",
+          "kurztitel": "Licht hinten",
+          "type": "41",
+          "name": "fkticon_a_041",
+          "typeCompatibility": "41",
+          "nameCompatibility": "fkticon_a_041"
+        },
+        {
+          "byte1": "3",
+          "byte2": "3",
+          "byte3": "65",
+          "kurztitel": "Licht, Gen hinten",
+          "type": "291",
+          "name": "fkticon_a_291",
+          "typeCompatibility": "41",
+          "nameCompatibility": "fkticon_a_041"
+        },
+        {
+          "byte1": "3",
+          "byte2": "3",
+          "byte3": "128",
+          "kurztitel": "Licht vorne",
+          "type": "42",
+          "name": "fkticon_a_042",
+          "typeCompatibility": "42",
+          "nameCompatibility": "fkticon_a_042"
+        },
+        {
+          "byte1": "3",
+          "byte2": "3",
+          "byte3": "129",
+          "kurztitel": "Licht, Gen vorne",
+          "type": "294",
+          "name": "fkticon_a_294",
+          "typeCompatibility": "42",
+          "nameCompatibility": "fkticon_a_042"
+        },
+        {
+          "byte1": "3",
+          "byte2": "3",
+          "byte3": "192",
+          "kurztitel": "Licht vorne hinten",
+          "type": "282",
+          "name": "fkticon_a_282",
+          "typeCompatibility": "1",
+          "nameCompatibility": "fkticon_a_001"
+        },
+        {
+          "byte1": "4",
+          "byte2": "4",
+          "kurztitel": "Innenlicht",
+          "type": "2",
+          "name": "fkticon_a_002",
+          "typeCompatibility": "2",
+          "nameCompatibility": "fkticon_a_002"
+        },
+        {
+          "byte1": "4",
+          "byte2": "4",
+          "byte3": "1",
+          "kurztitel": "Führer-stand",
+          "type": "48",
+          "name": "fkticon_a_048",
+          "typeCompatibility": "48",
+          "nameCompatibility": "fkticon_a_048"
+        },
+        {
+          "byte1": "4",
+          "byte2": "4",
+          "byte3": "2",
+          "kurztitel": "Licht Technik",
+          "type": "126",
+          "name": "fkticon_a_126",
+          "typeCompatibility": "2",
+          "nameCompatibility": "fkticon_a_002"
+        },
+        {
+          "byte1": "4",
+          "byte2": "4",
+          "byte3": "3",
+          "kurztitel": "Licht Konsole",
+          "type": "117",
+          "name": "fkticon_a_117",
+          "typeCompatibility": "117",
+          "nameCompatibility": "fkticon_a_117"
+        },
+        {
+          "byte1": "4",
+          "byte2": "4",
+          "byte3": "4",
+          "kurztitel": "Decken-licht",
+          "type": "32",
+          "name": "fkticon_a_032",
+          "typeCompatibility": "32",
+          "nameCompatibility": "fkticon_a_032"
+        },
+        {
+          "byte1": "4",
+          "byte2": "4",
+          "byte3": "5",
+          "kurztitel": "Tisch 3",
+          "type": "35",
+          "name": "fkticon_a_035",
+          "typeCompatibility": "35",
+          "nameCompatibility": "fkticon_a_035"
+        },
+        {
+          "byte1": "4",
+          "byte2": "4",
+          "byte3": "6",
+          "kurztitel": "Tisch 2",
+          "type": "34",
+          "name": "fkticon_a_034",
+          "typeCompatibility": "34",
+          "nameCompatibility": "fkticon_a_034"
+        },
+        {
+          "byte1": "4",
+          "byte2": "4",
+          "byte3": "7",
+          "kurztitel": "Tisch 1",
+          "type": "33",
+          "name": "fkticon_a_033",
+          "typeCompatibility": "33",
+          "nameCompatibility": "fkticon_a_033"
+        },
+        {
+          "byte1": "4",
+          "byte2": "4",
+          "byte3": "8",
+          "kurztitel": "Party Licht",
+          "type": "119",
+          "name": "fkticon_a_119",
+          "typeCompatibility": "119",
+          "nameCompatibility": "fkticon_a_119"
+        },
+        {
+          "byte1": "4",
+          "byte2": "4",
+          "byte3": "9",
+          "kurztitel": "Abteile",
+          "type": "221",
+          "name": "fkticon_a_221",
+          "typeCompatibility": "2",
+          "nameCompatibility": "fkticon_a_002"
+        },
+        {
+          "byte1": "4",
+          "byte2": "4",
+          "byte3": "10",
+          "kurztitel": "Gang",
+          "type": "222",
+          "name": "fkticon_a_222",
+          "typeCompatibility": "2",
+          "nameCompatibility": "fkticon_a_002"
+        },
+        {
+          "byte1": "4",
+          "byte2": "4",
+          "byte3": "11",
+          "kurztitel": "Küche",
+          "type": "223",
+          "name": "fkticon_a_223",
+          "typeCompatibility": "2",
+          "nameCompatibility": "fkticon_a_002"
+        },
+        {
+          "byte1": "4",
+          "byte2": "4",
+          "byte3": "12",
+          "kurztitel": "Gepäck",
+          "type": "224",
+          "name": "fkticon_a_224",
+          "typeCompatibility": "2",
+          "nameCompatibility": "fkticon_a_002"
+        },
+        {
+          "byte1": "4",
+          "byte2": "4",
+          "byte3": "13",
+          "kurztitel": "Bar",
+          "type": "225",
+          "name": "fkticon_a_225",
+          "typeCompatibility": "2",
+          "nameCompatibility": "fkticon_a_002"
+        },
+        {
+          "byte1": "5",
+          "byte2": "5",
+          "kurztitel": "Aussen-licht",
+          "type": "3",
+          "name": "fkticon_a_003",
+          "typeCompatibility": "3",
+          "nameCompatibility": "fkticon_a_003"
+        },
+        {
+          "byte1": "5",
+          "byte2": "5",
+          "byte3": "128",
+          "kurztitel": "Aussen vorn",
+          "type": "105",
+          "name": "fkticon_a_105",
+          "typeCompatibility": "105",
+          "nameCompatibility": "fkticon_a_105"
+        },
+        {
+          "byte1": "5",
+          "byte2": "5",
+          "byte3": "1",
+          "kurztitel": "Nummern-schild",
+          "type": "38",
+          "name": "fkticon_a_038",
+          "typeCompatibility": "38",
+          "nameCompatibility": "fkticon_a_038"
+        },
+        {
+          "byte1": "5",
+          "byte2": "5",
+          "byte3": "2",
+          "kurztitel": "Linienlicht",
+          "type": "40",
+          "name": "fkticon_a_040",
+          "typeCompatibility": "40",
+          "nameCompatibility": "fkticon_a_040"
+        },
+        {
+          "byte1": "5",
+          "byte2": "5",
+          "byte3": "3",
+          "kurztitel": "Triebwerk",
+          "type": "90",
+          "name": "fkticon_a_090",
+          "typeCompatibility": "90",
+          "nameCompatibility": "fkticon_a_090"
+        },
+        {
+          "byte1": "5",
+          "byte2": "5",
+          "byte3": "4",
+          "kurztitel": "Licht Rangier",
+          "type": "118",
+          "name": "fkticon_a_118",
+          "typeCompatibility": "118",
+          "nameCompatibility": "fkticon_a_118"
+        },
+        {
+          "byte1": "5",
+          "byte2": "5",
+          "byte3": "5",
+          "kurztitel": "Blinker",
+          "type": "130",
+          "name": "fkticon_a_130",
+          "typeCompatibility": "3",
+          "nameCompatibility": "fkticon_a_003"
+        },
+        {
+          "byte1": "5",
+          "byte2": "5",
+          "byte3": "6",
+          "kurztitel": "Warnlicht",
+          "type": "47",
+          "name": "fkticon_a_047",
+          "typeCompatibility": "47",
+          "nameCompatibility": "fkticon_a_047"
+        },
+        {
+          "byte1": "5",
+          "byte2": "5",
+          "byte3": "7",
+          "kurztitel": "Trittstufen",
+          "type": "110",
+          "name": "fkticon_a_110",
+          "typeCompatibility": "110",
+          "nameCompatibility": "fkticon_a_110"
+        },
+        {
+          "byte1": "5",
+          "byte2": "5",
+          "byte3": "8",
+          "kurztitel": "Blinklicht",
+          "type": "212",
+          "name": "fkticon_a_212",
+          "typeCompatibility": "3",
+          "nameCompatibility": "fkticon_a_003"
+        },
+        {
+          "byte1": "5",
+          "byte2": "5",
+          "byte3": "9",
+          "kurztitel": "Feuer-büchse",
+          "type": "31",
+          "name": "fkticon_a_031",
+          "typeCompatibility": "31",
+          "nameCompatibility": "fkticon_a_031"
+        },
+        {
+          "byte1": "5",
+          "byte2": "5",
+          "byte3": "10",
+          "kurztitel": "CH-Wechsel",
+          "type": "233",
+          "name": "fkticon_a_233",
+          "typeCompatibility": "118",
+          "nameCompatibility": "fkticon_a_118"
+        },
+        {
+          "byte2": "35",
+          "kurztitel": "Fernlicht",
+          "type": "4",
+          "name": "fkticon_a_004",
+          "typeCompatibility": "4",
+          "nameCompatibility": "fkticon_a_004"
+        },
+        {
+          "byte2": "35",
+          "byte3": "64",
+          "kurztitel": "Fernlicht hinten",
+          "type": "86",
+          "name": "fkticon_a_086",
+          "typeCompatibility": "86",
+          "nameCompatibility": "fkticon_a_086"
+        },
+        {
+          "byte2": "35",
+          "byte3": "128",
+          "kurztitel": "Fernlicht vorn",
+          "type": "87",
+          "name": "fkticon_a_087",
+          "typeCompatibility": "87",
+          "nameCompatibility": "fkticon_a_087"
+        },
+        {
+          "byte2": "35",
+          "byte3": "192",
+          "kurztitel": "Fernlicht vorn hinten",
+          "type": "281",
+          "name": "fkticon_a_281",
+          "typeCompatibility": "4",
+          "nameCompatibility": "fkticon_a_004"
+        }
+      ]
+    },
+    {
+      "name": "Ton 1",
+      "icon": [
+        {
+          "kurztitel": "Ohne Funktion",
+          "name": "fkticon_a_000",
+          "nameCompatibility": "fkticon_a_000"
+        },
+        {
+          "byte1": "2",
+          "byte2": "2",
+          "kurztitel": "F0",
+          "type": "50",
+          "name": "fkticon_a_050",
+          "typeCompatibility": "59",
+          "nameCompatibility": "fkticon_a_059"
+        },
+        {
+          "byte1": "7",
+          "byte2": "7",
+          "kurztitel": "Betriebs-geräusch",
+          "type": "5",
+          "name": "fkticon_a_005",
+          "typeCompatibility": "5",
+          "nameCompatibility": "fkticon_a_005"
+        },
+        {
+          "byte1": "7",
+          "byte2": "7",
+          "byte3": "1",
+          "kurztitel": "Bremsenq. aus",
+          "type": "20",
+          "name": "fkticon_a_020",
+          "typeCompatibility": "20",
+          "nameCompatibility": "fkticon_a_020"
+        },
+        {
+          "byte1": "7",
+          "byte2": "7",
+          "byte3": "2",
+          "kurztitel": "Auf-/ Abbügeln",
+          "type": "101",
+          "name": "fkticon_a_101",
+          "typeCompatibility": "101",
+          "nameCompatibility": "fkticon_a_101"
+        },
+        {
+          "byte1": "7",
+          "byte2": "7",
+          "byte3": "4",
+          "kurztitel": "Auspuff-schlag",
+          "type": "201",
+          "name": "fkticon_a_201",
+          "typeCompatibility": "5",
+          "nameCompatibility": "fkticon_a_005"
+        },
+        {
+          "byte1": "7",
+          "byte2": "7",
+          "byte3": "5",
+          "kurztitel": "An-/ Abkuppeln",
+          "type": "43",
+          "name": "fkticon_a_043",
+          "typeCompatibility": "43",
+          "nameCompatibility": "fkticon_a_043"
+        },
+        {
+          "byte1": "7",
+          "byte2": "7",
+          "byte3": "6",
+          "kurztitel": "Schienen-stoß",
+          "type": "37",
+          "name": "fkticon_a_037",
+          "typeCompatibility": "37",
+          "nameCompatibility": "fkticon_a_037"
+        },
+        {
+          "byte1": "7",
+          "byte2": "7",
+          "byte3": "7",
+          "kurztitel": "Schlämmen",
+          "type": "247",
+          "name": "fkticon_a_247",
+          "typeCompatibility": "5",
+          "nameCompatibility": "fkticon_a_005"
+        },
+        {
+          "byte1": "7",
+          "byte2": "7",
+          "byte3": "8",
+          "kurztitel": "Schaffner-pfiff",
+          "type": "11",
+          "name": "fkticon_a_011",
+          "typeCompatibility": "11",
+          "nameCompatibility": "fkticon_a_011"
+        },
+        {
+          "byte1": "7",
+          "byte2": "7",
+          "byte3": "9",
+          "kurztitel": "Schalt-stufen",
+          "type": "21",
+          "name": "fkticon_a_021",
+          "typeCompatibility": "21",
+          "nameCompatibility": "fkticon_a_021"
+        },
+        {
+          "byte1": "7",
+          "byte2": "7",
+          "byte3": "10",
+          "kurztitel": "Zylinder/ Dampf",
+          "type": "91",
+          "name": "fkticon_a_091",
+          "typeCompatibility": "91",
+          "nameCompatibility": "fkticon_a_091"
+        },
+        {
+          "byte1": "7",
+          "byte2": "7",
+          "byte3": "11",
+          "kurztitel": "Diesel-heizung",
+          "type": "202",
+          "name": "fkticon_a_202",
+          "typeCompatibility": "5",
+          "nameCompatibility": "fkticon_a_005"
+        },
+        {
+          "byte1": "7",
+          "byte2": "7",
+          "byte3": "12",
+          "kurztitel": "Sicherheits-ventil",
+          "type": "123",
+          "name": "fkticon_a_123",
+          "typeCompatibility": "5",
+          "nameCompatibility": "fkticon_a_005"
+        },
+        {
+          "byte1": "7",
+          "byte2": "7",
+          "byte3": "13",
+          "kurztitel": "Schüttel-rost",
+          "type": "36",
+          "name": "fkticon_a_036",
+          "typeCompatibility": "36",
+          "nameCompatibility": "fkticon_a_036"
+        },
+        {
+          "byte1": "7",
+          "byte2": "7",
+          "byte3": "14",
+          "kurztitel": "Generator",
+          "type": "22",
+          "name": "fkticon_a_022",
+          "typeCompatibility": "22",
+          "nameCompatibility": "fkticon_a_022"
+        },
+        {
+          "byte1": "7",
+          "byte2": "7",
+          "byte3": "15",
+          "kurztitel": "Puffer-stoß",
+          "type": "44",
+          "name": "fkticon_a_044",
+          "typeCompatibility": "44",
+          "nameCompatibility": "fkticon_a_044"
+        },
+        {
+          "byte1": "7",
+          "byte2": "7",
+          "byte3": "17",
+          "kurztitel": "Party",
+          "type": "39",
+          "name": "fkticon_a_039",
+          "typeCompatibility": "39",
+          "nameCompatibility": "fkticon_a_039"
+        },
+        {
+          "byte1": "7",
+          "byte2": "7",
+          "byte3": "18",
+          "kurztitel": "Tanzmusik",
+          "type": "128",
+          "name": "fkticon_a_128",
+          "typeCompatibility": "39",
+          "nameCompatibility": "fkticon_a_039"
+        },
+        {
+          "byte1": "7",
+          "byte2": "7",
+          "byte3": "19",
+          "kurztitel": "Pressluft",
+          "type": "92",
+          "name": "fkticon_a_092",
+          "typeCompatibility": "92",
+          "nameCompatibility": "fkticon_a_092"
+        },
+        {
+          "byte1": "7",
+          "byte2": "7",
+          "byte3": "20",
+          "kurztitel": "Maschine vorschm.",
+          "type": "24",
+          "name": "fkticon_a_024",
+          "typeCompatibility": "24",
+          "nameCompatibility": "fkticon_a_024"
+        },
+        {
+          "byte1": "7",
+          "byte2": "7",
+          "byte3": "21",
+          "kurztitel": "Kessel Heizung",
+          "type": "124",
+          "name": "fkticon_a_124",
+          "typeCompatibility": "5",
+          "nameCompatibility": "fkticon_a_005"
+        },
+        {
+          "byte1": "7",
+          "byte2": "7",
+          "byte3": "24",
+          "kurztitel": "Hilfs Aggregat",
+          "type": "125",
+          "name": "fkticon_a_125",
+          "typeCompatibility": "5",
+          "nameCompatibility": "fkticon_a_005"
+        },
+        {
+          "byte1": "7",
+          "byte2": "7",
+          "byte3": "25",
+          "kurztitel": "Zugheizung",
+          "type": "203",
+          "name": "fkticon_a_203",
+          "typeCompatibility": "5",
+          "nameCompatibility": "fkticon_a_005"
+        },
+        {
+          "byte1": "7",
+          "byte2": "7",
+          "byte3": "26",
+          "kurztitel": "Ansage Pfiff",
+          "type": "234",
+          "name": "fkticon_a_234",
+          "typeCompatibility": "5",
+          "nameCompatibility": "fkticon_a_005"
+        },
+        {
+          "byte1": "7",
+          "byte2": "7",
+          "byte3": "27",
+          "kurztitel": "Zufall aus",
+          "type": "235",
+          "name": "fkticon_a_235",
+          "typeCompatibility": "5",
+          "nameCompatibility": "fkticon_a_005"
+        },
+        {
+          "byte1": "7",
+          "byte2": "7",
+          "byte3": "28",
+          "kurztitel": "Sifataster",
+          "type": "236",
+          "name": "fkticon_a_236",
+          "typeCompatibility": "5",
+          "nameCompatibility": "fkticon_a_005"
+        },
+        {
+          "byte1": "7",
+          "byte2": "7",
+          "byte3": "29",
+          "kurztitel": "Not Aus",
+          "type": "237",
+          "name": "fkticon_a_237",
+          "typeCompatibility": "5",
+          "nameCompatibility": "fkticon_a_005"
+        },
+        {
+          "byte1": "7",
+          "byte2": "7",
+          "byte3": "30",
+          "kurztitel": "Schalter",
+          "type": "238",
+          "name": "fkticon_a_238",
+          "typeCompatibility": "5",
+          "nameCompatibility": "fkticon_a_005"
+        },
+        {
+          "byte1": "7",
+          "byte2": "7",
+          "byte3": "31",
+          "kurztitel": "Kipp-schalter",
+          "type": "239",
+          "name": "fkticon_a_239",
+          "typeCompatibility": "5",
+          "nameCompatibility": "fkticon_a_005"
+        },
+        {
+          "byte1": "7",
+          "byte2": "7",
+          "byte3": "32",
+          "kurztitel": "Dreh-schalter",
+          "type": "240",
+          "name": "fkticon_a_240",
+          "typeCompatibility": "5",
+          "nameCompatibility": "fkticon_a_005"
+        },
+        {
+          "byte1": "7",
+          "byte2": "7",
+          "byte3": "33",
+          "kurztitel": "Kurbeln",
+          "type": "295",
+          "name": "fkticon_a_295",
+          "typeCompatibility": "5",
+          "nameCompatibility": "fkticon_a_005"
+        },
+        {
+          "byte1": "7",
+          "byte2": "7",
+          "byte3": "34",
+          "kurztitel": "Not Halt",
+          "type": "241",
+          "name": "fkticon_a_241",
+          "typeCompatibility": "5",
+          "nameCompatibility": "fkticon_a_005"
+        },
+        {
+          "byte1": "7",
+          "byte2": "7",
+          "byte3": "35",
+          "kurztitel": "Klackern Tacho",
+          "type": "243",
+          "name": "fkticon_a_243",
+          "typeCompatibility": "5",
+          "nameCompatibility": "fkticon_a_005"
+        },
+        {
+          "byte1": "7",
+          "byte2": "7",
+          "byte3": "36",
+          "kurztitel": "Sound Wischer",
+          "type": "244",
+          "name": "fkticon_a_244",
+          "typeCompatibility": "5",
+          "nameCompatibility": "fkticon_a_005"
+        },
+        {
+          "byte1": "7",
+          "byte2": "7",
+          "byte3": "43",
+          "kurztitel": "Kurven quietschen",
+          "type": "129",
+          "name": "fkticon_a_129",
+          "typeCompatibility": "5",
+          "nameCompatibility": "fkticon_a_005"
+        },
+        {
+          "byte1": "7",
+          "byte2": "7",
+          "byte3": "44",
+          "kurztitel": "Ablass Ventil",
+          "type": "131",
+          "name": "fkticon_a_131",
+          "typeCompatibility": "5",
+          "nameCompatibility": "fkticon_a_005"
+        },
+        {
+          "byte1": "7",
+          "byte2": "7",
+          "byte3": "46",
+          "kurztitel": "Sanden",
+          "type": "108",
+          "name": "fkticon_a_108",
+          "typeCompatibility": "108",
+          "nameCompatibility": "fkticon_a_108"
+        },
+        {
+          "byte1": "7",
+          "byte2": "7",
+          "byte3": "47",
+          "kurztitel": "Bremsen-quietschen",
+          "type": "112",
+          "name": "fkticon_a_112",
+          "typeCompatibility": "112",
+          "nameCompatibility": "fkticon_a_112"
+        },
+        {
+          "byte1": "8",
+          "byte2": "8",
+          "kurztitel": "Fahr-geräusch",
+          "type": "23",
+          "name": "fkticon_a_023",
+          "typeCompatibility": "23",
+          "nameCompatibility": "fkticon_a_023"
+        },
+        {
+          "byte1": "8",
+          "byte2": "8",
+          "byte3": "1",
+          "kurztitel": "Segeln",
+          "type": "204",
+          "name": "fkticon_a_204",
+          "typeCompatibility": "23",
+          "nameCompatibility": "fkticon_a_023"
+        },
+        {
+          "byte1": "8",
+          "byte2": "8",
+          "byte3": "2",
+          "kurztitel": "Sound Zahnrad",
+          "type": "242",
+          "name": "fkticon_a_242",
+          "typeCompatibility": "23",
+          "nameCompatibility": "fkticon_a_023"
+        },
+        {
+          "byte2": "36",
+          "kurztitel": "Glocke",
+          "type": "13",
+          "name": "fkticon_a_013",
+          "typeCompatibility": "13",
+          "nameCompatibility": "fkticon_a_013"
+        },
+        {
+          "byte2": "36",
+          "byte3": "4",
+          "kurztitel": "Glocke kurz",
+          "type": "248",
+          "name": "fkticon_a_248",
+          "typeCompatibility": "13",
+          "nameCompatibility": "fkticon_a_013"
+        },
+        {
+          "byte2": "36",
+          "byte3": "8",
+          "kurztitel": "Glocke lang",
+          "type": "249",
+          "name": "fkticon_a_249",
+          "typeCompatibility": "13",
+          "nameCompatibility": "fkticon_a_013"
+        },
+        {
+          "byte2": "37",
+          "kurztitel": "Horn/ Typhon",
+          "type": "10",
+          "name": "fkticon_a_010",
+          "typeCompatibility": "10",
+          "nameCompatibility": "fkticon_a_010"
+        },
+        {
+          "byte2": "37",
+          "byte3": "16",
+          "kurztitel": "Kurz",
+          "type": "250",
+          "name": "fkticon_a_250",
+          "typeCompatibility": "10",
+          "nameCompatibility": "fkticon_a_010"
+        },
+        {
+          "byte2": "37",
+          "byte3": "32",
+          "kurztitel": "Lang",
+          "type": "251",
+          "name": "fkticon_a_251",
+          "typeCompatibility": "10",
+          "nameCompatibility": "fkticon_a_010"
+        },
+        {
+          "byte2": "38",
+          "kurztitel": "Pfeife",
+          "type": "12",
+          "name": "fkticon_a_012",
+          "typeCompatibility": "12",
+          "nameCompatibility": "fkticon_a_012"
+        },
+        {
+          "byte2": "38",
+          "byte3": "16",
+          "kurztitel": "Pfeife kurz",
+          "type": "252",
+          "name": "fkticon_a_252",
+          "typeCompatibility": "12",
+          "nameCompatibility": "fkticon_a_012"
+        },
+        {
+          "byte2": "38",
+          "byte3": "32",
+          "kurztitel": "Pfeife lang",
+          "type": "253",
+          "name": "fkticon_a_253",
+          "typeCompatibility": "12",
+          "nameCompatibility": "fkticon_a_012"
+        },
+        {
+          "byte2": "40",
+          "kurztitel": "Lüfter",
+          "type": "29",
+          "name": "fkticon_a_029",
+          "typeCompatibility": "29",
+          "nameCompatibility": "fkticon_a_029"
+        },
+        {
+          "byte2": "40",
+          "byte3": "2",
+          "kurztitel": "Starklüften",
+          "type": "273",
+          "name": "fkticon_a_273",
+          "typeCompatibility": "29",
+          "nameCompatibility": "fkticon_a_029"
+        },
+        {
+          "byte2": "40",
+          "byte3": "3",
+          "kurztitel": "Schwach-lüften",
+          "type": "274",
+          "name": "fkticon_a_274",
+          "typeCompatibility": "29",
+          "nameCompatibility": "fkticon_a_029"
+        },
+        {
+          "byte2": "41",
+          "kurztitel": "Luftpumpe",
+          "type": "19",
+          "name": "fkticon_a_019",
+          "typeCompatibility": "19",
+          "nameCompatibility": "fkticon_a_019"
+        },
+        {
+          "byte2": "41",
+          "byte3": "1",
+          "kurztitel": "Luftpumpe manuell",
+          "type": "106",
+          "name": "fkticon_a_106",
+          "typeCompatibility": "106",
+          "nameCompatibility": "fkticon_a_106"
+        },
+        {
+          "byte2": "41",
+          "byte3": "3",
+          "kurztitel": "Kom-pressor",
+          "type": "116",
+          "name": "fkticon_a_116",
+          "typeCompatibility": "116",
+          "nameCompatibility": "fkticon_a_116"
+        },
+        {
+          "byte2": "41",
+          "byte3": "2",
+          "kurztitel": "Vakuum-pumpe",
+          "type": "89",
+          "name": "fkticon_a_089",
+          "typeCompatibility": "89",
+          "nameCompatibility": "fkticon_a_089"
+        },
+        {
+          "byte2": "41",
+          "byte3": "4",
+          "kurztitel": "Injektor",
+          "type": "49",
+          "name": "fkticon_a_049",
+          "typeCompatibility": "49",
+          "nameCompatibility": "fkticon_a_049"
+        },
+        {
+          "byte2": "41",
+          "byte3": "5",
+          "kurztitel": "Wasser-pumpe",
+          "type": "111",
+          "name": "fkticon_a_111",
+          "typeCompatibility": "111",
+          "nameCompatibility": "fkticon_a_111"
+        },
+        {
+          "byte2": "41",
+          "byte3": "6",
+          "kurztitel": "Ölpumpe",
+          "type": "113",
+          "name": "fkticon_a_113",
+          "typeCompatibility": "113",
+          "nameCompatibility": "fkticon_a_113"
+        },
+        {
+          "byte2": "41",
+          "byte3": "7",
+          "kurztitel": "Schmier-pumpe",
+          "type": "114",
+          "name": "fkticon_a_114",
+          "typeCompatibility": "114",
+          "nameCompatibility": "fkticon_a_114"
+        },
+        {
+          "byte2": "41",
+          "byte3": "8",
+          "kurztitel": "Diesel-pumpe",
+          "type": "115",
+          "name": "fkticon_a_115",
+          "typeCompatibility": "115",
+          "nameCompatibility": "fkticon_a_115"
+        },
+        {
+          "byte2": "41",
+          "byte3": "9",
+          "kurztitel": "Sonst. Pumpe",
+          "type": "135",
+          "name": "fkticon_a_135",
+          "typeCompatibility": "19",
+          "nameCompatibility": "fkticon_a_019"
+        },
+        {
+          "byte2": "42",
+          "kurztitel": "Kohle schaufeln",
+          "type": "26",
+          "name": "fkticon_a_026",
+          "typeCompatibility": "26",
+          "nameCompatibility": "fkticon_a_026"
+        },
+        {
+          "byte2": "42",
+          "byte3": "1",
+          "kurztitel": "Kombi Kohle",
+          "type": "136",
+          "name": "fkticon_a_136",
+          "typeCompatibility": "26",
+          "nameCompatibility": "fkticon_a_026"
+        },
+        {
+          "byte2": "42",
+          "byte3": "2",
+          "kurztitel": "Kohlestaub",
+          "type": "280",
+          "name": "fkticon_a_280",
+          "typeCompatibility": "26",
+          "nameCompatibility": "fkticon_a_026"
+        }
+      ]
+    },
+    {
+      "name": "Ton 2",
+      "icon": [
+        {
+          "kurztitel": "Ohne Funktion",
+          "name": "fkticon_a_000",
+          "nameCompatibility": "fkticon_a_000"
+        },
+        {
+          "byte1": "2",
+          "byte2": "2",
+          "kurztitel": "F0",
+          "type": "50",
+          "name": "fkticon_a_050",
+          "typeCompatibility": "59",
+          "nameCompatibility": "fkticon_a_059"
+        },
+        {
+          "byte1": "9",
+          "byte2": "9",
+          "kurztitel": "Sprach-ausgabe",
+          "type": "45",
+          "name": "fkticon_a_045",
+          "typeCompatibility": "45",
+          "nameCompatibility": "fkticon_a_045"
+        },
+        {
+          "byte1": "9",
+          "byte2": "9",
+          "byte3": "1",
+          "kurztitel": "Bahnhofs-durchsage",
+          "type": "25",
+          "name": "fkticon_a_025",
+          "typeCompatibility": "25",
+          "nameCompatibility": "fkticon_a_025"
+        },
+        {
+          "byte1": "9",
+          "byte2": "9",
+          "byte3": "2",
+          "kurztitel": "Bahnsteig-durchsage",
+          "type": "104",
+          "name": "fkticon_a_104",
+          "typeCompatibility": "104",
+          "nameCompatibility": "fkticon_a_104"
+        },
+        {
+          "byte1": "9",
+          "byte2": "9",
+          "byte3": "3",
+          "kurztitel": "Zugziel Ansage",
+          "type": "121",
+          "name": "fkticon_a_121",
+          "typeCompatibility": "45",
+          "nameCompatibility": "fkticon_a_045"
+        },
+        {
+          "byte1": "9",
+          "byte2": "9",
+          "byte3": "4",
+          "kurztitel": "Funk-gespräch",
+          "type": "103",
+          "name": "fkticon_a_103",
+          "typeCompatibility": "103",
+          "nameCompatibility": "fkticon_a_103"
+        },
+        {
+          "byte1": "9",
+          "byte2": "9",
+          "byte3": "5",
+          "kurztitel": "Wartende Passagiere",
+          "type": "120",
+          "name": "fkticon_a_120",
+          "typeCompatibility": "45",
+          "nameCompatibility": "fkticon_a_045"
+        },
+        {
+          "byte1": "9",
+          "byte2": "9",
+          "byte3": "6",
+          "kurztitel": "Ansage Schaffner",
+          "type": "122",
+          "name": "fkticon_a_122",
+          "typeCompatibility": "45",
+          "nameCompatibility": "fkticon_a_045"
+        },
+        {
+          "byte1": "9",
+          "byte2": "9",
+          "byte3": "7",
+          "kurztitel": "Sprach-wolke",
+          "type": "107",
+          "name": "fkticon_a_107",
+          "typeCompatibility": "107",
+          "nameCompatibility": "fkticon_a_107"
+        },
+        {
+          "byte1": "9",
+          "byte2": "9",
+          "byte3": "8",
+          "kurztitel": "Gespräch Lokführer",
+          "type": "133",
+          "name": "fkticon_a_133",
+          "typeCompatibility": "107",
+          "nameCompatibility": "fkticon_a_107"
+        },
+        {
+          "byte1": "9",
+          "byte2": "9",
+          "byte3": "9",
+          "kurztitel": "Info Durchsage",
+          "type": "134",
+          "name": "fkticon_a_134",
+          "typeCompatibility": "45",
+          "nameCompatibility": "fkticon_a_045"
+        },
+        {
+          "byte1": "9",
+          "byte2": "9",
+          "byte3": "14",
+          "kurztitel": "Warn ansage",
+          "type": "132",
+          "name": "fkticon_a_132",
+          "typeCompatibility": "45",
+          "nameCompatibility": "fkticon_a_045"
+        },
+        {
+          "byte1": "9",
+          "byte2": "9",
+          "byte3": "15",
+          "kurztitel": "Information Zug",
+          "type": "205",
+          "name": "fkticon_a_205",
+          "typeCompatibility": "45",
+          "nameCompatibility": "fkticon_a_045"
+        },
+        {
+          "byte1": "9",
+          "byte2": "9",
+          "byte3": "16",
+          "kurztitel": "Ansage Zug",
+          "type": "206",
+          "name": "fkticon_a_206",
+          "typeCompatibility": "107",
+          "nameCompatibility": "fkticon_a_107"
+        },
+        {
+          "byte1": "9",
+          "byte2": "9",
+          "byte3": "17",
+          "kurztitel": "Wartende Passagiere",
+          "type": "207",
+          "name": "fkticon_a_207",
+          "typeCompatibility": "107",
+          "nameCompatibility": "fkticon_a_107"
+        },
+        {
+          "byte1": "9",
+          "byte2": "9",
+          "byte3": "18",
+          "kurztitel": "allg. Zug-durchsage",
+          "type": "211",
+          "name": "fkticon_a_211",
+          "typeCompatibility": "45",
+          "nameCompatibility": "fkticon_a_045"
+        },
+        {
+          "byte2": "39",
+          "kurztitel": "Türen schließen",
+          "type": "28",
+          "name": "fkticon_a_028",
+          "typeCompatibility": "28",
+          "nameCompatibility": "fkticon_a_028"
+        },
+        {
+          "byte2": "39",
+          "byte3": "2",
+          "kurztitel": "Türen schließen",
+          "type": "140",
+          "name": "fkticon_a_140",
+          "typeCompatibility": "28",
+          "nameCompatibility": "fkticon_a_028"
+        },
+        {
+          "byte2": "39",
+          "byte3": "3",
+          "kurztitel": "Falttüre",
+          "type": "145",
+          "name": "fkticon_a_145",
+          "typeCompatibility": "28",
+          "nameCompatibility": "fkticon_a_028"
+        },
+        {
+          "byte2": "39",
+          "byte3": "4",
+          "kurztitel": "Klapptüre",
+          "type": "146",
+          "name": "fkticon_a_146",
+          "typeCompatibility": "28",
+          "nameCompatibility": "fkticon_a_028"
+        },
+        {
+          "byte2": "39",
+          "byte3": "5",
+          "kurztitel": "Mehrfach Türe",
+          "type": "147",
+          "name": "fkticon_a_147",
+          "typeCompatibility": "28",
+          "nameCompatibility": "fkticon_a_028"
+        },
+        {
+          "byte2": "39",
+          "byte3": "6",
+          "kurztitel": "Rolltor",
+          "type": "148",
+          "name": "fkticon_a_148",
+          "typeCompatibility": "28",
+          "nameCompatibility": "fkticon_a_028"
+        },
+        {
+          "byte2": "39",
+          "byte3": "7",
+          "kurztitel": "Schiebe Tor",
+          "type": "149",
+          "name": "fkticon_a_149",
+          "typeCompatibility": "28",
+          "nameCompatibility": "fkticon_a_028"
+        },
+        {
+          "byte2": "39",
+          "byte3": "8",
+          "kurztitel": "Geräusch Fenster",
+          "type": "139",
+          "name": "fkticon_a_139",
+          "typeCompatibility": "28",
+          "nameCompatibility": "fkticon_a_028"
+        },
+        {
+          "byte2": "39",
+          "byte3": "9",
+          "kurztitel": "Türe zu links",
+          "type": "209",
+          "name": "fkticon_a_209",
+          "typeCompatibility": "28",
+          "nameCompatibility": "fkticon_a_028"
+        },
+        {
+          "byte2": "39",
+          "byte3": "12",
+          "kurztitel": "Rauch- kammer",
+          "type": "279",
+          "name": "fkticon_a_279",
+          "typeCompatibility": "28",
+          "nameCompatibility": "fkticon_a_028"
+        },
+        {
+          "byte2": "45",
+          "byte3": "1",
+          "kurztitel": "Hammer",
+          "type": "257",
+          "name": "fkticon_a_257",
+          "typeCompatibility": "5",
+          "nameCompatibility": "fkticon_a_005"
+        },
+        {
+          "byte2": "45",
+          "byte3": "2",
+          "kurztitel": "Säge",
+          "type": "258",
+          "name": "fkticon_a_258",
+          "typeCompatibility": "5",
+          "nameCompatibility": "fkticon_a_005"
+        },
+        {
+          "byte2": "45",
+          "byte3": "3",
+          "kurztitel": "Bohrer",
+          "type": "259",
+          "name": "fkticon_a_259",
+          "typeCompatibility": "5",
+          "nameCompatibility": "fkticon_a_005"
+        },
+        {
+          "byte2": "45",
+          "byte3": "4",
+          "kurztitel": "Schweißen",
+          "type": "260",
+          "name": "fkticon_a_260",
+          "typeCompatibility": "5",
+          "nameCompatibility": "fkticon_a_005"
+        },
+        {
+          "byte2": "45",
+          "byte3": "5",
+          "kurztitel": "Schleifen",
+          "type": "261",
+          "name": "fkticon_a_261",
+          "typeCompatibility": "5",
+          "nameCompatibility": "fkticon_a_005"
+        },
+        {
+          "byte2": "45",
+          "byte3": "6",
+          "kurztitel": "Bürsten",
+          "type": "262",
+          "name": "fkticon_a_262",
+          "typeCompatibility": "5",
+          "nameCompatibility": "fkticon_a_005"
+        },
+        {
+          "byte2": "45",
+          "byte3": "7",
+          "kurztitel": "Kettenzug",
+          "type": "263",
+          "name": "fkticon_a_263",
+          "typeCompatibility": "5",
+          "nameCompatibility": "fkticon_a_005"
+        },
+        {
+          "byte2": "45",
+          "byte3": "8",
+          "kurztitel": "Flex",
+          "type": "264",
+          "name": "fkticon_a_264",
+          "typeCompatibility": "5",
+          "nameCompatibility": "fkticon_a_005"
+        },
+        {
+          "byte2": "45",
+          "byte3": "9",
+          "kurztitel": "Schaufel",
+          "type": "265",
+          "name": "fkticon_a_265",
+          "typeCompatibility": "5",
+          "nameCompatibility": "fkticon_a_005"
+        },
+        {
+          "byte2": "45",
+          "byte3": "10",
+          "kurztitel": "Laden",
+          "type": "266",
+          "name": "fkticon_a_266",
+          "typeCompatibility": "5",
+          "nameCompatibility": "fkticon_a_005"
+        },
+        {
+          "byte2": "45",
+          "byte3": "11",
+          "kurztitel": "Hämmern",
+          "type": "267",
+          "name": "fkticon_a_267",
+          "typeCompatibility": "5",
+          "nameCompatibility": "fkticon_a_005"
+        },
+        {
+          "byte2": "46",
+          "byte3": "1",
+          "kurztitel": "Abspielen",
+          "type": "213",
+          "name": "fkticon_a_213",
+          "typeCompatibility": "5",
+          "nameCompatibility": "fkticon_a_005"
+        },
+        {
+          "byte2": "46",
+          "byte3": "2",
+          "kurztitel": "Pause",
+          "type": "214",
+          "name": "fkticon_a_214",
+          "typeCompatibility": "5",
+          "nameCompatibility": "fkticon_a_005"
+        },
+        {
+          "byte2": "46",
+          "byte3": "3",
+          "kurztitel": "Vor",
+          "type": "215",
+          "name": "fkticon_a_215",
+          "typeCompatibility": "5",
+          "nameCompatibility": "fkticon_a_005"
+        },
+        {
+          "byte2": "46",
+          "byte3": "4",
+          "kurztitel": "Zurück",
+          "type": "216",
+          "name": "fkticon_a_216",
+          "typeCompatibility": "5",
+          "nameCompatibility": "fkticon_a_005"
+        },
+        {
+          "byte2": "46",
+          "byte3": "5",
+          "kurztitel": "Lauter",
+          "type": "217",
+          "name": "fkticon_a_217",
+          "typeCompatibility": "5",
+          "nameCompatibility": "fkticon_a_005"
+        },
+        {
+          "byte2": "46",
+          "byte3": "6",
+          "kurztitel": "Leiser",
+          "type": "218",
+          "name": "fkticon_a_218",
+          "typeCompatibility": "5",
+          "nameCompatibility": "fkticon_a_005"
+        },
+        {
+          "byte2": "46",
+          "byte3": "7",
+          "kurztitel": "Stop",
+          "type": "268",
+          "name": "fkticon_a_268",
+          "typeCompatibility": "5",
+          "nameCompatibility": "fkticon_a_005"
+        },
+        {
+          "byte2": "46",
+          "byte3": "8",
+          "kurztitel": "Nächstes",
+          "type": "269",
+          "name": "fkticon_a_269",
+          "typeCompatibility": "5",
+          "nameCompatibility": "fkticon_a_005"
+        },
+        {
+          "byte2": "46",
+          "byte3": "9",
+          "kurztitel": "Letztes",
+          "type": "270",
+          "name": "fkticon_a_270",
+          "typeCompatibility": "5",
+          "nameCompatibility": "fkticon_a_005"
+        },
+        {
+          "byte2": "47",
+          "kurztitel": "Tanken",
+          "type": "226",
+          "name": "fkticon_a_226",
+          "typeCompatibility": "5",
+          "nameCompatibility": "fkticon_a_005"
+        },
+        {
+          "byte2": "47",
+          "byte3": "1",
+          "kurztitel": "Wasser",
+          "type": "227",
+          "name": "fkticon_a_227",
+          "typeCompatibility": "5",
+          "nameCompatibility": "fkticon_a_005"
+        },
+        {
+          "byte2": "47",
+          "byte3": "2",
+          "kurztitel": "Diesel",
+          "type": "228",
+          "name": "fkticon_a_228",
+          "typeCompatibility": "5",
+          "nameCompatibility": "fkticon_a_005"
+        },
+        {
+          "byte2": "47",
+          "byte3": "3",
+          "kurztitel": "Kohle",
+          "type": "229",
+          "name": "fkticon_a_229",
+          "typeCompatibility": "5",
+          "nameCompatibility": "fkticon_a_005"
+        },
+        {
+          "byte2": "47",
+          "byte3": "4",
+          "kurztitel": "Kohlestaub",
+          "type": "230",
+          "name": "fkticon_a_230",
+          "typeCompatibility": "5",
+          "nameCompatibility": "fkticon_a_005"
+        },
+        {
+          "byte2": "47",
+          "byte3": "5",
+          "kurztitel": "Öl",
+          "type": "231",
+          "name": "fkticon_a_231",
+          "typeCompatibility": "5",
+          "nameCompatibility": "fkticon_a_005"
+        },
+        {
+          "byte2": "47",
+          "byte3": "6",
+          "kurztitel": "Sand",
+          "type": "232",
+          "name": "fkticon_a_232",
+          "typeCompatibility": "5",
+          "nameCompatibility": "fkticon_a_005"
+        },
+        {
+          "byte1": "9",
+          "byte2": "9",
+          "kurztitel": "Sprach-ausgabe",
+          "type": "45",
+          "name": "fkticon_a_045",
+          "typeCompatibility": "45",
+          "nameCompatibility": "fkticon_a_045"
+        },
+        {
+          "byte1": "9",
+          "byte2": "9",
+          "byte3": "10",
+          "kurztitel": "Ambiente Stadt",
+          "type": "141",
+          "name": "fkticon_a_141",
+          "typeCompatibility": "45",
+          "nameCompatibility": "fkticon_a_045"
+        },
+        {
+          "byte1": "9",
+          "byte2": "9",
+          "byte3": "11",
+          "kurztitel": "Ambiente Tunnel",
+          "type": "142",
+          "name": "fkticon_a_142",
+          "typeCompatibility": "45",
+          "nameCompatibility": "fkticon_a_045"
+        },
+        {
+          "byte1": "9",
+          "byte2": "9",
+          "byte3": "12",
+          "kurztitel": "Ambiente Stahl",
+          "type": "143",
+          "name": "fkticon_a_143",
+          "typeCompatibility": "45",
+          "nameCompatibility": "fkticon_a_045"
+        },
+        {
+          "byte1": "9",
+          "byte2": "9",
+          "byte3": "13",
+          "kurztitel": "Ambiente Beton",
+          "type": "144",
+          "name": "fkticon_a_144",
+          "typeCompatibility": "45",
+          "nameCompatibility": "fkticon_a_045"
+        },
+        {
+          "byte2": "48",
+          "byte3": "5",
+          "kurztitel": "Bahnüber-gang",
+          "type": "271",
+          "name": "fkticon_a_271",
+          "typeCompatibility": "5",
+          "nameCompatibility": "fkticon_a_005"
+        },
+        {
+          "byte2": "48",
+          "byte3": "6",
+          "kurztitel": "Glocke BÜ",
+          "type": "272",
+          "name": "fkticon_a_272",
+          "typeCompatibility": "5",
+          "nameCompatibility": "fkticon_a_005"
+        }
+      ]
+    },
+    {
+      "name": "Mechanik",
+      "icon": [
+        {
+          "kurztitel": "Ohne Funktion",
+          "name": "fkticon_a_000",
+          "nameCompatibility": "fkticon_a_000"
+        },
+        {
+          "byte1": "2",
+          "byte2": "2",
+          "kurztitel": "F0",
+          "type": "50",
+          "name": "fkticon_a_050",
+          "typeCompatibility": "59",
+          "nameCompatibility": "fkticon_a_059"
+        },
+        {
+          "byte1": "6",
+          "byte2": "6",
+          "byte3": "1",
+          "kurztitel": "Zahnrad Antrieb",
+          "type": "245",
+          "name": "fkticon_a_245",
+          "typeCompatibility": "59",
+          "nameCompatibility": "fkticon_a_059"
+        },
+        {
+          "byte1": "6",
+          "byte2": "6",
+          "byte3": "2",
+          "kurztitel": "Wischer",
+          "type": "246",
+          "name": "fkticon_a_246",
+          "typeCompatibility": "59",
+          "nameCompatibility": "fkticon_a_059"
+        },
+        {
+          "byte1": "10",
+          "byte2": "10",
+          "kurztitel": "Rangier-gang ein",
+          "type": "8",
+          "name": "fkticon_a_008",
+          "typeCompatibility": "8",
+          "nameCompatibility": "fkticon_a_008"
+        },
+        {
+          "byte1": "10",
+          "byte2": "10",
+          "byte3": "1",
+          "kurztitel": "Rangier-freigabe",
+          "type": "100",
+          "name": "fkticon_a_100",
+          "typeCompatibility": "100",
+          "nameCompatibility": "fkticon_a_100"
+        },
+        {
+          "byte1": "11",
+          "byte2": "11",
+          "kurztitel": "ABV aus",
+          "type": "18",
+          "name": "fkticon_a_018",
+          "typeCompatibility": "18",
+          "nameCompatibility": "fkticon_a_018"
+        },
+        {
+          "byte1": "11",
+          "byte2": "11",
+          "byte3": "1",
+          "kurztitel": "ABV aus",
+          "type": "102",
+          "name": "fkticon_a_102",
+          "typeCompatibility": "102",
+          "nameCompatibility": "fkticon_a_102"
+        },
+        {
+          "byte1": "11",
+          "byte2": "11",
+          "byte3": "2",
+          "kurztitel": "Bocksprung",
+          "type": "208",
+          "name": "fkticon_a_208",
+          "typeCompatibility": "102",
+          "nameCompatibility": "fkticon_a_102"
+        },
+        {
+          "byte1": "11",
+          "byte2": "11",
+          "byte3": "3",
+          "kurztitel": "Zuggattung",
+          "type": "210",
+          "name": "fkticon_a_210",
+          "typeCompatibility": "102",
+          "nameCompatibility": "fkticon_a_102"
+        },
+        {
+          "byte2": "32",
+          "kurztitel": "Telex",
+          "type": "9",
+          "name": "fkticon_a_009",
+          "typeCompatibility": "9",
+          "nameCompatibility": "fkticon_a_009"
+        },
+        {
+          "byte2": "32",
+          "byte3": "1",
+          "kurztitel": "Telex Walzer",
+          "type": "277",
+          "name": "fkticon_a_277",
+          "typeCompatibility": "9",
+          "nameCompatibility": "fkticon_a_009"
+        },
+        {
+          "byte2": "32",
+          "byte3": "64",
+          "kurztitel": "Telex hinten",
+          "type": "82",
+          "name": "fkticon_a_082",
+          "typeCompatibility": "82",
+          "nameCompatibility": "fkticon_a_082"
+        },
+        {
+          "byte2": "32",
+          "byte3": "65",
+          "kurztitel": "Telex Walzer hinten",
+          "type": "292",
+          "name": "fkticon_a_292",
+          "typeCompatibility": "82",
+          "nameCompatibility": "fkticon_a_082"
+        },
+        {
+          "byte2": "32",
+          "byte3": "128",
+          "kurztitel": "Telex vorn",
+          "type": "83",
+          "name": "fkticon_a_083",
+          "typeCompatibility": "83",
+          "nameCompatibility": "fkticon_a_083"
+        },
+        {
+          "byte2": "32",
+          "byte3": "129",
+          "kurztitel": "Telex Walzer vorne",
+          "type": "293",
+          "name": "fkticon_a_293",
+          "typeCompatibility": "83",
+          "nameCompatibility": "fkticon_a_083"
+        },
+        {
+          "byte2": "33",
+          "kurztitel": "Rauch-generator",
+          "type": "7",
+          "name": "fkticon_a_007",
+          "typeCompatibility": "7",
+          "nameCompatibility": "fkticon_a_007"
+        },
+        {
+          "byte2": "34",
+          "kurztitel": "Panto",
+          "type": "6",
+          "name": "fkticon_a_006",
+          "typeCompatibility": "6",
+          "nameCompatibility": "fkticon_a_006"
+        },
+        {
+          "byte2": "34",
+          "byte3": "64",
+          "kurztitel": "Panto hinten",
+          "type": "84",
+          "name": "fkticon_a_084",
+          "typeCompatibility": "84",
+          "nameCompatibility": "fkticon_a_084"
+        },
+        {
+          "byte2": "34",
+          "byte3": "128",
+          "kurztitel": "Panto vorn",
+          "type": "85",
+          "name": "fkticon_a_085",
+          "typeCompatibility": "85",
+          "nameCompatibility": "fkticon_a_085"
+        },
+        {
+          "byte2": "39",
+          "byte3": "1",
+          "kurztitel": "Türen schließen",
+          "type": "27",
+          "name": "fkticon_a_027",
+          "typeCompatibility": "27",
+          "nameCompatibility": "fkticon_a_027"
+        },
+        {
+          "byte2": "39",
+          "byte3": "10",
+          "kurztitel": "Fenster auf/zu",
+          "type": "138",
+          "name": "fkticon_a_138",
+          "typeCompatibility": "27",
+          "nameCompatibility": "fkticon_a_027"
+        },
+        {
+          "byte2": "39",
+          "byte3": "11",
+          "kurztitel": "Aktion Schaffner",
+          "type": "137",
+          "name": "fkticon_a_137",
+          "typeCompatibility": "27",
+          "nameCompatibility": "fkticon_a_027"
+        },
+        {
+          "byte2": "40",
+          "byte3": "1",
+          "kurztitel": "Lüfter",
+          "type": "30",
+          "name": "fkticon_a_030",
+          "typeCompatibility": "30",
+          "nameCompatibility": "fkticon_a_030"
+        },
+        {
+          "byte2": "43",
+          "kurztitel": "Kran",
+          "type": "93",
+          "name": "fkticon_a_093",
+          "typeCompatibility": "93",
+          "nameCompatibility": "fkticon_a_093"
+        },
+        {
+          "byte2": "43",
+          "byte3": "1",
+          "kurztitel": "Kran neigen",
+          "type": "17",
+          "name": "fkticon_a_017",
+          "typeCompatibility": "17",
+          "nameCompatibility": "fkticon_a_017"
+        },
+        {
+          "byte2": "43",
+          "byte3": "2",
+          "kurztitel": "Kran Höhe",
+          "type": "15",
+          "name": "fkticon_a_015",
+          "typeCompatibility": "15",
+          "nameCompatibility": "fkticon_a_015"
+        },
+        {
+          "byte2": "43",
+          "byte3": "3",
+          "kurztitel": "Drehen links",
+          "type": "16",
+          "name": "fkticon_a_016",
+          "typeCompatibility": "16",
+          "nameCompatibility": "fkticon_a_016"
+        },
+        {
+          "byte2": "43",
+          "byte3": "4",
+          "kurztitel": "Kran verfahren",
+          "type": "14",
+          "name": "fkticon_a_014",
+          "typeCompatibility": "14",
+          "nameCompatibility": "fkticon_a_014"
+        },
+        {
+          "byte2": "43",
+          "byte3": "5",
+          "kurztitel": "Kranhaupt-haken",
+          "type": "46",
+          "name": "fkticon_a_046",
+          "typeCompatibility": "46",
+          "nameCompatibility": "fkticon_a_046"
+        },
+        {
+          "byte2": "43",
+          "byte3": "6",
+          "kurztitel": "Kran Magnet",
+          "type": "99",
+          "name": "fkticon_a_099",
+          "typeCompatibility": "99",
+          "nameCompatibility": "fkticon_a_099"
+        },
+        {
+          "byte2": "43",
+          "byte3": "7",
+          "kurztitel": "Kran auf",
+          "type": "94",
+          "name": "fkticon_a_094",
+          "typeCompatibility": "94",
+          "nameCompatibility": "fkticon_a_094"
+        },
+        {
+          "byte2": "43",
+          "byte3": "8",
+          "kurztitel": "Kran ab",
+          "type": "95",
+          "name": "fkticon_a_095",
+          "typeCompatibility": "95",
+          "nameCompatibility": "fkticon_a_095"
+        },
+        {
+          "byte2": "43",
+          "byte3": "9",
+          "kurztitel": "Kran links",
+          "type": "96",
+          "name": "fkticon_a_096",
+          "typeCompatibility": "96",
+          "nameCompatibility": "fkticon_a_096"
+        },
+        {
+          "byte2": "43",
+          "byte3": "10",
+          "kurztitel": "Kran rechts",
+          "type": "97",
+          "name": "fkticon_a_097",
+          "typeCompatibility": "97",
+          "nameCompatibility": "fkticon_a_097"
+        },
+        {
+          "byte2": "43",
+          "byte3": "11",
+          "kurztitel": "Kranhaken",
+          "type": "256",
+          "name": "fkticon_a_256",
+          "typeCompatibility": "93",
+          "nameCompatibility": "fkticon_a_093"
+        },
+        {
+          "byte2": "43",
+          "byte3": "12",
+          "kurztitel": "Drehen rechts",
+          "type": "98",
+          "name": "fkticon_a_098",
+          "typeCompatibility": "98",
+          "nameCompatibility": "fkticon_a_098"
+        },
+        {
+          "byte2": "43",
+          "byte3": "13",
+          "kurztitel": "Kran ein",
+          "type": "254",
+          "name": "fkticon_a_254",
+          "typeCompatibility": "93",
+          "nameCompatibility": "fkticon_a_093"
+        },
+        {
+          "byte2": "43",
+          "byte3": "14",
+          "kurztitel": "Kran aus",
+          "type": "255",
+          "name": "fkticon_a_255",
+          "typeCompatibility": "93",
+          "nameCompatibility": "fkticon_a_093"
+        },
+        {
+          "byte2": "44",
+          "kurztitel": "Shift",
+          "type": "88",
+          "name": "fkticon_a_088",
+          "typeCompatibility": "88",
+          "nameCompatibility": "fkticon_a_088"
+        },
+        {
+          "byte2": "44",
+          "byte3": "1",
+          "kurztitel": "Mute/ Fade",
+          "type": "109",
+          "name": "fkticon_a_109",
+          "typeCompatibility": "109",
+          "nameCompatibility": "fkticon_a_109"
+        },
+        {
+          "byte2": "44",
+          "byte3": "2",
+          "kurztitel": "CV +",
+          "type": "275",
+          "name": "fkticon_a_275",
+          "typeCompatibility": "88",
+          "nameCompatibility": "fkticon_a_088"
+        },
+        {
+          "byte2": "44",
+          "byte3": "3",
+          "kurztitel": "CV -",
+          "type": "276",
+          "name": "fkticon_a_276",
+          "typeCompatibility": "88",
+          "nameCompatibility": "fkticon_a_088"
+        },
+        {
+          "byte2": "255",
+          "byte3": "1",
+          "kurztitel": "Pendel",
+          "type": "283",
+          "name": "fkticon_a_283",
+          "typeCompatibility": "59",
+          "nameCompatibility": "fkticon_a_059"
+        },
+        {
+          "byte2": "255",
+          "byte3": "2",
+          "kurztitel": "Ablauf",
+          "type": "284",
+          "name": "fkticon_a_284",
+          "typeCompatibility": "59",
+          "nameCompatibility": "fkticon_a_059"
+        },
+        {
+          "byte2": "255",
+          "byte3": "3",
+          "kurztitel": "Zufall",
+          "type": "285",
+          "name": "fkticon_a_285",
+          "typeCompatibility": "59",
+          "nameCompatibility": "fkticon_a_059"
+        },
+        {
+          "byte2": "255",
+          "byte3": "4",
+          "kurztitel": "Verzweigen",
+          "type": "286",
+          "name": "fkticon_a_286",
+          "typeCompatibility": "59",
+          "nameCompatibility": "fkticon_a_059"
+        },
+        {
+          "byte2": "255",
+          "byte3": "5",
+          "kurztitel": "Ablauf Sounds",
+          "type": "287",
+          "name": "fkticon_a_287",
+          "typeCompatibility": "59",
+          "nameCompatibility": "fkticon_a_059"
+        },
+        {
+          "byte2": "255",
+          "byte3": "6",
+          "kurztitel": "Sicherheit",
+          "type": "288",
+          "name": "fkticon_a_288",
+          "typeCompatibility": "59",
+          "nameCompatibility": "fkticon_a_059"
+        },
+        {
+          "byte2": "255",
+          "byte3": "7",
+          "kurztitel": "Zeit Ablauf",
+          "type": "289",
+          "name": "fkticon_a_289",
+          "typeCompatibility": "59",
+          "nameCompatibility": "fkticon_a_059"
+        },
+        {
+          "byte2": "255",
+          "byte3": "8",
+          "kurztitel": "Ereignis",
+          "type": "290",
+          "name": "fkticon_a_290",
+          "typeCompatibility": "59",
+          "nameCompatibility": "fkticon_a_059"
+        }
+      ]
+    },
+    {
+      "name": "Häufige",
+      "icon": [
+        {
+          "kurztitel": "Ohne Funktion",
+          "name": "fkticon_a_000",
+          "nameCompatibility": "fkticon_a_000"
+        },
+        {
+          "byte1": "2",
+          "byte2": "2",
+          "kurztitel": "F0",
+          "type": "50",
+          "name": "fkticon_a_050",
+          "typeCompatibility": "59",
+          "nameCompatibility": "fkticon_a_059"
+        },
+        {
+          "byte1": "3",
+          "byte2": "3",
+          "kurztitel": "Licht",
+          "type": "1",
+          "name": "fkticon_a_001",
+          "typeCompatibility": "1",
+          "nameCompatibility": "fkticon_a_001"
+        },
+        {
+          "byte1": "3",
+          "byte2": "3",
+          "byte3": "64",
+          "kurztitel": "Licht hinten",
+          "type": "41",
+          "name": "fkticon_a_041",
+          "typeCompatibility": "41",
+          "nameCompatibility": "fkticon_a_041"
+        },
+        {
+          "byte1": "3",
+          "byte2": "3",
+          "byte3": "128",
+          "kurztitel": "Licht vorne",
+          "type": "42",
+          "name": "fkticon_a_042",
+          "typeCompatibility": "42",
+          "nameCompatibility": "fkticon_a_042"
+        },
+        {
+          "byte1": "7",
+          "byte2": "7",
+          "kurztitel": "Betriebs-geräusch",
+          "type": "5",
+          "name": "fkticon_a_005",
+          "typeCompatibility": "5",
+          "nameCompatibility": "fkticon_a_005"
+        },
+        {
+          "byte1": "7",
+          "byte2": "7",
+          "byte3": "8",
+          "kurztitel": "Schaffner-pfiff",
+          "type": "11",
+          "name": "fkticon_a_011",
+          "typeCompatibility": "11",
+          "nameCompatibility": "fkticon_a_011"
+        },
+        {
+          "byte1": "7",
+          "byte2": "7",
+          "byte3": "46",
+          "kurztitel": "Sanden",
+          "type": "108",
+          "name": "fkticon_a_108",
+          "typeCompatibility": "108",
+          "nameCompatibility": "fkticon_a_108"
+        },
+        {
+          "byte1": "8",
+          "byte2": "8",
+          "kurztitel": "Fahr-geräusch",
+          "type": "23",
+          "name": "fkticon_a_023",
+          "typeCompatibility": "23",
+          "nameCompatibility": "fkticon_a_023"
+        },
+        {
+          "byte1": "9",
+          "byte2": "9",
+          "kurztitel": "Sprach-ausgabe",
+          "type": "45",
+          "name": "fkticon_a_045",
+          "typeCompatibility": "45",
+          "nameCompatibility": "fkticon_a_045"
+        },
+        {
+          "byte1": "9",
+          "byte2": "9",
+          "byte3": "1",
+          "kurztitel": "Bahnhofs-durchsage",
+          "type": "25",
+          "name": "fkticon_a_025",
+          "typeCompatibility": "25",
+          "nameCompatibility": "fkticon_a_025"
+        },
+        {
+          "byte1": "10",
+          "byte2": "10",
+          "kurztitel": "Rangier-gang ein",
+          "type": "8",
+          "name": "fkticon_a_008",
+          "typeCompatibility": "8",
+          "nameCompatibility": "fkticon_a_008"
+        },
+        {
+          "byte1": "11",
+          "byte2": "11",
+          "kurztitel": "ABV aus",
+          "type": "18",
+          "name": "fkticon_a_018",
+          "typeCompatibility": "18",
+          "nameCompatibility": "fkticon_a_018"
+        },
+        {
+          "byte2": "32",
+          "kurztitel": "Telex",
+          "type": "9",
+          "name": "fkticon_a_009",
+          "typeCompatibility": "9",
+          "nameCompatibility": "fkticon_a_009"
+        },
+        {
+          "byte2": "33",
+          "kurztitel": "Rauch-generator",
+          "type": "7",
+          "name": "fkticon_a_007",
+          "typeCompatibility": "7",
+          "nameCompatibility": "fkticon_a_007"
+        },
+        {
+          "byte2": "34",
+          "kurztitel": "Panto",
+          "type": "6",
+          "name": "fkticon_a_006",
+          "typeCompatibility": "6",
+          "nameCompatibility": "fkticon_a_006"
+        },
+        {
+          "byte2": "35",
+          "kurztitel": "Fernlicht",
+          "type": "4",
+          "name": "fkticon_a_004",
+          "typeCompatibility": "4",
+          "nameCompatibility": "fkticon_a_004"
+        },
+        {
+          "byte2": "36",
+          "kurztitel": "Glocke",
+          "type": "13",
+          "name": "fkticon_a_013",
+          "typeCompatibility": "13",
+          "nameCompatibility": "fkticon_a_013"
+        },
+        {
+          "byte2": "37",
+          "kurztitel": "Horn/ Typhon",
+          "type": "10",
+          "name": "fkticon_a_010",
+          "typeCompatibility": "10",
+          "nameCompatibility": "fkticon_a_010"
+        },
+        {
+          "byte2": "38",
+          "kurztitel": "Pfeife",
+          "type": "12",
+          "name": "fkticon_a_012",
+          "typeCompatibility": "12",
+          "nameCompatibility": "fkticon_a_012"
+        },
+        {
+          "byte2": "42",
+          "kurztitel": "Kohle schaufeln",
+          "type": "26",
+          "name": "fkticon_a_026",
+          "typeCompatibility": "26",
+          "nameCompatibility": "fkticon_a_026"
+        }
+      ]
+    }
+  ]
+}

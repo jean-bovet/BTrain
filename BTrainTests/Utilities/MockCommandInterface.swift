@@ -14,6 +14,7 @@
 import Foundation
 
 final class MockCommandInterface: CommandInterface {
+    
     var callbacks = CommandInterfaceCallbacks()
 
     var speedValues = [UInt16]()
@@ -111,4 +112,9 @@ final class MockCommandInterface: CommandInterface {
     func speedSteps(for value: SpeedValue, decoder _: DecoderType) -> SpeedStep {
         .init(value: value.value)
     }
+    
+    func attributes(about function: BTrain.CommandLocomotiveFunction) -> BTrain.CommandLocomotiveFunctionAttributes? {
+        return nil
+    }
+
 }

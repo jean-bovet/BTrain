@@ -38,23 +38,29 @@ final class MarklinInterface: CommandInterface, ObservableObject {
     /// For example, the hash field should be left out because it will change between the command and the corresponding acknowledgement.
     private var completionBlocks = [MarklinCANMessage: [CompletionBlock]]()
 
+    private let resources = MarklinInterfaceResources()
+        
     func connect(server: String, port: UInt16, onReady: @escaping () -> Void, onError: @escaping (Error) -> Void, onStop: @escaping () -> Void) {
         client = Client(address: server, port: port)
-        client?.start {
-            onReady()
-        } onData: { [weak self] msg in
-            DispatchQueue.main.async {
-                self?.onMessage(msg: msg)
+        if let client = client {
+            client.start { [weak self] in
+                self?.resources.fetchResources(server: client.address) {
+                    onReady()
+                }
+            } onData: { [weak self] msg in
+                DispatchQueue.main.async {
+                    self?.onMessage(msg: msg)
+                }
+            } onError: { [weak self] error in
+                self?.client = nil
+                onError(error)
+            } onStop: { [weak self] in
+                DispatchQueue.main.async {
+                    self?.disconnectCompletionBlocks?()
+                }
+                self?.client = nil
+                onStop()
             }
-        } onError: { [weak self] error in
-            self?.client = nil
-            onError(error)
-        } onStop: { [weak self] in
-            DispatchQueue.main.async {
-                self?.disconnectCompletionBlocks?()
-            }
-            self?.client = nil
-            onStop()
         }
     }
 
@@ -107,15 +113,12 @@ final class MarklinInterface: CommandInterface, ObservableObject {
         }
     }
 
-    private func triggerCompletionBlock(for message: MarklinCANMessage) {
-        if let blocks = completionBlocks[message.raw] {
-            for completionBlock in blocks {
-                completionBlock()
-            }
-            completionBlocks[message.raw] = nil
-        }
+    func attributes(about function: CommandLocomotiveFunction) -> CommandLocomotiveFunctionAttributes? {
+        resources.attributes(about: function)
     }
 
+    // MARK: -
+    
     func onMessage(msg: MarklinCANMessage) {
         if collectMessages {
             messages.append(msg)
@@ -214,6 +217,15 @@ final class MarklinInterface: CommandInterface, ObservableObject {
         }
     }
 
+    private func triggerCompletionBlock(for message: MarklinCANMessage) {
+        if let blocks = completionBlocks[message.raw] {
+            for completionBlock in blocks {
+                completionBlock()
+            }
+            completionBlocks[message.raw] = nil
+        }
+    }
+
     private func send(message: MarklinCANMessage, priority: Command.Priority, completion: CompletionBlock?) {
         guard let client = client else {
             BTLogger.error("Cannot send message to Digital Controller because the client is nil!")
@@ -243,7 +255,7 @@ extension MarklinInterface: MetricsProvider {
 
 extension LocomotivesDocumentParser.LocomotiveInfo {
     var commandLocomotive: CommandLocomotive {
-        CommandLocomotive(uid: uid, name: name, address: address, maxSpeed: vmax, decoderType: type?.locomotiveDecoderType ?? .MFX, icon: nil)
+        CommandLocomotive(uid: uid, name: name, address: address, maxSpeed: vmax, decoderType: type?.locomotiveDecoderType ?? .MFX, icon: nil, functions: [])
     }
 }
 
@@ -260,7 +272,9 @@ extension MarklinCS3.Lok {
     }
 
     func toCommand(icon: Data?) -> CommandLocomotive {
-        CommandLocomotive(uid: uid.valueFromHex, name: name, address: address, maxSpeed: tachomax, decoderType: decoderType, icon: icon)
+        let actualFunctions = funktionen.filter({$0.typ2 != 0})
+        let functions = actualFunctions.map { CommandLocomotiveFunction(identifier: $0.typ2 )}
+        return CommandLocomotive(uid: uid.valueFromHex, name: name, address: address, maxSpeed: tachomax, decoderType: decoderType, icon: icon, functions: functions)
     }
 }
 

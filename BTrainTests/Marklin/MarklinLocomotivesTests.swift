@@ -28,7 +28,21 @@ final class MarklinLocomotivesTests: XCTestCase {
         XCTAssertEqual(l1.address, 14)
         XCTAssertEqual(l1.decoderType, .MFX)
         XCTAssertEqual(l1.icon, "/usr/local/cs3/lokicons/SBB 193 524-6 Cargo")
+        XCTAssertEqual(l1.funktionen.count, 32)
+        XCTAssertEqual(l1.funktionen[0].typ2, 1)
 
+//        for lok in locks {
+//            var types = Set<UInt32>()
+//            for type in lok.funktionen {
+//                if type.typ2 == 0 {
+//                    continue
+//                }
+//                XCTAssertFalse(types.contains(type.typ2), "Value \(type.typ2) appears more than once!")
+//                types.insert(type.typ2)
+//            }
+//            break
+//        }
+        
         let icon = try await cs3.fetchLokIcon(server: server, lok: l1)
         XCTAssertNotNil(icon)
     }
