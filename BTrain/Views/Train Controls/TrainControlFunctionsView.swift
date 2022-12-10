@@ -12,14 +12,12 @@
 
 import SwiftUI
 
-struct TrainFunctionsView: View {
+struct TrainControlFunctionsView: View {
     
     let locomotive: Locomotive
 
     let interface: CommandInterface
     
-    let columns = [GridItem(.flexible()), GridItem(.flexible())]
-
     struct FunctionAttributes {
         let index: Int
         let name: String
@@ -30,18 +28,22 @@ struct TrainFunctionsView: View {
         var attributes = [FunctionAttributes]()
         for (index, function) in locomotive.functions.enumerated() {
             let cmdFunc = CommandLocomotiveFunction(identifier: function.identifier)
-            guard let info = interface.attributes(about: cmdFunc) else {
-                continue
-            }
+            let info = interface.attributes(about: cmdFunc)
 
             let icon: NSImage?
-            if let svg = info.svgIcon, let data = svg.data(using: .utf8) {
+            if let svg = info?.svgIcon, let data = svg.data(using: .utf8) {
                 icon = NSImage(data: data)
             } else {
                 icon = nil
             }
             
-            attributes.append(FunctionAttributes(index: index, name: info.name, icon: icon))
+            let name: String
+            if let info = info {
+                name = info.name
+            } else {
+                name = "f\(index)"
+            }
+            attributes.append(FunctionAttributes(index: index, name: name, icon: icon))
         }
         return attributes
     }
@@ -56,13 +58,13 @@ struct TrainFunctionsView: View {
                             Image(nsImage: image)
                                 .resizable()
                                 .renderingMode(.template)
-//                                .foregroundColor(.white)
                                 .frame(width: 20, height: 20)
                         } else {
                             Text("f\(fattrs.index)")
                         }
                     }
-                    .help(fattrs.name)
+//                    .foregroundColor(.yellow)
+                    .help("f\(fattrs.index): \(fattrs.name)")
                     .buttonStyle(.borderless)
                     .fixedSize()
                 }
@@ -81,6 +83,6 @@ struct TrainFunctionsView_Previews: PreviewProvider {
     }()
     
     static var previews: some View {
-        TrainFunctionsView(locomotive: locomotive, interface: MarklinInterface())
+        TrainControlFunctionsView(locomotive: locomotive, interface: MarklinInterface())
     }
 }

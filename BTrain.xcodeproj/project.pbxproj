@@ -177,7 +177,7 @@
 		A75F41AF293D83E8003C709F /* RoutePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = A75F41AE293D83E8003C709F /* RoutePicker.swift */; };
 		A75F41B52940D5A8003C709F /* icon.svg in Resources */ = {isa = PBXBuildFile; fileRef = A75F41B42940D5A8003C709F /* icon.svg */; };
 		A75F41B72940D63C003C709F /* MarklinFunctionsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A75F41B62940D63C003C709F /* MarklinFunctionsTests.swift */; };
-		A75F41B92943F984003C709F /* TrainFunctionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A75F41B82943F984003C709F /* TrainFunctionsView.swift */; };
+		A75F41B92943F984003C709F /* TrainControlFunctionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A75F41B82943F984003C709F /* TrainControlFunctionsView.swift */; };
 		A75F41BE2944E78F003C709F /* MarklinInterfaceResources.swift in Sources */ = {isa = PBXBuildFile; fileRef = A75F41BD2944E78F003C709F /* MarklinInterfaceResources.swift */; };
 		A763F18D27BDD82A00B3499A /* TrainSpeedMeasurementTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A763F18C27BDD82A00B3499A /* TrainSpeedMeasurementTests.swift */; };
 		A763F18F27BE01C300B3499A /* XCTestCase+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A763F18E27BE01C300B3499A /* XCTestCase+Extension.swift */; };
@@ -585,7 +585,7 @@
 		A75F41AE293D83E8003C709F /* RoutePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoutePicker.swift; sourceTree = "<group>"; };
 		A75F41B42940D5A8003C709F /* icon.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = icon.svg; sourceTree = "<group>"; };
 		A75F41B62940D63C003C709F /* MarklinFunctionsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarklinFunctionsTests.swift; sourceTree = "<group>"; };
-		A75F41B82943F984003C709F /* TrainFunctionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainFunctionsView.swift; sourceTree = "<group>"; };
+		A75F41B82943F984003C709F /* TrainControlFunctionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainControlFunctionsView.swift; sourceTree = "<group>"; };
 		A75F41BD2944E78F003C709F /* MarklinInterfaceResources.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarklinInterfaceResources.swift; sourceTree = "<group>"; };
 		A763F18C27BDD82A00B3499A /* TrainSpeedMeasurementTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainSpeedMeasurementTests.swift; sourceTree = "<group>"; };
 		A763F18E27BE01C300B3499A /* XCTestCase+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "XCTestCase+Extension.swift"; sourceTree = "<group>"; };
@@ -1134,13 +1134,13 @@
 				A747967E291EA869001DF7FA /* TrainControlHeaderView.swift */,
 				A7F779F72732407E00E73275 /* TrainControlContainerView.swift */,
 				A76507E7275AD1FE0079C71A /* TrainControlLocationView.swift */,
+				A75F41B82943F984003C709F /* TrainControlFunctionsView.swift */,
 				A7DB7D5127C9C0C6000893BA /* TrainControlStateView.swift */,
 				A744D13227659208005C2F37 /* TrainControlSpeedView.swift */,
 				A73E0828276BF554005F9D64 /* TrainControlSetLocationSheet.swift */,
 				A76FD43728FD07A000E1A295 /* TrainControlMoveSheet.swift */,
 				A76FD43928FD07AA00E1A295 /* TrainControlRemoveSheet.swift */,
 				A744D13427659330005C2F37 /* TrainControlRouteView.swift */,
-				A75F41B82943F984003C709F /* TrainFunctionsView.swift */,
 			);
 			path = "Train Controls";
 			sourceTree = "<group>";
@@ -2280,7 +2280,7 @@
 				A7012C91283AED29003AC687 /* Types.swift in Sources */,
 				A7CA5EBF2795D05A00171398 /* TrainControlActionsView.swift in Sources */,
 				A744FDA5290B437F00852283 /* LayoutSpeed.swift in Sources */,
-				A75F41B92943F984003C709F /* TrainFunctionsView.swift in Sources */,
+				A75F41B92943F984003C709F /* TrainControlFunctionsView.swift in Sources */,
 				A700B218292697F1001CC33E /* MainMenu.swift in Sources */,
 				A744FDAD290F377B00852283 /* LayoutTrainsSchedulingObserver.swift in Sources */,
 				A78B996927FE41A90021EFE4 /* PathFinder.swift in Sources */,

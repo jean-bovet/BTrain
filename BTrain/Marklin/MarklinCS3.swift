@@ -132,7 +132,6 @@ struct MarklinCS3 {
         } else {
             url = server.appending(path: API_FUNCTIONS)
         }
-        print(url)
         let (data, _) = try await URLSession.shared.data(from: url)
         let functions = try JSONDecoder().decode(Functions.self, from: data)
         return functions

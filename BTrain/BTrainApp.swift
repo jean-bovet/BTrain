@@ -28,6 +28,7 @@ struct BTrainApp: App {
             newDocument
         } editor: { configuration in
             DocumentView(document: configuration.document)
+                .focusedSceneValue(\.document, configuration.document)
         }
         .commands {
             MenuCommands()
