@@ -64,12 +64,17 @@ struct ConnectSheet: View {
                         .frame(minWidth: 200)
                 }.disabled(type == .simulator)
 
+                Toggle("Activate Turnouts", isOn: $activateTurnouts)
+                
                 VStack(alignment: .leading) {
-                    Toggle("Activate Turnouts", isOn: $activateTurnouts)
-                    if let percentage = onConnectTasks.activateTurnoutPercentage {
+                    if let percentage = onConnectTasks.connectionCompletionPercentage {
                         ProgressView(value: percentage)
                     } else {
                         ProgressView(value: 0).hidden()
+                    }
+                    if let label = onConnectTasks.connectionCompletionLabel {
+                        Text(label)
+                            .font(.footnote)
                     }
                 }
             }.disabled(connecting)
@@ -85,6 +90,8 @@ struct ConnectSheet: View {
 
             HStack {
                 Button("Cancel") {
+                    onConnectTasks.cancel = true
+                    document.simulator.stop {}
                     document.interface.disconnect {}
                     presentationMode.wrappedValue.dismiss()
                 }.keyboardShortcut(.cancelAction)
@@ -106,6 +113,10 @@ struct ConnectSheet: View {
                 .keyboardShortcut(.defaultAction)
                 .disabled(connecting)
             }.padding()
+        }.onAppear() {
+            msg = ""
+            onConnectTasks.connectionCompletionPercentage = nil
+            onConnectTasks.connectionCompletionLabel = nil
         }
     }
 }

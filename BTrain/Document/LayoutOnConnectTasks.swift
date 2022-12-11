@@ -16,29 +16,38 @@ final class LayoutOnConnectTasks: ObservableObject {
     let layout: Layout
     let layoutController: LayoutController
     let interface: CommandInterface
-    let locFuncCatalog: LocomotiveFunctionsCatalog
+    let catalog: LocomotiveFunctionsCatalog
+    let discovery: LocomotiveDiscovery
 
-    // Property used to keep track of the progress when activating the turnouts
-    // when connecting to the Digital Controller
-    @Published var activateTurnoutPercentage: Double? = nil
-
-    init(layout: Layout, layoutController: LayoutController, interface: CommandInterface, locFuncCatalog: LocomotiveFunctionsCatalog) {
+    /// Property used to keep track of the progress
+    @Published var connectionCompletionPercentage: Double? = nil
+    @Published var connectionCompletionLabel: String? = nil
+    
+    var cancel = false
+    
+    init(layout: Layout, layoutController: LayoutController, interface: CommandInterface, locFuncCatalog: LocomotiveFunctionsCatalog, locomotiveDiscovery: LocomotiveDiscovery) {
         self.layout = layout
         self.layoutController = layoutController
         self.interface = interface
-        self.locFuncCatalog = locFuncCatalog
+        self.catalog = locFuncCatalog
+        self.discovery = locomotiveDiscovery
     }
 
     func performOnConnectTasks(activateTurnouts: Bool, completion: @escaping CompletionBlock) {
-        processLocomotivesFunctions {
-            queryLocomotivesDirection {
+        cancel = false
+        notifyProgress(label: "Fetching Locomotives", activateTurnouts: activateTurnouts, step: 0)
+        fetchLocomotives {
+            self.notifyProgress(label: "Querying Locomotives", activateTurnouts: activateTurnouts, step: 1)
+            self.queryLocomotivesDirection {
                 if activateTurnouts {
+                    self.notifyProgress(label: "Activate Turnouts", activateTurnouts: activateTurnouts, step: 2)
                     self.layoutController.go {
                         self.applyTurnoutStateToDigitalController {
                             completion()
                         }
                     }
                 } else {
+                    self.notifyProgress(label: "Done", activateTurnouts: activateTurnouts, step: 2)
                     self.layoutController.stop {
                         completion()
                     }
@@ -46,19 +55,21 @@ final class LayoutOnConnectTasks: ObservableObject {
             }
         }
     }
-
-    private func processLocomotivesFunctions(completion: CompletionBlock) {
-        locFuncCatalog.process(interface: interface)
-        
-        // Notify each locomotive functions that the function icon and name
-        // have changed so the UI is refreshed. This is because after connecting
-        // to the digital controller, the function definitions are retrieved again.
-        layout.locomotives.elements.forEach { loc in
-            loc.functions.objectWillChange.send()
-        }
-        completion()
+    
+    private func notifyProgress(label: String, activateTurnouts: Bool, step: Int) {
+        let progressPercentageStep = 1.0 / (activateTurnouts ? 3 : 2)
+        connectionCompletionPercentage = Double(step) * progressPercentageStep
+        connectionCompletionLabel = label
     }
     
+    private func fetchLocomotives(completion: @escaping CompletionBlock) {
+        catalog.process(interface: interface)
+        
+        discovery.discover(merge: true) {
+            completion()
+        }
+    }
+        
     private func queryLocomotivesDirection(completion: @escaping CompletionBlock) {
         let locomotives = layout.locomotives.elements.filter { $0.enabled }
         guard !locomotives.isEmpty else {
@@ -87,14 +98,20 @@ final class LayoutOnConnectTasks: ObservableObject {
             return
         }
 
-        activateTurnoutPercentage = 0.0
+        let delta = 1.0 - (connectionCompletionPercentage ?? 0)
+        var activateTurnoutPercentage = 0.0
         var completionCount = 0
         for t in turnouts {
             layoutController.sendTurnoutState(turnout: t) { _ in
+                guard self.cancel == false else {
+                    return
+                }
                 completionCount += 1
-                self.activateTurnoutPercentage = Double(completionCount) / Double(turnouts.count)
+                activateTurnoutPercentage = Double(completionCount) / Double(turnouts.count)
+                self.connectionCompletionPercentage = 1.0 - delta + activateTurnoutPercentage / 1.0 * delta
                 if completionCount == turnouts.count {
-                    self.activateTurnoutPercentage = nil
+                    self.connectionCompletionPercentage = nil
+                    self.connectionCompletionLabel = nil
                     completion()
                 }
             }

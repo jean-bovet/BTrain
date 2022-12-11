@@ -50,6 +50,7 @@ final class Locomotive: Element, ObservableObject {
     /// Direction(s) the locomotive is allowed to move
     @Published var allowedDirections = AllowedDirection.forward
     
+    /// The functions of the locomotive
     @Published var functions = LocomotiveFunctions()
     
     convenience init(uuid: String = UUID().uuidString, name: String = "", address: UInt32 = 0, decoder: DecoderType = .MFX,

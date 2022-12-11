@@ -190,7 +190,8 @@ final class LayoutDocument: ObservableObject {
         self.switchboard = switchboard
         self.layoutController = layoutController
 
-        onConnectTasks = LayoutOnConnectTasks(layout: layout, layoutController: layoutController, interface: interface, locFuncCatalog: locomotiveFunctionsCatalog)
+        let discovery = LocomotiveDiscovery(interface: interface, layout: layout, locomotiveIconManager: locomotiveIconManager)
+        onConnectTasks = LayoutOnConnectTasks(layout: layout, layoutController: layoutController, interface: interface, locFuncCatalog: locomotiveFunctionsCatalog, locomotiveDiscovery: discovery)
 
         switchboard.provider.layoutController = layoutController
         switchboard.update()
@@ -198,7 +199,7 @@ final class LayoutDocument: ObservableObject {
         trainsStateObserver = LayoutTrainsStateObserver(layout: layout)
         trainsSchedulingObserver = LayoutTrainsSchedulingObserver(layout: layout)
 
-        locomotiveDiscovery = LocomotiveDiscovery(interface: interface, layout: layout, locomotiveIconManager: locomotiveIconManager)
+        locomotiveDiscovery = discovery
 
         listenToTrainsStateChange(layout: layout)
     }
