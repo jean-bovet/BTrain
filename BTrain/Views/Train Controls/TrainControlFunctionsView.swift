@@ -44,34 +44,40 @@ struct TrainControlFunctionsView: View {
         return attributes
     }
         
+    static let iconSize = 20.0
+    
+    let columns = [
+        GridItem(.adaptive(minimum: iconSize))
+    ]
+
     var body: some View {
-            HStack {
-                ForEach(functionAttributes, id: \.function.nr) { fattrs in
-                    Button {
-                        toggleFunction(function: fattrs.function)
-                    } label: {
-                        if let image = fattrs.icon {
-                            Image(nsImage: image)
-                                .resizable()
-                                .renderingMode(.template)
-                                .frame(width: 20, height: 20)
-                        } else {
-                            Text("f\(fattrs.function.nr)")
-                        }
+        LazyVGrid(columns: columns) {
+            ForEach(functionAttributes, id: \.function.nr) { fattrs in
+                Button {
+                    toggleFunction(function: fattrs.function)
+                } label: {
+                    if let image = fattrs.icon {
+                        Image(nsImage: image)
+                            .resizable()
+                            .renderingMode(.template)
+                            .frame(width: TrainControlFunctionsView.iconSize, height: TrainControlFunctionsView.iconSize)
+                    } else {
+                        Text("f\(fattrs.function.nr)")
                     }
-                    .if(functionState(function: fattrs.function), transform: { $0.foregroundColor(.yellow) })
+                }
+                .if(functionState(function: fattrs.function), transform: { $0.foregroundColor(.yellow) })
                     .help("f\(fattrs.function.nr): \(fattrs.name)")
                     .buttonStyle(.borderless)
                     .fixedSize()
-                }
             }
+        }
     }
     
-    func functionState(function: CommandLocomotiveFunction) -> Bool {
+    private func functionState(function: CommandLocomotiveFunction) -> Bool {
         functions.states[function.nr] == 1
     }
     
-    func toggleFunction(function: CommandLocomotiveFunction) {
+    private func toggleFunction(function: CommandLocomotiveFunction) {
         let state = functionState(function: function)
         let newState: UInt8 = state ? 0 : 1
         // Note: the state of the function will be updated
@@ -96,6 +102,10 @@ struct TrainFunctionsView_Previews: PreviewProvider {
     }()
     
     static var previews: some View {
-        TrainControlFunctionsView(locomotive: locomotive, interface: MarklinInterface(), catalog: LocomotiveFunctionsCatalog(), functions: locomotive.functions)
+        TrainControlFunctionsView(locomotive: locomotive,
+                                  interface: MarklinInterface(),
+                                  catalog: LocomotiveFunctionsCatalog(),
+                                  functions: locomotive.functions)
+        .frame(width: 200)
     }
 }
