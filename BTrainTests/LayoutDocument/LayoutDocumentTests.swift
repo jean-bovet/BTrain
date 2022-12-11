@@ -84,7 +84,7 @@ class LayoutDocumentTests: XCTestCase {
         }
 
         let expectation = expectation(description: "Completion")
-        t.performOnConnectTasks(activateTurnouts: true) {
+        t.performOnConnectTasks(simulator: true, activateTurnouts: true) {
             expectation.fulfill()
         }
         wait(for: [expectation], timeout: 2)

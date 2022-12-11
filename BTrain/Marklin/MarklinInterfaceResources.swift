@@ -42,7 +42,15 @@ final class MarklinInterfaceResources {
         for group in functions.gruppe {
             for f in group.icon {
                 if let type = f.typeCompatibility, let typeInt = UInt32(type) {
-                    let attributes = CommandLocomotiveFunctionAttributes(type: typeInt, name: f.kurztitel, svgIcon: svgSprites?["\(f.name).svg"])
+                    let typeIcon = String(format: "%03d", typeInt)
+                    let activeName = "fkticon_a_\(typeIcon).svg"
+                    let inactiveName = "fkticon_i_\(typeIcon).svg"
+                    let activeSvgIcon = svgSprites?[activeName]
+                    let inactiveSvgIcon = svgSprites?[inactiveName]
+                    let attributes = CommandLocomotiveFunctionAttributes(type: typeInt,
+                                                                         name: f.kurztitel,
+                                                                         activeSvgIcon: activeSvgIcon,
+                                                                         inactiveSvgIcon: inactiveSvgIcon)
                     all.append(attributes)
                 }
             }

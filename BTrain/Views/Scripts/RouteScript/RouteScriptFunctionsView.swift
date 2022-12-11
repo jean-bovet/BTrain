@@ -53,7 +53,7 @@ struct RouteScriptFunctionsView: View {
                                         } else {
                                             Text("f\(type)")
                                         }
-                                        if let image = catalog.image(for: type)?.copy(size: .init(width: 20, height: 20)) {
+                                        if let image = catalog.image(for: type, state: true)?.copy(size: .init(width: 20, height: 20)) {
                                             Image(nsImage: image)
                                                 .renderingMode(.template)
                                         }

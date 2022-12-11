@@ -31,7 +31,7 @@ struct TrainControlFunctionsView: View {
     var functionAttributes: [FunctionAttributes] {
         var attributes = [FunctionAttributes]()
         for (index, function) in functions.definitions.enumerated() {
-            let icon = catalog.image(for: function.type)
+            let icon = catalog.image(for: function.type, state: functionState(function: function))
 
             let name: String
             if let cname = catalog.name(for: function.type) {

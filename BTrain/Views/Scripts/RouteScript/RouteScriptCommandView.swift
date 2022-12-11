@@ -29,7 +29,7 @@ struct RouteScriptCommandView: View {
             } else {
                 ForEach(command.functions, id: \.self) { function in
                     Group {
-                        if let image = doc.locomotiveFunctionsCatalog.image(for: function.type) {
+                        if let image = doc.locomotiveFunctionsCatalog.image(for: function.type, state: function.enabled) {
                             Image(nsImage: image)
                                 .resizable()
                                 .renderingMode(.template)

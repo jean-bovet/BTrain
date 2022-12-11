@@ -40,17 +40,27 @@ final class LocomotiveFunctionsCatalog {
         return type2attributes[type]?.name
     }
     
-    func image(for type: UInt32) -> NSImage? {
-        let key = String(type) as NSString
+    func image(for type: UInt32, state: Bool) -> NSImage? {
+        guard let funcAttrs = type2attributes[type] else {
+            return nil
+        }
+
+        let svgIconName: String?
+        if state {
+            svgIconName = funcAttrs.activeSvgIcon
+        } else {
+            svgIconName = funcAttrs.inactiveSvgIcon
+        }
+        
+        guard let key = svgIconName as? NSString else {
+            return nil
+        }
         
         if let image = imageCache.object(forKey: key) {
             return image
         }
-        
-        guard let funcAttrs = type2attributes[type] else {
-            return nil
-        }
-        if let svg = funcAttrs.svgIcon, let data = svg.data(using: .utf8), let image = NSImage(data: data) {
+                
+        if let svg = svgIconName, let data = svg.data(using: .utf8), let image = NSImage(data: data) {
             imageCache.setObject(image, forKey: key)
             return image
         } else {
