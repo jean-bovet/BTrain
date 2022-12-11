@@ -33,7 +33,7 @@ final class LayoutOnConnectTasks: ObservableObject {
         self.discovery = locomotiveDiscovery
     }
 
-    func performOnConnectTasks(activateTurnouts: Bool, completion: @escaping CompletionBlock) {
+    func performOnConnectTasks(simulator: Bool, activateTurnouts: Bool, completion: @escaping CompletionBlock) {
         cancel = false
         notifyProgress(label: "Fetching Locomotives", activateTurnouts: activateTurnouts, step: 0)
         fetchLocomotives {
@@ -48,8 +48,11 @@ final class LayoutOnConnectTasks: ObservableObject {
                     }
                 } else {
                     self.notifyProgress(label: "Done", activateTurnouts: activateTurnouts, step: 2)
-                    self.layoutController.stop {
-                        completion()
+                    if !simulator {
+                        // With the real digital controller, always start in stop mode by security
+                        self.layoutController.stop {
+                            completion()
+                        }
                     }
                 }
             }

@@ -36,12 +36,12 @@ struct ConnectSheet: View {
 
     @State private var connecting = false
 
-    func didConnect(withError error: Error?) {
+    func didConnect(simulator: Bool, withError error: Error?) {
         if let error = error {
             connecting.toggle()
             msg = error.localizedDescription
         } else {
-            onConnectTasks.performOnConnectTasks(activateTurnouts: activateTurnouts) {
+            onConnectTasks.performOnConnectTasks(simulator: simulator, activateTurnouts: activateTurnouts) {
                 connecting.toggle()
                 self.presentationMode.wrappedValue.dismiss()
             }
@@ -102,11 +102,11 @@ struct ConnectSheet: View {
                     connecting.toggle()
                     if type == .centralStation {
                         document.connect(address: address, port: UInt16(port)!) { error in
-                            didConnect(withError: error)
+                            didConnect(simulator: false, withError: error)
                         }
                     } else {
                         document.connectToSimulator(enable: false) { error in
-                            didConnect(withError: error)
+                            didConnect(simulator: true, withError: error)
                         }
                     }
                 }

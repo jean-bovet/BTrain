@@ -63,74 +63,6 @@ final class LayoutDocument: ObservableObject {
     /// Used to show or hide the switchboard view settings
     @Published var showSwitchboardViewSettings = false
 
-    /// The various type of sheets that can be displayed
-    enum DisplaySheetType: String, CaseIterable {
-        case layoutScripts = "Layout Scripts"
-        case routeScripts = "Route Scripts"
-        case routes = "Routes"
-        case trains = "Trains"
-        case locomotives = "Locomotives"
-        case stations = "Stations"
-        case blocks = "Blocks"
-        case turnouts = "Turnouts"
-        case feedbacks = "Feedbacks"
-        case cs3 = "Central Station 3 Debugger"
-
-        var label: String {
-            switch self {
-            case .layoutScripts:
-                return "Scripts"
-            case .routeScripts:
-                return "Routes"
-            case .routes:
-                return "Steps"
-            case .trains:
-                return "Trains"
-            case .locomotives:
-                return "Locomotives"
-            case .stations:
-                return "Stations"
-            case .blocks:
-                return "Blocks"
-            case .turnouts:
-                return "Turnouts"
-            case .feedbacks:
-                return "Feedbacks"
-            case .cs3:
-                return "Central Station 3 Debugger"
-            }
-        }
-
-        var shortcut: KeyEquivalent? {
-            switch self {
-            case .layoutScripts:
-                return "1"
-            case .routeScripts:
-                return "2"
-            case .routes:
-                return nil
-            case .trains:
-                return "3"
-            case .locomotives:
-                return "4"
-            case .stations:
-                return "5"
-            case .blocks:
-                return "6"
-            case .turnouts:
-                return "7"
-            case .feedbacks:
-                return "8"
-            case .cs3:
-                return nil
-            }
-        }
-
-        var debugOnly: Bool {
-            self == .routes || self == .cs3
-        }
-    }
-
     /// Show the specific sheet type
     @Published var displaySheetType = DisplaySheetType.routeScripts {
         didSet {
@@ -238,4 +170,76 @@ final class LayoutDocument: ObservableObject {
             self.stateChangeUUID = nil
         }
     }
+}
+
+extension LayoutDocument {
+    
+    /// The various type of sheets that can be displayed
+    enum DisplaySheetType: String, CaseIterable {
+        case layoutScripts = "Layout Scripts"
+        case routeScripts = "Route Scripts"
+        case routes = "Routes"
+        case trains = "Trains"
+        case locomotives = "Locomotives"
+        case stations = "Stations"
+        case blocks = "Blocks"
+        case turnouts = "Turnouts"
+        case feedbacks = "Feedbacks"
+        case cs3 = "Central Station 3 Debugger"
+
+        var label: String {
+            switch self {
+            case .layoutScripts:
+                return "Scripts"
+            case .routeScripts:
+                return "Routes"
+            case .routes:
+                return "Steps"
+            case .trains:
+                return "Trains"
+            case .locomotives:
+                return "Locomotives"
+            case .stations:
+                return "Stations"
+            case .blocks:
+                return "Blocks"
+            case .turnouts:
+                return "Turnouts"
+            case .feedbacks:
+                return "Feedbacks"
+            case .cs3:
+                return "Central Station 3 Debugger"
+            }
+        }
+
+        var shortcut: KeyEquivalent? {
+            switch self {
+            case .layoutScripts:
+                return "1"
+            case .routeScripts:
+                return "2"
+            case .routes:
+                return nil
+            case .trains:
+                return "3"
+            case .locomotives:
+                return "4"
+            case .stations:
+                return "5"
+            case .blocks:
+                return "6"
+            case .turnouts:
+                return "7"
+            case .feedbacks:
+                return "8"
+            case .cs3:
+                return nil
+            }
+        }
+
+        var debugOnly: Bool {
+            self == .routes || self == .cs3
+        }
+    }
+
 }

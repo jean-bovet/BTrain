@@ -70,7 +70,7 @@ struct DocumentView: View {
             if autoConnectSimulator {
                 document.connectToSimulator(enable: autoEnableSimulator) { error in
                     if error == nil {
-                        document.onConnectTasks.performOnConnectTasks(activateTurnouts: false) {
+                        document.onConnectTasks.performOnConnectTasks(simulator: true, activateTurnouts: false) {
                             // no-op
                         }
                     }
