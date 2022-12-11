@@ -80,8 +80,10 @@ extension LayoutDocument {
 
     func disconnect(_ completion: @escaping CompletionBlock) {
         simulator.stop {
-            self.interface.disconnect {
-                completion()
+            self.interface.execute(command: .stop()) {
+                self.interface.disconnect {
+                    completion()
+                }
             }
         }
     }
