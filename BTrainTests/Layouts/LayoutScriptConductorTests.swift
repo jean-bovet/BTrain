@@ -148,7 +148,7 @@ final class LayoutScriptConductorTests: XCTestCase {
         let layout = LayoutLoop1().newLayout()
         let conductor = LayoutScriptConductor(layout: layout)
 
-        let controller = LayoutController(layout: layout, switchboard: nil, interface: MockCommandInterface())
+        let controller = LayoutController(layout: layout, switchboard: nil, interface: MockCommandInterface(), functionCatalog: nil)
         conductor.layoutControlling = controller
 
         XCTAssertTrue(layout.layoutScripts.elements.isEmpty)

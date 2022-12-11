@@ -73,6 +73,9 @@ final class LayoutController: ObservableObject, LayoutControlling {
 
     /// The layout script conductor
     let conductor: LayoutScriptConductor
+    
+    /// The train functions controller
+    let functionsController: TrainFunctionsController
 
     lazy var reservation: LayoutReservation = .init(layout: layout, executor: self, verbose: SettingsKeys.bool(forKey: SettingsKeys.logReservation))
 
@@ -99,13 +102,14 @@ final class LayoutController: ObservableObject, LayoutControlling {
         static var memoryLeakCounter = 0
     #endif
 
-    init(layout: Layout, switchboard: SwitchBoard?, interface: CommandInterface) {
+    init(layout: Layout, switchboard: SwitchBoard?, interface: CommandInterface, functionCatalog: LocomotiveFunctionsCatalog?) {
         self.layout = layout
         layoutObserver = LayoutObserver(layout: layout)
         feedbackMonitor = LayoutFeedbackMonitor(layout: layout)
         self.switchboard = switchboard
         self.interface = interface
         conductor = LayoutScriptConductor(layout: layout)
+        functionsController = TrainFunctionsController(catalog: functionCatalog, interface: interface)
         turnoutManager = LayoutTurnoutManager(interface: interface)
         debugger = LayoutControllerDebugger(layout: layout)
 
@@ -202,7 +206,7 @@ final class LayoutController: ObservableObject, LayoutControlling {
             return nil
         }
 
-        return TrainController(train: train, route: route, layout: layout, frontBlock: frontBlock, frontBlockTrainInstance: trainInstance, layoutController: self, reservation: reservation)
+        return TrainController(train: train, route: route, layout: layout, frontBlock: frontBlock, frontBlockTrainInstance: trainInstance, layoutController: self, functionsController: functionsController, reservation: reservation)
     }
 
     private func updateExpectedFeedbacks() throws {

@@ -81,7 +81,7 @@ struct SwitchboardPreview: View {
     }
 
     var coordinator: LayoutController {
-        LayoutController(layout: layout, switchboard: switchboard, interface: MarklinInterface())
+        LayoutController(layout: layout, switchboard: switchboard, interface: MarklinInterface(), functionCatalog: nil)
     }
 
     var scale: Double {

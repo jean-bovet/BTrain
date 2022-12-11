@@ -28,12 +28,15 @@ struct RouteItemBlock: Equatable, Codable, CustomStringConvertible, SourceIdenti
     // If nil, the block waitingTime is used instead.
     var waitingTime: TimeInterval?
 
+    /// The direction of travel of the train within that block
+    var direction: Direction
+    
+    /// Functions associated with this route item
+    var functions: RouteItemFunctions?
+
     var description: String {
         "\(blockId):\(direction)"
     }
-
-    // The direction of travel of the train within that block
-    var direction: Direction
 
     init(_ block: Block, _ direction: Direction, _ waitingTime: TimeInterval? = nil) {
         self.init(block.id, direction, waitingTime)

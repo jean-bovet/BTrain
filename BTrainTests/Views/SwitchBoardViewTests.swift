@@ -28,7 +28,7 @@ class SwitchBoardViewTests: XCTestCase {
         let context = ShapeContext()
         let provider = ShapeProvider(layout: layout, context: context)
         let switchboard = SwitchBoard(layout: layout, provider: provider, context: context)
-        let coordinator = LayoutController(layout: layout, switchboard: switchboard, interface: MarklinInterface())
+        let coordinator = LayoutController(layout: layout, switchboard: switchboard, interface: MarklinInterface(), functionCatalog: nil)
         let v = SwitchBoardView(switchboard: switchboard, containerSize: switchboard.idealSize, state: switchboard.state, layout: layout, layoutController: coordinator, gestureEnabled: true)
 
         let canvas = try v.inspect().view(Canvas<SwitchBoardView>.self)

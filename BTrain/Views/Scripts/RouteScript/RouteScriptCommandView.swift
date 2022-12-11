@@ -20,6 +20,36 @@ struct RouteScriptCommandView: View {
     @Binding var commandErrorIds: [String]
     @State private var showFunctionsSheet = false
     
+    var functions: some View {
+        HStack {
+            Text("and")
+            
+            if command.functions.isEmpty {
+                Button("Add…") {
+                    showFunctionsSheet.toggle()
+                }
+            } else {
+                ForEach(command.functions, id: \.self) { function in
+                    Group {
+                        if let image = doc.locomotiveFunctionsCatalog.image(for: function.type) {
+                            Image(nsImage: image)
+                                .resizable()
+                                .renderingMode(.template)
+                                .frame(width: 20, height: 20)
+                        } else {
+                            Text("f\(function.type)")
+                        }
+                    }
+                    .if(function.enabled, transform: { $0.foregroundColor(.yellow)})
+                        .help(doc.locomotiveFunctionsCatalog.name(for: function.type) ?? "")
+                }
+                Button("Edit…") {
+                    showFunctionsSheet.toggle()
+                }
+            }
+        }
+    }
+    
     var body: some View {
         HStack {
             if command.action != .start {
@@ -52,6 +82,8 @@ struct RouteScriptCommandView: View {
                 DirectionPicker(direction: $command.direction)
                     .labelsHidden()
 
+                functions
+
             case .move:
                 Text("to")
                     .fixedSize()
@@ -82,34 +114,11 @@ struct RouteScriptCommandView: View {
                         .fixedSize()
                 }
                 
+                functions
+
             case .loop:
                 Stepper("\(command.repeatCount) times", value: $command.repeatCount, in: 1 ... 10)
                     .fixedSize()
-                
-            case .functions:
-                if command.functions.isEmpty {
-                    Button("Add…") {
-                        showFunctionsSheet.toggle()
-                    }
-                } else {
-                    ForEach(command.functions, id: \.self) { function in
-                        Group {
-                            if let image = doc.locomotiveFunctionsCatalog.image(for: function.type) {
-                                Image(nsImage: image)
-                                    .resizable()
-                                    .renderingMode(.template)
-                                    .frame(width: 20, height: 20)
-                            } else {
-                                Text("f\(function.type)")
-                            }
-                        }
-                        .if(function.enabled, transform: { $0.foregroundColor(.yellow)})
-                            .help(doc.locomotiveFunctionsCatalog.name(for: function.type) ?? "")
-                    }
-                    Button("Edit…") {
-                        showFunctionsSheet.toggle()
-                    }
-                }
             }
 
             Button("􀁌") {
@@ -146,6 +155,7 @@ struct ScriptCommandView_Previews: PreviewProvider {
         var cmd = RouteScriptCommand(action: .move)
         cmd.blockId = doc.layout.blocks.elements.first(where: { $0.category == .station })!.id
         cmd.direction = .next
+        cmd.functions = [.init(type: 0, enabled: true), .init(type: 2, enabled: false)]
         return cmd
     }()
 
@@ -156,18 +166,7 @@ struct ScriptCommandView_Previews: PreviewProvider {
         return cmd
     }()
 
-    static let emptyFunctions = {
-        var cmd = RouteScriptCommand(action: .functions)
-        return cmd
-    }()
-
-    static let functions = {
-        var cmd = RouteScriptCommand(action: .functions)
-        cmd.functions = [.init(type: 0, enabled: true), .init(type: 2, enabled: false)]
-        return cmd
-    }()
-
-    static let commands = [start, moveToFreeBlock, moveToStationBlock, loop, emptyFunctions, functions]
+    static let commands = [start, moveToFreeBlock, moveToStationBlock, loop]
 
     static var previews: some View {
         VStack(alignment: .leading) {

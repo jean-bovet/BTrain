@@ -19,7 +19,6 @@ struct RouteScriptCommand: ScriptCommand, Identifiable, Hashable {
         case start = "Start"
         case move = "Move"
         case loop = "Repeat"
-        case functions = "Functions"
     }
 
     var action: Action = .move

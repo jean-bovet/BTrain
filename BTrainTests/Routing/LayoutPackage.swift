@@ -47,7 +47,7 @@ final class Package {
 
     init(layout: Layout) {
         self.layout = layout
-        layoutController = LayoutController(layout: layout, switchboard: nil, interface: digitalController)
+        layoutController = LayoutController(layout: layout, switchboard: nil, interface: digitalController, functionCatalog: nil)
         asserter = LayoutAsserter(layout: layout, layoutController: layoutController)
 
         layout.automaticRouteRandom = false

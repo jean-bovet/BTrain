@@ -53,6 +53,10 @@ struct TrainEventStateMachine {
 
         case .modeChanged:
             if train.mode == .managed {
+                // Execute the functions associated with the starting route item
+                // when the route is started
+                train.executeFunctions()
+                
                 if try train.updateReservedBlocks() {
                     // Note: change the train direction is necessary after the necessary blocks
                     // have been reserved. Changing the direction will unblock the train which

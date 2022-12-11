@@ -17,7 +17,7 @@ class LayoutControllerTests: BTTestCase {
     func testTurnoutListener() throws {
         let layout = LayoutComplexLoop().newLayout()
         let interface = MarklinInterface()
-        let c = LayoutController(layout: layout, switchboard: nil, interface: interface)
+        let c = LayoutController(layout: layout, switchboard: nil, interface: interface, functionCatalog: nil)
         c.registerForTurnoutChange()
 
         let t1 = layout.turnouts[0]

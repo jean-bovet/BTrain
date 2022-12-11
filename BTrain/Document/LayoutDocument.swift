@@ -177,14 +177,15 @@ final class LayoutDocument: ObservableObject {
         let shapeProvider = ShapeProvider(layout: layout, context: context)
         let switchboard = SwitchBoard(layout: layout, provider: shapeProvider, context: context)
 
-        let layoutController = LayoutController(layout: layout, switchboard: switchboard, interface: interface)
+        let catalog = LocomotiveFunctionsCatalog()
+        let layoutController = LayoutController(layout: layout, switchboard: switchboard, interface: interface, functionCatalog: catalog)
 
         self.layout = layout
         self.interface = interface
         self.simulator = simulator
         layoutDiagnostics = LayoutDiagnostic(layout: layout)
         self.locomotiveIconManager = locomotiveIconManager
-        self.locomotiveFunctionsCatalog = LocomotiveFunctionsCatalog()
+        self.locomotiveFunctionsCatalog = catalog
         
         self.switchboard = switchboard
         self.layoutController = layoutController

@@ -17,6 +17,7 @@ final class TrainController: TrainControlling, CustomStringConvertible {
     let route: Route
     let layout: Layout
     let layoutController: LayoutController
+    let functionsController: TrainFunctionsController
     let reservation: LayoutReservation
     let layoutSpeed: LayoutSpeed
     
@@ -127,13 +128,14 @@ final class TrainController: TrainControlling, CustomStringConvertible {
         train.leading.settling
     }
 
-    init(train: Train, route: Route, layout: Layout, frontBlock: Block, frontBlockTrainInstance: TrainInstance, layoutController: LayoutController, reservation: LayoutReservation) {
+    init(train: Train, route: Route, layout: Layout, frontBlock: Block, frontBlockTrainInstance: TrainInstance, layoutController: LayoutController, functionsController: TrainFunctionsController, reservation: LayoutReservation) {
         self.train = train
         self.route = route
         self.layout = layout
         self.frontBlock = frontBlock
         self.frontBlockTrainInstance = frontBlockTrainInstance
         self.layoutController = layoutController
+        self.functionsController = functionsController
         self.reservation = reservation
         layoutSpeed = LayoutSpeed(layout: layout)
     }
@@ -325,6 +327,9 @@ final class TrainController: TrainControlling, CustomStringConvertible {
 
         // Update the current route step index
         train.routeStepIndex = train.routeStepIndex + 1
+        
+        // Execute the functions of the new block
+        executeFunctions()
 
         guard let newBlock = layout.blocks[entryFeedback.block.id] else {
             throw LayoutError.blockNotFound(blockId: entryFeedback.block.id)
@@ -352,6 +357,28 @@ final class TrainController: TrainControlling, CustomStringConvertible {
         layoutController.scheduleRestartTimer(train: train)
     }
 
+    func executeFunctions() {
+        guard let routeItem = route.steps.element(at: train.routeStepIndex) else {
+            return
+        }
+        
+        switch routeItem {
+            
+        case let .block(block):
+            if let functions = block.functions {
+                functionsController.execute(functions: functions, train: train)
+            }
+            
+        case .turnout(_):
+            break
+            
+        case let .station(station):
+            if let functions = (station).functions {
+                functionsController.execute(functions: functions, train: train)
+            }
+        }
+    }
+    
     /// Returns the time the train needs to wait in the current block
     var waitingTime: TimeInterval {
         if let step = route.steps.element(at: train.routeStepIndex),

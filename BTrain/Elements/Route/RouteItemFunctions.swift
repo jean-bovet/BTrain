@@ -12,19 +12,21 @@
 
 import Foundation
 
-struct RouteItemStation: Equatable, Codable {
-    static func == (lhs: RouteItemStation, rhs: RouteItemStation) -> Bool {
+/// Functions associated with a specific route item
+struct RouteItemFunctions: Codable, Equatable {
+    
+    static func == (lhs: RouteItemFunctions, rhs: RouteItemFunctions) -> Bool {
         lhs.id == rhs.id
     }
 
     var id = UUID().uuidString
 
-    var stationId: Identifier<Station>
-    
-    /// The functions associated with this route item
-    var functions: RouteItemFunctions?
-
-    var description: String {
-        "\(stationId)"
+    struct Function: Codable {
+        var type: UInt32
+        var enabled: Bool
     }
+    
+    /// The array of function to execute
+    var functions: [Function]?
+    
 }

@@ -16,7 +16,7 @@ struct RouteScriptFunctionsView: View {
         
     let catalog: LocomotiveFunctionsCatalog
     @Binding var cmd: RouteScriptCommand
-    @State private var editedCmd = RouteScriptCommand(action: .functions)
+    @State private var editedCmd = RouteScriptCommand(action: .move)
     
     @Environment(\.presentationMode) var presentationMode
 
@@ -93,7 +93,7 @@ struct RouteScriptFunctionsView: View {
     }
     
     func addFunction() {
-        editedCmd.functions.append(.init(type: 0, enabled: false))
+        editedCmd.functions.append(.init(type: 1, enabled: true))
     }
     
     func removeFunction(function: RouteScriptCommand.Function) {
@@ -104,14 +104,14 @@ struct RouteScriptFunctionsView: View {
 struct RouteScriptFunctionsView_Previews: PreviewProvider {
     
     static let cmd = {
-        var command = RouteScriptCommand(action: .functions)
+        var command = RouteScriptCommand(action: .move)
         command.functions = [.init(type: 0, enabled: true)]
         return command
     }()
     
     static var previews: some View {
         Group {
-            RouteScriptFunctionsView(catalog: LocomotiveFunctionsCatalog(), cmd: .constant(RouteScriptCommand(action: .functions)))
+            RouteScriptFunctionsView(catalog: LocomotiveFunctionsCatalog(), cmd: .constant(RouteScriptCommand(action: .move)))
         }.previewDisplayName("Empty")
         Group {
             RouteScriptFunctionsView(catalog: LocomotiveFunctionsCatalog(), cmd: .constant(cmd))
