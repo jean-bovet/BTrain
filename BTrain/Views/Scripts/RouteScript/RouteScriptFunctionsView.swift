@@ -41,7 +41,9 @@ struct RouteScriptFunctionsView: View {
                             Picker("State:", selection: function.enabled) {
                                 Text("Enable").tag(true)
                                 Text("Disable").tag(false)
-                            }.labelsHidden()
+                            }
+                            .labelsHidden()
+                            .fixedSize()
                             
                             Picker("Function:", selection: function.type) {
                                 ForEach(catalog.allTypes, id: \.self) { type in
@@ -57,8 +59,17 @@ struct RouteScriptFunctionsView: View {
                                         }
                                     }.tag(type)
                                 }
-                            }.labelsHidden()
-                                                        
+                            }
+                            .labelsHidden()
+                            .fixedSize()
+                                                 
+                            Stepper("Duration: \(String(format: "%.3f", function.wrappedValue.duration)) s.",
+                                    value: function.duration,
+                                    in: 0 ... 10, step: 0.250)
+                                .fixedSize()
+
+                            Spacer()
+                            
                             Button("􀁌") {
                                 addFunction()
                             }.buttonStyle(.borderless)

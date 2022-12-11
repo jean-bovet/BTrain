@@ -74,7 +74,8 @@ struct TrainControlFunctionsView: View {
     func toggleFunction(function: CommandLocomotiveFunction) {
         let state = functionState(function: function)
         let newState: UInt8 = state ? 0 : 1
-        functions.states[function.nr] = newState
+        // Note: the state of the function will be updated
+        // when the acknowledgement from the Digital Controller comes back
         interface.execute(command: .function(address: locomotive.address,
                                              decoderType: locomotive.decoder,
                                              index: function.nr,

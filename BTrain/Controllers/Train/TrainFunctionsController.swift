@@ -49,6 +49,12 @@ final class TrainFunctionsController {
             }
 
             interface.execute(command: .function(address: locomotive.address, decoderType: locomotive.decoder, index: def.nr, value: enabled ? 1 : 0), completion: nil)
+            
+            if f.duration > 0 {
+                DispatchQueue.main.asyncAfter(deadline: .now() + f.duration) {
+                    self.interface.execute(command: .function(address: locomotive.address, decoderType: locomotive.decoder, index: def.nr, value: enabled ? 0 : 1), completion: nil)
+                }
+            }
         }
     }
     

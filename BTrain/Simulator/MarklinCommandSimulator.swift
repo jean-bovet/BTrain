@@ -208,6 +208,9 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
                 directionChanged(address: address, decoderType: decoderType, direction: direction)
             }
 
+        case .function(address: let address, decoderType: let decoderType, index: let index, value: let value, priority: _, descriptor: _):
+            functionChanged(address: address, decoderType: decoderType, index: index, value: value)
+
         case .turnout(address: let address, state: let state, power: let power, priority: _, descriptor: _):
             if enabled {
                 turnoutChanged(address: address, state: state, power: power)
@@ -221,9 +224,6 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
 
         case .queryDirection(address: let address, decoderType: let decoderType, priority: _, descriptor: _):
             provideDirection(address: address.actualAddress(for: decoderType))
-
-        case .function(address: _, decoderType: _, index: _, value: _, priority: _, descriptor: _):
-            break
 
         case .unknown(command: _):
             break
@@ -261,6 +261,11 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
             let message = MarklinCANMessageFactory.direction(addr: address, direction: direction == .forward ? .forward : .backward)
             self.send(message.ack)
         }
+    }
+
+    func functionChanged(address: UInt32, decoderType: DecoderType?, index: UInt8, value: UInt8) {
+        let message = MarklinCANMessageFactory.function(addr: address, index: index, value: value)
+        send(message.ack)
     }
 
     func provideLocomotives() {

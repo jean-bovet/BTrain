@@ -133,7 +133,7 @@ struct RouteScriptCommandView: View {
         }.sheet(isPresented: $showFunctionsSheet) {
             RouteScriptFunctionsView(catalog: doc.locomotiveFunctionsCatalog, cmd: $command)
                 .padding()
-                .frame(width: 400, height: 300)
+                .frame(width: 600, height: 300)
         }
     }
 }

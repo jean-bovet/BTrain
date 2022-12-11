@@ -42,6 +42,7 @@ struct RouteScriptCommand: ScriptCommand, Identifiable, Hashable {
         var id = UUID().uuidString
         var type: UInt32
         var enabled: Bool
+        @DecodableDefault.Zero var duration: TimeInterval
     }
 
     var functions = [Function]()

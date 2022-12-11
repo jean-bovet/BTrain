@@ -24,6 +24,7 @@ struct RouteItemFunctions: Codable, Equatable {
     struct Function: Codable {
         var type: UInt32
         var enabled: Bool
+        @DecodableDefault.Zero var duration: TimeInterval
     }
     
     /// The array of function to execute
