@@ -55,7 +55,7 @@ extension RouteScriptCommand {
     
     /// Returns the functions for a route item
     var routeItemFunctions: RouteItemFunctions {
-        RouteItemFunctions(functions: functions.map({ RouteItemFunctions.Function(type: $0.type, enabled: $0.enabled, duration: .init(wrappedValue: $0.duration) ) }))
+        RouteItemFunctions(functions: functions.map({ RouteItemFunctions.Function(type: $0.type, enabled: $0.enabled, duration: .value($0.duration) ) }))
     }
 
     func toBlockItem(functions: RouteItemFunctions? = nil) throws -> RouteItem {

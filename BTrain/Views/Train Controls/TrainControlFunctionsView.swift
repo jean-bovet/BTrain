@@ -20,6 +20,8 @@ struct TrainControlFunctionsView: View {
     
     let catalog: LocomotiveFunctionsCatalog
     
+    let functionsController: TrainFunctionsController
+    
     @ObservedObject var functions: LocomotiveFunctions
         
     struct FunctionAttributes {
@@ -79,15 +81,9 @@ struct TrainControlFunctionsView: View {
     
     private func toggleFunction(function: CommandLocomotiveFunction) {
         let state = functionState(function: function)
-        let newState: UInt8 = state ? 0 : 1
         // Note: the state of the function will be updated
         // when the acknowledgement from the Digital Controller comes back
-        interface.execute(command: .function(address: locomotive.address,
-                                             decoderType: locomotive.decoder,
-                                             index: function.nr,
-                                             value: newState)) {
-            // no-op
-        }
+        functionsController.execute(locomotive: locomotive, function: function, enabled: !state, duration: 0)
     }
 }
 
@@ -105,6 +101,7 @@ struct TrainFunctionsView_Previews: PreviewProvider {
         TrainControlFunctionsView(locomotive: locomotive,
                                   interface: MarklinInterface(),
                                   catalog: LocomotiveFunctionsCatalog(),
+                                  functionsController: TrainFunctionsController(catalog: nil, interface: MarklinInterface()),
                                   functions: locomotive.functions)
         .frame(width: 200)
     }

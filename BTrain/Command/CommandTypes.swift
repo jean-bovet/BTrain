@@ -56,6 +56,9 @@ struct CommandLocomotiveFunction: Codable {
 
     /// The type of the function
     let type: UInt32
+    
+    /// True if the function is a toggle, meaning it must be activated and de-activated shortly after
+    @DecodableDefault.False var toggle: Bool
 }
 
 /// The attributes of a specific locomotive function

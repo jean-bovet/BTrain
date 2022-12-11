@@ -48,15 +48,27 @@ final class TrainFunctionsController {
                 BTLogger.debug("Execute function of type \(type) with \(locomotive.name)")
             }
 
-            interface.execute(command: .function(address: locomotive.address, decoderType: locomotive.decoder, index: def.nr, value: enabled ? 1 : 0), completion: nil)
-            
-            if f.duration > 0 {
-                DispatchQueue.main.asyncAfter(deadline: .now() + f.duration) {
-                    self.interface.execute(command: .function(address: locomotive.address, decoderType: locomotive.decoder, index: def.nr, value: enabled ? 0 : 1), completion: nil)
-                }
-            }
+            execute(locomotive: locomotive, function: def, enabled: enabled, duration: f.duration)
         }
     }
     
+    func execute(locomotive: Locomotive, function: CommandLocomotiveFunction, enabled: Bool, duration: TimeInterval) {
+        interface.execute(command: .function(address: locomotive.address, decoderType: locomotive.decoder, index: function.nr, value: enabled ? 1 : 0), completion: nil)
 
+        let actualDuration: TimeInterval
+        if function.toggle {
+            // The Digital Controller (at least the CS3) does not toggle it back
+            // automatically, so we have to do it.
+            actualDuration = 0.25
+        } else {
+            actualDuration = duration
+        }
+        
+        if actualDuration > 0 {
+            DispatchQueue.main.asyncAfter(deadline: .now() + actualDuration) {
+                self.interface.execute(command: .function(address: locomotive.address, decoderType: locomotive.decoder, index: function.nr, value: enabled ? 0 : 1), completion: nil)
+            }
+        }
+
+    }
 }

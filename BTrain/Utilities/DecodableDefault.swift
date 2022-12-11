@@ -29,6 +29,11 @@ extension DecodableDefault {
     struct Wrapper<Source: DecodableDefaultSource> {
         typealias Value = Source.Value
         var wrappedValue = Source.defaultValue
+        
+        static func value(_ value: Value) -> Self {
+            .init(wrappedValue: value)
+        }
+    
     }
 }
 
