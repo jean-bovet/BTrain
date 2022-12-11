@@ -90,6 +90,10 @@ extension RouteScriptCommand {
                 items.append(contentsOf: routeItems)
             }
             return items
+            
+        case .functions:
+            // TODO: 
+            return []
         }
     }
 }

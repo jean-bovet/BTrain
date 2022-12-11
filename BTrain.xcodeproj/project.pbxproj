@@ -181,6 +181,7 @@
 		A75F41BE2944E78F003C709F /* MarklinInterfaceResources.swift in Sources */ = {isa = PBXBuildFile; fileRef = A75F41BD2944E78F003C709F /* MarklinInterfaceResources.swift */; };
 		A75F41C0294509ED003C709F /* LocomotiveFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = A75F41BF294509ED003C709F /* LocomotiveFunctions.swift */; };
 		A75F41C529453C63003C709F /* LocomotiveFunctionsCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = A75F41C429453C63003C709F /* LocomotiveFunctionsCatalog.swift */; };
+		A75F41C729454A3A003C709F /* RouteScriptFunctionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A75F41C629454A3A003C709F /* RouteScriptFunctionsView.swift */; };
 		A763F18D27BDD82A00B3499A /* TrainSpeedMeasurementTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A763F18C27BDD82A00B3499A /* TrainSpeedMeasurementTests.swift */; };
 		A763F18F27BE01C300B3499A /* XCTestCase+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A763F18E27BE01C300B3499A /* XCTestCase+Extension.swift */; };
 		A763F19327BE26CF00B3499A /* LocomotiveSpeedMeasurementsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A763F19227BE26CF00B3499A /* LocomotiveSpeedMeasurementsView.swift */; };
@@ -591,6 +592,7 @@
 		A75F41BD2944E78F003C709F /* MarklinInterfaceResources.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarklinInterfaceResources.swift; sourceTree = "<group>"; };
 		A75F41BF294509ED003C709F /* LocomotiveFunctions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocomotiveFunctions.swift; sourceTree = "<group>"; };
 		A75F41C429453C63003C709F /* LocomotiveFunctionsCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocomotiveFunctionsCatalog.swift; sourceTree = "<group>"; };
+		A75F41C629454A3A003C709F /* RouteScriptFunctionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteScriptFunctionsView.swift; sourceTree = "<group>"; };
 		A763F18C27BDD82A00B3499A /* TrainSpeedMeasurementTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainSpeedMeasurementTests.swift; sourceTree = "<group>"; };
 		A763F18E27BE01C300B3499A /* XCTestCase+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "XCTestCase+Extension.swift"; sourceTree = "<group>"; };
 		A763F19227BE26CF00B3499A /* LocomotiveSpeedMeasurementsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocomotiveSpeedMeasurementsView.swift; sourceTree = "<group>"; };
@@ -1505,6 +1507,7 @@
 				A7479680291F437E001DF7FA /* RouteScriptEditorView.swift */,
 				A747968629201FE4001DF7FA /* RouteScriptLineView.swift */,
 				A7479682292010F4001DF7FA /* RouteScriptCommandView.swift */,
+				A75F41C629454A3A003C709F /* RouteScriptFunctionsView.swift */,
 			);
 			path = RouteScript;
 			sourceTree = "<group>";
@@ -2149,6 +2152,7 @@
 				A744D1372765C5A3005C2F37 /* LayoutError.swift in Sources */,
 				A73EFD75292F3A260052C407 /* FeedbackPosition.swift in Sources */,
 				A71715892758448D00200F92 /* CGRect+Extension.swift in Sources */,
+				A75F41C729454A3A003C709F /* RouteScriptFunctionsView.swift in Sources */,
 				A75F41AF293D83E8003C709F /* RoutePicker.swift in Sources */,
 				A74F38052818C0E50013FD23 /* RouteItemTurnout.swift in Sources */,
 				A7BE36AA2751BDC300286709 /* ConnectorPlug.swift in Sources */,

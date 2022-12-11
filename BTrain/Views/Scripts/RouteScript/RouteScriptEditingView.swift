@@ -13,6 +13,7 @@
 import SwiftUI
 
 struct RouteScriptEditingView: View {
+    let doc: LayoutDocument
     @ObservedObject var layout: Layout
 
     var body: some View {
@@ -31,7 +32,7 @@ struct RouteScriptEditingView: View {
                 TextField("", text: script.name)
             }
         }) { script in
-            RouteScriptEditorView(layout: layout, script: script)
+            RouteScriptEditorView(doc: doc, layout: layout, script: script)
         }.onDisappear() {
             layout.updateRoutesUsingRouteScripts()
         }
@@ -42,12 +43,14 @@ struct RouteScriptEditingView_Previews: PreviewProvider {
     static var previews: some View {
         Group {
             ConfigurationSheet(title: "Routes") {
-                RouteScriptEditingView(layout: RouteScriptEditorView_Previews.layout)
+                RouteScriptEditingView(doc: LayoutDocument(layout: RouteScriptEditorView_Previews.layout),
+                                       layout: RouteScriptEditorView_Previews.layout)
             }
         }
         Group {
             ConfigurationSheet(title: "Routes") {
-                RouteScriptEditingView(layout: Layout())
+                RouteScriptEditingView(doc: LayoutDocument(layout: Layout()),
+                                       layout: Layout())
             }
         }.previewDisplayName("Empty")
     }

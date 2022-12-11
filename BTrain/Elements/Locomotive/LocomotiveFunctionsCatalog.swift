@@ -22,6 +22,10 @@ final class LocomotiveFunctionsCatalog {
 
     private var imageCache = NSCache<NSString, NSImage>()
 
+    var allTypes: [UInt32] {
+        type2attributes.keys.sorted()
+    }
+    
     func process(interface: CommandInterface) {
         type2attributes.removeAll()
         for attributes in interface.locomotiveFunctions() {

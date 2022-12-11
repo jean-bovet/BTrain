@@ -100,7 +100,7 @@ struct DocumentView: View {
             case .layoutScripts:
                 LayoutScriptEditingView(doc: document, layout: document.layout)
             case .routeScripts:
-                RouteScriptEditingView(layout: document.layout)
+                RouteScriptEditingView(doc: document, layout: document.layout)
             case .routes:
                 RouteListView(layout: document.layout)
             case .trains:

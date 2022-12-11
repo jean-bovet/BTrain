@@ -13,6 +13,7 @@
 import SwiftUI
 
 struct RouteScriptLineView: View {
+    let doc: LayoutDocument
     let layout: Layout
 
     @ObservedObject var script: RouteScript
@@ -21,7 +22,7 @@ struct RouteScriptLineView: View {
 
     var body: some View {
         DragAndDropLineView(lineUUID: command.id.uuidString, dragAllowed: command.action != .start, dragInsideAllowed: command.action == .loop) {
-            RouteScriptCommandView(layout: layout, script: script, command: $command, commandErrorIds: $commandErrorIds)
+            RouteScriptCommandView(doc: doc, layout: layout, script: script, command: $command, commandErrorIds: $commandErrorIds)
         } onMove: { sourceUUID, targetUUID, position in
             guard let sourceCommand = script.commands.commandWith(uuid: sourceUUID) else {
                 return
@@ -49,8 +50,8 @@ struct ScriptLineView_Previews: PreviewProvider {
 
     static var previews: some View {
         VStack(alignment: .leading) {
-            RouteScriptLineView(layout: doc.layout, script: RouteScript(), command: .constant(command), commandErrorIds: .constant([]))
-            RouteScriptLineView(layout: doc.layout, script: RouteScript(), command: .constant(command), commandErrorIds: .constant([command.id.uuidString]))
+            RouteScriptLineView(doc: doc, layout: doc.layout, script: RouteScript(), command: .constant(command), commandErrorIds: .constant([]))
+            RouteScriptLineView(doc: doc, layout: doc.layout, script: RouteScript(), command: .constant(command), commandErrorIds: .constant([command.id.uuidString]))
         }
     }
 }

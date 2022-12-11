@@ -19,6 +19,7 @@ struct RouteScriptCommand: ScriptCommand, Identifiable, Hashable {
         case start = "Start"
         case move = "Move"
         case loop = "Repeat"
+        case functions = "Functions"
     }
 
     var action: Action = .move
@@ -38,6 +39,14 @@ struct RouteScriptCommand: ScriptCommand, Identifiable, Hashable {
     var direction: Direction?
     var stationId: Identifier<Station>?
 
+    struct Function: Identifiable, Hashable, Codable {
+        var id = UUID().uuidString
+        var type: UInt32
+        var enabled: Bool
+    }
+
+    var functions = [Function]()
+    
     init(id: UUID = UUID(), action: Action) {
         self.id = id
         self.action = action
@@ -46,7 +55,7 @@ struct RouteScriptCommand: ScriptCommand, Identifiable, Hashable {
 
 extension RouteScriptCommand: Codable {
     enum CodingKeys: CodingKey {
-        case id, action, children, repeatCount, waitDuration, destinationType, blockId, direction, stationId
+        case id, action, children, repeatCount, waitDuration, destinationType, blockId, direction, stationId, functions
     }
 
     init(from decoder: Decoder) throws {
@@ -61,6 +70,7 @@ extension RouteScriptCommand: Codable {
         blockId = try container.decodeIfPresent(Identifier<Block>.self, forKey: CodingKeys.blockId)
         direction = try container.decodeIfPresent(Direction.self, forKey: CodingKeys.direction)
         stationId = try container.decodeIfPresent(Identifier<Station>.self, forKey: CodingKeys.stationId)
+        functions = try container.decodeIfPresent([Function].self, forKey: CodingKeys.functions) ?? []
     }
 
     func encode(to encoder: Encoder) throws {
@@ -74,5 +84,6 @@ extension RouteScriptCommand: Codable {
         try container.encode(blockId, forKey: CodingKeys.blockId)
         try container.encode(direction, forKey: CodingKeys.direction)
         try container.encode(stationId, forKey: CodingKeys.stationId)
+        try container.encode(functions, forKey: CodingKeys.functions)
     }
 }

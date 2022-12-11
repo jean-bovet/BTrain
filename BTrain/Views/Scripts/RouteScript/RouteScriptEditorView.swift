@@ -13,6 +13,7 @@
 import SwiftUI
 
 struct RouteScriptEditorView: View {
+    let doc: LayoutDocument
     let layout: Layout
     @ObservedObject var script: RouteScript
 
@@ -31,12 +32,12 @@ struct RouteScriptEditorView: View {
             } else {
                 List {
                     ForEach($script.commands, id: \.self) { command in
-                        RouteScriptLineView(layout: layout, script: script, command: command, commandErrorIds: $validator.commandErrorIds)
+                        RouteScriptLineView(doc: doc, layout: layout, script: script, command: command, commandErrorIds: $validator.commandErrorIds)
                         if let children = command.children {
                             ForEach(children, id: \.self) { command in
                                 HStack {
                                     Spacer().fixedSpace()
-                                    RouteScriptLineView(layout: layout, script: script, command: command, commandErrorIds: $validator.commandErrorIds)
+                                    RouteScriptLineView(doc: doc, layout: layout, script: script, command: command, commandErrorIds: $validator.commandErrorIds)
                                 }
                             }
                         }
@@ -109,12 +110,14 @@ struct RouteScriptEditorView_Previews: PreviewProvider {
         return layout
     }()
 
+    static let doc = LayoutDocument(layout: layout)
+    
     static var previews: some View {
         Group {
-            RouteScriptEditorView(layout: layout, script: layout.routeScripts[0])
+            RouteScriptEditorView(doc: doc, layout: layout, script: layout.routeScripts[0])
         }.previewDisplayName("Route")
         Group {
-            RouteScriptEditorView(layout: layout, script: RouteScript())
+            RouteScriptEditorView(doc: doc, layout: layout, script: RouteScript())
         }.previewDisplayName("Empty Route")
     }
 }

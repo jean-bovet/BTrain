@@ -13,11 +13,13 @@
 import SwiftUI
 
 struct RouteScriptCommandView: View {
+    let doc: LayoutDocument
     let layout: Layout
     @ObservedObject var script: RouteScript
     @Binding var command: RouteScriptCommand
     @Binding var commandErrorIds: [String]
-
+    @State private var showFunctionsSheet = false
+    
     var body: some View {
         HStack {
             if command.action != .start {
@@ -79,9 +81,35 @@ struct RouteScriptCommandView: View {
                     Stepper("and wait \(command.waitDuration) seconds", value: $command.waitDuration, in: 0 ... 100, step: 10)
                         .fixedSize()
                 }
+                
             case .loop:
                 Stepper("\(command.repeatCount) times", value: $command.repeatCount, in: 1 ... 10)
                     .fixedSize()
+                
+            case .functions:
+                if command.functions.isEmpty {
+                    Button("Add…") {
+                        showFunctionsSheet.toggle()
+                    }
+                } else {
+                    ForEach(command.functions, id: \.self) { function in
+                        Group {
+                            if let image = doc.locomotiveFunctionsCatalog.image(for: function.type) {
+                                Image(nsImage: image)
+                                    .resizable()
+                                    .renderingMode(.template)
+                                    .frame(width: 20, height: 20)
+                            } else {
+                                Text("f\(function.type)")
+                            }
+                        }
+                        .if(function.enabled, transform: { $0.foregroundColor(.yellow)})
+                            .help(doc.locomotiveFunctionsCatalog.name(for: function.type) ?? "")
+                    }
+                    Button("Edit…") {
+                        showFunctionsSheet.toggle()
+                    }
+                }
             }
 
             Button("􀁌") {
@@ -93,6 +121,10 @@ struct RouteScriptCommandView: View {
                     script.commands.remove(source: command)
                 }.buttonStyle(.borderless)
             }
+        }.sheet(isPresented: $showFunctionsSheet) {
+            RouteScriptFunctionsView(catalog: doc.locomotiveFunctionsCatalog, cmd: $command)
+                .padding()
+                .frame(width: 400, height: 300)
         }
     }
 }
@@ -124,12 +156,23 @@ struct ScriptCommandView_Previews: PreviewProvider {
         return cmd
     }()
 
-    static let commands = [start, moveToFreeBlock, moveToStationBlock, loop]
+    static let emptyFunctions = {
+        var cmd = RouteScriptCommand(action: .functions)
+        return cmd
+    }()
+
+    static let functions = {
+        var cmd = RouteScriptCommand(action: .functions)
+        cmd.functions = [.init(type: 0, enabled: true), .init(type: 2, enabled: false)]
+        return cmd
+    }()
+
+    static let commands = [start, moveToFreeBlock, moveToStationBlock, loop, emptyFunctions, functions]
 
     static var previews: some View {
         VStack(alignment: .leading) {
             ForEach(commands, id: \.self) { command in
-                RouteScriptCommandView(layout: doc.layout, script: script, command: .constant(command), commandErrorIds: .constant([]))
+                RouteScriptCommandView(doc: doc, layout: doc.layout, script: script, command: .constant(command), commandErrorIds: .constant([]))
                     .fixedSize()
             }
         }
