@@ -161,10 +161,14 @@ final class MockTrainController: TrainControlling {
         // no-op
     }
     
-    func executeFunctions() {
+    func routeWillStart() {
         // no-op
     }
     
+    func routeDidStop() {
+        // no-op
+    }
+        
     func logDebug(_ message: String) {
         // no-op
     }

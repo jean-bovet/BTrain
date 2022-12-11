@@ -22,8 +22,6 @@ struct RouteScriptCommandView: View {
     
     var functions: some View {
         HStack {
-            Text("and")
-            
             if command.functions.isEmpty {
                 Button("Add…") {
                     showFunctionsSheet.toggle()
@@ -52,7 +50,7 @@ struct RouteScriptCommandView: View {
     
     var body: some View {
         HStack {
-            if command.action != .start {
+            if command.action.draggable {
                 Text("􀌃")
             }
             if commandErrorIds.contains(command.id.uuidString) {
@@ -60,7 +58,7 @@ struct RouteScriptCommandView: View {
                     .foregroundColor(.red)
             }
 
-            if command.action != .start {
+            if command.action.mutable {
                 Picker("Command", selection: $command.action) {
                     ForEach(RouteScriptCommand.Action.allCases.filter { $0 != .start }, id: \.self) {
                         Text($0.rawValue).tag($0 as RouteScriptCommand.Action?)
@@ -81,6 +79,14 @@ struct RouteScriptCommandView: View {
                     .fixedSize()
                 DirectionPicker(direction: $command.direction)
                     .labelsHidden()
+
+                Text("and")
+                
+                functions
+                
+            case .stop:
+                Text("Completion:")
+                    .fixedSize()
 
                 functions
 
@@ -114,6 +120,8 @@ struct RouteScriptCommandView: View {
                         .fixedSize()
                 }
                 
+                Text("and")
+                
                 functions
 
             case .loop:
@@ -121,11 +129,13 @@ struct RouteScriptCommandView: View {
                     .fixedSize()
             }
 
-            Button("􀁌") {
-                script.commands.insert(source: RouteScriptCommand(action: .move), after: command)
-            }.buttonStyle(.borderless)
+            if command.action != .stop {
+                Button("􀁌") {
+                    script.commands.insert(source: RouteScriptCommand(action: .move), after: command)
+                }.buttonStyle(.borderless)
+            }
 
-            if command.action != .start {
+            if command.action.deletable {
                 Button("􀁎") {
                     script.commands.remove(source: command)
                 }.buttonStyle(.borderless)
@@ -143,6 +153,7 @@ struct ScriptCommandView_Previews: PreviewProvider {
     static let script = RouteScript()
 
     static let start = RouteScriptCommand(action: .start)
+    static let stop = RouteScriptCommand(action: .stop)
 
     static let moveToFreeBlock = {
         var cmd = RouteScriptCommand(action: .move)
@@ -166,7 +177,7 @@ struct ScriptCommandView_Previews: PreviewProvider {
         return cmd
     }()
 
-    static let commands = [start, moveToFreeBlock, moveToStationBlock, loop]
+    static let commands = [start, moveToFreeBlock, moveToStationBlock, loop, stop]
 
     static var previews: some View {
         VStack(alignment: .leading) {

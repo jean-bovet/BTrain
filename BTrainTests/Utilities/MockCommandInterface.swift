@@ -55,10 +55,11 @@ final class MockCommandInterface: CommandInterface {
     }
 
     private func executePendingCommands() {
-        for (command, completion) in pendingCommands {
+        let commands = pendingCommands
+        pendingCommands.removeAll()
+        for (command, completion) in commands {
             executeImmediate(command: command, onCompletion: completion)
         }
-        pendingCommands.removeAll()
     }
 
     private func executeImmediate(command: Command, onCompletion: CompletionBlock?) {
@@ -67,12 +68,6 @@ final class MockCommandInterface: CommandInterface {
 
         // Then we can trigger the callbacks for any acknowledgement from the Digital Controller
         switch command {
-//        case .go(let priority, let descriptor):
-//            break
-//        case .stop(let priority, let descriptor):
-//            break
-//        case .emergencyStop(let address, let decoderType, let priority, let descriptor):
-//            break
         case let .speed(address, decoderType, value, _, _):
             speedValues.append(value.value)
             for speedChangeCallback in callbacks.speedChanges.all {
@@ -84,8 +79,6 @@ final class MockCommandInterface: CommandInterface {
                 directionChangeCallback(address, decoderType, direction)
             }
 
-        //        case .queryDirection(let address, let decoderType, let priority, let descriptor):
-//            break
         case let .turnout(address, state, power, _, _):
             if power == 1 {
                 turnoutCommands.append(command)
@@ -94,17 +87,23 @@ final class MockCommandInterface: CommandInterface {
                 turnoutChangeCallback(address, state, power, true /* ack */ )
             }
 
-//        case .feedback(let deviceID, let contactID, let oldValue, let newValue, let time, let priority, let descriptor):
-//            break
-//        case .locomotives(let priority, let descriptor):
-//            break
-//        case .unknown(let command, let priority, let descriptor):
-//            break
+        case let .function(address, _, index, value, _, _):
+            triggeredFunctions.append(Function(address: address, index: index, value: value))
+            
         default:
             break
         }
     }
 
+    struct Function: Equatable {
+        let address: UInt32
+        let index: UInt8
+        let value: UInt8
+    }
+    
+    var triggeredFunctions = [Function]()
+    var locFunctions = [CommandLocomotiveFunctionAttributes]()
+    
     func speedValue(for steps: SpeedStep, decoder _: DecoderType) -> SpeedValue {
         .init(value: steps.value)
     }
@@ -114,7 +113,7 @@ final class MockCommandInterface: CommandInterface {
     }
     
     func locomotiveFunctions() -> [CommandLocomotiveFunctionAttributes] {
-        []
+        locFunctions
     }
 
 }

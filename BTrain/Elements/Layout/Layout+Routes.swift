@@ -59,6 +59,8 @@ extension Layout {
         if let existingRoute = self.route(for: route.id) {
             existingRoute.name = route.name
             existingRoute.partialSteps = route.partialSteps
+            existingRoute.startFunctions = route.startFunctions
+            existingRoute.stopFunctions = route.stopFunctions
         } else {
             routes.append(route)
         }

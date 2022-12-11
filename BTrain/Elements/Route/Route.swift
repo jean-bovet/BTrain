@@ -78,6 +78,12 @@ final class Route: Element, ObservableObject {
     /// blocks that need to be picked up when the train moves along the route. This is done when
     /// the route is resolved, where each station returns a single block satisfying the constraints of the layout.
     @Published var steps = [RouteItem]()
+    
+    /// The functions to execute when the route starts
+    @Published var startFunctions: RouteItemFunctions?
+    
+    /// The functions to execute when the route stops
+    @Published var stopFunctions: RouteItemFunctions?
 
     /// The last message about the status of the route, or nil if there is no problem with the route.
     @Published var lastMessage: String?
@@ -112,7 +118,7 @@ final class Route: Element, ObservableObject {
 
 extension Route: Codable {
     enum CodingKeys: CodingKey {
-        case id, name, steps, stepsv2, items, automatic, mode
+        case id, name, steps, stepsv2, items, automatic, mode, startFunctions, stopFunctions
     }
 
     convenience init(from decoder: Decoder) throws {
@@ -133,6 +139,8 @@ extension Route: Codable {
         } else if container.contains(CodingKeys.items) {
             partialSteps = try container.decode([RouteItem].self, forKey: CodingKeys.items)
         }
+        startFunctions = try container.decodeIfPresent(RouteItemFunctions.self, forKey: CodingKeys.startFunctions)
+        stopFunctions = try container.decodeIfPresent(RouteItemFunctions.self, forKey: CodingKeys.stopFunctions)
     }
 
     func encode(to encoder: Encoder) throws {
@@ -141,5 +149,7 @@ extension Route: Codable {
         try container.encode(name, forKey: CodingKeys.name)
         try container.encode(partialSteps, forKey: CodingKeys.items)
         try container.encode(mode, forKey: CodingKeys.mode)
+        try container.encode(startFunctions, forKey: CodingKeys.startFunctions)
+        try container.encode(stopFunctions, forKey: CodingKeys.stopFunctions)
     }
 }

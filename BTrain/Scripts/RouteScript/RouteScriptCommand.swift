@@ -19,6 +19,19 @@ struct RouteScriptCommand: ScriptCommand, Identifiable, Hashable {
         case start = "Start"
         case move = "Move"
         case loop = "Repeat"
+        case stop = "Stop"
+        
+        var draggable: Bool {
+            self == .move || self == .loop
+        }
+        
+        var mutable: Bool {
+            self == .move || self == .loop
+        }
+        
+        var deletable: Bool {
+            self == .move || self == .loop
+        }
     }
 
     var action: Action = .move

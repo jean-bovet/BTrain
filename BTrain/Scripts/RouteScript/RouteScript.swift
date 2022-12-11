@@ -25,7 +25,7 @@ final class RouteScript: Element, ObservableObject {
     internal init(id: Identifier<RouteScript>, name: String = "") {
         self.id = id
         self.name = name
-        commands = [.init(action: .start)]
+        commands = [.init(action: .start), .init(action: .stop)]
     }
 }
 
@@ -42,6 +42,10 @@ extension RouteScript: Codable {
         self.init(id: id, name: name)
 
         commands = try container.decode([RouteScriptCommand].self, forKey: CodingKeys.commands)
+        
+        if let lastAction = commands.last?.action, lastAction != .stop {
+            commands.append(.init(action: .stop))
+        }
     }
 
     func encode(to encoder: Encoder) throws {

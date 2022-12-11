@@ -53,9 +53,7 @@ struct TrainEventStateMachine {
 
         case .modeChanged:
             if train.mode == .managed {
-                // Execute the functions associated with the starting route item
-                // when the route is started
-                train.executeFunctions()
+                train.routeWillStart()
                 
                 if try train.updateReservedBlocks() {
                     // Note: change the train direction is necessary after the necessary blocks
@@ -83,6 +81,10 @@ struct TrainEventStateMachine {
             }
 
         case .stateChanged:
+            if train.state == .stopped && train.mode == .unmanaged {
+                train.routeDidStop()
+            }
+            
             // Note: do not remove the reserved blocks if they are still settling. The train
             // can be in the stopped state because the reserved blocks are still settling and
             // the train does not have enough free distance to move.

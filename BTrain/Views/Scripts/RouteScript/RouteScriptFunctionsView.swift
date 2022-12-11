@@ -63,9 +63,9 @@ struct RouteScriptFunctionsView: View {
                             .labelsHidden()
                             .fixedSize()
                                                  
-                            Stepper("Duration: \(String(format: "%.3f", function.wrappedValue.duration)) s.",
+                            Stepper("Duration: \(String(format: "%.2f", function.wrappedValue.duration)) s.",
                                     value: function.duration,
-                                    in: 0 ... 10, step: 0.250)
+                                    in: 0 ... 10, step: 0.25)
                                 .fixedSize()
 
                             Spacer()

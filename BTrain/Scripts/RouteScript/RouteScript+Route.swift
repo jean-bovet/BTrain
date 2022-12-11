@@ -45,6 +45,8 @@ extension RouteScript {
         let route = Route(uuid: id.uuid, mode: .fixed)
         route.name = name
         route.partialSteps.append(contentsOf: try commands.toRouteItems())
+        route.startFunctions = commands.first?.routeItemFunctions
+        route.stopFunctions = commands.last?.routeItemFunctions
         return route
     }
 }
@@ -56,7 +58,7 @@ extension RouteScriptCommand {
         RouteItemFunctions(functions: functions.map({ RouteItemFunctions.Function(type: $0.type, enabled: $0.enabled, duration: .init(wrappedValue: $0.duration) ) }))
     }
 
-    func toBlockItem() throws -> RouteItem {
+    func toBlockItem(functions: RouteItemFunctions? = nil) throws -> RouteItem {
         guard let blockId = blockId else {
             throw ScriptError.undefinedBlock(command: self)
         }
@@ -80,11 +82,14 @@ extension RouteScriptCommand {
         switch action {
         case .start:
             return [try toBlockItem()]
+            
+        case .stop:
+            return []
 
         case .move:
             switch destinationType {
             case .block:
-                return [try toBlockItem()]
+                return [try toBlockItem(functions: routeItemFunctions)]
             case .station:
                 if let stationId = stationId {
                     return [.station(.init(stationId: stationId, functions: routeItemFunctions))]

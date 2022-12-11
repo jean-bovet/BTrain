@@ -109,9 +109,12 @@ protocol TrainControlling: AnyObject {
     /// Schedule a timer that will restart the train after a specific waiting period
     func reschedule()
     
-    /// Executes the functions specified in the current route item
-    func executeFunctions()
+    /// Invoked when the route will start
+    func routeWillStart()
     
+    /// Invoked when the route did stop
+    func routeDidStop()
+        
     /// Logs the specified message in the debug console
     /// - Parameter message: the message
     func logDebug(_ message: String)

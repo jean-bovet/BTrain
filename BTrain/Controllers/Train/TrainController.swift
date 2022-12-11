@@ -357,6 +357,18 @@ final class TrainController: TrainControlling, CustomStringConvertible {
         layoutController.scheduleRestartTimer(train: train)
     }
 
+    func routeWillStart() {
+        if let functions = route.startFunctions {
+            functionsController.execute(functions: functions, train: train)
+        }
+    }
+    
+    func routeDidStop() {
+        if let functions = route.stopFunctions {
+            functionsController.execute(functions: functions, train: train)
+        }
+    }
+    
     func executeFunctions() {
         guard let routeItem = route.steps.element(at: train.routeStepIndex) else {
             return

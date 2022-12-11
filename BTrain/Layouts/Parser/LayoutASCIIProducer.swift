@@ -69,6 +69,9 @@ final class LayoutASCIIProducer {
                 text += "\(block.id)"
             }
         case .free, .sidingNext, .sidingPrevious:
+            if block.category == .sidingPrevious {
+                text += "|"
+            }
             text += "["
             if let reserved = block.reservation {
                 text += "r\(reserved.trainId)"
@@ -136,6 +139,9 @@ final class LayoutASCIIProducer {
                 text += " ]]"
             } else {
                 text += " ]"
+            }
+            if block.category == .sidingNext {
+                text += "|"
             }
         }
     }
