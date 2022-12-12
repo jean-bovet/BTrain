@@ -128,11 +128,15 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
             guard let loc = train.locomotive else {
                 continue
             }
+            
             if let simTrain = locomotives.first(where: { $0.id == loc.id }) {
                 simTrain.speed = loc.speed.actualSteps
                 simTrain.directionForward = loc.directionForward
             } else {
-                locomotives.append(SimulatorLocomotive(loc: loc))
+                let simTrain = SimulatorLocomotive(loc: loc)
+                simTrain.speed = loc.speed.actualSteps
+                simTrain.directionForward = loc.directionForward
+                locomotives.append(simTrain)
             }
         }
 
