@@ -53,6 +53,8 @@ final class LayoutOnConnectTasks: ObservableObject {
                         self.layoutController.stop {
                             completion()
                         }
+                    } else {
+                        completion()
                     }
                 }
             }
