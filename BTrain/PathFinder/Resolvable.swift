@@ -13,7 +13,7 @@
 import Foundation
 
 /// Protocol describing an item that can be resolved to a single path element
-protocol Resolvable: CustomStringConvertible {
+protocol Resolvable {
     /// Resolves this object using the specified constraints
     /// - Parameter constraints: the constraints
     /// - Returns: a resolved path element or nil if it cannot be resolved

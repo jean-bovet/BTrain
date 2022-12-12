@@ -185,6 +185,24 @@ final class Block: Element, ObservableObject {
     convenience init(name: String = UUID().uuidString) {
         self.init(id: Identifier<Block>(uuid: name), name: name)
     }
+    
+    func description(_ layout: Layout) -> String {
+        var info = "\(name)-[\(id)]"
+        if let reserved = reservation, let train = layout.trains[reserved.trainId] {
+            info += ", reserved for '\(train.name)'-\(reserved.direction)"
+        }
+        if let trainInstance = trainInstance {
+            if let train = layout.trains[trainInstance.trainId] {
+                info += ", \(train.description(layout))"
+            }
+            if trainInstance.direction == .next {
+                info += ", direction forward"
+            } else {
+                info += ", direction backward"
+            }
+        }
+        return info
+    }
 }
 
 extension Block: Restorable {

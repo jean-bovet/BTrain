@@ -225,6 +225,24 @@ final class LayoutController: ObservableObject, LayoutControlling {
         }
     }
 
+    private func dumpAll() {
+        var text = "*******************************************"
+        text += "\nEnabled Trains:"
+        for (index, train) in layout.trains.elements.filter({ $0.enabled }).enumerated() {
+            text += "\n  [\(String(format:"%02d", index))] " + train.description(layout)
+        }
+        text += "\nInteresting Blocks:"
+        for (index, block) in layout.blocks.elements.filter({ $0.enabled && ($0.reservation != nil || $0.trainInstance != nil) }).enumerated() {
+            text += "\n  [\(String(format:"%02d", index))] " + block.description(layout)
+        }
+        text += "\nRoutes:"
+        for (index, route) in layout.routes.enumerated() {
+            text += "\n  [\(String(format:"%02d", index))] " + route.description(layout)
+        }
+        text += "*******************************************"
+        BTLogger.router.error("\(text, privacy: .public)")
+    }
+
     private func haltAll() {
         stopAll(includingManualTrains: true)
 

@@ -825,8 +825,8 @@ class FixedRoutingTests: BTTestCase {
             }
         }
 
-        XCTAssertEqual(route.partialSteps.description, "[st1, st2]")
-        XCTAssertEqual(route.steps.description, "[]")
+        XCTAssertEqual(route.partialSteps.description(layout), ["Station S", "Station N"])
+        XCTAssertEqual(route.steps.description(layout), [])
 
         let resolver = RouteResolver(layout: layout, train: train)
         let results = try resolver.resolve(unresolvedPath: route.partialSteps)
@@ -915,8 +915,8 @@ class FixedRoutingTests: BTTestCase {
         let p = Package(layout: layout)
         try p.prepare(routeID: "r1", trainID: "0", fromBlockId: "A", position: .end)
 
-        XCTAssertEqual(p.route.partialSteps.description, "[A:next, C:next, E:next]")
-        XCTAssertEqual(p.route.steps.description, "[A:next, B:next, C:next, D:next, E:next]")
+        XCTAssertEqual(p.route.partialSteps.description(layout), ["A:next", "C:next", "E:next"])
+        XCTAssertEqual(p.route.steps.description(layout), ["A:next", "B:next", "C:next", "D:next", "E:next"])
 
         try p.assert("r1: |[r0[A ≏ 􀼰0 ≏ 🔴􀼮0 ]] <AB> [B ≏ ≏ ] [C ≏ ≏ ] [D ≏ ≏ ] <DE(1,0)> [E ≏ ≏ ]|")
 

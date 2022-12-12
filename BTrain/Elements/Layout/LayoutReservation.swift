@@ -282,7 +282,7 @@ final class LayoutReservation {
             // Reserve all the transitions
             for transition in transitions {
                 guard transition.reserved == nil || (transition.reserved == train.id && transition.train == train.id) else {
-                    throw LayoutError.transitionAlreadyReserved(transition: transition)
+                    throw LayoutError.transitionAlreadyReserved(train: train, transition: transition)
                 }
                 debug("Reserving transition \(transition) for \(train)")
                 transition.reserved = train.id
@@ -382,7 +382,7 @@ final class LayoutReservation {
         let spreader = TrainSpreader(layout: layout)
         let remainingTrainLength = try spreader.spread(train: train) { transition in
             guard transition.reserved == nil else {
-                throw LayoutError.transitionAlreadyReserved(transition: transition)
+                throw LayoutError.transitionAlreadyReserved(train: train, transition: transition)
             }
             transition.reserved = train.id
             transition.train = train.id

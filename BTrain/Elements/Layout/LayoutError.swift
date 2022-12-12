@@ -56,7 +56,7 @@ enum LayoutError: Error {
 
     case blockAlreadyReserved(block: Block)
     case turnoutAlreadyReserved(turnout: Turnout)
-    case transitionAlreadyReserved(transition: Transition)
+    case transitionAlreadyReserved(train: Train, transition: Transition)
 
     case unexpectedFeedback(feedback: Feedback)
 
@@ -184,8 +184,8 @@ extension LayoutError: LocalizedError {
             return "Block \(block.name) is already reserved for \(String(describing: block.reservation))"
         case let .turnoutAlreadyReserved(turnout: turnout):
             return "Turnout \(turnout.name) is already reserved for \(String(describing: turnout.reserved))"
-        case let .transitionAlreadyReserved(transition: transition):
-            return "Transition \(transition.id) is already reserved for \(String(describing: transition.reserved))"
+        case let .transitionAlreadyReserved(train, transition):
+            return "Train \(train.name): transition \(transition.id) is already reserved for \(transition.reserved!)"
 
         case let .invalidPartIndex(index: index, block: block):
             return "Invalid part index \(index) in \(block.name)"

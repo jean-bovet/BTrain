@@ -25,8 +25,12 @@ struct RouteItemTurnout: Equatable, Codable {
 
     var entrySocket: Socket
 
-    var description: String {
-        "\(turnoutId):(\(entrySocket.socketId!)>\(exitSocket.socketId!))"
+    func description(_ layout: Layout) -> String {
+        if let turnout = layout.turnouts[turnoutId] {
+            return "\(turnout.name):(\(entrySocket.socketId!)>\(exitSocket.socketId!))"
+        } else {
+            return "\(turnoutId):(\(entrySocket.socketId!)>\(exitSocket.socketId!))"
+        }
     }
 
     init(_ turnoutId: Identifier<Turnout>, _ fromSocket: Socket, _ toSocket: Socket) {

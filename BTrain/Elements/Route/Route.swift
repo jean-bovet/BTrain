@@ -114,6 +114,27 @@ final class Route: Element, ObservableObject {
     static func automaticRouteId(for trainId: Identifier<Train>) -> Identifier<Route> {
         Identifier<Route>(uuid: "automatic-\(trainId)")
     }
+    
+    func description(_ layout: Layout) -> String {
+        var info = "\(name)-[\(id)]"
+        switch mode {
+        case let .automaticOnce(destination: destination):
+            info += " (automatic once to \(destination.blockId), direction \(String(describing: destination.direction))"
+        case .automatic:
+            info += " (automatic mode)"
+        case .fixed:
+            info += " (fixed)"
+        }
+        
+        if steps.isEmpty {
+            info += ". No steps defined."
+        } else {
+            info += ". \(steps.count) steps: ["
+            info += steps.map({ "(\($0.description(layout)))"}).joined(separator: ",")
+            info += "]"
+        }
+        return info
+    }
 }
 
 extension Route: Codable {

@@ -12,7 +12,7 @@
 
 import Foundation
 
-struct RouteItemBlock: Equatable, Codable, CustomStringConvertible, SourceIdentifiable {
+struct RouteItemBlock: Equatable, Codable, SourceIdentifiable {
     static func == (lhs: RouteItemBlock, rhs: RouteItemBlock) -> Bool {
         lhs.id == rhs.id
     }
@@ -34,8 +34,12 @@ struct RouteItemBlock: Equatable, Codable, CustomStringConvertible, SourceIdenti
     /// Functions associated with this route item
     var functions: RouteItemFunctions?
 
-    var description: String {
-        "\(blockId):\(direction)"
+    func description(_ layout: Layout) -> String {
+        if let block = layout.blocks[blockId] {
+            return "\(block.name):\(direction)"
+        } else {
+            return "\(blockId):\(direction)"
+        }
     }
 
     init(_ block: Block, _ direction: Direction, _ waitingTime: TimeInterval? = nil) {

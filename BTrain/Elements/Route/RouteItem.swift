@@ -43,13 +43,20 @@ enum RouteItem: Identifiable, Equatable {
         case let .station(station): return station.id
         }
     }
-
-    var description: String {
+    
+    func description(_ layout: Layout) -> String {
         switch self {
-        case let .block(block): return block.description
-        case let .turnout(turnout): return turnout.description
-        case let .station(station): return station.description
+        case let .block(block): return block.description(layout)
+        case let .turnout(turnout): return turnout.description(layout)
+        case let .station(station): return station.description(layout)
         }
+    }
+}
+
+extension Array where Element == RouteItem {
+    
+    func description(_ layout: Layout) -> [String] {
+        map({$0.description(layout)})
     }
 }
 
