@@ -39,9 +39,9 @@ struct LayoutSpeed {
         // The braking distance is respected if it is shorter or equal to the leading distance available.
         let respected = result.distance <= leadingDistance
         if respected {
-            BTLogger.router.debug("\(train, privacy: .public): can come to a full stop in \(result.distance, format: .fixed(precision: 1))cm (in \(result.duration, format: .fixed(precision: 1))s) at \(Double(speed), format: .fixed(precision: 1))kph. The leading distance is \(leadingDistance, format: .fixed(precision: 1))cm with blocks \(train.leading.blocks, privacy: .public)")
+            BTLogger.router.debug("\(train.description(layout), privacy: .public): can come to a full stop in \(result.distance, format: .fixed(precision: 1))cm (in \(result.duration, format: .fixed(precision: 1))s) at \(Double(speed), format: .fixed(precision: 1))kph. The leading distance is \(leadingDistance, format: .fixed(precision: 1))cm with blocks \(train.leading.blocks, privacy: .public)")
         } else {
-            BTLogger.router.debug("\(train, privacy: .public): ⚠️ cannot come to a full stop in \(result.distance, format: .fixed(precision: 1))cm (in \(result.duration, format: .fixed(precision: 1))s) at \(Double(speed), format: .fixed(precision: 1))kph because the leading distance is \(leadingDistance, format: .fixed(precision: 1))cm with blocks \(train.leading.blocks, privacy: .public)")
+            BTLogger.router.debug("\(train.description(layout), privacy: .public): ⚠️ cannot come to a full stop in \(result.distance, format: .fixed(precision: 1))cm (in \(result.duration, format: .fixed(precision: 1))s) at \(Double(speed), format: .fixed(precision: 1))kph because the leading distance is \(leadingDistance, format: .fixed(precision: 1))cm with blocks \(train.leading.blocks, privacy: .public)")
         }
         return respected
     }
@@ -62,7 +62,7 @@ struct LayoutSpeed {
         maximumSpeedAllowed = min(maximumSpeedAllowed, try unrestrictedLeadMaximumSpeed(train: train))
         maximumSpeedAllowed = min(maximumSpeedAllowed, try settledLeadMaximumSpeed(train: train))
 
-        BTLogger.router.debug("\(train, privacy: .public): maximum allowed speed is \(maximumSpeedAllowed)kph")
+        BTLogger.router.debug("\(train.description(layout), privacy: .public): maximum allowed speed is \(maximumSpeedAllowed)kph")
 
         return maximumSpeedAllowed
     }

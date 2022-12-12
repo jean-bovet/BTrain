@@ -31,7 +31,7 @@ protocol ElementUUID {
 }
 
 // Describes an element of the layout
-protocol Element: ElementUUID, Hashable, Identifiable, Comparable, CustomStringConvertible {
+protocol Element: ElementUUID, Hashable, Identifiable, Comparable {
     associatedtype ItemType
     var id: Identifier<ItemType> { get }
 }
@@ -53,7 +53,4 @@ extension Element {
         id.uuid
     }
 
-    var description: String {
-        id.description
-    }
 }

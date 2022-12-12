@@ -212,13 +212,28 @@ final class Train: Element, ObservableObject {
     // when running the layout.
     var timeUntilAutomaticRestart: TimeInterval = 0
     
-    var description: String {
+    convenience init(uuid: String = UUID().uuidString, name: String = "", wagonsLength: Double? = nil, maxSpeed: SpeedKph? = nil, maxNumberOfLeadingReservedBlocks: Int? = nil) {
+        self.init(id: Identifier(uuid: uuid), name: name, wagonsLength: wagonsLength, maxSpeed: maxSpeed, maxNumberOfLeadingReservedBlocks: maxNumberOfLeadingReservedBlocks)
+    }
+
+    init(id: Identifier<Train>, name: String, wagonsLength: Double? = nil, maxSpeed _: SpeedKph? = nil, maxNumberOfLeadingReservedBlocks: Int? = nil) {
+        self.id = id
+        routeId = Route.automaticRouteId(for: id)
+        self.name = name
+        self.wagonsLength = wagonsLength
+        self.maxNumberOfLeadingReservedBlocks = maxNumberOfLeadingReservedBlocks ?? self.maxNumberOfLeadingReservedBlocks
+    }
+}
+
+extension Train {
+    
+    func description(_ layout: Layout) -> String {
         var text = "Train '\(name)' (\(id), \(state)"
         text += ", \(scheduling)"
         if let block = block {
             text += ", \(block.name)"
         }
-        text += ", \(positions)"
+        text += ", \(positions.description(layout))"
         if locomotive != nil {
             text += ", \(directionForward ? "f" : "b")"
         } else {
@@ -232,17 +247,6 @@ final class Train: Element, ObservableObject {
         return text
     }
 
-    convenience init(uuid: String = UUID().uuidString, name: String = "", wagonsLength: Double? = nil, maxSpeed: SpeedKph? = nil, maxNumberOfLeadingReservedBlocks: Int? = nil) {
-        self.init(id: Identifier(uuid: uuid), name: name, wagonsLength: wagonsLength, maxSpeed: maxSpeed, maxNumberOfLeadingReservedBlocks: maxNumberOfLeadingReservedBlocks)
-    }
-
-    init(id: Identifier<Train>, name: String, wagonsLength: Double? = nil, maxSpeed _: SpeedKph? = nil, maxNumberOfLeadingReservedBlocks: Int? = nil) {
-        self.id = id
-        routeId = Route.automaticRouteId(for: id)
-        self.name = name
-        self.wagonsLength = wagonsLength
-        self.maxNumberOfLeadingReservedBlocks = maxNumberOfLeadingReservedBlocks ?? self.maxNumberOfLeadingReservedBlocks
-    }
 }
 
 extension Train {

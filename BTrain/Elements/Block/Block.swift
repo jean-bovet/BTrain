@@ -187,12 +187,6 @@ final class Block: Element, ObservableObject {
     }
 }
 
-extension Block: CustomStringConvertible {
-    var description: String {
-        "\(name) (\(id))"
-    }
-}
-
 extension Block: Restorable {
     func restore(layout _: Layout) {
         if trainInstance == nil {

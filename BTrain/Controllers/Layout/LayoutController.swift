@@ -343,16 +343,19 @@ final class LayoutController: ObservableObject, LayoutControlling {
         // Start a timer that will restart the train with a new automatic route
         // Note: the timer fires every second to update the remaining time until it reaches 0.
         let timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true, block: { [weak self] timer in
+            guard let sSelf = self else {
+                return
+            }
             train.timeUntilAutomaticRestart -= 1
             if train.timeUntilAutomaticRestart <= 0 {
-                BTLogger.router.debug("It is now time to restart train \(train, privacy: .public)")
+                BTLogger.router.debug("It is now time to restart train \(train.description(sSelf.layout), privacy: .public)")
                 // The TrainController is the class that actually restarts the train
                 // when it sees that this timer has reached 0 and all other parameters are valid.
-                self?.restartTimerFired(train)
+                sSelf.restartTimerFired(train)
                 timer.invalidate()
             }
             // Redraw the switchboard so the time interval is refreshed
-            self?.redrawSwitchboard()
+            sSelf.redrawSwitchboard()
         })
         pausedTrainTimers[train.id] = timer
     }
@@ -510,7 +513,7 @@ extension LayoutController {
             return
         }
 
-        BTLogger.router.debug("\(loc, privacy: .public): change train direction to \(forward ? "forward" : "backward")")
+        BTLogger.router.debug("\(loc.name, privacy: .public): change locomotive direction to \(forward ? "forward" : "backward")")
         let command: Command
         if forward {
             command = .direction(address: loc.address, decoderType: loc.decoder, direction: .forward)

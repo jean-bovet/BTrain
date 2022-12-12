@@ -66,11 +66,11 @@ final class LocomotiveSpeedManager {
                     // when a speed command completion happens. This is fine because for each speed change,
                     // we need to call both the completion block and the change callback here.
                     loc.speed.actualSteps = steps
-                    BTLogger.speed.debug("\(loc, privacy: .public): 􀝆 actual speed is \(loc.speed.actualKph) kph (\(loc.speed.actualSteps))")
+                    BTLogger.speed.debug("\(loc.name, privacy: .public): 􀝆 actual speed is \(loc.speed.actualKph) kph (\(loc.speed.actualSteps))")
                 } else {
                     // Only a  direct command from the Digital Controller should change the requested speed.
                     loc.speed.requestedSteps = steps
-                    BTLogger.speed.debug("\(loc, privacy: .public): 􀝆 requested speed is \(loc.speed.actualKph) kph (\(loc.speed.actualSteps))")
+                    BTLogger.speed.debug("\(loc.name, privacy: .public): 􀝆 requested speed is \(loc.speed.actualKph) kph (\(loc.speed.actualSteps))")
                 }
                 speedChanged?()
             }
@@ -125,7 +125,7 @@ final class LocomotiveSpeedManager {
 
         case .working:
             if shouldCancelFirstCommand {
-                BTLogger.speed.debug("\(self.loc, privacy: .public): cancelling in-progress speed request {\(command.requestUUID)} of \(command.requestedKph) kph")
+                BTLogger.speed.debug("\(self.loc.name, privacy: .public): cancelling in-progress speed request {\(command.requestUUID)} of \(command.requestedKph) kph")
 
                 // Note: the next time the timer fires, the command
                 // will be actually cancelled and the next command processed.
@@ -141,7 +141,7 @@ final class LocomotiveSpeedManager {
         LocomotiveSpeedManager.globalRequestUUID += 1
         let requestUUID = LocomotiveSpeedManager.globalRequestUUID
 
-        BTLogger.speed.debug("\(self.loc, privacy: .public): {\(requestUUID)} scheduling request for speed of \(self.loc.speed.requestedKph) kph (\(self.loc.speed.requestedSteps)) from actual speed of \(self.loc.speed.actualKph) kph (\(self.loc.speed.actualSteps))")
+        BTLogger.speed.debug("\(self.loc.name, privacy: .public): {\(requestUUID)} scheduling request for speed of \(self.loc.speed.requestedKph) kph (\(self.loc.speed.requestedSteps)) from actual speed of \(self.loc.speed.actualKph) kph (\(self.loc.speed.actualSteps))")
 
         let steps = stepsArray(from: loc.speed.actualSteps, to: loc.speed.requestedSteps, acceleration: acceleration)
         return LocomotiveSpeedCommand(requestUUID: requestUUID, requestedKph: loc.speed.requestedKph, requestedSteps: loc.speed.requestedSteps, acceleration: acceleration, steps: steps, completion: completion)
@@ -150,7 +150,7 @@ final class LocomotiveSpeedManager {
     private func executeSpeedChangeCommand(_ command: LocomotiveSpeedCommand) {
         assert(command.status == .pending, "Only pending speed command can be executed!")
 
-        BTLogger.speed.debug("\(self.loc, privacy: .public): {\(command.requestUUID)} requesting speed of \(command.requestedKph) kph (\(command.requestedSteps)) from actual speed of \(self.loc.speed.actualKph) kph (\(self.loc.speed.actualSteps))")
+        BTLogger.speed.debug("\(self.loc.name, privacy: .public): {\(command.requestUUID)} requesting speed of \(command.requestedKph) kph (\(command.requestedSteps)) from actual speed of \(self.loc.speed.actualKph) kph (\(self.loc.speed.actualSteps))")
 
         command.status = .working
         command.running = true
@@ -184,7 +184,7 @@ final class LocomotiveSpeedManager {
 
         let value = interface.speedValue(for: steps, decoder: loc.decoder)
         let speedKph = loc.speed.speedKph(for: steps)
-        BTLogger.speed.debug("\(self.loc, privacy: .public): {\(command.requestUUID)} 􀐫 speed command for \(speedKph) kph (value=\(value), \(steps)), requested \(command.requestedKph) kph, status: \(command.status, privacy: .public)")
+        BTLogger.speed.debug("\(self.loc.name, privacy: .public): {\(command.requestUUID)} 􀐫 speed command for \(speedKph) kph (value=\(value), \(steps)), requested \(command.requestedKph) kph, status: \(command.status, privacy: .public)")
 
         assert(command.isProcessedByDigitalController == false)
         command.isProcessedByDigitalController = true
@@ -198,7 +198,7 @@ final class LocomotiveSpeedManager {
         loc.speed.actualSteps = steps
 
         let speedKph = loc.speed.speedKph(for: steps)
-        BTLogger.speed.debug("\(self.loc, privacy: .public): {\(command.requestUUID)} 􀆅 speed command for \(speedKph) kph (\(steps)), requested \(command.requestedKph) kph, status: \(command.status, privacy: .public)")
+        BTLogger.speed.debug("\(self.loc.name, privacy: .public): {\(command.requestUUID)} 􀆅 speed command for \(speedKph) kph (\(steps)), requested \(command.requestedKph) kph, status: \(command.status, privacy: .public)")
 
         if command.status == .finished || command.status == .cancelled {
             let finished = command.status == .finished

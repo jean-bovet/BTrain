@@ -74,7 +74,7 @@ final class LayoutAsserter {
             let producer = LayoutASCIIProducer(layout: layout)
             _ = try! producer.stringFrom(route: route, trainId: train.id)
 
-            try assert(routeName: route.description, actualSteps: actualSteps, expectedSteps: expectedRoute.resolvedSteps,
+            try assert(routeName: route.id.uuid, actualSteps: actualSteps, expectedSteps: expectedRoute.resolvedSteps,
                        trains: trains, expectedTrains: expectedTrains,
                        expectedLayout: expectedLayout)
 

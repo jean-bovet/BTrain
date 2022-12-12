@@ -323,11 +323,11 @@ final class LayoutReservation {
             // Do not request a turnout state change to the Digital Controller if the turnout is settled (which means it has already the state
             // requested) AND it has already been reserved. This is to avoid flooding the Digital Controller with unnecessary turnout requests
             // because this method is called frequently (when a train moves within a block or to a next block).
-            BTLogger.reservation.debug("\(train, privacy: .public): do not activate state \(turnout.requestedState, privacy: .public) for turnout \(turnout.name, privacy: .public) because it was already activated")
+            BTLogger.reservation.debug("\(train.description(self.layout), privacy: .public): do not activate state \(turnout.requestedState, privacy: .public) for turnout \(turnout.name, privacy: .public) because it was already activated")
         } else {
-            BTLogger.reservation.debug("\(train, privacy: .public): request state \(turnout.requestedState, privacy: .public) for turnout \(turnout.name, privacy: .public)")
+            BTLogger.reservation.debug("\(train.description(self.layout), privacy: .public): request state \(turnout.requestedState, privacy: .public) for turnout \(turnout.name, privacy: .public)")
             executor?.sendTurnoutState(turnout: turnout) { completed in
-                BTLogger.reservation.debug("\(train, privacy: .public): request state \(turnout.requestedState, privacy: .public) for turnout \(turnout.name, privacy: .public) [command executed: \(completed)]")
+                BTLogger.reservation.debug("\(train.description(self.layout), privacy: .public): request state \(turnout.requestedState, privacy: .public) for turnout \(turnout.name, privacy: .public) [command executed: \(completed)]")
             }
         }
     }
