@@ -132,10 +132,14 @@ final class MarklinInterface: CommandInterface, ObservableObject {
         }
     }
 
-    func locomotiveFunctions() -> [CommandLocomotiveFunctionAttributes] {
+    func defaultLocomotiveFunctionAttributes() -> [CommandLocomotiveFunctionAttributes] {
         resources.locomotiveFunctions()
     }
     
+    func locomotiveFunctionAttributesFor(type: UInt32) -> CommandLocomotiveFunctionAttributes {
+        resources.locomotiveFunctionAttributesFor(type: type)
+    }
+
     // MARK: -
     
     func onMessage(msg: MarklinCANMessage) {

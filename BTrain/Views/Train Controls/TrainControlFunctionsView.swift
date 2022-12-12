@@ -100,7 +100,7 @@ struct TrainFunctionsView_Previews: PreviewProvider {
     static var previews: some View {
         TrainControlFunctionsView(locomotive: locomotive,
                                   interface: MarklinInterface(),
-                                  catalog: LocomotiveFunctionsCatalog(),
+                                  catalog: LocomotiveFunctionsCatalog(interface: MarklinInterface()),
                                   functionsController: TrainFunctionsController(catalog: nil, interface: MarklinInterface()),
                                   functions: locomotive.functions)
         .frame(width: 200)

@@ -46,7 +46,7 @@ struct RouteScriptFunctionsView: View {
                             .fixedSize()
                             
                             Picker("Function:", selection: function.type) {
-                                ForEach(catalog.allTypes, id: \.self) { type in
+                                ForEach(catalog.globalTypes, id: \.self) { type in
                                     HStack {
                                         if let name = catalog.name(for: type) {
                                             Text("f\(type): \(name)")
@@ -122,10 +122,10 @@ struct RouteScriptFunctionsView_Previews: PreviewProvider {
     
     static var previews: some View {
         Group {
-            RouteScriptFunctionsView(catalog: LocomotiveFunctionsCatalog(), cmd: .constant(RouteScriptCommand(action: .move)))
+            RouteScriptFunctionsView(catalog: LocomotiveFunctionsCatalog(interface: MarklinInterface()), cmd: .constant(RouteScriptCommand(action: .move)))
         }.previewDisplayName("Empty")
         Group {
-            RouteScriptFunctionsView(catalog: LocomotiveFunctionsCatalog(), cmd: .constant(cmd))
+            RouteScriptFunctionsView(catalog: LocomotiveFunctionsCatalog(interface: MarklinInterface()), cmd: .constant(cmd))
         }.previewDisplayName("Functions")
     }
 }

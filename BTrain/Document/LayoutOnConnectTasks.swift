@@ -68,7 +68,7 @@ final class LayoutOnConnectTasks: ObservableObject {
     }
     
     private func fetchLocomotives(completion: @escaping CompletionBlock) {
-        catalog.process(interface: interface)
+        catalog.globalAttributesChanged()
         
         discovery.discover(merge: true) {
             completion()

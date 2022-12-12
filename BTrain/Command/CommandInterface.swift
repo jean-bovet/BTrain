@@ -59,5 +59,10 @@ protocol CommandInterface: AnyObject, MetricsProvider {
         
     /// Returns all the locomotive functions available in the Digital Controller
     /// - Returns: an array of locomotive function attributes
-    func locomotiveFunctions() -> [CommandLocomotiveFunctionAttributes]
+    func defaultLocomotiveFunctionAttributes() -> [CommandLocomotiveFunctionAttributes]
+    
+    /// Returns the attributes for the specified locomotive function type
+    /// - Parameter type: the type of the locomotive function
+    /// - Returns: the attributes
+    func locomotiveFunctionAttributesFor(type: UInt32) -> CommandLocomotiveFunctionAttributes
 }

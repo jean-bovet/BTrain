@@ -111,9 +111,13 @@ final class MockCommandInterface: CommandInterface {
     func speedSteps(for value: SpeedValue, decoder _: DecoderType) -> SpeedStep {
         .init(value: value.value)
     }
-    
-    func locomotiveFunctions() -> [CommandLocomotiveFunctionAttributes] {
+        
+    func defaultLocomotiveFunctionAttributes() -> [BTrain.CommandLocomotiveFunctionAttributes] {
         locFunctions
     }
-
+    
+    func locomotiveFunctionAttributesFor(type: UInt32) -> BTrain.CommandLocomotiveFunctionAttributes {
+        .init(type: 0, name: "", activeSvgIcon: nil, inactiveSvgIcon: nil)
+    }
+    
 }

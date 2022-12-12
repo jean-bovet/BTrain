@@ -41,20 +41,29 @@ final class MarklinInterfaceResources {
         var all = [CommandLocomotiveFunctionAttributes]()
         for group in functions.gruppe {
             for f in group.icon {
-                if let type = f.typeCompatibility, let typeInt = UInt32(type) {
-                    let typeIcon = String(format: "%03d", typeInt)
-                    let activeName = "fkticon_a_\(typeIcon).svg"
-                    let inactiveName = "fkticon_i_\(typeIcon).svg"
-                    let activeSvgIcon = svgSprites?[activeName]
-                    let inactiveSvgIcon = svgSprites?[inactiveName]
-                    let attributes = CommandLocomotiveFunctionAttributes(type: typeInt,
-                                                                         name: f.kurztitel,
-                                                                         activeSvgIcon: activeSvgIcon,
-                                                                         inactiveSvgIcon: inactiveSvgIcon)
-                    all.append(attributes)
+                if let type = f.type, let typeInt = UInt32(type) {
+                    all.append(attributesFor(type: typeInt, name: f.kurztitel))
+                } else if let type = f.typeCompatibility, let typeInt = UInt32(type) {
+                    all.append(attributesFor(type: typeInt, name: f.kurztitel))
                 }
             }
         }
         return all
+    }
+    
+    func locomotiveFunctionAttributesFor(type: UInt32) -> CommandLocomotiveFunctionAttributes {
+        attributesFor(type: type, name: "\(type)")
+    }
+    
+    private func attributesFor(type: UInt32, name: String) -> CommandLocomotiveFunctionAttributes {
+        let typeIcon = String(format: "%03d", type)
+        let activeName = "fkticon_a_\(typeIcon).svg"
+        let inactiveName = "fkticon_i_\(typeIcon).svg"
+        let activeSvgIcon = svgSprites?[activeName]
+        let inactiveSvgIcon = svgSprites?[inactiveName]
+        return CommandLocomotiveFunctionAttributes(type: type,
+                                                   name: name,
+                                                   activeSvgIcon: activeSvgIcon,
+                                                   inactiveSvgIcon: inactiveSvgIcon)
     }
 }

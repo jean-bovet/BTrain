@@ -18,32 +18,52 @@ import AppKit
 /// include their icons, when the document is not connected to the Digital Controller.
 final class LocomotiveFunctionsCatalog {
     
-    private var type2attributes = [UInt32:CommandLocomotiveFunctionAttributes]()
+    struct AttributesCache: Codable {
+        
+        /// Cache of the global attributes of the CS3
+        var globalAttributes = [UInt32:CommandLocomotiveFunctionAttributes]()
+        
+        /// Attributes that are defined in a locomotive but not in the global attributes.
+        ///
+        /// This happens when a locomotive has an unknown attribute to the CS3.
+        var unknownAttributes = [UInt32:CommandLocomotiveFunctionAttributes]()
+        
+        mutating func clear() {
+            globalAttributes.removeAll()
+            unknownAttributes.removeAll()
+        }
+    }
 
+    private var attributesCache = AttributesCache()
     private var imageCache = NSCache<NSString, NSImage>()
 
-    var allTypes: [UInt32] {
-        type2attributes.keys.sorted()
+    private let interface: CommandInterface
+    
+    /// Returns all the global types defined by the Digital Controller
+    var globalTypes: [UInt32] {
+        attributesCache.globalAttributes.keys.sorted()
     }
     
-    func process(interface: CommandInterface) {
-        type2attributes.removeAll()
-        for attributes in interface.locomotiveFunctions() {
-            if type2attributes[attributes.type] != nil {
+    init(interface: CommandInterface) {
+        self.interface = interface
+    }
+    
+    func globalAttributesChanged() {
+        attributesCache.clear()
+        for attributes in interface.defaultLocomotiveFunctionAttributes() {
+            if attributesCache.globalAttributes[attributes.type] != nil {
                 BTLogger.warning("Duplicate attributes \(attributes.type) for \(attributes.name)")
             }
-            type2attributes[attributes.type] = attributes
+            attributesCache.globalAttributes[attributes.type] = attributes
         }
     }
     
     func name(for type: UInt32) -> String? {
-        return type2attributes[type]?.name
+        return attributesCache.globalAttributes[type]?.name
     }
     
     func image(for type: UInt32, state: Bool) -> NSImage? {
-        guard let funcAttrs = type2attributes[type] else {
-            return nil
-        }
+        let funcAttrs = attributes(for: type)
 
         let svgIconName: String?
         if state {
@@ -69,14 +89,26 @@ final class LocomotiveFunctionsCatalog {
         }
     }
     
+    private func attributes(for type: UInt32) -> CommandLocomotiveFunctionAttributes {
+        if let funcAttrs = attributesCache.globalAttributes[type] {
+            return funcAttrs
+        } else if let funcAttrs = attributesCache.unknownAttributes[type] {
+            return funcAttrs
+        } else {
+            let funcAttrs = interface.locomotiveFunctionAttributesFor(type: type)
+            attributesCache.unknownAttributes[funcAttrs.type] = funcAttrs
+            return funcAttrs
+        }
+    }
+    
     func encode() throws -> Data {
         let encoder = JSONEncoder()
-        let data = try encoder.encode(type2attributes)
+        let data = try encoder.encode(attributesCache)
         return data
     }
 
     func restore(_ data: Data) throws {
         let decoder = JSONDecoder()
-        type2attributes = try decoder.decode([UInt32:CommandLocomotiveFunctionAttributes].self, from: data)
+        attributesCache = (try? decoder.decode(AttributesCache.self, from: data)) ?? AttributesCache()
     }
 }
