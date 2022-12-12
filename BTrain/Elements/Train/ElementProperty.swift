@@ -13,6 +13,14 @@
 import Foundation
 import Combine
 
+/// Property wrapper that simplifies the management of a reference to an element identifier
+/// while also having the element instance available.
+///
+/// All references to an element (aka Block, Train, etc) should use the element identifier (aka Identifier<Element>)
+/// instead of the element instance, in order for serialization to be possible and to avoid retain cycle.
+///
+/// However, it is useful to also have access to the element instance itself to simplify the code which this property
+/// wrapper makes possible.
 @propertyWrapper struct ElementProperty<E:LayoutElement> {
     
     private var publisher = PassthroughSubject<E?, Never>()
