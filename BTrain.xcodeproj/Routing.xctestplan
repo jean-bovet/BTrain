@@ -75,6 +75,16 @@
         "LayoutTests\/testTurnoutSpeedLimit()",
         "LayoutTests\/testValidation()",
         "LayoutYardRoutingTests\/testActivateTurnoutOnlyOnce()",
+        "PointToLoopLayoutTests\/testAutomaticRoute()",
+        "RouteFunctionsTests\/testStartAndStopFunctions()",
+        "RouteResolverTests\/testResolveAvoidBlocks()",
+        "RouteResolverTests\/testResolveAvoidTurnouts()",
+        "RouteResolverTests\/testResolveRoute()",
+        "RouteResolverTests\/testResolveRouteWithMissingBlocks()",
+        "RouteResolverTests\/testResolveRouteWithMissingTurnouts()",
+        "RouteResolverTests\/testResolveSimpleRoute()",
+        "RouteTests\/testCodable()",
+        "RouteTests\/testStep()",
         "TransitionsTests\/testReserveBehavior()"
       ],
       "target" : {
