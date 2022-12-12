@@ -266,8 +266,10 @@ final class TrainPositionsHelperTests: XCTestCase {
         block.feedbacks[1].distance = 50
         block.feedbacks[2].distance = 90
 
+        let loc = Locomotive(name: "loc1")
+        
         let t = Train(id: .init(uuid: "t1"), name: "SBB")
-        t.locomotive = Locomotive(name: "loc1")
+        t.locomotive = loc
         t.locomotive!.directionForward = true
         t.block = block
         block.trainInstance = .init(t.id, .next)
@@ -298,8 +300,9 @@ final class TrainPositionsHelperTests: XCTestCase {
         block.feedbacks[1].distance = 50
         block.feedbacks[2].distance = 90
 
+        let loc = Locomotive(name: "loc1")
         let t = Train(id: .init(uuid: "t1"), name: "SBB")
-        t.locomotive = Locomotive(name: "loc1")
+        t.locomotive = loc
         t.locomotive!.directionForward = false
         t.block = block
         block.trainInstance = .init(t.id, .next)

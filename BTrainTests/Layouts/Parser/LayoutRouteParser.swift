@@ -362,6 +362,7 @@ final class LayoutRouteParser {
             let loc = Locomotive(uuid: attributes.uuid)
             loc.speed = .init(kph: attributes.speed, decoderType: .MFX)
             loc.allowedDirections = attributes.allowedDirection
+            layout.locs.insert(loc)
             
             let train: Train
             let distance = resolver.distance(forFeedbackAtPosition: position, blockId: block.id, directionInBlock: attributes.direction)

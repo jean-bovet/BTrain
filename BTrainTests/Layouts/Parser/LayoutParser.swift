@@ -46,6 +46,7 @@ final class LayoutParser {
         var blocks = Set<Block>()
         var turnouts = Set<Turnout>()
         var trains = Set<Train>()
+        var locs = Set<Locomotive>()
         var feedbacks = Set<Feedback>()
         var transitions = Set<Transition>()
         var routes = [Identifier<Route>: LayoutRouteParser.ParsedRoute]()

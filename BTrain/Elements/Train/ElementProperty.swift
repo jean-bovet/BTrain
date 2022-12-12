@@ -21,7 +21,7 @@ import Combine
 ///
 /// However, it is useful to also have access to the element instance itself to simplify the code which this property
 /// wrapper makes possible.
-@propertyWrapper struct ElementProperty<E:LayoutElement> {
+@propertyWrapper struct ElementProperty<E:LayoutElement&AnyObject> {
     
     private var publisher = PassthroughSubject<E?, Never>()
 
@@ -31,12 +31,20 @@ import Combine
 
     var elementId: Identifier<E.ItemType>?
     
+    private var storage: WeakObject<E>?
+
     var wrappedValue: E? {
-        willSet {
-            publisher.send(newValue)
+        get {
+            storage?.value
         }
-        didSet {
-            elementId = wrappedValue?.id
+        set {
+            publisher.send(newValue)
+            if let newValue = newValue {
+                storage = .init(newValue)
+            } else {
+                storage = nil
+            }
+            elementId = newValue?.id
         }
     }
     
@@ -52,4 +60,10 @@ import Combine
         wrappedValue = container[elementId]
         assert(wrappedValue?.id == elementId)
     }
+}
+
+/// Object referencing another object with weak reference
+final class WeakObject<T: AnyObject> {
+    private(set) weak var value: T?
+    init(_ v: T) { value = v }
 }
