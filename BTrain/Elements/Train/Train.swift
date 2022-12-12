@@ -94,7 +94,7 @@ final class Train: Element, ObservableObject {
     @Published var name = ""
 
     /// The locomotive assigned to this train or nil of no locomotive is assigned
-    @Published var locomotive: Locomotive?
+    @ElementProperty var locomotive: Locomotive?
 
     // Length of the wagons (in cm)
     @Published var wagonsLength: DistanceCm?
@@ -165,19 +165,12 @@ final class Train: Element, ObservableObject {
     // The state of the train
     @Published var state: State = .stopped
     
-    /// Internal block id used for persistence only
-    private var blockId: Identifier<Block>?
-    
     /// The block where the front of the train is located.
     ///
     /// The "front of the train" is the part of the train that is in the direction of travel of the train:
     /// - If the train moves forward, it is the block where the locomotive is located
     /// - If the train moves backward, it is the block where the last wagon is located
-    @Published var block: Block? {
-        didSet {
-            blockId = block?.id
-        }
-    }
+    @ElementProperty var block: Block?
 
     // The positions of the train.
     @Published var positions = TrainPositions()
@@ -224,8 +217,6 @@ final class Train: Element, ObservableObject {
         text += ", \(scheduling)"
         if let block = block {
             text += ", \(block.name)"
-        } else if let blockId = blockId {
-            text += ", \(blockId)"
         }
         text += ", \(positions)"
         if locomotive != nil {
@@ -252,11 +243,6 @@ final class Train: Element, ObservableObject {
         self.wagonsLength = wagonsLength
         self.maxNumberOfLeadingReservedBlocks = maxNumberOfLeadingReservedBlocks ?? self.maxNumberOfLeadingReservedBlocks
     }
-
-    /// This variable is serialized instead of ``locomotive`` in order to avoid duplication in the JSON graph.
-    /// When deserializing a locomotive, this variable is going to be used to restore the actual ``locomotive`` from the layout.
-    private var locomotiveId: Identifier<Locomotive>?
-    
 }
 
 extension Train {
@@ -294,12 +280,8 @@ extension Train {
 
 extension Train: Restorable {
     func restore(layout: Layout) {
-        assert(locomotive == nil)
-        locomotive = layout.locomotives[locomotiveId]
-        
-        assert(block == nil)
-        block = layout.blocks[blockId]
-        assert(block?.id == blockId)
+        _locomotive.restore(layout.locomotives)
+        _block.restore(layout.blocks)
     }
 }
 
@@ -315,13 +297,13 @@ extension Train: Codable {
 
         self.init(id: id, name: name)
 
-        locomotiveId = try container.decodeIfPresent(Identifier<Locomotive>.self, forKey: CodingKeys.locomotive)
+        _locomotive.elementId = try container.decodeIfPresent(Identifier<Locomotive>.self, forKey: CodingKeys.locomotive)
+        _block.elementId = try container.decodeIfPresent(Identifier<Block>.self, forKey: CodingKeys.block)
 
         enabled = try container.decodeIfPresent(Bool.self, forKey: CodingKeys.enabled) ?? true
         wagonsLength = try container.decodeIfPresent(Double.self, forKey: CodingKeys.wagonsLength)
         routeId = try container.decodeIfPresent(Identifier<Route>.self, forKey: CodingKeys.route) ?? Route.automaticRouteId(for: id)
         routeStepIndex = try container.decode(Int.self, forKey: CodingKeys.routeIndex)
-        blockId = try container.decodeIfPresent(Identifier<Block>.self, forKey: CodingKeys.block)
         positions = try container.decode(TrainPositions.self, forKey: CodingKeys.position)
         maxNumberOfLeadingReservedBlocks = try container.decodeIfPresent(Int.self, forKey: CodingKeys.maxLeadingBlocks) ?? 1
         blocksToAvoid = try container.decodeIfPresent([BlockItem].self, forKey: CodingKeys.blocksToAvoid) ?? []
@@ -333,11 +315,11 @@ extension Train: Codable {
         try container.encode(id, forKey: CodingKeys.id)
         try container.encode(enabled, forKey: CodingKeys.enabled)
         try container.encode(name, forKey: CodingKeys.name)
-        try container.encode(locomotive?.id, forKey: CodingKeys.locomotive)
+        try container.encode(_locomotive.elementId, forKey: CodingKeys.locomotive)
+        try container.encode(_block.elementId, forKey: CodingKeys.block)
         try container.encode(wagonsLength, forKey: CodingKeys.wagonsLength)
         try container.encode(routeId, forKey: CodingKeys.route)
         try container.encode(routeStepIndex, forKey: CodingKeys.routeIndex)
-        try container.encode(blockId, forKey: CodingKeys.block)
         try container.encode(positions, forKey: CodingKeys.position)
         try container.encode(maxNumberOfLeadingReservedBlocks, forKey: CodingKeys.maxLeadingBlocks)
         try container.encode(blocksToAvoid, forKey: CodingKeys.blocksToAvoid)

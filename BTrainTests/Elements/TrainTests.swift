@@ -43,4 +43,23 @@ class TrainTests: XCTestCase {
         XCTAssertEqual(t1.block, t2.block)
         XCTAssertEqual(t1.routeId, t2.routeId)
     }
+    
+    func testBlockProperty() {
+        let train = Train()
+        var blocks = [Block?]()
+        let cancellable = train.$block.sink { block in
+            blocks.append(block)
+        }
+        
+        XCTAssertNotNil(cancellable)
+        
+        let a1 = Block(name: "a1")
+        let a2 = Block(name: "a2")
+        train.block = a1
+        train.block = nil
+        train.block = a2
+        
+        XCTAssertEqual(blocks.count, 3)
+        XCTAssertEqual(blocks, [a1, nil, a2])
+    }
 }

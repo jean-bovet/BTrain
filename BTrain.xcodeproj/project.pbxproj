@@ -169,6 +169,7 @@
 		A74F3814281A1BFA0013FD23 /* StationElementView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A74F3813281A1BFA0013FD23 /* StationElementView.swift */; };
 		A74F3816281A5E0E0013FD23 /* RouteNewElementSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A74F3815281A5E0E0013FD23 /* RouteNewElementSheet.swift */; };
 		A74F3818281A61230013FD23 /* RouteStepStationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A74F3817281A61230013FD23 /* RouteStepStationView.swift */; };
+		A7567AD92946B29A00AFF2F6 /* ElementProperty.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7567AD82946B29A00AFF2F6 /* ElementProperty.swift */; };
 		A758295F27925DE300AA0649 /* LayoutController+Listeners.swift in Sources */ = {isa = PBXBuildFile; fileRef = A758295E27925DE300AA0649 /* LayoutController+Listeners.swift */; };
 		A7582966279380C000AA0649 /* LayoutTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7582965279380C000AA0649 /* LayoutTests.swift */; };
 		A75933E527E9774600ECB7A0 /* SwitchboardSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A75933E427E9774600ECB7A0 /* SwitchboardSettingsView.swift */; };
@@ -584,6 +585,7 @@
 		A74F3813281A1BFA0013FD23 /* StationElementView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StationElementView.swift; sourceTree = "<group>"; };
 		A74F3815281A5E0E0013FD23 /* RouteNewElementSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteNewElementSheet.swift; sourceTree = "<group>"; };
 		A74F3817281A61230013FD23 /* RouteStepStationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteStepStationView.swift; sourceTree = "<group>"; };
+		A7567AD82946B29A00AFF2F6 /* ElementProperty.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ElementProperty.swift; sourceTree = "<group>"; };
 		A758295E27925DE300AA0649 /* LayoutController+Listeners.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LayoutController+Listeners.swift"; sourceTree = "<group>"; };
 		A7582965279380C000AA0649 /* LayoutTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutTests.swift; sourceTree = "<group>"; };
 		A75933E427E9774600ECB7A0 /* SwitchboardSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwitchboardSettingsView.swift; sourceTree = "<group>"; };
@@ -1585,6 +1587,7 @@
 				A745C169282F2199006D16B0 /* TrainReservation.swift */,
 				A7E78C4527A1D669004D1821 /* TrainInstance.swift */,
 				A795A03727B6848000AE90EB /* TrainSpreader.swift */,
+				A7567AD82946B29A00AFF2F6 /* ElementProperty.swift */,
 			);
 			path = Train;
 			sourceTree = "<group>";
@@ -2088,6 +2091,7 @@
 				A717158427574B1C00200F92 /* ShapeProvider.swift in Sources */,
 				A7C8A2ED279BEA6D000C7246 /* FileWrapper+Layout.swift in Sources */,
 				A7841376273DD5A200381341 /* Vector2D.swift in Sources */,
+				A7567AD92946B29A00AFF2F6 /* ElementProperty.swift in Sources */,
 				A747968B292020D4001DF7FA /* StationPicker.swift in Sources */,
 				A7B06AE12727786500BDD88C /* DocumentView.swift in Sources */,
 				A7F779F6273214AF00E73275 /* TrainEditingView.swift in Sources */,
