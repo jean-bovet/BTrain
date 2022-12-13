@@ -29,6 +29,21 @@ An embedded Marklin Central 3 station simulator allows BTrain to simulate a layo
 
 ![Simulator](Assets/simulator.png)
 
+BTrain offers several editors to define the various elements of the layout, such as blocks, turnouts, feedback, trains, locomotive, and much more. Here is the locomotive editor, which automatically retrieves the locomotive defined in the Central Station:
+
+![Train](Assets/locomotives.png)
+
+BTrain allows the user to write powerful scripts without a single line of code. A script is a series of commands that runs a train along a specific user-defined route:
+
+![Train](Assets/scripts.png)
+
+BTrain defines several routes:
+
+- Automatic routes that are created automatically when BTrain moves a train from one block to another or when the user asks BTrain to move the train in the layout without any particular destination in mind.
+- User-defined routes that the user creates. A powerful editor allows for the user-defined routes to be created in a few minutes:
+
+![Train](Assets/routes.png)
+
 **Features**
 
 - Easy to use layout editor where blocks and turnouts can be added in one click and linked together by dragging and dropping links between them.
