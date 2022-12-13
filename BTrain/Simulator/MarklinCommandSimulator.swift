@@ -411,7 +411,6 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
             return false
         }
         
-        // TODO: unit tests
         let naturalDirection = block.trainInstance?.direction == .next
         let feedback: Block.BlockFeedback
         if naturalDirection {

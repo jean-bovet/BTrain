@@ -166,7 +166,7 @@ final class TrainController: TrainControlling, CustomStringConvertible {
         let previousOccupiedItems = train.occupied.items
 
         if mode == .unmanaged {
-            reservation.removeOccupation(train: train) // TODO: unit test this behavior
+            reservation.removeOccupation(train: train)
             try reservation.occupyBlocksWith(train: train)
         } else {
             try reserveLeadingBlocks()
