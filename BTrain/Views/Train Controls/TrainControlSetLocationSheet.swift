@@ -18,7 +18,7 @@ struct TrainControlSetLocationSheet: View {
 
     @ObservedObject var train: Train
 
-    @State private var blockId: Identifier<Block>? = nil
+    @State private var blockId: Identifier<Block>?
 
     @State private var direction: Direction = .next
 
@@ -43,6 +43,7 @@ struct TrainControlSetLocationSheet: View {
                 BlockPicker(layout: layout, blockId: $blockId)
                     .onAppear {
                         blockId = train.block?.id
+                        direction = train.block?.trainInstance?.direction ?? .next
                     }
 
                 Picker("with direction", selection: $direction) {
