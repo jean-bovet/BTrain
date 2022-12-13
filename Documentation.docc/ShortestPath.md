@@ -8,7 +8,21 @@ In particular, we discuss the algorithm implemented by the open-source [BTrain s
 
 For example, the following layout has two block stations, “A” and “Y,” five “free” blocks B, C, D, X, and Z, as well as two turnouts T1 and T2. This layout is interesting because moving the train from block A to block Y is not straightforward; if the locomotive is moving in the left-side direction, it cannot go straight from A to Y via X but needs to go around the loop of T1 and T2 before coming back in the opposite direction in A to finally reach Y via X.
 
-![alt_text](image1)
+                   ┌─────────────────────────────────┐    
+                   │                                 │    
+                   │                                 │    
+               ┌───────┐         ┌───────┐       ┌───────┐
+        ┌──────│  T1   │─────────│   D   │───────│  T2   │
+        │      └───────┘         └───────┘       └───────┘
+        │          │                                 │    
+    ┌───────┐      │             ┌───────┐           │    
+    │   B   │      └─────────────│   C   │───────────┘    
+    └───────┘                    └───────┘                
+        │                                                 
+        │                                                 
+        │       ┌───────┐        ┌───────┐       ┌───────┐
+        └───────│   A   │────────│   X   │───────│   Y   │
+                └───────┘        └───────┘       └───────┘
 
 ## Shortest Path
 
@@ -18,9 +32,22 @@ Each node represents a block or a turnout in a model train layout.
 
 
 Let’s use the following graph to illustrate how Dijkstra works: let’s start with node A. All the distances between the nodes are indicated in black.
-
-![alt_text](image2)
-
+                                                    
+                   ┌───────────────4─────────────────┐    
+                   │                                 │    
+                   │                                 │    
+               ┌───────┐         ┌───────┐       ┌───────┐
+        ┌──2───│  T1   │────4────│   D   │──3────│  T2   │
+        │      └───────┘         └───────┘       └───────┘
+        │          │                                 │    
+    ┌───────┐      │             ┌───────┐           │    
+    │   B   │      └───2─────────│   C   │─────3─────┘    
+    └───────┘                    └───────┘                
+        │                                                 
+        │                                                 
+        │       ╔═══════╗        ┌───────┐       ┌───────┐
+        └──5────║   A   ║───3────│   X   │──4────│   Y   │
+                ╚═══════╝        └───────┘       └───────┘
 
 The first iteration computes the distance for the adjacent node of A, namely B and X:
 
@@ -30,19 +57,43 @@ The first iteration computes the distance for the adjacent node of A, namely B a
     * distance(X) = 3
     * distance(B) = 5
 * Node A is marked as “visited” in orange.
-
-![alt_text](image3)
-
+                                                      
+                       ┌───────────────4─────────────────┐    
+                       │                                 │    
+                       │                                 │    
+                   ┌───────┐         ┌───────┐       ┌───────┐
+            ┌──2───│  T1   │────4────│   D   │──3────│  T2   │
+            │      └───────┘         └───────┘       └───────┘
+            │          │                                 │    
+        ╔═══════╗      │             ┌───────┐           │    
+        ║ B (5) ║      └───2─────────│   C   │─────3─────┘    
+        ╚═══════╝                    └───────┘                
+            │                                                 
+            │                                                 
+            │       ┏━━━━━━━┓        ╔═══════╗       ┌───────┐
+            └──5────┃   A   ┃───3────║ X (3) ║──4────│   Y   │
+                    ┗━━━━━━━┛        ╚═══════╝       └───────┘
 
 The process is repeated by taking the evaluated but not yet visited node in order of shortest distance. So X is visited first, and the distance to Y is evaluated. Then B is visited, and the distance to T1 is evaluated.
-
-
 
 * distance(T1) = 5+2 = 7
 * distance(Y) = 3+4 = 7
 
-![alt_text](image4)
-
+                       ┌───────────────4─────────────────┐    
+                       │                                 │    
+                       │                                 │    
+                   ╔═══════╗         ┌───────┐       ┌───────┐
+            ┌──2───║T1 (7) ║────4────│   D   │──3────│  T2   │
+            │      ╚═══════╝         └───────┘       └───────┘
+            │          │                                 │    
+        ┏━━━━━━━┓      │             ┌───────┐           │    
+        ┃ B (5) ┃      └───2─────────│   C   │─────3─────┘    
+        ┗━━━━━━━┛                    └───────┘                
+            │                                                 
+            │                                                 
+            │       ┏━━━━━━━┓        ┏━━━━━━━┓       ╔═══════╗
+            └──5────┃   A   ┃───3────┃ X (3) ┃──4────║ Y (7) ║
+                    ┗━━━━━━━┛        ┗━━━━━━━┛       ╚═══════╝
 
 The process is repeated:
 
@@ -53,30 +104,64 @@ The process is repeated:
     * distance(D)=7+4=11
     * distance(C)=7+2=9
     * distance(T2)=7+4=11
-
-
-![alt_text](image5)
+                                                      
+                           ┌───────────────4─────────────────┐    
+                           │                                 │    
+                           │                                 │    
+                       ┏━━━━━━━┓         ╔═══════╗       ╔═══════╗
+                ┌──2───┃T1 (7) ┃────4────║D (11) ║──3────║T2 (11)║
+                │      ┗━━━━━━━┛         ╚═══════╝       ╚═══════╝
+                │          │                                 │    
+            ┏━━━━━━━┓      │             ╔═══════╗           │    
+            ┃ B (5) ┃      └───2─────────║ C (9) ║─────3─────┘    
+            ┗━━━━━━━┛                    ╚═══════╝                
+                │                                                 
+                │                                                 
+                │       ┏━━━━━━━┓        ┏━━━━━━━┓       ┏━━━━━━━┓
+                └──5────┃   A   ┃───3────┃ X (3) ┃───4───┃ Y (7) ┃
+                        ┗━━━━━━━┛        ┗━━━━━━━┛       ┗━━━━━━━┛
 
 
 The process is repeated by picking the adjacent node that has been evaluated with the shortest distance but not yet visited.
-
-
 
 * Node C is visited first (distance 9 is shorter than distance for D or T2)
     * Distance to T2 is computed: 9+3=12 which is greater than the already evaluated distance of 11, so this new distance of 11 is discarded.
 * Node D is then visited.
     * Distance to T2 is computed: 11+3=14 which is greater than the existing distance of T2 of 11, so this new distance of 14 is discarded.
-
-
-![alt_text](image6)
-
+                                                      
+                           ┌───────────────4─────────────────┐    
+                           │                                 │    
+                           │                                 │    
+                       ┏━━━━━━━┓         ┏━━━━━━━┓       ╔═══════╗
+                ┌──2───┃T1 (7) ┃────4────┃D (11) ┃──3────║T2 (11)║
+                │      ┗━━━━━━━┛         ┗━━━━━━━┛       ╚═══════╝
+                │          │                                 │    
+            ┏━━━━━━━┓      │             ┏━━━━━━━┓           │    
+            ┃ B (5) ┃      └───2─────────┃ C (9) ┃─────3─────┘    
+            ┗━━━━━━━┛                    ┗━━━━━━━┛                
+                │                                                 
+                │                                                 
+                │       ┏━━━━━━━┓        ┏━━━━━━━┓       ┏━━━━━━━┓
+                └──5────┃   A   ┃───3────┃ X (3) ┃──4────┃ Y (7) ┃
+                        ┗━━━━━━━┛        ┗━━━━━━━┛       ┗━━━━━━━┛
 
 Finally, T2 is visited, and it has no more nodes to evaluate, so the process stops. At this point, the shortest paths between A and all the nodes are established. For example, going from A to T2 using the shortest path would lead to the path: A-B-T1-T2.
-
-
-![alt_text](image7)
-
-
+                                                      
+                           ┌───────────────4─────────────────┐    
+                           │                                 │    
+                           │                                 │    
+                       ┏━━━━━━━┓         ┏━━━━━━━┓       ┏━━━━━━━┓
+                ┌──2───┃T1 (7) ┃────4────┃D (11) ┃──3────┃T2 (11)┃
+                │      ┗━━━━━━━┛         ┗━━━━━━━┛       ┗━━━━━━━┛
+                │          │                                 │    
+            ┏━━━━━━━┓      │             ┏━━━━━━━┓           │    
+            ┃ B (5) ┃      └───2─────────┃ C (9) ┃─────3─────┘    
+            ┗━━━━━━━┛                    ┗━━━━━━━┛                
+                │                                                 
+                │                                                 
+                │       ┏━━━━━━━┓        ┏━━━━━━━┓       ┏━━━━━━━┓
+                └──5────┃   A   ┃───3────┃ X (3) ┃──4────┃ Y (7) ┃
+                        ┗━━━━━━━┛        ┗━━━━━━━┛       ┗━━━━━━━┛
 
 ## Model Train Restrictions
 
@@ -84,15 +169,51 @@ In an actual model train, it is not possible to immediately use the Dijkstra alg
 
 For example, a train located in node A has an arrow indicating its direction (a train moves through a block or turnout in either the “next” or “previous” direction):
 
-![alt_text](image8)
-
+                       ┌─────────────────────────────────┐    
+                       │                                 │    
+                       │                                 │    
+                   ┌───────┐         ┌───────┐       ┌───────┐
+            ┌──────│  T1   │─────────│   D   │───────│  T2   │
+            │      └───────┘         └───────┘       └───────┘
+            │          │                                 │    
+        ┌───────┐      │             ┌───────┐           │    
+        │   B   │      └─────────────│   C   │───────────┘    
+        └───────┘                    └───────┘                
+            │                                                 
+            │                                                 
+            │       ┌───────┐        ┌───────┐       ┌───────┐
+            └───────│   A   │────────│   X   │───────│   Y   │
+                    └───────┘        └───────┘       └───────┘
+                    ◀════════                                 
 
 Given this constraint, we immediately see that the train cannot go from A to Y via the path A-X-Y. However, this is the path that Dijkstra would return as the shortest path between A and Y.
 
 To solve this, we identify a node by its name **and** direction. Node (A, next) is not the same as node (A, previous). Applying this to our example, we can rerun our algorithm, which will have the effect of “unfolding” the graph:
 
-![alt_text](image9)
-
+                                                          ══════════▶                
+                                  ┌───────┐   ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓    
+                  ┏━━━━━━━━━━━━━━━│  T1'  │   ┃                                 ┃    
+                  ┃               └───────┘   ┃                                 ▼    
+                  ┃                   ▲   ┌───────┐         ┌───────┐       ┌───────┐
+                  ┃              ┏━━━━╋━━▶│  T1   │─────────│   D   │───────│  T2   │
+                  ┃              ┃    ┃   └───────┘         └───────┘       └───────┘
+            ║     ▼        ▲     ┃    ┃       │                                 ┃    
+            ║ ┌───────┐    ║ ┌───────┐┃       │             ┌───────┐           ┃    
+            ║ │  B'   │    ║ │   B   │┃       └─────────────│   C   │───────────┫    
+            ║ └───────┘    ║ └───────┘┃                     └───────┘           ┃    
+            ▼     ┃        ║     ▲    ┃                     ┌───────┐           ┃    
+                  ┃              ┃    ┗━━━━━━━━━━━━━━━━━━━━━│  C'   │◀━━━━━━━━━━┛    
+                  ┃              ┃                          └───────┘                
+                  ┃              ┃                          ◀════════                
+                  ┃              ┃         ┌───────┐        ┌───────┐       ┌───────┐
+                  ┃              ┗━━━━━━━━━│   A   │────────│   X   │───────│   Y   │
+                  ┃                        └───────┘        └───────┘       └───────┘
+                  ┃                        ◀════════                                 
+                  ┃                                                                  
+                  ┃                        ┌───────┐        ┌───────┐       ┌───────┐
+                  ┗━━━━━━━━━━━━━━━━━━━━━━━▶│  A'   │━━━━━━━▶│  X'   │━━━━━━▶│  Y'   │
+                                           └───────┘        └───────┘       └───────┘
+                                          ══════════▶                                
 
 Let’s take a look in more detail at how the algorithm proceeds:
 
@@ -111,7 +232,3 @@ Let’s take a look in more detail at how the algorithm proceeds:
 
 To move from A to Y, the train needs to take the (shortest) path A-B-T1-C-D-B’-A’-X’-Y’.
 
-Here is a screenshot of the actual layout with the first portion of the shortest path reserved (in orange) for the train:
-
-
-![alt_text](image10)
