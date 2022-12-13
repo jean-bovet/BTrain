@@ -562,7 +562,7 @@
 		A747968829202038001DF7FA /* BlockPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockPicker.swift; sourceTree = "<group>"; };
 		A747968A292020D4001DF7FA /* StationPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StationPicker.swift; sourceTree = "<group>"; };
 		A74925CF28E8D15C00FF39C3 /* TurnoutShapePreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TurnoutShapePreview.swift; sourceTree = "<group>"; };
-		A74BDD6E282C725800BA7160 /* Routing.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; name = Routing.xctestplan; path = BTrain.xcodeproj/Routing.xctestplan; sourceTree = "<group>"; };
+		A74BDD6E282C725800BA7160 /* Routing.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = Routing.xctestplan; sourceTree = "<group>"; };
 		A74CCC67272A59F0004E58F5 /* Layout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Layout.swift; sourceTree = "<group>"; };
 		A74CCC69272A59F9004E58F5 /* Block.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Block.swift; sourceTree = "<group>"; };
 		A74CCC6B272A5A01004E58F5 /* Train.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Train.swift; sourceTree = "<group>"; };
@@ -999,10 +999,6 @@
 		A73AFE792726594600E1ED21 = {
 			isa = PBXGroup;
 			children = (
-				A768B18D2855197B00B6497F /* StateMachine.xctestplan */,
-				A74BDD6E282C725800BA7160 /* Routing.xctestplan */,
-				A7C5E959280DDD6A00A5DB12 /* Networking.xctestplan */,
-				A71D97F727A3C5FE00EBEA06 /* All.xctestplan */,
 				A73D39DA2780C31100EBE409 /* README.md */,
 				A79079A6277FB8E700771A60 /* Credits.rtf */,
 				A73EFD78292F3CD70052C407 /* Documentation.docc */,
@@ -1066,6 +1062,10 @@
 		A73AFE962726594800E1ED21 /* BTrainTests */ = {
 			isa = PBXGroup;
 			children = (
+				A768B18D2855197B00B6497F /* StateMachine.xctestplan */,
+				A71D97F727A3C5FE00EBEA06 /* All.xctestplan */,
+				A7C5E959280DDD6A00A5DB12 /* Networking.xctestplan */,
+				A74BDD6E282C725800BA7160 /* Routing.xctestplan */,
 				A73A7DD8284D00C200ABEADE /* State Machine */,
 				A71D97F827A45B3B00EBEA06 /* Marklin */,
 				A775C61F27A37BD400D712CF /* Digital Controller */,

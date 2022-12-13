@@ -1,4 +1,3 @@
-[![Xcode - Build and Analyze](https://github.com/jean-bovet/BTrain/actions/workflows/swift-build.yml/badge.svg)](https://github.com/jean-bovet/BTrain/actions/workflows/swift-build.yml)
 
 **Welcome**
 
@@ -42,11 +41,10 @@ An embedded Marklin Central 3 station simulator allows BTrain to simulate a layo
 - Unexpected feedback detection.
 - Automatic discovery of locomotives.
 - Support for Marklin Central Station 3.
-- Layout simulator to simulate the movement of the trains, including feedbacks and turnouts, without having to connect to a real Central Station 3.
+- Offline layout simulator to simulate the movement of the trains, including feedbacks and turnouts, without having to connect to a real Central Station 3.
 
 **Known Issues**
 
-- Locomotives pushing their wagons is only partially supported today.
 - The document does not get marked as "Edited" for some changes.
 
 **Glossary**
@@ -60,8 +58,8 @@ An embedded Marklin Central 3 station simulator allows BTrain to simulate a layo
 **Build from Source**
 
 To compile BTrain from source, the following versions are required:
-- macOS 12.x
-- Xcode 13.x
+- macOS 13.x
+- Xcode 14.x
 
 Clone this repository and open the `BTrain.xcodeproj` in Xcode. Hit Command-R and enjoy!
 

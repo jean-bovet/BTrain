@@ -39,17 +39,17 @@
       </CodeCoverageTargets>
       <TestPlans>
          <TestPlanReference
-            reference = "container:All.xctestplan"
+            reference = "container:BTrainTests/All.xctestplan"
             default = "YES">
          </TestPlanReference>
          <TestPlanReference
-            reference = "container:Networking.xctestplan">
+            reference = "container:BTrainTests/Networking.xctestplan">
          </TestPlanReference>
          <TestPlanReference
-            reference = "container:BTrain.xcodeproj/Routing.xctestplan">
+            reference = "container:BTrainTests/Routing.xctestplan">
          </TestPlanReference>
          <TestPlanReference
-            reference = "container:StateMachine.xctestplan">
+            reference = "container:BTrainTests/StateMachine.xctestplan">
          </TestPlanReference>
       </TestPlans>
       <Testables>

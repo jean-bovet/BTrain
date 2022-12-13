@@ -113,6 +113,8 @@ final class LayoutController: ObservableObject, LayoutControlling {
         turnoutManager = LayoutTurnoutManager(interface: interface)
         debugger = LayoutControllerDebugger(layout: layout)
 
+        spreadAllTrains()
+
         registerForFeedbackChange()
         registerForDirectionChange()
         registerForFunctionChange()
@@ -131,7 +133,22 @@ final class LayoutController: ObservableObject, LayoutControlling {
             LayoutController.memoryLeakCounter -= 1
         }
     #endif
-
+    
+    /// All train assigned to the layout will be spread again. In other words, each train assigned to a block in the layout will have the necessary
+    /// elements (block, turnout and transition) reserved to fit its length.
+    /// This is necessary because the ``Train.Reservation`` is not persisted to disk (it cannot be serialized). When
+    /// opening a document, we need to ensure that each train has all its elements properly assigned to it which this function will do.
+    private func spreadAllTrains() {
+        for train in layout.trains.elements.filter({$0.block != nil}) {
+            do {
+                try reservation.freeElements(train: train)
+                try reservation.occupyBlocksWith(train: train)
+            } catch {
+                BTLogger.error("Unable to spread \(train): \(error)")
+            }
+        }
+    }
+    
     /// Run each train controller on the specified train event
     /// - Parameter event: the train event
     func runControllers(_ event: LayoutControllerEvent) {
