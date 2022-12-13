@@ -30,7 +30,6 @@ struct UndoProvider<WrappedView, Value>: View where WrappedView: View {
 
     var wrappedView: (Binding<Value>) -> WrappedView
 
-    //
     var binding: Binding<Value>
 
     init(_ binding: Binding<Value>, @ViewBuilder wrappedView: @escaping (Binding<Value>) -> WrappedView) {

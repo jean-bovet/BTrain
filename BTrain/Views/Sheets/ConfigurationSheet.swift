@@ -42,6 +42,7 @@ struct ConfigurationSheet<Content: View>: View {
                 Spacer()
 
                 Button("OK") {
+                    LayoutDocument.incrementChangeCount()
                     presentationMode.wrappedValue.dismiss()
                 }
                 .keyboardShortcut(.defaultAction)
