@@ -107,7 +107,7 @@ extension Layout {
         let toBlock = layout.block(named: to.0)
 
         setTrain(train: train, toBlockNamed: fromBlock.name, direction: from.1)
-        let path = try layout.bestPath(ofTrain: train, toReachBlock: toBlock, withDirection: to.1, reservedBlockBehavior: .avoidReserved)!
+        let path = try layout.bestPath(ofTrain: train, toReachBlock: toBlock, withDirection: to.1, reservedBlockBehavior: .avoidReserved, shortestPath: true)!
         XCTAssertEqual(path.toStrings, expectedPath)
     }
 
