@@ -84,7 +84,7 @@ final class LocomotiveFunctionsCatalog {
             return image
         }
                 
-        if let svg = svgIconName, let data = svg.data(using: .utf8), let image = NSImage(data: data) {
+        if let svg = svgIconName, let data = svg.data(using: .utf8), let image = NSImage(data: data)?.copy(size: .init(width: 20, height: 20)) {
             imageCache.setObject(image, forKey: key)
             return image
         } else {

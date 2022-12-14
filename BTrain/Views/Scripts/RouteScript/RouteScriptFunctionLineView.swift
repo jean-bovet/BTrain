@@ -35,7 +35,7 @@ struct RouteScriptFunctionLineView: View {
                         } else {
                             Text("f\(type)")
                         }
-                        if let image = catalog.image(for: type, state: true)?.copy(size: .init(width: 20, height: 20)) {
+                        if let image = catalog.image(for: type, state: true) {
                             Image(nsImage: image)
                                 .renderingMode(.template)
                         }
@@ -47,14 +47,14 @@ struct RouteScriptFunctionLineView: View {
                                  
             switch function.trigger {
             case .enable, .disable:
-                Stepper("after \(String(format: "%.2f", function.duration)) s.",
+                Stepper("after \(String(format: "%.1f", function.duration)) s.",
                         value: $function.duration,
-                        in: 0 ... 10, step: 0.25)
+                        in: 0 ... 10, step: 0.5)
                     .fixedSize()
             case .pulse:
-                Stepper("for \(String(format: "%.2f", function.duration)) s.",
+                Stepper("for \(String(format: "%.1f", function.duration)) s.",
                         value: $function.duration,
-                        in: 0 ... 10, step: 0.25)
+                        in: 0 ... 10, step: 0.5)
                     .fixedSize()
             }
         }
