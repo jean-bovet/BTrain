@@ -14,6 +14,7 @@ import SwiftUI
 
 extension LayoutElementsEditingView where More == EmptyView {
     init(layout: Layout,
+         elementName: String? = nil,
          new: @escaping () -> E,
          delete: @escaping (E) -> Void,
          duplicate: @escaping (E) -> E,
@@ -22,7 +23,7 @@ extension LayoutElementsEditingView where More == EmptyView {
          @ViewBuilder row: @escaping RowViewBuilder,
          @ViewBuilder editor: @escaping (E) -> Editor)
     {
-        self.init(layout: layout, new: new, delete: delete, duplicate: duplicate, sort: sort, elementContainer: elementContainer, more: { EmptyView() }, row: row, editor: editor)
+        self.init(layout: layout, elementName: elementName, new: new, delete: delete, duplicate: duplicate, sort: sort, elementContainer: elementContainer, more: { EmptyView() }, row: row, editor: editor)
     }
 }
 
@@ -39,6 +40,7 @@ struct LayoutElementsEditingView<E: LayoutElement, More: View, Row: View, Editor
     let editor: (E) -> Editor
 
     init(layout: Layout,
+         elementName: String? = nil,
          new: @escaping () -> E,
          delete: @escaping (E) -> Void,
          duplicate: @escaping (E) -> E,
@@ -49,6 +51,7 @@ struct LayoutElementsEditingView<E: LayoutElement, More: View, Row: View, Editor
          @ViewBuilder editor: @escaping (E) -> Editor)
     {
         self.layout = layout
+        self.elementName = elementName ?? "\(E.ItemType.self)".lowercased()
         self.new = new
         self.delete = delete
         self.duplicate = duplicate
@@ -66,10 +69,9 @@ struct LayoutElementsEditingView<E: LayoutElement, More: View, Row: View, Editor
 
     @Environment(\.undoManager) var undoManager
 
-    var elementName: String {
-        "\(E.ItemType.self)".lowercased()
-    }
+    var elementName: String
     
+    // TODO: proper localization
     var statusLabel: String {
         let count = elementContainer.elements.count
         switch count {

@@ -17,7 +17,7 @@ struct LayoutScriptEditingView: View {
     @ObservedObject var layout: Layout
 
     var body: some View {
-        LayoutElementsEditingView(layout: layout, new: {
+        LayoutElementsEditingView(layout: layout, elementName: "script", new: {
             layout.newLayoutScript()
         }, delete: { script in
             layout.layoutScripts.remove(script.id)
