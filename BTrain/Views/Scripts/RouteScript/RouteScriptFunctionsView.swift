@@ -38,36 +38,8 @@ struct RouteScriptFunctionsView: View {
                 List {
                     ForEach($editedCmd.functions, id:\.self) { function in
                         HStack {
-                            Picker("State:", selection: function.enabled) {
-                                Text("Enable").tag(true)
-                                Text("Disable").tag(false)
-                            }
-                            .labelsHidden()
-                            .fixedSize()
+                            RouteScriptFunctionLineView(catalog: catalog, function: function)
                             
-                            Picker("Function:", selection: function.type) {
-                                ForEach(catalog.globalTypes, id: \.self) { type in
-                                    HStack {
-                                        if let name = catalog.name(for: type) {
-                                            Text("f\(type): \(name)")
-                                        } else {
-                                            Text("f\(type)")
-                                        }
-                                        if let image = catalog.image(for: type, state: true)?.copy(size: .init(width: 20, height: 20)) {
-                                            Image(nsImage: image)
-                                                .renderingMode(.template)
-                                        }
-                                    }.tag(type)
-                                }
-                            }
-                            .labelsHidden()
-                            .fixedSize()
-                                                 
-                            Stepper("Duration: \(String(format: "%.2f", function.wrappedValue.duration)) s.",
-                                    value: function.duration,
-                                    in: 0 ... 10, step: 0.25)
-                                .fixedSize()
-
                             Spacer()
                             
                             Button("􀁌") {
@@ -104,10 +76,10 @@ struct RouteScriptFunctionsView: View {
     }
     
     func addFunction() {
-        editedCmd.functions.append(.init(type: 1, enabled: true))
+        editedCmd.functions.append(.init(type: 1))
     }
     
-    func removeFunction(function: RouteScriptCommand.Function) {
+    func removeFunction(function: RouteItemFunction) {
         editedCmd.functions.removeAll(where: { $0.id == function.id })
     }
 }
@@ -116,7 +88,7 @@ struct RouteScriptFunctionsView_Previews: PreviewProvider {
     
     static let cmd = {
         var command = RouteScriptCommand(action: .move)
-        command.functions = [.init(type: 0, enabled: true)]
+        command.functions = [.init(type: 0)]
         return command
     }()
     

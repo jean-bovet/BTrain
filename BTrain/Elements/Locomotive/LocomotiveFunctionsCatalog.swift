@@ -51,11 +51,15 @@ final class LocomotiveFunctionsCatalog {
     func globalAttributesChanged() {
         attributesCache.clear()
         for attributes in interface.defaultLocomotiveFunctionAttributes() {
-            if attributesCache.globalAttributes[attributes.type] != nil {
-                BTLogger.warning("Duplicate attributes \(attributes.type) for \(attributes.name)")
-            }
-            attributesCache.globalAttributes[attributes.type] = attributes
+            add(attributes: attributes)
         }
+    }
+    
+    func add(attributes: CommandLocomotiveFunctionAttributes) {
+        if attributesCache.globalAttributes[attributes.type] != nil {
+            BTLogger.warning("Duplicate attributes \(attributes.type) for \(attributes.name)")
+        }
+        attributesCache.globalAttributes[attributes.type] = attributes
     }
     
     func name(for type: UInt32) -> String? {

@@ -35,7 +35,6 @@ final class TrainFunctionsController {
 
         for f in functions {
             let type = f.type
-            let enabled = f.enabled
             
             guard let def = locomotive.functions.definitions.first(where: { $0.type == type }) else {
                 BTLogger.warning("Function \(type) not found in locomotive \(locomotive)")
@@ -48,27 +47,45 @@ final class TrainFunctionsController {
                 BTLogger.debug("Execute function of type \(type) with \(locomotive.name)")
             }
 
-            execute(locomotive: locomotive, function: def, enabled: enabled, duration: f.duration)
+            execute(locomotive: locomotive, function: def, trigger: f.trigger, duration: f.duration)
         }
     }
     
-    func execute(locomotive: Locomotive, function: CommandLocomotiveFunction, enabled: Bool, duration: TimeInterval) {
-        interface.execute(command: .function(address: locomotive.address, decoderType: locomotive.decoder, index: function.nr, value: enabled ? 1 : 0), completion: nil)
+    func execute(locomotive: Locomotive, function: CommandLocomotiveFunction, trigger: RouteItemFunction.Trigger, duration: TimeInterval) {
+        
+        switch trigger {
+        case .enable, .disable:
+            DispatchQueue.main.asyncAfter(deadline: .now() + duration) {
+                self.executeSingle(locomotive: locomotive, function: function, trigger: trigger)
+            }
+            
+        case .pulse:
+            executePulse(locomotive: locomotive, function: function, duration: duration)
+        }
+    }
+    
+    private func executeSingle(locomotive: Locomotive, function: CommandLocomotiveFunction, trigger: RouteItemFunction.Trigger) {
+        let initialValue = trigger == .disable ? 0 : 1
+        interface.execute(command: .function(address: locomotive.address, decoderType: locomotive.decoder, index: function.nr, value: UInt8(initialValue)), completion: nil)
 
-        let actualDuration: TimeInterval
         if function.toggle {
             // The Digital Controller (at least the CS3) does not toggle it back
             // automatically, so we have to do it.
-            actualDuration = 0.25
-        } else {
-            actualDuration = duration
-        }
-        
-        if actualDuration > 0 {
-            DispatchQueue.main.asyncAfter(deadline: .now() + actualDuration) {
-                self.interface.execute(command: .function(address: locomotive.address, decoderType: locomotive.decoder, index: function.nr, value: enabled ? 0 : 1), completion: nil)
+            let finalValue = UInt8(0)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
+                self.interface.execute(command: .function(address: locomotive.address, decoderType: locomotive.decoder, index: function.nr, value: finalValue), completion: nil)
             }
         }
-
     }
+    
+    private func executePulse(locomotive: Locomotive, function: CommandLocomotiveFunction, duration: TimeInterval) {
+        let initialValue = UInt8(1)
+        interface.execute(command: .function(address: locomotive.address, decoderType: locomotive.decoder, index: function.nr, value: initialValue), completion: nil)
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + duration) {
+            let finalValue = UInt8(0)
+            self.interface.execute(command: .function(address: locomotive.address, decoderType: locomotive.decoder, index: function.nr, value: finalValue), completion: nil)
+        }
+    }
+
 }

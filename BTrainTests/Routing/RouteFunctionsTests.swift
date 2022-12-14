@@ -22,8 +22,8 @@ final class RouteFunctionsTests: BTTestCase {
         let p = Package(layout: layout)
         try p.prepare(routeID: "0", trainID: "0", fromBlockId: "A", position: .end)
 
-        p.route.startFunctions = RouteItemFunctions(functions: [RouteItemFunctions.Function(type: 1, enabled: true)])
-        p.route.stopFunctions = RouteItemFunctions(functions: [RouteItemFunctions.Function(type: 1, enabled: false)])
+        p.route.startFunctions = RouteItemFunctions(functions: [RouteItemFunction(type: 1)])
+        p.route.stopFunctions = RouteItemFunctions(functions: [RouteItemFunction(type: 1, trigger: .disable)])
 
         p.loc.functions.definitions = [.init(nr: 0, state: 0, type: 1)]
                 

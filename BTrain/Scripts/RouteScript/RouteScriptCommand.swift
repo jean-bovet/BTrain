@@ -51,14 +51,7 @@ struct RouteScriptCommand: ScriptCommand, Identifiable, Hashable {
     var direction: Direction?
     var stationId: Identifier<Station>?
 
-    struct Function: Identifiable, Hashable, Codable {
-        var id = UUID().uuidString
-        var type: UInt32
-        var enabled: Bool
-        @DecodableDefault.Zero var duration: TimeInterval
-    }
-
-    var functions = [Function]()
+    var functions = [RouteItemFunction]()
     
     init(id: UUID = UUID(), action: Action) {
         self.id = id
@@ -83,7 +76,7 @@ extension RouteScriptCommand: Codable {
         blockId = try container.decodeIfPresent(Identifier<Block>.self, forKey: CodingKeys.blockId)
         direction = try container.decodeIfPresent(Direction.self, forKey: CodingKeys.direction)
         stationId = try container.decodeIfPresent(Identifier<Station>.self, forKey: CodingKeys.stationId)
-        functions = try container.decodeIfPresent([Function].self, forKey: CodingKeys.functions) ?? []
+        functions = try container.decodeIfPresent([RouteItemFunction].self, forKey: CodingKeys.functions) ?? []
     }
 
     func encode(to encoder: Encoder) throws {

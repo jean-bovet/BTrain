@@ -68,7 +68,7 @@ struct TrainControlFunctionsView: View {
                     }
                 }
                 .if(functionState(function: fattrs.function), transform: { $0.foregroundColor(.yellow) })
-                    .help("f\(fattrs.function.nr): \(fattrs.name)")
+                    .help("f\(fattrs.function.nr): \(fattrs.name) (\(fattrs.function.type))")
                     .buttonStyle(.borderless)
                     .fixedSize()
             }
@@ -83,7 +83,10 @@ struct TrainControlFunctionsView: View {
         let state = functionState(function: function)
         // Note: the state of the function will be updated
         // when the acknowledgement from the Digital Controller comes back
-        functionsController.execute(locomotive: locomotive, function: function, enabled: !state, duration: 0)
+        functionsController.execute(locomotive: locomotive,
+                                    function: function,
+                                    trigger: state ? .disable : .enable,
+                                    duration: 0)
     }
 }
 

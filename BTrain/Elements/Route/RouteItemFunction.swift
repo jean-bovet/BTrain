@@ -12,16 +12,17 @@
 
 import Foundation
 
-/// Functions associated with a specific route item
-struct RouteItemFunctions: Codable, Equatable {
-    
-    static func == (lhs: RouteItemFunctions, rhs: RouteItemFunctions) -> Bool {
-        lhs.id == rhs.id
-    }
-
+/// A function to execute during a route
+struct RouteItemFunction: Identifiable, Hashable, Equatable, Codable {
     var id = UUID().uuidString
+    var type: UInt32
     
-    /// The array of functions to execute
-    var functions: [RouteItemFunction]?
+    enum Trigger: Codable {
+        case enable
+        case disable
+        case pulse
+    }
     
+    var trigger: Trigger = .enable
+    @DecodableDefault.Zero var duration: TimeInterval
 }

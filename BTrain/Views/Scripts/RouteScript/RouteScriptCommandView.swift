@@ -29,7 +29,7 @@ struct RouteScriptCommandView: View {
             } else {
                 ForEach(command.functions, id: \.self) { function in
                     Group {
-                        if let image = doc.locomotiveFunctionsCatalog.image(for: function.type, state: function.enabled) {
+                        if let image = doc.locomotiveFunctionsCatalog.image(for: function.type, state: function.trigger != .disable) {
                             Image(nsImage: image)
                                 .resizable()
                                 .renderingMode(.template)
@@ -38,7 +38,7 @@ struct RouteScriptCommandView: View {
                             Text("f\(function.type)")
                         }
                     }
-                    .if(function.enabled, transform: { $0.foregroundColor(.yellow)})
+                    .if(function.trigger != .disable, transform: { $0.foregroundColor(.yellow)})
                         .help(doc.locomotiveFunctionsCatalog.name(for: function.type) ?? "")
                 }
                 Button("Edit…") {
@@ -166,7 +166,7 @@ struct ScriptCommandView_Previews: PreviewProvider {
         var cmd = RouteScriptCommand(action: .move)
         cmd.blockId = doc.layout.blocks.elements.first(where: { $0.category == .station })!.id
         cmd.direction = .next
-        cmd.functions = [.init(type: 0, enabled: true), .init(type: 2, enabled: false)]
+        cmd.functions = [.init(type: 0), .init(type: 2, trigger: .disable)]
         return cmd
     }()
 

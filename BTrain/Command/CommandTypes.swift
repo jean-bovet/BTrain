@@ -66,5 +66,5 @@ struct CommandLocomotiveFunctionAttributes: Codable {
     let type: UInt32
     let name: String
     let activeSvgIcon: String?
-    let inactiveSvgIcon: String?
+    let inactiveSvgIcon: String?        
 }

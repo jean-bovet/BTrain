@@ -73,6 +73,10 @@ extension DecodableDefault {
             static var defaultValue: String { "" }
         }
 
+        enum UniqueString: Source {
+            static var defaultValue: String { UUID().uuidString }
+        }
+
         enum EmptyList<T: List>: Source {
             static var defaultValue: T { [] }
         }
@@ -88,6 +92,7 @@ extension DecodableDefault {
     typealias False = Wrapper<Sources.False>
     typealias Zero = Wrapper<Sources.Zero>
     typealias EmptyString = Wrapper<Sources.EmptyString>
+    typealias UniqueString = Wrapper<Sources.UniqueString>
     typealias EmptyList<T: List> = Wrapper<Sources.EmptyList<T>>
     typealias EmptyMap<T: Map> = Wrapper<Sources.EmptyMap<T>>
 }
