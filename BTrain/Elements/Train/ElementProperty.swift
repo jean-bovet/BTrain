@@ -23,42 +23,68 @@ import Combine
 /// wrapper makes possible.
 @propertyWrapper struct ElementProperty<E:LayoutElement&AnyObject> {
     
+    /// We need to use this static subscript in order to get a hold of the enclosing
+    /// instance of this property wrapper to inform it of any changes to the
+    /// stored value of this wrapper.
+    /// See [this blog](https://www.swiftbysundell.com/articles/accessing-a-swift-property-wrappers-enclosing-instance/)
+    static subscript<T: ObservableObject>(
+        _enclosingInstance instance: T,
+        wrapped wrappedKeyPath: ReferenceWritableKeyPath<T, E?>,
+        storage storageKeyPath: ReferenceWritableKeyPath<T, Self>
+    ) -> E? {
+        get {
+            instance[keyPath: storageKeyPath].storage?.value
+        }
+        set {
+            // Notify the enclosing instance's publisher of the change
+            if let publisher = instance.objectWillChange as? ObservableObjectPublisher {
+                publisher.send()
+            }
+            
+            // Notify the publisher of the property wrapper itself of the change
+            instance[keyPath: storageKeyPath].publisher.send(newValue)
+            
+            if let newValue = newValue {
+                instance[keyPath: storageKeyPath].storage = .init(newValue)
+            } else {
+                instance[keyPath: storageKeyPath].storage = nil
+            }
+        }
+    }
+    
+    var elementId: Identifier<E.ItemType>?
+
+    private var storage: WeakObject<E>? {
+        didSet {
+            elementId = storage?.value?.id
+        }
+    }
+    
+    @available(*, unavailable,
+                message: "@Published can only be applied to classes"
+    )
+    var wrappedValue: E? {
+        get { fatalError() }
+        set { fatalError() }
+    }
+    
     private var publisher = PassthroughSubject<E?, Never>()
 
     var projectedValue: AnyPublisher<E?, Never> {
         return self.publisher.eraseToAnyPublisher()
-    }
-
-    var elementId: Identifier<E.ItemType>?
-    
-    private var storage: WeakObject<E>?
-
-    var wrappedValue: E? {
-        get {
-            storage?.value
-        }
-        set {
-            publisher.send(newValue)
-            if let newValue = newValue {
-                storage = .init(newValue)
-            } else {
-                storage = nil
-            }
-            elementId = newValue?.id
-        }
-    }
-    
-    init(wrappedValue: E?) {
-        self.wrappedValue = wrappedValue
     }
     
     /// Restores the element instance using the specified container and the underlying elementId
     /// defined in this wrapper. This method must be called once after deserialization.
     /// - Parameter container: the container
     mutating func restore(_ container: LayoutElementContainer<E>) {
-        assert(wrappedValue == nil)
-        wrappedValue = container[elementId]
-        assert(wrappedValue?.id == elementId)
+        assert(storage == nil)
+        if let elementId = elementId, let element = container[elementId] {
+            storage = .init(element)
+        } else {
+            storage = nil
+        }
+        assert(storage?.value?.id == elementId)
     }
 }
 

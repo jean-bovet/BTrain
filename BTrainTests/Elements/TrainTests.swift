@@ -45,7 +45,13 @@ class TrainTests: XCTestCase {
     }
     
     func testBlockProperty() {
+        var trainChangeCount = 0
         let train = Train()
+        let tc = train.objectWillChange.sink { train in
+            trainChangeCount += 1
+        }
+        XCTAssertNotNil(tc)
+
         var blocks = [Block?]()
         let cancellable = train.$block.sink { block in
             blocks.append(block)
@@ -59,6 +65,7 @@ class TrainTests: XCTestCase {
         train.block = nil
         train.block = a2
         
+        XCTAssertEqual(trainChangeCount, 3)
         XCTAssertEqual(blocks.count, 3)
         XCTAssertEqual(blocks, [a1, nil, a2])
     }
