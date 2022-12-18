@@ -19,7 +19,7 @@ Each train's direction, speed, and position is controlled via a dedicated sectio
 
 BTrain allows routes to be defined manually or automatically without any effort. Automatic route allows a train to be moved on the layout without the need to define a route ahead of time. The integrated CS 3 simulator simulates the entire layout before connecting to the real CS 3.
 
-![Train](Assets/loop-to-loop.gif)
+![Layout Example](Assets/loop-to-loop.gif)
 
 BTrain allows each locomotive's speed to be measured using 3 feedbacks. This measurement enables the locomotive speed to represent its prototype accurately and ensures all locomotives move at the same speed regardless of their decoder type.
 
@@ -31,18 +31,18 @@ An embedded Marklin Central 3 station simulator allows BTrain to simulate a layo
 
 BTrain offers several editors to define the various elements of the layout, such as blocks, turnouts, feedback, trains, locomotive, and much more. Here is the locomotive editor, which automatically retrieves the locomotive defined in the Central Station:
 
-![Train](Assets/locomotives.png)
+![Locomotives](Assets/locomotives.png)
 
 BTrain allows the user to write powerful scripts without a single line of code. A script is a series of commands that runs a train along a specific user-defined route:
 
-![Train](Assets/scripts.png)
+![Scripts](Assets/scripts.png)
 
 BTrain defines several routes:
 
 - Automatic routes that are created automatically when BTrain moves a train from one block to another or when the user asks BTrain to move the train in the layout without any particular destination in mind.
 - User-defined routes that the user creates. A powerful editor allows for the user-defined routes to be created in a few minutes:
 
-![Train](Assets/routes.png)
+![Routes](Assets/routes.png)
 
 **Features**
 

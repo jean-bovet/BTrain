@@ -139,7 +139,7 @@ final class Route: Element, ObservableObject {
 
 extension Route: Codable {
     enum CodingKeys: CodingKey {
-        case id, name, steps, stepsv2, items, automatic, mode, startFunctions, stopFunctions
+        case id, name, items, automatic, mode, startFunctions, stopFunctions
     }
 
     convenience init(from decoder: Decoder) throws {
@@ -153,13 +153,7 @@ extension Route: Codable {
         }
         self.init(id: id, mode: mode)
         name = try container.decode(String.self, forKey: CodingKeys.name)
-        if container.contains(CodingKeys.steps) {
-            partialSteps = try container.decode([RouteStep_v1].self, forKey: CodingKeys.steps).toRouteSteps
-        } else if container.contains(CodingKeys.stepsv2) {
-            partialSteps = try container.decode([RouteItem].self, forKey: CodingKeys.stepsv2)
-        } else if container.contains(CodingKeys.items) {
-            partialSteps = try container.decode([RouteItem].self, forKey: CodingKeys.items)
-        }
+        partialSteps = try container.decode([RouteItem].self, forKey: CodingKeys.items)
         startFunctions = try container.decodeIfPresent(RouteItemFunctions.self, forKey: CodingKeys.startFunctions)
         stopFunctions = try container.decodeIfPresent(RouteItemFunctions.self, forKey: CodingKeys.stopFunctions)
     }
