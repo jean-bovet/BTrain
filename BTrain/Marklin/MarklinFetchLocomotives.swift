@@ -16,7 +16,7 @@ typealias QueryLocomotivesResult = Result<[CommandLocomotive], Error>
 
 /// Fetches the locomotive definitions and icons from the Central Station by using an HTTP request.
 /// See ``MarklinCS3`` for more information.
-struct MarklinFetchLocomotives {    
+struct MarklinFetchLocomotives {
     /// Fetch the locomotive commands from the specified Central Station URL
     /// - Parameters:
     ///   - server: the URL of the Central Station (can also be a local file for testing)

@@ -30,7 +30,7 @@ struct RouteItemBlock: Equatable, Codable, SourceIdentifiable {
 
     /// The direction of travel of the train within that block
     var direction: Direction
-    
+
     /// Functions associated with this route item
     var functions: RouteItemFunctions?
 

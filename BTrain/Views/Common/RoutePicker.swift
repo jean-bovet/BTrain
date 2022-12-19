@@ -13,9 +13,8 @@
 import SwiftUI
 
 struct RoutePicker: View {
-    
     let layout: Layout
-    
+
     @ObservedObject var train: Train
 
     var automaticRouteId: Identifier<Route> {
@@ -23,9 +22,9 @@ struct RoutePicker: View {
     }
 
     var sortedRoutes: [Route] {
-        layout.fixedRoutes.sorted(by: {$0.name < $1.name})
+        layout.fixedRoutes.sorted(by: { $0.name < $1.name })
     }
-        
+
 //    var fixedRoutesWithTrain: [Route]? {
 //        let routes = sortedRoutes.filter({routeContainsTrain(route: $0)})
 //        if routes.isEmpty {
@@ -53,7 +52,7 @@ struct RoutePicker: View {
             }
         }
     }
-    
+
     // Note: disable for now because it takes too much time to evaluate this each time
     // the UI is updated.
     func routeContainsTrain(route: Route) -> Bool {
@@ -65,9 +64,7 @@ struct RoutePicker: View {
     }
 }
 
-
 struct RoutePicker_Previews: PreviewProvider {
-    
     static let doc = LayoutDocument(layout: LayoutLoop1().newLayout())
 
     static var previews: some View {

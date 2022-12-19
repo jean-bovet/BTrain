@@ -13,23 +13,21 @@
 import Foundation
 
 final class LocomotiveFunctions: ObservableObject {
-        
     /// The functions associated with this locomotive
     @Published var definitions = [CommandLocomotiveFunction]() {
         didSet {
-            states = definitions.reduce(into: FunctionStates(), { partialResult, function in
+            states = definitions.reduce(into: FunctionStates()) { partialResult, function in
                 partialResult[function.nr] = function.state
-            })
+            }
         }
     }
 
-    typealias FunctionStates = [UInt8:UInt8]
-    
+    typealias FunctionStates = [UInt8: UInt8]
+
     /// Map of state to each function index.
     ///
     /// This map is not persisted because it is re-created each time the connection to the Digital Controller is established.
     @Published var states = FunctionStates()
-
 }
 
 extension LocomotiveFunctions: Codable {

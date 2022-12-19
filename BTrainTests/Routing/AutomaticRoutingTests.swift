@@ -530,7 +530,7 @@ class AutomaticRoutingTests: BTTestCase {
     }
 
     // MARK: - - Backward
-    
+
     //    ┌─────────┐                      ┌─────────┐             ┌─────────┐
     //    │   s1    │───▶  t1  ───▶  t2  ─▶│   b1    │─▶  t4  ────▶│   s2    │
     //    └─────────┘                      └─────────┘             └─────────┘
@@ -543,8 +543,7 @@ class AutomaticRoutingTests: BTTestCase {
     //    ┌─────────┐                                              ┌─────────┐
     //    │   b5    │◀─────────────────────────────────────────────│   b4    │
     //    └─────────┘                                              └─────────┘
-    
-    
+
     /// Test that a locomotive that does not support going backward will not move when a route that requires
     /// it to go backward is chosen. The route path finder will fail to find a path for the train and the train won't move.
     func testBackwardRouteWithLocomotiveThatDontGoBackward() throws {
@@ -558,7 +557,7 @@ class AutomaticRoutingTests: BTTestCase {
 
         _ = try setup(layout: layout, fromBlockId: s1.id, destination: .init(s2.id, direction: .next), position: .end, direction: .previous, expectedState: .stopped, routeSteps: [])
     }
-    
+
     func testBackwardRoute() throws {
         let layout = LayoutLoopWithStation().newLayout()
         let s1 = layout.block(named: "s1")
@@ -567,12 +566,12 @@ class AutomaticRoutingTests: BTTestCase {
         let t1 = layout.trains[0]
         t1.locomotive!.length = 20
         t1.wagonsLength = s1.length! - 60
-        
+
         t1.locomotive!.directionForward = false
         t1.locomotive!.allowedDirections = .any
-        
+
         let p = try setup(layout: layout, fromBlockId: s1.id, destination: .init(s2.id, direction: .next), position: .automatic, direction: .previous, routeSteps: ["s1:next", "b1:next", "s2:next"])
-        
+
         // The route requires the train to move backward
         XCTAssertFalse(t1.directionForward)
         XCTAssertEqual(s1.trainInstance?.direction, .next)
@@ -582,7 +581,7 @@ class AutomaticRoutingTests: BTTestCase {
         // to finally be in the direction backward. This toggle is causing the back position to be not tied to a feedback position (it is computed using the front
         // position and the length of the train) which is why we need to specify the distance manually.
         try p.assert("automatic-0: {r0{s1 🔵􀼮⟷0 ≏ 􀼰{79.999}0 ≏ }} <r0<t1{sr}(0,1),s>> <r0<t2{sr}(0,1),s>> [r0[b1 ≏ ≏ ]] <t4{sl}(1,0),s> {s2 ≏ ≏ }", ["b1"])
-                
+
         // Note: once a feedback is detected "in front" of the train, then the back position will be again aligned with a feedback position and the ASCII representation
         // will be able to represent it correctly.
         try p.assert("automatic-0: {r0{s1 ≏ 🔵􀼮⟷0 ≡ 􀼰0 }} <r0<t1{sr}(0,1),s>> <r0<t2{sr}(0,1),s>> [r0[b1 ≏ ≏ ]] <t4{sl}(1,0),s> {s2 ≏ ≏ }", ["b1"])

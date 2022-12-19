@@ -29,7 +29,7 @@ class SimulatorViewTests: RootViewTests {
         let b1 = doc.layout.blocks[0]
 
         try doc.layoutController.setupTrainToBlock(t1, b1.id, naturalDirectionInBlock: .next)
-        
+
         XCTAssertTrue(t1.directionForward)
         XCTAssertEqual(t1.speed!.requestedKph, 0)
 

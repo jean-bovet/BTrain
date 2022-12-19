@@ -13,10 +13,9 @@
 import SwiftUI
 
 struct RouteScriptFunctionLineView: View {
-    
     let catalog: LocomotiveFunctionsCatalog
     @Binding var function: RouteItemFunction
-    
+
     var body: some View {
         HStack {
             Picker("State:", selection: $function.trigger) {
@@ -26,7 +25,7 @@ struct RouteScriptFunctionLineView: View {
             }
             .labelsHidden()
             .fixedSize()
-            
+
             Picker("Function:", selection: $function.type) {
                 ForEach(catalog.globalTypes, id: \.self) { type in
                     HStack {
@@ -44,7 +43,7 @@ struct RouteScriptFunctionLineView: View {
             }
             .labelsHidden()
             .fixedSize()
-                                 
+
             switch function.trigger {
             case .enable, .disable:
                 Stepper("after \(String(format: "%.1f", function.duration)) s.",
@@ -62,7 +61,6 @@ struct RouteScriptFunctionLineView: View {
 }
 
 struct RouteScriptFunctionLineView_Previews: PreviewProvider {
-    
     static let catalog = {
         let catalog = LocomotiveFunctionsCatalog(interface: MarklinInterface())
         catalog.add(attributes: .preview(type: 1, name: "Light"))
@@ -70,7 +68,7 @@ struct RouteScriptFunctionLineView_Previews: PreviewProvider {
         catalog.add(attributes: .preview(type: 3, name: "Horn"))
         return catalog
     }()
-    
+
     static var previews: some View {
         VStack(alignment: .leading) {
             RouteScriptFunctionLineView(catalog: catalog, function: .constant(RouteItemFunction(type: 1, trigger: .enable)))

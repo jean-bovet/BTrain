@@ -16,10 +16,10 @@ final class MarklinInterfaceResources {
     /// The list of function definitions which is global to the CS3. This is where
     /// each function name and icon name are defined.
     private var functions: MarklinCS3.Functions?
-    
+
     /// This is the SVG definition of each icon referenced by each function.
     private var svgSprites: MarklinCS3.SvgSprites?
-            
+
     func fetchResources(server: URL, _ completion: @escaping CompletionBlock) {
         Task {
             let cs3 = MarklinCS3()
@@ -33,7 +33,7 @@ final class MarklinInterfaceResources {
             }
         }
     }
-    
+
     func locomotiveFunctions() -> [CommandLocomotiveFunctionAttributes] {
         guard let functions = functions else {
             return []
@@ -50,11 +50,11 @@ final class MarklinInterfaceResources {
         }
         return all
     }
-    
+
     func locomotiveFunctionAttributesFor(type: UInt32) -> CommandLocomotiveFunctionAttributes {
         attributesFor(type: type, name: "\(type)")
     }
-    
+
     private func attributesFor(type: UInt32, name: String) -> CommandLocomotiveFunctionAttributes {
         let typeIcon = String(format: "%03d", type)
         let activeName = "fkticon_a_\(typeIcon).svg"

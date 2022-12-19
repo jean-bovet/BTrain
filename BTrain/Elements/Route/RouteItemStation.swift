@@ -16,14 +16,14 @@ struct RouteItemStation: Equatable, Codable {
     static func == (lhs: RouteItemStation, rhs: RouteItemStation) -> Bool {
         lhs.id == rhs.id
     }
-    
+
     var id = UUID().uuidString
-    
+
     var stationId: Identifier<Station>
-    
+
     /// The functions associated with this route item
     var functions: RouteItemFunctions?
-    
+
     func description(_ layout: Layout) -> String {
         if let station = layout.stations[stationId] {
             return "\(station.name)"
@@ -31,5 +31,4 @@ struct RouteItemStation: Equatable, Codable {
             return "\(stationId)"
         }
     }
-    
 }

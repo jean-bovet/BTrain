@@ -90,7 +90,7 @@ class SwitchboardTests: XCTestCase {
         train.locomotive = loc
         b1.block.length = 100
         b1.block.feedbacks.append(.init(id: "f1", feedbackId: .init(uuid: "f1"), distance: 10))
-        
+
         try controller.setupTrainToBlock(train, b1.block.id, naturalDirectionInBlock: .next)
         XCTAssertEqual(train.block, b1.block)
         XCTAssertEqual(train.positions, TrainPositions.both(blockId: b1.block.id, headIndex: b1.block.feedbacks.count, headDistance: 10.after, tailIndex: b1.block.feedbacks.count, tailDistance: 10.after))

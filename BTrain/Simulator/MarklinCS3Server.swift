@@ -58,14 +58,14 @@ final class MarklinCS3Server {
                 return .notFound
             }
         }
-        
+
         httpServer["/app/api/loks"] = { [weak self] _ in
             if let sSelf = self {
                 return .ok(.text(sSelf.loksContent()))
             } else {
                 return .ok(.text(""))
             }
-        }        
+        }
     }
 
     deinit {
@@ -112,12 +112,12 @@ final class MarklinCS3Server {
             return nil
         }
     }
-    
+
     private func functionIconGroups() -> String {
         let file = Bundle.main.url(forResource: "functionIconGroups", withExtension: nil, subdirectory: "CS3Server/app/api/loks:/")!
         return try! String(contentsOf: file)
     }
-    
+
     private func svgIcons() -> String {
         let file = Bundle.main.url(forResource: "fcticons", withExtension: "json", subdirectory: "CS3Server/images/svgSprites/")!
         return try! String(contentsOf: file)

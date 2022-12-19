@@ -64,7 +64,7 @@ extension TrainControlling {
         if shouldChangeDirection {
             return true
         }
-        
+
         return false
     }
 }

@@ -51,7 +51,7 @@ struct SwitchboardContainerView: View {
             }
             GeometryReader { geometry in
                 ScrollView([.horizontal, .vertical]) {
-                    if switchboard.isEmpty && !state.editing {
+                    if switchboard.isEmpty, !state.editing {
                         VStack {
                             Text("No Elements")
 

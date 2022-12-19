@@ -73,7 +73,7 @@ final class RouteResolver {
         let result = try pf.resolve(graph: layout, unresolvedPath)
         switch result {
         case let .success(resolvedPaths):
-            return .success(resolvedPaths.map { $0.elements.toResolvedRouteItems })
+            return .success(resolvedPaths.map(\.elements.toResolvedRouteItems))
 
         case let .failure(error):
             return .failure(error)

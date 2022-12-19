@@ -74,7 +74,7 @@ final class LayoutDiagnostic: ObservableObject {
     }
 
     func checkForDuplicateBlocks(_ errors: inout [DiagnosticError]) throws {
-        let enabledBlocks = layout.blocks.elements.filter { $0.enabled }
+        let enabledBlocks = layout.blocks.elements.filter(\.enabled)
         var ids = Set<Identifier<Block>>()
         for block in enabledBlocks {
             if ids.contains(block.id) {
@@ -138,7 +138,7 @@ final class LayoutDiagnostic: ObservableObject {
     }
 
     func checkForDuplicateTurnouts(_ errors: inout [DiagnosticError]) {
-        let enabledTurnouts = layout.turnouts.elements.filter { $0.enabled }
+        let enabledTurnouts = layout.turnouts.elements.filter(\.enabled)
 
         var ids = Set<Identifier<Turnout>>()
         for turnout in enabledTurnouts {
@@ -182,7 +182,7 @@ final class LayoutDiagnostic: ObservableObject {
     }
 
     func checkForDuplicateTrains(_ errors: inout [DiagnosticError]) {
-        let enabledTrains = layout.trains.elements.filter { $0.enabled }
+        let enabledTrains = layout.trains.elements.filter(\.enabled)
 
         var ids = Set<Identifier<Train>>()
         for train in enabledTrains {
@@ -216,7 +216,7 @@ final class LayoutDiagnostic: ObservableObject {
     }
 
     func checkForDuplicateLocomotives(_ errors: inout [DiagnosticError]) {
-        let enabledLocs = layout.locomotives.elements.filter { $0.enabled }
+        let enabledLocs = layout.locomotives.elements.filter(\.enabled)
         var ids = Set<Identifier<Locomotive>>()
         for loc in enabledLocs {
             if ids.contains(loc.id) {
@@ -306,7 +306,7 @@ final class LayoutDiagnostic: ObservableObject {
     }
 
     func checkForLengthAndDistance(_ errors: inout [DiagnosticError]) {
-        for block in layout.blocks.elements.filter({ $0.enabled }) {
+        for block in layout.blocks.elements.filter(\.enabled) {
             guard let bl = block.length else {
                 errors.append(DiagnosticError.blockMissingLength(block: block))
                 continue
@@ -323,17 +323,17 @@ final class LayoutDiagnostic: ObservableObject {
             }
         }
 
-        for turnout in layout.turnouts.elements.filter({ $0.enabled }) {
+        for turnout in layout.turnouts.elements.filter(\.enabled) {
             if turnout.length == nil {
                 errors.append(DiagnosticError.turnoutMissingLength(turnout: turnout))
             }
         }
-        for loc in layout.locomotives.elements.filter({ $0.enabled }) {
+        for loc in layout.locomotives.elements.filter(\.enabled) {
             if loc.length == nil {
                 errors.append(DiagnosticError.locMissingLength(loc: loc))
             }
         }
-        for train in layout.trains.elements.filter({ $0.enabled }) {
+        for train in layout.trains.elements.filter(\.enabled) {
             if train.wagonsLength == nil {
                 errors.append(DiagnosticError.trainMissingLength(train: train))
             }

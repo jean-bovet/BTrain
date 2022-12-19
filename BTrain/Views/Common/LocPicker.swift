@@ -21,7 +21,7 @@ struct LocPicker: View {
     }
 
     var locomotives: [Locomotive] {
-        doc.layout.locomotives.elements.filter { $0.enabled }
+        doc.layout.locomotives.elements.filter(\.enabled)
     }
 
     var body: some View {

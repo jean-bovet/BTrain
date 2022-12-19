@@ -54,7 +54,7 @@ struct TrainEventStateMachine {
         case .modeChanged:
             if train.mode == .managed {
                 train.routeWillStart()
-                
+
                 if try train.updateReservedBlocks() {
                     // Note: change the train direction is necessary after the necessary blocks
                     // have been reserved. Changing the direction will unblock the train which
@@ -84,7 +84,7 @@ struct TrainEventStateMachine {
             if train.state == .stopped && train.mode == .unmanaged {
                 train.routeDidStop()
             }
-            
+
             // Note: do not remove the reserved blocks if they are still settling. The train
             // can be in the stopped state because the reserved blocks are still settling and
             // the train does not have enough free distance to move.

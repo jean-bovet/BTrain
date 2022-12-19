@@ -14,7 +14,6 @@
 import XCTest
 
 final class MockTrainController: TrainControlling {
-    
     var id: String = UUID().uuidString
 
     var mode: StateMachine.TrainMode = .unmanaged
@@ -155,21 +154,21 @@ final class MockTrainController: TrainControlling {
 
     func stopImmediately() {}
 
-    func changeDirection() throws { }
+    func changeDirection() throws {}
 
     func reschedule() {
         // no-op
     }
-    
+
     func routeWillStart() {
         // no-op
     }
-    
+
     func routeDidStop() {
         // no-op
     }
-        
-    func logDebug(_ message: String) {
+
+    func logDebug(_: String) {
         // no-op
     }
 }

@@ -24,26 +24,26 @@ import Foundation
 //    ○─────────────────────────────○
 class Transition: Element, Codable, CustomStringConvertible {
     let id: Identifier<Transition>
-    
+
     // Socket to the first element
     var a: Socket
-    
+
     // Socket to the second element
     var b: Socket
-    
+
     // Contains the train that has reserved this transition,
     // or nil if no train has reserved it.
     var reserved: Identifier<Train>?
-    
+
     // The identifier of the train located inside this transition
     var train: Identifier<Train>?
-            
+
     /// Returns this transition but with socket a and b inverted. The returned class
     /// is a proxy to this one so any changes made to the proxy will be reflected in this class.
     var reverse: TransitionInverse {
         TransitionInverse(transition: self)
     }
-    
+
     var description: String {
         "\(a) -> \(b)"
     }
@@ -53,20 +53,20 @@ class Transition: Element, Codable, CustomStringConvertible {
         self.a = a
         self.b = b
     }
-    
+
     convenience init(id: String, a: Socket, b: Socket) {
         self.init(id: Identifier(uuid: id), a: a, b: b)
     }
-    
+
     // Returns true if a transition is the same as another one.
     // A transition is considered the same if it links the same two elements.
     func same(as t: Transition) -> Bool {
         a.contains(other: t.a) && b.contains(other: t.b) ||
-        a.contains(other: t.b) && b.contains(other: t.a)
+            a.contains(other: t.b) && b.contains(other: t.a)
     }
 
     // MARK: Codable
-    
+
     enum CodingKeys: CodingKey {
         case id, from, to, reserved, train
     }
@@ -89,7 +89,6 @@ class Transition: Element, Codable, CustomStringConvertible {
         try container.encode(reserved, forKey: CodingKeys.reserved)
         try container.encode(train, forKey: CodingKeys.train)
     }
-    
 }
 
 extension Transition: Restorable {
@@ -179,9 +178,8 @@ final class TransitionInverse: Transition {
         self.transition = transition
         super.init(id: transition.id, a: transition.a, b: transition.b)
     }
-    
-    required init(id: Identifier<Transition>, a: Socket, b: Socket) {
+
+    required init(id _: Identifier<Transition>, a _: Socket, b _: Socket) {
         fatalError("init(id:a:b:) is not supported for inverse transition")
     }
-    
 }

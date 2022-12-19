@@ -28,7 +28,7 @@ struct MarklinCS3 {
     let API_FUNCTIONS_ICONS = "images/svgSprites/fcticons.json"
 
     // MARK: - Locomotive
-    
+
     /// The definition of a locomotive
     struct Lok: Decodable {
         let name: String
@@ -39,7 +39,7 @@ struct MarklinCS3 {
         let icon: String
         let funktionen: [LokFunktion]
     }
-    
+
     /// The definition of a locomotive function
     struct LokFunktion: Decodable {
         /*
@@ -59,7 +59,7 @@ struct MarklinCS3 {
         let typ2: UInt32
         let isMoment: Bool
     }
-    
+
     /// Fetches all the locomotives
     /// - Parameter server: the Central Station IP address
     /// - Returns: the array of locomotives
@@ -91,19 +91,19 @@ struct MarklinCS3 {
             return nil
         }
     }
-    
+
     // MARK: - Functions
-    
+
     /// Definition of the group of function
     struct Functions: Decodable {
         let gruppe: [FunctionGroups]
     }
-    
+
     struct FunctionGroups: Decodable {
         let name: String
         let icon: [Function]
     }
-    
+
     struct Function: Decodable {
         //    {
         //      "byte1": "3",
@@ -135,8 +135,8 @@ struct MarklinCS3 {
         return try await fetch(url: url)
     }
 
-    typealias SvgSprites = [String:String]
-    
+    typealias SvgSprites = [String: String]
+
     /// Fetches all the SVG sprites defined in the CS3
     /// - Parameter server: the Central Station URL
     /// - Returns: the SVG sprites
@@ -144,7 +144,7 @@ struct MarklinCS3 {
         try await fetch(url: server.appending(path: API_FUNCTIONS_ICONS))
     }
 
-    private func fetch<E:Decodable>(url: URL) async throws -> E {
+    private func fetch<E: Decodable>(url: URL) async throws -> E {
         BTLogger.network.info("Fetching \(url)")
         let (data, _) = try await URLSession.shared.data(from: url)
         BTLogger.network.info("Got back \(data.count) bytes")

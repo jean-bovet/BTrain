@@ -30,5 +30,4 @@ struct Destination: Equatable, Codable {
         self.blockId = blockId
         self.direction = direction
     }
-
 }

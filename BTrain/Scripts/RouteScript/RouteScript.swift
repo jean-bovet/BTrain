@@ -42,7 +42,7 @@ extension RouteScript: Codable {
         self.init(id: id, name: name)
 
         commands = try container.decode([RouteScriptCommand].self, forKey: CodingKeys.commands)
-        
+
         if let lastAction = commands.last?.action, lastAction != .stop {
             commands.append(.init(action: .stop))
         }

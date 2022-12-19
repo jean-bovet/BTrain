@@ -446,7 +446,7 @@ class FixedRoutingTests: BTTestCase {
 
         // Train position should be updated although the feedback is not next to the train but a bit further.
         try p.assert("r1: {r1{b1 ≏ ≡ 🟢􀼮1 }} <r1<t0>> [r1[b2 ≏ ≏ ]] <t1(0,2)> [b3 ≏ ≏ ] <r1<t0(2,0)>> !{r1{b1 🟢􀼮1 ≡ ≏ }}")
-        
+
         // A feedback behind the train (in the same block) is triggered. Because the train has an allowedDirection of .forward,
         // that feedback is simply ignored (we could throw an exception in the future if we wanted to). Note that if the train
         // was allowed to move in any direction, the back position would be updated by that feedback.
@@ -574,7 +574,7 @@ class FixedRoutingTests: BTTestCase {
         // Train 2 stops because it has reached the end of the last block of its route (b1).
         try p.assert2("r1: {r2{b1 🔴!􀼮2 ≡ ≏ }} <t0,r> [b2 ≏ ≏ ] {r1{b3 ≡ 🟡􀼮1 ≏ }} <t1,r> [b4 ≏ ≏] {r2{b1 🔴!􀼮2 ≡ ≏ }}",
                       "r3: {r1{b3 ≡ 🟡􀼮1 ≏ }} <t1(0,2),r> [b5 ≏ ≏ ] <t0(2,0),r> !{r2{b1 ≏ ≡ 🔴!􀼮2  }}")
-        
+
         // Train 1 has stopped because it is in a station (b3). It will restart shortly after.
         try p.assert2("r1: {r2{b1 🔴!􀼮2 ≏ ≏ }} <t0,r> [b2 ≏ ≏ ] {r1{b3 ≏ ≡ 🔴􀼮1 }} <t1,r> [b4 ≏ ≏] {r2{b1 🔴!􀼮2 ≏ ≏ }}",
                       "r3: {r1{b3 ≏ ≡ 🔴􀼮1 }} <t1(0,2),r> [b5 ≏ ≏ ] <t0(2,0),r> !{r2{b1 ≏ ≏ 🔴!􀼮2 }}")
@@ -960,7 +960,7 @@ class FixedRoutingTests: BTTestCase {
 
         // Tip: use `try p.printASCII()` to get the inital ASCII representation
         try p.assert("r6: !{r16390{S3 􀼰16390 ≏ 􀼯16390 ≏ 􀼯16390 ≏ 🔴􀼮16390 }} <T15{ds}(3,2),s> <T18{sr}(0,2),r> [L1 ≏ ≏ ] <T19{sl}(1,0),s> <T20{sl}(1,0),s> <T22{sr}(0,2),r> [L3 ≏ ≏ ] <T21{sr}(2,0),r> <T22{sr}(1,0),r> <T20{sl}(0,1),s> <T19{sl}(0,1),s> ![L1 ≏ ≏ ] <T18{sr}(2,0),r> <T15{ds}(2,3),s> {r16390{S3 🔴􀼮16390 ≏ 􀼯16390 ≏ 􀼯16390 ≏ 􀼰16390 }}")
-        
+
         try p.start()
 
         try p.assert("r6: !{r16390{S3 ≏ ≏ 􀼰16390 ≏ 🔵􀼮16390 }} <r16390<T15{ds}(3,2),s>> <r16390<T18{sr}(0,2),r>> [r16390[L1 ≏ ≏ ]] <r16390<T19{sl}(1,0),s>> <r16390<T20{sl}(1,0),s>> <r16390<T22{sr}(0,2),r>> [r16390[L3 ≏ ≏ ]] <T21{sr}(2,0),r> <r16390<T22{sr}(1,0),r>> <r16390<T20{sl}(0,1),s>> <r16390<T19{sl}(0,1),s>> ![r16390[L1 ≏ ≏ ]] <r16390<T18{sr}(2,0),r>> <r16390<T15{ds}(2,3),s>> {r16390{S3 🔵􀼮16390 ≏ 􀼰16390 ≏ ≏ }}")
@@ -969,7 +969,7 @@ class FixedRoutingTests: BTTestCase {
 
         try p.assert("r6: !{S3 ≏ ≏ ≏ } <T15{ds}(3,2),s> <T18{sr}(0,2),r> [L1 ≏ ≏ ] <T19{sl}(1,0),s> <T20{sl}(1,0),s> <r16390<T22{sr}(0,2),r>> [r16390[L3 􀼰16390 ≡ 🟡􀼮16390 ≏ ]] <T21{sr}(2,0),r> <r16390<T22{sr}(1,0),r>> <T20{sl}(0,1),s> <T19{sl}(0,1),s> ![L1 ≏ ≏ ] <T18{sr}(2,0),r> <T15{ds}(2,3),s> {S3 ≏ ≏ ≏ }")
     }
-    
+
     /// Test that a train that can move in any direction can start in a route that has a starting block
     /// that has different direction than the train located in that block.
     func testRouteChangeDirection() throws {
@@ -979,14 +979,14 @@ class FixedRoutingTests: BTTestCase {
         let train = layout.trains[0]
         let blockA = layout.block(named: "A")
         try doc.layoutController.setupTrainToBlock(train, blockA.id, naturalDirectionInBlock: .previous)
-        
+
         train.locomotive?.allowedDirections = .forward
         XCTAssertThrowsError(try doc.start(train: train.id, withRoute: route.id, destination: nil))
-        
+
         train.locomotive?.allowedDirections = .any
         XCTAssertNoThrow(try doc.start(train: train.id, withRoute: route.id, destination: nil))
     }
-    
+
     func testASCIIProducer() throws {
         let layout = LayoutLoop1().newLayout().removeTrainGeometry()
         let producer = LayoutASCIIProducer(layout: layout)

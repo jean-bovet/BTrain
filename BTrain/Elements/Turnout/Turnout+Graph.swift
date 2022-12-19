@@ -31,7 +31,7 @@ extension Turnout: GraphNode {
     }
 
     func sockets() -> [SocketId] {
-        allSockets.compactMap { $0.socketId }
+        allSockets.compactMap(\.socketId)
     }
 
     func reachableSockets(from socket: SocketId) -> [SocketId] {

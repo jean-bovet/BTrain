@@ -13,10 +13,9 @@
 import Foundation
 
 extension TrainPositions {
-
     func newPositionsWith(trainMovesForward: Bool, detectedPosition: TrainPosition, reservation: Train.Reservation) throws -> TrainPositions {
         var newLocation = self
-        
+
         if trainMovesForward {
             //         Block Natural Direction: ────────▶  ────────▶                    ────────▶  ◀────────
             //        Train Direction In Block: ─ ─ ─ ─ ▶  ─ ─ ─ ─ ▶                    ─ ─ ─ ─ ▶  ─ ─ ─ ─ ▶
@@ -63,5 +62,4 @@ extension TrainPositions {
 
         return newLocation
     }
-    
 }

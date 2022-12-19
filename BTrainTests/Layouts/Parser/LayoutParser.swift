@@ -41,7 +41,7 @@ import Foundation
 final class LayoutParser {
     let routeStrings: [String]
     let resolver: LayoutParserResolver
-    
+
     final class ParsedLayout {
         var blocks = Set<Block>()
         var turnouts = Set<Turnout>()

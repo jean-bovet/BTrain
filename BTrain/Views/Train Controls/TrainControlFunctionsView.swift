@@ -13,17 +13,16 @@
 import SwiftUI
 
 struct TrainControlFunctionsView: View {
-    
     let locomotive: Locomotive
 
     let interface: CommandInterface
-    
+
     let catalog: LocomotiveFunctionsCatalog
-    
+
     let functionsController: TrainFunctionsController
-    
+
     @ObservedObject var functions: LocomotiveFunctions
-        
+
     struct FunctionAttributes {
         let function: CommandLocomotiveFunction
         let name: String
@@ -45,11 +44,11 @@ struct TrainControlFunctionsView: View {
         }
         return attributes
     }
-        
+
     static let iconSize = 20.0
-    
+
     let columns = [
-        GridItem(.adaptive(minimum: iconSize))
+        GridItem(.adaptive(minimum: iconSize)),
     ]
 
     var body: some View {
@@ -68,17 +67,17 @@ struct TrainControlFunctionsView: View {
                     }
                 }
                 .if(functionState(function: fattrs.function), transform: { $0.foregroundColor(.yellow) })
-                    .help("f\(fattrs.function.nr): \(fattrs.name) (\(fattrs.function.type))")
-                    .buttonStyle(.borderless)
-                    .fixedSize()
+                .help("f\(fattrs.function.nr): \(fattrs.name) (\(fattrs.function.type))")
+                .buttonStyle(.borderless)
+                .fixedSize()
             }
         }
     }
-    
+
     private func functionState(function: CommandLocomotiveFunction) -> Bool {
         functions.states[function.nr] == 1
     }
-    
+
     private func toggleFunction(function: CommandLocomotiveFunction) {
         let state = functionState(function: function)
         // Note: the state of the function will be updated
@@ -91,21 +90,20 @@ struct TrainControlFunctionsView: View {
 }
 
 struct TrainFunctionsView_Previews: PreviewProvider {
-    
     static let locomotive = {
         var loc = Locomotive()
-        for index in 0...20 {
-            loc.functions.definitions.append(CommandLocomotiveFunction(nr: UInt8(index), state: 0, type: UInt32(index)+1))
+        for index in 0 ... 20 {
+            loc.functions.definitions.append(CommandLocomotiveFunction(nr: UInt8(index), state: 0, type: UInt32(index) + 1))
         }
         return loc
     }()
-    
+
     static var previews: some View {
         TrainControlFunctionsView(locomotive: locomotive,
                                   interface: MarklinInterface(),
                                   catalog: LocomotiveFunctionsCatalog(interface: MarklinInterface()),
                                   functionsController: TrainFunctionsController(catalog: nil, interface: MarklinInterface()),
                                   functions: locomotive.functions)
-        .frame(width: 200)
+            .frame(width: 200)
     }
 }

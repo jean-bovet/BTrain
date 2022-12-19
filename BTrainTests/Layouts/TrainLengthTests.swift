@@ -76,7 +76,7 @@ class TrainLengthTests: XCTestCase {
         assert(b1, t1)
         assert(b4, t1)
         assert(b3, t1)
-        assert(b2,  nil)
+        assert(b2, nil)
 
         l1.length = 80
         t1.positions = .head(blockId: b1.id, index: 2, distance: 85)

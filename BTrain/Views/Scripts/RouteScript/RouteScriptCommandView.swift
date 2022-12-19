@@ -19,7 +19,7 @@ struct RouteScriptCommandView: View {
     @Binding var command: RouteScriptCommand
     @Binding var commandErrorIds: [String]
     @State private var showFunctionsSheet = false
-    
+
     var functions: some View {
         HStack {
             if command.functions.isEmpty {
@@ -38,8 +38,8 @@ struct RouteScriptCommandView: View {
                             Text("f\(function.type)")
                         }
                     }
-                    .if(function.trigger != .disable, transform: { $0.foregroundColor(.yellow)})
-                        .help(doc.locomotiveFunctionsCatalog.name(for: function.type) ?? "")
+                    .if(function.trigger != .disable, transform: { $0.foregroundColor(.yellow) })
+                    .help(doc.locomotiveFunctionsCatalog.name(for: function.type) ?? "")
                 }
                 Button("Edit…") {
                     showFunctionsSheet.toggle()
@@ -47,7 +47,7 @@ struct RouteScriptCommandView: View {
             }
         }
     }
-    
+
     var body: some View {
         HStack {
             if command.action.draggable {
@@ -81,9 +81,9 @@ struct RouteScriptCommandView: View {
                     .labelsHidden()
 
                 Text("and")
-                
+
                 functions
-                
+
             case .stop:
                 Text("Completion:")
                     .fixedSize()
@@ -119,9 +119,9 @@ struct RouteScriptCommandView: View {
                     Stepper("and wait \(command.waitDuration) seconds", value: $command.waitDuration, in: 0 ... 100, step: 10)
                         .fixedSize()
                 }
-                
+
                 Text("and")
-                
+
                 functions
 
             case .loop:

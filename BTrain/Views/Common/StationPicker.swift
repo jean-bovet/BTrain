@@ -19,9 +19,7 @@ struct StationPicker: View {
     var sortedStationIds: [Identifier<Station>] {
         layout.stations.elements.sorted {
             $0.name < $1.name
-        }.map {
-            $0.id
-        }
+        }.map(\.id)
     }
 
     var body: some View {

@@ -13,11 +13,10 @@
 import SwiftUI
 
 struct RouteScriptFunctionsView: View {
-        
     let catalog: LocomotiveFunctionsCatalog
     @Binding var cmd: RouteScriptCommand
     @State private var editedCmd = RouteScriptCommand(action: .move)
-    
+
     @Environment(\.presentationMode) var presentationMode
 
     var body: some View {
@@ -36,16 +35,16 @@ struct RouteScriptFunctionsView: View {
                 Spacer()
             } else {
                 List {
-                    ForEach($editedCmd.functions, id:\.self) { function in
+                    ForEach($editedCmd.functions, id: \.self) { function in
                         HStack {
                             RouteScriptFunctionLineView(catalog: catalog, function: function)
-                            
+
                             Spacer()
-                            
+
                             Button("􀁌") {
                                 addFunction()
                             }.buttonStyle(.borderless)
-                            
+
                             Button("􀁎") {
                                 removeFunction(function: function.wrappedValue)
                             }.buttonStyle(.borderless)
@@ -70,28 +69,27 @@ struct RouteScriptFunctionsView: View {
                 }
                 .keyboardShortcut(.defaultAction)
             }.padding()
-        }.onAppear() {
+        }.onAppear {
             editedCmd = cmd
         }
     }
-    
+
     func addFunction() {
         editedCmd.functions.append(.init(type: 1))
     }
-    
+
     func removeFunction(function: RouteItemFunction) {
         editedCmd.functions.removeAll(where: { $0.id == function.id })
     }
 }
 
 struct RouteScriptFunctionsView_Previews: PreviewProvider {
-    
     static let cmd = {
         var command = RouteScriptCommand(action: .move)
         command.functions = [.init(type: 0)]
         return command
     }()
-    
+
     static var previews: some View {
         Group {
             RouteScriptFunctionsView(catalog: LocomotiveFunctionsCatalog(interface: MarklinInterface()), cmd: .constant(RouteScriptCommand(action: .move)))

@@ -216,7 +216,7 @@ final class LocomotiveSpeed: ObservableObject, Equatable, CustomStringConvertibl
         }
 
         let x = (Double(index) - Double(previousEntry.steps.value)) / (Double(nextEntry.steps.value) - Double(previousEntry.steps.value))
-        guard !x.isNaN && !x.isInfinite else {
+        guard !x.isNaN, !x.isInfinite else {
             BTLogger.error("Unexpected x value of \(x) for previous steps \(previousEntry.steps.value) and next steps \(nextEntry.steps.value)")
             return nil
         }

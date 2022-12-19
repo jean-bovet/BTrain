@@ -173,5 +173,4 @@ class BlockTests: XCTestCase {
         XCTAssertEqual(block.stopFeedback(for: .next), f4)
         XCTAssertEqual(block.stopFeedback(for: .previous), f1)
     }
-
 }

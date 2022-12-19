@@ -13,7 +13,6 @@
 import Foundation
 
 extension TrainPosition {
-        
     /// Returns true if the location is after ``other``, in the direction of travel of the train.
     /// - Parameters:
     ///   - other: the other location
@@ -43,5 +42,4 @@ extension TrainPosition {
             }
         }
     }
-    
 }

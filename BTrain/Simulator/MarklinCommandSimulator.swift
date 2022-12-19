@@ -128,7 +128,7 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
             guard let loc = train.locomotive else {
                 continue
             }
-            
+
             if let simTrain = locomotives.first(where: { $0.id == loc.id }) {
                 simTrain.speed = loc.speed.actualSteps
                 simTrain.directionForward = loc.directionForward
@@ -267,7 +267,7 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
         }
     }
 
-    func functionChanged(address: UInt32, decoderType: DecoderType?, index: UInt8, value: UInt8) {
+    func functionChanged(address: UInt32, decoderType _: DecoderType?, index: UInt8, value: UInt8) {
         let message = MarklinCANMessageFactory.function(addr: address, index: index, value: value)
         send(message.ack)
     }
@@ -410,7 +410,7 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
         guard try layout.atEndOfBlock(train: train) == false else {
             return false
         }
-        
+
         let naturalDirection = block.trainInstance?.direction == .next
         let feedback: Block.BlockFeedback
         if naturalDirection {
@@ -438,10 +438,10 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
             BTLogger.debug("[Simulator] Trigger feedback \(feedback.name) to move train \(train.name) within \(block.name)")
             triggerFeedback(feedback: feedback)
         }
-        
+
         return true
     }
-    
+
     func moveTrainToNextBlock(train: Train, block: Block, layout: Layout) throws -> Bool {
         guard let entryFeedback = try layout.entryFeedback(for: train) else {
             return false
@@ -454,13 +454,13 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
                 setFeedback(feedback: feedback, value: 0)
             }
         }
-        
+
         BTLogger.debug("[Simulator] Trigger feedback \(entryFeedback.feedback.name) to move train \(train.name) to next block \(entryFeedback.block.name)")
         triggerFeedback(feedback: entryFeedback.feedback)
-        
+
         return true
     }
-    
+
     func triggerFeedback(feedback: Feedback) {
         setFeedback(feedback: feedback, value: 1)
         Timer.scheduledTimer(withTimeInterval: 0.25 * BaseTimeFactor, repeats: false) { _ in

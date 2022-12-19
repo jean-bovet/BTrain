@@ -16,14 +16,13 @@ import XCTest
 
 /// Helper class that the unit test uses to prepare, start and stop a train in a layout.
 final class Package {
-
     enum Position {
         case start
         case end
         case automatic
         case custom(index: Int)
     }
-    
+
     let digitalController = MockCommandInterface()
     let layout: Layout
     let asserter: LayoutAsserter
@@ -64,7 +63,7 @@ final class Package {
         let route = layout.route(for: .init(uuid: routeID), trainId: .init(uuid: trainID))!
         let loc = train.locomotive!
         let block = layout.blocks[Identifier<Block>(uuid: fromBlockId)]!
-        
+
         train.routeId = route.id
         switch position {
         case .start:
@@ -74,14 +73,14 @@ final class Package {
             let distance = block.feedbacks.last!.distance!
             let location = TrainPositions.head(blockId: block.id, index: block.feedbacks.count, distance: distance.after)
             try setTrainInBlock(train: train, block: block, positions: location, direction: direction)
-        case .custom(let index):
-            let distance = block.feedbacks[index-1].distance!
+        case let .custom(index):
+            let distance = block.feedbacks[index - 1].distance!
             let location = TrainPositions.head(blockId: block.id, index: index, distance: direction == .next ? distance.after : distance.before)
             try setTrainInBlock(train: train, block: block, positions: location, direction: direction)
         case .automatic:
             try layoutController.setupTrainToBlock(train, block.id, naturalDirectionInBlock: direction)
         }
-                
+
         XCTAssertEqual(loc.speed.requestedKph, 0)
         XCTAssertEqual(train.scheduling, .unmanaged)
         XCTAssertEqual(train.state, .stopped)
@@ -98,7 +97,7 @@ final class Package {
         try layoutController.reservation.freeElements(train: train)
         try layoutController.reservation.occupyBlocksWith(train: train)
     }
-    
+
     func start(destination: Destination? = nil, expectedState: Train.State = .running, routeSteps: [String]? = nil) throws {
         try start(routeID: route.id.uuid, trainID: train.id.uuid, destination: destination, expectedState: expectedState, routeSteps: routeSteps)
     }
@@ -170,15 +169,14 @@ final class Package {
 }
 
 extension Layout: LayoutParserResolver {
-    
     func blockId(forBlockName: String) -> BTrain.Identifier<BTrain.Block> {
         block(named: forBlockName).id
     }
-    
+
     func turnoutId(forTurnoutName: String) -> BTrain.Identifier<BTrain.Turnout> {
         turnout(named: forTurnoutName).id
     }
-    
+
     /// Returns the distance of the train in the specified block, given its direction of travel within the block and the feedback index.
     /// - Parameters:
     ///   - index: the feedback index that was triggered
@@ -204,7 +202,7 @@ extension Layout: LayoutParserResolver {
                 // Block:    [   f0    f1   ]>
                 // Distance: |----->
                 // Train:  -------->
-                return block.feedbacks[index-1].distance!.after
+                return block.feedbacks[index - 1].distance!.after
             } else {
                 // Block:    [    f0     f1   ]>
                 // Distance: |--------->
@@ -212,10 +210,9 @@ extension Layout: LayoutParserResolver {
                 if index < block.feedbacks.count {
                     return block.feedbacks[index].distance!.before
                 } else {
-                    return block.feedbacks[index-1].distance!.after
+                    return block.feedbacks[index - 1].distance!.after
                 }
             }
         }
     }
-
 }

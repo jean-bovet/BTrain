@@ -18,26 +18,22 @@ struct BlockPicker: View {
 
     var stationBlockIds: [Identifier<Block>] {
         layout.blocks.elements
-            .filter({
+            .filter {
                 $0.category == .station
-            })
+            }
             .sorted {
                 $0.name < $1.name
-            }.map {
-                $0.id
-            }
+            }.map(\.id)
     }
 
     var blockIds: [Identifier<Block>] {
         layout.blocks.elements
-            .filter({
+            .filter {
                 $0.category != .station
-            })
+            }
             .sorted {
                 $0.name < $1.name
-            }.map {
-                $0.id
-            }
+            }.map(\.id)
     }
 
     var body: some View {

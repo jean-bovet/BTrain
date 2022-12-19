@@ -11,7 +11,7 @@
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 import Foundation
-                                         
+
 /// The train positions: a front position and a back position.
 ///
 /// Notes:
@@ -19,13 +19,12 @@ import Foundation
 /// - A train that only moves forward needs only one magnet at the front of the train.
 /// - A train that moves forward and backward needs a magnet at the front and the back of the train
 struct TrainPositions: Equatable, Codable {
-    
     /// The position at the head of the train (where the locomotive is located)
     var head: TrainPosition?
-    
+
     /// The position at the tail of the train (where the last car is located)
     var tail: TrainPosition?
-    
+
     func description(_ layout: Layout) -> String {
         if let head = head, let tail = tail {
             return "􀼯\(tail.description(layout))-\(head.description(layout))􀼮"
@@ -37,7 +36,7 @@ struct TrainPositions: Equatable, Codable {
             return "􀼯?-?􀼮"
         }
     }
-    
+
     static func head(blockId: Identifier<Block>, index: Int, distance: Double) -> TrainPositions {
         TrainPositions(head: .init(blockId: blockId, index: index, distance: distance), tail: nil)
     }
@@ -50,5 +49,4 @@ struct TrainPositions: Equatable, Codable {
         TrainPositions(head: .init(blockId: blockId, index: headIndex, distance: headDistance),
                        tail: .init(blockId: blockId, index: tailIndex, distance: tailDistance))
     }
-
 }

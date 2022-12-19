@@ -43,7 +43,7 @@ struct DocumentView: View {
                     DeveloperView(doc: document)
                         .frame(height: 150)
                 }
-                if document.simulator.started && showSimulator {
+                if document.simulator.started, showSimulator {
                     SimulatorView(simulator: document.simulator)
                         .frame(height: 300)
                 }

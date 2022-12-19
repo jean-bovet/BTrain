@@ -37,9 +37,9 @@ final class LayoutFeedbackMonitor {
         if let currentBlock = train.block, blocks.isEmpty {
             blocks.append(currentBlock)
         }
-        
+
         // Gather all feedbacks in all the block occupied by the train
-        for feedback in blocks.flatMap({$0.feedbacks}) {
+        for feedback in blocks.flatMap(\.feedbacks) {
             expectedFeedbacks.insert(feedback.feedbackId)
         }
 
@@ -55,7 +55,7 @@ final class LayoutFeedbackMonitor {
     // Detect any unexpected feedback and throw an exception if that is the case.
     // It is up to the caller to handle that exception in the appropriate manner.
     func handleUnexpectedFeedbacks() throws {
-        for feedback in layout.feedbacks.elements.filter({ $0.detected }) {
+        for feedback in layout.feedbacks.elements.filter(\.detected) {
             if !expectedFeedbacks.contains(feedback.id) {
                 BTLogger.error("Unexpected feedback \(feedback.name) detected! Expected feedbacks: \(expectedFeedbacks.toString(layout: layout))")
                 throw LayoutError.unexpectedFeedback(feedback: feedback)

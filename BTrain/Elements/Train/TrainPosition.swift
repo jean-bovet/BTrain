@@ -17,33 +17,32 @@ import Foundation
 ///
 /// Note: the direction of travel of the train is used to determine if a position is before (or after) another position in the same block.
 struct TrainPosition: Equatable, Codable {
-    
     enum TrainPositionError: Error {
         case occupiedBlockNotFound(blockId: Identifier<Block>)
     }
-    
+
     /// The index of the block in which that position is located.
     /// Note: the index is increasing in the direction of travel of the train
     var blockId: Identifier<Block>
-    
+
     /// The index of the position within the block.
     /// Note: the index is increasing in the natural direction of the block (.next)
     var index: Int
-    
+
     /// Distance, in cm, from the beginning of the block in the direction of travel of the train
     var distance: Double
-        
+
     /// When comparing to position, the distance is only compared up to a thousandth because with
     /// double operations, there will be rouding errors.
     /// - Parameters:
     ///   - lhs: The left-hand side position
     ///   - rhs: The right-hand side position
     /// - Returns: true if both positions are equal
-    static func ==(lhs: TrainPosition, rhs: TrainPosition) -> Bool {
+    static func == (lhs: TrainPosition, rhs: TrainPosition) -> Bool {
         let delta = fabs(lhs.distance.distance(to: rhs.distance))
         return lhs.blockId == rhs.blockId
-        && lhs.index == rhs.index
-        && delta < 0.0001
+            && lhs.index == rhs.index
+            && delta < 0.0001
     }
 
     func description(_ layout: Layout) -> String {
@@ -53,5 +52,4 @@ struct TrainPosition: Equatable, Codable {
             return "\(blockId.uuid):\(index):\(String(format: "%.3f", distance))"
         }
     }
-
 }

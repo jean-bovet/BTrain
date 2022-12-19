@@ -49,7 +49,7 @@ final class SwitchBoard: ObservableObject {
     @Published var idealSize: CGSize = .zero
 
     var isEmpty: Bool {
-        provider.shapes.filter { $0.visible }.isEmpty
+        provider.shapes.filter(\.visible).isEmpty
     }
 
     init(layout: Layout, provider: ShapeProvider, context: ShapeContext) {

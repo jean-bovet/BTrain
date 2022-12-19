@@ -48,7 +48,7 @@ struct LocDetailsAttributesSectionView: View {
                     TextField("Length:", value: value, format: .number)
                         .unitStyle("cm")
                 }
-                
+
                 UndoProvider($loc.allowedDirections) { value in
                     Picker("Direction:", selection: value) {
                         ForEach(Locomotive.AllowedDirection.allCases, id: \.self) { direction in

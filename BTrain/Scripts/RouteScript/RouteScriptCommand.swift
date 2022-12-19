@@ -20,15 +20,15 @@ struct RouteScriptCommand: ScriptCommand, Identifiable, Hashable {
         case move = "Move"
         case loop = "Repeat"
         case stop = "Stop"
-        
+
         var draggable: Bool {
             self == .move || self == .loop
         }
-        
+
         var mutable: Bool {
             self == .move || self == .loop
         }
-        
+
         var deletable: Bool {
             self == .move || self == .loop
         }
@@ -52,7 +52,7 @@ struct RouteScriptCommand: ScriptCommand, Identifiable, Hashable {
     var stationId: Identifier<Station>?
 
     var functions = [RouteItemFunction]()
-    
+
     init(id: UUID = UUID(), action: Action) {
         self.id = id
         self.action = action

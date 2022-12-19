@@ -109,5 +109,4 @@ extension Block {
             return stopFeedbackPrevious ?? defaultStopFeedback(for: .previous)
         }
     }
-
 }

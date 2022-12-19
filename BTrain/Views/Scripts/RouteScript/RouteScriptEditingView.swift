@@ -33,7 +33,7 @@ struct RouteScriptEditingView: View {
             }
         }) { script in
             RouteScriptEditorView(doc: doc, layout: layout, script: script)
-        }.onDisappear() {
+        }.onDisappear {
             layout.updateRoutesUsingRouteScripts()
         }
     }

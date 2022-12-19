@@ -15,13 +15,12 @@ import XCTest
 @testable import BTrain
 
 final class LayoutReservationTests: XCTestCase {
-
     func testRemoveLeadingBlocks() throws {
         let layout = LayoutComplex().newLayout()
         let train = layout.trains[0]
-                
+
         let r = LayoutReservation(layout: layout, executor: nil, verbose: false)
-        
+
         XCTAssertTrue(train.leading.items.isEmpty)
 
         r.removeLeadingReservation(train: train)
@@ -30,13 +29,13 @@ final class LayoutReservationTests: XCTestCase {
         train.leading.append(layout.blocks[0])
         train.leading.append(layout.turnouts[0])
         train.leading.append(layout.transitions[0])
-        
+
         XCTAssertEqual(train.leading.items.count, 3)
-        
+
         r.removeLeadingReservation(train: train)
         XCTAssertTrue(train.leading.items.isEmpty)
     }
-    
+
     // ┌─────────┐           ┌──────┐   ┌──────┐  ┌──────┐            ┌──────┐
     // │    A    │──▶  AB  ─▶│  B   │──▶│  C   │─▶│  D   │──▶  DE  ──▶│  E   │
     // └─────────┘           └──────┘   └──────┘  └──────┘            └──────┘
@@ -47,11 +46,11 @@ final class LayoutReservationTests: XCTestCase {
     func testUpdateReservedBlocks() throws {
         let layout = LayoutPointToPoint().newLayout()
         let r = LayoutReservation(layout: layout, executor: nil, verbose: false)
-        
+
         let train = layout.trains[0]
         let blockA = layout.block(named: "A")
         let route = layout.route(named: "ABCDE")
-        
+
         train.block = blockA
         train.positions = .both(blockId: blockA.id, headIndex: blockA.feedbacks.count, headDistance: blockA.feedbacks.last!.distance!.after, tailIndex: 0, tailDistance: 0.after)
         train.routeStepIndex = 0
@@ -64,30 +63,30 @@ final class LayoutReservationTests: XCTestCase {
 
         try route.completePartialSteps(layout: layout, train: train)
         XCTAssertEqual(route.steps.toStrings(layout), ["A:next", "B:next", "C:next", "D:next", "E:next"])
-        
+
         XCTAssertEqual(try r.updateReservedBlocks(train: train), .success)
-        
+
         XCTAssertEqual(train.occupied.items.count, 1)
         XCTAssertEqual(train.occupied.blocks.toBlockNames, ["A"])
         XCTAssertEqual(train.leading.items.count, 4)
         XCTAssertEqual(train.leading.blocks.toBlockNames, ["B"])
-        
+
         XCTAssertEqual(try r.updateReservedBlocks(train: train), .successAndUnchanged)
 
         XCTAssertTrue(r.removeLeadingReservation(train: train))
-        
+
         XCTAssertEqual(train.occupied.items.count, 1)
         XCTAssertTrue(train.leading.items.isEmpty)
-        
+
         XCTAssertTrue(r.removeOccupation(train: train))
 
         XCTAssertTrue(train.occupied.items.isEmpty)
         XCTAssertTrue(train.leading.items.isEmpty)
-        
+
         XCTAssertFalse(r.removeOccupation(train: train))
-        
+
         XCTAssertNotNil(train.block?.trainInstance)
-        
+
         train.occupied.append(train.block!)
         XCTAssertTrue(r.removeOccupation(train: train, removeFrontBlock: true))
         XCTAssertNil(train.block?.trainInstance)

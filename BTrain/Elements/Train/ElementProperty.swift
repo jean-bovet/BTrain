@@ -10,8 +10,8 @@
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-import Foundation
 import Combine
+import Foundation
 
 /// Property wrapper that simplifies the management of a reference to an element identifier
 /// while also having the element instance available.
@@ -21,15 +21,14 @@ import Combine
 ///
 /// However, it is useful to also have access to the element instance itself to simplify the code which this property
 /// wrapper makes possible.
-@propertyWrapper struct ElementProperty<E:LayoutElement&AnyObject> {
-    
+@propertyWrapper struct ElementProperty<E: LayoutElement & AnyObject> {
     /// We need to use this static subscript in order to get a hold of the enclosing
     /// instance of this property wrapper to inform it of any changes to the
     /// stored value of this wrapper.
     /// See [this blog](https://www.swiftbysundell.com/articles/accessing-a-swift-property-wrappers-enclosing-instance/)
     static subscript<T: ObservableObject>(
         _enclosingInstance instance: T,
-        wrapped wrappedKeyPath: ReferenceWritableKeyPath<T, E?>,
+        wrapped _: ReferenceWritableKeyPath<T, E?>,
         storage storageKeyPath: ReferenceWritableKeyPath<T, Self>
     ) -> E? {
         get {
@@ -40,10 +39,10 @@ import Combine
             if let publisher = instance.objectWillChange as? ObservableObjectPublisher {
                 publisher.send()
             }
-            
+
             // Notify the publisher of the property wrapper itself of the change
             instance[keyPath: storageKeyPath].publisher.send(newValue)
-            
+
             if let newValue = newValue {
                 instance[keyPath: storageKeyPath].storage = .init(newValue)
             } else {
@@ -51,7 +50,7 @@ import Combine
             }
         }
     }
-    
+
     var elementId: Identifier<E.ItemType>?
 
     private var storage: WeakObject<E>? {
@@ -59,21 +58,20 @@ import Combine
             elementId = storage?.value?.id
         }
     }
-    
+
     @available(*, unavailable,
-                message: "@Published can only be applied to classes"
-    )
+               message: "@Published can only be applied to classes")
     var wrappedValue: E? {
         get { fatalError() }
         set { fatalError() }
     }
-    
+
     private var publisher = PassthroughSubject<E?, Never>()
 
     var projectedValue: AnyPublisher<E?, Never> {
-        return self.publisher.eraseToAnyPublisher()
+        self.publisher.eraseToAnyPublisher()
     }
-    
+
     /// Restores the element instance using the specified container and the underlying elementId
     /// defined in this wrapper. This method must be called once after deserialization.
     /// - Parameter container: the container

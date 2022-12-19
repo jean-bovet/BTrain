@@ -59,7 +59,7 @@ final class BlockShape: Shape, DraggableShape, ConnectableShape {
         }
         return r
     }
-    
+
     weak var layout: Layout?
     let block: Block
 

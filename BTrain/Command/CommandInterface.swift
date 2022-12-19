@@ -56,11 +56,11 @@ protocol CommandInterface: AnyObject, MetricsProvider {
     ///   - decoder: the decoder
     /// - Returns: the corresponding number of steps
     func speedSteps(for value: SpeedValue, decoder: DecoderType) -> SpeedStep
-        
+
     /// Returns all the locomotive functions available in the Digital Controller
     /// - Returns: an array of locomotive function attributes
     func defaultLocomotiveFunctionAttributes() -> [CommandLocomotiveFunctionAttributes]
-    
+
     /// Returns the attributes for the specified locomotive function type
     /// - Parameter type: the type of the locomotive function
     /// - Returns: the attributes

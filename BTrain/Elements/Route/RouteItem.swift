@@ -43,7 +43,7 @@ enum RouteItem: Identifiable, Equatable {
         case let .station(station): return station.id
         }
     }
-    
+
     func description(_ layout: Layout) -> String {
         switch self {
         case let .block(block): return block.description(layout)
@@ -54,9 +54,8 @@ enum RouteItem: Identifiable, Equatable {
 }
 
 extension Array where Element == RouteItem {
-    
     func description(_ layout: Layout) -> [String] {
-        map({$0.description(layout)})
+        map { $0.description(layout) }
     }
 }
 

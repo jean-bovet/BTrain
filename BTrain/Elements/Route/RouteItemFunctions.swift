@@ -14,14 +14,12 @@ import Foundation
 
 /// Functions associated with a specific route item
 struct RouteItemFunctions: Codable, Equatable {
-    
     static func == (lhs: RouteItemFunctions, rhs: RouteItemFunctions) -> Bool {
         lhs.id == rhs.id
     }
 
     var id = UUID().uuidString
-    
+
     /// The array of functions to execute
     var functions: [RouteItemFunction]?
-    
 }

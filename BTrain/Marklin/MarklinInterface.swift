@@ -38,7 +38,7 @@ final class MarklinInterface: CommandInterface, ObservableObject {
     private var completionBlocks = [MarklinCANMessage: [CompletionBlock]]()
 
     private let resources = MarklinInterfaceResources()
-    
+
     /// Returns the URL of the CS3 server
     private var serverURL: URL? {
         guard let address = client?.address else {
@@ -52,10 +52,10 @@ final class MarklinInterface: CommandInterface, ObservableObject {
             // When running with a real CS3, do not use the port otherwise the CS3 won't respond correctly.
             port = ""
         }
-        
+
         return URL(string: "http://\(address)\(port)")
     }
-    
+
     func connect(server: String, port: UInt16, onReady: @escaping () -> Void, onError: @escaping (Error) -> Void, onStop: @escaping () -> Void) {
         client = Client(address: server, port: port)
         if let client = client {
@@ -135,13 +135,13 @@ final class MarklinInterface: CommandInterface, ObservableObject {
     func defaultLocomotiveFunctionAttributes() -> [CommandLocomotiveFunctionAttributes] {
         resources.locomotiveFunctions()
     }
-    
+
     func locomotiveFunctionAttributesFor(type: UInt32) -> CommandLocomotiveFunctionAttributes {
         resources.locomotiveFunctionAttributesFor(type: type)
     }
 
     // MARK: -
-    
+
     func onMessage(msg: MarklinCANMessage) {
         if collectMessages {
             messages.append(msg)
@@ -289,8 +289,8 @@ extension MarklinCS3.Lok {
     }
 
     func toCommand(icon: Data?) -> CommandLocomotive {
-        let actualFunctions = funktionen.filter({$0.typ2 != 0})
-        let functions = actualFunctions.map { CommandLocomotiveFunction(nr: $0.nr, state: $0.state, type: $0.typ2, toggle: .value($0.isMoment))}
+        let actualFunctions = funktionen.filter { $0.typ2 != 0 }
+        let functions = actualFunctions.map { CommandLocomotiveFunction(nr: $0.nr, state: $0.state, type: $0.typ2, toggle: .value($0.isMoment)) }
         return CommandLocomotive(uid: uid.valueFromHex, name: name, address: address, maxSpeed: tachomax, decoderType: decoderType, icon: icon, functions: functions)
     }
 }

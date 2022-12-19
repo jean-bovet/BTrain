@@ -43,7 +43,7 @@ struct TrainControlContainerView: View {
                                               functionsController: document.layoutController.functionsController,
                                               functions: locomotive.functions)
                 }
-                
+
                 if train.block != nil {
                     HStack {
                         TrainControlSpeedView(document: document, train: train, loc: loc, speed: loc.speed, trainRuntimeError: $trainRuntimeError)

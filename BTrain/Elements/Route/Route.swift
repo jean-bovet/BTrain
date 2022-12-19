@@ -78,10 +78,10 @@ final class Route: Element, ObservableObject {
     /// blocks that need to be picked up when the train moves along the route. This is done when
     /// the route is resolved, where each station returns a single block satisfying the constraints of the layout.
     @Published var steps = [RouteItem]()
-    
+
     /// The functions to execute when the route starts
     @Published var startFunctions: RouteItemFunctions?
-    
+
     /// The functions to execute when the route stops
     @Published var stopFunctions: RouteItemFunctions?
 
@@ -114,7 +114,7 @@ final class Route: Element, ObservableObject {
     static func automaticRouteId(for trainId: Identifier<Train>) -> Identifier<Route> {
         Identifier<Route>(uuid: "automatic-\(trainId)")
     }
-    
+
     func description(_ layout: Layout) -> String {
         var info = "\(name)-[\(id)]"
         switch mode {
@@ -125,12 +125,12 @@ final class Route: Element, ObservableObject {
         case .fixed:
             info += " (fixed)"
         }
-        
+
         if steps.isEmpty {
             info += ". No steps defined."
         } else {
             info += ". \(steps.count) steps: ["
-            info += steps.map({ "(\($0.description(layout)))"}).joined(separator: ",")
+            info += steps.map { "(\($0.description(layout)))" }.joined(separator: ",")
             info += "]"
         }
         return info

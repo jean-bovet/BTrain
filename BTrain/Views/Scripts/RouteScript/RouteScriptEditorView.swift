@@ -111,7 +111,7 @@ struct RouteScriptEditorView_Previews: PreviewProvider {
     }()
 
     static let doc = LayoutDocument(layout: layout)
-    
+
     static var previews: some View {
         Group {
             RouteScriptEditorView(doc: doc, layout: layout, script: layout.routeScripts[0])

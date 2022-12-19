@@ -92,7 +92,7 @@ extension Layout {
             $0.name < $1.name
         }
     }
-    
+
     /// Returns the index in the route where the train is currently located or nil
     /// if the train is not located along the route.
     ///
@@ -126,7 +126,7 @@ extension Layout {
         }
         return nil
     }
-    
+
     func routeDescription(for train: Train) -> String {
         var text = ""
         if let route = route(for: train.routeId, trainId: train.id),
@@ -198,5 +198,4 @@ extension Layout {
             return "\(turnoutId)"
         }
     }
-
 }

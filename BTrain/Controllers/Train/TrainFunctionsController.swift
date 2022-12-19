@@ -13,10 +13,9 @@
 import Foundation
 
 final class TrainFunctionsController {
-    
     let catalog: LocomotiveFunctionsCatalog?
     let interface: CommandInterface
-    
+
     internal init(catalog: LocomotiveFunctionsCatalog?, interface: CommandInterface) {
         self.catalog = catalog
         self.interface = interface
@@ -26,21 +25,21 @@ final class TrainFunctionsController {
         guard let functions = functions.functions else {
             return
         }
-        
+
         guard let locomotive = train.locomotive else {
             return
         }
-        
+
         BTLogger.debug("Execute \(functions.count) functions for \(train)")
 
         for f in functions {
             let type = f.type
-            
+
             guard let def = locomotive.functions.definitions.first(where: { $0.type == type }) else {
                 BTLogger.warning("Function \(type) not found in locomotive \(locomotive)")
                 continue
             }
-                        
+
             if let name = catalog?.name(for: type) {
                 BTLogger.debug("Execute function \(name) of type \(type) with \(locomotive.name)")
             } else {
@@ -50,20 +49,19 @@ final class TrainFunctionsController {
             execute(locomotive: locomotive, function: def, trigger: f.trigger, duration: f.duration)
         }
     }
-    
+
     func execute(locomotive: Locomotive, function: CommandLocomotiveFunction, trigger: RouteItemFunction.Trigger, duration: TimeInterval) {
-        
         switch trigger {
         case .enable, .disable:
             DispatchQueue.main.asyncAfter(deadline: .now() + duration) {
                 self.executeSingle(locomotive: locomotive, function: function, trigger: trigger)
             }
-            
+
         case .pulse:
             executePulse(locomotive: locomotive, function: function, duration: duration)
         }
     }
-    
+
     private func executeSingle(locomotive: Locomotive, function: CommandLocomotiveFunction, trigger: RouteItemFunction.Trigger) {
         let initialValue = trigger == .disable ? 0 : 1
         interface.execute(command: .function(address: locomotive.address, decoderType: locomotive.decoder, index: function.nr, value: UInt8(initialValue)), completion: nil)
@@ -77,15 +75,14 @@ final class TrainFunctionsController {
             }
         }
     }
-    
+
     private func executePulse(locomotive: Locomotive, function: CommandLocomotiveFunction, duration: TimeInterval) {
         let initialValue = UInt8(1)
         interface.execute(command: .function(address: locomotive.address, decoderType: locomotive.decoder, index: function.nr, value: initialValue), completion: nil)
-        
+
         DispatchQueue.main.asyncAfter(deadline: .now() + duration) {
             let finalValue = UInt8(0)
             self.interface.execute(command: .function(address: locomotive.address, decoderType: locomotive.decoder, index: function.nr, value: finalValue), completion: nil)
         }
     }
-
 }

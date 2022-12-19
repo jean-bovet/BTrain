@@ -13,7 +13,6 @@
 import Foundation
 
 extension Layout {
-    
     /// Sets the train into the specified block, at the specified position and direction of travel in the block.
     ///
     /// - Parameters:
@@ -25,25 +24,25 @@ extension Layout {
         guard let toBlock = blocks[toBlockId] else {
             throw LayoutError.blockNotFound(blockId: toBlockId)
         }
-        
+
         guard toBlock.trainInstance == nil || toBlock.trainInstance?.trainId == train.id else {
             throw LayoutError.blockNotEmpty(blockId: toBlockId)
         }
-        
+
         guard toBlock.reservation == nil || toBlock.reservation?.trainId == train.id else {
             throw LayoutError.cannotReserveBlock(block: toBlock, train: train, reserved: toBlock.reservation!)
         }
-        
+
         train.positions = positions
-        
+
         // Reserve the block
         toBlock.reservation = Reservation(trainId: train.id, direction: directionOfTravelInBlock)
         toBlock.trainInstance = TrainInstance(train.id, directionOfTravelInBlock)
-        
+
         // Assign the block to the train
         train.block = toBlock
     }
-    
+
     /// Returns all the feedbacks that are currently detected in any of the occupied blocks by the train.
     ///
     /// Because a train can have more than one magnet to detect its position (besides under the front locomotive),
@@ -52,22 +51,21 @@ extension Layout {
     /// - Returns: array of detected feedback and their position
     func allActiveFeedbackPositions(train: Train) throws -> [FeedbackPosition] {
         var positions = [FeedbackPosition]()
-                
+
         for block in train.occupied.blocks {
             for (feedbackIndex, feedback) in block.feedbacks.enumerated() {
                 guard let f = feedbacks[feedback.feedbackId], f.detected else {
                     continue
                 }
-                
+
                 guard let fd = feedback.distance else {
                     throw LayoutError.feedbackDistanceNotSet(feedback: feedback)
                 }
-                
+
                 positions.append(FeedbackPosition(blockId: block.id, index: feedbackIndex, distance: fd))
             }
         }
-        
+
         return positions
     }
-            
 }

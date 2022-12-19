@@ -65,7 +65,7 @@ struct ConnectSheet: View {
                 }.disabled(type == .simulator)
 
                 Toggle("Activate Turnouts", isOn: $activateTurnouts)
-                
+
                 VStack(alignment: .leading) {
                     if let percentage = onConnectTasks.connectionCompletionPercentage {
                         ProgressView(value: percentage)
@@ -113,7 +113,7 @@ struct ConnectSheet: View {
                 .keyboardShortcut(.defaultAction)
                 .disabled(connecting)
             }.padding()
-        }.onAppear() {
+        }.onAppear {
             msg = ""
             onConnectTasks.connectionCompletionPercentage = nil
             onConnectTasks.connectionCompletionLabel = nil

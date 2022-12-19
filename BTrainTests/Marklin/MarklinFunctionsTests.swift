@@ -14,22 +14,20 @@
 import XCTest
 
 final class MarklinFunctionsTests: XCTestCase {
-
     var server: URL {
         MarklinCS3Server.cs3ServerDirectory
     }
-    
+
     func testFetchFunctions() async throws {
         let cs3 = MarklinCS3()
         let functions = try await cs3.fetchFunctions(server: server)
         XCTAssertEqual(functions.gruppe.count, 5)
         XCTAssertEqual(functions.gruppe[0].icon.count, 39)
     }
-    
+
     func testFetchSprites() async throws {
         let cs3 = MarklinCS3()
         let sprites = try await cs3.fetchSvgSprites(server: server)
         XCTAssertEqual(sprites.count, 746)
     }
-
 }

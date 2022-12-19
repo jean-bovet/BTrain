@@ -17,11 +17,9 @@ import Foundation
 /// in order to obtain certain runtime information available only in the real layout; for example,
 /// to convert between the block or turnout ID to name for easier debugging.
 protocol LayoutParserResolver {
-    
     func blockId(forBlockName: String) -> Identifier<Block>
-    
+
     func turnoutId(forTurnoutName: String) -> Identifier<Turnout>
-    
+
     func distance(forFeedbackAtPosition index: Int, blockId: Identifier<Block>, directionInBlock: Direction) -> Double
 }
-

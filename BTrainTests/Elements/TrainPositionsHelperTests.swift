@@ -15,7 +15,6 @@ import XCTest
 @testable import BTrain
 
 final class TrainPositionsHelperTests: XCTestCase {
-
     // ┌─────────┐           ┌──────┐   ┌──────┐  ┌──────┐            ┌──────┐
     // │    A    │──▶  AB  ─▶│  B   │──▶│  C   │─▶│  D   │──▶  DE  ──▶│  E   │
     // └─────────┘           └──────┘   └──────┘  └──────┘            └──────┘
@@ -33,16 +32,16 @@ final class TrainPositionsHelperTests: XCTestCase {
 
         try doc.layoutController.setupTrainToBlock(train, blockB.id, naturalDirectionInBlock: .next)
         XCTAssertEqual(train.occupied.blocks.count, 1)
-        
+
         try assertFeedbacks(layout, train, feedbackCount: 0)
-        
+
         layout.toggle(blockB.feedbacks[0])
         try assertFeedbacks(layout, train, feedbackCount: 1)
 
         layout.toggle(blockB.feedbacks[1])
         try assertFeedbacks(layout, train, feedbackCount: 2)
     }
-    
+
     // ┌─────────┐           ┌──────┐   ┌──────┐  ┌──────┐            ┌──────┐
     // │    A    │──▶  AB  ─▶│  B   │──▶│  C   │─▶│  D   │──▶  DE  ──▶│  E   │
     // └─────────┘           └──────┘   └──────┘  └──────┘            └──────┘
@@ -57,9 +56,9 @@ final class TrainPositionsHelperTests: XCTestCase {
         let blockA = layout.block(named: "A")
         let blockB = layout.block(named: "B")
         let blockC = layout.block(named: "C")
-        
+
         train.wagonsLength = blockB.length!
-        
+
         try doc.layoutController.setupTrainToBlock(train, blockB.id, naturalDirectionInBlock: .next)
         XCTAssertEqual(train.occupied.blocks.count, 2)
 
@@ -82,7 +81,7 @@ final class TrainPositionsHelperTests: XCTestCase {
     }
 
     // MARK: - Toggling -
-    
+
     // ┌─────────┐           ┌──────┐   ┌──────┐  ┌──────┐            ┌──────┐
     // │    A    │──▶  AB  ─▶│  B   │──▶│  C   │─▶│  D   │──▶  DE  ──▶│  E   │
     // └─────────┘           └──────┘   └──────┘  └──────┘            └──────┘
@@ -96,25 +95,25 @@ final class TrainPositionsHelperTests: XCTestCase {
         let layout = doc.layout
         let train = layout.trains[0]
         let blockA = layout.block(named: "A")
-        
+
         try doc.layoutController.setupTrainToBlock(train, blockA.id, naturalDirectionInBlock: .next)
-        
+
         XCTAssertTrue(train.directionForward)
         XCTAssertEqual(train.positions, .both(blockId: blockA.id,
-                                             headIndex: blockA.feedbacks.count,
-                                             headDistance: blockA.feedbacks.last!.distance!.after,
-                                             tailIndex: 1,
-                                             tailDistance: (blockA.feedbacks.last!.distance!-train.length!).after))
-        
+                                              headIndex: blockA.feedbacks.count,
+                                              headDistance: blockA.feedbacks.last!.distance!.after,
+                                              tailIndex: 1,
+                                              tailDistance: (blockA.feedbacks.last!.distance! - train.length!).after))
+
         // Toggle > backward
         try doc.layoutController.toggleTrainDirection(train)
-        
+
         XCTAssertFalse(train.directionForward)
         XCTAssertEqual(train.positions, .both(blockId: blockA.id,
                                               headIndex: blockA.feedbacks.count,
                                               headDistance: blockA.feedbacks.last!.distance!.after,
                                               tailIndex: 1,
-                                              tailDistance: (blockA.feedbacks.last!.distance!-train.length!).after))
+                                              tailDistance: (blockA.feedbacks.last!.distance! - train.length!).after))
 
         // Toggle > forward
         try doc.layoutController.toggleTrainDirection(train)
@@ -124,11 +123,11 @@ final class TrainPositionsHelperTests: XCTestCase {
                                               headIndex: blockA.feedbacks.count,
                                               headDistance: blockA.feedbacks.last!.distance!.after,
                                               tailIndex: 1,
-                                              tailDistance: (blockA.feedbacks.last!.distance!-train.length!).after))
+                                              tailDistance: (blockA.feedbacks.last!.distance! - train.length!).after))
     }
-    
+
     // MARK: - Setup Train
-    
+
     // ┌─────────┐           ┌──────┐   ┌──────┐  ┌──────┐            ┌──────┐
     // │    A    │──▶  AB  ─▶│  B   │──▶│  C   │─▶│  D   │──▶  DE  ──▶│  E   │
     // └─────────┘           └──────┘   └──────┘  └──────┘            └──────┘
@@ -136,41 +135,42 @@ final class TrainPositionsHelperTests: XCTestCase {
     //                 │    ┌──────┐   ┌──────┐  ┌──────┐      │
     //                 └───▶│  B2  │──▶│ !C2  │─▶│  D2  │──────┘
     //                      └──────┘   └──────┘  └──────┘
-    
+
     struct PositionAsserter {
         let allowedDirection: Locomotive.AllowedDirection
         let directionForward: Bool
         let directionInBlock: Direction
         let positions: TrainPositions
     }
-    
+
     private func assert(_ doc: LayoutDocument,
-                                _ train: Train,
-                                _ block: Block,
-                                _ directionForward: Bool,
-                                _ directionInBlock: Direction,
-                                _ position: TrainPositions) throws {
+                        _ train: Train,
+                        _ block: Block,
+                        _ directionForward: Bool,
+                        _ directionInBlock: Direction,
+                        _ position: TrainPositions) throws
+    {
         train.locomotive!.directionForward = directionForward
         try doc.layoutController.setupTrainToBlock(train, block.id, naturalDirectionInBlock: directionInBlock)
         XCTAssertEqual(train.positions, position)
         XCTAssertEqual(train.occupied.blocks.count, 1)
     }
-    
+
     func testSetupTrainToBlockAndChangeDirection() throws {
         let doc = LayoutDocument(layout: LayoutPointToPoint().newLayout())
         let layout = doc.layout
         let train = layout.trains[0]
         let blockA = layout.block(named: "A")
-        
+
         // A: [ f0 f1 ] (length 200)
         // B: [ f0 f1 ] (length 100)
         // Train: length 120
-        
+
         // Allowed direction: .forward / .any
         // Direction forward: true / false
         // Direction in block: .next / .previous
         let lastIndex = blockA.feedbacks.count
-        
+
         // Block: [ ---> ]
         // Train: ------->
         //               f
@@ -178,17 +178,17 @@ final class TrainPositionsHelperTests: XCTestCase {
                                                           headIndex: lastIndex,
                                                           headDistance: 180.after,
                                                           tailIndex: 1,
-                                                          tailDistance: (180-120).after))
-        
+                                                          tailDistance: (180 - 120).after))
+
         // Block: [ ---> ]
         // Train: <------
         //        f
         try assert(doc, train, blockA, true, .previous, .both(blockId: blockA.id,
                                                               headIndex: 0,
                                                               headDistance: 20.before,
-                                                              tailIndex: lastIndex-1,
-                                                              tailDistance: (20+120).before))
-                
+                                                              tailIndex: lastIndex - 1,
+                                                              tailDistance: (20 + 120).before))
+
         // Block: [ ---> ]
         // Train: -------<
         //        b      f
@@ -197,7 +197,7 @@ final class TrainPositionsHelperTests: XCTestCase {
                                                            headIndex: lastIndex,
                                                            headDistance: 180.after,
                                                            tailIndex: 1,
-                                                           tailDistance: (180-120).after))
+                                                           tailDistance: (180 - 120).after))
         // Block: [ ---> ]
         // Train: >-------
         //        f      b
@@ -205,12 +205,12 @@ final class TrainPositionsHelperTests: XCTestCase {
         try assert(doc, train, blockA, false, .previous, .both(blockId: blockA.id,
                                                                headIndex: 0,
                                                                headDistance: 20.before,
-                                                               tailIndex: lastIndex-1,
-                                                               tailDistance: (20+120).before))
+                                                               tailIndex: lastIndex - 1,
+                                                               tailDistance: (20 + 120).before))
     }
-    
+
     // MARK: - End of Block
-    
+
     func testEndOfBlock() throws {
         let doc = LayoutDocument(layout: LayoutPointToPoint().newLayout())
         let layout = doc.layout
@@ -228,11 +228,11 @@ final class TrainPositionsHelperTests: XCTestCase {
         try doc.layout.setTrainToBlock(train, blockB.id, positions: TrainPositions(head: .init(blockId: blockB.id, index: blockB.feedbacks.count, distance: 0), tail: nil), directionOfTravelInBlock: .next)
         assertEndOfBlock(occupiedCount: 1, atEndOfBlock: true, block: blockB, train: train)
 
-        try doc.layout.setTrainToBlock(train, blockB.id, positions: TrainPositions(head: .init(blockId: blockB.id, index: blockB.feedbacks.count-1, distance: 0), tail: nil), directionOfTravelInBlock: .next)
+        try doc.layout.setTrainToBlock(train, blockB.id, positions: TrainPositions(head: .init(blockId: blockB.id, index: blockB.feedbacks.count - 1, distance: 0), tail: nil), directionOfTravelInBlock: .next)
         assertEndOfBlock(occupiedCount: 1, atEndOfBlock: false, block: blockB, train: train)
 
         train.locomotive!.directionForward = false
-  
+
         // Not at the end of the block because the train is too short and spans only position 2 and 1 (because the train
         // is setup first as moving forward before being toggle backward).
         try doc.layoutController.setupTrainToBlock(train, blockB.id, naturalDirectionInBlock: .next)
@@ -240,20 +240,20 @@ final class TrainPositionsHelperTests: XCTestCase {
 
         try doc.layout.setTrainToBlock(train, blockB.id, positions: .both(blockId: blockB.id, headIndex: blockB.feedbacks.count, headDistance: 0, tailIndex: 1, tailDistance: 0), directionOfTravelInBlock: .next)
         assertEndOfBlock(occupiedCount: 1, atEndOfBlock: false, block: blockB, train: train)
-        
+
         // Now let's set a longer length to the train so it fills the entire block
         train.wagonsLength = 60
         try doc.layoutController.setupTrainToBlock(train, blockB.id, naturalDirectionInBlock: .next)
         assertEndOfBlock(occupiedCount: 1, atEndOfBlock: true, block: blockB, train: train)
     }
-    
+
     private func assertEndOfBlock(occupiedCount: Int, atEndOfBlock: Bool, block: Block, train: Train) {
         XCTAssertEqual(train.occupied.blocks.count, occupiedCount)
         XCTAssertEqual(try train.atEndOfBlock(block: block), atEndOfBlock)
     }
-    
+
     // MARK: -
-    
+
     let f1 = Identifier<Feedback>(uuid: "f1")
     let f2 = Identifier<Feedback>(uuid: "f2")
     let f3 = Identifier<Feedback>(uuid: "f3")
@@ -267,31 +267,31 @@ final class TrainPositionsHelperTests: XCTestCase {
         block.feedbacks[2].distance = 90
 
         let loc = Locomotive(name: "loc1")
-        
+
         let t = Train(id: .init(uuid: "t1"), name: "SBB")
         t.locomotive = loc
         t.locomotive!.directionForward = true
         t.block = block
         block.trainInstance = .init(t.id, .next)
-        
+
         // Block:    [ f1 f2 f3 ]>
         // Position:  0  1  2  3
         // Direction: ------>
-        assertRemainingDistance(t, head: (block.id,0), tail: (block.id,0), distance: 90)
-        assertRemainingDistance(t, head: (block.id,1), tail: (block.id,0), distance: 50)
-        assertRemainingDistance(t, head: (block.id,2), tail: (block.id,0), distance: 10)
-        assertRemainingDistance(t, head: (block.id,3), tail: (block.id,0), distance: 0)
-        
+        assertRemainingDistance(t, head: (block.id, 0), tail: (block.id, 0), distance: 90)
+        assertRemainingDistance(t, head: (block.id, 1), tail: (block.id, 0), distance: 50)
+        assertRemainingDistance(t, head: (block.id, 2), tail: (block.id, 0), distance: 10)
+        assertRemainingDistance(t, head: (block.id, 3), tail: (block.id, 0), distance: 0)
+
         // Block:    [ f1 f2 f3 ]>
         // Position:  0  1  2  3
         // Direction:     <-----
         block.trainInstance = .init(t.id, .previous)
-        assertRemainingDistance(t, head: (block.id,3), tail: (block.id,0), distance: 90)
-        assertRemainingDistance(t, head: (block.id,2), tail: (block.id,0), distance: 50)
-        assertRemainingDistance(t, head: (block.id,1), tail: (block.id,0), distance: 10)
-        assertRemainingDistance(t, head: (block.id,0), tail: (block.id,0), distance: 0)
+        assertRemainingDistance(t, head: (block.id, 3), tail: (block.id, 0), distance: 90)
+        assertRemainingDistance(t, head: (block.id, 2), tail: (block.id, 0), distance: 50)
+        assertRemainingDistance(t, head: (block.id, 1), tail: (block.id, 0), distance: 10)
+        assertRemainingDistance(t, head: (block.id, 0), tail: (block.id, 0), distance: 0)
     }
-    
+
     func testDistanceRemainingInBlockTravelingBackwards() {
         let block = Block(name: "b1")
         block.length = 100
@@ -310,31 +310,29 @@ final class TrainPositionsHelperTests: XCTestCase {
         // Block:    [ f1 f2 f3 ] >>>
         // Position:  0  1  2  3
         // Direction: >------
-        assertRemainingDistance(t, head: (block.id,0), tail: (block.id,0), distance: 90)
-        assertRemainingDistance(t, head: (block.id,0), tail: (block.id,1), distance: 50)
-        assertRemainingDistance(t, head: (block.id,0), tail: (block.id,2), distance: 10)
-        assertRemainingDistance(t, head: (block.id,0), tail: (block.id,3), distance: 0)
+        assertRemainingDistance(t, head: (block.id, 0), tail: (block.id, 0), distance: 90)
+        assertRemainingDistance(t, head: (block.id, 0), tail: (block.id, 1), distance: 50)
+        assertRemainingDistance(t, head: (block.id, 0), tail: (block.id, 2), distance: 10)
+        assertRemainingDistance(t, head: (block.id, 0), tail: (block.id, 3), distance: 0)
 
         block.trainInstance = .init(t.id, .previous)
 
         // Block:    [ f1 f2 f3 ]
         // Position:  0  1  2  3
         // Direction:     -----<
-        assertRemainingDistance(t, head: (block.id,0), tail: (block.id,3), distance: 90)
-        assertRemainingDistance(t, head: (block.id,0), tail: (block.id,2), distance: 50)
-        assertRemainingDistance(t, head: (block.id,0), tail: (block.id,1), distance: 10)
-        assertRemainingDistance(t, head: (block.id,0), tail: (block.id,0), distance: 0)
+        assertRemainingDistance(t, head: (block.id, 0), tail: (block.id, 3), distance: 90)
+        assertRemainingDistance(t, head: (block.id, 0), tail: (block.id, 2), distance: 50)
+        assertRemainingDistance(t, head: (block.id, 0), tail: (block.id, 1), distance: 10)
+        assertRemainingDistance(t, head: (block.id, 0), tail: (block.id, 0), distance: 0)
     }
 
     private func assertRemainingDistance(_ train: Train, head: (Identifier<Block>, Int), tail: (Identifier<Block>, Int), distance: Double) {
-        train.positions = .init(head:.init(blockId: head.0, index: head.1, distance: 0), tail:.init(blockId: tail.0, index: tail.1, distance: 0))
+        train.positions = .init(head: .init(blockId: head.0, index: head.1, distance: 0), tail: .init(blockId: tail.0, index: tail.1, distance: 0))
         XCTAssertEqual(train.distanceLeftInFrontBlock(), distance)
     }
-    
 }
 
 private extension Layout {
-    
     func toggle(_ feedback: Block.BlockFeedback) {
         feedbacks[feedback.feedbackId]!.detected.toggle()
     }

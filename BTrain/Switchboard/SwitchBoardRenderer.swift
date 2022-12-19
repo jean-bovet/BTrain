@@ -31,12 +31,12 @@ final class SwitchBoardRenderer {
     }
 
     func draw(context: CGContext) {
-        let visibleShapes = provider.shapes.filter({ $0.visible })
-        
+        let visibleShapes = provider.shapes.filter(\.visible)
+
         if provider.context.showStationBackground {
             drawStationsBackground(context: context, visibleShapes: visibleShapes)
         }
-        
+
         for shape in visibleShapes {
             context.with {
                 shape.draw(ctx: context)
@@ -75,7 +75,7 @@ final class SwitchBoardRenderer {
             }
         }
 
-        for shape in provider.rotableShapes.filter({ $0.selected }) {
+        for shape in provider.rotableShapes.filter(\.selected) {
             context.with {
                 context.setFillColor(shapeContext.rotationHandleColor)
                 context.addPath(shape.rotationHandle)
@@ -97,10 +97,10 @@ final class SwitchBoardRenderer {
             }
         }
     }
-    
+
     private func drawStationsBackground(context: CGContext, visibleShapes: [Shape]) {
         for station in provider.layout.stations.elements {
-            let blockIds = station.elements.compactMap { $0.blockId }
+            let blockIds = station.elements.compactMap(\.blockId)
 
             var bounds = CGRect.zero
             for shape in visibleShapes {

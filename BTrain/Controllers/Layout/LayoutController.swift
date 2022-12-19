@@ -73,7 +73,7 @@ final class LayoutController: ObservableObject, LayoutControlling {
 
     /// The layout script conductor
     let conductor: LayoutScriptConductor
-    
+
     /// The train functions controller
     let functionsController: TrainFunctionsController
 
@@ -133,13 +133,13 @@ final class LayoutController: ObservableObject, LayoutControlling {
             LayoutController.memoryLeakCounter -= 1
         }
     #endif
-    
+
     /// All train assigned to the layout will be spread again. In other words, each train assigned to a block in the layout will have the necessary
     /// elements (block, turnout and transition) reserved to fit its length.
     /// This is necessary because the ``Train.Reservation`` is not persisted to disk (it cannot be serialized). When
     /// opening a document, we need to ensure that each train has all its elements properly assigned to it which this function will do.
     private func spreadAllTrains() {
-        for train in layout.trains.elements.filter({$0.block != nil}) {
+        for train in layout.trains.elements.filter({ $0.block != nil }) {
             do {
                 try reservation.freeElements(train: train)
                 try reservation.occupyBlocksWith(train: train)
@@ -148,7 +148,7 @@ final class LayoutController: ObservableObject, LayoutControlling {
             }
         }
     }
-    
+
     /// Run each train controller on the specified train event
     /// - Parameter event: the train event
     func runControllers(_ event: LayoutControllerEvent) {
@@ -214,7 +214,7 @@ final class LayoutController: ObservableObject, LayoutControlling {
         guard let frontBlock = train.block else {
             return nil
         }
-        
+
         guard let trainInstance = frontBlock.trainInstance else {
             return nil
         }
@@ -245,16 +245,16 @@ final class LayoutController: ObservableObject, LayoutControlling {
     private func dumpAll() {
         var text = "*******************************************"
         text += "\nEnabled Trains:"
-        for (index, train) in layout.trains.elements.filter({ $0.enabled }).enumerated() {
-            text += "\n  [\(String(format:"%02d", index))] " + train.description(layout)
+        for (index, train) in layout.trains.elements.filter(\.enabled).enumerated() {
+            text += "\n  [\(String(format: "%02d", index))] " + train.description(layout)
         }
         text += "\nInteresting Blocks:"
         for (index, block) in layout.blocks.elements.filter({ $0.enabled && ($0.reservation != nil || $0.trainInstance != nil) }).enumerated() {
-            text += "\n  [\(String(format:"%02d", index))] " + block.description(layout)
+            text += "\n  [\(String(format: "%02d", index))] " + block.description(layout)
         }
         text += "\nRoutes:"
         for (index, route) in layout.routes.enumerated() {
-            text += "\n  [\(String(format:"%02d", index))] " + route.description(layout)
+            text += "\n  [\(String(format: "%02d", index))] " + route.description(layout)
         }
         text += "*******************************************"
         BTLogger.router.error("\(text, privacy: .public)")
@@ -397,7 +397,7 @@ final class LayoutController: ObservableObject, LayoutControlling {
 
     func purgeRestartTimers() {
         // Remove any expired timer
-        pausedTrainTimers = pausedTrainTimers.filter { $0.value.isValid }
+        pausedTrainTimers = pausedTrainTimers.filter(\.value.isValid)
     }
 
     func restartTimerFired(_ train: Train) {
@@ -557,7 +557,7 @@ extension LayoutController {
         }
         interface.execute(command: command, completion: completion)
     }
-    
+
     /// Toggles the direction of the train.
     ///
     /// Note: even if a train does not allow for a backward direction (as set in allowedDirections),
@@ -578,14 +578,14 @@ extension LayoutController {
         guard let ti = block.trainInstance else {
             throw LayoutError.trainNotFoundInBlock(blockId: blockId)
         }
-                     
+
         let loc = try train.locomotiveOrThrow()
-        
+
         block.trainInstance = nil
 
         if train.directionForward {
             loc.directionForward = false
-            
+
             guard let tailBlockId = train.positions.tail?.blockId else {
                 throw LayoutError.backPositionBlockNotSpecified(position: train.positions)
             }
@@ -604,17 +604,17 @@ extension LayoutController {
             guard let newBlock = layout.blocks[headBlockId] else {
                 throw LayoutError.blockNotFound(blockId: headBlockId)
             }
-            
+
             train.block = newBlock
             newBlock.trainInstance = TrainInstance(train.id, ti.direction.opposite)
         }
-        
+
         // The method below will spread again the train, starting with the "front" block
         // of the train which has been updated here with "newBlock".
         reservation.removeLeadingReservation(train: train)
         try reservation.occupyBlocksWith(train: train)
     }
-    
+
     /// Setup the train in a block. This method places the train for the first time in the specified block, filling the block with the train
     /// by respecting the specified natural direction of the train in the block.
     ///
@@ -626,15 +626,15 @@ extension LayoutController {
         guard let toBlock = layout.blocks[toBlockId] else {
             throw LayoutError.blockNotFound(blockId: toBlockId)
         }
-        
+
         guard toBlock.trainInstance == nil || toBlock.trainInstance?.trainId == train.id else {
             throw LayoutError.blockNotEmpty(blockId: toBlockId)
         }
-        
+
         guard toBlock.reservation == nil || toBlock.reservation?.trainId == train.id else {
             throw LayoutError.cannotReserveBlock(block: toBlock, train: train, reserved: toBlock.reservation!)
         }
-        
+
         // Note: we set only the front position because the back position will be computed automatically
         // when the occupied blocks are filled (see TrainVisitor).
         if naturalDirectionInBlock == .next {
@@ -654,7 +654,7 @@ extension LayoutController {
             }
             train.positions = .head(blockId: toBlockId, index: 0, distance: fd.before)
         }
-        
+
         // If the train is moving backwards, always setup the train as if it was moving
         // forward and then toggle its direction. This is because the front position is always
         // at the front of the train when moving forward and the back position is determined
@@ -664,7 +664,7 @@ extension LayoutController {
             try train.locomotiveOrThrow().directionForward = true
         }
         try layout.setTrainToBlock(train, toBlockId, positions: train.positions, directionOfTravelInBlock: naturalDirectionInBlock)
-        
+
         try reservation.freeElements(train: train)
         try reservation.occupyBlocksWith(train: train)
 
@@ -672,8 +672,6 @@ extension LayoutController {
             try toggleTrainDirection(train)
         }
     }
-    
-
 }
 
 extension LayoutController: MetricsProvider {

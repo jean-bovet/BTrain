@@ -14,7 +14,6 @@
 import Foundation
 
 final class MockCommandInterface: CommandInterface {
-    
     var callbacks = CommandInterfaceCallbacks()
 
     var speedValues = [UInt16]()
@@ -89,7 +88,7 @@ final class MockCommandInterface: CommandInterface {
 
         case let .function(address, _, index, value, _, _):
             triggeredFunctions.append(Function(address: address, index: index, value: value))
-            
+
         default:
             break
         }
@@ -100,10 +99,10 @@ final class MockCommandInterface: CommandInterface {
         let index: UInt8
         let value: UInt8
     }
-    
+
     var triggeredFunctions = [Function]()
     var locFunctions = [CommandLocomotiveFunctionAttributes]()
-    
+
     func speedValue(for steps: SpeedStep, decoder _: DecoderType) -> SpeedValue {
         .init(value: steps.value)
     }
@@ -111,13 +110,12 @@ final class MockCommandInterface: CommandInterface {
     func speedSteps(for value: SpeedValue, decoder _: DecoderType) -> SpeedStep {
         .init(value: value.value)
     }
-        
+
     func defaultLocomotiveFunctionAttributes() -> [BTrain.CommandLocomotiveFunctionAttributes] {
         locFunctions
     }
-    
-    func locomotiveFunctionAttributesFor(type: UInt32) -> BTrain.CommandLocomotiveFunctionAttributes {
+
+    func locomotiveFunctionAttributesFor(type _: UInt32) -> BTrain.CommandLocomotiveFunctionAttributes {
         .init(type: 0, name: "", activeSvgIcon: nil, inactiveSvgIcon: nil)
     }
-    
 }

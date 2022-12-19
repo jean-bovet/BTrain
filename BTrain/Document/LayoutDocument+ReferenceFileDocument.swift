@@ -24,17 +24,16 @@ extension LayoutDocument: ReferenceFileDocument {
     static let userInterfaceFileName = "userInterface.json"
     static let locFunctionsFileName = "locFunctions.json"
 
-    
     /// Increment the change count of the main document - useful for operations
     /// that cannot be easily undoable.
     /// See  [this article](https://stackoverflow.com/questions/63830923/swiftui-referencefiledocument-inability-to-indicate-a-document-needs-saving).
     static func incrementChangeCount() {
         let controller = NSDocumentController.shared
         if let document = controller.currentDocument {
-          document.updateChangeCount(.changeDone)
+            document.updateChangeCount(.changeDone)
         }
     }
-    
+
     convenience init(configuration: ReadConfiguration) throws {
         try self.init(contentType: configuration.contentType, file: configuration.file)
     }

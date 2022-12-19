@@ -107,7 +107,7 @@ struct LayoutSpeed {
             case let .turnout(turnout):
                 speed = turnout.maximumSpeedAllowed(speed: speed)
                 distance = turnout.length ?? 0
-                
+
             case .transition:
                 distance = 0
             }

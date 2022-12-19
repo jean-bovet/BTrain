@@ -22,9 +22,9 @@ final class LayoutOnConnectTasks: ObservableObject {
     /// Property used to keep track of the progress
     @Published var connectionCompletionPercentage: Double? = nil
     @Published var connectionCompletionLabel: String? = nil
-    
+
     var cancel = false
-    
+
     init(layout: Layout, layoutController: LayoutController, interface: CommandInterface, locFuncCatalog: LocomotiveFunctionsCatalog, locomotiveDiscovery: LocomotiveDiscovery) {
         self.layout = layout
         self.layoutController = layoutController
@@ -60,23 +60,23 @@ final class LayoutOnConnectTasks: ObservableObject {
             }
         }
     }
-    
+
     private func notifyProgress(label: String, activateTurnouts: Bool, step: Int) {
         let progressPercentageStep = 1.0 / (activateTurnouts ? 3 : 2)
         connectionCompletionPercentage = Double(step) * progressPercentageStep
         connectionCompletionLabel = label
     }
-    
+
     private func fetchLocomotives(completion: @escaping CompletionBlock) {
         catalog.globalAttributesChanged()
-        
+
         discovery.discover(merge: true) {
             completion()
         }
     }
-        
+
     private func queryLocomotivesDirection(completion: @escaping CompletionBlock) {
-        let locomotives = layout.locomotives.elements.filter { $0.enabled }
+        let locomotives = layout.locomotives.elements.filter(\.enabled)
         guard !locomotives.isEmpty else {
             completion()
             return

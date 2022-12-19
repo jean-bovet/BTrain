@@ -13,7 +13,6 @@
 import Foundation
 
 extension Train {
-    
     func hasReachedStationOrDestination(_ route: Route?, _ block: Block) -> Bool {
         if let route = route {
             switch route.mode {
@@ -31,28 +30,28 @@ extension Train {
                 return false
             }
         }
-        
+
         // Check that the train is not in the first block of the route in which case
         // it should not stop at all, otherwise a train will never leave its station
         guard routeStepIndex != startRouteIndex || startRouteIndex == nil else {
             return false
         }
-        
+
         return true
     }
-    
+
     func hasReached(block: Block, destination: Destination) -> Bool {
         guard block.id == destination.blockId else {
             return false
         }
-        
+
         if let direction = destination.direction {
             return direction == block.trainInstance?.direction
         } else {
             return true
         }
     }
-    
+
     /// Returns true if the train is located at the end of the specified block
     /// - Parameters:
     ///   - block: the block
@@ -76,7 +75,7 @@ extension Train {
             }
         }
     }
-    
+
     /// Returns the distance left in the front block in the direction of travel of the train.
     ///
     /// If the train moves forward, the block will be the one where the locomotive is located.
@@ -91,15 +90,15 @@ extension Train {
         guard let block = block else {
             return 0
         }
-        
+
         guard let ti = block.trainInstance else {
             return 0
         }
-        
+
         guard let length = block.length else {
             return 0
         }
-        
+
         let feedbackIndex: Int
         if directionForward {
             // Direction of train is forward.
@@ -127,14 +126,14 @@ extension Train {
             guard let tailIndex = positions.tail?.index else {
                 return 0
             }
-            
+
             if ti.direction == .next {
                 feedbackIndex = tailIndex
             } else {
                 feedbackIndex = tailIndex - 1
             }
         }
-        
+
         switch ti.direction {
         case .next:
             if feedbackIndex < 0 {
@@ -148,7 +147,7 @@ extension Train {
             } else {
                 return 0
             }
-            
+
         case .previous:
             if feedbackIndex < 0 {
                 return 0
@@ -159,5 +158,4 @@ extension Train {
             }
         }
     }
-    
 }

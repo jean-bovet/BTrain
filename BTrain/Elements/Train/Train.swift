@@ -121,17 +121,17 @@ final class Train: Element, ObservableObject {
 
         /// Keeps track of the blocks and turnouts occupied by this train.
         let occupied = TrainOccupiedReservation()
-        
+
         /// Specify the next block in which the train will enter, given its position and direction of travel.
         /// Note: during automated routing (automatic or fixed), this variable correspond to the first
         /// leading block. During manual operation, the leading blocks are empty but this variable is used
         /// to properly move the train to the next block.
         var nextBlock: Block?
     }
-    
+
     /// The block reservation, available at runtime only (never persisted).
     var reservation = Reservation()
-    
+
     /// Schedule state of the train
     enum Schedule {
         /// The train is monitored by BTrain but not managed. This mode is used when the user wants to drive the train on its own via
@@ -164,7 +164,7 @@ final class Train: Element, ObservableObject {
 
     // The state of the train
     @Published var state: State = .stopped
-    
+
     /// The block where the front of the train is located.
     ///
     /// The "front of the train" is the part of the train that is in the direction of travel of the train:
@@ -211,7 +211,7 @@ final class Train: Element, ObservableObject {
     // Note: we don't need to store this property because it is used only
     // when running the layout.
     var timeUntilAutomaticRestart: TimeInterval = 0
-    
+
     convenience init(uuid: String = UUID().uuidString, name: String = "", wagonsLength: Double? = nil, maxSpeed: SpeedKph? = nil, maxNumberOfLeadingReservedBlocks: Int? = nil) {
         self.init(id: Identifier(uuid: uuid), name: name, wagonsLength: wagonsLength, maxSpeed: maxSpeed, maxNumberOfLeadingReservedBlocks: maxNumberOfLeadingReservedBlocks)
     }
@@ -226,7 +226,6 @@ final class Train: Element, ObservableObject {
 }
 
 extension Train {
-    
     func description(_ layout: Layout) -> String {
         var text = "Train '\(name)' (\(id), \(state)"
         text += ", \(scheduling)"
@@ -246,7 +245,6 @@ extension Train {
         text += ")"
         return text
     }
-
 }
 
 extension Train {
@@ -268,11 +266,11 @@ extension Train {
     var leading: TrainLeadingReservation {
         reservation.leading
     }
-    
+
     var occupied: TrainOccupiedReservation {
         reservation.occupied
     }
-    
+
     func locomotiveOrThrow() throws -> Locomotive {
         if let loc = locomotive {
             return loc

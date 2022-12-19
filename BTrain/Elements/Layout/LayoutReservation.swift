@@ -135,23 +135,23 @@ final class LayoutReservation {
 
         for item in train.leading.items {
             switch item {
-            case .block(let block):
+            case let .block(block):
                 assert(block.trainInstance == nil || block == train.block)
                 block.reservation = nil
-            case .turnout(let turnout):
+            case let .turnout(turnout):
                 assert(turnout.train == nil)
                 turnout.reserved = nil
-            case .transition(let transition):
+            case let .transition(transition):
                 assert(transition.train == nil)
                 transition.reserved = nil
             }
         }
-        
+
         train.leading.clear()
 
         return true
     }
-    
+
     /// Removes the reservation and train from the occupied blocks
     /// - Parameters:
     ///   - train: the train
@@ -165,20 +165,20 @@ final class LayoutReservation {
 
         for item in train.occupied.items {
             switch item {
-            case .block(let block):
+            case let .block(block):
                 if block != train.block || removeFrontBlock {
                     block.trainInstance = nil
                     block.reservation = nil
                 }
-            case .turnout(let turnout):
+            case let .turnout(turnout):
                 turnout.train = nil
                 turnout.reserved = nil
-            case .transition(let transition):
+            case let .transition(transition):
                 transition.train = nil
                 transition.reserved = nil
             }
         }
-        
+
         train.occupied.clear()
 
         return true

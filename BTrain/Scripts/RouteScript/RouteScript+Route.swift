@@ -52,13 +52,12 @@ extension RouteScript {
 }
 
 extension RouteScriptCommand {
-    
     /// Returns the functions for a route item
     var routeItemFunctions: RouteItemFunctions {
         RouteItemFunctions(functions: functions)
     }
 
-    func toBlockItem(functions: RouteItemFunctions? = nil) throws -> RouteItem {
+    func toBlockItem(functions _: RouteItemFunctions? = nil) throws -> RouteItem {
         guard let blockId = blockId else {
             throw ScriptError.undefinedBlock(command: self)
         }
@@ -69,12 +68,12 @@ extension RouteScriptCommand {
 
         var item = RouteItemBlock(blockId, direction, TimeInterval(waitDuration))
         item.functions = routeItemFunctions
-        
+
         // Assign to the route item the id of the script command. That way,
         // when an error happens during route resolving, we can easily map
         // the error to the original script command and highlight it in the UI.
         item.sourceIdentifier = id.uuidString
-        
+
         return .block(item)
     }
 
@@ -82,7 +81,7 @@ extension RouteScriptCommand {
         switch action {
         case .start:
             return [try toBlockItem()]
-            
+
         case .stop:
             return []
 
@@ -97,17 +96,16 @@ extension RouteScriptCommand {
                     throw ScriptError.undefinedStation(command: self)
                 }
             }
-            
+
         case .loop:
             var items = [RouteItem]()
             for _ in 1 ... repeatCount {
                 let routeItems = try children.toRouteItems()
                 items.append(contentsOf: routeItems)
             }
-            return items            
+            return items
         }
     }
-
 }
 
 extension Array where Element == RouteScriptCommand {

@@ -155,7 +155,7 @@ class UnmanagedTrainOperationTests: BTTestCase {
         func toggleDirection() throws {
             try doc.layoutController.toggleTrainDirection(train)
         }
-        
+
         func waitForSpeed(_ speed: SpeedKph) {
             let steps = loc.speed.steps(for: speed)
             BTTestCase.wait(for: {
@@ -174,14 +174,14 @@ class UnmanagedTrainOperationTests: BTTestCase {
         }
     }
 
-    private func setup(layout: Layout, fromBlockId: String, positionAtEnd: Bool = false, direction: Direction = .next) throws -> Package {
+    private func setup(layout: Layout, fromBlockId: String, positionAtEnd _: Bool = false, direction: Direction = .next) throws -> Package {
         layout.detectUnexpectedFeedback = true
 
         let train = layout.trains[0]
         let loc = train.locomotive!
         let doc = LayoutDocument(layout: layout)
         let block = layout.blocks[Identifier<Block>(uuid: fromBlockId)]!
-        
+
         try doc.layoutController.setupTrainToBlock(train, block.id, naturalDirectionInBlock: direction)
 
         XCTAssertEqual(loc.speed.requestedKph, 0)

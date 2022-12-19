@@ -44,7 +44,7 @@ extension LayoutController {
         switch direction {
         case .unchanged:
             BTLogger.debug("Direction \(direction) for \(address.toHex())")
-            
+
         case .forward:
             if loc.directionForward == false {
                 directionChanged = true
@@ -56,7 +56,7 @@ extension LayoutController {
         case .unknown:
             BTLogger.error("Unknown direction \(direction) for \(address.toHex())")
         }
-        
+
         if directionChanged {
             if let train = layout.trains[loc.id] {
                 do {
@@ -84,10 +84,10 @@ extension LayoutController {
             BTLogger.error("Unknown address \(address.toHex()) for change in function event")
             return
         }
-        
+
         loc.functions.states[index] = value
     }
-    
+
     func registerForTurnoutChange() {
         interface.callbacks.register(forTurnoutChange: { [weak self] address, state, power, acknowledgement in
             guard let layout = self?.layout else {

@@ -29,11 +29,10 @@ extension DecodableDefault {
     struct Wrapper<Source: DecodableDefaultSource> {
         typealias Value = Source.Value
         var wrappedValue = Source.defaultValue
-        
+
         static func value(_ value: Value) -> Self {
             .init(wrappedValue: value)
         }
-    
     }
 }
 
@@ -46,7 +45,8 @@ extension DecodableDefault.Wrapper: Decodable {
 
 extension KeyedDecodingContainer {
     func decode<T>(_ type: DecodableDefault.Wrapper<T>.Type,
-                   forKey key: Key) throws -> DecodableDefault.Wrapper<T> {
+                   forKey key: Key) throws -> DecodableDefault.Wrapper<T>
+    {
         try decodeIfPresent(type, forKey: key) ?? .init()
     }
 }

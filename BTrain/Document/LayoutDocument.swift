@@ -39,10 +39,10 @@ final class LayoutDocument: ObservableObject {
 
     /// The locomotive discovery class
     let locomotiveDiscovery: LocomotiveDiscovery
-    
+
     /// The catalog of locomotive functions
     let locomotiveFunctionsCatalog: LocomotiveFunctionsCatalog
-    
+
     /// True if the layout is connected to the Digital Controller, false otherwise
     @Published var connected = false {
         didSet {
@@ -118,7 +118,7 @@ final class LayoutDocument: ObservableObject {
         layoutDiagnostics = LayoutDiagnostic(layout: layout)
         self.locomotiveIconManager = locomotiveIconManager
         self.locomotiveFunctionsCatalog = catalog
-        
+
         self.switchboard = switchboard
         self.layoutController = layoutController
 
@@ -173,7 +173,6 @@ final class LayoutDocument: ObservableObject {
 }
 
 extension LayoutDocument {
-    
     /// The various type of sheets that can be displayed
     enum DisplaySheetType: String, CaseIterable {
         case layoutScripts = "Layout Scripts"
@@ -241,5 +240,4 @@ extension LayoutDocument {
             self == .routes || self == .cs3
         }
     }
-
 }

@@ -69,8 +69,7 @@ extension Array where Element: Feedback {
 }
 
 extension Set where Element == Identifier<Feedback> {
-    
     func toString(layout: Layout) -> String {
-        compactMap { layout.feedbacks[$0]?.name  }.joined(separator: ",")
+        compactMap { layout.feedbacks[$0]?.name }.joined(separator: ",")
     }
 }

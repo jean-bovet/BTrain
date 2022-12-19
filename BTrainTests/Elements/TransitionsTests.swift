@@ -40,7 +40,7 @@ class TransitionsTests: BTTestCase {
         let t1 = Transition(id: "1", a: Socket.block(b1.id, socketId: Block.nextSocket), b: Socket.block(b2.id, socketId: Block.previousSocket))
 
         let t11 = t1.reverse
-        
+
         XCTAssertEqual(t1.a, t11.b)
         XCTAssertEqual(t1.b, t11.a)
 

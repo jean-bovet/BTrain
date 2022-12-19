@@ -47,16 +47,15 @@ struct CommandLocomotive {
 
 /// A locomotive function
 struct CommandLocomotiveFunction: Codable {
-    
     /// The index of the function in the locomotive decoder
     let nr: UInt8
-    
+
     /// The state of the function
     let state: UInt8
 
     /// The type of the function
     let type: UInt32
-    
+
     /// True if the function is a toggle, meaning it must be activated and de-activated shortly after
     @DecodableDefault.False var toggle: Bool
 }
@@ -66,5 +65,5 @@ struct CommandLocomotiveFunctionAttributes: Codable {
     let type: UInt32
     let name: String
     let activeSvgIcon: String?
-    let inactiveSvgIcon: String?        
+    let inactiveSvgIcon: String?
 }

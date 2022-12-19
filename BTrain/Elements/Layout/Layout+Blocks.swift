@@ -66,7 +66,7 @@ extension Layout {
     }
 
     func assign(_ block: Block, _ feedbacks: [Feedback]) {
-        block.assign(feedbacks.map { $0.id })
+        block.assign(feedbacks.map(\.id))
         for feedback in feedbacks {
             self.feedbacks.add(feedback)
         }

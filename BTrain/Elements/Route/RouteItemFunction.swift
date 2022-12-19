@@ -16,13 +16,13 @@ import Foundation
 struct RouteItemFunction: Identifiable, Hashable, Equatable, Codable {
     var id = UUID().uuidString
     var type: UInt32
-    
+
     enum Trigger: Codable {
         case enable
         case disable
         case pulse
     }
-    
+
     var trigger: Trigger = .enable
     @DecodableDefault.Zero var duration: TimeInterval
 }

@@ -31,7 +31,7 @@ struct SwitchboardSettingsView: View {
                 .disabled(showBlockName)
             Toggle("Station Background", isOn: $showStationBackground)
             Toggle("Train Icon", isOn: $showTrainIcon)
-            if document.simulator.started && document.connected {
+            if document.simulator.started, document.connected {
                 Toggle("Simulator", isOn: $showSimulator)
             }
 

@@ -71,7 +71,7 @@ struct LocomotiveEditingView: View {
             Button("OK") {}
         }
     }
-    
+
     func discover(merge: Bool) {
         document.locomotiveDiscovery.discover(merge: merge, onError: { error in
             discoverLocomotiveError = error

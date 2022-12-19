@@ -25,7 +25,7 @@ struct GraphPath: Equatable {
     }
 
     var toStrings: [String] {
-        elements.map { $0.description }
+        elements.map(\.description)
     }
 
     static func empty() -> GraphPath {

@@ -30,7 +30,7 @@ final class MarklinLocomotivesTests: XCTestCase {
         XCTAssertEqual(l1.icon, "/usr/local/cs3/lokicons/SBB 193 524-6 Cargo")
         XCTAssertEqual(l1.funktionen.count, 32)
         XCTAssertEqual(l1.funktionen[0].typ2, 1)
-        
+
         let icon = try await cs3.fetchLokIcon(server: server, lok: l1)
         XCTAssertNotNil(icon)
     }

@@ -15,7 +15,7 @@ import SwiftUI
 struct MenuCommands: Commands {
     @FocusedValue(\.document) var document
     @FocusedBinding(\.power) var power
-    
+
     var body: some Commands {
         CommandGroup(after: CommandGroupPlacement.sidebar) {
             Group {
@@ -28,7 +28,7 @@ struct MenuCommands: Commands {
                 }
                 if document?.showDebugModeControls == true {
                     Divider()
-                    ForEach(LayoutDocument.DisplaySheetType.allCases.filter { $0.debugOnly }, id: \.self) { type in
+                    ForEach(LayoutDocument.DisplaySheetType.allCases.filter(\.debugOnly), id: \.self) { type in
                         CommandSelectedView(viewType: type)
                     }
                 }
@@ -77,7 +77,7 @@ extension FocusedValues {
             self[DocumentFocusedValueKey.self] = newValue
         }
     }
-    
+
     var power: DocumentPowerFocusedValueKey.Value? {
         get {
             self[DocumentPowerFocusedValueKey.self]
@@ -87,5 +87,4 @@ extension FocusedValues {
             self[DocumentPowerFocusedValueKey.self] = newValue
         }
     }
-
 }

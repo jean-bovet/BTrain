@@ -70,7 +70,7 @@ struct LayoutElementsEditingView<E: LayoutElement, More: View, Row: View, Editor
     @Environment(\.undoManager) var undoManager
 
     var elementName: String
-    
+
     // TODO: proper localization
     var statusLabel: String {
         let count = elementContainer.elements.count

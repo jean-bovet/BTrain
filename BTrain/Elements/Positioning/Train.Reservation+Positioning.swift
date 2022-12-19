@@ -13,7 +13,6 @@
 import Foundation
 
 extension Train.Reservation {
-    
     /// Returns the index of the block corresponding to the block ID.
     ///
     /// The index refers to the block located in the occupied and leading blocks together.
@@ -26,13 +25,13 @@ extension Train.Reservation {
     /// - Parameter blockId: the block id
     /// - Returns: the index of the block id
     func blockIndex(for blockId: Identifier<Block>) -> Int? {
-        if let blockIndex = occupied.blocks.firstIndex(where: {$0.id == blockId}) {
+        if let blockIndex = occupied.blocks.firstIndex(where: { $0.id == blockId }) {
             return blockIndex
         }
-        if let blockIndex = leading.blocks.firstIndex(where: {$0.id == blockId}) {
-            return -1-blockIndex
+        if let blockIndex = leading.blocks.firstIndex(where: { $0.id == blockId }) {
+            return -1 - blockIndex
         }
-        
+
         // Note: during manual operation, because no leading blocks are reserved,
         // `nextBlock` contains the block in which the train will enter.
         // Train:  --------------------->
@@ -45,7 +44,7 @@ extension Train.Reservation {
     }
 
     func directionInBlock(for blockId: Identifier<Block>) throws -> Direction? {
-        if let block = occupied.blocks.first(where: {$0.id == blockId}) {
+        if let block = occupied.blocks.first(where: { $0.id == blockId }) {
             if let ti = block.trainInstance {
                 return ti.direction
             } else {
