@@ -27,6 +27,8 @@ final class SimulatorLocomotive: ObservableObject, Element {
     // via commands sent through the interface.
     @Published var speed: SpeedStep = .zero
 
+    @Published var distance = 0.0
+    
     init(loc: Locomotive) {
         id = loc.id
         self.loc = loc

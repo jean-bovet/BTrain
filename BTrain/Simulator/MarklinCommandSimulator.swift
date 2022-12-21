@@ -371,16 +371,30 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
             guard let route = layout.route(for: train.routeId, trainId: train.id) else {
                 continue
             }
-
+            
             do {
-                try simulate(route: route, train: train, loc: loc)
+                try simulate(route: route, train: train, loc: loc, simLoc: simLoc)
             } catch {
                 BTLogger.error(error.localizedDescription)
             }
         }
     }
 
-    func simulate(route: Route, train: Train, loc: Locomotive) throws {
+    func updateDistance(train: Train, simLoc: SimulatorLocomotive, block: Block, duration: TimeInterval) {
+        guard let speed = train.speed else {
+            return
+        }
+        let delta = LayoutSpeed.distance(atSpeed: speed.actualKph, forDuration: duration)
+        print("Delta \(delta)cm for \(duration) sec and \(speed.actualKph) kph")
+        let naturalDirection = block.trainInstance?.direction == .next
+        if naturalDirection {
+            simLoc.distance += delta
+        } else {
+            simLoc.distance -= delta
+        }
+    }
+    
+    func simulate(route: Route, train: Train, loc: Locomotive, simLoc: SimulatorLocomotive) throws {
         guard let layout = layout else {
             return
         }
@@ -393,9 +407,11 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
             return
         }
 
-        BTLogger.debug("[Simulator] Simulating route \(route.name) for \(train.name), requested speed \(loc.speed.requestedKph) kph, actual speed \(loc.speed.actualKph) kph")
+        updateDistance(train: train, simLoc: simLoc, block: block, duration: refreshTimeInterval)
 
-        if try moveTrainInsideBlock(train: train, block: block, layout: layout) {
+        BTLogger.debug("[Simulator] Simulating route \(route.name) for \(train.name), requested speed \(loc.speed.requestedKph) kph, actual speed \(loc.speed.actualKph) kph. Distance \(simLoc.distance) cm.")
+
+        if try moveTrainInsideBlock(train: train, simLoc: simLoc, block: block, layout: layout) {
             return
         }
 
@@ -406,37 +422,40 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
         BTLogger.debug("[Simulator] Nothing to process for route \(route)")
     }
 
-    func moveTrainInsideBlock(train: Train, block: Block, layout: Layout) throws -> Bool {
+    func moveTrainInsideBlock(train: Train, simLoc: SimulatorLocomotive, block: Block, layout: Layout) throws -> Bool {
         guard try layout.atEndOfBlock(train: train) == false else {
             return false
         }
 
         let naturalDirection = block.trainInstance?.direction == .next
-        let feedback: Block.BlockFeedback
-        if naturalDirection {
-            if train.directionForward {
-                let position = train.positions.head?.index ?? block.feedbacks.count
-                feedback = block.feedbacks[position]
+        guard let blockFeedback = nextBlockFeedback(train: train, block: block) else {
+            return false
+        }
+        
+        let triggerFeedback: Bool
+        if let feedbackDistance = blockFeedback.distance {
+            if naturalDirection {
+                triggerFeedback = simLoc.distance >= feedbackDistance
             } else {
-                let position = train.positions.tail?.index ?? block.feedbacks.count
-                feedback = block.feedbacks[position]
+                triggerFeedback = simLoc.distance <= feedbackDistance
             }
         } else {
-            if train.directionForward {
-                // Block: [ 3 2 1 ]
-                // Train:  b   f
-                let position = train.positions.head?.index ?? 1
-                feedback = block.feedbacks[position - 1]
-            } else {
-                // Block: [ 3 2 1 ]
-                // Train:  f   b
-                let position = train.positions.tail?.index ?? 1
-                feedback = block.feedbacks[position - 1]
-            }
+            // Trigger the feedback immediately
+            triggerFeedback = true
         }
-        if let feedback = layout.feedbacks[feedback.feedbackId] {
+        
+        if let feedback = layout.feedbacks[blockFeedback.feedbackId], triggerFeedback {
             BTLogger.debug("[Simulator] Trigger feedback \(feedback.name) to move train \(train.name) within \(block.name)")
-            triggerFeedback(feedback: feedback)
+            if let distance = blockFeedback.distance {
+                if naturalDirection {
+                    simLoc.distance = distance.after
+                } else {
+                    simLoc.distance = distance.before
+                }
+            } else {
+                // TODO: log error or throw exception?
+            }
+            self.triggerFeedback(feedback: feedback)
         }
 
         return true
@@ -459,6 +478,58 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
         triggerFeedback(feedback: entryFeedback.feedback)
 
         return true
+    }
+
+    func currentBlockFeedback(train: Train, block: Block) -> Block.BlockFeedback? {
+        guard let ti = block.trainInstance else {
+            return nil
+        }
+        let naturalDirection = ti.direction == .next
+        let feedback: Block.BlockFeedback
+        if naturalDirection {
+            if train.directionForward {
+                let position = train.positions.head?.index ?? block.feedbacks.count
+                feedback = block.feedbacks[position - 1]
+            } else {
+                let position = train.positions.tail?.index ?? block.feedbacks.count
+                feedback = block.feedbacks[position - 1]
+            }
+        } else {
+            if train.directionForward {
+                let position = train.positions.head?.index ?? 1
+                feedback = block.feedbacks[position]
+            } else {
+                let position = train.positions.tail?.index ?? 1
+                feedback = block.feedbacks[position]
+            }
+        }
+        return feedback
+    }
+    
+    func nextBlockFeedback(train: Train, block: Block) -> Block.BlockFeedback? {
+        guard let ti = block.trainInstance else {
+            return nil
+        }
+        let naturalDirection = ti.direction == .next
+        let feedback: Block.BlockFeedback
+        if naturalDirection {
+            if train.directionForward {
+                let position = train.positions.head?.index ?? block.feedbacks.count
+                feedback = block.feedbacks[position]
+            } else {
+                let position = train.positions.tail?.index ?? block.feedbacks.count
+                feedback = block.feedbacks[position]
+            }
+        } else {
+            if train.directionForward {
+                let position = train.positions.head?.index ?? 1
+                feedback = block.feedbacks[position - 1]
+            } else {
+                let position = train.positions.tail?.index ?? 1
+                feedback = block.feedbacks[position - 1]
+            }
+        }
+        return feedback
     }
 
     func triggerFeedback(feedback: Feedback) {
