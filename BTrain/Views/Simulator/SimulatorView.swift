@@ -39,12 +39,13 @@ struct SimulatorView: View {
             }
             HStack {
                 VStack(spacing: 0) {
-                    Text("Speed").font(.headline)
+                    Text("Speed \(String(format: "%.1f", simulator.simulationSpeedFactor))x").font(.headline)
                     HStack {
                         Text("Slow")
                         Slider(
                             value: $simulator.simulationSpeedFactor,
-                            in: 0 ... Double(4.0)
+                            in: 0 ... Double(4.0),
+                            step: 0.5
                         ) {} onEditingChanged: { _ in
                         }
                         Text("Fast")
