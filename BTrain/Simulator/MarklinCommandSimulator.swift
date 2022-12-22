@@ -26,6 +26,7 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
     @Published var enabled = false
 
     @Published var locomotives = [SimulatorLocomotive]()
+    @Published var trains = [SimulatorTrain]()
 
     @AppStorage("simulatorRefreshSpeed") var refreshSpeed = 2.0 {
         didSet {
@@ -46,7 +47,6 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
     /// The local port used by the simulator
     var localPort: UInt16
 
-    private var trainArrayChangesCancellable: AnyCancellable?
     private var cancellables = [AnyCancellable]()
 
     private var server: Server?
@@ -69,9 +69,22 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
         // Initialization from the document can sometimes happen in the background,
         // let's make sure these are initialized in the main thread.
         MainThreadQueue.sync {
+            registerForLocomotiveChanges()
             registerForTrainChanges()
-            registerForTrainBlockChange()
         }
+    }
+
+    private func registerForLocomotiveChanges() {
+        guard let layout = layout else {
+            return
+        }
+
+        let cancellable = layout.$locomotives
+            .receive(on: RunLoop.main)
+            .sink { [weak self] _ in
+                self?.updateListOfLocomotives()
+            }
+        cancellables.append(cancellable)
     }
 
     private func registerForTrainChanges() {
@@ -82,93 +95,79 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
         let cancellable = layout.$trains
             .receive(on: RunLoop.main)
             .sink { [weak self] _ in
-                // When the array of trains changes, we need
-                // to re-register for changes for each individual trains
-                // because these instances have likely changed.
-                self?.registerForTrainBlockChange()
-
-                // Then update the list of trains
                 self?.updateListOfTrains()
             }
-        trainArrayChangesCancellable = cancellable
+        cancellables.append(cancellable)
     }
 
-    // Register to detect when a train is assigned to a different block,
-    // which happens when a train moves from one block to another or when
-    // a train is assigned a block for the first time (put into the layout).
-    private func registerForTrainBlockChange() {
+    private func updateListOfLocomotives() {
         guard let layout = layout else {
             return
         }
 
-        cancellables.removeAll()
-        for train in layout.trains.elements {
-            let cancellable = train.$block
-                .removeDuplicates()
-                .receive(on: RunLoop.main)
-                .sink { [weak self] _ in
-                    self?.updateListOfTrains()
-                }
-            cancellables.append(cancellable)
-        }
-    }
-
-    func updateListOfTrains() {
-        guard let layout = layout else {
-            return
-        }
-
-        // Remove locomotives that are not present anymore
         locomotives.removeAll(where: { simLoc in
             layout.locomotives[simLoc.id] == nil
         })
 
-        // Update existing locomotives, add new ones
+        for loc in layout.locomotives.elements {
+            if let simLoc = locomotives.first(where: { $0.id == loc.id }) {
+                simLoc.speed = loc.speed.actualSteps
+                simLoc.directionForward = loc.directionForward
+            } else {
+                let simLoc = SimulatorLocomotive(loc: loc)
+                simLoc.speed = loc.speed.actualSteps
+                simLoc.directionForward = loc.directionForward
+                locomotives.append(simLoc)
+            }
+        }
+
+        objectWillChange.send()
+    }
+    
+    private func updateListOfTrains() {
+        guard let layout = layout else {
+            return
+        }
+
+        trains.removeAll(where: { simTrain in
+            layout.trains[simTrain.id] == nil
+        })
+
         for train in layout.trains.elements.filter({ $0.block != nil }) {
             guard let loc = train.locomotive else {
                 continue
             }
 
-            if let simTrain = locomotives.first(where: { $0.id == loc.id }) {
-                simTrain.speed = loc.speed.actualSteps
-                simTrain.directionForward = loc.directionForward
-                updateTrainDistance(train: train, simLoc: simTrain)
+            guard let simLoc = locomotives.first(where: { $0.id == loc.id }) else {
+                continue
+            }
+
+            guard let block = train.block else {
+                continue
+            }
+            
+            guard let direction = block.trainInstance?.direction else {
+                continue
+            }
+            
+            if let simTrain = trains.first(where: { $0.id == train.id }) {
+                simTrain.loc.speed = loc.speed.actualSteps
+                simTrain.loc.directionForward = loc.directionForward
+                simTrain.loc.block = .init(block: block, direction: direction)
             } else {
-                let simTrain = SimulatorLocomotive(loc: loc)
-                simTrain.speed = loc.speed.actualSteps
-                simTrain.directionForward = loc.directionForward
-                updateTrainDistance(train: train, simLoc: simTrain)
-                locomotives.append(simTrain)
+                let simTrain = SimulatorTrain(id: train.id, name: train.name, loc: simLoc, layout: layout, delegate: self)
+                simTrain.loc.speed = loc.speed.actualSteps
+                simTrain.loc.directionForward = loc.directionForward
+                simTrain.loc.block = .init(block: block, direction: direction)
+                trains.append(simTrain)
             }
         }
 
         objectWillChange.send()
     }
 
-    func updateTrainDistance(train: Train, simLoc: SimulatorLocomotive) {
-        guard let block = train.block else {
-            // TODO: throw?
-            return
-        }
-        
-        guard let feedback = currentBlockFeedback(train: train, block: block) else {
-            // TODO: throw?
-            return
-        }
-        
-        guard let feedbackDistance = feedback.distance else {
-            // TODO: throw
-            return
-        }
-        
-        let naturalDirection = block.trainInstance?.direction == .next
-        if naturalDirection {
-            simLoc.distance = feedbackDistance.after
-        } else {
-            simLoc.distance = feedbackDistance.before
-        }
-        
-        BTLogger.debug("[Simulator] \(train.name): initial distance \(simLoc.distance.distanceString) in \(block.name)")
+    func trainPositionChangedManually(train: Train) {
+        updateListOfTrains()
     }
     
     func start(_ port: UInt16 = 8080) {
@@ -273,10 +272,10 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
     }
 
     func speedChanged(address: UInt32, decoderType: DecoderType?, value: SpeedValue) {
-        for loc in locomotives {
-            if loc.loc.actualAddress == address.actualAddress(for: decoderType) {
-                let steps = interface.speedSteps(for: value, decoder: loc.loc.decoder)
-                loc.speed = steps
+        for train in trains {
+            if train.loc.loc.actualAddress == address.actualAddress(for: decoderType) {
+                let steps = interface.speedSteps(for: value, decoder: train.loc.loc.decoder)
+                train.loc.speed = steps
             }
         }
         let message = MarklinCANMessageFactory.speed(addr: address, speed: value.value)
@@ -284,9 +283,9 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
     }
 
     func directionChanged(address: UInt32, decoderType: DecoderType?, direction: Command.Direction) {
-        for loc in locomotives {
-            if loc.loc.actualAddress == address.actualAddress(for: decoderType) {
-                loc.directionForward = direction == .forward
+        for train in trains {
+            if train.loc.loc.actualAddress == address.actualAddress(for: decoderType) {
+                train.loc.directionForward = direction == .forward
             }
         }
 
@@ -331,7 +330,7 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
     }
 
     func provideDirection(address: UInt32) {
-        guard let loc = locomotives.first(where: { $0.loc.actualAddress == address }) else {
+        guard let train = trains.first(where: { $0.loc.loc.actualAddress == address }) else {
             BTLogger.error("[Simulator] Unable to find a locomotive for address \(address.toHex())")
 
             // As per spec 3.5, an answer is always returned, even when a locomotive is not known.
@@ -341,7 +340,7 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
             }
             return
         }
-        let message = MarklinCANMessageFactory.direction(addr: address, direction: loc.directionForward ? .forward : .backward)
+        let message = MarklinCANMessageFactory.direction(addr: address, direction: train.loc.directionForward ? .forward : .backward)
         send(message.ack)
     }
 
@@ -351,21 +350,21 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
         send(message.ack)
     }
 
-    func setTrainDirection(train: SimulatorLocomotive, directionForward: Bool) {
+    func setLocomotiveDirection(locomotive: SimulatorLocomotive, directionForward: Bool) {
         // Remember this direction in the simulator train itself
-        train.directionForward = directionForward
+        locomotive.directionForward = directionForward
 
         // Note: directionForward is actually ignored because the message sent by the Central Station is `emergencyStop`
         // and the client must request the locomotive direction explicitly.
-        let message = MarklinCANMessageFactory.emergencyStop(addr: train.loc.actualAddress)
+        let message = MarklinCANMessageFactory.emergencyStop(addr: locomotive.loc.actualAddress)
         send(message)
     }
 
     /// Simulates a change in speed from the Central Station 3
-    /// - Parameter train: the train that had his speed changed
-    func setTrainSpeed(train: SimulatorLocomotive) {
-        let value = interface.speedValue(for: train.speed, decoder: train.loc.decoder)
-        let message = MarklinCANMessageFactory.speed(addr: train.loc.actualAddress, speed: value.value)
+    /// - Parameter locomotive: the locomotive that had his speed changed
+    func setLocomotiveSpeed(locomotive: SimulatorLocomotive) {
+        let value = interface.speedValue(for: locomotive.speed, decoder: locomotive.loc.decoder)
+        let message = MarklinCANMessageFactory.speed(addr: locomotive.loc.actualAddress, speed: value.value)
         send(message)
         send(message.ack) // Send also the acknowledgement
     }
@@ -390,244 +389,27 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
                 continue
             }
 
+            guard let simTrain = trains.first(where: { $0.id == train.id }) else {
+                continue
+            }
+
             guard let loc = train.locomotive else {
                 continue
             }
-
-            guard let simLoc = locomotives.first(where: { $0.loc.id == loc.id }), simLoc.simulate else {
-                continue
+            
+            guard loc.speed.actualKph > 0 else {
+                return
             }
 
-            guard let route = layout.route(for: train.routeId, trainId: train.id) else {
-                continue
+            do {
+                try simTrain.update(speed: loc.speed.actualKph, duration: timerInterval)
+            } catch {
+                BTLogger.error("\(train.name): \(error.localizedDescription)")
             }
             
-            do {
-                try simulate(route: route, train: train, loc: loc, simLoc: simLoc)
-            } catch {
-                BTLogger.error(error.localizedDescription)
-            }
         }
     }
-
-    func updateDistance(train: Train, simLoc: SimulatorLocomotive, block: Block, duration: TimeInterval) {
-        guard let speed = train.speed else {
-            return
-        }
-        let delta = LayoutSpeed.distance(atSpeed: speed.actualKph, forDuration: duration)
-        let naturalDirection = block.trainInstance?.direction == .next
-        if naturalDirection {
-            simLoc.distance += delta
-        } else {
-            simLoc.distance -= delta
-        }
-        
-        BTLogger.debug("[Simulator] \(train.name): updated distance to \(simLoc.distance.distanceString) with delta \(delta.distanceString) for \(duration.durationString) at \(speed.actualKph) kph.")
-    }
-    
-    func simulate(route: Route, train: Train, loc: Locomotive, simLoc: SimulatorLocomotive) throws {
-        guard let layout = layout else {
-            return
-        }
-
-        guard loc.speed.actualKph > 0 else {
-            return
-        }
-
-        guard let block = train.block else {
-            return
-        }
-
-        updateDistance(train: train, simLoc: simLoc, block: block, duration: timerInterval)
-
-        if isTrainInsideBlock(train: train, simLoc: simLoc, block: block) {
-            try moveTrainInsideBlock(train: train, simLoc: simLoc, block: block, layout: layout)
-        } else {
-            if simLoc.state == .movingInsideBlock {
-                updateTrainToNextBlock(train: train, simLoc: simLoc)
-                simLoc.state = .movingTowardsNextBlock
-            }
-            try moveTrainToNextBlock(train: train, simLoc: simLoc, block: block, layout: layout)
-        }
-    }
-
-    func isTrainInsideBlock(train: Train, simLoc: SimulatorLocomotive, block: Block) -> Bool {
-        guard let blockLength = block.length else {
-            // TODO: throw
-            return false
-        }
-        let naturalDirection = block.trainInstance?.direction == .next
-        let inside: Bool
-        if naturalDirection {
-            inside = simLoc.distance <= blockLength
-        } else {
-            inside = simLoc.distance >= 0
-        }
-        
-        if inside {
-            BTLogger.debug("[Simulator] \(train.name): distance \(simLoc.distance.distanceString) is inside \(block.name) with length \(blockLength.distanceString).")
-        } else {
-            BTLogger.debug("[Simulator] \(train.name): distance \(simLoc.distance.distanceString) is outside \(block.name) with length \(blockLength.distanceString).")
-        }
-        
-        return inside
-    }
-    
-    func moveTrainInsideBlock(train: Train, simLoc: SimulatorLocomotive, block: Block, layout: Layout) throws {
-        guard try layout.atEndOfBlock(train: train) == false else {
-            return
-        }
-
-        let naturalDirection = block.trainInstance?.direction == .next
-        guard let blockFeedback = nextBlockFeedback(train: train, block: block) else {
-            // TODO: throw
-            return
-        }
-        
-        let triggerFeedback: Bool
-        if let feedbackDistance = blockFeedback.distance {
-            if naturalDirection {
-                triggerFeedback = simLoc.distance >= feedbackDistance
-            } else {
-                triggerFeedback = simLoc.distance <= feedbackDistance
-            }
-        } else {
-            // Trigger the feedback immediately
-            triggerFeedback = true
-        }
-        
-        if let feedback = layout.feedbacks[blockFeedback.feedbackId], triggerFeedback {
-            BTLogger.debug("[Simulator] \(train.name): trigger feedback \(feedback.name) at \(blockFeedback.distanceString) inside \(block.name)")
-            if let distance = blockFeedback.distance {
-                if naturalDirection {
-                    simLoc.distance = distance.after
-                } else {
-                    simLoc.distance = distance.before
-                }
-            } else {
-                // TODO: log error or throw exception?
-            }
-            self.triggerFeedback(feedback: feedback)
-        }
-    }
-
-    func updateTrainToNextBlock(train: Train, simLoc: SimulatorLocomotive) {
-        guard let nextBlock = train.reservation.nextBlock else {
-            // TODO: throw
-            return
-        }
-        let naturalDirection = nextBlock.trainInstance?.direction == .next
-        if naturalDirection {
-            simLoc.distance = 0
-        } else {
-            simLoc.distance = nextBlock.length ?? 0
-        }
-    }
-    
-    func shouldTriggerNextBlockFeedback(train: Train, simLoc: SimulatorLocomotive, feedback: Layout.EntryFeedback) -> Bool {
-        guard let nextBlock = train.reservation.nextBlock else {
-            // TODO: throw
-            return false
-        }
-        
-        let blockFeedback = nextBlock.feedbacks[feedback.index]
-        guard let blockFeedbackDistance = blockFeedback.distance else {
-            // TODO: throw
-            return false
-        }
-
-        let naturalDirection = feedback.direction == .next
-        let reachedEntryFeedback: Bool
-        if naturalDirection {
-            reachedEntryFeedback = simLoc.distance >= blockFeedbackDistance
-        } else {
-            reachedEntryFeedback = simLoc.distance <= blockFeedbackDistance
-        }
-        
-        if reachedEntryFeedback {
-            BTLogger.debug("[Simulator] \(train.name): reached entry feedback \(feedback.feedback.name) at \(simLoc.distance.distanceString) inside \(nextBlock.name)")
-        } else {
-            BTLogger.debug("[Simulator] \(train.name): not yet reached entry feedback \(feedback.feedback.name) at \(simLoc.distance.distanceString) inside \(nextBlock.name)")
-        }
-
-        return reachedEntryFeedback
-    }
-    
-    func moveTrainToNextBlock(train: Train, simLoc: SimulatorLocomotive, block: Block, layout: Layout) throws {
-        guard let entryFeedback = try layout.entryFeedback(for: train) else {
-            // TODO: throw?
-            return
-        }
-
-        guard shouldTriggerNextBlockFeedback(train: train, simLoc: simLoc, feedback: entryFeedback) else {
-            return
-        }
-        
-        // Ensure all the feedbacks of the current block is turned off, otherwise there will be
-        // an unexpected feedback error in the layout. This happens when there is less than 250ms
-        // between the time the feedback was triggered (because the feedback gets reset after 250ms)
-        for bf in block.feedbacks {
-            if let feedback = layout.feedbacks[bf.feedbackId] {
-                setFeedback(feedback: feedback, value: 0)
-            }
-        }
-
-        BTLogger.debug("[Simulator] \(train.name): trigger feedback \(entryFeedback.feedback.name) to move next block \(entryFeedback.block.name)")
-        triggerFeedback(feedback: entryFeedback.feedback)
-    }
-
-    func currentBlockFeedback(train: Train, block: Block) -> Block.BlockFeedback? {
-        guard let ti = block.trainInstance else {
-            return nil
-        }
-        let naturalDirection = ti.direction == .next
-        let feedback: Block.BlockFeedback
-        if naturalDirection {
-            if train.directionForward {
-                let position = train.positions.head?.index ?? block.feedbacks.count
-                feedback = block.feedbacks[position - 1]
-            } else {
-                let position = train.positions.tail?.index ?? block.feedbacks.count
-                feedback = block.feedbacks[position - 1]
-            }
-        } else {
-            if train.directionForward {
-                let position = train.positions.head?.index ?? 1
-                feedback = block.feedbacks[position]
-            } else {
-                let position = train.positions.tail?.index ?? 1
-                feedback = block.feedbacks[position]
-            }
-        }
-        return feedback
-    }
-    
-    func nextBlockFeedback(train: Train, block: Block) -> Block.BlockFeedback? {
-        guard let ti = block.trainInstance else {
-            return nil
-        }
-        let naturalDirection = ti.direction == .next
-        let feedback: Block.BlockFeedback
-        if naturalDirection {
-            if train.directionForward {
-                let position = train.positions.head?.index ?? block.feedbacks.count
-                feedback = block.feedbacks[position]
-            } else {
-                let position = train.positions.tail?.index ?? block.feedbacks.count
-                feedback = block.feedbacks[position]
-            }
-        } else {
-            if train.directionForward {
-                let position = train.positions.head?.index ?? 1
-                feedback = block.feedbacks[position - 1]
-            } else {
-                let position = train.positions.tail?.index ?? 1
-                feedback = block.feedbacks[position - 1]
-            }
-        }
-        return feedback
-    }
-
+            
     func triggerFeedback(feedback: Feedback) {
         setFeedback(feedback: feedback, value: 1)
         Timer.scheduledTimer(withTimeInterval: 0.25 * BaseTimeFactor, repeats: false) { _ in
@@ -636,30 +418,34 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
     }
 }
 
+extension MarklinCommandSimulator: SimulatorTrainDelegate {
+    func trainDidChange(event: SimulatorTrainEvent) {
+        switch event {
+        case .distanceUpdated:
+            break
+            
+        case .movedToNextBlock(let block):
+            // Ensure all the feedbacks of the current block is turned off, otherwise there will be
+            // an unexpected feedback error in the layout. This happens when there is less than 250ms
+            // between the time the feedback was triggered (because the feedback gets reset after 250ms)
+            for bf in block.feedbacks {
+                if let feedback = layout?.feedbacks[bf.feedbackId] {
+                    setFeedback(feedback: feedback, value: 0)
+                }
+            }
+
+        case .movedToNextTurnout(_):
+            break
+            
+        case .triggerFeedback(let feedback):
+            triggerFeedback(feedback: feedback)
+        }
+    }
+    
+}
+
 private extension Locomotive {
     var actualAddress: UInt32 {
         address.actualAddress(for: decoder)
-    }
-}
-
-private extension Block.BlockFeedback {
-    
-    var distanceString: String {
-        if let distance = distance {
-            return distance.distanceString
-        } else {
-            return "n/a"
-        }
-    }
-}
-
-private extension Double {
-    
-    var distanceString: String {
-        String(format: "%.1f cm", self)
-    }
-    
-    var durationString: String {
-        String(format: "%.1f sec", self)
     }
 }

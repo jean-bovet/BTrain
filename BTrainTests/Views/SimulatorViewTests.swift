@@ -48,7 +48,7 @@ class SimulatorViewTests: RootViewTests {
 
         let simulatorTrainControl = try forEachView.view(SimulatorTrainControlView.self, 0)
 
-        XCTAssertEqual(t1.name, try simulatorTrainControl.hStack().toggle(0).labelView().text().string())
+        XCTAssertEqual(t1.name, try simulatorTrainControl.hStack().text(0).string())
 
         // Now tap on the direction of the first train and see if it is reflected in the train list
         let toggleButton = try simulatorTrainControl.hStack().group(1).button(0)

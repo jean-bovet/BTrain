@@ -18,11 +18,11 @@ struct SimulatorTrainControlView: View {
 
     var body: some View {
         HStack {
-            Toggle("\(simLoc.loc.name)", isOn: $simLoc.simulate)
+            Text(simLoc.loc.name)
 
             Group {
                 Button {
-                    simulator.setTrainDirection(train: simLoc, directionForward: !simLoc.directionForward)
+                    simulator.setLocomotiveDirection(locomotive: simLoc, directionForward: !simLoc.directionForward)
                 } label: {
                     if simLoc.directionForward {
                         Image(systemName: "arrowtriangle.right.fill")
@@ -36,12 +36,12 @@ struct SimulatorTrainControlView: View {
                         value: $simLoc.speedAsDouble,
                         in: 0 ... Double(simLoc.loc.decoder.steps)
                     ) {} onEditingChanged: { _ in
-                        simulator.setTrainSpeed(train: simLoc)
+                        simulator.setLocomotiveSpeed(locomotive: simLoc)
                     }
 
                     Text("\(Int(simLoc.speed.value)) steps")
                 }
-            }.disabled(simLoc.simulate == false)
+            }
         }
     }
 }

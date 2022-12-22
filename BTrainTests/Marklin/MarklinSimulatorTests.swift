@@ -48,11 +48,11 @@ class MarklinSimulatorTests: XCTestCase {
 
         let e = expectation(description: "callback")
         _ = doc.interface.callbacks.register(forDirectionChange: { _, _, direction in
-            XCTAssertFalse(direction == .forward)
+            XCTAssertEqual(direction, .backward)
             e.fulfill()
         })
 
-        doc.simulator.setTrainDirection(train: doc.simulator.locomotives[0], directionForward: false)
+        doc.simulator.setLocomotiveDirection(locomotive: doc.simulator.locomotives[0], directionForward: false)
 
         waitForExpectations(timeout: 1.0)
 
@@ -102,7 +102,7 @@ class MarklinSimulatorTests: XCTestCase {
             }
         })
 
-        doc.simulator.setTrainSpeed(train: doc.simulator.locomotives[0])
+        doc.simulator.setLocomotiveSpeed(locomotive: doc.simulator.locomotives[0])
 
         wait(for: [directCommand, acknowledgement, e], timeout: 1.0, enforceOrder: true)
     }
@@ -144,5 +144,109 @@ class MarklinSimulatorTests: XCTestCase {
 
         XCTAssertFalse(s2.started)
         XCTAssertFalse(MarklinCS3Server.shared.running)
+    }
+    
+    func testMoveTrain() throws {
+        let layout = LayoutPointToPoint().newLayout()
+        let train = layout.trains[0]
+        let blockA = layout.block(named: "A")
+        let blockB = layout.block(named: "B")
+        let turnoutAB = layout.turnout(named: "AB")
+
+        try layout.setTrainToBlock(train, blockA.id, positions: .both(blockId: blockA.id, headIndex: 1, headDistance: 10, tailIndex: 0, tailDistance: 0), directionOfTravelInBlock: .next)
+        
+        let delegate = MockSimulatorTrainDelegate(layout: layout)
+        let simTrain = SimulatorTrain(id: train.id, name: train.name, loc: SimulatorLocomotive(loc: train.locomotive!), layout: layout, delegate: delegate)
+        simTrain.loc.block = .init(block: blockA, direction: .next)
+        
+        XCTAssertEqual(delegate.events.count, 0)
+        while simTrain.loc.block?.block.id != blockB.id {            
+            try simTrain.update(speed: 30, duration: 0.25)
+        }
+                
+        XCTAssertEqual(delegate.matches(event: .distanceUpdated, untilFeedbackNamed: "A.1"), 9)
+        
+        XCTAssertTrue(delegate.matches(event: .distanceUpdated, untilFeedbackNamed: "A.2") > 10)
+        
+        XCTAssertTrue(delegate.matches(event: .distanceUpdated, untilEvent: .movedToNextTurnout(turnout: turnoutAB)) > 5)
+
+        XCTAssertTrue(delegate.matches(event: .distanceUpdated, untilEvent: .movedToNextBlock(block: blockB)) >= 5)
+    }
+    
+    func testMoveTrainWithInverseBlocks() throws {
+        let layout = LayoutPointToPoint().newLayout()
+        let train = layout.trains[0]
+        let blockA = layout.block(named: "A")
+        let blockB2 = layout.block(named: "B2")
+        let blockC2 = layout.block(named: "C2")
+        let blockD2 = layout.block(named: "D2")
+        let turnoutAB = layout.turnout(named: "AB")
+        turnoutAB.setState(.branchRight)
+
+        try layout.setTrainToBlock(train, blockA.id, positions: .both(blockId: blockA.id, headIndex: 1, headDistance: 10, tailIndex: 0, tailDistance: 0), directionOfTravelInBlock: .next)
+        
+        let delegate = MockSimulatorTrainDelegate(layout: layout)
+        let simTrain = SimulatorTrain(id: train.id, name: train.name, loc: SimulatorLocomotive(loc: train.locomotive!), layout: layout, delegate: delegate)
+        simTrain.loc.block = .init(block: blockA, direction: .next)
+        
+        XCTAssertEqual(delegate.events.count, 0)
+        while simTrain.loc.block?.block.id != blockD2.id {
+            try simTrain.update(speed: 30, duration: 0.25)
+        }
+        
+        XCTAssertGreaterThan(delegate.matches(event: .distanceUpdated, untilFeedbackNamed: "A.1"), 5)
+        XCTAssertGreaterThan(delegate.matches(event: .distanceUpdated, untilFeedbackNamed: "A.2"), 5)
+        XCTAssertGreaterThan(delegate.matches(event: .distanceUpdated, untilEvent: .movedToNextTurnout(turnout: turnoutAB)), 5)
+        
+        XCTAssertGreaterThan(delegate.matches(event: .distanceUpdated, untilEvent: .movedToNextBlock(block: blockB2)), 4)
+        XCTAssertGreaterThan(delegate.matches(event: .distanceUpdated, untilFeedbackNamed: "B2.1"), 5)
+        XCTAssertGreaterThan(delegate.matches(event: .distanceUpdated, untilFeedbackNamed: "B2.2"), 5)
+        
+        XCTAssertGreaterThan(delegate.matches(event: .distanceUpdated, untilEvent: .movedToNextBlock(block: blockC2)), 5)
+        XCTAssertGreaterThan(delegate.matches(event: .distanceUpdated, untilFeedbackNamed: "C2.2"), 5)
+        XCTAssertGreaterThan(delegate.matches(event: .distanceUpdated, untilFeedbackNamed: "C2.1"), 5)
+
+        XCTAssertGreaterThan(delegate.matches(event: .distanceUpdated, untilEvent: .movedToNextBlock(block: blockD2)), 5)
+    }
+
+}
+
+final class MockSimulatorTrainDelegate: SimulatorTrainDelegate {
+    
+    let layout: Layout
+    
+    var events = [SimulatorTrainEvent]()
+    
+    internal init(layout: Layout) {
+        self.layout = layout
+    }
+
+    func trainDidChange(event: SimulatorTrainEvent) {
+        events.append(event)
+    }
+    
+    func matches(event expectedEvent: SimulatorTrainEvent, count: Int) {
+        for _ in 1...count {
+            let event = events.removeFirst()
+            XCTAssertEqual(event, expectedEvent)
+        }
+    }
+
+    func matches(event expectedEvent: SimulatorTrainEvent, untilFeedbackNamed: String) -> Int {
+        matches(event: expectedEvent, untilEvent: .triggerFeedback(feedback: layout.feedback(named: untilFeedbackNamed)))
+    }
+    
+    func matches(event expectedEvent: SimulatorTrainEvent, untilEvent: SimulatorTrainEvent) -> Int {
+        var count = 0
+        while !events.isEmpty {
+            let event = events.removeFirst()
+            if event == untilEvent {
+                return count
+            } else {
+                count += 1
+            }
+        }
+        XCTFail("Did not find \(untilEvent)")
+        return 0
     }
 }

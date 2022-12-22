@@ -15,6 +15,7 @@ import SwiftUI
 struct TrainControlSetLocationSheet: View {
     let layout: Layout
     let controller: LayoutController
+    let doc: LayoutDocument
 
     @ObservedObject var train: Train
 
@@ -74,6 +75,7 @@ struct TrainControlSetLocationSheet: View {
                     do {
                         if let selectedBlock = blockId {
                             try controller.setupTrainToBlock(train, selectedBlock, naturalDirectionInBlock: direction)
+                            doc.simulator.trainPositionChangedManually(train: train)
                             controller.redrawSwitchboard()
                         }
                         errorStatus = nil
@@ -93,6 +95,6 @@ struct TrainControlSetLocationSheet_Previews: PreviewProvider {
     static let doc = LayoutDocument(layout: LayoutLoop2().newLayout())
 
     static var previews: some View {
-        TrainControlSetLocationSheet(layout: doc.layout, controller: doc.layoutController, train: doc.layout.trains[0])
+        TrainControlSetLocationSheet(layout: doc.layout, controller: doc.layoutController, doc: doc, train: doc.layout.trains[0])
     }
 }
