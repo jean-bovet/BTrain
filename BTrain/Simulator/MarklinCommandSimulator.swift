@@ -132,10 +132,12 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
             if let simTrain = locomotives.first(where: { $0.id == loc.id }) {
                 simTrain.speed = loc.speed.actualSteps
                 simTrain.directionForward = loc.directionForward
+                updateTrainDistance(train: train, simLoc: simTrain)
             } else {
                 let simTrain = SimulatorLocomotive(loc: loc)
                 simTrain.speed = loc.speed.actualSteps
                 simTrain.directionForward = loc.directionForward
+                updateTrainDistance(train: train, simLoc: simTrain)
                 locomotives.append(simTrain)
             }
         }
@@ -143,6 +145,32 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
         objectWillChange.send()
     }
 
+    func updateTrainDistance(train: Train, simLoc: SimulatorLocomotive) {
+        guard let block = train.block else {
+            // TODO: throw?
+            return
+        }
+        
+        guard let feedback = currentBlockFeedback(train: train, block: block) else {
+            // TODO: throw?
+            return
+        }
+        
+        guard let feedbackDistance = feedback.distance else {
+            // TODO: throw
+            return
+        }
+        
+        let naturalDirection = block.trainInstance?.direction == .next
+        if naturalDirection {
+            simLoc.distance = feedbackDistance.after
+        } else {
+            simLoc.distance = feedbackDistance.before
+        }
+        
+        BTLogger.debug("[Simulator] \(train.name): initial distance \(simLoc.distance.distanceString) in \(block.name)")
+    }
+    
     func start(_ port: UInt16 = 8080) {
         try? cs3Server.start(port)
 
@@ -387,15 +415,14 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
             return
         }
         let delta = LayoutSpeed.distance(atSpeed: speed.actualKph, forDuration: duration)
-        simLoc.distance += delta
-        BTLogger.debug("[Simulator] \(train.name): updated distance to \(simLoc.distance.distanceString) with delta \(delta.distanceString) for \(duration.durationString) at \(speed.actualKph) kph.")
-
         let naturalDirection = block.trainInstance?.direction == .next
         if naturalDirection {
             simLoc.distance += delta
         } else {
             simLoc.distance -= delta
         }
+        
+        BTLogger.debug("[Simulator] \(train.name): updated distance to \(simLoc.distance.distanceString) with delta \(delta.distanceString) for \(duration.durationString) at \(speed.actualKph) kph.")
     }
     
     func simulate(route: Route, train: Train, loc: Locomotive, simLoc: SimulatorLocomotive) throws {
@@ -413,23 +440,48 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
 
         updateDistance(train: train, simLoc: simLoc, block: block, duration: timerInterval)
 
-        if try moveTrainInsideBlock(train: train, simLoc: simLoc, block: block, layout: layout) {
-            return
-        }
-
-        if try moveTrainToNextBlock(train: train, simLoc: simLoc, block: block, layout: layout) {
-            return
+        if isTrainInsideBlock(train: train, simLoc: simLoc, block: block) {
+            try moveTrainInsideBlock(train: train, simLoc: simLoc, block: block, layout: layout)
+        } else {
+            if simLoc.state == .movingInsideBlock {
+                updateTrainToNextBlock(train: train, simLoc: simLoc)
+                simLoc.state = .movingTowardsNextBlock
+            }
+            try moveTrainToNextBlock(train: train, simLoc: simLoc, block: block, layout: layout)
         }
     }
 
-    func moveTrainInsideBlock(train: Train, simLoc: SimulatorLocomotive, block: Block, layout: Layout) throws -> Bool {
-        guard try layout.atEndOfBlock(train: train) == false else {
+    func isTrainInsideBlock(train: Train, simLoc: SimulatorLocomotive, block: Block) -> Bool {
+        guard let blockLength = block.length else {
+            // TODO: throw
             return false
+        }
+        let naturalDirection = block.trainInstance?.direction == .next
+        let inside: Bool
+        if naturalDirection {
+            inside = simLoc.distance <= blockLength
+        } else {
+            inside = simLoc.distance >= 0
+        }
+        
+        if inside {
+            BTLogger.debug("[Simulator] \(train.name): distance \(simLoc.distance.distanceString) is inside \(block.name) with length \(blockLength.distanceString).")
+        } else {
+            BTLogger.debug("[Simulator] \(train.name): distance \(simLoc.distance.distanceString) is outside \(block.name) with length \(blockLength.distanceString).")
+        }
+        
+        return inside
+    }
+    
+    func moveTrainInsideBlock(train: Train, simLoc: SimulatorLocomotive, block: Block, layout: Layout) throws {
+        guard try layout.atEndOfBlock(train: train) == false else {
+            return
         }
 
         let naturalDirection = block.trainInstance?.direction == .next
         guard let blockFeedback = nextBlockFeedback(train: train, block: block) else {
-            return false
+            // TODO: throw
+            return
         }
         
         let triggerFeedback: Bool
@@ -457,23 +509,59 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
             }
             self.triggerFeedback(feedback: feedback)
         }
-
-        return true
     }
 
-    func moveTrainToNextBlock(train: Train, simLoc: SimulatorLocomotive, block: Block, layout: Layout) throws -> Bool {
-        guard let entryFeedback = try layout.entryFeedback(for: train) else {
-            return false
+    func updateTrainToNextBlock(train: Train, simLoc: SimulatorLocomotive) {
+        guard let nextBlock = train.reservation.nextBlock else {
+            // TODO: throw
+            return
         }
-        
-        let naturalDirection = block.trainInstance?.direction == .next
+        let naturalDirection = nextBlock.trainInstance?.direction == .next
         if naturalDirection {
             simLoc.distance = 0
         } else {
-            simLoc.distance = block.length ?? 0
+            simLoc.distance = nextBlock.length ?? 0
         }
-                
-        // TODO: compute distance beginning of the block until the first feedback including from the previous block last feedback!
+    }
+    
+    func shouldTriggerNextBlockFeedback(train: Train, simLoc: SimulatorLocomotive, feedback: Layout.EntryFeedback) -> Bool {
+        guard let nextBlock = train.reservation.nextBlock else {
+            // TODO: throw
+            return false
+        }
+        
+        let blockFeedback = nextBlock.feedbacks[feedback.index]
+        guard let blockFeedbackDistance = blockFeedback.distance else {
+            // TODO: throw
+            return false
+        }
+
+        let naturalDirection = feedback.direction == .next
+        let reachedEntryFeedback: Bool
+        if naturalDirection {
+            reachedEntryFeedback = simLoc.distance >= blockFeedbackDistance
+        } else {
+            reachedEntryFeedback = simLoc.distance <= blockFeedbackDistance
+        }
+        
+        if reachedEntryFeedback {
+            BTLogger.debug("[Simulator] \(train.name): reached entry feedback \(feedback.feedback.name) at \(simLoc.distance.distanceString) inside \(nextBlock.name)")
+        } else {
+            BTLogger.debug("[Simulator] \(train.name): not yet reached entry feedback \(feedback.feedback.name) at \(simLoc.distance.distanceString) inside \(nextBlock.name)")
+        }
+
+        return reachedEntryFeedback
+    }
+    
+    func moveTrainToNextBlock(train: Train, simLoc: SimulatorLocomotive, block: Block, layout: Layout) throws {
+        guard let entryFeedback = try layout.entryFeedback(for: train) else {
+            // TODO: throw?
+            return
+        }
+
+        guard shouldTriggerNextBlockFeedback(train: train, simLoc: simLoc, feedback: entryFeedback) else {
+            return
+        }
         
         // Ensure all the feedbacks of the current block is turned off, otherwise there will be
         // an unexpected feedback error in the layout. This happens when there is less than 250ms
@@ -486,8 +574,6 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
 
         BTLogger.debug("[Simulator] \(train.name): trigger feedback \(entryFeedback.feedback.name) to move next block \(entryFeedback.block.name)")
         triggerFeedback(feedback: entryFeedback.feedback)
-
-        return true
     }
 
     func currentBlockFeedback(train: Train, block: Block) -> Block.BlockFeedback? {

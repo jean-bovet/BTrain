@@ -34,4 +34,11 @@ final class SimulatorLocomotive: ObservableObject, Element {
         self.loc = loc
         directionForward = loc.directionForward
     }
+    
+    enum State {
+        case movingInsideBlock
+        case movingTowardsNextBlock
+    }
+    
+    @Published var state = State.movingInsideBlock
 }
