@@ -43,8 +43,8 @@ struct SimulatorView: View {
                     HStack {
                         Text("Slow")
                         Slider(
-                            value: $simulator.refreshSpeed,
-                            in: 0 ... Double(3.5)
+                            value: $simulator.simulationSpeedFactor,
+                            in: 0 ... Double(4.0)
                         ) {} onEditingChanged: { _ in
                         }
                         Text("Fast")

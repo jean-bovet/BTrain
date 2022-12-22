@@ -28,17 +28,12 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
     @Published var locomotives = [SimulatorLocomotive]()
     @Published var trains = [SimulatorTrain]()
 
-    @AppStorage("simulatorRefreshSpeed") var refreshSpeed = 2.0 {
-        didSet {
-            scheduleTimer()
-        }
-    }
+    @AppStorage("simulatorSpeedFactor") var simulationSpeedFactor = 1.0
 
     @AppStorage("simulatorTurnoutSpeed") var turnoutSpeed = 0.250
-
-    var refreshTimeInterval: TimeInterval {
-        4.0 - refreshSpeed
-    }
+    
+    /// The interval of time between the simulation
+    let timerInterval = 0.250
 
     /// Internal global variable used to create a unique port each time a simulator instance
     /// is created, which allows for multiple document to be opened (and operated) at the same time
@@ -198,16 +193,18 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
             onCompletionBlock()
         }
     }
-
-    let timerInterval = 0.250
     
     func scheduleTimer() {
         timer?.invalidate()
-        timer = Timer.scheduledTimer(withTimeInterval: timerInterval * BaseTimeFactor, repeats: true) { [weak self] _ in
-            self?.simulateLayout()
+        timer = Timer.scheduledTimer(withTimeInterval: timerInterval * BaseTimeFactor, repeats: true) { [weak self] timer in
+            self?.timerFired(timer: timer)
         }
     }
 
+    func timerFired(timer: Timer) {
+        simulateLayout(duration: timer.timeInterval * simulationSpeedFactor)
+    }
+    
     func register(with connection: ServerConnection) {
         connection.receiveMessageCallback = { [weak self] message in
             if let self = self {
@@ -375,7 +372,7 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
         }
     }
 
-    func simulateLayout() {
+    func simulateLayout(duration: TimeInterval) {
         guard enabled else {
             return
         }
@@ -402,7 +399,7 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
             }
 
             do {
-                try simTrain.update(speed: loc.speed.actualKph, duration: timerInterval)
+                try simTrain.update(speed: loc.speed.actualKph, duration: duration)
             } catch {
                 BTLogger.error("\(train.name): \(error.localizedDescription)")
             }
