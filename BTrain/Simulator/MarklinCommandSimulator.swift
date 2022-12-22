@@ -261,7 +261,7 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
     }
 
     func turnoutChanged(address: CommandTurnoutAddress, state: UInt8, power: UInt8) {
-        BTLogger.debug("[Simulator] Turnout changed for \(address.address.toHex()): state \(state), power \(power)")
+        BTLogger.simulator.debug("Turnout changed for \(address.address.toHex()): state \(state), power \(power)")
         let message = MarklinCANMessageFactory.accessory(addr: address.actualAddress, state: state, power: power)
         DispatchQueue.main.asyncAfter(deadline: .now() + turnoutSpeed) {
             self.send(message.ack)
@@ -300,7 +300,7 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
 
     func provideLocomotives() {
         guard let file = Bundle.main.url(forResource: "Locomotives", withExtension: "cs2") else {
-            BTLogger.error("[Simulator]  Unable to find the Locomotives.cs2 file")
+            BTLogger.simulator.error("Unable to find the Locomotives.cs2 file")
             return
         }
         let data = try! Data(contentsOf: file)
@@ -328,7 +328,7 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
 
     func provideDirection(address: UInt32) {
         guard let train = trains.first(where: { $0.loc.loc.actualAddress == address }) else {
-            BTLogger.error("[Simulator] Unable to find a locomotive for address \(address.toHex())")
+            BTLogger.simulator.error("Unable to find a locomotive for address \(address.toHex())")
 
             // As per spec 3.5, an answer is always returned, even when a locomotive is not known.
             DispatchQueue.main.async {
@@ -401,7 +401,7 @@ final class MarklinCommandSimulator: Simulator, ObservableObject {
             do {
                 try simTrain.update(speed: loc.speed.actualKph, duration: duration)
             } catch {
-                BTLogger.error("\(train.name): \(error.localizedDescription)")
+                BTLogger.simulator.error("\(train.name): \(error.localizedDescription)")
             }
             
         }

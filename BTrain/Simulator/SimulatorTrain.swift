@@ -71,7 +71,7 @@ final class SimulatorTrain: ObservableObject, Element {
             throw SimulatorTrainError.missingBlockAndTurnout
         }
                 
-        BTLogger.debug("[Simulator] \(name): updated distance to \(loc.distance.distanceString) with delta \(delta.distanceString) for \(duration.durationString) at \(speed) kph.")
+        debug("updated distance to \(loc.distance.distanceString) with delta \(delta.distanceString) for \(duration.durationString) at \(speed) kph.")
         delegate?.trainDidChange(event: .distanceUpdated)
     }
     
@@ -116,7 +116,7 @@ final class SimulatorTrain: ObservableObject, Element {
             // Only trigger the feedback if it hasn't yet been triggered
             if lastTriggeredFeedbackId != feedback.id {
                 lastTriggeredFeedbackId = feedback.id
-                BTLogger.debug("[Simulator] \(name): trigger feedback \(feedback.name) at \(blockFeedback.distanceString) in \(block.block.name).")
+                debug("trigger feedback \(feedback.name) at \(blockFeedback.distanceString) in \(block.block.name).")
                 delegate?.trainDidChange(event: .triggerFeedback(feedback: feedback))
             }
         } else {
@@ -194,12 +194,12 @@ final class SimulatorTrain: ObservableObject, Element {
                 loc.block = .init(block: nextBlock, direction: direction)
                 loc.turnout = nil
                 loc.distance = direction == .next ? 0 : (nextBlock.length ?? 0)
-                BTLogger.debug("[Simulator] \(name): moved to block \(nextBlock.name) in \(direction).")
+                debug("moved to block \(nextBlock.name) in \(direction).")
                 delegate?.trainDidChange(event: .movedToNextBlock(block: nextBlock))
             }
         } else if let nextTurnoutId = toSocket.turnout {
             if let nextTurnout = layout.turnouts[nextTurnoutId] {
-                BTLogger.debug("[Simulator] \(name): moved to turnout \(nextTurnout.name).")
+                debug("moved to turnout \(nextTurnout.name).")
                 delegate?.trainDidChange(event: .movedToNextTurnout(turnout: nextTurnout))
 
                 loc.block = nil
@@ -214,6 +214,10 @@ final class SimulatorTrain: ObservableObject, Element {
         } else {
             throw SimulatorTrainError.missingBlockAndTurnout
         }
+    }
+    
+    private func debug(_ msg: String) {
+        BTLogger.simulator.debug("\(self.name, privacy: .public): \(msg, privacy: .public)")
     }
 }
 

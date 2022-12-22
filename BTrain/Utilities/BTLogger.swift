@@ -22,6 +22,7 @@ final class BTLogger {
         case router
         case speed
         case reservation
+        case simulator
     }
 
     /// Returns a new logger instance
@@ -41,6 +42,8 @@ final class BTLogger {
             return SettingsKeys.bool(forKey: SettingsKeys.logCategorySpeed)
         case .reservation:
             return SettingsKeys.bool(forKey: SettingsKeys.logCategoryReservation)
+        case .simulator:
+            return SettingsKeys.bool(forKey: SettingsKeys.logCategorySimulator)
         }
     }
 
@@ -55,6 +58,9 @@ final class BTLogger {
 
     /// The reservation logger instance
     static var reservation = newLogger(category: .reservation)
+    
+    /// The simulator logger instance
+    static var simulator = newLogger(category: .simulator)
 
     /// Re-create the network logger using the latest settings
     static func updateLoggerInstances() {
@@ -62,6 +68,7 @@ final class BTLogger {
         router = newLogger(category: .router)
         speed = newLogger(category: .speed)
         reservation = newLogger(category: .reservation)
+        simulator = newLogger(category: .simulator)
     }
 
     static func error(_ msg: String) {
