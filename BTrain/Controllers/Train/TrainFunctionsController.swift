@@ -33,17 +33,20 @@ final class TrainFunctionsController {
         BTLogger.debug("Execute \(functions.count) functions for \(train)")
 
         for f in functions {
-            let type = f.type
-
-            guard let def = locomotive.functions.definitions.first(where: { $0.type == type }) else {
-                BTLogger.warning("Function \(type) not found in locomotive \(locomotive)")
+            let def: CommandLocomotiveFunction
+            if let locFunction = f.locFunction {
+                def = locFunction
+            } else if let definition = locomotive.functions.definitions.first(where: { $0.type == f.type }) {
+                def = definition
+            } else {
+                BTLogger.warning("Function \(f.type) not found in locomotive \(locomotive)")
                 continue
             }
 
-            if let name = catalog?.name(for: type) {
-                BTLogger.debug("Execute function \(name) of type \(type) with \(locomotive.name)")
+            if let name = catalog?.name(for: def.type) {
+                BTLogger.debug("Execute function \(name) of type \(def.type) at index \(def.nr) with \(locomotive.name)")
             } else {
-                BTLogger.debug("Execute function of type \(type) with \(locomotive.name)")
+                BTLogger.debug("Execute function of type \(def.type) at index \(def.nr) with \(locomotive.name)")
             }
 
             execute(locomotive: locomotive, function: def, trigger: f.trigger, duration: f.duration)

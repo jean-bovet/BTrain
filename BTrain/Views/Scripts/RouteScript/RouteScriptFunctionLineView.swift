@@ -36,7 +36,7 @@ struct RouteScriptFunctionLineView: View {
             .fixedSize()
 
             if let loc = loc {
-                Picker("Function:", selection: $function.index) {
+                Picker("Function:", selection: $function.locFunction) {
                     ForEach(loc.functions.definitions, id: \.self) { def in
                         HStack {
                             if let name = catalog.name(for: def.type) {
@@ -48,7 +48,7 @@ struct RouteScriptFunctionLineView: View {
                                 Image(nsImage: image)
                                     .renderingMode(.template)
                             }
-                        }.tag(def.nr as UInt8?)
+                        }.tag(def as CommandLocomotiveFunction?)
                     }
                 }
                 .labelsHidden()

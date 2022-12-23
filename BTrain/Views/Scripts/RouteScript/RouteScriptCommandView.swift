@@ -19,20 +19,6 @@ struct RouteScriptCommandView: View {
     @Binding var command: RouteScriptCommand
     @Binding var commandErrorIds: [String]
     @State private var showFunctionsSheet = false
-
-    func functionType(function: RouteItemFunction) -> UInt32 {
-        if let locId = function.locomotive,
-           let index = function.index,
-           let loc = layout.locomotives[locId] {
-            if let def = loc.functions.definitions.first(where: {$0.nr == index }) {
-                return def.type
-            } else {
-                return function.type
-            }
-        } else {
-            return function.type
-        }
-    }
     
     var functions: some View {
         HStack {
@@ -43,17 +29,17 @@ struct RouteScriptCommandView: View {
             } else {
                 ForEach(command.functions, id: \.self) { function in
                     Group {
-                        if let image = doc.locomotiveFunctionsCatalog.image(for: function.type, state: function.trigger != .disable) {
+                        if let image = doc.locomotiveFunctionsCatalog.image(for: function.resolvedType, state: function.trigger != .disable) {
                             Image(nsImage: image)
                                 .resizable()
                                 .renderingMode(.template)
                                 .frame(width: 20, height: 20)
                         } else {
-                            Text("f\(function.type)")
+                            Text("\(function.resolvedType)")
                         }
                     }
                     .if(function.trigger != .disable, transform: { $0.foregroundColor(.yellow) })
-                    .help(doc.locomotiveFunctionsCatalog.name(for: function.type) ?? "")
+                        .help(function.resolvedName(catalog: doc.locomotiveFunctionsCatalog))
                 }
                 Button("Edit…") {
                     showFunctionsSheet.toggle()
