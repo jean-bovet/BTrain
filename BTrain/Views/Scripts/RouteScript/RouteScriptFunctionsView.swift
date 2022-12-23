@@ -13,6 +13,7 @@
 import SwiftUI
 
 struct RouteScriptFunctionsView: View {
+    let doc: LayoutDocument
     let catalog: LocomotiveFunctionsCatalog
     @Binding var cmd: RouteScriptCommand
     @State private var editedCmd = RouteScriptCommand(action: .move)
@@ -37,7 +38,7 @@ struct RouteScriptFunctionsView: View {
                 List {
                     ForEach($editedCmd.functions, id: \.self) { function in
                         HStack {
-                            RouteScriptFunctionLineView(catalog: catalog, function: function)
+                            RouteScriptFunctionLineView(doc: doc, catalog: catalog, function: function)
 
                             Spacer()
 
@@ -84,6 +85,8 @@ struct RouteScriptFunctionsView: View {
 }
 
 struct RouteScriptFunctionsView_Previews: PreviewProvider {
+    static let doc = LayoutDocument(layout: Layout())
+
     static let cmd = {
         var command = RouteScriptCommand(action: .move)
         command.functions = [.init(type: 0)]
@@ -92,10 +95,10 @@ struct RouteScriptFunctionsView_Previews: PreviewProvider {
 
     static var previews: some View {
         Group {
-            RouteScriptFunctionsView(catalog: LocomotiveFunctionsCatalog(interface: MarklinInterface()), cmd: .constant(RouteScriptCommand(action: .move)))
+            RouteScriptFunctionsView(doc: doc, catalog: LocomotiveFunctionsCatalog(interface: MarklinInterface()), cmd: .constant(RouteScriptCommand(action: .move)))
         }.previewDisplayName("Empty")
         Group {
-            RouteScriptFunctionsView(catalog: LocomotiveFunctionsCatalog(interface: MarklinInterface()), cmd: .constant(cmd))
+            RouteScriptFunctionsView(doc: doc, catalog: LocomotiveFunctionsCatalog(interface: MarklinInterface()), cmd: .constant(cmd))
         }.previewDisplayName("Functions")
     }
 }

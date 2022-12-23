@@ -20,6 +20,20 @@ struct RouteScriptCommandView: View {
     @Binding var commandErrorIds: [String]
     @State private var showFunctionsSheet = false
 
+    func functionType(function: RouteItemFunction) -> UInt32 {
+        if let locId = function.locomotive,
+           let index = function.index,
+           let loc = layout.locomotives[locId] {
+            if let def = loc.functions.definitions.first(where: {$0.nr == index }) {
+                return def.type
+            } else {
+                return function.type
+            }
+        } else {
+            return function.type
+        }
+    }
+    
     var functions: some View {
         HStack {
             if command.functions.isEmpty {
@@ -141,9 +155,9 @@ struct RouteScriptCommandView: View {
                 }.buttonStyle(.borderless)
             }
         }.sheet(isPresented: $showFunctionsSheet) {
-            RouteScriptFunctionsView(catalog: doc.locomotiveFunctionsCatalog, cmd: $command)
+            RouteScriptFunctionsView(doc: doc, catalog: doc.locomotiveFunctionsCatalog, cmd: $command)
                 .padding()
-                .frame(width: 600, height: 300)
+                .frame(width: 800, height: 300)
         }
     }
 }
