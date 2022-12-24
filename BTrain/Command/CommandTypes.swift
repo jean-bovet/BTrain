@@ -46,7 +46,7 @@ struct CommandLocomotive {
 }
 
 /// A locomotive function
-struct CommandLocomotiveFunction: Codable {
+struct CommandLocomotiveFunction: Codable, Hashable {
     /// The index of the function in the locomotive decoder
     let nr: UInt8
 

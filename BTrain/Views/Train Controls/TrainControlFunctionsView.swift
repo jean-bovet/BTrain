@@ -31,16 +31,16 @@ struct TrainControlFunctionsView: View {
 
     var functionAttributes: [FunctionAttributes] {
         var attributes = [FunctionAttributes]()
-        for (index, function) in functions.definitions.enumerated() {
-            let icon = catalog.image(for: function.type, state: functionState(function: function))
+        for (index, definition) in functions.definitions.enumerated() {
+            let icon = catalog.image(for: definition.type, state: functionState(function: definition))
 
             let name: String
-            if let cname = catalog.name(for: function.type) {
+            if let cname = catalog.name(for: definition.type) {
                 name = cname
             } else {
                 name = "f\(index)"
             }
-            attributes.append(FunctionAttributes(function: function, name: name, icon: icon))
+            attributes.append(FunctionAttributes(function: definition, name: name, icon: icon))
         }
         return attributes
     }

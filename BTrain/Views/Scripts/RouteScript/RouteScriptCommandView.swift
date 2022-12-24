@@ -19,7 +19,7 @@ struct RouteScriptCommandView: View {
     @Binding var command: RouteScriptCommand
     @Binding var commandErrorIds: [String]
     @State private var showFunctionsSheet = false
-
+    
     var functions: some View {
         HStack {
             if command.functions.isEmpty {
@@ -29,17 +29,17 @@ struct RouteScriptCommandView: View {
             } else {
                 ForEach(command.functions, id: \.self) { function in
                     Group {
-                        if let image = doc.locomotiveFunctionsCatalog.image(for: function.type, state: function.trigger != .disable) {
+                        if let image = doc.locomotiveFunctionsCatalog.image(for: function.resolvedType, state: function.trigger != .disable) {
                             Image(nsImage: image)
                                 .resizable()
                                 .renderingMode(.template)
                                 .frame(width: 20, height: 20)
                         } else {
-                            Text("f\(function.type)")
+                            Text("\(function.resolvedType)")
                         }
                     }
                     .if(function.trigger != .disable, transform: { $0.foregroundColor(.yellow) })
-                    .help(doc.locomotiveFunctionsCatalog.name(for: function.type) ?? "")
+                        .help(function.resolvedName(catalog: doc.locomotiveFunctionsCatalog))
                 }
                 Button("Edit…") {
                     showFunctionsSheet.toggle()
@@ -141,9 +141,9 @@ struct RouteScriptCommandView: View {
                 }.buttonStyle(.borderless)
             }
         }.sheet(isPresented: $showFunctionsSheet) {
-            RouteScriptFunctionsView(catalog: doc.locomotiveFunctionsCatalog, cmd: $command)
+            RouteScriptFunctionsView(doc: doc, catalog: doc.locomotiveFunctionsCatalog, cmd: $command)
                 .padding()
-                .frame(width: 600, height: 300)
+                .frame(width: 800, height: 300)
         }
     }
 }

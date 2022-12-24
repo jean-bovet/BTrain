@@ -14,7 +14,14 @@ import SwiftUI
 
 struct LocPicker: View {
     let doc: LayoutDocument
+    let emptyLabel: String
     @Binding var selectedLoc: Identifier<Locomotive>?
+
+    internal init(doc: LayoutDocument, emptyLabel: String = "", selectedLoc: Binding<Identifier<Locomotive>?>) {
+        self.doc = doc
+        self.emptyLabel = emptyLabel
+        self._selectedLoc = selectedLoc
+    }
 
     var iconSize: CGSize {
         .init(width: 60, height: 20)
@@ -26,7 +33,7 @@ struct LocPicker: View {
 
     var body: some View {
         Picker("Locomotive:", selection: $selectedLoc) {
-            Text("").tag(nil as Identifier<Locomotive>?)
+            Text(emptyLabel).tag(nil as Identifier<Locomotive>?)
             ForEach(locomotives, id: \.self) { loc in
                 HStack {
                     Text(loc.name)

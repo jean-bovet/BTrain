@@ -349,6 +349,7 @@
 		A7B06AFB2727B73300BDD88C /* FeedbackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7B06AFA2727B73300BDD88C /* FeedbackView.swift */; };
 		A7B0B5132761CF8400F11A3E /* SwitchboardLinkUpdater.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7B0B5122761CF8400F11A3E /* SwitchboardLinkUpdater.swift */; };
 		A7B0B5172762FB6500F11A3E /* BlockEditingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7B0B5162762FB6500F11A3E /* BlockEditingView.swift */; };
+		A7B11CE129566E1B00DCB615 /* TrainFunctionsControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7B11CE029566E1B00DCB615 /* TrainFunctionsControllerTests.swift */; };
 		A7B49570289522D1001707DA /* GraphPathElement.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7B4956F289522D1001707DA /* GraphPathElement.swift */; };
 		A7BD6259276D50380039B6C2 /* LayoutDocumentTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7BD6258276D50380039B6C2 /* LayoutDocumentTests.swift */; };
 		A7BE366B2751AAA300286709 /* BlockTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7F779E8272F06C400E73275 /* BlockTests.swift */; };
@@ -762,6 +763,7 @@
 		A7B06AFE2727C01100BDD88C /* MarklinTestMessageFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarklinTestMessageFactory.swift; sourceTree = "<group>"; };
 		A7B0B5122761CF8400F11A3E /* SwitchboardLinkUpdater.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwitchboardLinkUpdater.swift; sourceTree = "<group>"; };
 		A7B0B5162762FB6500F11A3E /* BlockEditingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockEditingView.swift; sourceTree = "<group>"; };
+		A7B11CE029566E1B00DCB615 /* TrainFunctionsControllerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainFunctionsControllerTests.swift; sourceTree = "<group>"; };
 		A7B4956F289522D1001707DA /* GraphPathElement.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GraphPathElement.swift; sourceTree = "<group>"; };
 		A7BD6258276D50380039B6C2 /* LayoutDocumentTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutDocumentTests.swift; sourceTree = "<group>"; };
 		A7BE36A72751BDAB00286709 /* ConnectorSocket.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectorSocket.swift; sourceTree = "<group>"; };
@@ -1497,6 +1499,7 @@
 				A73E0811276ACDA8005F9D64 /* ClientServerTests.swift */,
 				A763F18C27BDD82A00B3499A /* TrainSpeedMeasurementTests.swift */,
 				A76C1C5C287EA3AD00A22509 /* LayoutControllerTests.swift */,
+				A7B11CE029566E1B00DCB615 /* TrainFunctionsControllerTests.swift */,
 			);
 			path = "Digital Controller";
 			sourceTree = "<group>";
@@ -2339,6 +2342,7 @@
 			files = (
 				A76B903E28330CB4006596A3 /* LayoutYardRoutingTests.swift in Sources */,
 				A763F18D27BDD82A00B3499A /* TrainSpeedMeasurementTests.swift in Sources */,
+				A7B11CE129566E1B00DCB615 /* TrainFunctionsControllerTests.swift in Sources */,
 				A792DF012785095B004B0439 /* SettingsViewTests.swift in Sources */,
 				A76C1C5D287EA3AD00A22509 /* LayoutControllerTests.swift in Sources */,
 				A73E080D276ABB5C005F9D64 /* LayoutErrorTests.swift in Sources */,
@@ -2567,7 +2571,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 130;
+				CURRENT_PROJECT_VERSION = 131;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"BTrain/Preview Content\"";
 				DEVELOPMENT_TEAM = 28XRU7S6GA;
@@ -2582,7 +2586,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.5;
 				PRODUCT_BUNDLE_IDENTIFIER = "ch.arizona-software.BTrain";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -2600,7 +2604,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 130;
+				CURRENT_PROJECT_VERSION = 131;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"BTrain/Preview Content\"";
 				DEVELOPMENT_TEAM = 28XRU7S6GA;
@@ -2615,7 +2619,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.5;
 				PRODUCT_BUNDLE_IDENTIFIER = "ch.arizona-software.BTrain";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

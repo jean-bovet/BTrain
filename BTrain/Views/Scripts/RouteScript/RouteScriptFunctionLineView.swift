@@ -13,11 +13,20 @@
 import SwiftUI
 
 struct RouteScriptFunctionLineView: View {
+    let doc: LayoutDocument
     let catalog: LocomotiveFunctionsCatalog
     @Binding var function: RouteItemFunction
-
+    
+    var loc: Locomotive? {
+        doc.layout.locomotives[function.locomotive]
+    }
+    
     var body: some View {
         HStack {
+            LocPicker(doc: doc, emptyLabel: "Any Locomotive", selectedLoc: $function.locomotive)
+                .labelsHidden()
+                .fixedSize()
+
             Picker("State:", selection: $function.trigger) {
                 Text("Enable").tag(RouteItemFunction.Trigger.enable)
                 Text("Disable").tag(RouteItemFunction.Trigger.disable)
@@ -26,23 +35,43 @@ struct RouteScriptFunctionLineView: View {
             .labelsHidden()
             .fixedSize()
 
-            Picker("Function:", selection: $function.type) {
-                ForEach(catalog.globalTypes, id: \.self) { type in
-                    HStack {
-                        if let name = catalog.name(for: type) {
-                            Text("f\(type): \(name)")
-                        } else {
-                            Text("f\(type)")
-                        }
-                        if let image = catalog.image(for: type, state: true) {
-                            Image(nsImage: image)
-                                .renderingMode(.template)
-                        }
-                    }.tag(type)
+            if let loc = loc {
+                Picker("Function:", selection: $function.locFunction) {
+                    ForEach(loc.functions.definitions, id: \.self) { def in
+                        HStack {
+                            if let name = catalog.name(for: def.type) {
+                                Text("f\(def.nr): \(name) (\(def.type))")
+                            } else {
+                                Text("f\(def.nr): \(def.type)")
+                            }
+                            if let image = catalog.image(for: def.type, state: true) {
+                                Image(nsImage: image)
+                                    .renderingMode(.template)
+                            }
+                        }.tag(def as CommandLocomotiveFunction?)
+                    }
                 }
+                .labelsHidden()
+                .fixedSize()
+            } else {
+                Picker("Function:", selection: $function.type) {
+                    ForEach(catalog.globalTypes, id: \.self) { type in
+                        HStack {
+                            if let name = catalog.name(for: type) {
+                                Text("\(name) (\(type))")
+                            } else {
+                                Text("Type \(type)")
+                            }
+                            if let image = catalog.image(for: type, state: true) {
+                                Image(nsImage: image)
+                                    .renderingMode(.template)
+                            }
+                        }.tag(type)
+                    }
+                }
+                .labelsHidden()
+                .fixedSize()
             }
-            .labelsHidden()
-            .fixedSize()
 
             switch function.trigger {
             case .enable, .disable:
@@ -61,6 +90,8 @@ struct RouteScriptFunctionLineView: View {
 }
 
 struct RouteScriptFunctionLineView_Previews: PreviewProvider {
+    static let doc = LayoutDocument(layout: Layout())
+    
     static let catalog = {
         let catalog = LocomotiveFunctionsCatalog(interface: MarklinInterface())
         catalog.add(attributes: .preview(type: 1, name: "Light"))
@@ -71,9 +102,9 @@ struct RouteScriptFunctionLineView_Previews: PreviewProvider {
 
     static var previews: some View {
         VStack(alignment: .leading) {
-            RouteScriptFunctionLineView(catalog: catalog, function: .constant(RouteItemFunction(type: 1, trigger: .enable)))
-            RouteScriptFunctionLineView(catalog: catalog, function: .constant(RouteItemFunction(type: 2, trigger: .disable)))
-            RouteScriptFunctionLineView(catalog: catalog, function: .constant(RouteItemFunction(type: 3, trigger: .pulse)))
+            RouteScriptFunctionLineView(doc: doc, catalog: catalog, function: .constant(RouteItemFunction(type: 1, trigger: .enable)))
+            RouteScriptFunctionLineView(doc: doc, catalog: catalog, function: .constant(RouteItemFunction(type: 2, trigger: .disable)))
+            RouteScriptFunctionLineView(doc: doc, catalog: catalog, function: .constant(RouteItemFunction(type: 3, trigger: .pulse)))
         }
     }
 }
