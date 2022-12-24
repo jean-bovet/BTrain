@@ -68,7 +68,7 @@ struct TrainControlLocationView: View {
                 Spacer()
             }
         }.sheet(isPresented: $setTrainLocationSheet) {
-            TrainControlSetLocationSheet(layout: layout, controller: controller, train: train)
+            TrainControlSetLocationSheet(layout: layout, controller: controller, doc: doc, train: train)
                 .padding()
         }.sheet(isPresented: $moveTrainLocationSheet) {
             TrainControlMoveSheet(layout: layout, doc: doc, train: train)

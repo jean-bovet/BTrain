@@ -232,6 +232,8 @@
 		A77167FF288BD43F00A71657 /* PathFinder+Constraints.swift in Sources */ = {isa = PBXBuildFile; fileRef = A77167FE288BD43F00A71657 /* PathFinder+Constraints.swift */; };
 		A77168032892B0E100A71657 /* Route+Resolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = A77168022892B0E100A71657 /* Route+Resolver.swift */; };
 		A774B8E52801FA6F00E8043C /* PointToLoopLayoutTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A774B8E42801FA6F00E8043C /* PointToLoopLayoutTests.swift */; };
+		A776FDDF2954D7A100C79C6F /* SimulatorTrain.swift in Sources */ = {isa = PBXBuildFile; fileRef = A776FDDE2954D7A100C79C6F /* SimulatorTrain.swift */; };
+		A776FDE12955191600C79C6F /* SimulatorTrainError.swift in Sources */ = {isa = PBXBuildFile; fileRef = A776FDE02955191600C79C6F /* SimulatorTrainError.swift */; };
 		A778407E27F96BFC00F87078 /* GeometryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A778407D27F96BFC00F87078 /* GeometryTests.swift */; };
 		A77A02912915AC200017667A /* MarklinCS3.swift in Sources */ = {isa = PBXBuildFile; fileRef = A77A02902915AC200017667A /* MarklinCS3.swift */; };
 		A77A02952915B7260017667A /* MarklinLocomotivesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A77A02942915B7260017667A /* MarklinLocomotivesTests.swift */; };
@@ -648,6 +650,8 @@
 		A77167FE288BD43F00A71657 /* PathFinder+Constraints.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PathFinder+Constraints.swift"; sourceTree = "<group>"; };
 		A77168022892B0E100A71657 /* Route+Resolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Route+Resolver.swift"; sourceTree = "<group>"; };
 		A774B8E42801FA6F00E8043C /* PointToLoopLayoutTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PointToLoopLayoutTests.swift; sourceTree = "<group>"; };
+		A776FDDE2954D7A100C79C6F /* SimulatorTrain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimulatorTrain.swift; sourceTree = "<group>"; };
+		A776FDE02955191600C79C6F /* SimulatorTrainError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimulatorTrainError.swift; sourceTree = "<group>"; };
 		A778407D27F96BFC00F87078 /* GeometryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeometryTests.swift; sourceTree = "<group>"; };
 		A77A02902915AC200017667A /* MarklinCS3.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarklinCS3.swift; sourceTree = "<group>"; };
 		A77A02942915B7260017667A /* MarklinLocomotivesTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarklinLocomotivesTests.swift; sourceTree = "<group>"; };
@@ -1613,6 +1617,8 @@
 				A7841389274165FB00381341 /* MarklinCommandSimulator.swift */,
 				A77A029F291631600017667A /* MarklinCS3Server.swift */,
 				A783EA5A278530BF00E69B6D /* SimulatorLocomotive.swift */,
+				A776FDDE2954D7A100C79C6F /* SimulatorTrain.swift */,
+				A776FDE02955191600C79C6F /* SimulatorTrainError.swift */,
 			);
 			path = Simulator;
 			sourceTree = "<group>";
@@ -2065,6 +2071,7 @@
 				A785C073278A4852002FD538 /* LocomotiveIconView.swift in Sources */,
 				A74F37FE2817BC940013FD23 /* RouteItemStation.swift in Sources */,
 				A76FD43A28FD07AA00E1A295 /* TrainControlRemoveSheet.swift in Sources */,
+				A776FDE12955191600C79C6F /* SimulatorTrainError.swift in Sources */,
 				A77A02A0291631600017667A /* MarklinCS3Server.swift in Sources */,
 				A72720B729086B4F00E7B177 /* LayoutVector.swift in Sources */,
 				A75F41BE2944E78F003C709F /* MarklinInterfaceResources.swift in Sources */,
@@ -2224,6 +2231,7 @@
 				A7A7D6902921501A008FA648 /* DirectionPicker.swift in Sources */,
 				A76C1C612880515500A22509 /* LayoutDiagnostics+Error.swift in Sources */,
 				A7DB7D4E27C714E3000893BA /* LayoutTurnoutManager.swift in Sources */,
+				A776FDDF2954D7A100C79C6F /* SimulatorTrain.swift in Sources */,
 				A74F380F281A13CC0013FD23 /* StationEditingView.swift in Sources */,
 				A733224529232425000648EA /* LayoutScript.swift in Sources */,
 				A783EAAD2789290F00E69B6D /* SwitchboardRuntimeErrorView.swift in Sources */,

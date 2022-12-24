@@ -48,6 +48,12 @@ extension Layout {
         }!
     }
 
+    func feedback(named name: String) -> Feedback {
+        feedbacks.elements.first {
+            $0.name == name
+        }!
+    }
+
     func train(_ uuid: String) -> Train {
         trains[Identifier<Train>(uuid: uuid)]!
     }

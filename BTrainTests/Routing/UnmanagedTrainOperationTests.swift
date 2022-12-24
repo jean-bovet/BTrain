@@ -147,7 +147,7 @@ class UnmanagedTrainOperationTests: BTTestCase {
             let strain = doc.simulator.locomotives.first(where: { $0.loc.id == loc.id })!
             let steps = loc.speed.steps(for: speed)
             strain.speed = steps
-            doc.simulator.setTrainSpeed(train: strain)
+            doc.simulator.setLocomotiveSpeed(locomotive: strain)
 
             waitForSpeed(speed)
         }

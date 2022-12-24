@@ -19,7 +19,6 @@ final class SimulatorLocomotive: ObservableObject, Element {
     let id: Identifier<Locomotive>
     let loc: Locomotive
 
-    @Published var simulate = true
     @Published var directionForward = true
 
     // Note: ensure that the speed of the simulated train is decoupled from the train itself
@@ -27,9 +26,31 @@ final class SimulatorLocomotive: ObservableObject, Element {
     // via commands sent through the interface.
     @Published var speed: SpeedStep = .zero
 
+    struct CurrentBlock {
+        let block: Block
+        let direction: Direction
+    }
+    
+    struct CurrentTurnout {
+        let turnout: Turnout
+        let fromSocket: Socket
+        let toSocket: Socket
+    }
+    
+    /// The block in which the locomotive is located
+    @Published var block: CurrentBlock?
+    
+    /// The turnout in which the locomotive is located
+    @Published var turnout: CurrentTurnout?
+    
+    /// The distance of the locomotive within the block or the turnout
+    @Published var distance = 0.0
+
     init(loc: Locomotive) {
         id = loc.id
         self.loc = loc
         directionForward = loc.directionForward
     }
+    
 }
+

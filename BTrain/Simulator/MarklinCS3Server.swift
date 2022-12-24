@@ -81,7 +81,7 @@ final class MarklinCS3Server {
             startRequests = 0
         }
         if startRequests == 0 {
-            BTLogger.debug("Starting CS3 server on port \(port)")
+            BTLogger.simulator.debug("Starting CS3 server on port \(port)")
             try httpServer.start(port)
         }
         startRequests += 1
@@ -93,7 +93,7 @@ final class MarklinCS3Server {
             startRequests = 0
         }
         if startRequests == 0 {
-            BTLogger.debug("Stopping CS3 server")
+            BTLogger.simulator.debug("Stopping CS3 server")
             httpServer.stop()
         }
     }
@@ -108,7 +108,7 @@ final class MarklinCS3Server {
         do {
             return try Data(contentsOf: file)
         } catch {
-            BTLogger.error("Locomotive icon not found simulator assets: \(name)")
+            BTLogger.simulator.error("Locomotive icon not found simulator assets: \(name)")
             return nil
         }
     }
